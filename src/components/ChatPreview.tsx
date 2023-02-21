@@ -34,7 +34,7 @@ export default function ChatPreview({
     <Component
       {...props}
       className={cx(
-        'relative flex items-stretch gap-2.5 overflow-hidden py-2',
+        'relative flex items-stretch gap-2.5 overflow-hidden py-2 md:rounded-md',
         (isInteractive || asLink) && 'cursor-pointer hover:bg-background-light',
         props.className
       )}
