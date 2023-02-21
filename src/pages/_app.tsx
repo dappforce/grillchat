@@ -1,3 +1,4 @@
+import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import Navbar from '@/components/Navbar'
 import '@/styles/globals.css'
 import { cx } from '@/utils/className'
@@ -9,15 +10,28 @@ const sourceSansPro = Source_Sans_Pro({
   subsets: ['latin'],
 })
 
-export default function App({ Component, pageProps }: AppProps) {
+export type AppCommonProps = {
+  head?: HeadConfigProps
+}
+
+export default function App({
+  Component,
+  pageProps,
+}: AppProps<AppCommonProps>) {
+  const { head } = pageProps
+
   return (
-    <div
-      className={cx(
-        'min-h-screen bg-background text-text',
-        sourceSansPro.className
-      )}
-    >
-      <Navbar />
-    </div>
+    <>
+      <HeadConfig {...head} />
+      <div
+        className={cx(
+          'min-h-screen bg-background text-text',
+          sourceSansPro.className
+        )}
+      >
+        <Navbar />
+        <Component />
+      </div>
+    </>
   )
 }

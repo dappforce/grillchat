@@ -1,16 +1,3 @@
-import { cx } from '@/utils/className'
-import Head from 'next/head'
+import HomePage from '@/modules/HomePage'
 
-export default function Home() {
-  return (
-    <>
-      <Head>
-        <title>GrillChat</title>
-        <meta name='description' content='Chat app powered by Subsocial' />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
-      <main className={cx('bg-background')}>GrillChat</main>
-    </>
-  )
-}
+export default HomePage
