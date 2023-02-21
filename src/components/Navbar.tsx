@@ -25,7 +25,7 @@ export default function Navbar({ ...props }: NavbarProps) {
         <div className='flex items-center'>
           <LinkText
             href='https://google.com'
-            className='mr-4 flex items-center'
+            className='mr-6 flex items-center'
           >
             <HiOutlineLightBulb className='mr-1' /> Suggest Feature
           </LinkText>

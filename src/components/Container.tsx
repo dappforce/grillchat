@@ -7,10 +7,7 @@ export default function Container({ className, ...props }: ContainerProps) {
   return (
     <div
       {...props}
-      className={cx(
-        'relative mx-auto w-full px-2 xl:container md:px-6 2xl:max-w-screen-xl',
-        className
-      )}
+      className={cx('relative mx-auto w-full max-w-screen-md px-2', className)}
     />
   )
 }

@@ -6,7 +6,7 @@ export type HeadConfigProps = {
 }
 
 export default function HeadConfig({ description, title }: HeadConfigProps) {
-  const usedTitle = 'GrillChat' + title ? ` | ${title}` : ''
+  const usedTitle = 'GrillChat' + (title ? ` | ${title}` : '')
   const usedDesc = description || 'Chat app powered by Subsocial'
 
   return (

@@ -18,6 +18,8 @@ module.exports = {
         'text-muted': 'rgb(var(--text-muted) / <alpha-value>)',
         'text-primary': 'rgb(var(--text-primary) / <alpha-value>)',
         'text-dark': 'rgb(var(--text-dark) / <alpha-value>)',
+
+        'border-gray': 'rgb(var(--border-gray) / <alpha-value>)',
       },
     },
   },
