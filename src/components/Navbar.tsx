@@ -5,6 +5,7 @@ import { HiOutlineLightBulb } from 'react-icons/hi'
 import Button from './Button'
 import Container from './Container'
 import LinkText from './LinkText'
+import Logo from './Logo'
 
 export type NavbarProps = ComponentProps<'div'>
 
@@ -19,9 +20,7 @@ export default function Navbar({ ...props }: NavbarProps) {
           props.className
         )}
       >
-        <p className={cx(signPainter.className, 'relative top-1 text-2xl')}>
-          GrillChat
-        </p>
+        <Logo className='text-3xl' />
         <div className='flex items-center'>
           <LinkText
             href='https://google.com'
