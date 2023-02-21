@@ -1,3 +1,14 @@
+:root {
+  --background: 32 41 58;
+  --background-light: 74 85 103;
+  --background-primary: 77 70 220;
+  --background-warning: 225 181 62;
+  --text: 255 255 255;
+  --text-muted: 163 172 190;
+  --text-primary: 130 161 248;
+  --text-dark: 17 23 41;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
