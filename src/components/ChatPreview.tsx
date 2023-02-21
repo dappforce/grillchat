@@ -36,7 +36,7 @@ export default function ChatPreview({
       {...props}
       tabIndex={!asLink && isInteractive ? 0 : undefined}
       className={cx(
-        'md:rounded-md',
+        'outline-none md:rounded-md',
         (isInteractive || asLink) &&
           'cursor-pointer focus-within:bg-background-light/75 hover:bg-background-light/75',
         props.className
