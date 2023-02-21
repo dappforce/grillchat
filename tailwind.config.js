@@ -1,8 +1,13 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Source Sans Pro', ...defaultTheme.fontFamily.sans],
+      },
       colors: {
         background: 'rgb(var(--background) / <alpha-value>)',
         'background-light': 'rgb(var(--background-light) / <alpha-value>)',
