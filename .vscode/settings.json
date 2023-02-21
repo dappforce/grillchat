@@ -1,0 +1,7 @@
+{
+  "tailwindCSS.experimental.classRegex": [
+    "clsx`([^`]*)",
+    ["clsx\\(([^)]*)\\)", "'([^']*)'"]
+  ],
+  "editor.formatOnSave": true
+}
