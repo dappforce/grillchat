@@ -28,12 +28,13 @@ export default function ChatPreview({
   lastMessage: _lastMessage,
   ...props
 }: ChatPreviewProps) {
-  const Component = asContainer ? Container : 'div'
+  const Component = asContainer ? Container<'div'> : 'div'
   const ContentContainer = asLink ? Link : 'div'
 
   return (
     <Component
       {...props}
+      tabIndex={!asLink && isInteractive ? 0 : undefined}
       className={cx(
         'md:rounded-md',
         (isInteractive || asLink) &&
