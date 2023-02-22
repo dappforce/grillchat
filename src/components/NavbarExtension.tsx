@@ -1,10 +1,15 @@
 import { cx } from '@/utils/className'
 import { ComponentProps } from 'react'
-import Container from './Container'
+import Container, { ContainerProps } from './Container'
 
-export type NavbarExtensionProps = ComponentProps<'div'>
+export type NavbarExtensionProps = ComponentProps<'div'> & {
+  contentContainerProps?: ContainerProps<'div'>
+}
 
-export default function NavbarExtension({ ...props }: NavbarExtensionProps) {
+export default function NavbarExtension({
+  contentContainerProps,
+  ...props
+}: NavbarExtensionProps) {
   return (
     <div
       {...props}
@@ -13,7 +18,7 @@ export default function NavbarExtension({ ...props }: NavbarExtensionProps) {
         props.className
       )}
     >
-      <Container>{props.children}</Container>
+      <Container {...contentContainerProps}>{props.children}</Container>
     </div>
   )
 }

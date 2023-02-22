@@ -2,6 +2,7 @@
   "tailwindCSS.experimental.classRegex": [
     "clsx`([^`]*)",
     ["clsx\\(([^)]*)\\)", "'([^']*)'"],
+    ["cx\\(([^)]*)\\)", "'([^']*)'"],
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
   ],
   "editor.formatOnSave": true
