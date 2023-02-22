@@ -12,7 +12,10 @@ export default function Navbar({ ...props }: NavbarProps) {
   return (
     <nav
       {...props}
-      className={cx('sticky top-0 bg-background-light', props.className)}
+      className={cx(
+        'sticky top-0 border-b border-border-gray bg-background-light',
+        props.className
+      )}
     >
       <Container
         className={cx(

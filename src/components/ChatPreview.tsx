@@ -59,7 +59,7 @@ export default function ChatPreview({
             <p className='text-sm text-text-muted'>{description}</p>
           </div>
         </div>
-        <div className='absolute bottom-0 ml-20 w-full border-b border-border-gray/50' />
+        <div className='absolute bottom-0 ml-20 w-full border-b border-border-gray' />
       </ContentContainer>
     </Component>
   )

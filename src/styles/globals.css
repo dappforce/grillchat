@@ -7,7 +7,7 @@
   --text-muted: 163 172 190;
   --text-primary: 130 161 248;
   --text-dark: 17 23 41;
-  --border-gray: 74 85 103;
+  --border-gray: 51 59 74;
 }
 
 @tailwind base;
