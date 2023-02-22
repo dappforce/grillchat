@@ -30,9 +30,7 @@ export default function App({
         )}
       >
         <Navbar />
-        <main className='flex flex-1 flex-col'>
-          <Component />
-        </main>
+        <Component />
       </div>
     </>
   )
