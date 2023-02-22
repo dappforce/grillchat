@@ -31,7 +31,15 @@ export default function ChatRoom({
       >
         <div className={cx('flex flex-col gap-2')}>
           {chats.map((chat, index) => (
-            <ChatItem key={index} text={chat.text} alignment={chat.alignment} />
+            <div
+              className={cx(
+                'w-10/12',
+                chat.alignment === 'right' && 'self-end justify-self-end'
+              )}
+              key={index}
+            >
+              <ChatItem text={chat.text} alignment={chat.alignment} />
+            </div>
           ))}
         </div>
       </ScrollableContainer>

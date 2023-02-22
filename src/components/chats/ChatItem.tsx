@@ -19,7 +19,7 @@ export default function ChatItem({ text, alignment, ...props }: ChatItemProps) {
       <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-background-light'>
         A
       </div>
-      <div className='relative mr-3 rounded-xl bg-background-light py-2 px-4 shadow'>
+      <div className='relative rounded-xl bg-background-light py-2 px-4 shadow'>
         <div>{text}</div>
       </div>
     </div>

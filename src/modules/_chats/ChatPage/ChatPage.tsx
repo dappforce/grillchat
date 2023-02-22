@@ -49,7 +49,7 @@ const dummyChats = [
     alignment: 'left',
   },
   {
-    text: 'Hey guys, I want to build my first app on Subsocial. How should I start?',
+    text: 'Hey guys, I want to build my first app on Subsocial. How should I start? Hey guys, I want to build my first app on Subsocial. How should I start? Hey guys, I want to build my first app on Subsocial. How should I start?',
     alignment: 'left',
   },
   {
