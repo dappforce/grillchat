@@ -8,24 +8,38 @@ import { cx } from '@/utils/className'
 import type { ImageProps } from 'next/image'
 
 type Topic = {
+  id: string
   image: ImageProps['src']
   title: string
   desc: string
 }
 const topics: Topic[] = [
   {
+    id: 'bitcoin',
     title: 'Bitcoin',
     image: Bitcoin,
     desc: 'You can use an exchange to buy crypto',
   },
-  { title: 'Ethereum', image: Ethereum, desc: 'Hello everyone!' },
   {
+    id: 'ethereum',
+    title: 'Ethereum',
+    image: Ethereum,
+    desc: 'Hello everyone!',
+  },
+  {
+    id: 'polkadot',
     title: 'Polkadot',
     image: Polkadot,
     desc: 'Good day, I would like to create a network with new ',
   },
-  { title: 'Cosmos', image: Cosmos, desc: 'GM guys :)' },
   {
+    id: 'cosmos',
+    title: 'Cosmos',
+    image: Cosmos,
+    desc: 'GM guys :)',
+  },
+  {
+    id: 'near',
     title: 'NEAR',
     image: Near,
     desc: 'Is this something crucial that you need now?',
@@ -36,11 +50,13 @@ export default function HomePage() {
   return (
     <main className={cx('bg-background')}>
       <div className='flex flex-col'>
-        {topics.map(({ desc, image, title }) => (
+        {topics.map(({ id, desc, image, title }) => (
           <ChatPreview
             key={title}
             asContainer
-            asLink={{ href: '/' }}
+            asLink={{
+              href: { pathname: '/chats/[topic]', query: { topic: id } },
+            }}
             image={image}
             title={title}
             description={desc}

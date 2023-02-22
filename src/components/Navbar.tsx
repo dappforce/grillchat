@@ -1,5 +1,4 @@
 import { cx } from '@/utils/className'
-import localFont from '@next/font/local'
 import { ComponentProps } from 'react'
 import { HiOutlineLightBulb } from 'react-icons/hi'
 import Button from './Button'
@@ -8,8 +7,6 @@ import LinkText from './LinkText'
 import Logo from './Logo'
 
 export type NavbarProps = ComponentProps<'div'>
-
-const signPainter = localFont({ src: '../assets/fonts/SignPainter.ttf' })
 
 export default function Navbar({ ...props }: NavbarProps) {
   return (
