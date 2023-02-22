@@ -16,10 +16,6 @@ export function generatePolymorphicComponent<AdditionalProps>(
       return customRenderer(props as AdditionalProps)
     }
 
-    return (
-      <Component {...props} className={cx(defaultClassName, className)}>
-        ScrollableContainer
-      </Component>
-    )
+    return <Component {...props} className={cx(defaultClassName, className)} />
   }
 }

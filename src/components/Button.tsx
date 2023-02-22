@@ -8,6 +8,9 @@ const buttonStyles = cva('rounded-full px-6 py-2', {
     variant: {
       primary: 'font-medium bg-background-primary text-text',
     },
+    circleButton: {
+      true: 'p-2',
+    },
   },
   defaultVariants: {
     variant: 'primary',
@@ -18,22 +21,24 @@ export type ButtonProps = VariantProps<typeof buttonStyles> &
   ComponentProps<'button'> &
   ComponentProps<'a'>
 
-export default function Button({ variant, href, ...props }: ButtonProps) {
+export default function Button({
+  variant,
+  circleButton,
+  href,
+  ...props
+}: ButtonProps) {
+  const classNames = cx(
+    buttonStyles({ circleButton, variant }),
+    props.className
+  )
+
   if (href) {
     return (
       <Link href={href} passHref legacyBehavior>
-        <a
-          {...props}
-          className={cx(buttonStyles({ variant, className: props.className }))}
-        />
+        <a {...props} className={classNames} />
       </Link>
     )
   }
 
-  return (
-    <button
-      {...props}
-      className={cx(buttonStyles({ variant, className: props.className }))}
-    />
-  )
+  return <button {...props} className={classNames} />
 }
