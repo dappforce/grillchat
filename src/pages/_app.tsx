@@ -1,5 +1,5 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
-import Navbar from '@/components/Navbar'
+import Navbar from '@/components/navbar/Navbar'
 import '@/styles/globals.css'
 import { cx } from '@/utils/className'
 import { Source_Sans_Pro } from '@next/font/google'

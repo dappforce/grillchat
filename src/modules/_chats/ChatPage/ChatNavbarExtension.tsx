@@ -1,7 +1,7 @@
 import LinkText from '@/components/LinkText'
 import NavbarExtension, {
   NavbarExtensionProps,
-} from '@/components/NavbarExtension'
+} from '@/components/navbar/NavbarExtension'
 import { cx } from '@/utils/className'
 import Image, { ImageProps } from 'next/image'
 import { HiOutlineChevronLeft } from 'react-icons/hi'

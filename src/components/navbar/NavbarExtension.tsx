@@ -1,6 +1,6 @@
 import { cx } from '@/utils/className'
 import { ComponentProps } from 'react'
-import Container, { ContainerProps } from './Container'
+import Container, { ContainerProps } from '../Container'
 
 export type NavbarExtensionProps = ComponentProps<'div'> & {
   contentContainerProps?: ContainerProps<'div'>

@@ -1,10 +1,10 @@
 import { cx } from '@/utils/className'
 import { ComponentProps } from 'react'
 import { HiOutlineLightBulb } from 'react-icons/hi'
-import Button from './Button'
-import Container from './Container'
-import LinkText from './LinkText'
-import Logo from './Logo'
+import Button from '../Button'
+import Container from '../Container'
+import LinkText from '../LinkText'
+import Logo from '../Logo'
 
 export type NavbarProps = ComponentProps<'div'>
 

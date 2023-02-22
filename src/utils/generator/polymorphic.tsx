@@ -5,7 +5,7 @@ export function generatePolymorphicComponent<AdditionalProps>(
   defaultClassName: string,
   customRenderer?: (props: AdditionalProps) => JSX.Element
 ) {
-  return function PolymorphicComponent<Type extends PolymorphicTypes = 'div'>({
+  return function PolymorphicComponent<Type extends PolymorphicTypes>({
     className,
     as,
     ...props

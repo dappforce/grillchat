@@ -2,7 +2,7 @@ import { cx } from '@/utils/className'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
-import Container from './Container'
+import Container from '../Container'
 
 export type ChatPreviewProps = ComponentProps<'div'> & {
   title: string
