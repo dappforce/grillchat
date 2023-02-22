@@ -3,17 +3,22 @@ import { cva, VariantProps } from 'class-variance-authority'
 import Link from 'next/link'
 import { ComponentProps } from 'react'
 
-const buttonStyles = cva('rounded-full px-6 py-2', {
+const buttonStyles = cva('rounded-full', {
   variants: {
     variant: {
-      primary: 'font-medium bg-background-primary text-text',
+      primary: 'bg-background-primary text-text',
+      transparent: 'bg-transparent text-text',
     },
-    circleButton: {
-      true: 'p-2',
+    size: {
+      noPadding: 'p-0',
+      circle: 'p-2',
+      md: 'px-6 py-2',
+      lg: 'px-8 py-3',
     },
   },
   defaultVariants: {
     variant: 'primary',
+    size: 'md',
   },
 })
 
@@ -21,16 +26,8 @@ export type ButtonProps = VariantProps<typeof buttonStyles> &
   ComponentProps<'button'> &
   ComponentProps<'a'>
 
-export default function Button({
-  variant,
-  circleButton,
-  href,
-  ...props
-}: ButtonProps) {
-  const classNames = cx(
-    buttonStyles({ circleButton, variant }),
-    props.className
-  )
+export default function Button({ variant, href, size, ...props }: ButtonProps) {
+  const classNames = cx(buttonStyles({ variant, size }), props.className)
 
   if (href) {
     return (

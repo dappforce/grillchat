@@ -55,7 +55,7 @@ export default function ChatRoom({
           <Input
             placeholder='Message...'
             rightElement={(classNames) => (
-              <Button type='submit' circleButton className={cx(classNames)}>
+              <Button type='submit' size='circle' className={cx(classNames)}>
                 <Image
                   className='relative top-px h-4 w-4'
                   src={Send}
