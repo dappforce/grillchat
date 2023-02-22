@@ -3,12 +3,9 @@ import Cosmos from '@/assets/topics/cosmos.png'
 import Ethereum from '@/assets/topics/ethereum.png'
 import Near from '@/assets/topics/near.png'
 import Polkadot from '@/assets/topics/polkadot.png'
-import Button from '@/components/Button'
 import ChatPreview from '@/components/chats/ChatPreview'
-import Logo from '@/components/Logo'
-import Modal from '@/components/Modal'
 import type { ImageProps } from 'next/image'
-import { useState } from 'react'
+import WelcomeModal from './WelcomeModal'
 
 type Topic = {
   id: string
@@ -50,31 +47,9 @@ const topics: Topic[] = [
 ]
 
 export default function HomePage() {
-  const [openModal, setOpenModal] = useState(true)
-  const closeModal = () => setOpenModal(false)
-
   return (
     <>
-      <Modal
-        isOpen={openModal}
-        closeModal={closeModal}
-        title={
-          <div className='flex flex-col items-center'>
-            <Logo className='text-5xl' />
-            <p className='mt-3 text-center'>👋 Welcome to GrillChat</p>
-          </div>
-        }
-        description={
-          <p className='text-center'>
-            Engage in discussions without fear of social persecution, as
-            GrillChat is censorship-resistant.
-          </p>
-        }
-      >
-        <Button onClick={closeModal} size='lg' className='mt-2'>
-          Let&apos;s go!
-        </Button>
-      </Modal>
+      <WelcomeModal />
       <div className='flex flex-col'>
         {topics.map(({ id, desc, image, title }) => (
           <ChatPreview
