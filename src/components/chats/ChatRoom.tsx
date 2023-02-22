@@ -5,7 +5,7 @@ import Input from '@/components/inputs/Input'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { cx } from '@/utils/className'
 import Image from 'next/image'
-import { ComponentProps, useEffect, useId } from 'react'
+import { ComponentProps, useId, useLayoutEffect } from 'react'
 import ChatItem from './ChatItem'
 
 export type ChatRoomProps = ComponentProps<'div'> & {
@@ -24,9 +24,9 @@ export default function ChatRoom({
   const id = useId()
   const Component = asContainer ? Container<'div'> : 'div'
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const chatRoom = document.getElementById(id)
-    chatRoom?.scrollTo(0, chatRoom.scrollHeight)
+    chatRoom?.scrollTo({ top: chatRoom.scrollHeight })
   }, [id])
 
   return (

@@ -49,7 +49,11 @@ export default function ChatPreview({
           props.className
         )}
       >
-        <Image className='h-14 w-14' src={image} alt={title} />
+        <Image
+          className='h-14 w-14'
+          src={image}
+          alt={title ?? 'chat preview'}
+        />
         <div className='flex flex-1 items-center'>
           <div className='flex flex-1 flex-col gap-1'>
             <div className='flex items-center justify-between'>

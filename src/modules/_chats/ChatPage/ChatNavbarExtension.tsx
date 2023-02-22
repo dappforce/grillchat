@@ -35,10 +35,14 @@ export default function ChatNavbarExtension({
         <span className='ml-1'>Back</span>
       </LinkText>
       <div className='flex flex-col text-center'>
-        <span className='font-medium'>{topic}</span>
+        <span className='font-medium'>{topic ?? 'Topic'}</span>
         <span className='text-xs text-text-muted'>{messageCount} messages</span>
       </div>
-      <Image className='h-6 w-6 justify-self-end' src={image} alt={topic} />
+      <Image
+        className='h-6 w-6 justify-self-end'
+        src={image}
+        alt={topic ?? 'chat topic'}
+      />
     </NavbarExtension>
   )
 }
