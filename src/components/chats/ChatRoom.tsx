@@ -44,18 +44,20 @@ export default function ChatRoom({
         </div>
       </ScrollableContainer>
       <Component className='mt-auto flex py-3'>
-        <Input
-          placeholder='Message...'
-          rightElement={(classNames) => (
-            <Button circleButton className={cx(classNames)}>
-              <Image
-                className='relative top-px h-4 w-4'
-                src={Send}
-                alt='send'
-              />
-            </Button>
-          )}
-        />
+        <form className='flex w-full'>
+          <Input
+            placeholder='Message...'
+            rightElement={(classNames) => (
+              <Button type='submit' circleButton className={cx(classNames)}>
+                <Image
+                  className='relative top-px h-4 w-4'
+                  src={Send}
+                  alt='send'
+                />
+              </Button>
+            )}
+          />
+        </form>
       </Component>
     </div>
   )
