@@ -1,5 +1,6 @@
 import { cx } from '@/utils/className'
 import { ComponentProps } from 'react'
+import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   text: string
@@ -7,26 +8,48 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
 }
 
 export default function ChatItem({ text, alignment, ...props }: ChatItemProps) {
+  const isMyMessage = alignment === 'right'
+  const isSent = true
+
   return (
     <div
       {...props}
       className={cx(
         'flex items-start justify-start gap-2',
-        alignment === 'right' && 'flex-row-reverse',
+        isMyMessage && 'flex-row-reverse',
         props.className
       )}
     >
-      <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-background-light'>
-        A
-      </div>
-      <div className='relative flex flex-col rounded-3xl bg-background-light py-2 px-4'>
-        <div className='flex items-center'>
-          <span className='mr-2 text-sm text-text-primary'>
-            5D4cYH...FAaki5
-          </span>
-          <span className='text-xs text-text-muted'>2 days</span>
+      {!isMyMessage && (
+        <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-background-light'>
+          A
         </div>
+      )}
+      <div
+        className={cx(
+          'relative flex flex-col gap-0.5 rounded-3xl py-2 px-4',
+          isMyMessage ? 'bg-background-primary' : 'bg-background-light'
+        )}
+      >
+        {!isMyMessage && (
+          <div className='flex items-center'>
+            <span className='mr-2 text-sm text-text-primary'>
+              5D4cYH...FAaki5
+            </span>
+            <span className='text-xs text-text-muted'>2 days</span>
+          </div>
+        )}
         <p>{text}</p>
+        {isMyMessage && (
+          <div className='flex items-center gap-1'>
+            <span className='text-xs text-text-muted'>12:32</span>
+            {isSent ? (
+              <IoCheckmarkDoneOutline className='text-sm' />
+            ) : (
+              <IoCheckmarkOutline className={cx('text-sm text-text-muted')} />
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
