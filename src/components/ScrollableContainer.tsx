@@ -5,7 +5,7 @@ import { PolymorphicProps, PolymorphicTypes } from '@/utils/types'
 export type ContainerProps<Type extends PolymorphicTypes> =
   PolymorphicProps<Type>
 
-const Container = generatePolymorphicComponent(
-  cx('relative mx-auto w-full max-w-screen-md px-2')
+const ScrollableContainer = generatePolymorphicComponent(
+  cx('flex-1 overflow-auto')
 )
-export default Container
+export default ScrollableContainer

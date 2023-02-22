@@ -25,7 +25,7 @@ export default function App({
       <HeadConfig {...head} />
       <div
         className={cx(
-          'min-h-screen bg-background text-text',
+          'flex h-screen flex-col bg-background text-text',
           sourceSansPro.className
         )}
       >
