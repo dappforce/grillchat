@@ -6,7 +6,7 @@ import ChatNavbarExtension from './ChatNavbarExtension'
 const dummyChats = [
   {
     text: 'Hey guys, I want to build my first app on Subsocial. How should I start?',
-    alignment: 'left',
+    alignment: 'right',
   },
   {
     text: 'Hey guys, I want to build my first app on Subsocial. How should I start?',
@@ -105,6 +105,7 @@ export default function ChatPage() {
         chats={dummyChats as any}
         asContainer
         className='flex-1 overflow-hidden pt-2'
+        scrollableContainerClassName='pt-2'
       />
     </>
   )

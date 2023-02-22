@@ -11,19 +11,24 @@ import ChatItem from './ChatItem'
 export type ChatRoomProps = ComponentProps<'div'> & {
   chats: { text: string; alignment: 'left' | 'right' }[]
   asContainer?: boolean
+  scrollableContainerClassName?: string
 }
 
 export default function ChatRoom({
   className,
   chats,
   asContainer,
+  scrollableContainerClassName,
   ...props
 }: ChatRoomProps) {
   const Component = asContainer ? Container<'div'> : 'div'
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
-      <ScrollableContainer as={Component}>
+      <ScrollableContainer
+        as={Component}
+        className={scrollableContainerClassName}
+      >
         <div className={cx('flex flex-col gap-2')}>
           {chats.map((chat, index) => (
             <ChatItem key={index} text={chat.text} alignment={chat.alignment} />
