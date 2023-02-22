@@ -5,7 +5,7 @@ import Input from '@/components/inputs/Input'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { cx } from '@/utils/className'
 import Image from 'next/image'
-import { ComponentProps } from 'react'
+import { ComponentProps, useEffect, useId } from 'react'
 import ChatItem from './ChatItem'
 
 export type ChatRoomProps = ComponentProps<'div'> & {
@@ -21,12 +21,19 @@ export default function ChatRoom({
   scrollableContainerClassName,
   ...props
 }: ChatRoomProps) {
+  const id = useId()
   const Component = asContainer ? Container<'div'> : 'div'
+
+  useEffect(() => {
+    const chatRoom = document.getElementById(id)
+    chatRoom?.scrollTo(0, chatRoom.scrollHeight)
+  }, [id])
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
       <ScrollableContainer
         as={Component}
+        id={id}
         className={scrollableContainerClassName}
       >
         <div className={cx('flex flex-col gap-2')}>
