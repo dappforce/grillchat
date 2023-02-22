@@ -13,10 +13,13 @@ const signPainter = localFont({ src: '../assets/fonts/SignPainter.ttf' })
 
 export default function Navbar({ ...props }: NavbarProps) {
   return (
-    <nav {...props} className={cx('bg-background-light', props.className)}>
+    <nav
+      {...props}
+      className={cx('sticky top-0 bg-background-light', props.className)}
+    >
       <Container
         className={cx(
-          'flex items-center justify-between py-3',
+          'flex items-center justify-between py-2',
           props.className
         )}
       >

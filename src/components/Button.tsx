@@ -3,7 +3,7 @@ import { cva, VariantProps } from 'class-variance-authority'
 import Link from 'next/link'
 import { ComponentProps } from 'react'
 
-const buttonStyles = cva('rounded-full px-5 py-2', {
+const buttonStyles = cva('rounded-full px-6 py-2', {
   variants: {
     variant: {
       primary: 'font-medium bg-background-primary text-text',
