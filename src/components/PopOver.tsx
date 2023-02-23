@@ -1,3 +1,4 @@
+import { cx } from '@/utils/className'
 import { arrow, offset, useFloating } from '@floating-ui/react-dom'
 import { Popover, Transition } from '@headlessui/react'
 import { useRef } from 'react'
@@ -32,6 +33,9 @@ export default function PopOver({
     ],
   })
 
+  // create custom background if needed
+  const backgroundColor = cx('bg-background-warning')
+
   const { x: arrowX, y: arrowY } = middlewareData?.arrow || { x: 0, y: 0 }
 
   return (
@@ -56,7 +60,10 @@ export default function PopOver({
             left: x ?? 0,
             width: 'max-content',
           }}
-          className='absolute z-30 flex max-w-sm items-center rounded-3xl bg-background-warning py-4 px-6 font-bold text-text-dark'
+          className={cx(
+            'absolute z-30 flex max-w-sm items-center rounded-3xl py-4 px-6 font-bold text-text-dark',
+            backgroundColor
+          )}
         >
           <div>{children}</div>
           {withCloseButton && (
@@ -69,7 +76,10 @@ export default function PopOver({
           )}
           {withArrow && (
             <div
-              className='translate h-5 !w-5 -translate-y-0.5 rotate-45 bg-background-warning '
+              className={cx(
+                'translate h-5 !w-5 -translate-y-0.5 rotate-45',
+                backgroundColor
+              )}
               style={{
                 position: 'absolute',
                 top: arrowY ?? 0,
