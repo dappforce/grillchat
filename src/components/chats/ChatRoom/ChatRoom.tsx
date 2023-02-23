@@ -62,6 +62,8 @@ export default function ChatRoom({
         <form onSubmit={onSubmitForm} className='flex w-full'>
           <Input
             placeholder='Message...'
+            pill
+            variant='fill'
             rightElement={(classNames) => (
               <Button type='submit' size='circle' className={cx(classNames)}>
                 <Image
