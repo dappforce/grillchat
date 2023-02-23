@@ -39,10 +39,10 @@ export function useCommentIdsByPostId(
   postId: string,
   config?: QueryConfig & { subscribe?: boolean }
 ) {
-  const resolverRef = useRef<() => void>(() => undefined)
+  const resolverRef = useRef<(ids: string[]) => void>(() => undefined)
   const promiseRef = useRef(
-    new Promise<void>((resolve) => {
-      resolverRef.current = resolve
+    new Promise<string[]>((resolve) => {
+      resolverRef.current = (ids: string[]) => resolve(ids)
     })
   )
   useSubscribeCommentIdsByPostId(
