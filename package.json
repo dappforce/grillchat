@@ -13,6 +13,8 @@
     "@floating-ui/react-dom": "^1.3.0",
     "@headlessui/react": "^1.7.11",
     "@next/font": "13.1.6",
+    "@subsocial/api": "^0.8.1",
+    "@tanstack/react-query": "^4.24.10",
     "@types/node": "18.14.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
