@@ -1,5 +1,6 @@
-import { offset, useFloating } from '@floating-ui/react-dom'
+import { arrow, offset, useFloating } from '@floating-ui/react-dom'
 import { Popover, Transition } from '@headlessui/react'
+import { useRef } from 'react'
 import { HiXMark } from 'react-icons/hi2'
 import Button from './Button'
 
@@ -8,6 +9,7 @@ export interface PopOverProps {
   trigger: any
   asButton?: boolean
   withCloseButton?: boolean
+  withArrow?: boolean
 }
 
 export default function PopOver({
@@ -15,11 +17,22 @@ export default function PopOver({
   trigger,
   asButton = false,
   withCloseButton,
+  withArrow = true,
 }: PopOverProps) {
-  const { x, y, strategy, refs } = useFloating({
+  const arrowRef = useRef(null)
+  const { x, y, strategy, refs, middlewareData } = useFloating({
     placement: 'bottom-end',
-    middleware: [offset({ mainAxis: 20 })],
+    middleware: [
+      offset({ mainAxis: 20 }),
+      withArrow &&
+        arrow({
+          element: arrowRef,
+          padding: 12,
+        }),
+    ],
   })
+
+  const { x: arrowX, y: arrowY } = middlewareData?.arrow || { x: 0, y: 0 }
 
   return (
     <Popover className='relative'>
@@ -53,6 +66,18 @@ export default function PopOver({
             >
               <HiXMark />
             </Button>
+          )}
+          {withArrow && (
+            <div
+              className='translate h-5 !w-5 -translate-y-0.5 rotate-45 bg-background-warning '
+              style={{
+                position: 'absolute',
+                top: arrowY ?? 0,
+                left: arrowX ?? 0,
+                width: 'max-content',
+              }}
+              ref={arrowRef}
+            />
           )}
         </Popover.Panel>
       </Transition>
