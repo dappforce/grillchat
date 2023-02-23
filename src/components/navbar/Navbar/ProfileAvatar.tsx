@@ -34,6 +34,7 @@ export default function ProfileAvatar({ address }: ProfileAvatarProps) {
           className='relative z-10'
         />
         <PopOver
+          popOverClassName='font-bold'
           yOffset={16}
           placement='bottom-end'
           panelColor='warning'

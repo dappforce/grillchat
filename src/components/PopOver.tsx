@@ -7,7 +7,7 @@ import { HiXMark } from 'react-icons/hi2'
 import Button from './Button'
 
 const panelStyles = cva(
-  'absolute z-30 flex max-w-sm items-center rounded-3xl font-bold text-text-dark',
+  'absolute z-30 flex max-w-sm items-center rounded-3xl text-text-dark',
   {
     variants: {
       panelSize: {
@@ -98,7 +98,7 @@ export default function PopOver({
             width: 'max-content',
           }}
           className={cx(
-            'absolute z-30 flex max-w-sm items-center rounded-3xl py-4 px-6 font-bold text-text-dark',
+            'absolute z-30 flex max-w-sm items-center rounded-3xl py-4 px-6 text-text-dark',
             'shadow-md',
             panelStyles({ panelSize }),
             color,

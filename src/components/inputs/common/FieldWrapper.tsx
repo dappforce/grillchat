@@ -1,7 +1,25 @@
 import { cx, hoverRingClassName } from '@/utils/className'
+import { cva, VariantProps } from 'class-variance-authority'
 import { useId } from 'react'
 
-export interface RequiredFieldWrapperProps {
+const inputStyles = cva('', {
+  variants: {
+    variant: {
+      fill: 'bg-background-light',
+      outlined: 'border border-background-lighter bg-transparent',
+    },
+    pill: {
+      true: 'rounded-full',
+      false: 'rounded-xl',
+    },
+  },
+  defaultVariants: {
+    variant: 'outlined',
+    pill: false,
+  },
+})
+
+export type RequiredFieldWrapperProps = VariantProps<typeof inputStyles> & {
   containerClassName?: string
   inputParentClassName?: string
   fullWidth?: boolean
@@ -38,19 +56,20 @@ export default function FieldWrapper({
   rightElement,
   helperTextOnRightOfLabel,
   helperTextOnRightOfLabelClassNames,
+  pill,
+  variant,
   children,
 }: FieldWrapperProps) {
   const generatedId = useId()
   const usedId = id || generatedId
 
   const commonClassNames = cx(
-    'bg-background-light',
     'py-3 pl-5 pr-9',
-    'rounded-full',
     'transition duration-150',
     'hover:brightness-110',
     'focus:brightness-110',
     'disabled:cursor-not-allowed disabled:brightness-75',
+    inputStyles({ pill, variant }),
     hoverRingClassName
   )
   const errorClassNames = cx('ring-2 ring-red-500 ring-offset-2')
