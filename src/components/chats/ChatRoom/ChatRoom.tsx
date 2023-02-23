@@ -3,6 +3,7 @@ import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Input from '@/components/inputs/Input'
 import ScrollableContainer from '@/components/ScrollableContainer'
+import { useCommentIdsByPostId } from '@/services/queries'
 import { cx } from '@/utils/className'
 import Image from 'next/image'
 import { ComponentProps, useId, useLayoutEffect, useState } from 'react'
@@ -23,6 +24,10 @@ export default function ChatRoom({
   ...props
 }: ChatRoomProps) {
   const id = useId()
+
+  const postId = '226'
+  const { data } = useCommentIdsByPostId(postId, { subscribe: true })
+
   const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
 
   const Component = asContainer ? Container<'div'> : 'div'
@@ -45,15 +50,9 @@ export default function ChatRoom({
         className={scrollableContainerClassName}
       >
         <div className={cx('flex flex-col gap-2')}>
-          {chats.map((chat, index) => (
-            <div
-              className={cx(
-                'w-10/12',
-                chat.alignment === 'right' && 'self-end justify-self-end'
-              )}
-              key={index}
-            >
-              <ChatItem text={chat.text} alignment={chat.alignment} />
+          {(data ?? []).map((commentId, index) => (
+            <div className={cx('w-10/12')} key={index}>
+              <ChatItem commentId={commentId} />
             </div>
           ))}
         </div>

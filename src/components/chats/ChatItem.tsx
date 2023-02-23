@@ -1,15 +1,28 @@
+import { useGetComment } from '@/services/queries'
 import { cx } from '@/utils/className'
 import { ComponentProps } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
-  text: string
-  alignment: 'left' | 'right'
+  // text: string
+  // alignment: 'left' | 'right'
+  commentId: string
 }
 
-export default function ChatItem({ text, alignment, ...props }: ChatItemProps) {
-  const isMyMessage = alignment === 'right'
+export default function ChatItem({
+  // text,
+  // alignment,
+  commentId,
+  ...props
+}: ChatItemProps) {
+  const { data } = useGetComment(commentId)
+  // const isMyMessage = alignment === 'right'
+  const isMyMessage = false
   const isSent = true
+
+  console.log(data)
+
+  const text = data?.content?.body ?? 'empty?'
 
   return (
     <div
