@@ -7,7 +7,7 @@ import Button from './Button'
 export type ModalProps = {
   isOpen: boolean
   closeModal: () => void
-  showCloseButton?: boolean
+  withCloseButton?: boolean
   children: React.ReactNode
   title?: React.ReactNode
   description?: React.ReactNode
@@ -16,7 +16,7 @@ export type ModalProps = {
 export default function Modal({
   children,
   closeModal,
-  showCloseButton,
+  withCloseButton,
   isOpen,
   title,
   description,
@@ -55,10 +55,11 @@ export default function Modal({
                   'flex flex-col'
                 )}
               >
-                {showCloseButton && (
+                {withCloseButton && (
                   <Button
-                    className='absolute right-8 p-1 pr-0 text-2xl text-text-muted'
+                    className='absolute right-8 m-1 mr-0 p-0 text-2xl text-text-muted'
                     variant='transparent'
+                    onClick={closeModal}
                   >
                     <HiXMark />
                   </Button>

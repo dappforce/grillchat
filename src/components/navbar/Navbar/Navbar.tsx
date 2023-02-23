@@ -1,12 +1,11 @@
 import { cx } from '@/utils/className'
 import { ComponentProps } from 'react'
 import { HiOutlineLightBulb } from 'react-icons/hi'
-import AddressAvatar from '../AddressAvatar'
-import Button from '../Button'
-import Container from '../Container'
-import LinkText from '../LinkText'
-import Logo from '../Logo'
-import PopOver from '../PopOver'
+import Button from '../../Button'
+import Container from '../../Container'
+import LinkText from '../../LinkText'
+import Logo from '../../Logo'
+import ProfileAvatar from './ProfileAvatar'
 
 export type NavbarProps = ComponentProps<'div'>
 
@@ -36,12 +35,7 @@ export default function Navbar({ ...props }: NavbarProps) {
             <HiOutlineLightBulb className='mr-1' /> Suggest Feature
           </LinkText>
           {isLoggedIn ? (
-            <PopOver
-              withCloseButton
-              trigger={<AddressAvatar address='asdfasdf' />}
-            >
-              <p>Click on your avatar and save your private key</p>
-            </PopOver>
+            <ProfileAvatar address='asdfasdf' />
           ) : (
             <Button>Login</Button>
           )}

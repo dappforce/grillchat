@@ -53,6 +53,7 @@ export default function PopOver({
         leaveTo='transform scale-95 opacity-0'
       >
         <Popover.Panel
+          unmount
           ref={refs.setFloating}
           style={{
             position: strategy,
@@ -65,29 +66,34 @@ export default function PopOver({
             backgroundColor
           )}
         >
-          <div>{children}</div>
-          {withCloseButton && (
-            <Button
-              className='py-1 pl-4 pr-0 text-2xl text-current'
-              variant='transparent'
-            >
-              <HiXMark />
-            </Button>
-          )}
-          {withArrow && (
-            <div
-              className={cx(
-                'translate h-5 !w-5 -translate-y-0.5 rotate-45',
-                backgroundColor
+          {({ close }) => (
+            <>
+              <div>{children}</div>
+              {withCloseButton && (
+                <Button
+                  onClick={() => close()}
+                  className='my-1 ml-4 mr-0 p-0 text-2xl text-current'
+                  variant='transparent'
+                >
+                  <HiXMark />
+                </Button>
               )}
-              style={{
-                position: 'absolute',
-                top: arrowY ?? 0,
-                left: arrowX ?? 0,
-                width: 'max-content',
-              }}
-              ref={arrowRef}
-            />
+              {withArrow && (
+                <div
+                  className={cx(
+                    'translate h-5 !w-5 -translate-y-0.5 rotate-45',
+                    backgroundColor
+                  )}
+                  style={{
+                    position: 'absolute',
+                    top: arrowY ?? 0,
+                    left: arrowX ?? 0,
+                    width: 'max-content',
+                  }}
+                  ref={arrowRef}
+                />
+              )}
+            </>
           )}
         </Popover.Panel>
       </Transition>
