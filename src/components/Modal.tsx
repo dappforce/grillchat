@@ -49,7 +49,7 @@ export default function Modal({
             >
               <Dialog.Panel
                 className={cx(
-                  'relative w-full max-w-md overflow-hidden rounded-3xl bg-background-light',
+                  'relative w-full max-w-lg overflow-hidden rounded-3xl bg-background-light',
                   'p-8 text-left align-middle shadow-xl',
                   'transform transition-all',
                   'flex flex-col'
