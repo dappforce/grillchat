@@ -4,9 +4,12 @@ import { Fragment } from 'react'
 import { HiXMark } from 'react-icons/hi2'
 import Button from './Button'
 
-export type ModalProps = {
+export type ModalFunctionalityProps = {
   isOpen: boolean
   closeModal: () => void
+}
+
+export type ModalProps = ModalFunctionalityProps & {
   withCloseButton?: boolean
   children: React.ReactNode
   title?: React.ReactNode

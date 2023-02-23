@@ -1,16 +1,42 @@
 import { cx } from '@/utils/className'
-import { arrow, offset, useFloating } from '@floating-ui/react-dom'
+import { arrow, offset, Placement, useFloating } from '@floating-ui/react-dom'
 import { Popover, Transition } from '@headlessui/react'
+import { cva, VariantProps } from 'class-variance-authority'
 import { useRef } from 'react'
 import { HiXMark } from 'react-icons/hi2'
 import Button from './Button'
 
-export interface PopOverProps {
+const panelStyles = cva(
+  'absolute z-30 flex max-w-sm items-center rounded-3xl font-bold text-text-dark',
+  {
+    variants: {
+      panelSize: {
+        sm: 'py-2 px-4 text-xs',
+        md: 'py-4 px-6',
+      },
+    },
+    defaultVariants: {
+      panelSize: 'md',
+    },
+  }
+)
+
+const panelColors = {
+  warning: cx('bg-background-warning text-text-dark'),
+  default: cx('text-text bg-background-lighter'),
+}
+
+export type PopOverProps = VariantProps<typeof panelStyles> & {
   children: any
   trigger: any
   asButton?: boolean
   withCloseButton?: boolean
   withArrow?: boolean
+  placement?: Placement
+  yOffset?: number
+  panelColor?: keyof typeof panelColors
+  triggerClassName?: string
+  popOverClassName?: string
 }
 
 export default function PopOver({
@@ -19,12 +45,18 @@ export default function PopOver({
   asButton = false,
   withCloseButton,
   withArrow = true,
+  placement = 'bottom',
+  yOffset = 0,
+  panelSize,
+  panelColor = 'default',
+  popOverClassName,
+  triggerClassName,
 }: PopOverProps) {
   const arrowRef = useRef(null)
   const { x, y, strategy, refs, middlewareData } = useFloating({
-    placement: 'bottom-end',
+    placement,
     middleware: [
-      offset({ mainAxis: 20 }),
+      offset({ mainAxis: yOffset }),
       withArrow &&
         arrow({
           element: arrowRef,
@@ -34,13 +66,17 @@ export default function PopOver({
   })
 
   // create custom background if needed
-  const backgroundColor = cx('bg-background-warning')
+  const color = panelColors[panelColor]
 
   const { x: arrowX, y: arrowY } = middlewareData?.arrow || { x: 0, y: 0 }
 
   return (
     <Popover className='relative'>
-      <Popover.Button as={!asButton ? 'div' : 'button'} ref={refs.setReference}>
+      <Popover.Button
+        className={cx('flex items-center', triggerClassName)}
+        as={!asButton ? 'div' : 'button'}
+        ref={refs.setReference}
+      >
         {trigger}
       </Popover.Button>
 
@@ -63,12 +99,15 @@ export default function PopOver({
           }}
           className={cx(
             'absolute z-30 flex max-w-sm items-center rounded-3xl py-4 px-6 font-bold text-text-dark',
-            backgroundColor
+            'shadow-md',
+            panelStyles({ panelSize }),
+            color,
+            popOverClassName
           )}
         >
           {({ close }) => (
             <>
-              <div>{children}</div>
+              <div className='relative z-10'>{children}</div>
               {withCloseButton && (
                 <Button
                   onClick={() => close()}
@@ -82,7 +121,7 @@ export default function PopOver({
                 <div
                   className={cx(
                     'translate h-5 !w-5 -translate-y-0.5 rotate-45',
-                    backgroundColor
+                    color
                   )}
                   style={{
                     position: 'absolute',

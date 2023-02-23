@@ -1,27 +1,65 @@
 import { cx } from '@/utils/className'
-import { ComponentProps } from 'react'
+import { ComponentProps, useState } from 'react'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
+import PopOver from './PopOver'
 
 export type CopyTextProps = ComponentProps<'div'> & {
   text: string
+  type?: 'short' | 'long'
 }
 
-export default function CopyText({ text, ...props }: CopyTextProps) {
+export default function CopyText({
+  text,
+  type = 'short',
+  ...props
+}: CopyTextProps) {
+  const [isCopied, setIsCopied] = useState(false)
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(text)
+
+    setIsCopied(true)
+    setTimeout(() => {
+      setIsCopied(false)
+    }, 1000)
   }
 
-  return (
-    <div {...props} className={cx('flex items-center', props.className)}>
-      <span>{text}</span>
-      <Button
-        variant='transparent'
-        className='ml-2 p-0'
-        onClick={copyToClipboard}
+  if (type === 'short') {
+    return (
+      <div {...props} className={cx('flex items-center', props.className)}>
+        <span>{text}</span>
+        <PopOver
+          triggerClassName='ml-2'
+          yOffset={12}
+          trigger={
+            <Button
+              variant='transparent'
+              className='p-0'
+              onClick={copyToClipboard}
+            >
+              <MdOutlineContentCopy />
+            </Button>
+          }
+          panelSize='sm'
+        >
+          <p>Copied!</p>
+        </PopOver>
+      </div>
+    )
+  } else {
+    return (
+      <div
+        {...props}
+        className={cx('flex flex-col items-stretch gap-4', props.className)}
       >
-        <MdOutlineContentCopy />
-      </Button>
-    </div>
-  )
+        <span className='break-all rounded-2xl border border-border-gray p-4'>
+          {text}
+        </span>
+        <Button disabled={isCopied} onClick={copyToClipboard} size='lg'>
+          {isCopied ? 'Copied' : 'Copy'}
+        </Button>
+      </div>
+    )
+  }
 }
