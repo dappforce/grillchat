@@ -36,7 +36,10 @@ export default function Navbar({ ...props }: NavbarProps) {
             <HiOutlineLightBulb className='mr-1' /> Suggest Feature
           </LinkText>
           {isLoggedIn ? (
-            <PopOver trigger={<AddressAvatar address='asdfasdf' />}>
+            <PopOver
+              withCloseButton
+              trigger={<AddressAvatar address='asdfasdf' />}
+            >
               <p>Click on your avatar and save your private key</p>
             </PopOver>
           ) : (

@@ -1,16 +1,20 @@
 import { offset, useFloating } from '@floating-ui/react-dom'
 import { Popover, Transition } from '@headlessui/react'
+import { HiXMark } from 'react-icons/hi2'
+import Button from './Button'
 
 export interface PopOverProps {
   children: any
   trigger: any
   asButton?: boolean
+  withCloseButton?: boolean
 }
 
 export default function PopOver({
   children,
   trigger,
   asButton = false,
+  withCloseButton,
 }: PopOverProps) {
   const { x, y, strategy, refs } = useFloating({
     placement: 'bottom-end',
@@ -39,9 +43,17 @@ export default function PopOver({
             left: x ?? 0,
             width: 'max-content',
           }}
-          className='absolute z-30 max-w-sm rounded-3xl bg-background-warning p-4 font-bold text-text-dark'
+          className='absolute z-30 flex max-w-sm items-center rounded-3xl bg-background-warning py-4 px-6 font-bold text-text-dark'
         >
-          {children}
+          <div>{children}</div>
+          {withCloseButton && (
+            <Button
+              className='py-1 pl-4 pr-0 text-2xl text-current'
+              variant='transparent'
+            >
+              <HiXMark />
+            </Button>
+          )}
         </Popover.Panel>
       </Transition>
     </Popover>

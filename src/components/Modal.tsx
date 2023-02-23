@@ -1,7 +1,7 @@
 import { cx } from '@/utils/className'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
-import { HiX } from 'react-icons/hi'
+import { HiXMark } from 'react-icons/hi2'
 import Button from './Button'
 
 export type ModalProps = {
@@ -60,7 +60,7 @@ export default function Modal({
                     className='absolute right-8 p-1 pr-0 text-2xl text-text-muted'
                     variant='transparent'
                   >
-                    <HiX />
+                    <HiXMark />
                   </Button>
                 )}
                 {title && (
