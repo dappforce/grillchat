@@ -33,7 +33,7 @@ export default function Navbar({ ...props }: NavbarProps) {
             props.className
           )}
         >
-          <Logo className='text-3xl' />
+          <Logo className='text-2xl' />
           <div className='flex items-center'>
             <LinkText
               href='https://google.com'

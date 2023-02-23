@@ -20,7 +20,7 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
       title={
         <div className='flex flex-col items-center'>
           <Logo className='text-5xl' />
-          <p className='mt-3 text-center'>👋 Welcome to GrillChat</p>
+          <p className='mt-5 text-center'>👋 Welcome to GrillChat</p>
         </div>
       }
       description={
