@@ -5,8 +5,9 @@ import Input from '@/components/inputs/Input'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { cx } from '@/utils/className'
 import Image from 'next/image'
-import { ComponentProps, useId, useLayoutEffect } from 'react'
-import ChatItem from './ChatItem'
+import { ComponentProps, useId, useLayoutEffect, useState } from 'react'
+import ChatItem from '../ChatItem'
+import CaptchaModal from './CaptchaModal'
 
 export type ChatRoomProps = ComponentProps<'div'> & {
   chats: { text: string; alignment: 'left' | 'right' }[]
@@ -22,12 +23,19 @@ export default function ChatRoom({
   ...props
 }: ChatRoomProps) {
   const id = useId()
+  const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
+
   const Component = asContainer ? Container<'div'> : 'div'
 
   useLayoutEffect(() => {
     const chatRoom = document.getElementById(id)
     chatRoom?.scrollTo({ top: chatRoom.scrollHeight })
   }, [id])
+
+  const onSubmitForm = (e: any) => {
+    e?.preventDefault()
+    setIsOpenCaptcha(true)
+  }
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
@@ -51,7 +59,7 @@ export default function ChatRoom({
         </div>
       </ScrollableContainer>
       <Component className='mt-auto flex py-3'>
-        <form className='flex w-full'>
+        <form onSubmit={onSubmitForm} className='flex w-full'>
           <Input
             placeholder='Message...'
             rightElement={(classNames) => (
@@ -66,6 +74,10 @@ export default function ChatRoom({
           />
         </form>
       </Component>
+      <CaptchaModal
+        isOpen={isOpenCaptcha}
+        closeModal={() => setIsOpenCaptcha(false)}
+      />
     </div>
   )
 }

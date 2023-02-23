@@ -10,6 +10,8 @@ export type ModalFunctionalityProps = {
 }
 
 export type ModalProps = ModalFunctionalityProps & {
+  titleClassName?: string
+  descriptionClassName?: string
   withCloseButton?: boolean
   children: React.ReactNode
   title?: React.ReactNode
@@ -18,6 +20,8 @@ export type ModalProps = ModalFunctionalityProps & {
 
 export default function Modal({
   children,
+  titleClassName,
+  descriptionClassName,
   closeModal,
   withCloseButton,
   isOpen,
@@ -68,12 +72,17 @@ export default function Modal({
                   </Button>
                 )}
                 {title && (
-                  <Dialog.Title as='h3' className={cx('mb-4 text-2xl')}>
+                  <Dialog.Title
+                    as='h3'
+                    className={cx('mb-4 text-2xl', titleClassName)}
+                  >
                     {title}
                   </Dialog.Title>
                 )}
                 {description && (
-                  <Dialog.Description className={cx('mb-4 text-text-muted')}>
+                  <Dialog.Description
+                    className={cx('mb-4 text-text-muted', descriptionClassName)}
+                  >
                     {description}
                   </Dialog.Description>
                 )}
