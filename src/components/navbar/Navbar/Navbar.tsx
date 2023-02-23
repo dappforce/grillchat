@@ -1,5 +1,5 @@
 import { cx } from '@/utils/className'
-import { ComponentProps } from 'react'
+import { ComponentProps, useState } from 'react'
 import { HiOutlineLightBulb } from 'react-icons/hi'
 import Button from '../../Button'
 import Container from '../../Container'
@@ -10,7 +10,11 @@ import ProfileAvatar from './ProfileAvatar'
 export type NavbarProps = ComponentProps<'div'>
 
 export default function Navbar({ ...props }: NavbarProps) {
-  const isLoggedIn = true
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  const login = () => {
+    setIsLoggedIn(true)
+  }
 
   return (
     <nav
@@ -37,7 +41,7 @@ export default function Navbar({ ...props }: NavbarProps) {
           {isLoggedIn ? (
             <ProfileAvatar address='asdfasdf' />
           ) : (
-            <Button>Login</Button>
+            <Button onClick={login}>Login</Button>
           )}
         </div>
       </Container>

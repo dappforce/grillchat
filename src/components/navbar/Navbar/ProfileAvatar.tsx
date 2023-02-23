@@ -1,4 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
+import Button from '@/components/Button'
+import CopyText from '@/components/CopyText'
 import Modal from '@/components/Modal'
 import PopOver from '@/components/PopOver'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
@@ -25,11 +27,18 @@ export default function ProfileAvatar({ address }: ProfileAvatarProps) {
       <Modal
         isOpen={isOpen}
         closeModal={() => setIsOpen(false)}
-        title='🤖 My Account'
+        title={<span className='font-medium'>My Account</span>}
         withCloseButton
       >
-        <div className='flex flex-col items-center'>
+        <div className='mt-2 flex flex-col items-center gap-4'>
           <AddressAvatar address={address} className='h-20 w-20' />
+          <CopyText text={address} />
+          <Button className='mt-2 w-full' size='lg'>
+            Show private key
+          </Button>
+          <Button className='w-full' size='lg' variant='primaryOutline'>
+            Log out
+          </Button>
         </div>
       </Modal>
       <div className='relative h-9 w-9'>

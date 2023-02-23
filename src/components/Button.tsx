@@ -7,6 +7,8 @@ const buttonStyles = cva('rounded-full', {
   variants: {
     variant: {
       primary: 'bg-background-primary text-text',
+      primaryOutline:
+        'bg-transparent border border-background-primary text-text',
       transparent: 'bg-transparent text-text',
     },
     size: {
