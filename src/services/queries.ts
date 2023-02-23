@@ -2,6 +2,7 @@ import {
   poolQuery,
   QueryConfig,
   SubsocialParam,
+  useSubsocialQueries,
   useSubsocialQuery,
 } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
@@ -23,11 +24,11 @@ export const getPost = poolQuery<SubsocialParam<string>, PostData>({
     resultToKey: (result) => result?.id ?? '',
   },
 })
-export function useGetComment(id: string, config?: QueryConfig) {
-  return useSubsocialQuery(
+export function useGetComments(ids: string[], config?: QueryConfig) {
+  return useSubsocialQueries(
     {
       key: getCommentKey,
-      data: id,
+      data: ids,
     },
     getPost,
     config

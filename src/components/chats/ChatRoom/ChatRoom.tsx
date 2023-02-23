@@ -2,12 +2,10 @@ import Send from '@/assets/icons/send.png'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Input from '@/components/inputs/Input'
-import ScrollableContainer from '@/components/ScrollableContainer'
-import { useCommentIdsByPostId } from '@/services/queries'
 import { cx } from '@/utils/className'
 import Image from 'next/image'
-import { ComponentProps, useId, useLayoutEffect, useState } from 'react'
-import ChatItem from '../ChatItem'
+import { ComponentProps, useState } from 'react'
+import ChatList from '../ChatList'
 import CaptchaModal from './CaptchaModal'
 
 export type ChatRoomProps = ComponentProps<'div'> & {
@@ -23,19 +21,9 @@ export default function ChatRoom({
   scrollableContainerClassName,
   ...props
 }: ChatRoomProps) {
-  const id = useId()
-
-  const postId = '226'
-  const { data } = useCommentIdsByPostId(postId, { subscribe: true })
-
   const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
 
   const Component = asContainer ? Container<'div'> : 'div'
-
-  useLayoutEffect(() => {
-    const chatRoom = document.getElementById(id)
-    chatRoom?.scrollTo({ top: chatRoom.scrollHeight })
-  }, [id])
 
   const onSubmitForm = (e: any) => {
     e?.preventDefault()
@@ -44,19 +32,10 @@ export default function ChatRoom({
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
-      <ScrollableContainer
-        as={Component}
-        id={id}
-        className={scrollableContainerClassName}
-      >
-        <div className={cx('flex flex-col gap-2')}>
-          {(data ?? []).map((commentId, index) => (
-            <div className={cx('w-10/12')} key={index}>
-              <ChatItem commentId={commentId} />
-            </div>
-          ))}
-        </div>
-      </ScrollableContainer>
+      <ChatList
+        asContainer={asContainer}
+        scrollableContainerClassName={scrollableContainerClassName}
+      />
       <Component className='mt-auto flex py-3'>
         <form onSubmit={onSubmitForm} className='flex w-full'>
           <Input
