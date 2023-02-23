@@ -5,11 +5,12 @@ import { commentIdsByPostIdKey } from './queries'
 
 export function useSubscribeCommentIdsByPostId(
   postId: string,
-  startSubscribe?: boolean
+  enabled: boolean,
+  callback?: (ids: string[]) => void
 ) {
   const queryClient = useQueryClient()
   useEffect(() => {
-    if (!startSubscribe) return
+    if (!enabled) return
 
     let unsub: () => void = () => undefined
     ;(async () => {
@@ -18,8 +19,9 @@ export function useSubscribeCommentIdsByPostId(
       unsub = await substrateApi.query.posts.replyIdsByPostId(postId, (ids) => {
         const newIds = Array.from(ids.toPrimitive() as any).map((id) => id + '')
         queryClient.setQueriesData([commentIdsByPostIdKey, postId], newIds)
+        callback?.(newIds)
       })
     })()
     return unsub
-  }, [postId, queryClient, startSubscribe])
+  }, [postId, queryClient, enabled, callback])
 }

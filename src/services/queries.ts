@@ -5,6 +5,7 @@ import {
   useSubsocialQuery,
 } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
+import { useRef } from 'react'
 import { useSubscribeCommentIdsByPostId } from './subscription'
 
 export const getCommentKey = 'getComment'
@@ -38,13 +39,23 @@ export function useCommentIdsByPostId(
   postId: string,
   config?: QueryConfig & { subscribe?: boolean }
 ) {
-  useSubscribeCommentIdsByPostId(postId, config?.subscribe)
+  const resolverRef = useRef<() => void>(() => undefined)
+  const promiseRef = useRef(
+    new Promise<void>((resolve) => {
+      resolverRef.current = resolve
+    })
+  )
+  useSubscribeCommentIdsByPostId(
+    postId,
+    !!config?.subscribe,
+    resolverRef.current
+  )
   return useSubsocialQuery(
     {
       key: commentIdsByPostIdKey,
       data: postId,
     },
-    ({ api, data }) => api.blockchain.getReplyIdsByPostId(data),
+    () => promiseRef.current,
     config
   )
 }
