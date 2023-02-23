@@ -1,4 +1,4 @@
-import { cx, hoverRingClassName } from '@/utils/className'
+import { cx, interactionRingStyles } from '@/utils/className'
 import { cva, VariantProps } from 'class-variance-authority'
 import { useId } from 'react'
 
@@ -70,7 +70,7 @@ export default function FieldWrapper({
     'focus:brightness-110',
     'disabled:cursor-not-allowed disabled:brightness-75',
     inputStyles({ pill, variant }),
-    hoverRingClassName
+    interactionRingStyles()
   )
   const errorClassNames = cx('ring-2 ring-red-500 ring-offset-2')
   const inputClassNames = cx(commonClassNames, error && errorClassNames)

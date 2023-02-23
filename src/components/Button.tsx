@@ -1,9 +1,9 @@
-import { cx } from '@/utils/className'
+import { cx, interactionRingStyles } from '@/utils/className'
 import { cva, VariantProps } from 'class-variance-authority'
 import Link from 'next/link'
 import { ComponentProps } from 'react'
 
-const buttonStyles = cva('rounded-full transition', {
+const buttonStyles = cva('rounded-full transition hover:brightness-110', {
   variants: {
     variant: {
       primary: 'bg-background-primary text-text',
@@ -39,6 +39,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const classNames = cx(
+    interactionRingStyles({ color: 'background', variant: 'small-offset' }),
     buttonStyles({ variant, size, disabled }),
     props.className
   )
