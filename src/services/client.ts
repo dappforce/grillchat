@@ -1,4 +1,4 @@
-import { setSubsocialConfig } from '@/subsocial-query'
+import { setSubsocialConfig } from '@/subsocial-query/subsocial/config'
 import { QueryClient } from '@tanstack/react-query'
 
 setSubsocialConfig('staging')

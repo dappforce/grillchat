@@ -17,7 +17,8 @@ import {
   Transaction,
   WalletAccount,
 } from '../types'
-import { getConnectionConfig, getSubsocialApi } from './connection'
+import { getConnectionConfig } from './config'
+import { getSubsocialApi } from './connection'
 
 export type SubsocialParam<T> = { data: T } & { api: SubsocialApi }
 
