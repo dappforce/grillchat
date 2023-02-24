@@ -56,7 +56,12 @@ export function useCommentIdsByPostId(
       key: commentIdsByPostIdKey,
       data: postId,
     },
-    () => promiseRef.current,
+    ({ api, data }) => {
+      if (!config?.subscribe) {
+        return api.blockchain.getReplyIdsByPostId(data)
+      }
+      return promiseRef.current
+    },
     config
   )
 }
