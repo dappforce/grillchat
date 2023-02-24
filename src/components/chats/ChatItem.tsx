@@ -1,24 +1,29 @@
+import { truncateAddress } from '@/utils/address'
 import { cx } from '@/utils/className'
+import { getTimeRelativeToNow } from '@/utils/date'
 import { ComponentProps } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
+import AddressAvatar from '../AddressAvatar'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   text: string
   alignment: 'left' | 'right'
-  // commentId: string
+  senderAddress: string
+  sentDate: Date | string | number
 }
 
 export default function ChatItem({
   text,
   alignment,
-  // commentId,
+  senderAddress,
+  sentDate,
   ...props
 }: ChatItemProps) {
   // const isMyMessage = alignment === 'right'
   const isMyMessage = false
   const isSent = true
 
-  console.log(text)
+  const relativeTime = getTimeRelativeToNow(sentDate)
 
   return (
     <div
@@ -30,9 +35,7 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-background-light'>
-          A
-        </div>
+        <AddressAvatar address={senderAddress} className='relative top-1' />
       )}
       <div
         className={cx(
@@ -43,15 +46,15 @@ export default function ChatItem({
         {!isMyMessage && (
           <div className='flex items-center'>
             <span className='mr-2 text-sm text-text-primary'>
-              5D4cYH...FAaki5
+              {truncateAddress(senderAddress)}
             </span>
-            <span className='text-xs text-text-muted'>2 days</span>
+            <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}
         <p>{text}</p>
         {isMyMessage && (
           <div className='flex items-center gap-1'>
-            <span className='text-xs text-text-muted'>12:32</span>
+            <span className='text-xs text-text-muted'>{relativeTime}</span>
             {isSent ? (
               <IoCheckmarkDoneOutline className='text-sm' />
             ) : (

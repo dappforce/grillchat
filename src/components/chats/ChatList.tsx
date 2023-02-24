@@ -47,6 +47,8 @@ export default function ChatList({
             data?.content?.body ? (
               <div className={cx('w-10/12')} key={index}>
                 <ChatItem
+                  sentDate={data.struct.createdAtTime}
+                  senderAddress={data.struct.ownerId}
                   alignment='left'
                   text={data?.content?.body ?? 'empty?'}
                 />
