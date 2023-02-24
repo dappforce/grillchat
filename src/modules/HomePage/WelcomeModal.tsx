@@ -24,10 +24,10 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
         </div>
       }
       description={
-        <p className='text-center'>
+        <span className='text-center'>
           Engage in discussions without fear of social persecution, as GrillChat
           is censorship-resistant.
-        </p>
+        </span>
       }
     >
       <Button onClick={closeModal} size='lg' className='mt-2'>
