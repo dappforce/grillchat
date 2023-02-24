@@ -1,15 +1,16 @@
 import {
+  createQueryKeys,
+  createSubsocialQuery,
   poolQuery,
   QueryConfig,
   SubsocialParam,
-  useSubsocialQueries,
   useSubsocialQuery,
 } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import { useRef } from 'react'
 import { useSubscribeCommentIdsByPostId } from './subscription'
 
-export const getCommentKey = 'getComment'
+const getCommentKey = 'getComment'
 export const getPost = poolQuery<SubsocialParam<string>, PostData>({
   multiCall: async (allParams) => {
     const [{ api }] = allParams
@@ -24,18 +25,15 @@ export const getPost = poolQuery<SubsocialParam<string>, PostData>({
     resultToKey: (result) => result?.id ?? '',
   },
 })
-export function useGetComments(ids: string[], config?: QueryConfig) {
-  return useSubsocialQueries(
-    {
-      key: getCommentKey,
-      data: ids,
-    },
-    getPost,
-    config
-  )
-}
+export const getCommentQuery = createSubsocialQuery({
+  key: 'getComment',
+  getData: getPost,
+})
 
-export const commentIdsByPostIdKey = 'commentIdsByPostId'
+const commentIdsByPostIdKey = 'commentIdsByPostId'
+export const getCommentIdsQueryKey = createQueryKeys<string>(
+  commentIdsByPostIdKey
+)
 export function useCommentIdsByPostId(
   postId: string,
   config?: QueryConfig & { subscribe?: boolean }

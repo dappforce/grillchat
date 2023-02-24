@@ -1,5 +1,5 @@
 import ChatPage from '@/modules/_chats/ChatPage'
-import { commentIdsByPostIdKey, getCommentKey } from '@/services/queries'
+import { getCommentIdsQueryKey, getCommentQuery } from '@/services/queries'
 import { getSubsocialApi } from '@/subsocial-query'
 import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
@@ -13,13 +13,13 @@ export const getServerSideProps = getCommonStaticProps<{
   const posts = await subsocialApi.findPublicPosts(commentIds)
 
   const queryClient = new QueryClient()
-  await queryClient.fetchQuery(
-    [commentIdsByPostIdKey, postId],
-    () => commentIds
-  )
+  await queryClient.fetchQuery(getCommentIdsQueryKey(postId), () => commentIds)
   await Promise.all(
     posts.map(async (post) => {
-      await queryClient.fetchQuery([getCommentKey, post.struct.id], () => post)
+      await queryClient.fetchQuery(
+        getCommentQuery.getQueryKey(post.id),
+        () => post
+      )
     })
   )
 

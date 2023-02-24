@@ -6,6 +6,8 @@ import {
   useQuery,
 } from '@tanstack/react-query'
 import {
+  createQueryInvalidation,
+  createQueryKeys,
   createTxAndSend,
   makeCombinedCallback,
   mergeQueryConfig,
@@ -92,4 +94,23 @@ export function useSubsocialMutation<Param>(
     onSuccess: makeCombinedCallback(defaultConfig, config, 'onSuccess'),
     onError: makeCombinedCallback(defaultConfig, config, 'onError'),
   })
+}
+
+export function createSubsocialQuery<Params, ReturnValue>({
+  key,
+  getData,
+}: {
+  key: string
+  getData: (params: SubsocialParam<Params>) => Promise<ReturnValue>
+}) {
+  return {
+    getQueryKey: createQueryKeys<Params>(key),
+    invalidate: createQueryInvalidation<Params>(key),
+    useQuery: (data: Params, config?: QueryConfig<Params, any>) => {
+      return useSubsocialQuery({ key, data }, getData, config)
+    },
+    useQueries: (data: Params[], config?: QueryConfig<Params, any>) => {
+      return useSubsocialQueries({ key, data }, getData, config)
+    },
+  }
 }

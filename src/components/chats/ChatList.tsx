@@ -1,6 +1,6 @@
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
-import { useCommentIdsByPostId, useGetComments } from '@/services/queries'
+import { getCommentQuery, useCommentIdsByPostId } from '@/services/queries'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/className'
 import { ComponentProps, useId, useLayoutEffect } from 'react'
@@ -22,7 +22,7 @@ export default function ChatList({
   const { data, isLoading: isLoadingIds } = useCommentIdsByPostId(postId, {
     subscribe: true,
   })
-  const results = useGetComments(data ?? [])
+  const results = getCommentQuery.useQueries(data ?? [])
   const isLoading = useIsAnyQueriesLoading(results) || isLoadingIds
 
   const Component = asContainer ? Container<'div'> : 'div'
