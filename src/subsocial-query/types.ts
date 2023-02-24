@@ -1,5 +1,5 @@
-import { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
 import { ApiPromise } from '@polkadot/api'
+import { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
 
 export type QueryConfig<T = any, V = any> = Omit<
   UseQueryOptions<T, unknown, T, (string | V | null)[]>,
