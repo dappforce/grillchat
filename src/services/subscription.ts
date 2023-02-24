@@ -12,16 +12,18 @@ export function useSubscribeCommentIdsByPostId(
   useEffect(() => {
     if (!enabled) return
 
-    let unsub: () => void = () => undefined
+    let unsub: Promise<() => void> | undefined
     ;(async () => {
       const subsocialApi = await getSubsocialApi()
       const substrateApi = await subsocialApi.substrateApi
-      unsub = await substrateApi.query.posts.replyIdsByPostId(postId, (ids) => {
+      unsub = substrateApi.query.posts.replyIdsByPostId(postId, (ids) => {
         const newIds = Array.from(ids.toPrimitive() as any).map((id) => id + '')
         queryClient.setQueriesData([commentIdsByPostIdKey, postId], newIds)
         callback?.(newIds)
       })
     })()
-    return unsub
+    return () => {
+      unsub?.then((func) => func())
+    }
   }, [postId, queryClient, enabled, callback])
 }
