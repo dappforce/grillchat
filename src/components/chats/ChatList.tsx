@@ -3,7 +3,13 @@ import ScrollableContainer from '@/components/ScrollableContainer'
 import { getCommentQuery, useCommentIdsByPostId } from '@/services/queries'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/className'
-import { ComponentProps, useId, useLayoutEffect } from 'react'
+import {
+  ComponentProps,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useState,
+} from 'react'
 import ChatItem from './ChatItem'
 
 export type ChatListProps = ComponentProps<'div'> & {
@@ -11,7 +17,22 @@ export type ChatListProps = ComponentProps<'div'> & {
   scrollableContainerClassName?: string
 }
 
-export default function ChatList({
+// ChatListContent needs to use useLayoutEffect, so it can't run in server.
+export default function ChatList(props: ChatListProps) {
+  const [showChild, setShowChild] = useState(false)
+
+  useEffect(() => {
+    setShowChild(true)
+  }, [])
+
+  if (!showChild) {
+    return null
+  }
+
+  return <ChatListContent {...props} />
+}
+
+function ChatListContent({
   asContainer,
   scrollableContainerClassName,
   ...props

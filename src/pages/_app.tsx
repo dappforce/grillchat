@@ -27,7 +27,6 @@ export default function App({
 }: AppProps<AppCommonProps>) {
   const [client] = useState(() => new QueryClient())
   const { head, dehydratedState } = pageProps
-  console.log(dehydratedState)
 
   return (
     <QueryClientProvider client={client}>
