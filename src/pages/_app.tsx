@@ -3,9 +3,9 @@ import Navbar from '@/components/navbar/Navbar'
 import client from '@/services/client'
 import '@/styles/globals.css'
 import { cx } from '@/utils/className'
-import { Source_Sans_Pro } from '@next/font/google'
 import { QueryClientProvider } from '@tanstack/react-query'
 import type { AppProps } from 'next/app'
+import { Source_Sans_Pro } from 'next/font/google'
 
 const sourceSansPro = Source_Sans_Pro({
   weight: ['400', '600'],
