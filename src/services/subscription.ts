@@ -1,6 +1,6 @@
 import { getSubsocialApi } from '@/subsocial-query'
 import { useQueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { getCommentIdsQueryKey } from './queries'
 
 export function useSubscribeCommentIdsByPostId(
@@ -9,6 +9,9 @@ export function useSubscribeCommentIdsByPostId(
   callback?: (ids: string[]) => void
 ) {
   const queryClient = useQueryClient()
+  const callbackRef = useRef(callback)
+  callbackRef.current = callback
+
   useEffect(() => {
     if (!enabled) return
 
@@ -19,11 +22,11 @@ export function useSubscribeCommentIdsByPostId(
       unsub = substrateApi.query.posts.replyIdsByPostId(postId, (ids) => {
         const newIds = Array.from(ids.toPrimitive() as any).map((id) => id + '')
         queryClient.setQueriesData(getCommentIdsQueryKey(postId), newIds)
-        callback?.(newIds)
+        callbackRef.current?.(newIds)
       })
     })()
     return () => {
       unsub?.then((func) => func())
     }
-  }, [postId, queryClient, enabled, callback])
+  }, [postId, queryClient, enabled])
 }
