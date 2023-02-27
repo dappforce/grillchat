@@ -1,4 +1,4 @@
-import { truncateAddress } from '@/utils/address'
+import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/className'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { ComponentProps } from 'react'
