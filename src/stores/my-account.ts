@@ -10,7 +10,10 @@ type State = {
 }
 type Actions = {
   login: (secretKey: string) => Promise<boolean>
+  logout: () => void
 }
+
+const STORAGE_KEY = 'account'
 
 const initialState = {
   isInitialized: false,
@@ -28,25 +31,26 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         signer,
         secretKey,
       })
+      localStorage.setItem(STORAGE_KEY, secretKey)
     } catch (e) {
       console.log('Failed to login', e)
       return false
     }
     return true
   },
+  logout: () => {
+    localStorage.removeItem(STORAGE_KEY)
+    set(initialState)
+  },
   init: () => {
     const { isInitialized, login } = get()
     if (isInitialized) return true
 
-    const secretKey = localStorage.getItem('account')
-    console.log(secretKey)
+    const secretKey = localStorage.getItem(STORAGE_KEY)
     if (secretKey) {
       set({ isInitialized: true })
       return login(secretKey)
     }
     set({ isInitialized: true })
-  },
-  logout: () => {
-    set(initialState)
   },
 }))

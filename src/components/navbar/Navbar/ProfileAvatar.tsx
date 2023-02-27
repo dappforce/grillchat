@@ -6,23 +6,23 @@ import ProfileModal from './ProfileModal'
 
 export type ProfileAvatarProps = ComponentProps<'div'> & {
   address: string
+  displayPopOver?: boolean
 }
 
 export default function ProfileAvatar({
   address,
+  displayPopOver,
   ...props
 }: ProfileAvatarProps) {
   const popOverTriggerRef = useRef<HTMLDivElement>(null)
   const [isOpen, setIsOpen] = useState(false)
 
-  const hasOpened = useRef(false)
   useEffect(() => {
-    if (!hasOpened.current) {
+    if (displayPopOver) {
       if (!popOverTriggerRef.current) return
       popOverTriggerRef.current.click()
-      hasOpened.current = true
     }
-  }, [address])
+  }, [displayPopOver, address])
 
   return (
     <>

@@ -4,14 +4,18 @@ import Button from './Button'
 import Input from './inputs/Input'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
-export type LoginModalProps = ModalFunctionalityProps
+export type LoginModalProps = ModalFunctionalityProps & {
+  afterLogin?: () => void
+}
 
-export default function LoginModal({ ...props }: LoginModalProps) {
+export default function LoginModal({ afterLogin, ...props }: LoginModalProps) {
   const login = useMyAccount((state) => state.login)
   const [privateKey, setPrivateKey] = useState('')
   const onSubmit = async (e: any) => {
     e.preventDefault()
     if (await login(privateKey)) {
+      afterLogin?.()
+      setPrivateKey('')
       props.closeModal()
     } else {
       // TODO: handle error

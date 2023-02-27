@@ -45,6 +45,8 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
 }
 
 function AccountContent({ address, setCurrentState }: ContentProps) {
+  const logout = useMyAccount((state) => state.logout)
+
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
       <AddressAvatar address={address} className='h-20 w-20' />
@@ -56,7 +58,12 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
       >
         Show private key
       </Button>
-      <Button className='w-full' size='lg' variant='primaryOutline'>
+      <Button
+        className='w-full'
+        size='lg'
+        variant='primaryOutline'
+        onClick={logout}
+      >
         Log out
       </Button>
     </div>
@@ -65,6 +72,7 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
 
 function PrivateKeyContent() {
   const secretKey = useMyAccount((state) => state.secretKey)
+
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
       <CopyText type='long' text={secretKey || ''} />
