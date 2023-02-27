@@ -12,10 +12,12 @@ import ProfileAvatar from './ProfileAvatar'
 export type NavbarProps = ComponentProps<'div'>
 
 export default function Navbar({ ...props }: NavbarProps) {
-  const isAfterLogin = useRef<boolean>(false)
+  const isInitialized = useMyAccount((state) => state.isInitialized)
   const address = useMyAccount((state) => state.address)
   const isLoggedIn = !!address
+
   const [openLoginModal, setOpenLoginModal] = useState(false)
+  const isAfterLogin = useRef<boolean>(false)
 
   const login = () => {
     setOpenLoginModal(true)
@@ -44,14 +46,17 @@ export default function Navbar({ ...props }: NavbarProps) {
             >
               <HiOutlineLightBulb className='mr-1' /> Suggest Feature
             </LinkText>
-            {isLoggedIn ? (
-              <ProfileAvatar
-                displayPopOver={isAfterLogin.current}
-                address={address}
-              />
-            ) : (
-              <Button onClick={login}>Login</Button>
-            )}
+            {(() => {
+              if (!isInitialized) return <div className='w-9' />
+              return isLoggedIn ? (
+                <ProfileAvatar
+                  displayPopOver={isAfterLogin.current}
+                  address={address}
+                />
+              ) : (
+                <Button onClick={login}>Login</Button>
+              )
+            })()}
           </div>
         </Container>
       </nav>

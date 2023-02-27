@@ -42,14 +42,14 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     localStorage.removeItem(STORAGE_KEY)
     set(initialState)
   },
-  init: () => {
+  init: async () => {
     const { isInitialized, login } = get()
     if (isInitialized) return true
 
     const secretKey = localStorage.getItem(STORAGE_KEY)
     if (secretKey) {
+      await login(secretKey)
       set({ isInitialized: true })
-      return login(secretKey)
     }
     set({ isInitialized: true })
   },
