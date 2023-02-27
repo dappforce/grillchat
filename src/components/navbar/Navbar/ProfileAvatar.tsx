@@ -1,5 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import PopOver from '@/components/PopOver'
+import { cx } from '@/utils/className'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
 import ProfileModal from './ProfileModal'
 
@@ -7,7 +8,10 @@ export type ProfileAvatarProps = ComponentProps<'div'> & {
   address: string
 }
 
-export default function ProfileAvatar({ address }: ProfileAvatarProps) {
+export default function ProfileAvatar({
+  address,
+  ...props
+}: ProfileAvatarProps) {
   const popOverTriggerRef = useRef<HTMLDivElement>(null)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -18,7 +22,7 @@ export default function ProfileAvatar({ address }: ProfileAvatarProps) {
       popOverTriggerRef.current.click()
       hasOpened.current = true
     }
-  }, [])
+  }, [address])
 
   return (
     <>
@@ -27,7 +31,7 @@ export default function ProfileAvatar({ address }: ProfileAvatarProps) {
         isOpen={isOpen}
         closeModal={() => setIsOpen(false)}
       />
-      <div className='relative h-9 w-9'>
+      <div {...props} className={cx('relative h-9 w-9', props.className)}>
         <AddressAvatar
           onClick={() => setIsOpen(true)}
           address={address}

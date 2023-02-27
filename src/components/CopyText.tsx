@@ -6,18 +6,20 @@ import PopOver from './PopOver'
 
 export type CopyTextProps = ComponentProps<'div'> & {
   text: string
+  textToCopy?: string
   type?: 'short' | 'long'
 }
 
 export default function CopyText({
   text,
+  textToCopy,
   type = 'short',
   ...props
 }: CopyTextProps) {
   const [isCopied, setIsCopied] = useState(false)
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(textToCopy || text)
 
     setIsCopied(true)
     setTimeout(() => {

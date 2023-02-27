@@ -1,5 +1,6 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import Navbar from '@/components/navbar/Navbar'
+import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
 import { cx } from '@/utils/className'
 import {
@@ -9,7 +10,7 @@ import {
 } from '@tanstack/react-query'
 import type { AppProps } from 'next/app'
 import { Source_Sans_Pro } from 'next/font/google'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const sourceSansPro = Source_Sans_Pro({
   weight: ['400', '600'],
@@ -27,6 +28,10 @@ export default function App({
 }: AppProps<AppCommonProps>) {
   const [client] = useState(() => new QueryClient())
   const { head, dehydratedState } = pageProps
+
+  useEffect(() => {
+    initAllStores()
+  }, [])
 
   return (
     <QueryClientProvider client={client}>

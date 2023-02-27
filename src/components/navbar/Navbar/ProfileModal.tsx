@@ -2,6 +2,8 @@ import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import CopyText from '@/components/CopyText'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import { useMyAccount } from '@/stores/my-account'
+import { truncateAddress } from '@/utils/account'
 import React, { useEffect, useState } from 'react'
 
 type ProfileModalProps = ModalFunctionalityProps & {
@@ -46,7 +48,7 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
       <AddressAvatar address={address} className='h-20 w-20' />
-      <CopyText text={address} />
+      <CopyText text={truncateAddress(address)} textToCopy={address} />
       <Button
         className='mt-2 w-full'
         size='lg'
@@ -61,13 +63,11 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
   )
 }
 
-function PrivateKeyContent({ address, setCurrentState }: ContentProps) {
+function PrivateKeyContent() {
+  const secretKey = useMyAccount((state) => state.secretKey)
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
-      <CopyText
-        type='long'
-        text='0x8da4ef21b864d2cc526dbdb2a120bd2874c36c9d0a1fb7f8c63d7f7a8b41de8f'
-      />
+      <CopyText type='long' text={secretKey || ''} />
       <p className='mt-2 text-text-muted'>
         A private key is like a long password. We recommend keeping it in a safe
         place, so you can recover your account.

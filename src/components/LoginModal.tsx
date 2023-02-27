@@ -1,3 +1,4 @@
+import { useMyAccount } from '@/stores/my-account'
 import { useState } from 'react'
 import Button from './Button'
 import Input from './inputs/Input'
@@ -6,10 +7,15 @@ import Modal, { ModalFunctionalityProps } from './Modal'
 export type LoginModalProps = ModalFunctionalityProps
 
 export default function LoginModal({ ...props }: LoginModalProps) {
+  const login = useMyAccount((state) => state.login)
   const [privateKey, setPrivateKey] = useState('')
-  const onSubmit = (e: any) => {
+  const onSubmit = async (e: any) => {
     e.preventDefault()
-    props.closeModal()
+    if (await login(privateKey)) {
+      props.closeModal()
+    } else {
+      // TODO: handle error
+    }
   }
 
   return (

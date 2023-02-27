@@ -1,4 +1,5 @@
 import LoginModal from '@/components/LoginModal'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
 import { ComponentProps, useState } from 'react'
 import { HiOutlineLightBulb } from 'react-icons/hi'
@@ -11,7 +12,8 @@ import ProfileAvatar from './ProfileAvatar'
 export type NavbarProps = ComponentProps<'div'>
 
 export default function Navbar({ ...props }: NavbarProps) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const address = useMyAccount((state) => state.address)
+  const isLoggedIn = !!address
   const [openLoginModal, setOpenLoginModal] = useState(false)
 
   const login = () => {
@@ -42,7 +44,7 @@ export default function Navbar({ ...props }: NavbarProps) {
               <HiOutlineLightBulb className='mr-1' /> Suggest Feature
             </LinkText>
             {isLoggedIn ? (
-              <ProfileAvatar address='asdfasdf' />
+              <ProfileAvatar address={address} />
             ) : (
               <Button onClick={login}>Login</Button>
             )}
@@ -51,10 +53,7 @@ export default function Navbar({ ...props }: NavbarProps) {
       </nav>
       <LoginModal
         isOpen={openLoginModal}
-        closeModal={() => {
-          setOpenLoginModal(false)
-          setIsLoggedIn(true)
-        }}
+        closeModal={() => setOpenLoginModal(false)}
       />
     </>
   )
