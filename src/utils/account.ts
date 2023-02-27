@@ -7,8 +7,8 @@ export async function generateAccount() {
   const { publicKey: publicKeyBuffer, secretKey: secretKeyBuffer } =
     ed25519PairFromSeed(seedAlice)
 
-  const publicKey = Buffer.from(publicKeyBuffer.buffer)
-  const secretKey = Buffer.from(secretKeyBuffer.buffer)
+  const publicKey = Buffer.from(publicKeyBuffer.buffer).toString('hex')
+  const secretKey = Buffer.from(secretKeyBuffer.buffer).toString('hex')
   return { publicKey, secretKey }
 }
 
