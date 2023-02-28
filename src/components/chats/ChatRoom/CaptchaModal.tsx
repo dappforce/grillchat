@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import { useSignUp } from '@/services/api/mutations'
 import { generateAccount } from '@/utils/account'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { useRef, useState } from 'react'
@@ -9,6 +10,7 @@ export type CaptchaModalProps = ModalFunctionalityProps
 const siteKey = '10000000-ffff-ffff-ffff-000000000001'
 
 export default function CaptchaModal({ ...props }: CaptchaModalProps) {
+  const { mutateAsync: signUp } = useSignUp()
   const [token, setToken] = useState('')
   const [captchaError, setCaptchaError] = useState('')
   const captchaRef = useRef<HCaptcha>(null)
@@ -20,6 +22,7 @@ export default function CaptchaModal({ ...props }: CaptchaModalProps) {
 
   const submitCaptcha = async () => {
     const { publicKey, secretKey } = await generateAccount()
+    const { data } = await signUp({ address: publicKey, captchaToken: token })
     console.log({ publicKey, secretKey })
     captchaRef.current?.resetCaptcha()
     props.closeModal()

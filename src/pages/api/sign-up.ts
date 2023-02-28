@@ -1,4 +1,5 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { getSubsocialApi } from '@/subsocial-query'
+import { Keyring } from '@polkadot/keyring'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -9,6 +10,7 @@ const schema = z.object({
 
 type Data = {
   message: string
+  hash?: string
 }
 
 const VERIFIER = 'https://hcaptcha.com/siteverify'
@@ -22,7 +24,28 @@ async function verifyCaptcha(captchaToken: string) {
     body: formData,
   })
   const jsonRes = await res.json()
-  console.log(jsonRes)
+  if (!jsonRes.success) throw new Error('Invalid Token')
+  return true
+}
+
+function getSenderAccount() {
+  const mnemonic = process.env.SERVER_MNEMONIC
+  if (!mnemonic) throw new Error('No mnemonic')
+  const keyring = new Keyring()
+  return keyring.addFromMnemonic(mnemonic)
+}
+async function sendToken(address: string) {
+  const signer = getSenderAccount()
+  if (!signer) throw new Error('Invalid Mnemonic')
+
+  const subsocialApi = await getSubsocialApi()
+  const substrateApi = await subsocialApi.substrateApi
+  const amount = 0.1 * 10 ** 12
+  const tx = await substrateApi.tx.balances
+    .transfer(address, amount)
+    .signAndSend(getSenderAccount())
+
+  return tx.hash.toString()
 }
 
 export default async function handler(
@@ -38,6 +61,22 @@ export default async function handler(
     })
   }
 
-  await verifyCaptcha(body.data.captchaToken)
-  return res.status(200).send({ message: 'OK' })
+  try {
+    await verifyCaptcha(body.data.captchaToken)
+  } catch (e: any) {
+    return res.status(400).send({
+      message: `Captcha failed: ${e.message}`,
+    })
+  }
+
+  let hash: string
+  try {
+    hash = await sendToken(body.data.address)
+  } catch (e: any) {
+    return res.status(500).send({
+      message: `Failed to send token: ${e.message}`,
+    })
+  }
+
+  return res.status(200).send({ message: 'OK', hash })
 }

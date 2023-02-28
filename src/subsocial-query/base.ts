@@ -1,4 +1,10 @@
-import { QueryClient, UseQueryResult } from '@tanstack/react-query'
+import {
+  MutationFunction,
+  QueryClient,
+  useMutation,
+  UseMutationOptions,
+  UseQueryResult,
+} from '@tanstack/react-query'
 import { useMemo } from 'react'
 import {
   MutationConfig,
@@ -59,6 +65,22 @@ export function makeCombinedCallback(
   return (...data: any[]) => {
     defaultConfig && defaultConfig[attr] && defaultConfig[attr](...data)
     config && config[attr] && config[attr](...data)
+  }
+}
+
+export default function mutationWrapper<ReturnData, Data>(
+  func: MutationFunction<ReturnData, Data>,
+  defaultConfig?: UseMutationOptions<ReturnData, unknown, Data, unknown>
+) {
+  return function (
+    config?: UseMutationOptions<ReturnData, unknown, Data, unknown>
+  ) {
+    return useMutation(func, {
+      ...(defaultConfig || {}),
+      ...config,
+      onSuccess: makeCombinedCallback(defaultConfig, config, 'onSuccess'),
+      onError: makeCombinedCallback(defaultConfig, config, 'onError'),
+    })
   }
 }
 
