@@ -10,7 +10,10 @@ const schema = z.object({
 })
 
 type Data = {
+  success: boolean
   message: string
+  errors?: any
+  data?: string
   hash?: string
 }
 
@@ -59,7 +62,9 @@ export default async function handler(
   const body = schema.safeParse(req.body)
   if (!body.success) {
     return res.status(400).send({
-      message: `Invalid request body: ${body.error.message}`,
+      success: false,
+      message: 'Invalid request body',
+      errors: body.error.errors,
     })
   }
 
@@ -67,7 +72,9 @@ export default async function handler(
     await verifyCaptcha(body.data.captchaToken)
   } catch (e: any) {
     return res.status(400).send({
-      message: `Captcha failed: ${e.message}`,
+      success: false,
+      message: 'Captcha failed',
+      errors: e.message,
     })
   }
 
@@ -76,9 +83,11 @@ export default async function handler(
     hash = await sendToken(body.data.address)
   } catch (e: any) {
     return res.status(500).send({
-      message: `Failed to send token: ${e.message}`,
+      success: false,
+      message: 'Failed to send token',
+      errors: e.message,
     })
   }
 
-  return res.status(200).send({ message: 'OK', hash })
+  return res.status(200).send({ success: true, message: 'OK', data: hash })
 }
