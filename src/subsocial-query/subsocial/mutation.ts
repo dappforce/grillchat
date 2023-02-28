@@ -81,7 +81,6 @@ function sendTransaction<Param>(
     wallet: { address, signer },
   } = txInfo
   return new Promise<string>(async (resolve, reject) => {
-    optimisticCallbacks?.addData()
     try {
       const unsub = await tx.signAndSend(signer, async (result: any) => {
         resolve(result.txHash.toString())
@@ -165,19 +164,25 @@ export function useSubsocialMutation<Param>(
       },
       defaultConfig?.optimistic
     )
+    optimisticCallbacks?.addData()
 
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
     const ipfsApi = subsocialApi.ipfs
-    return createTxAndSend(
-      transactionGenerator,
-      param,
-      { subsocialApi, substrateApi, ipfsApi },
-      { wallet, networkRpc: getConnectionConfig().substrateUrl },
-      config,
-      defaultConfig,
-      optimisticCallbacks
-    )
+    try {
+      return createTxAndSend(
+        transactionGenerator,
+        param,
+        { subsocialApi, substrateApi, ipfsApi },
+        { wallet, networkRpc: getConnectionConfig().substrateUrl },
+        config,
+        defaultConfig,
+        optimisticCallbacks
+      )
+    } catch (e) {
+      optimisticCallbacks?.removeData()
+      throw e
+    }
   }
 
   return useMutation(workerFunc, {

@@ -10,6 +10,7 @@ import {
   useEffect,
   useId,
   useLayoutEffect,
+  useRef,
   useState,
 } from 'react'
 import ChatItem from './ChatItem'
@@ -40,6 +41,7 @@ function ChatListContent({
   ...props
 }: ChatListProps) {
   const id = useId()
+  const isInBottom = useRef(true)
 
   const postId = '226'
   const { data } = useCommentIdsByPostId(postId, {
@@ -50,8 +52,23 @@ function ChatListContent({
   const Component = asContainer ? Container<'div'> : 'div'
 
   useLayoutEffect(() => {
+    if (!isInBottom.current) return
     const chatRoom = document.getElementById(id)
     chatRoom?.scrollTo({ top: chatRoom.scrollHeight })
+  }, [id, data?.length])
+
+  useEffect(() => {
+    const chatRoom = document.getElementById(id)
+    const scrollListener = () => {
+      if (!chatRoom) return
+      isInBottom.current =
+        chatRoom.scrollTop + chatRoom.clientHeight >= chatRoom.scrollHeight
+    }
+    chatRoom?.addEventListener('scroll', scrollListener, { passive: true })
+
+    return () => {
+      chatRoom?.removeEventListener('scroll', scrollListener)
+    }
   }, [id])
 
   return (
