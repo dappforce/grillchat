@@ -150,53 +150,40 @@ export function sendTransaction<Param>(
   } = txInfo
   return new Promise<string>(async (resolve, reject) => {
     try {
-      const unsub = await tx.signAndSend(
-        address,
-        {
-          signer,
-        },
-        async (result) => {
-          resolve(result.txHash.toString())
-          if (result.status.isBroadcast) {
-            txCallbacks.onBroadcast({
-              summary,
-              params: params,
-              address,
-            })
-          } else if (result.status.isInBlock) {
-            const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
-            let explorerLink: string | undefined
-            if (networkRpc) {
-              explorerLink = getBlockExplorerBlockInfoLink(
-                networkRpc,
-                blockHash
-              )
-            }
-            if (
-              result.isError ||
-              result.dispatchError ||
-              result.internalError
-            ) {
-              txCallbacks.onError({
-                error: result.dispatchError?.toString(),
-                summary,
-                address,
-                params,
-                explorerLink,
-              })
-            } else {
-              const onTxSuccess = makeCombinedCallback(
-                defaultConfig,
-                config,
-                'onTxSuccess'
-              )
-              onTxSuccess(params, address)
-              txCallbacks.onSuccess({ explorerLink, summary, address, params })
-            }
-            unsub()
+      const unsub = await tx.signAndSend(signer, async (result: any) => {
+        resolve(result.txHash.toString())
+        if (result.status.isBroadcast) {
+          txCallbacks.onBroadcast({
+            summary,
+            params: params,
+            address,
+          })
+        } else if (result.status.isInBlock) {
+          const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
+          let explorerLink: string | undefined
+          if (networkRpc) {
+            explorerLink = getBlockExplorerBlockInfoLink(networkRpc, blockHash)
           }
+          if (result.isError || result.dispatchError || result.internalError) {
+            txCallbacks.onError({
+              error: result.dispatchError?.toString(),
+              summary,
+              address,
+              params,
+              explorerLink,
+            })
+          } else {
+            const onTxSuccess = makeCombinedCallback(
+              defaultConfig,
+              config,
+              'onTxSuccess'
+            )
+            onTxSuccess(params, address)
+            txCallbacks.onSuccess({ explorerLink, summary, address, params })
+          }
+          unsub()
         }
-      )
+      })
     } catch (e) {
       txCallbacks.onError((e as any).message)
       reject(e)
