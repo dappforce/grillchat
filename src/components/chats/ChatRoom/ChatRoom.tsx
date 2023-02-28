@@ -2,6 +2,7 @@ import Send from '@/assets/icons/send.png'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Input from '@/components/inputs/Input'
+import { useSendMessage } from '@/services/api/mutations'
 import { cx } from '@/utils/className'
 import Image from 'next/image'
 import { ComponentProps, useState } from 'react'
@@ -21,12 +22,17 @@ export default function ChatRoom({
   scrollableContainerClassName,
   ...props
 }: ChatRoomProps) {
+  // move to inside form only
+  const { mutate: sendMessage } = useSendMessage()
   const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
 
   const Component = asContainer ? Container<'div'> : 'div'
 
+  const postId = '226'
+  const spaceId = '1181'
   const onSubmitForm = (e: any) => {
     e?.preventDefault()
+    sendMessage({ message: 'new chat', rootPostId: postId, spaceId })
     setIsOpenCaptcha(true)
   }
 

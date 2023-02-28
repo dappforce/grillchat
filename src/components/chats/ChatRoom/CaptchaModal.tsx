@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import { useSignUp } from '@/services/api/mutations'
-import { useMyAccount } from '@/stores/account'
+import { useMyAccount } from '@/stores/my-account'
 import { generateAccount } from '@/utils/account'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { useRef, useState } from 'react'
