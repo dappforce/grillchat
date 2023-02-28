@@ -1,6 +1,9 @@
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
-import { getCommentQuery, useCommentIdsByPostId } from '@/services/queries'
+import {
+  getCommentQuery,
+  useCommentIdsByPostId,
+} from '@/services/subsocial/queries'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/className'
 import {

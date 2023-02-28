@@ -1,5 +1,8 @@
 import ChatPage from '@/modules/_chats/ChatPage'
-import { getCommentIdsQueryKey, getCommentQuery } from '@/services/queries'
+import {
+  getCommentIdsQueryKey,
+  getCommentQuery,
+} from '@/services/subsocial/queries'
 import { getSubsocialApi } from '@/subsocial-query'
 import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'

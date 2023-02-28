@@ -1,5 +1,6 @@
 import { cx } from '@/utils/className'
 import { Dialog, Transition } from '@headlessui/react'
+import { cva, VariantProps } from 'class-variance-authority'
 import { Fragment } from 'react'
 import { HiXMark } from 'react-icons/hi2'
 import Button from './Button'
@@ -9,18 +10,41 @@ export type ModalFunctionalityProps = {
   closeModal: () => void
 }
 
-export type ModalProps = ModalFunctionalityProps & {
-  titleClassName?: string
-  descriptionClassName?: string
-  withCloseButton?: boolean
-  children: React.ReactNode
-  title?: React.ReactNode
-  description?: React.ReactNode
-}
+const panelStyles = cva(
+  cx(
+    'relative w-full overflow-hidden rounded-3xl bg-background-light',
+    'p-8 text-left align-middle shadow-xl',
+    'transform transition-all',
+    'flex flex-col'
+  ),
+  {
+    variants: {
+      size: {
+        sm: cx('max-w-sm'),
+        md: cx('max-w-md'),
+        lg: cx('max-w-lg'),
+      },
+    },
+    defaultVariants: { size: 'lg' },
+  }
+)
+
+export type ModalProps = ModalFunctionalityProps &
+  VariantProps<typeof panelStyles> & {
+    titleClassName?: string
+    descriptionClassName?: string
+    withCloseButton?: boolean
+    children: React.ReactNode
+    title?: React.ReactNode
+    description?: React.ReactNode
+    panelClassName?: string
+  }
 
 export default function Modal({
   children,
   titleClassName,
+  panelClassName,
+  size,
   descriptionClassName,
   closeModal,
   withCloseButton,
@@ -55,12 +79,7 @@ export default function Modal({
               leaveTo='opacity-0 scale-95'
             >
               <Dialog.Panel
-                className={cx(
-                  'relative w-full max-w-lg overflow-hidden rounded-3xl bg-background-light',
-                  'p-8 text-left align-middle shadow-xl',
-                  'transform transition-all',
-                  'flex flex-col'
-                )}
+                className={cx(panelStyles({ size }), panelClassName)}
               >
                 {withCloseButton && (
                   <Button
