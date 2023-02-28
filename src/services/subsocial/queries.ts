@@ -10,7 +10,6 @@ import { PostData } from '@subsocial/api/types'
 import { useRef } from 'react'
 import { useSubscribeCommentIdsByPostId } from './subscription'
 
-const getCommentKey = 'getComment'
 export const getPost = poolQuery<SubsocialParam<string>, PostData>({
   multiCall: async (allParams) => {
     const [{ api }] = allParams
