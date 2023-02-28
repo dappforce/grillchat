@@ -4,7 +4,6 @@ import {
   getCommentQuery,
   useCommentIdsByPostId,
 } from '@/services/subsocial/queries'
-import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/className'
 import {
   ComponentProps,
@@ -43,11 +42,10 @@ function ChatListContent({
   const id = useId()
 
   const postId = '226'
-  const { data, isLoading: isLoadingIds } = useCommentIdsByPostId(postId, {
+  const { data } = useCommentIdsByPostId(postId, {
     subscribe: true,
   })
   const results = getCommentQuery.useQueries(data ?? [])
-  const isLoading = useIsAnyQueriesLoading(results) || isLoadingIds
 
   const Component = asContainer ? Container<'div'> : 'div'
 
@@ -63,24 +61,20 @@ function ChatListContent({
       id={id}
       className={scrollableContainerClassName}
     >
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className={cx('flex flex-col gap-2')}>
-          {results.map(({ data }, index) =>
-            data?.content?.body ? (
-              <div className={cx('w-10/12')} key={index}>
-                <ChatItem
-                  sentDate={data.struct.createdAtTime}
-                  senderAddress={data.struct.ownerId}
-                  alignment='left'
-                  text={data?.content?.body ?? 'empty?'}
-                />
-              </div>
-            ) : null
-          )}
-        </div>
-      )}
+      <div className={cx('flex flex-col gap-2')}>
+        {results.map(({ data }, index) =>
+          data?.content?.body ? (
+            <div className={cx('w-10/12')} key={data.id}>
+              <ChatItem
+                sentDate={data.struct.createdAtTime}
+                senderAddress={data.struct.ownerId}
+                alignment='left'
+                text={data?.content?.body ?? 'empty?'}
+              />
+            </div>
+          ) : null
+        )}
+      </div>
     </ScrollableContainer>
   )
 }
