@@ -1,8 +1,9 @@
-import { Signer } from './types'
+import type { Signer } from './types'
 
 export async function generateAccount() {
   const { ed25519PairFromSeed, mnemonicGenerate, mnemonicToMiniSecret } =
     await import('@polkadot/util-crypto')
+  const { toSubsocialAddress } = await import('@subsocial/utils')
 
   const mnemonicAlice = mnemonicGenerate()
   const seedAlice = mnemonicToMiniSecret(mnemonicAlice)
@@ -11,7 +12,7 @@ export async function generateAccount() {
 
   const publicKey = Buffer.from(publicKeyBuffer.buffer).toString('hex')
   const secretKey = Buffer.from(secretKeyBuffer.buffer).toString('hex')
-  return { publicKey, secretKey }
+  return { publicKey: toSubsocialAddress('0x' + publicKey), secretKey }
 }
 
 export async function loginWithSecretKey(secretKey: string): Promise<Signer> {
