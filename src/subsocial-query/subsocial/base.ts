@@ -81,7 +81,6 @@ export function useSubsocialMutation<Param>(
 ): UseMutationResult<string, Error, Param, unknown> {
   const workerFunc = async (param: Param) => {
     const wallet = await getWallet()
-    console.log(wallet)
     if (!wallet.address || !wallet.signer)
       throw new Error('You need to connect your wallet first!')
     const subsocialApi = await getSubsocialApi()
