@@ -1,4 +1,4 @@
-import { getSubsocialApi } from '@/subsocial-query'
+import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { Keyring } from '@polkadot/keyring'
 import { waitReady } from '@polkadot/wasm-crypto'
 import type { NextApiRequest, NextApiResponse } from 'next'

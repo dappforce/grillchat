@@ -1,11 +1,9 @@
+import { createQueryKeys, poolQuery, QueryConfig } from '@/subsocial-query'
 import {
-  createQueryKeys,
   createSubsocialQuery,
-  poolQuery,
-  QueryConfig,
   SubsocialParam,
   useSubsocialQuery,
-} from '@/subsocial-query'
+} from '@/subsocial-query/subsocial'
 import { PostData } from '@subsocial/api/types'
 import { useRef } from 'react'
 import { useSubscribeCommentIdsByPostId } from './subscription'

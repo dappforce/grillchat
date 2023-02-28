@@ -34,10 +34,11 @@ export default function ChatRoom({
 
   const postId = '226'
   const spaceId = '1181'
-  const onSubmitForm = (e: any) => {
+  const onSubmitForm = async (e: any) => {
     e?.preventDefault()
     if (isLoggedIn) {
-      sendMessage({ message, rootPostId: postId, spaceId })
+      const data = await sendMessage({ message, rootPostId: postId, spaceId })
+      console.log('kelar')
     } else {
       setIsOpenCaptcha(true)
     }

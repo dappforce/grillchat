@@ -1,4 +1,3 @@
-import { ApiPromise } from '@polkadot/api'
 import { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
 
 export type QueryConfig<T = any, V = any> = Omit<
@@ -10,11 +9,4 @@ export type MutationConfig<Param> = UseMutationOptions<
   Error,
   Param,
   unknown
-> & { onTxSuccess?: (data: Param, address: string) => void }
-
-export type Transaction = ReturnType<ApiPromise['tx']['']['']>
-
-export interface WalletAccount {
-  address: string
-  signer?: any
-}
+>

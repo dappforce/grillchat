@@ -1,4 +1,4 @@
-import { getSubsocialApi } from '@/subsocial-query'
+import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
 import { getCommentIdsQueryKey } from './queries'

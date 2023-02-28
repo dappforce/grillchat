@@ -1,5 +1,4 @@
 export * from './base'
-export * from './subsocial'
 export * from './types'
 
 export interface PoolQueryConfig<Param, SingleReturn> {

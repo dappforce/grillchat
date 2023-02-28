@@ -1,2 +1,3 @@
-export * from './base'
 export * from './connection'
+export * from './mutation'
+export * from './query'

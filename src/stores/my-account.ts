@@ -1,4 +1,4 @@
-import { getSubsocialApi } from '@/subsocial-query'
+import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { loginWithSecretKey } from '@/utils/account'
 import { Signer } from '@/utils/types'
 import { create } from './utils'

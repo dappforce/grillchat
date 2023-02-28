@@ -1,6 +1,7 @@
 import { useMyAccount } from '@/stores/my-account'
-import { MutationConfig, useSubsocialMutation } from '@/subsocial-query'
+import { MutationConfig } from '@/subsocial-query'
 import mutationWrapper from '@/subsocial-query/base'
+import { useSubsocialMutation } from '@/subsocial-query/subsocial'
 import { IpfsContent } from '@subsocial/api/substrate/wrappers'
 import { PostData } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
