@@ -43,7 +43,7 @@ export function mergeQueryConfig<T, V>(
 }
 
 export function createQueryKeys<Param>(key: string) {
-  return (data: Param | null = null) => {
+  return (data: Param) => {
     return [key, data]
   }
 }
@@ -178,7 +178,7 @@ export function sendTransaction<Param>(
               config,
               'onTxSuccess'
             )
-            onTxSuccess(params, address)
+            onTxSuccess({ params, address, result })
             txCallbacks.onSuccess({ explorerLink, summary, address, params })
           }
           unsub()
