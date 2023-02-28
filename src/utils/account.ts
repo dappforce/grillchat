@@ -12,7 +12,7 @@ export async function generateAccount() {
 
   const publicKey = Buffer.from(publicKeyBuffer.buffer).toString('hex')
   const secretKey = Buffer.from(secretKeyBuffer.buffer).toString('hex')
-  return { publicKey: toSubsocialAddress('0x' + publicKey), secretKey }
+  return { publicKey: toSubsocialAddress('0x' + publicKey)!, secretKey }
 }
 
 export async function loginWithSecretKey(secretKey: string): Promise<Signer> {

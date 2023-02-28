@@ -22,7 +22,7 @@ export default function CaptchaModal({ ...props }: CaptchaModalProps) {
 
   const submitCaptcha = async () => {
     const { publicKey, secretKey } = await generateAccount()
-    const { data } = await signUp({ address: publicKey, captchaToken: token })
+    await signUp({ address: publicKey, captchaToken: token })
     console.log({ publicKey, secretKey })
     captchaRef.current?.resetCaptcha()
     props.closeModal()
