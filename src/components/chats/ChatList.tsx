@@ -4,7 +4,9 @@ import {
   getCommentQuery,
   useCommentIdsByPostId,
 } from '@/services/subsocial/queries'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
+import { PostData } from '@subsocial/api/types'
 import {
   ComponentProps,
   useEffect,
@@ -79,19 +81,28 @@ function ChatListContent({
       className={scrollableContainerClassName}
     >
       <div className={cx('flex flex-col gap-2')}>
-        {results.map(({ data }, index) =>
-          data?.content?.body ? (
-            <div className={cx('w-10/12')} key={data.id}>
-              <ChatItem
-                sentDate={data.struct.createdAtTime}
-                senderAddress={data.struct.ownerId}
-                alignment='left'
-                text={data?.content?.body ?? 'empty?'}
-              />
-            </div>
-          ) : null
-        )}
+        {results.map(({ data }) => (
+          <ChatItemContainer data={data} key={data?.id} />
+        ))}
       </div>
     </ScrollableContainer>
+  )
+}
+
+function ChatItemContainer({ data }: { data: PostData | null | undefined }) {
+  const address = useMyAccount((state) => state.address)
+  if (!data?.content?.body) return null
+
+  const ownerId = data.struct.ownerId
+  const isMyMessage = address === ownerId
+
+  return (
+    <div className={cx('w-10/12', isMyMessage && 'self-end')}>
+      <ChatItem
+        sentDate={data.struct.createdAtTime}
+        senderAddress={ownerId}
+        text={data.content.body}
+      />
+    </div>
   )
 }

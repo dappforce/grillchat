@@ -1,3 +1,4 @@
+import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/className'
 import { getTimeRelativeToNow } from '@/utils/date'
@@ -7,20 +8,18 @@ import AddressAvatar from '../AddressAvatar'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   text: string
-  alignment: 'left' | 'right'
   senderAddress: string
   sentDate: Date | string | number
 }
 
 export default function ChatItem({
   text,
-  alignment,
   senderAddress,
   sentDate,
   ...props
 }: ChatItemProps) {
-  // const isMyMessage = alignment === 'right'
-  const isMyMessage = false
+  const address = useMyAccount((state) => state.address)
+  const isMyMessage = address === senderAddress
   const isSent = true
 
   const relativeTime = getTimeRelativeToNow(sentDate)
