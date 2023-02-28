@@ -1,5 +1,6 @@
 import { getSubsocialApi } from '@/subsocial-query'
 import { Keyring } from '@polkadot/keyring'
+import { waitReady } from '@polkadot/wasm-crypto'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -28,22 +29,23 @@ async function verifyCaptcha(captchaToken: string) {
   return true
 }
 
-function getSenderAccount() {
+async function getSenderAccount() {
   const mnemonic = process.env.SERVER_MNEMONIC
   if (!mnemonic) throw new Error('No mnemonic')
   const keyring = new Keyring()
-  return keyring.addFromMnemonic(mnemonic)
+  await waitReady()
+  return keyring.addFromMnemonic(mnemonic, {}, 'sr25519')
 }
 async function sendToken(address: string) {
-  const signer = getSenderAccount()
+  const signer = await getSenderAccount()
   if (!signer) throw new Error('Invalid Mnemonic')
 
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi
-  const amount = 0.1 * 10 ** 12
+  const amount = 0.1 * 10 ** 10
   const tx = await substrateApi.tx.balances
     .transfer(address, amount)
-    .signAndSend(getSenderAccount())
+    .signAndSend(signer)
 
   return tx.hash.toString()
 }
