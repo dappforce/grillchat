@@ -53,36 +53,35 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     },
     config,
     {
-      onMutate: (params) => {
-        const tempId = `optimistic-${params.rootPostId}-${Date.now()}`
-        client.setQueryData(getCommentQuery.getQueryKey(tempId), {
-          id: tempId,
-          struct: {
-            createdAtTime: Date.now(),
-            ownerId: address,
-          },
-          content: {
-            body: params.message,
-          },
-        } as PostData)
-        client.setQueryData<string[]>(
-          getCommentIdsQueryKey(params.rootPostId),
-          (ids) => {
-            return [...(ids ?? []), tempId]
-          }
-        )
-
-        return { tempId }
-      },
-      onError: (_, params, context) => {
-        const { tempId } = context as { tempId: string }
-        client.removeQueries(getCommentQuery.getQueryKey(tempId))
-        client.setQueryData<string[]>(
-          getCommentIdsQueryKey(params.rootPostId),
-          (ids) => {
-            return ids?.filter((id) => id !== tempId)
-          }
-        )
+      optimistic: {
+        getTempId: () => `optimistic-${Date.now()}`,
+        addData: ({ param, tempId }) => {
+          client.setQueryData(getCommentQuery.getQueryKey(tempId!), {
+            id: tempId,
+            struct: {
+              createdAtTime: Date.now(),
+              ownerId: address,
+            },
+            content: {
+              body: param.message,
+            },
+          } as PostData)
+          client.setQueryData<string[]>(
+            getCommentIdsQueryKey(param.rootPostId),
+            (ids) => {
+              return [...(ids ?? []), tempId!]
+            }
+          )
+        },
+        removeData: ({ tempId, param }) => {
+          client.removeQueries(getCommentQuery.getQueryKey(tempId!))
+          client.setQueryData<string[]>(
+            getCommentIdsQueryKey(param.rootPostId),
+            (ids) => {
+              return ids?.filter((id) => id !== tempId)
+            }
+          )
+        },
       },
     }
   )
