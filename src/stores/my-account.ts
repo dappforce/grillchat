@@ -30,10 +30,11 @@ const initialState = {
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
   login: async (secretKey: string) => {
+    const { toSubsocialAddress } = await import('@subsocial/utils')
     try {
       const signer = await loginWithSecretKey(secretKey)
       set({
-        address: signer.address,
+        address: toSubsocialAddress(signer.address),
         signer,
         secretKey,
       })

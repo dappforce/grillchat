@@ -5,6 +5,7 @@ import { IpfsContent } from '@subsocial/api/substrate/wrappers'
 import { PostData } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { getCommentIdsQueryKey, getCommentQuery } from '../subsocial/queries'
+import { generateOptimisticId } from './utils'
 
 export type SendMessageParams = {
   message: string
@@ -34,7 +35,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     config,
     {
       optimistic: {
-        getTempId: () => `optimistic-${Date.now()}`,
+        getTempId: () => generateOptimisticId(),
         addData: ({ param, tempId }) => {
           client.setQueryData(getCommentQuery.getQueryKey(tempId!), {
             id: tempId,
