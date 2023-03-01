@@ -84,6 +84,7 @@ function sendTransaction<Param>(
     try {
       const unsub = await tx.signAndSend(signer, async (result: any) => {
         resolve(result.txHash.toString())
+        console.log('STATUS: ', result.status.toString())
         if (result.status.isBroadcast) {
           txCallbacks.onBroadcast({
             summary,
@@ -91,6 +92,8 @@ function sendTransaction<Param>(
             address,
           })
         } else if (result.status.isInBlock) {
+          console.log('Is In block')
+          optimisticCallbacks?.removeData()
           const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
           let explorerLink: string | undefined
           if (networkRpc) {
@@ -106,7 +109,6 @@ function sendTransaction<Param>(
               explorerLink,
             })
           } else {
-            optimisticCallbacks?.removeData()
             const onTxSuccess = makeCombinedCallback(
               defaultConfig,
               config,
