@@ -39,6 +39,7 @@ export default function ChatRoom({
     e?.preventDefault()
     if (isLoggedIn) {
       sendMessage({ message, rootPostId: postId, spaceId })
+      setMessage('')
     } else {
       setIsOpenCaptcha(true)
     }
@@ -73,7 +74,10 @@ export default function ChatRoom({
       </Component>
       <CaptchaModal
         isOpen={isOpenCaptcha}
-        closeModal={() => setIsOpenCaptcha(false)}
+        closeModal={() => {
+          setIsOpenCaptcha(false)
+          setMessage('')
+        }}
         message={message}
         rootPostId={postId}
         spaceId={spaceId}
