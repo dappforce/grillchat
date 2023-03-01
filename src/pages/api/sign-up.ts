@@ -48,7 +48,7 @@ async function sendToken(address: string) {
   const amount = 0.3 * 10 ** 10
   const tx = await substrateApi.tx.balances
     .transfer(address, amount)
-    .signAndSend(signer)
+    .signAndSend(signer, { nonce: -1 })
 
   return tx.hash.toString()
 }
