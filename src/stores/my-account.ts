@@ -53,10 +53,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
 
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
-    const unsub = substrateApi.query.balances.account(address, (balances) => {
-      const parsedBalances = balances.toPrimitive()
-      const freeBalance =
-        parseFloat(parsedBalances?.free as any) ?? 0 / 10 ** 10
+    const unsub = substrateApi.derive.balances.account(address, (balances) => {
+      const parsedBalances = balances.freeBalance.toPrimitive()
+      const freeBalance = (parseFloat(parsedBalances as any) ?? 0) / 10 ** 10
       set({
         balance: freeBalance,
         unsubscribeBalance: () => unsub.then((unsub) => unsub()),
