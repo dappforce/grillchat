@@ -12,6 +12,15 @@ export interface PoolQueryConfig<Param, SingleReturn> {
   waitTime?: number
 }
 
+function generateBatchPromise<BatchData>() {
+  let batchResolver: (value: BatchData | PromiseLike<BatchData>) => void = () =>
+    undefined
+  const batchPromise = new Promise<BatchData>((resolve) => {
+    batchResolver = resolve
+  })
+  return { batchPromise, batchResolver }
+}
+
 export function poolQuery<Param, SingleReturn>(
   config: PoolQueryConfig<Param, SingleReturn>
 ): (param: Param) => Promise<SingleReturn | null> {
@@ -31,10 +40,7 @@ export function poolQuery<Param, SingleReturn>(
         [key: string]: SingleReturn
       }
 
-  let batchResolver: (value: BatchData | PromiseLike<BatchData>) => void
-  const batchPromise = new Promise<BatchData>((resolve) => {
-    batchResolver = resolve
-  })
+  let { batchPromise, batchResolver } = generateBatchPromise<BatchData>()
 
   const later = async function () {
     timeout = undefined
@@ -69,8 +75,9 @@ export function poolQuery<Param, SingleReturn>(
       })
       result = resultMap
     }
-    queryPool = []
     batchResolver(result)
+    queryPool = []
+    ;({ batchPromise, batchResolver } = generateBatchPromise<BatchData>())
   }
 
   return async function executedFunction(
