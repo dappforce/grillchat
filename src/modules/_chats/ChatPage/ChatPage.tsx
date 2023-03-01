@@ -98,6 +98,7 @@ const dummyChats = [
 export default function ChatPage() {
   const router = useRouter()
   const { topic } = router.query as { topic: string }
+  // TODO: handle error not found
   const postId = getTopicId(topic as any)
 
   return (
