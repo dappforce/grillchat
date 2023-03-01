@@ -7,7 +7,7 @@ type State = {
   isInitialized?: boolean
   address: string | null
   signer: Signer | null
-  balance: number
+  balance: number | null
   unsubscribeBalance: () => void
   secretKey: string | null
 }
@@ -22,7 +22,7 @@ const STORAGE_KEY = 'account'
 const initialState = {
   address: null,
   signer: null,
-  balance: 0,
+  balance: null,
   unsubscribeBalance: () => undefined,
   secretKey: null,
 }
