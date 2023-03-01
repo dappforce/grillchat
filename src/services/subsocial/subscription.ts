@@ -48,6 +48,7 @@ export function useSubscribeCommentIdsByPostId(
         }
 
         // consecutive subscription, set data after new block
+        // TODO: remove if subscription is fixed
         await waitNewBlock()
         updateQueryData()
       })
