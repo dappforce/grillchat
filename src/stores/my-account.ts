@@ -4,7 +4,7 @@ import { Signer } from '@/utils/types'
 import { create } from './utils'
 
 type State = {
-  isInitialized: boolean
+  isInitialized?: boolean
   address: string | null
   signer: Signer | null
   balance: number
@@ -20,7 +20,6 @@ type Actions = {
 const STORAGE_KEY = 'account'
 
 const initialState = {
-  isInitialized: false,
   address: null,
   signer: null,
   balance: 0,
@@ -32,6 +31,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   login: async (secretKey: string) => {
     const { toSubsocialAddress } = await import('@subsocial/utils')
     try {
+      console.log(secretKey)
       const signer = await loginWithSecretKey(secretKey)
       set({
         address: toSubsocialAddress(signer.address),
