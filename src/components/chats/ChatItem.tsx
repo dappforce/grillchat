@@ -51,7 +51,9 @@ export default function ChatItem({
         )}
         <p>{text}</p>
         {isMyMessage && (
-          <div className='flex items-center gap-1'>
+          <div
+            className={cx('flex items-center gap-1', isMyMessage && 'self-end')}
+          >
             <span className='text-xs text-text-muted'>{relativeTime}</span>
             {isSent ? (
               <IoCheckmarkDoneOutline className='text-sm' />
