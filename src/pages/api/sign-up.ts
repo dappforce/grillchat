@@ -45,7 +45,7 @@ async function sendToken(address: string) {
 
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi
-  const amount = 0.1 * 10 ** 10
+  const amount = 0.3 * 10 ** 10
   const tx = await substrateApi.tx.balances
     .transfer(address, amount)
     .signAndSend(signer)
