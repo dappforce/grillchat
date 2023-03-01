@@ -23,7 +23,9 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   return useSubsocialMutation<SendMessageParams>(
     async () => ({ address, signer }),
     async (params, { ipfsApi, substrateApi }) => {
+      console.log('waiting balance')
       await waitHasBalance()
+      console.log('done balance')
       const cid = await ipfsApi.saveContent({
         body: params.message,
       } as any)
