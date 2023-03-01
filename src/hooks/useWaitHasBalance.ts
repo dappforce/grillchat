@@ -1,10 +1,12 @@
 import { useMyAccount } from '@/stores/my-account'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import useWaitNewBlock from './useWaitNewBlock'
 
 export default function useWaitHasBalance() {
   const address = useMyAccount((state) => state.address)
   const balance = useMyAccount((state) => state.balance)
   const hasBalanceResolver = useRef<() => void>(() => undefined)
+  const waitNewBlock = useWaitNewBlock()
 
   const generatePromise = useCallback(
     () =>
@@ -23,11 +25,13 @@ export default function useWaitHasBalance() {
   useEffect(() => {
     if (balance > 0) {
       console.log('MY CURRENT BALANCE: ', balance)
-      hasBalanceResolver.current?.()
+      waitNewBlock().then(() => {
+        hasBalanceResolver.current?.()
+      })
     } else {
       setHasBalancePromise(generatePromise())
     }
-  }, [balance, generatePromise])
+  }, [balance, generatePromise, waitNewBlock])
 
   return () => hasBalancePromise
 }

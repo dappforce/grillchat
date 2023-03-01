@@ -1,6 +1,6 @@
+import useWaitNewBlock from '@/hooks/useWaitNewBlock'
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { SubsocialApi } from '@subsocial/api'
-import { convertToNewPostData } from '@subsocial/api/subsocial/flatteners'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
 import { getCommentIdsQueryKey, getCommentQuery } from './queries'
@@ -20,6 +20,7 @@ export function useSubscribeCommentIdsByPostId(
   callback?: (ids: string[]) => void
 ) {
   const queryClient = useQueryClient()
+  const waitNewBlock = useWaitNewBlock()
   const callbackRef = useRef(callback)
   callbackRef.current = callback
 
@@ -36,10 +37,7 @@ export function useSubscribeCommentIdsByPostId(
         const lastSubscribedId = getLastSubscribedId()
         setLastSubscribedId(lastId)
 
-        console.log('LAST SUBSCRIBED ID:', lastSubscribedId)
-
         if (!lastSubscribedId) {
-          console.log('NOT SUBSCRIBING:', lastSubscribedId)
           queryClient.setQueriesData<string[]>(
             getCommentIdsQueryKey(postId),
             (oldIds) => {
@@ -53,36 +51,29 @@ export function useSubscribeCommentIdsByPostId(
 
         const lastIdIndex = newIds.findIndex((id) => id === lastSubscribedId)
         const newIdsToFetch = newIds.slice(lastIdIndex + 1)
-        console.log('START SUBSCRIBING:', newIdsToFetch)
         newIdsToFetch.forEach((id) =>
-          getNewComment(queryClient, subsocialApi, postId, id)
+          getNewComment(queryClient, subsocialApi, postId, id, waitNewBlock)
         )
       })
     })()
     return () => {
       unsub?.then((func) => func())
     }
-  }, [postId, queryClient, enabled])
+  }, [postId, queryClient, enabled, waitNewBlock])
 }
 
 async function getNewComment(
   queryClient: QueryClient,
   api: SubsocialApi,
   rootPostId: string,
-  id: string
+  id: string,
+  waitNewBlock: () => Promise<void>
 ) {
-  const substrateApi = await api.substrateApi
-  let unsub = await substrateApi.query.posts.postById(id, async (rawPost) => {
-    const post = rawPost.toPrimitive() as any
-    console.log('new post data', rawPost, rawPost.toHuman())
-    if (!post) return
-    const content = (await api.ipfs.getContent(post.content.ipfs)) as any
-    const postData = convertToNewPostData({ struct: post, content })
-    console.log('post data', id, postData)
-    queryClient.setQueriesData(
-      getCommentQuery.getQueryKey(postData.id),
-      postData
-    )
+  await waitNewBlock()
+
+  const post = await api.findPost({ id })
+  if (post) {
+    queryClient.setQueriesData(getCommentQuery.getQueryKey(post.id), post)
     queryClient.setQueriesData<string[]>(
       getCommentIdsQueryKey(rootPostId),
       (oldIds) => {
@@ -98,6 +89,5 @@ async function getNewComment(
         return [...oldIdsWithoutOptimistic, id, ...(optimisticIds ?? [])]
       }
     )
-    unsub()
-  })
+  }
 }
