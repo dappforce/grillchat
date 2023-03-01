@@ -72,6 +72,9 @@ export default function ChatRoom({
       <CaptchaModal
         isOpen={isOpenCaptcha}
         closeModal={() => setIsOpenCaptcha(false)}
+        message={message}
+        rootPostId={postId}
+        spaceId={spaceId}
       />
     </div>
   )
