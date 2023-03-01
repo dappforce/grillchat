@@ -11,7 +11,6 @@ export async function generateAccount() {
 
   const publicKey = Buffer.from(publicKeyBuffer).toString('hex')
   const secretKey = Buffer.from(seedAlice).toString('hex')
-  console.log(publicKey, secretKey)
   return { publicKey: toSubsocialAddress('0x' + publicKey)!, secretKey }
 }
 
