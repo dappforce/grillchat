@@ -1,6 +1,5 @@
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
-import { getPostId } from '@/constants/space'
 import {
   getCommentQuery,
   useCommentIdsByPostId,
@@ -22,6 +21,7 @@ import ChatItem from './ChatItem'
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
+  postId: string
 }
 
 // ChatListContent needs to use useLayoutEffect, so it can't run in server.
@@ -42,12 +42,13 @@ export default function ChatList(props: ChatListProps) {
 function ChatListContent({
   asContainer,
   scrollableContainerClassName,
+  postId,
   ...props
 }: ChatListProps) {
   const id = useId()
   const isInBottom = useRef(true)
 
-  const { data } = useCommentIdsByPostId(getPostId(), {
+  const { data } = useCommentIdsByPostId(postId, {
     subscribe: true,
   })
   const results = getCommentQuery.useQueries(data ?? [])

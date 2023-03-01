@@ -1,18 +1,20 @@
-import { getPostId } from '@/constants/space'
+import { getTopicId } from '@/constants/topics'
 import ChatPage from '@/modules/_chats/ChatPage'
 import {
   getCommentIdsQueryKey,
   getCommentQuery,
 } from '@/services/subsocial/queries'
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
-import { getCommonStaticProps } from '@/utils/page'
+import { getCommonServerSideProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 
-export const getServerSideProps = getCommonStaticProps<{
+export const getServerSideProps = getCommonServerSideProps<{
   dehydratedState: any
-}>({}, async () => {
+}>({}, async (context) => {
+  const { query } = context
   const subsocialApi = await getSubsocialApi()
-  const postId = getPostId()
+  const postId = getTopicId(query.topic as any)
+
   const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(postId)
   const posts = await subsocialApi.findPublicPosts(commentIds)
 

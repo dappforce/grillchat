@@ -2,7 +2,6 @@ import Send from '@/assets/icons/send.png'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Input from '@/components/inputs/Input'
-import { getPostId } from '@/constants/space'
 import { useSendMessage } from '@/services/subsocial/mutations'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
@@ -15,6 +14,7 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   chats: { text: string; alignment: 'left' | 'right' }[]
   asContainer?: boolean
   scrollableContainerClassName?: string
+  postId: string
 }
 
 export default function ChatRoom({
@@ -22,6 +22,7 @@ export default function ChatRoom({
   chats,
   asContainer,
   scrollableContainerClassName,
+  postId,
   ...props
 }: ChatRoomProps) {
   const isLoggedIn = useMyAccount((state) => !!state.address)
@@ -34,7 +35,6 @@ export default function ChatRoom({
   const Component = asContainer ? Container<'div'> : 'div'
 
   const spaceId = '1181'
-  const postId = getPostId()
   const onSubmitForm = (e: any) => {
     e?.preventDefault()
     if (isLoggedIn) {
@@ -47,6 +47,7 @@ export default function ChatRoom({
   return (
     <div {...props} className={cx('flex flex-col', className)}>
       <ChatList
+        postId={postId}
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}
       />
