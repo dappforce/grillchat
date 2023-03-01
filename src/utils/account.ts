@@ -7,11 +7,10 @@ export async function generateAccount() {
 
   const mnemonicAlice = mnemonicGenerate()
   const seedAlice = mnemonicToMiniSecret(mnemonicAlice)
-  const { publicKey: publicKeyBuffer, secretKey: secretKeyBuffer } =
-    ed25519PairFromSeed(seedAlice)
+  const { publicKey: publicKeyBuffer } = ed25519PairFromSeed(seedAlice)
 
-  const publicKey = Buffer.from(publicKeyBuffer.buffer).toString('hex')
-  const secretKey = Buffer.from(secretKeyBuffer.buffer).toString('hex')
+  const publicKey = Buffer.from(publicKeyBuffer).toString('hex')
+  const secretKey = Buffer.from(seedAlice).toString('hex')
   return { publicKey: toSubsocialAddress('0x' + publicKey)!, secretKey }
 }
 
