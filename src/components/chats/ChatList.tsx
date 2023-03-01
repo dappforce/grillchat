@@ -27,10 +27,11 @@ export type ChatListProps = ComponentProps<'div'> & {
 // ChatListContent needs to use useLayoutEffect, so it can't run in server.
 export default function ChatList(props: ChatListProps) {
   const [showChild, setShowChild] = useState(false)
+  const isInitialized = useMyAccount((state) => state.isInitialized)
 
   useEffect(() => {
-    setShowChild(true)
-  }, [])
+    if (isInitialized) setShowChild(true)
+  }, [isInitialized])
 
   if (!showChild) {
     return null
@@ -103,6 +104,7 @@ function ChatItemContainer({ data }: { data: PostData | null | undefined }) {
   return (
     <div className={cx('w-10/12', isMyMessage && 'self-end')}>
       <ChatItem
+        isMyMessage={isMyMessage}
         sentDate={data.struct.createdAtTime}
         senderAddress={ownerId}
         text={data.content.body}
