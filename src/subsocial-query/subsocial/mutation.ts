@@ -82,44 +82,55 @@ function sendTransaction<Param>(
   } = txInfo
   return new Promise<string>(async (resolve, reject) => {
     try {
-      const unsub = await tx.signAndSend(signer, async (result: any) => {
-        resolve(result.txHash.toString())
-        console.log('STATUS: ', result.status.toString())
-        if (result.status.isBroadcast) {
-          txCallbacks.onBroadcast({
-            summary,
-            params: params,
-            address,
-          })
-        } else if (result.status.isInBlock) {
-          console.log('Is In block')
-          optimisticCallbacks?.removeData()
-          const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
-          let explorerLink: string | undefined
-          if (networkRpc) {
-            explorerLink = getBlockExplorerBlockInfoLink(networkRpc, blockHash)
-          }
-          if (result.isError || result.dispatchError || result.internalError) {
-            optimisticCallbacks?.removeData()
-            txCallbacks.onError({
-              error: result.dispatchError?.toString(),
+      const unsub = await tx.signAndSend(
+        signer,
+        { nonce: -1 },
+        async (result) => {
+          resolve(result.txHash.toString())
+          console.log('STATUS: ', result.status.toString())
+          if (result.status.isBroadcast) {
+            txCallbacks.onBroadcast({
               summary,
+              params: params,
               address,
-              params,
-              explorerLink,
             })
-          } else {
-            const onTxSuccess = makeCombinedCallback(
-              defaultConfig,
-              config,
-              'onTxSuccess'
-            )
-            onTxSuccess({ params, address, result })
-            txCallbacks.onSuccess({ explorerLink, summary, address, params })
+          } else if (result.status.isInBlock) {
+            console.log('Is In block')
+            optimisticCallbacks?.removeData()
+            const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
+            let explorerLink: string | undefined
+            if (networkRpc) {
+              explorerLink = getBlockExplorerBlockInfoLink(
+                networkRpc,
+                blockHash
+              )
+            }
+            if (
+              result.isError ||
+              result.dispatchError ||
+              result.internalError
+            ) {
+              optimisticCallbacks?.removeData()
+              txCallbacks.onError({
+                error: result.dispatchError?.toString(),
+                summary,
+                address,
+                params,
+                explorerLink,
+              })
+            } else {
+              const onTxSuccess = makeCombinedCallback(
+                defaultConfig,
+                config,
+                'onTxSuccess'
+              )
+              onTxSuccess({ params, address, result })
+              txCallbacks.onSuccess({ explorerLink, summary, address, params })
+            }
+            unsub()
           }
-          unsub()
         }
-      })
+      )
     } catch (e) {
       txCallbacks.onError((e as any).message)
       reject(e)
