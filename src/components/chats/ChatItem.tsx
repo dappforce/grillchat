@@ -10,17 +10,18 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   text: string
   senderAddress: string
   sentDate: Date | string | number
+  isSent?: boolean
 }
 
 export default function ChatItem({
   text,
   senderAddress,
   sentDate,
+  isSent,
   ...props
 }: ChatItemProps) {
   const address = useMyAccount((state) => state.address)
   const isMyMessage = address === senderAddress
-  const isSent = true
 
   const relativeTime = getTimeRelativeToNow(sentDate)
 

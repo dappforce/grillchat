@@ -2,6 +2,7 @@ import Send from '@/assets/icons/send.png'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Input from '@/components/inputs/Input'
+import { getPostId } from '@/constants/space'
 import { useSendMessage } from '@/services/subsocial/mutations'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
@@ -32,8 +33,8 @@ export default function ChatRoom({
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  const postId = '226'
   const spaceId = '1181'
+  const postId = getPostId()
   const onSubmitForm = (e: any) => {
     e?.preventDefault()
     if (isLoggedIn) {

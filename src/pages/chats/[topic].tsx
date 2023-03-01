@@ -1,3 +1,4 @@
+import { getPostId } from '@/constants/space'
 import ChatPage from '@/modules/_chats/ChatPage'
 import {
   getCommentIdsQueryKey,
@@ -11,7 +12,7 @@ export const getServerSideProps = getCommonStaticProps<{
   dehydratedState: any
 }>({}, async () => {
   const subsocialApi = await getSubsocialApi()
-  const postId = '226'
+  const postId = getPostId()
   const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(postId)
   const posts = await subsocialApi.findPublicPosts(commentIds)
 

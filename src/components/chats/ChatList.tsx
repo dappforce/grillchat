@@ -1,9 +1,11 @@
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
+import { getPostId } from '@/constants/space'
 import {
   getCommentQuery,
   useCommentIdsByPostId,
 } from '@/services/subsocial/queries'
+import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
 import { PostData } from '@subsocial/api/types'
@@ -45,8 +47,7 @@ function ChatListContent({
   const id = useId()
   const isInBottom = useRef(true)
 
-  const postId = '226'
-  const { data } = useCommentIdsByPostId(postId, {
+  const { data } = useCommentIdsByPostId(getPostId(), {
     subscribe: true,
   })
   const results = getCommentQuery.useQueries(data ?? [])
@@ -81,9 +82,10 @@ function ChatListContent({
       className={scrollableContainerClassName}
     >
       <div className={cx('flex flex-col gap-2')}>
-        {results.map(({ data }) => (
-          <ChatItemContainer data={data} key={data?.id} />
-        ))}
+        {results.map(
+          ({ data }) =>
+            data?.id && <ChatItemContainer data={data} key={data?.id} />
+        )}
       </div>
     </ScrollableContainer>
   )
@@ -93,6 +95,7 @@ function ChatItemContainer({ data }: { data: PostData | null | undefined }) {
   const address = useMyAccount((state) => state.address)
   if (!data?.content?.body) return null
 
+  const isSent = !isOptimisticId(data.id)
   const ownerId = data.struct.ownerId
   const isMyMessage = address === ownerId
 
@@ -102,6 +105,7 @@ function ChatItemContainer({ data }: { data: PostData | null | undefined }) {
         sentDate={data.struct.createdAtTime}
         senderAddress={ownerId}
         text={data.content.body}
+        isSent={isSent}
       />
     </div>
   )
