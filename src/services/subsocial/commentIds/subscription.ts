@@ -77,7 +77,6 @@ export function useSubscribeCommentIdsByPostId(
           getCommentIdsQueryKey(postId),
           (oldIds) => {
             const optimisticIds = oldIds?.filter((id) => isOptimisticId(id))
-            console.log('OPTIMISTIC IDS', optimisticIds)
             return [
               ...newIds,
               ...(filterOptimisticIds(newPosts, optimisticIds) ?? []),
