@@ -27,12 +27,14 @@ const DEFAULT_TX_CALLBACKS = {
   onSuccess: ({ summary }: TxCallbacksParams) =>
     console.log(`Success submit ${summary}...`),
 }
-let txCallbacks = DEFAULT_TX_CALLBACKS
-export const setupTxCallbacks = (callbacks: Partial<typeof txCallbacks>) => {
-  txCallbacks = { ...DEFAULT_TX_CALLBACKS, ...callbacks }
+let globalTxCallbacks = DEFAULT_TX_CALLBACKS
+export const setupTxCallbacks = (
+  callbacks: Partial<typeof globalTxCallbacks>
+) => {
+  globalTxCallbacks = { ...DEFAULT_TX_CALLBACKS, ...callbacks }
 }
 
-async function createTxAndSend<Param, AdditionalParams>(
+async function createTxAndSend<Param, AdditionalParams, Context>(
   transactionGenerator: (
     param: Param,
     additionalParams: AdditionalParams
@@ -44,8 +46,8 @@ async function createTxAndSend<Param, AdditionalParams>(
     networkRpc?: string
   },
   config?: MutationConfig<Param>,
-  defaultConfig?: DefaultSubsocialMutationConfig<Param>,
-  optimisticCallbacks?: ReturnType<typeof generateOptimisticCallbacks>
+  defaultConfig?: DefaultSubsocialMutationConfig<Param, Context>,
+  optimisticCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
   const { tx, summary } = await transactionGenerator(param, additionalParams)
   return sendTransaction(
@@ -61,7 +63,7 @@ async function createTxAndSend<Param, AdditionalParams>(
     optimisticCallbacks
   )
 }
-function sendTransaction<Param>(
+function sendTransaction<Param, Context>(
   txInfo: {
     tx: Transaction
     summary: string
@@ -70,8 +72,8 @@ function sendTransaction<Param>(
     networkRpc: string | undefined
   },
   config?: MutationConfig<Param>,
-  defaultConfig?: DefaultSubsocialMutationConfig<Param>,
-  optimisticCallbacks?: ReturnType<typeof generateOptimisticCallbacks>
+  defaultConfig?: DefaultSubsocialMutationConfig<Param, Context>,
+  txCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
   const {
     networkRpc,
@@ -82,6 +84,7 @@ function sendTransaction<Param>(
   } = txInfo
   return new Promise<string>(async (resolve, reject) => {
     try {
+      txCallbacks?.onSend()
       const unsub = await tx.signAndSend(
         signer,
         { nonce: -1 },
@@ -89,14 +92,13 @@ function sendTransaction<Param>(
           resolve(result.txHash.toString())
           console.log('STATUS: ', result.status.toString())
           if (result.status.isBroadcast) {
-            txCallbacks.onBroadcast({
+            globalTxCallbacks.onBroadcast({
               summary,
               params: params,
               address,
             })
           } else if (result.status.isInBlock) {
             console.log('Is In block')
-            optimisticCallbacks?.removeData()
             const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
             let explorerLink: string | undefined
             if (networkRpc) {
@@ -110,8 +112,8 @@ function sendTransaction<Param>(
               result.dispatchError ||
               result.internalError
             ) {
-              optimisticCallbacks?.removeData()
-              txCallbacks.onError({
+              txCallbacks?.onError()
+              globalTxCallbacks.onError({
                 error: result.dispatchError?.toString(),
                 summary,
                 address,
@@ -119,40 +121,47 @@ function sendTransaction<Param>(
                 explorerLink,
               })
             } else {
+              txCallbacks?.onSuccess()
               const onTxSuccess = makeCombinedCallback(
                 defaultConfig,
                 config,
                 'onTxSuccess'
               )
               onTxSuccess({ params, address, result })
-              txCallbacks.onSuccess({ explorerLink, summary, address, params })
+              globalTxCallbacks.onSuccess({
+                explorerLink,
+                summary,
+                address,
+                params,
+              })
             }
             unsub()
           }
         }
       )
     } catch (e) {
-      txCallbacks.onError((e as any).message)
+      globalTxCallbacks.onError((e as any).message)
       reject(e)
     }
   })
 }
 
-function generateOptimisticCallbacks<Param>(
+function generateTxCallbacks<Param, Context>(
   data: OptimisticData<Param>,
-  callbacks: DefaultSubsocialMutationConfig<Param>['optimistic']
+  callbacks: DefaultSubsocialMutationConfig<Param, Context>['txCallbacks']
 ) {
   if (!callbacks) return
-  const { addData, removeData, getTempId } = callbacks
-  const tempId = getTempId(data)
-  const optimisticDataWithId = { ...data, tempId }
+  const { onError, onSuccess, onSend, onStart, getContext } = callbacks
+  const context = getContext(data)
   return {
-    addData: () => addData?.(optimisticDataWithId),
-    removeData: () => removeData?.(optimisticDataWithId),
+    onError: () => onError?.(data, context),
+    onSuccess: () => onSuccess?.(data, context),
+    onSend: () => onSend?.(data, context),
+    onStart: () => onStart?.(data, context),
   }
 }
 
-export function useSubsocialMutation<Param>(
+export function useSubsocialMutation<Param, Context>(
   getWallet: () => Promise<WalletAccount>,
   transactionGenerator: (
     params: Param,
@@ -163,21 +172,21 @@ export function useSubsocialMutation<Param>(
     }
   ) => Promise<{ tx: Transaction; summary: string }>,
   config?: MutationConfig<Param>,
-  defaultConfig?: DefaultSubsocialMutationConfig<Param>
+  defaultConfig?: DefaultSubsocialMutationConfig<Param, Context>
 ): UseMutationResult<string, Error, Param, unknown> {
   const workerFunc = async (param: Param) => {
     const wallet = await getWallet()
     if (!wallet.address || !wallet.signer)
       throw new Error('You need to connect your wallet first!')
 
-    const optimisticCallbacks = generateOptimisticCallbacks(
+    const txCallbacks = generateTxCallbacks(
       {
         address: wallet.address,
         param,
       },
-      defaultConfig?.optimistic
+      defaultConfig?.txCallbacks
     )
-    optimisticCallbacks?.addData()
+    txCallbacks?.onStart()
 
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
@@ -190,10 +199,10 @@ export function useSubsocialMutation<Param>(
         { wallet, networkRpc: getConnectionConfig().substrateUrl },
         config,
         defaultConfig,
-        optimisticCallbacks
+        txCallbacks
       )
     } catch (e) {
-      optimisticCallbacks?.removeData()
+      txCallbacks?.onError()
       throw e
     }
   }

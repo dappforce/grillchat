@@ -4,7 +4,7 @@ import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial'
 import { IpfsContent } from '@subsocial/api/substrate/wrappers'
 import { PostData } from '@subsocial/api/types'
-import { useQueryClient } from '@tanstack/react-query'
+import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { getCommentIdsQueryKey, getCommentQuery } from '../subsocial/queries'
 import { generateOptimisticId } from './utils'
 
@@ -13,6 +13,48 @@ export type SendMessageParams = {
   rootPostId: string
   spaceId: string
 }
+type OptimisticGeneratorParam = {
+  client: QueryClient
+  param: SendMessageParams
+  tempId: string
+  address: string
+}
+function addOptimisticData({
+  client,
+  param,
+  tempId,
+  address,
+}: OptimisticGeneratorParam) {
+  client.setQueryData(getCommentQuery.getQueryKey(tempId), {
+    id: tempId,
+    struct: {
+      createdAtTime: Date.now(),
+      ownerId: address,
+    },
+    content: {
+      body: param.message,
+    },
+  } as PostData)
+  client.setQueryData<string[]>(
+    getCommentIdsQueryKey(param.rootPostId),
+    (ids) => {
+      return [...(ids ?? []), tempId]
+    }
+  )
+}
+function deleteOptimisticData({
+  client,
+  param,
+  tempId,
+}: OptimisticGeneratorParam) {
+  client.removeQueries(getCommentQuery.getQueryKey(tempId))
+  client.setQueryData<string[]>(
+    getCommentIdsQueryKey(param.rootPostId),
+    (ids) => {
+      return ids?.filter((id) => id !== tempId)
+    }
+  )
+}
 export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const client = useQueryClient()
   const address = useMyAccount((state) => state.address ?? '')
@@ -20,7 +62,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
   const waitHasBalance = useWaitHasBalance()
 
-  return useSubsocialMutation<SendMessageParams>(
+  return useSubsocialMutation<SendMessageParams, string>(
     async () => ({ address, signer }),
     async (params, { ipfsApi, substrateApi }) => {
       console.log('waiting balance')
@@ -40,34 +82,14 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     },
     config,
     {
-      optimistic: {
-        getTempId: () => generateOptimisticId(),
-        addData: ({ param, tempId }) => {
-          client.setQueryData(getCommentQuery.getQueryKey(tempId!), {
-            id: tempId,
-            struct: {
-              createdAtTime: Date.now(),
-              ownerId: address,
-            },
-            content: {
-              body: param.message,
-            },
-          } as PostData)
-          client.setQueryData<string[]>(
-            getCommentIdsQueryKey(param.rootPostId),
-            (ids) => {
-              return [...(ids ?? []), tempId!]
-            }
-          )
-        },
-        removeData: ({ tempId, param }) => {
-          client.removeQueries(getCommentQuery.getQueryKey(tempId!))
-          client.setQueryData<string[]>(
-            getCommentIdsQueryKey(param.rootPostId),
-            (ids) => {
-              return ids?.filter((id) => id !== tempId)
-            }
-          )
+      txCallbacks: {
+        getContext: () => generateOptimisticId(),
+        onStart: ({ address, param }, tempId) =>
+          addOptimisticData({ address, param, tempId, client }),
+        onError: ({ address, param }, tempId) =>
+          deleteOptimisticData({ tempId, address, client, param }),
+        onSuccess: ({ param }) => {
+          client.invalidateQueries(getCommentIdsQueryKey(param.rootPostId))
         },
       },
     }

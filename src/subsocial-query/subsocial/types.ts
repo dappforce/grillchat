@@ -9,15 +9,13 @@ export interface WalletAccount {
 }
 
 export type OptimisticData<Param> = { param: Param; address: string }
-export interface DefaultSubsocialMutationConfig<Param>
+export interface DefaultSubsocialMutationConfig<Param, Context>
   extends MutationConfig<Param> {
-  optimistic?: {
-    getTempId: (data: OptimisticData<Param>) => string
-    addData: (
-      param: OptimisticData<Param> & { tempId: string | undefined }
-    ) => any
-    removeData: (
-      param: OptimisticData<Param> & { tempId: string | undefined }
-    ) => any
+  txCallbacks?: {
+    getContext: (data: OptimisticData<Param>) => Context
+    onStart?: (param: OptimisticData<Param>, context: Context) => void
+    onSend?: (param: OptimisticData<Param>, context: Context) => void
+    onError?: (param: OptimisticData<Param>, context: Context) => void
+    onSuccess?: (param: OptimisticData<Param>, context: Context) => void
   }
 }
