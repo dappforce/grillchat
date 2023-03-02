@@ -44,7 +44,7 @@ export function useSubsocialMutation<Param, Context>(
     const substrateApi = await subsocialApi.substrateApi
     const ipfsApi = subsocialApi.ipfs
     try {
-      return createTxAndSend(
+      return await createTxAndSend(
         transactionGenerator,
         param,
         { subsocialApi, substrateApi, ipfsApi },
@@ -54,7 +54,6 @@ export function useSubsocialMutation<Param, Context>(
         txCallbacks
       )
     } catch (e) {
-      console.log('masuk nih')
       txCallbacks?.onError()
       throw e
     }
@@ -119,7 +118,6 @@ function sendTransaction<Param, Context>(
   const globalTxCallbacks = getGlobalTxCallbacks()
   return new Promise<string>(async (resolve, reject) => {
     try {
-      txCallbacks?.onSend()
       const unsub = await tx.signAndSend(
         signer,
         { nonce: -1 },
@@ -133,7 +131,6 @@ function sendTransaction<Param, Context>(
               address,
             })
           } else if (result.status.isInBlock) {
-            console.log('Is In block')
             const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
             let explorerLink: string | undefined
             if (networkRpc) {
@@ -174,10 +171,10 @@ function sendTransaction<Param, Context>(
           }
         }
       )
+      txCallbacks?.onSend()
     } catch (e) {
-      console.log('masuk sini')
       globalTxCallbacks.onError((e as any).message)
-      reject(e)
+      reject((e as any).message)
     }
   })
 }
