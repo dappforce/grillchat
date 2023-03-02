@@ -2,6 +2,7 @@ import useWaitHasBalance from '@/hooks/useWaitHasBalance'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial'
+import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { IpfsContent } from '@subsocial/api/substrate/wrappers'
 import { useQueryClient } from '@tanstack/react-query'
 import { generateOptimisticId } from '../utils'
@@ -41,10 +42,14 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             address,
             message: param.message,
           }),
-        onStart: ({ address, param }, tempId) =>
-          addOptimisticData({ address, param, tempId, client }),
-        onError: ({ address, param }, tempId) =>
-          deleteOptimisticData({ tempId, address, client, param }),
+        onStart: ({ address, param }, tempId) => {
+          preventWindowUnload()
+          addOptimisticData({ address, param, tempId, client })
+        },
+        onError: ({ address, param }, tempId) => {
+          allowWindowUnload()
+          deleteOptimisticData({ tempId, address, client, param })
+        },
       },
     }
   )
