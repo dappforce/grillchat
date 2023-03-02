@@ -1,6 +1,17 @@
-export default function ChatLoading() {
+import { cx } from '@/utils/className'
+import { ComponentProps } from 'react'
+
+export type ChatLoadingProps = ComponentProps<'div'>
+
+export default function ChatLoading({ ...props }: ChatLoadingProps) {
   return (
-    <div className='flex items-center justify-center gap-4 overflow-hidden py-2'>
+    <div
+      {...props}
+      className={cx(
+        'flex items-center justify-center gap-4 overflow-hidden',
+        props.className
+      )}
+    >
       <div className='relative h-4 w-4'>
         <div className='absolute inset-0 h-4 w-4 animate-spin rounded-full border-b-2 border-background-lighter' />
       </div>

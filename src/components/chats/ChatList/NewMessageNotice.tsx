@@ -1,16 +1,20 @@
-import Button from '@/components/Button'
+import Button, { ButtonProps } from '@/components/Button'
+import { cx } from '@/utils/className'
 import { RefObject, useEffect } from 'react'
 import { IoReturnUpForward } from 'react-icons/io5'
 import useAnyNewData from './hooks/useAnyNewData'
 import useIsAtBottom from './hooks/useIsAtBottom'
 
+export type NewMessageNoticeProps = ButtonProps & {
+  scrollContainerRef: RefObject<HTMLDivElement | null>
+  commentIds: string[]
+}
+
 export function NewMessageNotice({
   scrollContainerRef,
   commentIds,
-}: {
-  scrollContainerRef: RefObject<HTMLDivElement | null>
-  commentIds: string[]
-}) {
+  ...props
+}: NewMessageNoticeProps) {
   const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
   const { anyNewData, clearAnyNewData } = useAnyNewData(commentIds)
 
@@ -33,7 +37,11 @@ export function NewMessageNotice({
       variant='transparent'
       onClick={scrollToBottom}
       withRingInteraction={false}
-      className='absolute bottom-0 left-1/2 -translate-x-1/2 cursor-pointer rounded-lg bg-background-light px-4 py-2'
+      {...props}
+      className={cx(
+        'relative cursor-pointer rounded-lg bg-background-light px-4 py-2',
+        props.className
+      )}
     >
       <div className='flex items-center justify-center gap-2 overflow-hidden text-text-muted'>
         <span className='text-sm'>

@@ -67,16 +67,17 @@ function ChatListContent({
           hasMore={!isAllPostsLoaded}
           inverse
           scrollableTarget={scrollableContainerId}
-          loader={<ChatLoading />}
+          loader={<ChatLoading className='py-2' />}
         >
           {posts.map(
             ({ data: post }) =>
               post && <ChatItemContainer post={post} key={post.id} />
           )}
-          {isAllPostsLoaded && <ChatTopNotice />}
+          {isAllPostsLoaded && <ChatTopNotice className='py-2' />}
         </InfiniteScroll>
       </ScrollableContainer>
       <NewMessageNotice
+        className='absolute bottom-0 left-1/2 -translate-x-1/2'
         commentIds={commentIds}
         scrollContainerRef={scrollContainerRef}
       />
