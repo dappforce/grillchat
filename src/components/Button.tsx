@@ -29,17 +29,21 @@ const buttonStyles = cva('rounded-full transition hover:brightness-110', {
 
 export type ButtonProps = VariantProps<typeof buttonStyles> &
   ComponentProps<'button'> &
-  ComponentProps<'a'>
+  ComponentProps<'a'> & {
+    withRingInteraction?: boolean
+  }
 
 export default function Button({
   variant,
   href,
   size,
   disabled,
+  withRingInteraction = true,
   ...props
 }: ButtonProps) {
   const classNames = cx(
-    interactionRingStyles({ color: 'background', variant: 'small-offset' }),
+    withRingInteraction &&
+      interactionRingStyles({ color: 'background', variant: 'small-offset' }),
     buttonStyles({ variant, size, disabled }),
     props.className
   )
