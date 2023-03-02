@@ -22,7 +22,7 @@ export const getPost = poolQuery<SubsocialParam<string>, PostData>({
     resultToKey: (result) => result?.id ?? '',
   },
 })
-export const getCommentQuery = createSubsocialQuery({
+export const getPostQuery = createSubsocialQuery({
   key: 'getComment',
   getData: getPost,
 })

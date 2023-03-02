@@ -1,13 +1,12 @@
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import {
-  getCommentQuery,
+  getPostQuery,
   useCommentIdsByPostId,
 } from '@/services/subsocial/queries'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
-import { PostData } from '@subsocial/api/types'
 import {
   ComponentProps,
   useEffect,
@@ -49,10 +48,9 @@ function ChatListContent({
   const id = useId()
   const isInBottom = useRef(true)
 
-  const { data } = useCommentIdsByPostId(postId, {
+  const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
     subscribe: true,
   })
-  const results = getCommentQuery.useQueries(data ?? [])
 
   const Component = asContainer ? Container<'div'> : 'div'
 
@@ -60,7 +58,7 @@ function ChatListContent({
     if (!isInBottom.current) return
     const chatRoom = document.getElementById(id)
     chatRoom?.scrollTo({ top: chatRoom.scrollHeight })
-  }, [id, data?.length])
+  }, [id, commentIds?.length])
 
   useEffect(() => {
     const chatRoom = document.getElementById(id)
@@ -84,30 +82,30 @@ function ChatListContent({
       className={scrollableContainerClassName}
     >
       <div className={cx('flex flex-col gap-2')}>
-        {results.map(
-          ({ data }) =>
-            data?.id && <ChatItemContainer data={data} key={data?.id} />
-        )}
+        {commentIds.map((id) => (
+          <ChatItemContainer id={id} key={id} />
+        ))}
       </div>
     </ScrollableContainer>
   )
 }
 
-function ChatItemContainer({ data }: { data: PostData | null | undefined }) {
+function ChatItemContainer({ id }: { id: string }) {
+  const { data: post } = getPostQuery.useQuery(id)
   const address = useMyAccount((state) => state.address)
-  if (!data?.content?.body) return null
+  if (!post?.content?.body) return null
 
-  const isSent = !isOptimisticId(data.id)
-  const ownerId = data.struct.ownerId
+  const isSent = !isOptimisticId(post.id)
+  const ownerId = post.struct.ownerId
   const isMyMessage = address === ownerId
 
   return (
     <div className={cx('w-10/12', isMyMessage && 'self-end')}>
       <ChatItem
         isMyMessage={isMyMessage}
-        sentDate={data.struct.createdAtTime}
+        sentDate={post.struct.createdAtTime}
         senderAddress={ownerId}
-        text={data.content.body}
+        text={post.content.body}
         isSent={isSent}
       />
     </div>

@@ -5,7 +5,7 @@ import { useSubsocialMutation } from '@/subsocial-query/subsocial'
 import { IpfsContent } from '@subsocial/api/substrate/wrappers'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
-import { getCommentIdsQueryKey, getCommentQuery } from '../subsocial/queries'
+import { getCommentIdsQueryKey, getPost } from '../subsocial/queries'
 import { generateOptimisticId } from './utils'
 
 export type SendMessageParams = {
@@ -25,7 +25,7 @@ function addOptimisticData({
   tempId,
   address,
 }: OptimisticGeneratorParam) {
-  client.setQueryData(getCommentQuery.getQueryKey(tempId), {
+  client.setQueryData(getPost.getQueryKey(tempId), {
     id: tempId,
     struct: {
       createdAtTime: Date.now(),
@@ -47,7 +47,7 @@ function deleteOptimisticData({
   param,
   tempId,
 }: OptimisticGeneratorParam) {
-  client.removeQueries(getCommentQuery.getQueryKey(tempId))
+  client.removeQueries(getPost.getQueryKey(tempId))
   client.setQueryData<string[]>(
     getCommentIdsQueryKey(param.rootPostId),
     (ids) => {

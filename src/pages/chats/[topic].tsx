@@ -1,9 +1,6 @@
 import { getTopicId } from '@/constants/topics'
 import ChatPage from '@/modules/_chats/ChatPage'
-import {
-  getCommentIdsQueryKey,
-  getCommentQuery,
-} from '@/services/subsocial/queries'
+import { getCommentIdsQueryKey, getPost } from '@/services/subsocial/queries'
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { getCommonServerSideProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
@@ -22,10 +19,7 @@ export const getServerSideProps = getCommonServerSideProps<{
   await queryClient.fetchQuery(getCommentIdsQueryKey(postId), () => commentIds)
   await Promise.all(
     posts.map(async (post) => {
-      await queryClient.fetchQuery(
-        getCommentQuery.getQueryKey(post.id),
-        () => post
-      )
+      await queryClient.fetchQuery(getPost.getQueryKey(post.id), () => post)
     })
   )
 
