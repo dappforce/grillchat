@@ -14,7 +14,12 @@ export const getServerSideProps = getCommonServerSideProps<{
   const postId = getTopicId(query.topic as any)
 
   const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(postId)
-  const posts = await subsocialApi.findPublicPosts(commentIds)
+
+  const preloadedPostCount = 30
+  const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
+  const endSlice = commentIds.length
+  const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
+  const posts = await subsocialApi.findPublicPosts(prefetchedCommentIds)
 
   const queryClient = new QueryClient()
   await queryClient.fetchQuery(getCommentIdsQueryKey(postId), () => commentIds)
