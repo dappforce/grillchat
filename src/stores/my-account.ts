@@ -71,12 +71,14 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   },
   init: async () => {
     const { isInitialized, login } = get()
-    if (isInitialized) return true
+
+    // Prevent multiple initialization
+    if (isInitialized !== undefined) return
+    set({ isInitialized: false })
 
     const secretKey = localStorage.getItem(STORAGE_KEY)
     if (secretKey) {
       await login(secretKey)
-      set({ isInitialized: true })
     }
     set({ isInitialized: true })
   },
