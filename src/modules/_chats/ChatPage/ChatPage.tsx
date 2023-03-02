@@ -109,7 +109,6 @@ export default function ChatPage() {
         chats={dummyChats as any}
         asContainer
         className='flex-1 overflow-hidden pt-2'
-        scrollableContainerClassName='pt-2'
       />
     </>
   )

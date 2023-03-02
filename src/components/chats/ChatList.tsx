@@ -1,18 +1,20 @@
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
+import useInfiniteScrollData from '@/hooks/useInfiniteScrollData'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { getPostQuery } from '@/services/subsocial/posts'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
+import { PostData } from '@subsocial/api/types'
 import {
   ComponentProps,
   useEffect,
-  useId,
   useLayoutEffect,
   useRef,
   useState,
 } from 'react'
+import InfiniteScroll from 'react-infinite-scroller'
 import ChatItem from './ChatItem'
 
 export type ChatListProps = ComponentProps<'div'> & {
@@ -43,23 +45,32 @@ function ChatListContent({
   postId,
   ...props
 }: ChatListProps) {
-  const id = useId()
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const isInBottom = useRef(true)
+  const [isScrolledToBottomFirstLoad, setIsScrolledToBottomFirstTime] =
+    useState(false)
 
   const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
     subscribe: true,
   })
+  const { currentData, hasMore, loadMore } = useInfiniteScrollData(
+    commentIds,
+    15,
+    true
+  )
+  const posts = getPostQuery.useQueries(currentData)
 
   const Component = asContainer ? Container<'div'> : 'div'
 
   useLayoutEffect(() => {
     if (!isInBottom.current) return
-    const chatRoom = document.getElementById(id)
+    const chatRoom = scrollContainerRef.current
     chatRoom?.scrollTo({ top: chatRoom.scrollHeight })
-  }, [id, commentIds?.length])
+    setIsScrolledToBottomFirstTime(true)
+  }, [commentIds?.length])
 
   useEffect(() => {
-    const chatRoom = document.getElementById(id)
+    const chatRoom = scrollContainerRef.current
     const scrollListener = () => {
       if (!chatRoom) return
       isInBottom.current =
@@ -70,26 +81,34 @@ function ChatListContent({
     return () => {
       chatRoom?.removeEventListener('scroll', scrollListener)
     }
-  }, [id])
+  }, [])
 
   return (
     <ScrollableContainer
       {...props}
       as={Component}
-      id={id}
+      ref={scrollContainerRef}
       className={scrollableContainerClassName}
     >
-      <div className={cx('flex flex-col gap-2')}>
-        {commentIds.map((id) => (
-          <ChatItemContainer id={id} key={id} />
-        ))}
-      </div>
+      <InfiniteScroll
+        isReverse
+        useWindow={false}
+        getScrollParent={() => scrollContainerRef.current}
+        hasMore={isScrolledToBottomFirstLoad && hasMore}
+        className={cx('relative flex flex-col gap-2 pt-10')}
+        loadMore={loadMore}
+      >
+        <ChatLoading hasMore={hasMore} key='loading' />
+        {posts.map(
+          ({ data: post }) =>
+            post && <ChatItemContainer post={post} key={post.id} />
+        )}
+      </InfiniteScroll>
     </ScrollableContainer>
   )
 }
 
-function ChatItemContainer({ id }: { id: string }) {
-  const { data: post } = getPostQuery.useQuery(id)
+function ChatItemContainer({ post }: { post: PostData }) {
   const address = useMyAccount((state) => state.address)
   if (!post?.content?.body) return null
 
@@ -106,6 +125,23 @@ function ChatItemContainer({ id }: { id: string }) {
         text={post.content.body}
         isSent={isSent}
       />
+    </div>
+  )
+}
+
+function ChatLoading({ hasMore }: { hasMore: boolean }) {
+  return (
+    <div className='absolute top-2 left-1/2 flex -translate-x-1/2 items-center gap-4'>
+      {hasMore ? (
+        <>
+          <div className='h-4 w-4 animate-spin rounded-full border-b-2 border-background-lighter' />
+          <span className='text-sm text-text-muted'>Loading...</span>
+        </>
+      ) : (
+        <span className='text-sm text-text-muted'>
+          You have reached the first message in this topic!
+        </span>
+      )}
     </div>
   )
 }
