@@ -3,58 +3,11 @@ import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial'
 import { IpfsContent } from '@subsocial/api/substrate/wrappers'
-import { PostData } from '@subsocial/api/types'
-import { QueryClient, useQueryClient } from '@tanstack/react-query'
-import { getCommentIdsQueryKey, getPost } from '../subsocial/queries'
-import { generateOptimisticId } from './utils'
+import { useQueryClient } from '@tanstack/react-query'
+import { generateOptimisticId } from '../utils'
+import { addOptimisticData, deleteOptimisticData } from './optimistic'
+import { OptimisticMessageIdData, SendMessageParams } from './types'
 
-export type SendMessageParams = {
-  message: string
-  rootPostId: string
-  spaceId: string
-}
-type OptimisticGeneratorParam = {
-  client: QueryClient
-  param: SendMessageParams
-  tempId: string
-  address: string
-}
-function addOptimisticData({
-  client,
-  param,
-  tempId,
-  address,
-}: OptimisticGeneratorParam) {
-  client.setQueryData(getPost.getQueryKey(tempId), {
-    id: tempId,
-    struct: {
-      createdAtTime: Date.now(),
-      ownerId: address,
-    },
-    content: {
-      body: param.message,
-    },
-  } as PostData)
-  client.setQueryData<string[]>(
-    getCommentIdsQueryKey(param.rootPostId),
-    (ids) => {
-      return [...(ids ?? []), tempId]
-    }
-  )
-}
-function deleteOptimisticData({
-  client,
-  param,
-  tempId,
-}: OptimisticGeneratorParam) {
-  client.removeQueries(getPost.getQueryKey(tempId))
-  client.setQueryData<string[]>(
-    getCommentIdsQueryKey(param.rootPostId),
-    (ids) => {
-      return ids?.filter((id) => id !== tempId)
-    }
-  )
-}
 export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const client = useQueryClient()
   const address = useMyAccount((state) => state.address ?? '')
@@ -83,14 +36,15 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     config,
     {
       txCallbacks: {
-        getContext: () => generateOptimisticId(),
+        getContext: ({ param, address }) =>
+          generateOptimisticId<OptimisticMessageIdData>({
+            address,
+            message: param.message,
+          }),
         onStart: ({ address, param }, tempId) =>
           addOptimisticData({ address, param, tempId, client }),
         onError: ({ address, param }, tempId) =>
           deleteOptimisticData({ tempId, address, client, param }),
-        onSuccess: ({ param }) => {
-          client.invalidateQueries(getCommentIdsQueryKey(param.rootPostId))
-        },
       },
     }
   )

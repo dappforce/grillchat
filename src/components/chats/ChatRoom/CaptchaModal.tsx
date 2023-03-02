@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import { useSignUpAndSendMessage } from '@/hooks/useSignUpAndSendMessage'
-import { SendMessageParams } from '@/services/subsocial/mutations'
+import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { generateAccount } from '@/utils/account'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { useRef, useState } from 'react'

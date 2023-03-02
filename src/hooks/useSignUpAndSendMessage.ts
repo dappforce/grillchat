@@ -1,5 +1,5 @@
 import { useSignUp } from '@/services/api/mutations'
-import { useSendMessage } from '@/services/subsocial/mutations'
+import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { useMutation } from '@tanstack/react-query'
 
