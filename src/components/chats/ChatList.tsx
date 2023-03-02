@@ -1,15 +1,26 @@
+import useInfiniteScrollData from '@/components/chats/ChatRoom/hooks/useInfiniteScrollData'
+import useIsAtBottom from '@/components/chats/ChatRoom/hooks/useIsAtBottom'
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
-import useInfiniteScrollData from '@/hooks/useInfiniteScrollData'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { getPostQuery } from '@/services/subsocial/posts'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
 import { PostData } from '@subsocial/api/types'
-import { ComponentProps, useEffect, useId, useMemo, useRef } from 'react'
+import {
+  ComponentProps,
+  RefObject,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+} from 'react'
+import { IoReturnUpForward } from 'react-icons/io5'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import Button from '../Button'
 import ChatItem from './ChatItem'
+import useAnyNewData from './ChatRoom/hooks/useAnyNewData'
 
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
@@ -31,7 +42,6 @@ function ChatListContent({
 }: ChatListProps) {
   const scrollableContainerId = useId()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const isInBottom = useRef(true)
 
   const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
     subscribe: true,
@@ -44,46 +54,43 @@ function ChatListContent({
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  useEffect(() => {
-    const chatRoom = scrollContainerRef.current
-    const scrollListener = () => {
-      if (!chatRoom) return
-      isInBottom.current =
-        chatRoom.scrollTop + chatRoom.clientHeight >= chatRoom.scrollHeight
-    }
-    chatRoom?.addEventListener('scroll', scrollListener, { passive: true })
-
-    return () => {
-      chatRoom?.removeEventListener('scroll', scrollListener)
-    }
-  }, [])
-
   const isAllPostsLoaded = loadedPost.length === commentIds.length
 
   return (
-    <ScrollableContainer
+    <div
       {...props}
-      id={scrollableContainerId}
-      as={Component}
-      ref={scrollContainerRef}
-      className={cx('flex flex-col-reverse', scrollableContainerClassName)}
+      className={cx(
+        'relative flex flex-1 flex-col overflow-hidden',
+        props.className
+      )}
     >
-      <InfiniteScroll
-        dataLength={loadedPost.length}
-        next={loadMore}
-        className={cx('relative flex flex-col-reverse gap-2 overflow-hidden')}
-        hasMore={!isAllPostsLoaded}
-        inverse
-        scrollableTarget={scrollableContainerId}
-        loader={<ChatLoading />}
+      <ScrollableContainer
+        id={scrollableContainerId}
+        as={Component}
+        ref={scrollContainerRef}
+        className={cx('flex flex-col-reverse', scrollableContainerClassName)}
       >
-        {posts.map(
-          ({ data: post }) =>
-            post && <ChatItemContainer post={post} key={post.id} />
-        )}
-        {isAllPostsLoaded && <ChatTopNotice />}
-      </InfiniteScroll>
-    </ScrollableContainer>
+        <InfiniteScroll
+          dataLength={loadedPost.length}
+          next={loadMore}
+          className={cx('relative flex flex-col-reverse gap-2 overflow-hidden')}
+          hasMore={!isAllPostsLoaded}
+          inverse
+          scrollableTarget={scrollableContainerId}
+          loader={<ChatLoading />}
+        >
+          {posts.map(
+            ({ data: post }) =>
+              post && <ChatItemContainer post={post} key={post.id} />
+          )}
+          {isAllPostsLoaded && <ChatTopNotice />}
+        </InfiniteScroll>
+      </ScrollableContainer>
+      <ChatNewDataNotice
+        commentIds={commentIds}
+        scrollContainerRef={scrollContainerRef}
+      />
+    </div>
   )
 }
 
@@ -126,5 +133,50 @@ function ChatTopNotice() {
         You have reached the first message in this topic!
       </span>
     </div>
+  )
+}
+
+function ChatNewDataNotice({
+  scrollContainerRef,
+  commentIds,
+}: {
+  scrollContainerRef: RefObject<HTMLDivElement | null>
+  commentIds: string[]
+}) {
+  const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
+  const { anyNewData, clearAnyNewData } = useAnyNewData(commentIds)
+
+  useEffect(() => {
+    if (isAtBottom) clearAnyNewData()
+  }, [clearAnyNewData, isAtBottom, anyNewData])
+
+  if (!anyNewData || isAtBottom) return null
+
+  const scrollToBottom = () => {
+    scrollContainerRef.current?.scrollTo({
+      top: scrollContainerRef.current?.scrollHeight,
+      behavior: 'smooth',
+    })
+    clearAnyNewData()
+  }
+
+  return (
+    <Button
+      variant='transparent'
+      onClick={scrollToBottom}
+      withRingInteraction={false}
+      className='absolute bottom-0 left-1/2 -translate-x-1/2 cursor-pointer rounded-lg bg-background-light px-4 py-2'
+    >
+      <div className='flex items-center justify-center gap-2 overflow-hidden text-text-muted'>
+        <span className='text-sm'>
+          {anyNewData} new message{anyNewData > 1 ? 's' : ''}
+        </span>
+        <IoReturnUpForward className='rotate-90' />
+        <div className='absolute top-0 right-0 h-3 w-3 translate-x-1/2 -translate-y-1/2'>
+          <div className='absolute inset-0 h-full w-full animate-ping rounded-full bg-background-primary' />
+          <div className='absolute inset-0 h-full w-full rounded-full bg-background-primary' />
+        </div>
+      </div>
+    </Button>
   )
 }

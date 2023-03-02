@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import usePrevious from './usePrevious'
+import usePrevious from '../../../../hooks/usePrevious'
 
 export default function useInfiniteScrollData<Data>(
   data: Data[],
@@ -11,6 +11,7 @@ export default function useInfiniteScrollData<Data>(
 
   const currentData = useMemo(() => {
     const newData = data.length - (previousDataLength ?? data.length)
+
     const itemCountInCurrentPage = currentPage * itemsPerPage + newData
     let start = 0
     let end = Math.min(itemCountInCurrentPage, data.length)
@@ -26,7 +27,7 @@ export default function useInfiniteScrollData<Data>(
   const hasMore = currentPage * itemsPerPage < data.length
 
   const loadMore = () => {
-    console.log('load more...')
+    console.log('Load more...')
     if (hasMore) {
       setCurrentPage(currentPage + 1)
     }
