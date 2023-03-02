@@ -31,7 +31,6 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   login: async (secretKey: string) => {
     const { toSubsocialAddress } = await import('@subsocial/utils')
     try {
-      console.log(secretKey)
       const signer = await loginWithSecretKey(secretKey)
       set({
         address: toSubsocialAddress(signer.address),

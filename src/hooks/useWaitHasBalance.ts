@@ -27,7 +27,7 @@ export default function useWaitHasBalance() {
 
   useEffect(() => {
     if (balance && balance > 0) {
-      console.log('MY CURRENT BALANCE: ', balance)
+      console.log('My Current Balance', balance)
       if (hasBalanceResolver.current) {
         const resolveHasBalance = () => {
           hasBalanceResolver.current?.()

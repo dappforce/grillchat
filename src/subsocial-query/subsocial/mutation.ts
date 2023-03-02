@@ -123,7 +123,6 @@ function sendTransaction<Param, Context>(
         { nonce: -1 },
         async (result) => {
           resolve(result.txHash.toString())
-          console.log('STATUS: ', result.status.toString())
           if (result.status.isBroadcast) {
             globalTxCallbacks.onBroadcast({
               summary,
