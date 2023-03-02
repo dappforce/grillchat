@@ -28,10 +28,10 @@ export default function ChatForm({
     e.preventDefault()
     if (isLoggedIn) {
       sendMessage({ message, rootPostId: postId, spaceId })
+      setMessage('')
     } else {
       setIsOpenCaptcha(true)
     }
-    setMessage('')
   }
 
   return (
