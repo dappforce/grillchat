@@ -1,5 +1,10 @@
 import { cx } from '@/utils/className'
-import { PolymorphicProps, PolymorphicTypes } from '@/utils/types'
+import type { ComponentProps, JSXElementConstructor } from 'react'
+
+export type PolymorphicTypes = React.ElementType | JSXElementConstructor<any>
+export type PolymorphicProps<Type extends PolymorphicTypes> = {
+  as?: Type
+} & Omit<ComponentProps<Type>, 'as'>
 
 export function generatePolymorphicComponent<AdditionalProps>(
   defaultClassName: string,

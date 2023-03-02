@@ -1,4 +1,6 @@
-import type { Signer } from './types'
+import type { Keyring } from '@polkadot/keyring'
+
+export type Signer = ReturnType<Keyring['addFromSeed']>
 
 export async function generateAccount() {
   const { ed25519PairFromSeed, mnemonicGenerate, mnemonicToMiniSecret } =

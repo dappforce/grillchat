@@ -1,6 +1,5 @@
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
-import { loginWithSecretKey } from '@/utils/account'
-import { Signer } from '@/utils/types'
+import { loginWithSecretKey, Signer } from '@/utils/account'
 import { create } from './utils'
 
 type State = {

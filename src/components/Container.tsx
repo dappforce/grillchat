@@ -1,6 +1,9 @@
 import { cx } from '@/utils/className'
-import { generatePolymorphicComponent } from '@/utils/generator/polymorphic'
-import { PolymorphicProps, PolymorphicTypes } from '@/utils/types'
+import {
+  generatePolymorphicComponent,
+  PolymorphicProps,
+  PolymorphicTypes,
+} from '@/utils/generator/polymorphic'
 
 export type ContainerProps<Type extends PolymorphicTypes> =
   PolymorphicProps<Type>
