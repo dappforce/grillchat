@@ -17,7 +17,12 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           props.className
         )}
       >
-        <Image fill src={`https://robohash.org/${address}.png`} alt='avatar' />
+        <Image
+          sizes='5rem'
+          fill
+          src={`https://robohash.org/${address}.png`}
+          alt='avatar'
+        />
       </div>
     )
   }
