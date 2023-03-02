@@ -17,7 +17,6 @@ export function useSignUpAndSendMessage() {
     if (!successLogin) throw new Error('Failed to login')
 
     await signUp({ address, captchaToken })
-    console.log('sending msg...', sendMessageParams)
     await sendMessage(sendMessageParams)
   }
 
