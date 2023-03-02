@@ -7,6 +7,7 @@ import { PostData } from '@subsocial/api/types'
 
 export const getPost = poolQuery<SubsocialParam<string>, PostData>({
   multiCall: async (allParams) => {
+    if (allParams.length === 0) return []
     const [{ api }] = allParams
     const postIds = allParams.map(({ data }) => data)
     const res = await api.findPublicPosts(postIds)
