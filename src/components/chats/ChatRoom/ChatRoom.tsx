@@ -2,7 +2,7 @@ import Container from '@/components/Container'
 import { getSpaceId } from '@/constants/space'
 import { cx } from '@/utils/className'
 import { ComponentProps } from 'react'
-import ChatList from '../ChatList'
+import ChatList from '../ChatList/ChatList'
 import ChatForm from './ChatForm'
 
 export type ChatRoomProps = ComponentProps<'div'> & {
