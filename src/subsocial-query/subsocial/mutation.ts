@@ -3,7 +3,7 @@ import { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 import { makeCombinedCallback } from '../base'
 import { MutationConfig } from '../types'
-import { getConnectionConfig } from './config'
+import { getConnectionConfig, getGlobalTxCallbacks } from './config'
 import { getSubsocialApi } from './connection'
 import {
   DefaultSubsocialMutationConfig,
@@ -13,25 +13,59 @@ import {
 } from './types'
 import { getBlockExplorerBlockInfoLink } from './utils'
 
-export interface TxCallbacksParams {
-  summary: string
-  address: string
-  params: any
-  explorerLink?: string
-  error?: string
-}
-const DEFAULT_TX_CALLBACKS = {
-  onBroadcast: ({ summary }: TxCallbacksParams) =>
-    console.info(`Broadcasting ${summary}...`),
-  onError: ({ error }: TxCallbacksParams) => console.error(error),
-  onSuccess: ({ summary }: TxCallbacksParams) =>
-    console.log(`Success submit ${summary}...`),
-}
-let globalTxCallbacks = DEFAULT_TX_CALLBACKS
-export const setupTxCallbacks = (
-  callbacks: Partial<typeof globalTxCallbacks>
-) => {
-  globalTxCallbacks = { ...DEFAULT_TX_CALLBACKS, ...callbacks }
+export function useSubsocialMutation<Param, Context>(
+  getWallet: () => Promise<WalletAccount>,
+  transactionGenerator: (
+    params: Param,
+    apis: {
+      subsocialApi: SubsocialApi
+      ipfsApi: SubsocialIpfsApi
+      substrateApi: ApiPromise
+    }
+  ) => Promise<{ tx: Transaction; summary: string }>,
+  config?: MutationConfig<Param>,
+  defaultConfig?: DefaultSubsocialMutationConfig<Param, Context>
+): UseMutationResult<string, Error, Param, unknown> {
+  const workerFunc = async (param: Param) => {
+    const wallet = await getWallet()
+    if (!wallet.address || !wallet.signer)
+      throw new Error('You need to connect your wallet first!')
+
+    const txCallbacks = generateTxCallbacks(
+      {
+        address: wallet.address,
+        param,
+      },
+      defaultConfig?.txCallbacks
+    )
+    txCallbacks?.onStart()
+
+    const subsocialApi = await getSubsocialApi()
+    const substrateApi = await subsocialApi.substrateApi
+    const ipfsApi = subsocialApi.ipfs
+    try {
+      return createTxAndSend(
+        transactionGenerator,
+        param,
+        { subsocialApi, substrateApi, ipfsApi },
+        { wallet, networkRpc: getConnectionConfig().substrateUrl },
+        config,
+        defaultConfig,
+        txCallbacks
+      )
+    } catch (e) {
+      console.log('masuk nih')
+      txCallbacks?.onError()
+      throw e
+    }
+  }
+
+  return useMutation(workerFunc, {
+    ...(defaultConfig || {}),
+    ...config,
+    onSuccess: makeCombinedCallback(defaultConfig, config, 'onSuccess'),
+    onError: makeCombinedCallback(defaultConfig, config, 'onError'),
+  })
 }
 
 async function createTxAndSend<Param, AdditionalParams, Context>(
@@ -82,6 +116,7 @@ function sendTransaction<Param, Context>(
     tx,
     wallet: { address, signer },
   } = txInfo
+  const globalTxCallbacks = getGlobalTxCallbacks()
   return new Promise<string>(async (resolve, reject) => {
     try {
       txCallbacks?.onSend()
@@ -140,6 +175,7 @@ function sendTransaction<Param, Context>(
         }
       )
     } catch (e) {
+      console.log('masuk sini')
       globalTxCallbacks.onError((e as any).message)
       reject(e)
     }
@@ -159,58 +195,4 @@ function generateTxCallbacks<Param, Context>(
     onSend: () => onSend?.(data, context),
     onStart: () => onStart?.(data, context),
   }
-}
-
-export function useSubsocialMutation<Param, Context>(
-  getWallet: () => Promise<WalletAccount>,
-  transactionGenerator: (
-    params: Param,
-    apis: {
-      subsocialApi: SubsocialApi
-      ipfsApi: SubsocialIpfsApi
-      substrateApi: ApiPromise
-    }
-  ) => Promise<{ tx: Transaction; summary: string }>,
-  config?: MutationConfig<Param>,
-  defaultConfig?: DefaultSubsocialMutationConfig<Param, Context>
-): UseMutationResult<string, Error, Param, unknown> {
-  const workerFunc = async (param: Param) => {
-    const wallet = await getWallet()
-    if (!wallet.address || !wallet.signer)
-      throw new Error('You need to connect your wallet first!')
-
-    const txCallbacks = generateTxCallbacks(
-      {
-        address: wallet.address,
-        param,
-      },
-      defaultConfig?.txCallbacks
-    )
-    txCallbacks?.onStart()
-
-    const subsocialApi = await getSubsocialApi()
-    const substrateApi = await subsocialApi.substrateApi
-    const ipfsApi = subsocialApi.ipfs
-    try {
-      return createTxAndSend(
-        transactionGenerator,
-        param,
-        { subsocialApi, substrateApi, ipfsApi },
-        { wallet, networkRpc: getConnectionConfig().substrateUrl },
-        config,
-        defaultConfig,
-        txCallbacks
-      )
-    } catch (e) {
-      txCallbacks?.onError()
-      throw e
-    }
-  }
-
-  return useMutation(workerFunc, {
-    ...(defaultConfig || {}),
-    ...config,
-    onSuccess: makeCombinedCallback(defaultConfig, config, 'onSuccess'),
-    onError: makeCombinedCallback(defaultConfig, config, 'onError'),
-  })
 }
