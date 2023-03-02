@@ -12,15 +12,18 @@ export default function useInfiniteScrollData<Data>(
     let start = 0
     let end = Math.min(itemCountInCurrentPage, data.length)
     if (reverse) {
-      start = Math.max(data.length - itemCountInCurrentPage - 1, 0)
-      end = data.length - 1
+      start = Math.max(data.length - itemCountInCurrentPage, 0)
+      end = data.length
     }
-    return data.slice(start, end)
+    const slicedData = data.slice(start, end)
+    if (reverse) slicedData.reverse()
+    return slicedData
   }, [data, currentPage, itemsPerPage, reverse])
 
   const hasMore = currentPage * itemsPerPage < data.length
 
   const loadMore = () => {
+    console.log('load more...')
     if (hasMore) {
       setCurrentPage(currentPage + 1)
     }

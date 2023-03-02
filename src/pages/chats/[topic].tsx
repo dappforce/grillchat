@@ -15,7 +15,7 @@ export const getServerSideProps = getCommonServerSideProps<{
 
   const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(postId)
 
-  const preloadedPostCount = 30
+  const preloadedPostCount = 15
   const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
   const endSlice = commentIds.length
   const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
