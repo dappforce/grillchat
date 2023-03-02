@@ -46,6 +46,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           preventWindowUnload()
           addOptimisticData({ address, param, tempId, client })
         },
+        onSend: allowWindowUnload,
         onError: ({ address, param }, tempId) => {
           allowWindowUnload()
           deleteOptimisticData({ tempId, address, client, param })
