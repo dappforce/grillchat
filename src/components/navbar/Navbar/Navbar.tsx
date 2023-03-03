@@ -1,6 +1,6 @@
-import LoginModal from '@/components/LoginModal'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ComponentProps, useRef, useState } from 'react'
 import { HiOutlineLightBulb } from 'react-icons/hi'
@@ -9,6 +9,10 @@ import Container from '../../Container'
 import LinkText from '../../LinkText'
 import Logo from '../../Logo'
 import ProfileAvatar from './ProfileAvatar'
+
+const LoginModal = dynamic(() => import('@/components/LoginModal'), {
+  ssr: false,
+})
 
 export type NavbarProps = ComponentProps<'div'>
 
