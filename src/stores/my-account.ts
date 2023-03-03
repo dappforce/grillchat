@@ -1,4 +1,3 @@
-import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { loginWithSecretKey, Signer } from '@/utils/account'
 import { create } from './utils'
 
@@ -48,6 +47,8 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const { address, unsubscribeBalance } = get()
     unsubscribeBalance()
     if (!address) return
+
+    const { getSubsocialApi } = await import('@/subsocial-query/subsocial')
 
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
