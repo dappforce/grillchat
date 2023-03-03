@@ -54,13 +54,17 @@ export default function ChatPreview({
           src={image}
           alt={title ?? 'chat preview'}
         />
-        <div className='flex flex-1 items-center'>
-          <div className='flex flex-1 flex-col gap-1'>
+        <div className='flex flex-1 items-center overflow-hidden'>
+          <div className='flex flex-1 flex-col gap-1 overflow-hidden'>
             <div className='flex items-center justify-between'>
               <span className='font-medium'>{title}</span>
               <span className='text-sm text-text-muted'>10:11</span>
             </div>
-            <p className='text-sm text-text-muted'>{description}</p>
+            <div className='overflow-hidden'>
+              <p className='overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted'>
+                {description}
+              </p>
+            </div>
           </div>
         </div>
         <div className='absolute bottom-0 ml-20 w-full border-b border-border-gray' />
