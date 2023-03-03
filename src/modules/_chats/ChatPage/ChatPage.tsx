@@ -16,7 +16,7 @@ export default function ChatPage({ topic }: { topic: Topic }) {
       <ChatRoom
         postId={topic.postId}
         asContainer
-        className='flex-1 overflow-hidden pt-2'
+        className='flex-1 overflow-hidden'
       />
     </>
   )
