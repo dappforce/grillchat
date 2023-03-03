@@ -8,6 +8,8 @@ import { extractOptimisticIdData, isOptimisticId } from '../utils'
 import { getCommentIdsQueryKey } from './query'
 import { OptimisticMessageIdData } from './types'
 
+const subscribedPostIds = new Set<string>()
+
 export function useSubscribeCommentIdsByPostId(
   postId: string,
   enabled: boolean,
@@ -21,11 +23,13 @@ export function useSubscribeCommentIdsByPostId(
   callbackRef.current = callbackFirstResult
 
   useEffect(() => {
-    if (!enabled) return
+    if (!enabled || subscribedPostIds.has(postId)) return
+    subscribedPostIds.add(postId)
 
     let unsub: Promise<() => void> = (async () => {
       const subsocialApi = await getSubsocialApi()
       const substrateApi = await subsocialApi.substrateApi
+
       return substrateApi.query.posts.replyIdsByPostId(postId, async (ids) => {
         const newIds = Array.from(ids.toPrimitive() as any).map((id) => id + '')
         const lastId = newIds[newIds.length - 1]
@@ -88,6 +92,7 @@ export function useSubscribeCommentIdsByPostId(
 
     return () => {
       unsub?.then((func) => func())
+      subscribedPostIds.delete(postId)
       lastIdInPreviousSub.current = ''
     }
   }, [postId, queryClient, enabled, waitNewBlock])
