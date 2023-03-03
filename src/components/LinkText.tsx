@@ -7,6 +7,7 @@ const linkTextStyles = cva('', {
   variants: {
     variant: {
       primary: 'text-text-primary',
+      secondary: 'text-text-secondary',
       default: 'font-medium',
     },
   },
@@ -18,13 +19,23 @@ const linkTextStyles = cva('', {
 export type LinkTextProps = Omit<ComponentProps<'a'>, 'href'> &
   VariantProps<typeof linkTextStyles> & {
     href: LinkProps['href']
+    openInNewTab?: boolean
   }
 
 export default function LinkText({ href, variant, ...props }: LinkTextProps) {
+  let anchorProps = {}
+  if (props.openInNewTab) {
+    anchorProps = {
+      target: '_blank',
+      rel: 'noopener noreferrer',
+    }
+  }
+
   return (
     <Link href={href} passHref legacyBehavior>
       <a
         {...props}
+        {...anchorProps}
         className={cx(
           props.className,
           linkTextStyles({ variant }),

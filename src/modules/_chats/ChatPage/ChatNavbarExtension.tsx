@@ -30,7 +30,7 @@ export default function ChatNavbarExtension({
         ),
       }}
     >
-      <LinkText href='/' variant='primary' className='flex items-center'>
+      <LinkText href='/' variant='secondary' className='flex items-center'>
         <HiOutlineChevronLeft />
         <span className='ml-1'>Back</span>
       </LinkText>
