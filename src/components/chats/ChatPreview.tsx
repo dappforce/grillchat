@@ -38,7 +38,7 @@ export default function ChatPreview({
       className={cx(
         'outline-none md:rounded-md',
         (isInteractive || asLink) &&
-          'cursor-pointer focus-within:bg-background-light/75 hover:bg-background-light/75',
+          'cursor-pointer transition focus-within:bg-background-light/75 hover:bg-background-light/75',
         props.className
       )}
     >
