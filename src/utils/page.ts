@@ -26,10 +26,16 @@ export function getCommonServerSideProps<ReturnValue>(
   params: AppCommonProps,
   callback?: (
     context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
-  ) => Promise<ReturnValue>
+  ) => Promise<ReturnValue | undefined>
 ): GetServerSideProps<AppCommonProps & ReturnValue> {
   return async (context) => {
-    const data = callback ? await callback(context) : ({} as ReturnValue)
+    const data = callback ? await callback(context) : undefined
+    if (!data) {
+      return {
+        notFound: true,
+      }
+    }
+
     return {
       props: {
         ...params,

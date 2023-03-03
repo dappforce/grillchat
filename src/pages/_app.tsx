@@ -22,7 +22,7 @@ export default function App({
   Component,
   pageProps,
 }: AppProps<AppCommonProps>) {
-  const { head, dehydratedState } = pageProps
+  const { head, dehydratedState, ...props } = pageProps
 
   useEffect(() => {
     initAllStores()
@@ -38,7 +38,7 @@ export default function App({
         )}
       >
         <Navbar />
-        <Component />
+        <Component {...props} />
       </div>
     </QueryProvider>
   )
