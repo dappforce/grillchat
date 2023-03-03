@@ -35,7 +35,7 @@ export default function ProfileAvatar({
         <AddressAvatar
           onClick={() => setIsOpen(true)}
           address={address}
-          className='relative z-10'
+          className='relative z-10 cursor-pointer'
         />
         <PopOver
           popOverClassName='font-bold'
