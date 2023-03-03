@@ -24,6 +24,9 @@ const topics = {
   },
 } satisfies Record<string, Topic>
 
+export function getAllTopics(): Readonly<typeof topics> {
+  return topics
+}
 export function isSupportedTopic(topic: string): topic is keyof typeof topics {
   return topic in topics
 }
