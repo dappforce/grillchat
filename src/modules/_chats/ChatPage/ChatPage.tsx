@@ -1,4 +1,3 @@
-import Bitcoin from '@/assets/topics/bitcoin.png'
 import ChatRoom from '@/components/chats/ChatRoom'
 import { Topic } from '@/constants/topics'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
@@ -10,7 +9,7 @@ export default function ChatPage({ topic }: { topic: Topic }) {
   return (
     <>
       <ChatNavbarExtension
-        image={Bitcoin}
+        image={topic.image}
         messageCount={data?.length ?? 0}
         topic={topic.title}
       />
