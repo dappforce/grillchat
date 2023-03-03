@@ -60,10 +60,13 @@ export default function ChatPreview({
               <span className='font-medium'>{title}</span>
               <span className='text-sm text-text-muted'>10:11</span>
             </div>
-            <div className='overflow-hidden'>
+            <div className='flex items-baseline justify-between overflow-hidden'>
               <p className='overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted'>
                 {description}
               </p>
+              <span className='ml-2 rounded-full bg-background-primary py-0.5 px-2 text-sm'>
+                7
+              </span>
             </div>
           </div>
         </div>
