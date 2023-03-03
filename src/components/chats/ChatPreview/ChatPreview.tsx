@@ -74,11 +74,9 @@ export default function ChatPreview({
             </div>
             <div className='flex items-baseline justify-between overflow-hidden'>
               <ChatLastMessage postId={postId} />
-              <div className='ml-2 rounded-full bg-background-primary py-0.5 px-2 text-sm'>
-                {withUnreadCount && (
-                  <ChatUnreadCount className='ml-2' postId={postId} />
-                )}
-              </div>
+              {withUnreadCount && (
+                <ChatUnreadCount className='ml-2' postId={postId} />
+              )}
             </div>
           </div>
         </div>
