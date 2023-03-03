@@ -1,4 +1,4 @@
-import { getTopicId, isSupportedTopic } from '@/constants/topics'
+import { getTopicData, isSupportedTopic, Topic } from '@/constants/topics'
 import ChatPage from '@/modules/_chats/ChatPage'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getPostQuery } from '@/services/subsocial/posts'
@@ -8,7 +8,7 @@ import { dehydrate, QueryClient } from '@tanstack/react-query'
 
 export const getServerSideProps = getCommonServerSideProps<{
   dehydratedState: any
-  postId: string
+  topic: Topic
 }>({}, async (context) => {
   const { query } = context
   const subsocialApi = await getSubsocialApi()
@@ -17,7 +17,8 @@ export const getServerSideProps = getCommonServerSideProps<{
   const isSupported = isSupportedTopic(topic)
   if (!isSupported) return undefined
 
-  const postId = getTopicId(topic)
+  const topicData = getTopicData(topic)
+  const { postId } = topicData
 
   const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(postId)
 
@@ -40,7 +41,7 @@ export const getServerSideProps = getCommonServerSideProps<{
 
   return {
     dehydratedState: dehydrate(queryClient),
-    postId,
+    topic: topicData,
   }
 })
 
