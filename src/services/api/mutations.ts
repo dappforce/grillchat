@@ -1,13 +1,13 @@
 import mutationWrapper from '@/subsocial-query/base'
 
-async function signUp({
+async function requestToken({
   address,
   captchaToken,
 }: {
   captchaToken: string
   address: string
 }) {
-  const res = await fetch('/api/sign-up', {
+  const res = await fetch('/api/request-token', {
     method: 'POST',
     body: JSON.stringify({ captchaToken, address }),
     headers: new Headers({
@@ -17,4 +17,4 @@ async function signUp({
   })
   return res.json()
 }
-export const useSignUp = mutationWrapper(signUp)
+export const useRequestToken = mutationWrapper(requestToken)
