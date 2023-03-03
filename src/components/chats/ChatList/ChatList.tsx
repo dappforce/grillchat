@@ -66,13 +66,13 @@ function ChatListContent({
           hasMore={!isAllPostsLoaded}
           inverse
           scrollableTarget={scrollableContainerId}
-          loader={<ChatLoading className='py-2' />}
+          loader={<ChatLoading className='pb-2 pt-4' />}
         >
           {posts.map(
             ({ data: post }) =>
               post && <ChatItemContainer post={post} key={post.id} />
           )}
-          {isAllPostsLoaded && <ChatTopNotice className='py-2' />}
+          {isAllPostsLoaded && <ChatTopNotice className='pb-2 pt-4' />}
         </InfiniteScroll>
       </ScrollableContainer>
       <NewMessageNotice
