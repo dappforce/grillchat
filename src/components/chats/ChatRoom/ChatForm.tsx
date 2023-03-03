@@ -45,6 +45,7 @@ export default function ChatForm({
           value={message}
           onChange={(e) => setMessage((e.target as any).value)}
           placeholder='Message...'
+          autoComplete='off'
           pill
           variant='fill'
           rightElement={(classNames) => (
