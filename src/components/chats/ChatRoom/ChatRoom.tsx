@@ -6,7 +6,6 @@ import ChatList from '../ChatList/ChatList'
 import ChatForm from './ChatForm'
 
 export type ChatRoomProps = ComponentProps<'div'> & {
-  chats: { text: string; alignment: 'left' | 'right' }[]
   asContainer?: boolean
   scrollableContainerClassName?: string
   postId: string
@@ -14,7 +13,6 @@ export type ChatRoomProps = ComponentProps<'div'> & {
 
 export default function ChatRoom({
   className,
-  chats,
   asContainer,
   scrollableContainerClassName,
   postId,
