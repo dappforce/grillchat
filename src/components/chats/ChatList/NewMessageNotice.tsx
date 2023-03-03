@@ -1,7 +1,7 @@
 import Button, { ButtonProps } from '@/components/Button'
 import { cx } from '@/utils/className'
 import { RefObject, useEffect } from 'react'
-import { IoReturnUpForward } from 'react-icons/io5'
+import { BsChevronDown } from 'react-icons/bs'
 import useAnyNewData from './hooks/useAnyNewData'
 import useIsAtBottom from './hooks/useIsAtBottom'
 
@@ -37,22 +37,14 @@ export function NewMessageNotice({
       variant='transparent'
       onClick={scrollToBottom}
       withRingInteraction={false}
+      size='circle'
       {...props}
-      className={cx(
-        'relative cursor-pointer rounded-lg bg-background-light px-4 py-2',
-        props.className
-      )}
+      className={cx('relative bg-background-light p-3', props.className)}
     >
-      <div className='flex items-center justify-center gap-2 overflow-hidden text-text-muted'>
-        <span className='text-sm'>
-          {anyNewData} new message{anyNewData > 1 ? 's' : ''}
-        </span>
-        <IoReturnUpForward className='rotate-90' />
-        <div className='absolute top-0 right-0 h-3 w-3 translate-x-1/2 -translate-y-1/2'>
-          <div className='absolute inset-0 h-full w-full animate-ping rounded-full bg-background-primary' />
-          <div className='absolute inset-0 h-full w-full rounded-full bg-background-primary' />
-        </div>
-      </div>
+      <span className='absolute -top-1 left-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full bg-background-primary py-0.5 px-2 text-sm'>
+        {anyNewData}
+      </span>
+      <BsChevronDown className='relative top-px text-2xl' />
     </Button>
   )
 }

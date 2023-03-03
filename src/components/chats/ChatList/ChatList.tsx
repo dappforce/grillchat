@@ -47,7 +47,7 @@ function ChatListContent({
   const isAllPostsLoaded = loadedPost.length === commentIds.length
 
   return (
-    <div
+    <Component
       {...props}
       className={cx(
         'relative flex flex-1 flex-col overflow-hidden',
@@ -56,7 +56,6 @@ function ChatListContent({
     >
       <ScrollableContainer
         id={scrollableContainerId}
-        as={Component}
         ref={scrollContainerRef}
         className={cx('flex flex-col-reverse', scrollableContainerClassName)}
       >
@@ -77,10 +76,10 @@ function ChatListContent({
         </InfiniteScroll>
       </ScrollableContainer>
       <NewMessageNotice
-        className='absolute bottom-0 left-1/2 -translate-x-1/2'
+        className='absolute bottom-0 right-8'
         commentIds={commentIds}
         scrollContainerRef={scrollContainerRef}
       />
-    </div>
+    </Component>
   )
 }
