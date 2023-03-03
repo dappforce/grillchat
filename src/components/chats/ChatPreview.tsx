@@ -64,9 +64,9 @@ export default function ChatPreview({
               <p className='overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted'>
                 {description}
               </p>
-              <span className='ml-2 rounded-full bg-background-primary py-0.5 px-2 text-sm'>
-                7
-              </span>
+              <div className='ml-2 rounded-full bg-background-primary py-0.5 px-2 text-sm'>
+                <span className='relative top-px'>7</span>
+              </div>
             </div>
           </div>
         </div>
