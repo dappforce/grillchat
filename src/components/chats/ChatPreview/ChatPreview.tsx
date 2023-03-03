@@ -1,8 +1,16 @@
 import { cx } from '@/utils/className'
+import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
-import Container from '../Container'
+import Container from '../../Container'
+
+const ChatLastMessage = dynamic(() => import('./ChatLastMessage'), {
+  ssr: false,
+})
+const ChatUnreadCount = dynamic(() => import('./ChatUnreadCount'), {
+  ssr: false,
+})
 
 export type ChatPreviewProps = ComponentProps<'div'> & {
   title: string
@@ -14,6 +22,8 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
     text: string
     date: string
   }
+  postId: string
+  withUnreadCount?: boolean
   asContainer?: boolean
 }
 
@@ -24,8 +34,10 @@ export default function ChatPreview({
   image,
   asContainer,
   asLink,
+  postId,
   isInteractive,
   lastMessage: _lastMessage,
+  withUnreadCount,
   ...props
 }: ChatPreviewProps) {
   const Component = asContainer ? Container<'div'> : 'div'
@@ -61,11 +73,11 @@ export default function ChatPreview({
               <span className='text-sm text-text-muted'>10:11</span>
             </div>
             <div className='flex items-baseline justify-between overflow-hidden'>
-              <p className='overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted'>
-                {description}
-              </p>
+              <ChatLastMessage postId={postId} />
               <div className='ml-2 rounded-full bg-background-primary py-0.5 px-2 text-sm'>
-                <span className='relative top-px'>7</span>
+                {withUnreadCount && (
+                  <ChatUnreadCount className='ml-2' postId={postId} />
+                )}
               </div>
             </div>
           </div>

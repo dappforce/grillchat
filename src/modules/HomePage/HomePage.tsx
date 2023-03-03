@@ -9,7 +9,7 @@ export default function HomePage() {
     <>
       <WelcomeModal />
       <div className='flex flex-col'>
-        {Object.entries(topics).map(([key, { desc, image, title }]) => (
+        {Object.entries(topics).map(([key, { desc, image, title, postId }]) => (
           <ChatPreview
             key={title}
             asContainer
@@ -19,6 +19,8 @@ export default function HomePage() {
             image={image}
             title={title}
             description={desc}
+            postId={postId}
+            withUnreadCount
           />
         ))}
       </div>
