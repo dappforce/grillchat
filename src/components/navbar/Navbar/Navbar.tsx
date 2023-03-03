@@ -1,6 +1,7 @@
 import LoginModal from '@/components/LoginModal'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
+import Link from 'next/link'
 import { ComponentProps, useRef, useState } from 'react'
 import { HiOutlineLightBulb } from 'react-icons/hi'
 import Button from '../../Button'
@@ -38,7 +39,9 @@ export default function Navbar({ ...props }: NavbarProps) {
             props.className
           )}
         >
-          <Logo className='text-2xl' />
+          <Link href='/'>
+            <Logo className='text-2xl' />
+          </Link>
           <div className='flex items-center'>
             <LinkText
               href='https://google.com'
