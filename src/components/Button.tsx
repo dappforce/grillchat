@@ -6,14 +6,14 @@ import { ComponentProps } from 'react'
 const buttonStyles = cva('rounded-full transition hover:brightness-110', {
   variants: {
     variant: {
-      primary: 'bg-background-primary text-text',
+      primary: 'bg-background-primary border border-transparent text-text',
       primaryOutline:
         'bg-transparent border border-background-primary text-text',
       mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
       transparent: 'bg-transparent text-text',
     },
     disabled: {
-      true: 'brightness-50 cursor-default',
+      true: 'brightness-50 pointer-events-none cursor-default',
     },
     size: {
       noPadding: 'p-0',
@@ -31,6 +31,7 @@ const buttonStyles = cva('rounded-full transition hover:brightness-110', {
 export type ButtonProps = VariantProps<typeof buttonStyles> &
   ComponentProps<'button'> &
   ComponentProps<'a'> & {
+    withDisabledStyles?: boolean
     withRingInteraction?: boolean
   }
 
@@ -39,13 +40,14 @@ export default function Button({
   href,
   size,
   disabled,
+  withDisabledStyles = true,
   withRingInteraction = true,
   ...props
 }: ButtonProps) {
   const classNames = cx(
     withRingInteraction &&
       interactionRingStyles({ color: 'background', variant: 'small-offset' }),
-    buttonStyles({ variant, size, disabled }),
+    buttonStyles({ variant, size, disabled: disabled && withDisabledStyles }),
     props.className
   )
 
