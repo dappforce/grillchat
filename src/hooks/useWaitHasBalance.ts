@@ -3,45 +3,45 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import usePrevious from './usePrevious'
 import useWaitNewBlock from './useWaitNewBlock'
 
-export default function useWaitHasBalance() {
+export default function useWaitHasEnergy() {
   const address = useMyAccount((state) => state.address)
-  const balance = useMyAccount((state) => state.energy)
-  const previousBalance = usePrevious(balance)
+  const energy = useMyAccount((state) => state.energy)
+  const previousEnergy = usePrevious(energy)
 
-  const hasBalanceResolver = useRef<() => void | undefined>()
+  const hasEnergyResolver = useRef<() => void | undefined>()
   const waitNewBlock = useWaitNewBlock()
 
   const generatePromise = useCallback(
     () =>
       new Promise<void>((resolve) => {
-        hasBalanceResolver.current = () => resolve()
+        hasEnergyResolver.current = () => resolve()
       }),
     []
   )
-  const [hasBalancePromise, setHasBalancePromise] =
+  const [hasEnergyPromise, setHasEnergyPromise] =
     useState<Promise<void>>(generatePromise)
 
   useEffect(() => {
-    setHasBalancePromise(generatePromise())
+    setHasEnergyPromise(generatePromise())
   }, [address, generatePromise])
 
   useEffect(() => {
-    if (balance && balance > 0) {
-      console.log('My Current Balance', balance)
-      if (hasBalanceResolver.current) {
-        const resolveHasBalance = () => {
-          hasBalanceResolver.current?.()
-          hasBalanceResolver.current = undefined
+    if (energy && energy > 0) {
+      console.log('My Current Energy', energy)
+      if (hasEnergyResolver.current) {
+        const resolveHasEnergy = () => {
+          hasEnergyResolver.current?.()
+          hasEnergyResolver.current = undefined
         }
-        if (previousBalance === null) {
-          resolveHasBalance()
+        if (previousEnergy === null) {
+          resolveHasEnergy()
         }
-        waitNewBlock().then(resolveHasBalance)
+        waitNewBlock().then(resolveHasEnergy)
       }
     } else {
-      setHasBalancePromise(generatePromise())
+      setHasEnergyPromise(generatePromise())
     }
-  }, [balance, generatePromise, waitNewBlock, previousBalance])
+  }, [energy, generatePromise, waitNewBlock, previousEnergy])
 
-  return () => hasBalancePromise
+  return () => hasEnergyPromise
 }

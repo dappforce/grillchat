@@ -1,4 +1,4 @@
-import useWaitHasBalance from '@/hooks/useWaitHasBalance'
+import useWaitHasEnergy from '@/hooks/useWaitHasBalance'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial'
@@ -14,7 +14,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const address = useMyAccount((state) => state.address ?? '')
   const signer = useMyAccount((state) => state.signer)
 
-  const waitHasBalance = useWaitHasBalance()
+  const waitHasBalance = useWaitHasEnergy()
 
   return useSubsocialMutation<SendMessageParams, string>(
     async () => ({ address, signer }),
