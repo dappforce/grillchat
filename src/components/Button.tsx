@@ -9,6 +9,7 @@ const buttonStyles = cva('rounded-full transition hover:brightness-110', {
       primary: 'bg-background-primary text-text',
       primaryOutline:
         'bg-transparent border border-background-primary text-text',
+      mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
       transparent: 'bg-transparent text-text',
     },
     disabled: {

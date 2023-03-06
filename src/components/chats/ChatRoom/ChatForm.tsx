@@ -1,10 +1,9 @@
-import Send from '@/assets/icons/send.png'
+import Send from '@/assets/icons/send.svg'
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
-import Image from 'next/image'
 import { ComponentProps, useState } from 'react'
 import CaptchaModal from './CaptchaModal'
 
@@ -48,13 +47,19 @@ export default function ChatForm({
           autoComplete='off'
           pill
           variant='fill'
+          containerClassName='group'
           rightElement={(classNames) => (
-            <Button type='submit' size='circle' className={cx(classNames)}>
-              <Image
-                className='relative top-px h-4 w-4'
-                src={Send}
-                alt='send'
-              />
+            <Button
+              type='submit'
+              size='circle'
+              variant='mutedOutline'
+              className={cx(
+                classNames,
+                'group-hover:border-transparent group-hover:bg-background-primary group-hover:text-text',
+                'group-focus-within:border-transparent group-focus-within:bg-background-primary group-focus-within:text-text '
+              )}
+            >
+              <Send className='relative top-px h-4 w-4' />
             </Button>
           )}
         />
