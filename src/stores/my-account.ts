@@ -5,14 +5,14 @@ type State = {
   isInitialized?: boolean
   address: string | null
   signer: Signer | null
-  balance: number | null
-  unsubscribeBalance: () => void
+  energy: number | null
+  unsubscribeEnergy: () => void
   secretKey: string | null
 }
 type Actions = {
   login: (secretKey: string) => Promise<boolean>
   logout: () => void
-  subscribeBalance: () => Promise<void>
+  subscribeEnergy: () => Promise<void>
 }
 
 const STORAGE_KEY = 'account'
@@ -20,8 +20,8 @@ const STORAGE_KEY = 'account'
 const initialState = {
   address: null,
   signer: null,
-  balance: null,
-  unsubscribeBalance: () => undefined,
+  energy: null,
+  unsubscribeEnergy: () => undefined,
   secretKey: null,
 }
 export const useMyAccount = create<State & Actions>()((set, get) => ({
@@ -36,34 +36,36 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         secretKey,
       })
       localStorage.setItem(STORAGE_KEY, secretKey)
-      get().subscribeBalance()
+      get().subscribeEnergy()
     } catch (e) {
       console.log('Failed to login', e)
       return false
     }
     return true
   },
-  subscribeBalance: async () => {
-    const { address, unsubscribeBalance } = get()
-    unsubscribeBalance()
+  subscribeEnergy: async () => {
+    const { address, unsubscribeEnergy } = get()
+    unsubscribeEnergy()
     if (!address) return
 
     const { getSubsocialApi } = await import('@/subsocial-query/subsocial')
 
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
-    const unsub = substrateApi.derive.balances.account(address, (balances) => {
-      const parsedBalances = balances.freeBalance.toPrimitive()
-      const freeBalance = (parseFloat(parsedBalances as any) ?? 0) / 10 ** 10
-      set({
-        balance: freeBalance,
-        unsubscribeBalance: () => unsub.then((unsub) => unsub()),
-      })
-    })
+    const unsub = substrateApi.query.energy.energyBalance(
+      address,
+      (energyAmount) => {
+        const parsedEnergy = parseFloat(energyAmount.toPrimitive().toString())
+        set({
+          energy: parsedEnergy,
+          unsubscribeEnergy: () => unsub.then((unsub) => unsub()),
+        })
+      }
+    )
   },
   logout: () => {
-    const { unsubscribeBalance } = get()
-    unsubscribeBalance()
+    const { unsubscribeEnergy } = get()
+    unsubscribeEnergy()
 
     localStorage.removeItem(STORAGE_KEY)
     set(initialState)

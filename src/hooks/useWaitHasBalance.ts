@@ -5,7 +5,7 @@ import useWaitNewBlock from './useWaitNewBlock'
 
 export default function useWaitHasBalance() {
   const address = useMyAccount((state) => state.address)
-  const balance = useMyAccount((state) => state.balance)
+  const balance = useMyAccount((state) => state.energy)
   const previousBalance = usePrevious(balance)
 
   const hasBalanceResolver = useRef<() => void | undefined>()
