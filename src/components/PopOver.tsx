@@ -37,6 +37,7 @@ export type PopOverProps = VariantProps<typeof panelStyles> & {
   panelColor?: keyof typeof panelColors
   triggerClassName?: string
   popOverClassName?: string
+  containerClassName?: string
 }
 
 export default function PopOver({
@@ -51,6 +52,7 @@ export default function PopOver({
   panelColor = 'default',
   popOverClassName,
   triggerClassName,
+  containerClassName,
 }: PopOverProps) {
   const arrowRef = useRef(null)
   const { x, y, strategy, refs, middlewareData } = useFloating({
@@ -69,9 +71,10 @@ export default function PopOver({
   const color = panelColors[panelColor]
 
   const { x: arrowX, y: arrowY } = middlewareData?.arrow || { x: 0, y: 0 }
+  const isArrowPlacementOnBottom = placement.startsWith('bottom')
 
   return (
-    <Popover className='relative'>
+    <Popover className={cx('relative', containerClassName)}>
       <Popover.Button
         className={cx('flex items-center', triggerClassName)}
         as={!asButton ? 'div' : 'button'}
@@ -120,12 +123,16 @@ export default function PopOver({
               {withArrow && (
                 <div
                   className={cx(
-                    'translate h-5 !w-5 -translate-y-0.5 rotate-45',
+                    'translate h-5 !w-5 rotate-45',
+                    isArrowPlacementOnBottom
+                      ? '-translate-y-0.5'
+                      : 'translate-y-0.5',
                     color
                   )}
                   style={{
                     position: 'absolute',
-                    top: arrowY ?? 0,
+                    top: isArrowPlacementOnBottom ? arrowY ?? 0 : 'auto',
+                    bottom: isArrowPlacementOnBottom ? 'auto' : arrowY ?? 0,
                     left: arrowX ?? 0,
                     width: 'max-content',
                   }}
