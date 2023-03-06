@@ -46,8 +46,8 @@ async function sendToken(address: string) {
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi
   const amount = 0.3 * 10 ** 10
-  const tx = await substrateApi.tx.balances
-    .transfer(address, amount)
+  const tx = await substrateApi.tx.energy
+    .generateEnergy(address, amount)
     .signAndSend(signer, { nonce: -1 })
 
   return tx.hash.toString()
