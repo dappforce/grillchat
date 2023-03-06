@@ -30,6 +30,7 @@ export default function ChatForm({
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
+    if (!message) return
     if (isLoggedIn) {
       sendMessage({ message, rootPostId: postId, spaceId })
       setMessage('')
@@ -37,6 +38,8 @@ export default function ChatForm({
       setIsOpenCaptcha(true)
     }
   }
+
+  const isDisabled = !message
 
   return (
     <>
@@ -52,17 +55,14 @@ export default function ChatForm({
           autoComplete='off'
           pill
           variant='fill'
-          containerClassName='group'
           rightElement={(classNames) => (
             <Button
               type='submit'
               size='circle'
-              variant='mutedOutline'
-              className={cx(
-                classNames,
-                'group-hover:border-transparent group-hover:bg-background-primary group-hover:text-text',
-                'group-focus-within:border-transparent group-focus-within:bg-background-primary group-focus-within:text-text '
-              )}
+              disabled={isDisabled}
+              withDisabledStyles={false}
+              variant={isDisabled ? 'mutedOutline' : 'primary'}
+              className={cx(classNames)}
             >
               <Send className='relative top-px h-4 w-4' />
             </Button>
