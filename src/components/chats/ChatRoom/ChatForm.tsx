@@ -12,13 +12,18 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   spaceId: string
 }
 
+const ESTIMATED_ENERGY_FOR_ONE_TX = 300000000 // TODO: update based on chain
+
 export default function ChatForm({
   className,
   postId,
   spaceId,
   ...props
 }: ChatFormProps) {
-  const isLoggedIn = useMyAccount((state) => !!state.address)
+  const isLoggedIn = useMyAccount(
+    (state) =>
+      !!state.address && (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
+  )
   const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
   const [message, setMessage] = useState('')
   const { mutate: sendMessage } = useSendMessage()
