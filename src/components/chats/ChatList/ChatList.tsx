@@ -68,6 +68,7 @@ function ChatListContent({
           scrollableTarget={scrollableContainerId}
           loader={<ChatLoading className='pb-2 pt-4' />}
           endMessage={<ChatTopNotice className='pb-2 pt-4' />}
+          scrollThreshold='200px'
         >
           {posts.map(
             ({ data: post }) =>
