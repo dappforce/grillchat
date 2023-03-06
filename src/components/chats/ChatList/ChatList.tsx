@@ -5,7 +5,7 @@ import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { getPostQuery } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
-import { ComponentProps, useId, useMemo, useRef } from 'react'
+import { ComponentProps, useEffect, useId, useMemo, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
@@ -32,6 +32,7 @@ function ChatListContent({
 }: ChatListProps) {
   const scrollableContainerId = useId()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
 
   const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
     subscribe: true,
@@ -41,6 +42,18 @@ function ChatListContent({
   const loadedPost = useMemo(() => {
     return posts.filter((post) => post.isLoading === false)
   }, [posts])
+
+  useEffect(() => {
+    const inner = innerRef.current
+    const scrollContainer = scrollContainerRef.current
+    if (inner && scrollContainer) {
+      const innerHeight = inner.clientHeight
+      const scrollContainerHeight = scrollContainer.scrollHeight
+      if (innerHeight < scrollContainerHeight) {
+        loadMore()
+      }
+    }
+  }, [loadedPost.length, loadMore])
 
   const Component = asContainer ? Container<'div'> : 'div'
 
@@ -59,22 +72,26 @@ function ChatListContent({
         ref={scrollContainerRef}
         className={cx('flex flex-col-reverse', scrollableContainerClassName)}
       >
-        <InfiniteScroll
-          dataLength={loadedPost.length}
-          next={loadMore}
-          className={cx('relative flex flex-col-reverse gap-2 overflow-hidden')}
-          hasMore={!isAllPostsLoaded}
-          inverse
-          scrollableTarget={scrollableContainerId}
-          loader={<ChatLoading className='pb-2 pt-4' />}
-          endMessage={<ChatTopNotice className='pb-2 pt-4' />}
-          scrollThreshold='200px'
-        >
-          {posts.map(
-            ({ data: post }) =>
-              post && <ChatItemContainer post={post} key={post.id} />
-          )}
-        </InfiniteScroll>
+        <div ref={innerRef}>
+          <InfiniteScroll
+            dataLength={loadedPost.length}
+            next={loadMore}
+            className={cx(
+              'relative flex flex-col-reverse gap-2 overflow-hidden'
+            )}
+            hasMore={!isAllPostsLoaded}
+            inverse
+            scrollableTarget={scrollableContainerId}
+            loader={<ChatLoading className='pb-2 pt-4' />}
+            endMessage={<ChatTopNotice className='pb-2 pt-4' />}
+            scrollThreshold='200px'
+          >
+            {posts.map(
+              ({ data: post }) =>
+                post && <ChatItemContainer post={post} key={post.id} />
+            )}
+          </InfiniteScroll>
+        </div>
       </ScrollableContainer>
       <NewMessageNotice
         className='absolute bottom-0 right-8'
