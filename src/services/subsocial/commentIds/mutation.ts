@@ -1,4 +1,4 @@
-import useWaitHasEnergy from '@/hooks/useWaitHasBalance'
+import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial'
