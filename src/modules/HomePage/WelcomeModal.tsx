@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import Logo from '@/components/Logo'
 import Modal, { ModalProps } from '@/components/Modal'
+import { LocalStorage } from '@/utils/storage'
 import { useState } from 'react'
 
 export type WelcomeModalProps = Omit<
@@ -8,9 +9,18 @@ export type WelcomeModalProps = Omit<
   'isOpen' | 'closeModal' | 'title' | 'description' | 'children'
 >
 
+const STORAGE_KEY = 'dismissed-welcome-modal'
+const storage = new LocalStorage(() => STORAGE_KEY)
+
 export default function WelcomeModal({ ...props }: WelcomeModalProps) {
   const [openModal, setOpenModal] = useState(true)
-  const closeModal = () => setOpenModal(false)
+
+  if (storage.get() === 'true') return null
+
+  const closeModal = () => {
+    storage.set('true')
+    setOpenModal(false)
+  }
 
   return (
     <Modal
