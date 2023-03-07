@@ -1,25 +1,22 @@
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { isOptimisticId } from '@/services/subsocial/utils'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function useFocusedLastMessageId(postId: string) {
   const { getLastReadMessageId } = useLastReadMessageId(postId)
   const [lastReadId, setLastReadId] = useState(() => getLastReadMessageId())
-  const [shouldUpdateLastReadId, setShouldUpdateLastReadId] = useState(false)
+  const shouldUpdateLastReadId = useRef(false)
 
   const { data: commentIds } = useCommentIdsByPostId(postId)
   const lastCommentId = commentIds?.[commentIds.length - 1]
-
-  useEffect(() => {
-    const hasSentMessage = isOptimisticId(lastCommentId ?? '')
-    setShouldUpdateLastReadId(hasSentMessage)
-  }, [lastCommentId])
+  const hasSentMessage = isOptimisticId(lastCommentId ?? '')
+  if (hasSentMessage) shouldUpdateLastReadId.current = true
 
   useEffect(() => {
     function onVisibilityChange() {
       if (document.visibilityState !== 'visible')
-        setShouldUpdateLastReadId(false)
+        shouldUpdateLastReadId.current = false
     }
     document.addEventListener('visibilitychange', onVisibilityChange)
     return () => {
@@ -28,9 +25,9 @@ export default function useFocusedLastMessageId(postId: string) {
   }, [])
 
   useEffect(() => {
-    if (!shouldUpdateLastReadId) return
+    if (!shouldUpdateLastReadId.current) return
     if (lastCommentId) setLastReadId(lastCommentId)
   }, [lastCommentId, shouldUpdateLastReadId])
 
-  return lastReadId
+  return shouldUpdateLastReadId.current ? lastCommentId : lastReadId
 }
