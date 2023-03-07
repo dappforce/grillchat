@@ -4,6 +4,7 @@ import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
 import Container from '../../Container'
+import ChatLastMessageTime from './ChatLastMessageTime'
 
 const ChatLastMessage = dynamic(() => import('./ChatLastMessage'), {
   ssr: false,
@@ -18,10 +19,6 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   image: ImageProps['src']
   asLink?: LinkProps
   isInteractive?: boolean
-  lastMessage?: {
-    text: string
-    date: string
-  }
   postId: string
   withUnreadCount?: boolean
   asContainer?: boolean
@@ -30,13 +27,11 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
 export default function ChatPreview({
   title,
   description,
-  lastMessage,
   image,
   asContainer,
   asLink,
   postId,
   isInteractive,
-  lastMessage: _lastMessage,
   withUnreadCount,
   ...props
 }: ChatPreviewProps) {
@@ -70,10 +65,13 @@ export default function ChatPreview({
           <div className='flex flex-1 flex-col gap-1 overflow-hidden'>
             <div className='flex items-center justify-between'>
               <span className='font-medium'>{title}</span>
-              <span className='text-sm text-text-muted'>10:11</span>
+              <ChatLastMessageTime
+                postId={postId}
+                className='text-sm text-text-muted'
+              />
             </div>
             <div className='flex items-baseline justify-between overflow-hidden'>
-              <ChatLastMessage postId={postId} />
+              <ChatLastMessage defaultDesc={description} postId={postId} />
               {withUnreadCount && (
                 <ChatUnreadCount className='ml-2' postId={postId} />
               )}
