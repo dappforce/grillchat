@@ -2,7 +2,6 @@ import Button from '@/components/Button'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import { useRequestTokenAndSendMessage } from '@/hooks/useRequestTokenAndSendMessage'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
-import { generateAccount } from '@/utils/account'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { useRef, useState } from 'react'
 
@@ -28,10 +27,7 @@ export default function CaptchaModal({
   }
 
   const submitCaptcha = async () => {
-    const { publicKey, secretKey } = await generateAccount()
     requestTokenAndSendMessage({
-      secretKey,
-      address: publicKey,
       captchaToken: token,
       message,
       rootPostId,

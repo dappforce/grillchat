@@ -20,10 +20,11 @@ export default function ChatForm({
   spaceId,
   ...props
 }: ChatFormProps) {
-  const isLoggedIn = useMyAccount(
-    (state) =>
-      !!state.address && (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
+  const isLoggedIn = useMyAccount((state) => !!state.address)
+  const hasEnoughEnergy = useMyAccount(
+    (state) => (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
   )
+
   const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
   const [message, setMessage] = useState('')
   const { mutate: sendMessage } = useSendMessage()
@@ -31,7 +32,7 @@ export default function ChatForm({
   const handleSubmit = (e: any) => {
     e.preventDefault()
     if (!message) return
-    if (isLoggedIn) {
+    if (isLoggedIn && hasEnoughEnergy) {
       sendMessage({ message, rootPostId: postId, spaceId })
       setMessage('')
     } else {
