@@ -24,7 +24,7 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
         </div>
       }
       description={
-        <span className='text-center'>
+        <span className='block text-center'>
           Engage in discussions without fear of social persecution, as GrillChat
           is censorship-resistant.
         </span>
