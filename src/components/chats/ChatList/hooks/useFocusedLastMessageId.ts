@@ -10,8 +10,10 @@ export default function useFocusedLastMessageId(postId: string) {
 
   const { data: commentIds } = useCommentIdsByPostId(postId)
   const lastCommentId = commentIds?.[commentIds.length - 1]
+
   const hasSentMessage = isOptimisticId(lastCommentId ?? '')
-  if (hasSentMessage) shouldUpdateLastReadId.current = true
+  const hasReadAll = lastReadId === lastCommentId
+  if (hasSentMessage || hasReadAll) shouldUpdateLastReadId.current = true
 
   useEffect(() => {
     function onVisibilityChange() {
