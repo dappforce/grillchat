@@ -1,4 +1,5 @@
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
+import { getCaptchaSecret, getServerMnemonic } from '@/utils/env/server'
 import { Keyring } from '@polkadot/keyring'
 import { waitReady } from '@polkadot/wasm-crypto'
 import type { NextApiRequest, NextApiResponse } from 'next'
@@ -18,10 +19,10 @@ type Data = {
 }
 
 const VERIFIER = 'https://hcaptcha.com/siteverify'
-const TEST_SECRET = '0x0000000000000000000000000000000000000000'
+
 async function verifyCaptcha(captchaToken: string) {
   const formData = new FormData()
-  formData.append('secret', TEST_SECRET)
+  formData.append('secret', getCaptchaSecret())
   formData.append('response', captchaToken)
   const res = await fetch(VERIFIER, {
     method: 'POST',
@@ -32,15 +33,14 @@ async function verifyCaptcha(captchaToken: string) {
   return true
 }
 
-async function getSenderAccount() {
-  const mnemonic = process.env.SERVER_MNEMONIC
-  if (!mnemonic) throw new Error('No mnemonic')
+async function getServerAccount() {
+  const mnemonic = getServerMnemonic()
   const keyring = new Keyring()
   await waitReady()
   return keyring.addFromMnemonic(mnemonic, {}, 'sr25519')
 }
 async function sendToken(address: string) {
-  const signer = await getSenderAccount()
+  const signer = await getServerAccount()
   if (!signer) throw new Error('Invalid Mnemonic')
 
   const subsocialApi = await getSubsocialApi()

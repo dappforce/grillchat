@@ -2,12 +2,13 @@ import Button from '@/components/Button'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import { useRequestTokenAndSendMessage } from '@/hooks/useRequestTokenAndSendMessage'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
+import { getCaptchaSiteKey } from '@/utils/env/client'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { useRef, useState } from 'react'
 
 export type CaptchaModalProps = ModalFunctionalityProps & SendMessageParams
 
-const siteKey = '10000000-ffff-ffff-ffff-000000000001'
+const siteKey = getCaptchaSiteKey()
 
 export default function CaptchaModal({
   message,
