@@ -1,6 +1,8 @@
 import ChatPreview from '@/components/chats/ChatPreview'
 import { getAllTopics } from '@/constants/topics'
-import WelcomeModal from './WelcomeModal'
+import dynamic from 'next/dynamic'
+
+const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
 export default function HomePage() {
   const topics = getAllTopics()
