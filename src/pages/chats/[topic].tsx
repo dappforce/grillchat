@@ -29,15 +29,10 @@ export const getServerSideProps = getCommonServerSideProps<{
   const posts = await subsocialApi.findPublicPosts(prefetchedCommentIds)
 
   const queryClient = new QueryClient()
-  await queryClient.fetchQuery(getCommentIdsQueryKey(postId), () => commentIds)
-  await Promise.all(
-    posts.map(async (post) => {
-      await queryClient.fetchQuery(
-        getPostQuery.getQueryKey(post.id),
-        () => post
-      )
-    })
-  )
+  queryClient.setQueryData(getCommentIdsQueryKey(postId), commentIds)
+  posts.forEach((post) => {
+    queryClient.setQueryData(getPostQuery.getQueryKey(post.id), post)
+  })
 
   return {
     dehydratedState: dehydrate(queryClient),
