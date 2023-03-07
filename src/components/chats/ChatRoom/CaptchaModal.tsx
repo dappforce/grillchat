@@ -1,14 +1,11 @@
 import Button from '@/components/Button'
+import Captcha from '@/components/Captcha'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import { useRequestTokenAndSendMessage } from '@/hooks/useRequestTokenAndSendMessage'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
-import { getCaptchaSiteKey } from '@/utils/env/client'
-import HCaptcha from '@hcaptcha/react-hcaptcha'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 
 export type CaptchaModalProps = ModalFunctionalityProps & SendMessageParams
-
-const siteKey = getCaptchaSiteKey()
 
 export default function CaptchaModal({
   message,
@@ -19,13 +16,6 @@ export default function CaptchaModal({
   const { mutateAsync: requestTokenAndSendMessage } =
     useRequestTokenAndSendMessage()
   const [token, setToken] = useState('')
-  const [captchaError, setCaptchaError] = useState('')
-  const captchaRef = useRef<HCaptcha>(null)
-
-  const [loaded, setLoaded] = useState(false)
-  const onLoad = () => {
-    setLoaded(true)
-  }
 
   const submitCaptcha = async () => {
     requestTokenAndSendMessage({
@@ -34,18 +24,8 @@ export default function CaptchaModal({
       rootPostId,
       spaceId,
     })
-    captchaRef.current?.resetCaptcha()
+    setToken('')
     props.closeModal()
-  }
-
-  const onExpire = () => {
-    setToken('')
-    setCaptchaError('Captcha expired, please try again.')
-  }
-
-  const onError = () => {
-    setToken('')
-    setCaptchaError('Captcha error, please try again.')
   }
 
   return (
@@ -57,19 +37,7 @@ export default function CaptchaModal({
     >
       <div className='flex flex-col items-stretch gap-6 pt-4'>
         <div className='flex flex-col items-center'>
-          {!loaded && <div className='w-full' style={{ height: '78px' }} />}
-          <HCaptcha
-            onLoad={onLoad}
-            theme='dark'
-            onVerify={setToken}
-            onExpire={onExpire}
-            sitekey={siteKey}
-            onError={onError}
-            ref={captchaRef}
-          />
-          {captchaError && (
-            <p className='mt-2 text-sm text-red-400'>{captchaError}</p>
-          )}
+          <Captcha token={token} setToken={setToken} />
         </div>
         <Button disabled={!token} size='lg' onClick={submitCaptcha}>
           Continue
