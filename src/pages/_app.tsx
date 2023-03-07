@@ -6,6 +6,7 @@ import '@/styles/globals.css'
 import { cx } from '@/utils/className'
 import type { AppProps } from 'next/app'
 import { Source_Sans_Pro } from 'next/font/google'
+import NextNProgress from 'nextjs-progressbar'
 import { useEffect } from 'react'
 
 const sourceSansPro = Source_Sans_Pro({
@@ -30,6 +31,7 @@ export default function App({
 
   return (
     <QueryProvider dehydratedState={dehydratedState}>
+      <NextNProgress color='#4d46dc' />
       <HeadConfig {...head} />
       <div
         className={cx(
