@@ -14,16 +14,11 @@ const siteKey = getCaptchaSiteKey()
 
 export default function Captcha({ token, setToken, ...props }: CaptchaProps) {
   const [error, setError] = useState('')
-  const [loaded, setLoaded] = useState(false)
   const captchaRef = useRef<HCaptcha>(null)
 
   useEffect(() => {
     if (!token) captchaRef.current?.resetCaptcha()
   }, [token])
-
-  const onLoad = () => {
-    setLoaded(true)
-  }
 
   const onExpire = () => {
     setToken('')
@@ -36,7 +31,7 @@ export default function Captcha({ token, setToken, ...props }: CaptchaProps) {
   }
 
   const onTriggerCaptcha = () => {
-    if (loaded) captchaRef.current?.execute()
+    captchaRef.current?.execute()
   }
 
   return (
@@ -59,7 +54,6 @@ export default function Captcha({ token, setToken, ...props }: CaptchaProps) {
       </div>
       <HCaptcha
         size='invisible'
-        onLoad={onLoad}
         theme='dark'
         onVerify={setToken}
         onExpire={onExpire}
