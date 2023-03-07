@@ -3,6 +3,7 @@ import { create } from './utils'
 
 type State = {
   isInitialized?: boolean
+  isInitializedAddress?: boolean
   address: string | null
   signer: Signer | null
   energy: number | null
@@ -18,6 +19,7 @@ type Actions = {
 const STORAGE_KEY = 'account'
 
 const initialState = {
+  isInitializedAddress: false,
   address: null,
   signer: null,
   energy: null,
@@ -34,6 +36,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         address: toSubsocialAddress(signer.address),
         signer,
         secretKey,
+        isInitializedAddress: false,
       })
       localStorage.setItem(STORAGE_KEY, secretKey)
       get().subscribeEnergy()
@@ -81,6 +84,6 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     if (secretKey) {
       await login(secretKey)
     }
-    set({ isInitialized: true })
+    set({ isInitialized: true, isInitializedAddress: true })
   },
 }))

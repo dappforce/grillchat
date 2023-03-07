@@ -18,11 +18,14 @@ export type NavbarProps = ComponentProps<'div'>
 
 export default function Navbar({ ...props }: NavbarProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
+  const isInitializedAddress = useMyAccount(
+    (state) => state.isInitializedAddress
+  )
   const address = useMyAccount((state) => state.address)
   const isLoggedIn = !!address
 
   const [openLoginModal, setOpenLoginModal] = useState(false)
-  const isAfterLogin = useRef<boolean>(false)
+  const isLoggingInWithKey = useRef(false)
 
   const login = () => {
     setOpenLoginModal(true)
@@ -57,7 +60,9 @@ export default function Navbar({ ...props }: NavbarProps) {
               if (!isInitialized) return <div className='w-9' />
               return isLoggedIn ? (
                 <ProfileAvatar
-                  displayPopOver={isAfterLogin.current}
+                  displayPopOver={
+                    !isLoggingInWithKey.current && !isInitializedAddress
+                  }
                   address={address}
                 />
               ) : (
@@ -70,7 +75,8 @@ export default function Navbar({ ...props }: NavbarProps) {
       <LoginModal
         isOpen={openLoginModal}
         closeModal={() => setOpenLoginModal(false)}
-        afterLogin={() => (isAfterLogin.current = true)}
+        beforeLogin={() => (isLoggingInWithKey.current = true)}
+        afterLogin={() => (isLoggingInWithKey.current = false)}
       />
     </>
   )

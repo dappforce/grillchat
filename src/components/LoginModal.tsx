@@ -6,13 +6,19 @@ import Modal, { ModalFunctionalityProps } from './Modal'
 
 export type LoginModalProps = ModalFunctionalityProps & {
   afterLogin?: () => void
+  beforeLogin?: () => void
 }
 
-export default function LoginModal({ afterLogin, ...props }: LoginModalProps) {
+export default function LoginModal({
+  afterLogin,
+  beforeLogin,
+  ...props
+}: LoginModalProps) {
   const login = useMyAccount((state) => state.login)
   const [privateKey, setPrivateKey] = useState('')
   const onSubmit = async (e: any) => {
     e.preventDefault()
+    beforeLogin?.()
     if (await login(privateKey)) {
       afterLogin?.()
       setPrivateKey('')

@@ -14,13 +14,18 @@ export default function ProfileAvatar({
   displayPopOver,
   ...props
 }: ProfileAvatarProps) {
-  const popOverTriggerRef = useRef<HTMLDivElement>(null)
+  const popOverTriggerRef = useRef<HTMLDivElement | null>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const prevAccountPopOverOpened = useRef('')
 
   useEffect(() => {
+    if (prevAccountPopOverOpened.current === address) return
+    prevAccountPopOverOpened.current = address
+
     if (displayPopOver) {
       if (!popOverTriggerRef.current) return
-      popOverTriggerRef.current.click()
+      console.log('click?')
+      popOverTriggerRef.current?.click()
     }
   }, [displayPopOver, address])
 
@@ -43,13 +48,7 @@ export default function ProfileAvatar({
           placement='bottom-end'
           panelColor='warning'
           withCloseButton
-          trigger={
-            <AddressAvatar
-              ref={popOverTriggerRef}
-              className='pointer-events-none absolute inset-0 hidden'
-              address={address}
-            />
-          }
+          trigger={<div ref={popOverTriggerRef} />}
         >
           <p>Click on your avatar and save your private key</p>
         </PopOver>
