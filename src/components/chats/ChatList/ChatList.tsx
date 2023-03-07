@@ -5,7 +5,14 @@ import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { getPostQuery } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
-import { ComponentProps, useEffect, useId, useMemo, useRef } from 'react'
+import {
+  ComponentProps,
+  Fragment,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+} from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
@@ -102,12 +109,12 @@ function ChatListContent({
               if (!showLastUnreadMessageNotice) return chatElement
 
               return (
-                <>
+                <Fragment key={post?.id || index}>
                   <div className='my-2 w-full rounded-md bg-background-light py-0.5 text-center text-sm'>
                     Unread messages
                   </div>
                   {chatElement}
-                </>
+                </Fragment>
               )
             })}
           </InfiniteScroll>
