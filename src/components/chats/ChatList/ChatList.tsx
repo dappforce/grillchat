@@ -10,6 +10,7 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
+import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
 import { NewMessageNotice } from './NewMessageNotice'
 
 export type ChatListProps = ComponentProps<'div'> & {
@@ -30,6 +31,8 @@ function ChatListContent({
   postId,
   ...props
 }: ChatListProps) {
+  const lastReadId = useFocusedLastMessageId(postId)
+
   const scrollableContainerId = useId()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
@@ -86,10 +89,27 @@ function ChatListContent({
             endMessage={<ChatTopNotice className='pb-2 pt-4' />}
             scrollThreshold='200px'
           >
-            {posts.map(
-              ({ data: post }) =>
-                post && <ChatItemContainer post={post} key={post.id} />
-            )}
+            {posts.map(({ data: post }, index) => {
+              const isLastReadMessage = lastReadId === post?.id
+              // bottom message is the first element, because the flex direction is reversed
+              const isBottomMessage = index === 0
+              const showLastUnreadMessageNotice =
+                isLastReadMessage && !isBottomMessage
+
+              const chatElement = post && (
+                <ChatItemContainer post={post} key={post.id} />
+              )
+              if (!showLastUnreadMessageNotice) return chatElement
+
+              return (
+                <>
+                  <div className='my-2 w-full rounded-md bg-background-light py-0.5 text-center text-sm'>
+                    Unread messages
+                  </div>
+                  {chatElement}
+                </>
+              )
+            })}
           </InfiniteScroll>
         </div>
       </ScrollableContainer>
