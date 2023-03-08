@@ -19,7 +19,7 @@ export function getTimeRelativeToNow(
   const formatter = new Intl.RelativeTimeFormat(config.locale)
   let duration = (new Date(date).getTime() - new Date().getTime()) / 1000
 
-  if (duration < 60) {
+  if (duration > -60) {
     return 'just now'
   }
 
