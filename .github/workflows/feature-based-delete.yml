@@ -1,0 +1,51 @@
+name: Delete feature
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  delete:
+    if: github.event.pull_request.merged == true
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - uses: mdecoleman/pr-branch-name@1.2.0
+        id: vars
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=$(echo ${{ steps.vars.outputs.branch }} | sed 's/^deploy\///')" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_STAGING }}
+
+      - name: remove previous feature
+        continue-on-error: true
+        run: |
+          doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_STAGING }}
+          NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/features/all.yaml
+          NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/features/deployment.yaml
+          kubectl delete -f $GITHUB_WORKSPACE/deployment/features/
+
+      - name: Get CF A record ID
+        continue-on-error: true
+        shell: bash
+        run: echo "record=$(echo $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/dns_records?type=A&name=${{ env.name }}-grillchat.subsocial.network&content=188.166.202.107&proxied=true&page=1&per_page=100&order=type&direction=desc&match=all"  -H "X-Auth-Email:${{ secrets.CF_MAIL }}"      -H "Authorization:Bearer ${{ secrets.CF_TOKEN }}"      -H "Content-Type:application/json" |  jq . | jq -c '.result[]' | jq -r .id) )" >> $GITHUB_ENV
+        id: cf
+
+      - name: delete CF A record
+        continue-on-error: true
+        run: curl -X DELETE "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/dns_records/${{ env.record }}"  -H "X-Auth-Email:${{ secrets.CF_MAIL }}"      -H "Authorization:Bearer ${{ secrets.CF_TOKEN }}"      -H "Content-Type:application/json"
+
+      - name: final task
+        if: always()
+        run: echo "finished successfully"

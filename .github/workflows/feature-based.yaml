@@ -1,0 +1,98 @@
+name: Feature based build and deploy grillchat
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - deploy/**
+
+jobs:
+  grillchat_build:
+    name: build & Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^deploy\///')" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Prepare
+        id: prep
+        run: |
+          echo "image=dappforce/subsocial-grillchat:${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+
+      - name: Login to DockerHub
+        uses: docker/login-action@master
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-single-buildx
+
+      - name: Build docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          builder: ${{ steps.buildx.outputs.name }}
+          file: docker/Dockerfile
+          push: true
+          build-args: |
+            GH_SERVER_MNEMONIC=plunge pumpkin penalty segment cattle more print below fat lemon clap uniform
+            GH_CAPTCHA_SECRET=0xd04Bd3Ff81E50c568CE2c763318d2277A79E46bE
+            GH_NEXT_PUBLIC_CAPTCHA_SITE_KEY=10000000-ffff-ffff-ffff-000000000001
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  deploy:
+    name: deploy
+    needs: grillchat_build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^deploy\///')" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_STAGING }}
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_STAGING }}
+
+      - name: Update docker image name
+        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-grillchat:'${TAG}'|' $GITHUB_WORKSPACE/deployment/features/deployment.yaml
+
+      - name: Update svc & ingress file
+        run: NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/features/all.yaml
+
+      - name: Update deploy file
+        run: NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/features/deployment.yaml
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/deployment/features/
+
+      - name: Verify deployment
+        run: NAME=${{ env.name }} && kubectl -n sub-back rollout status deployment/grillchat-${NAME}
+
+      - name: CF deploy
+        run: curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/dns_records"      -H "X-Auth-Email:${{ secrets.CF_MAIL }}"      -H "Authorization:Bearer ${{ secrets.CF_TOKEN }}"      -H "Content-Type:application/json"      --data '{"type":"A","name":"${{ env.name }}-grillchat.subsocial.network","content":"188.166.202.107","ttl":3600,"priority":10,"proxied":true}'
