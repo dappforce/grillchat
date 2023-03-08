@@ -28,7 +28,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           className='relative'
           fill
           onLoad={() => setLoadedImg(true)}
-          src={`https://robohash.org/${address}.png`}
+          src={`https://robohash.org/${address}`}
           alt='avatar'
         />
       </div>
