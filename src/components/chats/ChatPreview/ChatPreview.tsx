@@ -1,13 +1,16 @@
+import Container from '@/components/Container'
 import { cx } from '@/utils/className'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
-import Container from '../../Container'
-import ChatLastMessageTime from './ChatLastMessageTime'
 
+const ChatLastMessageTime = dynamic(() => import('./ChatLastMessageTime'), {
+  ssr: false,
+})
 const ChatLastMessage = dynamic(() => import('./ChatLastMessage'), {
   ssr: false,
+  loading: () => <p>&nbsp;</p>,
 })
 const ChatUnreadCount = dynamic(() => import('./ChatUnreadCount'), {
   ssr: false,
