@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grillchat-<BRANCH>
+  name: grillchat-<BRANCH>
+  namespace: sub-back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grillchat-<BRANCH>
+  template:
+    metadata:
+      labels:
+        app: grillchat-<BRANCH>
+      name: grillchat-<BRANCH>
+    spec:
+      containers:
+      - image: <IMAGE>
+        imagePullPolicy: IfNotPresent
+        name: grillchat-<BRANCH>
+        ports:
+        - containerPort: 3000
+      imagePullSecrets:
+      - name: dockerhub
+      restartPolicy: Always
