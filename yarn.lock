@@ -6022,6 +6022,11 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
+use-breakpoint@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/use-breakpoint/-/use-breakpoint-3.0.7.tgz#7dace4fc2b0a45e70005590d7a66435c00251fa2"
+  integrity sha512-9jAE9fY6N+PYhAMrzJ7BjYmGB1aXuizv3LiZvMPIpQKuaimc1uYAvEmpXLwmxhRujb/4uMFjj/pNso9pAGt1XQ==
+
 use-sync-external-store@1.2.0, use-sync-external-store@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"

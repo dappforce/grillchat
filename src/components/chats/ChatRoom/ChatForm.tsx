@@ -1,11 +1,13 @@
 import Send from '@/assets/icons/send.svg'
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
+import Toast from '@/components/Toast'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
-import { ComponentProps, useState } from 'react'
+import { ComponentProps, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
+import { IoWarningOutline } from 'react-icons/io5'
 import CaptchaModal from './CaptchaModal'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
@@ -30,6 +32,18 @@ export default function ChatForm({
   const [message, setMessage] = useState('')
   const { mutate: sendMessage, error } = useSendMessage()
 
+  useEffect(() => {
+    if (error)
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          icon={(classNames) => <IoWarningOutline className={classNames} />}
+          title='Sending message failed. Please try again'
+          description={error?.message}
+        />
+      ))
+  }, [error])
+
   const handleSubmit = (e: any) => {
     e.preventDefault()
     if (!message) return
@@ -45,7 +59,6 @@ export default function ChatForm({
 
   return (
     <>
-      <button onClick={() => toast.error('asdfasdfasdf')}>asdfasdf</button>
       <form
         onSubmit={handleSubmit}
         {...props}

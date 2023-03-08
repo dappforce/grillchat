@@ -1,5 +1,6 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import Navbar from '@/components/navbar/Navbar'
+import { useBreakpointThreshold } from '@/hooks/useBreakpointThreshold'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
@@ -33,15 +34,7 @@ export default function App({
   return (
     <QueryProvider dehydratedState={dehydratedState}>
       <NextNProgress color='#4d46dc' />
-      <Toaster
-        position='bottom-right'
-        toastOptions={{
-          error: {
-            className: cx('!bg-red-50 !text-text !rounded-xl'),
-          },
-          duration: 100000,
-        }}
-      />
+      <ToasterConfig />
       <HeadConfig {...head} />
       <div
         className={cx(
@@ -54,4 +47,9 @@ export default function App({
       </div>
     </QueryProvider>
   )
+}
+
+function ToasterConfig() {
+  const mdUp = useBreakpointThreshold('md')
+  return <Toaster position={mdUp ? 'bottom-right' : 'top-center'} />
 }
