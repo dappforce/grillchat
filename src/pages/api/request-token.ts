@@ -3,6 +3,7 @@ import { getCaptchaSecret, getServerMnemonic } from '@/utils/env/server'
 import { Keyring } from '@polkadot/keyring'
 import { waitReady } from '@polkadot/wasm-crypto'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import NextCors from 'nextjs-cors'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -80,6 +81,11 @@ export default async function handler(
   res: NextApiResponse<RequestTokenResponse>
 ) {
   if (req.method !== 'POST') return res.status(404).end()
+
+  await NextCors(req, res, {
+    methods: ['POST'],
+    origin: '*',
+  })
 
   const body = schema.safeParse(req.body)
   if (!body.success) {
