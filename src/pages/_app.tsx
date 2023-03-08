@@ -41,6 +41,7 @@ export default function App({
           'flex h-screen flex-col bg-background text-text',
           sourceSansPro.className
         )}
+        style={{ height: '100svh' }}
       >
         <Navbar />
         <Component {...props} />
