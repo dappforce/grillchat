@@ -994,6 +994,26 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
+"@dicebear/bottts@^5.3.4":
+  version "5.3.4"
+  resolved "https://registry.yarnpkg.com/@dicebear/bottts/-/bottts-5.3.4.tgz#6d61a809d07e46548eaff166d8fb3c508e4b7853"
+  integrity sha512-LVe6i+D+VFfiaqshKMkHu8QB7zb3cE4PlnkgG5GV8zNvihTUrfs+7gzFxjLliqQIqZ6PRYJGiK7ui29kpyBY0A==
+
+"@dicebear/converter@5.3.4":
+  version "5.3.4"
+  resolved "https://registry.yarnpkg.com/@dicebear/converter/-/converter-5.3.4.tgz#d07fc525ee8d563f7347bd4a4d8c7ed4905ba2ce"
+  integrity sha512-lAwgL7sORLc2HuOwFy18CfUIUdUXTBs0qq6GnFd3f8YF1LYq/a9LkEaE3/7ExIUfXeubPWyGxjZ3iikkX4n8aQ==
+  dependencies:
+    "@types/json-schema" "^7.0.7"
+    tmp-promise "^3.0.3"
+
+"@dicebear/core@^5.3.4":
+  version "5.3.4"
+  resolved "https://registry.yarnpkg.com/@dicebear/core/-/core-5.3.4.tgz#c66e978358eda2155d033fd22757567faaa34165"
+  integrity sha512-XOMDUl5kGIeaux43ul3SCXAOKj7dYvzHxRQeUgZyni+FK9g/IoVq1/imY5ShfsfwYROSglCA2yElmSgxe9uKBA==
+  dependencies:
+    "@dicebear/converter" "5.3.4"
+
 "@eslint/eslintrc@^1.4.1":
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-1.4.1.tgz#af58772019a2d271b7e2d4c23ff4ddcba3ccfb3e"
@@ -1882,6 +1902,11 @@
   integrity sha512-qNrYbZqMx0uJAfKnKclPh+dTwK33KfLHYqtyODwd5HnXOjnkhc4qgn3BrK6RWyGZm5+sIFE7Q7Vz6QQtJB7w7g==
   dependencies:
     "@types/node" "*"
+
+"@types/json-schema@^7.0.7":
+  version "7.0.11"
+  resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.11.tgz#d421b6c527a3037f7c84433fd2c4229e016863d3"
+  integrity sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==
 
 "@types/json5@^0.0.29":
   version "0.0.29"
@@ -5422,7 +5447,7 @@ reusify@^1.0.4:
   resolved "https://registry.yarnpkg.com/reusify/-/reusify-1.0.4.tgz#90da382b1e126efc02146e90845a88db12925d76"
   integrity sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==
 
-rimraf@^3.0.2:
+rimraf@^3.0.0, rimraf@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-3.0.2.tgz#f1a5402ba6220ad52cc1282bac1ae3aa49fd061a"
   integrity sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==
@@ -5816,6 +5841,20 @@ tiny-glob@^0.2.9:
   dependencies:
     globalyzer "0.1.0"
     globrex "^0.1.2"
+
+tmp-promise@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/tmp-promise/-/tmp-promise-3.0.3.tgz#60a1a1cc98c988674fcbfd23b6e3367bdeac4ce7"
+  integrity sha512-RwM7MoPojPxsOBYnyd2hy0bxtIlVrihNs9pj5SUvY8Zz1sQcQG2tG1hSr8PDxfgEB8RNKDhqbIlroIarSNDNsQ==
+  dependencies:
+    tmp "^0.2.0"
+
+tmp@^0.2.0:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.2.1.tgz#8457fc3037dcf4719c251367a1af6500ee1ccf14"
+  integrity sha512-76SUhtfqR2Ijn+xllcI5P1oyannHNHByD80W1q447gU3mp9G9PSpGdWmjUOHRDPiHYacIk66W7ubDTuPF3BEtQ==
+  dependencies:
+    rimraf "^3.0.0"
 
 to-fast-properties@^2.0.0:
   version "2.0.0"
