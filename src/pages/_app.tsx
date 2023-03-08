@@ -1,5 +1,6 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import Navbar from '@/components/navbar/Navbar'
+import { useBreakpointThreshold } from '@/hooks/useBreakpointThreshold'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
@@ -8,6 +9,7 @@ import type { AppProps } from 'next/app'
 import { Source_Sans_Pro } from 'next/font/google'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect } from 'react'
+import { Toaster } from 'react-hot-toast'
 
 const sourceSansPro = Source_Sans_Pro({
   weight: ['400', '600'],
@@ -32,6 +34,7 @@ export default function App({
   return (
     <QueryProvider dehydratedState={dehydratedState}>
       <NextNProgress color='#4d46dc' />
+      <ToasterConfig />
       <HeadConfig {...head} />
       <div
         className={cx(
@@ -44,4 +47,9 @@ export default function App({
       </div>
     </QueryProvider>
   )
+}
+
+function ToasterConfig() {
+  const mdUp = useBreakpointThreshold('md')
+  return <Toaster position={mdUp ? 'bottom-right' : 'top-center'} />
 }

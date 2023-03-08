@@ -34,11 +34,13 @@
     "nextjs-progressbar": "^0.0.16",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.0",
     "react-icons": "^4.7.1",
     "react-infinite-scroll-component": "^6.1.0",
     "sharp": "^0.31.3",
     "tailwind-merge": "^1.10.0",
     "typescript": "4.9.5",
+    "use-breakpoint": "^3.0.7",
     "zod": "^3.20.6",
     "zustand": "^4.3.4"
   },

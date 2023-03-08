@@ -1,9 +1,12 @@
 import Button from '@/components/Button'
 import Captcha from '@/components/Captcha'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import Toast from '@/components/Toast'
 import { useRequestTokenAndSendMessage } from '@/hooks/useRequestTokenAndSendMessage'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { IoWarningOutline } from 'react-icons/io5'
 
 export type CaptchaModalProps = ModalFunctionalityProps & SendMessageParams
 
@@ -13,9 +16,21 @@ export default function CaptchaModal({
   spaceId,
   ...props
 }: CaptchaModalProps) {
-  const { mutateAsync: requestTokenAndSendMessage } =
+  const { mutateAsync: requestTokenAndSendMessage, error } =
     useRequestTokenAndSendMessage()
   const [token, setToken] = useState('')
+
+  useEffect(() => {
+    if (error)
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          icon={(classNames) => <IoWarningOutline className={classNames} />}
+          title='Sign up or send message failed. Please try again'
+          description={(error as Error)?.message}
+        />
+      ))
+  }, [error])
 
   const submitCaptcha = async () => {
     requestTokenAndSendMessage({
