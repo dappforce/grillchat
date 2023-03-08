@@ -69,6 +69,9 @@ export default function ChatForm({
           onChange={(e) => setMessage((e.target as any).value)}
           placeholder='Message...'
           autoComplete='off'
+          autoCapitalize='off'
+          autoCorrect='off'
+          spellCheck='false'
           pill
           variant='fill'
           rightElement={(classNames) => (
