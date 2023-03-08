@@ -32,7 +32,7 @@ export default function ChatUnreadCount({
         props.className
       )}
     >
-      <span className='relative top-px'>{unreadCount}</span>
+      <span className='relative'>{unreadCount}</span>
     </div>
   )
 }
