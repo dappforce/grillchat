@@ -1,6 +1,7 @@
 import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfiniteScrollData'
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
+import { CHAT_PER_PAGE } from '@/constants/chat'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { getPostQuery } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
@@ -47,7 +48,11 @@ function ChatListContent({
   const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
     subscribe: true,
   })
-  const { currentData, loadMore } = useInfiniteScrollData(commentIds, 15, true)
+  const { currentData, loadMore } = useInfiniteScrollData(
+    commentIds,
+    CHAT_PER_PAGE,
+    true
+  )
   const posts = getPostQuery.useQueries(currentData)
   const loadedPost = useMemo(() => {
     return posts.filter((post) => post.isLoading === false)

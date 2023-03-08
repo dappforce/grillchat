@@ -1,3 +1,4 @@
+import { CHAT_PER_PAGE } from '@/constants/chat'
 import ChatPage from '@/modules/_chats/ChatPage'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getPostQuery } from '@/services/subsocial/posts'
@@ -28,7 +29,7 @@ export const getServerSideProps = getCommonServerSideProps<{
 
     const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(postId)
 
-    const preloadedPostCount = 15
+    const preloadedPostCount = CHAT_PER_PAGE
     const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
     const endSlice = commentIds.length
     const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
