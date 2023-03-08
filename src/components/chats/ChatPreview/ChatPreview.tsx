@@ -10,6 +10,7 @@ const ChatLastMessageTime = dynamic(() => import('./ChatLastMessageTime'), {
 })
 const ChatLastMessage = dynamic(() => import('./ChatLastMessage'), {
   ssr: false,
+  loading: () => <p>&nbsp;</p>,
 })
 const ChatUnreadCount = dynamic(() => import('./ChatUnreadCount'), {
   ssr: false,
