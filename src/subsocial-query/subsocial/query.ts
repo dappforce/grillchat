@@ -1,5 +1,5 @@
 import { SubsocialApi } from '@subsocial/api'
-import { useQueries, useQuery } from '@tanstack/react-query'
+import { QueryClient, useQueries, useQuery } from '@tanstack/react-query'
 import {
   createQueryInvalidation,
   createQueryKeys,
@@ -59,14 +59,18 @@ export function createSubsocialQuery<Params, ReturnValue>({
   key: string
   getData: (params: SubsocialParam<Params>) => Promise<ReturnValue>
 }) {
+  const getQueryKey = createQueryKeys<Params>(key)
   return {
-    getQueryKey: createQueryKeys<Params>(key),
+    getQueryKey,
     invalidate: createQueryInvalidation<Params>(key),
     useQuery: (data: Params, config?: QueryConfig<Params, any>) => {
       return useSubsocialQuery({ key, data }, getData, config)
     },
     useQueries: (data: Params[], config?: QueryConfig<Params, any>) => {
       return useSubsocialQueries({ key, data }, getData, config)
+    },
+    setQueryData: (client: QueryClient, data: Params, value: ReturnValue) => {
+      client.setQueryData(getQueryKey(data), value)
     },
   }
 }

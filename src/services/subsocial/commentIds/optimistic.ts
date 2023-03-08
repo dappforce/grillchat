@@ -16,7 +16,7 @@ export function addOptimisticData({
   tempId,
   address,
 }: OptimisticGeneratorParam) {
-  client.setQueryData(getPostQuery.getQueryKey(tempId), {
+  getPostQuery.setQueryData(client, tempId, {
     id: tempId,
     struct: {
       createdAtTime: Date.now(),

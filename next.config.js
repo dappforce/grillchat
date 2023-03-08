@@ -22,6 +22,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'ipfs.subsocial.network',
+        port: '',
+        pathname: '/ipfs/**',
+      },
     ],
   },
 }

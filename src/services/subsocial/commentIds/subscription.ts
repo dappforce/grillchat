@@ -72,10 +72,7 @@ export function useSubscribeCommentIdsByPostId(
           newIdsAfterLastSubscribed
         )
         newPosts.forEach((post) => {
-          queryClient.setQueryData<PostData>(
-            getPostQuery.getQueryKey(post.id),
-            post
-          )
+          getPostQuery.setQueryData(queryClient, post.id, post)
         })
         queryClient.setQueryData<string[]>(
           getCommentIdsQueryKey(postId),

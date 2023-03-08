@@ -1,14 +1,17 @@
 import ChatRoom from '@/components/chats/ChatRoom'
-import { Topic } from '@/constants/topics'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { getPostQuery } from '@/services/subsocial/posts'
+import { getSpaceId } from '@/utils/env/client'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import { useEffect } from 'react'
 import ChatNavbarExtension from './ChatNavbarExtension'
 
-export default function ChatPage({ topic }: { topic: Topic }) {
-  const { data } = useCommentIdsByPostId(topic.postId, { subscribe: true })
+export default function ChatPage({ postId }: { postId: string }) {
+  const { data: post } = getPostQuery.useQuery(postId)
+  const { data } = useCommentIdsByPostId(postId, { subscribe: true })
 
-  const { setLastReadMessageId } = useLastReadMessageId(topic.postId)
+  const { setLastReadMessageId } = useLastReadMessageId(postId)
 
   useEffect(() => {
     const lastId = data?.[data.length - 1]
@@ -16,15 +19,18 @@ export default function ChatPage({ topic }: { topic: Topic }) {
     setLastReadMessageId(lastId)
   }, [setLastReadMessageId, data])
 
+  const content = post?.content
+
   return (
     <>
       <ChatNavbarExtension
-        image={topic.image}
+        image={content?.image ? getIpfsContentUrl(content.image) : ''}
         messageCount={data?.length ?? 0}
-        topic={topic.title}
+        topic={content?.title ?? ''}
       />
       <ChatRoom
-        postId={topic.postId}
+        spaceId={getSpaceId()}
+        postId={postId}
         asContainer
         className='flex-1 overflow-hidden'
       />

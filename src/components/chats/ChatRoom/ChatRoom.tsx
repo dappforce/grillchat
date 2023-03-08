@@ -1,5 +1,4 @@
 import Container from '@/components/Container'
-import { getSpaceId } from '@/constants/space'
 import { cx } from '@/utils/className'
 import { ComponentProps } from 'react'
 import ChatList from '../ChatList/ChatList'
@@ -9,6 +8,7 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
   postId: string
+  spaceId: string
 }
 
 export default function ChatRoom({
@@ -16,6 +16,7 @@ export default function ChatRoom({
   asContainer,
   scrollableContainerClassName,
   postId,
+  spaceId,
   ...props
 }: ChatRoomProps) {
   const Component = asContainer ? Container<'div'> : 'div'
@@ -28,7 +29,7 @@ export default function ChatRoom({
         scrollableContainerClassName={scrollableContainerClassName}
       />
       <Component className='mt-auto flex py-3'>
-        <ChatForm postId={postId} spaceId={getSpaceId()} />
+        <ChatForm postId={postId} spaceId={spaceId} />
       </Component>
     </div>
   )

@@ -60,8 +60,9 @@ export default function ChatPreview({
         )}
       >
         <Image
-          className='h-14 w-14'
           src={image}
+          width={56}
+          height={56}
           alt={title ?? 'chat preview'}
         />
         <div className='flex flex-1 items-center overflow-hidden'>
