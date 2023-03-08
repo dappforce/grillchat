@@ -50,6 +50,8 @@ jobs:
             GH_SERVER_MNEMONIC=plunge pumpkin penalty segment cattle more print below fat lemon clap uniform
             GH_CAPTCHA_SECRET=0xd04Bd3Ff81E50c568CE2c763318d2277A79E46bE
             GH_NEXT_PUBLIC_CAPTCHA_SITE_KEY=10000000-ffff-ffff-ffff-000000000001
+          tags: |
+            ${{ env.image }}            
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
