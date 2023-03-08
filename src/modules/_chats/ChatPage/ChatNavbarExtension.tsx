@@ -39,7 +39,7 @@ export default function ChatNavbarExtension({
         <span className='text-xs text-text-muted'>{messageCount} messages</span>
       </div>
       <Image
-        className='justify-self-end'
+        className='h-6 w-6 justify-self-end'
         width={24}
         height={24}
         src={image}
