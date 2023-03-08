@@ -8,6 +8,7 @@ import type { AppProps } from 'next/app'
 import { Source_Sans_Pro } from 'next/font/google'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect } from 'react'
+import { Toaster } from 'react-hot-toast'
 
 const sourceSansPro = Source_Sans_Pro({
   weight: ['400', '600'],
@@ -32,6 +33,15 @@ export default function App({
   return (
     <QueryProvider dehydratedState={dehydratedState}>
       <NextNProgress color='#4d46dc' />
+      <Toaster
+        position='bottom-right'
+        toastOptions={{
+          error: {
+            className: cx('!bg-red-50 !text-text !rounded-xl'),
+          },
+          duration: 100000,
+        }}
+      />
       <HeadConfig {...head} />
       <div
         className={cx(

@@ -5,6 +5,7 @@ import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
 import { ComponentProps, useState } from 'react'
+import { toast } from 'react-hot-toast'
 import CaptchaModal from './CaptchaModal'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
@@ -27,7 +28,7 @@ export default function ChatForm({
 
   const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
   const [message, setMessage] = useState('')
-  const { mutate: sendMessage } = useSendMessage()
+  const { mutate: sendMessage, error } = useSendMessage()
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
@@ -44,6 +45,7 @@ export default function ChatForm({
 
   return (
     <>
+      <button onClick={() => toast.error('asdfasdfasdf')}>asdfasdf</button>
       <form
         onSubmit={handleSubmit}
         {...props}
