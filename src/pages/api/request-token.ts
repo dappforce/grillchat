@@ -10,7 +10,8 @@ const schema = z.object({
   address: z.string(),
 })
 
-type Data = {
+export type RequestTokenParams = z.infer<typeof schema>
+export type RequestTokenResponse = {
   success: boolean
   message: string
   errors?: any
@@ -55,7 +56,7 @@ async function sendToken(address: string) {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<RequestTokenResponse>
 ) {
   if (req.method !== 'POST') return res.status(404).end()
 
