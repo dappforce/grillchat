@@ -36,13 +36,13 @@ function ChatPreviewContainer({ postId }: { postId: string }) {
         href: {
           pathname: '/chats/[topic]',
           query: {
-            topic: createPostSlug(postId, { title: data?.content?.title }),
+            topic: createPostSlug(postId, { title: content?.title }),
           },
         },
       }}
       image={content?.image ? getIpfsContentUrl(content.image) : ''}
-      title={data?.content?.title ?? ''}
-      description={data?.content?.body ?? ''}
+      title={content?.title ?? ''}
+      description={content?.body ?? ''}
       postId={postId}
       withUnreadCount
     />
