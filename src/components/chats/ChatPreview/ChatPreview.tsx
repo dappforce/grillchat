@@ -78,7 +78,7 @@ export default function ChatPreview({
             </div>
           </div>
         </div>
-        <div className='absolute bottom-0 ml-20 w-full border-b border-border-gray' />
+        <div className='absolute bottom-0 ml-16 w-full border-b border-border-gray' />
       </ContentContainer>
     </Component>
   )
