@@ -14,7 +14,7 @@ export default function NavbarExtension({
     <div
       {...props}
       className={cx(
-        'sticky top-14 border-b border-border-gray bg-background-light py-2',
+        'sticky top-14 z-10 border-b border-border-gray bg-background-light py-2',
         props.className
       )}
     >
