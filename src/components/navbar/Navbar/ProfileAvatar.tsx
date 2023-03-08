@@ -24,7 +24,9 @@ export default function ProfileAvatar({
 
     if (displayPopOver) {
       if (!popOverTriggerRef.current) return
-      popOverTriggerRef.current?.click()
+      setTimeout(() => {
+        popOverTriggerRef.current?.click()
+      }, 1000)
     }
   }, [displayPopOver, address])
 
