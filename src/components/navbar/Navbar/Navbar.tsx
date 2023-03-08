@@ -36,7 +36,7 @@ export default function Navbar({ ...props }: NavbarProps) {
       <nav
         {...props}
         className={cx(
-          'sticky top-0 z-10 flex h-14 items-center border-b border-border-gray bg-background-light',
+          'sticky top-0 z-20 flex h-14 items-center border-b border-border-gray bg-background-light',
           props.className
         )}
       >
