@@ -17,4 +17,4 @@ RUN set -x \
     && yarn install && \
     yarn build
 
-ENTRYPOINT [ "yarn", "dev" ]
+ENTRYPOINT [ "yarn", "start" ]
