@@ -1,4 +1,4 @@
-import { generateManuallyTriggeredPromise } from '@/utils/promise'
+import { generatePromiseQueue } from '@/utils/promise'
 import type { ApiPromise } from '@polkadot/api'
 import { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
@@ -167,8 +167,8 @@ function sendTransaction<Param, Context>(
           }
           unsub()
         }
-        nonceResolver()
       })
+      nonceResolver()
       txCallbacks?.onSend()
     } catch (e) {
       globalTxCallbacks.onError({ address, error: e, params, summary })
@@ -177,8 +177,7 @@ function sendTransaction<Param, Context>(
   })
 }
 
-const noncePromise = generateManuallyTriggeredPromise()
-noncePromise.getResolver()()
+const noncePromise = generatePromiseQueue()
 /**
  * This function is used to get nonce for the next transaction, and wait until the previous transaction is sent.
  * You need to call `nonceResolver()` after you send the transaction.
@@ -186,10 +185,10 @@ noncePromise.getResolver()()
  * @param address Address of the account
  */
 async function getNonce(substrateApi: ApiPromise, address: string) {
-  await noncePromise.getPromise()
-  noncePromise.generateNewPromise()
+  const previousQueue = noncePromise.addQueue()
+  await previousQueue
   const nonce = await substrateApi.rpc.system.accountNextIndex(address)
-  return { nonce, nonceResolver: noncePromise.getResolver() }
+  return { nonce, nonceResolver: noncePromise.resolveQueue }
 }
 
 function generateTxCallbacks<Param, Context>(

@@ -31,3 +31,29 @@ export function generateManuallyTriggeredPromise() {
     generateNewPromise,
   }
 }
+
+/**
+ * This function generates a queue for promises
+ * which will be useful for waiting things that are in other function calls in queue order.
+ * @returns
+ * - addQueue: function that adds a new promise to the queue and returns the last promise in the queue
+ * - resolveQueue: function that resolves the first promise in the queue
+ */
+export function generatePromiseQueue() {
+  const queue: { promise: Promise<void>; resolve: VoidFunction }[] = []
+
+  const addQueue = () => {
+    const { getPromise, getResolver } = generateManuallyTriggeredPromise()
+    const lastPromise = queue[queue.length - 1]?.promise || Promise.resolve()
+    queue.push({ promise: getPromise(), resolve: getResolver() })
+    return lastPromise
+  }
+
+  return {
+    addQueue,
+    resolveQueue: () => {
+      const { resolve } = queue.shift() ?? {}
+      resolve?.()
+    },
+  }
+}
