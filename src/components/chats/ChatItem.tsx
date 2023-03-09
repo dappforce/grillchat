@@ -1,6 +1,7 @@
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/className'
 import { getTimeRelativeToNow } from '@/utils/date'
+import randomColor from 'randomcolor'
 import { ComponentProps, useReducer } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import AddressAvatar from '../AddressAvatar'
@@ -43,6 +44,10 @@ export default function ChatItem({
     variant: '',
   })
   const relativeTime = getTimeRelativeToNow(sentDate)
+  const senderColor = randomColor({
+    seed: senderAddress,
+    luminosity: 'light',
+  })
 
   return (
     <div
@@ -67,7 +72,10 @@ export default function ChatItem({
       >
         {!isMyMessage && (
           <div className='flex items-center'>
-            <span className='mr-2 text-sm text-text-secondary'>
+            <span
+              className='mr-2 text-sm text-text-secondary'
+              style={{ color: senderColor }}
+            >
               {truncateAddress(senderAddress)}
             </span>
             <span className='text-xs text-text-muted'>{relativeTime}</span>
