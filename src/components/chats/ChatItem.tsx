@@ -61,7 +61,7 @@ export default function ChatItem({
       )}
       <div
         className={cx(
-          'relative flex flex-col gap-0.5 rounded-3xl py-2 px-4',
+          'relative flex flex-col gap-0.5 rounded-[20px] py-1.5 px-2.5',
           isMyMessage ? 'bg-background-primary' : 'bg-background-light'
         )}
       >
