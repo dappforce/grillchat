@@ -1,6 +1,6 @@
-import useWaitNewBlock from '@/hooks/useWaitNewBlock'
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { PostData } from '@subsocial/api/types'
+import { toSubsocialAddress } from '@subsocial/utils/accounts'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
 import { getPostQuery } from '../posts'
@@ -16,7 +16,6 @@ export function useSubscribeCommentIdsByPostId(
   callbackFirstResult?: (ids: string[]) => void
 ) {
   const queryClient = useQueryClient()
-  const waitNewBlock = useWaitNewBlock()
 
   const lastIdInPreviousSub = useRef('')
   const callbackRef = useRef(callbackFirstResult)
@@ -55,8 +54,6 @@ export function useSubscribeCommentIdsByPostId(
         }
 
         // consecutive subscription, set data after new block
-        // TODO: remove if subscription is fixed
-        await waitNewBlock()
         const lastSubscribedIdIndex = newIds.findIndex(
           (id) => id === lastSubscribedId
         )
@@ -92,7 +89,7 @@ export function useSubscribeCommentIdsByPostId(
       subscribedPostIds.delete(postId)
       lastIdInPreviousSub.current = ''
     }
-  }, [postId, queryClient, enabled, waitNewBlock])
+  }, [postId, queryClient, enabled])
 }
 
 function filterOptimisticIds(
@@ -108,7 +105,8 @@ function filterOptimisticIds(
     const foundIndex = mutatedNewPosts.findIndex((post) => {
       return (
         post.content?.body === idData.message &&
-        post.struct.ownerId === idData.address
+        toSubsocialAddress(post.struct.ownerId) ===
+          toSubsocialAddress(idData.address)
       )
     })
     const isFound = foundIndex !== -1
