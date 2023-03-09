@@ -70,7 +70,7 @@ export function createSubsocialQuery<Params, ReturnValue>({
       return useSubsocialQueries({ key, data }, getData, config)
     },
     setQueryData: (client: QueryClient, data: Params, value: ReturnValue) => {
-      client.setQueryData(getQueryKey(data), value)
+      client.setQueryData(getQueryKey(data), value ?? null)
     },
   }
 }

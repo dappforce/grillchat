@@ -35,7 +35,10 @@ export const getServerSideProps = getCommonServerSideProps<{
       postIds,
     })
     commentIdsByPostId.forEach((commentIds, idx) => {
-      queryClient.setQueryData(getCommentIdsQueryKey(postIds[idx]), commentIds)
+      queryClient.setQueryData(
+        getCommentIdsQueryKey(postIds[idx]),
+        commentIds ?? null
+      )
     })
     ;[...lastPosts, ...posts].forEach((post) => {
       getPostQuery.setQueryData(queryClient, post.id, post)

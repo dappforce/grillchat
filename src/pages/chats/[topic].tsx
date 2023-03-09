@@ -36,7 +36,7 @@ export const getServerSideProps = getCommonServerSideProps<{
     const posts = await subsocialApi.findPublicPosts(prefetchedCommentIds)
 
     getPostQuery.setQueryData(queryClient, postId, post)
-    queryClient.setQueryData(getCommentIdsQueryKey(postId), commentIds)
+    queryClient.setQueryData(getCommentIdsQueryKey(postId), commentIds ?? null)
     posts.forEach((post) => {
       getPostQuery.setQueryData(queryClient, post.id, post)
     })
