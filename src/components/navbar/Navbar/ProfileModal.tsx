@@ -10,10 +10,11 @@ type ProfileModalProps = ModalFunctionalityProps & {
   address: string
 }
 
-type ModalState = 'account' | 'private-key'
+type ModalState = 'account' | 'private-key' | 'logout'
 const modalTitles: { [key in ModalState]: React.ReactNode } = {
   account: <span className='font-medium'>My Account</span>,
   'private-key': '🔑 Private key',
+  logout: '🤔 Did you back up your private key?',
 }
 
 type ContentProps = {
@@ -25,6 +26,7 @@ const modalContents: {
 } = {
   account: AccountContent,
   'private-key': PrivateKeyContent,
+  logout: LogoutContent,
 }
 
 export default function ProfileModal({ address, ...props }: ProfileModalProps) {
@@ -45,8 +47,6 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
 }
 
 function AccountContent({ address, setCurrentState }: ContentProps) {
-  const logout = useMyAccount((state) => state.logout)
-
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
       <AddressAvatar address={address} className='h-20 w-20' />
@@ -62,7 +62,7 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
         className='w-full'
         size='lg'
         variant='primaryOutline'
-        onClick={logout}
+        onClick={() => setCurrentState('logout')}
       >
         Log out
       </Button>
@@ -80,6 +80,21 @@ function PrivateKeyContent() {
         A private key is like a long password. We recommend keeping it in a safe
         place, so you can recover your account.
       </p>
+    </div>
+  )
+}
+
+function LogoutContent({ setCurrentState }: ContentProps) {
+  const logout = useMyAccount((state) => state.logout)
+
+  return (
+    <div className='mt-4 flex flex-col gap-4'>
+      <Button size='lg' onClick={() => setCurrentState('private-key')}>
+        No, show me my private key
+      </Button>
+      <Button size='lg' onClick={logout} variant='primaryOutline'>
+        Yes, log out
+      </Button>
     </div>
   )
 }
