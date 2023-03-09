@@ -35,6 +35,8 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     config,
     {
       txCallbacks: {
+        // Removal of optimistic comment generated is done by the subscription of commentIds
+        // this is done to prevent a bit of flickering because the optimistic comment is done first, before the comment data finished fetching
         getContext: ({ param, address }) =>
           generateOptimisticId<OptimisticMessageIdData>({
             address,
