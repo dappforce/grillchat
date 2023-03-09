@@ -16,7 +16,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   onSubmit?: () => void
 }
 
-const ESTIMATED_ENERGY_FOR_ONE_TX = 300000000 // TODO: update based on chain
+const ESTIMATED_ENERGY_FOR_ONE_TX = 100_000_000
 
 export default function ChatForm({
   className,
