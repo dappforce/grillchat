@@ -2,27 +2,23 @@ import HCaptchaIcon from '@/assets/logo/hcaptcha.svg'
 import { cx } from '@/utils/className'
 import { getCaptchaSiteKey } from '@/utils/env/client'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
-import { ComponentProps, useEffect, useRef, useState } from 'react'
+import { ComponentProps, useRef, useState } from 'react'
 import { IoCheckmarkOutline } from 'react-icons/io5'
 
 export type CaptchaProps = ComponentProps<'div'> & {
-  token: string
-  setToken: (token: string) => void
+  onVerify: (token: string) => Promise<void> | void
 }
 
 const siteKey = getCaptchaSiteKey()
 
-export default function Captcha({ token, setToken, ...props }: CaptchaProps) {
+export default function Captcha({
+  onVerify: _onVerify,
+  ...props
+}: CaptchaProps) {
+  const [token, setToken] = useState('')
   const [error, setError] = useState('')
   const [clickedCaptcha, setClickedCaptcha] = useState(false)
   const captchaRef = useRef<HCaptcha>(null)
-
-  useEffect(() => {
-    if (!token) {
-      captchaRef.current?.resetCaptcha()
-      setClickedCaptcha(false)
-    }
-  }, [token])
 
   const onExpire = () => {
     setClickedCaptcha(false)
@@ -41,9 +37,12 @@ export default function Captcha({ token, setToken, ...props }: CaptchaProps) {
     captchaRef.current?.execute()
   }
 
-  const onVerify = (token: string) => {
-    setClickedCaptcha(false)
+  const onVerify = async (token: string) => {
     setToken(token)
+    setClickedCaptcha(false)
+    await _onVerify(token)
+
+    captchaRef.current?.resetCaptcha()
   }
 
   return (

@@ -1,10 +1,9 @@
-import Button from '@/components/Button'
 import Captcha from '@/components/Captcha'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import Toast from '@/components/Toast'
 import { useRequestTokenAndSendMessage } from '@/hooks/useRequestTokenAndSendMessage'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
 
@@ -18,7 +17,6 @@ export default function CaptchaModal({
 }: CaptchaModalProps) {
   const { mutateAsync: requestTokenAndSendMessage, error } =
     useRequestTokenAndSendMessage()
-  const [token, setToken] = useState('')
 
   useEffect(() => {
     if (error)
@@ -32,14 +30,13 @@ export default function CaptchaModal({
       ))
   }, [error])
 
-  const submitCaptcha = async () => {
+  const submitCaptcha = async (token: string) => {
     requestTokenAndSendMessage({
       captchaToken: token,
       message,
       rootPostId,
       spaceId,
     })
-    setToken('')
     props.closeModal()
   }
 
@@ -50,13 +47,10 @@ export default function CaptchaModal({
       titleClassName='text-center'
       title='🤖 Are you a human?'
     >
-      <div className='flex flex-col items-stretch gap-6 pt-4'>
+      <div className='flex flex-col items-stretch gap-6 py-4'>
         <div className='flex flex-col items-center'>
-          <Captcha token={token} setToken={setToken} />
+          <Captcha onVerify={submitCaptcha} />
         </div>
-        <Button disabled={!token} size='lg' onClick={submitCaptcha}>
-          Continue
-        </Button>
       </div>
     </Modal>
   )
