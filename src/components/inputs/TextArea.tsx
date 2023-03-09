@@ -1,6 +1,6 @@
 import { cx, scrollBarStyles } from '@/utils/className'
 import clsx from 'clsx'
-import { ComponentProps, forwardRef } from 'react'
+import { ComponentProps, forwardRef, KeyboardEventHandler } from 'react'
 import FieldWrapper, {
   getCleanedInputProps,
   RequiredFieldWrapperProps,
@@ -12,6 +12,21 @@ export type TextAreaProps = ComponentProps<'textarea'> &
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   function TextArea(props: TextAreaProps, ref) {
+    const onKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        const form = (e.target as HTMLTextAreaElement).closest('form')
+        if (!form) return
+
+        const dummySubmitBtn = form.ownerDocument.createElement('button')
+        dummySubmitBtn.style.display = 'none'
+        dummySubmitBtn.type = 'submit'
+        form.appendChild(dummySubmitBtn).click()
+        form.removeChild(dummySubmitBtn)
+      }
+      props.onKeyDown?.(e)
+    }
+
     return (
       <FieldWrapper {...props}>
         {(id, commonClassNames) => (
@@ -24,6 +39,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           >
             <textarea
               {...getCleanedInputProps(props)}
+              onKeyDown={onKeyDown}
               ref={ref}
               id={id}
               className={clsx(
