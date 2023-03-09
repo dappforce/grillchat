@@ -1,6 +1,7 @@
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/className'
 import { getTimeRelativeToNow } from '@/utils/date'
+import Linkify from 'linkify-react'
 import randomColor from 'randomcolor'
 import { ComponentProps, useReducer } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
@@ -81,7 +82,23 @@ export default function ChatItem({
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}
-        <p className='break-words'>{text}</p>
+        <p className='break-words'>
+          <Linkify
+            options={{
+              render: ({ content, attributes }) => (
+                <LinkText
+                  {...attributes}
+                  href={attributes.href}
+                  variant='secondary'
+                >
+                  {content}
+                </LinkText>
+              ),
+            }}
+          >
+            {text}
+          </Linkify>
+        </p>
         {isMyMessage && (
           <div
             className={cx('flex items-center gap-1', isMyMessage && 'self-end')}
