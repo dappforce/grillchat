@@ -11,6 +11,8 @@
 }
 .textAreaWrapper::after,
 .textAreaWrapper > textarea {
+  overflow: hidden;
+  overflow-wrap: break-word;
   max-height: 160px;
   grid-area: 1 / 1 / 2 / 2;
 }

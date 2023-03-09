@@ -26,18 +26,19 @@ export const interactionRingStyles = cva(
   }
 )
 
-export const scrollBarStyles = cva(
-  cx(
-    'flex-1 overflow-auto pr-4',
-    'scrollbar-thin',
-    'scrollbar-thumb-background-light scrollbar-track-background-light/50',
-    'scrollbar-track-rounded-full scrollbar-thumb-rounded-full'
-  ),
-  {
-    variants: {
-      none: {
-        true: cx('scrollbar-none'),
-      },
+export const scrollBarStyles = cva('', {
+  variants: {
+    none: {
+      true: cx('scrollbar-none'),
+      false: cx(
+        'flex-1 overflow-auto pr-4',
+        'scrollbar-thin',
+        'scrollbar-thumb-background-light scrollbar-track-background-light/50',
+        'scrollbar-track-rounded-full scrollbar-thumb-rounded-full'
+      ),
     },
-  }
-)
+  },
+  defaultVariants: {
+    none: false,
+  },
+})
