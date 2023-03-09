@@ -9,7 +9,7 @@ const inputStyles = cva('', {
       outlined: 'border border-background-lighter bg-transparent',
     },
     pill: {
-      true: 'rounded-full',
+      true: 'rounded-3xl',
       false: 'rounded-2xl',
     },
   },
