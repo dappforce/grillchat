@@ -61,7 +61,7 @@ export default function ChatItem({
       )}
       <div
         className={cx(
-          'relative flex flex-col gap-0.5 rounded-[20px] py-1.5 px-2.5',
+          'relative flex flex-col gap-0.5 overflow-hidden rounded-[20px] py-1.5 px-2.5',
           isMyMessage ? 'bg-background-primary' : 'bg-background-light'
         )}
       >
@@ -73,7 +73,7 @@ export default function ChatItem({
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}
-        <p>{text}</p>
+        <p className='break-words'>{text}</p>
         {isMyMessage && (
           <div
             className={cx('flex items-center gap-1', isMyMessage && 'self-end')}

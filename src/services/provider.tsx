@@ -7,7 +7,7 @@ import {
 import { useState } from 'react'
 
 setSubsocialConfig('staging', {
-  substrateUrl: 'wss://xsocial.subsocial.network',
+  // substrateUrl: 'wss://xsocial.subsocial.network',
 })
 
 const createClient = () => {
