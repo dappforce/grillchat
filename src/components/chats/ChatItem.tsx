@@ -89,7 +89,8 @@ export default function ChatItem({
                 <LinkText
                   {...attributes}
                   href={attributes.href}
-                  variant='secondary'
+                  variant={isMyMessage ? 'default' : 'secondary'}
+                  className={cx('underline')}
                 >
                   {content}
                 </LinkText>
