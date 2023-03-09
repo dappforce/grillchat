@@ -7,12 +7,16 @@ import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
 
-export type CaptchaModalProps = ModalFunctionalityProps & SendMessageParams
+export type CaptchaModalProps = ModalFunctionalityProps &
+  SendMessageParams & {
+    onSubmit?: () => void
+  }
 
 export default function CaptchaModal({
   message,
   rootPostId,
   spaceId,
+  onSubmit,
   ...props
 }: CaptchaModalProps) {
   const { mutateAsync: requestTokenAndSendMessage, error } =
@@ -38,6 +42,7 @@ export default function CaptchaModal({
       spaceId,
     })
     props.closeModal()
+    onSubmit?.()
   }
 
   return (

@@ -25,6 +25,7 @@ export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
   postId: string
+  scrollContainerRef?: React.RefObject<HTMLDivElement>
 }
 
 export default function ChatList(props: ChatListProps) {
@@ -37,12 +38,15 @@ function ChatListContent({
   asContainer,
   scrollableContainerClassName,
   postId,
+  scrollContainerRef: _scrollContainerRef,
   ...props
 }: ChatListProps) {
   const lastReadId = useFocusedLastMessageId(postId)
 
   const scrollableContainerId = useId()
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const innerScrollContainerRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
+
   const innerRef = useRef<HTMLDivElement>(null)
 
   const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
@@ -68,7 +72,7 @@ function ChatListContent({
         loadMore()
       }
     }
-  }, [loadedPost.length, loadMore])
+  }, [loadedPost.length, loadMore, scrollContainerRef])
 
   const Component = asContainer ? Container<'div'> : 'div'
 

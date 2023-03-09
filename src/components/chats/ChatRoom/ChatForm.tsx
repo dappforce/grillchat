@@ -13,6 +13,7 @@ import CaptchaModal from './CaptchaModal'
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
   spaceId: string
+  onSubmit?: () => void
 }
 
 const ESTIMATED_ENERGY_FOR_ONE_TX = 300000000 // TODO: update based on chain
@@ -21,6 +22,7 @@ export default function ChatForm({
   className,
   postId,
   spaceId,
+  onSubmit,
   ...props
 }: ChatFormProps) {
   const isLoggedIn = useMyAccount((state) => !!state.address)
@@ -50,6 +52,7 @@ export default function ChatForm({
     if (isLoggedIn && hasEnoughEnergy) {
       sendMessage({ message, rootPostId: postId, spaceId })
       setMessage('')
+      onSubmit?.()
     } else {
       setIsOpenCaptcha(true)
     }
@@ -89,6 +92,7 @@ export default function ChatForm({
         />
       </form>
       <CaptchaModal
+        onSubmit={onSubmit}
         isOpen={isOpenCaptcha}
         closeModal={() => {
           setIsOpenCaptcha(false)
