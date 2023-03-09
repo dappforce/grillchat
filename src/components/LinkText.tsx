@@ -3,12 +3,12 @@ import { cva, VariantProps } from 'class-variance-authority'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
 
-const linkTextStyles = cva('', {
+const linkTextStyles = cva('font-medium', {
   variants: {
     variant: {
       primary: 'text-text-primary',
       secondary: 'text-text-secondary',
-      default: 'font-medium',
+      default: '',
     },
   },
   defaultVariants: {
@@ -36,11 +36,7 @@ export default function LinkText({ href, variant, ...props }: LinkTextProps) {
       <a
         {...props}
         {...anchorProps}
-        className={cx(
-          props.className,
-          linkTextStyles({ variant }),
-          'font-medium'
-        )}
+        className={cx(linkTextStyles({ variant }), props.className)}
       />
     </Link>
   )
