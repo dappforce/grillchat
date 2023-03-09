@@ -76,7 +76,6 @@ export default function ChatForm({
           autoCapitalize='off'
           autoCorrect='off'
           spellCheck='false'
-          pill
           variant='fill'
           rightElement={(classNames) => (
             <Button

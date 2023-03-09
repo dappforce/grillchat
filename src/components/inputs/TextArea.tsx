@@ -1,4 +1,4 @@
-import { cx } from '@/utils/className'
+import { cx, scrollBarStyles } from '@/utils/className'
 import clsx from 'clsx'
 import { ComponentProps, forwardRef } from 'react'
 import FieldWrapper, {
@@ -26,7 +26,11 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
               {...getCleanedInputProps(props)}
               ref={ref}
               id={id}
-              className={clsx(commonClassNames, props?.className)}
+              className={clsx(
+                commonClassNames,
+                props?.className,
+                scrollBarStyles({ none: true })
+              )}
             />
           </div>
         )}

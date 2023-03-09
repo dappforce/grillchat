@@ -8,9 +8,9 @@
 }
 .textAreaWrapper > textarea {
   resize: none;
-  overflow: hidden;
 }
 .textAreaWrapper::after,
 .textAreaWrapper > textarea {
+  max-height: 160px;
   grid-area: 1 / 1 / 2 / 2;
 }
