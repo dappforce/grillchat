@@ -12,8 +12,8 @@ export type ModalFunctionalityProps = {
 
 const panelStyles = cva(
   cx(
-    'relative w-full overflow-hidden rounded-3xl bg-background-light',
-    'p-8 text-left align-middle shadow-xl',
+    'relative w-full overflow-hidden rounded-[20px] bg-background-light',
+    'p-6 text-left align-middle shadow-xl',
     'transform transition-all',
     'flex flex-col'
   ),
@@ -90,7 +90,7 @@ export default function Modal({
               >
                 {withCloseButton && (
                   <Button
-                    className='absolute right-8 m-1 mr-0 p-0 text-2xl text-text-muted'
+                    className='absolute right-6 m-1 mr-0 p-0 text-2xl text-text-muted'
                     variant='transparent'
                     onClick={closeModal}
                   >
