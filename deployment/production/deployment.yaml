@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grillchat
+  name: grillchat
+  namespace: sub-back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grillchat
+  template:
+    metadata:
+      labels:
+        app: grillchat
+      name: grillchat
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - grillchat
+            topologyKey: kubernetes.io/hostname            
+      containers:
+      - image: <IMAGE>
+        imagePullPolicy: IfNotPresent
+        name: grillchat
+        ports:
+        - containerPort: 3000
+          resources:
+            requests:
+              memory: "750Mi"
+              cpu: "100m"
+            limits:
+              memory: "1600Mi"
+              cpu: "1"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            failureThreshold: 3
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 20
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            failureThreshold: 3
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 35
+          
+      imagePullSecrets:
+      - name: dockerhub
+      restartPolicy: Always
