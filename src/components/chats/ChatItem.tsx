@@ -91,6 +91,7 @@ export default function ChatItem({
                   href={attributes.href}
                   variant={isMyMessage ? 'default' : 'secondary'}
                   className={cx('underline')}
+                  openInNewTab
                 >
                   {content}
                 </LinkText>
