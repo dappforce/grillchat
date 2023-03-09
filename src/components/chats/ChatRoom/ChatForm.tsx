@@ -1,6 +1,6 @@
 import Send from '@/assets/icons/send.svg'
 import Button from '@/components/Button'
-import Input from '@/components/inputs/Input'
+import TextArea from '@/components/inputs/TextArea'
 import Toast from '@/components/Toast'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
@@ -67,10 +67,11 @@ export default function ChatForm({
         {...props}
         className={cx('flex w-full', className)}
       >
-        <Input
+        <TextArea
           value={message}
           onChange={(e) => setMessage((e.target as any).value)}
           placeholder='Message...'
+          rows={1}
           autoComplete='off'
           autoCapitalize='off'
           autoCorrect='off'

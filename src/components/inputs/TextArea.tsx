@@ -1,0 +1,37 @@
+import { cx } from '@/utils/className'
+import clsx from 'clsx'
+import { ComponentProps, forwardRef } from 'react'
+import FieldWrapper, {
+  getCleanedInputProps,
+  RequiredFieldWrapperProps,
+} from './common/FieldWrapper'
+import styles from './TextArea.module.css'
+
+export type TextAreaProps = ComponentProps<'textarea'> &
+  RequiredFieldWrapperProps
+
+const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
+  function TextArea(props: TextAreaProps, ref) {
+    return (
+      <FieldWrapper {...props}>
+        {(id, commonClassNames) => (
+          <div
+            className={cx(
+              styles.textAreaWrapper,
+              'after:py-3 after:pl-5 after:pr-12'
+            )}
+            data-replicated-value={props.value}
+          >
+            <textarea
+              {...getCleanedInputProps(props)}
+              ref={ref}
+              id={id}
+              className={clsx(commonClassNames, props?.className)}
+            />
+          </div>
+        )}
+      </FieldWrapper>
+    )
+  }
+)
+export default TextArea

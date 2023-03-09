@@ -1,15 +1,14 @@
 import clsx from 'clsx'
-import { forwardRef, HTMLProps } from 'react'
+import { ComponentProps, forwardRef } from 'react'
 import FieldWrapper, {
   getCleanedInputProps,
   RequiredFieldWrapperProps,
 } from './common/FieldWrapper'
 
-export type TextFieldProps = HTMLProps<HTMLInputElement> &
-  RequiredFieldWrapperProps
+export type InputProps = ComponentProps<'input'> & RequiredFieldWrapperProps
 
-const Input = forwardRef<HTMLInputElement, TextFieldProps>(function Input(
-  props: TextFieldProps,
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  props: InputProps,
   ref
 ) {
   return (

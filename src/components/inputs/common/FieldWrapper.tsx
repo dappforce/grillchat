@@ -10,7 +10,7 @@ const inputStyles = cva('', {
     },
     pill: {
       true: 'rounded-full',
-      false: 'rounded-xl',
+      false: 'rounded-2xl',
     },
   },
   defaultVariants: {
@@ -64,7 +64,7 @@ export default function FieldWrapper({
   const usedId = id || generatedId
 
   const commonClassNames = cx(
-    'py-3 pl-5 pr-9',
+    'py-3 pl-5 pr-12',
     'transition duration-150',
     'hover:brightness-110',
     'focus:brightness-110',
@@ -122,7 +122,7 @@ export default function FieldWrapper({
       {(helperText || hasErrorMessage) && (
         <p
           className={cx(
-            'text-text-secondary text-sm',
+            'text-sm text-text-secondary',
             hasErrorMessage && '!text-red-500',
             helperTextClassName
           )}
