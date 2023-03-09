@@ -5,7 +5,7 @@ import Toast from '@/components/Toast'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/className'
-import { ComponentProps, useEffect, useState } from 'react'
+import { ComponentProps, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
 import CaptchaModal from './CaptchaModal'
@@ -25,6 +25,7 @@ export default function ChatForm({
   onSubmit,
   ...props
 }: ChatFormProps) {
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
   const hasEnoughEnergy = useMyAccount(
     (state) => (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
@@ -33,6 +34,10 @@ export default function ChatForm({
   const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
   const [message, setMessage] = useState('')
   const { mutate: sendMessage, error } = useSendMessage()
+
+  useEffect(() => {
+    textAreaRef.current?.focus()
+  }, [])
 
   useEffect(() => {
     if (error)
@@ -68,7 +73,9 @@ export default function ChatForm({
         className={cx('flex w-full', className)}
       >
         <TextArea
+          ref={textAreaRef}
           value={message}
+          autoFocus
           onChange={(e) => setMessage((e.target as any).value)}
           placeholder='Message...'
           rows={1}
