@@ -147,7 +147,7 @@ function CheckMarkExplanationModal({
   return (
     <Modal {...props} title={title} withCloseButton>
       <div className='flex flex-col items-center'>
-        <div className='my-6 flex justify-center text-9xl'>{icon}</div>
+        <div className='my-6 flex justify-center text-8xl'>{icon}</div>
         <p className='text-text-muted'>{desc}</p>
       </div>
     </Modal>
