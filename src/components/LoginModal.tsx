@@ -1,8 +1,10 @@
 import { useMyAccount } from '@/stores/my-account'
 import { useState } from 'react'
+import { toast } from 'react-hot-toast'
 import Button from './Button'
 import Input from './inputs/Input'
 import Modal, { ModalFunctionalityProps } from './Modal'
+import Toast from './Toast'
 
 export type LoginModalProps = ModalFunctionalityProps & {
   afterLogin?: () => void
@@ -24,7 +26,13 @@ export default function LoginModal({
       setPrivateKey('')
       props.closeModal()
     } else {
-      // TODO: handle error
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          title='Login Failed'
+          description='The private key you provided is not valid'
+        />
+      ))
     }
   }
 
