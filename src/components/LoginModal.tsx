@@ -1,5 +1,5 @@
 import { useMyAccount } from '@/stores/my-account'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Button from './Button'
 import Input from './inputs/Input'
@@ -18,6 +18,8 @@ export default function LoginModal({
 }: LoginModalProps) {
   const login = useMyAccount((state) => state.login)
   const [privateKey, setPrivateKey] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
   const onSubmit = async (e: any) => {
     e.preventDefault()
     beforeLogin?.()
@@ -37,9 +39,10 @@ export default function LoginModal({
   }
 
   return (
-    <Modal {...props} title='🔐 Login' withCloseButton>
+    <Modal {...props} initialFocus={inputRef} title='🔐 Login' withCloseButton>
       <form onSubmit={onSubmit} className='mt-2 flex flex-col gap-4'>
         <Input
+          ref={inputRef}
           value={privateKey}
           onChange={(e) => setPrivateKey((e.target as HTMLInputElement).value)}
           placeholder='Enter your private key'

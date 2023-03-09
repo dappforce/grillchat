@@ -38,6 +38,7 @@ export type ModalProps = ModalFunctionalityProps &
     title?: React.ReactNode
     description?: React.ReactNode
     panelClassName?: string
+    initialFocus?: React.RefObject<HTMLElement>
   }
 
 export default function Modal({
@@ -51,10 +52,16 @@ export default function Modal({
   isOpen,
   title,
   description,
+  initialFocus,
 }: ModalProps) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as='div' className='relative z-40 text-text' onClose={closeModal}>
+      <Dialog
+        as='div'
+        initialFocus={initialFocus}
+        className='relative z-40 text-text'
+        onClose={closeModal}
+      >
         <Transition.Child
           as={Fragment}
           enter='ease-out duration-300'
