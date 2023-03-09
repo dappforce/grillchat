@@ -7,19 +7,11 @@ import {
 import { useState } from 'react'
 
 setSubsocialConfig('staging', {
-  // substrateUrl: 'wss://xsocial.subsocial.network',
+  substrateUrl: 'wss://xsocial.subsocial.network',
 })
 
 const createClient = () => {
-  return new QueryClient({
-    defaultOptions: {
-      // TODO: remove this config after done develop
-      queries: {
-        staleTime: Infinity,
-        refetchOnWindowFocus: false,
-      },
-    },
-  })
+  return new QueryClient()
 }
 
 export function QueryProvider({
