@@ -6,7 +6,9 @@ import {
 } from '@tanstack/react-query'
 import { useState } from 'react'
 
-setSubsocialConfig('staging')
+setSubsocialConfig('staging', {
+  substrateUrl: 'wss://xsocial.subsocial.network',
+})
 
 const createClient = () => {
   return new QueryClient({
