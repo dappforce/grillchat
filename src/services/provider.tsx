@@ -11,7 +11,14 @@ setSubsocialConfig('staging', {
 })
 
 const createClient = () => {
-  return new QueryClient()
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: Infinity,
+        refetchOnWindowFocus: false,
+      },
+    },
+  })
 }
 
 export function QueryProvider({
