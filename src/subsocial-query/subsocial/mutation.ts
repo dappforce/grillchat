@@ -171,8 +171,8 @@ function sendTransaction<Param, Context>(
       })
       txCallbacks?.onSend()
     } catch (e) {
-      globalTxCallbacks.onError((e as any).message)
-      reject((e as any).message)
+      globalTxCallbacks.onError({ address, error: e, params, summary })
+      reject(e)
     }
   })
 }

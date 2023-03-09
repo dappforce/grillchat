@@ -50,12 +50,13 @@ export interface TxCallbacksParams {
   address: string
   params: any
   explorerLink?: string
-  error?: string
+  error?: unknown
 }
 const DEFAULT_TX_CALLBACKS = {
   onBroadcast: ({ summary }: TxCallbacksParams) =>
     console.info(`Broadcasting ${summary}...`),
-  onError: ({ error }: TxCallbacksParams) => console.error(error),
+  onError: ({ error }: TxCallbacksParams) =>
+    console.error('Tx Error', (error as Error).message),
   onSuccess: ({ summary }: TxCallbacksParams) =>
     console.log(`Success submit ${summary}...`),
 }
