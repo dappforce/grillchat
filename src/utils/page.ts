@@ -21,7 +21,6 @@ export function getCommonServerSideProps<ReturnValue>(
   callback?: (context: any) => Promise<ReturnValue | undefined>
 ): any {
   return async (context: any) => {
-    if (typeof window !== 'undefined') return null
     const data = callback ? await callback(context) : undefined
     if (!data) {
       return {
@@ -30,10 +29,8 @@ export function getCommonServerSideProps<ReturnValue>(
     }
 
     return {
-      props: {
-        ...params,
-        ...data,
-      },
+      ...params,
+      ...data,
     }
   }
 }

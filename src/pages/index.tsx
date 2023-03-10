@@ -13,6 +13,7 @@ import { NextPage } from 'next'
 const getInitialProps = getCommonServerSideProps<{
   dehydratedState: any
 }>({}, async () => {
+  if (typeof window !== 'undefined') return { dehydratedState: null }
   console.log('CALLED')
   const queryClient = new QueryClient()
 

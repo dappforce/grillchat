@@ -13,11 +13,12 @@ const getInitialProps = getCommonServerSideProps<{
   dehydratedState: any
   postId: string
 }>({}, async (context) => {
-  console.log('CALLED')
   const { query } = context
   const topic = query.topic as string
   const postId = getPostIdFromSlug(topic)
+
   if (!postId) return undefined
+  if (typeof window !== 'undefined') return { postId, dehydratedState: null }
 
   const queryClient = new QueryClient()
 
