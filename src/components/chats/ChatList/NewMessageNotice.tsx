@@ -15,14 +15,14 @@ export function NewMessageNotice({
   commentIds,
   ...props
 }: NewMessageNoticeProps) {
-  const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
+  const isAtBottom = useIsAtBottom(scrollContainerRef, 300)
   const { anyNewData, clearAnyNewData } = useAnyNewData(commentIds)
 
   useEffect(() => {
     if (isAtBottom) clearAnyNewData()
   }, [clearAnyNewData, isAtBottom, anyNewData])
 
-  if (!anyNewData || isAtBottom) return null
+  if (isAtBottom) return null
 
   const scrollToBottom = () => {
     scrollContainerRef.current?.scrollTo({
@@ -41,9 +41,11 @@ export function NewMessageNotice({
       {...props}
       className={cx('relative bg-background-light p-3', props.className)}
     >
-      <span className='absolute -top-1 left-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full bg-background-primary py-0.5 px-2 text-sm'>
-        {anyNewData}
-      </span>
+      {anyNewData ? (
+        <span className='absolute -top-1 left-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full bg-background-primary py-0.5 px-2 text-sm'>
+          {anyNewData}
+        </span>
+      ) : null}
       <BsChevronDown className='relative top-px text-2xl' />
     </Button>
   )

@@ -132,7 +132,7 @@ function ChatListContent({
         </div>
       </ScrollableContainer>
       <NewMessageNotice
-        className='absolute bottom-0 right-8'
+        className='absolute bottom-4 right-8'
         commentIds={commentIds}
         scrollContainerRef={scrollContainerRef}
       />
