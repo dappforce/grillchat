@@ -28,7 +28,7 @@ export const getServerSideProps = getCommonServerSideProps<{
     const posts = await postsPromise
 
     const lastPostIds = commentIdsByPostId.map((ids) => ids[ids.length - 1])
-    const lastPosts = await subsocialApi.findPosts({ ids: lastPostIds })
+    const lastPosts = await subsocialApi.findPublicPosts(lastPostIds)
 
     getPostIdsBySpaceIdQuery.setQueryData(queryClient, spaceId, {
       spaceId,
@@ -41,7 +41,11 @@ export const getServerSideProps = getCommonServerSideProps<{
       )
     })
     ;[...lastPosts, ...posts].forEach((post) => {
-      getPostQuery.setQueryData(queryClient, post.id, post)
+      getPostQuery.setQueryData(
+        queryClient,
+        post.id,
+        JSON.parse(JSON.stringify(post))
+      )
     })
   } catch (e) {
     console.error('Error fetching for home page: ', e)
