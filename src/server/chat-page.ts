@@ -2,6 +2,7 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
 import { PostData } from '@subsocial/api/types'
+import { getCachedPosts } from './post-cache'
 
 type CacheType = {
   post: PostData
@@ -28,10 +29,7 @@ export async function startSubscription(postId: string) {
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi
   console.log('GET POST...')
-  const post = await subsocialApi.findPost({
-    id: postId,
-    visibility: 'onlyPublic',
-  })
+  const [post] = await getCachedPosts([postId])
 
   // TODO: better handling
   if (!post) return
@@ -52,7 +50,7 @@ export async function startSubscription(postId: string) {
 
         console.log('GET CHATS...')
         const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
-        const posts = await subsocialApi.findPublicPosts(prefetchedCommentIds)
+        const posts = await getCachedPosts(prefetchedCommentIds)
 
         cache[postId].cache = {
           commentIds,

@@ -1,5 +1,5 @@
 import ChatPage from '@/modules/_chats/ChatPage'
-import { getCache, startSubscription } from '@/modules/_chats/ChatPage/server'
+import { getCache, startSubscription } from '@/server/chat-page'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getPostQuery } from '@/services/subsocial/posts'
 import { getCommonServerSideProps } from '@/utils/page'
@@ -28,7 +28,11 @@ export const getServerSideProps = getCommonServerSideProps<{
       cacheData.commentIds ?? null
     )
     cacheData.comments.forEach((post) => {
-      getPostQuery.setQueryData(queryClient, post.id, post)
+      getPostQuery.setQueryData(
+        queryClient,
+        post.id,
+        JSON.parse(JSON.stringify(post))
+      )
     })
   } catch (err) {
     console.error('Error fetching for topic page: ', err)

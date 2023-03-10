@@ -1,10 +1,10 @@
 import HomePage from '@/modules/HomePage'
+import { getCache, startSubscription } from '@/server/home-page'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import {
   getPostIdsBySpaceIdQuery,
   getPostQuery,
 } from '@/services/subsocial/posts'
-import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { getSpaceId } from '@/utils/env/client'
 import { getCommonServerSideProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
@@ -16,32 +16,33 @@ export const getServerSideProps = getCommonServerSideProps<{
 
   try {
     const spaceId = getSpaceId()
-    const subsocialApi = await getSubsocialApi()
-    const postIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
+    console.log('waiting sub')
+    await startSubscription(spaceId)
 
-    const promises = postIds.map((postId) => {
-      return subsocialApi.blockchain.getReplyIdsByPostId(postId)
-    })
-    const postsPromise = subsocialApi.findPublicPosts(postIds)
+    console.log('waiting cache')
+    const cachedData = await getCache(spaceId)
+    console.log('finish getting cache', cachedData)
+    if (!cachedData) return
 
-    const commentIdsByPostId = await Promise.all(promises)
-    const posts = await postsPromise
+    const { commentIdsByPostIds, postIdsBySpaceId, posts } = cachedData
 
-    const lastPostIds = commentIdsByPostId.map((ids) => ids[ids.length - 1])
-    const lastPosts = await subsocialApi.findPosts({ ids: lastPostIds })
-
-    getPostIdsBySpaceIdQuery.setQueryData(queryClient, spaceId, {
+    getPostIdsBySpaceIdQuery.setQueryData(
+      queryClient,
       spaceId,
-      postIds,
-    })
-    commentIdsByPostId.forEach((commentIds, idx) => {
+      postIdsBySpaceId
+    )
+    Object.entries(commentIdsByPostIds).forEach(([postId, commentIds], idx) => {
       queryClient.setQueryData(
-        getCommentIdsQueryKey(postIds[idx]),
+        getCommentIdsQueryKey(postId),
         commentIds ?? null
       )
     })
-    ;[...lastPosts, ...posts].forEach((post) => {
-      getPostQuery.setQueryData(queryClient, post.id, post)
+    posts.forEach((post) => {
+      getPostQuery.setQueryData(
+        queryClient,
+        post.id,
+        JSON.parse(JSON.stringify(post))
+      )
     })
   } catch (e) {
     console.error('Error fetching for home page: ', e)
