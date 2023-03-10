@@ -75,7 +75,11 @@ export default function ChatPreview({
               />
             </div>
             <div className='flex items-baseline justify-between overflow-hidden'>
-              <ChatLastMessage defaultDesc={description} postId={postId} />
+              <ChatLastMessage
+                className='py-0.5'
+                defaultDesc={description}
+                postId={postId}
+              />
               {withUnreadCount && (
                 <ChatUnreadCount className='ml-2' postId={postId} />
               )}
