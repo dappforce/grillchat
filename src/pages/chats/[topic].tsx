@@ -28,11 +28,7 @@ export const getServerSideProps = getCommonServerSideProps<{
       cacheData.commentIds ?? null
     )
     cacheData.comments.forEach((post) => {
-      getPostQuery.setQueryData(
-        queryClient,
-        post.id,
-        JSON.parse(JSON.stringify(post))
-      )
+      getPostQuery.setQueryData(queryClient, post.id, post)
     })
   } catch (err) {
     console.error('Error fetching for topic page: ', err)

@@ -16,7 +16,7 @@ export async function getCachedPosts(ids: string[]): Promise<PostData[]> {
   const subsocialApi = await getSubsocialApi()
   const postsFromApi = await subsocialApi.findPublicPosts(needToFetchIds)
   postsFromApi.forEach((post) => {
-    postCache.add(post.id, post)
+    postCache.add(post.id, JSON.parse(JSON.stringify(post)))
   })
   return [...postsFromApi, ...postsFromCache]
 }

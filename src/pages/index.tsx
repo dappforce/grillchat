@@ -35,11 +35,7 @@ export const getServerSideProps = getCommonServerSideProps<{
       )
     })
     posts.forEach((post) => {
-      getPostQuery.setQueryData(
-        queryClient,
-        post.id,
-        JSON.parse(JSON.stringify(post))
-      )
+      getPostQuery.setQueryData(queryClient, post.id, post)
     })
   } catch (e) {
     console.error('Error fetching for home page: ', e)
