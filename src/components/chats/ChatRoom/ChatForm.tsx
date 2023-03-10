@@ -1,5 +1,5 @@
 import Send from '@/assets/icons/send.svg'
-import Button from '@/components/Button'
+import { buttonStyles } from '@/components/Button'
 import TextArea from '@/components/inputs/TextArea'
 import Toast from '@/components/Toast'
 import { useSendMessage } from '@/services/subsocial/commentIds'
@@ -55,10 +55,13 @@ export default function ChatForm({
       ))
   }, [error])
 
+  const isDisabled = !processMessage(message)
+
   const handleSubmit = (e: any) => {
     e.preventDefault()
     const processedMessage = processMessage(message)
-    if (!processedMessage) return
+    if (isDisabled) return
+
     if (isLoggedIn && hasEnoughEnergy) {
       setMessage('')
       sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
@@ -67,8 +70,6 @@ export default function ChatForm({
       setIsOpenCaptcha(true)
     }
   }
-
-  const isDisabled = !processMessage(message)
 
   return (
     <>
@@ -91,17 +92,19 @@ export default function ChatForm({
           variant='fill'
           pill
           rightElement={(classNames) => (
-            <Button
-              onClick={() => textAreaRef.current?.focus()}
-              type='submit'
-              size='circle'
-              disabled={isDisabled}
-              withDisabledStyles={false}
-              variant={isDisabled ? 'mutedOutline' : 'primary'}
-              className={cx(classNames)}
+            <div
+              onMouseDown={handleSubmit}
+              className={cx(
+                buttonStyles({
+                  size: 'circle',
+                  variant: isDisabled ? 'mutedOutline' : 'primary',
+                }),
+                classNames,
+                'cursor-pointer'
+              )}
             >
               <Send className='relative top-px h-4 w-4' />
-            </Button>
+            </div>
           )}
         />
       </form>
