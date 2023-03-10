@@ -78,7 +78,7 @@ function ChatListContent({
 
   const isAllPostsLoaded = loadedPost.length === commentIds.length
   const scrollThreshold =
-    (scrollContainerRef.current?.scrollHeight ?? 0) * 0.75 || 300
+    (scrollContainerRef.current?.scrollHeight ?? 0) * 0.5 || 1000
 
   return (
     <Component
