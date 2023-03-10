@@ -93,7 +93,10 @@ export default function ChatForm({
           pill
           rightElement={(classNames) => (
             <div
-              onMouseDown={handleSubmit}
+              onMouseDown={(e) => {
+                handleSubmit(e)
+                textAreaRef.current?.focus()
+              }}
               className={cx(
                 buttonStyles({
                   size: 'circle',
