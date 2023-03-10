@@ -1,11 +1,5 @@
 import { AppCommonProps } from '@/pages/_app'
-import {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  GetStaticProps,
-  PreviewData,
-} from 'next'
-import { ParsedUrlQuery } from 'querystring'
+import { GetStaticProps } from 'next'
 
 export function getCommonStaticProps<ReturnValue>(
   params: AppCommonProps,
@@ -24,11 +18,10 @@ export function getCommonStaticProps<ReturnValue>(
 
 export function getCommonServerSideProps<ReturnValue>(
   params: AppCommonProps,
-  callback?: (
-    context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
-  ) => Promise<ReturnValue | undefined>
-): GetServerSideProps<AppCommonProps & ReturnValue> {
-  return async (context) => {
+  callback?: (context: any) => Promise<ReturnValue | undefined>
+): any {
+  return async (context: any) => {
+    if (typeof window !== 'undefined') return null
     const data = callback ? await callback(context) : undefined
     if (!data) {
       return {

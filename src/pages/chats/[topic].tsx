@@ -7,11 +7,13 @@ import { getSpaceId } from '@/utils/env/client'
 import { getCommonServerSideProps } from '@/utils/page'
 import { getPostIdFromSlug } from '@subsocial/utils/slugify'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
+import { NextPage } from 'next'
 
-export const getServerSideProps = getCommonServerSideProps<{
+const getInitialProps = getCommonServerSideProps<{
   dehydratedState: any
   postId: string
 }>({}, async (context) => {
+  console.log('CALLED')
   const { query } = context
   const topic = query.topic as string
   const postId = getPostIdFromSlug(topic)
@@ -50,4 +52,6 @@ export const getServerSideProps = getCommonServerSideProps<{
   }
 })
 
-export default ChatPage
+const Page: NextPage<{ postId: string }> = ChatPage
+Page.getInitialProps = getInitialProps
+export default Page

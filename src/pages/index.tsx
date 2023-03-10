@@ -8,10 +8,12 @@ import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { getSpaceId } from '@/utils/env/client'
 import { getCommonServerSideProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
+import { NextPage } from 'next'
 
-export const getServerSideProps = getCommonServerSideProps<{
+const getInitialProps = getCommonServerSideProps<{
   dehydratedState: any
 }>({}, async () => {
+  console.log('CALLED')
   const queryClient = new QueryClient()
 
   try {
@@ -51,4 +53,6 @@ export const getServerSideProps = getCommonServerSideProps<{
     dehydratedState: dehydrate(queryClient),
   }
 })
-export default HomePage
+const Page: NextPage = HomePage
+Page.getInitialProps = getInitialProps
+export default Page
