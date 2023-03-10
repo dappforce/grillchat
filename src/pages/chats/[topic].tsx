@@ -4,16 +4,32 @@ import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getPostQuery } from '@/services/subsocial/posts'
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { getSpaceId } from '@/utils/env/client'
-import { getCommonServerSideProps } from '@/utils/page'
-import { getPostIdFromSlug } from '@subsocial/utils/slugify'
+import { getCommonStaticProps } from '@/utils/page'
+import { createPostSlug, getPostIdFromSlug } from '@subsocial/utils/slugify'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
+import { GetStaticPaths } from 'next'
 
-export const getServerSideProps = getCommonServerSideProps<{
+export const getStaticPaths: GetStaticPaths = async () => {
+  const spaceId = getSpaceId()
+  const subsocialApi = await getSubsocialApi()
+  const postIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
+  const posts = await subsocialApi.findPublicPosts(postIds)
+
+  const paths = posts.map((post) => ({
+    params: { topic: createPostSlug(post.id, post.content) },
+  }))
+
+  return {
+    paths,
+    fallback: 'blocking',
+  }
+}
+
+export const getStaticProps = getCommonStaticProps<{
   dehydratedState: any
   postId: string
 }>({}, async (context) => {
-  const { query } = context
-  const topic = query.topic as string
+  const topic = context.params?.topic as string
   const postId = getPostIdFromSlug(topic)
   if (!postId) return undefined
 
@@ -45,8 +61,11 @@ export const getServerSideProps = getCommonServerSideProps<{
   }
 
   return {
-    dehydratedState: dehydrate(queryClient),
-    postId,
+    props: {
+      dehydratedState: dehydrate(queryClient),
+      postId,
+    },
+    revalidate: 2,
   }
 })
 

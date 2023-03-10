@@ -18,6 +18,10 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
 
 const ESTIMATED_ENERGY_FOR_ONE_TX = 100_000_000
 
+function processMessage(message: string) {
+  return message.trim()
+}
+
 export default function ChatForm({
   className,
   postId,
@@ -53,17 +57,18 @@ export default function ChatForm({
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
-    if (!message) return
+    const processedMessage = processMessage(message)
+    if (!processedMessage) return
     if (isLoggedIn && hasEnoughEnergy) {
-      sendMessage({ message, rootPostId: postId, spaceId })
       setMessage('')
+      sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
       onSubmit?.()
     } else {
       setIsOpenCaptcha(true)
     }
   }
 
-  const isDisabled = !message
+  const isDisabled = !processMessage(message)
 
   return (
     <>
@@ -100,13 +105,13 @@ export default function ChatForm({
         />
       </form>
       <CaptchaModal
-        onSubmit={onSubmit}
-        isOpen={isOpenCaptcha}
-        closeModal={() => {
-          setIsOpenCaptcha(false)
+        onSubmit={() => {
+          onSubmit?.()
           setMessage('')
         }}
-        message={message}
+        isOpen={isOpenCaptcha}
+        closeModal={() => setIsOpenCaptcha(false)}
+        message={processMessage(message)}
         rootPostId={postId}
         spaceId={spaceId}
       />
