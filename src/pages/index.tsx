@@ -6,10 +6,10 @@ import {
 } from '@/services/subsocial/posts'
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { getSpaceId } from '@/utils/env/client'
-import { getCommonServerSideProps } from '@/utils/page'
+import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 
-export const getServerSideProps = getCommonServerSideProps<{
+export const getStaticProps = getCommonStaticProps<{
   dehydratedState: any
 }>({}, async () => {
   const queryClient = new QueryClient()
@@ -52,7 +52,10 @@ export const getServerSideProps = getCommonServerSideProps<{
   }
 
   return {
-    dehydratedState: dehydrate(queryClient),
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+    revalidate: 2,
   }
 })
 export default HomePage
