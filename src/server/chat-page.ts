@@ -28,7 +28,6 @@ export async function startSubscription(postId: string) {
 
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi
-  console.log('GET POST...')
   const [post] = await getCachedPosts([postId])
 
   // TODO: better handling
@@ -38,7 +37,6 @@ export async function startSubscription(postId: string) {
     const unsub = substrateApi.query.posts.replyIdsByPostId(
       postId,
       async (ids) => {
-        console.log('NEW COMMENTIDS...')
         const promise = cache[postId].promise
         resolve()
 
@@ -48,7 +46,6 @@ export async function startSubscription(postId: string) {
         const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
         const endSlice = commentIds.length
 
-        console.log('GET CHATS...')
         const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
         const posts = await getCachedPosts(prefetchedCommentIds)
 

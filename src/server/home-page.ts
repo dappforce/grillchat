@@ -63,9 +63,7 @@ export async function startSubscription(spaceId: string) {
     })
     getResolver()()
   })
-  console.log('awaiting sub promise')
   await subscriptionPromise
-  console.log('awaiting child promise')
   await Promise.all(childSubscriptionPromises)
 
   cacheData.posts = cacheData.posts.filter((post) => !!post)

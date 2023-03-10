@@ -16,12 +16,9 @@ export const getServerSideProps = getCommonServerSideProps<{
 
   try {
     const spaceId = getSpaceId()
-    console.log('waiting sub')
     await startSubscription(spaceId)
 
-    console.log('waiting cache')
     const cachedData = await getCache(spaceId)
-    console.log('finish getting cache', cachedData)
     if (!cachedData) return
 
     const { commentIdsByPostIds, postIdsBySpaceId, posts } = cachedData
