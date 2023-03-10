@@ -62,7 +62,6 @@ export default function ChatForm({
     if (isLoggedIn && hasEnoughEnergy) {
       setMessage('')
       sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
-      textAreaRef.current?.focus()
       onSubmit?.()
     } else {
       setIsOpenCaptcha(true)
@@ -93,6 +92,7 @@ export default function ChatForm({
           pill
           rightElement={(classNames) => (
             <Button
+              onClick={() => textAreaRef.current?.focus()}
               type='submit'
               size='circle'
               disabled={isDisabled}
