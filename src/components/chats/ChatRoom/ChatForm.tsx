@@ -62,6 +62,7 @@ export default function ChatForm({
     if (isLoggedIn && hasEnoughEnergy) {
       setMessage('')
       sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
+      textAreaRef.current?.focus()
       onSubmit?.()
     } else {
       setIsOpenCaptcha(true)
