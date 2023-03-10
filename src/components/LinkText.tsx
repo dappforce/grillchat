@@ -22,9 +22,14 @@ export type LinkTextProps = Omit<ComponentProps<'a'>, 'href'> &
     openInNewTab?: boolean
   }
 
-export default function LinkText({ href, variant, ...props }: LinkTextProps) {
+export default function LinkText({
+  href,
+  variant,
+  openInNewTab,
+  ...props
+}: LinkTextProps) {
   let anchorProps = {}
-  if (props.openInNewTab) {
+  if (openInNewTab) {
     anchorProps = {
       target: '_blank',
       rel: 'noopener noreferrer',
