@@ -3,6 +3,7 @@ import type { SubsocialApi } from '@subsocial/api'
 export interface SubsocialConnectionConfig {
   substrateUrl: string
   ipfsNodeUrl: string
+  ipfsAdminNodeUrl?: string
   postConnectConfig?: (api: SubsocialApi) => void
 }
 
