@@ -77,6 +77,8 @@ function ChatListContent({
   const Component = asContainer ? Container<'div'> : 'div'
 
   const isAllPostsLoaded = loadedPost.length === commentIds.length
+  const scrollThreshold =
+    (scrollContainerRef.current?.scrollHeight ?? 0) * 0.75 || 300
 
   return (
     <Component
@@ -103,7 +105,7 @@ function ChatListContent({
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
             endMessage={<ChatTopNotice className='pb-2 pt-4' />}
-            scrollThreshold='200px'
+            scrollThreshold={`${scrollThreshold}px`}
           >
             {posts.map(({ data: post }, index) => {
               const isLastReadMessage = lastReadId === post?.id
