@@ -1,4 +1,5 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
+import { saveFile } from '@/services/api/mutations'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial'
@@ -20,9 +21,12 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     async () => ({ address, signer }),
     async (params, { ipfsApi, substrateApi }) => {
       await waitHasBalance()
-      const cid = await ipfsApi.saveContent({
+      const { cid, success } = await saveFile({
         body: params.message,
       } as any)
+
+      if (!success) throw new Error('Failed to save file to IPFS')
+
       return {
         tx: substrateApi.tx.posts.createPost(
           params.spaceId,

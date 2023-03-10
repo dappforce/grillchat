@@ -1,3 +1,4 @@
+import { AnalyticProvider } from '@/analytics/amplitude'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import Navbar from '@/components/navbar/Navbar'
 import { useBreakpointThreshold } from '@/hooks/useBreakpointThreshold'
@@ -33,19 +34,21 @@ export default function App({
 
   return (
     <QueryProvider dehydratedState={dehydratedState}>
-      <NextNProgress color='#4d46dc' />
       <ToasterConfig />
-      <HeadConfig {...head} />
-      <div
-        className={cx(
-          'flex h-screen flex-col bg-background text-text',
-          sourceSansPro.className
-        )}
-        style={{ height: '100svh' }}
-      >
-        <Navbar />
-        <Component {...props} />
-      </div>
+      <AnalyticProvider>
+        <NextNProgress color='#4d46dc' />
+        <HeadConfig {...head} />
+        <div
+          className={cx(
+            'flex h-screen flex-col bg-background text-text',
+            sourceSansPro.className
+          )}
+          style={{ height: '100svh' }}
+        >
+          <Navbar />
+          <Component {...props} />
+        </div>
+      </AnalyticProvider>
     </QueryProvider>
   )
 }

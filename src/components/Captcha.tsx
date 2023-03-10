@@ -1,3 +1,4 @@
+import useAnalytic from '@/analytics/amplitude'
 import HCaptchaIcon from '@/assets/logo/hcaptcha.svg'
 import { cx } from '@/utils/className'
 import { getCaptchaSiteKey } from '@/utils/env/client'
@@ -19,6 +20,7 @@ export default function Captcha({
   const [error, setError] = useState('')
   const [clickedCaptcha, setClickedCaptcha] = useState(false)
   const captchaRef = useRef<HCaptcha>(null)
+  const { amp } = useAnalytic()
 
   const onExpire = () => {
     setClickedCaptcha(false)

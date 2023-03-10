@@ -88,6 +88,8 @@ export default async function handler(
   })
 
   const body = schema.safeParse(req.body)
+
+  console.log(body)
   if (!body.success) {
     return res.status(400).send({
       success: false,
