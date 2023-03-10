@@ -6,9 +6,9 @@
  * - getResolver: function that returns the resolver function
  * - generateNewPromise: generates a new promise and resolver
  */
-export function generateManuallyTriggeredPromise() {
-  let resolve: VoidFunction = () => undefined
-  let promise = new Promise<void>((_resolve) => {
+export function generateManuallyTriggeredPromise<ReturnType = void>() {
+  let resolve: (value: ReturnType) => void = () => undefined
+  let promise = new Promise<ReturnType>((_resolve) => {
     resolve = _resolve
   })
 
@@ -20,7 +20,7 @@ export function generateManuallyTriggeredPromise() {
   }
 
   const generateNewPromise = () => {
-    promise = new Promise<void>((_resolve) => {
+    promise = new Promise<ReturnType>((_resolve) => {
       resolve = _resolve
     })
   }
