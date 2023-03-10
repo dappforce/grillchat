@@ -54,13 +54,17 @@ export default function ChatPreview({
           props.className
         )}
       >
-        <Image
-          src={image}
-          className='h-14 w-14'
-          width={56}
-          height={56}
-          alt={title ?? 'chat preview'}
-        />
+        <div className='h-14 w-14 rounded-full bg-background-lighter'>
+          {image && (
+            <Image
+              className='h-full w-full'
+              src={image}
+              width={56}
+              height={56}
+              alt={title ?? 'chat preview'}
+            />
+          )}
+        </div>
         <div className='flex flex-1 items-center overflow-hidden'>
           <div className='flex flex-1 flex-col gap-1 overflow-hidden'>
             <div className='flex items-center justify-between'>
