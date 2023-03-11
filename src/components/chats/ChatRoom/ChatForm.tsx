@@ -86,7 +86,7 @@ export default function ChatForm({
           placeholder='Message...'
           rows={1}
           autoComplete='off'
-          autoCapitalize='on'
+          autoCapitalize='sentences'
           autoCorrect='off'
           spellCheck='false'
           variant='fill'
