@@ -1,5 +1,5 @@
 import Container from '@/components/Container'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'

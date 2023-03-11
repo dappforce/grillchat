@@ -1,5 +1,5 @@
 import { useMyAccount } from '@/stores/my-account'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ComponentProps, useRef, useState } from 'react'

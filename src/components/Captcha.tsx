@@ -1,5 +1,5 @@
 import HCaptchaIcon from '@/assets/logo/hcaptcha.svg'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { getCaptchaSiteKey } from '@/utils/env/client'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { ComponentProps, useRef, useState } from 'react'

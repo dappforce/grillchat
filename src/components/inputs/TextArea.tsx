@@ -1,4 +1,4 @@
-import { cx, scrollBarStyles } from '@/utils/className'
+import { cx, scrollBarStyles } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import clsx from 'clsx'
 import { ComponentProps, forwardRef, KeyboardEventHandler } from 'react'

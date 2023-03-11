@@ -5,7 +5,7 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { getPostQuery } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import {
   ComponentProps,
   Fragment,

@@ -1,4 +1,4 @@
-import { cx, interactionRingStyles } from '@/utils/className'
+import { cx, interactionRingStyles } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import { useId } from 'react'
 

@@ -1,5 +1,5 @@
 import { truncateAddress } from '@/utils/account'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
 import randomColor from 'randomcolor'

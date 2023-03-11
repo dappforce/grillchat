@@ -1,5 +1,5 @@
 import Container from '@/components/Container'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { ComponentProps, useRef } from 'react'
 import ChatList from '../ChatList/ChatList'
 import ChatForm from './ChatForm'

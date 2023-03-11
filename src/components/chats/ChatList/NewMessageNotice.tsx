@@ -1,5 +1,5 @@
 import Button, { ButtonProps } from '@/components/Button'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { RefObject, useEffect } from 'react'
 import { BsChevronDown } from 'react-icons/bs'
 import useAnyNewData from './hooks/useAnyNewData'

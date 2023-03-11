@@ -1,4 +1,4 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import useLastMessage from './hooks/useLastMessage'
 
