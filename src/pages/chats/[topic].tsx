@@ -28,7 +28,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = getCommonStaticProps<{
   dehydratedState: any
   postId: string
-}>({}, async (context) => {
+}>({ head: { disableZoom: true } }, async (context) => {
   const topic = context.params?.topic as string
   const postId = getPostIdFromSlug(topic)
   if (!postId) return undefined
