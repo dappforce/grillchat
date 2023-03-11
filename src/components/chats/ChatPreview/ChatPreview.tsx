@@ -57,7 +57,7 @@ export default function ChatPreview({
         <div className='h-14 w-14 rounded-full bg-background-lighter'>
           {image && (
             <Image
-              className='h-full w-full'
+              className='h-full w-full rounded-full'
               src={image}
               width={56}
               height={56}
