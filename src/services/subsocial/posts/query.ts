@@ -12,7 +12,9 @@ const getPost = poolQuery<SubsocialParam<string>, PostData>({
     const postIds = allParams.map(({ data }) => data).filter((id) => !!id)
     if (postIds.length === 0) return []
 
+    console.log('fetching posts...')
     const res = await api.findPublicPosts(postIds)
+    console.log('done fetching')
     return res
   },
   resultMapper: {
