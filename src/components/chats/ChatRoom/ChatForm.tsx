@@ -5,6 +5,7 @@ import Toast from '@/components/Toast'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { submitClosestForm } from '@/utils/form'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
@@ -57,7 +58,7 @@ export default function ChatForm({
 
   const isDisabled = !processMessage(message)
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e?: any) => {
     e.preventDefault()
     const processedMessage = processMessage(message)
     if (isDisabled) return
@@ -94,7 +95,8 @@ export default function ChatForm({
           rightElement={(classNames) => (
             <div
               onMouseDown={(e) => {
-                handleSubmit(e)
+                e.preventDefault()
+                submitClosestForm(e.target as HTMLElement)
                 textAreaRef.current?.focus()
               }}
               className={cx(
