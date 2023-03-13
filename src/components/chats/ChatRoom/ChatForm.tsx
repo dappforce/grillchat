@@ -99,7 +99,7 @@ export default function ChatForm({
           pill
           rightElement={(classNames) => (
             <div
-              onMouseDown={(e) => {
+              onTouchEnd={(e) => {
                 e.preventDefault()
                 submitClosestForm(e.target as HTMLElement)
                 textAreaRef.current?.focus()
