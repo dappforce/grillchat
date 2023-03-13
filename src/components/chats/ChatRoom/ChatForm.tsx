@@ -61,18 +61,20 @@ export default function ChatForm({
       ))
   }, [error])
 
+  const shouldOpenCaptcha =
+    isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
   const isDisabled = !processMessage(message)
 
   const handleSubmit = (e?: any) => {
     e.preventDefault()
-    if ('virtualKeyboard' in navigator) {
+    if (!shouldOpenCaptcha && 'virtualKeyboard' in navigator) {
       ;(navigator.virtualKeyboard as any).show()
     }
 
     const processedMessage = processMessage(message)
     if (isDisabled) return
 
-    if (isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)) {
+    if (shouldOpenCaptcha) {
       setMessage('')
       sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
       onSubmit?.()
@@ -104,6 +106,7 @@ export default function ChatForm({
           rightElement={(classNames) => (
             <div
               onTouchEnd={(e) => {
+                if (shouldOpenCaptcha) return
                 e.preventDefault()
                 submitClosestForm(e.target as HTMLElement)
                 textAreaRef.current?.focus()
