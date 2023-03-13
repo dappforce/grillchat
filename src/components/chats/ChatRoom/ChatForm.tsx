@@ -65,6 +65,10 @@ export default function ChatForm({
 
   const handleSubmit = (e?: any) => {
     e.preventDefault()
+    if ('virtualKeyboard' in navigator) {
+      ;(navigator.virtualKeyboard as any).show()
+    }
+
     const processedMessage = processMessage(message)
     if (isDisabled) return
 
