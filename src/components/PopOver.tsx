@@ -27,8 +27,8 @@ const panelColors = {
 }
 
 export type PopOverProps = VariantProps<typeof panelStyles> & {
-  children: any
-  trigger: any
+  children: React.ReactNode
+  trigger: React.ReactNode
   asButton?: boolean
   withCloseButton?: boolean
   withArrow?: boolean

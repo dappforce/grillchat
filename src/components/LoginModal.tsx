@@ -1,5 +1,5 @@
 import { useMyAccount } from '@/stores/my-account'
-import { useRef, useState } from 'react'
+import { SyntheticEvent, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Button from './Button'
 import Input from './inputs/Input'
@@ -20,7 +20,7 @@ export default function LoginModal({
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const onSubmit = async (e: any) => {
+  const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
     beforeLogin?.()
     if (await login(privateKey)) {

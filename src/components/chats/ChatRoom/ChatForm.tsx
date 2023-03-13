@@ -5,7 +5,13 @@ import Toast from '@/components/Toast'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { ComponentProps, useEffect, useRef, useState } from 'react'
+import {
+  ComponentProps,
+  SyntheticEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
 import CaptchaModal from './CaptchaModal'
@@ -64,7 +70,7 @@ export default function ChatForm({
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
   const isDisabled = !processMessage(message)
 
-  const handleSubmit = (e?: any) => {
+  const handleSubmit = (e?: SyntheticEvent) => {
     e?.preventDefault()
     if (
       shouldSendMessage &&
