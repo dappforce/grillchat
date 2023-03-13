@@ -67,7 +67,11 @@ export default function ChatForm({
   const handleSubmit = (e?: any) => {
     alert('called')
     e.preventDefault()
-    if (shouldSendMessage && 'virtualKeyboard' in navigator) {
+    if (
+      shouldSendMessage &&
+      'virtualKeyboard' in navigator &&
+      typeof (navigator.virtualKeyboard as any).show === 'function'
+    ) {
       ;(navigator.virtualKeyboard as any).show()
     }
 
