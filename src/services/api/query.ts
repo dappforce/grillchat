@@ -3,9 +3,10 @@ import { PostData } from '@subsocial/api/types'
 import axios from 'axios'
 
 export async function getPosts(postIds: string[]) {
-  const res = await axios.post('/api/posts', {
-    params: postIds,
-  })
+  const res = await axios.get(
+    'http://localhost:3000/api/posts?' +
+      postIds.map((n) => `postIds=${n}`).join('&')
+  )
   return res.data.data as PostData[]
 }
 const getPost = poolQuery<string, PostData>({

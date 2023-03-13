@@ -36,13 +36,11 @@ export const getStaticProps = getCommonStaticProps<{
   const queryClient = new QueryClient()
 
   try {
-    const subsocialApi = await getSubsocialApi()
-    const post = await subsocialApi.findPost({
-      id: postId,
-      visibility: 'onlyPublic',
-    })
+    const [post] = await getPosts([postId])
+    console.log(post)
     if (post?.struct.spaceId !== getSpaceId()) return undefined
 
+    const subsocialApi = await getSubsocialApi()
     const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(postId)
 
     const preloadedPostCount = CHAT_PER_PAGE * 2

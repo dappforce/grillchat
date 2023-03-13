@@ -60,8 +60,9 @@ export default async function handler(
     origin: '*',
   })
 
+  const query = req.query.postIds
   const params = querySchema.safeParse({
-    postIds: req.query.postIds || req.query['postIds[]'],
+    postIds: Array.isArray(query) ? query : [query],
   })
   if (!params.success) {
     return res.status(400).send({
@@ -71,6 +72,8 @@ export default async function handler(
     })
   }
 
+  console.log('fetching posts')
   const posts = await getPostsFromCache(params.data.postIds)
+  console.log('finished')
   return res.status(200).send({ success: true, message: 'OK', data: posts })
 }
