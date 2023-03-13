@@ -39,14 +39,14 @@ export function NewMessageNotice({
       withRingInteraction={false}
       size='circle'
       {...props}
-      className={cx('relative bg-background-light p-3', props.className)}
+      className={cx('relative bg-background-light p-2.5', props.className)}
     >
       {anyNewData ? (
         <span className='absolute -top-1 left-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full bg-background-primary py-0.5 px-2 text-sm'>
           {anyNewData}
         </span>
       ) : null}
-      <BsChevronDown className='relative top-px text-2xl' />
+      <BsChevronDown className='relative top-px text-xl' />
     </Button>
   )
 }
