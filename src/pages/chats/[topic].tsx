@@ -1,7 +1,7 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import ChatPage from '@/modules/_chats/ChatPage'
+import { getPostQuery, getPosts } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
-import { getPostQuery } from '@/services/subsocial/posts'
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { getSpaceId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
@@ -13,7 +13,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const spaceId = getSpaceId()
   const subsocialApi = await getSubsocialApi()
   const postIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
-  const posts = await subsocialApi.findPublicPosts(postIds)
+  const posts = await getPosts(postIds)
 
   const paths = posts.map((post) => ({
     params: { topic: createPostSlug(post.id, post.content) },
@@ -49,7 +49,7 @@ export const getStaticProps = getCommonStaticProps<{
     const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
     const endSlice = commentIds.length
     const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
-    const posts = await subsocialApi.findPublicPosts(prefetchedCommentIds)
+    const posts = await getPosts(prefetchedCommentIds)
 
     getPostQuery.setQueryData(queryClient, postId, post)
     queryClient.setQueryData(getCommentIdsQueryKey(postId), commentIds ?? null)

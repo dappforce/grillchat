@@ -1,27 +1,8 @@
-import { ApiPostsResponse } from '@/pages/api/posts'
-import { createQuery, poolQuery } from '@/subsocial-query'
+import { poolQuery } from '@/subsocial-query'
 import {
   createSubsocialQuery,
   SubsocialParam,
 } from '@/subsocial-query/subsocial'
-import { PostData } from '@subsocial/api/types'
-import axios from 'axios'
-
-const getPost = poolQuery<string, PostData>({
-  multiCall: async (postIds) => {
-    if (postIds.length === 0) return []
-    const res = await axios.get('/api/posts', { params: { postIds } })
-    return (res.data as ApiPostsResponse).data as PostData[]
-  },
-  resultMapper: {
-    paramToKey: (postId) => postId,
-    resultToKey: (result) => result?.id ?? '',
-  },
-})
-export const getPostQuery = createQuery({
-  key: 'getPost',
-  getData: getPost,
-})
 
 const getPostsBySpaceId = poolQuery<
   SubsocialParam<string>,

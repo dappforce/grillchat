@@ -1,7 +1,7 @@
 import ChatRoom from '@/components/chats/ChatRoom'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
+import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
-import { getPostQuery } from '@/services/subsocial/posts'
 import { getSpaceId } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { useEffect } from 'react'

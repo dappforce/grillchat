@@ -1,8 +1,6 @@
 import ChatPreview from '@/components/chats/ChatPreview'
-import {
-  getPostIdsBySpaceIdQuery,
-  getPostQuery,
-} from '@/services/subsocial/posts'
+import { getPostQuery } from '@/services/api/query'
+import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceId } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { createPostSlug } from '@subsocial/utils/slugify'
