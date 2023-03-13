@@ -1,5 +1,5 @@
 import Send from '@/assets/icons/send.svg'
-import Button, { buttonStyles } from '@/components/Button'
+import { buttonStyles } from '@/components/Button'
 import TextArea from '@/components/inputs/TextArea'
 import Toast from '@/components/Toast'
 import { useSendMessage } from '@/services/subsocial/commentIds'
@@ -107,7 +107,13 @@ export default function ChatForm({
           variant='fill'
           pill
           rightElement={(classNames) => (
-            <Button
+            <div
+              onTouchEnd={(e) => {
+                if (shouldSendMessage) {
+                  e.preventDefault()
+                  handleSubmit()
+                }
+              }}
               onClick={handleSubmit}
               className={cx(
                 buttonStyles({
@@ -119,7 +125,7 @@ export default function ChatForm({
               )}
             >
               <Send className='relative top-px h-4 w-4' />
-            </Button>
+            </div>
           )}
         />
       </form>
