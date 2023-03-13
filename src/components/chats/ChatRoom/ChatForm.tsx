@@ -35,6 +35,7 @@ export default function ChatForm({
   const hasEnoughEnergy = useMyAccount(
     (state) => (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
   )
+  const [isRequestingEnergy, setIsRequestingEnergy] = useState(false)
 
   const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
   const [message, setMessage] = useState('')
@@ -43,6 +44,10 @@ export default function ChatForm({
   useEffect(() => {
     textAreaRef.current?.focus()
   }, [])
+
+  useEffect(() => {
+    setIsRequestingEnergy(false)
+  }, [hasEnoughEnergy])
 
   useEffect(() => {
     if (error)
@@ -63,7 +68,7 @@ export default function ChatForm({
     const processedMessage = processMessage(message)
     if (isDisabled) return
 
-    if (isLoggedIn && hasEnoughEnergy) {
+    if (isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)) {
       setMessage('')
       sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
       onSubmit?.()
@@ -117,6 +122,7 @@ export default function ChatForm({
         onSubmit={() => {
           onSubmit?.()
           setMessage('')
+          setIsRequestingEnergy(true)
         }}
         isOpen={isOpenCaptcha}
         closeModal={() => setIsOpenCaptcha(false)}
