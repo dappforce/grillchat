@@ -65,7 +65,6 @@ export default function ChatForm({
   const isDisabled = !processMessage(message)
 
   const handleSubmit = (e?: any) => {
-    alert('called')
     e.preventDefault()
     if (
       shouldSendMessage &&
@@ -75,7 +74,6 @@ export default function ChatForm({
       ;(navigator.virtualKeyboard as any).show()
     }
 
-    alert(`submit ${isDisabled} ${shouldSendMessage}`)
     const processedMessage = processMessage(message)
     if (isDisabled) return
 
