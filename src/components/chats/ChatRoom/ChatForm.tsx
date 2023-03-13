@@ -70,6 +70,7 @@ export default function ChatForm({
       ;(navigator.virtualKeyboard as any).show()
     }
 
+    alert(`submit ${isDisabled} ${shouldSendMessage}`)
     const processedMessage = processMessage(message)
     if (isDisabled) return
 
