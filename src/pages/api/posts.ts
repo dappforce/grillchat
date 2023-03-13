@@ -17,7 +17,7 @@ export type ApiPostsResponse = {
 }
 
 const postsCache = new Map<string, PostData>()
-async function getPostsFromCache(postIds: string[]) {
+export async function getPostsFromCache(postIds: string[]) {
   const postsFromCache: PostData[] = []
   const needToFetchIds: string[] = []
 
