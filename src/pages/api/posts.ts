@@ -72,8 +72,6 @@ export default async function handler(
     })
   }
 
-  console.log('fetching posts')
   const posts = await getPostsFromCache(params.data.postIds)
-  console.log('finished')
   return res.status(200).send({ success: true, message: 'OK', data: posts })
 }

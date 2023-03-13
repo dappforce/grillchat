@@ -37,7 +37,6 @@ export const getStaticProps = getCommonStaticProps<{
 
   try {
     const [post] = await getPosts([postId])
-    console.log(post)
     if (post?.struct.spaceId !== getSpaceId()) return undefined
 
     const subsocialApi = await getSubsocialApi()
