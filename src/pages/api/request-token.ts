@@ -2,16 +2,17 @@ import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { getCaptchaSecret, getServerMnemonic } from '@/utils/env/server'
 import { Keyring } from '@polkadot/keyring'
 import { waitReady } from '@polkadot/wasm-crypto'
+import axios from 'axios'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { z } from 'zod'
 
-const schema = z.object({
+const bodySchema = z.object({
   captchaToken: z.string(),
   address: z.string(),
 })
 
-export type RequestTokenParams = z.infer<typeof schema>
+export type RequestTokenBody = z.infer<typeof bodySchema>
 export type RequestTokenResponse = {
   success: boolean
   message: string
@@ -53,12 +54,11 @@ async function verifyCaptcha(captchaToken: string) {
   const formData = new FormData()
   formData.append('secret', getCaptchaSecret())
   formData.append('response', captchaToken)
-  const res = await fetch(VERIFIER, {
+  const res: { success: boolean } = await axios.post(VERIFIER, {
     method: 'POST',
     body: formData,
   })
-  const jsonRes = await res.json()
-  if (!jsonRes.success) throw new Error('Invalid Token')
+  if (!res.success) throw new Error('Invalid Token')
   return true
 }
 
@@ -87,7 +87,7 @@ export default async function handler(
     origin: '*',
   })
 
-  const body = schema.safeParse(req.body)
+  const body = bodySchema.safeParse(req.body)
   if (!body.success) {
     return res.status(400).send({
       success: false,
