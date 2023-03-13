@@ -65,6 +65,7 @@ export default function ChatForm({
   const isDisabled = !processMessage(message)
 
   const handleSubmit = (e?: any) => {
+    alert('submit')
     e.preventDefault()
     if (
       shouldSendMessage &&
@@ -74,8 +75,10 @@ export default function ChatForm({
       ;(navigator.virtualKeyboard as any).show()
     }
 
+    alert(`sending ${isDisabled} ${shouldSendMessage}`)
     const processedMessage = processMessage(message)
     if (isDisabled) return
+    alert('sent')
 
     if (shouldSendMessage) {
       setMessage('')
@@ -110,6 +113,7 @@ export default function ChatForm({
             <div
               onTouchEnd={(e) => {
                 if (shouldSendMessage) {
+                  alert('touchend')
                   e.preventDefault()
                   handleSubmit()
                 }
