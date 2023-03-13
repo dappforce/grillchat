@@ -106,12 +106,16 @@ export default function ChatForm({
             <div
               onTouchEnd={(e) => {
                 if (shouldSendMessage) {
+                  alert('touchend')
                   e.preventDefault()
                   textAreaRef.current?.focus()
                   handleSubmit()
                 }
               }}
-              onClick={handleSubmit}
+              onClick={(e) => {
+                alert('click')
+                handleSubmit(e)
+              }}
               className={cx(
                 buttonStyles({
                   size: 'circle',
