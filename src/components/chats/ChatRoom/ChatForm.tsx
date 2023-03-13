@@ -5,7 +5,6 @@ import Toast from '@/components/Toast'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { submitClosestForm } from '@/utils/form'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
@@ -106,11 +105,13 @@ export default function ChatForm({
           rightElement={(classNames) => (
             <div
               onTouchEnd={(e) => {
-                if (shouldOpenCaptcha) return
-                e.preventDefault()
-                submitClosestForm(e.target as HTMLElement)
-                textAreaRef.current?.focus()
+                if (!shouldOpenCaptcha) {
+                  e.preventDefault()
+                  textAreaRef.current?.focus()
+                  handleSubmit()
+                }
               }}
+              onClick={handleSubmit}
               className={cx(
                 buttonStyles({
                   size: 'circle',
