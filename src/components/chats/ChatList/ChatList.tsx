@@ -19,6 +19,7 @@ import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
+import useIsAtBottom from './hooks/useIsAtBottom'
 import { NewMessageNotice } from './NewMessageNotice'
 
 export type ChatListProps = ComponentProps<'div'> & {
@@ -48,6 +49,7 @@ function ChatListContent({
   const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
 
   const innerRef = useRef<HTMLDivElement>(null)
+  const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
 
   const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
     subscribe: true,
@@ -73,6 +75,14 @@ function ChatListContent({
       }
     }
   }, [loadedPost.length, loadMore, scrollContainerRef])
+
+  useEffect(() => {
+    if (!isAtBottom) return
+    scrollContainerRef.current?.scrollTo({
+      top: scrollContainerRef.current?.scrollHeight,
+      behavior: 'auto',
+    })
+  }, [isAtBottom, loadedPost.length, scrollContainerRef])
 
   const Component = asContainer ? Container<'div'> : 'div'
 

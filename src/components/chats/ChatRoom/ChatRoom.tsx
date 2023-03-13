@@ -25,7 +25,10 @@ export default function ChatRoom({
   const scrollToBottom = () => {
     const scrollContainer = scrollContainerRef.current
     if (scrollContainer) {
-      scrollContainer.scrollTop = scrollContainer.scrollHeight
+      scrollContainer?.scrollTo({
+        top: scrollContainer?.scrollHeight,
+        behavior: 'auto',
+      })
     }
   }
 
