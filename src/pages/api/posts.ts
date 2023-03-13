@@ -7,8 +7,8 @@ import { z } from 'zod'
 const querySchema = z.object({
   postIds: z.array(z.string()),
 })
-export type PostsQuery = z.infer<typeof querySchema>
-export type PostsResponse = {
+export type ApiPostsParams = z.infer<typeof querySchema>
+export type ApiPostsResponse = {
   success: boolean
   message: string
   errors?: any
@@ -51,7 +51,7 @@ async function getPostsFromCache(postIds: string[]) {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<PostsResponse>
+  res: NextApiResponse<ApiPostsResponse>
 ) {
   if (req.method !== 'GET') return res.status(404).end()
 
@@ -60,7 +60,9 @@ export default async function handler(
     origin: '*',
   })
 
-  const params = querySchema.safeParse(req.query)
+  const params = querySchema.safeParse({
+    postIds: req.query.postIds || req.query['postIds[]'],
+  })
   if (!params.success) {
     return res.status(400).send({
       success: false,

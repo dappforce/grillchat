@@ -1,28 +1,24 @@
-import { poolQuery } from '@/subsocial-query'
+import { ApiPostsResponse } from '@/pages/api/posts'
+import { createQuery, poolQuery } from '@/subsocial-query'
 import {
   createSubsocialQuery,
   SubsocialParam,
 } from '@/subsocial-query/subsocial'
 import { PostData } from '@subsocial/api/types'
+import axios from 'axios'
 
-const getPost = poolQuery<SubsocialParam<string>, PostData>({
-  multiCall: async (allParams) => {
-    if (allParams.length === 0) return []
-    const [{ api }] = allParams
-    const postIds = allParams.map(({ data }) => data).filter((id) => !!id)
+const getPost = poolQuery<string, PostData>({
+  multiCall: async (postIds) => {
     if (postIds.length === 0) return []
-
-    console.log('fetching posts...')
-    const res = await api.findPublicPosts(postIds)
-    console.log('done fetching')
-    return res
+    const res = await axios.get('/api/posts', { params: { postIds } })
+    return (res.data as ApiPostsResponse).data as PostData[]
   },
   resultMapper: {
-    paramToKey: (param) => param.data,
+    paramToKey: (postId) => postId,
     resultToKey: (result) => result?.id ?? '',
   },
 })
-export const getPostQuery = createSubsocialQuery({
+export const getPostQuery = createQuery({
   key: 'getPost',
   getData: getPost,
 })

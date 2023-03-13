@@ -12,8 +12,8 @@ const bodySchema = z.object({
   address: z.string(),
 })
 
-export type RequestTokenBody = z.infer<typeof bodySchema>
-export type RequestTokenResponse = {
+export type ApiRequestTokenBody = z.infer<typeof bodySchema>
+export type ApiRequestTokenResponse = {
   success: boolean
   message: string
   errors?: any
@@ -78,7 +78,7 @@ async function sendToken(address: string) {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<RequestTokenResponse>
+  res: NextApiResponse<ApiRequestTokenResponse>
 ) {
   if (req.method !== 'POST') return res.status(404).end()
 
