@@ -110,6 +110,14 @@ export default async function handler(
   try {
     hash = await sendToken(body.data.address)
   } catch (e: any) {
+    if (typeof e.message === 'string' && e.message.startsWith('1010:')) {
+      return res.status(400).send({
+        success: false,
+        message:
+          'Faucet does not have enough balance, please contact developers to refill',
+        errors: e.message,
+      })
+    }
     return res.status(500).send({
       success: false,
       message: 'Failed to send token',
