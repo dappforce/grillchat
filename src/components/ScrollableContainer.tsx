@@ -1,4 +1,4 @@
-import { scrollBarStyles } from '@/utils/className'
+import { scrollBarStyles } from '@/utils/class-names'
 import {
   generatePolymorphicComponent,
   PolymorphicProps,

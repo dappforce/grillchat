@@ -8,6 +8,8 @@ import { useState } from 'react'
 
 setSubsocialConfig('staging', {
   substrateUrl: 'wss://xsocial.subsocial.network',
+  ipfsNodeUrl: 'https://ipfs.subsocial.network',
+  ipfsAdminNodeUrl: 'https://gw.crustfiles.app',
 })
 
 const createClient = () => {

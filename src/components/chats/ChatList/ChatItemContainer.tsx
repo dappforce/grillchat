@@ -1,6 +1,6 @@
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import type { PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils/accounts'
 import { ComponentProps } from 'react'

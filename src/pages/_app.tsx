@@ -5,11 +5,11 @@ import { useBreakpointThreshold } from '@/hooks/useBreakpointThreshold'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import type { AppProps } from 'next/app'
 import { Source_Sans_Pro } from 'next/font/google'
 import NextNProgress from 'nextjs-progressbar'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 
 const sourceSansPro = Source_Sans_Pro({
@@ -27,8 +27,11 @@ export default function App({
   pageProps,
 }: AppProps<AppCommonProps>) {
   const { head, dehydratedState, ...props } = pageProps
+  const isInitialized = useRef(false)
 
   useEffect(() => {
+    if (isInitialized.current) return
+    isInitialized.current = true
     initAllStores()
   }, [])
 

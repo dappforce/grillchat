@@ -16,6 +16,14 @@ export function getSpaceId() {
   )
 }
 
+export function getBaseUrl() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_BASE_URL,
+    'NEXT_PUBLIC_BASE_URL',
+    true
+  )
+}
+
 export function getAmpId() {
   return checkEnv(process.env.NEXT_PUBLIC_AMP_ID, 'NEXT_PUBLIC_AMP_ID', true)
 }

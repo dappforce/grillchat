@@ -10,11 +10,13 @@ export const getSubsocialApi = async (renew?: boolean) => {
 }
 
 async function connectToSubsocialApi(config: SubsocialConnectionConfig) {
-  const { ipfsNodeUrl, substrateUrl, postConnectConfig } = config
+  const { ipfsNodeUrl, substrateUrl, postConnectConfig, ipfsAdminNodeUrl } =
+    config
   const substrateApi = await getSubstrateApi(substrateUrl)
   const api = new SubsocialApi({
     ipfsNodeUrl,
     substrateApi,
+    ipfsAdminNodeUrl,
     useServer: {
       httpRequestMethod: 'get',
     },

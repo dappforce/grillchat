@@ -1,4 +1,4 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import {
   generatePolymorphicComponent,
   PolymorphicProps,

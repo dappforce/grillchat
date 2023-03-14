@@ -1,5 +1,5 @@
 import Container from '@/components/Container'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { ComponentProps, useRef } from 'react'
 import ChatList from '../ChatList/ChatList'
 import ChatForm from './ChatForm'
@@ -25,7 +25,10 @@ export default function ChatRoom({
   const scrollToBottom = () => {
     const scrollContainer = scrollContainerRef.current
     if (scrollContainer) {
-      scrollContainer.scrollTop = scrollContainer.scrollHeight
+      scrollContainer?.scrollTo({
+        top: scrollContainer?.scrollHeight,
+        behavior: 'auto',
+      })
     }
   }
 

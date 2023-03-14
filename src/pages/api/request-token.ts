@@ -6,13 +6,13 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { z } from 'zod'
 
-const schema = z.object({
+const bodySchema = z.object({
   captchaToken: z.string(),
   address: z.string(),
 })
 
-export type RequestTokenParams = z.infer<typeof schema>
-export type RequestTokenResponse = {
+export type ApiRequestTokenBody = z.infer<typeof bodySchema>
+export type ApiRequestTokenResponse = {
   success: boolean
   message: string
   errors?: any
@@ -78,7 +78,7 @@ async function sendToken(address: string) {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<RequestTokenResponse>
+  res: NextApiResponse<ApiRequestTokenResponse>
 ) {
   if (req.method !== 'POST') return res.status(404).end()
 
@@ -87,9 +87,7 @@ export default async function handler(
     origin: '*',
   })
 
-  const body = schema.safeParse(req.body)
-
-  console.log(body)
+  const body = bodySchema.safeParse(req.body)
   if (!body.success) {
     return res.status(400).send({
       success: false,
@@ -112,6 +110,14 @@ export default async function handler(
   try {
     hash = await sendToken(body.data.address)
   } catch (e: any) {
+    if (typeof e.message === 'string' && e.message.startsWith('1010:')) {
+      return res.status(400).send({
+        success: false,
+        message:
+          'The faucet does not have a high enough balance, please contact the developers to refill it',
+        errors: e.message,
+      })
+    }
     return res.status(500).send({
       success: false,
       message: 'Failed to send token',

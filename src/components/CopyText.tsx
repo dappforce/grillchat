@@ -1,4 +1,4 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { ComponentProps, useState } from 'react'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'

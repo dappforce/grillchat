@@ -1,5 +1,5 @@
 import Container from '@/components/Container'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
@@ -57,7 +57,7 @@ export default function ChatPreview({
         <div className='h-14 w-14 rounded-full bg-background-lighter'>
           {image && (
             <Image
-              className='h-full w-full'
+              className='h-full w-full rounded-full'
               src={image}
               width={56}
               height={56}
@@ -75,7 +75,11 @@ export default function ChatPreview({
               />
             </div>
             <div className='flex items-baseline justify-between overflow-hidden'>
-              <ChatLastMessage defaultDesc={description} postId={postId} />
+              <ChatLastMessage
+                className='py-0.5'
+                defaultDesc={description}
+                postId={postId}
+              />
               {withUnreadCount && (
                 <ChatUnreadCount className='ml-2' postId={postId} />
               )}

@@ -1,11 +1,17 @@
 import Send from '@/assets/icons/send.svg'
-import Button from '@/components/Button'
+import { buttonStyles } from '@/components/Button'
 import TextArea from '@/components/inputs/TextArea'
 import Toast from '@/components/Toast'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
-import { cx } from '@/utils/className'
-import { ComponentProps, useEffect, useRef, useState } from 'react'
+import { cx } from '@/utils/class-names'
+import {
+  ComponentProps,
+  SyntheticEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
 import CaptchaModal from './CaptchaModal'
@@ -17,6 +23,10 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
 }
 
 const ESTIMATED_ENERGY_FOR_ONE_TX = 100_000_000
+
+function processMessage(message: string) {
+  return message.trim()
+}
 
 export default function ChatForm({
   className,
@@ -30,6 +40,7 @@ export default function ChatForm({
   const hasEnoughEnergy = useMyAccount(
     (state) => (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
   )
+  const [isRequestingEnergy, setIsRequestingEnergy] = useState(false)
 
   const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
   const [message, setMessage] = useState('')
@@ -40,30 +51,48 @@ export default function ChatForm({
   }, [])
 
   useEffect(() => {
-    if (error)
+    setIsRequestingEnergy(false)
+  }, [hasEnoughEnergy])
+
+  useEffect(() => {
+    if (error) {
       toast.custom((t) => (
         <Toast
           t={t}
           icon={(classNames) => <IoWarningOutline className={classNames} />}
-          title='Sending message failed. Please try again'
+          title='Message failed to send, please try again'
           description={error?.message}
         />
       ))
+      setIsRequestingEnergy(false)
+    }
   }, [error])
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault()
-    if (!message) return
-    if (isLoggedIn && hasEnoughEnergy) {
-      sendMessage({ message, rootPostId: postId, spaceId })
+  const shouldSendMessage =
+    isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
+  const isDisabled = !processMessage(message)
+
+  const handleSubmit = (e?: SyntheticEvent) => {
+    e?.preventDefault()
+    if (
+      shouldSendMessage &&
+      'virtualKeyboard' in navigator &&
+      typeof (navigator.virtualKeyboard as any).show === 'function'
+    ) {
+      ;(navigator.virtualKeyboard as any).show()
+    }
+
+    const processedMessage = processMessage(message)
+    if (isDisabled) return
+
+    if (shouldSendMessage) {
       setMessage('')
+      sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
       onSubmit?.()
     } else {
       setIsOpenCaptcha(true)
     }
   }
-
-  const isDisabled = !message
 
   return (
     <>
@@ -80,33 +109,43 @@ export default function ChatForm({
           placeholder='Message...'
           rows={1}
           autoComplete='off'
-          autoCapitalize='off'
+          autoCapitalize='sentences'
           autoCorrect='off'
           spellCheck='false'
           variant='fill'
           pill
           rightElement={(classNames) => (
-            <Button
-              type='submit'
-              size='circle'
-              disabled={isDisabled}
-              withDisabledStyles={false}
-              variant={isDisabled ? 'mutedOutline' : 'primary'}
-              className={cx(classNames)}
+            <div
+              onTouchEnd={(e) => {
+                if (shouldSendMessage) {
+                  e.preventDefault()
+                  handleSubmit()
+                }
+              }}
+              onClick={handleSubmit}
+              className={cx(
+                buttonStyles({
+                  size: 'circle',
+                  variant: isDisabled ? 'mutedOutline' : 'primary',
+                }),
+                classNames,
+                'cursor-pointer'
+              )}
             >
               <Send className='relative top-px h-4 w-4' />
-            </Button>
+            </div>
           )}
         />
       </form>
       <CaptchaModal
-        onSubmit={onSubmit}
-        isOpen={isOpenCaptcha}
-        closeModal={() => {
-          setIsOpenCaptcha(false)
+        onSubmit={() => {
+          onSubmit?.()
           setMessage('')
+          setIsRequestingEnergy(true)
         }}
-        message={message}
+        isOpen={isOpenCaptcha}
+        closeModal={() => setIsOpenCaptcha(false)}
+        message={processMessage(message)}
         rootPostId={postId}
         spaceId={spaceId}
       />

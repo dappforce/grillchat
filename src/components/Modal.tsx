@@ -1,4 +1,4 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { Dialog, Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Fragment } from 'react'
@@ -100,7 +100,11 @@ export default function Modal({
                 {title && (
                   <Dialog.Title
                     as='h3'
-                    className={cx('mb-4 text-2xl', titleClassName)}
+                    className={cx(
+                      'mb-4 text-2xl',
+                      withCloseButton && 'pr-8',
+                      titleClassName
+                    )}
                   >
                     {title}
                   </Dialog.Title>

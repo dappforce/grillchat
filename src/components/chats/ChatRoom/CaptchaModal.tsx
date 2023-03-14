@@ -2,6 +2,7 @@ import Captcha from '@/components/Captcha'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import Toast from '@/components/Toast'
 import { useRequestTokenAndSendMessage } from '@/hooks/useRequestTokenAndSendMessage'
+import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
@@ -23,15 +24,21 @@ export default function CaptchaModal({
     useRequestTokenAndSendMessage()
 
   useEffect(() => {
-    if (error)
+    if (error) {
+      const response = (error as any)?.response?.data
+      let message: string | undefined = undefined
+      const responseMessage = (response as ApiRequestTokenResponse)?.message
+      if (responseMessage) message = responseMessage
+
       toast.custom((t) => (
         <Toast
           t={t}
           icon={(classNames) => <IoWarningOutline className={classNames} />}
-          title='Sign up or send message failed. Please try again'
-          description={(error as Error)?.message}
+          title='Sign up failed, please try again'
+          description={message}
         />
       ))
+    }
   }, [error])
 
   const submitCaptcha = async (token: string) => {

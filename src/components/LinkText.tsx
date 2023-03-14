@@ -1,4 +1,4 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
@@ -22,9 +22,14 @@ export type LinkTextProps = Omit<ComponentProps<'a'>, 'href'> &
     openInNewTab?: boolean
   }
 
-export default function LinkText({ href, variant, ...props }: LinkTextProps) {
+export default function LinkText({
+  href,
+  variant,
+  openInNewTab,
+  ...props
+}: LinkTextProps) {
   let anchorProps = {}
-  if (props.openInNewTab) {
+  if (openInNewTab) {
     anchorProps = {
       target: '_blank',
       rel: 'noopener noreferrer',

@@ -2,10 +2,10 @@ import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfinite
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
+import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
-import { getPostQuery } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import {
   ComponentProps,
   Fragment,
@@ -19,6 +19,7 @@ import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
+import useIsAtBottom from './hooks/useIsAtBottom'
 import { NewMessageNotice } from './NewMessageNotice'
 
 export type ChatListProps = ComponentProps<'div'> & {
@@ -48,6 +49,7 @@ function ChatListContent({
   const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
 
   const innerRef = useRef<HTMLDivElement>(null)
+  const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
 
   const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
     subscribe: true,
@@ -74,9 +76,23 @@ function ChatListContent({
     }
   }, [loadedPost.length, loadMore, scrollContainerRef])
 
+  useEffect(() => {
+    if (!isAtBottom) return
+    scrollContainerRef.current?.scrollTo({
+      top: scrollContainerRef.current?.scrollHeight,
+      behavior: 'auto',
+    })
+  }, [isAtBottom, loadedPost.length, scrollContainerRef])
+
   const Component = asContainer ? Container<'div'> : 'div'
 
   const isAllPostsLoaded = loadedPost.length === commentIds.length
+
+  // 80% of the scroll container height
+  // Its using big percentage because its actually using 80% of the previous container height before the new data is loaded
+  // This is because this line is run first before the new data finished rendering, so the scroll container height is using the previous one.
+  const scrollThreshold =
+    (scrollContainerRef.current?.scrollHeight ?? 0) * 0.8 || 1000
 
   return (
     <Component
@@ -103,7 +119,7 @@ function ChatListContent({
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
             endMessage={<ChatTopNotice className='pb-2 pt-4' />}
-            scrollThreshold='200px'
+            scrollThreshold={`${scrollThreshold}px`}
           >
             {posts.map(({ data: post }, index) => {
               const isLastReadMessage = lastReadId === post?.id
@@ -130,7 +146,7 @@ function ChatListContent({
         </div>
       </ScrollableContainer>
       <NewMessageNotice
-        className='absolute bottom-0 right-8'
+        className='absolute bottom-0 right-6'
         commentIds={commentIds}
         scrollContainerRef={scrollContainerRef}
       />

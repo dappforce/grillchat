@@ -1,4 +1,4 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'

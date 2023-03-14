@@ -1,5 +1,5 @@
 import { truncateAddress } from '@/utils/account'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
 import randomColor from 'randomcolor'
@@ -60,10 +60,7 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <AddressAvatar
-          address={senderAddress}
-          className='relative top-1 flex-shrink-0'
-        />
+        <AddressAvatar address={senderAddress} className='flex-shrink-0' />
       )}
       <div
         className={cx(
@@ -82,7 +79,7 @@ export default function ChatItem({
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}
-        <p className='break-words'>
+        <p className='whitespace-pre-wrap break-words text-base'>
           <Linkify
             options={{
               render: ({ content, attributes }) => (
