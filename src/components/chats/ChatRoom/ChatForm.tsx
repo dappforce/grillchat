@@ -55,7 +55,7 @@ export default function ChatForm({
   }, [hasEnoughEnergy])
 
   useEffect(() => {
-    if (error)
+    if (error) {
       toast.custom((t) => (
         <Toast
           t={t}
@@ -64,6 +64,8 @@ export default function ChatForm({
           description={error?.message}
         />
       ))
+      setIsRequestingEnergy(false)
+    }
   }, [error])
 
   const shouldSendMessage =
