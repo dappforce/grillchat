@@ -114,7 +114,7 @@ export default async function handler(
       return res.status(400).send({
         success: false,
         message:
-          'Faucet does not have enough balance, please contact developers to refill',
+          'The faucet does not have a high enough balance, please contact the developers to refill it',
         errors: e.message,
       })
     }

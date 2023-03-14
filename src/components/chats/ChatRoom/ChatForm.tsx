@@ -60,7 +60,7 @@ export default function ChatForm({
         <Toast
           t={t}
           icon={(classNames) => <IoWarningOutline className={classNames} />}
-          title='Sending message failed. Please try again'
+          title='Message failed to send, please try again'
           description={error?.message}
         />
       ))

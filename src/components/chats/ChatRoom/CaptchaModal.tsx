@@ -34,7 +34,7 @@ export default function CaptchaModal({
         <Toast
           t={t}
           icon={(classNames) => <IoWarningOutline className={classNames} />}
-          title='Sign up or send message failed. Please try again'
+          title='Sign up failed, please try again'
           description={message}
         />
       ))
