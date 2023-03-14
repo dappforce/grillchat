@@ -79,7 +79,7 @@ export default function ChatItem({
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}
-        <p className='whitespace-pre-wrap break-words'>
+        <p className='whitespace-pre-wrap break-words text-base'>
           <Linkify
             options={{
               render: ({ content, attributes }) => (
