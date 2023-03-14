@@ -32,14 +32,12 @@ export async function getPostsFromCache(postIds: string[]) {
   postIds.forEach((id) => {
     const cachedData = postsCache.get(id)
     if (cachedData) {
-      console.log('Found post in cache: ', id)
       postsFromCache.push(cachedData)
     } else {
       needToFetchIds.push(id)
     }
   })
   if (needToFetchIds.length > 0) {
-    console.log('Need to fetch: ', needToFetchIds)
     try {
       const subsocialApi = await getSubsocialApi()
       newlyFetchedData = await subsocialApi.findPublicPosts(needToFetchIds)
