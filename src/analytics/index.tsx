@@ -1,10 +1,9 @@
 import { useAmplitude } from '@/analytics/amplitude'
 import { getSalt } from '@/utils/salt'
-import { BrowserClient } from '@amplitude/analytics-types'
 import React, { FC, useMemo } from 'react'
 
 type AnalyticContextProps = {
-  amp?: BrowserClient | null
+  sendEvent: (name: string, properties?: Record<string, string>) => void
   setUserId: (address: string) => void
 }
 const AnalyticContext = React.createContext<AnalyticContextProps>(
@@ -27,9 +26,15 @@ export const AnalyticProvider: FC<React.PropsWithChildren> = ({ children }) => {
     const userIdArray = await crypto.subtle.digest('SHA-256', Buffer.from(key))
     const userId = Buffer.from(userIdArray).toString('hex')
     amp?.setUserId(userId)
+    // TODO add GA user id
   }
 
-  const value = useMemo(() => ({ amp, setUserId }), [!!amp])
+  const sendEvent = (name: string, properties?: Record<string, string>) => {
+    amp?.logEvent(name, properties)
+    // TODO add GA events
+  }
+
+  const value = useMemo(() => ({ setUserId, sendEvent }), [!!amp])
 
   return (
     <AnalyticContext.Provider value={value}>
