@@ -17,6 +17,11 @@ export type ApiPostsResponse = {
   hash?: string
 }
 
+// TODO: posts cache may not work in this current implementation, because next js api are stateless which makes the posts cache will be remake every request.
+// Currently, it doesn't work in dev mode, but works in build mode.
+// Solution:
+// 1. Use redis to store the cache
+// 2. Use squid for historical data, for newer data that are not in squid yet, fetch it from chain
 const MAX_POSTS_IN_CACHE = 500_000
 const postsCache = new MinimalUsageQueue<PostData>(MAX_POSTS_IN_CACHE)
 export async function getPostsFromCache(postIds: string[]) {
@@ -27,12 +32,14 @@ export async function getPostsFromCache(postIds: string[]) {
   postIds.forEach((id) => {
     const cachedData = postsCache.get(id)
     if (cachedData) {
+      console.log('Found post in cache: ', id)
       postsFromCache.push(cachedData)
     } else {
       needToFetchIds.push(id)
     }
   })
   if (needToFetchIds.length > 0) {
+    console.log('Need to fetch: ', needToFetchIds)
     try {
       const subsocialApi = await getSubsocialApi()
       newlyFetchedData = await subsocialApi.findPublicPosts(needToFetchIds)
