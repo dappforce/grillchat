@@ -2,7 +2,6 @@ import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { getCaptchaSecret, getServerMnemonic } from '@/utils/env/server'
 import { Keyring } from '@polkadot/keyring'
 import { waitReady } from '@polkadot/wasm-crypto'
-import axios from 'axios'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { z } from 'zod'
@@ -54,11 +53,12 @@ async function verifyCaptcha(captchaToken: string) {
   const formData = new FormData()
   formData.append('secret', getCaptchaSecret())
   formData.append('response', captchaToken)
-  const res: { success: boolean } = await axios.post(VERIFIER, {
+  const res = await fetch(VERIFIER, {
     method: 'POST',
     body: formData,
   })
-  if (!res.success) throw new Error('Invalid Token')
+  const jsonRes = await res.json()
+  if (!jsonRes.success) throw new Error('Invalid Token')
   return true
 }
 
