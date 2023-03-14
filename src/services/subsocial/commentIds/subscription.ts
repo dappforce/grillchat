@@ -1,9 +1,9 @@
+import { getPostQuery, getPosts } from '@/services/api/query'
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils/accounts'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
-import { getPostQuery } from '../posts'
 import { extractOptimisticIdData, isOptimisticId } from '../utils'
 import { getCommentIdsQueryKey } from './query'
 import { OptimisticMessageIdData } from './types'
@@ -65,9 +65,7 @@ export function useSubscribeCommentIdsByPostId(
           return
         }
 
-        const newPosts = await subsocialApi.findPublicPosts(
-          newIdsAfterLastSubscribed
-        )
+        const newPosts = await getPosts(newIdsAfterLastSubscribed)
         newPosts.forEach((post) => {
           getPostQuery.setQueryData(queryClient, post.id, post)
         })

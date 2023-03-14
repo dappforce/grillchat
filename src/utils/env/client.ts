@@ -15,3 +15,11 @@ export function getSpaceId() {
     true
   )
 }
+
+export function getBaseUrl() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_BASE_URL,
+    'NEXT_PUBLIC_BASE_URL',
+    true
+  )
+}

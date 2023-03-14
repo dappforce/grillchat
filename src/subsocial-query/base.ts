@@ -3,6 +3,8 @@ import {
   QueryClient,
   useMutation,
   UseMutationOptions,
+  useQueries,
+  useQuery,
   UseQueryResult,
 } from '@tanstack/react-query'
 import { useMemo } from 'react'
@@ -12,7 +14,7 @@ export function queryWrapper<ReturnType, Data, AdditionalData>(
   func: (params: { data: Data } & AdditionalData) => Promise<ReturnType>,
   getAdditionalData: () => Promise<AdditionalData>
 ) {
-  return async ({ queryKey }: any) => {
+  return async ({ queryKey }: { queryKey: any }) => {
     const data = queryKey[1]
     const additionalData = await getAdditionalData()
     return func({ ...additionalData, data })
@@ -75,5 +77,56 @@ export default function mutationWrapper<ReturnData, Data>(
       onSuccess: makeCombinedCallback(defaultConfig, config, 'onSuccess'),
       onError: makeCombinedCallback(defaultConfig, config, 'onError'),
     })
+  }
+}
+
+export function createQuery<Params, ReturnValue>({
+  key,
+  getData,
+}: {
+  key: string
+  getData: (params: Params) => Promise<ReturnValue>
+}) {
+  const getQueryKey = createQueryKeys<Params>(key)
+  return {
+    getQueryKey,
+    invalidate: createQueryInvalidation<Params>(key),
+    useQuery: (
+      data: Params | null,
+      config?: QueryConfig<ReturnValue, Params>,
+      defaultConfig?: QueryConfig<ReturnValue, Params>
+    ) => {
+      const mergedConfig = mergeQueryConfig(config, defaultConfig)
+      return useQuery(
+        [key, data],
+        queryWrapper<ReturnValue, Params, void>(
+          ({ data }) => getData(data),
+          async () => undefined
+        ),
+        mergedConfig
+      )
+    },
+    useQueries: (
+      data: (Params | null)[],
+      config?: QueryConfig<ReturnValue, Params>,
+      defaultConfig?: QueryConfig<ReturnValue, Params>
+    ) => {
+      const mergedConfig = mergeQueryConfig(config, defaultConfig)
+      return useQueries({
+        queries: data.map((singleData) => {
+          return {
+            queryKey: [key, singleData],
+            queryFn: queryWrapper<ReturnValue, Params, void>(
+              ({ data }) => getData(data),
+              async () => undefined
+            ),
+            ...mergedConfig,
+          }
+        }),
+      })
+    },
+    setQueryData: (client: QueryClient, data: Params, value: ReturnValue) => {
+      client.setQueryData(getQueryKey(data), value ?? null)
+    },
   }
 }
