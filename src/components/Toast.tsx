@@ -23,7 +23,7 @@ export default function Toast({ t, icon, title, description }: ToastProps) {
     >
       <div
         className={cx(
-          'flex items-center rounded-xl border border-border-gray bg-background-light px-4 py-3 text-text shadow-xl ring-1 ring-black ring-opacity-5'
+          'flex max-w-lg items-center rounded-xl border border-border-gray bg-background-light px-4 py-3 text-text shadow-xl ring-1 ring-black ring-opacity-5'
         )}
       >
         {icon && icon(cx('text-3xl mr-2.5'))}
