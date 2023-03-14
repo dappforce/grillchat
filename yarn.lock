@@ -1755,10 +1755,10 @@
     escape-string-regexp "^2.0.0"
     lodash.deburr "^4.1.0"
 
-"@subsocial/api@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@subsocial/api/-/api-0.8.1.tgz#1f82f0cbe7e6ee01cf79abfc038db50230cae07c"
-  integrity sha512-JNUiGENiKwXM8bLDhZnL0USyKb3su/zLZGHZ/L0w1ZVnsZnHEpmRhktXGmVXjPP3XHdk/mF13/Qf1EqhMcM7ag==
+"@subsocial/api@0.8.6-beta.2":
+  version "0.8.6-beta.2"
+  resolved "https://registry.yarnpkg.com/@subsocial/api/-/api-0.8.6-beta.2.tgz#5a49f8dbd902e18161bb9044cce7f972c6668215"
+  integrity sha512-KEYbp/lQRFzep6OMXUVy1k2z7I2hAnq8PX7LWlWIh7R0rzyBSSMH4M+w6R8Dtnw7Xf1Khp09S8Yrg00ucZ2LBw==
   dependencies:
     "@polkadot/api" latest
     "@polkadot/types" latest
@@ -2004,10 +2004,15 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@18.14.1", "@types/node@>=13.7.0":
+"@types/node@*", "@types/node@18.14.1":
   version "18.14.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.14.1.tgz#90dad8476f1e42797c49d6f8b69aaf9f876fc69f"
   integrity sha512-QH+37Qds3E0eDlReeboBxfHbX9omAcBCXEzswCu6jySP642jiM3cYSIkU/REqwhCUqXdonHFuBfJDiAJxMNhaQ==
+
+"@types/node@>=13.7.0":
+  version "18.15.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.0.tgz#286a65e3fdffd691e170541e6ecb0410b16a38be"
+  integrity sha512-z6nr0TTEOBGkzLGmbypWOGnpSpSIBorEhC4L+4HeQ2iezKCi4f77kyslRwvHeNitymGQ+oFyIWGP96l/DPSV9w==
 
 "@types/nprogress@^0.2.0":
   version "0.2.0"
@@ -5066,9 +5071,9 @@ parent-module@^1.0.0:
     callsites "^3.0.0"
 
 parse-duration@^1.0.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/parse-duration/-/parse-duration-1.0.2.tgz#b9aa7d3a1363cc7e8845bea8fd3baf8a11df5805"
-  integrity sha512-Dg27N6mfok+ow1a2rj/nRjtCfaKrHUZV2SJpEn/s8GaVUSlf4GGRCRP1c13Hj+wfPKVMrFDqLMLITkYKgKxyyg==
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/parse-duration/-/parse-duration-1.0.3.tgz#b6681f5edcc2689643b34c09ea63f86f58a35814"
+  integrity sha512-o6NAh12na5VvR6nFejkU0gpQ8jmOY9Y9sTU2ke3L3G/d/3z8jqmbBbeyBGHU73P4JLXfc7tJARygIK3WGIkloA==
 
 parse-entities@^2.0.0:
   version "2.0.0"

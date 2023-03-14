@@ -1,3 +1,4 @@
+import { CRUST_IPFS_CONFIG } from '@/subsocial-query/subsocial/config'
 import { getCrustIpfsAuth } from '@/utils/env/server'
 import { SubsocialIpfsApi } from '@subsocial/api'
 import { IpfsPostContent } from '@subsocial/api/types'
@@ -11,30 +12,27 @@ export type SaveFileResponse = {
   cid?: string
 }
 
-const ipfs = new SubsocialIpfsApi({
-  ipfsNodeUrl: 'https://gw-seattle.cloud3.cc',
-  ipfsClusterUrl: 'https://test-pin.cloud3.cc/psa/pins',
-})
-const authHeader = { authorization: `${getCrustIpfsAuth()}` }
+const headers = { authorization: `${getCrustIpfsAuth()}` }
 
-ipfs.setWriteHeaders(authHeader)
-ipfs.setPinHeaders(authHeader)
+const ipfs = new SubsocialIpfsApi({
+  ...CRUST_IPFS_CONFIG,
+  headers,
+})
+ipfs.setWriteHeaders(headers)
+ipfs.setPinHeaders(headers)
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<SaveFileResponse>
 ) {
-  console.log(authHeader)
   if (req.method !== 'POST') return res.status(404).end()
 
   const body = req.body as IpfsPostContent
 
-  console.log(body, body.body, typeof body)
-
   let cid: string
   try {
-    cid = await ipfs.saveFile(JSON.stringify(body) as any)
-    // await ipfs.pinContent(cid)
+    cid = await ipfs.saveFile(JSON.stringify(body))
+    await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
   } catch (e: any) {
     return res.status(500).send({
       success: false,

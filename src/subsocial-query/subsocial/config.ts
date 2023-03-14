@@ -6,6 +6,12 @@ export interface SubsocialConnectionConfig {
   postConnectConfig?: (api: SubsocialApi) => void
 }
 
+export const CRUST_IPFS_CONFIG = {
+  ipfsNodeUrl: 'https://ipfs.subsocial.network',
+  ipfsAdminNodeUrl: 'https://gw-seattle.cloud3.cc',
+  ipfsClusterUrl: 'https://test-pin.cloud3.cc/psa',
+}
+
 const DEFAULT_STAGING_CONFIG: SubsocialConnectionConfig = {
   substrateUrl: 'wss://rco-para.subsocial.network',
   ipfsNodeUrl: 'https://ipfs.subsocial.network',
