@@ -1755,10 +1755,10 @@
     escape-string-regexp "^2.0.0"
     lodash.deburr "^4.1.0"
 
-"@subsocial/api@0.8.6-beta.2":
-  version "0.8.6-beta.2"
-  resolved "https://registry.yarnpkg.com/@subsocial/api/-/api-0.8.6-beta.2.tgz#5a49f8dbd902e18161bb9044cce7f972c6668215"
-  integrity sha512-KEYbp/lQRFzep6OMXUVy1k2z7I2hAnq8PX7LWlWIh7R0rzyBSSMH4M+w6R8Dtnw7Xf1Khp09S8Yrg00ucZ2LBw==
+"@subsocial/api@0.8.6":
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/@subsocial/api/-/api-0.8.6.tgz#f8358fc30e3a654d0a8e8082590815ef2a313caf"
+  integrity sha512-Ll6bOAvrKlRaM0Yz4lxTxP63+HsDhJUia9Mh/875wWtlFQgxOlVtD6vG/VXSgjrEh4GC4ZpC61GLoVU+CW8IXw==
   dependencies:
     "@polkadot/api" latest
     "@polkadot/types" latest
