@@ -1,4 +1,4 @@
-import { AnalyticProvider } from '@/analytics/amplitude'
+import { AnalyticProvider } from '@/analytics'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import Navbar from '@/components/navbar/Navbar'
 import { useBreakpointThreshold } from '@/hooks/useBreakpointThreshold'
