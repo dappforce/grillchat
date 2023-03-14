@@ -1,10 +1,10 @@
 import { useAmplitude } from '@/analytics/amplitude'
-import { getSalt } from '@/utils/salt'
 import React, { FC, useMemo } from 'react'
 
 type AnalyticContextProps = {
   sendEvent: (name: string, properties?: Record<string, string>) => void
   setUserId: (address: string) => void
+  removeUserId: () => void
 }
 const AnalyticContext = React.createContext<AnalyticContextProps>(
   {} as AnalyticContextProps
@@ -21,20 +21,30 @@ export default function useAnalytic() {
 export const AnalyticProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const amp = useAmplitude()
 
-  const setUserId = async (address: string) => {
-    const key = `${address}-${getSalt()}`
-    const userIdArray = await crypto.subtle.digest('SHA-256', Buffer.from(key))
-    const userId = Buffer.from(userIdArray).toString('hex')
-    amp?.setUserId(userId)
-    // TODO add GA user id
+  const updateUserId = async (address?: string) => {
+    if (address) {
+      const userIdArray = await crypto.subtle.digest(
+        'SHA-256',
+        Buffer.from(address)
+      )
+      const userId = Buffer.from(userIdArray).toString('hex')
+      amp?.setUserId(userId)
+      // TODO add GA user id
+    } else {
+      amp?.setUserId(undefined)
+      // TODO remove GA user id
+    }
   }
+
+  const removeUserId = () => updateUserId(undefined)
+  const setUserId = (address: string) => updateUserId(address)
 
   const sendEvent = (name: string, properties?: Record<string, string>) => {
     amp?.logEvent(name, properties)
     // TODO add GA events
   }
 
-  const value = useMemo(() => ({ setUserId, sendEvent }), [!!amp])
+  const value = useMemo(() => ({ setUserId, removeUserId, sendEvent }), [!!amp])
 
   return (
     <AnalyticContext.Provider value={value}>
