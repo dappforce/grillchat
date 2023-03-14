@@ -1,4 +1,5 @@
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
+import { MinimalUsageQueue } from '@/utils/data-structure'
 import { PostData } from '@subsocial/api/types'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
@@ -16,7 +17,8 @@ export type ApiPostsResponse = {
   hash?: string
 }
 
-const postsCache = new Map<string, PostData>()
+const MAX_POSTS_IN_CACHE = 500_000
+const postsCache = new MinimalUsageQueue<PostData>(MAX_POSTS_IN_CACHE)
 export async function getPostsFromCache(postIds: string[]) {
   const postsFromCache: PostData[] = []
   const needToFetchIds: string[] = []
@@ -35,7 +37,7 @@ export async function getPostsFromCache(postIds: string[]) {
       const subsocialApi = await getSubsocialApi()
       newlyFetchedData = await subsocialApi.findPublicPosts(needToFetchIds)
       newlyFetchedData.forEach((post) => {
-        postsCache.set(post.id.toString(), post)
+        postsCache.add(post.id.toString(), post)
       })
     } catch (e) {
       console.error(
