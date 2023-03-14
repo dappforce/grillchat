@@ -32,7 +32,7 @@ export default async function handler(
   let cid: string
   try {
     cid = await ipfs.saveFile(JSON.stringify(body))
-    await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
+    ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
   } catch (e: any) {
     return res.status(500).send({
       success: false,
