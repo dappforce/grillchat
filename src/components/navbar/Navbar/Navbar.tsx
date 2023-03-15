@@ -55,7 +55,9 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
           props.className
         )}
       >
-        <Container className={cx('py-2', props.className)}>
+        <Container
+          className={cx('grid h-14 items-center py-2', props.className)}
+        >
           {customContent ? (
             customContent(authComponent)
           ) : (
