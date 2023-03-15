@@ -50,7 +50,7 @@ export default function CaptchaModal({
       rootPostId,
       spaceId,
     })
-    sendEvent('Submit captcha and send message')
+    sendEvent('submit captcha and send message')
     props.closeModal()
     onSubmit?.()
   }

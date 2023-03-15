@@ -50,11 +50,11 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
 function AccountContent({ address, setCurrentState }: ContentProps) {
   const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = () => {
-    sendEvent('Click on "Show private key" button')
+    sendEvent('click show_private_key_button')
     setCurrentState('private-key')
   }
   const onLogoutClick = () => {
-    sendEvent('Click on "Log out" button')
+    sendEvent('click log_out_button')
     setCurrentState('logout')
   }
 
@@ -81,7 +81,7 @@ function PrivateKeyContent() {
   const secretKey = useMyAccount((state) => state.secretKey)
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
-    sendEvent('Click on "Copy private key" button')
+    sendEvent('click copy_private_key_button')
   }
 
   return (
@@ -100,11 +100,11 @@ function LogoutContent({ setCurrentState }: ContentProps) {
   const sendEvent = useSendEvent()
 
   const onShowPrivateKeyClick = () => {
-    sendEvent('Click on "No, show me my private key" button')
+    sendEvent('click no_show_me_my_private_key_button')
     setCurrentState('private-key')
   }
   const onLogoutClick = () => {
-    sendEvent('Click on "Yes, log out" button')
+    sendEvent('click yes_log_out_button')
     logout()
   }
 

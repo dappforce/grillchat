@@ -57,7 +57,7 @@ export default function ChatItem({
     const checkMarkType: CheckMarkModalVariant = isSent
       ? 'recorded'
       : 'recording'
-    sendEvent('Click on "Check mark" button', { type: checkMarkType })
+    sendEvent('click check_mark_button', { type: checkMarkType })
     dispatch(checkMarkType)
   }
 

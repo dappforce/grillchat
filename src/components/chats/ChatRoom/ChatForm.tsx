@@ -98,9 +98,9 @@ export default function ChatForm({
       onSubmit?.()
     } else {
       if (isLoggedIn) {
-        sendEvent('Request Energy')
+        sendEvent('request energy')
       } else {
-        sendEvent('Sending First Message', { chatId: postId, name: topicName })
+        sendEvent('send first message', { chatId: postId, name: topicName })
       }
       setIsOpenCaptcha(true)
     }
