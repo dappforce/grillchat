@@ -1,11 +1,10 @@
 import { useAmplitude } from '@/analytics/amplitude'
+import { useMyAccount } from '@/stores/my-account'
 import { event } from 'nextjs-google-analytics'
-import React, { FC, useCallback, useMemo, useRef } from 'react'
+import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react'
 
 type AnalyticContextProps = {
   sendEvent: (name: string, properties?: Record<string, string>) => void
-  setUserId: (address: string) => void
-  removeUserId: () => void
 }
 const AnalyticContext = React.createContext<AnalyticContextProps>(
   {} as AnalyticContextProps
@@ -22,6 +21,7 @@ export default function useAnalytic() {
 export const AnalyticProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const amp = useAmplitude()
   const userIdRef = useRef<string | undefined>()
+  const address = useMyAccount((state) => state.address)
 
   const updateUserId = useCallback(
     async (address: string | undefined) => {
@@ -50,6 +50,11 @@ export const AnalyticProvider: FC<React.PropsWithChildren> = ({ children }) => {
     [updateUserId]
   )
 
+  useEffect(() => {
+    if (!address) removeUserId()
+    else setUserId(address)
+  }, [address, setUserId, removeUserId])
+
   const sendEvent = useCallback(
     (name: string, properties?: Record<string, string>) => {
       amp?.logEvent(name, properties)
@@ -61,10 +66,7 @@ export const AnalyticProvider: FC<React.PropsWithChildren> = ({ children }) => {
     [amp]
   )
 
-  const value = useMemo(
-    () => ({ setUserId, removeUserId, sendEvent }),
-    [setUserId, removeUserId, sendEvent]
-  )
+  const value = useMemo(() => ({ sendEvent }), [sendEvent])
 
   return (
     <AnalyticContext.Provider value={value}>
