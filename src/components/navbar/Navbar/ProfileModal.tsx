@@ -53,6 +53,10 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
     sendEvent('Click on "Show private key" button')
     setCurrentState('private-key')
   }
+  const onLogoutClick = () => {
+    sendEvent('Click on "Log out" button')
+    setCurrentState('logout')
+  }
 
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
@@ -65,7 +69,7 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
         className='w-full'
         size='lg'
         variant='primaryOutline'
-        onClick={() => setCurrentState('logout')}
+        onClick={onLogoutClick}
       >
         Log out
       </Button>
@@ -93,13 +97,23 @@ function PrivateKeyContent() {
 
 function LogoutContent({ setCurrentState }: ContentProps) {
   const logout = useMyAccount((state) => state.logout)
+  const { sendEvent } = useAnalytic()
+
+  const onShowPrivateKeyClick = () => {
+    sendEvent('Click on "No, show me my private key" button')
+    setCurrentState('private-key')
+  }
+  const onLogoutClick = () => {
+    sendEvent('Click on "Yes, log out" button')
+    logout()
+  }
 
   return (
     <div className='mt-4 flex flex-col gap-4'>
-      <Button size='lg' onClick={() => setCurrentState('private-key')}>
+      <Button size='lg' onClick={onShowPrivateKeyClick}>
         No, show me my private key
       </Button>
-      <Button size='lg' onClick={logout} variant='primaryOutline'>
+      <Button size='lg' onClick={onLogoutClick} variant='primaryOutline'>
         Yes, log out
       </Button>
     </div>
