@@ -28,7 +28,7 @@ export default function ChatPage({ postId }: { postId: string }) {
     <DefaultLayout
       navbarProps={{
         customContent: (authComponent) => (
-          <div className='flex justify-between gap-4'>
+          <div className='flex items-center justify-between gap-4'>
             <NavbarChatInfo
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
               messageCount={data?.length ?? 0}
