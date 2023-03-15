@@ -31,7 +31,7 @@ export default async function handler(
 
   let userId: string
   try {
-    const userIdInput = `${body.data.address}-${getUserIdSalt()}`
+    const userIdInput = `${body.data.address}-${getUserIdSalt() ?? ''}`
     userId = createHash('sha256').update(userIdInput).digest('hex')
   } catch (e: any) {
     return res.status(500).send({
