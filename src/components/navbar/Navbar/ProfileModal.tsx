@@ -2,6 +2,7 @@ import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import CopyText from '@/components/CopyText'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import React, { useEffect, useState } from 'react'
@@ -47,22 +48,28 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
 }
 
 function AccountContent({ address, setCurrentState }: ContentProps) {
+  const sendEvent = useSendEvent()
+  const onShowPrivateKeyClick = () => {
+    sendEvent('click show_private_key_button')
+    setCurrentState('private-key')
+  }
+  const onLogoutClick = () => {
+    sendEvent('click log_out_button')
+    setCurrentState('logout')
+  }
+
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
       <AddressAvatar address={address} className='h-20 w-20' />
       <CopyText text={truncateAddress(address)} textToCopy={address} />
-      <Button
-        className='mt-2 w-full'
-        size='lg'
-        onClick={() => setCurrentState('private-key')}
-      >
+      <Button className='mt-2 w-full' size='lg' onClick={onShowPrivateKeyClick}>
         Show private key
       </Button>
       <Button
         className='w-full'
         size='lg'
         variant='primaryOutline'
-        onClick={() => setCurrentState('logout')}
+        onClick={onLogoutClick}
       >
         Log out
       </Button>
@@ -72,10 +79,14 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
 
 function PrivateKeyContent() {
   const secretKey = useMyAccount((state) => state.secretKey)
+  const sendEvent = useSendEvent()
+  const onCopyClick = () => {
+    sendEvent('click copy_private_key_button')
+  }
 
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
-      <CopyText type='long' text={secretKey || ''} />
+      <CopyText onCopyClick={onCopyClick} type='long' text={secretKey || ''} />
       <p className='mt-2 text-text-muted'>
         A private key is like a long password. We recommend keeping it in a safe
         place, so you can recover your account.
@@ -86,13 +97,23 @@ function PrivateKeyContent() {
 
 function LogoutContent({ setCurrentState }: ContentProps) {
   const logout = useMyAccount((state) => state.logout)
+  const sendEvent = useSendEvent()
+
+  const onShowPrivateKeyClick = () => {
+    sendEvent('click no_show_me_my_private_key_button')
+    setCurrentState('private-key')
+  }
+  const onLogoutClick = () => {
+    sendEvent('click yes_log_out_button')
+    logout()
+  }
 
   return (
     <div className='mt-4 flex flex-col gap-4'>
-      <Button size='lg' onClick={() => setCurrentState('private-key')}>
+      <Button size='lg' onClick={onShowPrivateKeyClick}>
         No, show me my private key
       </Button>
-      <Button size='lg' onClick={logout} variant='primaryOutline'>
+      <Button size='lg' onClick={onLogoutClick} variant='primaryOutline'>
         Yes, log out
       </Button>
     </div>

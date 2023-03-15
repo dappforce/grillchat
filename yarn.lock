@@ -2,6 +2,72 @@
 # yarn lockfile v1
 
 
+"@amplitude/analytics-browser@^1.9.1":
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-browser/-/analytics-browser-1.9.1.tgz#a26981c1940cf7602f127d726166fbe09f26418a"
+  integrity sha512-7FkcBl6yI5JkiJEqGrIrkaHFRv/W37Nv16C86QduBDKJWN19pUIafkCi6NR4H05BUswFDBtQAxH6cY5zehm0kA==
+  dependencies:
+    "@amplitude/analytics-client-common" "^0.6.1"
+    "@amplitude/analytics-core" "^0.12.0"
+    "@amplitude/analytics-types" "^0.17.0"
+    "@amplitude/plugin-page-view-tracking-browser" "^0.6.1"
+    "@amplitude/plugin-web-attribution-browser" "^0.6.1"
+    "@amplitude/ua-parser-js" "^0.7.31"
+    tslib "^2.4.1"
+
+"@amplitude/analytics-client-common@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-client-common/-/analytics-client-common-0.6.1.tgz#9023ff4d5b731dd11e97f55ca2033b6910546400"
+  integrity sha512-P9Zb1xfmbYMFy3QPfY7G+wwvbvTsfIOS5BOWSUiig+P9PduRwxslPe1Uscns0is6SaHcqIqrw47uuH58FEmmcg==
+  dependencies:
+    "@amplitude/analytics-connector" "^1.4.5"
+    "@amplitude/analytics-core" "^0.12.0"
+    "@amplitude/analytics-types" "^0.17.0"
+    tslib "^2.4.1"
+
+"@amplitude/analytics-connector@^1.4.5":
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-connector/-/analytics-connector-1.4.6.tgz#60a66eaf0bcdcd17db4f414ff340c69e63116a72"
+  integrity sha512-6jD2pOosRD4y8DT8StUCz7yTd5ZDkdOU9/AWnlWKM5qk90Mz7sdZrdZ9H7sA/L3yOJEpQOYZgQplQdWWUzyWug==
+  dependencies:
+    "@amplitude/ua-parser-js" "0.7.31"
+
+"@amplitude/analytics-core@^0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-core/-/analytics-core-0.12.0.tgz#5ca956a55ee97ab9ac6a6ddc034c335156570ae8"
+  integrity sha512-Qg5own7VApdEOUtOnKwk7vFKbXubZ/YBQq0COYK+QFMCp0eF1xwLLLEiE4ThYiq49EwptvinH/bziU6IMi205g==
+  dependencies:
+    "@amplitude/analytics-types" "^0.17.0"
+    tslib "^2.4.1"
+
+"@amplitude/analytics-types@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@amplitude/analytics-types/-/analytics-types-0.17.0.tgz#5f129ec2c99d1587b7a3495c9dc808534fb02609"
+  integrity sha512-J6JdlUkYPaOInsqYBBOjxwhYi+3ZFl+ICE6yG/1SySX/Eu7a7jAJbBbrH1HrYk+0Hzl5sdO/WA2zhHi0j00qTQ==
+
+"@amplitude/plugin-page-view-tracking-browser@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@amplitude/plugin-page-view-tracking-browser/-/plugin-page-view-tracking-browser-0.6.1.tgz#9bd4b2131fc18b7cc04c0f8d91ba56d911d0be6d"
+  integrity sha512-vafShnEX4a7+73vlSEr7bsVzaUrA7MlrWWtTobU/AJSh1PzmbSRBQKD/xYQNt8W4qChq1AyXOjp9GKFGnWiiTw==
+  dependencies:
+    "@amplitude/analytics-client-common" "^0.6.1"
+    "@amplitude/analytics-types" "^0.17.0"
+    tslib "^2.4.1"
+
+"@amplitude/plugin-web-attribution-browser@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@amplitude/plugin-web-attribution-browser/-/plugin-web-attribution-browser-0.6.1.tgz#fd635d184be978ac5ce9e55d36591c8b098c9178"
+  integrity sha512-znbnwownJPK4BdFGNTfwTq/ILk4n0USyYm+X5f1oHEi8tgHSsY2sT4vTAqdEvJQ7J1e355flYhn2l73WyBsr9w==
+  dependencies:
+    "@amplitude/analytics-client-common" "^0.6.1"
+    "@amplitude/analytics-types" "^0.17.0"
+    tslib "^2.4.1"
+
+"@amplitude/ua-parser-js@0.7.31", "@amplitude/ua-parser-js@^0.7.31":
+  version "0.7.31"
+  resolved "https://registry.yarnpkg.com/@amplitude/ua-parser-js/-/ua-parser-js-0.7.31.tgz#749bf7cb633cfcc7ff3c10805bad7c5f6fbdbc61"
+  integrity sha512-+z8UGRaj13Pt5NDzOnkTBy49HE2CX64jeL0ArB86HAtilpnfkPB7oqkigN7Lf2LxscMg4QhFD7mmCfedh3rqTg==
+
 "@ampproject/remapping@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.2.0.tgz#56c133824780de3174aed5ab6834f3026790154d"
@@ -1689,10 +1755,10 @@
     escape-string-regexp "^2.0.0"
     lodash.deburr "^4.1.0"
 
-"@subsocial/api@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@subsocial/api/-/api-0.8.1.tgz#1f82f0cbe7e6ee01cf79abfc038db50230cae07c"
-  integrity sha512-JNUiGENiKwXM8bLDhZnL0USyKb3su/zLZGHZ/L0w1ZVnsZnHEpmRhktXGmVXjPP3XHdk/mF13/Qf1EqhMcM7ag==
+"@subsocial/api@0.8.6":
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/@subsocial/api/-/api-0.8.6.tgz#f8358fc30e3a654d0a8e8082590815ef2a313caf"
+  integrity sha512-Ll6bOAvrKlRaM0Yz4lxTxP63+HsDhJUia9Mh/875wWtlFQgxOlVtD6vG/VXSgjrEh4GC4ZpC61GLoVU+CW8IXw==
   dependencies:
     "@polkadot/api" latest
     "@polkadot/types" latest
@@ -1938,10 +2004,15 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@18.14.1", "@types/node@>=13.7.0":
+"@types/node@*", "@types/node@18.14.1":
   version "18.14.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.14.1.tgz#90dad8476f1e42797c49d6f8b69aaf9f876fc69f"
   integrity sha512-QH+37Qds3E0eDlReeboBxfHbX9omAcBCXEzswCu6jySP642jiM3cYSIkU/REqwhCUqXdonHFuBfJDiAJxMNhaQ==
+
+"@types/node@>=13.7.0":
+  version "18.15.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.0.tgz#286a65e3fdffd691e170541e6ecb0410b16a38be"
+  integrity sha512-z6nr0TTEOBGkzLGmbypWOGnpSpSIBorEhC4L+4HeQ2iezKCi4f77kyslRwvHeNitymGQ+oFyIWGP96l/DPSV9w==
 
 "@types/nprogress@^0.2.0":
   version "0.2.0"
@@ -3431,7 +3502,7 @@ fs.realpath@^1.0.0:
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
 
-fsevents@~2.3.2:
+fsevents@^2.3.2, fsevents@~2.3.2:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
   integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
@@ -4737,6 +4808,13 @@ nextjs-cors@^2.1.2:
   dependencies:
     cors "^2.8.5"
 
+nextjs-google-analytics@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/nextjs-google-analytics/-/nextjs-google-analytics-2.3.3.tgz#8393804b89915b22d94e0fabb786bdd4012cb888"
+  integrity sha512-Y6sI6A7wt5dji8hYBnVkOh9LTyImSLFZXx3FpyQgVW7W4b4qEFHjH2u3fhDJsrRZeLlUGM8/RuHD/mhHc2Axfg==
+  optionalDependencies:
+    fsevents "^2.3.2"
+
 nextjs-progressbar@^0.0.16:
   version "0.0.16"
   resolved "https://registry.yarnpkg.com/nextjs-progressbar/-/nextjs-progressbar-0.0.16.tgz#d2c1e54ffc2c6d52b64282c0d764a44241fbc36e"
@@ -5000,9 +5078,9 @@ parent-module@^1.0.0:
     callsites "^3.0.0"
 
 parse-duration@^1.0.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/parse-duration/-/parse-duration-1.0.2.tgz#b9aa7d3a1363cc7e8845bea8fd3baf8a11df5805"
-  integrity sha512-Dg27N6mfok+ow1a2rj/nRjtCfaKrHUZV2SJpEn/s8GaVUSlf4GGRCRP1c13Hj+wfPKVMrFDqLMLITkYKgKxyyg==
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/parse-duration/-/parse-duration-1.0.3.tgz#b6681f5edcc2689643b34c09ea63f86f58a35814"
+  integrity sha512-o6NAh12na5VvR6nFejkU0gpQ8jmOY9Y9sTU2ke3L3G/d/3z8jqmbBbeyBGHU73P4JLXfc7tJARygIK3WGIkloA==
 
 parse-entities@^2.0.0:
   version "2.0.0"
@@ -5918,7 +5996,7 @@ tslib@^1.8.1:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.1.0, tslib@^2.3.0, tslib@^2.4.0, tslib@^2.5.0:
+tslib@^2.1.0, tslib@^2.3.0, tslib@^2.4.0, tslib@^2.4.1, tslib@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.5.0.tgz#42bfed86f5787aeb41d031866c8f402429e0fddf"
   integrity sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==

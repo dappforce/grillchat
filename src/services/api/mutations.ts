@@ -1,11 +1,16 @@
+import { CreateUserIdResponse } from '@/pages/api/create-user-id'
 import {
   ApiRequestTokenBody,
   ApiRequestTokenResponse,
 } from '@/pages/api/request-token'
+import { SaveFileRequest, SaveFileResponse } from '@/pages/api/save-file'
 import mutationWrapper from '@/subsocial-query/base'
 import axios from 'axios'
 
-async function requestToken({ address, captchaToken }: ApiRequestTokenBody) {
+export async function requestToken({
+  address,
+  captchaToken,
+}: ApiRequestTokenBody) {
   const res = await axios.post('/api/request-token', {
     captchaToken,
     address,
@@ -15,3 +20,18 @@ async function requestToken({ address, captchaToken }: ApiRequestTokenBody) {
   return res
 }
 export const useRequestToken = mutationWrapper(requestToken)
+
+export async function saveFile(content: SaveFileRequest) {
+  const res = await axios.post('/api/save-file', content)
+  const data = res.data as SaveFileResponse
+  if (!data.success) throw new Error(data.errors)
+  return data
+}
+export const useSaveFile = mutationWrapper(saveFile)
+
+export async function createUserId(address: string) {
+  const res = await axios.post('/api/create-user-id', { address })
+  const data = res.data as CreateUserIdResponse
+  if (!data.success || !data.userId) throw new Error(data.errors)
+  return data.userId
+}
