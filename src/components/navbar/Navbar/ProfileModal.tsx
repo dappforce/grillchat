@@ -1,3 +1,4 @@
+import useAnalytic from '@/analytics'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import CopyText from '@/components/CopyText'
@@ -47,15 +48,17 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
 }
 
 function AccountContent({ address, setCurrentState }: ContentProps) {
+  const { sendEvent } = useAnalytic()
+  const onShowPrivateKeyClick = () => {
+    sendEvent('Click on "Show private key" button')
+    setCurrentState('private-key')
+  }
+
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
       <AddressAvatar address={address} className='h-20 w-20' />
       <CopyText text={truncateAddress(address)} textToCopy={address} />
-      <Button
-        className='mt-2 w-full'
-        size='lg'
-        onClick={() => setCurrentState('private-key')}
-      >
+      <Button className='mt-2 w-full' size='lg' onClick={onShowPrivateKeyClick}>
         Show private key
       </Button>
       <Button
@@ -72,10 +75,14 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
 
 function PrivateKeyContent() {
   const secretKey = useMyAccount((state) => state.secretKey)
+  const { sendEvent } = useAnalytic()
+  const onCopyClick = () => {
+    sendEvent('Click on "Copy private key" button')
+  }
 
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
-      <CopyText type='long' text={secretKey || ''} />
+      <CopyText onCopyClick={onCopyClick} type='long' text={secretKey || ''} />
       <p className='mt-2 text-text-muted'>
         A private key is like a long password. We recommend keeping it in a safe
         place, so you can recover your account.

@@ -8,12 +8,14 @@ export type CopyTextProps = ComponentProps<'div'> & {
   text: string
   textToCopy?: string
   type?: 'short' | 'long'
+  onCopyClick?: () => void
 }
 
 export default function CopyText({
   text,
   textToCopy,
   type = 'short',
+  onCopyClick,
   ...props
 }: CopyTextProps) {
   const [isCopied, setIsCopied] = useState(false)
@@ -21,6 +23,7 @@ export default function CopyText({
   const copyToClipboard = () => {
     navigator.clipboard.writeText(textToCopy || text)
 
+    onCopyClick?.()
     setIsCopied(true)
     setTimeout(() => {
       setIsCopied(false)
