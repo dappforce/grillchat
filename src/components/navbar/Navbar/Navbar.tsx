@@ -14,9 +14,11 @@ const LoginModal = dynamic(() => import('@/components/LoginModal'), {
   ssr: false,
 })
 
-export type NavbarProps = ComponentProps<'div'>
+export type NavbarProps = ComponentProps<'div'> & {
+  customContent?: (authComponent: JSX.Element) => JSX.Element
+}
 
-export default function Navbar({ ...props }: NavbarProps) {
+export default function Navbar({ customContent, ...props }: NavbarProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
@@ -31,6 +33,19 @@ export default function Navbar({ ...props }: NavbarProps) {
     setOpenLoginModal(true)
   }
 
+  const renderAuthComponent = () => {
+    if (!isInitialized) return <div className='w-9' />
+    return isLoggedIn ? (
+      <ProfileAvatar
+        displayPopOver={!isLoggingInWithKey.current && !isInitializedAddress}
+        address={address}
+      />
+    ) : (
+      <Button onClick={login}>Login</Button>
+    )
+  }
+  const authComponent = renderAuthComponent()
+
   return (
     <>
       <nav
@@ -40,36 +55,25 @@ export default function Navbar({ ...props }: NavbarProps) {
           props.className
         )}
       >
-        <Container
-          className={cx(
-            'flex items-center justify-between py-2',
-            props.className
+        <Container className={cx('py-2', props.className)}>
+          {customContent ? (
+            customContent(authComponent)
+          ) : (
+            <div className='flex items-center justify-between'>
+              <Link href='/'>
+                <Logo className='text-2xl' />
+              </Link>
+              <div className='flex items-center'>
+                <LinkText
+                  href='https://google.com'
+                  className='mr-6 flex items-center'
+                >
+                  <HiOutlineLightBulb className='mr-1' /> Suggest Feature
+                </LinkText>
+                {authComponent}
+              </div>
+            </div>
           )}
-        >
-          <Link href='/'>
-            <Logo className='text-2xl' />
-          </Link>
-          <div className='flex items-center'>
-            <LinkText
-              href='https://google.com'
-              className='mr-6 flex items-center'
-            >
-              <HiOutlineLightBulb className='mr-1' /> Suggest Feature
-            </LinkText>
-            {(() => {
-              if (!isInitialized) return <div className='w-9' />
-              return isLoggedIn ? (
-                <ProfileAvatar
-                  displayPopOver={
-                    !isLoggingInWithKey.current && !isInitializedAddress
-                  }
-                  address={address}
-                />
-              ) : (
-                <Button onClick={login}>Login</Button>
-              )
-            })()}
-          </div>
         </Container>
       </nav>
       <LoginModal
