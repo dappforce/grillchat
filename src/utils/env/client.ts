@@ -25,5 +25,5 @@ export function getBaseUrl() {
 }
 
 export function getAmpId() {
-  return checkEnv(process.env.NEXT_PUBLIC_AMP_ID, 'NEXT_PUBLIC_AMP_ID', true)
+  return checkEnv(process.env.NEXT_PUBLIC_AMP_ID, 'NEXT_PUBLIC_AMP_ID')
 }

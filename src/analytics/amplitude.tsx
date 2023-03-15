@@ -8,6 +8,9 @@ export const useAmplitude = () => {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
+    const ampId = getAmpId()
+    if (!ampId) return
+
     const amp = createInstance()
     amp
       .init(getAmpId(), undefined, { disableCookies: true })
