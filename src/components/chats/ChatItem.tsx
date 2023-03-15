@@ -1,3 +1,4 @@
+import useAnalytic from '@/analytics'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
@@ -40,6 +41,8 @@ export default function ChatItem({
   isMyMessage,
   ...props
 }: ChatItemProps) {
+  const { sendEvent } = useAnalytic()
+
   const [checkMarkModalState, dispatch] = useReducer(checkMarkModalReducer, {
     isOpen: false,
     variant: '',
@@ -49,6 +52,14 @@ export default function ChatItem({
     seed: senderAddress,
     luminosity: 'light',
   })
+
+  const onCheckMarkClick = () => {
+    const checkMarkType: CheckMarkModalVariant = isSent
+      ? 'recorded'
+      : 'recording'
+    sendEvent('Click on "Check mark" button', { type: checkMarkType })
+    dispatch(checkMarkType)
+  }
 
   return (
     <div
@@ -107,7 +118,7 @@ export default function ChatItem({
               variant='transparent'
               size='noPadding'
               withRingInteraction={false}
-              onClick={() => dispatch(isSent ? 'recorded' : 'recording')}
+              onClick={onCheckMarkClick}
             >
               {isSent ? (
                 <IoCheckmarkDoneOutline className='text-sm' />
