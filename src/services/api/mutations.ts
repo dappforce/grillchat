@@ -6,7 +6,10 @@ import { SaveFileRequest, SaveFileResponse } from '@/pages/api/save-file'
 import mutationWrapper from '@/subsocial-query/base'
 import axios from 'axios'
 
-async function requestToken({ address, captchaToken }: ApiRequestTokenBody) {
+export async function requestToken({
+  address,
+  captchaToken,
+}: ApiRequestTokenBody) {
   const res = await axios.post('/api/request-token', {
     captchaToken,
     address,
@@ -15,10 +18,9 @@ async function requestToken({ address, captchaToken }: ApiRequestTokenBody) {
   if (!data.success) throw new Error(data.message)
   return res
 }
-
 export const useRequestToken = mutationWrapper(requestToken)
 
-async function saveFile(content: SaveFileRequest) {
+export async function saveFile(content: SaveFileRequest) {
   const res = await fetch('/api/save-file', {
     method: 'POST',
     body: JSON.stringify(content),
