@@ -1,3 +1,4 @@
+import useAnalytic from '@/analytics'
 import ChatPreview from '@/components/chats/ChatPreview'
 import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
@@ -25,9 +26,19 @@ export default function HomePage() {
 
 function ChatPreviewContainer({ postId }: { postId: string }) {
   const { data } = getPostQuery.useQuery(postId)
+  const { sendEvent } = useAnalytic()
+
   const content = data?.content
+
+  const onChatClick = () =>
+    sendEvent('Click on chat', {
+      chatId: postId,
+      name: content?.title ?? '',
+    })
+
   return (
     <ChatPreview
+      onClick={onChatClick}
       key={postId}
       asContainer
       asLink={{
