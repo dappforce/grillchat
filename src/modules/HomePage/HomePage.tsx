@@ -1,5 +1,6 @@
 import useAnalytic from '@/analytics'
 import ChatPreview from '@/components/chats/ChatPreview'
+import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceId } from '@/utils/env/client'
@@ -13,14 +14,14 @@ export default function HomePage() {
   const { data } = getPostIdsBySpaceIdQuery.useQuery(getSpaceId())
 
   return (
-    <>
+    <DefaultLayout>
       <WelcomeModal />
       <div className='flex flex-col'>
         {(data?.postIds ?? []).map((postId) => (
           <ChatPreviewContainer postId={postId} key={postId} />
         ))}
       </div>
-    </>
+    </DefaultLayout>
   )
 }
 

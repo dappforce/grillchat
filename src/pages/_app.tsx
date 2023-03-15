@@ -1,21 +1,13 @@
 import { AnalyticProvider } from '@/analytics'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
-import Navbar from '@/components/navbar/Navbar'
 import { useBreakpointThreshold } from '@/hooks/useBreakpointThreshold'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
-import { cx } from '@/utils/class-names'
 import type { AppProps } from 'next/app'
-import { Source_Sans_Pro } from 'next/font/google'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
-
-const sourceSansPro = Source_Sans_Pro({
-  weight: ['400', '600'],
-  subsets: ['latin'],
-})
 
 export type AppCommonProps = {
   head?: HeadConfigProps
@@ -38,19 +30,10 @@ export default function App({
   return (
     <QueryProvider dehydratedState={dehydratedState}>
       <ToasterConfig />
+      <NextNProgress color='#4d46dc' />
+      <HeadConfig {...head} />
       <AnalyticProvider>
-        <NextNProgress color='#4d46dc' />
-        <HeadConfig {...head} />
-        <div
-          className={cx(
-            'flex h-screen flex-col bg-background text-text',
-            sourceSansPro.className
-          )}
-          style={{ height: '100svh' }}
-        >
-          <Navbar />
-          <Component {...props} />
-        </div>
+        <Component {...props} />
       </AnalyticProvider>
     </QueryProvider>
   )
