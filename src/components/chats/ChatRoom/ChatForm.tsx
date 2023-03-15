@@ -3,6 +3,7 @@ import Send from '@/assets/icons/send.svg'
 import { buttonStyles } from '@/components/Button'
 import TextArea from '@/components/inputs/TextArea'
 import Toast from '@/components/Toast'
+import { getPostQuery } from '@/services/api/query'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -36,6 +37,9 @@ export default function ChatForm({
   onSubmit,
   ...props
 }: ChatFormProps) {
+  const { data: post } = getPostQuery.useQuery(postId)
+  const topicName = post?.content?.title ?? ''
+
   const { sendEvent } = useAnalytic()
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -89,11 +93,15 @@ export default function ChatForm({
     if (isDisabled) return
 
     if (shouldSendMessage) {
-      sendEvent('Send message')
       setMessage('')
       sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
       onSubmit?.()
     } else {
+      if (isLoggedIn) {
+        sendEvent('Request Energy')
+      } else {
+        sendEvent('Sending First Message', { chatId: postId, name: topicName })
+      }
       setIsOpenCaptcha(true)
     }
   }
