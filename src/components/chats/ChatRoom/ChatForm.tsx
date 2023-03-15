@@ -1,3 +1,4 @@
+import useAnalytic from '@/analytics'
 import Send from '@/assets/icons/send.svg'
 import { buttonStyles } from '@/components/Button'
 import TextArea from '@/components/inputs/TextArea'
@@ -35,6 +36,8 @@ export default function ChatForm({
   onSubmit,
   ...props
 }: ChatFormProps) {
+  const { sendEvent } = useAnalytic()
+
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
   const hasEnoughEnergy = useMyAccount(
@@ -86,6 +89,7 @@ export default function ChatForm({
     if (isDisabled) return
 
     if (shouldSendMessage) {
+      sendEvent('Send message')
       setMessage('')
       sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
       onSubmit?.()

@@ -1,3 +1,4 @@
+import useAnalytic from '@/analytics'
 import Captcha from '@/components/Captcha'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import Toast from '@/components/Toast'
@@ -20,6 +21,7 @@ export default function CaptchaModal({
   onSubmit,
   ...props
 }: CaptchaModalProps) {
+  const { sendEvent } = useAnalytic()
   const { mutateAsync: requestTokenAndSendMessage, error } =
     useRequestTokenAndSendMessage()
 
@@ -48,6 +50,7 @@ export default function CaptchaModal({
       rootPostId,
       spaceId,
     })
+    sendEvent('Submit captcha and send message')
     props.closeModal()
     onSubmit?.()
   }
