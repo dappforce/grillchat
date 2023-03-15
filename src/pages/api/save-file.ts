@@ -12,7 +12,7 @@ export type SaveFileResponse = {
   cid?: string
 }
 
-const headers = { authorization: `${getCrustIpfsAuth()}` }
+const headers = { authorization: `Bearer ${getCrustIpfsAuth()}` }
 
 const ipfs = new SubsocialIpfsApi({
   ...CRUST_IPFS_CONFIG,
