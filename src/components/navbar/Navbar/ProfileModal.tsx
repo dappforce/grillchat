@@ -1,8 +1,8 @@
-import useAnalytic from '@/analytics'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import CopyText from '@/components/CopyText'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import React, { useEffect, useState } from 'react'
@@ -48,7 +48,7 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
 }
 
 function AccountContent({ address, setCurrentState }: ContentProps) {
-  const { sendEvent } = useAnalytic()
+  const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = () => {
     sendEvent('Click on "Show private key" button')
     setCurrentState('private-key')
@@ -79,7 +79,7 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
 
 function PrivateKeyContent() {
   const secretKey = useMyAccount((state) => state.secretKey)
-  const { sendEvent } = useAnalytic()
+  const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('Click on "Copy private key" button')
   }
@@ -97,7 +97,7 @@ function PrivateKeyContent() {
 
 function LogoutContent({ setCurrentState }: ContentProps) {
   const logout = useMyAccount((state) => state.logout)
-  const { sendEvent } = useAnalytic()
+  const sendEvent = useSendEvent()
 
   const onShowPrivateKeyClick = () => {
     sendEvent('Click on "No, show me my private key" button')

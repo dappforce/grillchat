@@ -1,4 +1,5 @@
 import { loginWithSecretKey, Signer } from '@/utils/account'
+import { useAnalytics } from './analytics'
 import { create } from './utils'
 
 type State = {
@@ -29,6 +30,7 @@ const initialState = {
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
   login: async (secretKey: string) => {
+    const { isInitialized } = get()
     const { toSubsocialAddress } = await import('@subsocial/utils')
     try {
       const signer = await loginWithSecretKey(secretKey)
@@ -40,6 +42,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       })
       localStorage.setItem(STORAGE_KEY, secretKey)
       get().subscribeEnergy()
+      if (isInitialized) {
+        useAnalytics.getState().setUserId(signer.address)
+      }
     } catch (e) {
       console.log('Failed to login', e)
       return false
@@ -67,11 +72,15 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     )
   },
   logout: () => {
-    const { unsubscribeEnergy } = get()
+    const { unsubscribeEnergy, isInitialized } = get()
     unsubscribeEnergy()
 
     localStorage.removeItem(STORAGE_KEY)
     set(initialState)
+
+    if (isInitialized) {
+      useAnalytics.getState().removeUserId()
+    }
   },
   init: async () => {
     const { isInitialized, login } = get()

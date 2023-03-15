@@ -1,10 +1,10 @@
-import useAnalytic from '@/analytics'
 import Captcha from '@/components/Captcha'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import Toast from '@/components/Toast'
 import { useRequestTokenAndSendMessage } from '@/hooks/useRequestTokenAndSendMessage'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
+import { useSendEvent } from '@/stores/analytics'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
@@ -21,7 +21,7 @@ export default function CaptchaModal({
   onSubmit,
   ...props
 }: CaptchaModalProps) {
-  const { sendEvent } = useAnalytic()
+  const sendEvent = useSendEvent()
   const { mutateAsync: requestTokenAndSendMessage, error } =
     useRequestTokenAndSendMessage()
 
