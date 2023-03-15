@@ -67,7 +67,7 @@ function NavbarChatInfo({
       </div>
       <div className='flex items-center gap-2'>
         <Image
-          className='h-9 w-9 justify-self-end'
+          className='h-9 w-9 justify-self-end rounded-full bg-background-lighter'
           width={36}
           height={36}
           src={image}
