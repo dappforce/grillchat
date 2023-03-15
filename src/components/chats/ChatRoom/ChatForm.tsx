@@ -1,10 +1,10 @@
-import useAnalytic from '@/analytics'
 import Send from '@/assets/icons/send.svg'
 import { buttonStyles } from '@/components/Button'
 import TextArea from '@/components/inputs/TextArea'
 import Toast from '@/components/Toast'
 import { getPostQuery } from '@/services/api/query'
 import { useSendMessage } from '@/services/subsocial/commentIds'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import {
@@ -40,7 +40,7 @@ export default function ChatForm({
   const { data: post } = getPostQuery.useQuery(postId)
   const topicName = post?.content?.title ?? ''
 
-  const { sendEvent } = useAnalytic()
+  const sendEvent = useSendEvent()
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)

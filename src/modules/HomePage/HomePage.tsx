@@ -1,8 +1,8 @@
-import useAnalytic from '@/analytics'
 import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { useSendEvent } from '@/stores/analytics'
 import { getSpaceId } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { createPostSlug } from '@subsocial/utils/slugify'
@@ -27,7 +27,7 @@ export default function HomePage() {
 
 function ChatPreviewContainer({ postId }: { postId: string }) {
   const { data } = getPostQuery.useQuery(postId)
-  const { sendEvent } = useAnalytic()
+  const sendEvent = useSendEvent()
 
   const content = data?.content
 
