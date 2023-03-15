@@ -1,3 +1,4 @@
+import { CreateUserIdResponse } from '@/pages/api/create-user-id'
 import {
   ApiRequestTokenBody,
   ApiRequestTokenResponse,
@@ -21,16 +22,16 @@ export async function requestToken({
 export const useRequestToken = mutationWrapper(requestToken)
 
 export async function saveFile(content: SaveFileRequest) {
-  const res = await fetch('/api/save-file', {
-    method: 'POST',
-    body: JSON.stringify(content),
-    headers: new Headers({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    }),
-  })
-  const data = (await res.json()) as SaveFileResponse
+  const res = await axios.post('/api/save-file', content)
+  const data = res.data as SaveFileResponse
   if (!data.success) throw new Error(data.errors)
   return data
 }
 export const useSaveFile = mutationWrapper(saveFile)
+
+export async function createUserId(address: string) {
+  const res = await axios.post('/api/create-user-id', { address })
+  const data = res.data as CreateUserIdResponse
+  if (!data.success || !data.userId) throw new Error(data.errors)
+  return data.userId
+}

@@ -1,4 +1,5 @@
 import { createAmplitudeInstance } from '@/analytics/amplitude'
+import { createUserId } from '@/services/api/mutations'
 import { BrowserClient } from '@amplitude/analytics-types'
 import { event } from 'nextjs-google-analytics'
 import { create } from './utils'
@@ -24,11 +25,7 @@ export const useAnalytics = create<State & Actions>()((set, get) => ({
   _updateUserId: async (address: string | undefined) => {
     const { amp } = get()
     if (address) {
-      const userIdArray = await crypto.subtle.digest(
-        'SHA-256',
-        Buffer.from(address)
-      )
-      const userId = Buffer.from(userIdArray).toString('hex')
+      const userId = await createUserId(address)
       amp?.setUserId(userId)
       set({ userId })
     } else {

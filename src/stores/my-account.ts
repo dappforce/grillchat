@@ -42,9 +42,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       })
       localStorage.setItem(STORAGE_KEY, secretKey)
       get().subscribeEnergy()
-      if (isInitialized) {
-        useAnalytics.getState().setUserId(signer.address)
-      }
+      useAnalytics.getState().setUserId(signer.address)
     } catch (e) {
       console.log('Failed to login', e)
       return false

@@ -1,4 +1,3 @@
-import { AnalyticProvider } from '@/analytics'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import { useBreakpointThreshold } from '@/hooks/useBreakpointThreshold'
 import { QueryProvider } from '@/services/provider'
@@ -34,10 +33,12 @@ export default function App({
       <ToasterConfig />
       <NextNProgress color='#4d46dc' />
       <HeadConfig {...head} />
-      <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
-      <AnalyticProvider>
-        <Component {...props} />
-      </AnalyticProvider>
+      <GoogleAnalytics
+        trackPageViews
+        gaMeasurementId={getGaId()}
+        defaultConsent='denied'
+      />
+      <Component {...props} />
     </QueryProvider>
   )
 }
