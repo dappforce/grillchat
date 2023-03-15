@@ -53,7 +53,10 @@ export const AnalyticProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const sendEvent = useCallback(
     (name: string, properties?: Record<string, string>) => {
       amp?.logEvent(name, properties)
-      event(name, { userId: userIdRef.current })
+      event(name, {
+        userId: userIdRef.current,
+        category: properties ? JSON.stringify(properties) : undefined,
+      })
     },
     [amp]
   )
