@@ -1,5 +1,5 @@
 import { useAmplitude } from '@/analytics/amplitude'
-import React, { FC, useMemo } from 'react'
+import React, { FC, useCallback, useMemo } from 'react'
 
 type AnalyticContextProps = {
   sendEvent: (name: string, properties?: Record<string, string>) => void
@@ -21,30 +21,45 @@ export default function useAnalytic() {
 export const AnalyticProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const amp = useAmplitude()
 
-  const updateUserId = async (address?: string) => {
-    if (address) {
-      const userIdArray = await crypto.subtle.digest(
-        'SHA-256',
-        Buffer.from(address)
-      )
-      const userId = Buffer.from(userIdArray).toString('hex')
-      amp?.setUserId(userId)
-      // TODO add GA user id
-    } else {
-      amp?.setUserId(undefined)
-      // TODO remove GA user id
-    }
-  }
+  const updateUserId = useCallback(
+    async (address: string | undefined) => {
+      if (address) {
+        const userIdArray = await crypto.subtle.digest(
+          'SHA-256',
+          Buffer.from(address)
+        )
+        const userId = Buffer.from(userIdArray).toString('hex')
+        amp?.setUserId(userId)
+        // TODO add GA user id
+      } else {
+        amp?.setUserId(undefined)
+        // TODO remove GA user id
+      }
+    },
+    [amp]
+  )
 
-  const removeUserId = () => updateUserId(undefined)
-  const setUserId = (address: string) => updateUserId(address)
+  const removeUserId = useCallback(
+    () => updateUserId(undefined),
+    [updateUserId]
+  )
+  const setUserId = useCallback(
+    (address: string) => updateUserId(address),
+    [updateUserId]
+  )
 
-  const sendEvent = (name: string, properties?: Record<string, string>) => {
-    amp?.logEvent(name, properties)
-    // TODO add GA events
-  }
+  const sendEvent = useCallback(
+    (name: string, properties?: Record<string, string>) => {
+      amp?.logEvent(name, properties)
+      // TODO add GA events
+    },
+    [amp]
+  )
 
-  const value = useMemo(() => ({ setUserId, removeUserId, sendEvent }), [!!amp])
+  const value = useMemo(
+    () => ({ setUserId, removeUserId, sendEvent }),
+    [setUserId, removeUserId, sendEvent]
+  )
 
   return (
     <AnalyticContext.Provider value={value}>
