@@ -1,22 +1,17 @@
 import { getAmpId } from '@/utils/env/client'
 import { createInstance } from '@amplitude/analytics-browser'
-import { BrowserClient } from '@amplitude/analytics-types'
-import React, { useEffect } from 'react'
 
-export const useAmplitude = () => {
-  const [amp, setAmp] = React.useState<BrowserClient | null>(null)
+export async function createAmplitudeInstance() {
+  if (typeof window === 'undefined') return null
+  const ampId = getAmpId()
+  if (!ampId) return null
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const ampId = getAmpId()
-    if (!ampId) return
-
+  try {
     const amp = createInstance()
-    amp
-      .init(getAmpId(), undefined, { disableCookies: true })
-      .promise.then(() => setAmp(amp))
-      .catch(console.error)
-  }, [])
-
-  return amp
+    await amp.init(getAmpId(), undefined, { disableCookies: true }).promise
+    return amp
+  } catch (e) {
+    console.error(e)
+    return null
+  }
 }

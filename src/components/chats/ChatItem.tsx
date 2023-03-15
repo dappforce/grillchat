@@ -1,4 +1,4 @@
-import useAnalytic from '@/analytics'
+import { useSendEvent } from '@/stores/analytics'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
@@ -41,7 +41,7 @@ export default function ChatItem({
   isMyMessage,
   ...props
 }: ChatItemProps) {
-  const { sendEvent } = useAnalytic()
+  const sendEvent = useSendEvent()
 
   const [checkMarkModalState, dispatch] = useReducer(checkMarkModalReducer, {
     isOpen: false,
