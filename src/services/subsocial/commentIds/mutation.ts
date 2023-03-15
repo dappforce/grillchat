@@ -1,5 +1,5 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import { saveFile } from '@/services/api/mutations'
+import { useSaveFile } from '@/services/api/mutations'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial'
@@ -15,11 +15,13 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const address = useMyAccount((state) => state.address ?? '')
   const signer = useMyAccount((state) => state.signer)
 
+  const { mutateAsync: saveFile } = useSaveFile()
+
   const waitHasBalance = useWaitHasEnergy()
 
   return useSubsocialMutation<SendMessageParams, string>(
     async () => ({ address, signer }),
-    async (params, { ipfsApi, substrateApi }) => {
+    async (params, { substrateApi }) => {
       await waitHasBalance()
       const { cid, success } = await saveFile({
         body: params.message,

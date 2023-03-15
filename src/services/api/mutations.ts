@@ -18,7 +18,7 @@ async function requestToken({ address, captchaToken }: ApiRequestTokenBody) {
 
 export const useRequestToken = mutationWrapper(requestToken)
 
-export async function saveFile(content: SaveFileRequest) {
+async function saveFile(content: SaveFileRequest) {
   const res = await fetch('/api/save-file', {
     method: 'POST',
     body: JSON.stringify(content),
@@ -31,3 +31,4 @@ export async function saveFile(content: SaveFileRequest) {
   if (!data.success) throw new Error(data.errors)
   return data
 }
+export const useSaveFile = mutationWrapper(saveFile)
