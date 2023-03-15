@@ -1,5 +1,6 @@
 import { useAmplitude } from '@/analytics/amplitude'
-import React, { FC, useCallback, useMemo } from 'react'
+import { event } from 'nextjs-google-analytics'
+import React, { FC, useCallback, useMemo, useRef } from 'react'
 
 type AnalyticContextProps = {
   sendEvent: (name: string, properties?: Record<string, string>) => void
@@ -20,6 +21,7 @@ export default function useAnalytic() {
 
 export const AnalyticProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const amp = useAmplitude()
+  const userIdRef = useRef<string | undefined>()
 
   const updateUserId = useCallback(
     async (address: string | undefined) => {
@@ -30,10 +32,10 @@ export const AnalyticProvider: FC<React.PropsWithChildren> = ({ children }) => {
         )
         const userId = Buffer.from(userIdArray).toString('hex')
         amp?.setUserId(userId)
-        // TODO add GA user id
+        userIdRef.current = userId
       } else {
         amp?.setUserId(undefined)
-        // TODO remove GA user id
+        userIdRef.current = undefined
       }
     },
     [amp]
@@ -51,7 +53,7 @@ export const AnalyticProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const sendEvent = useCallback(
     (name: string, properties?: Record<string, string>) => {
       amp?.logEvent(name, properties)
-      // TODO add GA events
+      event(name, { userId: userIdRef.current })
     },
     [amp]
   )
