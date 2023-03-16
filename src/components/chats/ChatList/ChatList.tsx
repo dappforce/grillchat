@@ -88,11 +88,8 @@ function ChatListContent({
 
   const isAllPostsLoaded = loadedPost.length === commentIds.length
 
-  // 80% of the scroll container height
-  // Its using big percentage because its actually using 80% of the previous container height before the new data is loaded
-  // This is because this line is run first before the new data finished rendering, so the scroll container height is using the previous one.
   const scrollThreshold =
-    (scrollContainerRef.current?.scrollHeight ?? 0) * 0.8 || 1000
+    (scrollContainerRef.current?.scrollHeight ?? 0) * 0.35 || 500
 
   return (
     <Component
