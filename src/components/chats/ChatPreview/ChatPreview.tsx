@@ -24,6 +24,7 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   isPinned?: boolean
   withUnreadCount?: boolean
   asContainer?: boolean
+  withBorderBottom?: boolean
 }
 
 export default function ChatPreview({
@@ -36,6 +37,7 @@ export default function ChatPreview({
   postId,
   isInteractive,
   withUnreadCount,
+  withBorderBottom = true,
   ...props
 }: ChatPreviewProps) {
   const Component = asContainer ? Container<'div'> : 'div'
@@ -100,8 +102,7 @@ export default function ChatPreview({
               ) : (
                 <p
                   className={cx(
-                    'overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted',
-                    props.className
+                    'overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted'
                   )}
                 >
                   {description}
@@ -113,7 +114,9 @@ export default function ChatPreview({
             </div>
           </div>
         </div>
-        <div className='absolute bottom-0 ml-16 w-full border-b border-border-gray' />
+        {withBorderBottom && (
+          <div className='absolute bottom-0 ml-16 w-full border-b border-border-gray' />
+        )}
       </ContentContainer>
     </Component>
   )
