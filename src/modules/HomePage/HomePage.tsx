@@ -12,31 +12,48 @@ import dynamic from 'next/dynamic'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
-export default function HomePage() {
+export default function HomePage({
+  isIntegrateChatButtonOnTop,
+}: {
+  isIntegrateChatButtonOnTop: boolean
+}) {
   const { data } = getPostIdsBySpaceIdQuery.useQuery(getSpaceId())
+
+  const integrateChatButton = (
+    <ChatPreview
+      key='integrate-chat'
+      isPinned
+      asLink={{ href: '/' }}
+      asContainer
+      className='bg-background-light md:bg-transparent'
+      title='Integrate chat into an existing app'
+      description='Let your users communicate using blockchain'
+      image={IntegrateIcon}
+    />
+  )
+
+  const launchCommunityButton = (
+    <ChatPreview
+      key='launch-community'
+      isPinned
+      asLink={{ href: '/' }}
+      asContainer
+      className='bg-background-light md:bg-transparent'
+      title='Launch your community'
+      description='Create your own discussion groups'
+      image={AddIcon}
+    />
+  )
+
+  const specialButtons = isIntegrateChatButtonOnTop
+    ? [integrateChatButton, launchCommunityButton]
+    : [launchCommunityButton, integrateChatButton]
 
   return (
     <DefaultLayout>
       <WelcomeModal />
       <div className='flex flex-col'>
-        <ChatPreview
-          isPinned
-          asLink={{ href: '/' }}
-          asContainer
-          className='bg-background-light md:bg-transparent'
-          title='Integrate chat into an existing app'
-          description='Let your users communicate using blockchain'
-          image={IntegrateIcon}
-        />
-        <ChatPreview
-          isPinned
-          asLink={{ href: '/' }}
-          asContainer
-          className='bg-background-light md:bg-transparent'
-          title='Launch your community'
-          description='Create your own discussion groups'
-          image={AddIcon}
-        />
+        {specialButtons}
         {(data?.postIds ?? []).map((postId) => (
           <ChatPreviewContainer postId={postId} key={postId} />
         ))}

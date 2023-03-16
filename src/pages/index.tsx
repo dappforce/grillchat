@@ -10,6 +10,7 @@ import { getPostsFromCache } from './api/posts'
 
 export const getStaticProps = getCommonStaticProps<{
   dehydratedState: any
+  isIntegrateChatButtonOnTop: boolean
 }>({}, async () => {
   const queryClient = new QueryClient()
 
@@ -53,6 +54,7 @@ export const getStaticProps = getCommonStaticProps<{
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
+      isIntegrateChatButtonOnTop: Math.random() > 0.5,
     },
     revalidate: 2,
   }
