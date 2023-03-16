@@ -1,3 +1,5 @@
+import AddIcon from '@/assets/icons/add.png'
+import IntegrateIcon from '@/assets/icons/integrate.png'
 import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getPostQuery } from '@/services/api/query'
@@ -17,6 +19,24 @@ export default function HomePage() {
     <DefaultLayout>
       <WelcomeModal />
       <div className='flex flex-col'>
+        <ChatPreview
+          isPinned
+          asLink={{ href: '/' }}
+          asContainer
+          className='bg-background-light md:bg-transparent'
+          title='Integrate chat into an existing app'
+          description='Let your users communicate using blockchain'
+          image={IntegrateIcon}
+        />
+        <ChatPreview
+          isPinned
+          asLink={{ href: '/' }}
+          asContainer
+          className='bg-background-light md:bg-transparent'
+          title='Launch your community'
+          description='Create your own discussion groups'
+          image={AddIcon}
+        />
         {(data?.postIds ?? []).map((postId) => (
           <ChatPreviewContainer postId={postId} key={postId} />
         ))}
