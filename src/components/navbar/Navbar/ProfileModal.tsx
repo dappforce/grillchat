@@ -62,17 +62,27 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
     <div className='mt-2 flex flex-col items-center gap-4'>
       <AddressAvatar address={address} className='h-20 w-20' />
       <CopyText text={truncateAddress(address)} textToCopy={address} />
-      <Button className='mt-2 w-full' size='lg' onClick={onShowPrivateKeyClick}>
-        Show private key
-      </Button>
-      <Button
-        className='w-full'
-        size='lg'
-        variant='primaryOutline'
-        onClick={onLogoutClick}
-      >
-        Log out
-      </Button>
+      <div className='mt-4 flex w-full flex-col gap-3'>
+        <Button className='w-full' size='lg' onClick={onShowPrivateKeyClick}>
+          Show private key
+        </Button>
+        <Button
+          variant='primaryOutline'
+          className='w-full'
+          size='lg'
+          onClick={onShowPrivateKeyClick}
+        >
+          Suggest Feature
+        </Button>
+        <Button
+          className='w-full'
+          size='lg'
+          variant='transparent'
+          onClick={onLogoutClick}
+        >
+          Log out
+        </Button>
+      </div>
     </div>
   )
 }

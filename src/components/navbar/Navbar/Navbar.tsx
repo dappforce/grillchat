@@ -3,10 +3,8 @@ import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ComponentProps, useRef, useState } from 'react'
-import { HiOutlineLightBulb } from 'react-icons/hi'
 import Button from '../../Button'
 import Container from '../../Container'
-import LinkText from '../../LinkText'
 import Logo from '../../Logo'
 import ProfileAvatar from './ProfileAvatar'
 
@@ -65,15 +63,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
               <Link href='/'>
                 <Logo className='text-2xl' />
               </Link>
-              <div className='flex items-center'>
-                <LinkText
-                  href='https://google.com'
-                  className='mr-6 flex items-center'
-                >
-                  <HiOutlineLightBulb className='mr-1' /> Suggest Feature
-                </LinkText>
-                {authComponent}
-              </div>
+              <div className='flex items-center'>{authComponent}</div>
             </div>
           )}
         </Container>
