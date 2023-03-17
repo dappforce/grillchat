@@ -10,6 +10,7 @@ import { getSpaceId } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { createPostSlug } from '@subsocial/utils/slugify'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
@@ -26,6 +27,11 @@ export default function HomePage({
       isPinned
       asLink={{ href: '/' }}
       asContainer
+      image={
+        <div className='h-full w-full rounded-full bg-background-primary p-3'>
+          <Image src={IntegrateIcon} alt='integrate chat' />
+        </div>
+      }
       className={cx(
         'bg-background-light md:rounded-none md:bg-background-light/50',
         isIntegrateChatButtonOnTop ? '' : 'md:rounded-b-3xl'
@@ -33,7 +39,6 @@ export default function HomePage({
       withBorderBottom={isIntegrateChatButtonOnTop}
       title='Integrate chat into an existing app'
       description='Let your users communicate using blockchain'
-      image={IntegrateIcon}
     />
   )
 
@@ -43,6 +48,11 @@ export default function HomePage({
       isPinned
       asLink={{ href: '/' }}
       asContainer
+      image={
+        <div className='h-full w-full rounded-full bg-background-primary p-4'>
+          <Image src={AddIcon} alt='launch community' />
+        </div>
+      }
       className={cx(
         'bg-background-light md:rounded-none md:bg-background-light/50',
         isIntegrateChatButtonOnTop ? 'md:rounded-b-3xl' : ''
@@ -50,7 +60,6 @@ export default function HomePage({
       withBorderBottom={!isIntegrateChatButtonOnTop}
       title='Launch your community'
       description='Create your own discussion groups'
-      image={AddIcon}
     />
   )
 

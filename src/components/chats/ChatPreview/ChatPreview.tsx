@@ -4,7 +4,7 @@ import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
-import { ComponentProps } from 'react'
+import React, { ComponentProps } from 'react'
 import ChatLastMessage from './ChatLastMessage'
 
 const ChatLastMessageTime = dynamic(() => import('./ChatLastMessageTime'), {
@@ -17,7 +17,7 @@ const ChatUnreadCount = dynamic(() => import('./ChatUnreadCount'), {
 export type ChatPreviewProps = ComponentProps<'div'> & {
   title: string
   description: string
-  image: ImageProps['src']
+  image: ImageProps['src'] | JSX.Element
   asLink?: LinkProps
   isInteractive?: boolean
   postId?: string
@@ -61,15 +61,17 @@ export default function ChatPreview({
         )}
       >
         <div className='h-14 w-14 rounded-full bg-background-lighter'>
-          {image && (
-            <Image
-              className='h-full w-full rounded-full'
-              src={image}
-              width={56}
-              height={56}
-              alt={title ?? 'chat preview'}
-            />
-          )}
+          {React.isValidElement(image)
+            ? image
+            : image && (
+                <Image
+                  className='h-full w-full rounded-full'
+                  src={image as string}
+                  width={56}
+                  height={56}
+                  alt={title ?? 'chat preview'}
+                />
+              )}
         </div>
         <div className='flex flex-1 items-center overflow-hidden'>
           <div className='flex flex-1 flex-col gap-1 overflow-hidden'>
