@@ -67,6 +67,7 @@ export default function ChatPreview({
                 <Image
                   className='h-full w-full rounded-full'
                   src={image as string}
+                  sizes='150px'
                   width={56}
                   height={56}
                   alt={title ?? 'chat preview'}
