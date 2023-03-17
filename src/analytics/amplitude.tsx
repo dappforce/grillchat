@@ -11,7 +11,7 @@ export async function createAmplitudeInstance() {
     await amp.init(getAmpId(), undefined, { disableCookies: true }).promise
     return amp
   } catch (e) {
-    console.error(e)
+    console.error('Error initializing amplitude', e)
     return null
   }
 }
