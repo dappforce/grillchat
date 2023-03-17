@@ -78,7 +78,8 @@ function ChatPreviewContainer({ postId }: { postId: string }) {
   const content = data?.content
 
   const onChatClick = () =>
-    sendEvent(`click on chat ${content?.title}`, {
+    sendEvent(`click on chat`, {
+      title: content?.title ?? '',
       chatId: postId,
     })
 
