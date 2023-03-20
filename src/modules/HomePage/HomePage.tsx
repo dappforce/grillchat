@@ -25,7 +25,7 @@ export default function HomePage({
     <ChatPreview
       key='integrate-chat'
       isPinned
-      asLink={{ href: '/' }}
+      asLink={{ href: '/integrate-chat' }}
       asContainer
       image={
         <div className='h-full w-full rounded-full bg-background-primary p-3'>
