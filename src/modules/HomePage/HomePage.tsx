@@ -46,7 +46,7 @@ export default function HomePage({
     <ChatPreview
       key='launch-community'
       isPinned
-      asLink={{ href: '/' }}
+      asLink={{ href: '/launch-community' }}
       asContainer
       image={
         <div className='h-full w-full rounded-full bg-background-primary p-4'>
@@ -70,7 +70,7 @@ export default function HomePage({
   return (
     <DefaultLayout>
       <WelcomeModal />
-      <div className='flex flex-col'>
+      <div className='flex flex-col overflow-auto'>
         {specialButtons}
         {(data?.postIds ?? []).map((postId) => (
           <ChatPreviewContainer postId={postId} key={postId} />

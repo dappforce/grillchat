@@ -14,11 +14,6 @@ export function generatePolymorphicComponent<AdditionalProps>(
   defaultClassName: string,
   customRenderer?: (props: AdditionalProps) => JSX.Element
 ) {
-  type Props<Type extends PolymorphicTypes> = { as?: Type } & Omit<
-    ComponentProps<Type>,
-    'as'
-  > &
-    Omit<AdditionalProps, 'as'>
   const forwardRef = _forwardRef as unknown as <
     TypeInner extends PolymorphicTypes
   >(
