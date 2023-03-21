@@ -102,7 +102,10 @@ function ChatListContent({
       <ScrollableContainer
         id={scrollableContainerId}
         ref={scrollContainerRef}
-        className={cx('flex flex-col-reverse', scrollableContainerClassName)}
+        className={cx(
+          'flex flex-col-reverse pr-4',
+          scrollableContainerClassName
+        )}
       >
         <div ref={innerRef}>
           <InfiniteScroll
