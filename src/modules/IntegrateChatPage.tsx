@@ -28,7 +28,7 @@ export default function IntegrateChatPage() {
       }
     >
       <div className='flex flex-1 flex-col gap-20 text-center'>
-        <div className='mt-12 flex flex-col items-center gap-4'>
+        <div className='mt-14 flex flex-col items-center gap-4'>
           <Chatbox className='w-80' />
           <h1 ref={ref} className='text-3xl font-bold'>
             {title}
