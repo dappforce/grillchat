@@ -28,7 +28,7 @@ export default function IntegrateChatPage() {
           </div>
           <div className='flex flex-1 flex-col gap-20 text-center'>
             <div className='mt-16 flex flex-col items-center gap-4'>
-              <Chatbox className='w-56' />
+              <Chatbox className='w-80' />
               <h1 className='text-3xl font-bold'>
                 🛠 Add a chatbox to any existing app
               </h1>
@@ -47,13 +47,13 @@ export default function IntegrateChatPage() {
                 src={EmbedImage}
                 quality={100}
                 alt=''
-                className='max-w-full'
+                className='w-full max-w-2xl'
               />
               <Image
                 src={Embed2Image}
                 quality={100}
                 alt=''
-                className='max-w-full'
+                className='w-full max-w-2xl'
               />
             </div>
             <div className='mt-4 flex flex-col items-center gap-4'>
@@ -66,7 +66,7 @@ export default function IntegrateChatPage() {
                 src={MigrateImage}
                 quality={100}
                 alt=''
-                className='max-w-full'
+                className='w-full max-w-sm'
               />
             </div>
             <div className='mt-4 flex flex-col items-center gap-4'>
@@ -79,7 +79,7 @@ export default function IntegrateChatPage() {
                 src={BenefitsImage}
                 quality={100}
                 alt=''
-                className='max-w-full'
+                className='w-full max-w-sm'
               />
             </div>
           </div>

@@ -28,9 +28,8 @@ export default function LaunchCommunityPage() {
           <div className='flex flex-1 flex-col gap-20 text-center'>
             <div className='mt-4 flex flex-col items-center gap-4'>
               <Image
-                className='rounded-full'
+                className='w-full max-w-sm rounded-full'
                 priority
-                width={300}
                 quality={100}
                 src={LaunchCommunityImage}
                 alt=''
@@ -54,7 +53,7 @@ export default function LaunchCommunityPage() {
                 src={CustomizeImage}
                 quality={100}
                 alt=''
-                className='max-w-full'
+                className='w-full max-w-sm'
               />
             </div>
             <div className='mt-4 flex flex-col items-center gap-4'>
@@ -75,7 +74,7 @@ export default function LaunchCommunityPage() {
                 src={SetupChatImage}
                 quality={100}
                 alt=''
-                className='max-w-full'
+                className='w-full max-w-sm'
               />
               <Button className='w-full max-w-sm' size='lg'>
                 Join Waitlist
@@ -92,7 +91,7 @@ export default function LaunchCommunityPage() {
                 src={FeaturesImage}
                 quality={100}
                 alt=''
-                className='max-w-full'
+                className='w-full max-w-sm'
               />
               <p className='text-text-muted'>
                 Provide feedback and vote for the features that you want to see
