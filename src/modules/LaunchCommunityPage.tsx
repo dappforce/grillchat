@@ -28,6 +28,7 @@ export default function LaunchCommunityPage() {
             <Image
               className='rounded-full'
               priority
+              width={300}
               quality={100}
               src={LaunchCommunityImage}
               alt=''
