@@ -4,6 +4,8 @@ import LinkText from '@/components/LinkText'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { cx } from '@/utils/class-names'
 import { HiOutlineChevronLeft } from 'react-icons/hi'
+import { useBreakpointThreshold } from '../../hooks/useBreakpointThreshold'
+import Button from '../Button'
 import NavbarExtension from '../navbar/NavbarExtension'
 
 export type FixedBottomActionLayoutProps = {
@@ -44,6 +46,7 @@ function LayoutNavbarExtension({
   title: string
   transparent: boolean
 }) {
+  const mdUp = useBreakpointThreshold('md')
   return (
     <NavbarExtension
       className={cx(
@@ -52,14 +55,22 @@ function LayoutNavbarExtension({
       )}
     >
       <div className='relative flex h-8 items-center justify-center py-1'>
-        <LinkText
-          href='/'
-          variant='secondary'
-          className='absolute top-1/2 left-0 flex -translate-y-1/2 items-center'
-        >
-          <HiOutlineChevronLeft className='mr-1.5 text-xl' />
-          <span>Back</span>
-        </LinkText>
+        <div className='absolute top-1/2 left-0 -translate-y-1/2'>
+          {mdUp || transparent ? (
+            <LinkText
+              href='/'
+              variant='secondary'
+              className='flex items-center'
+            >
+              <HiOutlineChevronLeft className='mr-1.5 text-xl' />
+              <span>Back</span>
+            </LinkText>
+          ) : (
+            <Button size='circle' href='/' variant='transparent'>
+              <HiOutlineChevronLeft />
+            </Button>
+          )}
+        </div>
         {!transparent && <h1>{title}</h1>}
       </div>
     </NavbarExtension>
