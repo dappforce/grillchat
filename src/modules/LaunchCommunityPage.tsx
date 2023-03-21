@@ -9,8 +9,10 @@ import LinkText from '@/components/LinkText'
 import Image from 'next/image'
 
 export default function LaunchCommunityPage() {
+  const title = '🚀 Launch your own community'
   return (
     <FixedBottomActionLayout
+      title={title}
       bottomPanel={
         <Container
           as='div'
@@ -31,7 +33,7 @@ export default function LaunchCommunityPage() {
             src={LaunchCommunityImage}
             alt=''
           />
-          <h1 className='text-3xl font-bold'>🚀 Launch your own community</h1>
+          <h1 className='text-3xl font-bold'>{title}</h1>
           <p className='text-text-muted'>
             Grill.chat streamlines the process of setting up an anonymous chat
             group for your brand or community.

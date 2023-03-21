@@ -9,8 +9,10 @@ import FixedBottomActionLayout from '@/components/layouts/FixedBottomActionLayou
 import Image from 'next/image'
 
 export default function IntegrateChatPage() {
+  const title = '🛠 Add a chatbox to any existing app'
   return (
     <FixedBottomActionLayout
+      title={title}
       bottomPanel={
         <Container
           as='div'
@@ -25,9 +27,7 @@ export default function IntegrateChatPage() {
       <div className='flex flex-1 flex-col gap-20 text-center'>
         <div className='mt-16 flex flex-col items-center gap-4'>
           <Chatbox className='w-80' />
-          <h1 className='text-3xl font-bold'>
-            🛠 Add a chatbox to any existing app
-          </h1>
+          <h1 className='text-3xl font-bold'>{title}</h1>
           <p className='text-text-muted'>
             Enable your community to develop and grow right inside of your
             application
