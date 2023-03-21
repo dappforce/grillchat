@@ -10,7 +10,7 @@ import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
 
 export default function IntegrateChatPage() {
-  const { ref, inView } = useInView()
+  const { ref, inView } = useInView({ initialInView: true })
   const title = '🛠 Add a chatbox to any existing app'
   return (
     <FixedBottomActionLayout
