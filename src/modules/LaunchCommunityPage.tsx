@@ -76,7 +76,7 @@ export default function LaunchCommunityPage() {
             src={SetupChatImage}
             quality={100}
             alt=''
-            className='w-full max-w-sm'
+            className='w-full max-w-sm rounded-2xl'
           />
           <Button className='w-full max-w-sm' size='lg'>
             Join Waitlist
