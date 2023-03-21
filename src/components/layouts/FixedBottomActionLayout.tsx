@@ -46,9 +46,12 @@ function LayoutNavbarExtension({
 }) {
   return (
     <NavbarExtension
-      className={cx(transparent && 'fixed w-full border-none bg-transparent')}
+      className={cx(
+        'fixed w-full transition',
+        transparent && 'border-none bg-transparent'
+      )}
     >
-      <div className='relative flex items-center justify-center py-1'>
+      <div className='relative flex h-8 items-center justify-center py-1'>
         <LinkText
           href='/'
           variant='secondary'
@@ -57,7 +60,7 @@ function LayoutNavbarExtension({
           <HiOutlineChevronLeft className='mr-1.5 text-xl' />
           <span>Back</span>
         </LinkText>
-        <h1>{title}</h1>
+        {!transparent && <h1>{title}</h1>}
       </div>
     </NavbarExtension>
   )
