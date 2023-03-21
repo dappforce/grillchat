@@ -13,6 +13,7 @@ export default function IntegrateChatPage() {
   return (
     <FixedBottomActionLayout
       title={title}
+      showTransparentNavbar
       bottomPanel={
         <Container
           as='div'

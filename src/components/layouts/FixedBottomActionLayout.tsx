@@ -2,6 +2,7 @@ import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LinkText from '@/components/LinkText'
 import ScrollableContainer from '@/components/ScrollableContainer'
+import { cx } from '@/utils/class-names'
 import { HiOutlineChevronLeft } from 'react-icons/hi'
 import NavbarExtension from '../navbar/NavbarExtension'
 
@@ -9,16 +10,21 @@ export type FixedBottomActionLayoutProps = {
   children: React.ReactNode
   bottomPanel: JSX.Element
   title: string
+  showTransparentNavbar?: boolean
 }
 
 export default function FixedBottomActionLayout({
   bottomPanel,
   children,
   title,
+  showTransparentNavbar,
 }: FixedBottomActionLayoutProps) {
   return (
     <DefaultLayout>
-      <LayoutNavbarExtension title={title} />
+      <LayoutNavbarExtension
+        title={title}
+        transparent={!!showTransparentNavbar}
+      />
       <ScrollableContainer className='flex flex-1 flex-col md:pb-24'>
         <Container as='div' className='flex flex-1 flex-col pb-8'>
           {children}
@@ -31,9 +37,17 @@ export default function FixedBottomActionLayout({
   )
 }
 
-function LayoutNavbarExtension({ title }: { title: string }) {
+function LayoutNavbarExtension({
+  title,
+  transparent,
+}: {
+  title: string
+  transparent: boolean
+}) {
   return (
-    <NavbarExtension>
+    <NavbarExtension
+      className={cx(transparent && 'fixed w-full border-none bg-transparent')}
+    >
       <div className='relative flex items-center justify-center py-1'>
         <LinkText
           href='/'
