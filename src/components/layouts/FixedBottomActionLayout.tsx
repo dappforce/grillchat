@@ -62,7 +62,7 @@ function LayoutNavbarExtension({
               variant='secondary'
               className='flex items-center'
             >
-              <HiOutlineChevronLeft className='mr-1.5 text-xl' />
+              <HiOutlineChevronLeft className='mr-1' />
               <span>Back</span>
             </LinkText>
           ) : (
