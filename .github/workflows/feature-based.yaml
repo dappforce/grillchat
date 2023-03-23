@@ -19,7 +19,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          echo "image=dappforce/subsocial-grillchat:${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
+          echo "image=dappforce/subsocial-web-app:grillchat-${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         id: buildx
@@ -82,7 +82,7 @@ jobs:
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_STAGING }}
 
       - name: Update docker image name
-        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-grillchat:'${TAG}'|' $GITHUB_WORKSPACE/deployment/features/deployment.yaml
+        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/features/deployment.yaml
 
       - name: Update svc & ingress file
         run: NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/features/all.yaml

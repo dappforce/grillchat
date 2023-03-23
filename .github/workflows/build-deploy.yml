@@ -18,7 +18,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          echo "image=dappforce/subsocial-grillchat:${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
+          echo "image=dappforce/subsocial-web-app:grillchat-${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         id: buildx
@@ -46,13 +46,17 @@ jobs:
           file: docker/Dockerfile
           push: true
           build-args: |
+            GH_NEXT_PUBLIC_SPACE_ID=1001
+            GH_NEXT_PUBLIC_AMP_ID=81d0fc2014ce14eed5a475efe9a44035
+            GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
+            GH_CRUST_IPFS_AUTH=${{ secrets.CRUST_IPFS_AUTH }}
+            GH_USER_ID_SALT=${{ secrets.USER_ID_SALT }}
             GH_SERVER_MNEMONIC=${{ secrets.SERVER_ENERGY_MNEMONIC }}
             GH_CAPTCHA_SECRET=${{ secrets.CAPTCHA_SECRET }}
             GH_NEXT_PUBLIC_CAPTCHA_SITE_KEY=a1b1d585-c9c4-4eff-a380-39484191bc82
-
           tags: |
             ${{ env.image }}
-            dappforce/subsocial-grillchat:master-latest
+            dappforce/subsocial-web-app:grillchat-master-latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -84,7 +88,7 @@ jobs:
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
 
       - name: Update deploy file
-        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-grillchat:'${TAG}'|' $GITHUB_WORKSPACE/deployment/production/deployment.yaml
+        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/production/deployment.yaml
 
       - name: Deploy to DigitalOcean Kubernetes
         run: kubectl apply -f $GITHUB_WORKSPACE/deployment/production/
