@@ -27,7 +27,7 @@ export default function IntegrateChatPage() {
         </Container>
       }
     >
-      <div className='flex flex-1 flex-col gap-20 text-center'>
+      <div className='flex flex-1 flex-col gap-20 text-center [&>*]:z-[5]'>
         <div className='mt-14 flex flex-col items-center gap-4'>
           <Chatbox className='w-80' />
           <h1 ref={ref} className='text-3xl font-bold'>
@@ -38,24 +38,27 @@ export default function IntegrateChatPage() {
             application
           </p>
         </div>
-        <div className='mt-4 flex flex-col items-center gap-4'>
+        <div className='mt-4 flex flex-col items-center gap-4 [&>*]:z-[5]'>
           <h2 className='text-2xl'>📦 Embed chat functionality</h2>
           <p className='text-text-muted'>
             Enhance user engagement in your applications by leveraging Web3
             native social integrations
           </p>
-          <Image
-            src={EmbedImage}
-            quality={100}
-            alt=''
-            className='w-full max-w-2xl'
-          />
-          <Image
-            src={Embed2Image}
-            quality={100}
-            alt=''
-            className='w-full max-w-2xl'
-          />
+          <div className='relative !z-0 flex flex-col items-center gap-4'>
+            <div className='visible absolute top-1/2 !z-0 w-full -translate-y-1/2 rounded-full bg-background-accent pt-[100%] blur-[225px]' />
+            <Image
+              src={EmbedImage}
+              quality={100}
+              alt=''
+              className='relative w-full max-w-2xl'
+            />
+            <Image
+              src={Embed2Image}
+              quality={100}
+              alt=''
+              className='relative w-full max-w-2xl'
+            />
+          </div>
         </div>
         <div className='mt-4 flex flex-col items-center gap-4'>
           <h2 className='text-2xl'>🔗 Keep it Web3</h2>

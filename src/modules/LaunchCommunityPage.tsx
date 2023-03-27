@@ -27,7 +27,7 @@ export default function LaunchCommunityPage() {
         </Container>
       }
     >
-      <div className='flex flex-1 flex-col gap-20 text-center'>
+      <div className='flex flex-1 flex-col gap-20 text-center [&>*]:z-[5]'>
         <div className='mt-4 flex flex-col items-center gap-4'>
           <Image
             className='w-full max-w-sm rounded-full'
@@ -44,19 +44,22 @@ export default function LaunchCommunityPage() {
             group for your brand or community.
           </p>
         </div>
-        <div className='mt-4 flex flex-col items-center gap-4'>
+        <div className='mt-4 flex flex-col items-center gap-4 [&>*]:z-[5]'>
           <h2 className='text-2xl'>🎨 Customization</h2>
           <p className='text-text-muted'>
             Customize your community&apos;s look and feel with our selection of
             options, including personalized backgrounds, colors, message
             bubbles, logos, and more!
           </p>
-          <Image
-            src={CustomizeImage}
-            quality={100}
-            alt=''
-            className='w-full max-w-sm'
-          />
+          <div className='relative !z-0'>
+            <div className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]' />
+            <Image
+              src={CustomizeImage}
+              quality={100}
+              alt=''
+              className='relative w-full max-w-sm'
+            />
+          </div>
         </div>
         <div className='mt-4 flex flex-col items-center gap-4'>
           <h2 className='text-2xl'>⚙️ Set up your chat</h2>
@@ -82,19 +85,22 @@ export default function LaunchCommunityPage() {
             Join Waitlist
           </Button>
         </div>
-        <div className='mt-4 flex flex-col items-center gap-4'>
+        <div className='mt-4 flex flex-col items-center gap-4 [&>*]:z-[5]'>
           <h2 className='text-2xl'>📦 Web3 native features</h2>
           <p className='text-text-muted'>
             Discover the future of Web3 with new features on the horizon, such
             as integrating tips and token transfers directly into communities.
             Discuss NFTs and other web3 assets.
           </p>
-          <Image
-            src={FeaturesImage}
-            quality={100}
-            alt=''
-            className='w-full max-w-sm'
-          />
+          <div className='relative !z-0'>
+            <div className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]' />
+            <Image
+              src={FeaturesImage}
+              quality={100}
+              alt=''
+              className='relative w-full max-w-sm'
+            />
+          </div>
           <p className='text-text-muted'>
             Provide feedback and vote for the features that you want to see most
           </p>
