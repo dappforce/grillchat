@@ -27,7 +27,7 @@ export default function LaunchCommunityPage() {
           <Button
             className='w-full max-w-sm'
             size='lg'
-            onClick={() => sendEvent('click join_waitlist_in_launch_community')}
+            onClick={() => sendEvent('click join_waitlist_button')}
           >
             Join Waitlist
           </Button>

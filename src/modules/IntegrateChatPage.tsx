@@ -27,9 +27,9 @@ export default function IntegrateChatPage() {
           <Button
             className='w-full max-w-sm'
             size='lg'
-            onClick={() => sendEvent('click join_waitlist_in_integrate_chat')}
+            onClick={() => sendEvent('click integrate_button')}
           >
-            Join Waitlist
+            Integrate
           </Button>
         </Container>
       }
