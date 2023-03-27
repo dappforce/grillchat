@@ -66,7 +66,12 @@ function LayoutNavbarExtension({
               <span>Back</span>
             </LinkText>
           ) : (
-            <Button size='circle' href='/' variant='transparent'>
+            <Button
+              size='noPadding'
+              className='block'
+              href='/'
+              variant='transparent'
+            >
               <HiOutlineChevronLeft />
             </Button>
           )}
