@@ -20,6 +20,7 @@ export default function HomePage({
   isIntegrateChatButtonOnTop: boolean
 }) {
   const { data } = getPostIdsBySpaceIdQuery.useQuery(getSpaceId())
+  const sendEvent = useSendEvent()
 
   const integrateChatButton = (
     <ChatPreview
@@ -27,6 +28,7 @@ export default function HomePage({
       isPinned
       asLink={{ href: '/integrate-chat' }}
       asContainer
+      onClick={() => sendEvent('click integrate_chat_button')}
       image={
         <div className='h-full w-full rounded-full bg-background-primary p-3'>
           <Image src={IntegrateIcon} alt='integrate chat' />
@@ -48,6 +50,7 @@ export default function HomePage({
       isPinned
       asLink={{ href: '/launch-community' }}
       asContainer
+      onClick={() => sendEvent('click launch_community_button')}
       image={
         <div className='h-full w-full rounded-full bg-background-primary p-4'>
           <Image src={AddIcon} alt='launch community' />
