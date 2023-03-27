@@ -6,12 +6,15 @@ import MigrateImage from '@/assets/graphics/migrate.png'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import FixedBottomActionLayout from '@/components/layouts/FixedBottomActionLayout'
+import { useSendEvent } from '@/stores/analytics'
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
 
 export default function IntegrateChatPage() {
+  const sendEvent = useSendEvent()
   const { ref, inView } = useInView({ initialInView: true })
   const title = '🛠 Add a chatbox to any existing app'
+
   return (
     <FixedBottomActionLayout
       title={title}
@@ -21,7 +24,11 @@ export default function IntegrateChatPage() {
           as='div'
           className='flex justify-center border-t border-border-gray bg-background-light py-4 md:rounded-t-[30px]'
         >
-          <Button className='w-full max-w-sm' size='lg'>
+          <Button
+            className='w-full max-w-sm'
+            size='lg'
+            onClick={() => sendEvent('click join_waitlist_in_integrate_chat')}
+          >
             Join Waitlist
           </Button>
         </Container>
