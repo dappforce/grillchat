@@ -68,7 +68,7 @@ function LayoutNavbarExtension({
           ) : (
             <Button
               size='noPadding'
-              className='block'
+              className='block text-text-primary'
               href='/'
               variant='transparent'
             >
