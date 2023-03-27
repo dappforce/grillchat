@@ -67,9 +67,9 @@ function LayoutNavbarExtension({
             </LinkText>
           ) : (
             <Button
+              href='/'
               size='noPadding'
               className='block text-text-primary'
-              href='/'
               variant='transparent'
             >
               <HiOutlineChevronLeft />
