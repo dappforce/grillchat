@@ -51,6 +51,7 @@ export default function Button({
     withRingInteraction &&
       interactionRingStyles({ color: 'background', variant: 'small-offset' }),
     buttonStyles({ variant, size, disabled: disabled && withDisabledStyles }),
+    'inline-block',
     props.className
   )
 
