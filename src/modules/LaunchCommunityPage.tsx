@@ -27,6 +27,7 @@ export default function LaunchCommunityPage() {
           <Button
             className='w-full max-w-sm'
             size='lg'
+            href='https://forms.gle/WJWLu16X3S9oHDs96'
             onClick={() => sendEvent('click join_waitlist_button')}
           >
             Join Waitlist
