@@ -89,9 +89,6 @@ export default function LaunchCommunityPage() {
             alt=''
             className='w-full max-w-sm rounded-2xl'
           />
-          <Button className='w-full max-w-sm' size='lg'>
-            Join Waitlist
-          </Button>
         </div>
         <div className='mt-4 flex flex-col items-center gap-4 [&>*]:z-[5]'>
           <h2 className='text-2xl'>📦 Web3 native features</h2>
