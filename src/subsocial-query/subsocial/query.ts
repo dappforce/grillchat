@@ -30,22 +30,25 @@ export function useSubsocialQuery<ReturnValue, Data>(
 
 export function useSubsocialQueries<ReturnValue, Data>(
   params: { key: string; data: (Data | null)[] },
-  func: (params: SubsocialParam<Data>) => Promise<ReturnValue>,
+  func: (
+    params: SubsocialParam<Data> & { idx: number }
+  ) => Promise<ReturnValue>,
   config?: QueryConfig,
   defaultConfig?: QueryConfig<ReturnValue, Data>
 ) {
   const mergedConfig = mergeQueryConfig(config, defaultConfig)
   return useQueries({
-    queries: params.data.map((singleData) => {
+    queries: params.data.map((singleData, idx) => {
       return {
         queryKey: [params.key, singleData],
-        queryFn: queryWrapper<ReturnValue, Data, { api: SubsocialApi }>(
-          func,
-          async () => {
-            const api = await getSubsocialApi()
-            return { api }
-          }
-        ),
+        queryFn: queryWrapper<
+          ReturnValue,
+          Data,
+          { api: SubsocialApi; idx: number }
+        >(func, async () => {
+          const api = await getSubsocialApi()
+          return { api, idx }
+        }),
         ...mergedConfig,
       }
     }),

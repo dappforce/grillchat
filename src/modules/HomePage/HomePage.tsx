@@ -11,6 +11,7 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import { createPostSlug } from '@subsocial/utils/slugify'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
@@ -20,6 +21,7 @@ export default function HomePage({
   isIntegrateChatButtonOnTop: boolean
 }) {
   const { data } = getPostIdsBySpaceIdQuery.useQuery(getSpaceId())
+  const sortedIds = useSortedPostIdsByLatestMessage(data?.postIds ?? [])
   const sendEvent = useSendEvent()
 
   const integrateChatButton = (
@@ -75,7 +77,7 @@ export default function HomePage({
       <WelcomeModal />
       <div className='flex flex-col overflow-auto'>
         {specialButtons}
-        {(data?.postIds ?? []).map((postId) => (
+        {sortedIds.map((postId) => (
           <ChatPreviewContainer postId={postId} key={postId} />
         ))}
       </div>
