@@ -10,6 +10,8 @@ import { useSendEvent } from '@/stores/analytics'
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
 
+const GITHUB_LINK = 'https://github.com/dappforce/grillchat'
+
 export default function LaunchCommunityPage() {
   const sendEvent = useSendEvent()
   const { ref, inView } = useInView({ initialInView: true })
@@ -49,7 +51,15 @@ export default function LaunchCommunityPage() {
           </h1>
           <p className='text-text-muted'>
             Grill.chat streamlines the process of setting up an anonymous chat
-            group for your brand or community.
+            group for your brand or community. Use our{' '}
+            <LinkText
+              href={GITHUB_LINK}
+              onClick={() => sendEvent('click github_link')}
+              openInNewTab
+            >
+              open source code
+            </LinkText>{' '}
+            to start your own group
           </p>
         </div>
         <div className='mt-4 flex flex-col items-center gap-4 [&>*]:z-[5]'>
