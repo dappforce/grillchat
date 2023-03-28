@@ -54,6 +54,7 @@ export default function LaunchCommunityPage() {
             group for your brand or community. Use our{' '}
             <LinkText
               href={GITHUB_LINK}
+              variant='primary'
               onClick={() => sendEvent('click github_link')}
               openInNewTab
             >
