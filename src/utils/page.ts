@@ -15,12 +15,8 @@ export function getCommonStaticProps<ReturnValue>(
   ) => Promise<{ props: ReturnValue; revalidate?: number } | undefined>
 ): GetStaticProps<AppCommonProps & ReturnValue> {
   return async (context) => {
-    const data = callback
-      ? await callback(context)
-      : ({ props: {} } as {
-          props: ReturnValue
-          revalidate: number | undefined
-        })
+    const EMPTY_PROPS = {} as ReturnValue
+    const data = callback ? await callback(context) : { props: EMPTY_PROPS }
     if (!data) {
       return {
         notFound: true,
