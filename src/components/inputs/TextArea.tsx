@@ -1,6 +1,5 @@
 import { cx, scrollBarStyles } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import { submitClosestForm } from '@/utils/form'
 import clsx from 'clsx'
 import { ComponentProps, forwardRef, KeyboardEventHandler } from 'react'
 import FieldWrapper, {
@@ -10,14 +9,16 @@ import FieldWrapper, {
 import styles from './TextArea.module.css'
 
 export type TextAreaProps = ComponentProps<'textarea'> &
-  RequiredFieldWrapperProps
+  RequiredFieldWrapperProps & {
+    onEnterToSubmitForm?: () => void
+  }
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  function TextArea(props: TextAreaProps, ref) {
+  function TextArea({ onEnterToSubmitForm, ...props }: TextAreaProps, ref) {
     const onKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
       if (!isTouchDevice() && e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
-        submitClosestForm(e.target as HTMLElement)
+        onEnterToSubmitForm?.()
       }
       props.onKeyDown?.(e)
     }

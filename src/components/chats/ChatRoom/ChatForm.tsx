@@ -114,6 +114,7 @@ export default function ChatForm({
         className={cx('flex w-full', className)}
       >
         <TextArea
+          onEnterToSubmitForm={handleSubmit}
           ref={textAreaRef}
           value={message}
           autoFocus
