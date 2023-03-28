@@ -75,7 +75,7 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
   }
 
   return (
-    <div className='mt-2 flex flex-col items-center gap-4'>
+    <div className='flex flex-col items-center gap-4'>
       <AddressAvatar address={address} className='h-20 w-20' />
       <CopyText text={truncateAddress(address)} textToCopy={address} />
       <div className='mt-4 flex w-full flex-col gap-3'>
@@ -111,12 +111,17 @@ function PrivateKeyContent() {
   }
 
   return (
-    <div className='mt-2 flex flex-col items-center gap-4'>
+    <div className='flex flex-col items-center gap-4'>
       <p className='mb-2 text-text-muted'>
         A private key is like a long password. We recommend keeping it in a safe
         place, so you can recover your account.
       </p>
-      <CopyText onCopyClick={onCopyClick} type='long' text={secretKey || ''} />
+      <CopyText
+        onCopyClick={onCopyClick}
+        type='long'
+        codeText
+        text={secretKey || ''}
+      />
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { cx } from '@/utils/class-names'
+import { Space_Mono } from 'next/font/google'
 import { ComponentProps, useState } from 'react'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
@@ -9,13 +10,20 @@ export type CopyTextProps = ComponentProps<'div'> & {
   textToCopy?: string
   type?: 'short' | 'long'
   onCopyClick?: () => void
+  codeText?: boolean
 }
+
+const spaceMono = Space_Mono({
+  weight: '400',
+  subsets: ['latin'],
+})
 
 export default function CopyText({
   text,
   textToCopy,
   type = 'short',
   onCopyClick,
+  codeText,
   ...props
 }: CopyTextProps) {
   const [isCopied, setIsCopied] = useState(false)
@@ -30,10 +38,12 @@ export default function CopyText({
     }, 1000)
   }
 
+  const fontClassName = codeText && spaceMono.className
+
   if (type === 'short') {
     return (
       <div {...props} className={cx('flex items-center', props.className)}>
-        <span>{text}</span>
+        <span className={cx(fontClassName)}>{text}</span>
         <PopOver
           triggerClassName='ml-2'
           yOffset={12}
@@ -58,7 +68,12 @@ export default function CopyText({
         {...props}
         className={cx('flex flex-col items-stretch gap-4', props.className)}
       >
-        <span className='break-all rounded-2xl border border-border-gray p-4'>
+        <span
+          className={cx(
+            'break-all rounded-2xl border border-border-gray p-4',
+            fontClassName
+          )}
+        >
           {text}
         </span>
         <Button disabled={isCopied} onClick={copyToClipboard} size='lg'>
