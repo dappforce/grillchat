@@ -36,6 +36,9 @@ export default function ChatList(props: ChatListProps) {
   return <ChatListContent {...props} />
 }
 
+const SCROLL_THRESHOLD_PERCENTAGE = 0.35
+const DEFAULT_SCROLL_THRESHOLD = 500
+
 function ChatListContent({
   asContainer,
   scrollableContainerClassName,
@@ -83,7 +86,8 @@ function ChatListContent({
   const isAllPostsLoaded = loadedPost.length === commentIds.length
 
   const scrollThreshold =
-    (scrollContainerRef.current?.scrollHeight ?? 0) * 0.35 || 500
+    (scrollContainerRef.current?.scrollHeight ?? 0) *
+      SCROLL_THRESHOLD_PERCENTAGE || DEFAULT_SCROLL_THRESHOLD
 
   return (
     <Component
