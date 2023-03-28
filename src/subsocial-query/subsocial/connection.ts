@@ -17,9 +17,6 @@ async function connectToSubsocialApi(config: SubsocialConnectionConfig) {
     ipfsNodeUrl,
     substrateApi,
     ipfsAdminNodeUrl,
-    useServer: {
-      httpRequestMethod: 'get',
-    },
   })
   postConnectConfig && postConnectConfig(api)
   return api
