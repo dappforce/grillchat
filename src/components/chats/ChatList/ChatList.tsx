@@ -20,6 +20,7 @@ import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
 import useIsAtBottom from './hooks/useIsAtBottom'
+import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import { NewMessageNotice } from './NewMessageNotice'
 
 export type ChatListProps = ComponentProps<'div'> & {
@@ -64,17 +65,10 @@ function ChatListContent({
     return posts.filter((post) => post.isLoading === false)
   }, [posts])
 
-  useEffect(() => {
-    const inner = innerRef.current
-    const scrollContainer = scrollContainerRef.current
-    if (inner && scrollContainer) {
-      const innerHeight = inner.clientHeight
-      const scrollContainerHeight = scrollContainer.scrollHeight
-      if (innerHeight < scrollContainerHeight) {
-        loadMore()
-      }
-    }
-  }, [loadedPost.length, loadMore, scrollContainerRef])
+  useLoadMoreIfNoScroll(loadMore, loadedPost?.length ?? 0, {
+    scrollContainer: scrollContainerRef,
+    innerContainer: innerRef,
+  })
 
   useEffect(() => {
     if (!isAtBottom) return
