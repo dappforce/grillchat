@@ -17,11 +17,11 @@ spec:
       name: grillchat-<BRANCH>
     spec:
       containers:
-      - image: <IMAGE>
-        imagePullPolicy: IfNotPresent
-        name: grillchat-<BRANCH>
-        ports:
-        - containerPort: 3000
+        - image: <IMAGE>
+          imagePullPolicy: IfNotPresent
+          name: grillchat-<BRANCH>
+          ports:
+            - containerPort: 3000
       imagePullSecrets:
-      - name: dockerhub
+        - name: dockerhub
       restartPolicy: Always

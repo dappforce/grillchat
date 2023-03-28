@@ -1,0 +1,128 @@
+name: build and deploy grillchat in production
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  front_build:
+    name: build & Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Prepare
+        id: prep
+        run: |
+          echo "image=dappforce/subsocial-web-app:grillchat-${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+
+      - name: Login to DockerHub
+        uses: docker/login-action@master
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-single-buildx
+
+      - name: Build production image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          builder: ${{ steps.buildx.outputs.name }}
+          file: docker/Dockerfile
+          push: true
+          build-args: |
+            GH_NEXT_PUBLIC_SPACE_ID=1001
+            GH_NEXT_PUBLIC_AMP_ID=81d0fc2014ce14eed5a475efe9a44035
+            GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
+            GH_CRUST_IPFS_AUTH=${{ secrets.CRUST_IPFS_AUTH }}
+            GH_USER_ID_SALT=${{ secrets.USER_ID_SALT }}
+            GH_SERVER_MNEMONIC=${{ secrets.SERVER_ENERGY_MNEMONIC }}
+            GH_CAPTCHA_SECRET=${{ secrets.CAPTCHA_SECRET }}
+            GH_NEXT_PUBLIC_CAPTCHA_SITE_KEY=a1b1d585-c9c4-4eff-a380-39484191bc82
+          tags: |
+            ${{ env.image }}
+            dappforce/subsocial-web-app:grillchat-master-latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  prod_deploy:
+    name: prod-deploy
+    needs: front_build
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
+
+      - name: Update deploy file
+        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/production/deployment.yaml
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/deployment/production/
+
+      - name: Verify deployment
+        run: kubectl -n sub-back rollout status deployment/grillchat
+
+      - name: Verify deployment
+        run: kubectl -n sub-back rollout status deployment/grillchat
+
+      - name: Add more replica
+        run: kubectl -n sub-back scale --replicas=2 deployment/grillchat
+
+  front-bk-prod-deploy:
+    name: bk-prod-deploy
+    needs: front_build
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: executing remote ssh commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BACKUP_HOST }}
+          username: ${{ secrets.BACKUP_USERNAME }}
+          key: ${{ secrets.BACKUP_KEY }}
+          port: ${{ secrets.BACKUP_PORT }}
+          script: |
+            cd /root/grillchat
+            ./update.sh
