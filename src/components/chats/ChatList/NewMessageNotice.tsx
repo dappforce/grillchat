@@ -1,7 +1,7 @@
 import Button, { ButtonProps } from '@/components/Button'
 import { cx } from '@/utils/class-names'
 import { RefObject, useEffect } from 'react'
-import { BsChevronDown } from 'react-icons/bs'
+import { HiOutlineChevronDown } from 'react-icons/hi'
 import useAnyNewData from './hooks/useAnyNewData'
 import useIsAtBottom from './hooks/useIsAtBottom'
 
@@ -48,7 +48,7 @@ export function NewMessageNotice({
           {anyNewData}
         </span>
       ) : null}
-      <BsChevronDown className='relative top-px text-xl' />
+      <HiOutlineChevronDown className='relative top-px text-xl' />
     </Button>
   )
 }

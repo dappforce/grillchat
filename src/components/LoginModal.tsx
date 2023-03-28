@@ -38,8 +38,17 @@ export default function LoginModal({
     }
   }
 
+  const desc =
+    'To access GrillChat, you need a private key. If you do not have one, just write your first chat message, and you will be given one.'
+
   return (
-    <Modal {...props} initialFocus={inputRef} title='🔐 Login' withCloseButton>
+    <Modal
+      {...props}
+      initialFocus={inputRef}
+      title='🔐 Login'
+      withCloseButton
+      description={desc}
+    >
       <form onSubmit={onSubmit} className='mt-2 flex flex-col gap-4'>
         <Input
           ref={inputRef}
@@ -50,10 +59,6 @@ export default function LoginModal({
         <Button disabled={!privateKey} size='lg'>
           Let&apos;s go
         </Button>
-        <p className='mt-2 text-text-muted'>
-          To access GrillChat, you need a private key. If you do not have one,
-          just write your first chat message, and you will be given one.
-        </p>
       </form>
     </Modal>
   )

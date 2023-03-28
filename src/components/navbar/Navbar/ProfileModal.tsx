@@ -6,16 +6,31 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import React, { useEffect, useState } from 'react'
+import { HiOutlineChevronLeft } from 'react-icons/hi'
 
 type ProfileModalProps = ModalFunctionalityProps & {
   address: string
 }
 
 type ModalState = 'account' | 'private-key' | 'logout'
-const modalTitles: { [key in ModalState]: React.ReactNode } = {
-  account: <span className='font-medium'>My Account</span>,
-  'private-key': '🔑 Private key',
-  logout: '🤔 Did you back up your private key?',
+const modalTitles: {
+  [key in ModalState]: (onBackClick?: () => void) => React.ReactNode
+} = {
+  account: () => <span className='font-medium'>My Account</span>,
+  'private-key': (onBackClick) => (
+    <div className='flex items-center'>
+      <Button
+        size='circle'
+        variant='transparent'
+        className='mr-1 text-lg'
+        onClick={onBackClick}
+      >
+        <HiOutlineChevronLeft />
+      </Button>
+      <span>🔑 Private key</span>
+    </div>
+  ),
+  logout: () => '🤔 Did you back up your private key?',
 }
 
 type ContentProps = {
@@ -37,7 +52,8 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
     if (props.isOpen) setCurrentState('account')
   }, [props.isOpen])
 
-  const title = modalTitles[currentState]
+  const onBackClick = () => setCurrentState('account')
+  const title = modalTitles[currentState]?.(onBackClick)
   const Content = modalContents[currentState]
 
   return (
@@ -96,11 +112,11 @@ function PrivateKeyContent() {
 
   return (
     <div className='mt-2 flex flex-col items-center gap-4'>
-      <CopyText onCopyClick={onCopyClick} type='long' text={secretKey || ''} />
-      <p className='mt-2 text-text-muted'>
+      <p className='mb-2 text-text-muted'>
         A private key is like a long password. We recommend keeping it in a safe
         place, so you can recover your account.
       </p>
+      <CopyText onCopyClick={onCopyClick} type='long' text={secretKey || ''} />
     </div>
   )
 }

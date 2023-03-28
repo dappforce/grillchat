@@ -39,6 +39,7 @@ export type ModalProps = ModalFunctionalityProps &
     description?: React.ReactNode
     panelClassName?: string
     initialFocus?: React.RefObject<HTMLElement>
+    onBackClick?: () => void
   }
 
 export default function Modal({
@@ -53,6 +54,7 @@ export default function Modal({
   title,
   description,
   initialFocus,
+  onBackClick,
 }: ModalProps) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
