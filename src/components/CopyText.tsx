@@ -1,6 +1,7 @@
-import { cx } from '@/utils/class-names'
+import { cx, interactionRingStyles } from '@/utils/class-names'
 import { Space_Mono } from 'next/font/google'
 import { ComponentProps, useState } from 'react'
+import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
 import PopOver from './PopOver'
@@ -10,7 +11,8 @@ export type CopyTextProps = ComponentProps<'div'> & {
   textToCopy?: string
   type?: 'short' | 'long'
   onCopyClick?: () => void
-  codeText?: boolean
+  isCodeText?: boolean
+  withHideButton?: boolean
 }
 
 const spaceMono = Space_Mono({
@@ -23,10 +25,12 @@ export default function CopyText({
   textToCopy,
   type = 'short',
   onCopyClick,
-  codeText,
+  isCodeText: codeText,
+  withHideButton,
   ...props
 }: CopyTextProps) {
   const [isCopied, setIsCopied] = useState(false)
+  const [isHidden, setIsHidden] = useState(false)
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(textToCopy || text)
@@ -68,14 +72,30 @@ export default function CopyText({
         {...props}
         className={cx('flex flex-col items-stretch gap-4', props.className)}
       >
-        <span
+        <div
           className={cx(
-            'break-all rounded-2xl border border-border-gray p-4',
+            'flex items-stretch rounded-2xl border border-border-gray',
             fontClassName
           )}
         >
-          {text}
-        </span>
+          <span className={cx('break-all p-4', isHidden && 'blur-sm')}>
+            {text}
+          </span>
+          {withHideButton && (
+            <Button
+              size='noPadding'
+              variant='transparent'
+              className={cx(
+                'block rounded-r-2xl rounded-l-none px-4 text-2xl',
+                interactionRingStyles({ variant: 'no-offset' })
+              )}
+              withRingInteraction={false}
+              onClick={() => setIsHidden((prev) => !prev)}
+            >
+              {isHidden ? <HiOutlineEyeOff /> : <HiOutlineEye />}
+            </Button>
+          )}
+        </div>
         <Button disabled={isCopied} onClick={copyToClipboard} size='lg'>
           {isCopied ? 'Copied' : 'Copy'}
         </Button>
