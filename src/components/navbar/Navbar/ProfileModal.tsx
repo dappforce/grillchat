@@ -117,7 +117,6 @@ function PrivateKeyContent() {
         place, so you can recover your account.
       </p>
       <CopyText
-        withHideButton
         onCopyClick={onCopyClick}
         type='long'
         isCodeText
