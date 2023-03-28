@@ -47,7 +47,7 @@ export default function Button({
   withRingInteraction = true,
   ...props
 }: ButtonProps) {
-  const classNames = cx(
+  const className = cx(
     withRingInteraction &&
       interactionRingStyles({ color: 'background', variant: 'small-offset' }),
     buttonStyles({ variant, size, disabled: disabled && withDisabledStyles }),
@@ -58,10 +58,10 @@ export default function Button({
   if (href) {
     return (
       <Link href={href} passHref legacyBehavior>
-        <a {...props} className={classNames} />
+        <a {...props} className={className} />
       </Link>
     )
   }
 
-  return <button {...props} disabled={disabled} className={classNames} />
+  return <button {...props} disabled={disabled} className={className} />
 }
