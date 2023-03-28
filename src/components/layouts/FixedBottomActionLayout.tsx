@@ -32,7 +32,7 @@ export default function FixedBottomActionLayout({
           {children}
         </Container>
       </ScrollableContainer>
-      <div className='sticky bottom-0 w-full md:fixed md:pr-2'>
+      <div className='sticky bottom-0 z-10 w-full md:fixed md:pr-2'>
         {bottomPanel}
       </div>
     </DefaultLayout>
