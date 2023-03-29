@@ -23,8 +23,7 @@ const spaceMono = Space_Mono({
 const copyTextStyles = cva('', {
   variants: {
     size: {
-      sm: 'px-4 py-2',
-      md: 'p-4',
+      md: 'px-4 py-3',
     },
   },
   defaultVariants: {
