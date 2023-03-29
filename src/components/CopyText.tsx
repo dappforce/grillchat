@@ -78,7 +78,7 @@ export default function CopyText({
             fontClassName
           )}
         >
-          <span className={cx('break-all p-4', isHidden && 'blur-sm')}>
+          <span className={cx('break-all py-2 px-4', isHidden && 'blur-sm')}>
             {text}
           </span>
           {withHideButton && (
