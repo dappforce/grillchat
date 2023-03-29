@@ -2,7 +2,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { SyntheticEvent, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Button from './Button'
-import Input from './inputs/Input'
+import TextArea from './inputs/TextArea'
 import Modal, { ModalFunctionalityProps } from './Modal'
 import Toast from './Toast'
 
@@ -18,7 +18,7 @@ export default function LoginModal({
 }: LoginModalProps) {
   const login = useMyAccount((state) => state.login)
   const [privateKey, setPrivateKey] = useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
@@ -50,10 +50,14 @@ export default function LoginModal({
       description={desc}
     >
       <form onSubmit={onSubmit} className='mt-2 flex flex-col gap-4'>
-        <Input
+        <TextArea
           ref={inputRef}
           value={privateKey}
-          onChange={(e) => setPrivateKey((e.target as HTMLInputElement).value)}
+          rows={3}
+          size='sm'
+          onChange={(e) =>
+            setPrivateKey((e.target as HTMLTextAreaElement).value)
+          }
           placeholder='Enter your private key'
         />
         <Button disabled={!privateKey} size='lg'>

@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import { cx } from '@/utils/class-names'
 import { ComponentProps, forwardRef } from 'react'
 import FieldWrapper, {
   getCleanedInputProps,
@@ -18,7 +18,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           {...getCleanedInputProps(props)}
           ref={ref}
           id={id}
-          className={clsx(commonClassNames, props?.className)}
+          className={cx(commonClassNames, props?.className)}
         />
       )}
     </FieldWrapper>
