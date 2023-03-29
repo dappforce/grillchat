@@ -89,7 +89,7 @@ export default function CopyText({
                 'block rounded-r-2xl rounded-l-none px-4 text-2xl',
                 interactionRingStyles({ variant: 'no-offset' })
               )}
-              withRingInteraction={false}
+              interactive='brightness-only'
               onClick={() => setIsHidden((prev) => !prev)}
             >
               {isHidden ? <HiOutlineEyeOff /> : <HiOutlineEye />}

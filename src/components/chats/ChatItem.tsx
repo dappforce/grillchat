@@ -117,7 +117,7 @@ export default function ChatItem({
             <Button
               variant='transparent'
               size='noPadding'
-              withRingInteraction={false}
+              interactive='brightness-only'
               onClick={onCheckMarkClick}
             >
               {isSent ? (

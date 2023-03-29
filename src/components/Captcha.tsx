@@ -48,16 +48,16 @@ export default function Captcha({
   return (
     <>
       <div {...props} className={cx('w-full', props.className)}>
-        <div className='flex w-full items-center rounded-lg border border-background-lighter bg-background-light py-5 px-4 transition hover:brightness-105'>
+        <div className='flex w-full items-center rounded-lg border border-background-lightest bg-background-light py-5 px-4 transition hover:brightness-105'>
           <div
             className={cx(
-              'relative mr-3 flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-background-lighter',
+              'relative mr-3 flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-background-lightest',
               token && 'bg-background-primary'
             )}
             onClick={onTriggerCaptcha}
           >
             {clickedCaptcha && !token && (
-              <div className='absolute inset-0 h-full w-full animate-pulse bg-background-lighter' />
+              <div className='absolute inset-0 h-full w-full animate-pulse bg-background-lightest' />
             )}
             {token && <IoCheckmarkOutline className='text-2xl' />}
           </div>

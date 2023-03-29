@@ -1,3 +1,7 @@
+import BulbIcon from '@/assets/icons/bulb.svg'
+import ExitIcon from '@/assets/icons/exit.svg'
+import KeyIcon from '@/assets/icons/key.svg'
+import ShareIcon from '@/assets/icons/share.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import CopyText from '@/components/CopyText'
@@ -5,6 +9,7 @@ import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
+import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi'
 
@@ -57,12 +62,25 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
   const Content = modalContents[currentState]
 
   return (
-    <Modal {...props} title={title} withCloseButton>
+    <Modal
+      {...props}
+      title={title}
+      contentClassName='px-0 pb-0'
+      titleClassName='px-6'
+      withFooter
+      withCloseButton
+    >
       <Content address={address} setCurrentState={setCurrentState} />
     </Modal>
   )
 }
 
+type ButtonData = {
+  text: string
+  icon: React.ComponentType<{ className?: string }>
+  onClick?: () => void
+  href?: string
+}
 function AccountContent({ address, setCurrentState }: ContentProps) {
   const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = () => {
@@ -74,30 +92,38 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
     setCurrentState('logout')
   }
 
+  const buttons: ButtonData[] = [
+    { text: 'Show private key', icon: KeyIcon, onClick: onShowPrivateKeyClick },
+    { text: 'Share session', icon: ShareIcon, onClick: onShowPrivateKeyClick },
+    { text: 'Suggest feature', icon: BulbIcon, onClick: onShowPrivateKeyClick },
+    { text: 'Log out', icon: ExitIcon, onClick: onShowPrivateKeyClick },
+  ]
+
   return (
-    <div className='flex flex-col items-center gap-4'>
-      <AddressAvatar address={address} className='h-20 w-20' />
-      <CopyText text={truncateAddress(address)} textToCopy={address} />
-      <div className='mt-4 flex w-full flex-col gap-3'>
-        <Button className='w-full' size='lg' onClick={onShowPrivateKeyClick}>
-          Show private key
-        </Button>
-        <Button
-          variant='primaryOutline'
-          className='w-full'
-          size='lg'
-          onClick={onShowPrivateKeyClick}
-        >
-          Suggest Feature
-        </Button>
-        <Button
-          className='w-full'
-          size='lg'
-          variant='transparent'
-          onClick={onLogoutClick}
-        >
-          Log out
-        </Button>
+    <div className='mt-6 flex flex-col'>
+      <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
+        <AddressAvatar address={address} className='h-20 w-20' />
+        <CopyText text={truncateAddress(address)} textToCopy={address} />
+      </div>
+      <div className='flex w-full flex-col gap-6 py-6 px-3'>
+        {buttons.map(({ icon: Icon, onClick, text, href }) => (
+          <Button
+            key={text}
+            href={href}
+            variant='transparent'
+            size='noPadding'
+            interactive='none'
+            className={cx(
+              'relative flex items-center gap-6 px-6 [&>*]:z-10',
+              'after:absolute after:top-1/2 after:left-0 after:h-full after:w-full after:-translate-y-1/2 after:rounded-lg after:bg-transparent after:py-6 after:transition-colors',
+              'hover:after:bg-background-lighter'
+            )}
+            onClick={onClick}
+          >
+            <Icon className='text-xl' />
+            <span>{text}</span>
+          </Button>
+        ))}
       </div>
     </div>
   )

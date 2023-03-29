@@ -133,7 +133,7 @@ export default function Modal({
                 </div>
 
                 {withFooter && (
-                  <div className='flex items-center justify-center gap-4 border-t border-border-gray px-6 py-5 text-text-muted'>
+                  <div className='flex items-center justify-center gap-4 border-t border-background-lightest px-6 py-5 text-text-muted'>
                     <LinkText href='/' className='font-normal' openInNewTab>
                       Privacy Policy
                     </LinkText>
