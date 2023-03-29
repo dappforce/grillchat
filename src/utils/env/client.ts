@@ -25,5 +25,8 @@ export function getGaId() {
 }
 
 export function getBaseUrl() {
-  return checkEnv(process.env.NEXT_PUBLIC_BASE_URL, 'NEXT_PUBLIC_BASE_URL')
+  return (
+    checkEnv(process.env.NEXT_PUBLIC_BASE_URL, 'NEXT_PUBLIC_BASE_URL') ||
+    'https://grill.chat/'
+  )
 }
