@@ -1,29 +1,33 @@
 import Captcha from '@/components/Captcha'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import Toast from '@/components/Toast'
-import { useRequestTokenAndSendMessage } from '@/hooks/useRequestTokenAndSendMessage'
+import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
+import { useRequestToken } from '@/services/api/mutations'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount } from '@/stores/my-account'
+import { generateAccount } from '@/utils/account'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
 
-export type CaptchaModalProps = ModalFunctionalityProps &
-  SendMessageParams & {
-    onSubmit?: () => void
-  }
+export type CaptchaModalProps = ModalFunctionalityProps & {
+  messageData?: SendMessageParams
+} & {
+  onSubmit?: () => void
+}
 
 export default function CaptchaModal({
-  message,
-  rootPostId,
-  spaceId,
+  messageData,
   onSubmit,
   ...props
 }: CaptchaModalProps) {
   const sendEvent = useSendEvent()
   const { mutateAsync: requestTokenAndSendMessage, error } =
     useRequestTokenAndSendMessage()
+  const { mutateAsync: requestToken } = useRequestToken()
+  const login = useMyAccount((state) => state.login)
 
   useEffect(() => {
     if (error) {
@@ -44,12 +48,17 @@ export default function CaptchaModal({
   }, [error])
 
   const submitCaptcha = async (token: string) => {
-    requestTokenAndSendMessage({
-      captchaToken: token,
-      message,
-      rootPostId,
-      spaceId,
-    })
+    if (messageData) {
+      requestTokenAndSendMessage({
+        captchaToken: token,
+        ...messageData,
+      })
+    } else {
+      const { publicKey, secretKey } = await generateAccount()
+      const successLogin = await login(secretKey)
+      if (!successLogin) return
+      requestToken({ address: publicKey, captchaToken: token })
+    }
     sendEvent('submit captcha and send message')
     props.closeModal()
     onSubmit?.()
