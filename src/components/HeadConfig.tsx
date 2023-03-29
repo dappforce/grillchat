@@ -11,8 +11,12 @@ export default function HeadConfig({
   title,
   disableZoom,
 }: HeadConfigProps) {
-  const usedTitle = 'GrillChat' + (title ? ` | ${title}` : '')
-  const usedDesc = description || 'Chat app powered by Subsocial'
+  const defaultTitle = 'Chat Anonymously On-Chain Without Wallets'
+  const usedTitle = 'GrillChat | ' + (title || defaultTitle)
+
+  const defaultDesc =
+    'Talk with others from around the world and create your own communities about any topic, utilizing our censorship-resistant blockchain and app with anonymous logins.'
+  const usedDesc = description || defaultDesc
 
   return (
     <Head>
