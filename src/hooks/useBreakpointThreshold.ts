@@ -34,7 +34,7 @@ function useTailwindBreakpoint() {
  * @param threshold breakpoint to become threshold
  * @returns boolean bool that determines if current vw is larger than threshold
  */
-export function useBreakpointThreshold(
+export default function useBreakpointThreshold(
   threshold: (typeof breakpoints)[number]
 ): boolean {
   const breakpoint = useTailwindBreakpoint()

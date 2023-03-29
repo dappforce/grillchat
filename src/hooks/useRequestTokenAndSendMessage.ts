@@ -4,7 +4,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { generateAccount } from '@/utils/account'
 import { useMutation } from '@tanstack/react-query'
 
-export function useRequestTokenAndSendMessage() {
+export default function useRequestTokenAndSendMessage() {
   const address = useMyAccount((state) => state.address)
 
   const { mutateAsync: requestToken } = useRequestToken()
