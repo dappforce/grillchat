@@ -116,7 +116,7 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
             className={cx(
               'relative flex items-center gap-6 px-6 [&>*]:z-10',
               'after:absolute after:top-1/2 after:left-0 after:h-full after:w-full after:-translate-y-1/2 after:rounded-lg after:bg-transparent after:py-6 after:transition-colors',
-              'hover:after:bg-background-lighter'
+              'outline-none focus:after:bg-background-lighter hover:after:bg-background-lighter'
             )}
             onClick={onClick}
           >
