@@ -76,7 +76,7 @@ export default function LoginModal({
             placeholder='Enter your private key'
           />
           <Button disabled={!privateKey} size='lg'>
-            Let&apos;s go
+            Login
           </Button>
           <Button
             variant='primaryOutline'

@@ -23,3 +23,7 @@ export function getAmpId() {
 export function getGaId() {
   return checkEnv(process.env.NEXT_PUBLIC_GA_ID, 'NEXT_PUBLIC_GA_ID')
 }
+
+export function getBaseUrl() {
+  return checkEnv(process.env.NEXT_PUBLIC_BASE_URL, 'NEXT_PUBLIC_BASE_URL')
+}

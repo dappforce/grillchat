@@ -15,7 +15,7 @@ const panelStyles = cva(
   cx(
     'relative w-full overflow-hidden rounded-[20px] bg-background-light',
     'text-left align-middle shadow-xl',
-    'transform transition-all',
+    'transform transition-transform',
     'flex flex-col'
   ),
   {
@@ -92,7 +92,7 @@ export default function Modal({
                 <div
                   className={cx(
                     'p-6 text-left align-middle',
-                    'transform transition-all',
+                    'transform',
                     'flex flex-col',
                     contentClassName
                   )}
