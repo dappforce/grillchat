@@ -57,6 +57,7 @@ export default function LoginModal({
     <>
       <Modal
         {...props}
+        withFooter
         initialFocus={inputRef}
         title='🔐 Login'
         withCloseButton

@@ -4,6 +4,7 @@ import { cva, VariantProps } from 'class-variance-authority'
 import { Fragment } from 'react'
 import { HiXMark } from 'react-icons/hi2'
 import Button from './Button'
+import LinkText from './LinkText'
 
 export type ModalFunctionalityProps = {
   isOpen: boolean
@@ -13,7 +14,7 @@ export type ModalFunctionalityProps = {
 const panelStyles = cva(
   cx(
     'relative w-full overflow-hidden rounded-[20px] bg-background-light',
-    'p-6 text-left align-middle shadow-xl',
+    'text-left align-middle shadow-xl',
     'transform transition-all',
     'flex flex-col'
   ),
@@ -37,15 +38,15 @@ export type ModalProps = ModalFunctionalityProps &
     children: React.ReactNode
     title?: React.ReactNode
     description?: React.ReactNode
-    panelClassName?: string
+    contentClassName?: string
     initialFocus?: React.RefObject<HTMLElement>
-    onBackClick?: () => void
+    withFooter?: boolean
   }
 
 export default function Modal({
   children,
   titleClassName,
-  panelClassName,
+  contentClassName,
   size,
   descriptionClassName,
   closeModal,
@@ -54,7 +55,7 @@ export default function Modal({
   title,
   description,
   initialFocus,
-  onBackClick,
+  withFooter,
 }: ModalProps) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -87,39 +88,61 @@ export default function Modal({
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel
-                className={cx(panelStyles({ size }), panelClassName)}
-              >
-                {withCloseButton && (
-                  <Button
-                    className='absolute right-6 m-1 mr-0 p-0 text-2xl text-text-muted'
-                    variant='transparent'
-                    onClick={closeModal}
-                  >
-                    <HiXMark />
-                  </Button>
-                )}
-                {title && (
-                  <Dialog.Title
-                    as='h3'
-                    className={cx(
-                      'mb-4 text-2xl',
-                      withCloseButton && 'pr-8',
-                      titleClassName
-                    )}
-                  >
-                    {title}
-                  </Dialog.Title>
-                )}
-                {description && (
-                  <Dialog.Description
-                    className={cx('mb-4 text-text-muted', descriptionClassName)}
-                  >
-                    {description}
-                  </Dialog.Description>
-                )}
+              <Dialog.Panel className={cx(panelStyles({ size }))}>
+                <div
+                  className={cx(
+                    'p-6 text-left align-middle',
+                    'transform transition-all',
+                    'flex flex-col',
+                    contentClassName
+                  )}
+                >
+                  {withCloseButton && (
+                    <Button
+                      className='absolute right-6 m-1 mr-0 p-0 text-2xl text-text-muted'
+                      variant='transparent'
+                      onClick={closeModal}
+                    >
+                      <HiXMark />
+                    </Button>
+                  )}
+                  {title && (
+                    <Dialog.Title
+                      as='h3'
+                      className={cx(
+                        'mb-4 text-2xl',
+                        withCloseButton && 'pr-8',
+                        titleClassName
+                      )}
+                    >
+                      {title}
+                    </Dialog.Title>
+                  )}
+                  {description && (
+                    <Dialog.Description
+                      className={cx(
+                        'mb-4 text-text-muted',
+                        descriptionClassName
+                      )}
+                    >
+                      {description}
+                    </Dialog.Description>
+                  )}
 
-                {children}
+                  {children}
+                </div>
+
+                {withFooter && (
+                  <div className='flex items-center justify-center gap-4 border-t border-border-gray px-6 py-5 text-text-muted'>
+                    <LinkText href='/' className='font-normal' openInNewTab>
+                      Privacy Policy
+                    </LinkText>
+                    <span>&middot;</span>
+                    <LinkText href='/' className='font-normal' openInNewTab>
+                      Terms of Service
+                    </LinkText>
+                  </div>
+                )}
               </Dialog.Panel>
             </Transition.Child>
           </div>
