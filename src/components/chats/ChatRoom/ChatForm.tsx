@@ -158,9 +158,11 @@ export default function ChatForm({
         }}
         isOpen={isOpenCaptcha}
         closeModal={() => setIsOpenCaptcha(false)}
-        message={processMessage(message)}
-        rootPostId={postId}
-        spaceId={spaceId}
+        messageData={{
+          message: processMessage(message),
+          rootPostId: postId,
+          spaceId,
+        }}
       />
     </>
   )

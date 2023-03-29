@@ -1,13 +1,11 @@
 import Captcha from '@/components/Captcha'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import Toast from '@/components/Toast'
+import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
-import { useRequestToken } from '@/services/api/mutations'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
-import { generateAccount } from '@/utils/account'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
@@ -24,15 +22,21 @@ export default function CaptchaModal({
   ...props
 }: CaptchaModalProps) {
   const sendEvent = useSendEvent()
-  const { mutateAsync: requestTokenAndSendMessage, error } =
-    useRequestTokenAndSendMessage()
-  const { mutateAsync: requestToken } = useRequestToken()
-  const login = useMyAccount((state) => state.login)
+  const {
+    mutateAsync: requestTokenAndSendMessage,
+    error: errorRequestTokenAndSendMessage,
+  } = useRequestTokenAndSendMessage()
+  const {
+    mutateAsync: loginAndRequestToken,
+    error: errorLoginAndRequestToken,
+  } = useLoginAndRequestToken()
 
+  const error = errorLoginAndRequestToken || errorRequestTokenAndSendMessage
   useEffect(() => {
     if (error) {
+      let message: string | undefined = (error as any)?.message
+
       const response = (error as any)?.response?.data
-      let message: string | undefined = undefined
       const responseMessage = (response as ApiRequestTokenResponse)?.message
       if (responseMessage) message = responseMessage
 
@@ -54,10 +58,7 @@ export default function CaptchaModal({
         ...messageData,
       })
     } else {
-      const { publicKey, secretKey } = await generateAccount()
-      const successLogin = await login(secretKey)
-      if (!successLogin) return
-      requestToken({ address: publicKey, captchaToken: token })
+      loginAndRequestToken({ captchaToken: token })
     }
     sendEvent('submit captcha and send message')
     props.closeModal()
