@@ -3,24 +3,31 @@ import {
   createSubsocialQuery,
   SubsocialParam,
 } from '@/subsocial-query/subsocial'
-import { PostData } from '@subsocial/api/types'
 
-export const getPost = poolQuery<SubsocialParam<string>, PostData>({
+const getPostsBySpaceId = poolQuery<
+  SubsocialParam<string>,
+  { spaceId: string; postIds: string[] }
+>({
   multiCall: async (allParams) => {
     if (allParams.length === 0) return []
     const [{ api }] = allParams
-    const postIds = allParams.map(({ data }) => data).filter((id) => !!id)
-    if (postIds.length === 0) return []
+    const spaceIds = allParams.map(({ data }) => data).filter((id) => !!id)
+    if (spaceIds.length === 0) return []
 
-    const res = await api.findPublicPosts(postIds)
-    return res
+    const res = await Promise.all(
+      spaceIds.map((spaceId) => api.blockchain.postIdsBySpaceId(spaceId))
+    )
+    return res.map((postIds, i) => ({
+      spaceId: spaceIds[i],
+      postIds,
+    }))
   },
   resultMapper: {
     paramToKey: (param) => param.data,
-    resultToKey: (result) => result?.id ?? '',
+    resultToKey: (result) => result?.spaceId ?? '',
   },
 })
-export const getPostQuery = createSubsocialQuery({
-  key: 'getComment',
-  getData: getPost,
+export const getPostIdsBySpaceIdQuery = createSubsocialQuery({
+  key: 'getPostIdsBySpaceId',
+  getData: getPostsBySpaceId,
 })

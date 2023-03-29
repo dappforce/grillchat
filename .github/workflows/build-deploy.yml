@@ -99,9 +99,8 @@ jobs:
       - name: Verify deployment
         run: kubectl -n sub-back rollout status deployment/grillchat
 
-      - name: Add more replica 
+      - name: Add more replica
         run: kubectl -n sub-back scale --replicas=2 deployment/grillchat
-
 
   front-bk-prod-deploy:
     name: bk-prod-deploy

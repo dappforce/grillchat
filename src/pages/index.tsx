@@ -1,41 +1,62 @@
-import { getAllTopics } from '@/constants/topics'
 import HomePage from '@/modules/HomePage'
+import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
-import { getPostQuery } from '@/services/subsocial/posts'
+import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSubsocialApi } from '@/subsocial-query/subsocial'
-import { getCommonServerSideProps } from '@/utils/page'
+import { getSpaceId } from '@/utils/env/client'
+import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
+import { getPostsFromCache } from './api/posts'
 
-export const getServerSideProps = getCommonServerSideProps<{
+export const getStaticProps = getCommonStaticProps<{
   dehydratedState: any
+  isIntegrateChatButtonOnTop: boolean
 }>({}, async () => {
-  const topics = Object.values(getAllTopics())
   const queryClient = new QueryClient()
 
   try {
+    const spaceId = getSpaceId()
     const subsocialApi = await getSubsocialApi()
-    const promises = topics.map(({ postId }) => {
+    const postIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
+
+    const promises = postIds.map((postId) => {
       return subsocialApi.blockchain.getReplyIdsByPostId(postId)
     })
-    const commentIdsByPostId = await Promise.all(promises)
-    const lastPostIds = commentIdsByPostId.map((ids) => ids[ids.length - 1])
-    const lastPosts = await subsocialApi.findPosts({ ids: lastPostIds })
+    const postsPromise = getPostsFromCache(postIds)
 
+    const commentIdsByPostId = await Promise.all(promises)
+    const posts = await postsPromise
+
+    const lastPostIds = commentIdsByPostId.map((ids) => ids[ids.length - 1])
+    const lastPosts = await getPostsFromCache(lastPostIds)
+
+    getPostIdsBySpaceIdQuery.setQueryData(queryClient, spaceId, {
+      spaceId,
+      postIds,
+    })
     commentIdsByPostId.forEach((commentIds, idx) => {
       queryClient.setQueryData(
-        getCommentIdsQueryKey(topics[idx].postId),
-        commentIds
+        getCommentIdsQueryKey(postIds[idx]),
+        commentIds ?? null
       )
     })
-    lastPosts.forEach((post) => {
-      queryClient.setQueryData(getPostQuery.getQueryKey(post.id), () => post)
+    ;[...lastPosts, ...posts].forEach((post) => {
+      getPostQuery.setQueryData(
+        queryClient,
+        post.id,
+        JSON.parse(JSON.stringify(post))
+      )
     })
   } catch (e) {
     console.error('Error fetching for home page: ', e)
   }
 
   return {
-    dehydratedState: dehydrate(queryClient),
+    props: {
+      dehydratedState: dehydrate(queryClient),
+      isIntegrateChatButtonOnTop: Math.random() > 0.5,
+    },
+    revalidate: 2,
   }
 })
 export default HomePage

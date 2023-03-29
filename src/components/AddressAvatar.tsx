@@ -1,6 +1,8 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
+import * as bottts from '@dicebear/bottts'
+import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
-import { ComponentProps, forwardRef } from 'react'
+import { ComponentProps, forwardRef, useMemo } from 'react'
 
 export type AddressAvatarProps = ComponentProps<'div'> & {
   address: string
@@ -8,6 +10,13 @@ export type AddressAvatarProps = ComponentProps<'div'> & {
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   function AddressAvatar({ address, ...props }: AddressAvatarProps, ref) {
+    const avatar = useMemo(() => {
+      return createAvatar(bottts, {
+        size: 128,
+        seed: address,
+      }).toDataUriSync()
+    }, [address])
+
     return (
       <div
         {...props}
@@ -19,8 +28,9 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       >
         <Image
           sizes='5rem'
+          className='relative'
           fill
-          src={`https://robohash.org/${address}.png`}
+          src={avatar}
           alt='avatar'
         />
       </div>

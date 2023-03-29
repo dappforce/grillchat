@@ -1,16 +1,14 @@
+import PinIcon from '@/assets/icons/pin.png'
 import Container from '@/components/Container'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
-import { ComponentProps } from 'react'
+import React, { ComponentProps } from 'react'
+import ChatLastMessage from './ChatLastMessage'
 
 const ChatLastMessageTime = dynamic(() => import('./ChatLastMessageTime'), {
   ssr: false,
-})
-const ChatLastMessage = dynamic(() => import('./ChatLastMessage'), {
-  ssr: false,
-  loading: () => <p>&nbsp;</p>,
 })
 const ChatUnreadCount = dynamic(() => import('./ChatUnreadCount'), {
   ssr: false,
@@ -19,12 +17,14 @@ const ChatUnreadCount = dynamic(() => import('./ChatUnreadCount'), {
 export type ChatPreviewProps = ComponentProps<'div'> & {
   title: string
   description: string
-  image: ImageProps['src']
+  image: ImageProps['src'] | JSX.Element
   asLink?: LinkProps
   isInteractive?: boolean
-  postId: string
+  postId?: string
+  isPinned?: boolean
   withUnreadCount?: boolean
   asContainer?: boolean
+  withBorderBottom?: boolean
 }
 
 export default function ChatPreview({
@@ -33,9 +33,11 @@ export default function ChatPreview({
   image,
   asContainer,
   asLink,
+  isPinned,
   postId,
   isInteractive,
   withUnreadCount,
+  withBorderBottom = true,
   ...props
 }: ChatPreviewProps) {
   const Component = asContainer ? Container<'div'> : 'div'
@@ -55,33 +57,69 @@ export default function ChatPreview({
       <ContentContainer
         {...(asLink as any)}
         className={cx(
-          'relative flex items-stretch gap-2.5 overflow-hidden py-2 outline-none',
-          props.className
+          'relative flex items-stretch gap-2.5 overflow-hidden py-2 outline-none'
         )}
       >
-        <Image
-          className='h-14 w-14'
-          src={image}
-          alt={title ?? 'chat preview'}
-        />
+        <div className='h-14 w-14 rounded-full bg-background-lighter'>
+          {React.isValidElement(image)
+            ? image
+            : image && (
+                <Image
+                  className='h-full w-full rounded-full'
+                  src={image as string}
+                  sizes='150px'
+                  width={56}
+                  height={56}
+                  alt={title ?? 'chat preview'}
+                />
+              )}
+        </div>
         <div className='flex flex-1 items-center overflow-hidden'>
           <div className='flex flex-1 flex-col gap-1 overflow-hidden'>
             <div className='flex items-center justify-between'>
               <span className='font-medium'>{title}</span>
-              <ChatLastMessageTime
-                postId={postId}
-                className='text-sm text-text-muted'
-              />
+              {isPinned ? (
+                <Image
+                  src={PinIcon}
+                  alt='pin'
+                  width={16}
+                  height={16}
+                  className='ml-2 h-4 w-4 flex-shrink-0'
+                />
+              ) : (
+                postId && (
+                  <ChatLastMessageTime
+                    postId={postId}
+                    className='text-sm text-text-muted'
+                  />
+                )
+              )}
             </div>
             <div className='flex items-baseline justify-between overflow-hidden'>
-              <ChatLastMessage defaultDesc={description} postId={postId} />
-              {withUnreadCount && (
+              {postId ? (
+                <ChatLastMessage
+                  className='py-0.5'
+                  defaultDesc={description}
+                  postId={postId}
+                />
+              ) : (
+                <p
+                  className={cx(
+                    'overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted'
+                  )}
+                >
+                  {description}
+                </p>
+              )}
+              {withUnreadCount && postId && (
                 <ChatUnreadCount className='ml-2' postId={postId} />
               )}
             </div>
           </div>
         </div>
-        <div className='absolute bottom-0 ml-20 w-full border-b border-border-gray' />
+        {withBorderBottom && (
+          <div className='absolute bottom-0 ml-16 w-full border-b border-border-gray' />
+        )}
       </ContentContainer>
     </Component>
   )

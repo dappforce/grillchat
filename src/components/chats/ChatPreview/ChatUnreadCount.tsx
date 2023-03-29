@@ -1,6 +1,6 @@
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { ComponentProps, useMemo } from 'react'
 
 export type ChatUnreadCountProps = ComponentProps<'div'> & {
@@ -32,7 +32,7 @@ export default function ChatUnreadCount({
         props.className
       )}
     >
-      <span className='relative top-px'>{unreadCount}</span>
+      <span className='relative'>{unreadCount}</span>
     </div>
   )
 }

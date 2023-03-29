@@ -1,7 +1,6 @@
 import { useMyAccount } from '@/stores/my-account'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import usePrevious from './usePrevious'
-import useWaitNewBlock from './useWaitNewBlock'
 
 export default function useWaitHasEnergy() {
   const address = useMyAccount((state) => state.address)
@@ -9,7 +8,6 @@ export default function useWaitHasEnergy() {
   const previousEnergy = usePrevious(energy)
 
   const hasEnergyResolver = useRef<() => void | undefined>()
-  const waitNewBlock = useWaitNewBlock()
 
   const generatePromise = useCallback(
     () =>
@@ -33,15 +31,12 @@ export default function useWaitHasEnergy() {
           hasEnergyResolver.current?.()
           hasEnergyResolver.current = undefined
         }
-        if (previousEnergy === null) {
-          resolveHasEnergy()
-        }
-        waitNewBlock().then(resolveHasEnergy)
+        resolveHasEnergy()
       }
     } else {
       setHasEnergyPromise(generatePromise())
     }
-  }, [energy, generatePromise, waitNewBlock, previousEnergy])
+  }, [energy, generatePromise, previousEnergy])
 
   return () => hasEnergyPromise
 }

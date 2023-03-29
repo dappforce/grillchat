@@ -3,14 +3,16 @@ import { getCaptchaSecret, getServerMnemonic } from '@/utils/env/server'
 import { Keyring } from '@polkadot/keyring'
 import { waitReady } from '@polkadot/wasm-crypto'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import NextCors from 'nextjs-cors'
 import { z } from 'zod'
 
-const schema = z.object({
+const bodySchema = z.object({
   captchaToken: z.string(),
   address: z.string(),
 })
 
-type Data = {
+export type ApiRequestTokenBody = z.infer<typeof bodySchema>
+export type ApiRequestTokenResponse = {
   success: boolean
   message: string
   errors?: any
@@ -19,6 +21,33 @@ type Data = {
 }
 
 const VERIFIER = 'https://hcaptcha.com/siteverify'
+const BURN_AMOUNT = 0.3 * 10 ** 10
+
+async function getServerAccount() {
+  const mnemonic = getServerMnemonic()
+  const keyring = new Keyring()
+  await waitReady()
+  return keyring.addFromMnemonic(mnemonic, {}, 'sr25519')
+}
+
+async function getPaymentFee() {
+  const signer = await getServerAccount()
+  const subsocialApi = await getSubsocialApi()
+  const substrateApi = await subsocialApi.substrateApi
+  const paymentFee = await substrateApi.tx.energy
+    .generateEnergy(signer.address, BURN_AMOUNT)
+    .paymentInfo(signer.address)
+  return paymentFee.partialFee.toNumber() + BURN_AMOUNT
+}
+
+async function isEnoughBalance() {
+  const signer = await getServerAccount()
+  const subsocialApi = await getSubsocialApi()
+  const substrateApi = await subsocialApi.substrateApi
+  const balance = await substrateApi.query.system.account(signer.address)
+  const paymentFee = await getPaymentFee()
+  return balance.data.free.toNumber() > paymentFee
+}
 
 async function verifyCaptcha(captchaToken: string) {
   const formData = new FormData()
@@ -33,21 +62,15 @@ async function verifyCaptcha(captchaToken: string) {
   return true
 }
 
-async function getServerAccount() {
-  const mnemonic = getServerMnemonic()
-  const keyring = new Keyring()
-  await waitReady()
-  return keyring.addFromMnemonic(mnemonic, {}, 'sr25519')
-}
 async function sendToken(address: string) {
   const signer = await getServerAccount()
   if (!signer) throw new Error('Invalid Mnemonic')
+  if (!isEnoughBalance()) throw new Error('Account balance is not enough')
 
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi
-  const amount = 0.3 * 10 ** 10
   const tx = await substrateApi.tx.energy
-    .generateEnergy(address, amount)
+    .generateEnergy(address, BURN_AMOUNT)
     .signAndSend(signer, { nonce: -1 })
 
   return tx.hash.toString()
@@ -55,11 +78,16 @@ async function sendToken(address: string) {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<ApiRequestTokenResponse>
 ) {
   if (req.method !== 'POST') return res.status(404).end()
 
-  const body = schema.safeParse(req.body)
+  await NextCors(req, res, {
+    methods: ['POST'],
+    origin: '*',
+  })
+
+  const body = bodySchema.safeParse(req.body)
   if (!body.success) {
     return res.status(400).send({
       success: false,
@@ -82,6 +110,14 @@ export default async function handler(
   try {
     hash = await sendToken(body.data.address)
   } catch (e: any) {
+    if (typeof e.message === 'string' && e.message.startsWith('1010:')) {
+      return res.status(400).send({
+        success: false,
+        message:
+          'The faucet does not have a high enough balance, please contact the developers to refill it',
+        errors: e.message,
+      })
+    }
     return res.status(500).send({
       success: false,
       message: 'Failed to send token',

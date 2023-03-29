@@ -1,4 +1,4 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { arrow, offset, Placement, useFloating } from '@floating-ui/react-dom'
 import { Popover, Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
@@ -27,8 +27,8 @@ const panelColors = {
 }
 
 export type PopOverProps = VariantProps<typeof panelStyles> & {
-  children: any
-  trigger: any
+  children: React.ReactNode
+  trigger: React.ReactNode
   asButton?: boolean
   withCloseButton?: boolean
   withArrow?: boolean

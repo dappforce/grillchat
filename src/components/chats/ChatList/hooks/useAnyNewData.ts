@@ -1,7 +1,7 @@
 import usePrevious from '@/hooks/usePrevious'
 import { useCallback, useEffect, useState } from 'react'
 
-export default function useAnyNewData(data: any[]) {
+export default function useAnyNewData(data: unknown[]) {
   const [anyNewData, setAnyNewData] = useState(0)
   const previousDataLength = usePrevious(data.length)
 

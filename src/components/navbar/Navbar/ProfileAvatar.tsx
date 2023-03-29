@@ -1,6 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import PopOver from '@/components/PopOver'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
 import ProfileModal from './ProfileModal'
 
@@ -26,7 +26,7 @@ export default function ProfileAvatar({
       if (!popOverTriggerRef.current) return
       setTimeout(() => {
         popOverTriggerRef.current?.click()
-      }, 1000)
+      }, 10_000)
     }
   }, [displayPopOver, address])
 

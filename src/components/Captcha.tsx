@@ -1,37 +1,48 @@
 import HCaptchaIcon from '@/assets/logo/hcaptcha.svg'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { getCaptchaSiteKey } from '@/utils/env/client'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
-import { ComponentProps, useEffect, useRef, useState } from 'react'
+import { ComponentProps, useRef, useState } from 'react'
 import { IoCheckmarkOutline } from 'react-icons/io5'
 
 export type CaptchaProps = ComponentProps<'div'> & {
-  token: string
-  setToken: (token: string) => void
+  onVerify: (token: string) => Promise<void> | void
 }
 
 const siteKey = getCaptchaSiteKey()
 
-export default function Captcha({ token, setToken, ...props }: CaptchaProps) {
+export default function Captcha({
+  onVerify: _onVerify,
+  ...props
+}: CaptchaProps) {
+  const [token, setToken] = useState('')
   const [error, setError] = useState('')
+  const [clickedCaptcha, setClickedCaptcha] = useState(false)
   const captchaRef = useRef<HCaptcha>(null)
 
-  useEffect(() => {
-    if (!token) captchaRef.current?.resetCaptcha()
-  }, [token])
-
   const onExpire = () => {
+    setClickedCaptcha(false)
     setToken('')
     setError('Captcha expired, please try again.')
   }
 
   const onError = () => {
+    setClickedCaptcha(false)
     setToken('')
     setError('Captcha error, please try again.')
   }
 
   const onTriggerCaptcha = () => {
+    setClickedCaptcha(true)
     captchaRef.current?.execute()
+  }
+
+  const onVerify = async (token: string) => {
+    setToken(token)
+    setClickedCaptcha(false)
+    await _onVerify(token)
+
+    captchaRef.current?.resetCaptcha()
   }
 
   return (
@@ -40,11 +51,14 @@ export default function Captcha({ token, setToken, ...props }: CaptchaProps) {
         <div className='flex w-full items-center rounded-lg border border-background-lighter bg-background-light py-5 px-4 transition hover:brightness-105'>
           <div
             className={cx(
-              'mr-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border border-background-lighter',
+              'relative mr-3 flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-background-lighter',
               token && 'bg-background-primary'
             )}
             onClick={onTriggerCaptcha}
           >
+            {clickedCaptcha && !token && (
+              <div className='absolute inset-0 h-full w-full animate-pulse bg-background-lighter' />
+            )}
             {token && <IoCheckmarkOutline className='text-2xl' />}
           </div>
           <span className=''>I&apos;m human</span>
@@ -55,7 +69,7 @@ export default function Captcha({ token, setToken, ...props }: CaptchaProps) {
       <HCaptcha
         size='invisible'
         theme='dark'
-        onVerify={setToken}
+        onVerify={onVerify}
         onExpire={onExpire}
         sitekey={siteKey}
         onError={onError}

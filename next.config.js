@@ -18,9 +18,9 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'robohash.org',
+        hostname: 'ipfs.subsocial.network',
         port: '',
-        pathname: '/**',
+        pathname: '/ipfs/**',
       },
     ],
   },

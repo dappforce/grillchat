@@ -1,14 +1,14 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
 
-const linkTextStyles = cva('', {
+const linkTextStyles = cva('font-medium', {
   variants: {
     variant: {
       primary: 'text-text-primary',
       secondary: 'text-text-secondary',
-      default: 'font-medium',
+      default: '',
     },
   },
   defaultVariants: {
@@ -22,9 +22,14 @@ export type LinkTextProps = Omit<ComponentProps<'a'>, 'href'> &
     openInNewTab?: boolean
   }
 
-export default function LinkText({ href, variant, ...props }: LinkTextProps) {
+export default function LinkText({
+  href,
+  variant,
+  openInNewTab,
+  ...props
+}: LinkTextProps) {
   let anchorProps = {}
-  if (props.openInNewTab) {
+  if (openInNewTab) {
     anchorProps = {
       target: '_blank',
       rel: 'noopener noreferrer',
@@ -36,11 +41,7 @@ export default function LinkText({ href, variant, ...props }: LinkTextProps) {
       <a
         {...props}
         {...anchorProps}
-        className={cx(
-          props.className,
-          linkTextStyles({ variant }),
-          'font-medium'
-        )}
+        className={cx(linkTextStyles({ variant }), props.className)}
       />
     </Link>
   )

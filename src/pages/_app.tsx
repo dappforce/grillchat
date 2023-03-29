@@ -1,18 +1,14 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
-import Navbar from '@/components/navbar/Navbar'
+import { useBreakpointThreshold } from '@/hooks/useBreakpointThreshold'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
-import { cx } from '@/utils/className'
+import { getGaId } from '@/utils/env/client'
 import type { AppProps } from 'next/app'
-import { Source_Sans_Pro } from 'next/font/google'
+import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
-import { useEffect } from 'react'
-
-const sourceSansPro = Source_Sans_Pro({
-  weight: ['400', '600'],
-  subsets: ['latin'],
-})
+import { useEffect, useRef } from 'react'
+import { Toaster } from 'react-hot-toast'
 
 export type AppCommonProps = {
   head?: HeadConfigProps
@@ -24,24 +20,30 @@ export default function App({
   pageProps,
 }: AppProps<AppCommonProps>) {
   const { head, dehydratedState, ...props } = pageProps
+  const isInitialized = useRef(false)
 
   useEffect(() => {
+    if (isInitialized.current) return
+    isInitialized.current = true
     initAllStores()
   }, [])
 
   return (
     <QueryProvider dehydratedState={dehydratedState}>
+      <ToasterConfig />
       <NextNProgress color='#4d46dc' />
       <HeadConfig {...head} />
-      <div
-        className={cx(
-          'flex h-screen flex-col bg-background text-text',
-          sourceSansPro.className
-        )}
-      >
-        <Navbar />
-        <Component {...props} />
-      </div>
+      <GoogleAnalytics
+        trackPageViews
+        gaMeasurementId={getGaId()}
+        defaultConsent='denied'
+      />
+      <Component {...props} />
     </QueryProvider>
   )
+}
+
+function ToasterConfig() {
+  const mdUp = useBreakpointThreshold('md')
+  return <Toaster position={mdUp ? 'bottom-right' : 'top-center'} />
 }

@@ -1,5 +1,5 @@
+import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
-import { getPostQuery } from '@/services/subsocial/posts'
 
 export default function useLastMessage(postId: string) {
   const { data: commentIds } = useCommentIdsByPostId(postId, {

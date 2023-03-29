@@ -1,10 +1,11 @@
 import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfiniteScrollData'
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
+import { CHAT_PER_PAGE } from '@/constants/chat'
+import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
-import { getPostQuery } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import {
   ComponentProps,
   Fragment,
@@ -18,12 +19,15 @@ import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
+import useIsAtBottom from './hooks/useIsAtBottom'
+import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import { NewMessageNotice } from './NewMessageNotice'
 
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
   postId: string
+  scrollContainerRef?: React.RefObject<HTMLDivElement>
 }
 
 export default function ChatList(props: ChatListProps) {
@@ -32,42 +36,58 @@ export default function ChatList(props: ChatListProps) {
   return <ChatListContent {...props} />
 }
 
+const SCROLL_THRESHOLD_PERCENTAGE = 0.35
+const DEFAULT_SCROLL_THRESHOLD = 500
+
 function ChatListContent({
   asContainer,
   scrollableContainerClassName,
   postId,
+  scrollContainerRef: _scrollContainerRef,
   ...props
 }: ChatListProps) {
   const lastReadId = useFocusedLastMessageId(postId)
 
   const scrollableContainerId = useId()
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const innerScrollContainerRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
+
   const innerRef = useRef<HTMLDivElement>(null)
+  const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
 
   const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
     subscribe: true,
   })
-  const { currentData, loadMore } = useInfiniteScrollData(commentIds, 15, true)
+  const { currentData, loadMore } = useInfiniteScrollData(
+    commentIds,
+    CHAT_PER_PAGE,
+    true
+  )
   const posts = getPostQuery.useQueries(currentData)
   const loadedPost = useMemo(() => {
     return posts.filter((post) => post.isLoading === false)
   }, [posts])
 
+  useLoadMoreIfNoScroll(loadMore, loadedPost?.length ?? 0, {
+    scrollContainer: scrollContainerRef,
+    innerContainer: innerRef,
+  })
+
   useEffect(() => {
-    const inner = innerRef.current
-    const scrollContainer = scrollContainerRef.current
-    if (inner && scrollContainer) {
-      const innerHeight = inner.clientHeight
-      const scrollContainerHeight = scrollContainer.scrollHeight
-      if (innerHeight < scrollContainerHeight) {
-        loadMore()
-      }
-    }
-  }, [loadedPost.length, loadMore])
+    if (!isAtBottom) return
+    scrollContainerRef.current?.scrollTo({
+      top: scrollContainerRef.current?.scrollHeight,
+      behavior: 'auto',
+    })
+  }, [isAtBottom, loadedPost.length, scrollContainerRef])
 
   const Component = asContainer ? Container<'div'> : 'div'
 
   const isAllPostsLoaded = loadedPost.length === commentIds.length
+
+  const scrollThreshold =
+    (scrollContainerRef.current?.scrollHeight ?? 0) *
+      SCROLL_THRESHOLD_PERCENTAGE || DEFAULT_SCROLL_THRESHOLD
 
   return (
     <Component
@@ -80,7 +100,10 @@ function ChatListContent({
       <ScrollableContainer
         id={scrollableContainerId}
         ref={scrollContainerRef}
-        className={cx('flex flex-col-reverse', scrollableContainerClassName)}
+        className={cx(
+          'flex flex-col-reverse pr-4',
+          scrollableContainerClassName
+        )}
       >
         <div ref={innerRef}>
           <InfiniteScroll
@@ -94,7 +117,7 @@ function ChatListContent({
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
             endMessage={<ChatTopNotice className='pb-2 pt-4' />}
-            scrollThreshold='200px'
+            scrollThreshold={`${scrollThreshold}px`}
           >
             {posts.map(({ data: post }, index) => {
               const isLastReadMessage = lastReadId === post?.id
@@ -121,7 +144,7 @@ function ChatListContent({
         </div>
       </ScrollableContainer>
       <NewMessageNotice
-        className='absolute bottom-0 right-8'
+        className='absolute bottom-0 right-6'
         commentIds={commentIds}
         scrollContainerRef={scrollContainerRef}
       />

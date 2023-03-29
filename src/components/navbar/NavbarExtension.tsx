@@ -1,4 +1,4 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import Container, { ContainerProps } from '../Container'
 
@@ -14,7 +14,7 @@ export default function NavbarExtension({
     <div
       {...props}
       className={cx(
-        'sticky top-14 border-b border-border-gray bg-background-light py-2',
+        'sticky top-14 z-10 border-b border-border-gray bg-background-light py-2',
         props.className
       )}
     >

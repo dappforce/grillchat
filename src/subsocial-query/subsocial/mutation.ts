@@ -1,3 +1,4 @@
+import { generatePromiseQueue } from '@/utils/promise'
 import type { ApiPromise } from '@polkadot/api'
 import { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
@@ -13,15 +14,17 @@ import {
 } from './types'
 import { getBlockExplorerBlockInfoLink } from './utils'
 
+type Apis = {
+  subsocialApi: SubsocialApi
+  ipfsApi: SubsocialIpfsApi
+  substrateApi: ApiPromise
+}
+
 export function useSubsocialMutation<Param, Context>(
   getWallet: () => Promise<WalletAccount>,
   transactionGenerator: (
     params: Param,
-    apis: {
-      subsocialApi: SubsocialApi
-      ipfsApi: SubsocialIpfsApi
-      substrateApi: ApiPromise
-    }
+    apis: Apis
   ) => Promise<{ tx: Transaction; summary: string }>,
   config?: MutationConfig<Param>,
   defaultConfig?: DefaultSubsocialMutationConfig<Param, Context>
@@ -67,13 +70,13 @@ export function useSubsocialMutation<Param, Context>(
   })
 }
 
-async function createTxAndSend<Param, AdditionalParams, Context>(
+async function createTxAndSend<Param, Context>(
   transactionGenerator: (
     param: Param,
-    additionalParams: AdditionalParams
+    apis: Apis
   ) => Promise<{ tx: Transaction; summary: string }>,
   param: Param,
-  additionalParams: AdditionalParams,
+  apis: Apis,
   txConfig: {
     wallet: WalletAccount
     networkRpc?: string
@@ -82,7 +85,7 @@ async function createTxAndSend<Param, AdditionalParams, Context>(
   defaultConfig?: DefaultSubsocialMutationConfig<Param, Context>,
   optimisticCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
-  const { tx, summary } = await transactionGenerator(param, additionalParams)
+  const { tx, summary } = await transactionGenerator(param, apis)
   return sendTransaction(
     {
       tx,
@@ -91,6 +94,7 @@ async function createTxAndSend<Param, AdditionalParams, Context>(
       networkRpc: txConfig.networkRpc,
       summary,
     },
+    apis,
     config,
     defaultConfig,
     optimisticCallbacks
@@ -104,6 +108,7 @@ function sendTransaction<Param, Context>(
     params: Param
     networkRpc: string | undefined
   },
+  apis: Apis,
   config?: MutationConfig<Param>,
   defaultConfig?: DefaultSubsocialMutationConfig<Param, Context>,
   txCallbacks?: ReturnType<typeof generateTxCallbacks>
@@ -118,64 +123,72 @@ function sendTransaction<Param, Context>(
   const globalTxCallbacks = getGlobalTxCallbacks()
   return new Promise<string>(async (resolve, reject) => {
     try {
-      const unsub = await tx.signAndSend(
-        signer,
-        { nonce: -1 },
-        async (result) => {
-          resolve(result.txHash.toString())
-          if (result.status.isBroadcast) {
-            globalTxCallbacks.onBroadcast({
-              summary,
-              params: params,
-              address,
-            })
-          } else if (result.status.isInBlock) {
-            const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
-            let explorerLink: string | undefined
-            if (networkRpc) {
-              explorerLink = getBlockExplorerBlockInfoLink(
-                networkRpc,
-                blockHash
-              )
-            }
-            if (
-              result.isError ||
-              result.dispatchError ||
-              result.internalError
-            ) {
-              txCallbacks?.onError()
-              globalTxCallbacks.onError({
-                error: result.dispatchError?.toString(),
-                summary,
-                address,
-                params,
-                explorerLink,
-              })
-            } else {
-              txCallbacks?.onSuccess()
-              const onTxSuccess = makeCombinedCallback(
-                defaultConfig,
-                config,
-                'onTxSuccess'
-              )
-              onTxSuccess({ params, address, result })
-              globalTxCallbacks.onSuccess({
-                explorerLink,
-                summary,
-                address,
-                params,
-              })
-            }
-            unsub()
-          }
-        }
+      const { nonce, nonceResolver } = await getNonce(
+        apis.substrateApi,
+        address
       )
+      const unsub = await tx.signAndSend(signer, { nonce }, async (result) => {
+        resolve(result.txHash.toString())
+        if (result.status.isBroadcast) {
+          globalTxCallbacks.onBroadcast({
+            summary,
+            params: params,
+            address,
+          })
+        } else if (result.status.isInBlock) {
+          const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
+          let explorerLink: string | undefined
+          if (networkRpc) {
+            explorerLink = getBlockExplorerBlockInfoLink(networkRpc, blockHash)
+          }
+          if (result.isError || result.dispatchError || result.internalError) {
+            txCallbacks?.onError()
+            globalTxCallbacks.onError({
+              error: result.dispatchError?.toString(),
+              summary,
+              address,
+              params,
+              explorerLink,
+            })
+          } else {
+            txCallbacks?.onSuccess()
+            const onTxSuccess = makeCombinedCallback(
+              defaultConfig,
+              config,
+              'onTxSuccess'
+            )
+            onTxSuccess({ params, address, result })
+            globalTxCallbacks.onSuccess({
+              explorerLink,
+              summary,
+              address,
+              params,
+            })
+          }
+          unsub()
+        }
+      })
+      nonceResolver()
       txCallbacks?.onSend()
     } catch (e) {
-      globalTxCallbacks.onError((e as any).message)
-      reject((e as any).message)
+      globalTxCallbacks.onError({ address, error: e, params, summary })
+      reject(e)
     }
   })
+}
+
+const noncePromise = generatePromiseQueue()
+/**
+ * This function is used to get nonce for the next transaction, and wait until the previous transaction is sent.
+ * You need to call `nonceResolver()` after you send the transaction.
+ * @param substrateApi Substrate API
+ * @param address Address of the account
+ */
+async function getNonce(substrateApi: ApiPromise, address: string) {
+  const previousQueue = noncePromise.addQueue()
+  await previousQueue
+  const nonce = await substrateApi.rpc.system.accountNextIndex(address)
+  return { nonce, nonceResolver: noncePromise.resolveQueue }
 }
 
 function generateTxCallbacks<Param, Context>(

@@ -1,6 +1,6 @@
+import { getPostQuery } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
-import { getPostQuery } from '../posts'
 import { getCommentIdsQueryKey } from './query'
 import { SendMessageParams } from './types'
 
@@ -16,7 +16,7 @@ export function addOptimisticData({
   tempId,
   address,
 }: OptimisticGeneratorParam) {
-  client.setQueryData(getPostQuery.getQueryKey(tempId), {
+  getPostQuery.setQueryData(client, tempId, {
     id: tempId,
     struct: {
       createdAtTime: Date.now(),

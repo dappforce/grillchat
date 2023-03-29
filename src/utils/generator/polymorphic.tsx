@@ -1,4 +1,4 @@
-import { cx } from '@/utils/className'
+import { cx } from '@/utils/class-names'
 import {
   ComponentProps,
   forwardRef as _forwardRef,
@@ -14,11 +14,6 @@ export function generatePolymorphicComponent<AdditionalProps>(
   defaultClassName: string,
   customRenderer?: (props: AdditionalProps) => JSX.Element
 ) {
-  type Props<Type extends PolymorphicTypes> = { as?: Type } & Omit<
-    ComponentProps<Type>,
-    'as'
-  > &
-    Omit<AdditionalProps, 'as'>
   const forwardRef = _forwardRef as unknown as <
     TypeInner extends PolymorphicTypes
   >(

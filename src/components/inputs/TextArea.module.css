@@ -1,0 +1,18 @@
+.textAreaWrapper {
+  display: grid;
+}
+.textAreaWrapper::after {
+  content: attr(data-replicated-value) ' ';
+  white-space: pre-wrap;
+  visibility: hidden;
+}
+.textAreaWrapper > textarea {
+  resize: none;
+}
+.textAreaWrapper::after,
+.textAreaWrapper > textarea {
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  max-height: 160px;
+  grid-area: 1 / 1 / 2 / 2;
+}

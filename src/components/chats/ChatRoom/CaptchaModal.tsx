@@ -1,31 +1,58 @@
-import Button from '@/components/Button'
 import Captcha from '@/components/Captcha'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import Toast from '@/components/Toast'
 import { useRequestTokenAndSendMessage } from '@/hooks/useRequestTokenAndSendMessage'
+import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
-import { useState } from 'react'
+import { useSendEvent } from '@/stores/analytics'
+import { useEffect } from 'react'
+import { toast } from 'react-hot-toast'
+import { IoWarningOutline } from 'react-icons/io5'
 
-export type CaptchaModalProps = ModalFunctionalityProps & SendMessageParams
+export type CaptchaModalProps = ModalFunctionalityProps &
+  SendMessageParams & {
+    onSubmit?: () => void
+  }
 
 export default function CaptchaModal({
   message,
   rootPostId,
   spaceId,
+  onSubmit,
   ...props
 }: CaptchaModalProps) {
-  const { mutateAsync: requestTokenAndSendMessage } =
+  const sendEvent = useSendEvent()
+  const { mutateAsync: requestTokenAndSendMessage, error } =
     useRequestTokenAndSendMessage()
-  const [token, setToken] = useState('')
 
-  const submitCaptcha = async () => {
+  useEffect(() => {
+    if (error) {
+      const response = (error as any)?.response?.data
+      let message: string | undefined = undefined
+      const responseMessage = (response as ApiRequestTokenResponse)?.message
+      if (responseMessage) message = responseMessage
+
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          icon={(classNames) => <IoWarningOutline className={classNames} />}
+          title='Sign up failed, please try again'
+          description={message}
+        />
+      ))
+    }
+  }, [error])
+
+  const submitCaptcha = async (token: string) => {
     requestTokenAndSendMessage({
       captchaToken: token,
       message,
       rootPostId,
       spaceId,
     })
-    setToken('')
+    sendEvent('submit captcha and send message')
     props.closeModal()
+    onSubmit?.()
   }
 
   return (
@@ -35,13 +62,10 @@ export default function CaptchaModal({
       titleClassName='text-center'
       title='🤖 Are you a human?'
     >
-      <div className='flex flex-col items-stretch gap-6 pt-4'>
+      <div className='flex flex-col items-stretch gap-6 py-4'>
         <div className='flex flex-col items-center'>
-          <Captcha token={token} setToken={setToken} />
+          <Captcha onVerify={submitCaptcha} />
         </div>
-        <Button disabled={!token} size='lg' onClick={submitCaptcha}>
-          Continue
-        </Button>
       </div>
     </Modal>
   )

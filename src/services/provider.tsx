@@ -6,12 +6,15 @@ import {
 } from '@tanstack/react-query'
 import { useState } from 'react'
 
-setSubsocialConfig('staging')
+setSubsocialConfig('staging', {
+  substrateUrl: 'wss://xsocial.subsocial.network',
+  ipfsNodeUrl: 'https://ipfs.subsocial.network',
+  ipfsAdminNodeUrl: 'https://gw.crustfiles.app',
+})
 
 const createClient = () => {
   return new QueryClient({
     defaultOptions: {
-      // TODO: remove this config after done develop
       queries: {
         staleTime: Infinity,
         refetchOnWindowFocus: false,

@@ -1,46 +1,110 @@
 import Send from '@/assets/icons/send.svg'
-import Button from '@/components/Button'
-import Input from '@/components/inputs/Input'
+import { buttonStyles } from '@/components/Button'
+import TextArea from '@/components/inputs/TextArea'
+import Toast from '@/components/Toast'
+import { getPostQuery } from '@/services/api/query'
 import { useSendMessage } from '@/services/subsocial/commentIds'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import { cx } from '@/utils/className'
-import { ComponentProps, useState } from 'react'
+import { cx } from '@/utils/class-names'
+import {
+  ComponentProps,
+  SyntheticEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import { toast } from 'react-hot-toast'
+import { IoWarningOutline } from 'react-icons/io5'
 import CaptchaModal from './CaptchaModal'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
   spaceId: string
+  onSubmit?: () => void
 }
 
-const ESTIMATED_ENERGY_FOR_ONE_TX = 300000000 // TODO: update based on chain
+const ESTIMATED_ENERGY_FOR_ONE_TX = 100_000_000
+
+function processMessage(message: string) {
+  return message.trim()
+}
 
 export default function ChatForm({
   className,
   postId,
   spaceId,
+  onSubmit,
   ...props
 }: ChatFormProps) {
+  const { data: post } = getPostQuery.useQuery(postId)
+  const topicName = post?.content?.title ?? ''
+
+  const sendEvent = useSendEvent()
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
   const hasEnoughEnergy = useMyAccount(
     (state) => (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
   )
+  const [isRequestingEnergy, setIsRequestingEnergy] = useState(false)
 
   const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
   const [message, setMessage] = useState('')
-  const { mutate: sendMessage } = useSendMessage()
+  const { mutate: sendMessage, error } = useSendMessage()
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault()
-    if (!message) return
-    if (isLoggedIn && hasEnoughEnergy) {
-      sendMessage({ message, rootPostId: postId, spaceId })
+  useEffect(() => {
+    textAreaRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    setIsRequestingEnergy(false)
+  }, [hasEnoughEnergy])
+
+  useEffect(() => {
+    if (error) {
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          icon={(classNames) => <IoWarningOutline className={classNames} />}
+          title='Message failed to send, please try again'
+          description={error?.message}
+        />
+      ))
+      setIsRequestingEnergy(false)
+    }
+  }, [error])
+
+  const shouldSendMessage =
+    isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
+  const isDisabled = !processMessage(message)
+
+  const handleSubmit = (e?: SyntheticEvent) => {
+    e?.preventDefault()
+    if (
+      shouldSendMessage &&
+      'virtualKeyboard' in navigator &&
+      typeof (navigator.virtualKeyboard as any).show === 'function'
+    ) {
+      ;(navigator.virtualKeyboard as any).show()
+    }
+
+    const processedMessage = processMessage(message)
+    if (isDisabled) return
+
+    if (shouldSendMessage) {
       setMessage('')
+      sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
+      onSubmit?.()
     } else {
+      if (isLoggedIn) {
+        sendEvent('request energy')
+      } else {
+        sendEvent('send first message', { chatId: postId, name: topicName })
+      }
       setIsOpenCaptcha(true)
     }
   }
-
-  const isDisabled = !message
 
   return (
     <>
@@ -49,34 +113,52 @@ export default function ChatForm({
         {...props}
         className={cx('flex w-full', className)}
       >
-        <Input
+        <TextArea
+          onEnterToSubmitForm={handleSubmit}
+          ref={textAreaRef}
           value={message}
+          autoFocus
           onChange={(e) => setMessage((e.target as any).value)}
           placeholder='Message...'
+          rows={1}
           autoComplete='off'
-          pill
+          autoCapitalize='sentences'
+          autoCorrect='off'
+          spellCheck='false'
           variant='fill'
+          pill
           rightElement={(classNames) => (
-            <Button
-              type='submit'
-              size='circle'
-              disabled={isDisabled}
-              withDisabledStyles={false}
-              variant={isDisabled ? 'mutedOutline' : 'primary'}
-              className={cx(classNames)}
+            <div
+              onTouchEnd={(e) => {
+                if (shouldSendMessage) {
+                  e.preventDefault()
+                  handleSubmit()
+                }
+              }}
+              onClick={handleSubmit}
+              className={cx(
+                buttonStyles({
+                  size: 'circle',
+                  variant: isDisabled ? 'mutedOutline' : 'primary',
+                }),
+                classNames,
+                'cursor-pointer'
+              )}
             >
               <Send className='relative top-px h-4 w-4' />
-            </Button>
+            </div>
           )}
         />
       </form>
       <CaptchaModal
-        isOpen={isOpenCaptcha}
-        closeModal={() => {
-          setIsOpenCaptcha(false)
+        onSubmit={() => {
+          onSubmit?.()
           setMessage('')
+          setIsRequestingEnergy(true)
         }}
-        message={message}
+        isOpen={isOpenCaptcha}
+        closeModal={() => setIsOpenCaptcha(false)}
+        message={processMessage(message)}
         rootPostId={postId}
         spaceId={spaceId}
       />
