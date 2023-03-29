@@ -1,9 +1,15 @@
 import Head from 'next/head'
 
 export type HeadConfigProps = {
-  title?: string
-  description?: string
+  title?: string | null
+  description?: string | null
   disableZoom?: boolean
+}
+
+const LIMIT = 45
+function summarize(text: string) {
+  if (text.length <= LIMIT) return text
+  return text.slice(0, LIMIT) + '...'
 }
 
 export default function HeadConfig({
@@ -12,7 +18,7 @@ export default function HeadConfig({
   disableZoom,
 }: HeadConfigProps) {
   const defaultTitle = 'Chat Anonymously On-Chain Without Wallets'
-  const usedTitle = 'GrillChat | ' + (title || defaultTitle)
+  const usedTitle = 'GrillChat | ' + summarize(title || defaultTitle)
 
   const defaultDesc =
     'Talk with others from around the world and create your own communities about any topic, utilizing our censorship-resistant blockchain and app with anonymous logins.'

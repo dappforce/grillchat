@@ -9,7 +9,7 @@ import {
 import { ParsedUrlQuery } from 'querystring'
 
 export function getCommonStaticProps<ReturnValue>(
-  params: AppCommonProps,
+  getParams: (callbackReturn: ReturnValue) => AppCommonProps,
   callback?: (
     context: GetStaticPropsContext<ParsedUrlQuery, PreviewData>
   ) => Promise<{ props: ReturnValue; revalidate?: number } | undefined>
@@ -24,7 +24,7 @@ export function getCommonStaticProps<ReturnValue>(
     }
     return {
       props: {
-        ...params,
+        ...getParams(data.props),
         ...data.props,
       },
       revalidate: data.revalidate,
