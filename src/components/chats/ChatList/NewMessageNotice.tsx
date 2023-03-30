@@ -38,7 +38,7 @@ export function NewMessageNotice({
     <Button
       variant='transparent'
       onClick={scrollToBottom}
-      withRingInteraction={false}
+      interactive='brightness-only'
       size='circle'
       {...props}
       className={cx('relative bg-background-light p-2.5', props.className)}

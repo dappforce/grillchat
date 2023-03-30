@@ -1,5 +1,5 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
-import { useBreakpointThreshold } from '@/hooks/useBreakpointThreshold'
+import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'

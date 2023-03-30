@@ -70,6 +70,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
       </nav>
       <LoginModal
         isOpen={openLoginModal}
+        openModal={() => setOpenLoginModal(true)}
         closeModal={() => setOpenLoginModal(false)}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}

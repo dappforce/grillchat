@@ -4,7 +4,7 @@ import LinkText from '@/components/LinkText'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { cx } from '@/utils/class-names'
 import { HiOutlineChevronLeft } from 'react-icons/hi'
-import { useBreakpointThreshold } from '../../hooks/useBreakpointThreshold'
+import useBreakpointThreshold from '../../hooks/useBreakpointThreshold'
 import Button from '../Button'
 import NavbarExtension from '../navbar/NavbarExtension'
 

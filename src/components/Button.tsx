@@ -3,39 +3,44 @@ import { cva, VariantProps } from 'class-variance-authority'
 import Link from 'next/link'
 import { ComponentProps } from 'react'
 
-export const buttonStyles = cva(
-  'rounded-full transition hover:brightness-110',
-  {
-    variants: {
-      variant: {
-        primary: 'bg-background-primary border border-transparent text-text',
-        primaryOutline:
-          'bg-transparent border border-background-primary text-text',
-        mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
-        transparent: 'bg-transparent text-text',
-      },
-      disabled: {
-        true: 'brightness-50 pointer-events-none cursor-default',
-      },
-      size: {
-        noPadding: 'p-0',
-        circle: 'p-2',
-        md: 'px-6 py-2',
-        lg: 'px-8 py-3',
-      },
+export const buttonStyles = cva('rounded-full transition', {
+  variants: {
+    variant: {
+      primary: 'bg-background-primary border border-transparent text-text',
+      primaryOutline:
+        'bg-transparent border border-background-primary text-text',
+      mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
+      transparent: 'bg-transparent text-text',
     },
-    defaultVariants: {
-      variant: 'primary',
-      size: 'md',
+    disabled: {
+      true: 'brightness-50 pointer-events-none cursor-default',
     },
-  }
-)
+    size: {
+      noPadding: 'p-0',
+      circle: 'p-2',
+      md: 'px-6 py-2',
+      lg: 'px-8 py-3',
+    },
+    interactive: {
+      all: cx(
+        'hover:brightness-110 focus:brightness-110',
+        interactionRingStyles({ color: 'background', variant: 'small-offset' })
+      ),
+      'brightness-only': cx('hover:brightness-110 focus:brightness-110'),
+      none: '',
+    },
+  },
+  defaultVariants: {
+    variant: 'primary',
+    size: 'md',
+    interactive: 'all',
+  },
+})
 
 export type ButtonProps = VariantProps<typeof buttonStyles> &
   ComponentProps<'button'> &
   ComponentProps<'a'> & {
     withDisabledStyles?: boolean
-    withRingInteraction?: boolean
   }
 
 export default function Button({
@@ -44,13 +49,16 @@ export default function Button({
   size,
   disabled,
   withDisabledStyles = true,
-  withRingInteraction = true,
+  interactive,
   ...props
 }: ButtonProps) {
   const className = cx(
-    withRingInteraction &&
-      interactionRingStyles({ color: 'background', variant: 'small-offset' }),
-    buttonStyles({ variant, size, disabled: disabled && withDisabledStyles }),
+    buttonStyles({
+      variant,
+      size,
+      disabled: disabled && withDisabledStyles,
+      interactive,
+    }),
     'inline-block text-center',
     props.className
   )

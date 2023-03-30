@@ -6,16 +6,21 @@ const inputStyles = cva('', {
   variants: {
     variant: {
       fill: 'bg-background-light',
-      outlined: 'border border-background-lighter bg-transparent',
+      outlined: 'border border-background-lightest bg-transparent',
     },
     pill: {
       true: 'rounded-3xl',
       false: 'rounded-2xl',
     },
+    size: {
+      sm: 'pl-4 py-2 pr-8',
+      md: 'py-3 pl-5 pr-12',
+    },
   },
   defaultVariants: {
     variant: 'outlined',
     pill: false,
+    size: 'md',
   },
 })
 
@@ -58,18 +63,18 @@ export default function FieldWrapper({
   helperTextOnRightOfLabelClassNames,
   pill,
   variant,
+  size,
   children,
 }: FieldWrapperProps) {
   const generatedId = useId()
   const usedId = id || generatedId
 
   const commonClassNames = cx(
-    'py-3 pl-5 pr-12',
     'transition duration-150',
     'hover:brightness-110',
     'focus:brightness-110',
     'disabled:cursor-not-allowed disabled:brightness-75',
-    inputStyles({ pill, variant }),
+    inputStyles({ pill, variant, size }),
     interactionRingStyles()
   )
   const errorClassNames = cx('ring-2 ring-red-500 ring-offset-2')

@@ -1,5 +1,6 @@
 import Send from '@/assets/icons/send.svg'
 import { buttonStyles } from '@/components/Button'
+import CaptchaModal from '@/components/CaptchaModal'
 import TextArea from '@/components/inputs/TextArea'
 import Toast from '@/components/Toast'
 import { getPostQuery } from '@/services/api/query'
@@ -16,7 +17,6 @@ import {
 } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoWarningOutline } from 'react-icons/io5'
-import CaptchaModal from './CaptchaModal'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
@@ -158,9 +158,11 @@ export default function ChatForm({
         }}
         isOpen={isOpenCaptcha}
         closeModal={() => setIsOpenCaptcha(false)}
-        message={processMessage(message)}
-        rootPostId={postId}
-        spaceId={spaceId}
+        messageData={{
+          message: processMessage(message),
+          rootPostId: postId,
+          spaceId,
+        }}
       />
     </>
   )

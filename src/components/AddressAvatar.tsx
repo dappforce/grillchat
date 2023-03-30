@@ -22,7 +22,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         {...props}
         ref={ref}
         className={cx(
-          'relative h-9 w-9 overflow-hidden rounded-full bg-background-lighter',
+          'relative h-9 w-9 overflow-hidden rounded-full bg-background-lightest',
           props.className
         )}
       >

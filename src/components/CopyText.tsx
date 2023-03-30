@@ -1,4 +1,5 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
+import { cva, VariantProps } from 'class-variance-authority'
 import { Space_Mono } from 'next/font/google'
 import { ComponentProps, useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
@@ -6,10 +7,9 @@ import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
 import PopOver from './PopOver'
 
-export type CopyTextProps = ComponentProps<'div'> & {
+type CommonCopyTextProps = ComponentProps<'div'> & {
   text: string
   textToCopy?: string
-  type?: 'short' | 'long'
   onCopyClick?: () => void
   isCodeText?: boolean
   withHideButton?: boolean
@@ -20,13 +20,26 @@ const spaceMono = Space_Mono({
   subsets: ['latin'],
 })
 
-export default function CopyText({
+const copyTextStyles = cva('', {
+  variants: {
+    size: {
+      md: 'px-4 py-3',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+})
+
+export type CopyTextProps = CommonCopyTextProps &
+  VariantProps<typeof copyTextStyles>
+export function CopyText({
   text,
   textToCopy,
-  type = 'short',
   onCopyClick,
   isCodeText: codeText,
   withHideButton,
+  size,
   ...props
 }: CopyTextProps) {
   const [isCopied, setIsCopied] = useState(false)
@@ -44,62 +57,82 @@ export default function CopyText({
 
   const fontClassName = codeText && spaceMono.className
 
-  if (type === 'short') {
-    return (
-      <div {...props} className={cx('flex items-center', props.className)}>
-        <span className={cx(fontClassName)}>{text}</span>
-        <PopOver
-          triggerClassName='ml-2'
-          yOffset={12}
-          trigger={
-            <Button
-              variant='transparent'
-              className='p-0'
-              onClick={copyToClipboard}
-            >
-              <MdOutlineContentCopy />
-            </Button>
-          }
-          panelSize='sm'
-        >
-          <p>Copied!</p>
-        </PopOver>
-      </div>
-    )
-  } else {
-    return (
+  return (
+    <div
+      {...props}
+      className={cx('flex flex-col items-stretch gap-4', props.className)}
+    >
       <div
-        {...props}
-        className={cx('flex flex-col items-stretch gap-4', props.className)}
+        className={cx(
+          'flex items-stretch rounded-2xl border border-border-gray',
+          fontClassName
+        )}
       >
-        <div
+        <span
           className={cx(
-            'flex items-stretch rounded-2xl border border-border-gray',
-            fontClassName
+            'break-all py-2 px-4',
+            copyTextStyles({ size }),
+            isHidden && 'blur-sm'
           )}
         >
-          <span className={cx('break-all p-4', isHidden && 'blur-sm')}>
-            {text}
-          </span>
-          {withHideButton && (
-            <Button
-              size='noPadding'
-              variant='transparent'
-              className={cx(
-                'block rounded-r-2xl rounded-l-none px-4 text-2xl',
-                interactionRingStyles({ variant: 'no-offset' })
-              )}
-              withRingInteraction={false}
-              onClick={() => setIsHidden((prev) => !prev)}
-            >
-              {isHidden ? <HiOutlineEyeOff /> : <HiOutlineEye />}
-            </Button>
-          )}
-        </div>
-        <Button disabled={isCopied} onClick={copyToClipboard} size='lg'>
-          {isCopied ? 'Copied' : 'Copy'}
-        </Button>
+          {text}
+        </span>
+        {withHideButton && (
+          <Button
+            size='noPadding'
+            variant='transparent'
+            className={cx(
+              'block rounded-r-2xl rounded-l-none px-4 text-2xl',
+              interactionRingStyles({ variant: 'no-offset' })
+            )}
+            interactive='brightness-only'
+            onClick={() => setIsHidden((prev) => !prev)}
+          >
+            {isHidden ? <HiOutlineEyeOff /> : <HiOutlineEye />}
+          </Button>
+        )}
       </div>
-    )
+      <Button disabled={isCopied} onClick={copyToClipboard} size='lg'>
+        {isCopied ? 'Copied' : 'Copy'}
+      </Button>
+    </div>
+  )
+}
+
+export type CopyTextInlineProps = CommonCopyTextProps
+export function CopyTextInline({
+  text,
+  textToCopy,
+  onCopyClick,
+  isCodeText: codeText,
+  withHideButton,
+  ...props
+}: CopyTextInlineProps) {
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(textToCopy || text)
+    onCopyClick?.()
   }
+
+  const fontClassName = codeText && spaceMono.className
+  return (
+    <div {...props} className={cx('flex items-center', props.className)}>
+      <span className={cx(fontClassName)}>{text}</span>
+      <PopOver
+        triggerClassName='ml-2'
+        yOffset={12}
+        trigger={
+          <Button
+            variant='transparent'
+            className='p-0'
+            onClick={copyToClipboard}
+          >
+            <MdOutlineContentCopy />
+          </Button>
+        }
+        panelSize='sm'
+      >
+        <p>Copied!</p>
+      </PopOver>
+    </div>
+  )
 }
