@@ -151,11 +151,19 @@ export default function Modal({
 
                 {withFooter && (
                   <div className='flex items-center justify-center gap-4 border-t border-background-lightest px-6 py-5 text-text-muted'>
-                    <LinkText href='/' className='font-normal' openInNewTab>
+                    <LinkText
+                      href='https://polkaverse.com/legal/privacy'
+                      className='font-normal'
+                      openInNewTab
+                    >
                       Privacy Policy
                     </LinkText>
                     <span>&middot;</span>
-                    <LinkText href='/' className='font-normal' openInNewTab>
+                    <LinkText
+                      href='https://polkaverse.com/legal/terms'
+                      className='font-normal'
+                      openInNewTab
+                    >
                       Terms of Service
                     </LinkText>
                   </div>
