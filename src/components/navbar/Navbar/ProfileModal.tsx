@@ -124,7 +124,7 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
   ]
 
   return (
-    <div className='mt-6 flex flex-col'>
+    <div className='mt-2 flex flex-col'>
       <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
         <AddressAvatar address={address} className='h-20 w-20' />
         <CopyTextInline text={truncateAddress(address)} textToCopy={address} />
