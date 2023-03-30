@@ -45,6 +45,10 @@ export type PopOverProps = VariantProps<typeof panelStyles> & {
   panelColor?: keyof typeof panelColors
   triggerClassName?: string
   popOverClassName?: string
+  manualTrigger?: {
+    isOpen: boolean
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  }
 }
 
 export default function PopOver({
@@ -59,8 +63,11 @@ export default function PopOver({
   panelColor = 'default',
   popOverClassName,
   triggerClassName,
+  manualTrigger,
 }: PopOverProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [_isOpen, _setIsOpen] = useState(false)
+  const isOpen = manualTrigger?.isOpen ?? _isOpen
+  const setIsOpen = manualTrigger?.setIsOpen ?? _setIsOpen
 
   const arrowRef = useRef(null)
   const { x, y, strategy, refs, middlewareData, context } = useFloating({
@@ -167,77 +174,4 @@ export default function PopOver({
       )}
     </>
   )
-
-  // return (
-  //   <Popover className={cx('relative', containerClassName)}>
-  // <Popover.Button
-  //   className={cx('flex items-center', triggerClassName)}
-  //   as={!asButton ? 'div' : 'button'}
-  //   ref={refs.setReference}
-  // >
-  //   {trigger}
-  // </Popover.Button>
-
-  // <Transition
-  //   enter='transition duration-100 ease-out'
-  //   enterFrom='transform scale-95 opacity-0'
-  //   enterTo='transform scale-100 opacity-100'
-  //   leave='transition duration-75 ease-out'
-  //   leaveFrom='transform scale-100 opacity-100'
-  //   leaveTo='transform scale-95 opacity-0'
-  // >
-  //   <Popover.Panel
-  //     unmount
-  //     ref={refs.setFloating}
-  //     style={{
-  //       position: strategy,
-  //       top: y ?? 0,
-  //       left: x ?? 0,
-  //       width: 'max-content',
-  //     }}
-  //     className={cx(
-  //       'absolute z-30 flex max-w-sm items-center rounded-3xl py-4 px-6 text-text-dark',
-  //       'shadow-md',
-  //       panelStyles({ panelSize }),
-  //       color,
-  //       popOverClassName
-  //     )}
-  //   >
-  //     {({ close }) => (
-  //       <>
-  //         <div className='relative z-10'>{children}</div>
-  //         {withCloseButton && (
-  //           <Button
-  //             onClick={() => close()}
-  //             className='my-1 ml-4 mr-0 p-0 text-2xl text-current'
-  //             variant='transparent'
-  //           >
-  //             <HiXMark />
-  //           </Button>
-  //         )}
-  //         {withArrow && (
-  //           <div
-  //             className={cx(
-  //               'translate h-5 !w-5 rotate-45',
-  //               isArrowPlacementOnBottom
-  //                 ? '-translate-y-0.5'
-  //                 : 'translate-y-0.5',
-  //               color
-  //             )}
-  //             style={{
-  //               position: 'absolute',
-  //               top: isArrowPlacementOnBottom ? arrowY ?? 0 : 'auto',
-  //               bottom: isArrowPlacementOnBottom ? 'auto' : arrowY ?? 0,
-  //               left: arrowX ?? 0,
-  //               width: 'max-content',
-  //             }}
-  //             ref={arrowRef}
-  //           />
-  //         )}
-  //       </>
-  //     )}
-  //   </Popover.Panel>
-  // </Transition>
-  //   </Popover>
-  // )
 }

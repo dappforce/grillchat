@@ -2,7 +2,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { ComponentProps, useRef, useState } from 'react'
+import { ComponentProps, useEffect, useRef, useState } from 'react'
 import Button from '../../Button'
 import Container from '../../Container'
 import Logo from '../../Logo'
@@ -25,7 +25,15 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
   const isLoggedIn = !!address
 
   const [openLoginModal, setOpenLoginModal] = useState(false)
+  const [openPrivateKeyNotice, setOpenPrivateKeyNotice] = useState(false)
   const isLoggingInWithKey = useRef(false)
+  const timeoutRef = useRef<any>()
+
+  useEffect(() => {
+    if (isInitializedAddress || isLoggingInWithKey.current) return
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => setOpenPrivateKeyNotice(true), 10_000)
+  }, [address, isInitializedAddress])
 
   const login = () => {
     setOpenLoginModal(true)
@@ -35,7 +43,10 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
     if (!isInitialized) return <div className='w-9' />
     return isLoggedIn ? (
       <ProfileAvatar
-        displayPopOver={!isLoggingInWithKey.current && !isInitializedAddress}
+        popOverControl={{
+          isOpen: openPrivateKeyNotice,
+          setIsOpen: setOpenPrivateKeyNotice,
+        }}
         address={address}
       />
     ) : (
