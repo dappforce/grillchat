@@ -29,42 +29,54 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = getCommonStaticProps<{
   dehydratedState: any
   postId: string
-}>({ head: { disableZoom: true } }, async (context) => {
-  const topic = context.params?.topic as string
-  const postId = getPostIdFromSlug(topic)
-  if (!postId) return undefined
+  title: string | null
+}>(
+  (data) => ({ head: { disableZoom: true, title: data.title } }),
+  async (context) => {
+    const topic = context.params?.topic as string
+    const postId = getPostIdFromSlug(topic)
+    if (!postId) return undefined
 
-  const queryClient = new QueryClient()
+    const queryClient = new QueryClient()
 
-  try {
-    const [post] = await getPostsFromCache([postId])
-    if (post?.struct.spaceId !== getSpaceId()) return undefined
+    let title: string | null = null
+    try {
+      const [post] = await getPostsFromCache([postId])
+      if (post?.struct.spaceId !== getSpaceId()) return undefined
+      title = post?.content?.title || null
 
-    const subsocialApi = await getSubsocialApi()
-    const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(postId)
+      const subsocialApi = await getSubsocialApi()
+      const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(
+        postId
+      )
 
-    const preloadedPostCount = CHAT_PER_PAGE * 2
-    const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
-    const endSlice = commentIds.length
-    const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
-    const posts = await getPostsFromCache(prefetchedCommentIds)
+      const preloadedPostCount = CHAT_PER_PAGE * 2
+      const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
+      const endSlice = commentIds.length
+      const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
+      const posts = await getPostsFromCache(prefetchedCommentIds)
 
-    getPostQuery.setQueryData(queryClient, postId, post)
-    queryClient.setQueryData(getCommentIdsQueryKey(postId), commentIds ?? null)
-    posts.forEach((post) => {
-      getPostQuery.setQueryData(queryClient, post.id, post)
-    })
-  } catch (err) {
-    console.error('Error fetching for topic page: ', err)
+      getPostQuery.setQueryData(queryClient, postId, post)
+      queryClient.setQueryData(
+        getCommentIdsQueryKey(postId),
+        commentIds ?? null
+      )
+      posts.forEach((post) => {
+        getPostQuery.setQueryData(queryClient, post.id, post)
+      })
+    } catch (err) {
+      console.error('Error fetching for topic page: ', err)
+    }
+
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+        postId,
+        title,
+      },
+      revalidate: 2,
+    }
   }
-
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-      postId,
-    },
-    revalidate: 2,
-  }
-})
+)
 
 export default ChatPage
