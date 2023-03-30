@@ -19,7 +19,7 @@ export type NavbarProps = ComponentProps<'div'> & {
 export default function Navbar({ customContent, ...props }: NavbarProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isInitializedAddress = useMyAccount(
-    (state) => state.isInitializedAddress
+    (state) => state.isInitializedAddress || !state.isInitialized
   )
   const address = useMyAccount((state) => state.address)
   const isLoggedIn = !!address
