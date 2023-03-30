@@ -6,6 +6,7 @@ import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
@@ -213,7 +214,10 @@ function ShareSessionContent() {
     sendEvent('click copy_share_session_link')
   }
 
-  const shareSessionLink = urlJoin(getBaseUrl(), `/account?k=${secretKey}`)
+  const shareSessionLink = urlJoin(
+    getBaseUrl(),
+    `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${secretKey}`
+  )
 
   return (
     <div className='mt-4 flex flex-col gap-4'>
