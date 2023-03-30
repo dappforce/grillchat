@@ -27,6 +27,7 @@ export default function IntegrateChatPage() {
           <Button
             className='w-full max-w-sm'
             size='lg'
+            href='https://forms.gle/s3VvHNxfvKkdZwtk7'
             onClick={() => sendEvent('click integrate_button')}
           >
             Integrate
