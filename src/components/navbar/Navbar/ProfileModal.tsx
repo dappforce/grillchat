@@ -22,36 +22,44 @@ type ProfileModalProps = ModalFunctionalityProps & {
 
 type ModalState = 'account' | 'private-key' | 'logout' | 'share-session'
 const modalTitles: {
-  [key in ModalState]: (onBackClick?: () => void) => React.ReactNode
+  [key in ModalState]: {
+    title: (onBackClick?: () => void) => React.ReactNode
+    desc?: React.ReactNode
+  }
 } = {
-  account: () => <span className='font-medium'>My Account</span>,
-  logout: () => '🤔 Did you back up your private key?',
-  'private-key': (onBackClick) => (
-    <div className='flex items-center'>
-      <Button
-        size='circle'
-        variant='transparent'
-        className='mr-1 text-lg'
-        onClick={onBackClick}
-      >
-        <HiOutlineChevronLeft />
-      </Button>
-      <span>🔑 Private key</span>
-    </div>
-  ),
-  'share-session': (onBackClick) => (
-    <div className='flex items-center'>
-      <Button
-        size='circle'
-        variant='transparent'
-        className='mr-1 text-lg'
-        onClick={onBackClick}
-      >
-        <HiOutlineChevronLeft />
-      </Button>
-      <span>💻 Share session</span>
-    </div>
-  ),
+  account: { title: () => <span className='font-medium'>My Account</span> },
+  logout: { title: () => '🤔 Did you back up your private key?' },
+  'private-key': {
+    title: (onBackClick) => (
+      <div className='flex items-center'>
+        <Button
+          size='circle'
+          variant='transparent'
+          className='mr-1 text-lg'
+          onClick={onBackClick}
+        >
+          <HiOutlineChevronLeft />
+        </Button>
+        <span>🔑 Private key</span>
+      </div>
+    ),
+  },
+  'share-session': {
+    title: (onBackClick) => (
+      <div className='flex items-center'>
+        <Button
+          size='circle'
+          variant='transparent'
+          className='mr-1 text-lg'
+          onClick={onBackClick}
+        >
+          <HiOutlineChevronLeft />
+        </Button>
+        <span>💻 Share session</span>
+      </div>
+    ),
+    desc: 'Use this link or scan the QR code to quickly log in to this account on another device.',
+  },
 }
 
 type ContentProps = {
@@ -75,7 +83,8 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
   }, [props.isOpen])
 
   const onBackClick = () => setCurrentState('account')
-  const title = modalTitles[currentState]?.(onBackClick)
+  const { title: titleGenerator, desc } = modalTitles[currentState] || {}
+  const title = titleGenerator?.(onBackClick)
   const Content = modalContents[currentState]
 
   const shouldRemoveDefaultPadding = currentState === 'account'
@@ -85,6 +94,7 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
     <Modal
       {...props}
       title={title}
+      description={desc}
       contentClassName={cx(shouldRemoveDefaultPadding && 'px-0 pb-0')}
       titleClassName={cx(shouldRemoveDefaultPadding && 'px-6')}
       withFooter={withFooter}
@@ -216,10 +226,6 @@ function ShareSessionContent() {
         />
       </div>
       <CopyText text={shareSessionLink} onCopyClick={onCopyClick} />
-      <p className='text-text-muted'>
-        Use this link or scan the QR code to quickly log in to this account on
-        another device.
-      </p>
     </div>
   )
 }
