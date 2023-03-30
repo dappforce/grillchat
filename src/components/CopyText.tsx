@@ -70,7 +70,7 @@ export function CopyText({
       >
         <span
           className={cx(
-            'break-all py-2 px-4',
+            'cursor-pointer select-all break-all py-2 px-4',
             copyTextStyles({ size }),
             isHidden && 'blur-sm'
           )}
