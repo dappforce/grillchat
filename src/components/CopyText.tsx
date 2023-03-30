@@ -111,7 +111,8 @@ export function CopyTextInline({
   tooltip,
   ...props
 }: CopyTextInlineProps) {
-  const [isButtonClicked, setIsButtonClicked] = useState(false)
+  const [click, setClick] = useState(false)
+  const [hover, setHover] = useState(false)
   const copyToClipboard = () => {
     navigator.clipboard.writeText(textToCopy || text)
     onCopyClick?.()
@@ -123,22 +124,33 @@ export function CopyTextInline({
       <span className={cx(fontClassName)}>{text}</span>
       <PopOver
         triggerClassName='ml-2'
+        manualTrigger={{ isOpen: click, setIsOpen: setClick }}
         yOffset={12}
         trigger={
-          <Button
-            variant='transparent'
-            className='p-1 text-text-primary'
-            onClick={() => {
-              copyToClipboard()
-              setIsButtonClicked(true)
+          <PopOver
+            panelSize='sm'
+            yOffset={12}
+            triggerOnHover
+            manualTrigger={{
+              isOpen: click ? false : hover,
+              setIsOpen: setHover,
             }}
+            trigger={
+              <Button
+                variant='transparent'
+                className='p-1 text-text-primary'
+                onClick={copyToClipboard}
+              >
+                <MdOutlineContentCopy />
+              </Button>
+            }
           >
-            <MdOutlineContentCopy />
-          </Button>
+            <p>Copy my public address</p>
+          </PopOver>
         }
         panelSize='sm'
       >
-        <p>{!isButtonClicked && tooltip ? tooltip : 'Copied!'}</p>
+        <p>Copied!</p>
       </PopOver>
     </div>
   )

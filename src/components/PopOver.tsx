@@ -4,6 +4,7 @@ import {
   useClick,
   useDismiss,
   useFloating,
+  useHover,
   useInteractions,
   useRole,
 } from '@floating-ui/react'
@@ -49,6 +50,7 @@ export type PopOverProps = VariantProps<typeof panelStyles> & {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   }
+  triggerOnHover?: boolean
 }
 
 export default function PopOver({
@@ -63,6 +65,7 @@ export default function PopOver({
   panelColor = 'default',
   popOverClassName,
   triggerClassName,
+  triggerOnHover,
   manualTrigger,
 }: PopOverProps) {
   const [_isOpen, _setIsOpen] = useState(false)
@@ -85,11 +88,13 @@ export default function PopOver({
     ],
   })
 
-  const click = useClick(context)
+  const hover = useHover(context, { enabled: !!triggerOnHover })
+  const click = useClick(context, { enabled: !triggerOnHover })
   const dismiss = useDismiss(context)
   const role = useRole(context)
 
   const { getReferenceProps, getFloatingProps } = useInteractions([
+    hover,
     dismiss,
     click,
     role,
