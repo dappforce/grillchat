@@ -220,7 +220,7 @@ function ShareSessionContent() {
   )
 
   return (
-    <div className='mt-4 flex flex-col gap-4'>
+    <div className='mt-2 flex flex-col gap-4'>
       <div className='mx-auto mb-2 h-40 w-40 rounded-2xl bg-white p-4'>
         <QRCode
           value={shareSessionLink}
