@@ -66,16 +66,17 @@ export default function Captcha({
           <HCaptchaIcon className='ml-auto text-4xl' />
         </div>
         {error && <p className='mt-2 text-sm text-red-400'>{error}</p>}
+        <ReCAPTCHA
+          sitekey={siteKey}
+          theme='dark'
+          ref={captchaRef}
+          size='invisible'
+          badge='inline'
+          onExpired={onExpire}
+          onErrored={onError}
+          onChange={onChange}
+        />
       </div>
-      <ReCAPTCHA
-        sitekey={siteKey}
-        theme='dark'
-        size='invisible'
-        onExpired={onExpire}
-        badge='bottomright'
-        onErrored={onError}
-        onChange={onChange}
-      />
     </>
   )
 }
