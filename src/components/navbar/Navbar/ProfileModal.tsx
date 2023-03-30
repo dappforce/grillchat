@@ -13,7 +13,6 @@ import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getBaseUrl } from '@/utils/env/client'
 import React, { useEffect, useState } from 'react'
-import { HiOutlineChevronLeft } from 'react-icons/hi'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
 
@@ -24,42 +23,24 @@ type ProfileModalProps = ModalFunctionalityProps & {
 type ModalState = 'account' | 'private-key' | 'logout' | 'share-session'
 const modalTitles: {
   [key in ModalState]: {
-    title: (onBackClick?: () => void) => React.ReactNode
+    title: React.ReactNode
     desc?: React.ReactNode
+    withBackButton?: boolean
   }
 } = {
-  account: { title: () => <span className='font-medium'>My Account</span> },
-  logout: { title: () => '🤔 Did you back up your private key?' },
+  account: { title: <span className='font-medium'>My Account</span> },
+  logout: {
+    title: '🤔 Did you back up your private key?',
+    withBackButton: true,
+  },
   'private-key': {
-    title: (onBackClick) => (
-      <div className='flex items-center'>
-        <Button
-          size='circle'
-          variant='transparent'
-          className='mr-1 text-lg'
-          onClick={onBackClick}
-        >
-          <HiOutlineChevronLeft />
-        </Button>
-        <span>🔑 Private key</span>
-      </div>
-    ),
+    title: '🔑 Private key',
+    withBackButton: true,
   },
   'share-session': {
-    title: (onBackClick) => (
-      <div className='flex items-center'>
-        <Button
-          size='circle'
-          variant='transparent'
-          className='mr-1 text-lg'
-          onClick={onBackClick}
-        >
-          <HiOutlineChevronLeft />
-        </Button>
-        <span>💻 Share session</span>
-      </div>
-    ),
+    title: '💻 Share session',
     desc: 'Use this link or scan the QR code to quickly log in to this account on another device.',
+    withBackButton: true,
   },
 }
 
@@ -84,8 +65,7 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
   }, [props.isOpen])
 
   const onBackClick = () => setCurrentState('account')
-  const { title: titleGenerator, desc } = modalTitles[currentState] || {}
-  const title = titleGenerator?.(onBackClick)
+  const { title, desc, withBackButton } = modalTitles[currentState] || {}
   const Content = modalContents[currentState]
 
   const shouldRemoveDefaultPadding = currentState === 'account'
@@ -100,6 +80,7 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
       titleClassName={cx(shouldRemoveDefaultPadding && 'px-6')}
       withFooter={withFooter}
       withCloseButton
+      onBackClick={withBackButton ? onBackClick : undefined}
     >
       <Content address={address} setCurrentState={setCurrentState} />
     </Modal>

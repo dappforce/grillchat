@@ -2,6 +2,7 @@ import { cx } from '@/utils/class-names'
 import { Dialog, Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Fragment } from 'react'
+import { HiOutlineChevronLeft } from 'react-icons/hi'
 import { HiXMark } from 'react-icons/hi2'
 import Button from './Button'
 import LinkText from './LinkText'
@@ -37,6 +38,7 @@ export type ModalProps = ModalFunctionalityProps &
     withCloseButton?: boolean
     children: React.ReactNode
     title?: React.ReactNode
+    onBackClick?: () => void
     description?: React.ReactNode
     contentClassName?: string
     initialFocus?: React.RefObject<HTMLElement>
@@ -50,6 +52,7 @@ export default function Modal({
   size,
   descriptionClassName,
   closeModal,
+  onBackClick,
   withCloseButton,
   isOpen,
   title,
@@ -115,7 +118,21 @@ export default function Modal({
                         titleClassName
                       )}
                     >
-                      {title}
+                      {onBackClick ? (
+                        <div className='flex items-start'>
+                          <Button
+                            size='circle'
+                            variant='transparent'
+                            className='mr-1 text-lg'
+                            onClick={onBackClick}
+                          >
+                            <HiOutlineChevronLeft />
+                          </Button>
+                          <span>{title}</span>
+                        </div>
+                      ) : (
+                        title
+                      )}
                     </Dialog.Title>
                   )}
                   {description && (
