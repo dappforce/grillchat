@@ -138,7 +138,7 @@ export default function PopOver({
               ref={refs.setFloating}
               className={cx(
                 'absolute z-30 flex max-w-sm items-center rounded-3xl py-4 px-6 text-text-dark',
-                'shadow-md',
+                'shadow-md outline-none',
                 panelStyles({ panelSize }),
                 color,
                 popOverClassName
