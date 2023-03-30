@@ -1,5 +1,6 @@
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import { useMyAccount } from '@/stores/my-account'
+import { isTouchDevice } from '@/utils/device'
 import { SyntheticEvent, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Button from './Button'
@@ -52,7 +53,7 @@ export default function LoginModal({
     <Modal
       {...props}
       withFooter
-      initialFocus={inputRef}
+      initialFocus={isTouchDevice() ? undefined : inputRef}
       title='🔐 Login'
       withCloseButton
       description={desc}
