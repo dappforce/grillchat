@@ -99,15 +99,19 @@ export function CopyText({
   )
 }
 
-export type CopyTextInlineProps = CommonCopyTextProps
+export type CopyTextInlineProps = CommonCopyTextProps & {
+  tooltip?: string
+}
 export function CopyTextInline({
   text,
   textToCopy,
   onCopyClick,
   isCodeText: codeText,
   withHideButton,
+  tooltip,
   ...props
 }: CopyTextInlineProps) {
+  const [isButtonClicked, setIsButtonClicked] = useState(false)
   const copyToClipboard = () => {
     navigator.clipboard.writeText(textToCopy || text)
     onCopyClick?.()
@@ -124,14 +128,17 @@ export function CopyTextInline({
           <Button
             variant='transparent'
             className='p-1 text-text-primary'
-            onClick={copyToClipboard}
+            onClick={() => {
+              copyToClipboard()
+              setIsButtonClicked(true)
+            }}
           >
             <MdOutlineContentCopy />
           </Button>
         }
         panelSize='sm'
       >
-        <p>Copied!</p>
+        <p>{!isButtonClicked && tooltip ? tooltip : 'Copied!'}</p>
       </PopOver>
     </div>
   )

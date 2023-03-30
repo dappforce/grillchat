@@ -119,7 +119,11 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
     <div className='mt-2 flex flex-col'>
       <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
         <AddressAvatar address={address} className='h-20 w-20' />
-        <CopyTextInline text={truncateAddress(address)} textToCopy={address} />
+        <CopyTextInline
+          text={truncateAddress(address)}
+          tooltip='Copy my public address'
+          textToCopy={address}
+        />
       </div>
       <div className='flex w-full flex-col gap-6 py-6 px-3'>
         {buttons.map(({ icon: Icon, onClick, text, href }) => (
