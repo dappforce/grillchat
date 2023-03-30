@@ -77,7 +77,11 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <AddressAvatar address={senderAddress} className='flex-shrink-0' />
+        <AddressAvatar
+          style={{ background: senderColor }}
+          address={senderAddress}
+          className='flex-shrink-0'
+        />
       )}
       <div
         className={cx(
