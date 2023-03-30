@@ -4,6 +4,7 @@ import { getCaptchaSiteKey } from '@/utils/env/client'
 import { ComponentProps, useRef, useState } from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { IoCheckmarkOutline } from 'react-icons/io5'
+import LinkText from './LinkText'
 
 export type CaptchaProps = ComponentProps<'div'> & {
   onVerify: (token: string) => Promise<void> | void
@@ -66,6 +67,25 @@ export default function Captcha({
           <HCaptchaIcon className='ml-auto text-4xl' />
         </div>
         {error && <p className='mt-2 text-sm text-red-400'>{error}</p>}
+        <p className='mt-2 text-sm text-text-muted'>
+          This site is protected by reCAPTCHA and the Google{' '}
+          <LinkText
+            openInNewTab
+            variant='secondary'
+            href='https://policies.google.com/privacy'
+          >
+            Privacy Policy
+          </LinkText>{' '}
+          and{' '}
+          <LinkText
+            openInNewTab
+            variant='secondary'
+            href='https://policies.google.com/terms'
+          >
+            Terms of Service
+          </LinkText>{' '}
+          apply.
+        </p>
         <ReCAPTCHA
           sitekey={siteKey}
           theme='dark'
