@@ -30,9 +30,11 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
   const timeoutRef = useRef<any>()
 
   useEffect(() => {
-    if (isInitializedAddress || isLoggingInWithKey.current) return
+    if (isInitializedAddress || isLoggingInWithKey.current || !address) return
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    timeoutRef.current = setTimeout(() => setOpenPrivateKeyNotice(true), 10_000)
+    timeoutRef.current = setTimeout(() => {
+      setOpenPrivateKeyNotice(true)
+    }, 10_000)
   }, [address, isInitializedAddress])
 
   const login = () => {
