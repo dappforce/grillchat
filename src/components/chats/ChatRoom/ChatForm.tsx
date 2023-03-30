@@ -91,7 +91,6 @@ export default function ChatForm({
   const isDisabled = !processMessage(message)
 
   const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
-    console.log(captchaToken, shouldSendMessage)
     e?.preventDefault()
     if (
       shouldSendMessage &&
@@ -131,14 +130,11 @@ export default function ChatForm({
     <CaptchaInvisible>
       {(runCaptcha) => {
         const onSubmit = async (e?: SyntheticEvent) => {
-          console.log('masuk', shouldSendMessage)
           if (shouldSendMessage) {
             handleSubmit(null, e)
             return
           }
-          console.log('requesting token')
           const token = await runCaptcha()
-          console.log('done requesting token')
           handleSubmit(token, e)
         }
 
