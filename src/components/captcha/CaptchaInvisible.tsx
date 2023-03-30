@@ -1,6 +1,8 @@
 import { getCaptchaSiteKey } from '@/utils/env/client'
 import React, { useRef } from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
+import { toast } from 'react-hot-toast'
+import Toast from '../Toast'
 import CaptchaTermsAndService from './CaptchaTermsAndService'
 
 export type CaptchaInvisibleProps = {
@@ -13,7 +15,14 @@ export type CaptchaInvisibleProps = {
 export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
   const captchaRef = useRef<ReCAPTCHA>(null)
   const runCaptcha = async () => {
-    return captchaRef.current?.executeAsync() ?? null
+    const token = (await captchaRef.current?.executeAsync()) ?? null
+    if (!token) {
+      toast.custom((t) => (
+        <Toast t={t} title='Captcha Failed' description='Please try again' />
+      ))
+      return null
+    }
+    return token
   }
   return (
     <>

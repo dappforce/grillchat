@@ -86,17 +86,8 @@ export default function LoginModal({
                     onClick={async () => {
                       setHasStartCaptcha(true)
                       const token = await runCaptcha()
+                      if (!token) return
                       setHasStartCaptcha(false)
-                      if (!token) {
-                        toast.custom((t) => (
-                          <Toast
-                            t={t}
-                            title='Captcha Failed'
-                            description='Please try again'
-                          />
-                        ))
-                        return
-                      }
                       await loginAndRequestToken({ captchaToken: token })
                       props.closeModal()
                     }}
