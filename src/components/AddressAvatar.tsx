@@ -1,4 +1,5 @@
 import { cx } from '@/utils/class-names'
+import { generateRandomColor } from '@/utils/random-colors'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
@@ -10,6 +11,7 @@ export type AddressAvatarProps = ComponentProps<'div'> & {
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   function AddressAvatar({ address, ...props }: AddressAvatarProps, ref) {
+    const backgroundColor = generateRandomColor(address)
     const avatar = useMemo(() => {
       return createAvatar(bottts, {
         size: 128,
@@ -25,14 +27,19 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           'relative h-9 w-9 overflow-hidden rounded-full bg-background-lightest',
           props.className
         )}
+        style={{ backgroundColor }}
       >
-        <Image
-          sizes='5rem'
-          className='relative'
-          fill
-          src={avatar}
-          alt='avatar'
-        />
+        <div className='relative h-full w-full p-[8%]'>
+          <div className='relative h-full w-full'>
+            <Image
+              sizes='5rem'
+              className='relative'
+              fill
+              src={avatar}
+              alt='avatar'
+            />
+          </div>
+        </div>
       </div>
     )
   }

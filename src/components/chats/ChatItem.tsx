@@ -4,8 +4,8 @@ import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { getExplorerUrl } from '@/utils/explorer'
 import { getIpfsContentUrl } from '@/utils/ipfs'
+import { generateRandomColor } from '@/utils/random-colors'
 import Linkify from 'linkify-react'
-import randomColor from 'randomcolor'
 import { ComponentProps, useReducer } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import AddressAvatar from '../AddressAvatar'
@@ -54,10 +54,7 @@ export default function ChatItem({
     variant: '',
   })
   const relativeTime = getTimeRelativeToNow(sentDate)
-  const senderColor = randomColor({
-    seed: senderAddress,
-    luminosity: 'light',
-  })
+  const senderColor = generateRandomColor(senderAddress)
 
   const onCheckMarkClick = () => {
     const checkMarkType: CheckMarkModalVariant = isSent
