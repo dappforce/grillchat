@@ -1,4 +1,4 @@
-import Captcha from '@/components/Captcha'
+import Captcha from '@/components/captcha/Captcha'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import Toast from '@/components/Toast'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
