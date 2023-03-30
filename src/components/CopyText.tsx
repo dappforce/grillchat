@@ -119,6 +119,33 @@ export function CopyTextInline({
   }
 
   const fontClassName = codeText && spaceMono.className
+  let copyButton = (
+    <Button
+      variant='transparent'
+      className='p-1 text-text-primary'
+      onClick={copyToClipboard}
+    >
+      <MdOutlineContentCopy />
+    </Button>
+  )
+
+  if (tooltip) {
+    copyButton = (
+      <PopOver
+        panelSize='sm'
+        yOffset={12}
+        triggerOnHover
+        manualTrigger={{
+          isOpen: click ? false : hover,
+          setIsOpen: setHover,
+        }}
+        trigger={copyButton}
+      >
+        <p>{tooltip}</p>
+      </PopOver>
+    )
+  }
+
   return (
     <div {...props} className={cx('flex items-center', props.className)}>
       <span className={cx(fontClassName)}>{text}</span>
@@ -126,28 +153,7 @@ export function CopyTextInline({
         triggerClassName='ml-2'
         manualTrigger={{ isOpen: click, setIsOpen: setClick }}
         yOffset={12}
-        trigger={
-          <PopOver
-            panelSize='sm'
-            yOffset={12}
-            triggerOnHover
-            manualTrigger={{
-              isOpen: click ? false : hover,
-              setIsOpen: setHover,
-            }}
-            trigger={
-              <Button
-                variant='transparent'
-                className='p-1 text-text-primary'
-                onClick={copyToClipboard}
-              >
-                <MdOutlineContentCopy />
-              </Button>
-            }
-          >
-            <p>Copy my public address</p>
-          </PopOver>
-        }
+        trigger={copyButton}
         panelSize='sm'
       >
         <p>Copied!</p>
