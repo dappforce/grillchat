@@ -33,6 +33,8 @@ export default function ChatItemContainer({
         senderAddress={senderAddress}
         text={post.content.body}
         isSent={isSent}
+        blockNumber={post.struct.createdAtBlock}
+        cid={post.struct.contentId}
       />
     </div>
   )
