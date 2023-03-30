@@ -123,7 +123,7 @@ export function CopyTextInline({
         trigger={
           <Button
             variant='transparent'
-            className='p-0'
+            className='p-1 text-text-primary'
             onClick={copyToClipboard}
           >
             <MdOutlineContentCopy />
