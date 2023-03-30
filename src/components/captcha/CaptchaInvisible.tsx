@@ -22,6 +22,7 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
       ))
       return null
     }
+    captchaRef.current?.reset()
     return token
   }
   return (
