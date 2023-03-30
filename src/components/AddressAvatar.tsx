@@ -29,7 +29,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
         style={{ backgroundColor }}
       >
-        <div className='relative h-full w-full p-[8%]'>
+        <div className='relative h-full w-full p-[7.5%]'>
           <div className='relative h-full w-full'>
             <Image
               sizes='5rem'
