@@ -119,7 +119,11 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
   const buttons: ButtonData[] = [
     { text: 'Show private key', icon: KeyIcon, onClick: onShowPrivateKeyClick },
     { text: 'Share session', icon: ShareIcon, onClick: onShareSessionClick },
-    { text: 'Suggest feature', icon: BulbIcon, href: '/' },
+    {
+      text: 'Suggest feature',
+      icon: BulbIcon,
+      href: 'https://grill.hellonext.co',
+    },
     { text: 'Log out', icon: ExitIcon, onClick: onLogoutClick },
   ]
 
