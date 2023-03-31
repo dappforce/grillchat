@@ -1,6 +1,10 @@
 import { cx } from '@/utils/class-names'
 import {
+  arrow,
+  autoUpdate,
   FloatingFocusManager,
+  offset,
+  Placement,
   useClick,
   useDismiss,
   useFloating,
@@ -8,7 +12,6 @@ import {
   useInteractions,
   useRole,
 } from '@floating-ui/react'
-import { arrow, autoUpdate, offset, Placement } from '@floating-ui/react-dom'
 import { Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { useRef, useState } from 'react'
