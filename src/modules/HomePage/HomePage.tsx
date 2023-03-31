@@ -104,7 +104,7 @@ function ChatPreviewContainer({ postId }: { postId: string }) {
       asContainer
       asLink={{
         href: {
-          pathname: '/chats/[topic]',
+          pathname: '/c/[topic]',
           query: {
             topic: createPostSlug(postId, { title: content?.title }),
           },
