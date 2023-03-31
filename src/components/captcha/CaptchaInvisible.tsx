@@ -15,7 +15,12 @@ export type CaptchaInvisibleProps = {
 export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
   const captchaRef = useRef<ReCAPTCHA>(null)
   const runCaptcha = async () => {
-    const token = (await captchaRef.current?.executeAsync()) ?? null
+    let token: string | null = null
+    try {
+      token = (await captchaRef.current?.executeAsync()) ?? null
+    } catch (e) {
+      console.error(e)
+    }
     if (!token) {
       toast.custom((t) => (
         <Toast t={t} title='Captcha Failed' description='Please try again' />
