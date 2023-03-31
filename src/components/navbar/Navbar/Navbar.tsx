@@ -1,3 +1,4 @@
+import usePrevious from '@/hooks/usePrevious'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
@@ -22,6 +23,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
     (state) => state.isInitializedAddress
   )
   const address = useMyAccount((state) => state.address)
+  const prevAddress = usePrevious(address)
   const isLoggedIn = !!address
 
   const [openLoginModal, setOpenLoginModal] = useState(false)
@@ -30,12 +32,19 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
   const timeoutRef = useRef<any>()
 
   useEffect(() => {
-    if (isInitializedAddress || isLoggingInWithKey.current || !address) return
+    const isChangedAddressFromGuest = prevAddress === null && address
+    if (
+      isInitializedAddress ||
+      isLoggingInWithKey.current ||
+      !address ||
+      !isChangedAddressFromGuest
+    )
+      return
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
     timeoutRef.current = setTimeout(() => {
       setOpenPrivateKeyNotice(true)
     }, 10_000)
-  }, [address, isInitializedAddress])
+  }, [address, isInitializedAddress, prevAddress])
 
   const login = () => {
     setOpenLoginModal(true)
