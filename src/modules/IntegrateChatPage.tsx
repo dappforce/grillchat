@@ -34,7 +34,7 @@ export default function IntegrateChatPage() {
         </Container>
       }
     >
-      <div className='flex flex-1 flex-col gap-20 text-center [&>*]:z-[5]'>
+      <div className='flex flex-1 flex-col gap-[60px] text-center [&>*]:z-[5]'>
         <div className='mt-14 flex flex-col items-center gap-4'>
           <Chatbox className='w-80' />
           <h1 ref={ref} className='text-3xl font-bold'>
