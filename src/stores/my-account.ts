@@ -1,4 +1,9 @@
-import { loginWithSecretKey, Signer } from '@/utils/account'
+import {
+  decodeSecretKey,
+  encodeSecretKey,
+  loginWithSecretKey,
+  Signer,
+} from '@/utils/account'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
 
@@ -9,7 +14,7 @@ type State = {
   signer: Signer | null
   energy: number | null
   unsubscribeEnergy: () => void
-  secretKey: string | null
+  encodedSecretKey: string | null
 }
 type Actions = {
   login: (secretKey: string) => Promise<boolean>
@@ -25,7 +30,7 @@ const initialState = {
   signer: null,
   energy: null,
   unsubscribeEnergy: () => undefined,
-  secretKey: null,
+  encodedSecretKey: null,
 }
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
@@ -33,13 +38,14 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const { toSubsocialAddress } = await import('@subsocial/utils')
     try {
       const signer = await loginWithSecretKey(secretKey)
+      const encodedSecretKey = encodeSecretKey(secretKey)
       set({
         address: toSubsocialAddress(signer.address),
         signer,
-        secretKey,
+        encodedSecretKey,
         isInitializedAddress: false,
       })
-      localStorage.setItem(STORAGE_KEY, secretKey)
+      localStorage.setItem(STORAGE_KEY, encodedSecretKey)
       get().subscribeEnergy()
       useAnalytics.getState().setUserId(signer.address)
     } catch (e) {
@@ -86,8 +92,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     if (isInitialized !== undefined) return
     set({ isInitialized: false })
 
-    const secretKey = localStorage.getItem(STORAGE_KEY)
-    if (secretKey) {
+    const encodedSecretKey = localStorage.getItem(STORAGE_KEY)
+    if (encodedSecretKey) {
+      const secretKey = decodeSecretKey(encodedSecretKey)
       await login(secretKey)
     }
     set({ isInitialized: true, isInitializedAddress: true })

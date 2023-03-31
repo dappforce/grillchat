@@ -9,7 +9,7 @@ import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import { truncateAddress } from '@/utils/account'
+import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getBaseUrl } from '@/utils/env/client'
 import React, { useEffect, useState } from 'react'
@@ -150,7 +150,9 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
 }
 
 function PrivateKeyContent() {
-  const secretKey = useMyAccount((state) => state.secretKey)
+  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
+  const secretKey = decodeSecretKey(encodedSecretKey ?? '')
+
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('click copy_private_key_button')
@@ -193,7 +195,7 @@ function LogoutContent({ setCurrentState }: ContentProps) {
 }
 
 function ShareSessionContent() {
-  const secretKey = useMyAccount((state) => state.secretKey)
+  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('click copy_share_session_link')
@@ -201,7 +203,7 @@ function ShareSessionContent() {
 
   const shareSessionLink = urlJoin(
     getBaseUrl(),
-    `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${secretKey}`
+    `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${encodedSecretKey}`
   )
 
   return (

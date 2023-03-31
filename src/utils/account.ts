@@ -20,10 +20,18 @@ export async function loginWithSecretKey(secretKey: string): Promise<Signer> {
   const { Keyring } = await import('@polkadot/keyring')
   const keyring = new Keyring({ type: 'sr25519' })
   const secret = Buffer.from(secretKey, 'hex')
-  const pair = keyring.addFromSeed(secret, {}, 'ed25519')
-  return pair
+  const signer = keyring.addFromSeed(secret, {}, 'ed25519')
+  return signer
 }
 
 export function truncateAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(-6)}`
+}
+
+export function encodeSecretKey(secretKey: string) {
+  return Buffer.from(secretKey, 'hex').toString('base64')
+}
+
+export function decodeSecretKey(encodedSecretKey: string) {
+  return Buffer.from(encodedSecretKey, 'base64').toString('hex')
 }
