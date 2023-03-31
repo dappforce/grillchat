@@ -17,7 +17,7 @@ type State = {
   encodedSecretKey: string | null
 }
 type Actions = {
-  login: (secretKey: string) => Promise<boolean>
+  login: (secretKey: string, isInitialization?: boolean) => Promise<boolean>
   logout: () => void
   subscribeEnergy: () => Promise<void>
 }
@@ -25,7 +25,7 @@ type Actions = {
 const STORAGE_KEY = 'account'
 
 const initialState = {
-  isInitializedAddress: false,
+  isInitializedAddress: true,
   address: null,
   signer: null,
   energy: null,
@@ -34,7 +34,7 @@ const initialState = {
 }
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
-  login: async (secretKey: string) => {
+  login: async (secretKey: string, isInitialization?: boolean) => {
     const { toSubsocialAddress } = await import('@subsocial/utils')
     try {
       const signer = await loginWithSecretKey(secretKey)
@@ -43,7 +43,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         address: toSubsocialAddress(signer.address),
         signer,
         encodedSecretKey,
-        isInitializedAddress: false,
+        isInitializedAddress: !!isInitialization,
       })
       localStorage.setItem(STORAGE_KEY, encodedSecretKey)
       get().subscribeEnergy()
@@ -95,8 +95,8 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const encodedSecretKey = localStorage.getItem(STORAGE_KEY)
     if (encodedSecretKey) {
       const secretKey = decodeSecretKey(encodedSecretKey)
-      await login(secretKey)
+      await login(secretKey, true)
     }
-    set({ isInitialized: true, isInitializedAddress: true })
+    set({ isInitialized: true })
   },
 }))
