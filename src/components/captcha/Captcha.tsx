@@ -1,4 +1,4 @@
-import HCaptchaIcon from '@/assets/logo/hcaptcha.svg'
+import ReCaptchaIcon from '@/assets/logo/recaptcha.svg'
 import { cx } from '@/utils/class-names'
 import { getCaptchaSiteKey } from '@/utils/env/client'
 import { ComponentProps, useRef, useState } from 'react'
@@ -64,7 +64,7 @@ export default function Captcha({
             {token && <IoCheckmarkOutline className='text-2xl' />}
           </div>
           <span className=''>I&apos;m human</span>
-          <HCaptchaIcon className='ml-auto text-4xl' />
+          <ReCaptchaIcon className='ml-auto h-12 w-12 text-4xl' />
         </div>
         {error && <p className='mt-2 text-sm text-red-400'>{error}</p>}
         <CaptchaTermsAndService className='mt-2' />
