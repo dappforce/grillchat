@@ -16,8 +16,14 @@ import React, { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
 
-type ProfileModalProps = ModalFunctionalityProps & {
+type NotificationControl = {
+  showNotif: boolean
+  setNotifDone: () => void
+}
+
+export type ProfileModalProps = ModalFunctionalityProps & {
   address: string
+  notification?: NotificationControl
 }
 
 type ModalState = 'account' | 'private-key' | 'logout' | 'share-session'
@@ -47,6 +53,7 @@ const modalTitles: {
 type ContentProps = {
   address: string
   setCurrentState: React.Dispatch<React.SetStateAction<ModalState>>
+  notification?: NotificationControl
 }
 const modalContents: {
   [key in ModalState]: (props: ContentProps) => JSX.Element
@@ -57,7 +64,11 @@ const modalContents: {
   'share-session': ShareSessionContent,
 }
 
-export default function ProfileModal({ address, ...props }: ProfileModalProps) {
+export default function ProfileModal({
+  address,
+  notification,
+  ...props
+}: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
 
   useEffect(() => {
@@ -82,7 +93,11 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
       withCloseButton
       onBackClick={withBackButton ? onBackClick : undefined}
     >
-      <Content address={address} setCurrentState={setCurrentState} />
+      <Content
+        address={address}
+        setCurrentState={setCurrentState}
+        notification={notification}
+      />
     </Modal>
   )
 }
@@ -92,8 +107,13 @@ type ButtonData = {
   icon: React.ComponentType<{ className?: string }>
   onClick?: () => void
   href?: string
+  notification?: NotificationControl
 }
-function AccountContent({ address, setCurrentState }: ContentProps) {
+function AccountContent({
+  address,
+  setCurrentState,
+  notification,
+}: ContentProps) {
   const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = () => {
     sendEvent('click show_private_key_button')
@@ -109,7 +129,12 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
   }
 
   const buttons: ButtonData[] = [
-    { text: 'Show private key', icon: KeyIcon, onClick: onShowPrivateKeyClick },
+    {
+      text: 'Show private key',
+      icon: KeyIcon,
+      onClick: onShowPrivateKeyClick,
+      notification,
+    },
     { text: 'Share session', icon: ShareIcon, onClick: onShareSessionClick },
     { text: 'Suggest feature', icon: BulbIcon, href: '/' },
     { text: 'Log out', icon: ExitIcon, onClick: onLogoutClick },
@@ -126,7 +151,7 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
         />
       </div>
       <div className='flex w-full flex-col gap-6 py-6 px-3'>
-        {buttons.map(({ icon: Icon, onClick, text, href }) => (
+        {buttons.map(({ icon: Icon, onClick, text, href, notification }) => (
           <Button
             key={text}
             href={href}
@@ -134,14 +159,23 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
             size='noPadding'
             interactive='none'
             className={cx(
-              'relative flex items-center gap-6 px-6 [&>*]:z-10',
+              'relative flex items-center px-6 [&>*]:z-10',
               'after:absolute after:top-1/2 after:left-0 after:h-full after:w-full after:-translate-y-1/2 after:rounded-lg after:bg-transparent after:py-6 after:transition-colors',
               'outline-none focus:after:bg-background-lighter hover:after:bg-background-lighter'
             )}
-            onClick={onClick}
+            onClick={() => {
+              notification?.setNotifDone()
+              onClick?.()
+            }}
           >
-            <Icon className='text-xl' />
+            <Icon className='mr-6 text-xl' />
             <span>{text}</span>
+            {notification?.showNotif && (
+              <span className='relative top-0.5 ml-2 h-2 w-2'>
+                <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
+                <span className='relative block h-full w-full rounded-full bg-background-warning' />
+              </span>
+            )}
           </Button>
         ))}
       </div>

@@ -1,7 +1,7 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import PopOver from '@/components/PopOver'
 import { cx } from '@/utils/class-names'
-import { ComponentProps, useState } from 'react'
+import { ComponentProps, useEffect, useState } from 'react'
 import ProfileModal from './ProfileModal'
 
 export type ProfileAvatarProps = ComponentProps<'div'> & {
@@ -18,6 +18,12 @@ export default function ProfileAvatar({
   ...props
 }: ProfileAvatarProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [showNotif, setShowNotif] = useState(false)
+  useEffect(() => {
+    if (popOverControl?.isOpen) {
+      setShowNotif(true)
+    }
+  }, [popOverControl?.isOpen])
 
   return (
     <>
@@ -25,6 +31,10 @@ export default function ProfileAvatar({
         address={address}
         isOpen={isOpen}
         closeModal={() => setIsOpen(false)}
+        notification={{
+          showNotif: showNotif,
+          setNotifDone: () => setShowNotif(false),
+        }}
       />
       <div {...props} className={cx('relative h-9 w-9', props.className)}>
         <AddressAvatar
