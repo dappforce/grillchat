@@ -1,7 +1,7 @@
 import Toast from '@/components/Toast'
 import { useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast'
-import { IoWarningOutline } from 'react-icons/io5'
+import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 
 export default function useToastError<ErrorType>(
   error: unknown,
@@ -21,7 +21,9 @@ export default function useToastError<ErrorType>(
       toast.custom((t) => (
         <Toast
           t={t}
-          icon={(classNames) => <IoWarningOutline className={classNames} />}
+          icon={(classNames) => (
+            <HiOutlineExclamationTriangle className={classNames} />
+          )}
           title='Sign up failed, please try again'
           description={message}
         />

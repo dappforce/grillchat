@@ -1,7 +1,7 @@
 import Button, { ButtonProps } from '@/components/Button'
 import { cx } from '@/utils/class-names'
 import { RefObject, useEffect } from 'react'
-import { HiOutlineChevronDown } from 'react-icons/hi'
+import { HiOutlineChevronDown } from 'react-icons/hi2'
 import useAnyNewData from './hooks/useAnyNewData'
 import useIsAtBottom from './hooks/useIsAtBottom'
 

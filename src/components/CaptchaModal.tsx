@@ -8,7 +8,7 @@ import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
-import { IoWarningOutline } from 'react-icons/io5'
+import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 
 export type CaptchaModalProps = ModalFunctionalityProps & {
   messageData?: SendMessageParams
@@ -43,7 +43,9 @@ export default function CaptchaModal({
       toast.custom((t) => (
         <Toast
           t={t}
-          icon={(classNames) => <IoWarningOutline className={classNames} />}
+          icon={(classNames) => (
+            <HiOutlineExclamationTriangle className={classNames} />
+          )}
           title='Sign up failed, please try again'
           description={message}
         />

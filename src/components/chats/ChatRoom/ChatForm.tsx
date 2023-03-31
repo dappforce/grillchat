@@ -20,7 +20,7 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
-import { IoWarningOutline } from 'react-icons/io5'
+import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
@@ -76,7 +76,9 @@ export default function ChatForm({
       toast.custom((t) => (
         <Toast
           t={t}
-          icon={(classNames) => <IoWarningOutline className={classNames} />}
+          icon={(classNames) => (
+            <HiOutlineExclamationTriangle className={classNames} />
+          )}
           title='Message failed to send, please try again'
           description={error?.message}
         />

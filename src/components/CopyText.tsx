@@ -2,7 +2,7 @@ import { cx, interactionRingStyles } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Space_Mono } from 'next/font/google'
 import { ComponentProps, useState } from 'react'
-import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
+import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
 import PopOver from './PopOver'
@@ -88,7 +88,7 @@ export function CopyText({
             interactive='brightness-only'
             onClick={() => setIsHidden((prev) => !prev)}
           >
-            {isHidden ? <HiOutlineEyeOff /> : <HiOutlineEye />}
+            {isHidden ? <HiOutlineEyeSlash /> : <HiOutlineEye />}
           </Button>
         )}
       </div>
