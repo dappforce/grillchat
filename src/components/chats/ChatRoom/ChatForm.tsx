@@ -3,6 +3,7 @@ import { buttonStyles } from '@/components/Button'
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea from '@/components/inputs/TextArea'
 import Toast from '@/components/Toast'
+import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/chat'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
@@ -26,8 +27,6 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   spaceId: string
   onSubmit?: () => void
 }
-
-const ESTIMATED_ENERGY_FOR_ONE_TX = 100_000_000
 
 function processMessage(message: string) {
   return message.trim()

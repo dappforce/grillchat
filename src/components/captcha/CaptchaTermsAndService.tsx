@@ -12,7 +12,7 @@ export default function CaptchaTermsAndService({
       This site is protected by reCAPTCHA and the Google{' '}
       <LinkText
         openInNewTab
-        variant='secondary'
+        variant='primary'
         href='https://policies.google.com/privacy'
       >
         Privacy Policy
@@ -20,7 +20,7 @@ export default function CaptchaTermsAndService({
       and{' '}
       <LinkText
         openInNewTab
-        variant='secondary'
+        variant='primary'
         href='https://policies.google.com/terms'
       >
         Terms of Service
