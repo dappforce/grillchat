@@ -95,7 +95,7 @@ export default function LoginModal({
                   >
                     Create an account
                   </Button>
-                  {termsAndService('mt-4')}
+                  {termsAndService('mt-5')}
                 </>
               )
             }}
