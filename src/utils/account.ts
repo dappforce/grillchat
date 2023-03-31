@@ -3,11 +3,11 @@ import type { Keyring } from '@polkadot/keyring'
 export type Signer = ReturnType<Keyring['addFromSeed']>
 
 export async function generateAccount() {
-  const { mnemonicGenerate, mnemonicToMiniSecret } = await import(
-    '@polkadot/util-crypto'
-  )
+  const { mnemonicGenerate, mnemonicToMiniSecret, cryptoWaitReady } =
+    await import('@polkadot/util-crypto')
   const { Keyring } = await import('@polkadot/keyring')
   const { toSubsocialAddress } = await import('@subsocial/utils')
+  await cryptoWaitReady()
 
   const mnemonic = mnemonicGenerate()
   const seed = mnemonicToMiniSecret(mnemonic)
@@ -20,6 +20,9 @@ export async function generateAccount() {
 
 export async function loginWithSecretKey(secretKey: string): Promise<Signer> {
   const { Keyring } = await import('@polkadot/keyring')
+  const { cryptoWaitReady } = await import('@polkadot/util-crypto')
+  await cryptoWaitReady()
+
   const keyring = new Keyring({ type: 'sr25519' })
   const secret = Buffer.from(secretKey, 'hex')
   const signer = keyring.addFromSeed(secret, {}, 'sr25519')
