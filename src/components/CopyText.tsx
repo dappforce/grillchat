@@ -111,8 +111,8 @@ export function CopyTextInline({
   tooltip,
   ...props
 }: CopyTextInlineProps) {
-  const [click, setClick] = useState(false)
-  const [hover, setHover] = useState(false)
+  const [openTooltipClickTrigger, setOpenTooltipClickTrigger] = useState(false)
+  const [openTooltipHoverTrigger, setOpenTooltipHoverTrigger] = useState(false)
   const copyToClipboard = () => {
     navigator.clipboard.writeText(textToCopy || text)
     onCopyClick?.()
@@ -136,8 +136,8 @@ export function CopyTextInline({
         yOffset={12}
         triggerOnHover
         manualTrigger={{
-          isOpen: click ? false : hover,
-          setIsOpen: setHover,
+          isOpen: openTooltipClickTrigger ? false : openTooltipHoverTrigger,
+          setIsOpen: setOpenTooltipHoverTrigger,
         }}
         trigger={copyButton}
       >
@@ -151,7 +151,10 @@ export function CopyTextInline({
       <span className={cx(fontClassName)}>{text}</span>
       <PopOver
         triggerClassName='ml-2'
-        manualTrigger={{ isOpen: click, setIsOpen: setClick }}
+        manualTrigger={{
+          isOpen: openTooltipClickTrigger,
+          setIsOpen: setOpenTooltipClickTrigger,
+        }}
         yOffset={12}
         trigger={copyButton}
         panelSize='sm'
