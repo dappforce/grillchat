@@ -1,34 +1,29 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import PopOver from '@/components/PopOver'
 import { cx } from '@/utils/class-names'
-import { ComponentProps, useEffect, useRef, useState } from 'react'
+import { ComponentProps, useEffect, useState } from 'react'
 import ProfileModal from './ProfileModal'
 
 export type ProfileAvatarProps = ComponentProps<'div'> & {
   address: string
-  displayPopOver?: boolean
+  popOverControl?: {
+    isOpen: boolean
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  }
 }
 
 export default function ProfileAvatar({
   address,
-  displayPopOver,
+  popOverControl,
   ...props
 }: ProfileAvatarProps) {
-  const popOverTriggerRef = useRef<HTMLDivElement | null>(null)
   const [isOpen, setIsOpen] = useState(false)
-  const prevAccountPopOverOpened = useRef('')
-
+  const [showNotif, setShowNotif] = useState(false)
   useEffect(() => {
-    if (prevAccountPopOverOpened.current === address) return
-    prevAccountPopOverOpened.current = address
-
-    if (displayPopOver) {
-      if (!popOverTriggerRef.current) return
-      setTimeout(() => {
-        popOverTriggerRef.current?.click()
-      }, 10_000)
+    if (popOverControl?.isOpen) {
+      setShowNotif(true)
     }
-  }, [displayPopOver, address])
+  }, [popOverControl?.isOpen])
 
   return (
     <>
@@ -36,6 +31,10 @@ export default function ProfileAvatar({
         address={address}
         isOpen={isOpen}
         closeModal={() => setIsOpen(false)}
+        notification={{
+          showNotif: showNotif,
+          setNotifDone: () => setShowNotif(false),
+        }}
       />
       <div {...props} className={cx('relative h-9 w-9', props.className)}>
         <AddressAvatar
@@ -44,12 +43,13 @@ export default function ProfileAvatar({
           className='relative z-10 cursor-pointer'
         />
         <PopOver
+          manualTrigger={popOverControl}
           popOverClassName='font-bold'
           yOffset={16}
           placement='bottom-end'
           panelColor='warning'
           withCloseButton
-          trigger={<div ref={popOverTriggerRef} />}
+          trigger={null}
         >
           <p>Click on your avatar and save your private key</p>
         </PopOver>

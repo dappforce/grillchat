@@ -2,8 +2,10 @@ import { useSendEvent } from '@/stores/analytics'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
+import { getExplorerUrl } from '@/utils/explorer'
+import { getIpfsContentUrl } from '@/utils/ipfs'
+import { generateRandomColor } from '@/utils/random-colors'
 import Linkify from 'linkify-react'
-import randomColor from 'randomcolor'
 import { ComponentProps, useReducer } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import AddressAvatar from '../AddressAvatar'
@@ -17,6 +19,8 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   sentDate: Date | string | number
   isSent?: boolean
   isMyMessage?: boolean
+  cid?: string
+  blockNumber?: number
 }
 
 type CheckMarkModalReducerState = {
@@ -39,6 +43,8 @@ export default function ChatItem({
   sentDate,
   isSent,
   isMyMessage,
+  blockNumber: blockHash,
+  cid,
   ...props
 }: ChatItemProps) {
   const sendEvent = useSendEvent()
@@ -48,10 +54,7 @@ export default function ChatItem({
     variant: '',
   })
   const relativeTime = getTimeRelativeToNow(sentDate)
-  const senderColor = randomColor({
-    seed: senderAddress,
-    luminosity: 'light',
-  })
+  const senderColor = generateRandomColor(senderAddress)
 
   const onCheckMarkClick = () => {
     const checkMarkType: CheckMarkModalVariant = isSent
@@ -133,16 +136,26 @@ export default function ChatItem({
         isOpen={checkMarkModalState.isOpen}
         variant={checkMarkModalState.variant || 'recording'}
         closeModal={() => dispatch('')}
+        blockNumber={blockHash}
+        cid={cid}
       />
     </div>
   )
 }
 
+type CheckMarkDescData = {
+  blockNumber?: number
+  cid?: string
+}
+type CheckMarkExplanationModalProps = ModalFunctionalityProps & {
+  variant: CheckMarkModalVariant
+} & CheckMarkDescData
+
 const variants = {
   recording: {
     title: 'Recording message',
     icon: <IoCheckmarkOutline className='text-text-muted' />,
-    desc: (
+    desc: () => (
       <span>
         Your message is being processed. In the next few seconds, it will be
         saved to the blockchain, after which you will see this icon:{' '}
@@ -153,15 +166,23 @@ const variants = {
   recorded: {
     title: 'Message recorded',
     icon: <IoCheckmarkDoneOutline />,
-    desc: (
+    desc: ({ blockNumber, cid }) => (
       <span>
         Your censorship-resistant message has been stored on{' '}
-        <LinkText href='https://ipfs.tech/' openInNewTab variant='primary'>
+        <LinkText
+          href={cid ? getIpfsContentUrl(cid) : 'https://ipfs.tech/'}
+          openInNewTab
+          variant='primary'
+        >
           IPFS
         </LinkText>{' '}
         and the{' '}
         <LinkText
-          href='https://subsocial.network/'
+          href={
+            blockNumber
+              ? getExplorerUrl(blockNumber)
+              : 'https://subsocial.network/'
+          }
           openInNewTab
           variant='primary'
         >
@@ -171,19 +192,27 @@ const variants = {
       </span>
     ),
   },
+} satisfies {
+  [key: string]: {
+    title: string
+    icon: JSX.Element
+    desc: (data: CheckMarkDescData) => JSX.Element
+  }
 }
 type CheckMarkModalVariant = keyof typeof variants
 function CheckMarkExplanationModal({
   variant,
+  blockNumber,
+  cid,
   ...props
-}: ModalFunctionalityProps & { variant: CheckMarkModalVariant }) {
+}: CheckMarkExplanationModalProps) {
   const { title, icon, desc } = variants[variant]
 
   return (
     <Modal {...props} title={title} withCloseButton>
       <div className='flex flex-col items-center'>
         <div className='my-6 flex justify-center text-8xl'>{icon}</div>
-        <p className='text-text-muted'>{desc}</p>
+        <p className='text-text-muted'>{desc({ blockNumber, cid })}</p>
       </div>
     </Modal>
   )

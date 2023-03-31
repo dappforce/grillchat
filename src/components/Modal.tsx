@@ -2,7 +2,7 @@ import { cx } from '@/utils/class-names'
 import { Dialog, Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Fragment } from 'react'
-import { HiXMark } from 'react-icons/hi2'
+import { HiOutlineChevronLeft, HiXMark } from 'react-icons/hi2'
 import Button from './Button'
 import LinkText from './LinkText'
 
@@ -37,6 +37,7 @@ export type ModalProps = ModalFunctionalityProps &
     withCloseButton?: boolean
     children: React.ReactNode
     title?: React.ReactNode
+    onBackClick?: () => void
     description?: React.ReactNode
     contentClassName?: string
     initialFocus?: React.RefObject<HTMLElement>
@@ -50,6 +51,7 @@ export default function Modal({
   size,
   descriptionClassName,
   closeModal,
+  onBackClick,
   withCloseButton,
   isOpen,
   title,
@@ -115,7 +117,21 @@ export default function Modal({
                         titleClassName
                       )}
                     >
-                      {title}
+                      {onBackClick ? (
+                        <div className='flex items-start'>
+                          <Button
+                            size='circle'
+                            variant='transparent'
+                            className='mr-1 text-lg'
+                            onClick={onBackClick}
+                          >
+                            <HiOutlineChevronLeft />
+                          </Button>
+                          <span>{title}</span>
+                        </div>
+                      ) : (
+                        title
+                      )}
                     </Dialog.Title>
                   )}
                   {description && (
@@ -134,11 +150,19 @@ export default function Modal({
 
                 {withFooter && (
                   <div className='flex items-center justify-center gap-4 border-t border-background-lightest px-6 py-5 text-text-muted'>
-                    <LinkText href='/' className='font-normal' openInNewTab>
+                    <LinkText
+                      href='https://polkaverse.com/legal/privacy'
+                      className='font-normal'
+                      openInNewTab
+                    >
                       Privacy Policy
                     </LinkText>
                     <span>&middot;</span>
-                    <LinkText href='/' className='font-normal' openInNewTab>
+                    <LinkText
+                      href='https://polkaverse.com/legal/terms'
+                      className='font-normal'
+                      openInNewTab
+                    >
                       Terms of Service
                     </LinkText>
                   </div>

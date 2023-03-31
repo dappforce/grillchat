@@ -2,7 +2,7 @@ import { cx, interactionRingStyles } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Space_Mono } from 'next/font/google'
 import { ComponentProps, useState } from 'react'
-import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
+import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
 import PopOver from './PopOver'
@@ -70,7 +70,7 @@ export function CopyText({
       >
         <span
           className={cx(
-            'break-all py-2 px-4',
+            'cursor-pointer select-all break-all py-2 px-4',
             copyTextStyles({ size }),
             isHidden && 'blur-sm'
           )}
@@ -88,7 +88,7 @@ export function CopyText({
             interactive='brightness-only'
             onClick={() => setIsHidden((prev) => !prev)}
           >
-            {isHidden ? <HiOutlineEyeOff /> : <HiOutlineEye />}
+            {isHidden ? <HiOutlineEyeSlash /> : <HiOutlineEye />}
           </Button>
         )}
       </div>
@@ -99,36 +99,64 @@ export function CopyText({
   )
 }
 
-export type CopyTextInlineProps = CommonCopyTextProps
+export type CopyTextInlineProps = CommonCopyTextProps & {
+  tooltip?: string
+}
 export function CopyTextInline({
   text,
   textToCopy,
   onCopyClick,
   isCodeText: codeText,
   withHideButton,
+  tooltip,
   ...props
 }: CopyTextInlineProps) {
+  const [openTooltipClickTrigger, setOpenTooltipClickTrigger] = useState(false)
+  const [openTooltipHoverTrigger, setOpenTooltipHoverTrigger] = useState(false)
   const copyToClipboard = () => {
     navigator.clipboard.writeText(textToCopy || text)
     onCopyClick?.()
   }
 
   const fontClassName = codeText && spaceMono.className
+  let copyButton = (
+    <Button
+      variant='transparent'
+      className='p-1 text-text-primary'
+      onClick={copyToClipboard}
+    >
+      <MdOutlineContentCopy />
+    </Button>
+  )
+
+  if (tooltip) {
+    copyButton = (
+      <PopOver
+        panelSize='sm'
+        yOffset={12}
+        triggerOnHover
+        manualTrigger={{
+          isOpen: openTooltipClickTrigger ? false : openTooltipHoverTrigger,
+          setIsOpen: setOpenTooltipHoverTrigger,
+        }}
+        trigger={copyButton}
+      >
+        <p>{tooltip}</p>
+      </PopOver>
+    )
+  }
+
   return (
     <div {...props} className={cx('flex items-center', props.className)}>
       <span className={cx(fontClassName)}>{text}</span>
       <PopOver
         triggerClassName='ml-2'
+        manualTrigger={{
+          isOpen: openTooltipClickTrigger,
+          setIsOpen: setOpenTooltipClickTrigger,
+        }}
         yOffset={12}
-        trigger={
-          <Button
-            variant='transparent'
-            className='p-0'
-            onClick={copyToClipboard}
-          >
-            <MdOutlineContentCopy />
-          </Button>
-        }
+        trigger={copyButton}
         panelSize='sm'
       >
         <p>Copied!</p>

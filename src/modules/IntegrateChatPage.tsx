@@ -35,7 +35,7 @@ export default function IntegrateChatPage() {
         </Container>
       }
     >
-      <div className='flex flex-1 flex-col gap-20 text-center [&>*]:z-[5]'>
+      <div className='flex flex-1 flex-col gap-[60px] text-center [&>*]:z-[5]'>
         <div className='mt-14 flex flex-col items-center gap-4'>
           <Chatbox className='w-80' />
           <h1 ref={ref} className='text-3xl font-bold'>
@@ -56,13 +56,11 @@ export default function IntegrateChatPage() {
             <div className='visible absolute top-1/2 !z-0 w-full -translate-y-1/2 rounded-full bg-background-accent pt-[100%] blur-[225px]' />
             <Image
               src={EmbedImage}
-              quality={100}
               alt=''
               className='relative w-full max-w-2xl'
             />
             <Image
               src={Embed2Image}
-              quality={100}
               alt=''
               className='relative w-full max-w-2xl'
             />
@@ -74,12 +72,7 @@ export default function IntegrateChatPage() {
             Migrate your community on-chain, instead of forcing it to live
             through Web2 tools like Twitter and Telegram
           </p>
-          <Image
-            src={MigrateImage}
-            quality={100}
-            alt=''
-            className='w-full max-w-sm'
-          />
+          <Image src={MigrateImage} alt='' className='w-full max-w-sm' />
         </div>
         <div className='mt-4 flex flex-col items-center gap-4'>
           <h2 className='text-2xl'>🏄‍♂️ Experience the benefits</h2>
@@ -87,12 +80,7 @@ export default function IntegrateChatPage() {
             On-chain communities allow for user reputation, increased
             transparency, and improved user freedom
           </p>
-          <Image
-            src={BenefitsImage}
-            quality={100}
-            alt=''
-            className='w-full max-w-sm'
-          />
+          <Image src={BenefitsImage} alt='' className='w-full max-w-sm' />
         </div>
       </div>
     </FixedBottomActionLayout>

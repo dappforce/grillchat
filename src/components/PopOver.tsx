@@ -1,8 +1,20 @@
 import { cx } from '@/utils/class-names'
-import { arrow, offset, Placement, useFloating } from '@floating-ui/react-dom'
-import { Popover, Transition } from '@headlessui/react'
+import {
+  arrow,
+  autoUpdate,
+  FloatingFocusManager,
+  offset,
+  Placement,
+  useClick,
+  useDismiss,
+  useFloating,
+  useHover,
+  useInteractions,
+  useRole,
+} from '@floating-ui/react'
+import { Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { HiXMark } from 'react-icons/hi2'
 import Button from './Button'
 
@@ -37,7 +49,11 @@ export type PopOverProps = VariantProps<typeof panelStyles> & {
   panelColor?: keyof typeof panelColors
   triggerClassName?: string
   popOverClassName?: string
-  containerClassName?: string
+  manualTrigger?: {
+    isOpen: boolean
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  }
+  triggerOnHover?: boolean
 }
 
 export default function PopOver({
@@ -52,11 +68,19 @@ export default function PopOver({
   panelColor = 'default',
   popOverClassName,
   triggerClassName,
-  containerClassName,
+  triggerOnHover,
+  manualTrigger,
 }: PopOverProps) {
+  const [_isOpen, _setIsOpen] = useState(false)
+  const isOpen = manualTrigger?.isOpen ?? _isOpen
+  const setIsOpen = manualTrigger?.setIsOpen ?? _setIsOpen
+
   const arrowRef = useRef(null)
-  const { x, y, strategy, refs, middlewareData } = useFloating({
+  const { x, y, strategy, refs, middlewareData, context } = useFloating({
+    open: isOpen,
     placement,
+    onOpenChange: setIsOpen,
+    whileElementsMounted: autoUpdate,
     middleware: [
       offset({ mainAxis: yOffset }),
       withArrow &&
@@ -67,53 +91,67 @@ export default function PopOver({
     ],
   })
 
+  const hover = useHover(context, { enabled: !!triggerOnHover })
+  const click = useClick(context, { enabled: !triggerOnHover })
+  const dismiss = useDismiss(context)
+  const role = useRole(context)
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    hover,
+    dismiss,
+    click,
+    role,
+  ])
+
   // create custom background if needed
   const color = panelColors[panelColor]
 
   const { x: arrowX, y: arrowY } = middlewareData?.arrow || { x: 0, y: 0 }
   const isArrowPlacementOnBottom = placement.startsWith('bottom')
 
+  const TriggerElement = !asButton ? 'div' : 'button'
+
   return (
-    <Popover className={cx('relative', containerClassName)}>
-      <Popover.Button
+    <>
+      <TriggerElement
         className={cx('flex items-center', triggerClassName)}
-        as={!asButton ? 'div' : 'button'}
         ref={refs.setReference}
+        {...getReferenceProps()}
       >
         {trigger}
-      </Popover.Button>
-
-      <Transition
-        enter='transition duration-100 ease-out'
-        enterFrom='transform scale-95 opacity-0'
-        enterTo='transform scale-100 opacity-100'
-        leave='transition duration-75 ease-out'
-        leaveFrom='transform scale-100 opacity-100'
-        leaveTo='transform scale-95 opacity-0'
-      >
-        <Popover.Panel
-          unmount
-          ref={refs.setFloating}
-          style={{
-            position: strategy,
-            top: y ?? 0,
-            left: x ?? 0,
-            width: 'max-content',
-          }}
-          className={cx(
-            'absolute z-30 flex max-w-sm items-center rounded-3xl py-4 px-6 text-text-dark',
-            'shadow-md',
-            panelStyles({ panelSize }),
-            color,
-            popOverClassName
-          )}
-        >
-          {({ close }) => (
-            <>
+      </TriggerElement>
+      {isOpen && (
+        <FloatingFocusManager context={context} modal={false}>
+          <Transition
+            enter='transition duration-100 ease-out'
+            enterFrom='transform scale-95 opacity-0'
+            enterTo='transform scale-100 opacity-100'
+            leave='transition duration-75 ease-out'
+            leaveFrom='transform scale-100 opacity-100'
+            leaveTo='transform scale-95 opacity-0'
+            show={isOpen}
+          >
+            <div
+              style={{
+                position: strategy,
+                top: y ?? 0,
+                left: x ?? 0,
+                width: 'max-content',
+              }}
+              ref={refs.setFloating}
+              className={cx(
+                'absolute z-30 flex max-w-sm items-center rounded-3xl py-4 px-6 text-text-dark',
+                'shadow-md outline-none',
+                panelStyles({ panelSize }),
+                color,
+                popOverClassName
+              )}
+              {...getFloatingProps()}
+            >
               <div className='relative z-10'>{children}</div>
               {withCloseButton && (
                 <Button
-                  onClick={() => close()}
+                  onClick={() => setIsOpen(false)}
                   className='my-1 ml-4 mr-0 p-0 text-2xl text-current'
                   variant='transparent'
                 >
@@ -139,10 +177,10 @@ export default function PopOver({
                   ref={arrowRef}
                 />
               )}
-            </>
-          )}
-        </Popover.Panel>
-      </Transition>
-    </Popover>
+            </div>
+          </Transition>
+        </FloatingFocusManager>
+      )}
+    </>
   )
 }

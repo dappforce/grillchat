@@ -2,6 +2,7 @@ import { cx, interactionRingStyles } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import Link from 'next/link'
 import { ComponentProps } from 'react'
+import Spinner from './Spinner'
 
 export const buttonStyles = cva('rounded-full transition', {
   variants: {
@@ -41,17 +42,32 @@ export type ButtonProps = VariantProps<typeof buttonStyles> &
   ComponentProps<'button'> &
   ComponentProps<'a'> & {
     withDisabledStyles?: boolean
+    isLoading?: boolean
   }
 
 export default function Button({
   variant,
   href,
   size,
-  disabled,
+  disabled: _disabled,
   withDisabledStyles = true,
   interactive,
+  isLoading,
+  children,
   ...props
 }: ButtonProps) {
+  const disabled = _disabled || isLoading
+  if (isLoading) {
+    children = (
+      <>
+        <span className='opacity-0'>{children}</span>
+        <div className='absolute top-1/2 left-1/2 flex -translate-y-1/2 -translate-x-1/2 items-center'>
+          <span className='mr-2'>Loading</span> <Spinner className='h-6 w-6' />
+        </div>
+      </>
+    )
+  }
+
   const className = cx(
     buttonStyles({
       variant,
@@ -66,10 +82,16 @@ export default function Button({
   if (href) {
     return (
       <Link href={href} passHref legacyBehavior>
-        <a {...props} className={className} />
+        <a {...props} className={className}>
+          {children}
+        </a>
       </Link>
     )
   }
 
-  return <button {...props} disabled={disabled} className={className} />
+  return (
+    <button {...props} disabled={disabled} className={className}>
+      {children}
+    </button>
+  )
 }

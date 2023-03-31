@@ -1,4 +1,9 @@
-import { loginWithSecretKey, Signer } from '@/utils/account'
+import {
+  decodeSecretKey,
+  encodeSecretKey,
+  loginWithSecretKey,
+  Signer,
+} from '@/utils/account'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
 
@@ -9,10 +14,10 @@ type State = {
   signer: Signer | null
   energy: number | null
   unsubscribeEnergy: () => void
-  secretKey: string | null
+  encodedSecretKey: string | null
 }
 type Actions = {
-  login: (secretKey: string) => Promise<boolean>
+  login: (secretKey: string, isInitialization?: boolean) => Promise<boolean>
   logout: () => void
   subscribeEnergy: () => Promise<void>
 }
@@ -20,26 +25,27 @@ type Actions = {
 const STORAGE_KEY = 'account'
 
 const initialState = {
-  isInitializedAddress: false,
+  isInitializedAddress: true,
   address: null,
   signer: null,
   energy: null,
   unsubscribeEnergy: () => undefined,
-  secretKey: null,
+  encodedSecretKey: null,
 }
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
-  login: async (secretKey: string) => {
+  login: async (secretKey: string, isInitialization?: boolean) => {
     const { toSubsocialAddress } = await import('@subsocial/utils')
     try {
       const signer = await loginWithSecretKey(secretKey)
+      const encodedSecretKey = encodeSecretKey(secretKey)
       set({
         address: toSubsocialAddress(signer.address),
         signer,
-        secretKey,
-        isInitializedAddress: false,
+        encodedSecretKey,
+        isInitializedAddress: !!isInitialization,
       })
-      localStorage.setItem(STORAGE_KEY, secretKey)
+      localStorage.setItem(STORAGE_KEY, encodedSecretKey)
       get().subscribeEnergy()
       useAnalytics.getState().setUserId(signer.address)
     } catch (e) {
@@ -86,10 +92,11 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     if (isInitialized !== undefined) return
     set({ isInitialized: false })
 
-    const secretKey = localStorage.getItem(STORAGE_KEY)
-    if (secretKey) {
-      await login(secretKey)
+    const encodedSecretKey = localStorage.getItem(STORAGE_KEY)
+    if (encodedSecretKey) {
+      const secretKey = decodeSecretKey(encodedSecretKey)
+      await login(secretKey, true)
     }
-    set({ isInitialized: true, isInitializedAddress: true })
+    set({ isInitialized: true })
   },
 }))

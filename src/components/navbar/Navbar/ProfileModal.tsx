@@ -6,57 +6,54 @@ import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import { truncateAddress } from '@/utils/account'
+import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getBaseUrl } from '@/utils/env/client'
 import React, { useEffect, useState } from 'react'
-import { HiOutlineChevronLeft } from 'react-icons/hi'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
 
-type ProfileModalProps = ModalFunctionalityProps & {
+type NotificationControl = {
+  showNotif: boolean
+  setNotifDone: () => void
+}
+
+export type ProfileModalProps = ModalFunctionalityProps & {
   address: string
+  notification?: NotificationControl
 }
 
 type ModalState = 'account' | 'private-key' | 'logout' | 'share-session'
 const modalTitles: {
-  [key in ModalState]: (onBackClick?: () => void) => React.ReactNode
+  [key in ModalState]: {
+    title: React.ReactNode
+    desc?: React.ReactNode
+    withBackButton?: boolean
+  }
 } = {
-  account: () => <span className='font-medium'>My Account</span>,
-  logout: () => '🤔 Did you back up your private key?',
-  'private-key': (onBackClick) => (
-    <div className='flex items-center'>
-      <Button
-        size='circle'
-        variant='transparent'
-        className='mr-1 text-lg'
-        onClick={onBackClick}
-      >
-        <HiOutlineChevronLeft />
-      </Button>
-      <span>🔑 Private key</span>
-    </div>
-  ),
-  'share-session': (onBackClick) => (
-    <div className='flex items-center'>
-      <Button
-        size='circle'
-        variant='transparent'
-        className='mr-1 text-lg'
-        onClick={onBackClick}
-      >
-        <HiOutlineChevronLeft />
-      </Button>
-      <span>💻 Share session</span>
-    </div>
-  ),
+  account: { title: <span className='font-medium'>My Account</span> },
+  logout: {
+    title: '🤔 Did you back up your private key?',
+    withBackButton: true,
+  },
+  'private-key': {
+    title: '🔑 Private key',
+    withBackButton: true,
+  },
+  'share-session': {
+    title: '💻 Share session',
+    desc: 'Use this link or scan the QR code to quickly log in to this account on another device.',
+    withBackButton: true,
+  },
 }
 
 type ContentProps = {
   address: string
   setCurrentState: React.Dispatch<React.SetStateAction<ModalState>>
+  notification?: NotificationControl
 }
 const modalContents: {
   [key in ModalState]: (props: ContentProps) => JSX.Element
@@ -67,7 +64,11 @@ const modalContents: {
   'share-session': ShareSessionContent,
 }
 
-export default function ProfileModal({ address, ...props }: ProfileModalProps) {
+export default function ProfileModal({
+  address,
+  notification,
+  ...props
+}: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
 
   useEffect(() => {
@@ -75,7 +76,7 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
   }, [props.isOpen])
 
   const onBackClick = () => setCurrentState('account')
-  const title = modalTitles[currentState]?.(onBackClick)
+  const { title, desc, withBackButton } = modalTitles[currentState] || {}
   const Content = modalContents[currentState]
 
   const shouldRemoveDefaultPadding = currentState === 'account'
@@ -85,12 +86,18 @@ export default function ProfileModal({ address, ...props }: ProfileModalProps) {
     <Modal
       {...props}
       title={title}
+      description={desc}
       contentClassName={cx(shouldRemoveDefaultPadding && 'px-0 pb-0')}
       titleClassName={cx(shouldRemoveDefaultPadding && 'px-6')}
       withFooter={withFooter}
       withCloseButton
+      onBackClick={withBackButton ? onBackClick : undefined}
     >
-      <Content address={address} setCurrentState={setCurrentState} />
+      <Content
+        address={address}
+        setCurrentState={setCurrentState}
+        notification={notification}
+      />
     </Modal>
   )
 }
@@ -100,8 +107,13 @@ type ButtonData = {
   icon: React.ComponentType<{ className?: string }>
   onClick?: () => void
   href?: string
+  notification?: NotificationControl
 }
-function AccountContent({ address, setCurrentState }: ContentProps) {
+function AccountContent({
+  address,
+  setCurrentState,
+  notification,
+}: ContentProps) {
   const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = () => {
     sendEvent('click show_private_key_button')
@@ -117,7 +129,12 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
   }
 
   const buttons: ButtonData[] = [
-    { text: 'Show private key', icon: KeyIcon, onClick: onShowPrivateKeyClick },
+    {
+      text: 'Show private key',
+      icon: KeyIcon,
+      onClick: onShowPrivateKeyClick,
+      notification,
+    },
     { text: 'Share session', icon: ShareIcon, onClick: onShareSessionClick },
     {
       text: 'Suggest feature',
@@ -128,13 +145,17 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
   ]
 
   return (
-    <div className='mt-6 flex flex-col'>
+    <div className='mt-2 flex flex-col'>
       <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
         <AddressAvatar address={address} className='h-20 w-20' />
-        <CopyTextInline text={truncateAddress(address)} textToCopy={address} />
+        <CopyTextInline
+          text={truncateAddress(address)}
+          tooltip='Copy my public address'
+          textToCopy={address}
+        />
       </div>
       <div className='flex w-full flex-col gap-6 py-6 px-3'>
-        {buttons.map(({ icon: Icon, onClick, text, href }) => (
+        {buttons.map(({ icon: Icon, onClick, text, href, notification }) => (
           <Button
             key={text}
             href={href}
@@ -142,14 +163,23 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
             size='noPadding'
             interactive='none'
             className={cx(
-              'relative flex items-center gap-6 px-6 [&>*]:z-10',
+              'relative flex items-center px-6 [&>*]:z-10',
               'after:absolute after:top-1/2 after:left-0 after:h-full after:w-full after:-translate-y-1/2 after:rounded-lg after:bg-transparent after:py-6 after:transition-colors',
               'outline-none focus:after:bg-background-lighter hover:after:bg-background-lighter'
             )}
-            onClick={onClick}
+            onClick={() => {
+              notification?.setNotifDone()
+              onClick?.()
+            }}
           >
-            <Icon className='text-xl' />
+            <Icon className='mr-6 text-xl' />
             <span>{text}</span>
+            {notification?.showNotif && (
+              <span className='relative top-0.5 ml-2 h-2 w-2'>
+                <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
+                <span className='relative block h-full w-full rounded-full bg-background-warning' />
+              </span>
+            )}
           </Button>
         ))}
       </div>
@@ -158,7 +188,9 @@ function AccountContent({ address, setCurrentState }: ContentProps) {
 }
 
 function PrivateKeyContent() {
-  const secretKey = useMyAccount((state) => state.secretKey)
+  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
+  const secretKey = decodeSecretKey(encodedSecretKey ?? '')
+
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('click copy_private_key_button')
@@ -201,16 +233,19 @@ function LogoutContent({ setCurrentState }: ContentProps) {
 }
 
 function ShareSessionContent() {
-  const secretKey = useMyAccount((state) => state.secretKey)
+  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('click copy_share_session_link')
   }
 
-  const shareSessionLink = urlJoin(getBaseUrl(), `/account?k=${secretKey}`)
+  const shareSessionLink = urlJoin(
+    getBaseUrl(),
+    `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${encodedSecretKey}`
+  )
 
   return (
-    <div className='mt-4 flex flex-col gap-4'>
+    <div className='mt-2 flex flex-col gap-4'>
       <div className='mx-auto mb-2 h-40 w-40 rounded-2xl bg-white p-4'>
         <QRCode
           value={shareSessionLink}
@@ -220,10 +255,6 @@ function ShareSessionContent() {
         />
       </div>
       <CopyText text={shareSessionLink} onCopyClick={onCopyClick} />
-      <p className='text-text-muted'>
-        Use this link or scan the QR code to quickly log in to this account on
-        another device.
-      </p>
     </div>
   )
 }

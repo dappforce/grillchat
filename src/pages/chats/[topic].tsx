@@ -42,7 +42,6 @@ export const getStaticProps = getCommonStaticProps<{
     let title: string | null = null
     try {
       const [post] = await getPostsFromCache([postId])
-      if (post?.struct.spaceId !== getSpaceId()) return undefined
       title = post?.content?.title || null
 
       const subsocialApi = await getSubsocialApi()

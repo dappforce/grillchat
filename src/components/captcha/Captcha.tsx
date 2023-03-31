@@ -1,9 +1,10 @@
 import HCaptchaIcon from '@/assets/logo/hcaptcha.svg'
 import { cx } from '@/utils/class-names'
 import { getCaptchaSiteKey } from '@/utils/env/client'
-import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { ComponentProps, useRef, useState } from 'react'
+import ReCAPTCHA from 'react-google-recaptcha'
 import { IoCheckmarkOutline } from 'react-icons/io5'
+import CaptchaTermsAndService from './CaptchaTermsAndService'
 
 export type CaptchaProps = ComponentProps<'div'> & {
   onVerify: (token: string) => Promise<void> | void
@@ -18,7 +19,7 @@ export default function Captcha({
   const [token, setToken] = useState('')
   const [error, setError] = useState('')
   const [clickedCaptcha, setClickedCaptcha] = useState(false)
-  const captchaRef = useRef<HCaptcha>(null)
+  const captchaRef = useRef<ReCAPTCHA>(null)
 
   const onExpire = () => {
     setClickedCaptcha(false)
@@ -37,12 +38,13 @@ export default function Captcha({
     captchaRef.current?.execute()
   }
 
-  const onVerify = async (token: string) => {
+  const onChange = async (token: string | null) => {
+    if (!token) return
     setToken(token)
     setClickedCaptcha(false)
     await _onVerify(token)
 
-    captchaRef.current?.resetCaptcha()
+    captchaRef.current?.reset()
   }
 
   return (
@@ -65,15 +67,17 @@ export default function Captcha({
           <HCaptchaIcon className='ml-auto text-4xl' />
         </div>
         {error && <p className='mt-2 text-sm text-red-400'>{error}</p>}
+        <CaptchaTermsAndService className='mt-2' />
       </div>
-      <HCaptcha
-        size='invisible'
-        theme='dark'
-        onVerify={onVerify}
-        onExpire={onExpire}
+      <ReCAPTCHA
         sitekey={siteKey}
-        onError={onError}
+        theme='dark'
         ref={captchaRef}
+        size='invisible'
+        badge='inline'
+        onExpired={onExpire}
+        onErrored={onError}
+        onChange={onChange}
       />
     </>
   )

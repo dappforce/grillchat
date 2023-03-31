@@ -20,8 +20,8 @@ export type ApiRequestTokenResponse = {
   hash?: string
 }
 
-const VERIFIER = 'https://hcaptcha.com/siteverify'
-const BURN_AMOUNT = 0.3 * 10 ** 10
+const VERIFIER = 'https://www.google.com/recaptcha/api/siteverify'
+const BURN_AMOUNT = 0.5 * 10 ** 10
 
 async function getServerAccount() {
   const mnemonic = getServerMnemonic()

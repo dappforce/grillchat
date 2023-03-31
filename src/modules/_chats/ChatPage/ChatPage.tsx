@@ -8,7 +8,8 @@ import { getSpaceId } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import Image, { ImageProps } from 'next/image'
 import { useEffect } from 'react'
-import { HiOutlineChevronLeft } from 'react-icons/hi'
+import { HiOutlineChevronLeft } from 'react-icons/hi2'
+import ChatPageNavbarExtension from './ChatPageNavbarExtension'
 
 export default function ChatPage({ postId }: { postId: string }) {
   const { data: post } = getPostQuery.useQuery(postId)
@@ -39,6 +40,7 @@ export default function ChatPage({ postId }: { postId: string }) {
         ),
       }}
     >
+      <ChatPageNavbarExtension />
       <ChatRoom
         spaceId={getSpaceId()}
         postId={postId}

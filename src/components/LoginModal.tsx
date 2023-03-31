@@ -1,8 +1,10 @@
+import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import { useMyAccount } from '@/stores/my-account'
+import { isTouchDevice } from '@/utils/device'
 import { SyntheticEvent, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Button from './Button'
-import CaptchaModal from './CaptchaModal'
+import CaptchaInvisible from './captcha/CaptchaInvisible'
 import TextArea from './inputs/TextArea'
 import Modal, { ModalFunctionalityProps } from './Modal'
 import Toast from './Toast'
@@ -21,7 +23,10 @@ export default function LoginModal({
   const login = useMyAccount((state) => state.login)
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  const [isOpenCaptchaModal, setIsOpenCaptchaModal] = useState(false)
+  const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
+  const { mutateAsync: loginAndRequestToken, isLoading: loadingRequestToken } =
+    useLoginAndRequestToken()
+  const isLoading = loadingRequestToken || hasStartCaptcha
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
@@ -44,55 +49,59 @@ export default function LoginModal({
   const desc =
     'To access GrillChat, you need a private key. If you do not have one, just write your first chat message, and you will be given one.'
 
-  const openCaptchaModal = () => {
-    setIsOpenCaptchaModal(true)
-    props.closeModal()
-  }
-  const closeCaptchaModal = () => {
-    setIsOpenCaptchaModal(false)
-    props.openModal()
-  }
-
   return (
-    <>
-      <Modal
-        {...props}
-        withFooter
-        initialFocus={inputRef}
-        title='🔐 Login'
-        withCloseButton
-        description={desc}
-      >
-        <form onSubmit={onSubmit} className='mt-2 flex flex-col gap-4'>
-          <TextArea
-            ref={inputRef}
-            value={privateKey}
-            rows={3}
-            size='sm'
-            className='bg-background'
-            onChange={(e) =>
-              setPrivateKey((e.target as HTMLTextAreaElement).value)
-            }
-            placeholder='Enter your private key'
-          />
-          <Button disabled={!privateKey} size='lg'>
-            Login
-          </Button>
-          <Button
-            variant='primaryOutline'
-            type='button'
-            size='lg'
-            onClick={openCaptchaModal}
-          >
-            Create an account
-          </Button>
-        </form>
-      </Modal>
-      <CaptchaModal
-        isOpen={isOpenCaptchaModal}
-        closeModal={closeCaptchaModal}
-        onSubmit={() => props.closeModal()}
-      />
-    </>
+    <Modal
+      {...props}
+      withFooter
+      initialFocus={isTouchDevice() ? undefined : inputRef}
+      title='🔐 Login'
+      withCloseButton
+      description={desc}
+    >
+      <form onSubmit={onSubmit} className='mt-2 flex flex-col gap-4'>
+        <TextArea
+          ref={inputRef}
+          value={privateKey}
+          rows={3}
+          size='sm'
+          className='bg-background'
+          onChange={(e) =>
+            setPrivateKey((e.target as HTMLTextAreaElement).value)
+          }
+          placeholder='Enter your private key'
+        />
+        <Button disabled={!privateKey} size='lg'>
+          Login
+        </Button>
+        <div className='w-full'>
+          <CaptchaInvisible>
+            {(runCaptcha, termsAndService) => {
+              return (
+                <>
+                  <Button
+                    variant='primaryOutline'
+                    type='button'
+                    size='lg'
+                    className='w-full'
+                    isLoading={isLoading}
+                    onClick={async () => {
+                      setHasStartCaptcha(true)
+                      const token = await runCaptcha()
+                      if (!token) return
+                      setHasStartCaptcha(false)
+                      await loginAndRequestToken({ captchaToken: token })
+                      props.closeModal()
+                    }}
+                  >
+                    Create an account
+                  </Button>
+                  {termsAndService('mt-2')}
+                </>
+              )
+            }}
+          </CaptchaInvisible>
+        </div>
+      </form>
+    </Modal>
   )
 }

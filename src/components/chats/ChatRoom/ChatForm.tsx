@@ -1,8 +1,12 @@
 import Send from '@/assets/icons/send.svg'
 import { buttonStyles } from '@/components/Button'
-import CaptchaModal from '@/components/CaptchaModal'
+import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea from '@/components/inputs/TextArea'
 import Toast from '@/components/Toast'
+import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/chat'
+import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
+import useToastError from '@/hooks/useToastError'
+import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { getPostQuery } from '@/services/api/query'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
@@ -16,15 +20,13 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
-import { IoWarningOutline } from 'react-icons/io5'
+import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
   spaceId: string
   onSubmit?: () => void
 }
-
-const ESTIMATED_ENERGY_FOR_ONE_TX = 100_000_000
 
 function processMessage(message: string) {
   return message.trim()
@@ -49,7 +51,15 @@ export default function ChatForm({
   )
   const [isRequestingEnergy, setIsRequestingEnergy] = useState(false)
 
-  const [isOpenCaptcha, setIsOpenCaptcha] = useState(false)
+  const {
+    mutateAsync: requestTokenAndSendMessage,
+    error: errorRequestTokenAndSendMessage,
+  } = useRequestTokenAndSendMessage()
+  useToastError<ApiRequestTokenResponse>(
+    errorRequestTokenAndSendMessage,
+    (e) => e.message
+  )
+
   const [message, setMessage] = useState('')
   const { mutate: sendMessage, error } = useSendMessage()
 
@@ -66,7 +76,9 @@ export default function ChatForm({
       toast.custom((t) => (
         <Toast
           t={t}
-          icon={(classNames) => <IoWarningOutline className={classNames} />}
+          icon={(classNames) => (
+            <HiOutlineExclamationTriangle className={classNames} />
+          )}
           title='Message failed to send, please try again'
           description={error?.message}
         />
@@ -79,7 +91,7 @@ export default function ChatForm({
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
   const isDisabled = !processMessage(message)
 
-  const handleSubmit = (e?: SyntheticEvent) => {
+  const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
     e?.preventDefault()
     if (
       shouldSendMessage &&
@@ -102,68 +114,76 @@ export default function ChatForm({
       } else {
         sendEvent('send first message', { chatId: postId, name: topicName })
       }
-      setIsOpenCaptcha(true)
+      if (!captchaToken) return
+      setMessage('')
+      requestTokenAndSendMessage({
+        captchaToken,
+        message: processMessage(message),
+        rootPostId: postId,
+        spaceId,
+      })
+      setIsRequestingEnergy(true)
+      sendEvent('request energy and send message')
     }
   }
 
   return (
-    <>
-      <form
-        onSubmit={handleSubmit}
-        {...props}
-        className={cx('flex w-full', className)}
-      >
-        <TextArea
-          onEnterToSubmitForm={handleSubmit}
-          ref={textAreaRef}
-          value={message}
-          autoFocus
-          onChange={(e) => setMessage((e.target as any).value)}
-          placeholder='Message...'
-          rows={1}
-          autoComplete='off'
-          autoCapitalize='sentences'
-          autoCorrect='off'
-          spellCheck='false'
-          variant='fill'
-          pill
-          rightElement={(classNames) => (
-            <div
-              onTouchEnd={(e) => {
-                if (shouldSendMessage) {
-                  e.preventDefault()
-                  handleSubmit()
-                }
-              }}
-              onClick={handleSubmit}
-              className={cx(
-                buttonStyles({
-                  size: 'circle',
-                  variant: isDisabled ? 'mutedOutline' : 'primary',
-                }),
-                classNames,
-                'cursor-pointer'
+    <CaptchaInvisible>
+      {(runCaptcha) => {
+        const onSubmit = async (e?: SyntheticEvent) => {
+          if (shouldSendMessage) {
+            handleSubmit(null, e)
+            return
+          }
+          const token = await runCaptcha()
+          handleSubmit(token, e)
+        }
+
+        return (
+          <form
+            onSubmit={onSubmit}
+            {...props}
+            className={cx('flex w-full', className)}
+          >
+            <TextArea
+              onEnterToSubmitForm={onSubmit}
+              ref={textAreaRef}
+              value={message}
+              autoFocus
+              onChange={(e) => setMessage((e.target as any).value)}
+              placeholder='Message...'
+              rows={1}
+              autoComplete='off'
+              autoCapitalize='sentences'
+              autoCorrect='off'
+              spellCheck='false'
+              variant='fill'
+              pill
+              rightElement={(classNames) => (
+                <div
+                  onTouchEnd={(e) => {
+                    if (shouldSendMessage) {
+                      e.preventDefault()
+                      onSubmit()
+                    }
+                  }}
+                  onClick={onSubmit}
+                  className={cx(
+                    buttonStyles({
+                      size: 'circle',
+                      variant: isDisabled ? 'mutedOutline' : 'primary',
+                    }),
+                    classNames,
+                    'cursor-pointer'
+                  )}
+                >
+                  <Send className='relative top-px h-4 w-4' />
+                </div>
               )}
-            >
-              <Send className='relative top-px h-4 w-4' />
-            </div>
-          )}
-        />
-      </form>
-      <CaptchaModal
-        onSubmit={() => {
-          onSubmit?.()
-          setMessage('')
-          setIsRequestingEnergy(true)
-        }}
-        isOpen={isOpenCaptcha}
-        closeModal={() => setIsOpenCaptcha(false)}
-        messageData={{
-          message: processMessage(message),
-          rootPostId: postId,
-          spaceId,
-        }}
-      />
-    </>
+            />
+          </form>
+        )
+      }}
+    </CaptchaInvisible>
   )
 }
