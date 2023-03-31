@@ -42,7 +42,6 @@ export default function LaunchCommunityPage() {
           <Image
             className='w-full max-w-sm rounded-full'
             priority
-            quality={100}
             src={LaunchCommunityImage}
             alt=''
           />
@@ -74,7 +73,6 @@ export default function LaunchCommunityPage() {
             <div className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]' />
             <Image
               src={CustomizeImage}
-              quality={100}
               alt=''
               className='relative w-full max-w-sm'
             />
@@ -96,7 +94,6 @@ export default function LaunchCommunityPage() {
           </p>
           <Image
             src={SetupChatImage}
-            quality={100}
             alt=''
             className='w-full max-w-sm rounded-2xl'
           />
@@ -112,7 +109,6 @@ export default function LaunchCommunityPage() {
             <div className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]' />
             <Image
               src={FeaturesImage}
-              quality={100}
               alt=''
               className='relative w-full max-w-sm'
             />
