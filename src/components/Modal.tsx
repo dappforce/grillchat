@@ -149,7 +149,7 @@ export default function Modal({
                 </div>
 
                 {withFooter && (
-                  <div className='flex items-center justify-center gap-4 border-t border-background-lightest px-6 py-5 text-text-muted'>
+                  <div className='flex items-center justify-center gap-4 border-t border-background-lightest px-6 py-5 text-sm text-text-muted'>
                     <LinkText
                       href='https://polkaverse.com/legal/privacy'
                       className='font-normal'
