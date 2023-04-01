@@ -53,7 +53,7 @@ jobs:
             GH_USER_ID_SALT=${{ secrets.USER_ID_SALT }}
             GH_SERVER_MNEMONIC=${{ secrets.SERVER_ENERGY_MNEMONIC }}
             GH_CAPTCHA_SECRET=${{ secrets.CAPTCHA_SECRET }}
-            GH_NEXT_PUBLIC_CAPTCHA_SITE_KEY=a1b1d585-c9c4-4eff-a380-39484191bc82
+            GH_NEXT_PUBLIC_CAPTCHA_SITE_KEY=6LcnGU0lAAAAANPvuR2I3gZswHpX1GJnpJG2ocVb
             GH_NEXT_PUBLIC_BASE_URL=https://grill.chat/
           tags: |
             ${{ env.image }}
