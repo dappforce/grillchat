@@ -21,7 +21,7 @@
     "@dicebear/core": "^5.3.4",
     "@floating-ui/react": "^0.22.2",
     "@headlessui/react": "^1.7.11",
-    "@subsocial/api": "0.8.6",
+    "@subsocial/api": "0.8.7",
     "@tanstack/react-query": "^4.24.10",
     "@types/node": "18.14.1",
     "@types/randomcolor": "^0.5.7",
