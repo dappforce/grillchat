@@ -7,8 +7,10 @@ import { ComponentProps, useEffect, useRef, useState } from 'react'
 import Button from '../../Button'
 import Container from '../../Container'
 import Logo from '../../Logo'
-import ProfileAvatar from './ProfileAvatar'
 
+const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
+  ssr: false,
+})
 const LoginModal = dynamic(() => import('@/components/LoginModal'), {
   ssr: false,
 })
