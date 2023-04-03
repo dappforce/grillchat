@@ -3,8 +3,8 @@ import { useSaveFile } from '@/services/api/mutations'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
+import { IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
-import { IpfsContent } from '@subsocial/api/substrate/wrappers'
 import { useQueryClient } from '@tanstack/react-query'
 import { generateOptimisticId } from '../utils'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
@@ -33,7 +33,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         tx: substrateApi.tx.posts.createPost(
           params.spaceId,
           { Comment: { parentId: null, rootPostId: params.rootPostId } },
-          IpfsContent(cid)
+          IpfsWrapper(cid)
         ),
         summary: 'Sending message',
       }
