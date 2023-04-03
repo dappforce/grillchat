@@ -15,7 +15,7 @@ const panelStyles = cva(
   cx(
     'relative w-full overflow-hidden rounded-[20px] bg-background-light',
     'text-left align-middle shadow-xl',
-    'transform transition-transform',
+    'transform transition-all',
     'flex flex-col'
   ),
   {
