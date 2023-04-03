@@ -15,3 +15,10 @@ export function getCrustIpfsAuth() {
 export function getUserIdSalt() {
   return checkEnv(process.env.USER_ID_SALT, 'USER_ID_SALT', false)
 }
+
+export function getIpfsPinUrl() {
+  return (
+    checkEnv(process.env.IPFS_PIN_URL, 'IPFS_PIN_URL') ||
+    'https://pin.cloud3.cc/psa'
+  )
+}
