@@ -31,7 +31,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
       return {
         tx: substrateApi.tx.posts.createPost(
-          params.spaceId,
+          null,
           { Comment: { parentId: null, rootPostId: params.rootPostId } },
           IpfsContent(cid)
         ),
