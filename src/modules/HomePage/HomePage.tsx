@@ -8,7 +8,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getSpaceId } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
-import { createPostSlug } from '@subsocial/utils/slugify'
+import { createSlug } from '@/utils/slug'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
@@ -106,7 +106,7 @@ function ChatPreviewContainer({ postId }: { postId: string }) {
         href: {
           pathname: '/c/[topic]',
           query: {
-            topic: createPostSlug(postId, { title: content?.title }),
+            topic: createSlug(postId, { title: content?.title }),
           },
         },
       }}
