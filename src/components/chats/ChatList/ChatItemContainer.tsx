@@ -2,7 +2,6 @@ import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import type { PostData } from '@subsocial/api/types'
-import { toSubsocialAddress } from '@subsocial/utils/accounts'
 import { ComponentProps } from 'react'
 import ChatItem from '../ChatItem'
 
@@ -17,7 +16,7 @@ export default function ChatItemContainer({
   if (!post?.content?.body) return null
 
   const ownerId = post.struct.ownerId
-  const senderAddress = toSubsocialAddress(ownerId) ?? ''
+  const senderAddress = ownerId ?? ''
 
   const isMyMessage = address === senderAddress
   const isSent = !isOptimisticId(post.id)

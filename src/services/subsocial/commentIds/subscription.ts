@@ -1,6 +1,5 @@
 import { getPostQuery, getPosts } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
-import { toSubsocialAddress } from '@subsocial/utils/accounts'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
 import { extractOptimisticIdData, isOptimisticId } from '../utils'
@@ -170,8 +169,7 @@ function filterOptimisticIds(
     const foundIndex = mutatedNewPosts.findIndex((post) => {
       return (
         post.content?.body === idData.message &&
-        toSubsocialAddress(post.struct.ownerId) ===
-          toSubsocialAddress(idData.address)
+        post.struct.ownerId === idData.address
       )
     })
     const isFound = foundIndex !== -1
