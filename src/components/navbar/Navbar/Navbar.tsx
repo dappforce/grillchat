@@ -1,12 +1,12 @@
+import Button from '@/components/Button'
+import Container from '@/components/Container'
+import Logo from '@/components/Logo'
 import usePrevious from '@/hooks/usePrevious'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
-import Button from '../../Button'
-import Container from '../../Container'
-import Logo from '../../Logo'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
