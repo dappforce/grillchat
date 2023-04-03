@@ -1,11 +1,10 @@
 import { generatePromiseQueue } from '@/utils/promise'
 import type { ApiPromise } from '@polkadot/api'
-import { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
+import type { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 import { makeCombinedCallback } from '../base'
 import { MutationConfig } from '../types'
 import { getConnectionConfig, getGlobalTxCallbacks } from './config'
-import { getSubsocialApi } from './connection'
 import {
   DefaultSubsocialMutationConfig,
   OptimisticData,
@@ -43,6 +42,7 @@ export function useSubsocialMutation<Param, Context>(
     )
     txCallbacks?.onStart()
 
+    const { getSubsocialApi } = await import('./connection')
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
     const ipfsApi = subsocialApi.ipfs

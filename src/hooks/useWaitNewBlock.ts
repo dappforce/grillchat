@@ -1,4 +1,4 @@
-import { getSubsocialApi } from '@/subsocial-query/subsocial'
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { useCallback } from 'react'
 
 export default function useWaitNewBlock() {

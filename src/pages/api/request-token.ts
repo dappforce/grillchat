@@ -1,4 +1,4 @@
-import { getSubsocialApi } from '@/subsocial-query/subsocial'
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCaptchaSecret, getServerMnemonic } from '@/utils/env/server'
 import { Keyring } from '@polkadot/keyring'
 import { waitReady } from '@polkadot/wasm-crypto'

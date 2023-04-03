@@ -2,7 +2,7 @@ import { poolQuery } from '@/subsocial-query'
 import {
   createSubsocialQuery,
   SubsocialParam,
-} from '@/subsocial-query/subsocial'
+} from '@/subsocial-query/subsocial/query'
 
 const getPostsBySpaceId = poolQuery<
   SubsocialParam<string>,
