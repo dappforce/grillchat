@@ -84,7 +84,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
             customContent(authComponent)
           ) : (
             <div className='flex items-center justify-between'>
-              <Link href='/'>
+              <Link href='/' aria-label='Back to home'>
                 <Logo className='text-2xl' />
               </Link>
               <div className='flex items-center'>{authComponent}</div>
