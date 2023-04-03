@@ -3,5 +3,5 @@ export function getIpfsContentUrl(cid: string) {
 }
 
 export function IpfsWrapper(cid?: string) {
-  return cid ? { None: null } : { IPFS: cid }
+  return cid ? { IPFS: cid } : { None: null }
 }
