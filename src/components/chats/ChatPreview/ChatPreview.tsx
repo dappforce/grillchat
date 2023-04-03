@@ -5,13 +5,13 @@ import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import React, { ComponentProps } from 'react'
-import ChatLastMessageTime from './ChatLastMessageTime'
+import ChatLastMessage from './ChatLastMessage'
 
 // dynamic import to prevent hydration mismatch
 const ChatUnreadCount = dynamic(() => import('./ChatUnreadCount'), {
   ssr: false,
 })
-const ChatLastMessage = dynamic(() => import('./ChatLastMessage'), {
+const ChatLastMessageTime = dynamic(() => import('./ChatLastMessageTime'), {
   ssr: false,
 })
 
