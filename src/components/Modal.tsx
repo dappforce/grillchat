@@ -15,7 +15,7 @@ const panelStyles = cva(
   cx(
     'relative w-full overflow-hidden rounded-[20px] bg-background-light',
     'text-left align-middle shadow-xl',
-    'transform transition-transform',
+    'transform transition-all',
     'flex flex-col'
   ),
   {
@@ -24,6 +24,7 @@ const panelStyles = cva(
         sm: cx('max-w-sm'),
         md: cx('max-w-md'),
         lg: cx('max-w-lg'),
+        'full-screen': cx('max-w-screen-lg'),
       },
     },
     defaultVariants: { size: 'lg' },
