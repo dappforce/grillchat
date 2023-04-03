@@ -1,5 +1,4 @@
 import { getPostQuery, getPosts } from '@/services/api/query'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils/accounts'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
@@ -23,6 +22,9 @@ const subscription = (
   subscribedPostIds.add(postId)
 
   let unsub: Promise<() => void> = (async () => {
+    const { getSubsocialApi } = await import(
+      '@/subsocial-query/subsocial/connection'
+    )
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
 
