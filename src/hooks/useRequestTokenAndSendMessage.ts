@@ -1,7 +1,6 @@
 import { useRequestToken } from '@/services/api/mutations'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
-import { generateAccount } from '@/utils/account'
 import { useMutation } from '@tanstack/react-query'
 
 export default function useRequestTokenAndSendMessage() {
@@ -18,10 +17,9 @@ export default function useRequestTokenAndSendMessage() {
     const { captchaToken, ...sendMessageParams } = params
     let usedAddress: string = address ?? ''
     if (!address) {
-      const { publicKey, secretKey } = await generateAccount()
-      usedAddress = publicKey
-      const successLogin = await login(secretKey)
-      if (!successLogin) throw new Error('Failed to login')
+      const address = await login()
+      if (!address) throw new Error('Failed to login')
+      usedAddress = address
     }
 
     await requestToken({ address: usedAddress, captchaToken })
