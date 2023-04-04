@@ -3,6 +3,7 @@ import FeaturesImage from '@/assets/graphics/features.png'
 import LaunchCommunityImage from '@/assets/graphics/launch-community.png'
 import SetupChatImage from '@/assets/graphics/setup-chat.png'
 import Button from '@/components/Button'
+import ClickableImage from '@/components/ClickableImage'
 import Container from '@/components/Container'
 import FixedBottomActionLayout from '@/components/layouts/FixedBottomActionLayout'
 import LinkText from '@/components/LinkText'
@@ -71,7 +72,7 @@ export default function LaunchCommunityPage() {
           </p>
           <div className='relative !z-0'>
             <div className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]' />
-            <Image
+            <ClickableImage
               src={CustomizeImage}
               alt=''
               className='relative w-full max-w-sm'

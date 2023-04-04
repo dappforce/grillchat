@@ -4,6 +4,7 @@ import Embed2Image from '@/assets/graphics/embed-2.png'
 import EmbedImage from '@/assets/graphics/embed.png'
 import MigrateImage from '@/assets/graphics/migrate.png'
 import Button from '@/components/Button'
+import ClickableImage from '@/components/ClickableImage'
 import Container from '@/components/Container'
 import FixedBottomActionLayout from '@/components/layouts/FixedBottomActionLayout'
 import { useSendEvent } from '@/stores/analytics'
@@ -54,12 +55,12 @@ export default function IntegrateChatPage() {
           </p>
           <div className='relative !z-0 flex flex-col items-center gap-4'>
             <div className='visible absolute top-1/2 !z-0 w-full -translate-y-1/2 rounded-full bg-background-accent pt-[100%] blur-[225px]' />
-            <Image
+            <ClickableImage
               src={EmbedImage}
               alt=''
               className='relative w-full max-w-2xl'
             />
-            <Image
+            <ClickableImage
               src={Embed2Image}
               alt=''
               className='relative w-full max-w-2xl'
