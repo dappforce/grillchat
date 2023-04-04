@@ -4,7 +4,6 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
-import { getSpaceId } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import Image, { ImageProps } from 'next/image'
 import { useEffect } from 'react'
@@ -42,7 +41,6 @@ export default function ChatPage({ postId }: { postId: string }) {
     >
       <ChatPageNavbarExtension />
       <ChatRoom
-        spaceId={getSpaceId()}
         postId={postId}
         asContainer
         className='flex-1 overflow-hidden'
