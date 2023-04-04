@@ -1,6 +1,5 @@
 import { useRequestToken } from '@/services/api/mutations'
 import { useMyAccount } from '@/stores/my-account'
-import { generateAccount } from '@/utils/account'
 import { useMutation } from '@tanstack/react-query'
 
 export default function useLoginAndRequestToken() {
@@ -11,11 +10,10 @@ export default function useLoginAndRequestToken() {
     params: Omit<Parameters<typeof requestToken>[0], 'address'>
   ) => {
     const { captchaToken } = params
-    const { publicKey, secretKey } = await generateAccount()
-    const successLogin = await login(secretKey)
-    if (!successLogin) throw new Error('Failed to login')
+    const address = await login()
+    if (!address) throw new Error('Failed to login')
 
-    await requestToken({ address: publicKey, captchaToken })
+    await requestToken({ address, captchaToken })
   }
 
   return useMutation(loginAndRequestToken)
