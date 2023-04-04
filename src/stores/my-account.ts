@@ -33,7 +33,7 @@ type Actions = {
   logout: () => void
   _subscribeEnergy: () => Promise<void>
   _setSessionKey: (session: Session) => Promise<void>
-  _syncSessionKey: (key?: Session) => Promise<void>
+  _syncSessionKey: () => Promise<void>
   _syncSessionWithLocalStorage: () => Promise<void>
   _getSecretKeyForLogin: () => Promise<string>
 }
