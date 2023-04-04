@@ -23,9 +23,9 @@ export default function ClickableImage({ ...props }: ClickableImageProps) {
       >
         <Image
           {...props}
-          className='w-full max-w-screen-xl'
+          className='w-full max-w-screen-lg'
           alt={props.alt ?? ''}
-          width={1280}
+          width={1024}
         />
       </Modal>
     </>

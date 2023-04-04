@@ -24,7 +24,7 @@ const panelStyles = cva(
         sm: cx('max-w-sm'),
         md: cx('max-w-md'),
         lg: cx('max-w-lg'),
-        'full-screen': cx('max-w-screen-xl'),
+        'full-screen': cx('max-w-screen-lg'),
       },
     },
     defaultVariants: { size: 'lg' },
