@@ -54,6 +54,7 @@ export type PopOverProps = VariantProps<typeof panelStyles> & {
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   }
   triggerOnHover?: boolean
+  initialFocus?: Parameters<typeof FloatingFocusManager>[0]['initialFocus']
 }
 
 export default function PopOver({
@@ -70,6 +71,7 @@ export default function PopOver({
   triggerClassName,
   triggerOnHover,
   manualTrigger,
+  initialFocus,
 }: PopOverProps) {
   const [_isOpen, _setIsOpen] = useState(false)
   const isOpen = manualTrigger?.isOpen ?? _isOpen
@@ -121,7 +123,11 @@ export default function PopOver({
         {trigger}
       </TriggerElement>
       {isOpen && (
-        <FloatingFocusManager context={context} modal={false}>
+        <FloatingFocusManager
+          initialFocus={initialFocus}
+          context={context}
+          modal={false}
+        >
           <Transition
             enter='transition duration-100 ease-out'
             enterFrom='transform scale-95 opacity-0'
