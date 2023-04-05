@@ -1,6 +1,8 @@
+import ColorModeToggler from '@/components/ColorModeToggler'
 import usePrevious from '@/hooks/usePrevious'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
@@ -18,6 +20,7 @@ export type NavbarProps = ComponentProps<'div'> & {
 }
 
 export default function Navbar({ customContent, ...props }: NavbarProps) {
+  const theme = useTheme()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
@@ -85,7 +88,10 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
               <Link href='/'>
                 <Logo className='text-2xl' />
               </Link>
-              <div className='flex items-center'>{authComponent}</div>
+              <div className='flex items-center gap-4'>
+                <ColorModeToggler />
+                {authComponent}
+              </div>
             </div>
           )}
         </Container>
