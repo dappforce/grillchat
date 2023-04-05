@@ -1,3 +1,4 @@
+import useGetTheme from '@/hooks/useGetTheme'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { HiMoon, HiSun } from 'react-icons/hi2'
@@ -6,7 +7,8 @@ import Button, { ButtonProps } from './Button'
 export type ColorModeTogglerProps = ButtonProps
 
 export default function ColorModeToggler({ ...props }: ColorModeTogglerProps) {
-  const { systemTheme, theme, setTheme } = useTheme()
+  const { setTheme } = useTheme()
+  const theme = useGetTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     setMounted(true)
@@ -14,11 +16,8 @@ export default function ColorModeToggler({ ...props }: ColorModeTogglerProps) {
 
   if (!mounted) return null
 
-  const isDark =
-    theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
-
   const handleClick = (e: any) => {
-    setTheme(isDark ? 'light' : 'dark')
+    setTheme(theme === 'dark' ? 'light' : 'dark')
     props.onClick?.(e)
   }
 
@@ -29,7 +28,7 @@ export default function ColorModeToggler({ ...props }: ColorModeTogglerProps) {
       {...props}
       onClick={handleClick}
     >
-      {isDark ? <HiMoon /> : <HiSun />}
+      {theme === 'dark' ? <HiMoon /> : <HiSun />}
     </Button>
   )
 }

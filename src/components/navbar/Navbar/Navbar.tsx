@@ -2,7 +2,6 @@ import ColorModeToggler from '@/components/ColorModeToggler'
 import usePrevious from '@/hooks/usePrevious'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
@@ -16,11 +15,13 @@ const LoginModal = dynamic(() => import('@/components/LoginModal'), {
 })
 
 export type NavbarProps = ComponentProps<'div'> & {
-  customContent?: (authComponent: JSX.Element) => JSX.Element
+  customContent?: (
+    authComponent: JSX.Element,
+    colorModeToggler: JSX.Element
+  ) => JSX.Element
 }
 
 export default function Navbar({ customContent, ...props }: NavbarProps) {
-  const theme = useTheme()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
@@ -68,6 +69,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
     )
   }
   const authComponent = renderAuthComponent()
+  const colorModeToggler = <ColorModeToggler />
 
   return (
     <>
@@ -82,14 +84,14 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
           className={cx('grid h-14 items-center py-2', props.className)}
         >
           {customContent ? (
-            customContent(authComponent)
+            customContent(authComponent, colorModeToggler)
           ) : (
             <div className='flex items-center justify-between'>
               <Link href='/'>
                 <Logo className='text-2xl' />
               </Link>
               <div className='flex items-center gap-4'>
-                <ColorModeToggler />
+                {colorModeToggler}
                 {authComponent}
               </div>
             </div>

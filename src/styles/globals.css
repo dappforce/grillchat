@@ -7,6 +7,8 @@
   --background-warning: 225 181 62;
   --background-accent: 104 4 231;
   --text: 0 0 0;
+  --text-on-primary: 255 255 255;
+  --text-muted-on-primary: 163 172 190;
   --text-muted: 102 115 143;
   --text-primary: 136 131 232;
   --text-secondary: 130 161 248;
@@ -24,6 +26,8 @@
   --background-accent: 104 4 231;
   --text: 255 255 255;
   --text-muted: 163 172 190;
+  --text-on-primary: 255 255 255;
+  --text-muted-on-primary: 163 172 190;
   --text-primary: 136 131 232;
   --text-secondary: 130 161 248;
   --text-dark: 17 23 41;

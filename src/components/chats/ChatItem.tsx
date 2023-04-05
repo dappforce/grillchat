@@ -1,3 +1,4 @@
+import useGetTheme from '@/hooks/useGetTheme'
 import { useSendEvent } from '@/stores/analytics'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
@@ -47,6 +48,7 @@ export default function ChatItem({
   cid,
   ...props
 }: ChatItemProps) {
+  const theme = useGetTheme()
   const sendEvent = useSendEvent()
 
   const [checkMarkModalState, dispatch] = useReducer(checkMarkModalReducer, {
@@ -54,7 +56,7 @@ export default function ChatItem({
     variant: '',
   })
   const relativeTime = getTimeRelativeToNow(sentDate)
-  const senderColor = generateRandomColor(senderAddress)
+  const senderColor = generateRandomColor(senderAddress, theme)
 
   const onCheckMarkClick = () => {
     const checkMarkType: CheckMarkModalVariant = isSent
@@ -79,7 +81,9 @@ export default function ChatItem({
       <div
         className={cx(
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl py-1.5 px-2.5',
-          isMyMessage ? 'bg-background-primary' : 'bg-background-light'
+          isMyMessage
+            ? 'bg-background-primary text-text-on-primary'
+            : 'bg-background-light'
         )}
       >
         {!isMyMessage && (
@@ -116,7 +120,9 @@ export default function ChatItem({
           <div
             className={cx('flex items-center gap-1', isMyMessage && 'self-end')}
           >
-            <span className='text-xs text-text-muted'>{relativeTime}</span>
+            <span className='text-xs text-text-muted-on-primary'>
+              {relativeTime}
+            </span>
             <Button
               variant='transparent'
               size='noPadding'
@@ -124,9 +130,11 @@ export default function ChatItem({
               onClick={onCheckMarkClick}
             >
               {isSent ? (
-                <IoCheckmarkDoneOutline className='text-sm' />
+                <IoCheckmarkDoneOutline className='text-sm text-text-on-primary' />
               ) : (
-                <IoCheckmarkOutline className={cx('text-sm text-text-muted')} />
+                <IoCheckmarkOutline
+                  className={cx('text-sm text-text-muted-on-primary')}
+                />
               )}
             </Button>
           </div>

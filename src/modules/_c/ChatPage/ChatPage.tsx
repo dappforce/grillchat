@@ -27,14 +27,17 @@ export default function ChatPage({ postId }: { postId: string }) {
   return (
     <DefaultLayout
       navbarProps={{
-        customContent: (authComponent) => (
+        customContent: (authComponent, colorModeToggler) => (
           <div className='flex items-center justify-between gap-4'>
             <NavbarChatInfo
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
               messageCount={data?.length ?? 0}
               topic={content?.title ?? ''}
             />
-            {authComponent}
+            <div className='flex items-center gap-4'>
+              {colorModeToggler}
+              {authComponent}
+            </div>
           </div>
         ),
       }}

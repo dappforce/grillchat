@@ -21,6 +21,9 @@ module.exports = {
 
         text: 'rgb(var(--text) / <alpha-value>)',
         'text-muted': 'rgb(var(--text-muted) / <alpha-value>)',
+        'text-on-primary': 'rgb(var(--text-on-primary) / <alpha-value>)',
+        'text-muted-on-primary':
+          'rgb(var(--text-muted-on-primary) / <alpha-value>)',
         'text-primary': 'rgb(var(--text-primary) / <alpha-value>)',
         'text-secondary': 'rgb(var(--text-secondary) / <alpha-value>)',
         'text-dark': 'rgb(var(--text-dark) / <alpha-value>)',
