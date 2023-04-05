@@ -2,7 +2,7 @@ import { createQueryKeys, QueryConfig } from '@/subsocial-query'
 import {
   useSubsocialQueries,
   useSubsocialQuery,
-} from '@/subsocial-query/subsocial'
+} from '@/subsocial-query/subsocial/query'
 import { useRef } from 'react'
 import {
   useSubscribeCommentIdsByPostId,

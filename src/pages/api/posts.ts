@@ -1,4 +1,4 @@
-import { getSubsocialApi } from '@/subsocial-query/subsocial'
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { MinimalUsageQueue } from '@/utils/data-structure'
 import { PostData } from '@subsocial/api/types'
 import { NextApiRequest, NextApiResponse } from 'next'

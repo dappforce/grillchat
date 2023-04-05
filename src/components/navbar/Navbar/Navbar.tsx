@@ -1,14 +1,16 @@
+import Button from '@/components/Button'
+import Container from '@/components/Container'
+import Logo from '@/components/Logo'
 import usePrevious from '@/hooks/usePrevious'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
-import Button from '../../Button'
-import Container from '../../Container'
-import Logo from '../../Logo'
-import ProfileAvatar from './ProfileAvatar'
 
+const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
+  ssr: false,
+})
 const LoginModal = dynamic(() => import('@/components/LoginModal'), {
   ssr: false,
 })
@@ -82,7 +84,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
             customContent(authComponent)
           ) : (
             <div className='flex items-center justify-between'>
-              <Link href='/'>
+              <Link href='/' aria-label='Back to home'>
                 <Logo className='text-2xl' />
               </Link>
               <div className='flex items-center'>{authComponent}</div>

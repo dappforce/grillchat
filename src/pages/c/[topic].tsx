@@ -2,10 +2,10 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import ChatPage from '@/modules/_c/ChatPage'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
-import { getSubsocialApi } from '@/subsocial-query/subsocial'
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getSpaceId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
-import { createPostSlug, getPostIdFromSlug } from '@subsocial/utils/slugify'
+import { createSlug, getIdFromSlug } from '@/utils/slug'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
 import { getPostsFromCache } from '../api/posts'
@@ -17,7 +17,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getPostsFromCache(postIds)
 
   const paths = posts.map((post) => ({
-    params: { topic: createPostSlug(post.id, post.content) },
+    params: { topic: createSlug(post.id, post.content) },
   }))
 
   return {
@@ -34,7 +34,7 @@ export const getStaticProps = getCommonStaticProps<{
   (data) => ({ head: { disableZoom: true, title: data.title } }),
   async (context) => {
     const topic = context.params?.topic as string
-    const postId = getPostIdFromSlug(topic)
+    const postId = getIdFromSlug(topic)
     if (!postId) return undefined
 
     const queryClient = new QueryClient()

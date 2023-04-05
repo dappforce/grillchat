@@ -55,14 +55,13 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
   login: async (secretKey, isInitialization) => {
     const { _syncSessionKey, _getSecretKeyForLogin } = get()
-    const { toSubsocialAddress } = await import('@subsocial/utils')
     let address: string = ''
     try {
       secretKey = secretKey || (await _getSecretKeyForLogin())
 
       const signer = await loginWithSecretKey(secretKey)
       const encodedSecretKey = encodeSecretKey(secretKey)
-      address = toSubsocialAddress(signer.address)!
+      address = signer.address
       set({
         address,
         signer,
@@ -83,7 +82,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     _unsubscribeEnergy()
     if (!address) return
 
-    const { getSubsocialApi } = await import('@/subsocial-query/subsocial')
+    const { getSubsocialApi } = await import(
+      '@/subsocial-query/subsocial/connection'
+    )
 
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
@@ -112,7 +113,6 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     return secretKey
   },
   _setSessionKey: async ({ address, encodedSecretKey, isNewSecretKey }) => {
-    const { toSubsocialAddress } = await import('@subsocial/utils')
     const secretKey = decodeSecretKey(encodedSecretKey)
     const isNewSessionKey =
       isNewSecretKey === undefined ? get()._isNewSessionKey : isNewSecretKey
@@ -121,7 +121,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       _isNewSessionKey: isNewSessionKey,
     })
     localStorage.setItem(SESSION_STORAGE_KEY, encodedSecretKey)
-    useAnalytics.getState().setUserId(toSubsocialAddress(address)!)
+    useAnalytics.getState().setUserId(address)
   },
   _syncSessionKey: async () => {
     const { encodedSecretKey, address, _setSessionKey } = get()
