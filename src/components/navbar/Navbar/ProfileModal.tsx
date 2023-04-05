@@ -60,6 +60,7 @@ const modalTitles: {
   about: {
     title: 'About app',
     desc: null,
+    withBackButton: true,
   },
 }
 
@@ -197,6 +198,8 @@ function AccountContent({
           <Button
             key={text}
             href={href}
+            target='_blank'
+            rel='noopener noreferrer'
             variant='transparent'
             size='noPadding'
             interactive='none'
