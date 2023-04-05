@@ -1,7 +1,6 @@
 import type { Keyring } from '@polkadot/keyring'
 
 export type Signer = ReturnType<Keyring['addFromSeed']>
-export const SUBSOCIAL_ADDRESS_FORMAT = 28
 
 async function getKeyring() {
   const { Keyring } = await import('@polkadot/keyring')
@@ -9,7 +8,6 @@ async function getKeyring() {
   await cryptoWaitReady()
 
   const keyring = new Keyring({ type: 'sr25519' })
-  keyring.setSS58Format(SUBSOCIAL_ADDRESS_FORMAT)
   return keyring
 }
 
