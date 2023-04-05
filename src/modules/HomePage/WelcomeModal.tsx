@@ -1,4 +1,6 @@
 import Button from '@/components/Button'
+import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
+import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
 import Modal, { ModalProps } from '@/components/Modal'
 import { LocalStorage } from '@/utils/storage'
@@ -35,14 +37,27 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
       }
       description={
         <span className='block text-center'>
-          Engage in discussions without fear of social persecution, as GrillChat
-          is censorship-resistant.
+          Engage in discussions anonymously without fear of social persecution.
+          Grill.chat runs on the{' '}
+          <LinkText
+            variant='primary'
+            href='https://subsocial.network/xsocial'
+            openInNewTab
+          >
+            xSocial
+          </LinkText>{' '}
+          blockchain and backs up its content to{' '}
+          <LinkText openInNewTab href='https://ipfs.tech' variant='primary'>
+            IPFS
+          </LinkText>
+          .
         </span>
       }
     >
       <Button onClick={closeModal} size='lg' className='mt-2'>
         Let&apos;s go!
       </Button>
+      <CaptchaTermsAndService className='mt-6 text-center' />
     </Modal>
   )
 }
