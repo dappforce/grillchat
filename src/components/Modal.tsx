@@ -123,7 +123,7 @@ export default function Modal({
                           <Button
                             size='circle'
                             variant='transparent'
-                            className='mr-1 text-lg'
+                            className='mr-2 -ml-2 text-lg'
                             onClick={onBackClick}
                           >
                             <HiOutlineChevronLeft />

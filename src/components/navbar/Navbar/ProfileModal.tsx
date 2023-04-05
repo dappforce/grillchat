@@ -5,6 +5,8 @@ import ShareIcon from '@/assets/icons/share.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
+import LinkText from '@/components/LinkText'
+import Logo from '@/components/Logo'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
@@ -12,7 +14,9 @@ import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getBaseUrl } from '@/utils/env/client'
+import { LocalStorage } from '@/utils/storage'
 import React, { useEffect, useState } from 'react'
+import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
 
@@ -26,7 +30,12 @@ export type ProfileModalProps = ModalFunctionalityProps & {
   notification?: NotificationControl
 }
 
-type ModalState = 'account' | 'private-key' | 'logout' | 'share-session'
+type ModalState =
+  | 'account'
+  | 'private-key'
+  | 'logout'
+  | 'share-session'
+  | 'about'
 const modalTitles: {
   [key in ModalState]: {
     title: React.ReactNode
@@ -48,6 +57,11 @@ const modalTitles: {
     desc: 'Use this link or scan the QR code to quickly log in to this account on another device.',
     withBackButton: true,
   },
+  about: {
+    title: 'About app',
+    desc: null,
+    withBackButton: true,
+  },
 }
 
 type ContentProps = {
@@ -62,6 +76,7 @@ const modalContents: {
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
+  about: AboutContent,
 }
 
 export default function ProfileModal({
@@ -109,11 +124,19 @@ type ButtonData = {
   href?: string
   notification?: NotificationControl
 }
+
+const STORAGE_KEY = 'viewed-about-app'
+const storage = new LocalStorage(() => STORAGE_KEY)
 function AccountContent({
   address,
   setCurrentState,
   notification,
 }: ContentProps) {
+  const [aboutAppNotif, setAboutAppNotif] = useState(false)
+  useEffect(() => {
+    if (storage.get() !== 'true') setAboutAppNotif(true)
+  }, [])
+
   const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = () => {
     sendEvent('click show_private_key_button')
@@ -126,6 +149,10 @@ function AccountContent({
   const onLogoutClick = () => {
     sendEvent('click log_out_button')
     setCurrentState('logout')
+  }
+  const onAboutClick = () => {
+    sendEvent('click about_app_button')
+    setCurrentState('about')
   }
 
   const buttons: ButtonData[] = [
@@ -140,6 +167,18 @@ function AccountContent({
       text: 'Suggest feature',
       icon: BulbIcon,
       href: 'https://grill.hellonext.co',
+    },
+    {
+      text: 'About app',
+      icon: HiOutlineInformationCircle,
+      onClick: onAboutClick,
+      notification: {
+        showNotif: aboutAppNotif,
+        setNotifDone: () => {
+          setAboutAppNotif(false)
+          storage.set('true')
+        },
+      },
     },
     { text: 'Log out', icon: ExitIcon, onClick: onLogoutClick },
   ]
@@ -159,6 +198,8 @@ function AccountContent({
           <Button
             key={text}
             href={href}
+            target='_blank'
+            rel='noopener noreferrer'
             variant='transparent'
             size='noPadding'
             interactive='none'
@@ -255,6 +296,43 @@ function ShareSessionContent() {
         />
       </div>
       <CopyText text={shareSessionLink} onCopyClick={onCopyClick} />
+    </div>
+  )
+}
+
+function AboutContent() {
+  return (
+    <div className='mt-2 flex flex-col gap-4'>
+      <div className='flex justify-center'>
+        <Logo className='text-5xl' />
+      </div>
+      <p className='text-text-muted'>
+        Engage in discussions anonymously without fear of social persecution.
+        Grill.chat runs on the{' '}
+        <LinkText
+          openInNewTab
+          href='https://subsocial.network/xsocial'
+          variant='primary'
+        >
+          xSocial
+        </LinkText>{' '}
+        blockchain and backs up its content to{' '}
+        <LinkText openInNewTab href='https://ipfs.tech/' variant='primary'>
+          IPFS
+        </LinkText>
+        .
+      </p>
+      <div className='rounded-2xl border border-background-warning py-2 px-4 text-background-warning'>
+        xSocial is an experimental environment for innovative web3 social
+        features before they are deployed on{' '}
+        <LinkText
+          openInNewTab
+          href='https://subsocial.network'
+          variant='primary'
+        >
+          Subsocial
+        </LinkText>
+      </div>
     </div>
   )
 }
