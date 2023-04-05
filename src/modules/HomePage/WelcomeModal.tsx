@@ -4,7 +4,7 @@ import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
 import Modal, { ModalProps } from '@/components/Modal'
 import { LocalStorage } from '@/utils/storage'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 export type WelcomeModalProps = Omit<
   ModalProps,
@@ -15,6 +15,7 @@ const STORAGE_KEY = 'dismissed-welcome-modal'
 const storage = new LocalStorage(() => STORAGE_KEY)
 
 export default function WelcomeModal({ ...props }: WelcomeModalProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const [openModal, setOpenModal] = useState(true)
 
   if (storage.get() === 'true') return null
@@ -29,6 +30,7 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
       {...props}
       isOpen={openModal}
       closeModal={closeModal}
+      initialFocus={buttonRef}
       title={
         <div className='mt-4 flex flex-col items-center'>
           <Logo className='text-5xl' />
@@ -54,7 +56,7 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
         </span>
       }
     >
-      <Button onClick={closeModal} size='lg' className='mt-2'>
+      <Button ref={buttonRef} onClick={closeModal} size='lg' className='mt-2'>
         Let&apos;s go!
       </Button>
       <CaptchaTermsAndService className='mt-6 text-center' />

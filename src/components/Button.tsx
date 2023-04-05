@@ -1,7 +1,7 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import Link from 'next/link'
-import { ComponentProps } from 'react'
+import { ComponentProps, forwardRef } from 'react'
 import Spinner from './Spinner'
 
 export const buttonStyles = cva('rounded-full transition', {
@@ -38,24 +38,28 @@ export const buttonStyles = cva('rounded-full transition', {
   },
 })
 
-export type ButtonProps = VariantProps<typeof buttonStyles> &
+type ButtonPropsWithRef = VariantProps<typeof buttonStyles> &
   ComponentProps<'button'> &
   ComponentProps<'a'> & {
     withDisabledStyles?: boolean
     isLoading?: boolean
   }
+export type ButtonProps = Omit<ButtonPropsWithRef, 'ref'>
 
-export default function Button({
-  variant,
-  href,
-  size,
-  disabled: _disabled,
-  withDisabledStyles = true,
-  interactive,
-  isLoading,
-  children,
-  ...props
-}: ButtonProps) {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    variant,
+    href,
+    size,
+    disabled: _disabled,
+    withDisabledStyles = true,
+    interactive,
+    isLoading,
+    children,
+    ...props
+  },
+  ref
+) {
   const disabled = _disabled || isLoading
   if (isLoading) {
     children = (
@@ -82,7 +86,7 @@ export default function Button({
   if (href) {
     return (
       <Link href={href} passHref legacyBehavior>
-        <a {...props} className={className}>
+        <a ref={ref as any} {...props} className={className}>
           {children}
         </a>
       </Link>
@@ -90,8 +94,9 @@ export default function Button({
   }
 
   return (
-    <button {...props} disabled={disabled} className={className}>
+    <button ref={ref} {...props} disabled={disabled} className={className}>
       {children}
     </button>
   )
-}
+})
+export default Button
