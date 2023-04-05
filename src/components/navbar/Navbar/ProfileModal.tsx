@@ -1,5 +1,6 @@
 import BulbIcon from '@/assets/icons/bulb.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
+import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import AddressAvatar from '@/components/AddressAvatar'
@@ -16,7 +17,6 @@ import { cx } from '@/utils/class-names'
 import { getBaseUrl } from '@/utils/env/client'
 import { LocalStorage } from '@/utils/storage'
 import React, { useEffect, useState } from 'react'
-import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
 
@@ -170,7 +170,7 @@ function AccountContent({
     },
     {
       text: 'About app',
-      icon: HiOutlineInformationCircle,
+      icon: InfoIcon,
       onClick: onAboutClick,
       notification: {
         showNotif: aboutAppNotif,
@@ -213,7 +213,7 @@ function AccountContent({
               onClick?.()
             }}
           >
-            <Icon className='mr-6 text-xl' />
+            <Icon className='mr-6 text-xl text-text-muted' />
             <span>{text}</span>
             {notification?.showNotif && (
               <span className='relative ml-2 h-2 w-2'>
