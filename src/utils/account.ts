@@ -38,9 +38,11 @@ export function truncateAddress(address: string) {
 }
 
 export function encodeSecretKey(secretKey: string) {
-  return Buffer.from(secretKey, 'hex').toString('base64')
+  return encodeURIComponent(Buffer.from(secretKey, 'hex').toString('base64'))
 }
 
 export function decodeSecretKey(encodedSecretKey: string) {
-  return Buffer.from(encodedSecretKey, 'base64').toString('hex')
+  return Buffer.from(decodeURIComponent(encodedSecretKey), 'base64').toString(
+    'hex'
+  )
 }

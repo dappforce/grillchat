@@ -175,7 +175,7 @@ function AccountContent({
             <Icon className='mr-6 text-xl' />
             <span>{text}</span>
             {notification?.showNotif && (
-              <span className='relative top-0.5 ml-2 h-2 w-2'>
+              <span className='relative ml-2 h-2 w-2'>
                 <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
                 <span className='relative block h-full w-full rounded-full bg-background-warning' />
               </span>

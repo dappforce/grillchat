@@ -8,7 +8,6 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
   postId: string
-  spaceId: string
 }
 
 export default function ChatRoom({
@@ -16,7 +15,6 @@ export default function ChatRoom({
   asContainer,
   scrollableContainerClassName,
   postId,
-  spaceId,
   ...props
 }: ChatRoomProps) {
   const Component = asContainer ? Container<'div'> : 'div'
@@ -41,7 +39,7 @@ export default function ChatRoom({
         scrollContainerRef={scrollContainerRef}
       />
       <Component className='mt-auto flex py-3'>
-        <ChatForm onSubmit={scrollToBottom} postId={postId} spaceId={spaceId} />
+        <ChatForm onSubmit={scrollToBottom} postId={postId} />
       </Component>
     </div>
   )

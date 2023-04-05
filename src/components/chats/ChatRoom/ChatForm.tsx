@@ -24,7 +24,6 @@ import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
-  spaceId: string
   onSubmit?: () => void
 }
 
@@ -35,7 +34,6 @@ function processMessage(message: string) {
 export default function ChatForm({
   className,
   postId,
-  spaceId,
   onSubmit,
   ...props
 }: ChatFormProps) {
@@ -106,7 +104,7 @@ export default function ChatForm({
 
     if (shouldSendMessage) {
       setMessage('')
-      sendMessage({ message: processedMessage, rootPostId: postId, spaceId })
+      sendMessage({ message: processedMessage, rootPostId: postId })
       onSubmit?.()
     } else {
       if (isLoggedIn) {
@@ -120,7 +118,6 @@ export default function ChatForm({
         captchaToken,
         message: processMessage(message),
         rootPostId: postId,
-        spaceId,
       })
       setIsRequestingEnergy(true)
       sendEvent('request energy and send message')

@@ -33,11 +33,7 @@ export default function App({
       <ToasterConfig />
       <NextNProgress color='#4d46dc' />
       <HeadConfig {...head} />
-      <GoogleAnalytics
-        trackPageViews
-        gaMeasurementId={getGaId()}
-        defaultConsent='denied'
-      />
+      <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
       <Component {...props} />
     </QueryProvider>
   )
