@@ -38,12 +38,13 @@ export const buttonStyles = cva('rounded-full transition', {
   },
 })
 
-export type ButtonProps = VariantProps<typeof buttonStyles> &
+type ButtonPropsWithRef = VariantProps<typeof buttonStyles> &
   ComponentProps<'button'> &
   ComponentProps<'a'> & {
     withDisabledStyles?: boolean
     isLoading?: boolean
   }
+export type ButtonProps = Omit<ButtonPropsWithRef, 'ref'>
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   {
