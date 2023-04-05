@@ -30,7 +30,7 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
       isOpen={openModal}
       closeModal={closeModal}
       title={
-        <div className='flex flex-col items-center'>
+        <div className='mt-4 flex flex-col items-center'>
           <Logo className='text-5xl' />
           <p className='mt-5 text-center'>👋 Welcome to GrillChat</p>
         </div>
