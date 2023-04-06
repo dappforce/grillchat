@@ -1,3 +1,4 @@
+import { isTouchDevice } from '@/utils/device'
 import {
   autoPlacement,
   useClientPoint,
@@ -56,6 +57,10 @@ export default function CustomContextMenu({
     setEnableClientPoint(false)
   }
   const closeMenu = () => setOpenMenu(false)
+  const onReferenceClick = () => {
+    if (isTouchDevice()) toggleMenu()
+    else closeMenu()
+  }
 
   return (
     <>
@@ -67,7 +72,7 @@ export default function CustomContextMenu({
           ...getReferenceProps(),
           onMouseEnter,
           onMouseLeave,
-          onClick: closeMenu,
+          onClick: onReferenceClick,
         })
       )}
       <Transition
