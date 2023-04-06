@@ -21,6 +21,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   isMyMessage?: boolean
   cid?: string
   blockNumber?: number
+  onSelectChatAsReply?: (chatId: string) => void
 }
 
 type CheckMarkModalReducerState = {
@@ -45,6 +46,7 @@ export default function ChatItem({
   isMyMessage,
   blockNumber: blockHash,
   cid,
+  onSelectChatAsReply,
   ...props
 }: ChatItemProps) {
   const sendEvent = useSendEvent()

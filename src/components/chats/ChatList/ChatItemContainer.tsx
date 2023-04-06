@@ -7,9 +7,11 @@ import ChatItem from '../ChatItem'
 
 export type ChatItemContainerProps = ComponentProps<'div'> & {
   post: PostData
+  onSelectChatAsReply?: (chatId: string) => void
 }
 export default function ChatItemContainer({
   post,
+  onSelectChatAsReply,
   ...props
 }: ChatItemContainerProps) {
   const address = useMyAccount((state) => state.address)
@@ -34,6 +36,7 @@ export default function ChatItemContainer({
         isSent={isSent}
         blockNumber={post.struct.createdAtBlock}
         cid={post.struct.contentId}
+        onSelectChatAsReply={onSelectChatAsReply}
       />
     </div>
   )
