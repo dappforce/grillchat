@@ -1,4 +1,5 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
+import { copyToClipboard } from '@/utils/text'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Space_Mono } from 'next/font/google'
 import { ComponentProps, useState } from 'react'
@@ -45,8 +46,8 @@ export function CopyText({
   const [isCopied, setIsCopied] = useState(false)
   const [isHidden, setIsHidden] = useState(false)
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(textToCopy || text)
+  const handleClick = () => {
+    copyToClipboard(textToCopy || text)
 
     onCopyClick?.()
     setIsCopied(true)
@@ -92,7 +93,7 @@ export function CopyText({
           </Button>
         )}
       </div>
-      <Button disabled={isCopied} onClick={copyToClipboard} size='lg'>
+      <Button disabled={isCopied} onClick={handleClick} size='lg'>
         {isCopied ? 'Copied' : 'Copy'}
       </Button>
     </div>
@@ -113,8 +114,8 @@ export function CopyTextInline({
 }: CopyTextInlineProps) {
   const [openTooltipClickTrigger, setOpenTooltipClickTrigger] = useState(false)
   const [openTooltipHoverTrigger, setOpenTooltipHoverTrigger] = useState(false)
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(textToCopy || text)
+  const handleClick = () => {
+    copyToClipboard(textToCopy || text)
     onCopyClick?.()
   }
 
@@ -123,7 +124,7 @@ export function CopyTextInline({
     <Button
       variant='transparent'
       className='p-1 text-text-primary'
-      onClick={copyToClipboard}
+      onClick={handleClick}
     >
       <MdOutlineContentCopy />
     </Button>

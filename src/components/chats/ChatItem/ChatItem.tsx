@@ -1,14 +1,21 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
-import DefaultCustomContextMenu from '@/components/floating/DefaultCustomContextMenu'
+import DefaultCustomContextMenu, {
+  DefaultCustomContextMenuProps,
+} from '@/components/floating/DefaultCustomContextMenu'
 import LinkText from '@/components/LinkText'
+import Toast from '@/components/Toast'
+import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { generateRandomColor } from '@/utils/random-colors'
+import { copyToClipboard } from '@/utils/text'
+import { PostData } from '@subsocial/api/types'
 import Linkify from 'linkify-react'
-import { ComponentProps, useReducer } from 'react'
+import { ComponentProps, useMemo, useReducer, useRef } from 'react'
+import { toast } from 'react-hot-toast'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
@@ -16,14 +23,9 @@ import CheckMarkExplanationModal, {
 import RepliedMessagePreview from './RepliedMessagePreview'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
-  text: string
-  senderAddress: string
-  sentDate: Date | string | number
-  isSent?: boolean
-  isMyMessage?: boolean
-  cid?: string
-  blockNumber?: number
-  replyTo?: string
+  post: PostData
+  onSelectChatAsReply?: (chatId: string) => void
+  isMyMessage: boolean
 }
 
 type CheckMarkModalReducerState = {
@@ -41,24 +43,46 @@ const checkMarkModalReducer = (
 }
 
 export default function ChatItem({
-  text,
-  senderAddress,
-  sentDate,
-  isSent,
+  post,
+  onSelectChatAsReply,
   isMyMessage,
-  blockNumber: blockHash,
-  cid,
-  replyTo,
   ...props
 }: ChatItemProps) {
+  const postId = post.id
+  const isSent = !isOptimisticId(postId)
+  const { createdAtTime, createdAtBlock, ownerId, contentId } = post.struct
+  const { body, replyTo } = post.content || {}
+
   const sendEvent = useSendEvent()
 
   const [checkMarkModalState, dispatch] = useReducer(checkMarkModalReducer, {
     isOpen: false,
     variant: '',
   })
-  const relativeTime = getTimeRelativeToNow(sentDate)
-  const senderColor = generateRandomColor(senderAddress)
+  const relativeTime = getTimeRelativeToNow(createdAtTime)
+  const senderColor = generateRandomColor(ownerId)
+
+  const onSelectChatAsReplyRef = useRef(onSelectChatAsReply)
+  onSelectChatAsReplyRef.current = onSelectChatAsReply
+  const menus = useMemo<DefaultCustomContextMenuProps['menus']>(() => {
+    return [
+      {
+        text: 'Reply',
+        onClick: () => onSelectChatAsReplyRef.current?.(postId),
+      },
+      {
+        text: 'Copy',
+        onClick: () => {
+          copyToClipboard(body ?? '')
+          toast.custom((t) => (
+            <Toast t={t} title='Message copied to clipboard!' />
+          ))
+        },
+      },
+    ]
+  }, [body, postId, onSelectChatAsReplyRef])
+
+  if (!body) return null
 
   const onCheckMarkClick = () => {
     const checkMarkType: CheckMarkModalVariant = isSent
@@ -78,9 +102,9 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <AddressAvatar address={senderAddress} className='flex-shrink-0' />
+        <AddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
-      <DefaultCustomContextMenu>
+      <DefaultCustomContextMenu menus={menus}>
         {(_, onContextMenu, referenceProps) => {
           return (
             <div
@@ -97,7 +121,7 @@ export default function ChatItem({
                     className='mr-2 text-sm text-text-secondary'
                     style={{ color: senderColor }}
                   >
-                    {truncateAddress(senderAddress)}
+                    {truncateAddress(ownerId)}
                   </span>
                   <span className='text-xs text-text-muted'>
                     {relativeTime}
@@ -106,7 +130,7 @@ export default function ChatItem({
               )}
               {replyTo && (
                 <RepliedMessagePreview
-                  originalMessage={text}
+                  originalMessage={body}
                   className='mt-1'
                   replyTo={replyTo}
                 />
@@ -127,7 +151,7 @@ export default function ChatItem({
                     ),
                   }}
                 >
-                  {text}
+                  {body}
                 </Linkify>
               </p>
               {isMyMessage && (
@@ -164,8 +188,8 @@ export default function ChatItem({
         isOpen={checkMarkModalState.isOpen}
         variant={checkMarkModalState.variant || 'recording'}
         closeModal={() => dispatch('')}
-        blockNumber={blockHash}
-        cid={cid}
+        blockNumber={createdAtBlock}
+        cid={contentId}
       />
     </div>
   )
