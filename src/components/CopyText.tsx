@@ -5,7 +5,7 @@ import { ComponentProps, useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
-import PopOver from './PopOver'
+import PopOver from './floating/PopOver'
 
 type CommonCopyTextProps = ComponentProps<'div'> & {
   text: string
