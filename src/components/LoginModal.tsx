@@ -1,4 +1,6 @@
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
+import useToastError from '@/hooks/useToastError'
+import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { SyntheticEvent, useRef, useState } from 'react'
@@ -24,8 +26,17 @@ export default function LoginModal({
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
-  const { mutateAsync: loginAndRequestToken, isLoading: loadingRequestToken } =
-    useLoginAndRequestToken()
+  const {
+    mutateAsync: loginAndRequestToken,
+    isLoading: loadingRequestToken,
+    error,
+  } = useLoginAndRequestToken()
+  useToastError<ApiRequestTokenResponse>(
+    error,
+    'Create account failed',
+    (e) => e.message
+  )
+
   const isLoading = loadingRequestToken || hasStartCaptcha
 
   const onSubmit = async (e: SyntheticEvent) => {

@@ -5,7 +5,8 @@ import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 
 export default function useToastError<ErrorType>(
   error: unknown,
-  getMessage: (error: ErrorType) => string
+  errorTitle: string,
+  getMessage?: (error: ErrorType) => string
 ) {
   const getMessageRef = useRef(getMessage)
   useEffect(() => {
@@ -13,7 +14,7 @@ export default function useToastError<ErrorType>(
       let message: string | undefined = (error as any)?.message
 
       const response = (error as any)?.response?.data
-      if (response) {
+      if (response && getMessageRef.current) {
         const responseMessage = getMessageRef.current(response)
         if (responseMessage) message = responseMessage
       }
@@ -24,10 +25,10 @@ export default function useToastError<ErrorType>(
           icon={(classNames) => (
             <HiOutlineExclamationTriangle className={classNames} />
           )}
-          title='Sign up failed, please try again'
+          title={errorTitle}
           description={message}
         />
       ))
     }
-  }, [error])
+  }, [error, errorTitle])
 }
