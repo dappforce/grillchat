@@ -22,6 +22,7 @@ import {
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
   onSubmit?: () => void
+  replyChatId?: string
 }
 
 function processMessage(message: string) {
@@ -32,6 +33,7 @@ export default function ChatForm({
   className,
   postId,
   onSubmit,
+  replyChatId,
   ...props
 }: ChatFormProps) {
   const { data: post } = getPostQuery.useQuery(postId)

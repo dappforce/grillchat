@@ -1,6 +1,6 @@
 import Container from '@/components/Container'
 import { cx } from '@/utils/class-names'
-import { ComponentProps, useRef } from 'react'
+import { ComponentProps, useRef, useState } from 'react'
 import ChatList from '../ChatList/ChatList'
 import ChatForm from './ChatForm'
 
@@ -17,6 +17,8 @@ export default function ChatRoom({
   postId,
   ...props
 }: ChatRoomProps) {
+  const [replyChatId, setReplyChatId] = useState('')
+
   const Component = asContainer ? Container<'div'> : 'div'
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
@@ -37,9 +39,14 @@ export default function ChatRoom({
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}
         scrollContainerRef={scrollContainerRef}
+        onSelectChatAsReply={setReplyChatId}
       />
-      <Component className='mt-auto flex py-3'>
-        <ChatForm onSubmit={scrollToBottom} postId={postId} />
+      <Component className='mt-auto flex flex-col py-3'>
+        <ChatForm
+          replyChatId={replyChatId}
+          onSubmit={scrollToBottom}
+          postId={postId}
+        />
       </Component>
     </div>
   )

@@ -28,6 +28,7 @@ export type ChatListProps = ComponentProps<'div'> & {
   scrollableContainerClassName?: string
   postId: string
   scrollContainerRef?: React.RefObject<HTMLDivElement>
+  onSelectChatAsReply?: (chatId: string) => void
 }
 
 export default function ChatList(props: ChatListProps) {
@@ -44,6 +45,7 @@ function ChatListContent({
   scrollableContainerClassName,
   postId,
   scrollContainerRef: _scrollContainerRef,
+  onSelectChatAsReply,
   ...props
 }: ChatListProps) {
   const lastReadId = useFocusedLastMessageId(postId)
@@ -127,7 +129,11 @@ function ChatListContent({
                 isLastReadMessage && !isBottomMessage
 
               const chatElement = post && (
-                <ChatItemContainer post={post} key={post.id} />
+                <ChatItemContainer
+                  onSelectChatAsReply={onSelectChatAsReply}
+                  post={post}
+                  key={post.id}
+                />
               )
               if (!showLastUnreadMessageNotice) return chatElement
 
