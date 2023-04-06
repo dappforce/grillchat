@@ -1,4 +1,5 @@
 import {
+  autoPlacement,
   useClientPoint,
   useDismiss,
   useFloating,
@@ -25,6 +26,7 @@ export default function CustomContextMenu({
   const { x, y, strategy, refs, context } = useFloating({
     open: openMenu,
     onOpenChange: setOpenMenu,
+    middleware: [autoPlacement()],
   })
   const [enableClientPoint, setEnableClientPoint] = useState(false)
   const clientPoint = useClientPoint(context, {
@@ -64,32 +66,29 @@ export default function CustomContextMenu({
           ...getReferenceProps(),
           onMouseEnter,
           onMouseLeave,
+          onClick: () => setOpenMenu(false),
         })
       )}
-      {openMenu && (
-        <div
-          ref={refs.setFloating}
-          style={{
-            position: strategy,
-            top: y ?? 0,
-            left: x ?? 0,
-          }}
-          {...getFloatingProps()}
-        >
-          <Transition
-            appear
-            show={openMenu}
-            enter='ease-out duration-300'
-            enterFrom='opacity-0'
-            enterTo='opacity-100'
-            leave='ease-in duration-200'
-            leaveFrom='opacity-100'
-            leaveTo='opacity-0'
-          >
-            {menuPanel}
-          </Transition>
-        </div>
-      )}
+      <Transition
+        ref={refs.setFloating}
+        style={{
+          position: strategy,
+          top: y ?? 0,
+          left: x ?? 0,
+        }}
+        {...getFloatingProps()}
+        appear
+        show={openMenu}
+        className='transition-opacity'
+        enter='ease-out duration-150'
+        enterFrom='opacity-0'
+        enterTo='opacity-100'
+        leave='ease-in duration-200'
+        leaveFrom='opacity-100'
+        leaveTo='opacity-0'
+      >
+        {menuPanel}
+      </Transition>
     </>
   )
 }

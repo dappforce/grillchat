@@ -1,6 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
-import CustomContextMenu from '@/components/floating/CustomContextMenu'
+import DefaultCustomContextMenu from '@/components/floating/DefaultCustomContextMenu'
 import LinkText from '@/components/LinkText'
 import { useSendEvent } from '@/stores/analytics'
 import { truncateAddress } from '@/utils/account'
@@ -80,7 +80,7 @@ export default function ChatItem({
       {!isMyMessage && (
         <AddressAvatar address={senderAddress} className='flex-shrink-0' />
       )}
-      <CustomContextMenu menuPanel={<div>asdfasdf</div>}>
+      <DefaultCustomContextMenu>
         {(_, onContextMenu, referenceProps) => {
           return (
             <div
@@ -159,7 +159,7 @@ export default function ChatItem({
             </div>
           )
         }}
-      </CustomContextMenu>
+      </DefaultCustomContextMenu>
       <CheckMarkExplanationModal
         isOpen={checkMarkModalState.isOpen}
         variant={checkMarkModalState.variant || 'recording'}
