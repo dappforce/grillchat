@@ -2,7 +2,6 @@ import Send from '@/assets/icons/send.svg'
 import { buttonStyles } from '@/components/Button'
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea from '@/components/inputs/TextArea'
-import Toast from '@/components/Toast'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/chat'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import useToastError from '@/hooks/useToastError'
@@ -19,8 +18,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import { toast } from 'react-hot-toast'
-import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
@@ -55,11 +52,13 @@ export default function ChatForm({
   } = useRequestTokenAndSendMessage()
   useToastError<ApiRequestTokenResponse>(
     errorRequestTokenAndSendMessage,
+    'Create account failed',
     (e) => e.message
   )
 
   const [message, setMessage] = useState('')
   const { mutate: sendMessage, error } = useSendMessage()
+  useToastError(error, 'Message failed to send, please try again')
 
   useEffect(() => {
     textAreaRef.current?.focus()
@@ -68,22 +67,6 @@ export default function ChatForm({
   useEffect(() => {
     setIsRequestingEnergy(false)
   }, [hasEnoughEnergy])
-
-  useEffect(() => {
-    if (error) {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          icon={(classNames) => (
-            <HiOutlineExclamationTriangle className={classNames} />
-          )}
-          title='Message failed to send, please try again'
-          description={error?.message}
-        />
-      ))
-      setIsRequestingEnergy(false)
-    }
-  }, [error])
 
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
