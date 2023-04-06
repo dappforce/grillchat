@@ -15,7 +15,7 @@ export type CustomContextMenuProps = {
     onContextMenu: (e: SyntheticEvent) => void,
     referenceProps: ReferenceProps
   ) => React.ReactNode
-  menuPanel: React.ReactNode
+  menuPanel: (closeMenu: () => void) => React.ReactNode
 }
 
 export default function CustomContextMenu({
@@ -55,6 +55,7 @@ export default function CustomContextMenu({
   const onMouseLeave = () => {
     setEnableClientPoint(false)
   }
+  const closeMenu = () => setOpenMenu(false)
 
   return (
     <>
@@ -66,7 +67,7 @@ export default function CustomContextMenu({
           ...getReferenceProps(),
           onMouseEnter,
           onMouseLeave,
-          onClick: () => setOpenMenu(false),
+          onClick: closeMenu,
         })
       )}
       <Transition
@@ -87,7 +88,7 @@ export default function CustomContextMenu({
         leaveFrom='opacity-100'
         leaveTo='opacity-0'
       >
-        {menuPanel}
+        {menuPanel(closeMenu)}
       </Transition>
     </>
   )

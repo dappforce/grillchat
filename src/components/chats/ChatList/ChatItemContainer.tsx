@@ -1,4 +1,3 @@
-import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
@@ -21,7 +20,6 @@ export default function ChatItemContainer({
   const senderAddress = ownerId ?? ''
 
   const isMyMessage = address === senderAddress
-  const isSent = !isOptimisticId(post.id)
 
   return (
     <div
@@ -29,15 +27,9 @@ export default function ChatItemContainer({
       className={cx('w-10/12', isMyMessage && 'self-end', props.className)}
     >
       <ChatItem
+        post={post}
         isMyMessage={isMyMessage}
-        sentDate={post.struct.createdAtTime}
-        senderAddress={senderAddress}
-        text={post.content.body}
-        isSent={isSent}
-        blockNumber={post.struct.createdAtBlock}
-        cid={post.struct.contentId}
-        onDoubleClick={() => onSelectChatAsReply?.(post.id)}
-        replyTo={post.content.replyTo}
+        onSelectChatAsReply={onSelectChatAsReply}
       />
     </div>
   )
