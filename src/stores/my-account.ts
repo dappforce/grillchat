@@ -108,7 +108,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   },
   _getSecretKeyForLogin: async () => {
     const { _isNewSessionKey, _currentSessionSecretKey } = get()
-    if (_isNewSessionKey) return _currentSessionSecretKey
+    if (_isNewSessionKey && _currentSessionSecretKey)
+      return _currentSessionSecretKey
+
     const { secretKey } = await generateAccount()
     return secretKey
   },
