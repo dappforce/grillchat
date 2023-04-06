@@ -1,7 +1,7 @@
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { PostContent, PostData } from '@subsocial/api/types'
+import { PostData } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import ChatItem from '../ChatItem'
 
@@ -23,8 +23,6 @@ export default function ChatItemContainer({
   const isMyMessage = address === senderAddress
   const isSent = !isOptimisticId(post.id)
 
-  const content = post.content as PostContent
-
   return (
     <div
       {...props}
@@ -39,7 +37,7 @@ export default function ChatItemContainer({
         blockNumber={post.struct.createdAtBlock}
         cid={post.struct.contentId}
         onDoubleClick={() => onSelectChatAsReply?.(post.id)}
-        replyTo={content.replyTo}
+        replyTo={post.content.replyTo}
       />
     </div>
   )
