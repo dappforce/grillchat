@@ -160,10 +160,16 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     set({ isInitialized: false })
 
     const encodedSecretKey = localStorage.getItem(ACCOUNT_STORAGE_KEY)
+    let successLogin = false
     if (encodedSecretKey) {
       const secretKey = decodeSecretKey(encodedSecretKey)
-      await login(secretKey, true)
-    } else {
+      const address = await login(secretKey, true)
+
+      if (address) successLogin = true
+      else localStorage.removeItem(ACCOUNT_STORAGE_KEY)
+    }
+
+    if (!successLogin) {
       await _syncSessionWithLocalStorage()
     }
     set({ isInitialized: true })
