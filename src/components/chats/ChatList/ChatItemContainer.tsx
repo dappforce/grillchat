@@ -3,7 +3,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
-import ChatItem from '../ChatItem'
+import ChatItem from '../ChatItem/ChatItem'
 
 export type ChatItemContainerProps = ComponentProps<'div'> & {
   post: PostData
