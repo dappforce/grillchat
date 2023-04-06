@@ -3,6 +3,7 @@ import { cx } from '@/utils/class-names'
 import { ComponentProps, useRef, useState } from 'react'
 import ChatList from '../ChatList/ChatList'
 import ChatForm from './ChatForm'
+import RepliedMessage from './RepliedMessage'
 
 export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
@@ -17,7 +18,7 @@ export default function ChatRoom({
   postId,
   ...props
 }: ChatRoomProps) {
-  const [replyChatId, setReplyChatId] = useState('')
+  const [replyTo, setReplyTo] = useState<string | undefined>(undefined)
 
   const Component = asContainer ? Container<'div'> : 'div'
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -39,14 +40,12 @@ export default function ChatRoom({
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}
         scrollContainerRef={scrollContainerRef}
-        onSelectChatAsReply={setReplyChatId}
+        onSelectChatAsReply={setReplyTo}
+        replyTo={replyTo}
       />
       <Component className='mt-auto flex flex-col py-3'>
-        <ChatForm
-          replyChatId={replyChatId}
-          onSubmit={scrollToBottom}
-          postId={postId}
-        />
+        {replyTo && <RepliedMessage replyChatId={replyTo} />}
+        <ChatForm replyTo={replyTo} onSubmit={scrollToBottom} postId={postId} />
       </Component>
     </div>
   )

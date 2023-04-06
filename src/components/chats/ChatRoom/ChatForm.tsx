@@ -23,7 +23,7 @@ import {
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
   onSubmit?: () => void
-  replyChatId?: string
+  replyTo?: string
 }
 
 function processMessage(message: string) {
@@ -34,7 +34,7 @@ export default function ChatForm({
   className,
   postId,
   onSubmit,
-  replyChatId,
+  replyTo,
   ...props
 }: ChatFormProps) {
   const { data: post } = getPostQuery.useQuery(postId)
@@ -91,7 +91,11 @@ export default function ChatForm({
 
     if (shouldSendMessage) {
       setMessage('')
-      sendMessage({ message: processedMessage, rootPostId: postId })
+      sendMessage({
+        message: processedMessage,
+        rootPostId: postId,
+        replyTo,
+      })
       onSubmit?.()
     } else {
       if (isLoggedIn) {
@@ -105,6 +109,7 @@ export default function ChatForm({
         captchaToken,
         message: processMessage(message),
         rootPostId: postId,
+        replyTo,
       })
       setIsRequestingEnergy(true)
       sendEvent('request energy and send message')

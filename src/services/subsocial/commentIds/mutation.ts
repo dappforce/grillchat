@@ -25,6 +25,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
       await waitHasBalance()
       const { cid, success } = await saveFile({
         body: params.message,
+        replyTo: params.replyTo,
       } as any)
 
       if (!success) throw new Error('Failed to save file to IPFS')

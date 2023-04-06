@@ -28,6 +28,7 @@ export type ChatListProps = ComponentProps<'div'> & {
   scrollableContainerClassName?: string
   postId: string
   scrollContainerRef?: React.RefObject<HTMLDivElement>
+  replyTo?: string
   onSelectChatAsReply?: (chatId: string) => void
 }
 
@@ -45,6 +46,7 @@ function ChatListContent({
   scrollableContainerClassName,
   postId,
   scrollContainerRef: _scrollContainerRef,
+  replyTo,
   onSelectChatAsReply,
   ...props
 }: ChatListProps) {
@@ -81,7 +83,7 @@ function ChatListContent({
       top: scrollContainerRef.current?.scrollHeight,
       behavior: 'auto',
     })
-  }, [isAtBottom, loadedPost.length, scrollContainerRef])
+  }, [isAtBottom, loadedPost.length, scrollContainerRef, replyTo])
 
   const Component = asContainer ? Container<'div'> : 'div'
 

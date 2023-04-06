@@ -1,3 +1,4 @@
+import { getPostQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
@@ -21,7 +22,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   isMyMessage?: boolean
   cid?: string
   blockNumber?: number
-  onSelectChatAsReply?: (chatId: string) => void
+  replyTo?: string
 }
 
 type CheckMarkModalReducerState = {
@@ -46,7 +47,7 @@ export default function ChatItem({
   isMyMessage,
   blockNumber: blockHash,
   cid,
-  onSelectChatAsReply,
+  replyTo,
   ...props
 }: ChatItemProps) {
   const sendEvent = useSendEvent()
@@ -95,6 +96,7 @@ export default function ChatItem({
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}
+        {replyTo && <RepliedMessagePreview replyTo={replyTo} />}
         <p className='whitespace-pre-wrap break-words text-base'>
           <Linkify
             options={{
@@ -141,6 +143,17 @@ export default function ChatItem({
         blockNumber={blockHash}
         cid={cid}
       />
+    </div>
+  )
+}
+
+function RepliedMessagePreview({ replyTo }: { replyTo: string }) {
+  const { data } = getPostQuery.useQuery(replyTo)
+
+  return (
+    <div className='flex items-center'>
+      <span>{data?.struct.ownerId}</span>
+      <span>{data?.content?.body}</span>
     </div>
   )
 }
