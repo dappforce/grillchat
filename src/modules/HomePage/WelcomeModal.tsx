@@ -48,16 +48,16 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
           >
             xSocial
           </LinkText>{' '}
-          blockchain and backs up its content to{' '}
+          blockchain and stores your messages on the{' '}
           <LinkText openInNewTab href='https://ipfs.tech' variant='primary'>
             IPFS
-          </LinkText>
-          .
+          </LinkText>{' '}
+          storage network.
         </span>
       }
     >
       <Button ref={buttonRef} onClick={closeModal} size='lg' className='mt-2'>
-        Let&apos;s go!
+        Go to chats!
       </Button>
       <CaptchaTermsAndService className='mt-6 text-center' />
     </Modal>

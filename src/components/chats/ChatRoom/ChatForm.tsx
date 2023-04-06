@@ -11,6 +11,7 @@ import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { isTouchDevice } from '@/utils/device'
 import {
   ComponentProps,
   SyntheticEvent,
@@ -61,6 +62,7 @@ export default function ChatForm({
   useToastError(error, 'Message failed to send, please try again')
 
   useEffect(() => {
+    if (isTouchDevice()) return
     textAreaRef.current?.focus()
   }, [])
 
