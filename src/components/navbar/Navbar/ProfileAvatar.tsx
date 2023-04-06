@@ -1,5 +1,5 @@
 import AddressAvatar from '@/components/AddressAvatar'
-import PopOver from '@/components/PopOver'
+import PopOver from '@/components/floating/PopOver'
 import { cx } from '@/utils/class-names'
 import { ComponentProps, useEffect, useState } from 'react'
 import ProfileModal from './ProfileModal'
