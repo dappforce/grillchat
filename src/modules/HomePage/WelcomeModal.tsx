@@ -48,11 +48,11 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
           >
             xSocial
           </LinkText>{' '}
-          blockchain and backs up its content to{' '}
+          blockchain and and stores your messages on the{' '}
           <LinkText openInNewTab href='https://ipfs.tech' variant='primary'>
             IPFS
-          </LinkText>
-          .
+          </LinkText>{' '}
+          storage network.
         </span>
       }
     >
