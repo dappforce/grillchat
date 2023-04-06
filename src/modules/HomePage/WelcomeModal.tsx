@@ -57,7 +57,7 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
       }
     >
       <Button ref={buttonRef} onClick={closeModal} size='lg' className='mt-2'>
-        Let&apos;s go!
+        Go to chats!
       </Button>
       <CaptchaTermsAndService className='mt-6 text-center' />
     </Modal>
