@@ -24,6 +24,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
   onSubmit?: () => void
   replyTo?: string
+  clearReplyTo?: () => void
 }
 
 function processMessage(message: string) {
@@ -35,6 +36,7 @@ export default function ChatForm({
   postId,
   onSubmit,
   replyTo,
+  clearReplyTo,
   ...props
 }: ChatFormProps) {
   const { data: post } = getPostQuery.useQuery(postId)
@@ -76,6 +78,10 @@ export default function ChatForm({
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
   const isDisabled = !processMessage(message)
 
+  const resetForm = () => {
+    setMessage('')
+    clearReplyTo?.()
+  }
   const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
     e?.preventDefault()
     if (
@@ -90,7 +96,7 @@ export default function ChatForm({
     if (isDisabled) return
 
     if (shouldSendMessage) {
-      setMessage('')
+      resetForm()
       sendMessage({
         message: processedMessage,
         rootPostId: postId,
@@ -104,7 +110,7 @@ export default function ChatForm({
         sendEvent('send first message', { chatId: postId, name: topicName })
       }
       if (!captchaToken) return
-      setMessage('')
+      resetForm()
       requestTokenAndSendMessage({
         captchaToken,
         message: processMessage(message),

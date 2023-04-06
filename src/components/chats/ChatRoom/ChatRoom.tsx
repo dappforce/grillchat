@@ -45,7 +45,12 @@ export default function ChatRoom({
       />
       <Component className='mt-auto flex flex-col py-3'>
         {replyTo && <RepliedMessage replyChatId={replyTo} />}
-        <ChatForm replyTo={replyTo} onSubmit={scrollToBottom} postId={postId} />
+        <ChatForm
+          replyTo={replyTo}
+          onSubmit={scrollToBottom}
+          postId={postId}
+          clearReplyTo={() => setReplyTo(undefined)}
+        />
       </Component>
     </div>
   )
