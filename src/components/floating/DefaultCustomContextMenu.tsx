@@ -28,7 +28,7 @@ export default function DefaultCustomContextMenu({
 
 function DefaultContextMenu({ menus, closeMenu }: DefaultContextMenuProps) {
   return (
-    <ul className='flex w-28 flex-col rounded-lg bg-background-light py-1 shadow-2xl shadow-black'>
+    <ul className='flex w-28 flex-col rounded-lg bg-background-light py-1 shadow-[0_5px_50px_-12px_rgb(0,0,0)]'>
       {menus.map((menu) => (
         <li
           className='py-2 px-4 transition focus:bg-background-lighter hover:bg-background-lighter'
