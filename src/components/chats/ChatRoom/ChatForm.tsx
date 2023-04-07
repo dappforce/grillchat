@@ -67,6 +67,9 @@ export default function ChatForm({
   useEffect(() => {
     textAreaRef.current?.focus()
   }, [])
+  useEffect(() => {
+    if (replyTo) textAreaRef.current?.focus()
+  }, [replyTo])
 
   useEffect(() => {
     setIsRequestingEnergy(false)
