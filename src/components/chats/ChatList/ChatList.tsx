@@ -105,7 +105,7 @@ function ChatListContent({
         id={scrollableContainerId}
         ref={scrollContainerRef}
         className={cx(
-          'flex flex-col-reverse pr-4',
+          'flex flex-col-reverse pr-4 overflow-x-hidden',
           scrollableContainerClassName
         )}
       >
@@ -114,7 +114,7 @@ function ChatListContent({
             dataLength={loadedPost.length}
             next={loadMore}
             className={cx(
-              'relative flex flex-col-reverse gap-2 overflow-hidden'
+              'relative flex flex-col-reverse gap-2 !overflow-hidden'
             )}
             hasMore={!isAllPostsLoaded}
             inverse
