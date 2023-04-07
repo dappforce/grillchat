@@ -7,13 +7,13 @@ import {
   useInteractions,
 } from '@floating-ui/react'
 import { Transition } from '@headlessui/react'
-import { SyntheticEvent, useState } from 'react'
+import { MouseEvent, MouseEventHandler, useState } from 'react'
 
 type ReferenceProps = Record<string, unknown>
 export type CustomContextMenuProps = {
   children: (
     toggleMenu: () => void,
-    onContextMenu: (e: SyntheticEvent) => void,
+    onContextMenu: MouseEventHandler<Element>,
     referenceProps: ReferenceProps
   ) => React.ReactNode
   menuPanel: (closeMenu: () => void) => React.ReactNode
@@ -29,36 +29,38 @@ export default function CustomContextMenu({
     onOpenChange: setOpenMenu,
     middleware: [autoPlacement()],
   })
-  const [enableClientPoint, setEnableClientPoint] = useState(false)
+
+  const [clientClickX, setClientClickX] = useState(0)
+  const [clientClickY, setClientClickY] = useState(0)
   const clientPoint = useClientPoint(context, {
-    enabled: enableClientPoint && !openMenu,
+    x: clientClickX,
+    y: clientClickY,
   })
+
   const dismiss = useDismiss(context)
   const { getReferenceProps, getFloatingProps } = useInteractions([
     clientPoint,
     dismiss,
   ])
 
-  const toggleMenu = () => {
+  const toggleMenu = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {
+    if (!openMenu && e) {
+      setClientClickX(e.clientX)
+      setClientClickY(e.clientY)
+    }
     setOpenMenu((prev) => !prev)
   }
 
-  const onContextMenu = (e: SyntheticEvent) => {
+  const onContextMenu: MouseEventHandler<Element> = (e) => {
     if (window.getSelection()?.type !== 'Range') {
       e.preventDefault()
-      toggleMenu()
+      toggleMenu(e)
     }
   }
 
-  const onMouseEnter = () => {
-    setEnableClientPoint(true)
-  }
-  const onMouseLeave = () => {
-    setEnableClientPoint(false)
-  }
   const closeMenu = () => setOpenMenu(false)
-  const onReferenceClick = () => {
-    if (isTouchDevice()) toggleMenu()
+  const onReferenceClick: MouseEventHandler<Element> = (e) => {
+    if (isTouchDevice()) toggleMenu(e)
     else closeMenu()
   }
 
@@ -70,8 +72,6 @@ export default function CustomContextMenu({
         getReferenceProps({
           ref: refs.setReference,
           ...getReferenceProps(),
-          onMouseEnter,
-          onMouseLeave,
           onClick: onReferenceClick,
         })
       )}
