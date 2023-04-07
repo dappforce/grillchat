@@ -5,6 +5,7 @@ import DefaultCustomContextMenu, {
 } from '@/components/floating/DefaultCustomContextMenu'
 import LinkText from '@/components/LinkText'
 import Toast from '@/components/Toast'
+import useWrapCallbackInRef from '@/hooks/useWrapCallbackInRef'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { truncateAddress } from '@/utils/account'
@@ -14,7 +15,7 @@ import { generateRandomColor } from '@/utils/random-colors'
 import { copyToClipboard } from '@/utils/text'
 import { PostData } from '@subsocial/api/types'
 import Linkify from 'linkify-react'
-import { ComponentProps, useMemo, useReducer, useRef } from 'react'
+import { ComponentProps, useMemo, useReducer } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import CheckMarkExplanationModal, {
@@ -62,8 +63,7 @@ export default function ChatItem({
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const senderColor = generateRandomColor(ownerId)
 
-  const onSelectChatAsReplyRef = useRef(onSelectChatAsReply)
-  onSelectChatAsReplyRef.current = onSelectChatAsReply
+  const onSelectChatAsReplyRef = useWrapCallbackInRef(onSelectChatAsReply)
   const menus = useMemo<DefaultCustomContextMenuProps['menus']>(() => {
     return [
       {

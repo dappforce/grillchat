@@ -1,3 +1,4 @@
+import useWrapCallbackInRef from '@/hooks/useWrapCallbackInRef'
 import { getPostQuery, getPosts } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
@@ -89,8 +90,7 @@ export function useSubscribeCommentIdsByPostId(
   const queryClient = useQueryClient()
 
   const lastIdInPreviousSub = useRef('')
-  const callbackRef = useRef(callbackFirstResult)
-  callbackRef.current = callbackFirstResult
+  const callbackRef = useWrapCallbackInRef(callbackFirstResult)
 
   useEffect(() => {
     const unsub = subscription(
@@ -109,7 +109,7 @@ export function useSubscribeCommentIdsByPostId(
       subscribedPostIds.delete(postId)
       lastIdInPreviousSub.current = ''
     }
-  }, [postId, queryClient, enabled])
+  }, [postId, queryClient, enabled, callbackRef])
 }
 
 export function useSubscribeCommentIdsByPostIds(
@@ -120,8 +120,7 @@ export function useSubscribeCommentIdsByPostIds(
   const queryClient = useQueryClient()
 
   const lastIdInPreviousSub = useRef<Record<string, string>>({})
-  const callbackRef = useRef(callbackFirstResult)
-  callbackRef.current = callbackFirstResult
+  const callbackRef = useWrapCallbackInRef(callbackFirstResult)
 
   useEffect(() => {
     const resolvers: ((value: string[] | PromiseLike<string[]>) => void)[] = []
@@ -153,7 +152,7 @@ export function useSubscribeCommentIdsByPostIds(
       postIds.forEach((postId) => subscribedPostIds.delete(postId))
       lastIdInPreviousSub.current = {}
     }
-  }, [postIds, queryClient, enabled])
+  }, [postIds, queryClient, enabled, callbackRef])
 }
 
 function filterOptimisticIds(
