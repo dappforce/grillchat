@@ -65,7 +65,7 @@ function NavbarChatInfo({
           <HiOutlineChevronLeft />
         </Button>
       </div>
-      <div className='flex items-center gap-2'>
+      <div className='flex items-center gap-2 overflow-hidden'>
         <Image
           className='h-9 w-9 justify-self-end rounded-full bg-background-lightest'
           width={36}
@@ -73,8 +73,10 @@ function NavbarChatInfo({
           src={image}
           alt={topic ?? 'chat topic'}
         />
-        <div className='flex flex-col'>
-          <span className='font-medium'>{topic ?? 'Topic'}</span>
+        <div className='flex flex-col overflow-hidden'>
+          <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
+            {topic ?? 'Topic'}
+          </span>
           <span className='text-xs text-text-muted'>
             {messageCount} messages
           </span>
