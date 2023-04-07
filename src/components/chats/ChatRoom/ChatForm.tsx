@@ -69,6 +69,9 @@ export default function ChatForm({
     if (isTouchDevice()) return
     textAreaRef.current?.focus()
   }, [])
+  useEffect(() => {
+    if (replyTo) textAreaRef.current?.focus()
+  }, [replyTo])
 
   useEffect(() => {
     setIsRequestingEnergy(false)
