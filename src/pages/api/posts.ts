@@ -1,6 +1,14 @@
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { MinimalUsageQueue } from '@/utils/data-structure'
-import { PostData } from '@subsocial/api/types'
+import {
+  MinimalUsageQueue,
+  MinimalUsageQueueWithTimeLimit,
+} from '@/utils/data-structure'
+import {
+  IpfsCommonContent,
+  PostContent,
+  PostData,
+  PostStruct,
+} from '@subsocial/api/types'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { z } from 'zod'
@@ -22,27 +30,40 @@ export type ApiPostsResponse = {
 // Solution:
 // 1. Use redis to store the cache
 // 2. Use squid for historical data, for newer data that are not in squid yet, fetch it from chain
-const MAX_POSTS_IN_CACHE = 500_000
-const postsCache = new MinimalUsageQueue<PostData>(MAX_POSTS_IN_CACHE)
-export async function getPostsFromCache(postIds: string[]) {
-  const postsFromCache: PostData[] = []
+const MAX_CACHE_ITEMS = 500_000
+const contentCache = new MinimalUsageQueue<PostContent | null>(MAX_CACHE_ITEMS)
+const postsCache = new MinimalUsageQueueWithTimeLimit<{
+  post: PostStruct
+  insertedAt?: Date
+}>(MAX_CACHE_ITEMS, 15)
+
+function getPostStructFromCache(id: string): PostStruct | undefined {
+  const data = postsCache.get(id)
+  if (data) {
+    return data.post
+  }
+}
+
+async function getPostStructsFromCache(postIds: string[]) {
+  const postsFromCache: PostStruct[] = []
   const needToFetchIds: string[] = []
 
-  let newlyFetchedData: PostData[] = []
+  let newlyFetchedData: PostStruct[] = []
   postIds.forEach((id) => {
-    const cachedData = postsCache.get(id)
+    const cachedData = getPostStructFromCache(id)
     if (cachedData) {
       postsFromCache.push(cachedData)
     } else {
       needToFetchIds.push(id)
     }
   })
+
   if (needToFetchIds.length > 0) {
     try {
       const subsocialApi = await getSubsocialApi()
-      newlyFetchedData = await subsocialApi.findPublicPosts(needToFetchIds)
+      newlyFetchedData = await subsocialApi.findPostStructs(needToFetchIds)
       newlyFetchedData.forEach((post) => {
-        postsCache.add(post.id.toString(), post)
+        postsCache.add(post.id.toString(), { post })
       })
     } catch (e) {
       console.error(
@@ -54,6 +75,36 @@ export async function getPostsFromCache(postIds: string[]) {
     }
   }
   return [...postsFromCache, ...newlyFetchedData]
+}
+
+export async function getPostsFromCache(
+  postIds: string[]
+): Promise<PostData[]> {
+  const posts = await getPostStructsFromCache(postIds)
+  const contentMap: { [key: string]: IpfsCommonContent } = {}
+  const needToFetchContentIds: string[] = []
+  posts.forEach((post) => {
+    const cid = post.contentId
+    if (!cid) return
+    const content = contentCache.get(cid)
+    if (!content) {
+      needToFetchContentIds.push(cid)
+    } else {
+      contentMap[cid] = content
+    }
+  })
+
+  const api = await getSubsocialApi()
+  const contents = await api.ipfs.getContentArray(needToFetchContentIds, 10_000)
+  const allContents = { ...contents, ...contentMap }
+
+  return posts.map<PostData>((post) => {
+    const cid = post.contentId
+    const content = cid
+      ? (allContents[cid] as PostContent | undefined)
+      : undefined
+    return { struct: post, id: post.id, content }
+  })
 }
 
 export default async function handler(
