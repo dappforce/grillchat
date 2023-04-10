@@ -79,7 +79,7 @@ async function getPostStructsFromCache(postIds: string[]) {
 
 type PostStructWithContent = PostStruct & { contentId: string }
 function isPostValid(post: PostStruct): post is PostStructWithContent {
-  return post.hidden === false || post.contentId !== undefined
+  return post.hidden === false && post.contentId !== undefined
 }
 
 export async function getPostsFromCache(
@@ -106,6 +106,9 @@ export async function getPostsFromCache(
       needToFetchContentIds,
       10_000
     )
+    Object.entries(newlyFetchedContents).forEach(([cid, content]) => {
+      contentCache.add(cid, content as PostContent)
+    })
   }
 
   const allContents = { ...newlyFetchedContents, ...contentMap }
