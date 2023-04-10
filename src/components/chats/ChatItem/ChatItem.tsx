@@ -63,7 +63,11 @@ export default function ChatItem({
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const senderColor = generateRandomColor(ownerId)
 
-  const onSelectChatAsReplyRef = useWrapCallbackInRef(onSelectChatAsReply)
+  const setChatAsReply = (postId: string) => {
+    if (isOptimisticId(postId)) return
+    onSelectChatAsReply?.(postId)
+  }
+  const onSelectChatAsReplyRef = useWrapCallbackInRef(setChatAsReply)
   const menus = useMemo<DefaultCustomContextMenuProps['menus']>(() => {
     return [
       {
@@ -91,9 +95,6 @@ export default function ChatItem({
     sendEvent('click check_mark_button', { type: checkMarkType })
     dispatch(checkMarkType)
   }
-  const setCurrentChatAsReply = () => {
-    onSelectChatAsReplyRef.current?.(postId)
-  }
 
   return (
     <div
@@ -112,7 +113,7 @@ export default function ChatItem({
           return (
             <div
               onContextMenu={onContextMenu}
-              onDoubleClick={setCurrentChatAsReply}
+              onDoubleClick={() => setChatAsReply(postId)}
               className={cx(
                 'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl py-1.5 px-2.5',
                 isMyMessage ? 'bg-background-primary' : 'bg-background-light'
