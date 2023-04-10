@@ -32,17 +32,10 @@ export type ApiPostsResponse = {
 // 2. Use squid for historical data, for newer data that are not in squid yet, fetch it from chain
 const MAX_CACHE_ITEMS = 500_000
 const contentCache = new MinimalUsageQueue<PostContent | null>(MAX_CACHE_ITEMS)
-const postsCache = new MinimalUsageQueueWithTimeLimit<{
-  post: PostStruct
-  insertedAt?: Date
-}>(MAX_CACHE_ITEMS, 15)
-
-function getPostStructFromCache(id: string): PostStruct | undefined {
-  const data = postsCache.get(id)
-  if (data) {
-    return data.post
-  }
-}
+const postsCache = new MinimalUsageQueueWithTimeLimit<PostStruct>(
+  MAX_CACHE_ITEMS,
+  15
+)
 
 async function getPostStructsFromCache(postIds: string[]) {
   const postsFromCache: PostStruct[] = []
@@ -50,7 +43,7 @@ async function getPostStructsFromCache(postIds: string[]) {
 
   let newlyFetchedData: PostStruct[] = []
   postIds.forEach((id) => {
-    const cachedData = getPostStructFromCache(id)
+    const cachedData = postsCache.get(id)
     if (cachedData) {
       postsFromCache.push(cachedData)
     } else {
@@ -63,7 +56,7 @@ async function getPostStructsFromCache(postIds: string[]) {
       const subsocialApi = await getSubsocialApi()
       newlyFetchedData = await subsocialApi.findPostStructs(needToFetchIds)
       newlyFetchedData.forEach((post) => {
-        postsCache.add(post.id.toString(), { post })
+        postsCache.add(post.id.toString(), post)
       })
     } catch (e) {
       console.error(
