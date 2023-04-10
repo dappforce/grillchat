@@ -29,6 +29,8 @@ export default function IntegrateChatPage() {
             className='w-full max-w-sm'
             size='lg'
             href='https://forms.gle/s3VvHNxfvKkdZwtk7'
+            target='_blank'
+            rel='noopener noreferrer'
             onClick={() => sendEvent('click integrate_button')}
           >
             Integrate
