@@ -1,5 +1,7 @@
+import truncate from 'lodash.truncate'
+
 export function truncateText(text: string, length: number) {
-  return text.length > length ? `${text.slice(0, length)}...` : text
+  return truncate(text, { length })
 }
 
 export function copyToClipboard(text: string) {
