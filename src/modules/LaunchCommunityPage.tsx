@@ -7,6 +7,7 @@ import ClickableImage from '@/components/ClickableImage'
 import Container from '@/components/Container'
 import FixedBottomActionLayout from '@/components/layouts/FixedBottomActionLayout'
 import LinkText from '@/components/LinkText'
+import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import { useSendEvent } from '@/stores/analytics'
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
@@ -121,6 +122,8 @@ export default function LaunchCommunityPage() {
             variant='primaryOutline'
             className='w-full max-w-sm'
             size='lg'
+            href={SUGGEST_FEATURE_LINK}
+            onClick={() => sendEvent('click vote_for_features_button')}
           >
             Vote for features
           </Button>
