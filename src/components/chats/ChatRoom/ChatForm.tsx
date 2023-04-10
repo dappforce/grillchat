@@ -147,7 +147,6 @@ export default function ChatForm({
               onEnterToSubmitForm={onSubmit}
               ref={textAreaRef}
               value={message}
-              autoFocus
               onChange={(e) => setMessage((e.target as any).value)}
               placeholder='Message...'
               rows={1}
