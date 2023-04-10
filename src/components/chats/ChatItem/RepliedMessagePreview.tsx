@@ -18,7 +18,6 @@ export default function RepliedMessagePreview({
 }: RepliedMessagePreviewProps) {
   const { data } = getPostQuery.useQuery(replyTo)
   if (!data) {
-    // TODO: show loading
     return null
   }
 
