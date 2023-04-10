@@ -115,7 +115,11 @@ export async function getPostsFromCache(
     if (!isPostValid(post)) return
     const cid = post.contentId
     const content = allContents[cid] as PostContent | undefined
-    publicPostsData.push({ struct: post, id: post.id, content })
+    publicPostsData.push({
+      struct: post,
+      id: post.id,
+      content: content ?? null,
+    })
   })
   return publicPostsData
 }
