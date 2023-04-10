@@ -32,6 +32,8 @@ export default function LaunchCommunityPage() {
             className='w-full max-w-sm'
             size='lg'
             href='https://forms.gle/9ByHSa9rzAuAsDmHA'
+            target='_blank'
+            rel='noopener noreferrer'
             onClick={() => sendEvent('click join_waitlist_button')}
           >
             Join Waitlist
@@ -89,6 +91,7 @@ export default function LaunchCommunityPage() {
               className='font-bold'
               variant='primary'
               href='https://polkaverse.com/dd'
+              openInNewTab
             >
               Subsocial username
             </LinkText>
@@ -123,6 +126,8 @@ export default function LaunchCommunityPage() {
             className='w-full max-w-sm'
             size='lg'
             href={SUGGEST_FEATURE_LINK}
+            target='_blank'
+            rel='noopener noreferrer'
             onClick={() => sendEvent('click vote_for_features_button')}
           >
             Vote for features
