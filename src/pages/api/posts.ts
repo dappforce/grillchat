@@ -94,9 +94,16 @@ export async function getPostsFromCache(
     }
   })
 
-  const api = await getSubsocialApi()
-  const contents = await api.ipfs.getContentArray(needToFetchContentIds, 10_000)
-  const allContents = { ...contents, ...contentMap }
+  let newlyFetchedContents: { [key: string]: IpfsCommonContent } = {}
+  if (needToFetchContentIds.length > 0) {
+    const api = await getSubsocialApi()
+    newlyFetchedContents = await api.ipfs.getContentArray(
+      needToFetchContentIds,
+      10_000
+    )
+  }
+
+  const allContents = { ...newlyFetchedContents, ...contentMap }
 
   return posts.map<PostData>((post) => {
     const cid = post.contentId
