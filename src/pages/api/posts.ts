@@ -77,6 +77,11 @@ async function getPostStructsFromCache(postIds: string[]) {
   return [...postsFromCache, ...newlyFetchedData]
 }
 
+type PostStructWithContent = PostStruct & { contentId: string }
+function isPostValid(post: PostStruct): post is PostStructWithContent {
+  return post.hidden === false || post.contentId !== undefined
+}
+
 export async function getPostsFromCache(
   postIds: string[]
 ): Promise<PostData[]> {
@@ -84,8 +89,8 @@ export async function getPostsFromCache(
   const contentMap: { [key: string]: IpfsCommonContent } = {}
   const needToFetchContentIds: string[] = []
   posts.forEach((post) => {
+    if (!isPostValid(post)) return
     const cid = post.contentId
-    if (!cid) return
     const content = contentCache.get(cid)
     if (!content) {
       needToFetchContentIds.push(cid)
@@ -105,13 +110,14 @@ export async function getPostsFromCache(
 
   const allContents = { ...newlyFetchedContents, ...contentMap }
 
-  return posts.map<PostData>((post) => {
+  const publicPostsData: PostData[] = []
+  posts.forEach((post) => {
+    if (!isPostValid(post)) return
     const cid = post.contentId
-    const content = cid
-      ? (allContents[cid] as PostContent | undefined)
-      : undefined
-    return { struct: post, id: post.id, content }
+    const content = allContents[cid] as PostContent | undefined
+    publicPostsData.push({ struct: post, id: post.id, content })
   })
+  return publicPostsData
 }
 
 export default async function handler(
