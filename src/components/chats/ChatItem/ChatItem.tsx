@@ -29,7 +29,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   isMyMessage: boolean
 }
 
-export type CheckMarkModalReducerState = {
+type CheckMarkModalReducerState = {
   isOpen: boolean
   variant: CheckMarkModalVariant | ''
 }
@@ -42,9 +42,6 @@ const checkMarkModalReducer = (
   }
   return { isOpen: true, variant: action }
 }
-
-const BASE_EMOJI_FONT = 32
-const MAX_EMOJI_AMOUNT = 3
 
 export default function ChatItem({
   post,
@@ -120,7 +117,14 @@ export default function ChatItem({
       {!isMyMessage && (
         <AddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
-      <DefaultCustomContextMenu menus={menus}>
+      <DefaultCustomContextMenu
+        menus={menus}
+        allowedPlacements={
+          isMyMessage
+            ? ['left', 'left-end', 'left-start']
+            : ['right', 'right-end', 'right-start']
+        }
+      >
         {(_, onContextMenu, referenceProps) => {
           return (
             <div
