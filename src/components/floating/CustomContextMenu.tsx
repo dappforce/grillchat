@@ -1,6 +1,7 @@
 import { isTouchDevice } from '@/utils/device'
 import {
   autoPlacement,
+  Placement,
   useClientPoint,
   useDismiss,
   useFloating,
