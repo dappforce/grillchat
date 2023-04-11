@@ -108,7 +108,14 @@ export default function ChatItem({
       {!isMyMessage && (
         <AddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
-      <DefaultCustomContextMenu menus={menus}>
+      <DefaultCustomContextMenu
+        menus={menus}
+        allowedPlacements={
+          isMyMessage
+            ? ['left', 'left-end', 'left-start']
+            : ['right', 'right-end', 'right-start']
+        }
+      >
         {(_, onContextMenu, referenceProps) => {
           return (
             <div
@@ -173,7 +180,10 @@ export default function ChatItem({
                     variant='transparent'
                     size='noPadding'
                     interactive='brightness-only'
-                    onClick={onCheckMarkClick}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onCheckMarkClick()
+                    }}
                   >
                     {isSent ? (
                       <IoCheckmarkDoneOutline className='text-sm' />

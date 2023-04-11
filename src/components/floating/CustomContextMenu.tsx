@@ -1,6 +1,7 @@
 import { isTouchDevice } from '@/utils/device'
 import {
   autoPlacement,
+  Placement,
   useClientPoint,
   useDismiss,
   useFloating,
@@ -17,17 +18,19 @@ export type CustomContextMenuProps = {
     referenceProps: ReferenceProps
   ) => React.ReactNode
   menuPanel: (closeMenu: () => void) => React.ReactNode
+  allowedPlacements?: Placement[]
 }
 
 export default function CustomContextMenu({
   children,
   menuPanel,
+  allowedPlacements,
 }: CustomContextMenuProps) {
   const [openMenu, setOpenMenu] = useState(false)
   const { x, y, strategy, refs, context } = useFloating({
     open: openMenu,
     onOpenChange: setOpenMenu,
-    middleware: [autoPlacement()],
+    middleware: [autoPlacement({ allowedPlacements })],
   })
 
   const [clientClickX, setClientClickX] = useState(0)
