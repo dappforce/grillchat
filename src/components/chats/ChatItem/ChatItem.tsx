@@ -140,7 +140,7 @@ export default function ChatItem({
                   </span>
                 </div>
               )}
-              {inReplyTo && (
+              {inReplyTo?.id && (
                 <RepliedMessagePreview
                   originalMessage={body}
                   className='mt-1'
