@@ -35,6 +35,10 @@ export default function RepliedMessagePreview({
     const element = document.getElementById(id)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      element.classList.add('darken')
+      element.onanimationend = function () {
+        element.classList.remove('darken')
+      }
     }
   }
 

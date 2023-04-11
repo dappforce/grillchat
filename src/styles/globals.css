@@ -22,3 +22,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.darken {
+  animation: darken 3s ease-in-out 1;
+}
+@keyframes darken {
+  25% {
+    filter: brightness(0.5);
+  }
+}
