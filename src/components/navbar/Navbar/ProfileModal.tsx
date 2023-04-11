@@ -9,6 +9,7 @@ import { CopyText, CopyTextInline } from '@/components/CopyText'
 import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
@@ -166,7 +167,7 @@ function AccountContent({
     {
       text: 'Suggest feature',
       icon: BulbIcon,
-      href: 'https://grill.hellonext.co',
+      href: SUGGEST_FEATURE_LINK,
     },
     {
       text: 'About app',
