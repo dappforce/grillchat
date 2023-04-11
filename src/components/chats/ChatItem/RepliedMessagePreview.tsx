@@ -5,12 +5,12 @@ import { generateRandomColor } from '@/utils/random-colors'
 import { truncateText } from '@/utils/text'
 import { waitStopScrolling } from '@/utils/window'
 import { ComponentProps, RefObject } from 'react'
-import { getChatItemId } from './common'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   repliedMessageId: string
   originalMessage: string
   scrollContainer?: RefObject<HTMLElement | null>
+  getRepliedElement?: (commentId: string) => Promise<HTMLElement | null>
 }
 
 const MINIMUM_REPLY_CHAR = 20
@@ -18,6 +18,7 @@ export default function RepliedMessagePreview({
   repliedMessageId,
   originalMessage,
   scrollContainer,
+  getRepliedElement,
   ...props
 }: RepliedMessagePreviewProps) {
   const { data } = getPostQuery.useQuery(repliedMessageId)
@@ -34,8 +35,8 @@ export default function RepliedMessagePreview({
   }
 
   const onRepliedMessageClick = async () => {
-    const id = getChatItemId(repliedMessageId)
-    const element = document.getElementById(id)
+    if (!getRepliedElement) return
+    const element = await getRepliedElement(repliedMessageId)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       await waitStopScrolling(scrollContainer?.current)
@@ -50,7 +51,8 @@ export default function RepliedMessagePreview({
     <div
       {...props}
       className={cx(
-        'flex cursor-pointer flex-col overflow-hidden border-l-2 pl-2 text-sm',
+        'flex flex-col overflow-hidden border-l-2 pl-2 text-sm',
+        getRepliedElement && 'cursor-pointer',
         props.className
       )}
       style={{ borderColor: replySenderColor, ...props.style }}

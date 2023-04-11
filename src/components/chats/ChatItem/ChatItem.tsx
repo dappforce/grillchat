@@ -21,14 +21,15 @@ import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
-import { getChatItemId } from './common'
 import RepliedMessagePreview from './RepliedMessagePreview'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
-  post: PostData
+  comment: PostData
   onSelectChatAsReply?: (chatId: string) => void
   isMyMessage: boolean
   scrollContainer?: RefObject<HTMLElement | null>
+  chatBubbleId?: string
+  getRepliedElement?: (commentId: string) => Promise<HTMLElement | null>
 }
 
 type CheckMarkModalReducerState = {
@@ -46,16 +47,18 @@ const checkMarkModalReducer = (
 }
 
 export default function ChatItem({
-  post,
+  comment,
   onSelectChatAsReply,
   isMyMessage,
   scrollContainer,
+  chatBubbleId,
+  getRepliedElement,
   ...props
 }: ChatItemProps) {
-  const postId = post.id
-  const isSent = !isOptimisticId(postId)
-  const { createdAtTime, createdAtBlock, ownerId, contentId } = post.struct
-  const { body, inReplyTo } = post.content || {}
+  const commentId = comment.id
+  const isSent = !isOptimisticId(commentId)
+  const { createdAtTime, createdAtBlock, ownerId, contentId } = comment.struct
+  const { body, inReplyTo } = comment.content || {}
 
   const sendEvent = useSendEvent()
 
@@ -66,16 +69,16 @@ export default function ChatItem({
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const senderColor = generateRandomColor(ownerId)
 
-  const setChatAsReply = (postId: string) => {
-    if (isOptimisticId(postId)) return
-    onSelectChatAsReply?.(postId)
+  const setChatAsReply = (commentId: string) => {
+    if (isOptimisticId(commentId)) return
+    onSelectChatAsReply?.(commentId)
   }
   const onSelectChatAsReplyRef = useWrapCallbackInRef(setChatAsReply)
   const menus = useMemo<DefaultCustomContextMenuProps['menus']>(() => {
     return [
       {
         text: 'Reply',
-        onClick: () => onSelectChatAsReplyRef.current?.(postId),
+        onClick: () => onSelectChatAsReplyRef.current?.(commentId),
       },
       {
         text: 'Copy',
@@ -87,7 +90,7 @@ export default function ChatItem({
         },
       },
     ]
-  }, [body, postId, onSelectChatAsReplyRef])
+  }, [body, commentId, onSelectChatAsReplyRef])
 
   if (!body) return null
 
@@ -122,9 +125,9 @@ export default function ChatItem({
         {(_, onContextMenu, referenceProps) => {
           return (
             <div
-              id={getChatItemId(postId)}
+              id={chatBubbleId}
               onContextMenu={onContextMenu}
-              onDoubleClick={() => setChatAsReply(postId)}
+              onDoubleClick={() => setChatAsReply(commentId)}
               className={cx(
                 'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl py-1.5 px-2.5',
                 isMyMessage ? 'bg-background-primary' : 'bg-background-light'
@@ -146,6 +149,7 @@ export default function ChatItem({
               )}
               {inReplyTo?.id && (
                 <RepliedMessagePreview
+                  getRepliedElement={getRepliedElement}
                   scrollContainer={scrollContainer}
                   originalMessage={body}
                   className='mt-1'

@@ -18,6 +18,7 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
+import { getChatItemId } from './helpers'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
 import useIsAtBottom from './hooks/useIsAtBottom'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
@@ -123,25 +124,26 @@ function ChatListContent({
             endMessage={<ChatTopNotice className='pb-2 pt-4' />}
             scrollThreshold={`${scrollThreshold}px`}
           >
-            {posts.map(({ data: post }, index) => {
-              const isLastReadMessage = lastReadId === post?.id
+            {posts.map(({ data: comment }, index) => {
+              const isLastReadMessage = lastReadId === comment?.id
               // bottom message is the first element, because the flex direction is reversed
               const isBottomMessage = index === 0
               const showLastUnreadMessageNotice =
                 isLastReadMessage && !isBottomMessage
 
-              const chatElement = post && (
+              const chatElement = comment && (
                 <ChatItemContainer
                   onSelectChatAsReply={onSelectChatAsReply}
-                  post={post}
-                  key={post.id}
+                  comment={comment}
+                  key={comment.id}
                   scrollContainer={scrollContainerRef}
+                  chatBubbleId={getChatItemId(comment.id)}
                 />
               )
               if (!showLastUnreadMessageNotice) return chatElement
 
               return (
-                <Fragment key={post?.id || index}>
+                <Fragment key={comment?.id || index}>
                   <div className='my-2 w-full rounded-md bg-background-light py-0.5 text-center text-sm'>
                     Unread messages
                   </div>

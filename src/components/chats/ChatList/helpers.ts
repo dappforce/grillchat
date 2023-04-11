@@ -1,3 +1,3 @@
 export function getChatItemId(postId: string) {
-  return `chat-${postId}`
+  return `chat-item-${postId}`
 }
