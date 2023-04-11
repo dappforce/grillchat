@@ -6,7 +6,10 @@ declare module '@subsocial/api/types' {
   export default types
 
   export interface PostContent extends SubsocialPostContent {
-    replyTo?: string
+    inReplyTo?: {
+      kind: 'Post'
+      id: string
+    }
   }
   export declare type PostData = EntityData<PostStruct, PostContent>
 }
