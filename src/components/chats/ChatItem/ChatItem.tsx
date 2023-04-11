@@ -21,6 +21,7 @@ import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
+import { getChatItemId } from './common'
 import RepliedMessagePreview from './RepliedMessagePreview'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
@@ -99,6 +100,7 @@ export default function ChatItem({
   return (
     <div
       {...props}
+      id={getChatItemId(postId)}
       className={cx(
         'relative flex items-start justify-start gap-2',
         isMyMessage && 'flex-row-reverse',
@@ -144,7 +146,7 @@ export default function ChatItem({
                 <RepliedMessagePreview
                   originalMessage={body}
                   className='mt-1'
-                  replyTo={inReplyTo.id}
+                  repliedMessageId={inReplyTo.id}
                 />
               )}
               <p className='whitespace-pre-wrap break-words text-base'>
