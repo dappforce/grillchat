@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
-import { getEmojiAmount } from '@/utils/text'
+import { getEmojiAmount, isTextContainsOnlyEmoji } from '@/utils/text'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import RepliedMessagePreview from '../RepliedMessagePreview'
 import { ChatItemContentProps } from './types'
@@ -9,6 +9,12 @@ export type EmojiChatItemProps = ChatItemContentProps
 
 const BASE_EMOJI_FONT = 32
 const MAX_EMOJI_AMOUNT = 3
+
+export function shouldRenderEmojiChatItem(body: string) {
+  return (
+    isTextContainsOnlyEmoji(body) && getEmojiAmount(body) <= MAX_EMOJI_AMOUNT
+  )
+}
 
 export default function EmojiChatItem({
   isMyMessage,

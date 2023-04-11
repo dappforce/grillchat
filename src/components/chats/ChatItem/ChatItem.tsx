@@ -9,11 +9,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { generateRandomColor } from '@/utils/random-colors'
-import {
-  copyToClipboard,
-  getEmojiAmount,
-  isTextContainsOnlyEmoji,
-} from '@/utils/text'
+import { copyToClipboard } from '@/utils/text'
 import { PostData } from '@subsocial/api/types'
 import { ComponentProps, useMemo, useReducer } from 'react'
 import { toast } from 'react-hot-toast'
@@ -21,7 +17,9 @@ import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
 import DefaultChatItem from './variants/DefaultChatItem'
-import EmojiChatItem from './variants/EmojiChatItem'
+import EmojiChatItem, {
+  shouldRenderEmojiChatItem,
+} from './variants/EmojiChatItem'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   post: PostData
@@ -94,11 +92,7 @@ export default function ChatItem({
     dispatch(checkMarkType)
   }
 
-  const emojiCount = getEmojiAmount(body)
-  const isEmojiOnly =
-    isTextContainsOnlyEmoji(body) &&
-    emojiCount > 0 &&
-    emojiCount <= MAX_EMOJI_AMOUNT
+  const isEmojiOnly = shouldRenderEmojiChatItem(body)
 
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const senderColor = generateRandomColor(ownerId)
