@@ -4,7 +4,7 @@ import { cx } from '@/utils/class-names'
 import { generateRandomColor } from '@/utils/random-colors'
 import { truncateText } from '@/utils/text'
 import { waitStopScrolling } from '@/utils/window'
-import { ComponentProps, RefObject } from 'react'
+import { ComponentProps, RefObject, useState } from 'react'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   repliedMessageId: string
@@ -21,6 +21,7 @@ export default function RepliedMessagePreview({
   getRepliedElement,
   ...props
 }: RepliedMessagePreviewProps) {
+  const [isLoading, setIsLoading] = useState(false)
   const { data } = getPostQuery.useQuery(repliedMessageId)
   if (!data) {
     return null
@@ -36,7 +37,9 @@ export default function RepliedMessagePreview({
 
   const onRepliedMessageClick = async () => {
     if (!getRepliedElement) return
+    setIsLoading(true)
     const element = await getRepliedElement(repliedMessageId)
+    setIsLoading(false)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       await waitStopScrolling(scrollContainer?.current)
@@ -53,6 +56,7 @@ export default function RepliedMessagePreview({
       className={cx(
         'flex flex-col overflow-hidden border-l-2 pl-2 text-sm',
         getRepliedElement && 'cursor-pointer',
+        isLoading && 'animate-pulse',
         props.className
       )}
       style={{ borderColor: replySenderColor, ...props.style }}
