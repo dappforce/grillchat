@@ -3,18 +3,21 @@ import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { generateRandomColor } from '@/utils/random-colors'
 import { truncateText } from '@/utils/text'
-import { ComponentProps } from 'react'
+import { waitStopScrolling } from '@/utils/window'
+import { ComponentProps, RefObject } from 'react'
 import { getChatItemId } from './common'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   repliedMessageId: string
   originalMessage: string
+  scrollContainer?: RefObject<HTMLElement | null>
 }
 
 const MINIMUM_REPLY_CHAR = 20
 export default function RepliedMessagePreview({
   repliedMessageId,
   originalMessage,
+  scrollContainer,
   ...props
 }: RepliedMessagePreviewProps) {
   const { data } = getPostQuery.useQuery(repliedMessageId)
@@ -30,14 +33,15 @@ export default function RepliedMessagePreview({
     showedText = truncateText(showedText, MINIMUM_REPLY_CHAR)
   }
 
-  const onRepliedMessageClick = () => {
+  const onRepliedMessageClick = async () => {
     const id = getChatItemId(repliedMessageId)
     const element = document.getElementById(id)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      element.classList.add('darken')
+      await waitStopScrolling(scrollContainer?.current)
+      element.classList.add('wiggle')
       element.onanimationend = function () {
-        element.classList.remove('darken')
+        element.classList.remove('wiggle')
       }
     }
   }

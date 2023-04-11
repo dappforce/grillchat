@@ -1,16 +1,18 @@
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
-import { ComponentProps } from 'react'
+import { ComponentProps, RefObject } from 'react'
 import ChatItem from '../ChatItem'
 
 export type ChatItemContainerProps = ComponentProps<'div'> & {
   post: PostData
   onSelectChatAsReply?: (chatId: string) => void
+  scrollContainer?: RefObject<HTMLElement | null>
 }
 export default function ChatItemContainer({
   post,
   onSelectChatAsReply,
+  scrollContainer,
   ...props
 }: ChatItemContainerProps) {
   const address = useMyAccount((state) => state.address)
@@ -30,6 +32,7 @@ export default function ChatItemContainer({
         post={post}
         isMyMessage={isMyMessage}
         onSelectChatAsReply={onSelectChatAsReply}
+        scrollContainer={scrollContainer}
       />
     </div>
   )

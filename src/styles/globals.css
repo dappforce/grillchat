@@ -23,11 +23,26 @@
 @tailwind components;
 @tailwind utilities;
 
-.darken {
-  animation: darken 3s ease-in-out 1;
+.wiggle {
+  animation: wiggle 1s linear 1;
 }
-@keyframes darken {
-  25% {
-    filter: brightness(0.5);
+@keyframes wiggle {
+  0% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(15px);
+  }
+  30% {
+    transform: translateX(-12px);
+  }
+  55% {
+    transform: translateX(6px);
+  }
+  80% {
+    transform: translateX(-3px);
+  }
+  100% {
+    transform: translateX(0);
   }
 }

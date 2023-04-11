@@ -135,6 +135,7 @@ function ChatListContent({
                   onSelectChatAsReply={onSelectChatAsReply}
                   post={post}
                   key={post.id}
+                  scrollContainer={scrollContainerRef}
                 />
               )
               if (!showLastUnreadMessageNotice) return chatElement

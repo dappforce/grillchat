@@ -15,7 +15,7 @@ import { generateRandomColor } from '@/utils/random-colors'
 import { copyToClipboard } from '@/utils/text'
 import { PostData } from '@subsocial/api/types'
 import Linkify from 'linkify-react'
-import { ComponentProps, useMemo, useReducer } from 'react'
+import { ComponentProps, RefObject, useMemo, useReducer } from 'react'
 import { toast } from 'react-hot-toast'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import CheckMarkExplanationModal, {
@@ -28,6 +28,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   post: PostData
   onSelectChatAsReply?: (chatId: string) => void
   isMyMessage: boolean
+  scrollContainer?: RefObject<HTMLElement | null>
 }
 
 type CheckMarkModalReducerState = {
@@ -48,6 +49,7 @@ export default function ChatItem({
   post,
   onSelectChatAsReply,
   isMyMessage,
+  scrollContainer,
   ...props
 }: ChatItemProps) {
   const postId = post.id
@@ -100,7 +102,6 @@ export default function ChatItem({
   return (
     <div
       {...props}
-      id={getChatItemId(postId)}
       className={cx(
         'relative flex items-start justify-start gap-2',
         isMyMessage && 'flex-row-reverse',
@@ -121,6 +122,7 @@ export default function ChatItem({
         {(_, onContextMenu, referenceProps) => {
           return (
             <div
+              id={getChatItemId(postId)}
               onContextMenu={onContextMenu}
               onDoubleClick={() => setChatAsReply(postId)}
               className={cx(
@@ -144,6 +146,7 @@ export default function ChatItem({
               )}
               {inReplyTo?.id && (
                 <RepliedMessagePreview
+                  scrollContainer={scrollContainer}
                   originalMessage={body}
                   className='mt-1'
                   repliedMessageId={inReplyTo.id}
