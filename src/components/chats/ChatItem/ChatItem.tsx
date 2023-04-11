@@ -52,7 +52,7 @@ export default function ChatItem({
   const postId = post.id
   const isSent = !isOptimisticId(postId)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = post.struct
-  const { body, replyTo } = post.content || {}
+  const { body, inReplyTo } = post.content || {}
 
   const sendEvent = useSendEvent()
 
@@ -133,11 +133,11 @@ export default function ChatItem({
                   </span>
                 </div>
               )}
-              {replyTo && (
+              {inReplyTo && (
                 <RepliedMessagePreview
                   originalMessage={body}
                   className='mt-1'
-                  replyTo={replyTo}
+                  replyTo={inReplyTo.id}
                 />
               )}
               <p className='whitespace-pre-wrap break-words text-base'>

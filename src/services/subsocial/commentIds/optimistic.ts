@@ -24,7 +24,10 @@ export function addOptimisticData({
     },
     content: {
       body: param.message,
-      replyTo: param.replyTo,
+      inReplyTo: {
+        id: param.replyTo,
+        kind: 'Post',
+      },
     },
   } as PostData)
   client.setQueryData<string[]>(
