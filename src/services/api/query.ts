@@ -4,7 +4,11 @@ import axios from 'axios'
 
 export async function getPosts(postIds: string[]) {
   const res = await axios.get(
-    '/api/posts?' + postIds.map((n) => `postIds=${n}`).join('&')
+    '/api/posts?' +
+      postIds
+        .filter((id) => !!id)
+        .map((n) => `postIds=${n}`)
+        .join('&')
   )
   return res.data.data as PostData[]
 }
