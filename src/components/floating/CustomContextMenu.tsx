@@ -30,7 +30,12 @@ export default function CustomContextMenu({
   const { x, y, strategy, refs, context } = useFloating({
     open: openMenu,
     onOpenChange: setOpenMenu,
-    middleware: [autoPlacement({ allowedPlacements })],
+    middleware: [
+      autoPlacement({
+        crossAxis: true,
+        allowedPlacements,
+      }),
+    ],
   })
 
   const [clientClickX, setClientClickX] = useState(0)
