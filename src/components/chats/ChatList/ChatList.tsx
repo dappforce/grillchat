@@ -68,12 +68,12 @@ function ChatListContent({
     CHAT_PER_PAGE,
     true
   )
-  const posts = getPostQuery.useQueries(currentData)
-  const loadedPost = useMemo(() => {
-    return posts.filter((post) => post.isLoading === false)
-  }, [posts])
+  const comments = getPostQuery.useQueries(currentData)
+  const loadedComments = useMemo(() => {
+    return comments.filter((post) => post.isLoading === false)
+  }, [comments])
 
-  useLoadMoreIfNoScroll(loadMore, loadedPost?.length ?? 0, {
+  useLoadMoreIfNoScroll(loadMore, loadedComments?.length ?? 0, {
     scrollContainer: scrollContainerRef,
     innerContainer: innerRef,
   })
@@ -84,11 +84,11 @@ function ChatListContent({
       top: scrollContainerRef.current?.scrollHeight,
       behavior: 'auto',
     })
-  }, [isAtBottom, loadedPost.length, scrollContainerRef, replyTo])
+  }, [isAtBottom, loadedComments.length, scrollContainerRef, replyTo])
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  const isAllPostsLoaded = loadedPost.length === commentIds.length
+  const isAllCommentsLoaded = loadedComments.length === commentIds.length
 
   const scrollThreshold =
     (scrollContainerRef.current?.scrollHeight ?? 0) *
@@ -112,19 +112,19 @@ function ChatListContent({
       >
         <div ref={innerRef}>
           <InfiniteScroll
-            dataLength={loadedPost.length}
+            dataLength={loadedComments.length}
             next={loadMore}
             className={cx(
               'relative flex flex-col-reverse gap-2 !overflow-hidden'
             )}
-            hasMore={!isAllPostsLoaded}
+            hasMore={!isAllCommentsLoaded}
             inverse
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
             endMessage={<ChatTopNotice className='pb-2 pt-4' />}
             scrollThreshold={`${scrollThreshold}px`}
           >
-            {posts.map(({ data: comment }, index) => {
+            {comments.map(({ data: comment }, index) => {
               const isLastReadMessage = lastReadId === comment?.id
               // bottom message is the first element, because the flex direction is reversed
               const isBottomMessage = index === 0
