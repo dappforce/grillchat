@@ -18,6 +18,7 @@ export default function DefaultChatItem({
   relativeTime,
   senderColor,
   inReplyTo,
+  getRepliedElement,
   ...props
 }: DefaultChatItemProps) {
   return (
@@ -43,7 +44,8 @@ export default function DefaultChatItem({
           <RepliedMessagePreview
             originalMessage={body}
             className='mt-1'
-            replyTo={inReplyTo.id}
+            repliedMessageId={inReplyTo.id}
+            getRepliedElement={getRepliedElement}
           />
         )}
         <p className='whitespace-pre-wrap break-words text-base'>

@@ -25,6 +25,7 @@ export default function EmojiChatItem({
   relativeTime,
   senderColor,
   inReplyTo,
+  getRepliedElement,
   ...props
 }: EmojiChatItemProps) {
   const emojiCount = getEmojiAmount(body)
@@ -58,7 +59,8 @@ export default function EmojiChatItem({
             <div className='rounded-xl bg-background-light py-2 px-2.5'>
               <RepliedMessagePreview
                 originalMessage={body}
-                replyTo={inReplyTo.id}
+                repliedMessageId={inReplyTo.id}
+                getRepliedElement={getRepliedElement}
               />
             </div>
           )}

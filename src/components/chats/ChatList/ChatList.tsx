@@ -18,7 +18,9 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
+import { getChatItemId } from './helpers'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
+import useGetChatElement from './hooks/useGetChatElement'
 import useIsAtBottom from './hooks/useIsAtBottom'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import { NewMessageNotice } from './NewMessageNotice'
@@ -67,15 +69,22 @@ function ChatListContent({
     CHAT_PER_PAGE,
     true
   )
-  const posts = getPostQuery.useQueries(currentData)
-  const loadedPost = useMemo(() => {
-    return posts.filter((post) => post.isLoading === false)
-  }, [posts])
+  const comments = getPostQuery.useQueries(currentData)
+  const loadedComments = useMemo(() => {
+    return comments.filter((post) => post.isLoading === false)
+  }, [comments])
 
-  useLoadMoreIfNoScroll(loadMore, loadedPost?.length ?? 0, {
+  useLoadMoreIfNoScroll(loadMore, loadedComments?.length ?? 0, {
     scrollContainer: scrollContainerRef,
     innerContainer: innerRef,
   })
+
+  const getRepliedElement = useGetChatElement(
+    currentData,
+    comments,
+    loadedComments,
+    loadMore
+  )
 
   useEffect(() => {
     if (!isAtBottom) return
@@ -83,11 +92,11 @@ function ChatListContent({
       top: scrollContainerRef.current?.scrollHeight,
       behavior: 'auto',
     })
-  }, [isAtBottom, loadedPost.length, scrollContainerRef, replyTo])
+  }, [isAtBottom, loadedComments.length, scrollContainerRef, replyTo])
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  const isAllPostsLoaded = loadedPost.length === commentIds.length
+  const isAllCommentsLoaded = loadedComments.length === commentIds.length
 
   const scrollThreshold =
     (scrollContainerRef.current?.scrollHeight ?? 0) *
@@ -111,36 +120,39 @@ function ChatListContent({
       >
         <div ref={innerRef}>
           <InfiniteScroll
-            dataLength={loadedPost.length}
+            dataLength={loadedComments.length}
             next={loadMore}
             className={cx(
               'relative flex flex-col-reverse gap-2 !overflow-hidden'
             )}
-            hasMore={!isAllPostsLoaded}
+            hasMore={!isAllCommentsLoaded}
             inverse
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
             endMessage={<ChatTopNotice className='pb-2 pt-4' />}
             scrollThreshold={`${scrollThreshold}px`}
           >
-            {posts.map(({ data: post }, index) => {
-              const isLastReadMessage = lastReadId === post?.id
+            {comments.map(({ data: comment }, index) => {
+              const isLastReadMessage = lastReadId === comment?.id
               // bottom message is the first element, because the flex direction is reversed
               const isBottomMessage = index === 0
               const showLastUnreadMessageNotice =
                 isLastReadMessage && !isBottomMessage
 
-              const chatElement = post && (
+              const chatElement = comment && (
                 <ChatItemContainer
                   onSelectChatAsReply={onSelectChatAsReply}
-                  post={post}
-                  key={post.id}
+                  comment={comment}
+                  key={comment.id}
+                  scrollContainer={scrollContainerRef}
+                  chatBubbleId={getChatItemId(comment.id)}
+                  getRepliedElement={getRepliedElement}
                 />
               )
               if (!showLastUnreadMessageNotice) return chatElement
 
               return (
-                <Fragment key={post?.id || index}>
+                <Fragment key={comment?.id || index}>
                   <div className='my-2 w-full rounded-md bg-background-light py-0.5 text-center text-sm'>
                     Unread messages
                   </div>

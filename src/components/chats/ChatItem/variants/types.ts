@@ -9,4 +9,5 @@ export type ChatItemContentProps = ComponentProps<'div'> & {
   body: string
   inReplyTo?: { id: string }
   onCheckMarkClick: () => void
+  getRepliedElement?: (commentId: string) => Promise<HTMLElement | null>
 }

@@ -11,7 +11,7 @@ import { getTimeRelativeToNow } from '@/utils/date'
 import { generateRandomColor } from '@/utils/random-colors'
 import { copyToClipboard } from '@/utils/text'
 import { PostData } from '@subsocial/api/types'
-import { ComponentProps, useMemo, useReducer } from 'react'
+import { ComponentProps, RefObject, useMemo, useReducer } from 'react'
 import { toast } from 'react-hot-toast'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
@@ -22,9 +22,12 @@ import EmojiChatItem, {
 } from './variants/EmojiChatItem'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
-  post: PostData
+  comment: PostData
   onSelectChatAsReply?: (chatId: string) => void
   isMyMessage: boolean
+  scrollContainer?: RefObject<HTMLElement | null>
+  chatBubbleId?: string
+  getRepliedElement?: (commentId: string) => Promise<HTMLElement | null>
 }
 
 type CheckMarkModalReducerState = {
@@ -42,15 +45,18 @@ const checkMarkModalReducer = (
 }
 
 export default function ChatItem({
-  post,
+  comment,
   onSelectChatAsReply,
   isMyMessage,
+  scrollContainer,
+  chatBubbleId,
+  getRepliedElement,
   ...props
 }: ChatItemProps) {
-  const postId = post.id
-  const isSent = !isOptimisticId(postId)
-  const { createdAtTime, createdAtBlock, ownerId, contentId } = post.struct
-  const { body, inReplyTo } = post.content || {}
+  const commentId = comment.id
+  const isSent = !isOptimisticId(commentId)
+  const { createdAtTime, createdAtBlock, ownerId, contentId } = comment.struct
+  const { body, inReplyTo } = comment.content || {}
 
   const sendEvent = useSendEvent()
 
@@ -59,16 +65,16 @@ export default function ChatItem({
     variant: '',
   })
 
-  const setChatAsReply = (postId: string) => {
-    if (isOptimisticId(postId)) return
-    onSelectChatAsReply?.(postId)
+  const setChatAsReply = (commentId: string) => {
+    if (isOptimisticId(commentId)) return
+    onSelectChatAsReply?.(commentId)
   }
   const onSelectChatAsReplyRef = useWrapCallbackInRef(setChatAsReply)
   const menus = useMemo<DefaultCustomContextMenuProps['menus']>(() => {
     return [
       {
         text: 'Reply',
-        onClick: () => onSelectChatAsReplyRef.current?.(postId),
+        onClick: () => onSelectChatAsReplyRef.current?.(commentId),
       },
       {
         text: 'Copy',
@@ -80,7 +86,7 @@ export default function ChatItem({
         },
       },
     ]
-  }, [body, postId, onSelectChatAsReplyRef])
+  }, [body, commentId, onSelectChatAsReplyRef])
 
   if (!body) return null
 
@@ -124,8 +130,9 @@ export default function ChatItem({
             <div
               className={cx('flex flex-col', props.className)}
               onContextMenu={onContextMenu}
-              onDoubleClick={() => setChatAsReply(postId)}
+              onDoubleClick={() => setChatAsReply(commentId)}
               {...referenceProps}
+              id={chatBubbleId}
             >
               <ChatItemContentVariant
                 body={body}
@@ -136,6 +143,7 @@ export default function ChatItem({
                 relativeTime={relativeTime}
                 senderColor={senderColor}
                 inReplyTo={inReplyTo}
+                getRepliedElement={getRepliedElement}
               />
             </div>
           )

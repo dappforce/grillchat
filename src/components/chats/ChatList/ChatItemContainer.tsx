@@ -1,36 +1,35 @@
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { PostData } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
-import ChatItem from '../ChatItem'
+import ChatItem, { ChatItemProps } from '../ChatItem'
 
-export type ChatItemContainerProps = ComponentProps<'div'> & {
-  post: PostData
-  onSelectChatAsReply?: (chatId: string) => void
+export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
+  containerProps?: ComponentProps<'div'>
 }
+
 export default function ChatItemContainer({
-  post,
-  onSelectChatAsReply,
+  containerProps,
   ...props
 }: ChatItemContainerProps) {
+  const { comment } = props
   const address = useMyAccount((state) => state.address)
-  if (!post?.content?.body) return null
+  if (!comment?.content?.body) return null
 
-  const ownerId = post.struct.ownerId
+  const ownerId = comment.struct.ownerId
   const senderAddress = ownerId ?? ''
 
   const isMyMessage = address === senderAddress
 
   return (
     <div
-      {...props}
-      className={cx('w-10/12', isMyMessage && 'self-end', props.className)}
+      {...containerProps}
+      className={cx(
+        'w-10/12',
+        isMyMessage && 'self-end',
+        containerProps?.className
+      )}
     >
-      <ChatItem
-        post={post}
-        isMyMessage={isMyMessage}
-        onSelectChatAsReply={onSelectChatAsReply}
-      />
+      <ChatItem {...props} isMyMessage={isMyMessage} />
     </div>
   )
 }

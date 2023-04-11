@@ -3,20 +3,25 @@ import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { generateRandomColor } from '@/utils/random-colors'
 import { truncateText } from '@/utils/text'
-import { ComponentProps } from 'react'
+import { waitStopScrolling } from '@/utils/window'
+import { ComponentProps, RefObject } from 'react'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
-  replyTo: string
+  repliedMessageId: string
   originalMessage: string
+  scrollContainer?: RefObject<HTMLElement | null>
+  getRepliedElement?: (commentId: string) => Promise<HTMLElement | null>
 }
 
 const MINIMUM_REPLY_CHAR = 20
 export default function RepliedMessagePreview({
-  replyTo,
+  repliedMessageId,
   originalMessage,
+  scrollContainer,
+  getRepliedElement,
   ...props
 }: RepliedMessagePreviewProps) {
-  const { data } = getPostQuery.useQuery(replyTo)
+  const { data } = getPostQuery.useQuery(repliedMessageId)
   if (!data) {
     return null
   }
@@ -29,14 +34,35 @@ export default function RepliedMessagePreview({
     showedText = truncateText(showedText, MINIMUM_REPLY_CHAR)
   }
 
+  const onRepliedMessageClick = async () => {
+    console.log('asdfasd', getRepliedElement)
+    if (!getRepliedElement) return
+    console.log('fetch')
+    const element = await getRepliedElement(repliedMessageId)
+    console.log(element)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      await waitStopScrolling(scrollContainer?.current)
+      element.classList.add('wiggle')
+      element.onanimationend = function () {
+        element.classList.remove('wiggle')
+      }
+    }
+  }
+
   return (
     <div
       {...props}
       className={cx(
         'flex flex-col overflow-hidden border-l-2 pl-2 text-sm',
+        getRepliedElement && 'cursor-pointer',
         props.className
       )}
       style={{ borderColor: replySenderColor, ...props.style }}
+      onClick={(e) => {
+        onRepliedMessageClick()
+        props.onClick?.(e)
+      }}
     >
       <span style={{ color: replySenderColor }}>
         {truncateAddress(data?.struct.ownerId ?? '')}
