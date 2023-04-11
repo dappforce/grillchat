@@ -13,6 +13,8 @@ export default function useGetChatElement(
   loadMore: () => void
 ) {
   const waitAllCommentsLoaded = useWaitCommentsLoading(commentsQuery)
+
+  const waitAllCommentsLoadedRef = useWrapCallbackInRef(waitAllCommentsLoaded)
   const commentIdsRef = useWrapCallbackInRef(commentIds)
 
   const promiseRef = useRef<{
@@ -73,7 +75,7 @@ export default function useGetChatElement(
     await getPromise()
     await new Promise<void>((resolve) =>
       setTimeout(async () => {
-        await waitAllCommentsLoaded()
+        await waitAllCommentsLoadedRef.current()
         resolve()
       })
     )
