@@ -137,6 +137,7 @@ export default function ChatItem({
                 ownerId={ownerId}
                 relativeTime={relativeTime}
                 senderColor={senderColor}
+                inReplyTo={inReplyTo}
               />
             </div>
           )
