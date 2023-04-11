@@ -35,11 +35,8 @@ export default function RepliedMessagePreview({
   }
 
   const onRepliedMessageClick = async () => {
-    console.log('asdfasd', getRepliedElement)
     if (!getRepliedElement) return
-    console.log('fetch')
     const element = await getRepliedElement(repliedMessageId)
-    console.log(element)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       await waitStopScrolling(scrollContainer?.current)

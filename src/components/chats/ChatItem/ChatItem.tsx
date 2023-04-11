@@ -144,6 +144,7 @@ export default function ChatItem({
                 senderColor={senderColor}
                 inReplyTo={inReplyTo}
                 getRepliedElement={getRepliedElement}
+                scrollContainer={scrollContainer}
               />
             </div>
           )

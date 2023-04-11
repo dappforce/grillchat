@@ -18,6 +18,7 @@ export default function DefaultChatItem({
   relativeTime,
   senderColor,
   inReplyTo,
+  scrollContainer,
   getRepliedElement,
   ...props
 }: DefaultChatItemProps) {
@@ -45,6 +46,7 @@ export default function DefaultChatItem({
             originalMessage={body}
             className='mt-1'
             repliedMessageId={inReplyTo.id}
+            scrollContainer={scrollContainer}
             getRepliedElement={getRepliedElement}
           />
         )}
