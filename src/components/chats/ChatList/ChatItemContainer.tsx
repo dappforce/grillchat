@@ -1,15 +1,17 @@
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { ComponentProps } from 'react'
 import ChatItem, { ChatItemProps } from '../ChatItem'
 
-export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'>
+export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
+  containerProps?: ComponentProps<'div'>
+}
 
 export default function ChatItemContainer({
-  comment,
-  onSelectChatAsReply,
-  scrollContainer,
+  containerProps,
   ...props
 }: ChatItemContainerProps) {
+  const { comment } = props
   const address = useMyAccount((state) => state.address)
   if (!comment?.content?.body) return null
 
@@ -20,15 +22,14 @@ export default function ChatItemContainer({
 
   return (
     <div
-      {...props}
-      className={cx('w-10/12', isMyMessage && 'self-end', props.className)}
+      {...containerProps}
+      className={cx(
+        'w-10/12',
+        isMyMessage && 'self-end',
+        containerProps?.className
+      )}
     >
-      <ChatItem
-        comment={comment}
-        isMyMessage={isMyMessage}
-        onSelectChatAsReply={onSelectChatAsReply}
-        scrollContainer={scrollContainer}
-      />
+      <ChatItem {...props} isMyMessage={isMyMessage} />
     </div>
   )
 }

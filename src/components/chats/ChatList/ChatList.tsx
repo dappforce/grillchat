@@ -20,6 +20,7 @@ import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import { getChatItemId } from './helpers'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
+import useGetChatElement from './hooks/useGetChatElement'
 import useIsAtBottom from './hooks/useIsAtBottom'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import { NewMessageNotice } from './NewMessageNotice'
@@ -77,6 +78,13 @@ function ChatListContent({
     scrollContainer: scrollContainerRef,
     innerContainer: innerRef,
   })
+
+  const getRepliedElement = useGetChatElement(
+    currentData,
+    comments,
+    loadedComments,
+    loadMore
+  )
 
   useEffect(() => {
     if (!isAtBottom) return
@@ -138,6 +146,7 @@ function ChatListContent({
                   key={comment.id}
                   scrollContainer={scrollContainerRef}
                   chatBubbleId={getChatItemId(comment.id)}
+                  getRepliedElement={getRepliedElement}
                 />
               )
               if (!showLastUnreadMessageNotice) return chatElement
