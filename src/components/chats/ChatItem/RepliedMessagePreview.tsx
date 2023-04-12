@@ -61,6 +61,7 @@ export default function RepliedMessagePreview({
       )}
       style={{ borderColor: replySenderColor, ...props.style }}
       onClick={(e) => {
+        e.stopPropagation()
         onRepliedMessageClick()
         props.onClick?.(e)
       }}
