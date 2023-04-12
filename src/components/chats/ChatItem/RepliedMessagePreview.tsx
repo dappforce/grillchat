@@ -69,7 +69,7 @@ export default function RepliedMessagePreview({
       <span style={{ color: replySenderColor }}>
         {truncateAddress(data?.struct.ownerId ?? '')}
       </span>
-      <span className='overflow-hidden overflow-ellipsis whitespace-nowrap'>
+      <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-70'>
         {showedText}
       </span>
     </div>
