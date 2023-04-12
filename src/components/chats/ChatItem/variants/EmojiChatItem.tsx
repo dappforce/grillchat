@@ -7,7 +7,7 @@ import { ChatItemContentProps } from './types'
 
 export type EmojiChatItemProps = ChatItemContentProps
 
-const BASE_EMOJI_FONT = 32
+const EMOJI_FONT_SIZES = [80, 64, 32]
 const MAX_EMOJI_AMOUNT = 3
 
 export function shouldRenderEmojiChatItem(body: string) {
@@ -45,7 +45,7 @@ export default function EmojiChatItem({
         <p
           className={cx('flex items-center')}
           style={{
-            fontSize: (BASE_EMOJI_FONT * MAX_EMOJI_AMOUNT) / emojiCount,
+            fontSize: EMOJI_FONT_SIZES[emojiCount - 1],
           }}
         >
           {body}
