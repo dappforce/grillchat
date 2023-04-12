@@ -3,7 +3,7 @@ import ChatPage from '@/modules/_c/ChatPage'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { getSpaceId } from '@/utils/env/client'
+import { getMainSpaceId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { createSlug, getIdFromSlug } from '@/utils/slug'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
@@ -11,7 +11,7 @@ import { GetStaticPaths } from 'next'
 import { getPostsFromCache } from '../api/posts'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const spaceId = getSpaceId()
+  const spaceId = getMainSpaceId()
   const subsocialApi = await getSubsocialApi()
   const postIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
   const posts = await getPostsFromCache(postIds)

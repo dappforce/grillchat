@@ -6,7 +6,6 @@ import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
-import { getSpaceId } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { createSlug } from '@/utils/slug'
 import dynamic from 'next/dynamic'
@@ -15,12 +14,15 @@ import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
+export type HomePageProps = {
+  isIntegrateChatButtonOnTop: boolean
+  spaceId: string
+}
 export default function HomePage({
   isIntegrateChatButtonOnTop,
-}: {
-  isIntegrateChatButtonOnTop: boolean
-}) {
-  const { data } = getPostIdsBySpaceIdQuery.useQuery(getSpaceId())
+  spaceId,
+}: HomePageProps) {
+  const { data } = getPostIdsBySpaceIdQuery.useQuery(spaceId)
   const sortedIds = useSortedPostIdsByLatestMessage(data?.postIds ?? [])
   const sendEvent = useSendEvent()
 
