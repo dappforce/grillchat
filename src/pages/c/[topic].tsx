@@ -61,9 +61,6 @@ export const getStaticProps = getCommonStaticProps<{
         commentIds ?? null
       )
       posts.forEach((post) => {
-        if (post.content === undefined) {
-          console.log(post)
-        }
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
     } catch (err) {
