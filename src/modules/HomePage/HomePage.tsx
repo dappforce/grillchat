@@ -11,6 +11,7 @@ import { createSlug } from '@/utils/slug'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
+import useSortByUrlQuery from './hooks/useSortByUrlQuery'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
@@ -25,7 +26,11 @@ export default function HomePage({
   isMainPage,
 }: HomePageProps) {
   const { data } = getPostIdsBySpaceIdQuery.useQuery(spaceId)
+
   const sortedIds = useSortedPostIdsByLatestMessage(data?.postIds ?? [])
+  const order = useSortByUrlQuery(sortedIds)
+  const usedOrder = order.length > 0 ? order : sortedIds
+
   const sendEvent = useSendEvent()
 
   const integrateChatButton = (
@@ -81,7 +86,7 @@ export default function HomePage({
       {isMainPage && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {isMainPage && specialButtons}
-        {sortedIds.map((postId) => (
+        {usedOrder.map((postId) => (
           <ChatPreviewContainer postId={postId} key={postId} />
         ))}
       </div>

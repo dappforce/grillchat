@@ -14,3 +14,9 @@ export function preventWindowUnload() {
 export function allowWindowUnload() {
   window.onbeforeunload = null
 }
+
+export function getUrlQuery(queryName: string) {
+  const query = window.location.search
+  const searchParams = new URLSearchParams(query)
+  return searchParams.getAll(queryName)
+}
