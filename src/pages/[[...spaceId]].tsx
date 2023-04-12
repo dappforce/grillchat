@@ -85,6 +85,7 @@ export const getStaticProps = getCommonStaticProps<
         dehydratedState: dehydrate(queryClient),
         isIntegrateChatButtonOnTop: Math.random() > 0.5,
         spaceId,
+        isMainPage: !paramSpaceId,
       },
       revalidate: 2,
     }
