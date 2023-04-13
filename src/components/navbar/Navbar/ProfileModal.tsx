@@ -18,7 +18,6 @@ import { cx } from '@/utils/class-names'
 import { getBaseUrl } from '@/utils/env/client'
 import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
-import { LocalStorage } from '@/utils/storage'
 import React, { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
@@ -128,18 +127,11 @@ type ButtonData = {
   notification?: NotificationControl
 }
 
-const STORAGE_KEY = 'viewed-about-app'
-const storage = new LocalStorage(() => STORAGE_KEY)
 function AccountContent({
   address,
   setCurrentState,
   notification,
 }: ContentProps) {
-  const [aboutAppNotif, setAboutAppNotif] = useState(false)
-  useEffect(() => {
-    if (storage.get() !== 'true') setAboutAppNotif(true)
-  }, [])
-
   const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = () => {
     sendEvent('click show_private_key_button')
@@ -175,13 +167,6 @@ function AccountContent({
       text: 'About app',
       icon: InfoIcon,
       onClick: onAboutClick,
-      notification: {
-        showNotif: aboutAppNotif,
-        setNotifDone: () => {
-          setAboutAppNotif(false)
-          storage.set('true')
-        },
-      },
     },
     { text: 'Log out', icon: ExitIcon, onClick: onLogoutClick },
   ]
