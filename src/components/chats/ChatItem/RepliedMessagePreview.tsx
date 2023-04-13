@@ -3,8 +3,8 @@ import { cx } from '@/utils/class-names'
 import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
 import { truncateText } from '@/utils/text'
-import { waitStopScrolling } from '@/utils/window'
 import { ComponentProps, RefObject, useState } from 'react'
+import { scrollToChatItem } from '../helpers'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   repliedMessageId: string
@@ -40,14 +40,7 @@ export default function RepliedMessagePreview({
     setIsLoading(true)
     const element = await getRepliedElement(repliedMessageId)
     setIsLoading(false)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      await waitStopScrolling(scrollContainer?.current)
-      element.classList.add('highlighted')
-      element.onanimationend = function () {
-        element.classList.remove('highlighted')
-      }
-    }
+    scrollToChatItem(element, scrollContainer?.current ?? null)
   }
 
   const name = generateRandomName(data?.struct.ownerId ?? '')
