@@ -1,10 +1,10 @@
 import { getPostQuery } from '@/services/api/query'
-import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { generateRandomColor } from '@/utils/random-colors'
+import { generateRandomName } from '@/utils/random-name'
 import { truncateText } from '@/utils/text'
 import { waitStopScrolling } from '@/utils/window'
-import { ComponentProps, RefObject } from 'react'
+import { ComponentProps, RefObject, useState } from 'react'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   repliedMessageId: string
@@ -21,6 +21,7 @@ export default function RepliedMessagePreview({
   getRepliedElement,
   ...props
 }: RepliedMessagePreviewProps) {
+  const [isLoading, setIsLoading] = useState(false)
   const { data } = getPostQuery.useQuery(repliedMessageId)
   if (!data) {
     return null
@@ -36,16 +37,20 @@ export default function RepliedMessagePreview({
 
   const onRepliedMessageClick = async () => {
     if (!getRepliedElement) return
+    setIsLoading(true)
     const element = await getRepliedElement(repliedMessageId)
+    setIsLoading(false)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       await waitStopScrolling(scrollContainer?.current)
-      element.classList.add('wiggle')
+      element.classList.add('highlighted')
       element.onanimationend = function () {
-        element.classList.remove('wiggle')
+        element.classList.remove('highlighted')
       }
     }
   }
+
+  const name = generateRandomName(data?.struct.ownerId ?? '')
 
   return (
     <div
@@ -53,18 +58,18 @@ export default function RepliedMessagePreview({
       className={cx(
         'flex flex-col overflow-hidden border-l-2 pl-2 text-sm',
         getRepliedElement && 'cursor-pointer',
+        isLoading && 'animate-pulse',
         props.className
       )}
       style={{ borderColor: replySenderColor, ...props.style }}
       onClick={(e) => {
+        e.stopPropagation()
         onRepliedMessageClick()
         props.onClick?.(e)
       }}
     >
-      <span style={{ color: replySenderColor }}>
-        {truncateAddress(data?.struct.ownerId ?? '')}
-      </span>
-      <span className='overflow-hidden overflow-ellipsis whitespace-nowrap'>
+      <span style={{ color: replySenderColor }}>{name}</span>
+      <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
         {showedText}
       </span>
     </div>

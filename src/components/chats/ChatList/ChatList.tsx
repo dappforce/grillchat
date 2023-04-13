@@ -2,6 +2,7 @@ import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfinite
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
+import useWrapCallbackInRef from '@/hooks/useWrapCallbackInRef'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
@@ -32,6 +33,7 @@ export type ChatListProps = ComponentProps<'div'> & {
   scrollContainerRef?: React.RefObject<HTMLDivElement>
   replyTo?: string
   onSelectChatAsReply?: (chatId: string) => void
+  newChatNoticeClassName?: string
 }
 
 export default function ChatList(props: ChatListProps) {
@@ -50,6 +52,7 @@ function ChatListContent({
   scrollContainerRef: _scrollContainerRef,
   replyTo,
   onSelectChatAsReply,
+  newChatNoticeClassName,
   ...props
 }: ChatListProps) {
   const lastReadId = useFocusedLastMessageId(postId)
@@ -86,13 +89,14 @@ function ChatListContent({
     loadMore
   )
 
+  const isAtBottomRef = useWrapCallbackInRef(isAtBottom)
   useEffect(() => {
-    if (!isAtBottom) return
+    if (!isAtBottomRef.current) return
     scrollContainerRef.current?.scrollTo({
       top: scrollContainerRef.current?.scrollHeight,
       behavior: 'auto',
     })
-  }, [isAtBottom, loadedComments.length, scrollContainerRef, replyTo])
+  }, [loadedComments.length, isAtBottomRef, scrollContainerRef, replyTo])
 
   const Component = asContainer ? Container<'div'> : 'div'
 
@@ -123,7 +127,7 @@ function ChatListContent({
             dataLength={loadedComments.length}
             next={loadMore}
             className={cx(
-              'relative flex flex-col-reverse gap-2 !overflow-hidden'
+              'relative flex flex-col-reverse gap-2 !overflow-hidden pb-2'
             )}
             hasMore={!isAllCommentsLoaded}
             inverse
@@ -164,7 +168,7 @@ function ChatListContent({
         </div>
       </ScrollableContainer>
       <NewMessageNotice
-        className='absolute bottom-0 right-6'
+        className={cx('absolute bottom-0 right-6', newChatNoticeClassName)}
         commentIds={commentIds}
         scrollContainerRef={scrollContainerRef}
       />

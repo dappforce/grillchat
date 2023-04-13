@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
-import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
+import { generateRandomName } from '@/utils/random-name'
 import Linkify from 'linkify-react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import RepliedMessagePreview from '../RepliedMessagePreview'
@@ -22,6 +22,8 @@ export default function DefaultChatItem({
   getRepliedElement,
   ...props
 }: DefaultChatItemProps) {
+  const name = generateRandomName(ownerId)
+
   return (
     <div className={cx('flex flex-col', props.className)}>
       <div
@@ -36,7 +38,7 @@ export default function DefaultChatItem({
               className='mr-2 text-sm text-text-secondary'
               style={{ color: senderColor }}
             >
-              {truncateAddress(ownerId)}
+              {name}
             </span>
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>

@@ -56,6 +56,7 @@
     "slugify": "^1.6.6",
     "tailwind-merge": "^1.10.0",
     "typescript": "4.9.5",
+    "unique-names-generator": "^4.7.1",
     "url-join": "^5.0.0",
     "use-breakpoint": "^3.0.7",
     "zod": "^3.20.6",

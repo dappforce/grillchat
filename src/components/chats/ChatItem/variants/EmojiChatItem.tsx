@@ -24,7 +24,6 @@ export default function EmojiChatItem({
   isSent,
   onCheckMarkClick,
   body,
-  ownerId,
   relativeTime,
   senderColor,
   inReplyTo,
