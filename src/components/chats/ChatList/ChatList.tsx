@@ -16,10 +16,10 @@ import {
   useRef,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import { getChatItemId } from '../helpers'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
-import { getChatItemId } from './helpers'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
 import useGetChatElement from './hooks/useGetChatElement'
 import useIsAtBottom from './hooks/useIsAtBottom'

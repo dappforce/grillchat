@@ -5,15 +5,18 @@ import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
+import { getChatItemId, scrollToChatItem } from '../helpers'
 
 export type RepliedMessageProps = ComponentProps<'div'> & {
   replyChatId: string
   closeReply: () => void
+  scrollContainer?: React.RefObject<HTMLElement | null>
 }
 
 export default function RepliedMessage({
   replyChatId,
   closeReply,
+  scrollContainer,
 }: RepliedMessageProps) {
   const { data } = getPostQuery.useQuery(replyChatId)
   const chatContent = data?.content?.body
@@ -21,8 +24,16 @@ export default function RepliedMessage({
   const senderColor = generateRandomColor(chatSenderAddr ?? '')
   const name = generateRandomName(chatSenderAddr ?? '')
 
+  const onRepliedMessageClick = () => {
+    const element = document.getElementById(getChatItemId(replyChatId))
+    scrollToChatItem(element, scrollContainer?.current ?? null)
+  }
+
   return (
-    <div className='flex items-center overflow-hidden border-t border-border-gray pb-3 pt-2'>
+    <div
+      className='flex cursor-pointer items-center overflow-hidden border-t border-border-gray pb-3 pt-2'
+      onClick={onRepliedMessageClick}
+    >
       <div className='flex-shrink-0 pl-2 pr-3 text-text-muted'>
         <BsFillReplyFill className='text-2xl' />
       </div>
@@ -41,7 +52,10 @@ export default function RepliedMessage({
         size='noPadding'
         className='mx-3 flex-shrink-0'
         variant='transparent'
-        onClick={closeReply}
+        onClick={(e) => {
+          e.stopPropagation()
+          closeReply()
+        }}
       >
         <HiXMark className='text-2xl' />
       </Button>

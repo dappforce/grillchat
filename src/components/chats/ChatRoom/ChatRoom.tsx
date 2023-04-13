@@ -50,7 +50,11 @@ export default function ChatRoom({
         className={cx('mt-auto flex flex-col py-3', replyTo && 'pt-0')}
       >
         {replyTo && (
-          <RepliedMessage closeReply={closeReply} replyChatId={replyTo} />
+          <RepliedMessage
+            closeReply={closeReply}
+            replyChatId={replyTo}
+            scrollContainer={scrollContainerRef}
+          />
         )}
         <ChatForm
           replyTo={replyTo}

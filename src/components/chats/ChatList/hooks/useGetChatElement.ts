@@ -4,7 +4,7 @@ import { generateManuallyTriggeredPromise } from '@/utils/promise'
 import { PostData } from '@subsocial/api/types'
 import { UseQueryResult } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef } from 'react'
-import { getChatItemId } from '../helpers'
+import { getChatItemId } from '../../helpers'
 
 export default function useGetChatElement(
   commentIds: string[],
