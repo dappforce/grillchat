@@ -9,6 +9,7 @@ import FixedBottomActionLayout from '@/components/layouts/FixedBottomActionLayou
 import LinkText from '@/components/LinkText'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import { useSendEvent } from '@/stores/analytics'
+import { getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
 
@@ -76,14 +77,7 @@ export default function LaunchCommunityPage() {
           <div className='relative !z-0'>
             <div
               className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]'
-              style={{
-                backfaceVisibility: 'hidden',
-                MozBackfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-                transform: 'translate3d(0, 0, 0)',
-                msTransform: 'translate3d(0, 0, 0)',
-                WebkitTransform: 'translate3d(0, 0, 0)',
-              }}
+              style={getBlurFallbackStyles()}
             />
             <ClickableImage
               src={CustomizeImage}
@@ -123,14 +117,7 @@ export default function LaunchCommunityPage() {
           <div className='relative !z-0'>
             <div
               className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]'
-              style={{
-                backfaceVisibility: 'hidden',
-                MozBackfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-                transform: 'translate3d(0, 0, 0)',
-                msTransform: 'translate3d(0, 0, 0)',
-                WebkitTransform: 'translate3d(0, 0, 0)',
-              }}
+              style={getBlurFallbackStyles()}
             />
             <Image
               src={FeaturesImage}
