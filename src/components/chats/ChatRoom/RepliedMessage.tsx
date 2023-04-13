@@ -19,7 +19,7 @@ export default function RepliedMessage({
   const chatContent = data?.content?.body
   const chatSenderAddr = data?.struct.ownerId
   const senderColor = generateRandomColor(chatSenderAddr ?? '')
-  const name = generateRandomName(chatSenderAddr)
+  const name = generateRandomName(chatSenderAddr ?? '')
 
   return (
     <div className='flex items-center overflow-hidden border-t border-border-gray pb-3 pt-2'>
