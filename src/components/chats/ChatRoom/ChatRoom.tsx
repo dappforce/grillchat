@@ -33,6 +33,8 @@ export default function ChatRoom({
     }
   }
 
+  const closeReply = () => setReplyTo(undefined)
+
   return (
     <div {...props} className={cx('flex flex-col', className)}>
       <ChatList
@@ -43,13 +45,17 @@ export default function ChatRoom({
         onSelectChatAsReply={setReplyTo}
         replyTo={replyTo}
       />
-      <Component className='mt-auto flex flex-col py-3'>
-        {replyTo && <RepliedMessage replyChatId={replyTo} />}
+      <Component
+        className={cx('mt-auto flex flex-col py-3', replyTo && 'pt-0')}
+      >
+        {replyTo && (
+          <RepliedMessage closeReply={closeReply} replyChatId={replyTo} />
+        )}
         <ChatForm
           replyTo={replyTo}
           onSubmit={scrollToBottom}
           postId={postId}
-          clearReplyTo={() => setReplyTo(undefined)}
+          clearReplyTo={closeReply}
         />
       </Component>
     </div>
