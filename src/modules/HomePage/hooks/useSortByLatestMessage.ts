@@ -24,7 +24,7 @@ export default function useSortedPostIdsByLatestMessage(
     const hasAddedIds = new Set()
     const sortedIds: string[] = []
     posts.forEach((post) => {
-      const id = (post as CommentData)?.struct.rootPostId
+      const id = (post as unknown as CommentData)?.struct.rootPostId
       if (!id) return
       hasAddedIds.add(id)
       sortedIds.push(id)
