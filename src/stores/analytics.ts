@@ -1,7 +1,5 @@
-import { createAmplitudeInstance } from '@/analytics/amplitude'
 import { createUserId } from '@/services/api/mutations'
-import { BrowserClient } from '@amplitude/analytics-types'
-import { event } from 'nextjs-google-analytics'
+import { type BrowserClient } from '@amplitude/analytics-types'
 import { create } from './utils'
 
 type State = {
@@ -41,8 +39,9 @@ export const useAnalytics = create<State & Actions>()((set, get) => ({
     const { _updateUserId } = get()
     _updateUserId(address)
   },
-  sendEvent: (name: string, properties?: Record<string, string>) => {
+  sendEvent: async (name: string, properties?: Record<string, string>) => {
     const { amp, userId } = get()
+    const { event } = await import('nextjs-google-analytics')
     amp?.logEvent(name, properties)
     event(name, {
       userId,
@@ -50,6 +49,7 @@ export const useAnalytics = create<State & Actions>()((set, get) => ({
     })
   },
   init: async () => {
+    const { createAmplitudeInstance } = await import('@/analytics/amplitude')
     const amp = await createAmplitudeInstance()
     set({ amp })
   },

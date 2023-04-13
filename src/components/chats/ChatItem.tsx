@@ -1,11 +1,11 @@
 import useGetTheme from '@/hooks/useGetTheme'
 import { useSendEvent } from '@/stores/analytics'
-import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { getExplorerUrl } from '@/utils/explorer'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { generateRandomColor } from '@/utils/random-colors'
+import { generateRandomName } from '@/utils/random-name'
 import Linkify from 'linkify-react'
 import { ComponentProps, useReducer } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
@@ -92,7 +92,7 @@ export default function ChatItem({
               className='mr-2 text-sm text-text-secondary'
               style={{ color: senderColor }}
             >
-              {truncateAddress(senderAddress)}
+              {generateRandomName(senderAddress)}
             </span>
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>

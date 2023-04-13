@@ -7,10 +7,11 @@ import Link, { LinkProps } from 'next/link'
 import React, { ComponentProps } from 'react'
 import ChatLastMessage from './ChatLastMessage'
 
-const ChatLastMessageTime = dynamic(() => import('./ChatLastMessageTime'), {
+// dynamic import to prevent hydration mismatch
+const ChatUnreadCount = dynamic(() => import('./ChatUnreadCount'), {
   ssr: false,
 })
-const ChatUnreadCount = dynamic(() => import('./ChatUnreadCount'), {
+const ChatLastMessageTime = dynamic(() => import('./ChatLastMessageTime'), {
   ssr: false,
 })
 

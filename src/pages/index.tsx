@@ -2,9 +2,10 @@ import HomePage from '@/modules/HomePage'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
-import { getSubsocialApi } from '@/subsocial-query/subsocial'
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getSpaceId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
+import { PostData } from '@subsocial/api/types'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { getPostsFromCache } from './api/posts'
 
@@ -29,8 +30,14 @@ export const getStaticProps = getCommonStaticProps<{
       const commentIdsByPostId = await Promise.all(promises)
       const posts = await postsPromise
 
-      const lastPostIds = commentIdsByPostId.map((ids) => ids[ids.length - 1])
-      const lastPosts = await getPostsFromCache(lastPostIds)
+      const lastPostIds = commentIdsByPostId
+        .map((ids) => ids[ids.length - 1])
+        .filter((id) => !!id)
+
+      let lastPosts: PostData[] = []
+      if (lastPostIds.length > 0) {
+        lastPosts = await getPostsFromCache(lastPostIds)
+      }
 
       getPostIdsBySpaceIdQuery.setQueryData(queryClient, spaceId, {
         spaceId,

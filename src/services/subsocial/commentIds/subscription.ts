@@ -1,7 +1,5 @@
 import { getPostQuery, getPosts } from '@/services/api/query'
-import { getSubsocialApi } from '@/subsocial-query/subsocial'
 import { PostData } from '@subsocial/api/types'
-import { toSubsocialAddress } from '@subsocial/utils/accounts'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
 import { extractOptimisticIdData, isOptimisticId } from '../utils'
@@ -23,6 +21,9 @@ const subscription = (
   subscribedPostIds.add(postId)
 
   let unsub: Promise<() => void> = (async () => {
+    const { getSubsocialApi } = await import(
+      '@/subsocial-query/subsocial/connection'
+    )
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
 
@@ -168,8 +169,7 @@ function filterOptimisticIds(
     const foundIndex = mutatedNewPosts.findIndex((post) => {
       return (
         post.content?.body === idData.message &&
-        toSubsocialAddress(post.struct.ownerId) ===
-          toSubsocialAddress(idData.address)
+        post.struct.ownerId === idData.address
       )
     })
     const isFound = foundIndex !== -1

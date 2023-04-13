@@ -1,4 +1,4 @@
-import { SubsocialApi } from '@subsocial/api'
+import { type SubsocialApi } from '@subsocial/api'
 import { QueryClient, useQueries, useQuery } from '@tanstack/react-query'
 import {
   createQueryInvalidation,
@@ -7,7 +7,6 @@ import {
   queryWrapper,
 } from '..'
 import { QueryConfig } from '../types'
-import { getSubsocialApi } from './connection'
 
 export type SubsocialParam<T> = { data: T } & { api: SubsocialApi }
 
@@ -21,6 +20,7 @@ export function useSubsocialQuery<ReturnValue, Data>(
   return useQuery(
     [params.key, params.data],
     queryWrapper<ReturnValue, Data, { api: SubsocialApi }>(func, async () => {
+      const { getSubsocialApi } = await import('./connection')
       const api = await getSubsocialApi()
       return { api }
     }),
@@ -46,6 +46,7 @@ export function useSubsocialQueries<ReturnValue, Data>(
           Data,
           { api: SubsocialApi; idx: number }
         >(func, async () => {
+          const { getSubsocialApi } = await import('./connection')
           const api = await getSubsocialApi()
           return { api, idx }
         }),

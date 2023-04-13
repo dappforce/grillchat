@@ -50,6 +50,7 @@ export default function ProfileAvatar({
           panelColor='warning'
           withCloseButton
           trigger={null}
+          initialFocus={-1}
         >
           <p>Click on your avatar and save your private key</p>
         </PopOver>

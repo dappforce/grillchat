@@ -1,17 +1,24 @@
 import BulbIcon from '@/assets/icons/bulb.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
+import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
+import LinkText from '@/components/LinkText'
+import Logo from '@/components/Logo'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getBaseUrl } from '@/utils/env/client'
+import { generateRandomColor } from '@/utils/random-colors'
+import { generateRandomName } from '@/utils/random-name'
+import { LocalStorage } from '@/utils/storage'
 import React, { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
@@ -26,7 +33,12 @@ export type ProfileModalProps = ModalFunctionalityProps & {
   notification?: NotificationControl
 }
 
-type ModalState = 'account' | 'private-key' | 'logout' | 'share-session'
+type ModalState =
+  | 'account'
+  | 'private-key'
+  | 'logout'
+  | 'share-session'
+  | 'about'
 const modalTitles: {
   [key in ModalState]: {
     title: React.ReactNode
@@ -48,6 +60,11 @@ const modalTitles: {
     desc: 'Use this link or scan the QR code to quickly log in to this account on another device.',
     withBackButton: true,
   },
+  about: {
+    title: 'About app',
+    desc: null,
+    withBackButton: true,
+  },
 }
 
 type ContentProps = {
@@ -62,6 +79,7 @@ const modalContents: {
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
+  about: AboutContent,
 }
 
 export default function ProfileModal({
@@ -109,11 +127,19 @@ type ButtonData = {
   href?: string
   notification?: NotificationControl
 }
+
+const STORAGE_KEY = 'viewed-about-app'
+const storage = new LocalStorage(() => STORAGE_KEY)
 function AccountContent({
   address,
   setCurrentState,
   notification,
 }: ContentProps) {
+  const [aboutAppNotif, setAboutAppNotif] = useState(false)
+  useEffect(() => {
+    if (storage.get() !== 'true') setAboutAppNotif(true)
+  }, [])
+
   const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = () => {
     sendEvent('click show_private_key_button')
@@ -127,6 +153,10 @@ function AccountContent({
     sendEvent('click log_out_button')
     setCurrentState('logout')
   }
+  const onAboutClick = () => {
+    sendEvent('click about_app_button')
+    setCurrentState('about')
+  }
 
   const buttons: ButtonData[] = [
     {
@@ -139,7 +169,19 @@ function AccountContent({
     {
       text: 'Suggest feature',
       icon: BulbIcon,
-      href: 'https://grill.hellonext.co',
+      href: SUGGEST_FEATURE_LINK,
+    },
+    {
+      text: 'About app',
+      icon: InfoIcon,
+      onClick: onAboutClick,
+      notification: {
+        showNotif: aboutAppNotif,
+        setNotifDone: () => {
+          setAboutAppNotif(false)
+          storage.set('true')
+        },
+      },
     },
     { text: 'Log out', icon: ExitIcon, onClick: onLogoutClick },
   ]
@@ -148,17 +190,27 @@ function AccountContent({
     <div className='mt-2 flex flex-col'>
       <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
         <AddressAvatar address={address} className='h-20 w-20' />
-        <CopyTextInline
-          text={truncateAddress(address)}
-          tooltip='Copy my public address'
-          textToCopy={address}
-        />
+        <div className='flex flex-col'>
+          <span
+            className='text-lg'
+            style={{ color: generateRandomColor(address) }}
+          >
+            {generateRandomName(address)}
+          </span>
+          <CopyTextInline
+            text={truncateAddress(address)}
+            tooltip='Copy my public address'
+            textToCopy={address}
+          />
+        </div>
       </div>
       <div className='flex w-full flex-col gap-6 py-6 px-3'>
         {buttons.map(({ icon: Icon, onClick, text, href, notification }) => (
           <Button
             key={text}
             href={href}
+            target='_blank'
+            rel='noopener noreferrer'
             variant='transparent'
             size='noPadding'
             interactive='none'
@@ -172,7 +224,7 @@ function AccountContent({
               onClick?.()
             }}
           >
-            <Icon className='mr-6 text-xl' />
+            <Icon className='mr-6 text-xl text-text-muted' />
             <span>{text}</span>
             {notification?.showNotif && (
               <span className='relative ml-2 h-2 w-2'>
@@ -255,6 +307,43 @@ function ShareSessionContent() {
         />
       </div>
       <CopyText text={shareSessionLink} onCopyClick={onCopyClick} />
+    </div>
+  )
+}
+
+function AboutContent() {
+  return (
+    <div className='mt-2 flex flex-col gap-4'>
+      <div className='flex justify-center'>
+        <Logo className='text-5xl' />
+      </div>
+      <p className='text-text-muted'>
+        Engage in discussions anonymously without fear of social persecution.
+        Grill.chat runs on the{' '}
+        <LinkText
+          openInNewTab
+          href='https://subsocial.network/xsocial'
+          variant='primary'
+        >
+          xSocial
+        </LinkText>{' '}
+        blockchain and backs up its content to{' '}
+        <LinkText openInNewTab href='https://ipfs.tech/' variant='primary'>
+          IPFS
+        </LinkText>
+        .
+      </p>
+      <div className='rounded-2xl border border-background-warning py-2 px-4 text-background-warning'>
+        xSocial is an experimental environment for innovative web3 social
+        features before they are deployed on{' '}
+        <LinkText
+          openInNewTab
+          href='https://subsocial.network'
+          variant='primary'
+        >
+          Subsocial
+        </LinkText>
+      </div>
     </div>
   )
 }

@@ -7,7 +7,9 @@ import ClickableImage from '@/components/ClickableImage'
 import Container from '@/components/Container'
 import FixedBottomActionLayout from '@/components/layouts/FixedBottomActionLayout'
 import LinkText from '@/components/LinkText'
+import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import { useSendEvent } from '@/stores/analytics'
+import { getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
 
@@ -31,6 +33,8 @@ export default function LaunchCommunityPage() {
             className='w-full max-w-sm'
             size='lg'
             href='https://forms.gle/9ByHSa9rzAuAsDmHA'
+            target='_blank'
+            rel='noopener noreferrer'
             onClick={() => sendEvent('click join_waitlist_button')}
           >
             Join Waitlist
@@ -71,7 +75,10 @@ export default function LaunchCommunityPage() {
             bubbles, logos, and more!
           </p>
           <div className='relative !z-0'>
-            <div className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]' />
+            <div
+              className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]'
+              style={getBlurFallbackStyles()}
+            />
             <ClickableImage
               src={CustomizeImage}
               alt=''
@@ -88,6 +95,7 @@ export default function LaunchCommunityPage() {
               className='font-bold'
               variant='primary'
               href='https://polkaverse.com/dd'
+              openInNewTab
             >
               Subsocial username
             </LinkText>
@@ -107,7 +115,10 @@ export default function LaunchCommunityPage() {
             Discuss NFTs and other web3 assets.
           </p>
           <div className='relative !z-0'>
-            <div className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]' />
+            <div
+              className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]'
+              style={getBlurFallbackStyles()}
+            />
             <Image
               src={FeaturesImage}
               alt=''
@@ -121,6 +132,10 @@ export default function LaunchCommunityPage() {
             variant='primaryOutline'
             className='w-full max-w-sm'
             size='lg'
+            href={SUGGEST_FEATURE_LINK}
+            target='_blank'
+            rel='noopener noreferrer'
+            onClick={() => sendEvent('click vote_for_features_button')}
           >
             Vote for features
           </Button>
