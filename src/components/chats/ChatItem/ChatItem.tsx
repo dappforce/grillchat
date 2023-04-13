@@ -17,7 +17,9 @@ import { PostData } from '@subsocial/api/types'
 import Linkify from 'linkify-react'
 import { ComponentProps, RefObject, useMemo, useReducer } from 'react'
 import { toast } from 'react-hot-toast'
+import { BsFillReplyFill } from 'react-icons/bs'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
+import { MdContentCopy } from 'react-icons/md'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
@@ -78,10 +80,12 @@ export default function ChatItem({
     return [
       {
         text: 'Reply',
+        icon: <BsFillReplyFill className='text-xl text-text-muted' />,
         onClick: () => onSelectChatAsReplyRef.current?.(commentId),
       },
       {
         text: 'Copy',
+        icon: <MdContentCopy className='text-xl text-text-muted' />,
         onClick: () => {
           copyToClipboard(body ?? '')
           toast.custom((t) => (

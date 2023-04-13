@@ -30,23 +30,24 @@ export default function DefaultCustomContextMenu({
 
 function DefaultContextMenu({ menus, closeMenu }: DefaultContextMenuProps) {
   return (
-    <ul className='flex w-28 flex-col overflow-hidden rounded-lg bg-background-light py-1 shadow-[0_5px_50px_-12px_rgb(0,0,0)]'>
-      {menus.map((menu) => (
+    <ul className='flex w-32 flex-col overflow-hidden rounded-lg bg-background-light py-1 shadow-[0_5px_50px_-12px_rgb(0,0,0)]'>
+      {menus.map(({ onClick, text, icon }) => (
         <li
           className='py-2 px-4 transition focus:bg-background-lighter hover:bg-background-lighter'
-          key={menu.text}
+          key={text}
         >
           <Button
             onClick={() => {
-              menu.onClick()
+              onClick()
               closeMenu()
             }}
             variant='transparent'
             size='noPadding'
-            className='w-full text-left'
+            className='flex w-full items-center gap-4 text-left'
             interactive='none'
           >
-            {menu.text}
+            {icon}
+            {text}
           </Button>
         </li>
       ))}
