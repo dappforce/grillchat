@@ -38,6 +38,7 @@ export default function ChatRoom({
   return (
     <div {...props} className={cx('flex flex-col', className)}>
       <ChatList
+        newChatNoticeClassName={cx(replyTo && 'bottom-2')}
         postId={postId}
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}

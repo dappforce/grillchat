@@ -33,6 +33,7 @@ export type ChatListProps = ComponentProps<'div'> & {
   scrollContainerRef?: React.RefObject<HTMLDivElement>
   replyTo?: string
   onSelectChatAsReply?: (chatId: string) => void
+  newChatNoticeClassName?: string
 }
 
 export default function ChatList(props: ChatListProps) {
@@ -51,6 +52,7 @@ function ChatListContent({
   scrollContainerRef: _scrollContainerRef,
   replyTo,
   onSelectChatAsReply,
+  newChatNoticeClassName,
   ...props
 }: ChatListProps) {
   const lastReadId = useFocusedLastMessageId(postId)
@@ -166,7 +168,7 @@ function ChatListContent({
         </div>
       </ScrollableContainer>
       <NewMessageNotice
-        className='absolute bottom-0 right-6'
+        className={cx('absolute bottom-0 right-6', newChatNoticeClassName)}
         commentIds={commentIds}
         scrollContainerRef={scrollContainerRef}
       />
