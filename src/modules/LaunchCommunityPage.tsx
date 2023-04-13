@@ -74,7 +74,17 @@ export default function LaunchCommunityPage() {
             bubbles, logos, and more!
           </p>
           <div className='relative !z-0'>
-            <div className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]' />
+            <div
+              className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]'
+              style={{
+                backfaceVisibility: 'hidden',
+                MozBackfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                transform: 'translate3d(0, 0, 0)',
+                msTransform: 'translate3d(0, 0, 0)',
+                WebkitTransform: 'translate3d(0, 0, 0)',
+              }}
+            />
             <ClickableImage
               src={CustomizeImage}
               alt=''
@@ -111,7 +121,17 @@ export default function LaunchCommunityPage() {
             Discuss NFTs and other web3 assets.
           </p>
           <div className='relative !z-0'>
-            <div className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]' />
+            <div
+              className='visible absolute top-0 !z-0 h-full w-full rounded-full bg-background-accent blur-[225px]'
+              style={{
+                backfaceVisibility: 'hidden',
+                MozBackfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                transform: 'translate3d(0, 0, 0)',
+                msTransform: 'translate3d(0, 0, 0)',
+                WebkitTransform: 'translate3d(0, 0, 0)',
+              }}
+            />
             <Image
               src={FeaturesImage}
               alt=''
