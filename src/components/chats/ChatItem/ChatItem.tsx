@@ -120,14 +120,7 @@ export default function ChatItem({
       {!isMyMessage && (
         <AddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
-      <DefaultCustomContextMenu
-        menus={menus}
-        allowedPlacements={
-          isMyMessage
-            ? ['left', 'left-end', 'left-start']
-            : ['right', 'right-end', 'right-start']
-        }
-      >
+      <DefaultCustomContextMenu menus={menus}>
         {(_, onContextMenu, referenceProps) => {
           return (
             <div

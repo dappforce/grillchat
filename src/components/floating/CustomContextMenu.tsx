@@ -33,6 +33,7 @@ export default function CustomContextMenu({
     middleware: [
       autoPlacement({
         crossAxis: true,
+        alignment: 'end',
         allowedPlacements,
       }),
     ],
