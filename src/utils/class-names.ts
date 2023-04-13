@@ -1,6 +1,18 @@
 import { cva } from 'class-variance-authority'
 import clsx from 'clsx'
+import { CSSProperties } from 'react'
 import { twMerge } from 'tailwind-merge'
+
+export function getBlurFallbackStyles(): CSSProperties {
+  return {
+    backfaceVisibility: 'hidden',
+    MozBackfaceVisibility: 'hidden',
+    WebkitBackfaceVisibility: 'hidden',
+    transform: 'translate3d(0, 0, 0)',
+    msTransform: 'translate3d(0, 0, 0)',
+    WebkitTransform: 'translate3d(0, 0, 0)',
+  }
+}
 
 export function cx(...params: Parameters<typeof clsx>) {
   return twMerge(clsx(params))
