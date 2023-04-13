@@ -17,7 +17,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getPostsFromCache(postIds)
 
   const paths = posts.map((post) => ({
-    params: { topic: createSlug(post.id, post.content) },
+    params: { topic: createSlug(post.id, post.content ?? undefined) },
   }))
 
   return {
