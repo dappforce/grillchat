@@ -1,7 +1,7 @@
 import { getPostQuery } from '@/services/api/query'
-import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { generateRandomColor } from '@/utils/random-colors'
+import { generateRandomName } from '@/utils/random-name'
 import { truncateText } from '@/utils/text'
 import { waitStopScrolling } from '@/utils/window'
 import { ComponentProps, RefObject, useState } from 'react'
@@ -50,6 +50,8 @@ export default function RepliedMessagePreview({
     }
   }
 
+  const name = generateRandomName(data?.struct.ownerId ?? '')
+
   return (
     <div
       {...props}
@@ -66,9 +68,7 @@ export default function RepliedMessagePreview({
         props.onClick?.(e)
       }}
     >
-      <span style={{ color: replySenderColor }}>
-        {truncateAddress(data?.struct.ownerId ?? '')}
-      </span>
+      <span style={{ color: replySenderColor }}>{name}</span>
       <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
         {showedText}
       </span>

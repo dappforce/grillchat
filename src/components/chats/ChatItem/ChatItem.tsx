@@ -8,10 +8,10 @@ import Toast from '@/components/Toast'
 import useWrapCallbackInRef from '@/hooks/useWrapCallbackInRef'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
-import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { generateRandomColor } from '@/utils/random-colors'
+import { generateRandomName } from '@/utils/random-name'
 import { copyToClipboard } from '@/utils/text'
 import { PostData } from '@subsocial/api/types'
 import Linkify from 'linkify-react'
@@ -106,6 +106,8 @@ export default function ChatItem({
     dispatch(checkMarkType)
   }
 
+  const name = generateRandomName(ownerId)
+
   return (
     <div
       {...props}
@@ -144,7 +146,7 @@ export default function ChatItem({
                     className='mr-2 text-sm text-text-secondary'
                     style={{ color: senderColor }}
                   >
-                    {truncateAddress(ownerId)}
+                    {name}
                   </span>
                   <span className='text-xs text-text-muted'>
                     {relativeTime}

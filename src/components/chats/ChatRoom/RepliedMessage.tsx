@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import { getPostQuery } from '@/services/api/query'
-import { truncateAddress } from '@/utils/account'
 import { generateRandomColor } from '@/utils/random-colors'
+import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
@@ -19,6 +19,7 @@ export default function RepliedMessage({
   const chatContent = data?.content?.body
   const chatSenderAddr = data?.struct.ownerId
   const senderColor = generateRandomColor(chatSenderAddr ?? '')
+  const name = generateRandomName(chatSenderAddr)
 
   return (
     <div className='flex items-center overflow-hidden border-t border-border-gray pb-3 pt-2'>
@@ -30,7 +31,7 @@ export default function RepliedMessage({
         className='flex flex-1 flex-col items-start gap-0.5 overflow-hidden border-l-2 pl-2 text-sm'
       >
         <span className='font-medium' style={{ color: senderColor }}>
-          Reply to {truncateAddress(chatSenderAddr ?? '')}
+          Reply to {name}
         </span>
         <span className='w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-light opacity-75'>
           {chatContent}
