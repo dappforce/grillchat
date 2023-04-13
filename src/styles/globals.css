@@ -23,26 +23,14 @@
 @tailwind components;
 @tailwind utilities;
 
-.wiggle {
-  animation: wiggle 1s linear 1;
+.highlighted {
+  animation: highlighted 2s ease-in-out 1;
 }
-@keyframes wiggle {
-  0% {
-    transform: translateX(0);
+@keyframes highlighted {
+  20% {
+    filter: brightness(1.25);
   }
-  10% {
-    transform: translateX(15px);
-  }
-  30% {
-    transform: translateX(-12px);
-  }
-  55% {
-    transform: translateX(6px);
-  }
-  80% {
-    transform: translateX(-3px);
-  }
-  100% {
-    transform: translateX(0);
+  50% {
+    filter: brightness(1.25);
   }
 }

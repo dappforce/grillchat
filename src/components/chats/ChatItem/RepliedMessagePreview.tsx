@@ -43,9 +43,9 @@ export default function RepliedMessagePreview({
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       await waitStopScrolling(scrollContainer?.current)
-      element.classList.add('wiggle')
+      element.classList.add('highlighted')
       element.onanimationend = function () {
-        element.classList.remove('wiggle')
+        element.classList.remove('highlighted')
       }
     }
   }
