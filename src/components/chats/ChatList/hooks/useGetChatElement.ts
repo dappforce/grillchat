@@ -73,12 +73,7 @@ export default function useGetChatElement(
     resolvers.get(commentId)?.push(getResolver())
     waitingCommentIds.add(commentId)
     await getPromise()
-    await new Promise<void>((resolve) =>
-      setTimeout(async () => {
-        await waitAllCommentsLoadedRef.current()
-        resolve()
-      })
-    )
+    await waitAllCommentsLoadedRef.current()
 
     return document.getElementById(elementId)
   }
