@@ -26,7 +26,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
       await waitHasBalance()
       const { cid, success } = await saveFile({
         body: params.message,
-        inReplyTo: {
+        inReplyTo: params.replyTo && {
           id: params.replyTo,
           kind: 'Post',
         },
