@@ -125,7 +125,7 @@ export default function ChatItem({
         {(_, onContextMenu, referenceProps) => {
           return (
             <div
-              className={cx('flex flex-col', props.className)}
+              className={cx('flex flex-col overflow-hidden', props.className)}
               onContextMenu={onContextMenu}
               onDoubleClick={() => setChatAsReply(commentId)}
               {...referenceProps}
