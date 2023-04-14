@@ -78,7 +78,8 @@ function isPostValid(post: PostStruct): post is PostStructWithContent {
 export async function getPostsFromCache(
   postIds: string[]
 ): Promise<PostData[]> {
-  const posts = await getPostStructsFromCache(postIds)
+  const validIds = postIds.filter((id) => !!id && parseInt(id) >= 0)
+  const posts = await getPostStructsFromCache(validIds)
   const contentMap: { [key: string]: IpfsCommonContent } = {}
   const needToFetchContentIds: string[] = []
   posts.forEach((post) => {

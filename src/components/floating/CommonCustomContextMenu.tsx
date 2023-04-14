@@ -5,17 +5,17 @@ type DefaultContextMenuProps = {
   menus: { text: string; icon?: React.ReactNode; onClick: () => void }[]
   closeMenu: () => void
 }
-export type DefaultCustomContextMenuProps = Omit<
+export type CommonCustomContextMenuProps = Omit<
   CustomContextMenuProps,
   'menuPanel'
 > &
   Omit<DefaultContextMenuProps, 'closeMenu'>
 
-export default function DefaultCustomContextMenu({
+export default function CommonCustomContextMenu({
   children,
   allowedPlacements,
   ...props
-}: DefaultCustomContextMenuProps) {
+}: CommonCustomContextMenuProps) {
   return (
     <CustomContextMenu
       menuPanel={(closeMenu) => (
