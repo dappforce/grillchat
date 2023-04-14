@@ -12,15 +12,15 @@ import { useRef } from 'react'
  * const callback = () => {
  *   console.log(state)
  * }
- * const ref = useWrapCallbackInRef(callback)
+ * const ref = useWrapInRef(callback)
  * useEffect(() => {
  *   ref.current() // if you do not wrap it, you can remove the callback from the dependencies, but then it will use the old state and there will be a warning
  * }, [ref])
  * @param data {T}
  * @returns wrappedData {React.MutableRefObject<T>}
  */
-export default function useWrapCallbackInRef<T>(callback: T) {
-  const ref = useRef<T>(callback)
-  ref.current = callback
+export default function useWrapInRef<T>(data: T) {
+  const ref = useRef<T>(data)
+  ref.current = data
   return ref
 }
