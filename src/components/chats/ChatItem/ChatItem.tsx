@@ -1,8 +1,8 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
-import DefaultCustomContextMenu, {
-  DefaultCustomContextMenuProps,
-} from '@/components/floating/DefaultCustomContextMenu'
+import CommonCustomContextMenu, {
+  CommonCustomContextMenuProps,
+} from '@/components/floating/CommonCustomContextMenu'
 import LinkText from '@/components/LinkText'
 import Toast from '@/components/Toast'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -76,7 +76,7 @@ export default function ChatItem({
     onSelectChatAsReply?.(commentId)
   }
   const onSelectChatAsReplyRef = useWrapInRef(setChatAsReply)
-  const menus = useMemo<DefaultCustomContextMenuProps['menus']>(() => {
+  const menus = useMemo<CommonCustomContextMenuProps['menus']>(() => {
     return [
       {
         text: 'Reply',
@@ -120,7 +120,7 @@ export default function ChatItem({
       {!isMyMessage && (
         <AddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
-      <DefaultCustomContextMenu menus={menus}>
+      <CommonCustomContextMenu menus={menus}>
         {(_, onContextMenu, referenceProps) => {
           return (
             <div
@@ -206,7 +206,7 @@ export default function ChatItem({
             </div>
           )
         }}
-      </DefaultCustomContextMenu>
+      </CommonCustomContextMenu>
       <CheckMarkExplanationModal
         isOpen={checkMarkModalState.isOpen}
         variant={checkMarkModalState.variant || 'recording'}
