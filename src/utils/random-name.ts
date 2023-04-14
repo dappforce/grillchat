@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import {
   adjectives,
   animals,
@@ -5,11 +6,15 @@ import {
 } from 'unique-names-generator'
 
 export function generateRandomName(seed: string | undefined | null) {
-  const base64Seed = seed ? Buffer.from(seed).toString('base64') : undefined
+  let hashedSeed = seed
+  if (seed) {
+    const hashObj = crypto.createHash('sha256')
+    hashedSeed = hashObj.update(seed).digest().toString('hex')
+  }
   return uniqueNamesGenerator({
     dictionaries: [adjectives, animals],
     separator: ' ',
-    seed: base64Seed,
+    seed: hashedSeed ?? undefined,
     style: 'capital',
   })
 }
