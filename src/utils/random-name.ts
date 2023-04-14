@@ -8,7 +8,7 @@ import {
 export function generateRandomName(seed: string | undefined | null) {
   let hashedSeed = seed
   if (seed) {
-    const hashObj = crypto.createHash('sha256')
+    const hashObj = crypto.createHash('sha512')
     hashedSeed = hashObj.update(seed).digest().toString('hex')
   }
   return uniqueNamesGenerator({
