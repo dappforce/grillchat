@@ -27,7 +27,7 @@
   animation: highlighted 4s ease-in-out 1;
 }
 @keyframes highlighted {
-  10% {
+  3% {
     filter: brightness(1.4);
   }
   40% {
