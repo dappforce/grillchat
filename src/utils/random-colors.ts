@@ -1,8 +1,8 @@
 import randomColor from 'randomcolor'
 
-export function generateRandomColor(seed: string) {
+export function generateRandomColor(seed: string | undefined | null) {
   return randomColor({
-    seed,
+    seed: seed ?? undefined,
     luminosity: 'light',
   })
 }

@@ -21,8 +21,8 @@ export default function RepliedMessage({
   const { data } = getPostQuery.useQuery(replyChatId)
   const chatContent = data?.content?.body
   const chatSenderAddr = data?.struct.ownerId
-  const senderColor = generateRandomColor(chatSenderAddr ?? '')
-  const name = generateRandomName(chatSenderAddr ?? '')
+  const senderColor = generateRandomColor(chatSenderAddr)
+  const name = generateRandomName(chatSenderAddr)
 
   const onRepliedMessageClick = () => {
     const element = document.getElementById(getChatItemId(replyChatId))

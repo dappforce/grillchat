@@ -4,11 +4,11 @@ import {
   uniqueNamesGenerator,
 } from 'unique-names-generator'
 
-export function generateRandomName(seed: string) {
+export function generateRandomName(seed: string | undefined | null) {
   return uniqueNamesGenerator({
     dictionaries: [adjectives, animals],
     separator: ' ',
-    seed,
+    seed: seed ?? undefined,
     style: 'capital',
   })
 }

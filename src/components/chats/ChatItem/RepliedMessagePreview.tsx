@@ -43,7 +43,7 @@ export default function RepliedMessagePreview({
     scrollToChatItem(element, scrollContainer?.current ?? null)
   }
 
-  const name = generateRandomName(data?.struct.ownerId ?? '')
+  const name = generateRandomName(data?.struct.ownerId)
 
   return (
     <div
