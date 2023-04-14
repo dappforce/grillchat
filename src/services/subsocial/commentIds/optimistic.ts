@@ -1,4 +1,5 @@
 import { getPostQuery } from '@/services/api/query'
+import { ReplyWrapper } from '@/utils/ipfs'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
 import { getCommentIdsQueryKey } from './query'
@@ -24,10 +25,7 @@ export function addOptimisticData({
     },
     content: {
       body: param.message,
-      inReplyTo: {
-        id: param.replyTo,
-        kind: 'Post',
-      },
+      inReplyTo: ReplyWrapper(param.replyTo),
     },
   } as PostData)
   client.setQueryData<string[]>(

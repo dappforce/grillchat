@@ -1,4 +1,4 @@
-import useWrapCallbackInRef from '@/hooks/useWrapCallbackInRef'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
 import { PostData } from '@subsocial/api/types'
@@ -14,8 +14,8 @@ export default function useGetChatElement(
 ) {
   const waitAllCommentsLoaded = useWaitCommentsLoading(commentsQuery)
 
-  const waitAllCommentsLoadedRef = useWrapCallbackInRef(waitAllCommentsLoaded)
-  const commentIdsRef = useWrapCallbackInRef(commentIds)
+  const waitAllCommentsLoadedRef = useWrapInRef(waitAllCommentsLoaded)
+  const commentIdsRef = useWrapInRef(commentIds)
 
   const promiseRef = useRef<{
     resolvers: Map<string, VoidFunction[]>

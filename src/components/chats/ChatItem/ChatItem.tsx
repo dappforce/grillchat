@@ -3,7 +3,7 @@ import DefaultCustomContextMenu, {
   DefaultCustomContextMenuProps,
 } from '@/components/floating/DefaultCustomContextMenu'
 import Toast from '@/components/Toast'
-import useWrapCallbackInRef from '@/hooks/useWrapCallbackInRef'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
@@ -71,7 +71,7 @@ export default function ChatItem({
     if (isOptimisticId(commentId)) return
     onSelectChatAsReply?.(commentId)
   }
-  const onSelectChatAsReplyRef = useWrapCallbackInRef(setChatAsReply)
+  const onSelectChatAsReplyRef = useWrapInRef(setChatAsReply)
   const menus = useMemo<DefaultCustomContextMenuProps['menus']>(() => {
     return [
       {

@@ -2,7 +2,7 @@ import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfinite
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
-import useWrapCallbackInRef from '@/hooks/useWrapCallbackInRef'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
@@ -89,7 +89,7 @@ function ChatListContent({
     loadMore
   )
 
-  const isAtBottomRef = useWrapCallbackInRef(isAtBottom)
+  const isAtBottomRef = useWrapInRef(isAtBottom)
   useEffect(() => {
     if (!isAtBottomRef.current) return
     scrollContainerRef.current?.scrollTo({

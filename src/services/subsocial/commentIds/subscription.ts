@@ -1,4 +1,4 @@
-import useWrapCallbackInRef from '@/hooks/useWrapCallbackInRef'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery, getPosts } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
@@ -90,7 +90,7 @@ export function useSubscribeCommentIdsByPostId(
   const queryClient = useQueryClient()
 
   const lastIdInPreviousSub = useRef('')
-  const callbackRef = useWrapCallbackInRef(callbackFirstResult)
+  const callbackRef = useWrapInRef(callbackFirstResult)
 
   useEffect(() => {
     const unsub = subscription(
@@ -120,7 +120,7 @@ export function useSubscribeCommentIdsByPostIds(
   const queryClient = useQueryClient()
 
   const lastIdInPreviousSub = useRef<Record<string, string>>({})
-  const callbackRef = useWrapCallbackInRef(callbackFirstResult)
+  const callbackRef = useWrapInRef(callbackFirstResult)
 
   useEffect(() => {
     const resolvers: ((value: string[] | PromiseLike<string[]>) => void)[] = []
