@@ -24,13 +24,13 @@
 @tailwind utilities;
 
 .highlighted {
-  animation: highlighted 2s ease-in-out 1;
+  animation: highlighted 4s ease-in-out 1;
 }
 @keyframes highlighted {
-  20% {
-    filter: brightness(1.25);
+  10% {
+    filter: brightness(1.4);
   }
-  50% {
-    filter: brightness(1.25);
+  40% {
+    filter: brightness(1.4);
   }
 }
