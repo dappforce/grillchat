@@ -68,17 +68,11 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
       const { cid, success } = await saveFile(generateContent(params))
       if (!success) throw new Error('Failed to save file to IPFS')
 
-      let tx = substrateApi.tx.posts.createPost(
+      const tx = substrateApi.tx.posts.createPost(
         null,
         { Comment: { parentId: null, rootPostId: params.rootPostId } },
         IpfsWrapper(cid)
       )
-      if (params.selectedMessage?.type === 'edit') {
-        const { id } = params.selectedMessage
-        tx = substrateApi.tx.posts.updatePost(id, {
-          content: IpfsWrapper(cid),
-        })
-      }
 
       return {
         tx,
