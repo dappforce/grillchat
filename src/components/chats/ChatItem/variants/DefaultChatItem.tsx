@@ -25,6 +25,11 @@ export default function DefaultChatItem({
   ...props
 }: DefaultChatItemProps) {
   const name = generateRandomName(ownerId)
+  const editedLabel = (isEditing || isEdited) && (
+    <span className='text-xs text-text-muted'>
+      {isEditing ? 'editing' : 'edited'}
+    </span>
+  )
 
   return (
     <div className={cx('flex flex-col', props.className)}>
@@ -35,14 +40,15 @@ export default function DefaultChatItem({
         )}
       >
         {!isMyMessage && (
-          <div className='flex items-center'>
+          <div className='flex items-center gap-1'>
             <span
-              className='mr-2 text-sm text-text-secondary'
+              className='mr-1 text-sm text-text-secondary'
               style={{ color: senderColor }}
             >
               {name}
             </span>
             <span className='text-xs text-text-muted'>{relativeTime}</span>
+            {editedLabel}
           </div>
         )}
         {inReplyTo && (
@@ -77,11 +83,7 @@ export default function DefaultChatItem({
           <div
             className={cx('flex items-center gap-1', isMyMessage && 'self-end')}
           >
-            {(isEditing || isEdited) && (
-              <span className='text-xs text-text-muted'>
-                {isEditing ? 'editing' : 'edited'}
-              </span>
-            )}
+            {editedLabel}
             <span className='text-xs text-text-muted'>{relativeTime}</span>
             <Button
               variant='transparent'
