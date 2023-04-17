@@ -9,6 +9,7 @@ import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import axios from 'axios'
 import { generateOptimisticId } from '../utils'
 import {
   addOptimisticData,
@@ -94,6 +95,7 @@ function updatePostTxCallbacks(
     onStart: async ({ param: { message } }, id) => {
       if (!id) return
       updateDataOptimistically(client, id, message)
+      axios.post('/api/invalidate-posts', { postIds: [id] })
     },
     onSuccess: (_, id) => {
       getPostQuery.invalidate(client, id)
