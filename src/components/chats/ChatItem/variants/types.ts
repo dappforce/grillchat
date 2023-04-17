@@ -8,6 +8,7 @@ export type ChatItemContentProps = ComponentProps<'div'> & {
   ownerId: string
   body: string
   isEdited?: boolean
+  isEditing?: boolean
   inReplyTo?: { id: string }
   scrollContainer?: RefObject<HTMLElement | null>
   onCheckMarkClick: () => void

@@ -18,6 +18,7 @@ export default function DefaultChatItem({
   relativeTime,
   senderColor,
   isEdited,
+  isEditing,
   inReplyTo,
   scrollContainer,
   getRepliedElement,
@@ -76,8 +77,10 @@ export default function DefaultChatItem({
           <div
             className={cx('flex items-center gap-1', isMyMessage && 'self-end')}
           >
-            {isEdited && (
-              <span className='text-xs text-text-muted'>edited</span>
+            {(isEditing || isEdited) && (
+              <span className='text-xs text-text-muted'>
+                {isEditing ? 'editing' : 'edited'}
+              </span>
             )}
             <span className='text-xs text-text-muted'>{relativeTime}</span>
             <Button

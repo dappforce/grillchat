@@ -66,6 +66,7 @@ export function updateDataOptimistically(
             ...oldValue.content,
             body: newBody,
           },
+          isUpdating: true,
         }
       : undefined
   })

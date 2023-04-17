@@ -15,3 +15,11 @@ export function extractOptimisticIdData<Data>(id: string) {
   const [, param] = id.split(ID_DATA_SEPARATOR)
   return JSON.parse(param) as Data
 }
+
+export function isDataUpdatedOptimistically(data: unknown) {
+  const parsedData = data as { isUpdating?: boolean }
+  if ('isUpdating' in parsedData) {
+    return parsedData.isUpdating
+  }
+  return false
+}

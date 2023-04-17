@@ -4,7 +4,10 @@ import CommonCustomContextMenu, {
 } from '@/components/floating/CommonCustomContextMenu'
 import Toast from '@/components/Toast'
 import { SelectedMessage } from '@/services/subsocial/commentIds'
-import { isOptimisticId } from '@/services/subsocial/utils'
+import {
+  isDataUpdatedOptimistically,
+  isOptimisticId,
+} from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
@@ -59,6 +62,7 @@ export default function ChatItem({
   const commentId = comment.id
   const isSent = !isOptimisticId(commentId)
   const isEdited = comment.struct.isUpdated
+  const isEditing = isDataUpdatedOptimistically(comment)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = comment.struct
   const { body, inReplyTo } = comment.content || {}
 
@@ -156,6 +160,7 @@ export default function ChatItem({
                 relativeTime={relativeTime}
                 senderColor={senderColor}
                 inReplyTo={inReplyTo}
+                isEditing={isEditing}
                 getRepliedElement={getRepliedElement}
                 scrollContainer={scrollContainer}
                 isEdited={isEdited}
