@@ -1,8 +1,6 @@
+import { contentCache, postsCache } from '@/modules/_api/cache'
+import { ApiResponse } from '@/modules/_api/types'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import {
-  MinimalUsageQueue,
-  MinimalUsageQueueWithTimeLimit,
-} from '@/utils/data-structure'
 import {
   IpfsCommonContent,
   PostContent,
@@ -17,25 +15,9 @@ const querySchema = z.object({
   postIds: z.array(z.string()),
 })
 export type ApiPostsParams = z.infer<typeof querySchema>
-export type ApiPostsResponse = {
-  success: boolean
-  message: string
-  errors?: any
+export type ApiPostsResponse = ApiResponse<{
   data?: PostData[]
-  hash?: string
-}
-
-// TODO: posts cache may not work in this current implementation, because next js api are stateless which makes the posts cache will be remake every request.
-// Currently, it doesn't work in dev mode, but works in build mode.
-// Solution:
-// 1. Use redis to store the cache
-// 2. Use squid for historical data, for newer data that are not in squid yet, fetch it from chain
-const MAX_CACHE_ITEMS = 500_000
-const contentCache = new MinimalUsageQueue<PostContent | null>(MAX_CACHE_ITEMS)
-const postsCache = new MinimalUsageQueueWithTimeLimit<PostStruct>(
-  MAX_CACHE_ITEMS,
-  15
-)
+}>
 
 async function getPostStructsFromCache(postIds: string[]) {
   const postsFromCache: PostStruct[] = []

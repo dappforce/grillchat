@@ -1,3 +1,4 @@
+import { ApiResponse } from '@/modules/_api/types'
 import { getCrustIpfsAuth, getIpfsPinUrl } from '@/utils/env/server'
 import { SubsocialIpfsApi } from '@subsocial/api'
 import { IpfsPostContent } from '@subsocial/api/types'
@@ -5,11 +6,9 @@ import { NextApiRequest, NextApiResponse } from 'next'
 
 export type SaveFileRequest = IpfsPostContent
 
-export type SaveFileResponse = {
-  success: boolean
-  errors?: any
+export type SaveFileResponse = ApiResponse<{
   cid?: string
-}
+}>
 
 export const CRUST_IPFS_CONFIG = {
   ipfsNodeUrl: 'https://gw-seattle.cloud3.cc',
@@ -41,8 +40,9 @@ export default async function handler(
     return res.status(500).send({
       success: false,
       errors: e.message,
+      message: 'Failed to save file',
     })
   }
 
-  res.status(200).send({ success: true, cid: cid })
+  res.status(200).send({ success: true, cid: cid, message: 'OK' })
 }

@@ -51,19 +51,36 @@ export class MinimalUsageQueue<T> {
 }
 
 export class MinimalUsageQueueWithTimeLimit<T> extends MinimalUsageQueue<T> {
+  INVALIDATION_TIME = 60 * 1000 // 1 minute
+  invalidatedIds: Map<string, Date> = new Map<string, Date>()
+
   constructor(maxSize: number, private expiresInMins: number) {
     super(maxSize)
     this.expiresInMins = expiresInMins * 60 * 1000
   }
 
-  isExpired(data: Data<T>) {
+  isExpired(data: Data<T>, key: string) {
+    if (this.invalidatedIds.has(key)) {
+      const insertedAt = this.invalidatedIds.get(key)?.getTime()
+      const isStillInvalidated =
+        insertedAt && Date.now() < insertedAt + this.INVALIDATION_TIME
+      if (isStillInvalidated) {
+        return true
+      } else {
+        this.invalidatedIds.delete(key)
+      }
+    }
     if (!data.insertedAt) return true
     return Date.now() - data.insertedAt.getTime() > this.expiresInMins
   }
 
+  invalidateIds(ids: string[]) {
+    ids.forEach((id) => this.invalidatedIds.set(id, new Date()))
+  }
+
   get(key: string) {
     const data = super.getFullData(key)
-    if (data && this.isExpired(data)) {
+    if (data && this.isExpired(data, key)) {
       this.queue.delete(key)
       return undefined
     }

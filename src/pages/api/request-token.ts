@@ -1,3 +1,4 @@
+import { ApiResponse } from '@/modules/_api/types'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCaptchaSecret, getServerMnemonic } from '@/utils/env/server'
 import { Keyring } from '@polkadot/keyring'
@@ -12,13 +13,7 @@ const bodySchema = z.object({
 })
 
 export type ApiRequestTokenBody = z.infer<typeof bodySchema>
-export type ApiRequestTokenResponse = {
-  success: boolean
-  message: string
-  errors?: any
-  data?: string
-  hash?: string
-}
+export type ApiRequestTokenResponse = ApiResponse<{ data?: string }>
 
 const VERIFIER = 'https://www.google.com/recaptcha/api/siteverify'
 const BURN_AMOUNT = 0.5 * 10 ** 10
