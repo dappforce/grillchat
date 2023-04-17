@@ -5,7 +5,7 @@ import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import { BsFillReplyFill } from 'react-icons/bs'
-import { HiXMark } from 'react-icons/hi2'
+import { HiPencil, HiXMark } from 'react-icons/hi2'
 import { getChatItemId, scrollToChatItem } from '../helpers'
 
 export type RepliedMessageProps = ComponentProps<'div'> & {
@@ -30,20 +30,24 @@ export default function RepliedMessage({
     scrollToChatItem(element, scrollContainer?.current ?? null)
   }
 
+  const Icon = selectedMessage.type === 'reply' ? BsFillReplyFill : HiPencil
+  const text =
+    selectedMessage.type === 'reply' ? `Reply to ${name}` : 'Editing message'
+
   return (
     <div
       className='flex cursor-pointer items-center overflow-hidden border-t border-border-gray pb-3 pt-2'
       onClick={onRepliedMessageClick}
     >
-      <div className='flex-shrink-0 pl-2 pr-3 text-text-muted'>
-        <BsFillReplyFill className='text-2xl' />
+      <div className='flex-shrink-0 pl-2 pr-3 text-2xl text-text-muted'>
+        <Icon />
       </div>
       <div
         style={{ borderColor: senderColor }}
         className='flex flex-1 flex-col items-start gap-0.5 overflow-hidden border-l-2 pl-2 text-sm'
       >
         <span className='font-medium' style={{ color: senderColor }}>
-          Reply to {name}
+          {text}
         </span>
         <span className='w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-light opacity-75'>
           {chatContent}
