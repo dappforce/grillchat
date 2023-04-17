@@ -4,7 +4,7 @@ import { cx } from '@/utils/class-names'
 import { ComponentProps, useRef, useState } from 'react'
 import ChatList from '../ChatList/ChatList'
 import ChatForm from './ChatForm'
-import RepliedMessage from './RepliedMessage'
+import RepliedMessage from './SelectedMessagePreview'
 
 export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
