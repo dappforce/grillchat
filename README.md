@@ -14,6 +14,11 @@
 
 ## How to run locally 🏃‍♂️
 
+Requirements:
+
+- Node.js v16.0.0 or higher
+- Yarn (you can use npm/pnpm if you want to)
+
 ### 1. Install dependencies
 
 ```bash
