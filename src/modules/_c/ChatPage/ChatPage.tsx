@@ -6,6 +6,7 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import Image, { ImageProps } from 'next/image'
+import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
@@ -58,10 +59,11 @@ function NavbarChatInfo({
   messageCount: number
   topic: string
 }) {
+  const router = useRouter()
   return (
     <div className='flex items-center'>
       <div className='mr-2 flex w-9 items-center justify-center'>
-        <Button size='circle' href='/' variant='transparent'>
+        <Button size='circle' onClick={router.back} variant='transparent'>
           <HiOutlineChevronLeft />
         </Button>
       </div>
