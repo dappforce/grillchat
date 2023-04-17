@@ -4,7 +4,10 @@ import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import {
+  SelectedMessage,
+  useCommentIdsByPostId,
+} from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import {
@@ -16,7 +19,6 @@ import {
   useRef,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { SelectedMessage } from '../ChatRoom/types'
 import { getChatItemId } from '../helpers'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'

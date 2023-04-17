@@ -36,7 +36,7 @@ export default function ChatRoom({
     }
   }
 
-  const closeReply = () => setSelectedMessage(null)
+  const closeReply = () => setSelectedMessage(undefined)
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
