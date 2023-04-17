@@ -13,7 +13,7 @@
   --text-dark: 17 23 41; /* need confirmation */
   --text-on-primary: 255 255 255;
   --text-muted-on-primary: 151, 162, 182;
-  --border-gray: 183 190 205; /* need confirmation */
+  --border-gray: 151 162 182; /* need confirmation it needs to be lighter */
 }
 
 .dark {
