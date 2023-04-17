@@ -17,6 +17,7 @@ export function addOptimisticData({
   tempId,
   address,
 }: OptimisticGeneratorParam) {
+  const selectedMessage = param.selectedMessage
   getPostQuery.setQueryData(client, tempId, {
     id: tempId,
     struct: {
@@ -25,7 +26,10 @@ export function addOptimisticData({
     },
     content: {
       body: param.message,
-      inReplyTo: ReplyWrapper(param.replyTo),
+      inReplyTo:
+        selectedMessage?.type === 'reply'
+          ? ReplyWrapper(param.selectedMessage?.id)
+          : undefined,
     },
   } as PostData)
   client.setQueryData<string[]>(
