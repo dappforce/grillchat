@@ -58,6 +58,7 @@ export default function ChatItem({
 }: ChatItemProps) {
   const commentId = comment.id
   const isSent = !isOptimisticId(commentId)
+  const isEdited = comment.struct.isUpdated
   const { createdAtTime, createdAtBlock, ownerId, contentId } = comment.struct
   const { body, inReplyTo } = comment.content || {}
 
@@ -157,6 +158,7 @@ export default function ChatItem({
                 inReplyTo={inReplyTo}
                 getRepliedElement={getRepliedElement}
                 scrollContainer={scrollContainer}
+                isEdited={isEdited}
               />
             </div>
           )
