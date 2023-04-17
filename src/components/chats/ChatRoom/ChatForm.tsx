@@ -9,7 +9,7 @@ import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { getPostQuery } from '@/services/api/query'
 import {
   SelectedMessage,
-  useSendMessage,
+  useSendOrEditMessage,
 } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
@@ -65,7 +65,7 @@ export default function ChatForm({
   )
 
   const [message, setMessage] = useState('')
-  const { mutate: sendMessage, error } = useSendMessage()
+  const { mutateAsync: sendOrEditMessage, error } = useSendOrEditMessage()
   useToastError(error, 'Message failed to send, please try again')
 
   useEffect(() => {
@@ -103,11 +103,13 @@ export default function ChatForm({
 
     if (shouldSendMessage) {
       resetForm()
-      sendMessage({
+
+      sendOrEditMessage({
         message: processedMessage,
         rootPostId: postId,
         selectedMessage: selectedMessage,
       })
+
       onSubmit?.()
     } else {
       if (isLoggedIn) {

@@ -1,6 +1,7 @@
 import {
   MutationFunction,
   QueryClient,
+  Updater,
   useMutation,
   UseMutationOptions,
   useQueries,
@@ -125,8 +126,18 @@ export function createQuery<Params, ReturnValue>({
         }),
       })
     },
-    setQueryData: (client: QueryClient, data: Params, value: ReturnValue) => {
-      client.setQueryData(getQueryKey(data), value ?? null)
+    setQueryData: (
+      client: QueryClient,
+      data: Params,
+      value: Updater<ReturnValue | undefined, ReturnValue | undefined>
+    ) => {
+      client.setQueryData(getQueryKey(data), value)
+    },
+    getQueryData: (
+      client: QueryClient,
+      data: Params
+    ): ReturnValue | undefined => {
+      return client.getQueryData(getQueryKey(data))
     },
   }
 }

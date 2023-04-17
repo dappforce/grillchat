@@ -52,3 +52,21 @@ export function deleteOptimisticData({
     }
   )
 }
+
+export function updateDataOptimistically(
+  client: QueryClient,
+  id: string,
+  newBody: string
+) {
+  getPostQuery.setQueryData(client, id, (oldValue) => {
+    return oldValue && oldValue.content
+      ? {
+          ...oldValue,
+          content: {
+            ...oldValue.content,
+            body: newBody,
+          },
+        }
+      : undefined
+  })
+}

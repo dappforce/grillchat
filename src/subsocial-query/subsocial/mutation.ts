@@ -13,7 +13,7 @@ import {
 } from './types'
 import { getBlockExplorerBlockInfoLink } from './utils'
 
-type Apis = {
+export type SubsocialMutationApis = {
   subsocialApi: SubsocialApi
   ipfsApi: SubsocialIpfsApi
   substrateApi: ApiPromise
@@ -23,7 +23,7 @@ export function useSubsocialMutation<Param, Context>(
   getWallet: () => Promise<WalletAccount>,
   transactionGenerator: (
     params: Param,
-    apis: Apis
+    apis: SubsocialMutationApis
   ) => Promise<{ tx: Transaction; summary: string }>,
   config?: MutationConfig<Param>,
   defaultConfig?: DefaultSubsocialMutationConfig<Param, Context>
@@ -73,10 +73,10 @@ export function useSubsocialMutation<Param, Context>(
 async function createTxAndSend<Param, Context>(
   transactionGenerator: (
     param: Param,
-    apis: Apis
+    apis: SubsocialMutationApis
   ) => Promise<{ tx: Transaction; summary: string }>,
   param: Param,
-  apis: Apis,
+  apis: SubsocialMutationApis,
   txConfig: {
     wallet: WalletAccount
     networkRpc?: string
@@ -108,7 +108,7 @@ function sendTransaction<Param, Context>(
     params: Param
     networkRpc: string | undefined
   },
-  apis: Apis,
+  apis: SubsocialMutationApis,
   config?: MutationConfig<Param>,
   defaultConfig?: DefaultSubsocialMutationConfig<Param, Context>,
   txCallbacks?: ReturnType<typeof generateTxCallbacks>
