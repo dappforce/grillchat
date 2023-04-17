@@ -16,6 +16,7 @@ import {
   useRef,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import { SelectedMessage } from '../ChatRoom/types'
 import { getChatItemId } from '../helpers'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
@@ -31,8 +32,8 @@ export type ChatListProps = ComponentProps<'div'> & {
   scrollableContainerClassName?: string
   postId: string
   scrollContainerRef?: React.RefObject<HTMLDivElement>
-  replyTo?: string
-  onSelectChatAsReply?: (chatId: string) => void
+  selectedMessageId?: string
+  onSelectMessage?: (selectedMessage: SelectedMessage) => void
   newChatNoticeClassName?: string
 }
 
@@ -50,8 +51,8 @@ function ChatListContent({
   scrollableContainerClassName,
   postId,
   scrollContainerRef: _scrollContainerRef,
-  replyTo,
-  onSelectChatAsReply,
+  selectedMessageId,
+  onSelectMessage,
   newChatNoticeClassName,
   ...props
 }: ChatListProps) {
@@ -96,7 +97,12 @@ function ChatListContent({
       top: scrollContainerRef.current?.scrollHeight,
       behavior: 'auto',
     })
-  }, [loadedComments.length, isAtBottomRef, scrollContainerRef, replyTo])
+  }, [
+    loadedComments.length,
+    isAtBottomRef,
+    scrollContainerRef,
+    selectedMessageId,
+  ])
 
   const Component = asContainer ? Container<'div'> : 'div'
 
@@ -145,7 +151,7 @@ function ChatListContent({
 
               const chatElement = comment && (
                 <ChatItemContainer
-                  onSelectChatAsReply={onSelectChatAsReply}
+                  onSelectMessage={onSelectMessage}
                   comment={comment}
                   key={comment.id}
                   scrollContainer={scrollContainerRef}

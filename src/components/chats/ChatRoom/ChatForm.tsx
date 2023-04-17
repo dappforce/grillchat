@@ -7,7 +7,10 @@ import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { getPostQuery } from '@/services/api/query'
-import { useSendMessage } from '@/services/subsocial/commentIds'
+import {
+  SelectedMessage,
+  useSendMessage,
+} from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -23,7 +26,7 @@ import {
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
   onSubmit?: () => void
-  replyTo?: string
+  selectedMessage?: SelectedMessage
   clearReplyTo?: () => void
 }
 
@@ -35,7 +38,7 @@ export default function ChatForm({
   className,
   postId,
   onSubmit,
-  replyTo,
+  selectedMessage,
   clearReplyTo,
   ...props
 }: ChatFormProps) {
@@ -70,8 +73,8 @@ export default function ChatForm({
     textAreaRef.current?.focus()
   }, [])
   useEffect(() => {
-    if (replyTo) textAreaRef.current?.focus()
-  }, [replyTo])
+    if (selectedMessage) textAreaRef.current?.focus()
+  }, [selectedMessage])
 
   useEffect(() => {
     setIsRequestingEnergy(false)
@@ -103,7 +106,7 @@ export default function ChatForm({
       sendMessage({
         message: processedMessage,
         rootPostId: postId,
-        replyTo,
+        selectedMessage: selectedMessage,
       })
       onSubmit?.()
     } else {
@@ -118,7 +121,7 @@ export default function ChatForm({
         captchaToken,
         message: processMessage(message),
         rootPostId: postId,
-        replyTo,
+        selectedMessage,
       })
       setIsRequestingEnergy(true)
       sendEvent('request energy and send message')

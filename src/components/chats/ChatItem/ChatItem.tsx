@@ -3,7 +3,7 @@ import CommonCustomContextMenu, {
   CommonCustomContextMenuProps,
 } from '@/components/floating/CommonCustomContextMenu'
 import Toast from '@/components/Toast'
-import useWrapInRef from '@/hooks/useWrapInRef'
+import { SelectedMessage } from '@/services/subsocial/commentIds'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
@@ -11,9 +11,10 @@ import { getTimeRelativeToNow } from '@/utils/date'
 import { generateRandomColor } from '@/utils/random-colors'
 import { copyToClipboard } from '@/utils/text'
 import { PostData } from '@subsocial/api/types'
-import { ComponentProps, RefObject, useMemo, useReducer } from 'react'
+import { ComponentProps, RefObject, useReducer } from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
+import { HiPencil } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
@@ -25,7 +26,7 @@ import EmojiChatItem, {
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   comment: PostData
-  onSelectChatAsReply?: (chatId: string) => void
+  onSelectMessage?: (selectedMessage: SelectedMessage) => void
   isMyMessage: boolean
   scrollContainer?: RefObject<HTMLElement | null>
   chatBubbleId?: string
@@ -48,7 +49,7 @@ const checkMarkModalReducer = (
 
 export default function ChatItem({
   comment,
-  onSelectChatAsReply,
+  onSelectMessage,
   isMyMessage,
   scrollContainer,
   chatBubbleId,
@@ -69,16 +70,29 @@ export default function ChatItem({
 
   const setChatAsReply = (commentId: string) => {
     if (isOptimisticId(commentId)) return
-    onSelectChatAsReply?.(commentId)
+    onSelectMessage?.({ id: commentId, type: 'reply' })
   }
-  const onSelectChatAsReplyRef = useWrapInRef(setChatAsReply)
-  const menus = useMemo<CommonCustomContextMenuProps['menus']>(() => {
+  const getMenus = (): CommonCustomContextMenuProps['menus'] => {
+    const editMenus = isMyMessage
+      ? [
+          {
+            text: 'Edit',
+            icon: <HiPencil className='text-xl text-text-muted' />,
+            onClick: () => {
+              if (isOptimisticId(commentId)) return
+              onSelectMessage?.({ id: commentId, type: 'edit' })
+            },
+          },
+        ]
+      : []
+
     return [
       {
         text: 'Reply',
         icon: <BsFillReplyFill className='text-xl text-text-muted' />,
-        onClick: () => onSelectChatAsReplyRef.current?.(commentId),
+        onClick: () => setChatAsReply(commentId),
       },
+      ...editMenus,
       {
         text: 'Copy',
         icon: <MdContentCopy className='text-xl text-text-muted' />,
@@ -90,7 +104,8 @@ export default function ChatItem({
         },
       },
     ]
-  }, [body, commentId, onSelectChatAsReplyRef])
+  }
+  const menus = getMenus()
 
   if (!body) return null
 

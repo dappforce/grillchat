@@ -10,7 +10,7 @@ export function ReplyWrapper(replyToPostId: string | undefined | null) {
   return replyToPostId
     ? {
         id: replyToPostId,
-        kind: 'Post',
+        kind: 'Post' as const,
       }
     : undefined
 }

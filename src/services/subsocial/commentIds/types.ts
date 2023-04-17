@@ -1,7 +1,15 @@
+export type SelectedMessageActions = 'reply' | 'edit'
+export type SelectedMessage = {
+  id: string
+  type: SelectedMessageActions
+}
 export type SendMessageParams = {
   message: string
   rootPostId: string
-  replyTo?: string
+  selectedMessage?: {
+    id: string
+    type: SelectedMessageActions
+  }
 }
 export type OptimisticMessageIdData = {
   address: string

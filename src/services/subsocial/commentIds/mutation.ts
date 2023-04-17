@@ -24,19 +24,34 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     async () => ({ address, signer }),
     async (params, { substrateApi }) => {
       await waitHasBalance()
-      const { cid, success } = await saveFile({
+
+      let content: PostContent = {
         body: params.message,
-        inReplyTo: ReplyWrapper(params.replyTo),
-      } as PostContent)
+      } as PostContent
+      if (params.selectedMessage?.type === 'reply') {
+        content = {
+          ...content,
+          inReplyTo: ReplyWrapper(params.selectedMessage.id),
+        }
+      }
+      const { cid, success } = await saveFile(content)
 
       if (!success) throw new Error('Failed to save file to IPFS')
 
+      let tx = substrateApi.tx.posts.createPost(
+        null,
+        { Comment: { parentId: null, rootPostId: params.rootPostId } },
+        IpfsWrapper(cid)
+      )
+      if (params.selectedMessage?.type === 'edit') {
+        const { id } = params.selectedMessage
+        tx = substrateApi.tx.posts.updatePost(id, {
+          content: IpfsWrapper(cid),
+        })
+      }
+
       return {
-        tx: substrateApi.tx.posts.createPost(
-          null,
-          { Comment: { parentId: null, rootPostId: params.rootPostId } },
-          IpfsWrapper(cid)
-        ),
+        tx,
         summary: 'Sending message',
       }
     },

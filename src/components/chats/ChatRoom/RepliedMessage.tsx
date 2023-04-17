@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import { getPostQuery } from '@/services/api/query'
+import { SelectedMessage } from '@/services/subsocial/commentIds'
 import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
@@ -8,24 +9,24 @@ import { HiXMark } from 'react-icons/hi2'
 import { getChatItemId, scrollToChatItem } from '../helpers'
 
 export type RepliedMessageProps = ComponentProps<'div'> & {
-  replyChatId: string
+  selectedMessage: SelectedMessage
   closeReply: () => void
   scrollContainer?: React.RefObject<HTMLElement | null>
 }
 
 export default function RepliedMessage({
-  replyChatId,
+  selectedMessage,
   closeReply,
   scrollContainer,
 }: RepliedMessageProps) {
-  const { data } = getPostQuery.useQuery(replyChatId)
+  const { data } = getPostQuery.useQuery(selectedMessage.id)
   const chatContent = data?.content?.body
   const chatSenderAddr = data?.struct.ownerId
   const senderColor = generateRandomColor(chatSenderAddr)
   const name = generateRandomName(chatSenderAddr)
 
   const onRepliedMessageClick = () => {
-    const element = document.getElementById(getChatItemId(replyChatId))
+    const element = document.getElementById(getChatItemId(selectedMessage.id))
     scrollToChatItem(element, scrollContainer?.current ?? null)
   }
 

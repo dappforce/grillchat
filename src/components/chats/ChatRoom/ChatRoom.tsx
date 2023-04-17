@@ -1,4 +1,5 @@
 import Container from '@/components/Container'
+import { SelectedMessage } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
 import { ComponentProps, useRef, useState } from 'react'
 import ChatList from '../ChatList/ChatList'
@@ -18,7 +19,9 @@ export default function ChatRoom({
   postId,
   ...props
 }: ChatRoomProps) {
-  const [replyTo, setReplyTo] = useState<string | undefined>(undefined)
+  const [selectedMessage, setSelectedMessage] = useState<
+    SelectedMessage | undefined
+  >()
 
   const Component = asContainer ? Container<'div'> : 'div'
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -33,31 +36,31 @@ export default function ChatRoom({
     }
   }
 
-  const closeReply = () => setReplyTo(undefined)
+  const closeReply = () => setSelectedMessage(null)
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
       <ChatList
-        newChatNoticeClassName={cx(replyTo && 'bottom-2')}
+        newChatNoticeClassName={cx(selectedMessage && 'bottom-2')}
         postId={postId}
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}
         scrollContainerRef={scrollContainerRef}
-        onSelectChatAsReply={setReplyTo}
-        replyTo={replyTo}
+        onSelectMessage={setSelectedMessage}
+        selectedMessageId={selectedMessage?.id}
       />
       <Component
-        className={cx('mt-auto flex flex-col py-3', replyTo && 'pt-0')}
+        className={cx('mt-auto flex flex-col py-3', selectedMessage && 'pt-0')}
       >
-        {replyTo && (
+        {selectedMessage && (
           <RepliedMessage
             closeReply={closeReply}
-            replyChatId={replyTo}
+            selectedMessage={selectedMessage}
             scrollContainer={scrollContainerRef}
           />
         )}
         <ChatForm
-          replyTo={replyTo}
+          selectedMessage={selectedMessage}
           onSubmit={scrollToBottom}
           postId={postId}
           clearReplyTo={closeReply}
