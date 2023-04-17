@@ -47,6 +47,8 @@ You can change the colors in this file to customize the theme of the app accordi
 
 ## Environment variables 🌎
 
+Below is the list of environment variables that you can use to customize based on your needs.
+
 | Name                         | Description                                                                                               | Required? |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------- | --------- |
 | SERVER_MNEMONIC              | Wallet mnemonic for the server, to send token to users automatically                                      | Yes       |
