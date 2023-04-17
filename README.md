@@ -12,7 +12,7 @@
 
 ---
 
-## How to run locally
+## How to run locally 🏃‍♂️
 
 ### 1. Install dependencies
 
@@ -33,7 +33,14 @@ cp .env.local.example .env
 yarn dev
 ```
 
-## Environment variables
+Congrats 🎉, you can now access the app at http://localhost:3000
+
+## Theme Customization 🎨
+
+All the colors used in this project are provided in the [globals.css](./src/styles/globals.css) file.
+You can change the colors in this file to customize the theme of the app according to your needs.
+
+## Environment variables 🌎
 
 | Name                         | Description                                                                                               | Required? |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------- | --------- |
