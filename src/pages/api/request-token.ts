@@ -50,12 +50,13 @@ async function isEnoughBalance() {
 }
 
 async function verifyCaptcha(captchaToken: string) {
-  const formData = new FormData()
+  const formData = new URLSearchParams()
   formData.append('secret', getCaptchaSecret())
   formData.append('response', captchaToken)
   const res = await fetch(VERIFIER, {
     method: 'POST',
     body: formData,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   })
   const jsonRes = await res.json()
   if (!jsonRes.success) throw new Error('Invalid Token')
