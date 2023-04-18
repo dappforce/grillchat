@@ -28,7 +28,7 @@ export default function ColorModeToggler({ ...props }: ColorModeTogglerProps) {
       {...props}
       onClick={handleClick}
     >
-      {theme === 'dark' ? <HiMoon /> : <HiSun />}
+      {theme === 'dark' ? <HiSun /> : <HiMoon />}
     </Button>
   )
 }
