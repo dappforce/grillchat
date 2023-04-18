@@ -13,7 +13,7 @@ export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   getRepliedElement?: (commentId: string) => Promise<HTMLElement | null>
 }
 
-const MINIMUM_REPLY_CHAR = 20
+const MINIMUM_REPLY_CHAR = 35
 export default function RepliedMessagePreview({
   repliedMessageId,
   originalMessage,
