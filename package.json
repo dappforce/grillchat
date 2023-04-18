@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">= 18"
+    "node": ">= 16"
   },
   "scripts": {
     "dev": "next dev",
@@ -38,6 +38,7 @@
     "linkify-react": "^4.1.0",
     "linkifyjs": "^4.1.0",
     "next": "^13.2.1",
+    "next-themes": "^0.2.1",
     "nextjs-cors": "^2.1.2",
     "nextjs-google-analytics": "^2.3.3",
     "nextjs-progressbar": "^0.0.16",
@@ -54,6 +55,7 @@
     "slugify": "^1.6.6",
     "tailwind-merge": "^1.10.0",
     "typescript": "4.9.5",
+    "unique-names-generator": "^4.7.1",
     "url-join": "^5.0.0",
     "use-breakpoint": "^3.0.7",
     "zod": "^3.20.6",

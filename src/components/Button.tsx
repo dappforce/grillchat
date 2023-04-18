@@ -7,7 +7,8 @@ import Spinner from './Spinner'
 export const buttonStyles = cva('rounded-full transition', {
   variants: {
     variant: {
-      primary: 'bg-background-primary border border-transparent text-text',
+      primary:
+        'bg-background-primary border border-transparent text-text-on-primary',
       primaryOutline:
         'bg-transparent border border-background-primary text-text',
       mutedOutline: 'bg-transparent border border-text-muted text-text-muted',

@@ -28,7 +28,7 @@ export default function ChatUnreadCount({
   return (
     <div
       className={cx(
-        'rounded-full bg-background-primary py-0.5 px-2 text-sm',
+        'rounded-full bg-background-primary py-0.5 px-2 text-sm text-text-on-primary',
         props.className
       )}
     >

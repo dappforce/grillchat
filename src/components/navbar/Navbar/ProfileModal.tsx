@@ -16,7 +16,8 @@ import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getBaseUrl } from '@/utils/env/client'
-import { LocalStorage } from '@/utils/storage'
+import { generateRandomColor } from '@/utils/random-colors'
+import { generateRandomName } from '@/utils/random-name'
 import React, { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
@@ -126,18 +127,11 @@ type ButtonData = {
   notification?: NotificationControl
 }
 
-const STORAGE_KEY = 'viewed-about-app'
-const storage = new LocalStorage(() => STORAGE_KEY)
 function AccountContent({
   address,
   setCurrentState,
   notification,
 }: ContentProps) {
-  const [aboutAppNotif, setAboutAppNotif] = useState(false)
-  useEffect(() => {
-    if (storage.get() !== 'true') setAboutAppNotif(true)
-  }, [])
-
   const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = () => {
     sendEvent('click show_private_key_button')
@@ -173,13 +167,6 @@ function AccountContent({
       text: 'About app',
       icon: InfoIcon,
       onClick: onAboutClick,
-      notification: {
-        showNotif: aboutAppNotif,
-        setNotifDone: () => {
-          setAboutAppNotif(false)
-          storage.set('true')
-        },
-      },
     },
     { text: 'Log out', icon: ExitIcon, onClick: onLogoutClick },
   ]
@@ -188,11 +175,19 @@ function AccountContent({
     <div className='mt-2 flex flex-col'>
       <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
         <AddressAvatar address={address} className='h-20 w-20' />
-        <CopyTextInline
-          text={truncateAddress(address)}
-          tooltip='Copy my public address'
-          textToCopy={address}
-        />
+        <div className='flex flex-col'>
+          <span
+            className='text-lg'
+            style={{ color: generateRandomColor(address) }}
+          >
+            {generateRandomName(address)}
+          </span>
+          <CopyTextInline
+            text={truncateAddress(address)}
+            tooltip='Copy my public address'
+            textToCopy={address}
+          />
+        </div>
       </div>
       <div className='flex w-full flex-col gap-6 py-6 px-3'>
         {buttons.map(({ icon: Icon, onClick, text, href, notification }) => (
