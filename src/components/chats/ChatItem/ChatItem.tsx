@@ -11,7 +11,13 @@ import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { copyToClipboard } from '@/utils/text'
 import { PostData } from '@subsocial/api/types'
-import { ComponentProps, RefObject, useMemo, useReducer } from 'react'
+import {
+  ComponentProps,
+  RefObject,
+  SyntheticEvent,
+  useMemo,
+  useReducer,
+} from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { MdContentCopy } from 'react-icons/md'
@@ -95,7 +101,8 @@ export default function ChatItem({
 
   if (!body) return null
 
-  const onCheckMarkClick = () => {
+  const onCheckMarkClick = (e: SyntheticEvent) => {
+    e.stopPropagation()
     const checkMarkType: CheckMarkModalVariant = isSent
       ? 'recorded'
       : 'recording'
