@@ -1,19 +1,19 @@
 :root {
   --background: 236 239 244;
   --background-light: 248 250 252;
-  --background-lighter: 248 250 252; /* need confirmation */
-  --background-lightest: 255 255 255; /* need confirmation */
+  --background-lighter: 236 239 244;
+  --background-lightest: 195 201 213;
   --background-primary: 77 70 220;
-  --background-warning: 225 181 62; /* need confirmation */
-  --background-accent: 104 4 231; /* need confirmation */
+  --background-warning: 230 121 38;
+  --background-accent: 236 239 244;
   --text: 32 41 58;
-  --text-primary: 136 131 232; /* need confirmation */
-  --text-secondary: 130 161 248; /* need confirmation */
-  --text-muted: 151 162 182;
-  --text-dark: 17 23 41; /* need confirmation */
+  --text-primary: 99 102 241;
+  --text-secondary: 99 102 241;
+  --text-muted: 100 116 139;
+  --text-dark: 17 23 41;
   --text-on-primary: 255 255 255;
-  --text-muted-on-primary: 151, 162, 182;
-  --border-gray: 151 162 182; /* need confirmation it needs to be lighter */
+  --text-muted-on-primary: 151 162 182;
+  --border-gray: 195 201 213;
 }
 
 .dark {
