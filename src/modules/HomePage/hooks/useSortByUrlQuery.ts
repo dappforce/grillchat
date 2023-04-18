@@ -6,7 +6,7 @@ export default function useSortByUrlQuery(originalOrder: string[]) {
 
   if (mounted) {
     const orderQuery = getUrlQuery('order')
-    if (!orderQuery || orderQuery.length === 0) return []
+    if (!orderQuery || orderQuery.length === 0) return originalOrder
     const filteredOrder = orderQuery.filter((item) =>
       originalOrder.includes(item)
     )
@@ -15,5 +15,5 @@ export default function useSortByUrlQuery(originalOrder: string[]) {
       ...originalOrder.filter((item) => !filteredOrder.includes(item)),
     ]
   }
-  return []
+  return originalOrder
 }

@@ -29,7 +29,6 @@ export default function HomePage({
 
   const sortedIds = useSortedPostIdsByLatestMessage(data?.postIds ?? [])
   const order = useSortByUrlQuery(sortedIds)
-  const usedOrder = order.length > 0 ? order : sortedIds
 
   const sendEvent = useSendEvent()
 
@@ -86,7 +85,7 @@ export default function HomePage({
       {isMainPage && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {isMainPage && specialButtons}
-        {usedOrder.map((postId) => (
+        {order.map((postId) => (
           <ChatPreviewContainer postId={postId} key={postId} />
         ))}
       </div>
