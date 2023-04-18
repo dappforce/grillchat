@@ -1,4 +1,5 @@
 import BenefitsImage from '@/assets/graphics/benefits.png'
+import ChatboxLight from '@/assets/graphics/chatbox-light.svg'
 import Chatbox from '@/assets/graphics/chatbox.svg'
 import Embed2Image from '@/assets/graphics/embed-2.png'
 import EmbedImage from '@/assets/graphics/embed.png'
@@ -41,7 +42,8 @@ export default function IntegrateChatPage() {
     >
       <div className='flex flex-1 flex-col gap-[60px] text-center [&>*]:z-[5]'>
         <div className='mt-14 flex flex-col items-center gap-4'>
-          <Chatbox className='w-80' />
+          <ChatboxLight className='w-80 dark:hidden' />
+          <Chatbox className='hidden w-80 dark:block' />
           <h1 ref={ref} className='text-3xl font-bold'>
             {title}
           </h1>
