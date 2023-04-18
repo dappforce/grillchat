@@ -1,9 +1,7 @@
 import AddressAvatar from '@/components/AddressAvatar'
-import Button from '@/components/Button'
 import CommonCustomContextMenu, {
   CommonCustomContextMenuProps,
 } from '@/components/floating/CommonCustomContextMenu'
-import LinkText from '@/components/LinkText'
 import Toast from '@/components/Toast'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { isOptimisticId } from '@/services/subsocial/utils'
@@ -11,19 +9,19 @@ import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { generateRandomColor } from '@/utils/random-colors'
-import { generateRandomName } from '@/utils/random-name'
 import { copyToClipboard } from '@/utils/text'
 import { PostData } from '@subsocial/api/types'
-import Linkify from 'linkify-react'
 import { ComponentProps, RefObject, useMemo, useReducer } from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
-import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import { MdContentCopy } from 'react-icons/md'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
-import RepliedMessagePreview from './RepliedMessagePreview'
+import DefaultChatItem from './variants/DefaultChatItem'
+import EmojiChatItem, {
+  shouldRenderEmojiChatItem,
+} from './variants/EmojiChatItem'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   comment: PostData
@@ -68,8 +66,6 @@ export default function ChatItem({
     isOpen: false,
     variant: '',
   })
-  const relativeTime = getTimeRelativeToNow(createdAtTime)
-  const senderColor = generateRandomColor(ownerId)
 
   const setChatAsReply = (commentId: string) => {
     if (isOptimisticId(commentId)) return
@@ -106,7 +102,12 @@ export default function ChatItem({
     dispatch(checkMarkType)
   }
 
-  const name = generateRandomName(ownerId)
+  const isEmojiOnly = shouldRenderEmojiChatItem(body)
+
+  const relativeTime = getTimeRelativeToNow(createdAtTime)
+  const senderColor = generateRandomColor(ownerId)
+
+  const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
   return (
     <div
@@ -124,85 +125,24 @@ export default function ChatItem({
         {(_, onContextMenu, referenceProps) => {
           return (
             <div
-              id={chatBubbleId}
+              className={cx('flex flex-col overflow-hidden', props.className)}
               onContextMenu={onContextMenu}
               onDoubleClick={() => setChatAsReply(commentId)}
-              className={cx(
-                'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl py-1.5 px-2.5',
-                isMyMessage ? 'bg-background-primary' : 'bg-background-light'
-              )}
               {...referenceProps}
+              id={chatBubbleId}
             >
-              {!isMyMessage && (
-                <div className='flex items-center'>
-                  <span
-                    className='mr-2 text-sm text-text-secondary'
-                    style={{ color: senderColor }}
-                  >
-                    {name}
-                  </span>
-                  <span className='text-xs text-text-muted'>
-                    {relativeTime}
-                  </span>
-                </div>
-              )}
-              {inReplyTo?.id && (
-                <RepliedMessagePreview
-                  getRepliedElement={getRepliedElement}
-                  scrollContainer={scrollContainer}
-                  originalMessage={body}
-                  className='mt-1'
-                  repliedMessageId={inReplyTo.id}
-                />
-              )}
-              <p className='whitespace-pre-wrap break-words text-base'>
-                <Linkify
-                  options={{
-                    render: ({ content, attributes }) => (
-                      <LinkText
-                        {...attributes}
-                        href={attributes.href}
-                        variant={isMyMessage ? 'default' : 'secondary'}
-                        className={cx('underline')}
-                        openInNewTab
-                      >
-                        {content}
-                      </LinkText>
-                    ),
-                  }}
-                >
-                  {body}
-                </Linkify>
-              </p>
-              {isMyMessage && (
-                <div
-                  className={cx(
-                    'flex items-center gap-1',
-                    isMyMessage && 'self-end'
-                  )}
-                >
-                  <span className='text-xs text-text-muted'>
-                    {relativeTime}
-                  </span>
-                  <Button
-                    variant='transparent'
-                    size='noPadding'
-                    interactive='brightness-only'
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onCheckMarkClick()
-                    }}
-                  >
-                    {isSent ? (
-                      <IoCheckmarkDoneOutline className='text-sm' />
-                    ) : (
-                      <IoCheckmarkOutline
-                        className={cx('text-sm text-text-muted')}
-                      />
-                    )}
-                  </Button>
-                </div>
-              )}
+              <ChatItemContentVariant
+                body={body}
+                isMyMessage={isMyMessage}
+                isSent={isSent}
+                onCheckMarkClick={onCheckMarkClick}
+                ownerId={ownerId}
+                relativeTime={relativeTime}
+                senderColor={senderColor}
+                inReplyTo={inReplyTo}
+                getRepliedElement={getRepliedElement}
+                scrollContainer={scrollContainer}
+              />
             </div>
           )
         }}
