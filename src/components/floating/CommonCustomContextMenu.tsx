@@ -19,7 +19,7 @@ export default function CommonCustomContextMenu({
   return (
     <CustomContextMenu
       menuPanel={(closeMenu) => (
-        <DefaultContextMenu closeMenu={closeMenu} {...props} />
+        <CommonContextMenu closeMenu={closeMenu} {...props} />
       )}
       allowedPlacements={allowedPlacements}
     >
@@ -28,7 +28,7 @@ export default function CommonCustomContextMenu({
   )
 }
 
-function DefaultContextMenu({ menus, closeMenu }: DefaultContextMenuProps) {
+function CommonContextMenu({ menus, closeMenu }: DefaultContextMenuProps) {
   return (
     <ul className='flex w-32 flex-col overflow-hidden rounded-lg bg-background-light py-1 shadow-[0_5px_50px_-12px_rgb(0,0,0)]'>
       {menus.map(({ onClick, text, icon }) => (
