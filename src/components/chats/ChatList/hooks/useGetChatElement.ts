@@ -6,6 +6,7 @@ import { UseQueryResult } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef } from 'react'
 import { getChatItemId } from '../../helpers'
 
+// TODO: refactor this hook to have better readability
 export default function useGetChatElement(
   commentIds: string[],
   commentsQuery: UseQueryResult<PostData | null, unknown>[],
