@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { ComponentProps, forwardRef } from 'react'
 import Spinner from './Spinner'
 
-export const buttonStyles = cva('rounded-full transition', {
+export const buttonStyles = cva('relative rounded-full transition', {
   variants: {
     variant: {
       primary:
