@@ -102,6 +102,7 @@ export function CopyText({
 
 export type CopyTextInlineProps = CommonCopyTextProps & {
   tooltip?: string
+  textClassName?: string
 }
 export function CopyTextInline({
   text,
@@ -110,6 +111,7 @@ export function CopyTextInline({
   isCodeText: codeText,
   withHideButton,
   tooltip,
+  textClassName,
   ...props
 }: CopyTextInlineProps) {
   const [openTooltipClickTrigger, setOpenTooltipClickTrigger] = useState(false)
@@ -149,7 +151,7 @@ export function CopyTextInline({
 
   return (
     <div {...props} className={cx('flex items-center', props.className)}>
-      <span className={cx(fontClassName)}>{text}</span>
+      <span className={cx(fontClassName, textClassName)}>{text}</span>
       <PopOver
         triggerClassName='ml-2'
         manualTrigger={{
