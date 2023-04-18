@@ -61,7 +61,7 @@ export default function ChatPreview({
           'relative flex items-stretch gap-2.5 overflow-hidden py-2 outline-none'
         )}
       >
-        <div className='h-14 w-14 rounded-full bg-background-light'>
+        <div className='h-12 w-12 self-center rounded-full bg-background-light sm:h-14 sm:w-14'>
           {React.isValidElement(image)
             ? image
             : image && (
@@ -119,7 +119,7 @@ export default function ChatPreview({
           </div>
         </div>
         {withBorderBottom && (
-          <div className='absolute bottom-0 ml-16 w-full border-b border-border-gray' />
+          <div className='absolute bottom-0 ml-14 w-full border-b border-border-gray sm:ml-12' />
         )}
       </ContentContainer>
     </Component>

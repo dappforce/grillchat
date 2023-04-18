@@ -10,13 +10,13 @@ import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
 import Modal, { ModalFunctionalityProps } from '@/components/Modal'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
+import useRandomColor from '@/hooks/useRandomColor'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getBaseUrl } from '@/utils/env/client'
-import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
 import React, { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
@@ -132,6 +132,7 @@ function AccountContent({
   setCurrentState,
   notification,
 }: ContentProps) {
+  const senderColor = useRandomColor(address)
   const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = () => {
     sendEvent('click show_private_key_button')
@@ -176,10 +177,7 @@ function AccountContent({
       <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
         <AddressAvatar address={address} className='h-20 w-20' />
         <div className='flex flex-col'>
-          <span
-            className='text-lg'
-            style={{ color: generateRandomColor(address) }}
-          >
+          <span className='text-lg' style={{ color: senderColor }}>
             {generateRandomName(address)}
           </span>
           <CopyTextInline

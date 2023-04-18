@@ -1,6 +1,8 @@
 import Button from '@/components/Button'
+import ColorModeToggler from '@/components/ColorModeToggler'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
+import useIsInFrame from '@/hooks/useIsInFrame'
 import usePrevious from '@/hooks/usePrevious'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -16,7 +18,10 @@ const LoginModal = dynamic(() => import('@/components/LoginModal'), {
 })
 
 export type NavbarProps = ComponentProps<'div'> & {
-  customContent?: (authComponent: JSX.Element) => JSX.Element
+  customContent?: (
+    authComponent: JSX.Element,
+    colorModeToggler: JSX.Element
+  ) => JSX.Element
 }
 
 export default function Navbar({ customContent, ...props }: NavbarProps) {
@@ -24,6 +29,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
   )
+  const isInFrame = useIsInFrame()
   const address = useMyAccount((state) => state.address)
   const prevAddress = usePrevious(address)
   const isLoggedIn = !!address
@@ -67,6 +73,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
     )
   }
   const authComponent = renderAuthComponent()
+  const colorModeToggler = <ColorModeToggler />
 
   return (
     <>
@@ -81,13 +88,22 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
           className={cx('grid h-14 items-center py-2', props.className)}
         >
           {customContent ? (
-            customContent(authComponent)
+            customContent(authComponent, colorModeToggler)
           ) : (
             <div className='flex items-center justify-between'>
-              <Link href='/' aria-label='Back to home'>
-                <Logo className='text-2xl' />
-              </Link>
-              <div className='flex items-center'>{authComponent}</div>
+              {isInFrame ? (
+                <span>
+                  <Logo className='text-2xl' />
+                </span>
+              ) : (
+                <Link href='/' aria-label='Back to home'>
+                  <Logo className='text-2xl' />
+                </Link>
+              )}
+              <div className='flex items-center gap-4'>
+                {colorModeToggler}
+                {authComponent}
+              </div>
             </div>
           )}
         </Container>

@@ -15,7 +15,7 @@ export type CheckMarkExplanationModalProps = ModalFunctionalityProps & {
 const variants = {
   recording: {
     title: 'Recording message',
-    icon: <IoCheckmarkOutline className='text-text-muted' />,
+    icon: <IoCheckmarkOutline />,
     desc: () => (
       <span>
         Your message is being processed. In the next few seconds, it will be

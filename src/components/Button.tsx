@@ -4,17 +4,18 @@ import Link from 'next/link'
 import { ComponentProps, forwardRef } from 'react'
 import Spinner from './Spinner'
 
-export const buttonStyles = cva('rounded-full transition', {
+export const buttonStyles = cva('relative rounded-full transition', {
   variants: {
     variant: {
-      primary: 'bg-background-primary border border-transparent text-text',
+      primary:
+        'bg-background-primary border border-transparent text-text-on-primary',
       primaryOutline:
         'bg-transparent border border-background-primary text-text',
       mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
       transparent: 'bg-transparent text-text',
     },
     disabled: {
-      true: 'brightness-50 pointer-events-none cursor-default',
+      true: 'opacity-30 dark:brightness-50 dark:opacity-100 pointer-events-none cursor-default',
     },
     size: {
       noPadding: 'p-0',
@@ -24,10 +25,14 @@ export const buttonStyles = cva('rounded-full transition', {
     },
     interactive: {
       all: cx(
-        'hover:brightness-110 focus:brightness-110',
+        // TODO: find solution why filter makes element move around in safari
+        // 'hover:brightness-110 focus:brightness-110',
         interactionRingStyles({ color: 'background', variant: 'small-offset' })
       ),
-      'brightness-only': cx('hover:brightness-110 focus:brightness-110'),
+      'brightness-only': cx(
+        ''
+        // 'hover:brightness-110 focus:brightness-110'
+      ),
       none: '',
     },
   },

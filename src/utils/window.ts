@@ -15,6 +15,12 @@ export function allowWindowUnload() {
   window.onbeforeunload = null
 }
 
+export function getUrlQuery(queryName: string) {
+  const query = window.location.search
+  const searchParams = new URLSearchParams(query)
+  return searchParams.getAll(queryName)
+}
+
 export function waitStopScrolling(scrollContainer?: HTMLElement | null) {
   return new Promise<void>((resolve) => {
     let lastScrollTop = 0
@@ -30,4 +36,12 @@ export function waitStopScrolling(scrollContainer?: HTMLElement | null) {
       lastScrollTop = scrollTop
     }, 100)
   })
+}
+
+export function getIsInIframe() {
+  try {
+    return window.self !== window.top
+  } catch (e) {
+    return true
+  }
 }

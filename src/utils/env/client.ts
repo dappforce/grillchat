@@ -8,12 +8,22 @@ export function getCaptchaSiteKey() {
   )
 }
 
-export function getSpaceId() {
-  return checkEnv(
-    process.env.NEXT_PUBLIC_SPACE_ID,
-    'NEXT_PUBLIC_SPACE_ID',
+export function getMainSpaceId() {
+  const spaceIds = checkEnv(
+    process.env.NEXT_PUBLIC_SPACE_IDS,
+    'NEXT_PUBLIC_SPACE_IDS',
     true
   )
+  return spaceIds.split(',')[0]
+}
+
+export function getSpaceIds() {
+  const spaceIds = checkEnv(
+    process.env.NEXT_PUBLIC_SPACE_IDS,
+    'NEXT_PUBLIC_SPACE_IDS',
+    true
+  )
+  return spaceIds.split(',')
 }
 
 export function getAmpId() {
