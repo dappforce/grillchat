@@ -14,6 +14,7 @@ import { PostData } from '@subsocial/api/types'
 import { ComponentProps, RefObject, useMemo, useReducer } from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
+import { HiCircleStack } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
@@ -76,12 +77,28 @@ export default function ChatItem({
     return [
       {
         text: 'Reply',
-        icon: <BsFillReplyFill className='text-xl text-text-muted' />,
+        icon: (
+          <BsFillReplyFill className='flex-shrink-0 text-xl text-text-muted' />
+        ),
         onClick: () => onSelectChatAsReplyRef.current?.(commentId),
       },
       {
         text: 'Copy',
-        icon: <MdContentCopy className='text-xl text-text-muted' />,
+        icon: (
+          <MdContentCopy className='flex-shrink-0 text-xl text-text-muted' />
+        ),
+        onClick: () => {
+          copyToClipboard(body ?? '')
+          toast.custom((t) => (
+            <Toast t={t} title='Message copied to clipboard!' />
+          ))
+        },
+      },
+      {
+        text: 'Metadata',
+        icon: (
+          <HiCircleStack className='flex-shrink-0 text-xl text-text-muted' />
+        ),
         onClick: () => {
           copyToClipboard(body ?? '')
           toast.custom((t) => (
