@@ -17,13 +17,16 @@ import {
   SyntheticEvent,
   useMemo,
   useReducer,
+  useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
+import { HiCircleStack } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
+import MetadataModal from './MetadataModal'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
@@ -63,6 +66,7 @@ export default function ChatItem({
 }: ChatItemProps) {
   const commentId = comment.id
   const isSent = !isOptimisticId(commentId)
+  const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = comment.struct
   const { body, inReplyTo } = comment.content || {}
   const senderColor = useRandomColor(ownerId)
@@ -83,18 +87,29 @@ export default function ChatItem({
     return [
       {
         text: 'Reply',
-        icon: <BsFillReplyFill className='text-xl text-text-muted' />,
+        icon: (
+          <BsFillReplyFill className='flex-shrink-0 text-xl text-text-muted' />
+        ),
         onClick: () => onSelectChatAsReplyRef.current?.(commentId),
       },
       {
         text: 'Copy',
-        icon: <MdContentCopy className='text-xl text-text-muted' />,
+        icon: (
+          <MdContentCopy className='flex-shrink-0 text-xl text-text-muted' />
+        ),
         onClick: () => {
           copyToClipboard(body ?? '')
           toast.custom((t) => (
             <Toast t={t} title='Message copied to clipboard!' />
           ))
         },
+      },
+      {
+        text: 'Metadata',
+        icon: (
+          <HiCircleStack className='flex-shrink-0 text-xl text-text-muted' />
+        ),
+        onClick: () => setOpenMetadata(true),
       },
     ]
   }, [body, commentId, onSelectChatAsReplyRef])
@@ -160,6 +175,11 @@ export default function ChatItem({
         closeModal={() => dispatch('')}
         blockNumber={createdAtBlock}
         cid={contentId}
+      />
+      <MetadataModal
+        isOpen={openMetadata}
+        closeModal={() => setOpenMetadata(false)}
+        comment={comment}
       />
     </div>
   )
