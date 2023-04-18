@@ -25,10 +25,14 @@ export const buttonStyles = cva('relative rounded-full transition', {
     },
     interactive: {
       all: cx(
-        'hover:brightness-110 focus:brightness-110',
+        // TODO: find solution why filter makes element move around in safari
+        // 'hover:brightness-110 focus:brightness-110',
         interactionRingStyles({ color: 'background', variant: 'small-offset' })
       ),
-      'brightness-only': cx('hover:brightness-110 focus:brightness-110'),
+      'brightness-only': cx(
+        ''
+        // 'hover:brightness-110 focus:brightness-110'
+      ),
       none: '',
     },
   },
