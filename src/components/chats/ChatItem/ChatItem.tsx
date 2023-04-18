@@ -3,15 +3,22 @@ import CommonCustomContextMenu, {
   CommonCustomContextMenuProps,
 } from '@/components/floating/CommonCustomContextMenu'
 import Toast from '@/components/Toast'
+import useRandomColor from '@/hooks/useRandomColor'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
-import { generateRandomColor } from '@/utils/random-colors'
 import { copyToClipboard } from '@/utils/text'
 import { PostData } from '@subsocial/api/types'
-import { ComponentProps, RefObject, useMemo, useReducer, useState } from 'react'
+import {
+  ComponentProps,
+  RefObject,
+  SyntheticEvent,
+  useMemo,
+  useReducer,
+  useState,
+} from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack } from 'react-icons/hi2'
@@ -62,6 +69,7 @@ export default function ChatItem({
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = comment.struct
   const { body, inReplyTo } = comment.content || {}
+  const senderColor = useRandomColor(ownerId)
 
   const sendEvent = useSendEvent()
 
@@ -108,7 +116,8 @@ export default function ChatItem({
 
   if (!body) return null
 
-  const onCheckMarkClick = () => {
+  const onCheckMarkClick = (e: SyntheticEvent) => {
+    e.stopPropagation()
     const checkMarkType: CheckMarkModalVariant = isSent
       ? 'recorded'
       : 'recording'
@@ -119,7 +128,6 @@ export default function ChatItem({
   const isEmojiOnly = shouldRenderEmojiChatItem(body)
 
   const relativeTime = getTimeRelativeToNow(createdAtTime)
-  const senderColor = generateRandomColor(ownerId)
 
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 

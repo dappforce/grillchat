@@ -59,6 +59,7 @@ export default function LaunchCommunityPage() {
             <LinkText
               href={GITHUB_LINK}
               variant='primary'
+              className='font-bold'
               onClick={() => sendEvent('click github_link')}
               openInNewTab
             >

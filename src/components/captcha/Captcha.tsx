@@ -54,7 +54,7 @@ export default function Captcha({
           <div
             className={cx(
               'relative mr-3 flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-background-lightest',
-              token && 'bg-background-primary'
+              token && 'bg-background-primary text-text-on-primary'
             )}
             onClick={onTriggerCaptcha}
           >

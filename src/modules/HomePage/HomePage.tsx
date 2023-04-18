@@ -6,22 +6,30 @@ import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
-import { getSpaceId } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { createSlug } from '@/utils/slug'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
+import useSortByUrlQuery from './hooks/useSortByUrlQuery'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
+export type HomePageProps = {
+  isIntegrateChatButtonOnTop: boolean
+  spaceId: string
+  isMainPage: boolean
+}
 export default function HomePage({
   isIntegrateChatButtonOnTop,
-}: {
-  isIntegrateChatButtonOnTop: boolean
-}) {
-  const { data } = getPostIdsBySpaceIdQuery.useQuery(getSpaceId())
+  spaceId,
+  isMainPage,
+}: HomePageProps) {
+  const { data } = getPostIdsBySpaceIdQuery.useQuery(spaceId)
+
   const sortedIds = useSortedPostIdsByLatestMessage(data?.postIds ?? [])
+  const order = useSortByUrlQuery(sortedIds)
+
   const sendEvent = useSendEvent()
 
   const integrateChatButton = (
@@ -32,7 +40,7 @@ export default function HomePage({
       asContainer
       onClick={() => sendEvent('click integrate_chat_button')}
       image={
-        <div className='h-full w-full rounded-full bg-background-primary p-3'>
+        <div className='h-full w-full rounded-full bg-background-primary p-3 text-text-on-primary'>
           <Image src={IntegrateIcon} alt='integrate chat' />
         </div>
       }
@@ -54,7 +62,7 @@ export default function HomePage({
       asContainer
       onClick={() => sendEvent('click launch_community_button')}
       image={
-        <div className='h-full w-full rounded-full bg-background-primary p-4'>
+        <div className='h-full w-full rounded-full bg-background-primary p-4 text-text-on-primary'>
           <Image src={AddIcon} alt='launch community' />
         </div>
       }
@@ -74,10 +82,10 @@ export default function HomePage({
 
   return (
     <DefaultLayout>
-      <WelcomeModal />
+      {isMainPage && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
-        {specialButtons}
-        {sortedIds.map((postId) => (
+        {isMainPage && specialButtons}
+        {order.map((postId) => (
           <ChatPreviewContainer postId={postId} key={postId} />
         ))}
       </div>

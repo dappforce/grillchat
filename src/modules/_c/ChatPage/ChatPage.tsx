@@ -6,6 +6,7 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import Image, { ImageProps } from 'next/image'
+import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
@@ -27,14 +28,17 @@ export default function ChatPage({ postId }: { postId: string }) {
   return (
     <DefaultLayout
       navbarProps={{
-        customContent: (authComponent) => (
+        customContent: (authComponent, colorModeToggler) => (
           <div className='flex items-center justify-between gap-4'>
             <NavbarChatInfo
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
               messageCount={data?.length ?? 0}
               topic={content?.title ?? ''}
             />
-            {authComponent}
+            <div className='flex items-center gap-4'>
+              {colorModeToggler}
+              {authComponent}
+            </div>
           </div>
         ),
       }}
@@ -58,10 +62,11 @@ function NavbarChatInfo({
   messageCount: number
   topic: string
 }) {
+  const router = useRouter()
   return (
     <div className='flex items-center'>
-      <div className='-ml-3 mr-1 flex w-9 items-center justify-center'>
-        <Button size='noPadding' href='/' variant='transparent'>
+      <div className='mr-2 flex w-9 items-center justify-center'>
+        <Button size='circle' onClick={router.back} variant='transparent'>
           <HiOutlineChevronLeft />
         </Button>
       </div>

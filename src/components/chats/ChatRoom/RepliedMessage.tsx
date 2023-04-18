@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
+import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
-import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import { BsFillReplyFill } from 'react-icons/bs'
@@ -21,7 +21,7 @@ export default function RepliedMessage({
   const { data } = getPostQuery.useQuery(replyChatId)
   const chatContent = data?.content?.body
   const chatSenderAddr = data?.struct.ownerId
-  const senderColor = generateRandomColor(chatSenderAddr)
+  const senderColor = useRandomColor(chatSenderAddr)
   const name = generateRandomName(chatSenderAddr)
 
   const onRepliedMessageClick = () => {

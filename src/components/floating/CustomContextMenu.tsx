@@ -61,10 +61,8 @@ export default function CustomContextMenu({
   }
 
   const onContextMenu: MouseEventHandler<Element> = (e) => {
-    if (window.getSelection()?.type !== 'Range') {
-      e.preventDefault()
-      toggleMenu(e)
-    }
+    e.preventDefault()
+    toggleMenu(e)
   }
 
   const closeMenu = () => setOpenMenu(false)
