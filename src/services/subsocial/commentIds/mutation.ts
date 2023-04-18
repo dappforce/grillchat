@@ -3,8 +3,9 @@ import { useSaveFile } from '@/services/api/mutations'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { IpfsWrapper } from '@/utils/ipfs'
+import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
+import { PostContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { generateOptimisticId } from '../utils'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
@@ -25,7 +26,8 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
       await waitHasBalance()
       const { cid, success } = await saveFile({
         body: params.message,
-      } as any)
+        inReplyTo: ReplyWrapper(params.replyTo),
+      } as PostContent)
 
       if (!success) throw new Error('Failed to save file to IPFS')
 

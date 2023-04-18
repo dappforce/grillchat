@@ -22,3 +22,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.highlighted {
+  animation: highlighted 4s ease-in-out 1;
+}
+@keyframes highlighted {
+  3% {
+    filter: brightness(1.4);
+  }
+  15% {
+    filter: brightness(1.4);
+  }
+}

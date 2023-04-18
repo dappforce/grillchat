@@ -9,6 +9,18 @@ import { PostData } from '@subsocial/api/types'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { getPostsFromCache } from './api/posts'
 
+const getLastPosts = async (commentIdsByPostId: string[][]) => {
+  const lastPostIds = commentIdsByPostId
+    .map((ids) => ids[ids.length - 1])
+    .filter((id) => !!id)
+
+  let lastPosts: PostData[] = []
+  if (lastPostIds.length > 0) {
+    lastPosts = await getPostsFromCache(lastPostIds)
+  }
+  return lastPosts
+}
+
 export const getStaticProps = getCommonStaticProps<{
   dehydratedState: any
   isIntegrateChatButtonOnTop: boolean
@@ -30,14 +42,7 @@ export const getStaticProps = getCommonStaticProps<{
       const commentIdsByPostId = await Promise.all(promises)
       const posts = await postsPromise
 
-      const lastPostIds = commentIdsByPostId
-        .map((ids) => ids[ids.length - 1])
-        .filter((id) => !!id)
-
-      let lastPosts: PostData[] = []
-      if (lastPostIds.length > 0) {
-        lastPosts = await getPostsFromCache(lastPostIds)
-      }
+      const lastPosts = await getLastPosts(commentIdsByPostId)
 
       getPostIdsBySpaceIdQuery.setQueryData(queryClient, spaceId, {
         spaceId,

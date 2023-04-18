@@ -1,40 +1,35 @@
-import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import type { PostData } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
-import ChatItem from '../ChatItem'
+import ChatItem, { ChatItemProps } from '../ChatItem'
 
-export type ChatItemContainerProps = ComponentProps<'div'> & {
-  post: PostData
+export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
+  containerProps?: ComponentProps<'div'>
 }
+
 export default function ChatItemContainer({
-  post,
+  containerProps,
   ...props
 }: ChatItemContainerProps) {
+  const { comment } = props
   const address = useMyAccount((state) => state.address)
-  if (!post?.content?.body) return null
+  if (!comment?.content?.body) return null
 
-  const ownerId = post.struct.ownerId
+  const ownerId = comment.struct.ownerId
   const senderAddress = ownerId ?? ''
 
   const isMyMessage = address === senderAddress
-  const isSent = !isOptimisticId(post.id)
 
   return (
     <div
-      {...props}
-      className={cx('w-10/12', isMyMessage && 'self-end', props.className)}
+      {...containerProps}
+      className={cx(
+        'w-10/12',
+        isMyMessage && 'self-end',
+        containerProps?.className
+      )}
     >
-      <ChatItem
-        isMyMessage={isMyMessage}
-        sentDate={post.struct.createdAtTime}
-        senderAddress={senderAddress}
-        text={post.content.body}
-        isSent={isSent}
-        blockNumber={post.struct.createdAtBlock}
-        cid={post.struct.contentId}
-      />
+      <ChatItem {...props} isMyMessage={isMyMessage} />
     </div>
   )
 }

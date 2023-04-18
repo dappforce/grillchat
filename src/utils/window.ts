@@ -14,3 +14,20 @@ export function preventWindowUnload() {
 export function allowWindowUnload() {
   window.onbeforeunload = null
 }
+
+export function waitStopScrolling(scrollContainer?: HTMLElement | null) {
+  return new Promise<void>((resolve) => {
+    let lastScrollTop = 0
+    const interval = setInterval(() => {
+      const scrollTop =
+        scrollContainer?.scrollTop ||
+        window.scrollY ||
+        document.documentElement.scrollTop
+      if (scrollTop === lastScrollTop) {
+        clearInterval(interval)
+        resolve()
+      }
+      lastScrollTop = scrollTop
+    }, 100)
+  })
+}
