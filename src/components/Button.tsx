@@ -15,7 +15,7 @@ export const buttonStyles = cva('rounded-full transition', {
       transparent: 'bg-transparent text-text',
     },
     disabled: {
-      true: 'brightness-50 pointer-events-none cursor-default',
+      true: 'brightness-75 dark:brightness-50 pointer-events-none cursor-default',
     },
     size: {
       noPadding: 'p-0',
