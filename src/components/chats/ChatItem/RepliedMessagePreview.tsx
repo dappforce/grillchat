@@ -1,6 +1,6 @@
+import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
-import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
 import { truncateText } from '@/utils/text'
 import { ComponentProps, RefObject, useState } from 'react'
@@ -23,12 +23,12 @@ export default function RepliedMessagePreview({
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { data } = getPostQuery.useQuery(repliedMessageId)
+  const replySender = data?.struct.ownerId
+  const replySenderColor = useRandomColor(replySender)
+
   if (!data) {
     return null
   }
-
-  const replySender = data.struct.ownerId
-  const replySenderColor = generateRandomColor(replySender)
 
   let showedText = data.content?.body ?? ''
   if (originalMessage.length < MINIMUM_REPLY_CHAR) {
