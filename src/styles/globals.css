@@ -44,7 +44,28 @@
 @tailwind utilities;
 
 .highlighted {
+  @apply relative after:pointer-events-none after:absolute after:top-0 after:left-0 after:h-full after:w-full after:rounded-2xl after:bg-background-primary/20;
+}
+.highlighted::after {
+  animation: highlighted-blue 4s ease-in-out 1;
+}
+.dark .highlighted {
+  @apply after:hidden;
   animation: highlighted 4s ease-in-out 1;
+}
+@keyframes highlighted-blue {
+  0% {
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 @keyframes highlighted {
   3% {
