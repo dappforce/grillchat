@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import ChatRoom from '@/components/chats/ChatRoom'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import useIsInIframe from '@/hooks/useIsInFrame'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
@@ -63,10 +64,16 @@ function NavbarChatInfo({
   topic: string
 }) {
   const router = useRouter()
+  const isInIframe = useIsInIframe()
   return (
     <div className='flex items-center'>
       <div className='mr-2 flex w-9 items-center justify-center'>
-        <Button size='circle' onClick={router.back} variant='transparent'>
+        <Button
+          size='circle'
+          href={isInIframe ? undefined : '/'}
+          onClick={isInIframe ? router.back : undefined}
+          variant='transparent'
+        >
           <HiOutlineChevronLeft />
         </Button>
       </div>
