@@ -35,8 +35,14 @@ export const getStaticProps = getCommonStaticProps<
   () => ({}),
   async (context) => {
     const queryClient = new QueryClient()
-    const { spaceId: paramSpaceId } = context.params ?? {}
-    const spaceId = (paramSpaceId as string) ?? getMainSpaceId()
+
+    let { spaceId: paramSpaceId } = context.params ?? {}
+    if (Array.isArray(paramSpaceId)) {
+      if (paramSpaceId.length > 1) return undefined
+      paramSpaceId = paramSpaceId[0]
+    }
+    const spaceId = paramSpaceId ?? getMainSpaceId()
+    if (isNaN(parseInt(spaceId))) return undefined
 
     try {
       const subsocialApi = await getSubsocialApi()
