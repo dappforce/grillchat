@@ -4,7 +4,8 @@ import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
 import { getGaId } from '@/utils/env/client'
-import { ThemeProvider } from 'next-themes'
+import { getUrlQuery } from '@/utils/window'
+import { ThemeProvider, useTheme } from 'next-themes'
 import type { AppProps } from 'next/app'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
@@ -31,6 +32,7 @@ export default function App({
 
   return (
     <ThemeProvider attribute='class'>
+      <ThemeURLChecker />
       <QueryProvider dehydratedState={dehydratedState}>
         <ToasterConfig />
         <NextNProgress color='#4d46dc' />
@@ -45,4 +47,17 @@ export default function App({
 function ToasterConfig() {
   const mdUp = useBreakpointThreshold('md')
   return <Toaster position={mdUp ? 'bottom-right' : 'top-center'} />
+}
+
+function ThemeURLChecker() {
+  const { setTheme } = useTheme()
+
+  useEffect(() => {
+    const [theme] = getUrlQuery('theme')
+    if (theme === 'dark' || theme === 'light') {
+      setTheme(theme)
+    }
+  }, [setTheme])
+
+  return null
 }
