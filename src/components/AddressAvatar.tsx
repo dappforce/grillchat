@@ -11,7 +11,7 @@ export type AddressAvatarProps = ComponentProps<'div'> & {
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   function AddressAvatar({ address, ...props }: AddressAvatarProps, ref) {
-    const backgroundColor = useRandomColor(address)
+    const backgroundColor = useRandomColor(address, 'dark')
     const avatar = useMemo(() => {
       return createAvatar(bottts, {
         size: 128,

@@ -1,12 +1,12 @@
 import { getIsInIframe } from '@/utils/window'
 import { useEffect, useState } from 'react'
 
-export default function useIsInFrame() {
-  const [isInFrame, setIsInFrame] = useState(false)
+export default function useIsInIframe() {
+  const [isInIframe, setIsInIframe] = useState(false)
 
   useEffect(() => {
-    setIsInFrame(getIsInIframe())
+    setIsInIframe(getIsInIframe())
   }, [])
 
-  return isInFrame
+  return isInIframe
 }
