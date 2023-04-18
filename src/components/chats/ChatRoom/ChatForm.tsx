@@ -23,6 +23,8 @@ import {
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   postId: string
   onSubmit?: () => void
+  replyTo?: string
+  clearReplyTo?: () => void
 }
 
 function processMessage(message: string) {
@@ -33,6 +35,8 @@ export default function ChatForm({
   className,
   postId,
   onSubmit,
+  replyTo,
+  clearReplyTo,
   ...props
 }: ChatFormProps) {
   const { data: post } = getPostQuery.useQuery(postId)
@@ -65,6 +69,9 @@ export default function ChatForm({
     if (isTouchDevice()) return
     textAreaRef.current?.focus()
   }, [])
+  useEffect(() => {
+    if (replyTo) textAreaRef.current?.focus()
+  }, [replyTo])
 
   useEffect(() => {
     setIsRequestingEnergy(false)
@@ -74,6 +81,10 @@ export default function ChatForm({
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
   const isDisabled = !processMessage(message)
 
+  const resetForm = () => {
+    setMessage('')
+    clearReplyTo?.()
+  }
   const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
     e?.preventDefault()
     if (
@@ -88,8 +99,12 @@ export default function ChatForm({
     if (isDisabled) return
 
     if (shouldSendMessage) {
-      setMessage('')
-      sendMessage({ message: processedMessage, rootPostId: postId })
+      resetForm()
+      sendMessage({
+        message: processedMessage,
+        rootPostId: postId,
+        replyTo,
+      })
       onSubmit?.()
     } else {
       if (isLoggedIn) {
@@ -98,11 +113,12 @@ export default function ChatForm({
         sendEvent('send first message', { chatId: postId, name: topicName })
       }
       if (!captchaToken) return
-      setMessage('')
+      resetForm()
       requestTokenAndSendMessage({
         captchaToken,
         message: processMessage(message),
         rootPostId: postId,
+        replyTo,
       })
       setIsRequestingEnergy(true)
       sendEvent('request energy and send message')

@@ -1,11 +1,11 @@
 import randomColor from 'randomcolor'
 
 export function generateRandomColor(
-  seed: string,
+  seed: string | undefined | null,
   currentTheme?: 'light' | 'dark'
 ) {
   return randomColor({
-    seed,
+    seed: seed ?? undefined,
     luminosity: currentTheme === 'dark' ? 'light' : 'dark',
   })
 }

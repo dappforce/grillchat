@@ -75,7 +75,7 @@ export default function FieldWrapper({
     'focus:brightness-110',
     'disabled:cursor-not-allowed disabled:brightness-75',
     inputStyles({ pill, variant, size }),
-    interactionRingStyles()
+    interactionRingStyles({ variant: 'no-offset' })
   )
   const errorClassNames = cx('ring-2 ring-red-500 ring-offset-2')
   const inputClassNames = cx(commonClassNames, error && errorClassNames)

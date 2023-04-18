@@ -2,6 +2,7 @@ import { cx } from '@/utils/class-names'
 import {
   arrow,
   autoUpdate,
+  flip,
   FloatingFocusManager,
   offset,
   Placement,
@@ -16,7 +17,7 @@ import { Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { useRef, useState } from 'react'
 import { HiXMark } from 'react-icons/hi2'
-import Button from './Button'
+import Button from '../Button'
 
 const panelStyles = cva(
   'absolute z-30 flex max-w-[min(24rem,_95vw)] items-center rounded-3xl text-text-dark shadow-md outline-none',
@@ -84,6 +85,7 @@ export default function PopOver({
     onOpenChange: setIsOpen,
     whileElementsMounted: autoUpdate,
     middleware: [
+      flip(),
       offset({ mainAxis: yOffset }),
       withArrow &&
         arrow({

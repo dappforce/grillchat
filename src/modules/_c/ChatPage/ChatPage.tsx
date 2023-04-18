@@ -65,8 +65,8 @@ function NavbarChatInfo({
   const router = useRouter()
   return (
     <div className='flex items-center'>
-      <div className='mr-2 flex w-9 items-center justify-center'>
-        <Button size='circle' onClick={router.back} variant='transparent'>
+      <div className='-ml-3 mr-1 flex w-9 items-center justify-center'>
+        <Button size='noPadding' onClick={router.back} variant='transparent'>
           <HiOutlineChevronLeft />
         </Button>
       </div>

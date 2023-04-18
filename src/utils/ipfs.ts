@@ -5,3 +5,12 @@ export function getIpfsContentUrl(cid: string) {
 export function IpfsWrapper(cid?: string) {
   return cid ? { IPFS: cid } : { None: null }
 }
+
+export function ReplyWrapper(replyToPostId: string | undefined | null) {
+  return replyToPostId
+    ? {
+        id: replyToPostId,
+        kind: 'Post',
+      }
+    : undefined
+}
