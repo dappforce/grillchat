@@ -37,3 +37,11 @@ export function waitStopScrolling(scrollContainer?: HTMLElement | null) {
     }, 100)
   })
 }
+
+export function getIsInIframe() {
+  try {
+    return window.self !== window.top
+  } catch (e) {
+    return true
+  }
+}
