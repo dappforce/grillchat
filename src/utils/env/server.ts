@@ -19,6 +19,6 @@ export function getUserIdSalt() {
 export function getIpfsPinUrl() {
   return (
     checkEnv(process.env.IPFS_PIN_URL, 'IPFS_PIN_URL') ||
-    'https://pin.cloud3.cc/psa'
+    'https://pin.crustcloud.io/psa'
   )
 }

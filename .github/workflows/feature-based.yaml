@@ -56,7 +56,7 @@ jobs:
             GH_NEXT_PUBLIC_BASE_URL=https://${{ env.name }}-grillchat.subsocial.network
             GH_NEXT_PUBLIC_AMP_ID=81d0fc2014ce14eed5a475efe9a44035
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
-            GH_IPFS_PIN_URL=https://test-pin.cloud3.cc/psa
+            GH_IPFS_PIN_URL=https://test-pin.crustcloud.io/psa
           tags: |
             ${{ env.image }}
           cache-from: type=local,src=/tmp/.buildx-cache

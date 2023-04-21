@@ -49,7 +49,7 @@ jobs:
             GH_NEXT_PUBLIC_SPACE_IDS=1002
             GH_NEXT_PUBLIC_AMP_ID=81d0fc2014ce14eed5a475efe9a44035
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
-            GH_IPFS_PIN_URL=https://pin.cloud3.cc/psa
+            GH_IPFS_PIN_URL=https://pin.crustcloud.io/psa
             GH_CRUST_IPFS_AUTH=${{ secrets.CRUST_IPFS_AUTH }}
             GH_USER_ID_SALT=${{ secrets.USER_ID_SALT }}
             GH_SERVER_MNEMONIC=${{ secrets.SERVER_ENERGY_MNEMONIC }}

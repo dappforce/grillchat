@@ -12,8 +12,7 @@ export type SaveFileResponse = {
 }
 
 export const CRUST_IPFS_CONFIG = {
-  ipfsNodeUrl: 'https://gw.crustfiles.app',
-  // ipfsNodeUrl: 'https://gw-seattle.cloud3.cc',
+  ipfsNodeUrl: 'https://gw-seattle.crustcloud.io',
   ipfsClusterUrl: getIpfsPinUrl(),
 }
 
