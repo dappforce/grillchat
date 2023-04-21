@@ -25,7 +25,6 @@ export default function useWaitHasEnergy() {
 
   useEffect(() => {
     if (energy && energy > 0) {
-      console.log('My Current Energy', energy)
       if (hasEnergyResolver.current) {
         const resolveHasEnergy = () => {
           hasEnergyResolver.current?.()

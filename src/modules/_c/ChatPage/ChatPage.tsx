@@ -11,6 +11,7 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
+import { PostData } from '@subsocial/api/types'
 
 export default function ChatPage({ postId }: { postId: string }) {
   const { data: post } = getPostQuery.useQuery(postId)
@@ -34,7 +35,7 @@ export default function ChatPage({ postId }: { postId: string }) {
             <NavbarChatInfo
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
               messageCount={data?.length ?? 0}
-              topic={content?.title ?? ''}
+              post={post}
             />
             <div className='flex items-center gap-4'>
               {colorModeToggler}
@@ -57,21 +58,29 @@ export default function ChatPage({ postId }: { postId: string }) {
 function NavbarChatInfo({
   image,
   messageCount,
-  topic,
+  post,
 }: {
   image: ImageProps['src']
   messageCount: number
-  topic: string
+  post?: PostData | null
 }) {
   const router = useRouter()
   const isInIframe = useIsInIframe()
+
+  if(!post) return null
+
+  const { content, struct } = post
+
+  const topic = content?.title
+  const { spaceId } = struct
+
   return (
     <div className='flex items-center'>
       <div className='mr-2 flex w-9 items-center justify-center'>
         <Button
           size='circle'
           href={isInIframe ? undefined : '/'}
-          onClick={isInIframe ? router.back : undefined}
+          onClick={isInIframe ? () => router.replace(`/${spaceId}`) : undefined}
           variant='transparent'
         >
           <HiOutlineChevronLeft />
