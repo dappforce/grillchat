@@ -43,6 +43,10 @@
   display: none;
 }
 
+* {
+  @apply scrollbar-thin scrollbar-track-background scrollbar-thumb-background-lightest scrollbar-track-rounded-full scrollbar-thumb-rounded-full dark:scrollbar-thumb-background-lighter;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
