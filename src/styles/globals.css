@@ -4,6 +4,7 @@
   --background-lighter: 236 239 244;
   --background-lightest: 195 201 213;
   --background-primary: 77 70 220;
+  --background-primary-light: 216 214 255;
   --background-warning: 230 121 38;
   --background-accent: 236 239 244;
   --text: 32 41 58;
@@ -22,6 +23,7 @@
   --background-lighter: 44 56 79;
   --background-lightest: 74 85 103;
   --background-primary: 77 70 220;
+  --background-primary-light: 77 70 220;
   --background-warning: 225 181 62;
   --background-accent: 104 4 231;
   --text: 255 255 255;

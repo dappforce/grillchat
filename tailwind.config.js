@@ -16,6 +16,8 @@ module.exports = {
         'background-lightest':
           'rgb(var(--background-lightest) / <alpha-value>)',
         'background-primary': 'rgb(var(--background-primary) / <alpha-value>)',
+        'background-primary-light':
+          'rgb(var(--background-primary-light) / <alpha-value>)',
         'background-warning': 'rgb(var(--background-warning) / <alpha-value>)',
         'background-accent': 'rgb(var(--background-accent) / <alpha-value>)',
 
