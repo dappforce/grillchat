@@ -44,7 +44,10 @@ const DEFAULT_TX_CALLBACKS = {
   onBroadcast: ({ summary }: TxCallbacksParams) =>
     console.info(`Broadcasting ${summary}...`),
   onError: ({ error }: TxCallbacksParams) =>
-    console.error('Tx Error', (error as Error).message),
+    console.error(
+      'Tx Error',
+      typeof error === 'string' ? error : (error as Error)?.message
+    ),
   onSuccess: ({ summary }: TxCallbacksParams) =>
     console.log(`Success submit ${summary}...`),
 }

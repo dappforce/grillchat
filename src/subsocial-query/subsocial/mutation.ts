@@ -122,14 +122,23 @@ function sendTransaction<Param, Context>(
   } = txInfo
   const globalTxCallbacks = getGlobalTxCallbacks()
   return new Promise<string>(async (resolve, reject) => {
+    let danglingNonceResolver: undefined | (() => void)
     try {
       const { nonce, nonceResolver } = await getNonce(
         apis.substrateApi,
         address
       )
+      danglingNonceResolver = nonceResolver
       const unsub = await tx.signAndSend(signer, { nonce }, async (result) => {
         resolve(result.txHash.toString())
-        if (result.status.isBroadcast) {
+        if (result.status.isInvalid) {
+          txCallbacks?.onError()
+          globalTxCallbacks.onError({
+            summary,
+            address,
+            params,
+          })
+        } else if (result.status.isBroadcast) {
           globalTxCallbacks.onBroadcast({
             summary,
             params: params,
@@ -171,7 +180,7 @@ function sendTransaction<Param, Context>(
       nonceResolver()
       txCallbacks?.onSend()
     } catch (e) {
-      globalTxCallbacks.onError({ address, error: e, params, summary })
+      danglingNonceResolver?.()
       reject(e)
     }
   })

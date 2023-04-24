@@ -14,7 +14,7 @@ const subscription = (
   queryClient: QueryClient,
   lastIdInPreviousSub: {
     get: () => string | undefined
-    set: (id: string) => void
+    set: (id: string | undefined) => void
   },
   callback?: (ids: string[]) => void
 ) => {
@@ -30,12 +30,13 @@ const subscription = (
 
     return substrateApi.query.posts.replyIdsByPostId(postId, async (ids) => {
       const newIds = Array.from(ids.toPrimitive() as any).map((id) => id + '')
-      const lastId = newIds[newIds.length - 1]
+      const lastId = newIds[newIds.length - 1] ?? ''
       const lastSubscribedId = lastIdInPreviousSub.get()
 
       lastIdInPreviousSub.set(lastId)
 
       function updateQueryData() {
+        // order the ids, so that the optimistic ids are at the end
         queryClient.setQueryData<string[]>(
           getCommentIdsQueryKey(postId),
           (oldIds) => {
@@ -46,13 +47,13 @@ const subscription = (
       }
 
       // first subscription, set data immediately
-      if (!lastSubscribedId) {
+      if (lastSubscribedId === undefined) {
         updateQueryData()
         callback?.(newIds)
         return
       }
 
-      // consecutive subscription, set data after new block
+      // consecutive subscription, find new ids
       const lastSubscribedIdIndex = newIds.findIndex(
         (id) => id === lastSubscribedId
       )
@@ -89,7 +90,7 @@ export function useSubscribeCommentIdsByPostId(
 ) {
   const queryClient = useQueryClient()
 
-  const lastIdInPreviousSub = useRef('')
+  const lastIdInPreviousSub = useRef<string>()
   const callbackRef = useWrapInRef(callbackFirstResult)
 
   useEffect(() => {
@@ -119,7 +120,7 @@ export function useSubscribeCommentIdsByPostIds(
 ) {
   const queryClient = useQueryClient()
 
-  const lastIdInPreviousSub = useRef<Record<string, string>>({})
+  const lastIdInPreviousSub = useRef<Record<string, string | undefined>>({})
   const callbackRef = useWrapInRef(callbackFirstResult)
 
   useEffect(() => {
@@ -161,20 +162,15 @@ function filterOptimisticIds(
 ) {
   if (!optimisticIds) return
 
-  const mutatedNewPosts = [...newPosts]
   return optimisticIds.filter((id) => {
     const idData = extractOptimisticIdData<OptimisticMessageIdData>(id)
     if (!idData) return
-    const foundIndex = mutatedNewPosts.findIndex((post) => {
+    const foundData = newPosts.find((post) => {
       return (
         post.content?.body === idData.message &&
         post.struct.ownerId === idData.address
       )
     })
-    const isFound = foundIndex !== -1
-    if (isFound) {
-      mutatedNewPosts.splice(foundIndex, 1)
-    }
-    return !isFound
+    return !foundData
   })
 }
