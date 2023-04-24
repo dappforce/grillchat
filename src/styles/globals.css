@@ -44,7 +44,7 @@
 }
 
 * {
-  @apply scrollbar-thin scrollbar-track-background-lightest scrollbar-thumb-background-light scrollbar-track-rounded-full scrollbar-thumb-rounded-full dark:scrollbar-track-background-light dark:scrollbar-thumb-background-lighter;
+  @apply scrollbar-thin scrollbar-track-background scrollbar-thumb-background-lightest scrollbar-track-rounded-full scrollbar-thumb-rounded-full dark:scrollbar-thumb-background-lighter;
 }
 
 @tailwind base;
