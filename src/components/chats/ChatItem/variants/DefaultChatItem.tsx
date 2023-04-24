@@ -30,7 +30,7 @@ export default function DefaultChatItem({
         className={cx(
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl py-1.5 px-2.5',
           isMyMessage
-            ? 'bg-background-primary text-text-on-primary'
+            ? 'bg-background-primary-light text-text dark:bg-background-primary dark:text-text-on-primary'
             : 'bg-background-light'
         )}
       >
@@ -77,7 +77,7 @@ export default function DefaultChatItem({
           <div
             className={cx('flex items-center gap-1', isMyMessage && 'self-end')}
           >
-            <span className='text-xs text-text-muted-on-primary'>
+            <span className='text-xs text-text-muted dark:text-text-muted-on-primary'>
               {relativeTime}
             </span>
             <Button
@@ -87,10 +87,12 @@ export default function DefaultChatItem({
               onClick={onCheckMarkClick}
             >
               {isSent ? (
-                <IoCheckmarkDoneOutline className='text-sm text-text-on-primary' />
+                <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
               ) : (
                 <IoCheckmarkOutline
-                  className={cx('text-sm text-text-muted-on-primary')}
+                  className={cx(
+                    'text-muted text-sm dark:text-text-muted-on-primary'
+                  )}
                 />
               )}
             </Button>

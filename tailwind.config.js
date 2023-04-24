@@ -16,6 +16,8 @@ module.exports = {
         'background-lightest':
           'rgb(var(--background-lightest) / <alpha-value>)',
         'background-primary': 'rgb(var(--background-primary) / <alpha-value>)',
+        'background-primary-light':
+          'rgb(var(--background-primary-light) / <alpha-value>)',
         'background-warning': 'rgb(var(--background-warning) / <alpha-value>)',
         'background-accent': 'rgb(var(--background-accent) / <alpha-value>)',
 
@@ -27,6 +29,7 @@ module.exports = {
         'text-primary': 'rgb(var(--text-primary) / <alpha-value>)',
         'text-secondary': 'rgb(var(--text-secondary) / <alpha-value>)',
         'text-dark': 'rgb(var(--text-dark) / <alpha-value>)',
+        'text-warning': 'rgb(var(--text-warning) / <alpha-value>)',
 
         'border-gray': 'rgb(var(--border-gray) / <alpha-value>)',
       },

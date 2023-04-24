@@ -316,7 +316,7 @@ function AboutContent() {
         </LinkText>
         .
       </p>
-      <div className='rounded-2xl border border-background-warning py-2 px-4 text-background-warning'>
+      <div className='rounded-2xl border border-background-warning py-2 px-4 text-text-warning'>
         xSocial is an experimental environment for innovative web3 social
         features before they are deployed on{' '}
         <LinkText
