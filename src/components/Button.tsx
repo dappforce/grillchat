@@ -1,6 +1,6 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
-import Link from 'next/link'
+import Link, { LinkProps } from 'next/link'
 import { ComponentProps, forwardRef } from 'react'
 import Spinner from './Spinner'
 
@@ -48,6 +48,7 @@ type ButtonPropsWithRef = VariantProps<typeof buttonStyles> &
   ComponentProps<'a'> & {
     withDisabledStyles?: boolean
     isLoading?: boolean
+    nextLinkProps?: Omit<LinkProps, 'href'>
   }
 export type ButtonProps = Omit<ButtonPropsWithRef, 'ref'>
 
@@ -61,6 +62,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     interactive,
     isLoading,
     children,
+    nextLinkProps,
     ...props
   },
   ref
@@ -90,7 +92,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
 
   if (href) {
     return (
-      <Link href={href} passHref legacyBehavior>
+      <Link {...nextLinkProps} href={href} passHref legacyBehavior>
         <a ref={ref as any} {...props} className={className}>
           {children}
         </a>

@@ -1,17 +1,16 @@
 import Button from '@/components/Button'
 import ChatRoom from '@/components/chats/ChatRoom'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import useIsInIframe from '@/hooks/useIsInFrame'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { getIpfsContentUrl } from '@/utils/ipfs'
+import { PostData } from '@subsocial/api/types'
 import Image, { ImageProps } from 'next/image'
-import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
-import { PostData } from '@subsocial/api/types'
 
 export default function ChatPage({ postId }: { postId: string }) {
   const { data: post } = getPostQuery.useQuery(postId)
@@ -64,13 +63,11 @@ function NavbarChatInfo({
   messageCount: number
   post?: PostData | null
 }) {
-  const router = useRouter()
   const isInIframe = useIsInIframe()
 
-  if(!post) return null
+  if (!post) return null
 
   const { content, struct } = post
-
   const topic = content?.title
   const { spaceId } = struct
 
@@ -79,8 +76,8 @@ function NavbarChatInfo({
       <div className='mr-2 flex w-9 items-center justify-center'>
         <Button
           size='circle'
-          href={isInIframe ? undefined : '/'}
-          onClick={isInIframe ? () => router.replace(`/${spaceId}`) : undefined}
+          href={isInIframe ? `/${spaceId ?? ''}` : '/'}
+          nextLinkProps={{ replace: isInIframe }}
           variant='transparent'
         >
           <HiOutlineChevronLeft />

@@ -2,6 +2,7 @@ import AddIcon from '@/assets/icons/add.png'
 import IntegrateIcon from '@/assets/icons/integrate.png'
 import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
@@ -10,10 +11,8 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import { createSlug } from '@/utils/slug'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
 import useSortByUrlQuery from './hooks/useSortByUrlQuery'
-import useIsInIframe from '@/hooks/useIsInFrame'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
@@ -99,7 +98,6 @@ function ChatPreviewContainer({ postId }: { postId: string }) {
   const { data } = getPostQuery.useQuery(postId)
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
-  const router = useRouter()
 
   const content = data?.content
 
@@ -108,26 +106,6 @@ function ChatPreviewContainer({ postId }: { postId: string }) {
       title: content?.title ?? '',
       chatId: postId,
     })
-
-    isInIframe && router.replace({
-      pathname: '/c/[topic]',
-      query: {
-        topic: createSlug(postId, { title: content?.title }),
-      },
-    })
-  }
-
-  const params = isInIframe ? {
-    isInteractive: true
-  } : {
-    asLink: {
-      href: {
-        pathname: '/c/[topic]',
-        query: {
-          topic: createSlug(postId, { title: content?.title }),
-        },
-      },
-    }
   }
 
   return (
@@ -135,12 +113,20 @@ function ChatPreviewContainer({ postId }: { postId: string }) {
       onClick={onChatClick}
       key={postId}
       asContainer
+      asLink={{
+        replace: isInIframe,
+        href: {
+          pathname: '/c/[topic]',
+          query: {
+            topic: createSlug(postId, { title: content?.title }),
+          },
+        },
+      }}
       image={content?.image ? getIpfsContentUrl(content.image) : ''}
       title={content?.title ?? ''}
       description={content?.body ?? ''}
       postId={postId}
       withUnreadCount
-      {...params}
     />
   )
 }

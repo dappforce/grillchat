@@ -2,7 +2,7 @@ import Button from '@/components/Button'
 import ColorModeToggler from '@/components/ColorModeToggler'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
-import useIsInIframe from '@/hooks/useIsInFrame'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import usePrevious from '@/hooks/usePrevious'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -29,7 +29,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
   )
-  const isInFrame = useIsInIframe()
+  const isInIframe = useIsInIframe()
   const address = useMyAccount((state) => state.address)
   const prevAddress = usePrevious(address)
   const isLoggedIn = !!address
@@ -91,7 +91,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
             customContent(authComponent, colorModeToggler)
           ) : (
             <div className='flex items-center justify-between'>
-              {isInFrame ? (
+              {isInIframe ? (
                 <span>
                   <Logo className='text-2xl' />
                 </span>
