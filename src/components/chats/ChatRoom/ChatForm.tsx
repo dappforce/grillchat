@@ -105,7 +105,6 @@ export default function ChatForm({
         rootPostId: postId,
         replyTo,
       })
-      onSubmit?.()
     } else {
       if (isLoggedIn) {
         sendEvent('request energy')
@@ -123,12 +122,14 @@ export default function ChatForm({
       setIsRequestingEnergy(true)
       sendEvent('request energy and send message')
     }
+
+    onSubmit?.()
   }
 
   return (
     <CaptchaInvisible>
       {(runCaptcha) => {
-        const onSubmit = async (e?: SyntheticEvent) => {
+        const submitForm = async (e?: SyntheticEvent) => {
           if (shouldSendMessage) {
             handleSubmit(null, e)
             return
@@ -139,12 +140,12 @@ export default function ChatForm({
 
         return (
           <form
-            onSubmit={onSubmit}
+            onSubmit={submitForm}
             {...props}
             className={cx('flex w-full', className)}
           >
             <TextArea
-              onEnterToSubmitForm={onSubmit}
+              onEnterToSubmitForm={submitForm}
               ref={textAreaRef}
               value={message}
               onChange={(e) => setMessage((e.target as any).value)}
@@ -161,10 +162,10 @@ export default function ChatForm({
                   onTouchEnd={(e) => {
                     if (shouldSendMessage) {
                       e.preventDefault()
-                      onSubmit()
+                      submitForm()
                     }
                   }}
-                  onClick={onSubmit}
+                  onClick={submitForm}
                   className={cx(
                     buttonStyles({
                       size: 'circle',
