@@ -21,7 +21,7 @@ const nextConfig = {
       {
         has: SUBDOMAINS.map((subdomain) => ({
           type: 'host',
-          value: `(?<host>${subdomain}.*)`,
+          value: `(?<host>${subdomain}).*`,
         })),
         source: '/',
         destination: '/:host',
