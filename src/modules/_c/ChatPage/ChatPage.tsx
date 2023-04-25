@@ -68,13 +68,14 @@ function NavbarChatInfo({
   const isInIframe = useIsInIframe()
 
   const topic = post?.content?.title
+  const spaceId = post?.struct?.spaceId
 
   return (
     <div className='flex items-center'>
       <div className='mr-2 flex w-9 items-center justify-center'>
         <Button
           size='circle'
-          href={(isInIframe && prevUrl) || '/'}
+          href={prevUrl || `/${spaceId ?? ''}`}
           nextLinkProps={{ replace: isInIframe }}
           variant='transparent'
         >
