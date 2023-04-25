@@ -1,4 +1,8 @@
-import { ROOM_ID_TO_TOPIC_MAP, TOPIC_TO_ROOM_ID_MAP } from '@/constants/chat'
+import {
+  getLinkedPostIdsForSpaceId,
+  getSpaceIdFromTopic,
+  getTopicFromSpaceId,
+} from '@/constants/chat-room'
 import HomePage from '@/modules/HomePage'
 import { HomePageProps } from '@/modules/HomePage/HomePage'
 import { getPostQuery } from '@/services/api/query'
@@ -18,7 +22,7 @@ export const getStaticPaths = async () => {
   const paths = spaceIds
     .slice(1)
     .map<{ params: { spaceId?: string[] | false } }>((spaceId) => {
-      const topic = ROOM_ID_TO_TOPIC_MAP[spaceId]
+      const topic = getTopicFromSpaceId(spaceId)
       return {
         params: { spaceId: [topic ?? spaceId] },
       }
@@ -60,10 +64,7 @@ export const getStaticProps = getCommonStaticProps<
     const spaceIdOrTopic = paramSpaceId ?? getMainSpaceId()
     let spaceId = spaceIdOrTopic
     if (isNaN(parseInt(spaceIdOrTopic))) {
-      const spaceIdFromTopic =
-        TOPIC_TO_ROOM_ID_MAP[
-          spaceIdOrTopic as keyof typeof TOPIC_TO_ROOM_ID_MAP
-        ]
+      const spaceIdFromTopic = getSpaceIdFromTopic(spaceIdOrTopic)
       if (spaceIdFromTopic) {
         spaceId = spaceIdFromTopic
       } else {
@@ -74,11 +75,12 @@ export const getStaticProps = getCommonStaticProps<
     try {
       const subsocialApi = await getSubsocialApi()
       const postIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
+      const allPostIds = [...postIds, ...getLinkedPostIdsForSpaceId(spaceId)]
 
-      const promises = postIds.map((postId) => {
+      const promises = allPostIds.map((postId) => {
         return subsocialApi.blockchain.getReplyIdsByPostId(postId)
       })
-      const postsPromise = getPostsFromCache(postIds)
+      const postsPromise = getPostsFromCache(allPostIds)
 
       const commentIdsByPostId = await Promise.all(promises)
       const posts = await postsPromise
@@ -91,7 +93,7 @@ export const getStaticProps = getCommonStaticProps<
       })
       commentIdsByPostId.forEach((commentIds, idx) => {
         queryClient.setQueryData(
-          getCommentIdsQueryKey(postIds[idx]),
+          getCommentIdsQueryKey(allPostIds[idx]),
           commentIds ?? null
         )
       })

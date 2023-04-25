@@ -2,6 +2,7 @@ import AddIcon from '@/assets/icons/add.png'
 import IntegrateIcon from '@/assets/icons/integrate.png'
 import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { getLinkedPostIdsForSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
@@ -11,6 +12,7 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import { createSlug } from '@/utils/slug'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import { useMemo } from 'react'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
 import useSortByUrlQuery from './hooks/useSortByUrlQuery'
 
@@ -27,8 +29,11 @@ export default function HomePage({
   isMainPage,
 }: HomePageProps) {
   const { data } = getPostIdsBySpaceIdQuery.useQuery(spaceId)
+  const allPostIds = useMemo(() => {
+    return [...(data?.postIds ?? []), ...getLinkedPostIdsForSpaceId(spaceId)]
+  }, [data, spaceId])
 
-  const sortedIds = useSortedPostIdsByLatestMessage(data?.postIds ?? [])
+  const sortedIds = useSortedPostIdsByLatestMessage(allPostIds)
   const order = useSortByUrlQuery(sortedIds)
 
   const sendEvent = useSendEvent()
