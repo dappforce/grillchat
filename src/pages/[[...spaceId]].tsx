@@ -1,3 +1,4 @@
+import { ROOM_ID_TO_TOPIC_MAP, TOPIC_TO_ROOM_ID_MAP } from '@/constants/chat'
 import HomePage from '@/modules/HomePage'
 import { HomePageProps } from '@/modules/HomePage/HomePage'
 import { getPostQuery } from '@/services/api/query'
@@ -16,9 +17,12 @@ export const getStaticPaths = async () => {
   // first space id is using / route
   const paths = spaceIds
     .slice(1)
-    .map<{ params: { spaceId?: string[] | false } }>((spaceId) => ({
-      params: { spaceId: [spaceId] },
-    }))
+    .map<{ params: { spaceId?: string[] | false } }>((spaceId) => {
+      const topic = ROOM_ID_TO_TOPIC_MAP[spaceId]
+      return {
+        params: { spaceId: [topic ?? spaceId] },
+      }
+    })
   paths.push({ params: { spaceId: false } })
 
   return {
@@ -53,8 +57,19 @@ export const getStaticProps = getCommonStaticProps<
       if (paramSpaceId.length > 1) return undefined
       paramSpaceId = paramSpaceId[0]
     }
-    const spaceId = paramSpaceId ?? getMainSpaceId()
-    if (isNaN(parseInt(spaceId))) return undefined
+    const spaceIdOrTopic = paramSpaceId ?? getMainSpaceId()
+    let spaceId = spaceIdOrTopic
+    if (isNaN(parseInt(spaceIdOrTopic))) {
+      const spaceIdFromTopic =
+        TOPIC_TO_ROOM_ID_MAP[
+          spaceIdOrTopic as keyof typeof TOPIC_TO_ROOM_ID_MAP
+        ]
+      if (spaceIdFromTopic) {
+        spaceId = spaceIdFromTopic
+      } else {
+        return undefined
+      }
+    }
 
     try {
       const subsocialApi = await getSubsocialApi()
