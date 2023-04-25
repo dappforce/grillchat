@@ -2,6 +2,8 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
+const SUBDOMAINS = ['subid']
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -13,6 +15,18 @@ const nextConfig = {
     })
 
     return config
+  },
+  async rewrites() {
+    return [
+      {
+        has: SUBDOMAINS.map((subdomain) => ({
+          type: 'host',
+          value: `(?<host>${subdomain}.*)`,
+        })),
+        source: '/',
+        destination: '/:host',
+      },
+    ]
   },
   images: {
     remotePatterns: [
