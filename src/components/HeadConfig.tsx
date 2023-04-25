@@ -2,6 +2,7 @@ import Head from 'next/head'
 
 export type HeadConfigProps = {
   title?: string | null
+  isTitleBrandFocused?: boolean
   description?: string | null
   disableZoom?: boolean
 }
@@ -16,9 +17,15 @@ export default function HeadConfig({
   description,
   title,
   disableZoom,
+  isTitleBrandFocused,
 }: HeadConfigProps) {
   const defaultTitle = 'Chat Anonymously On-Chain Without Wallets'
-  const usedTitle = 'GrillChat | ' + summarize(title || defaultTitle)
+  const summarizedTitle = summarize(title || defaultTitle)
+
+  let usedTitle
+  if (isTitleBrandFocused || !title)
+    usedTitle = 'Grill.chat: ' + summarizedTitle
+  else usedTitle = summarizedTitle + ' | Grill.chat'
 
   const defaultDesc =
     'Talk with others from around the world and create your own communities about any topic, utilizing our censorship-resistant blockchain and app with anonymous logins.'
