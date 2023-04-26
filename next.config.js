@@ -14,6 +14,15 @@ const nextConfig = {
 
     return config
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/x',
+        permanent: true,
+      },
+    ]
+  },
   images: {
     remotePatterns: [
       {
