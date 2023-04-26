@@ -118,7 +118,7 @@ function ChatListContent({
         id={scrollableContainerId}
         ref={scrollContainerRef}
         className={cx(
-          'flex flex-col-reverse pr-4 overflow-x-hidden',
+          'flex flex-col-reverse overflow-x-hidden pr-2 md:pr-4',
           scrollableContainerClassName
         )}
       >

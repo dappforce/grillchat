@@ -10,6 +10,7 @@ export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   repliedMessageId: string
   originalMessage: string
   scrollContainer?: RefObject<HTMLElement | null>
+  minimumReplyChar?: number
   getRepliedElement?: (commentId: string) => Promise<HTMLElement | null>
 }
 
@@ -19,6 +20,7 @@ export default function RepliedMessagePreview({
   originalMessage,
   scrollContainer,
   getRepliedElement,
+  minimumReplyChar = MINIMUM_REPLY_CHAR,
   ...props
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
@@ -31,8 +33,8 @@ export default function RepliedMessagePreview({
   }
 
   let showedText = data.content?.body ?? ''
-  if (originalMessage.length < MINIMUM_REPLY_CHAR) {
-    showedText = truncateText(showedText, MINIMUM_REPLY_CHAR)
+  if (originalMessage.length < minimumReplyChar) {
+    showedText = truncateText(showedText, minimumReplyChar)
   }
 
   const onRepliedMessageClick = async () => {
