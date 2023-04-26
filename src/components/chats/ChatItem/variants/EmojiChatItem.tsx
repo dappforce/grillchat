@@ -85,6 +85,7 @@ export default function EmojiChatItem({
                 repliedMessageId={inReplyTo.id}
                 getRepliedElement={getRepliedElement}
                 scrollContainer={scrollContainer}
+                minimumReplyChar={12}
               />
             </div>
           )}
