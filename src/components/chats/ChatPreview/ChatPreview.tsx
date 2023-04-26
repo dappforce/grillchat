@@ -61,7 +61,7 @@ export default function ChatPreview({
           'relative flex items-stretch gap-2.5 overflow-hidden py-2 outline-none'
         )}
       >
-        <div className='h-12 w-12 self-center overflow-hidden rounded-full bg-background-light dark:bg-white sm:h-14 sm:w-14'>
+        <div className='h-12 w-12 self-center overflow-hidden rounded-full bg-background-light bg-gradient-to-b from-[#E0E7FF] to-[#A5B4FC] sm:h-14 sm:w-14'>
           {React.isValidElement(image)
             ? image
             : image && (
