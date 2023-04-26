@@ -4,6 +4,7 @@ import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import usePrevious from '@/hooks/usePrevious'
+import { useLocation } from '@/stores/location'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
@@ -29,6 +30,8 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
   )
+  const prevUrl = useLocation((state) => state.prevUrl)
+
   const isInIframe = useIsInIframe()
   const address = useMyAccount((state) => state.address)
   const prevAddress = usePrevious(address)
@@ -91,15 +94,12 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
             customContent(authComponent, colorModeToggler)
           ) : (
             <div className='flex items-center justify-between'>
-              {isInIframe ? (
-                <span>
-                  <Logo className='text-2xl' />
-                </span>
-              ) : (
-                <Link href='/' aria-label='Back to home'>
-                  <Logo className='text-2xl' />
-                </Link>
-              )}
+              <Link
+                href={(isInIframe && prevUrl) || '/'}
+                aria-label='Back to home'
+              >
+                <Logo className='text-2xl' />
+              </Link>
               <div className='flex items-center gap-4'>
                 {colorModeToggler}
                 {authComponent}

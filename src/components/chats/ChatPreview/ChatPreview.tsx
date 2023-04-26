@@ -66,7 +66,7 @@ export default function ChatPreview({
             ? image
             : image && (
                 <Image
-                  className='h-full w-full'
+                  className='h-full w-full object-cover'
                   src={image as string}
                   sizes='150px'
                   width={56}
