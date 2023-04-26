@@ -3,8 +3,8 @@ import {
   getSpaceIdFromTopic,
   getTopicFromSpaceId,
 } from '@/constants/chat-room'
-import HomePage from '@/modules/HomePage'
-import { HomePageProps } from '@/modules/HomePage/HomePage'
+import HomePage from '@/modules/_[spaceId]/HomePage'
+import { HomePageProps } from '@/modules/_[spaceId]/HomePage/HomePage'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
