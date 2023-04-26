@@ -21,7 +21,7 @@ export const getStaticPaths = async () => {
   const paths = spaceIds.map<{ params: { spaceId: string } }>((spaceId) => {
     const topic = getTopicFromSpaceId(spaceId)
     return {
-      params: { spaceId: topic ?? spaceId },
+      params: { spaceId: topic || spaceId },
     }
   })
 
