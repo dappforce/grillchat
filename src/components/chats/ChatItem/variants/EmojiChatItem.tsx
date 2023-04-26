@@ -45,7 +45,7 @@ export default function EmojiChatItem({
   return (
     <div
       className={cx(
-        'flex flex-col gap-1',
+        'flex flex-col gap-1 overflow-hidden',
         isMyMessage ? 'items-end' : 'items-start',
         props.className
       )}
@@ -62,7 +62,10 @@ export default function EmojiChatItem({
         </div>
       )}
       <div
-        className={cx('flex', isMyMessage ? 'flex-row-reverse' : 'flex-row')}
+        className={cx(
+          'flex w-full overflow-hidden',
+          isMyMessage ? 'flex-row-reverse' : 'flex-row'
+        )}
       >
         <p
           className={cx('flex items-center')}
@@ -75,17 +78,16 @@ export default function EmojiChatItem({
         <div
           className={cx(
             isMyMessage ? 'items-end' : 'items-start',
-            'flex flex-col gap-4 py-2'
+            'flex flex-col gap-4 overflow-hidden py-2'
           )}
         >
           {inReplyTo?.id && (
-            <div className='rounded-xl bg-background-light py-2 px-2.5'>
+            <div className='w-full overflow-hidden rounded-xl bg-background-light py-2 px-2.5'>
               <RepliedMessagePreview
                 originalMessage={body}
                 repliedMessageId={inReplyTo.id}
                 getRepliedElement={getRepliedElement}
                 scrollContainer={scrollContainer}
-                minimumReplyChar={12}
               />
             </div>
           )}
