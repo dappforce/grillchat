@@ -21,13 +21,12 @@ const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 export type HomePageProps = {
   isIntegrateChatButtonOnTop: boolean
   spaceId: string
-  isMainPage: boolean
 }
 export default function HomePage({
   isIntegrateChatButtonOnTop,
   spaceId,
-  isMainPage,
 }: HomePageProps) {
+  const isInIframe = useIsInIframe()
   const { data } = getPostIdsBySpaceIdQuery.useQuery(spaceId)
   const allPostIds = useMemo(() => {
     return [...(data?.postIds ?? []), ...getLinkedPostIdsForSpaceId(spaceId)]
@@ -88,9 +87,9 @@ export default function HomePage({
 
   return (
     <DefaultLayout>
-      {isMainPage && <WelcomeModal />}
+      {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
-        {isMainPage && specialButtons}
+        {!isInIframe && specialButtons}
         {order.map((postId) => (
           <ChatPreviewContainer postId={postId} key={postId} />
         ))}
