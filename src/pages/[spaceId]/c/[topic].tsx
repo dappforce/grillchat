@@ -1,5 +1,6 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
-import ChatPage from '@/modules/_c/ChatPage'
+import ChatPage from '@/modules/_[spaceId]/_c/ChatPage'
+import { getPostsFromCache } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
@@ -8,7 +9,6 @@ import { getCommonStaticProps } from '@/utils/page'
 import { createSlug, getIdFromSlug } from '@/utils/slug'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
-import { getPostsFromCache } from '../api/posts'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const spaceIds = getSpaceIds()

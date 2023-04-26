@@ -3,8 +3,8 @@ import {
   getSpaceIdFromTopic,
   getTopicFromSpaceId,
 } from '@/constants/chat-room'
-import HomePage from '@/modules/HomePage'
-import { HomePageProps } from '@/modules/HomePage/HomePage'
+import HomePage from '@/modules/_[spaceId]/HomePage'
+import { HomePageProps } from '@/modules/_[spaceId]/HomePage/HomePage'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
@@ -13,21 +13,17 @@ import { getMainSpaceId, getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { PostData } from '@subsocial/api/types'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
-import { getPostsFromCache } from './api/posts'
+import { getPostsFromCache } from '../api/posts'
 
 export const getStaticPaths = async () => {
   const spaceIds = getSpaceIds()
 
-  // first space id is using / route
-  const paths = spaceIds
-    .slice(1)
-    .map<{ params: { spaceId?: string[] | false } }>((spaceId) => {
-      const topic = getTopicFromSpaceId(spaceId)
-      return {
-        params: { spaceId: [topic ?? spaceId] },
-      }
-    })
-  paths.push({ params: { spaceId: false } })
+  const paths = spaceIds.map<{ params: { spaceId: string } }>((spaceId) => {
+    const topic = getTopicFromSpaceId(spaceId)
+    return {
+      params: { spaceId: topic || spaceId },
+    }
+  })
 
   return {
     paths,
@@ -57,11 +53,7 @@ export const getStaticProps = getCommonStaticProps<
     const queryClient = new QueryClient()
 
     let { spaceId: paramSpaceId } = context.params ?? {}
-    if (Array.isArray(paramSpaceId)) {
-      if (paramSpaceId.length > 1) return undefined
-      paramSpaceId = paramSpaceId[0]
-    }
-    const spaceIdOrTopic = paramSpaceId ?? getMainSpaceId()
+    const spaceIdOrTopic = (paramSpaceId as string) ?? getMainSpaceId()
     let spaceId = spaceIdOrTopic
     if (isNaN(parseInt(spaceIdOrTopic))) {
       const spaceIdFromTopic = getSpaceIdFromTopic(spaceIdOrTopic)
@@ -113,7 +105,6 @@ export const getStaticProps = getCommonStaticProps<
         dehydratedState: dehydrate(queryClient),
         isIntegrateChatButtonOnTop: Math.random() > 0.5,
         spaceId,
-        isMainPage: !paramSpaceId,
       },
       revalidate: 2,
     }

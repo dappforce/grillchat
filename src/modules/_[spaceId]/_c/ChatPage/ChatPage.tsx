@@ -7,8 +7,10 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useLocation } from '@/stores/location'
 import { getIpfsContentUrl } from '@/utils/ipfs'
+import { getHomePageLink } from '@/utils/links'
 import { PostData } from '@subsocial/api/types'
 import Image, { ImageProps } from 'next/image'
+import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
@@ -66,16 +68,16 @@ function NavbarChatInfo({
 }) {
   const prevUrl = useLocation((state) => state.prevUrl)
   const isInIframe = useIsInIframe()
+  const router = useRouter()
 
   const topic = post?.content?.title
-  const spaceId = post?.struct?.spaceId
 
   return (
     <div className='flex items-center'>
       <div className='mr-2 flex w-9 items-center justify-center'>
         <Button
           size='circle'
-          href={prevUrl || `/${spaceId ?? ''}`}
+          href={prevUrl || getHomePageLink(router.asPath)}
           nextLinkProps={{ replace: isInIframe }}
           variant='transparent'
         >

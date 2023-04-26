@@ -7,8 +7,10 @@ import usePrevious from '@/hooks/usePrevious'
 import { useLocation } from '@/stores/location'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getHomePageLink } from '@/utils/links'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
@@ -30,6 +32,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
   )
+  const router = useRouter()
   const prevUrl = useLocation((state) => state.prevUrl)
 
   const isInIframe = useIsInIframe()
@@ -95,7 +98,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
           ) : (
             <div className='flex items-center justify-between'>
               <Link
-                href={(isInIframe && prevUrl) || '/'}
+                href={(isInIframe && prevUrl) || getHomePageLink(router.asPath)}
                 aria-label='Back to home'
               >
                 <Logo className='text-2xl' />

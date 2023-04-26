@@ -9,9 +9,11 @@ import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
+import { getChatPageLink } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { useMemo } from 'react'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
 import useSortByUrlQuery from './hooks/useSortByUrlQuery'
@@ -21,13 +23,12 @@ const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 export type HomePageProps = {
   isIntegrateChatButtonOnTop: boolean
   spaceId: string
-  isMainPage: boolean
 }
 export default function HomePage({
   isIntegrateChatButtonOnTop,
   spaceId,
-  isMainPage,
 }: HomePageProps) {
+  const isInIframe = useIsInIframe()
   const { data } = getPostIdsBySpaceIdQuery.useQuery(spaceId)
   const allPostIds = useMemo(() => {
     return [...(data?.postIds ?? []), ...getLinkedPostIdsForSpaceId(spaceId)]
@@ -88,9 +89,9 @@ export default function HomePage({
 
   return (
     <DefaultLayout>
-      {isMainPage && <WelcomeModal />}
+      {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
-        {isMainPage && specialButtons}
+        {!isInIframe && specialButtons}
         {order.map((postId) => (
           <ChatPreviewContainer postId={postId} key={postId} />
         ))}
@@ -103,6 +104,7 @@ function ChatPreviewContainer({ postId }: { postId: string }) {
   const { data } = getPostQuery.useQuery(postId)
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
+  const router = useRouter()
 
   const content = data?.content
 
@@ -120,12 +122,10 @@ function ChatPreviewContainer({ postId }: { postId: string }) {
       asContainer
       asLink={{
         replace: isInIframe,
-        href: {
-          pathname: '/c/[topic]',
-          query: {
-            topic: createSlug(postId, { title: content?.title }),
-          },
-        },
+        href: getChatPageLink(
+          router.asPath,
+          createSlug(postId, { title: content?.title })
+        ),
       }}
       image={content?.image ? getIpfsContentUrl(content.image) : ''}
       title={content?.title ?? ''}
