@@ -17,7 +17,7 @@ export function getSpaceIdFromTopic(topic: string) {
 }
 
 const LINKED_POST_IDS_FOR_SPACE_ID: Record<string, string[]> = {
-  '1005': ['754'],
+  '1005': ['754', '2808'],
 }
 export function getLinkedPostIdsForSpaceId(spaceId: string) {
   return LINKED_POST_IDS_FOR_SPACE_ID[spaceId] ?? []
