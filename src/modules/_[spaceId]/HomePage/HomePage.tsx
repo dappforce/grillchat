@@ -15,8 +15,8 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
+import useSortByConfig from './hooks/useSortByConfig'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
-import useSortByUrlQuery from './hooks/useSortByUrlQuery'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
@@ -35,7 +35,7 @@ export default function HomePage({
   }, [data, spaceId])
 
   const sortedIds = useSortedPostIdsByLatestMessage(allPostIds)
-  const order = useSortByUrlQuery(sortedIds)
+  const order = useSortByConfig(sortedIds)
 
   const sendEvent = useSendEvent()
 
