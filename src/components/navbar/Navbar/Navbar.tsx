@@ -98,7 +98,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
           ) : (
             <div className='flex items-center justify-between'>
               <Link
-                href={(isInIframe && prevUrl) || getHomePageLink(router.asPath)}
+                href={(isInIframe && prevUrl) || getHomePageLink(router)}
                 aria-label='Back to home'
               >
                 <Logo className='text-2xl' />

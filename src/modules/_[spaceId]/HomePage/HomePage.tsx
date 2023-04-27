@@ -123,7 +123,7 @@ function ChatPreviewContainer({ postId }: { postId: string }) {
       asLink={{
         replace: isInIframe,
         href: getChatPageLink(
-          router.asPath,
+          router,
           createSlug(postId, { title: content?.title })
         ),
       }}

@@ -1,13 +1,16 @@
-function getSpaceIdFromUrl(asPath: string) {
-  return asPath.split('/')[1]
+import { ParsedUrlQuery } from 'querystring'
+
+type CurrentPath = { query: ParsedUrlQuery }
+function getSpaceIdFromUrl(currentPath: CurrentPath) {
+  return currentPath.query.spaceId as string
 }
 
-export function getHomePageLink(asPath: string) {
-  const spaceId = getSpaceIdFromUrl(asPath)
+export function getHomePageLink(currentPath: CurrentPath) {
+  const spaceId = getSpaceIdFromUrl(currentPath)
   return `/${spaceId ?? ''}`
 }
 
-export function getChatPageLink(asPath: string, chatSlug: string) {
-  const spaceId = getSpaceIdFromUrl(asPath)
+export function getChatPageLink(currentPath: CurrentPath, chatSlug: string) {
+  const spaceId = getSpaceIdFromUrl(currentPath)
   return `/${spaceId}/c/${chatSlug}`
 }

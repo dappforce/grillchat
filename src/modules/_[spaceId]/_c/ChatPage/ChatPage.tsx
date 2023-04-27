@@ -77,7 +77,7 @@ function NavbarChatInfo({
       <div className='mr-2 flex w-9 items-center justify-center'>
         <Button
           size='circle'
-          href={prevUrl || getHomePageLink(router.asPath)}
+          href={prevUrl || getHomePageLink(router)}
           nextLinkProps={{ replace: isInIframe }}
           variant='transparent'
         >
