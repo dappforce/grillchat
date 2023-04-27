@@ -27,8 +27,9 @@ yarn
 
 ### 2. Setup environment variables
 
+Copy the local example env file to .env
+
 ```bash
-# Copy the local example env file to .env
 cp .env.local.example .env
 ```
 
@@ -51,8 +52,8 @@ Below is the list of environment variables that you can use to customize based o
 
 | Name                         | Description                                                                                                                                                                                                                                                                                                       | Required? |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| SERVER_MNEMONIC              | Wallet mnemonic for the server, to send token to users automatically                                                                                                                                                                                                                                              | Yes       |
-| CRUST_IPFS_AUTH              | IPFS auth for using crust bucket                                                                                                                                                                                                                                                                                  | Yes       |
+| SERVER_MNEMONIC              | Wallet mnemonic for the server, to send [Subsocial Energy](https://docs.subsocial.network/docs/basics/lightpaper/architecture/energy) to users automatically                                                                                                                                                                                                                                              | Yes       |
+| CRUST_IPFS_AUTH              | IPFS auth for using Crust bucket                                                                                                                                                                                                                                                                                  | Yes       |
 | IPFS_PIN_URL                 | URL for Crust IPFS pinning service                                                                                                                                                                                                                                                                                | Yes       |
 | CAPTCHA_SECRET               | ReCaptcha captcha secret. Read [here](https://developers.google.com/recaptcha/intro) for more information                                                                                                                                                                                                         | Yes       |
 | USER_ID_SALT                 | Salt for user address encryption, used for analytics (which can be disabled)                                                                                                                                                                                                                                      | No        |
