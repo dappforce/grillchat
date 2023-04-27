@@ -3,22 +3,22 @@
 </a>
 <p align="center">
   <strong>
-    Chat application built on top of Subsocial Blockchain 🔗.
+    A chat application built on top of the Subsocial blockchain 🔗.
   </strong>
 </p>
 <p align="center">
-  It offers smooth and simple onboarding and UX for users while still having them leverage the power of blockchain.
+  Grill.chat offers a smooth and simple onboarding and user experience while still leveraging the power of blockchain technology.
 </p>
 
 ---
 
-## How to integrate it to your app 🤝
+## How to integrate Grill.chat into your app 🤝
 
-It's now simple to have anonymous chat feature in your app 🎉.
+It's now simpler than ever before to have an anonymous, on-chain chat right in your application 🎉.
 
-To do it, you can read the [integration guide](./integration/README.md).
+Read the [integration guide](./integration/README.md) to get started.
 
-## How to run locally 🏃‍♂️
+## How to run Grill.chat locally 🏃‍♂️
 
 Requirements:
 
@@ -49,21 +49,21 @@ Congrats 🎉, you can now access the app at http://localhost:3000
 
 ## Theme Customization 🎨
 
-All the colors used in this project are provided in the [globals.css](./src/styles/globals.css) file in RGB format.
+All of the colors used in this project are provided in the [globals.css](./src/styles/globals.css) file in RGB format.
 You can change the colors in this file to customize the theme of the app according to your needs.
 
 ## Environment variables 🌎
 
-Below is the list of environment variables that you can use to customize based on your needs.
+Below is the list of environment variables that you can use to customize your chat, based upon your needs and the needs of your community.
 
 | Name                         | Description                                                                                                                                                                                                                                                                                                       | Required? |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| SERVER_MNEMONIC              | Wallet mnemonic for the server, to send [Subsocial Energy](https://docs.subsocial.network/docs/basics/lightpaper/architecture/energy) to users automatically                                                                                                                                                      | Yes       |
-| CRUST_IPFS_AUTH              | IPFS auth for using Crust bucket                                                                                                                                                                                                                                                                                  | Yes       |
+| SERVER_MNEMONIC              | Wallet mnemonic of the server, in order to send automatically users [Energy](https://docs.subsocial.network/docs/basics/lightpaper/architecture/energy)                                                                                                                                                      | Yes       |
+| CRUST_IPFS_AUTH              | IPFS auth for using a Crust bucket                                                                                                                                                                                                                                                                                  | Yes       |
 | IPFS_PIN_URL                 | URL for Crust IPFS pinning service                                                                                                                                                                                                                                                                                | Yes       |
-| CAPTCHA_SECRET               | ReCaptcha captcha secret. Read [here](https://developers.google.com/recaptcha/intro) for more information                                                                                                                                                                                                         | Yes       |
-| USER_ID_SALT                 | Salt for user address encryption, used for analytics (which can be disabled)                                                                                                                                                                                                                                      | No        |
-| NEXT_PUBLIC_SPACE_IDS        | Your space id(s), where all the posts in it will be listed as topics, you can support multiple space ids, separated by comma, the first space id will be recognized as the main space id, where you can access the home page in / route, but for the other space ids homepage, you can access it using /[spaceId] | Yes       |
+| CAPTCHA_SECRET               | ReCaptcha secret, read [here](https://developers.google.com/recaptcha/intro) for more information.                                                                                                                                                                                                         | Yes       |
+| USER_ID_SALT                 | Salt for user address encryption, which is used for analytics (which can be disabled)                                                                                                                                                                                                                                      | No        |
+| NEXT_PUBLIC_SPACE_IDS        | Your space ID(s). All the posts in these space(s) will be listed as topics. You can use multiple space IDs, separated by a comma. The first space ID will be recognized as the main space ID, where you can access the home page in / route, but for the other space IDs homepage, you can access it using /[spaceId] | Yes       |
 | NEXT_PUBLIC_CAPTCHA_SITE_KEY | ReCaptcha sitekey                                                                                                                                                                                                                                                                                                 | Yes       |
 | NEXT_PUBLIC_BASE_URL         | Base URL for the site                                                                                                                                                                                                                                                                                             | Yes       |
 | NEXT_PUBLIC_AMP_ID           | Amplitude analytics ID (disabled if no ID is provided)                                                                                                                                                                                                                                                            | No        |
