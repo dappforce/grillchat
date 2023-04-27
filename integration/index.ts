@@ -13,7 +13,9 @@ const DEFAULT_CONFIG = {
 } satisfies GrillChatConfig
 
 const grillchat = {
-  init: (params: GrillChatConfig) => {
+  instance: null as HTMLIFrameElement | null,
+
+  init(params: GrillChatConfig) {
     const config = { ...DEFAULT_CONFIG, ...params }
     const targetElement = document.getElementById(config.targetId)
     if (!targetElement) {
@@ -42,6 +44,9 @@ const grillchat = {
       config.customizeIframe?.(iframe)
     }
 
+    this.instance?.remove()
+
+    this.instance = iframe
     targetElement.appendChild(iframe)
   },
 }
