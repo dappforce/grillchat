@@ -5,11 +5,11 @@ import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
 import { getGaId } from '@/utils/env/client'
 import { getUrlQuery } from '@/utils/window'
-import { ThemeProvider, useTheme } from 'next-themes'
+import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
 
 export type AppCommonProps = {
@@ -23,6 +23,7 @@ export default function App({
 }: AppProps<AppCommonProps>) {
   const { head, dehydratedState, ...props } = pageProps
   const isInitialized = useRef(false)
+  const [forcedTheme, setForcedTheme] = useState<string>()
 
   useEffect(() => {
     if (isInitialized.current) return
@@ -30,9 +31,15 @@ export default function App({
     initAllStores()
   }, [])
 
+  useEffect(() => {
+    const theme = getUrlQuery('theme')
+    if (theme === 'dark' || theme === 'light') {
+      setForcedTheme(theme)
+    }
+  }, [])
+
   return (
-    <ThemeProvider attribute='class'>
-      <ThemeURLChecker />
+    <ThemeProvider attribute='class' forcedTheme={forcedTheme}>
       <QueryProvider dehydratedState={dehydratedState}>
         <ToasterConfig />
         <NextNProgress color='#4d46dc' />
@@ -47,17 +54,4 @@ export default function App({
 function ToasterConfig() {
   const mdUp = useBreakpointThreshold('md')
   return <Toaster position={mdUp ? 'bottom-right' : 'top-center'} />
-}
-
-function ThemeURLChecker() {
-  const { setTheme } = useTheme()
-
-  useEffect(() => {
-    const theme = getUrlQuery('theme')
-    if (theme === 'dark' || theme === 'light') {
-      setTheme(theme)
-    }
-  }, [setTheme])
-
-  return null
 }
