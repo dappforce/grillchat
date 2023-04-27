@@ -1,6 +1,6 @@
 {
   "name": "opencomm",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Small integration script to help you integrate Grill.chat to your app.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
