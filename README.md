@@ -12,6 +12,12 @@
 
 ---
 
+## How to integrate it to your app 🤝
+
+It's now simple to have anonymous chat feature in your app 🎉.
+
+To do it, you can read the [integration guide](./INTEGRATION.md).
+
 ## How to run locally 🏃‍♂️
 
 Requirements:
@@ -52,7 +58,7 @@ Below is the list of environment variables that you can use to customize based o
 
 | Name                         | Description                                                                                                                                                                                                                                                                                                       | Required? |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| SERVER_MNEMONIC              | Wallet mnemonic for the server, to send [Subsocial Energy](https://docs.subsocial.network/docs/basics/lightpaper/architecture/energy) to users automatically                                                                                                                                                                                                                                              | Yes       |
+| SERVER_MNEMONIC              | Wallet mnemonic for the server, to send [Subsocial Energy](https://docs.subsocial.network/docs/basics/lightpaper/architecture/energy) to users automatically                                                                                                                                                      | Yes       |
 | CRUST_IPFS_AUTH              | IPFS auth for using Crust bucket                                                                                                                                                                                                                                                                                  | Yes       |
 | IPFS_PIN_URL                 | URL for Crust IPFS pinning service                                                                                                                                                                                                                                                                                | Yes       |
 | CAPTCHA_SECRET               | ReCaptcha captcha secret. Read [here](https://developers.google.com/recaptcha/intro) for more information                                                                                                                                                                                                         | Yes       |
