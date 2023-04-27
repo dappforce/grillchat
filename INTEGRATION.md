@@ -28,19 +28,21 @@ For example, if you create a space with ID `1002`, then you can set the iframe `
 
 Grill.chat has 2 pages that can be the start point.
 
-1. Home Page
-   Home page contains all of the topics in a subsocial space that you set in the `src` link. You can read more in [Space Options](#21-space-options).
+1. Home page
 
-```
-https://grill.chat/[spaceId]
-```
+   It contains all of the topics in a subsocial space that you set in the `src` link. You can read more in [Space Options](#21-space-options).
+
+   ```
+   https://grill.chat/[spaceId]
+   ```
 
 2. Chat Page
+
    You can also choose to have your user automatically opens a chat room. This is useful if you want to have a specific topic for your user to discuss.
 
-```
-https://grill.chat/[spaceId]/c/[topicId]
-```
+   ```
+   https://grill.chat/[spaceId]/c/[topicId]
+   ```
 
 #### 2.3. Other options
 
