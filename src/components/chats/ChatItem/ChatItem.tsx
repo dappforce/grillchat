@@ -21,7 +21,7 @@ import {
 } from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
-import { HiCircleStack } from 'react-icons/hi2'
+import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
@@ -110,6 +110,17 @@ export default function ChatItem({
           <HiCircleStack className='flex-shrink-0 text-xl text-text-muted' />
         ),
         onClick: () => setOpenMetadata(true),
+      },
+      {
+        text: 'Copy Message Link',
+        icon: <HiLink className='flex-shrink-0 text-xl text-text-muted' />,
+        onClick: () => {
+          const hrefWithoutQuery = window.location.href.split('?')[0]
+          copyToClipboard(`${hrefWithoutQuery}?chatId=${commentId}`)
+          toast.custom((t) => (
+            <Toast t={t} title='Message link copied to clipboard!' />
+          ))
+        },
       },
     ]
   }, [body, commentId, onSelectChatAsReplyRef])

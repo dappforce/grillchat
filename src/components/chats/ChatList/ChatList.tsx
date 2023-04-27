@@ -7,6 +7,7 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getUrlQuery } from '@/utils/window'
 import {
   ComponentProps,
   Fragment,
@@ -16,7 +17,7 @@ import {
   useRef,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { getChatItemId } from '../helpers'
+import { getChatItemId, scrollToChatItem } from '../helpers'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
@@ -88,6 +89,19 @@ function ChatListContent({
     loadedComments,
     loadMore
   )
+
+  useEffect(() => {
+    ;(async () => {
+      const commentIdFromUrl = getUrlQuery('chatId')
+      if (!commentIdFromUrl) return
+
+      const element = await getRepliedElement(commentIdFromUrl)
+      if (!element) return
+
+      scrollToChatItem(element, scrollContainerRef.current)
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const isAtBottomRef = useWrapInRef(isAtBottom)
   useEffect(() => {
