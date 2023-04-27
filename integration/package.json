@@ -6,7 +6,8 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup index.ts --format cjs,esm --dts"
+    "build": "tsup index.ts --format cjs,esm --dts",
+    "publish": "yarn build && npm publish --access public"
   },
   "keywords": [
     "Grill.chat",
