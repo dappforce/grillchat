@@ -18,7 +18,7 @@ export function allowWindowUnload() {
 export function getUrlQuery(queryName: string) {
   const query = window.location.search
   const searchParams = new URLSearchParams(query)
-  return searchParams.getAll(queryName)
+  return searchParams.get(queryName) ?? ''
 }
 
 export function waitStopScrolling(scrollContainer?: HTMLElement | null) {

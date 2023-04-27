@@ -53,7 +53,7 @@ function ThemeURLChecker() {
   const { setTheme } = useTheme()
 
   useEffect(() => {
-    const [theme] = getUrlQuery('theme')
+    const theme = getUrlQuery('theme')
     if (theme === 'dark' || theme === 'light') {
       setTheme(theme)
     }
