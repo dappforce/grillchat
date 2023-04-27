@@ -16,7 +16,7 @@
 
 It's now simple to have anonymous chat feature in your app 🎉.
 
-To do it, you can read the [integration guide](./INTEGRATION.md).
+To do it, you can read the [integration guide](./integration/README.md).
 
 ## How to run locally 🏃‍♂️
 
