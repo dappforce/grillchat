@@ -20,7 +20,7 @@ The `src` link can be customized to your needs. Below includes the list of optio
 
 #### 2.1. Space Options
 
-Grill.chat home page contains list of topics for user to choose from. This topics are listed from all the posts in a subsocial space.
+Grill.chat home page contains list of topics for user to choose from. This topics are listed from all the posts in a subsocial space. You can create space in xSocial chain using [Gazer](https://x.gazer.app/)
 
 For example, if you create a space with ID `1002`, then you can set the iframe `src` to `https://grill.chat/1002` to only show topics from that space.
 
