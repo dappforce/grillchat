@@ -13,10 +13,12 @@ import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getChatPageLink } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
+import { PostData } from '@subsocial/api/types'
+import Fuse from 'fuse.js'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { BsXCircleFill } from 'react-icons/bs'
 import { HiMagnifyingGlass } from 'react-icons/hi2'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
@@ -42,6 +44,10 @@ export default function HomePage({
   const order = useSortByUrlQuery(sortedIds)
 
   const [search, setSearch] = useState('')
+  const postsQuery = getPostQuery.useQueries(order)
+
+  const fuse = new Fuse(postsQuery.map(({ data: post }) => post))
+  const searchResult = fuse.search(search)
 
   const sendEvent = useSendEvent()
 
@@ -112,9 +118,10 @@ export default function HomePage({
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {!isInIframe && specialButtons}
-        {order.map((postId) => (
-          <ChatPreviewContainer postId={postId} key={postId} />
-        ))}
+        {searchResult.map(({ item: post }) => {
+          if (!post) return null
+          return <ChatPreviewContainer post={post} key={post.id} />
+        })}
       </div>
     </DefaultLayout>
   )
@@ -135,6 +142,7 @@ function HomePageNavbar({
   setSearch,
 }: HomePageNavbarProps) {
   const [openSearch, setOpenSearch] = useState(false)
+  const searchRef = useRef<HTMLInputElement | null>(null)
 
   return (
     <div className='relative'>
@@ -145,6 +153,7 @@ function HomePageNavbar({
         )}
       >
         <Input
+          ref={searchRef}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           leftElement={(className) => (
@@ -176,7 +185,10 @@ function HomePageNavbar({
           <Button
             size='circle'
             variant='transparent'
-            onClick={() => setOpenSearch(true)}
+            onClick={() => {
+              setOpenSearch(true)
+              searchRef.current?.focus()
+            }}
           >
             <HiMagnifyingGlass />
           </Button>
@@ -187,37 +199,35 @@ function HomePageNavbar({
   )
 }
 
-function ChatPreviewContainer({ postId }: { postId: string }) {
-  const { data } = getPostQuery.useQuery(postId)
+function ChatPreviewContainer({ post }: { post: PostData }) {
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
-  const content = data?.content
+  const content = post?.content
 
   const onChatClick = () => {
     sendEvent(`click on chat`, {
       title: content?.title ?? '',
-      chatId: postId,
+      chatId: post.id,
     })
   }
 
   return (
     <ChatPreview
       onClick={onChatClick}
-      key={postId}
       asContainer
       asLink={{
         replace: isInIframe,
         href: getChatPageLink(
           router,
-          createSlug(postId, { title: content?.title })
+          createSlug(post.id, { title: content?.title })
         ),
       }}
       image={content?.image ? getIpfsContentUrl(content.image) : ''}
       title={content?.title ?? ''}
       description={content?.body ?? ''}
-      postId={postId}
+      postId={post.id}
       withUnreadCount
     />
   )

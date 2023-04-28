@@ -160,6 +160,7 @@ export function getCleanedInputProps<T extends RequiredFieldWrapperProps>(
     helperTextOnRightOfLabel: _helperTextOnRightOfLabel,
     helperTextOnRightOfLabelClassNames: _helperTextOnRightOfLabelClassNames,
     rightElement: _rightElement,
+    leftElement: _leftElement,
     pill: _pill,
     inputParentClassName: _inputParentClassName,
     variant: _variant,
