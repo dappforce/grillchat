@@ -83,7 +83,7 @@ function ChatListContent({
     innerContainer: innerRef,
   })
 
-  const getRepliedElement = useGetChatElement(
+  const getChatElement = useGetChatElement(
     currentData,
     comments,
     loadedComments,
@@ -95,7 +95,7 @@ function ChatListContent({
       const commentIdFromUrl = getUrlQuery('chatId')
       if (!commentIdFromUrl) return
 
-      const element = await getRepliedElement(commentIdFromUrl)
+      const element = await getChatElement(commentIdFromUrl)
       if (!element) return
 
       scrollToChatItem(element, scrollContainerRef.current)
@@ -164,7 +164,7 @@ function ChatListContent({
                   key={comment.id}
                   scrollContainer={scrollContainerRef}
                   chatBubbleId={getChatItemId(comment.id)}
-                  getRepliedElement={getRepliedElement}
+                  getRepliedElement={getChatElement}
                 />
               )
               if (!showLastUnreadMessageNotice) return chatElement

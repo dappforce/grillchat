@@ -10,6 +10,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { copyToClipboard } from '@/utils/text'
+import { getCurrentUrlWithoutQuery } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
 import {
   ComponentProps,
@@ -115,7 +116,7 @@ export default function ChatItem({
         text: 'Copy Message Link',
         icon: <HiLink className='flex-shrink-0 text-xl text-text-muted' />,
         onClick: () => {
-          const hrefWithoutQuery = window.location.href.split('?')[0]
+          const hrefWithoutQuery = getCurrentUrlWithoutQuery()
           copyToClipboard(`${hrefWithoutQuery}?chatId=${commentId}`)
           toast.custom((t) => (
             <Toast t={t} title='Message link copied to clipboard!' />

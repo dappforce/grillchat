@@ -21,6 +21,10 @@ export function getUrlQuery(queryName: string) {
   return searchParams.get(queryName) ?? ''
 }
 
+export function getCurrentUrlWithoutQuery() {
+  return window.location.origin + window.location.pathname
+}
+
 export function waitStopScrolling(scrollContainer?: HTMLElement | null) {
   return new Promise<void>((resolve) => {
     let lastScrollTop = 0
