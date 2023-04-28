@@ -52,6 +52,7 @@ export default function HomePage({
       postsQuery.map(({ data: post }) => post),
       {
         keys: ['content.title'],
+        minMatchCharLength: search.length,
       }
     )
     searchResults = fuse.search(search).map(({ item }) => item)
@@ -172,9 +173,21 @@ function HomePageNavbar({
             />
           )}
           rightElement={(className) => (
-            <BsXCircleFill
-              className={cx(className, 'z-10 mr-1 text-lg text-text-muted')}
-            />
+            <Button
+              variant='transparent'
+              size='noPadding'
+              className={cx(
+                className,
+                'z-10 mr-1 cursor-pointer text-lg text-text-muted'
+              )}
+            >
+              <BsXCircleFill
+                onClick={() => {
+                  if (search) setSearch('')
+                  else setOpenSearch(false)
+                }}
+              />
+            </Button>
           )}
           size='sm'
           pill
