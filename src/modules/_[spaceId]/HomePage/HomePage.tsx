@@ -128,7 +128,7 @@ export default function HomePage({
     >
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
-        {!isInIframe && specialButtons}
+        {!isInIframe && !search && specialButtons}
         {searchResults.map((post) => {
           if (!post) return null
           return <ChatPreviewContainer post={post} key={post.id} />
