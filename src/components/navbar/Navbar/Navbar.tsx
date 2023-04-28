@@ -105,7 +105,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
           {customContent ? (
             customContent(logoLink, authComponent, colorModeToggler)
           ) : (
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center justify-between text-text-muted dark:text-text'>
               {logoLink}
               <div className='flex items-center gap-4'>
                 {colorModeToggler}
