@@ -180,13 +180,16 @@ function HomePageNavbar({
                 className,
                 'z-10 mr-1 cursor-pointer text-text-muted'
               )}
+              onClick={() => {
+                if (search) {
+                  setSearch('')
+                  searchRef.current?.focus()
+                } else {
+                  setOpenSearch(false)
+                }
+              }}
             >
-              <BsXCircleFill
-                onClick={() => {
-                  if (search) setSearch('')
-                  else setOpenSearch(false)
-                }}
-              />
+              <BsXCircleFill />
             </Button>
           )}
           size='sm'
