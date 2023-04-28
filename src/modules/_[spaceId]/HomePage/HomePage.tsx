@@ -1,6 +1,8 @@
 import AddIcon from '@/assets/icons/add.png'
 import IntegrateIcon from '@/assets/icons/integrate.png'
+import Button from '@/components/Button'
 import ChatPreview from '@/components/chats/ChatPreview'
+import Input from '@/components/inputs/Input'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getLinkedPostIdsForSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
@@ -14,7 +16,9 @@ import { createSlug } from '@/utils/slug'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { BsXCircleFill } from 'react-icons/bs'
+import { HiMagnifyingGlass } from 'react-icons/hi2'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
 import useSortByUrlQuery from './hooks/useSortByUrlQuery'
 
@@ -36,6 +40,8 @@ export default function HomePage({
 
   const sortedIds = useSortedPostIdsByLatestMessage(allPostIds)
   const order = useSortByUrlQuery(sortedIds)
+
+  const [search, setSearch] = useState('')
 
   const sendEvent = useSendEvent()
 
@@ -88,7 +94,21 @@ export default function HomePage({
     : [launchCommunityButton, integrateChatButton]
 
   return (
-    <DefaultLayout>
+    <DefaultLayout
+      navbarProps={{
+        customContent: (logo, auth, colorModeToggler) => {
+          return (
+            <HomePageNavbar
+              search={search}
+              setSearch={setSearch}
+              auth={auth}
+              colorModeToggler={colorModeToggler}
+              logo={logo}
+            />
+          )
+        },
+      }}
+    >
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {!isInIframe && specialButtons}
@@ -97,6 +117,73 @@ export default function HomePage({
         ))}
       </div>
     </DefaultLayout>
+  )
+}
+
+type HomePageNavbarProps = {
+  logo: JSX.Element
+  auth: JSX.Element
+  colorModeToggler: JSX.Element
+  search: string
+  setSearch: (search: string) => void
+}
+function HomePageNavbar({
+  auth,
+  colorModeToggler,
+  logo,
+  search,
+  setSearch,
+}: HomePageNavbarProps) {
+  const [openSearch, setOpenSearch] = useState(false)
+
+  return (
+    <div className='relative'>
+      <div
+        className={cx(
+          'absolute top-1/2 left-0 z-10 w-full -translate-y-1/2 transition-opacity',
+          !openSearch && 'pointer-events-none opacity-0'
+        )}
+      >
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          leftElement={(className) => (
+            <HiMagnifyingGlass
+              className={cx(className, 'z-10 ml-1 text-xl text-text-muted')}
+            />
+          )}
+          rightElement={(className) => (
+            <BsXCircleFill
+              className={cx(className, 'z-10 mr-1 text-lg text-text-muted')}
+            />
+          )}
+          size='sm'
+          pill
+          placeholder='Search rooms'
+          variant='fill'
+          className='bg-background pl-10'
+        />
+      </div>
+      <div
+        className={cx(
+          'relative z-0 flex items-center justify-between transition-opacity',
+          openSearch && 'opacity-0'
+        )}
+      >
+        {logo}
+        <div className='flex items-center gap-2'>
+          {colorModeToggler}
+          <Button
+            size='circle'
+            variant='transparent'
+            onClick={() => setOpenSearch(true)}
+          >
+            <HiMagnifyingGlass />
+          </Button>
+          <div className='ml-1.5'>{auth}</div>
+        </div>
+      </div>
+    </div>
   )
 }
 

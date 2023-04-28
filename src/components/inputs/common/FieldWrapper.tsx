@@ -33,6 +33,7 @@ export type RequiredFieldWrapperProps = VariantProps<typeof inputStyles> & {
   labelClassName?: string
   helperText?: string
   helperTextClassName?: string
+  leftElement?: (classNames: string) => JSX.Element
   rightElement?: (classNames: string) => JSX.Element
   helperTextOnRightOfLabel?: string
   helperTextOnRightOfLabelClassNames?: string
@@ -59,6 +60,7 @@ export default function FieldWrapper({
   error,
   required,
   rightElement,
+  leftElement,
   helperTextOnRightOfLabel,
   helperTextOnRightOfLabelClassNames,
   pill,
@@ -81,8 +83,11 @@ export default function FieldWrapper({
   const inputClassNames = cx(commonClassNames, error && errorClassNames)
 
   const rightElementClassNames = cx(
-    'absolute',
-    'right-2',
+    'absolute right-2',
+    'top-1/2 -translate-y-1/2'
+  )
+  const leftElementClassNames = cx(
+    'absolute left-2',
     'top-1/2 -translate-y-1/2'
   )
 
@@ -121,6 +126,7 @@ export default function FieldWrapper({
       <div
         className={cx('relative flex w-full flex-col', inputParentClassName)}
       >
+        {leftElement && leftElement(leftElementClassNames)}
         {children(usedId, inputClassNames)}
         {rightElement && rightElement(rightElementClassNames)}
       </div>
@@ -157,6 +163,7 @@ export function getCleanedInputProps<T extends RequiredFieldWrapperProps>(
     pill: _pill,
     inputParentClassName: _inputParentClassName,
     variant: _variant,
+    size: _size,
     ...otherProps
   } = props
 
