@@ -94,7 +94,7 @@ export default function ChatItem({
         onClick: () => onSelectChatAsReplyRef.current?.(commentId),
       },
       {
-        text: 'Copy',
+        text: 'Copy Text',
         icon: (
           <MdContentCopy className='flex-shrink-0 text-xl text-text-muted' />
         ),
@@ -106,13 +106,6 @@ export default function ChatItem({
         },
       },
       {
-        text: 'Metadata',
-        icon: (
-          <HiCircleStack className='flex-shrink-0 text-xl text-text-muted' />
-        ),
-        onClick: () => setOpenMetadata(true),
-      },
-      {
         text: 'Copy Message Link',
         icon: <HiLink className='flex-shrink-0 text-xl text-text-muted' />,
         onClick: () => {
@@ -122,6 +115,13 @@ export default function ChatItem({
             <Toast t={t} title='Message link copied to clipboard!' />
           ))
         },
+      },
+      {
+        text: 'Metadata',
+        icon: (
+          <HiCircleStack className='flex-shrink-0 text-xl text-text-muted' />
+        ),
+        onClick: () => setOpenMetadata(true),
       },
     ]
   }, [body, commentId, onSelectChatAsReplyRef])
