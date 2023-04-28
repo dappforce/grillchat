@@ -169,7 +169,7 @@ function HomePageNavbar({
           onChange={(e) => setSearch(e.target.value)}
           leftElement={(className) => (
             <HiMagnifyingGlass
-              className={cx(className, 'z-10 ml-1 text-xl text-text-muted')}
+              className={cx(className, 'z-10 ml-1 text-text-muted')}
             />
           )}
           rightElement={(className) => (
@@ -178,7 +178,7 @@ function HomePageNavbar({
               size='noPadding'
               className={cx(
                 className,
-                'z-10 mr-1 cursor-pointer text-lg text-text-muted'
+                'z-10 mr-1 cursor-pointer text-text-muted'
               )}
             >
               <BsXCircleFill
@@ -204,7 +204,6 @@ function HomePageNavbar({
       >
         {logo}
         <div className='flex items-center gap-2 text-text-muted dark:text-text'>
-          {colorModeToggler}
           <Button
             size='circle'
             variant='transparent'
@@ -215,6 +214,7 @@ function HomePageNavbar({
           >
             <HiMagnifyingGlass />
           </Button>
+          {colorModeToggler}
           <div className='ml-1.5'>{auth}</div>
         </div>
       </div>
