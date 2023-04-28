@@ -46,8 +46,18 @@ export default function HomePage({
   const [search, setSearch] = useState('')
   const postsQuery = getPostQuery.useQueries(order)
 
-  const fuse = new Fuse(postsQuery.map(({ data: post }) => post))
-  const searchResult = fuse.search(search)
+  let searchResults
+  if (search) {
+    const fuse = new Fuse(
+      postsQuery.map(({ data: post }) => post),
+      {
+        keys: ['content.title'],
+      }
+    )
+    searchResults = fuse.search(search).map(({ item }) => item)
+  } else {
+    searchResults = postsQuery.map(({ data: post }) => post)
+  }
 
   const sendEvent = useSendEvent()
 
@@ -118,7 +128,7 @@ export default function HomePage({
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {!isInIframe && specialButtons}
-        {searchResult.map(({ item: post }) => {
+        {searchResults.map((post) => {
           if (!post) return null
           return <ChatPreviewContainer post={post} key={post.id} />
         })}
