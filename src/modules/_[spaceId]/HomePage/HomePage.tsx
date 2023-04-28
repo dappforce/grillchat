@@ -196,7 +196,7 @@ function HomePageNavbar({
           pill
           placeholder='Search rooms'
           variant='fill'
-          className='bg-background pl-10'
+          className='bg-background pl-9'
         />
       </div>
       <div
