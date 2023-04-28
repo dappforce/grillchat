@@ -54,4 +54,4 @@ const grillchat = {
 export type GrillChat = typeof grillchat
 ;(window as any).grillchat = grillchat
 
-export {}
+export default grillchat
