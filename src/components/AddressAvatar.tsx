@@ -7,12 +7,16 @@ import { ComponentProps, forwardRef, useMemo } from 'react'
 
 export type AddressAvatarProps = ComponentProps<'div'> & {
   address: string
+  avatar?: string
 }
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
-  function AddressAvatar({ address, ...props }: AddressAvatarProps, ref) {
+  function AddressAvatar(
+    { address, avatar, ...props }: AddressAvatarProps,
+    ref
+  ) {
     const backgroundColor = useRandomColor(address, 'dark')
-    const avatar = useMemo(() => {
+    const randomAvatar = useMemo(() => {
       return createAvatar(bottts, {
         size: 128,
         seed: address,
@@ -29,13 +33,13 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
         style={{ backgroundColor }}
       >
-        <div className='relative h-full w-full p-[7.5%]'>
+        <div className='relative h-full w-full p-0'>
           <div className='relative h-full w-full'>
             <Image
               sizes='5rem'
-              className='relative'
+              className='relative rounded-full'
               fill
-              src={avatar}
+              src={avatar ?? randomAvatar}
               alt='avatar'
             />
           </div>

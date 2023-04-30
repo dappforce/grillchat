@@ -15,11 +15,10 @@ import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useRandomColor from '@/hooks/useRandomColor'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useWeb3Auth } from '@/stores/web3-auth'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin } from '@/utils/links'
-import { generateRandomName } from '@/utils/random-name'
 import React, { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
@@ -126,9 +125,10 @@ function AccountContent({
   setCurrentState,
   notification,
 }: ContentProps) {
-  const senderColor = useRandomColor(address)
+  const { authenticatedUser, signer } = useWeb3Auth((state) => state)
+  const senderColor = useRandomColor(signer?.address)
   const sendEvent = useSendEvent()
-  const onShowPrivateKeyClick = () => {
+  const onShowPrivateKeyClick = async () => {
     sendEvent('click show_private_key_button')
     setCurrentState('private-key')
   }
@@ -181,10 +181,14 @@ function AccountContent({
   return (
     <div className='mt-2 flex flex-col'>
       <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
-        <AddressAvatar address={address} className='h-20 w-20' />
+        <AddressAvatar
+          address={address}
+          avatar={authenticatedUser?.profileImage}
+          className='h-20 w-20'
+        />
         <div className='flex flex-col'>
           <span className='text-lg' style={{ color: senderColor }}>
-            {generateRandomName(address)}
+            {authenticatedUser?.name}
           </span>
           <CopyTextInline
             text={truncateAddress(address)}
@@ -199,13 +203,20 @@ function AccountContent({
 }
 
 function PrivateKeyContent() {
-  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
+  const { encodedSecretKey, getPrivateKey } = useWeb3Auth()
   const secretKey = decodeSecretKey(encodedSecretKey ?? '')
 
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('click copy_private_key_button')
   }
+  console.log({ encodedSecretKey })
+
+  useEffect(() => {
+    if (!encodedSecretKey) {
+      getPrivateKey()
+    }
+  }, [encodedSecretKey, getPrivateKey])
 
   return (
     <div className='flex flex-col items-center gap-4'>
@@ -219,12 +230,14 @@ function PrivateKeyContent() {
 }
 
 function LogoutContent({ setCurrentState }: ContentProps) {
-  const logout = useMyAccount((state) => state.logout)
+  const { logout, getPrivateKey } = useWeb3Auth((state) => state)
   const sendEvent = useSendEvent()
 
-  const onShowPrivateKeyClick = () => {
-    sendEvent('click no_show_me_my_private_key_button')
-    setCurrentState('private-key')
+  const onShowPrivateKeyClick = async () => {
+    await getPrivateKey().then(() => {
+      sendEvent('click no_show_me_my_private_key_button')
+      setCurrentState('private-key')
+    })
   }
   const onLogoutClick = () => {
     sendEvent('click yes_log_out_button')
@@ -244,7 +257,7 @@ function LogoutContent({ setCurrentState }: ContentProps) {
 }
 
 function ShareSessionContent() {
-  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
+  const { encodedSecretKey, getPrivateKey } = useWeb3Auth((state) => state)
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('click copy_share_session_link')
@@ -254,6 +267,12 @@ function ShareSessionContent() {
     getCurrentUrlOrigin(),
     `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${encodedSecretKey}`
   )
+
+  useEffect(() => {
+    if (!encodedSecretKey) {
+      getPrivateKey()
+    }
+  }, [encodedSecretKey, getPrivateKey])
 
   return (
     <div className='mt-2 flex flex-col gap-4'>

@@ -1,5 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import PopOver from '@/components/floating/PopOver'
+import { useWeb3Auth } from '@/stores/web3-auth'
 import { cx } from '@/utils/class-names'
 import { ComponentProps, useEffect, useState } from 'react'
 import ProfileModal from './ProfileModal'
@@ -17,6 +18,7 @@ export default function ProfileAvatar({
   popOverControl,
   ...props
 }: ProfileAvatarProps) {
+  const { authenticatedUser } = useWeb3Auth()
   const [isOpen, setIsOpen] = useState(false)
   const [showNotif, setShowNotif] = useState(false)
   useEffect(() => {
@@ -40,6 +42,7 @@ export default function ProfileAvatar({
         <AddressAvatar
           onClick={() => setIsOpen(true)}
           address={address}
+          avatar={authenticatedUser?.profileImage}
           className='relative z-10 cursor-pointer'
         />
         <PopOver
