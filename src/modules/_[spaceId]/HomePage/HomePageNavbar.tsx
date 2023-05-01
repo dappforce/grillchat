@@ -2,7 +2,7 @@ import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
 import { cx } from '@/utils/class-names'
 import { useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { Options, useHotkeys } from 'react-hotkeys-hook'
 import { BsXCircleFill } from 'react-icons/bs'
 import { HiMagnifyingGlass } from 'react-icons/hi2'
 
@@ -43,16 +43,28 @@ export default function HomePageNavbar({
       setIsOpenSearch(false)
     }
   }
-  useHotkeys('esc', clearOrCloseSearch)
+  useHotkeys('esc', clearOrCloseSearch, {
+    keydown: true,
+    enableOnFormTags: ['INPUT'],
+  })
 
   const openSearch = () => {
     setIsOpenSearch(true)
     searchRef.current?.focus()
   }
-  useHotkeys('/, ctrl+k', openSearch, { enabled: !isOpenSearch })
+  useHotkeys('/, ctrl+k', openSearch, {
+    enabled: !isOpenSearch,
+    preventDefault: true,
+  })
 
-  useHotkeys('up', onUpClick, { enabled: isOpenSearch })
-  useHotkeys('down', onDownClick, { enabled: isOpenSearch })
+  const arrowHotKeyOptions: Options = {
+    enabled: isOpenSearch,
+    preventDefault: true,
+    keydown: true,
+    enableOnFormTags: ['INPUT'],
+  }
+  useHotkeys('up', onUpClick, arrowHotKeyOptions)
+  useHotkeys('down', onDownClick, arrowHotKeyOptions)
 
   return (
     <div className='relative'>
