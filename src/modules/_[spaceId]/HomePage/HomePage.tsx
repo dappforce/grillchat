@@ -15,7 +15,7 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getChatPageLink } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import { PostData } from '@subsocial/api/types'
-import Fuse from 'fuse.js'
+import { matchSorter } from 'match-sorter'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -49,14 +49,13 @@ export default function HomePage({
 
   let searchResults: PostData[]
   if (search) {
-    const fuse = new Fuse(
+    searchResults = matchSorter(
       postsQuery.map(({ data: post }) => post),
+      search,
       {
         keys: ['content.title'],
-        minMatchCharLength: search.length,
       }
-    )
-    searchResults = fuse.search(search).map(({ item }) => item) as PostData[]
+    ) as PostData[]
   } else {
     searchResults = postsQuery.map(({ data: post }) => post) as PostData[]
   }
