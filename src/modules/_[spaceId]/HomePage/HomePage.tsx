@@ -127,14 +127,16 @@ export default function HomePage({
         customContent: (logo, auth, colorModeToggler) => {
           return (
             <HomePageNavbar
-              search={search}
-              setSearch={setSearch}
               auth={auth}
               colorModeToggler={colorModeToggler}
               logo={logo}
-              removeFocusedElement={removeFocusedElement}
-              onUpClick={onUpClick}
-              onDownClick={onDownClick}
+              searchProps={{
+                search,
+                setSearch,
+                removeFocusedElement,
+                onUpClick,
+                onDownClick,
+              }}
             />
           )
         },

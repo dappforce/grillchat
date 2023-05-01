@@ -10,22 +10,26 @@ export type HomePageNavbarProps = {
   logo: JSX.Element
   auth: JSX.Element
   colorModeToggler: JSX.Element
-  search: string
-  setSearch: (search: string) => void
-  removeFocusedElement: () => void
-  onUpClick: () => void
-  onDownClick: () => void
+  searchProps: {
+    search: string
+    setSearch: (search: string) => void
+    removeFocusedElement: () => void
+    onUpClick: () => void
+    onDownClick: () => void
+  }
 }
 
 export default function HomePageNavbar({
   auth,
   colorModeToggler,
   logo,
-  search,
-  setSearch,
-  removeFocusedElement,
-  onDownClick,
-  onUpClick,
+  searchProps: {
+    search,
+    setSearch,
+    removeFocusedElement,
+    onUpClick,
+    onDownClick,
+  },
 }: HomePageNavbarProps) {
   const [openSearch, setOpenSearch] = useState(false)
   const searchRef = useRef<HTMLInputElement | null>(null)
