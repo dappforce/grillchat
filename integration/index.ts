@@ -1,4 +1,4 @@
-export type GrillChatConfig = {
+export type OpenCommConfig = {
   targetId?: string
   spaceId?: string
   order?: string[]
@@ -9,18 +9,18 @@ export type GrillChatConfig = {
 
 const DEFAULT_CONFIG = {
   spaceId: 'x',
-  targetId: 'grillchat',
-} satisfies GrillChatConfig
+  targetId: 'opencomm',
+} satisfies OpenCommConfig
 
-const grillchat = {
+const opencomm = {
   instance: null as HTMLIFrameElement | null,
 
-  init(params: GrillChatConfig) {
+  init(params: OpenCommConfig) {
     const config = { ...DEFAULT_CONFIG, ...params }
     const targetElement = document.getElementById(config.targetId)
     if (!targetElement) {
       console.error(
-        `Grill.chat error: Element with id ${config.targetId} not found`
+        `OpenComm error: Element with id ${config.targetId} not found`
       )
       return
     }
@@ -51,7 +51,7 @@ const grillchat = {
   },
 }
 
-export type GrillChat = typeof grillchat
-;(window as any).grillchat = grillchat
+export type OpenComm = typeof opencomm
+;(window as any).opencomm = opencomm
 
-export default grillchat
+export default opencomm
