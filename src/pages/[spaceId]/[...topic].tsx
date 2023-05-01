@@ -21,7 +21,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
     posts.forEach((post) =>
       paths.push({
-        params: { topic: createSlug(post.id, post.content) },
+        params: { topic: [createSlug(post.id, post.content)] },
       })
     )
   })
@@ -36,23 +36,42 @@ export const getStaticProps = getCommonStaticProps<{
   dehydratedState: any
   postId: string
   title: string | null
+  desc: string | null
 }>(
-  (data) => ({ head: { disableZoom: true, title: data.title } }),
+  (data) => ({
+    head: { disableZoom: true, title: data.title, description: data.desc },
+  }),
   async (context) => {
-    const topic = context.params?.topic as string
-    const postId = getIdFromSlug(topic)
-    if (!postId) return undefined
+    const topicParams = context.params?.topic as string[]
+    if (topicParams.length <= 0 || topicParams.length > 2) {
+      return undefined
+    }
+
+    const [topic, chatId] = topicParams
+    const roomId = getIdFromSlug(topic)
+    if (!roomId) return undefined
+
+    const invalidChatId = chatId && isNaN(parseInt(chatId))
+    if (invalidChatId) return undefined
 
     const queryClient = new QueryClient()
 
     let title: string | null = null
+    let desc: string | null = null
     try {
-      const [post] = await getPostsFromCache([postId])
-      title = post?.content?.title || null
+      let roomIdAndChatId = [roomId]
+      if (chatId) roomIdAndChatId.push(chatId)
+
+      const [roomData, chatData] = await getPostsFromCache(roomIdAndChatId)
+      title = roomData?.content?.title || null
+      if (chatData) {
+        title = `Message from ${title}`
+        desc = chatData?.content?.body || null
+      }
 
       const subsocialApi = await getSubsocialApi()
       const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(
-        postId
+        roomId
       )
 
       const preloadedPostCount = CHAT_PER_PAGE * 2
@@ -61,9 +80,11 @@ export const getStaticProps = getCommonStaticProps<{
       const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
       const posts = await getPostsFromCache(prefetchedCommentIds)
 
-      getPostQuery.setQueryData(queryClient, postId, post)
+      getPostQuery.setQueryData(queryClient, roomId, roomData)
+      if (chatData) getPostQuery.setQueryData(queryClient, chatId, chatData)
+
       queryClient.setQueryData(
-        getCommentIdsQueryKey(postId),
+        getCommentIdsQueryKey(roomId),
         commentIds ?? null
       )
       posts.forEach((post) => {
@@ -76,8 +97,9 @@ export const getStaticProps = getCommonStaticProps<{
     return {
       props: {
         dehydratedState: dehydrate(queryClient),
-        postId,
+        postId: roomId,
         title,
+        desc,
       },
       revalidate: 2,
     }
