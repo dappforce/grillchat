@@ -1,3 +1,4 @@
+import { useConfigContext } from '@/contexts/ConfigContext'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
@@ -10,11 +11,13 @@ export default function ColorModeToggler({ ...props }: ColorModeTogglerProps) {
   const { setTheme } = useTheme()
   const theme = useGetTheme()
   const [mounted, setMounted] = useState(false)
+  const { theme: themeInConfig } = useConfigContext()
+
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  if (!mounted) return null
+  if (!mounted || themeInConfig) return null
 
   const handleClick = (e: any) => {
     setTheme(theme === 'dark' ? 'light' : 'dark')
