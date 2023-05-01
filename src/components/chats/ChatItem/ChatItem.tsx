@@ -110,7 +110,7 @@ export default function ChatItem({
         icon: <HiLink className='flex-shrink-0 text-xl text-text-muted' />,
         onClick: () => {
           const hrefWithoutQuery = getCurrentUrlWithoutQuery()
-          copyToClipboard(`${hrefWithoutQuery}?chatId=${commentId}`)
+          copyToClipboard(`${hrefWithoutQuery}?messageId=${commentId}`)
           toast.custom((t) => (
             <Toast t={t} title='Message link copied to clipboard!' />
           ))
