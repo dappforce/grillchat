@@ -6,7 +6,7 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup index.ts --format cjs,esm --dts --minify",
+    "build": "tsup index.ts --format cjs,esm,iife --dts --minify",
     "publish": "yarn build && npm publish --access public"
   },
   "keywords": [
