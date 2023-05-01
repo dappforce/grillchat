@@ -6,6 +6,7 @@ import Input from '@/components/inputs/Input'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getLinkedPostIdsForSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
@@ -18,7 +19,7 @@ import Fuse from 'fuse.js'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { BsXCircleFill } from 'react-icons/bs'
 import { HiMagnifyingGlass } from 'react-icons/hi2'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
@@ -155,6 +156,25 @@ function HomePageNavbar({
   const [openSearch, setOpenSearch] = useState(false)
   const searchRef = useRef<HTMLInputElement | null>(null)
 
+  const clearOrCloseSearch = useWrapInRef(() => {
+    if (search) {
+      setSearch('')
+      searchRef.current?.focus()
+    } else {
+      setOpenSearch(false)
+    }
+  })
+
+  useEffect(() => {
+    const keyListener = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        clearOrCloseSearch.current()
+      }
+    }
+    window.addEventListener('keydown', keyListener)
+    return () => window.removeEventListener('keydown', keyListener)
+  }, [clearOrCloseSearch])
+
   return (
     <div className='relative'>
       <div
@@ -180,14 +200,7 @@ function HomePageNavbar({
                 className,
                 'z-10 mr-1 cursor-pointer text-text-muted'
               )}
-              onClick={() => {
-                if (search) {
-                  setSearch('')
-                  searchRef.current?.focus()
-                } else {
-                  setOpenSearch(false)
-                }
-              }}
+              onClick={clearOrCloseSearch.current}
             >
               <BsXCircleFill />
             </Button>
