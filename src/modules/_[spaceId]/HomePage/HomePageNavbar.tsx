@@ -67,8 +67,10 @@ export default function HomePageNavbar({
     if (!openSearch) return
     const arrowListener = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
+        e.preventDefault()
         onDownClickRef.current()
       } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
         onUpClickRef.current()
       }
     }
