@@ -12,7 +12,7 @@ export type HomePageNavbarProps = {
   colorModeToggler: JSX.Element
   search: string
   setSearch: (search: string) => void
-  setFocusedElementIndex: React.Dispatch<React.SetStateAction<number>>
+  removeFocusedElement: () => void
   onUpClick: () => void
   onDownClick: () => void
 }
@@ -23,6 +23,7 @@ export default function HomePageNavbar({
   logo,
   search,
   setSearch,
+  removeFocusedElement,
   onDownClick,
   onUpClick,
 }: HomePageNavbarProps) {
@@ -30,6 +31,7 @@ export default function HomePageNavbar({
   const searchRef = useRef<HTMLInputElement | null>(null)
 
   const clearOrCloseSearch = useWrapInRef(() => {
+    removeFocusedElement()
     if (search) {
       setSearch('')
       searchRef.current?.focus()

@@ -61,6 +61,9 @@ export default function HomePage({
   useEffect(() => {
     setFocusedElementIndex(-1)
   }, [search])
+  const removeFocusedElement = () => {
+    setFocusedElementIndex(-1)
+  }
   const onDownClick = () => {
     setFocusedElementIndex((prev) =>
       Math.min(prev + 1, searchResults.length - 1)
@@ -131,7 +134,7 @@ export default function HomePage({
               auth={auth}
               colorModeToggler={colorModeToggler}
               logo={logo}
-              setFocusedElementIndex={setFocusedElementIndex}
+              removeFocusedElement={removeFocusedElement}
               onUpClick={onUpClick}
               onDownClick={onDownClick}
             />
