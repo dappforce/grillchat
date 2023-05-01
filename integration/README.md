@@ -41,7 +41,7 @@ Grill.chat has 2 pages that can be the start point.
    You can also choose to have your user automatically opens a chat room. This is useful if you want to have a specific topic for your user to discuss.
 
    ```
-   https://grill.chat/[spaceId]/c/[topicId]
+   https://grill.chat/[spaceId]/[topicId]
    ```
 
 #### 2.3. Other options

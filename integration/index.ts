@@ -32,7 +32,7 @@ const grillchat = {
 
     let baseUrl = `https://grill.chat/${config.spaceId}`
     if (config.chatRoomId) {
-      baseUrl += `/c/${config.chatRoomId}`
+      baseUrl += `/${config.chatRoomId}`
     }
 
     const query = new URLSearchParams()
