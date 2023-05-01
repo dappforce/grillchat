@@ -55,7 +55,6 @@ jobs:
             GH_SERVER_MNEMONIC=${{ secrets.SERVER_ENERGY_MNEMONIC }}
             GH_CAPTCHA_SECRET=${{ secrets.CAPTCHA_SECRET }}
             GH_NEXT_PUBLIC_CAPTCHA_SITE_KEY=6LcnGU0lAAAAANPvuR2I3gZswHpX1GJnpJG2ocVb
-            GH_NEXT_PUBLIC_BASE_URL=https://x.grill.chat/
           tags: |
             ${{ env.image }}
             dappforce/subsocial-web-app:grillchat-master-latest

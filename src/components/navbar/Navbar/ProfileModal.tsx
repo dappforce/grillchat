@@ -16,8 +16,8 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
-import { getBaseUrl } from '@/utils/env/client'
 import { generateRandomName } from '@/utils/random-name'
+import { getCurrentUrlOrigin } from '@/utils/window'
 import React, { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
@@ -275,7 +275,7 @@ function ShareSessionContent() {
   }
 
   const shareSessionLink = urlJoin(
-    getBaseUrl(),
+    getCurrentUrlOrigin(),
     `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${encodedSecretKey}`
   )
 

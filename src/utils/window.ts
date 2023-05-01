@@ -21,6 +21,10 @@ export function getUrlQuery(queryName: string) {
   return searchParams.get(queryName) ?? ''
 }
 
+export function getCurrentUrlOrigin() {
+  return window.location.origin
+}
+
 export function getCurrentUrlWithoutQuery() {
   return window.location.origin + window.location.pathname
 }
