@@ -92,7 +92,7 @@ function ChatListContent({
 
   useEffect(() => {
     ;(async () => {
-      const commentIdFromUrl = getUrlQuery('chatId')
+      const commentIdFromUrl = getUrlQuery('messageId')
       if (!commentIdFromUrl) return
 
       const element = await getChatElement(commentIdFromUrl)

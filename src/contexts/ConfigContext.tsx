@@ -1,11 +1,12 @@
+import { Theme } from '@/@types/theme'
 import { getUrlQuery } from '@/utils/window'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
-type State = { theme: string | undefined; order: string[] }
+type State = { theme: Theme | undefined; order: string[] }
 const ConfigContext = createContext<State>({ theme: undefined, order: [] })
 
 export function ConfigProvider({ children }: { children: any }) {
-  const [theme, setTheme] = useState<string>()
+  const [theme, setTheme] = useState<Theme>()
   const [order, setOrder] = useState<string[]>([])
 
   useEffect(() => {
