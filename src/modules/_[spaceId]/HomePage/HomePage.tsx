@@ -46,12 +46,16 @@ export default function HomePage({
   const searchResults = useMemo(() => {
     const postsData = postsQuery.map(({ data: post }) => post)
     let searchResults = postsData as PostData[]
-    const processedSearch = search.replace(/ /g, '')
+
+    const multipleSpacesRegex = / {2}+/g
+    const processedSearch = search.replace(multipleSpacesRegex, ' ').trim()
+
     if (processedSearch) {
       searchResults = matchSorter(postsData, processedSearch, {
         keys: ['content.title'],
       }) as PostData[]
     }
+
     return searchResults
   }, [search, postsQuery])
 
