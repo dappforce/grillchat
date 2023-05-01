@@ -10,7 +10,10 @@ export function getHomePageLink(currentPath: CurrentPath) {
   return `/${spaceId ?? ''}`
 }
 
-export function getChatPageLink(currentPath: CurrentPath, chatSlug: string) {
+export function getChatPageLink(currentPath: CurrentPath, chatSlug?: string) {
   const spaceId = getSpaceIdFromUrl(currentPath)
+  if (!chatSlug && Array.isArray(currentPath.query.topic)) {
+    chatSlug = currentPath.query.topic[0]
+  }
   return `/${spaceId}/${chatSlug}`
 }

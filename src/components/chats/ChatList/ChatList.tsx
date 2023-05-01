@@ -94,14 +94,14 @@ function ChatListContent({
 
   useEffect(() => {
     ;(async () => {
-      const [slug, chatId] = router.query.topic as string[]
+      const [, chatId] = router.query.topic as string[]
       if (!chatId) return
 
       const element = await getChatElement(chatId)
       if (!element) return
 
       await scrollToChatItem(element, scrollContainerRef.current)
-      router.replace(getChatPageLink(router, slug), undefined, {
+      router.replace(getChatPageLink(router), undefined, {
         shallow: true,
       })
     })()

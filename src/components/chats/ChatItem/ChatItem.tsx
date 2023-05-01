@@ -9,9 +9,10 @@ import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
+import { getChatPageLink } from '@/utils/links'
 import { copyToClipboard } from '@/utils/text'
-import { getCurrentUrlWithoutQuery } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
+import { useRouter } from 'next/router'
 import {
   ComponentProps,
   RefObject,
@@ -65,6 +66,7 @@ export default function ChatItem({
   getRepliedElement,
   ...props
 }: ChatItemProps) {
+  const router = useRouter()
   const commentId = comment.id
   const isSent = !isOptimisticId(commentId)
   const [openMetadata, setOpenMetadata] = useState(false)
@@ -109,8 +111,8 @@ export default function ChatItem({
         text: 'Copy Message Link',
         icon: <HiLink className='flex-shrink-0 text-xl text-text-muted' />,
         onClick: () => {
-          const hrefWithoutQuery = getCurrentUrlWithoutQuery()
-          copyToClipboard(`${hrefWithoutQuery}?messageId=${commentId}`)
+          const chatPageLink = getChatPageLink(router)
+          copyToClipboard(`${chatPageLink}/${commentId}`)
           toast.custom((t) => (
             <Toast t={t} title='Message link copied to clipboard!' />
           ))
