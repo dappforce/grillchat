@@ -4,7 +4,6 @@ import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getLinkedPostIdsForSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
@@ -178,18 +177,17 @@ function ChatPreviewContainer({
     createSlug(post.id, { title: content?.title })
   )
 
-  const routerRef = useWrapInRef(router)
   useEffect(() => {
     if (!isFocused) return
     const listener = (e: KeyboardEvent) => {
       const method = isInIframe ? 'replace' : 'push'
       if (e.key === 'Enter') {
-        routerRef.current[method](linkTo)
+        router[method](linkTo)
       }
     }
     window.addEventListener('keydown', listener)
     return () => window.removeEventListener('keydown', listener)
-  }, [linkTo, isFocused, routerRef, isInIframe])
+  }, [linkTo, isFocused, router, isInIframe])
 
   const onChatClick = () => {
     sendEvent(`click on chat`, {
