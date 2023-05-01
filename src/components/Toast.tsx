@@ -14,12 +14,13 @@ export default function Toast({ t, icon, title, description }: ToastProps) {
     <Transition
       appear
       show={t.visible}
+      className='relative top-12'
       enter={cx('transition duration-150')}
-      enterFrom={cx('translate-x-6 opacity-0')}
-      enterTo={cx('translate-x-0 opacity-100')}
+      enterFrom={cx('-translate-y-6 opacity-0')}
+      enterTo={cx('translate-y-0 opacity-100')}
       leave={cx('transition duration-150')}
-      leaveFrom={cx('translate-x-0 opacity-100')}
-      leaveTo={cx('translate-x-6 opacity-0')}
+      leaveFrom={cx('translate-y-0 opacity-100')}
+      leaveTo={cx('-translate-y-6 opacity-0')}
     >
       <div
         className={cx(

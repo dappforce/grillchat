@@ -1,6 +1,5 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import { ConfigProvider, useConfigContext } from '@/contexts/ConfigContext'
-import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
@@ -50,6 +49,5 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
 }
 
 function ToasterConfig() {
-  const mdUp = useBreakpointThreshold('md')
-  return <Toaster position={mdUp ? 'bottom-right' : 'top-center'} />
+  return <Toaster position='top-center' />
 }
