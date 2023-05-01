@@ -175,6 +175,19 @@ function HomePageNavbar({
     return () => window.removeEventListener('keydown', keyListener)
   }, [clearOrCloseSearch])
 
+  useEffect(() => {
+    if (openSearch) return
+    const openSearchHotKeyListener = (e: KeyboardEvent) => {
+      if (e.key === '/' || (e.ctrlKey && e.key === 'k')) {
+        e.preventDefault()
+        setOpenSearch(true)
+        searchRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', openSearchHotKeyListener)
+    return () => window.removeEventListener('keydown', openSearchHotKeyListener)
+  }, [openSearch])
+
   return (
     <div className='relative'>
       <div
