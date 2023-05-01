@@ -47,7 +47,7 @@ export default function HomePage({
     const postsData = postsQuery.map(({ data: post }) => post)
     let searchResults = postsData as PostData[]
 
-    const multipleSpacesRegex = / {2}+/g
+    const multipleSpacesRegex = /\s\s+/g
     const processedSearch = search.replace(multipleSpacesRegex, ' ').trim()
 
     if (processedSearch) {
