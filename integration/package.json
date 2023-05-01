@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "unpkg": "dist/index.global.js",
   "scripts": {
     "build": "tsup index.ts --format cjs,esm,iife --dts --minify",
     "publish": "yarn build && npm publish --access public"
