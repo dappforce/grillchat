@@ -44,18 +44,16 @@ export default function HomePage({
   const [search, setSearch] = useState('')
   const postsQuery = getPostQuery.useQueries(order)
 
-  let searchResults: PostData[]
-  if (search) {
-    searchResults = matchSorter(
-      postsQuery.map(({ data: post }) => post),
-      search,
-      {
+  const searchResults = useMemo(() => {
+    const postsData = postsQuery.map(({ data: post }) => post)
+    let searchResults = postsData as PostData[]
+    if (search) {
+      searchResults = matchSorter(postsData, search, {
         keys: ['content.title'],
-      }
-    ) as PostData[]
-  } else {
-    searchResults = postsQuery.map(({ data: post }) => post) as PostData[]
-  }
+      }) as PostData[]
+    }
+    return searchResults
+  }, [search, postsQuery])
 
   const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
   useEffect(() => {
