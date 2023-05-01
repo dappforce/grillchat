@@ -1,8 +1,8 @@
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
-import useWrapInRef from '@/hooks/useWrapInRef'
 import { cx } from '@/utils/class-names'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { BsXCircleFill } from 'react-icons/bs'
 import { HiMagnifyingGlass } from 'react-icons/hi2'
 
@@ -31,65 +31,35 @@ export default function HomePageNavbar({
     onDownClick,
   },
 }: HomePageNavbarProps) {
-  const [openSearch, setOpenSearch] = useState(false)
+  const [isOpenSearch, setIsOpenSearch] = useState(false)
   const searchRef = useRef<HTMLInputElement | null>(null)
 
-  const clearOrCloseSearch = useWrapInRef(() => {
+  const clearOrCloseSearch = () => {
     removeFocusedElement()
     if (search) {
       setSearch('')
       searchRef.current?.focus()
     } else {
-      setOpenSearch(false)
+      setIsOpenSearch(false)
     }
-  })
+  }
+  useHotkeys('esc', clearOrCloseSearch)
 
-  useEffect(() => {
-    const keyListener = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        clearOrCloseSearch.current()
-      }
-    }
-    window.addEventListener('keydown', keyListener)
-    return () => window.removeEventListener('keydown', keyListener)
-  }, [clearOrCloseSearch])
+  const openSearch = () => {
+    setIsOpenSearch(true)
+    searchRef.current?.focus()
+  }
+  useHotkeys('/, ctrl+k', openSearch, { enabled: !isOpenSearch })
 
-  useEffect(() => {
-    if (openSearch) return
-    const openSearchHotKeyListener = (e: KeyboardEvent) => {
-      if (e.key === '/' || (e.ctrlKey && e.key === 'k')) {
-        e.preventDefault()
-        setOpenSearch(true)
-        searchRef.current?.focus()
-      }
-    }
-    window.addEventListener('keydown', openSearchHotKeyListener)
-    return () => window.removeEventListener('keydown', openSearchHotKeyListener)
-  }, [openSearch])
-
-  const onUpClickRef = useWrapInRef(onUpClick)
-  const onDownClickRef = useWrapInRef(onDownClick)
-  useEffect(() => {
-    if (!openSearch) return
-    const arrowListener = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        onDownClickRef.current()
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        onUpClickRef.current()
-      }
-    }
-    window.addEventListener('keydown', arrowListener)
-    return () => window.removeEventListener('keydown', arrowListener)
-  }, [openSearch, onUpClickRef, onDownClickRef])
+  useHotkeys('up', onUpClick, { enabled: isOpenSearch })
+  useHotkeys('down', onDownClick, { enabled: isOpenSearch })
 
   return (
     <div className='relative'>
       <div
         className={cx(
           'absolute top-1/2 left-0 z-10 w-full -translate-y-1/2 transition-opacity',
-          !openSearch && 'pointer-events-none opacity-0'
+          !isOpenSearch && 'pointer-events-none opacity-0'
         )}
       >
         <Input
@@ -109,7 +79,7 @@ export default function HomePageNavbar({
                 className,
                 'z-10 mr-1 cursor-pointer text-text-muted'
               )}
-              onClick={clearOrCloseSearch.current}
+              onClick={clearOrCloseSearch}
             >
               <BsXCircleFill />
             </Button>
@@ -124,7 +94,7 @@ export default function HomePageNavbar({
       <div
         className={cx(
           'relative z-0 flex items-center justify-between transition-opacity',
-          openSearch && 'opacity-0'
+          isOpenSearch && 'opacity-0'
         )}
       >
         {logo}
@@ -133,7 +103,7 @@ export default function HomePageNavbar({
             size='circle'
             variant='transparent'
             onClick={() => {
-              setOpenSearch(true)
+              setIsOpenSearch(true)
               searchRef.current?.focus()
             }}
           >
