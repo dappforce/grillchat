@@ -1,5 +1,5 @@
 import { Theme } from '@/@types/theme'
-import { getUrlQuery } from '@/utils/window'
+import { getUrlQuery } from '@/utils/links'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 type State = { theme: Theme | undefined; order: string[] }

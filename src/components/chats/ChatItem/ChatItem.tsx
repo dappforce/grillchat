@@ -9,7 +9,7 @@ import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
-import { getChatPageLink } from '@/utils/links'
+import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/text'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
@@ -25,6 +25,7 @@ import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
+import urlJoin from 'url-join'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
@@ -111,8 +112,11 @@ export default function ChatItem({
         text: 'Copy Message Link',
         icon: <HiLink className='flex-shrink-0 text-xl text-text-muted' />,
         onClick: () => {
-          const chatPageLink = getChatPageLink(router)
-          copyToClipboard(`${chatPageLink}/${commentId}`)
+          const chatPageLink = urlJoin(
+            getCurrentUrlOrigin(),
+            getChatPageLink(router)
+          )
+          copyToClipboard(urlJoin(chatPageLink, commentId))
           toast.custom((t) => (
             <Toast t={t} title='Message link copied to clipboard!' />
           ))
@@ -126,7 +130,7 @@ export default function ChatItem({
         onClick: () => setOpenMetadata(true),
       },
     ]
-  }, [body, commentId, onSelectChatAsReplyRef])
+  }, [body, commentId, onSelectChatAsReplyRef, router])
 
   if (!body) return null
 

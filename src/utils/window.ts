@@ -15,20 +15,6 @@ export function allowWindowUnload() {
   window.onbeforeunload = null
 }
 
-export function getUrlQuery(queryName: string) {
-  const query = window.location.search
-  const searchParams = new URLSearchParams(query)
-  return searchParams.get(queryName) ?? ''
-}
-
-export function getCurrentUrlOrigin() {
-  return window.location.origin
-}
-
-export function getCurrentUrlWithoutQuery() {
-  return window.location.origin + window.location.pathname
-}
-
 export function waitStopScrolling(scrollContainer?: HTMLElement | null) {
   return new Promise<void>((resolve) => {
     let lastScrollTop = 0
