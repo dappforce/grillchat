@@ -5,6 +5,7 @@ import {
   loginWithSecretKey,
   Signer,
 } from '@/utils/account'
+import { LocalStorage } from '@/utils/storage'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
 
@@ -51,6 +52,10 @@ const initialState: State = {
   _unsubscribeEnergy: () => undefined,
   _isNewSessionKey: true,
 }
+
+const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
+const currentSessionStorage = new LocalStorage(() => SESSION_STORAGE_KEY)
+
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
   login: async (secretKey, isInitialization) => {
@@ -68,7 +73,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         encodedSecretKey,
         isInitializedAddress: !!isInitialization,
       })
-      localStorage.setItem(ACCOUNT_STORAGE_KEY, encodedSecretKey)
+      accountStorage.set(encodedSecretKey)
       get()._subscribeEnergy()
       _syncSessionKey()
     } catch (e) {
@@ -103,7 +108,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const { _unsubscribeEnergy, _currentSessionSecretKey } = get()
     _unsubscribeEnergy()
 
-    localStorage.removeItem(ACCOUNT_STORAGE_KEY)
+    accountStorage.remove()
     set({ ...initialState, _isNewSessionKey: false, _currentSessionSecretKey })
   },
   _getSecretKeyForLogin: async () => {
@@ -122,7 +127,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       _currentSessionSecretKey: secretKey,
       _isNewSessionKey: isNewSessionKey,
     })
-    localStorage.setItem(SESSION_STORAGE_KEY, encodedSecretKey)
+    currentSessionStorage.set(encodedSecretKey)
     useAnalytics.getState().setUserId(address)
   },
   _syncSessionKey: async () => {
@@ -133,7 +138,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   },
   _syncSessionWithLocalStorage: async () => {
     const { _setSessionKey } = get()
-    const encodedSecretKey = localStorage.getItem(SESSION_STORAGE_KEY)
+    const encodedSecretKey = currentSessionStorage.get()
     if (encodedSecretKey) {
       const secretKey = decodeSecretKey(encodedSecretKey)
       const signer = await loginWithSecretKey(secretKey)
@@ -159,14 +164,14 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     if (isInitialized !== undefined) return
     set({ isInitialized: false })
 
-    const encodedSecretKey = localStorage.getItem(ACCOUNT_STORAGE_KEY)
+    const encodedSecretKey = accountStorage.get()
     let successLogin = false
     if (encodedSecretKey) {
       const secretKey = decodeSecretKey(encodedSecretKey)
       const address = await login(secretKey, true)
 
       if (address) successLogin = true
-      else localStorage.removeItem(ACCOUNT_STORAGE_KEY)
+      else accountStorage.remove()
     }
 
     if (!successLogin) {

@@ -2,9 +2,7 @@ import Button from '@/components/Button'
 import ColorModeToggler from '@/components/ColorModeToggler'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
-import useIsInIframe from '@/hooks/useIsInIframe'
 import usePrevious from '@/hooks/usePrevious'
-import { useLocation } from '@/stores/location'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getHomePageLink } from '@/utils/links'
@@ -34,9 +32,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
     (state) => state.isInitializedAddress
   )
   const router = useRouter()
-  const prevUrl = useLocation((state) => state.prevUrl)
 
-  const isInIframe = useIsInIframe()
   const address = useMyAccount((state) => state.address)
   const prevAddress = usePrevious(address)
   const isLoggedIn = !!address
@@ -82,10 +78,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
   const authComponent = renderAuthComponent()
   const colorModeToggler = <ColorModeToggler />
   const logoLink = (
-    <Link
-      href={(isInIframe && prevUrl) || getHomePageLink(router)}
-      aria-label='Back to home'
-    >
+    <Link href={getHomePageLink(router)} aria-label='Back to home'>
       <Logo className='text-2xl' />
     </Link>
   )
@@ -105,7 +98,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
           {customContent ? (
             customContent(logoLink, authComponent, colorModeToggler)
           ) : (
-            <div className='flex items-center justify-between text-text-muted dark:text-text'>
+            <div className='flex items-center justify-between'>
               {logoLink}
               <div className='flex items-center gap-4'>
                 {colorModeToggler}

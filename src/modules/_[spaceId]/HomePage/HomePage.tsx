@@ -22,8 +22,8 @@ import { useRouter } from 'next/router'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { BsXCircleFill } from 'react-icons/bs'
 import { HiMagnifyingGlass } from 'react-icons/hi2'
+import useSortByConfig from './hooks/useSortByConfig'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
-import useSortByUrlQuery from './hooks/useSortByUrlQuery'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
@@ -42,7 +42,7 @@ export default function HomePage({
   }, [data, spaceId])
 
   const sortedIds = useSortedPostIdsByLatestMessage(allPostIds)
-  const order = useSortByUrlQuery(sortedIds)
+  const order = useSortByConfig(sortedIds)
 
   const [search, setSearch] = useState('')
   const postsQuery = getPostQuery.useQueries(order)

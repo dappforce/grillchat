@@ -5,7 +5,6 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
-import { useLocation } from '@/stores/location'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getHomePageLink } from '@/utils/links'
 import { PostData } from '@subsocial/api/types'
@@ -66,7 +65,6 @@ function NavbarChatInfo({
   messageCount: number
   post?: PostData | null
 }) {
-  const prevUrl = useLocation((state) => state.prevUrl)
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
@@ -77,7 +75,7 @@ function NavbarChatInfo({
       <div className='mr-2 flex w-9 items-center justify-center'>
         <Button
           size='circle'
-          href={prevUrl || getHomePageLink(router)}
+          href={getHomePageLink(router)}
           nextLinkProps={{ replace: isInIframe }}
           variant='transparent'
         >
