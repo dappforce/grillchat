@@ -16,7 +16,7 @@
 
 It's now simpler than ever before to have an anonymous, on-chain chat right in your application 🎉.
 
-Read the [integration guide](./integration/README.md) to get started.
+Read the [integration guide](./INTEGRATION.md) to get started.
 
 ## How to run Grill.chat locally 🏃‍♂️
 
