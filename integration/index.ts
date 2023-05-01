@@ -15,8 +15,8 @@ const DEFAULT_CONFIG = {
 const opencomm = {
   instance: null as HTMLIFrameElement | null,
 
-  init(params: OpenCommConfig) {
-    const config = { ...DEFAULT_CONFIG, ...params }
+  init(configs: OpenCommConfig) {
+    const config = { ...DEFAULT_CONFIG, ...configs }
     const targetElement = document.getElementById(config.targetId)
     if (!targetElement) {
       console.error(
