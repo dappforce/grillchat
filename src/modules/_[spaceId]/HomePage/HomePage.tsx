@@ -47,7 +47,7 @@ export default function HomePage({
   const [search, setSearch] = useState('')
   const postsQuery = getPostQuery.useQueries(order)
 
-  let searchResults
+  let searchResults: PostData[]
   if (search) {
     const fuse = new Fuse(
       postsQuery.map(({ data: post }) => post),
@@ -56,9 +56,22 @@ export default function HomePage({
         minMatchCharLength: search.length,
       }
     )
-    searchResults = fuse.search(search).map(({ item }) => item)
+    searchResults = fuse.search(search).map(({ item }) => item) as PostData[]
   } else {
-    searchResults = postsQuery.map(({ data: post }) => post)
+    searchResults = postsQuery.map(({ data: post }) => post) as PostData[]
+  }
+
+  const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
+  useEffect(() => {
+    setFocusedElementIndex(-1)
+  }, [search])
+  const onDownClick = () => {
+    setFocusedElementIndex((prev) =>
+      Math.min(prev + 1, searchResults.length - 1)
+    )
+  }
+  const onUpClick = () => {
+    setFocusedElementIndex((prev) => Math.max(prev - 1, 0))
   }
 
   const sendEvent = useSendEvent()
@@ -122,6 +135,9 @@ export default function HomePage({
               auth={auth}
               colorModeToggler={colorModeToggler}
               logo={logo}
+              setFocusedElementIndex={setFocusedElementIndex}
+              onUpClick={onUpClick}
+              onDownClick={onDownClick}
             />
           )
         },
@@ -130,9 +146,15 @@ export default function HomePage({
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {!isInIframe && !search && specialButtons}
-        {searchResults.map((post) => {
+        {searchResults.map((post, idx) => {
           if (!post) return null
-          return <ChatPreviewContainer post={post} key={post.id} />
+          return (
+            <ChatPreviewContainer
+              isFocused={idx === focusedElementIndex}
+              post={post}
+              key={post.id}
+            />
+          )
         })}
       </div>
     </DefaultLayout>
@@ -145,6 +167,9 @@ type HomePageNavbarProps = {
   colorModeToggler: JSX.Element
   search: string
   setSearch: (search: string) => void
+  setFocusedElementIndex: React.Dispatch<React.SetStateAction<number>>
+  onUpClick: () => void
+  onDownClick: () => void
 }
 function HomePageNavbar({
   auth,
@@ -152,6 +177,8 @@ function HomePageNavbar({
   logo,
   search,
   setSearch,
+  onDownClick,
+  onUpClick,
 }: HomePageNavbarProps) {
   const [openSearch, setOpenSearch] = useState(false)
   const searchRef = useRef<HTMLInputElement | null>(null)
@@ -187,6 +214,21 @@ function HomePageNavbar({
     window.addEventListener('keydown', openSearchHotKeyListener)
     return () => window.removeEventListener('keydown', openSearchHotKeyListener)
   }, [openSearch])
+
+  const onUpClickRef = useWrapInRef(onUpClick)
+  const onDownClickRef = useWrapInRef(onDownClick)
+  useEffect(() => {
+    if (!openSearch) return
+    const arrowListener = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowDown') {
+        onDownClickRef.current()
+      } else if (e.key === 'ArrowUp') {
+        onUpClickRef.current()
+      }
+    }
+    window.addEventListener('keydown', arrowListener)
+    return () => window.removeEventListener('keydown', arrowListener)
+  }, [openSearch, onUpClickRef, onDownClickRef])
 
   return (
     <div className='relative'>
@@ -251,12 +293,36 @@ function HomePageNavbar({
   )
 }
 
-function ChatPreviewContainer({ post }: { post: PostData }) {
+function ChatPreviewContainer({
+  post,
+  isFocused,
+}: {
+  post: PostData
+  isFocused?: boolean
+}) {
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
   const content = post?.content
+
+  const linkTo = getChatPageLink(
+    router,
+    createSlug(post.id, { title: content?.title })
+  )
+
+  const routerRef = useWrapInRef(router)
+  useEffect(() => {
+    if (!isFocused) return
+    const listener = (e: KeyboardEvent) => {
+      const method = isInIframe ? 'replace' : 'push'
+      if (e.key === 'Enter') {
+        routerRef.current[method](linkTo)
+      }
+    }
+    window.addEventListener('keydown', listener)
+    return () => window.removeEventListener('keydown', listener)
+  }, [linkTo, isFocused, routerRef, isInIframe])
 
   const onChatClick = () => {
     sendEvent(`click on chat`, {
@@ -271,16 +337,14 @@ function ChatPreviewContainer({ post }: { post: PostData }) {
       asContainer
       asLink={{
         replace: isInIframe,
-        href: getChatPageLink(
-          router,
-          createSlug(post.id, { title: content?.title })
-        ),
+        href: linkTo,
       }}
       image={content?.image ? getIpfsContentUrl(content.image) : ''}
       title={content?.title ?? ''}
       description={content?.body ?? ''}
       postId={post.id}
       withUnreadCount
+      withFocusedStyle={isFocused}
     />
   )
 }

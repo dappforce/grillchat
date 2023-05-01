@@ -26,6 +26,7 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   withUnreadCount?: boolean
   asContainer?: boolean
   withBorderBottom?: boolean
+  withFocusedStyle?: boolean
 }
 
 export default function ChatPreview({
@@ -39,6 +40,7 @@ export default function ChatPreview({
   isInteractive,
   withUnreadCount,
   withBorderBottom = true,
+  withFocusedStyle,
   ...props
 }: ChatPreviewProps) {
   const Component = asContainer ? Container<'div'> : 'div'
@@ -52,6 +54,7 @@ export default function ChatPreview({
         'outline-none md:rounded-md',
         (isInteractive || asLink) &&
           'cursor-pointer transition focus-within:bg-background-light/75 hover:bg-background-light/75',
+        withFocusedStyle && 'bg-background-light/75',
         props.className
       )}
     >
