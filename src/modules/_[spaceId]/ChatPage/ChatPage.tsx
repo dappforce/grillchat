@@ -14,6 +14,7 @@ import { useEffect } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
 
+export type ChatPageProps = { postId: string }
 export default function ChatPage({ postId }: { postId: string }) {
   const { data: post } = getPostQuery.useQuery(postId)
   const { data } = useCommentIdsByPostId(postId, { subscribe: true })

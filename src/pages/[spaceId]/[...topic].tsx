@@ -1,5 +1,6 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import ChatPage from '@/modules/_[spaceId]/ChatPage'
+import { ChatPageProps } from '@/modules/_[spaceId]/ChatPage/ChatPage'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
@@ -32,12 +33,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-export const getStaticProps = getCommonStaticProps<{
-  dehydratedState: any
-  postId: string
-  title: string | null
-  desc: string | null
-}>(
+export const getStaticProps = getCommonStaticProps<
+  {
+    dehydratedState: any
+    title: string | null
+    desc: string | null
+  } & ChatPageProps
+>(
   (data) => ({
     head: { disableZoom: true, title: data.title, description: data.desc },
   }),
