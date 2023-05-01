@@ -7,7 +7,8 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getUrlQuery } from '@/utils/window'
+import { getChatPageLink } from '@/utils/links'
+import { useRouter } from 'next/router'
 import {
   ComponentProps,
   Fragment,
@@ -56,6 +57,7 @@ function ChatListContent({
   newChatNoticeClassName,
   ...props
 }: ChatListProps) {
+  const router = useRouter()
   const lastReadId = useFocusedLastMessageId(postId)
 
   const scrollableContainerId = useId()
@@ -92,13 +94,16 @@ function ChatListContent({
 
   useEffect(() => {
     ;(async () => {
-      const commentIdFromUrl = getUrlQuery('messageId')
-      if (!commentIdFromUrl) return
+      const [slug, chatId] = router.query.topic as string[]
+      if (!chatId) return
 
-      const element = await getChatElement(commentIdFromUrl)
+      const element = await getChatElement(chatId)
       if (!element) return
 
-      scrollToChatItem(element, scrollContainerRef.current)
+      await scrollToChatItem(element, scrollContainerRef.current)
+      router.replace(getChatPageLink(router, slug), undefined, {
+        shallow: true,
+      })
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
