@@ -25,7 +25,7 @@ export default function ChatLastMessage({
         props.className
       )}
     >
-      {isMessageBlocked ? '<blocked>' : text}
+      {isMessageBlocked ? '<message moderated>' : text}
     </p>
   )
 }
