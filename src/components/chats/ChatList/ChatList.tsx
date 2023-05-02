@@ -181,6 +181,7 @@ function ChatListContent({
 
               const chatElement = comment && (
                 <ChatItemContainer
+                  rootPostId={postId}
                   onSelectChatAsReply={onSelectChatAsReply}
                   comment={comment}
                   key={comment.id}
