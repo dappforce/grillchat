@@ -5,18 +5,18 @@ import { QueryClient } from '@tanstack/react-query'
 import { getCommentIdsQueryKey } from './query'
 import { SendMessageParams } from './types'
 
-type OptimisticGeneratorParam = {
+type OptimisticGeneratorParams = {
   client: QueryClient
-  param: SendMessageParams
+  params: SendMessageParams
   tempId: string
   address: string
 }
 export function addOptimisticData({
   client,
-  param,
+  params,
   tempId,
   address,
-}: OptimisticGeneratorParam) {
+}: OptimisticGeneratorParams) {
   getPostQuery.setQueryData(client, tempId, {
     id: tempId,
     struct: {
@@ -24,12 +24,12 @@ export function addOptimisticData({
       ownerId: address,
     },
     content: {
-      body: param.message,
-      inReplyTo: ReplyWrapper(param.replyTo),
+      body: params.message,
+      inReplyTo: ReplyWrapper(params.replyTo),
     },
   } as PostData)
   client.setQueryData<string[]>(
-    getCommentIdsQueryKey(param.rootPostId),
+    getCommentIdsQueryKey(params.rootPostId),
     (ids) => {
       return [...(ids ?? []), tempId]
     }
@@ -37,12 +37,12 @@ export function addOptimisticData({
 }
 export function deleteOptimisticData({
   client,
-  param,
+  params,
   tempId,
-}: OptimisticGeneratorParam) {
+}: OptimisticGeneratorParams) {
   client.removeQueries(getPostQuery.getQueryKey(tempId))
   client.setQueryData<string[]>(
-    getCommentIdsQueryKey(param.rootPostId),
+    getCommentIdsQueryKey(params.rootPostId),
     (ids) => {
       return ids?.filter((id) => id !== tempId)
     }

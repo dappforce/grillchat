@@ -8,11 +8,11 @@ import {
 } from '..'
 import { QueryConfig } from '../types'
 
-export type SubsocialParam<T> = { data: T } & { api: SubsocialApi }
+export type SubsocialParams<T> = { data: T } & { api: SubsocialApi }
 
 export function useSubsocialQuery<ReturnValue, Data>(
   params: { key: string; data: Data | null },
-  func: (params: SubsocialParam<Data>) => Promise<ReturnValue>,
+  func: (params: SubsocialParams<Data>) => Promise<ReturnValue>,
   config?: QueryConfig,
   defaultConfig?: QueryConfig<ReturnValue, Data>
 ) {
@@ -31,7 +31,7 @@ export function useSubsocialQuery<ReturnValue, Data>(
 export function useSubsocialQueries<ReturnValue, Data>(
   params: { key: string; data: (Data | null)[] },
   func: (
-    params: SubsocialParam<Data> & { idx: number }
+    params: SubsocialParams<Data> & { idx: number }
   ) => Promise<ReturnValue>,
   config?: QueryConfig,
   defaultConfig?: QueryConfig<ReturnValue, Data>
@@ -61,7 +61,7 @@ export function createSubsocialQuery<Params, ReturnValue>({
   getData,
 }: {
   key: string
-  getData: (params: SubsocialParam<Params>) => Promise<ReturnValue>
+  getData: (params: SubsocialParams<Params>) => Promise<ReturnValue>
 }) {
   const getQueryKey = createQueryKeys<Params>(key)
   return {

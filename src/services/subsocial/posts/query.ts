@@ -1,11 +1,11 @@
 import { poolQuery } from '@/subsocial-query'
 import {
   createSubsocialQuery,
-  SubsocialParam,
+  SubsocialParams,
 } from '@/subsocial-query/subsocial/query'
 
 const getPostsBySpaceId = poolQuery<
-  SubsocialParam<string>,
+  SubsocialParams<string>,
   { spaceId: string; postIds: string[] }
 >({
   multiCall: async (allParams) => {

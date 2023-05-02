@@ -36,7 +36,7 @@ export const setSubsocialConfig = (
 export interface TxCallbacksParams {
   summary: string
   address: string
-  params: any
+  params: unknown
   explorerLink?: string
   error?: unknown
 }

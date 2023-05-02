@@ -9,9 +9,9 @@ export type QueryConfig<ReturnValue = any, Params = any> = Omit<
   >,
   'queryFn' | 'queryKey'
 >
-export type MutationConfig<Param> = UseMutationOptions<
+export type MutationConfig<Params> = UseMutationOptions<
   string,
   Error,
-  Param,
+  Params,
   unknown
 >

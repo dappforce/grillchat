@@ -38,14 +38,14 @@ export function mergeQueryConfig<T, V>(
   }
 }
 
-export function createQueryKeys<Param>(key: string) {
-  return (data: Param) => {
+export function createQueryKeys<Params>(key: string) {
+  return (data: Params) => {
     return [key, data]
   }
 }
 
-export function createQueryInvalidation<Param>(key: string) {
-  return (client: QueryClient, data: Param | null = null, exact = false) => {
+export function createQueryInvalidation<Params>(key: string) {
+  return (client: QueryClient, data: Params | null = null, exact = false) => {
     client.invalidateQueries({
       queryKey: [key, data],
       exact,
