@@ -15,7 +15,6 @@ import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import {
   ComponentProps,
-  RefObject,
   SyntheticEvent,
   useMemo,
   useReducer,
@@ -39,9 +38,8 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   comment: PostData
   onSelectChatAsReply?: (chatId: string) => void
   isMyMessage: boolean
-  scrollContainer?: RefObject<HTMLElement | null>
   chatBubbleId?: string
-  getRepliedElement?: (commentId: string) => Promise<HTMLElement | null>
+  scrollToChatElement?: (chatId: string) => Promise<void>
 }
 
 type CheckMarkModalReducerState = {
@@ -62,9 +60,8 @@ export default function ChatItem({
   comment,
   onSelectChatAsReply,
   isMyMessage,
-  scrollContainer,
+  scrollToChatElement,
   chatBubbleId,
-  getRepliedElement,
   ...props
 }: ChatItemProps) {
   const router = useRouter()
@@ -180,8 +177,7 @@ export default function ChatItem({
                 relativeTime={relativeTime}
                 senderColor={senderColor}
                 inReplyTo={inReplyTo}
-                getRepliedElement={getRepliedElement}
-                scrollContainer={scrollContainer}
+                scrollToChatElement={scrollToChatElement}
               />
             </div>
           )

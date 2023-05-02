@@ -1,4 +1,4 @@
-import { ComponentProps, RefObject, SyntheticEvent } from 'react'
+import { ComponentProps, SyntheticEvent } from 'react'
 
 export type ChatItemContentProps = ComponentProps<'div'> & {
   isMyMessage: boolean
@@ -8,7 +8,6 @@ export type ChatItemContentProps = ComponentProps<'div'> & {
   ownerId: string
   body: string
   inReplyTo?: { id: string }
-  scrollContainer?: RefObject<HTMLElement | null>
   onCheckMarkClick: (e: SyntheticEvent) => void
-  getRepliedElement?: (commentId: string) => Promise<HTMLElement | null>
+  scrollToChatElement?: (chatId: string) => Promise<void>
 }
