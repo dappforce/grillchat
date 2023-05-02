@@ -14,20 +14,22 @@ import { useEffect } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
 
-export type ChatPageProps = { postId: string }
-export default function ChatPage({ postId }: { postId: string }) {
-  const { data: post } = getPostQuery.useQuery(postId)
-  const { data } = useCommentIdsByPostId(postId, { subscribe: true })
+export type ChatPageProps = { chatId: string }
+export default function ChatPage({ chatId }: ChatPageProps) {
+  const { data: chat } = getPostQuery.useQuery(chatId)
+  const { data: messageIds } = useCommentIdsByPostId(chatId, {
+    subscribe: true,
+  })
 
-  const { setLastReadMessageId } = useLastReadMessageId(postId)
+  const { setLastReadMessageId } = useLastReadMessageId(chatId)
 
   useEffect(() => {
-    const lastId = data?.[data.length - 1]
+    const lastId = messageIds?.[messageIds.length - 1]
     if (!lastId) return
     setLastReadMessageId(lastId)
-  }, [setLastReadMessageId, data])
+  }, [setLastReadMessageId, messageIds])
 
-  const content = post?.content
+  const content = chat?.content
 
   return (
     <DefaultLayout
@@ -36,8 +38,8 @@ export default function ChatPage({ postId }: { postId: string }) {
           <div className='flex items-center justify-between gap-4'>
             <NavbarChatInfo
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
-              messageCount={data?.length ?? 0}
-              post={post}
+              messageCount={messageIds?.length ?? 0}
+              post={chat}
             />
             <div className='flex items-center gap-4'>
               {colorModeToggler}
@@ -49,7 +51,7 @@ export default function ChatPage({ postId }: { postId: string }) {
     >
       <ChatPageNavbarExtension />
       <ChatRoom
-        postId={postId}
+        postId={chatId}
         asContainer
         className='flex-1 overflow-hidden'
       />

@@ -2,10 +2,10 @@ import AddIcon from '@/assets/icons/add.png'
 import IntegrateIcon from '@/assets/icons/integrate.png'
 import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import { getLinkedPostIdsForSpaceId } from '@/constants/chat-room'
+import { getLinkedChatIdsForSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getPostQuery } from '@/services/api/query'
-import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -34,9 +34,9 @@ export default function HomePage({
   spaceId,
 }: HomePageProps) {
   const isInIframe = useIsInIframe()
-  const { data } = getPostIdsBySpaceIdQuery.useQuery(spaceId)
+  const { data } = getChatIdsBySpaceIdQuery.useQuery(spaceId)
   const allPostIds = useMemo(() => {
-    return [...(data?.postIds ?? []), ...getLinkedPostIdsForSpaceId(spaceId)]
+    return [...(data?.chatIds ?? []), ...getLinkedChatIdsForSpaceId(spaceId)]
   }, [data, spaceId])
 
   const sortedIds = useSortedPostIdsByLatestMessage(allPostIds)
