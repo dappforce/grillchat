@@ -11,10 +11,15 @@ import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getChatPageLink } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
+import { removeDoubleSpaces } from '@/utils/strings'
+import { PostData } from '@subsocial/api/types'
+import { matchSorter } from 'match-sorter'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+import HomePageNavbar from './HomePageNavbar'
 import useSortByConfig from './hooks/useSortByConfig'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
 
@@ -36,6 +41,40 @@ export default function HomePage({
 
   const sortedIds = useSortedPostIdsByLatestMessage(allPostIds)
   const order = useSortByConfig(sortedIds)
+
+  const [search, setSearch] = useState('')
+  const postsQuery = getPostQuery.useQueries(order)
+
+  const searchResults = useMemo(() => {
+    const postsData = postsQuery.map(({ data: post }) => post)
+    let searchResults = postsData as PostData[]
+
+    const processedSearch = removeDoubleSpaces(search)
+
+    if (processedSearch) {
+      searchResults = matchSorter(postsData, processedSearch, {
+        keys: ['content.title'],
+      }) as PostData[]
+    }
+
+    return searchResults
+  }, [search, postsQuery])
+
+  const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
+  useEffect(() => {
+    setFocusedElementIndex(-1)
+  }, [search])
+  const removeFocusedElement = () => {
+    setFocusedElementIndex(-1)
+  }
+  const onDownClick = () => {
+    setFocusedElementIndex((prev) =>
+      Math.min(prev + 1, searchResults.length - 1)
+    )
+  }
+  const onUpClick = () => {
+    setFocusedElementIndex((prev) => Math.max(prev - 1, 0))
+  }
 
   const sendEvent = useSendEvent()
 
@@ -88,50 +127,97 @@ export default function HomePage({
     : [launchCommunityButton, integrateChatButton]
 
   return (
-    <DefaultLayout>
+    <DefaultLayout
+      navbarProps={{
+        customContent: (logo, auth, colorModeToggler) => {
+          return (
+            <HomePageNavbar
+              auth={auth}
+              colorModeToggler={colorModeToggler}
+              logo={logo}
+              searchProps={{
+                search,
+                setSearch,
+                removeFocusedElement,
+                onUpClick,
+                onDownClick,
+              }}
+            />
+          )
+        },
+      }}
+    >
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
-        {!isInIframe && specialButtons}
-        {order.map((postId) => (
-          <ChatPreviewContainer postId={postId} key={postId} />
-        ))}
+        {!isInIframe && !search && specialButtons}
+        {searchResults.map((post, idx) => {
+          if (!post) return null
+          return (
+            <ChatPreviewContainer
+              isFocused={idx === focusedElementIndex}
+              post={post}
+              key={post.id}
+            />
+          )
+        })}
       </div>
     </DefaultLayout>
   )
 }
 
-function ChatPreviewContainer({ postId }: { postId: string }) {
-  const { data } = getPostQuery.useQuery(postId)
+function ChatPreviewContainer({
+  post,
+  isFocused,
+}: {
+  post: PostData
+  isFocused?: boolean
+}) {
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
-  const content = data?.content
+  const content = post?.content
+
+  const linkTo = getChatPageLink(
+    router,
+    createSlug(post.id, { title: content?.title })
+  )
+
+  useHotkeys(
+    'enter',
+    () => {
+      const method = isInIframe ? 'replace' : 'push'
+      router[method](linkTo)
+    },
+    {
+      enabled: isFocused,
+      preventDefault: true,
+      enableOnFormTags: ['INPUT'],
+      keydown: true,
+    }
+  )
 
   const onChatClick = () => {
     sendEvent(`click on chat`, {
       title: content?.title ?? '',
-      chatId: postId,
+      chatId: post.id,
     })
   }
 
   return (
     <ChatPreview
       onClick={onChatClick}
-      key={postId}
       asContainer
       asLink={{
         replace: isInIframe,
-        href: getChatPageLink(
-          router,
-          createSlug(postId, { title: content?.title })
-        ),
+        href: linkTo,
       }}
       image={content?.image ? getIpfsContentUrl(content.image) : ''}
       title={content?.title ?? ''}
       description={content?.body ?? ''}
-      postId={postId}
+      postId={post.id}
       withUnreadCount
+      withFocusedStyle={isFocused}
     />
   )
 }

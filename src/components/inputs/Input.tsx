@@ -5,7 +5,8 @@ import FieldWrapper, {
   RequiredFieldWrapperProps,
 } from './common/FieldWrapper'
 
-export type InputProps = ComponentProps<'input'> & RequiredFieldWrapperProps
+export type InputProps = Omit<ComponentProps<'input'>, 'size'> &
+  RequiredFieldWrapperProps
 
 const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   props: InputProps,

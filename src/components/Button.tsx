@@ -12,7 +12,7 @@ export const buttonStyles = cva('relative rounded-full transition', {
       primaryOutline:
         'bg-transparent border border-background-primary text-text',
       mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
-      transparent: 'bg-transparent text-text',
+      transparent: 'bg-transparent',
     },
     disabled: {
       true: 'opacity-30 dark:brightness-50 dark:opacity-100 pointer-events-none cursor-default',

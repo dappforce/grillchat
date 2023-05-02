@@ -20,6 +20,7 @@ const LoginModal = dynamic(() => import('@/components/LoginModal'), {
 
 export type NavbarProps = ComponentProps<'div'> & {
   customContent?: (
+    logoLink: JSX.Element,
     authComponent: JSX.Element,
     colorModeToggler: JSX.Element
   ) => JSX.Element
@@ -76,6 +77,11 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
   }
   const authComponent = renderAuthComponent()
   const colorModeToggler = <ColorModeToggler />
+  const logoLink = (
+    <Link href={getHomePageLink(router)} aria-label='Back to home'>
+      <Logo className='text-2xl' />
+    </Link>
+  )
 
   return (
     <>
@@ -90,12 +96,10 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
           className={cx('grid h-14 items-center py-2', props.className)}
         >
           {customContent ? (
-            customContent(authComponent, colorModeToggler)
+            customContent(logoLink, authComponent, colorModeToggler)
           ) : (
             <div className='flex items-center justify-between'>
-              <Link href={getHomePageLink(router)} aria-label='Back to home'>
-                <Logo className='text-2xl' />
-              </Link>
+              {logoLink}
               <div className='flex items-center gap-4'>
                 {colorModeToggler}
                 {authComponent}

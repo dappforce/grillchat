@@ -31,7 +31,7 @@ export default function ColorModeToggler({ ...props }: ColorModeTogglerProps) {
       {...props}
       onClick={handleClick}
     >
-      {theme === 'dark' ? <HiSun /> : <HiMoon className='text-text-muted' />}
+      {theme === 'dark' ? <HiSun /> : <HiMoon />}
     </Button>
   )
 }
