@@ -81,7 +81,7 @@ function ChatListContent({
       isPausedLoadMore,
     }
   )
-  console.log(isPausedLoadMore)
+
   const comments = getPostQuery.useQueries(currentData)
   const loadedComments = useMemo(() => {
     return comments.filter((post) => post.isLoading === false)
