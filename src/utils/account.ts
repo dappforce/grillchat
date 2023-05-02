@@ -46,3 +46,8 @@ export function decodeSecretKey(encodedSecretKey: string) {
     'hex'
   )
 }
+
+export async function convertHexAddressToSubstrateAddress(hexAddress: string) {
+  const { encodeAddress } = await import('@polkadot/keyring')
+  return encodeAddress(hexAddress, 42)
+}

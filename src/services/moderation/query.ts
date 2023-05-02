@@ -1,4 +1,5 @@
 import { createQuery } from '@/subsocial-query'
+import { convertHexAddressToSubstrateAddress } from '@/utils/account'
 import { request } from 'graphql-request'
 import { graphql } from './gql'
 import { getModerationUrl } from './utils'
@@ -44,7 +45,11 @@ const GET_BLOCKED_ADDRESSES = graphql(`
 `)
 export async function getBlockedAddresses() {
   const data = await request(getModerationUrl(), GET_BLOCKED_ADDRESSES)
-  return data.blockedResourceIds
+  const blockedHexAddresses = data.blockedResourceIds
+  const addresses = blockedHexAddresses.map((hexAddress: string) =>
+    convertHexAddressToSubstrateAddress(hexAddress)
+  )
+  return addresses
 }
 export const getBlockedAddressesQuery = createQuery({
   key: 'getBlockedAddressesQuery',
