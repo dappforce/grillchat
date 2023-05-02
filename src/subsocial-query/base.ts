@@ -128,5 +128,10 @@ export function createQuery<Params, ReturnValue>({
     setQueryData: (client: QueryClient, data: Params, value: ReturnValue) => {
       client.setQueryData(getQueryKey(data), value ?? null)
     },
+    fetchQuery: async (client: QueryClient, params: Params) => {
+      const data = await getData(params)
+      client.setQueryData(getQueryKey(params), data ?? null)
+      return data
+    },
   }
 }
