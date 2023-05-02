@@ -18,6 +18,7 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 import HomePageNavbar from './HomePageNavbar'
 import useSortByConfig from './hooks/useSortByConfig'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
@@ -182,17 +183,19 @@ function ChatPreviewContainer({
     createSlug(post.id, { title: content?.title })
   )
 
-  useEffect(() => {
-    if (!isFocused) return
-    const listener = (e: KeyboardEvent) => {
+  useHotkeys(
+    'enter',
+    () => {
       const method = isInIframe ? 'replace' : 'push'
-      if (e.key === 'Enter') {
-        router[method](linkTo)
-      }
+      router[method](linkTo)
+    },
+    {
+      enabled: isFocused,
+      preventDefault: true,
+      enableOnFormTags: ['INPUT'],
+      keydown: true,
     }
-    window.addEventListener('keydown', listener)
-    return () => window.removeEventListener('keydown', listener)
-  }, [linkTo, isFocused, router, isInIframe])
+  )
 
   const onChatClick = () => {
     sendEvent(`click on chat`, {
