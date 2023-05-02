@@ -3,15 +3,11 @@ import ChatPage from '@/modules/_[spaceId]/ChatPage'
 import { ChatPageProps } from '@/modules/_[spaceId]/ChatPage/ChatPage'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
-import {
-  getBlockedAddressesQuery,
-  getBlockedCidsQuery,
-  getBlockedIdsInRootPostIdQuery,
-} from '@/services/moderation/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
+import { prefetchBlockedEntities } from '@/utils/server'
 import { createSlug, getIdFromSlug } from '@/utils/slug'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
@@ -94,10 +90,8 @@ export const getStaticProps = getCommonStaticProps<
     let desc: string | null = null
     try {
       const [{ chatData, commentIds, posts, roomData }] = await Promise.all([
-        await getPostsData(roomId, chatId),
-        await getBlockedIdsInRootPostIdQuery.fetchQuery(queryClient, roomId),
-        await getBlockedAddressesQuery.fetchQuery(queryClient, null),
-        await getBlockedCidsQuery.fetchQuery(queryClient, null),
+        getPostsData(roomId, chatId),
+        prefetchBlockedEntities(queryClient, [roomId]),
       ] as const)
 
       title = roomData?.content?.title || null

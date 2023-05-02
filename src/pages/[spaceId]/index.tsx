@@ -11,6 +11,7 @@ import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getMainSpaceId, getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
+import { prefetchBlockedEntities } from '@/utils/server'
 import { PostData } from '@subsocial/api/types'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { getPostsFromCache } from '../api/posts'
@@ -31,18 +32,6 @@ export const getStaticPaths = async () => {
   }
 }
 
-const getLastPosts = async (commentIdsByPostId: string[][]) => {
-  const lastPostIds = commentIdsByPostId
-    .map((ids) => ids[ids.length - 1])
-    .filter((id) => !!id)
-
-  let lastPosts: PostData[] = []
-  if (lastPostIds.length > 0) {
-    lastPosts = await getPostsFromCache(lastPostIds)
-  }
-  return lastPosts
-}
-
 function getSpaceIdFromParam(paramSpaceId: string) {
   const spaceIdOrTopic = paramSpaceId ?? getMainSpaceId()
   let spaceId = spaceIdOrTopic
@@ -55,6 +44,33 @@ function getSpaceIdFromParam(paramSpaceId: string) {
     }
   }
   return spaceId
+}
+
+async function getLastPosts(commentIdsByPostId: string[][]) {
+  const lastPostIds = commentIdsByPostId
+    .map((ids) => ids[ids.length - 1])
+    .filter((id) => !!id)
+
+  let lastPosts: PostData[] = []
+  if (lastPostIds.length > 0) {
+    lastPosts = await getPostsFromCache(lastPostIds)
+  }
+  return lastPosts
+}
+async function getPostsData(postIds: string[]) {
+  const subsocialApi = await getSubsocialApi()
+
+  const promises = postIds.map((postId) => {
+    return subsocialApi.blockchain.getReplyIdsByPostId(postId)
+  })
+  const postsPromise = getPostsFromCache(postIds)
+
+  const commentIdsByPostId = await Promise.all(promises)
+  const posts = await postsPromise
+
+  const lastPosts = await getLastPosts(commentIdsByPostId)
+
+  return { posts, lastPosts, commentIdsByPostId }
 }
 
 export const getStaticProps = getCommonStaticProps<
@@ -75,15 +91,10 @@ export const getStaticProps = getCommonStaticProps<
       const postIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
       const allPostIds = [...postIds, ...getLinkedPostIdsForSpaceId(spaceId)]
 
-      const promises = allPostIds.map((postId) => {
-        return subsocialApi.blockchain.getReplyIdsByPostId(postId)
-      })
-      const postsPromise = getPostsFromCache(allPostIds)
-
-      const commentIdsByPostId = await Promise.all(promises)
-      const posts = await postsPromise
-
-      const lastPosts = await getLastPosts(commentIdsByPostId)
+      const [{ lastPosts, posts, commentIdsByPostId }] = await Promise.all([
+        getPostsData(allPostIds),
+        prefetchBlockedEntities(queryClient, allPostIds),
+      ] as const)
 
       getPostIdsBySpaceIdQuery.setQueryData(queryClient, spaceId, {
         spaceId,
