@@ -5,13 +5,15 @@ export function isMessageIdBlocked(messageId: string, blockedIds: string[]) {
 }
 
 export function isMessageBlocked(
-  message: PostData,
+  message: PostData | undefined | null,
   blockedData: {
     addresses: string[]
     contentIds: string[]
     postIds: string[]
   }
 ) {
+  if (!message) return false
+
   const { addresses, contentIds, postIds } = blockedData
   const { id, struct } = message
   const contentId = struct.contentId

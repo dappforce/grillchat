@@ -1,3 +1,4 @@
+import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import useLastMessage from './hooks/useLastMessage'
@@ -13,6 +14,7 @@ export default function ChatLastMessage({
   ...props
 }: ChatLastMessageProps) {
   const { data: lastMessage } = useLastMessage(postId)
+  const isMessageBlocked = useIsMessageBlocked(lastMessage, postId)
   const text = lastMessage?.content?.body || defaultDesc
 
   return (
@@ -23,7 +25,7 @@ export default function ChatLastMessage({
         props.className
       )}
     >
-      {text}
+      {isMessageBlocked ? '<blocked>' : text}
     </p>
   )
 }
