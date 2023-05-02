@@ -2,6 +2,10 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import ChatPage from '@/modules/_[spaceId]/ChatPage'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
+import {
+  getBlockedIdsInRootPostId,
+  getBlockedIdsInRootPostIdQuery,
+} from '@/services/moderation/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getSpaceIds } from '@/utils/env/client'
@@ -32,6 +36,21 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
+async function getPostsData(postId: string) {
+  const [post] = await getPostsFromCache([postId])
+
+  const subsocialApi = await getSubsocialApi()
+  const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(postId)
+
+  const preloadedPostCount = CHAT_PER_PAGE * 2
+  const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
+  const endSlice = commentIds.length
+  const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
+  const posts = await getPostsFromCache(prefetchedCommentIds)
+
+  return { rootPost: post, posts, commentIds }
+}
+
 export const getStaticProps = getCommonStaticProps<{
   dehydratedState: any
   postId: string
@@ -47,19 +66,12 @@ export const getStaticProps = getCommonStaticProps<{
 
     let title: string | null = null
     try {
-      const [post] = await getPostsFromCache([postId])
+      const [{ rootPost: post, posts, commentIds }, blockedIds] =
+        await Promise.all([
+          await getPostsData(postId),
+          await getBlockedIdsInRootPostId(postId),
+        ] as const)
       title = post?.content?.title || null
-
-      const subsocialApi = await getSubsocialApi()
-      const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(
-        postId
-      )
-
-      const preloadedPostCount = CHAT_PER_PAGE * 2
-      const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
-      const endSlice = commentIds.length
-      const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
-      const posts = await getPostsFromCache(prefetchedCommentIds)
 
       getPostQuery.setQueryData(queryClient, postId, post)
       queryClient.setQueryData(
@@ -69,6 +81,11 @@ export const getStaticProps = getCommonStaticProps<{
       posts.forEach((post) => {
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
+      getBlockedIdsInRootPostIdQuery.setQueryData(
+        queryClient,
+        postId,
+        blockedIds
+      )
     } catch (err) {
       console.error('Error fetching for topic page: ', err)
     }

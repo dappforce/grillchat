@@ -4,6 +4,7 @@ import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
+import { getBlockedIdsInRootPostIdQuery } from '@/services/moderation/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -73,7 +74,13 @@ function ChatListContent({
     CHAT_PER_PAGE,
     true
   )
-  const comments = getPostQuery.useQueries(currentData)
+
+  const { data: blockedIds } = getBlockedIdsInRootPostIdQuery.useQuery(postId)
+  const filteredIds = useMemo(() => {
+    return currentData.filter((id) => !blockedIds?.includes(id))
+  }, [blockedIds, currentData])
+
+  const comments = getPostQuery.useQueries(filteredIds)
   const loadedComments = useMemo(() => {
     return comments.filter((post) => post.isLoading === false)
   }, [comments])

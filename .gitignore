@@ -38,3 +38,6 @@ next-env.d.ts
 
 # idea
 .idea
+
+# graphql codegen
+src/services/moderation/gql
