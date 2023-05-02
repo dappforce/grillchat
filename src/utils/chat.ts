@@ -1,9 +1,5 @@
 import { PostData } from '@subsocial/api/types'
 
-export function isMessageIdBlocked(messageId: string, blockedIds: string[]) {
-  return blockedIds.includes(messageId)
-}
-
 export function isMessageBlocked(
   message: PostData | undefined | null,
   blockedData: {
