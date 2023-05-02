@@ -2,9 +2,9 @@
 
 This guide will help you to integrate Grill.chat to your app, with all the options available.
 
-## OpenComm Package (NPM Package)
+## Grill Widget Package (NPM Package)
 
-[OpenComm Package](https://www.npmjs.com/package/@subsocial/opencomm) is a tiny NPM package that you can use to integrate Grill.chat to your app.
+[Grill Widget Package](https://www.npmjs.com/package/@subsocial/grill-widget) is a tiny NPM package that you can use to integrate Grill.chat to your app.
 It wraps all the configs available in a simple function call.
 
 You can read further on how to use it [here](./integration/README.md)
