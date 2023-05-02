@@ -43,6 +43,20 @@ const getLastPosts = async (commentIdsByPostId: string[][]) => {
   return lastPosts
 }
 
+function getSpaceIdFromParam(paramSpaceId: string) {
+  const spaceIdOrTopic = paramSpaceId ?? getMainSpaceId()
+  let spaceId = spaceIdOrTopic
+  if (isNaN(parseInt(spaceIdOrTopic))) {
+    const spaceIdFromTopic = getSpaceIdFromTopic(spaceIdOrTopic)
+    if (spaceIdFromTopic) {
+      spaceId = spaceIdFromTopic
+    } else {
+      return undefined
+    }
+  }
+  return spaceId
+}
+
 export const getStaticProps = getCommonStaticProps<
   {
     dehydratedState: any
@@ -53,16 +67,8 @@ export const getStaticProps = getCommonStaticProps<
     const queryClient = new QueryClient()
 
     let { spaceId: paramSpaceId } = context.params ?? {}
-    const spaceIdOrTopic = (paramSpaceId as string) ?? getMainSpaceId()
-    let spaceId = spaceIdOrTopic
-    if (isNaN(parseInt(spaceIdOrTopic))) {
-      const spaceIdFromTopic = getSpaceIdFromTopic(spaceIdOrTopic)
-      if (spaceIdFromTopic) {
-        spaceId = spaceIdFromTopic
-      } else {
-        return undefined
-      }
-    }
+    const spaceId = getSpaceIdFromParam(paramSpaceId as string)
+    if (!spaceId) return undefined
 
     try {
       const subsocialApi = await getSubsocialApi()
