@@ -1,5 +1,5 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
-import ChatPage from '@/modules/_[spaceId]/_c/ChatPage'
+import ChatPage from '@/modules/_[spaceId]/ChatPage'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
