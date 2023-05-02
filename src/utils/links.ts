@@ -12,5 +12,5 @@ export function getHomePageLink(currentPath: CurrentPath) {
 
 export function getChatPageLink(currentPath: CurrentPath, chatSlug: string) {
   const spaceId = getSpaceIdFromUrl(currentPath)
-  return `/${spaceId}/c/${chatSlug}`
+  return `/${spaceId}/${chatSlug}`
 }
