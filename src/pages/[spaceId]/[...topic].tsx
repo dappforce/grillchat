@@ -105,7 +105,7 @@ export const getStaticProps = getCommonStaticProps<
       }
 
       getPostQuery.setQueryData(queryClient, roomId, roomData)
-      getPostQuery.setQueryData(queryClient, chatId, chatData)
+      if (chatData) getPostQuery.setQueryData(queryClient, chatId, chatData)
 
       queryClient.setQueryData(
         getCommentIdsQueryKey(roomId),
