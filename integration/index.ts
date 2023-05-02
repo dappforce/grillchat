@@ -1,4 +1,4 @@
-export type OpenCommConfig = {
+export type GrillConfig = {
   targetId?: string
   spaceId?: string
   order?: string[]
@@ -9,19 +9,17 @@ export type OpenCommConfig = {
 
 const DEFAULT_CONFIG = {
   spaceId: 'x',
-  targetId: 'opencomm',
-} satisfies OpenCommConfig
+  targetId: 'grill',
+} satisfies GrillConfig
 
-const opencomm = {
+const grill = {
   instance: null as HTMLIFrameElement | null,
 
-  init(configs: OpenCommConfig) {
+  init(configs: GrillConfig) {
     const config = { ...DEFAULT_CONFIG, ...configs }
     const targetElement = document.getElementById(config.targetId)
     if (!targetElement) {
-      console.error(
-        `OpenComm error: Element with id ${config.targetId} not found`
-      )
+      console.error(`Grill error: Element with id ${config.targetId} not found`)
       return
     }
 
@@ -51,7 +49,7 @@ const opencomm = {
   },
 }
 
-export type OpenComm = typeof opencomm
-;(window as any).opencomm = opencomm
+export type Grill = typeof grill
+;(window as any).GRILL = grill
 
-export default opencomm
+export default grill
