@@ -1,5 +1,6 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import ChatPage from '@/modules/_[spaceId]/ChatPage'
+import { ChatPageProps } from '@/modules/_[spaceId]/ChatPage/ChatPage'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
@@ -21,7 +22,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
     posts.forEach((post) =>
       paths.push({
-        params: { topic: createSlug(post.id, post.content) },
+        params: { topic: [createSlug(post.id, post.content)] },
       })
     )
   })
@@ -32,27 +33,56 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-export const getStaticProps = getCommonStaticProps<{
-  dehydratedState: any
-  postId: string
-  title: string | null
-}>(
-  (data) => ({ head: { disableZoom: true, title: data.title } }),
+function getRoomIdAndChatId(topicParams: string[]) {
+  if (topicParams.length <= 0 || topicParams.length > 2) {
+    return undefined
+  }
+
+  const [topic, chatId] = topicParams
+  const roomId = getIdFromSlug(topic)
+  if (!roomId) return undefined
+
+  const isInvalidChatId = chatId && isNaN(parseInt(chatId))
+  if (isInvalidChatId) return undefined
+
+  return [roomId, chatId] as const
+}
+
+export const getStaticProps = getCommonStaticProps<
+  {
+    dehydratedState: any
+    title: string | null
+    desc: string | null
+  } & ChatPageProps
+>(
+  (data) => ({
+    head: { disableZoom: true, title: data.title, description: data.desc },
+  }),
   async (context) => {
-    const topic = context.params?.topic as string
-    const postId = getIdFromSlug(topic)
-    if (!postId) return undefined
+    const topicParams = context.params?.topic as string[]
+    const topicAndChatId = getRoomIdAndChatId(topicParams)
+    if (!topicAndChatId) return undefined
+
+    const [roomId, chatId] = topicAndChatId
 
     const queryClient = new QueryClient()
 
     let title: string | null = null
+    let desc: string | null = null
     try {
-      const [post] = await getPostsFromCache([postId])
-      title = post?.content?.title || null
+      let roomIdAndChatId = [roomId]
+      if (chatId) roomIdAndChatId.push(chatId)
+
+      const [roomData, chatData] = await getPostsFromCache(roomIdAndChatId)
+      title = roomData?.content?.title || null
+      if (chatData) {
+        title = `Message from ${title}`
+        desc = chatData?.content?.body || null
+      }
 
       const subsocialApi = await getSubsocialApi()
       const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(
-        postId
+        roomId
       )
 
       const preloadedPostCount = CHAT_PER_PAGE * 2
@@ -61,9 +91,11 @@ export const getStaticProps = getCommonStaticProps<{
       const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
       const posts = await getPostsFromCache(prefetchedCommentIds)
 
-      getPostQuery.setQueryData(queryClient, postId, post)
+      getPostQuery.setQueryData(queryClient, roomId, roomData)
+      if (chatData) getPostQuery.setQueryData(queryClient, chatId, chatData)
+
       queryClient.setQueryData(
-        getCommentIdsQueryKey(postId),
+        getCommentIdsQueryKey(roomId),
         commentIds ?? null
       )
       posts.forEach((post) => {
@@ -76,8 +108,9 @@ export const getStaticProps = getCommonStaticProps<{
     return {
       props: {
         dehydratedState: dehydrate(queryClient),
-        postId,
+        postId: roomId,
         title,
+        desc,
       },
       revalidate: 2,
     }
