@@ -8,7 +8,8 @@ import { getBlockedIdsInRootPostIdQuery } from '@/services/moderation/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getUrlQuery } from '@/utils/window'
+import { getChatPageLink } from '@/utils/links'
+import { useRouter } from 'next/router'
 import {
   ComponentProps,
   Fragment,
@@ -16,16 +17,17 @@ import {
   useId,
   useMemo,
   useRef,
+  useState,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { getChatItemId, scrollToChatItem } from '../helpers'
+import { getChatItemId } from '../helpers'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
-import useGetChatElement from './hooks/useGetChatElement'
 import useIsAtBottom from './hooks/useIsAtBottom'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
+import useScrollToChatElement from './hooks/useScrollToElement'
 import { NewMessageNotice } from './NewMessageNotice'
 
 export type ChatListProps = ComponentProps<'div'> & {
@@ -57,6 +59,7 @@ function ChatListContent({
   newChatNoticeClassName,
   ...props
 }: ChatListProps) {
+  const router = useRouter()
   const lastReadId = useFocusedLastMessageId(postId)
 
   const scrollableContainerId = useId()
@@ -69,10 +72,15 @@ function ChatListContent({
   const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
     subscribe: true,
   })
+
+  const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)
   const { currentData, loadMore } = useInfiniteScrollData(
     commentIds,
     CHAT_PER_PAGE,
-    true
+    {
+      reverse: true,
+      isPausedLoadMore,
+    }
   )
 
   const { data: blockedIds } = getBlockedIdsInRootPostIdQuery.useQuery(postId)
@@ -90,22 +98,29 @@ function ChatListContent({
     innerContainer: innerRef,
   })
 
-  const getChatElement = useGetChatElement(
-    currentData,
-    comments,
-    loadedComments,
-    loadMore
+  const scrollToChatElement = useScrollToChatElement(
+    scrollContainerRef,
+    {
+      commentIds: currentData,
+      commentsQuery: comments,
+      loadedCommentsQuery: loadedComments,
+      loadMore,
+    },
+    {
+      pause: () => setIsPausedLoadMore(true),
+      unpause: () => setIsPausedLoadMore(false),
+    }
   )
 
   useEffect(() => {
     ;(async () => {
-      const commentIdFromUrl = getUrlQuery('messageId')
-      if (!commentIdFromUrl) return
+      const [, chatId] = router.query.topic as string[]
+      if (!chatId) return
 
-      const element = await getChatElement(commentIdFromUrl)
-      if (!element) return
-
-      scrollToChatItem(element, scrollContainerRef.current)
+      await scrollToChatElement(chatId)
+      router.replace(getChatPageLink(router), undefined, {
+        shallow: true,
+      })
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -169,9 +184,8 @@ function ChatListContent({
                   onSelectChatAsReply={onSelectChatAsReply}
                   comment={comment}
                   key={comment.id}
-                  scrollContainer={scrollContainerRef}
                   chatBubbleId={getChatItemId(comment.id)}
-                  getRepliedElement={getChatElement}
+                  scrollToChatElement={scrollToChatElement}
                 />
               )
               if (!showLastUnreadMessageNotice) return chatElement

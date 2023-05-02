@@ -3,23 +3,20 @@ import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
 import { truncateText } from '@/utils/text'
-import { ComponentProps, RefObject, useState } from 'react'
-import { scrollToChatItem } from '../helpers'
+import { ComponentProps, useState } from 'react'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   repliedMessageId: string
   originalMessage: string
-  scrollContainer?: RefObject<HTMLElement | null>
   minimumReplyChar?: number
-  getRepliedElement?: (commentId: string) => Promise<HTMLElement | null>
+  scrollToChatElement?: (chatId: string) => Promise<void>
 }
 
 const MINIMUM_REPLY_CHAR = 35
 export default function RepliedMessagePreview({
   repliedMessageId,
   originalMessage,
-  scrollContainer,
-  getRepliedElement,
+  scrollToChatElement,
   minimumReplyChar = MINIMUM_REPLY_CHAR,
   ...props
 }: RepliedMessagePreviewProps) {
@@ -38,11 +35,10 @@ export default function RepliedMessagePreview({
   }
 
   const onRepliedMessageClick = async () => {
-    if (!getRepliedElement) return
+    if (!scrollToChatElement) return
     setIsLoading(true)
-    const element = await getRepliedElement(repliedMessageId)
+    await scrollToChatElement(repliedMessageId)
     setIsLoading(false)
-    scrollToChatItem(element, scrollContainer?.current ?? null)
   }
 
   const name = generateRandomName(data?.struct.ownerId)
@@ -52,7 +48,7 @@ export default function RepliedMessagePreview({
       {...props}
       className={cx(
         'flex flex-col overflow-hidden border-l-2 pl-2 text-sm',
-        getRepliedElement && 'cursor-pointer',
+        scrollToChatElement && 'cursor-pointer',
         isLoading && 'animate-pulse',
         props.className
       )}

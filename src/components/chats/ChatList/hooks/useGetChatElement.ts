@@ -7,12 +7,17 @@ import { useEffect, useMemo, useRef } from 'react'
 import { getChatItemId } from '../../helpers'
 
 // TODO: refactor this hook to have better readability
-export default function useGetChatElement(
-  commentIds: string[],
-  commentsQuery: UseQueryResult<PostData | null, unknown>[],
-  loadedCommentsQuery: UseQueryResult<PostData | null, unknown>[],
+export default function useGetChatElement({
+  commentIds,
+  commentsQuery,
+  loadMore,
+  loadedCommentsQuery,
+}: {
+  commentIds: string[]
+  commentsQuery: UseQueryResult<PostData | null, unknown>[]
+  loadedCommentsQuery: UseQueryResult<PostData | null, unknown>[]
   loadMore: () => void
-) {
+}) {
   const waitAllCommentsLoaded = useWaitCommentsLoading(commentsQuery)
 
   const waitAllCommentsLoadedRef = useWrapInRef(waitAllCommentsLoaded)

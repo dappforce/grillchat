@@ -29,8 +29,7 @@ export default function EmojiChatItem({
   senderColor,
   ownerId,
   inReplyTo,
-  getRepliedElement,
-  scrollContainer,
+  scrollToChatElement,
   ...props
 }: EmojiChatItemProps) {
   const emojiCount = getEmojiAmount(body)
@@ -86,8 +85,7 @@ export default function EmojiChatItem({
               <RepliedMessagePreview
                 originalMessage={body}
                 repliedMessageId={inReplyTo.id}
-                getRepliedElement={getRepliedElement}
-                scrollContainer={scrollContainer}
+                scrollToChatElement={scrollToChatElement}
               />
             </div>
           )}
