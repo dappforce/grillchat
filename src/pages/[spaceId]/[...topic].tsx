@@ -33,6 +33,21 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
+function getRoomIdAndChatId(topicParams: string[]) {
+  if (topicParams.length <= 0 || topicParams.length > 2) {
+    return undefined
+  }
+
+  const [topic, chatId] = topicParams
+  const roomId = getIdFromSlug(topic)
+  if (!roomId) return undefined
+
+  const isInvalidChatId = chatId && isNaN(parseInt(chatId))
+  if (isInvalidChatId) return undefined
+
+  return [roomId, chatId] as const
+}
+
 export const getStaticProps = getCommonStaticProps<
   {
     dehydratedState: any
@@ -45,16 +60,10 @@ export const getStaticProps = getCommonStaticProps<
   }),
   async (context) => {
     const topicParams = context.params?.topic as string[]
-    if (topicParams.length <= 0 || topicParams.length > 2) {
-      return undefined
-    }
+    const topicAndChatId = getRoomIdAndChatId(topicParams)
+    if (!topicAndChatId) return undefined
 
-    const [topic, chatId] = topicParams
-    const roomId = getIdFromSlug(topic)
-    if (!roomId) return undefined
-
-    const invalidChatId = chatId && isNaN(parseInt(chatId))
-    if (invalidChatId) return undefined
+    const [roomId, chatId] = topicAndChatId
 
     const queryClient = new QueryClient()
 
