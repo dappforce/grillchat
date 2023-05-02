@@ -11,6 +11,7 @@ import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getChatPageLink } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
+import { removeDoubleSpaces } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { matchSorter } from 'match-sorter'
 import dynamic from 'next/dynamic'
@@ -47,8 +48,7 @@ export default function HomePage({
     const postsData = postsQuery.map(({ data: post }) => post)
     let searchResults = postsData as PostData[]
 
-    const multipleSpacesRegex = /\s\s+/g
-    const processedSearch = search.replace(multipleSpacesRegex, ' ').trim()
+    const processedSearch = removeDoubleSpaces(search)
 
     if (processedSearch) {
       searchResults = matchSorter(postsData, processedSearch, {
