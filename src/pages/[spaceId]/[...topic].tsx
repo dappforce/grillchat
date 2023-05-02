@@ -4,7 +4,8 @@ import { ChatPageProps } from '@/modules/_[spaceId]/ChatPage/ChatPage'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import {
-  getBlockedIdsInRootPostId,
+  getBlockedAddressesQuery,
+  getBlockedCidsQuery,
   getBlockedIdsInRootPostIdQuery,
 } from '@/services/moderation/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
@@ -92,11 +93,12 @@ export const getStaticProps = getCommonStaticProps<
     let title: string | null = null
     let desc: string | null = null
     try {
-      const [{ chatData, commentIds, posts, roomData }, blockedIds] =
-        await Promise.all([
-          await getPostsData(roomId, chatId),
-          await getBlockedIdsInRootPostId(roomId),
-        ] as const)
+      const [{ chatData, commentIds, posts, roomData }] = await Promise.all([
+        await getPostsData(roomId, chatId),
+        await getBlockedIdsInRootPostIdQuery.fetchQuery(queryClient, roomId),
+        await getBlockedAddressesQuery.fetchQuery(queryClient, null),
+        await getBlockedCidsQuery.fetchQuery(queryClient, null),
+      ] as const)
 
       title = roomData?.content?.title || null
       if (chatData) {
@@ -114,12 +116,6 @@ export const getStaticProps = getCommonStaticProps<
       posts.forEach((post) => {
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
-
-      getBlockedIdsInRootPostIdQuery.setQueryData(
-        queryClient,
-        roomId,
-        blockedIds
-      )
     } catch (err) {
       console.error('Error fetching for topic page: ', err)
     }
