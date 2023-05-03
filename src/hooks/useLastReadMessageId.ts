@@ -1,14 +1,14 @@
 import { LocalStorage } from '@/utils/storage'
 import { useCallback } from 'react'
 
-const getStorageKey = (postId: string) => `last-read-${postId}`
+const getStorageKey = (chatId: string) => `last-read-${chatId}`
 const storage = new LocalStorage(getStorageKey)
 
-export default function useLastReadMessageId(postId: string) {
-  const getLastReadMessageId = useCallback(() => storage.get(postId), [postId])
+export default function useLastReadMessageId(chatId: string) {
+  const getLastReadMessageId = useCallback(() => storage.get(chatId), [chatId])
   const setLastReadMessageId = useCallback(
-    (id: string) => storage.set(id, postId),
-    [postId]
+    (id: string) => storage.set(id, chatId),
+    [chatId]
   )
   return {
     getLastReadMessageId,

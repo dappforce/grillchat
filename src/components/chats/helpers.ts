@@ -1,7 +1,7 @@
 import { waitStopScrolling } from '@/utils/window'
 
-export function getMessageElementId(postId: string) {
-  return `message-${postId}`
+export function getMessageElementId(messageId: string) {
+  return `message-${messageId}`
 }
 
 export async function scrollToMessageElement(

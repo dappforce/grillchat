@@ -6,10 +6,10 @@ export function IpfsWrapper(cid?: string) {
   return cid ? { IPFS: cid } : { None: null }
 }
 
-export function ReplyWrapper(replyToPostId: string | undefined | null) {
-  return replyToPostId
+export function ReplyWrapper(replyToMessageId: string | undefined | null) {
+  return replyToMessageId
     ? {
-        id: replyToPostId,
+        id: replyToMessageId,
         kind: 'Post',
       }
     : undefined

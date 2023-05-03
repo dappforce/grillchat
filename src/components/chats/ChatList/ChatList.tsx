@@ -85,7 +85,7 @@ function ChatListContent({
 
   const messageQueries = getPostQuery.useQueries(filteredIds)
   const loadedMessageQueries = useMemo(() => {
-    return messageQueries.filter((post) => post.isLoading === false)
+    return messageQueries.filter((message) => message.isLoading === false)
   }, [messageQueries])
 
   useLoadMoreIfNoScroll(loadMore, loadedMessageQueries?.length ?? 0, {

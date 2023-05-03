@@ -21,23 +21,3 @@ export function isMessageBlocked(
     postIds.includes(id)
   )
 }
-
-export function getLastMessageId(
-  commentIds: string[] | undefined,
-  blockedIds: string[] | undefined
-) {
-  if (!commentIds) return undefined
-  let idx = commentIds.length - 1
-  while (true) {
-    if (idx < 0) {
-      return undefined
-    }
-
-    const id = commentIds[idx]
-    if (!blockedIds?.includes(id)) {
-      return id
-    }
-
-    idx--
-  }
-}
