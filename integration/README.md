@@ -1,6 +1,6 @@
 # Grill Widget
 
-Grill Widget is a tiny package that you can use to integrate Grill.chat to your app. It wraps all the configs available in a simple function call.
+Grill Widget is a tiny package that you can use to integrate Grill.chat to your app. It wraps all the config available in a simple function call.
 
 ## Installation
 
@@ -18,19 +18,24 @@ or using cdn
 ## Usage
 
 1. Add div with id of `grill` to your app
-2. Call `grill.init()` with configs
+2. Call `grill.init()` with config (config is optional)
+
+   a) Use as a JS/TS module
 
    ```js
    import grill from '@subsocial/grill-widget'
-   grill.init(configs) // optional configs
+   grill.init(config)
+   ```
 
-   // or using CDN
-   window.GRILL.init(configs) // optional configs
+   b) Use as a global variable (CDN)
+
+   ```js
+   window.GRILL.init(config)
    ```
 
 3. That's it 🥳!
 
-## Configs
+## Config Options
 
 | Name              | Type                                               | Description                                                                                                                                           |
 | ----------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |

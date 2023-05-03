@@ -15,11 +15,13 @@ const DEFAULT_CONFIG = {
 const grill = {
   instance: null as HTMLIFrameElement | null,
 
-  init(configs: GrillConfig) {
-    const config = { ...DEFAULT_CONFIG, ...configs }
-    const targetElement = document.getElementById(config.targetId)
+  init(config: GrillConfig) {
+    const mergedConfig = { ...DEFAULT_CONFIG, ...config }
+    const targetElement = document.getElementById(mergedConfig.targetId)
     if (!targetElement) {
-      console.error(`Grill error: Element with id ${config.targetId} not found`)
+      console.error(
+        `Grill error: Element with id ${mergedConfig.targetId} not found`
+      )
       return
     }
 
@@ -28,18 +30,18 @@ const grill = {
     iframe.style.width = '100%'
     iframe.style.height = '100%'
 
-    let baseUrl = `https://grill.chat/${config.spaceId}`
-    if (config.chatRoomId) {
-      baseUrl += `/${config.chatRoomId}`
+    let baseUrl = `https://grill.chat/${mergedConfig.spaceId}`
+    if (mergedConfig.chatRoomId) {
+      baseUrl += `/${mergedConfig.chatRoomId}`
     }
 
     const query = new URLSearchParams()
-    if (config.order) query.set('order', config.order.join(','))
-    if (config.theme) query.set('theme', config.theme)
+    if (mergedConfig.order) query.set('order', mergedConfig.order.join(','))
+    if (mergedConfig.theme) query.set('theme', mergedConfig.theme)
     iframe.src = `${baseUrl}?${query.toString()}`
 
-    if (config.customizeIframe) {
-      config.customizeIframe?.(iframe)
+    if (mergedConfig.customizeIframe) {
+      mergedConfig.customizeIframe?.(iframe)
     }
 
     this.instance?.remove()
