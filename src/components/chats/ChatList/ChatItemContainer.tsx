@@ -6,21 +6,21 @@ import ChatItem, { ChatItemProps } from '../ChatItem'
 
 export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
   containerProps?: ComponentProps<'div'>
-  rootPostId: string
+  chatId: string
 }
 
 export default function ChatItemContainer({
   containerProps,
-  rootPostId,
+  chatId,
   ...props
 }: ChatItemContainerProps) {
-  const { message: comment } = props
+  const { message } = props
 
-  const isMessageBlocked = useIsMessageBlocked(comment, rootPostId)
+  const isMessageBlocked = useIsMessageBlocked(message, chatId)
   const address = useMyAccount((state) => state.address)
-  if (!comment?.content?.body || isMessageBlocked) return null
+  if (!message?.content?.body || isMessageBlocked) return null
 
-  const ownerId = comment.struct.ownerId
+  const ownerId = message.struct.ownerId
   const senderAddress = ownerId ?? ''
 
   const isMyMessage = address === senderAddress

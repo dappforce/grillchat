@@ -15,20 +15,23 @@ export default function useSortedChatIdsByLatestMessage(
       return ids?.[ids?.length - 1] ?? null
     })
   }, [messageIdsQueries])
+
   const lastMessageQueries = getPostQuery.useQueries(latestMessageIds ?? [])
   return useMemo(() => {
     const messages = lastMessageQueries?.map((q) => q.data)
     messages.sort(
       (a, b) => (b?.struct.createdAtTime ?? 0) - (a?.struct.createdAtTime ?? 0)
     )
+
     const hasAddedIds = new Set()
     const sortedIds: string[] = []
-    messages.forEach((post) => {
-      const id = (post as unknown as CommentData)?.struct.rootPostId
+    messages.forEach((message) => {
+      const id = (message as unknown as CommentData)?.struct.rootPostId
       if (!id) return
       hasAddedIds.add(id)
       sortedIds.push(id)
     })
+
     const restIds = chatIds.filter((id) => !hasAddedIds.has(id))
     return [...sortedIds, ...restIds]
   }, [lastMessageQueries, chatIds])

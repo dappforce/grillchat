@@ -4,11 +4,11 @@ import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
 
 export type MetadataModalProps = ModalFunctionalityProps & {
-  comment: PostData
+  message: PostData
 }
 
 export default function MetadataModal({
-  comment,
+  message,
   ...props
 }: MetadataModalProps) {
   return (
@@ -19,7 +19,7 @@ export default function MetadataModal({
           <CopyTextInline
             className='max-w-full whitespace-pre-wrap break-words'
             textClassName={cx('max-w-[calc(100%_-_2rem)]')}
-            text={comment.id}
+            text={message.id}
           />
         </div>
         <div className='flex flex-col gap-1'>
@@ -27,7 +27,7 @@ export default function MetadataModal({
           <CopyTextInline
             className='max-w-full whitespace-pre-wrap break-words'
             textClassName={cx('max-w-[calc(100%_-_2rem)]')}
-            text={comment.struct.ownerId}
+            text={message.struct.ownerId}
           />
         </div>
         <div className='flex flex-col gap-1'>
@@ -35,7 +35,7 @@ export default function MetadataModal({
           <CopyTextInline
             className='max-w-full whitespace-pre-wrap break-words'
             textClassName={cx('max-w-[calc(100%_-_2rem)]')}
-            text={comment.struct.contentId ?? ''}
+            text={message.struct.contentId ?? ''}
           />
         </div>
       </div>

@@ -102,7 +102,7 @@ export default function ChatForm({
       resetForm()
       sendMessage({
         message: processedMessage,
-        rootPostId: chatId,
+        chatId: chatId,
         replyTo,
       })
     } else {
@@ -116,7 +116,7 @@ export default function ChatForm({
       requestTokenAndSendMessage({
         captchaToken,
         message: processMessage(messageBody),
-        rootPostId: chatId,
+        chatId: chatId,
         replyTo,
       })
       setIsRequestingEnergy(true)

@@ -65,8 +65,8 @@ export default function ChatItem({
   ...props
 }: ChatItemProps) {
   const router = useRouter()
-  const commentId = message.id
-  const isSent = !isOptimisticId(commentId)
+  const messageId = message.id
+  const isSent = !isOptimisticId(messageId)
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
   const { body, inReplyTo } = message.content || {}
@@ -79,9 +79,9 @@ export default function ChatItem({
     variant: '',
   })
 
-  const setMessageAsReply = (commentId: string) => {
-    if (isOptimisticId(commentId)) return
-    onSelectMessageAsReply?.(commentId)
+  const setMessageAsReply = (messageId: string) => {
+    if (isOptimisticId(messageId)) return
+    onSelectMessageAsReply?.(messageId)
   }
   const setMessageAsReplyRef = useWrapInRef(setMessageAsReply)
   const menus = useMemo<CommonCustomContextMenuProps['menus']>(() => {
@@ -91,7 +91,7 @@ export default function ChatItem({
         icon: (
           <BsFillReplyFill className='flex-shrink-0 text-xl text-text-muted' />
         ),
-        onClick: () => setMessageAsReplyRef.current?.(commentId),
+        onClick: () => setMessageAsReplyRef.current?.(messageId),
       },
       {
         text: 'Copy Text',
@@ -113,7 +113,7 @@ export default function ChatItem({
             getCurrentUrlOrigin(),
             getChatPageLink(router)
           )
-          copyToClipboard(urlJoin(chatPageLink, commentId))
+          copyToClipboard(urlJoin(chatPageLink, messageId))
           toast.custom((t) => (
             <Toast t={t} title='Message link copied to clipboard!' />
           ))
@@ -127,7 +127,7 @@ export default function ChatItem({
         onClick: () => setOpenMetadata(true),
       },
     ]
-  }, [body, commentId, setMessageAsReplyRef, router])
+  }, [body, messageId, setMessageAsReplyRef, router])
 
   if (!body) return null
 
@@ -164,7 +164,7 @@ export default function ChatItem({
             <div
               className={cx('flex flex-col overflow-hidden', props.className)}
               onContextMenu={onContextMenu}
-              onDoubleClick={() => setMessageAsReply(commentId)}
+              onDoubleClick={() => setMessageAsReply(messageId)}
               {...referenceProps}
               id={messageBubbleId}
             >
@@ -193,7 +193,7 @@ export default function ChatItem({
       <MetadataModal
         isOpen={openMetadata}
         closeModal={() => setOpenMetadata(false)}
-        comment={message}
+        message={message}
       />
     </div>
   )

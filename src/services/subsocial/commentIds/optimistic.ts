@@ -28,12 +28,9 @@ export function addOptimisticData({
       inReplyTo: ReplyWrapper(params.replyTo),
     },
   } as PostData)
-  client.setQueryData<string[]>(
-    getCommentIdsQueryKey(params.rootPostId),
-    (ids) => {
-      return [...(ids ?? []), tempId]
-    }
-  )
+  client.setQueryData<string[]>(getCommentIdsQueryKey(params.chatId), (ids) => {
+    return [...(ids ?? []), tempId]
+  })
 }
 export function deleteOptimisticData({
   client,
@@ -41,10 +38,7 @@ export function deleteOptimisticData({
   tempId,
 }: OptimisticGeneratorParams) {
   client.removeQueries(getPostQuery.getQueryKey(tempId))
-  client.setQueryData<string[]>(
-    getCommentIdsQueryKey(params.rootPostId),
-    (ids) => {
-      return ids?.filter((id) => id !== tempId)
-    }
-  )
+  client.setQueryData<string[]>(getCommentIdsQueryKey(params.chatId), (ids) => {
+    return ids?.filter((id) => id !== tempId)
+  })
 }

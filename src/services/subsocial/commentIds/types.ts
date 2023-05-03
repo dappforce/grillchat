@@ -1,6 +1,6 @@
 export type SendMessageParams = {
   message: string
-  rootPostId: string
+  chatId: string
   replyTo?: string
 }
 export type OptimisticMessageIdData = {

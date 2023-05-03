@@ -100,10 +100,10 @@ export const getStaticProps = getCommonStaticProps<
         spaceId,
         chatIds,
       })
-      messageIdsByChatIds.forEach((commentIds, idx) => {
+      messageIdsByChatIds.forEach((messageIds, idx) => {
         queryClient.setQueryData(
           getCommentIdsQueryKey(allChatIds[idx]),
-          commentIds ?? null
+          messageIds ?? null
         )
       })
       ;[...lastMessages, ...chats].forEach((post) => {
