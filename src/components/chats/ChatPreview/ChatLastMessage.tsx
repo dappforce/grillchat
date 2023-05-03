@@ -4,17 +4,17 @@ import { ComponentProps } from 'react'
 import useLastMessage from './hooks/useLastMessage'
 
 export type ChatLastMessageProps = ComponentProps<'div'> & {
-  postId: string
+  chatId: string
   defaultDesc: string
 }
 
 export default function ChatLastMessage({
-  postId,
+  chatId,
   defaultDesc,
   ...props
 }: ChatLastMessageProps) {
-  const { data: lastMessage } = useLastMessage(postId)
-  const isMessageBlocked = useIsMessageBlocked(lastMessage, postId)
+  const { data: lastMessage } = useLastMessage(chatId)
+  const isMessageBlocked = useIsMessageBlocked(lastMessage, chatId)
   const text = lastMessage?.content?.body || defaultDesc
 
   return (

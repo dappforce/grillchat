@@ -3,14 +3,14 @@ import { ComponentProps } from 'react'
 import useLastMessage from './hooks/useLastMessage'
 
 export type ChatLastMessageTimeProps = ComponentProps<'div'> & {
-  postId: string
+  chatId: string
 }
 
 export default function ChatLastMessageTime({
-  postId,
+  chatId,
   ...props
 }: ChatLastMessageTimeProps) {
-  const { data: lastMessage } = useLastMessage(postId)
+  const { data: lastMessage } = useLastMessage(chatId)
   const time = lastMessage?.struct.createdAtTime
   if (!time) return null
 

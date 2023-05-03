@@ -18,12 +18,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   spaceIds.forEach(async (spaceId) => {
     const subsocialApi = await getSubsocialApi()
-    const postIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
-    const posts = await getPostsFromCache(postIds)
+    const chatIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
+    const chats = await getPostsFromCache(chatIds)
 
-    posts.forEach((post) =>
+    chats.forEach((chat) =>
       paths.push({
-        params: { topic: [createSlug(post.id, post.content)] },
+        params: { topic: [createSlug(chat.id, chat.content)] },
       })
     )
   })

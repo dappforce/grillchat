@@ -21,7 +21,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import HomePageNavbar from './HomePageNavbar'
 import useSortByConfig from './hooks/useSortByConfig'
-import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
+import useSortedChatIdsByLatestMessage from './hooks/useSortByLatestMessage'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
@@ -39,7 +39,7 @@ export default function HomePage({
     return [...(data?.chatIds ?? []), ...getLinkedChatIdsForSpaceId(spaceId)]
   }, [data, spaceId])
 
-  const sortedIds = useSortedPostIdsByLatestMessage(allPostIds)
+  const sortedIds = useSortedChatIdsByLatestMessage(allPostIds)
   const order = useSortByConfig(sortedIds)
 
   const [search, setSearch] = useState('')
@@ -215,7 +215,7 @@ function ChatPreviewContainer({
       image={content?.image ? getIpfsContentUrl(content.image) : ''}
       title={content?.title ?? ''}
       description={content?.body ?? ''}
-      postId={post.id}
+      chatId={post.id}
       withUnreadCount
       withFocusedStyle={isFocused}
     />

@@ -39,7 +39,7 @@ export default function ChatPage({ chatId }: ChatPageProps) {
             <NavbarChatInfo
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
               messageCount={messageIds?.length ?? 0}
-              post={chat}
+              chat={chat}
             />
             <div className='flex items-center gap-4'>
               {colorModeToggler}
@@ -51,7 +51,7 @@ export default function ChatPage({ chatId }: ChatPageProps) {
     >
       <ChatPageNavbarExtension />
       <ChatRoom
-        postId={chatId}
+        chatId={chatId}
         asContainer
         className='flex-1 overflow-hidden'
       />
@@ -62,16 +62,16 @@ export default function ChatPage({ chatId }: ChatPageProps) {
 function NavbarChatInfo({
   image,
   messageCount,
-  post,
+  chat,
 }: {
   image: ImageProps['src']
   messageCount: number
-  post?: PostData | null
+  chat?: PostData | null
 }) {
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
-  const topic = post?.content?.title
+  const topic = chat?.content?.title
 
   return (
     <div className='flex items-center'>

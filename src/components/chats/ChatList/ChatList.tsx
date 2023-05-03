@@ -20,24 +20,24 @@ import {
   useState,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { getChatItemId } from '../helpers'
+import { getMessageElementId } from '../helpers'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
 import useIsAtBottom from './hooks/useIsAtBottom'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
-import useScrollToChatElement from './hooks/useScrollToElement'
+import useScrollToMessage from './hooks/useScrollToMessage'
 import { NewMessageNotice } from './NewMessageNotice'
 
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
-  postId: string
+  chatId: string
   scrollContainerRef?: React.RefObject<HTMLDivElement>
   replyTo?: string
-  onSelectChatAsReply?: (chatId: string) => void
-  newChatNoticeClassName?: string
+  onSelectMessageAsReply?: (chatId: string) => void
+  newMessageNoticeClassName?: string
 }
 
 export default function ChatList(props: ChatListProps) {
@@ -52,15 +52,15 @@ const DEFAULT_SCROLL_THRESHOLD = 500
 function ChatListContent({
   asContainer,
   scrollableContainerClassName,
-  postId,
+  chatId,
   scrollContainerRef: _scrollContainerRef,
   replyTo,
-  onSelectChatAsReply,
-  newChatNoticeClassName,
+  onSelectMessageAsReply,
+  newMessageNoticeClassName,
   ...props
 }: ChatListProps) {
   const router = useRouter()
-  const lastReadId = useFocusedLastMessageId(postId)
+  const lastReadId = useFocusedLastMessageId(chatId)
 
   const scrollableContainerId = useId()
   const innerScrollContainerRef = useRef<HTMLDivElement>(null)
@@ -69,41 +69,35 @@ function ChatListContent({
   const innerRef = useRef<HTMLDivElement>(null)
   const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
 
-  const { data: commentIds = [] } = useCommentIdsByPostId(postId, {
+  const { data: messageIds = [] } = useCommentIdsByPostId(chatId, {
     subscribe: true,
   })
 
   const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)
-  const { currentData, loadMore } = useInfiniteScrollData(
-    commentIds,
-    CHAT_PER_PAGE,
-    {
-      reverse: true,
-      isPausedLoadMore,
-    }
-  )
+  const { currentData: currentPageMessageIds, loadMore } =
+    useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
 
-  const { data: blockedIds } = getBlockedIdsInRootPostIdQuery.useQuery(postId)
+  const { data: blockedIds } = getBlockedIdsInRootPostIdQuery.useQuery(chatId)
   const filteredIds = useMemo(() => {
-    return currentData.filter((id) => !blockedIds?.includes(id))
-  }, [blockedIds, currentData])
+    return currentPageMessageIds.filter((id) => !blockedIds?.includes(id))
+  }, [blockedIds, currentPageMessageIds])
 
-  const comments = getPostQuery.useQueries(filteredIds)
-  const loadedComments = useMemo(() => {
-    return comments.filter((post) => post.isLoading === false)
-  }, [comments])
+  const messageQueries = getPostQuery.useQueries(filteredIds)
+  const loadedMessageQueries = useMemo(() => {
+    return messageQueries.filter((post) => post.isLoading === false)
+  }, [messageQueries])
 
-  useLoadMoreIfNoScroll(loadMore, loadedComments?.length ?? 0, {
+  useLoadMoreIfNoScroll(loadMore, loadedMessageQueries?.length ?? 0, {
     scrollContainer: scrollContainerRef,
     innerContainer: innerRef,
   })
 
-  const scrollToChatElement = useScrollToChatElement(
+  const scrollToChatElement = useScrollToMessage(
     scrollContainerRef,
     {
-      commentIds: currentData,
-      commentsQuery: comments,
-      loadedCommentsQuery: loadedComments,
+      messageIds: currentPageMessageIds,
+      messageQueries,
+      loadedMessageQueries,
       loadMore,
     },
     {
@@ -132,11 +126,11 @@ function ChatListContent({
       top: scrollContainerRef.current?.scrollHeight,
       behavior: 'auto',
     })
-  }, [loadedComments.length, isAtBottomRef, scrollContainerRef, replyTo])
+  }, [loadedMessageQueries.length, isAtBottomRef, scrollContainerRef, replyTo])
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  const isAllCommentsLoaded = loadedComments.length === commentIds.length
+  const isAllMessagesLoaded = loadedMessageQueries.length === messageIds.length
 
   const scrollThreshold =
     (scrollContainerRef.current?.scrollHeight ?? 0) *
@@ -160,39 +154,39 @@ function ChatListContent({
       >
         <div ref={innerRef}>
           <InfiniteScroll
-            dataLength={loadedComments.length}
+            dataLength={loadedMessageQueries.length}
             next={loadMore}
             className={cx(
               'relative flex flex-col-reverse gap-2 !overflow-hidden pb-2'
             )}
-            hasMore={!isAllCommentsLoaded}
+            hasMore={!isAllMessagesLoaded}
             inverse
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
             endMessage={<ChatTopNotice className='pb-2 pt-4' />}
             scrollThreshold={`${scrollThreshold}px`}
           >
-            {comments.map(({ data: comment }, index) => {
-              const isLastReadMessage = lastReadId === comment?.id
+            {messageQueries.map(({ data: message }, index) => {
+              const isLastReadMessage = lastReadId === message?.id
               // bottom message is the first element, because the flex direction is reversed
               const isBottomMessage = index === 0
               const showLastUnreadMessageNotice =
                 isLastReadMessage && !isBottomMessage
 
-              const chatElement = comment && (
+              const chatElement = message && (
                 <ChatItemContainer
-                  rootPostId={postId}
-                  onSelectChatAsReply={onSelectChatAsReply}
-                  comment={comment}
-                  key={comment.id}
-                  chatBubbleId={getChatItemId(comment.id)}
-                  scrollToChatElement={scrollToChatElement}
+                  rootPostId={chatId}
+                  onSelectMessageAsReply={onSelectMessageAsReply}
+                  message={message}
+                  key={message.id}
+                  messageBubbleId={getMessageElementId(message.id)}
+                  scrollToMessage={scrollToChatElement}
                 />
               )
               if (!showLastUnreadMessageNotice) return chatElement
 
               return (
-                <Fragment key={comment?.id || index}>
+                <Fragment key={message?.id || index}>
                   <div className='my-2 w-full rounded-md bg-background-light py-0.5 text-center text-sm'>
                     Unread messages
                   </div>
@@ -204,8 +198,8 @@ function ChatListContent({
         </div>
       </ScrollableContainer>
       <NewMessageNotice
-        className={cx('absolute bottom-0 right-6', newChatNoticeClassName)}
-        commentIds={commentIds}
+        className={cx('absolute bottom-0 right-6', newMessageNoticeClassName)}
+        messageIds={messageIds}
         scrollContainerRef={scrollContainerRef}
       />
     </Component>

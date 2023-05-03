@@ -1,10 +1,10 @@
 import { waitStopScrolling } from '@/utils/window'
 
-export function getChatItemId(postId: string) {
-  return `chat-item-${postId}`
+export function getMessageElementId(postId: string) {
+  return `message-${postId}`
 }
 
-export async function scrollToChatItem(
+export async function scrollToMessageElement(
   element: HTMLElement | null,
   scrollContainer: HTMLElement | null
 ) {

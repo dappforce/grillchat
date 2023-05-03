@@ -8,11 +8,11 @@ export default function useFocusedLastMessageId(postId: string) {
   const [lastReadId, setLastReadId] = useState(() => getLastReadMessageId())
   const shouldUpdateLastReadId = useRef(false)
 
-  const { data: commentIds } = useCommentIdsByPostId(postId)
-  const lastCommentId = commentIds?.[commentIds.length - 1]
+  const { data: messageIds } = useCommentIdsByPostId(postId)
+  const lastMessageId = messageIds?.[messageIds.length - 1]
 
-  const hasSentMessage = isOptimisticId(lastCommentId ?? '')
-  const hasReadAll = lastReadId === lastCommentId
+  const hasSentMessage = isOptimisticId(lastMessageId ?? '')
+  const hasReadAll = lastReadId === lastMessageId
   if (hasSentMessage || hasReadAll) shouldUpdateLastReadId.current = true
 
   useEffect(() => {
@@ -28,8 +28,8 @@ export default function useFocusedLastMessageId(postId: string) {
 
   useEffect(() => {
     if (!shouldUpdateLastReadId.current) return
-    if (lastCommentId) setLastReadId(lastCommentId)
-  }, [lastCommentId, shouldUpdateLastReadId])
+    if (lastMessageId) setLastReadId(lastMessageId)
+  }, [lastMessageId, shouldUpdateLastReadId])
 
-  return shouldUpdateLastReadId.current ? lastCommentId : lastReadId
+  return shouldUpdateLastReadId.current ? lastMessageId : lastReadId
 }

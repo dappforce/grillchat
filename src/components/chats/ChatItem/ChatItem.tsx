@@ -35,11 +35,11 @@ import EmojiChatItem, {
 } from './variants/EmojiChatItem'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
-  comment: PostData
-  onSelectChatAsReply?: (chatId: string) => void
+  message: PostData
+  onSelectMessageAsReply?: (chatId: string) => void
   isMyMessage: boolean
-  chatBubbleId?: string
-  scrollToChatElement?: (chatId: string) => Promise<void>
+  messageBubbleId?: string
+  scrollToMessage?: (chatId: string) => Promise<void>
 }
 
 type CheckMarkModalReducerState = {
@@ -57,19 +57,19 @@ const checkMarkModalReducer = (
 }
 
 export default function ChatItem({
-  comment,
-  onSelectChatAsReply,
+  message,
+  onSelectMessageAsReply,
   isMyMessage,
-  scrollToChatElement,
-  chatBubbleId,
+  scrollToMessage,
+  messageBubbleId,
   ...props
 }: ChatItemProps) {
   const router = useRouter()
-  const commentId = comment.id
+  const commentId = message.id
   const isSent = !isOptimisticId(commentId)
   const [openMetadata, setOpenMetadata] = useState(false)
-  const { createdAtTime, createdAtBlock, ownerId, contentId } = comment.struct
-  const { body, inReplyTo } = comment.content || {}
+  const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
+  const { body, inReplyTo } = message.content || {}
   const senderColor = useRandomColor(ownerId)
 
   const sendEvent = useSendEvent()
@@ -79,11 +79,11 @@ export default function ChatItem({
     variant: '',
   })
 
-  const setChatAsReply = (commentId: string) => {
+  const setMessageAsReply = (commentId: string) => {
     if (isOptimisticId(commentId)) return
-    onSelectChatAsReply?.(commentId)
+    onSelectMessageAsReply?.(commentId)
   }
-  const onSelectChatAsReplyRef = useWrapInRef(setChatAsReply)
+  const setMessageAsReplyRef = useWrapInRef(setMessageAsReply)
   const menus = useMemo<CommonCustomContextMenuProps['menus']>(() => {
     return [
       {
@@ -91,7 +91,7 @@ export default function ChatItem({
         icon: (
           <BsFillReplyFill className='flex-shrink-0 text-xl text-text-muted' />
         ),
-        onClick: () => onSelectChatAsReplyRef.current?.(commentId),
+        onClick: () => setMessageAsReplyRef.current?.(commentId),
       },
       {
         text: 'Copy Text',
@@ -127,7 +127,7 @@ export default function ChatItem({
         onClick: () => setOpenMetadata(true),
       },
     ]
-  }, [body, commentId, onSelectChatAsReplyRef, router])
+  }, [body, commentId, setMessageAsReplyRef, router])
 
   if (!body) return null
 
@@ -164,9 +164,9 @@ export default function ChatItem({
             <div
               className={cx('flex flex-col overflow-hidden', props.className)}
               onContextMenu={onContextMenu}
-              onDoubleClick={() => setChatAsReply(commentId)}
+              onDoubleClick={() => setMessageAsReply(commentId)}
               {...referenceProps}
-              id={chatBubbleId}
+              id={messageBubbleId}
             >
               <ChatItemContentVariant
                 body={body}
@@ -177,7 +177,7 @@ export default function ChatItem({
                 relativeTime={relativeTime}
                 senderColor={senderColor}
                 inReplyTo={inReplyTo}
-                scrollToChatElement={scrollToChatElement}
+                scrollToMessage={scrollToMessage}
               />
             </div>
           )
@@ -193,7 +193,7 @@ export default function ChatItem({
       <MetadataModal
         isOpen={openMetadata}
         closeModal={() => setOpenMetadata(false)}
-        comment={comment}
+        comment={message}
       />
     </div>
   )

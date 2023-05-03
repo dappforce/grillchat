@@ -14,7 +14,7 @@ export default function ChatItemContainer({
   rootPostId,
   ...props
 }: ChatItemContainerProps) {
-  const { comment } = props
+  const { message: comment } = props
 
   const isMessageBlocked = useIsMessageBlocked(comment, rootPostId)
   const address = useMyAccount((state) => state.address)

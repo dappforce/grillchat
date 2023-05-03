@@ -21,7 +21,7 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   image: ImageProps['src'] | JSX.Element
   asLink?: LinkProps
   isInteractive?: boolean
-  postId?: string
+  chatId?: string
   isPinned?: boolean
   withUnreadCount?: boolean
   asContainer?: boolean
@@ -36,7 +36,7 @@ export default function ChatPreview({
   asContainer,
   asLink,
   isPinned,
-  postId,
+  chatId,
   isInteractive,
   withUnreadCount,
   withBorderBottom = true,
@@ -94,20 +94,20 @@ export default function ChatPreview({
                   className='ml-2 h-4 w-4 flex-shrink-0'
                 />
               ) : (
-                postId && (
+                chatId && (
                   <ChatLastMessageTime
-                    postId={postId}
+                    chatId={chatId}
                     className='text-sm text-text-muted'
                   />
                 )
               )}
             </div>
             <div className='flex items-baseline justify-between overflow-hidden'>
-              {postId ? (
+              {chatId ? (
                 <ChatLastMessage
                   className='py-0.5'
                   defaultDesc={description}
-                  postId={postId}
+                  chatId={chatId}
                 />
               ) : (
                 <p
@@ -118,8 +118,8 @@ export default function ChatPreview({
                   {description}
                 </p>
               )}
-              {withUnreadCount && postId && (
-                <ChatUnreadCount className='ml-2' postId={postId} />
+              {withUnreadCount && chatId && (
+                <ChatUnreadCount className='ml-2' chatId={chatId} />
               )}
             </div>
           </div>
