@@ -49,7 +49,7 @@ export async function getBlockedAddresses() {
   const addresses = blockedHexAddresses.map((hexAddress: string) =>
     convertHexAddressToSubstrateAddress(hexAddress)
   )
-  return addresses
+  return Promise.all(addresses)
 }
 export const getBlockedAddressesQuery = createQuery({
   key: 'getBlockedAddressesQuery',
