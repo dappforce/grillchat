@@ -23,7 +23,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
     chats.forEach((chat) =>
       paths.push({
-        params: { topic: [createSlug(chat.id, chat.content)] },
+        params: { slug: [createSlug(chat.id, chat.content)] },
       })
     )
   })
@@ -113,7 +113,7 @@ export const getStaticProps = getCommonStaticProps<
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
     } catch (err) {
-      console.error('Error fetching for topic page: ', err)
+      console.error('Error fetching for chat page: ', err)
     }
 
     return {

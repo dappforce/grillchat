@@ -20,7 +20,7 @@ export async function getBlockedMessageIdsInChatId(chatId: string) {
 }
 export const getBlockedMessageIdsInChatIdQuery = createQuery({
   key: 'getBlockedMessageIdsInChatId',
-  getData: getBlockedMessageIdsInChatId,
+  fetcher: getBlockedMessageIdsInChatId,
 })
 
 const GET_BLOCKED_CIDS = graphql(`
@@ -34,7 +34,7 @@ export async function getBlockedCids() {
 }
 export const getBlockedCidsQuery = createQuery({
   key: 'getBlockedCidsQuery',
-  getData: getBlockedCids,
+  fetcher: getBlockedCids,
 })
 
 const GET_BLOCKED_ADDRESSES = graphql(`
@@ -48,5 +48,5 @@ export async function getBlockedAddresses() {
 }
 export const getBlockedAddressesQuery = createQuery({
   key: 'getBlockedAddressesQuery',
-  getData: getBlockedAddresses,
+  fetcher: getBlockedAddresses,
 })

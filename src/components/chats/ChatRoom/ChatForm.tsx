@@ -40,7 +40,7 @@ export default function ChatForm({
   ...props
 }: ChatFormProps) {
   const { data: chat } = getPostQuery.useQuery(chatId)
-  const topicName = chat?.content?.title ?? ''
+  const chatTitle = chat?.content?.title ?? ''
 
   const sendEvent = useSendEvent()
 
@@ -109,7 +109,7 @@ export default function ChatForm({
       if (isLoggedIn) {
         sendEvent('request energy')
       } else {
-        sendEvent('send first message', { chatId: chatId, name: topicName })
+        sendEvent('send first message', { chatId: chatId, name: chatTitle })
       }
       if (!captchaToken) return
       resetForm()

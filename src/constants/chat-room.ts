@@ -3,8 +3,8 @@ const ALIAS_TO_SPACE_ID_MAP: Record<string, string> = {
   polka: '1005',
 }
 const SPACE_ID_TO_ALIAS_MAP = Object.entries(ALIAS_TO_SPACE_ID_MAP).reduce(
-  (acc, [topic, roomId]) => {
-    acc[roomId] = topic
+  (acc, [alias, spaceId]) => {
+    acc[spaceId] = alias
     return acc
   },
   {} as Record<string, string>
@@ -12,8 +12,8 @@ const SPACE_ID_TO_ALIAS_MAP = Object.entries(ALIAS_TO_SPACE_ID_MAP).reduce(
 export function getAliasFromSpaceId(spaceId: string) {
   return SPACE_ID_TO_ALIAS_MAP[spaceId] ?? ''
 }
-export function getSpaceIdFromAlias(topic: string) {
-  return ALIAS_TO_SPACE_ID_MAP[topic] ?? ''
+export function getSpaceIdFromAlias(alias: string) {
+  return ALIAS_TO_SPACE_ID_MAP[alias] ?? ''
 }
 
 const LINKED_CHAT_IDS_FOR_SPACE_ID: Record<string, string[]> = {

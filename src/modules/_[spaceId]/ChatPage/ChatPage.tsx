@@ -71,7 +71,7 @@ function NavbarChatInfo({
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
-  const topic = chat?.content?.title
+  const chatTitle = chat?.content?.title
 
   return (
     <div className='flex items-center'>
@@ -91,11 +91,11 @@ function NavbarChatInfo({
           width={36}
           height={36}
           src={image}
-          alt={topic ?? 'chat topic'}
+          alt={chatTitle ?? 'chat topic'}
         />
         <div className='flex flex-col overflow-hidden'>
           <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
-            {topic ?? 'Topic'}
+            {chatTitle ?? 'Topic'}
           </span>
           <span className='text-xs text-text-muted'>
             {messageCount} messages
