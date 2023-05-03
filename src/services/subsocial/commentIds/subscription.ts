@@ -107,8 +107,8 @@ export function useSubscribeCommentIdsByPostId(
 
     return () => {
       unsub?.then((func) => func())
-      subscribedPostIds.delete(postId)
       lastIdInPreviousSub.current = undefined
+      if (unsub) subscribedPostIds.delete(postId)
     }
   }, [postId, queryClient, enabled, callbackRef])
 }
@@ -149,9 +149,11 @@ export function useSubscribeCommentIdsByPostIds(
     })
 
     return () => {
-      unsubs.forEach((unsub) => unsub?.then((func) => func()))
-      postIds.forEach((postId) => subscribedPostIds.delete(postId))
       lastIdInPreviousSub.current = {}
+      unsubs.forEach((unsub, idx) => {
+        unsub?.then((func) => func())
+        if (unsub) subscribedPostIds.delete(postIds[idx])
+      })
     }
   }, [postIds, queryClient, enabled, callbackRef])
 }
