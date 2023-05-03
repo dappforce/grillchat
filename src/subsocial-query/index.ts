@@ -8,7 +8,7 @@ export interface PoolQueryConfig<SingleParam, SingleReturn> {
     resultToKey: (result: SingleReturn) => string
     paramToKey: (param: SingleParam) => string
   }
-  singleCall?: (params: SingleParam) => Promise<SingleReturn>
+  singleCall?: (param: SingleParam) => Promise<SingleReturn>
   waitTime?: number
 }
 

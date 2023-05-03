@@ -33,22 +33,22 @@ export const setSubsocialConfig = (
   config = { ...presets[preset], ...customConfig }
 }
 
-export interface TxCallbacksParams {
+export interface TxCallbackInfo {
   summary: string
   address: string
-  params: unknown
+  data: unknown
   explorerLink?: string
   error?: unknown
 }
 const DEFAULT_TX_CALLBACKS = {
-  onBroadcast: ({ summary }: TxCallbacksParams) =>
+  onBroadcast: ({ summary }: TxCallbackInfo) =>
     console.info(`Broadcasting ${summary}...`),
-  onError: ({ error }: TxCallbacksParams) =>
+  onError: ({ error }: TxCallbackInfo) =>
     console.error(
       'Tx Error',
       typeof error === 'string' ? error : (error as Error)?.message
     ),
-  onSuccess: ({ summary }: TxCallbacksParams) =>
+  onSuccess: ({ summary }: TxCallbackInfo) =>
     console.log(`Success submit ${summary}...`),
 }
 let globalTxCallbacks = DEFAULT_TX_CALLBACKS

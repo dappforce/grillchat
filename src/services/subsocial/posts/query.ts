@@ -1,11 +1,11 @@
 import { poolQuery } from '@/subsocial-query'
 import {
   createSubsocialQuery,
-  SubsocialParams,
+  SubsocialQueryData,
 } from '@/subsocial-query/subsocial/query'
 
 const getChatIdsBySpaceId = poolQuery<
-  SubsocialParams<string>,
+  SubsocialQueryData<string>,
   { spaceId: string; chatIds: string[] }
 >({
   multiCall: async (allParams) => {
@@ -29,5 +29,5 @@ const getChatIdsBySpaceId = poolQuery<
 })
 export const getChatIdsBySpaceIdQuery = createSubsocialQuery({
   key: 'getPostIdsBySpaceId',
-  getData: getChatIdsBySpaceId,
+  fetcher: getChatIdsBySpaceId,
 })

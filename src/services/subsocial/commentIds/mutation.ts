@@ -45,17 +45,17 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
       txCallbacks: {
         // Removal of optimistic message generated is done by the subscription of messageIds
         // this is done to prevent a bit of flickering because the optimistic message is done first, before the message data finished fetching
-        getContext: ({ params, address }) =>
+        getContext: ({ data: params, address }) =>
           generateOptimisticId<OptimisticMessageIdData>({
             address,
             message: params.message,
           }),
-        onStart: ({ address, params }, tempId) => {
+        onStart: ({ address, data: params }, tempId) => {
           preventWindowUnload()
           addOptimisticData({ address, params, tempId, client })
         },
         onSend: allowWindowUnload,
-        onError: ({ address, params }, tempId) => {
+        onError: ({ address, data: params }, tempId) => {
           allowWindowUnload()
           deleteOptimisticData({ tempId, address, client, params })
         },

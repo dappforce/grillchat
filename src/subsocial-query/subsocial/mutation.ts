@@ -19,16 +19,16 @@ type Apis = {
   substrateApi: ApiPromise
 }
 
-export function useSubsocialMutation<Params, Context>(
+export function useSubsocialMutation<Data, Context>(
   getWallet: () => Promise<WalletAccount>,
   transactionGenerator: (
-    params: Params,
+    data: Data,
     apis: Apis
   ) => Promise<{ tx: Transaction; summary: string }>,
-  config?: MutationConfig<Params>,
-  defaultConfig?: DefaultSubsocialMutationConfig<Params, Context>
-): UseMutationResult<string, Error, Params, unknown> {
-  const workerFunc = async (params: Params) => {
+  config?: MutationConfig<Data>,
+  defaultConfig?: DefaultSubsocialMutationConfig<Data, Context>
+): UseMutationResult<string, Error, Data, unknown> {
+  const workerFunc = async (data: Data) => {
     const wallet = await getWallet()
     if (!wallet.address || !wallet.signer)
       throw new Error('You need to connect your wallet first!')
@@ -36,7 +36,7 @@ export function useSubsocialMutation<Params, Context>(
     const txCallbacks = generateTxCallbacks(
       {
         address: wallet.address,
-        params,
+        data,
       },
       defaultConfig?.txCallbacks
     )
@@ -49,11 +49,9 @@ export function useSubsocialMutation<Params, Context>(
     try {
       return await createTxAndSend(
         transactionGenerator,
-        params,
+        data,
         { subsocialApi, substrateApi, ipfsApi },
         { wallet, networkRpc: getConnectionConfig().substrateUrl },
-        config,
-        defaultConfig,
         txCallbacks
       )
     } catch (e) {
@@ -70,52 +68,46 @@ export function useSubsocialMutation<Params, Context>(
   })
 }
 
-async function createTxAndSend<Params, Context>(
+async function createTxAndSend<Data, Context>(
   transactionGenerator: (
-    params: Params,
+    data: Data,
     apis: Apis
   ) => Promise<{ tx: Transaction; summary: string }>,
-  param: Params,
+  data: Data,
   apis: Apis,
   txConfig: {
     wallet: WalletAccount
     networkRpc?: string
   },
-  config?: MutationConfig<Params>,
-  defaultConfig?: DefaultSubsocialMutationConfig<Params, Context>,
   optimisticCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
-  const { tx, summary } = await transactionGenerator(param, apis)
+  const { tx, summary } = await transactionGenerator(data, apis)
   return sendTransaction(
     {
       tx,
       wallet: txConfig.wallet,
-      params: param,
+      data,
       networkRpc: txConfig.networkRpc,
       summary,
     },
     apis,
-    config,
-    defaultConfig,
     optimisticCallbacks
   )
 }
-function sendTransaction<Params, Context>(
+function sendTransaction<Data, Context>(
   txInfo: {
     tx: Transaction
     summary: string
     wallet: WalletAccount
-    params: Params
+    data: Data
     networkRpc: string | undefined
   },
   apis: Apis,
-  config?: MutationConfig<Params>,
-  defaultConfig?: DefaultSubsocialMutationConfig<Params, Context>,
   txCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
   const {
     networkRpc,
-    params,
+    data,
     summary,
     tx,
     wallet: { address, signer },
@@ -136,12 +128,12 @@ function sendTransaction<Params, Context>(
           globalTxCallbacks.onError({
             summary,
             address,
-            params,
+            data,
           })
         } else if (result.status.isBroadcast) {
           globalTxCallbacks.onBroadcast({
             summary,
-            params,
+            data,
             address,
           })
         } else if (result.status.isInBlock) {
@@ -156,22 +148,16 @@ function sendTransaction<Params, Context>(
               error: result.dispatchError?.toString(),
               summary,
               address,
-              params,
+              data,
               explorerLink,
             })
           } else {
             txCallbacks?.onSuccess()
-            const onTxSuccess = makeCombinedCallback(
-              defaultConfig,
-              config,
-              'onTxSuccess'
-            )
-            onTxSuccess({ params, address, result })
             globalTxCallbacks.onSuccess({
               explorerLink,
               summary,
               address,
-              params,
+              data,
             })
           }
           unsub()
@@ -200,9 +186,9 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
   return { nonce, nonceResolver: noncePromise.resolveQueue }
 }
 
-function generateTxCallbacks<Params, Context>(
-  data: OptimisticData<Params>,
-  callbacks: DefaultSubsocialMutationConfig<Params, Context>['txCallbacks']
+function generateTxCallbacks<Data, Context>(
+  data: OptimisticData<Data>,
+  callbacks: DefaultSubsocialMutationConfig<Data, Context>['txCallbacks']
 ) {
   if (!callbacks) return
   const { onError, onSuccess, onSend, onStart, getContext } = callbacks

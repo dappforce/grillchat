@@ -10,8 +10,8 @@ import {
 import { useMemo } from 'react'
 import { QueryConfig } from './types'
 
-export function queryWrapper<ReturnType, Data, AdditionalData>(
-  func: (params: { data: Data } & AdditionalData) => Promise<ReturnType>,
+export function queryWrapper<ReturnValue, Data, AdditionalData>(
+  func: (queryData: { data: Data } & AdditionalData) => Promise<ReturnValue>,
   getAdditionalData: () => Promise<AdditionalData>
 ) {
   return async ({ queryKey }: { queryKey: any }) => {
@@ -38,14 +38,14 @@ export function mergeQueryConfig<T, V>(
   }
 }
 
-export function createQueryKeys<Params>(key: string) {
-  return (data: Params) => {
+export function createQueryKeys<Data>(key: string) {
+  return (data: Data) => {
     return [key, data]
   }
 }
 
-export function createQueryInvalidation<Params>(key: string) {
-  return (client: QueryClient, data: Params | null = null, exact = false) => {
+export function createQueryInvalidation<Data>(key: string) {
+  return (client: QueryClient, data: Data | null = null, exact = false) => {
     client.invalidateQueries({
       queryKey: [key, data],
       exact,
@@ -64,12 +64,12 @@ export function makeCombinedCallback(
   }
 }
 
-export default function mutationWrapper<ReturnData, Data>(
-  func: MutationFunction<ReturnData, Data>,
-  defaultConfig?: UseMutationOptions<ReturnData, unknown, Data, unknown>
+export default function mutationWrapper<ReturnValue, Data>(
+  func: MutationFunction<ReturnValue, Data>,
+  defaultConfig?: UseMutationOptions<ReturnValue, unknown, Data, unknown>
 ) {
   return function (
-    config?: UseMutationOptions<ReturnData, unknown, Data, unknown>
+    config?: UseMutationOptions<ReturnValue, unknown, Data, unknown>
   ) {
     return useMutation(func, {
       ...(defaultConfig || {}),
@@ -80,44 +80,44 @@ export default function mutationWrapper<ReturnData, Data>(
   }
 }
 
-export function createQuery<Params, ReturnValue>({
+export function createQuery<Data, ReturnValue>({
   key,
-  getData,
+  fetcher,
 }: {
   key: string
-  getData: (params: Params) => Promise<ReturnValue>
+  fetcher: (data: Data) => Promise<ReturnValue>
 }) {
-  const getQueryKey = createQueryKeys<Params>(key)
+  const getQueryKey = createQueryKeys<Data>(key)
   return {
     getQueryKey,
-    invalidate: createQueryInvalidation<Params>(key),
+    invalidate: createQueryInvalidation<Data>(key),
     useQuery: (
-      data: Params | null,
-      config?: QueryConfig<ReturnValue, Params>,
-      defaultConfig?: QueryConfig<ReturnValue, Params>
+      data: Data | null,
+      config?: QueryConfig<ReturnValue, Data>,
+      defaultConfig?: QueryConfig<ReturnValue, Data>
     ) => {
       const mergedConfig = mergeQueryConfig(config, defaultConfig)
       return useQuery(
         [key, data],
-        queryWrapper<ReturnValue, Params, void>(
-          ({ data }) => getData(data),
+        queryWrapper<ReturnValue, Data, void>(
+          ({ data }) => fetcher(data),
           async () => undefined
         ),
         mergedConfig
       )
     },
     useQueries: (
-      data: (Params | null)[],
-      config?: QueryConfig<ReturnValue, Params>,
-      defaultConfig?: QueryConfig<ReturnValue, Params>
+      data: (Data | null)[],
+      config?: QueryConfig<ReturnValue, Data>,
+      defaultConfig?: QueryConfig<ReturnValue, Data>
     ) => {
       const mergedConfig = mergeQueryConfig(config, defaultConfig)
       return useQueries({
         queries: data.map((singleData) => {
           return {
             queryKey: [key, singleData],
-            queryFn: queryWrapper<ReturnValue, Params, void>(
-              ({ data }) => getData(data),
+            queryFn: queryWrapper<ReturnValue, Data, void>(
+              ({ data }) => fetcher(data),
               async () => undefined
             ),
             ...mergedConfig,
@@ -125,13 +125,13 @@ export function createQuery<Params, ReturnValue>({
         }),
       })
     },
-    setQueryData: (client: QueryClient, data: Params, value: ReturnValue) => {
+    setQueryData: (client: QueryClient, data: Data, value: ReturnValue) => {
       client.setQueryData(getQueryKey(data), value ?? null)
     },
-    fetchQuery: async (client: QueryClient, params: Params) => {
-      const data = await getData(params)
-      client.setQueryData(getQueryKey(params), data ?? null)
-      return data
+    fetchQuery: async (client: QueryClient, data: Data) => {
+      const res = await fetcher(data)
+      client.setQueryData(getQueryKey(data), res ?? null)
+      return res
     },
   }
 }
