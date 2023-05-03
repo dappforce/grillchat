@@ -108,7 +108,7 @@ export function useSubscribeCommentIdsByPostId(
     return () => {
       unsub?.then((func) => func())
       subscribedPostIds.delete(postId)
-      lastIdInPreviousSub.current = ''
+      lastIdInPreviousSub.current = undefined
     }
   }, [postId, queryClient, enabled, callbackRef])
 }
