@@ -14,7 +14,7 @@ export default function MetadataModal({
   ...props
 }: MetadataModalProps) {
   return (
-    <Modal {...props} title='Metadata'>
+    <Modal {...props} title='Metadata' withCloseButton>
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-1'>
           <span className={cx('text-sm text-text-muted')}>
