@@ -6,7 +6,7 @@
     "node": ">= 16"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "yarn codegen && next dev",
     "build": "yarn codegen && next build",
     "start": "next start",
     "analyze": "ANALYZE=true yarn build",
