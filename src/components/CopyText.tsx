@@ -6,7 +6,7 @@ import { ComponentProps, useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
-import PopOver from './floating/PopOver'
+import PopOver, { PopOverProps } from './floating/PopOver'
 
 type CommonCopyTextProps = ComponentProps<'div'> & {
   text: string | JSX.Element | null
@@ -127,10 +127,12 @@ export function CopyTextInline({
 }: CopyTextInlineProps) {
   const [openTooltipClickTrigger, setOpenTooltipClickTrigger] = useState(false)
   const [openTooltipHoverTrigger, setOpenTooltipHoverTrigger] = useState(false)
+
   const [openTooltipClickTriggerButton, setOpenTooltipClickTriggerButton] =
     useState(false)
   const [openTooltipHoverTriggerButton, setOpenTooltipHoverTriggerButton] =
     useState(false)
+
   const handleClick = () => {
     copyToClipboard(getTextToCopy({ text, textToCopy }))
     onCopyClick?.()
@@ -158,26 +160,32 @@ export function CopyTextInline({
     </Button>
   )
 
+  const commonPopOverProps = {
+    panelSize: 'sm',
+    yOffset: 12,
+    children: <p>Copied!</p>,
+  } satisfies Partial<PopOverProps>
+
   if (tooltip) {
+    let commonHoverPopOverProps = {
+      ...commonPopOverProps,
+      triggerOnHover: true,
+      children: <p>{tooltip}</p>,
+    } satisfies Partial<PopOverProps>
+
     trigger = (
       <PopOver
-        panelSize='sm'
-        yOffset={12}
-        triggerOnHover
+        {...commonHoverPopOverProps}
         manualTrigger={{
           isOpen: openTooltipClickTrigger ? false : openTooltipHoverTrigger,
           setIsOpen: setOpenTooltipHoverTrigger,
         }}
         trigger={trigger}
-      >
-        <p>{tooltip}</p>
-      </PopOver>
+      />
     )
     copyButton = (
       <PopOver
-        panelSize='sm'
-        yOffset={12}
-        triggerOnHover
+        {...commonHoverPopOverProps}
         manualTrigger={{
           isOpen: openTooltipClickTriggerButton
             ? false
@@ -185,9 +193,7 @@ export function CopyTextInline({
           setIsOpen: setOpenTooltipHoverTriggerButton,
         }}
         trigger={copyButton}
-      >
-        <p>{tooltip}</p>
-      </PopOver>
+      />
     )
   }
 
@@ -196,33 +202,27 @@ export function CopyTextInline({
       <div>
         {text && (
           <PopOver
+            {...commonPopOverProps}
             triggerClassName={cx(textContainerClassName)}
             manualTrigger={{
               isOpen: openTooltipClickTrigger,
               setIsOpen: setOpenTooltipClickTrigger,
             }}
-            yOffset={12}
             trigger={trigger}
-            panelSize='sm'
-          >
-            <p>Copied!</p>
-          </PopOver>
+          />
         )}
       </div>
       <div>
         {withButton && (
           <PopOver
+            {...commonPopOverProps}
             triggerClassName={cx(textContainerClassName)}
             manualTrigger={{
               isOpen: openTooltipClickTriggerButton,
               setIsOpen: setOpenTooltipClickTriggerButton,
             }}
-            yOffset={12}
             trigger={copyButton}
-            panelSize='sm'
-          >
-            <p>Copied!</p>
-          </PopOver>
+          />
         )}
       </div>
     </div>
