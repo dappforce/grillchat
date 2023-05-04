@@ -4,31 +4,16 @@ import { getPostsFromCache } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { prefetchBlockedEntities } from '@/utils/server'
-import { createSlug, getIdFromSlug } from '@/utils/slug'
+import { getIdFromSlug } from '@/utils/slug'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const spaceIds = getSpaceIds()
-  const paths: Awaited<ReturnType<GetStaticPaths>>['paths'] = []
-
-  spaceIds.forEach(async (spaceId) => {
-    const subsocialApi = await getSubsocialApi()
-    const chatIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
-    const chats = await getPostsFromCache(chatIds)
-
-    chats.forEach((chat) =>
-      paths.push({
-        params: { slug: createSlug(chat.id, chat.content) },
-      })
-    )
-  })
-
+  // For chats page, skip pre-rendering, because it will cause super slow build time
   return {
-    paths,
+    paths: [],
     fallback: 'blocking',
   }
 }
