@@ -9,7 +9,7 @@ import Button from './Button'
 import PopOver from './floating/PopOver'
 
 type CommonCopyTextProps = ComponentProps<'div'> & {
-  text: string | JSX.Element
+  text: string | JSX.Element | null
   textToCopy?: string
   onCopyClick?: () => void
   isCodeText?: boolean
@@ -110,6 +110,8 @@ export function CopyText({
 export type CopyTextInlineProps = CommonCopyTextProps & {
   tooltip?: string
   textClassName?: string
+  textContainerClassName?: string
+  withButton?: boolean
 }
 export function CopyTextInline({
   text,
@@ -119,6 +121,8 @@ export function CopyTextInline({
   withHideButton,
   tooltip,
   textClassName,
+  textContainerClassName,
+  withButton = true,
   ...props
 }: CopyTextInlineProps) {
   const [openTooltipClickTrigger, setOpenTooltipClickTrigger] = useState(false)
@@ -129,18 +133,25 @@ export function CopyTextInline({
   }
 
   const fontClassName = codeText && spaceMono.className
-  let copyButton = (
-    <Button
-      variant='transparent'
-      className='p-1 text-text-primary'
-      onClick={handleClick}
-    >
-      <MdOutlineContentCopy />
-    </Button>
+  let trigger = (
+    <div className={cx('flex w-full cursor-pointer items-center gap-2')}>
+      {text && (
+        <div className={cx('flex-1', fontClassName, textClassName)}>{text}</div>
+      )}
+      {withButton && (
+        <Button
+          variant='transparent'
+          className='p-1 text-text-primary'
+          onClick={handleClick}
+        >
+          <MdOutlineContentCopy />
+        </Button>
+      )}
+    </div>
   )
 
   if (tooltip) {
-    copyButton = (
+    trigger = (
       <PopOver
         panelSize='sm'
         yOffset={12}
@@ -149,7 +160,7 @@ export function CopyTextInline({
           isOpen: openTooltipClickTrigger ? false : openTooltipHoverTrigger,
           setIsOpen: setOpenTooltipHoverTrigger,
         }}
-        trigger={copyButton}
+        trigger={trigger}
       >
         <p>{tooltip}</p>
       </PopOver>
@@ -158,15 +169,14 @@ export function CopyTextInline({
 
   return (
     <div {...props} className={cx('flex items-center', props.className)}>
-      <div className={cx(fontClassName, textClassName)}>{text}</div>
       <PopOver
-        triggerClassName='ml-2'
+        triggerClassName={cx(textContainerClassName)}
         manualTrigger={{
           isOpen: openTooltipClickTrigger,
           setIsOpen: setOpenTooltipClickTrigger,
         }}
         yOffset={12}
-        trigger={copyButton}
+        trigger={trigger}
         panelSize='sm'
       >
         <p>Copied!</p>

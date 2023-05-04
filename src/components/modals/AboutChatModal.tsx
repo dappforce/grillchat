@@ -5,7 +5,7 @@ import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { PostData } from '@subsocial/api/types'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { Fragment, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { IconType } from 'react-icons'
 import { HiCircleStack } from 'react-icons/hi2'
 import urlJoin from 'url-join'
@@ -85,31 +85,46 @@ export default function AboutChatModal({
           {contentList.map(({ content, title, withCopyButton }) => {
             const contentValue = content({ chat, url: chatUrl })
             if (!contentValue) return null
+            const containerClassName = cx(
+              'border-b border-background-lightest pb-3 last:border-none last:pb-0'
+            )
             const element = (
-              <div
-                key={title}
-                className={cx(
-                  'flex flex-col gap-0.5 border-b border-background-lightest pb-3 last:border-none last:pb-0'
-                )}
-              >
+              <div key={title} className={cx('flex flex-1 flex-col gap-0.5')}>
                 <span className='text-sm text-text-muted'>{title}</span>
-                <span>{contentValue}</span>
+                {withCopyButton ? (
+                  <CopyTextInline
+                    text={contentValue}
+                    withButton={false}
+                    className='text-text-secondary'
+                  />
+                ) : (
+                  <span>{contentValue}</span>
+                )}
               </div>
             )
 
             return (
-              <Fragment key={title}>
+              <div
+                key={title}
+                className={cx('flex w-full items-center', containerClassName)}
+              >
                 {withCopyButton ? (
-                  <CopyTextInline
-                    textClassName='flex-1'
-                    className='w-full'
-                    text={element}
-                    textToCopy={contentValue}
-                  />
+                  <div className={cx('flex w-full items-center')}>
+                    {element}
+                    <div>
+                      <CopyTextInline
+                        textClassName='flex-1'
+                        className='w-full'
+                        textContainerClassName='w-full'
+                        text={''}
+                        textToCopy={contentValue}
+                      />
+                    </div>
+                  </div>
                 ) : (
                   element
                 )}
-              </Fragment>
+              </div>
             )
           })}
         </div>
