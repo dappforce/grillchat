@@ -12,6 +12,7 @@ import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getMainSpaceId, getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { prefetchBlockedEntities } from '@/utils/server'
+import { isValidNumber } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { getPostsFromCache } from '../api/posts'
@@ -35,7 +36,7 @@ export const getStaticPaths = async () => {
 function getSpaceIdFromParam(paramSpaceId: string) {
   const spaceIdOrTopic = paramSpaceId ?? getMainSpaceId()
   let spaceId = spaceIdOrTopic
-  if (isNaN(parseInt(spaceIdOrTopic))) {
+  if (!isValidNumber(spaceIdOrTopic)) {
     const spaceIdFromTopic = getSpaceIdFromTopic(spaceIdOrTopic)
     if (spaceIdFromTopic) {
       spaceId = spaceIdFromTopic
