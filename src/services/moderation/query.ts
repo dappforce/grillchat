@@ -1,8 +1,9 @@
 import { createQuery } from '@/subsocial-query'
 import { convertHexAddressToSubstrateAddress } from '@/utils/account'
-import { request } from 'graphql-request'
 import { graphql } from './gql'
-import { getModerationUrl } from './utils'
+import { createModerationRequest } from './utils'
+
+const moderationRequest = createModerationRequest()
 
 const GET_BLOCKED_IDS_IN_ROOT_POST_ID = graphql(`
   query GetBlockedIdsInRootPostId($rootPostId: String!) {
@@ -10,13 +11,10 @@ const GET_BLOCKED_IDS_IN_ROOT_POST_ID = graphql(`
   }
 `)
 export async function getBlockedIdsInRootPostId(rootPostId: string) {
-  const data = await request(
-    getModerationUrl(),
-    GET_BLOCKED_IDS_IN_ROOT_POST_ID,
-    {
-      rootPostId,
-    }
-  )
+  const data = await moderationRequest({
+    document: GET_BLOCKED_IDS_IN_ROOT_POST_ID,
+    variables: { rootPostId },
+  })
   return data.blockedResourceIds
 }
 export const getBlockedIdsInRootPostIdQuery = createQuery({
@@ -30,7 +28,9 @@ const GET_BLOCKED_CIDS = graphql(`
   }
 `)
 export async function getBlockedCids() {
-  const data = await request(getModerationUrl(), GET_BLOCKED_CIDS)
+  const data = await moderationRequest({
+    document: GET_BLOCKED_CIDS,
+  })
   return data.blockedResourceIds
 }
 export const getBlockedCidsQuery = createQuery({
@@ -44,7 +44,7 @@ const GET_BLOCKED_ADDRESSES = graphql(`
   }
 `)
 export async function getBlockedAddresses() {
-  const data = await request(getModerationUrl(), GET_BLOCKED_ADDRESSES)
+  const data = await moderationRequest({ document: GET_BLOCKED_ADDRESSES })
   const blockedHexAddresses = data.blockedResourceIds
   const addresses = blockedHexAddresses.map((hexAddress: string) =>
     convertHexAddressToSubstrateAddress(hexAddress)
