@@ -7,6 +7,7 @@ import { getPostQuery } from '@/services/api/query'
 import { getBlockedIdsInRootPostIdQuery } from '@/services/moderation/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
+import { filterBlockedMessageIds } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink } from '@/utils/links'
 import { useRouter } from 'next/router'
@@ -85,7 +86,7 @@ function ChatListContent({
 
   const { data: blockedIds } = getBlockedIdsInRootPostIdQuery.useQuery(postId)
   const filteredIds = useMemo(() => {
-    return currentData.filter((id) => !blockedIds?.includes(id))
+    return filterBlockedMessageIds(currentData, blockedIds)
   }, [blockedIds, currentData])
 
   const comments = getPostQuery.useQueries(filteredIds)

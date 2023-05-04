@@ -22,22 +22,11 @@ export function isMessageBlocked(
   )
 }
 
-export function getLastMessageId(
-  commentIds: string[] | undefined,
+export function filterBlockedMessageIds(
+  messageIds: string[],
   blockedIds: string[] | undefined
 ) {
-  if (!commentIds) return undefined
-  let idx = commentIds.length - 1
-  while (true) {
-    if (idx < 0) {
-      return undefined
-    }
-
-    const id = commentIds[idx]
-    if (!blockedIds?.includes(id)) {
-      return id
-    }
-
-    idx--
-  }
+  if (!blockedIds) return messageIds
+  const blockedIdsSet = new Set(blockedIds)
+  return messageIds.filter((id) => !blockedIdsSet?.has(id))
 }
