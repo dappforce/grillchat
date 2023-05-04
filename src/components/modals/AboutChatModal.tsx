@@ -51,7 +51,7 @@ export default function AboutChatModal({
   >(() => {
     return [
       {
-        text: 'Show metadata',
+        text: 'Show Metadata',
         icon: HiCircleStack,
         className: cx('text-text-secondary'),
         onClick: () => setIsOpenMetadataModal(true),

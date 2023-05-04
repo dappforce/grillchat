@@ -120,7 +120,7 @@ export default function ChatItem({
         },
       },
       {
-        text: 'Metadata',
+        text: 'Show Metadata',
         icon: (
           <HiCircleStack className='flex-shrink-0 text-xl text-text-muted' />
         ),
