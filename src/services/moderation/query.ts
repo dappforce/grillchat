@@ -10,10 +10,10 @@ const GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID = graphql(`
     blockedResourceIds(blocked: true, rootPostId: $chatId)
   }
 `)
-export async function getBlockedMessageIdsInChatId(rootPostId: string) {
+export async function getBlockedMessageIdsInChatId(chatId: string) {
   const data = await moderationRequest({
     document: GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID,
-    variables: { rootPostId },
+    variables: { chatId },
   })
   return data.blockedResourceIds
 }
