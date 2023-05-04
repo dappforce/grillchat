@@ -21,3 +21,12 @@ export function isMessageBlocked(
     postIds.includes(id)
   )
 }
+
+export function filterBlockedMessageIds(
+  messageIds: string[],
+  blockedIds: string[] | undefined
+) {
+  if (!blockedIds) return messageIds
+  const blockedIdsSet = new Set(blockedIds)
+  return messageIds.filter((id) => !blockedIdsSet?.has(id))
+}

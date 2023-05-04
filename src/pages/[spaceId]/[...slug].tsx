@@ -39,7 +39,7 @@ function getChatIdAndMessageId(slugParams: string[]) {
     return undefined
   }
 
-  const [slug, messageId] = slugParams
+  const [slug, messageId] = slugParams as [string, string | undefined]
   const chatId = getIdFromSlug(slug)
   if (!chatId) return undefined
 
@@ -49,7 +49,7 @@ function getChatIdAndMessageId(slugParams: string[]) {
   return [chatId, messageId] as const
 }
 
-async function getChatsData(chatId: string, messageId: string) {
+async function getChatsData(chatId: string, messageId: string | undefined) {
   let chatIdAndMessageId = [chatId]
   if (messageId) chatIdAndMessageId.push(messageId)
 
@@ -102,7 +102,7 @@ export const getStaticProps = getCommonStaticProps<
       }
 
       getPostQuery.setQueryData(queryClient, chatId, chatData)
-      if (messageData)
+      if (messageId && messageData)
         getPostQuery.setQueryData(queryClient, messageId, messageData)
 
       queryClient.setQueryData(

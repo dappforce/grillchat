@@ -12,6 +12,7 @@ import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getMainSpaceId, getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { prefetchBlockedEntities } from '@/utils/server'
+import { isValidNumber } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { getPostsFromCache } from '../api/posts'
@@ -35,7 +36,7 @@ export const getStaticPaths = async () => {
 function getSpaceIdFromParam(paramSpaceId: string) {
   const spaceIdOrAlias = paramSpaceId ?? getMainSpaceId()
   let spaceId = spaceIdOrAlias
-  if (isNaN(parseInt(spaceIdOrAlias))) {
+  if (!isValidNumber(spaceIdOrAlias)) {
     const spaceIdFromAlias = getSpaceIdFromAlias(spaceIdOrAlias)
     if (spaceIdFromAlias) {
       spaceId = spaceIdFromAlias
@@ -60,13 +61,14 @@ async function getLastMessages(messageIdsByChatIds: string[][]) {
 async function getChatPreviewsData(chatIds: string[]) {
   const subsocialApi = await getSubsocialApi()
 
-  const promises = chatIds.map((chatId) => {
-    return subsocialApi.blockchain.getReplyIdsByPostId(chatId)
-  })
-  const chatsPromise = getPostsFromCache(chatIds)
-
-  const messageIdsByChatIds = await Promise.all(promises)
-  const chats = await chatsPromise
+  const [messageIdsByChatIds, chats] = await Promise.all([
+    Promise.all(
+      chatIds.map((chatId) => {
+        return subsocialApi.blockchain.getReplyIdsByPostId(chatId)
+      })
+    ),
+    getPostsFromCache(chatIds),
+  ] as const)
 
   const lastMessages = await getLastMessages(messageIdsByChatIds)
 

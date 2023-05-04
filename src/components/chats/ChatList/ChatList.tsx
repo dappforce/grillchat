@@ -2,9 +2,9 @@ import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfinite
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
+import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
-import { getBlockedMessageIdsInChatIdQuery } from '@/services/moderation/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -77,11 +77,7 @@ function ChatListContent({
   const { currentData: currentPageMessageIds, loadMore } =
     useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
 
-  const { data: blockedIds } =
-    getBlockedMessageIdsInChatIdQuery.useQuery(chatId)
-  const filteredIds = useMemo(() => {
-    return currentPageMessageIds.filter((id) => !blockedIds?.includes(id))
-  }, [blockedIds, currentPageMessageIds])
+  const filteredIds = useFilterBlockedMessageIds(chatId, currentPageMessageIds)
 
   const messageQueries = getPostQuery.useQueries(filteredIds)
   const loadedMessageQueries = useMemo(() => {
