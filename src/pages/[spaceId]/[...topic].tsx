@@ -39,7 +39,7 @@ function getRoomIdAndChatId(topicParams: string[]) {
     return undefined
   }
 
-  const [topic, chatId] = topicParams
+  const [topic, chatId] = topicParams as [string, string | undefined]
   const roomId = getIdFromSlug(topic)
   if (!roomId) return undefined
 
@@ -49,7 +49,7 @@ function getRoomIdAndChatId(topicParams: string[]) {
   return [roomId, chatId] as const
 }
 
-async function getPostsData(roomId: string, chatId: string) {
+async function getPostsData(roomId: string, chatId: string | undefined) {
   let roomIdAndChatId = [roomId]
   if (chatId) roomIdAndChatId.push(chatId)
 
@@ -101,7 +101,8 @@ export const getStaticProps = getCommonStaticProps<
       }
 
       getPostQuery.setQueryData(queryClient, roomId, roomData)
-      if (chatData) getPostQuery.setQueryData(queryClient, chatId, chatData)
+      if (chatId && chatData)
+        getPostQuery.setQueryData(queryClient, chatId, chatData)
 
       queryClient.setQueryData(
         getCommentIdsQueryKey(roomId),
