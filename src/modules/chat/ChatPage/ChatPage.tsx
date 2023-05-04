@@ -5,6 +5,7 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getHomePageLink } from '@/utils/links'
 import { PostData } from '@subsocial/api/types'
@@ -87,7 +88,10 @@ function NavbarChatInfo({
       </div>
       <div className='flex items-center gap-2 overflow-hidden'>
         <Image
-          className='h-9 w-9 justify-self-end rounded-full bg-background-light bg-gradient-to-b from-[#E0E7FF] to-[#A5B4FC] object-cover'
+          className={cx(
+            getCommonClassNames('chatImageBackground'),
+            'h-9 w-9 justify-self-end'
+          )}
           width={36}
           height={36}
           src={image}

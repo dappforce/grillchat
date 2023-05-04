@@ -23,7 +23,7 @@ export default function LaunchCommunityPage() {
   return (
     <FixedBottomActionLayout
       title={title}
-      showTransparentNavbar={inView}
+      isTransparentNavbar={inView}
       bottomPanel={
         <Container
           as='div'

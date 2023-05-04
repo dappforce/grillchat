@@ -9,7 +9,7 @@ import Button from './Button'
 import PopOver from './floating/PopOver'
 
 type CommonCopyTextProps = ComponentProps<'div'> & {
-  text: string
+  text: string | JSX.Element
   textToCopy?: string
   onCopyClick?: () => void
   isCodeText?: boolean
@@ -32,13 +32,20 @@ const copyTextStyles = cva('', {
   },
 })
 
+function getTextToCopy({
+  text,
+  textToCopy,
+}: Pick<CommonCopyTextProps, 'text' | 'textToCopy'>) {
+  return textToCopy || (typeof text === 'string' ? text : '')
+}
+
 export type CopyTextProps = CommonCopyTextProps &
   VariantProps<typeof copyTextStyles>
 export function CopyText({
   text,
   textToCopy,
   onCopyClick,
-  isCodeText: codeText,
+  isCodeText,
   withHideButton,
   size,
   ...props
@@ -47,7 +54,7 @@ export function CopyText({
   const [isHidden, setIsHidden] = useState(false)
 
   const handleClick = () => {
-    copyToClipboard(textToCopy || text)
+    copyToClipboard(getTextToCopy({ text, textToCopy }))
 
     onCopyClick?.()
     setIsCopied(true)
@@ -56,7 +63,7 @@ export function CopyText({
     }, 1000)
   }
 
-  const fontClassName = codeText && spaceMono.className
+  const fontClassName = isCodeText && spaceMono.className
 
   return (
     <div
@@ -69,7 +76,7 @@ export function CopyText({
           fontClassName
         )}
       >
-        <span
+        <div
           className={cx(
             'cursor-pointer select-all break-all py-2 px-4',
             copyTextStyles({ size }),
@@ -77,7 +84,7 @@ export function CopyText({
           )}
         >
           {text}
-        </span>
+        </div>
         {withHideButton && (
           <Button
             size='noPadding'
@@ -117,7 +124,7 @@ export function CopyTextInline({
   const [openTooltipClickTrigger, setOpenTooltipClickTrigger] = useState(false)
   const [openTooltipHoverTrigger, setOpenTooltipHoverTrigger] = useState(false)
   const handleClick = () => {
-    copyToClipboard(textToCopy || text)
+    copyToClipboard(getTextToCopy({ text, textToCopy }))
     onCopyClick?.()
   }
 
@@ -151,7 +158,7 @@ export function CopyTextInline({
 
   return (
     <div {...props} className={cx('flex items-center', props.className)}>
-      <span className={cx(fontClassName, textClassName)}>{text}</span>
+      <div className={cx(fontClassName, textClassName)}>{text}</div>
       <PopOver
         triggerClassName='ml-2'
         manualTrigger={{

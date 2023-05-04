@@ -4,30 +4,24 @@ import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
 
 export type MetadataModalProps = ModalFunctionalityProps & {
-  message: PostData
+  post: PostData
+  postIdTextPrefix?: string
 }
 
 export default function MetadataModal({
-  message,
+  post,
+  postIdTextPrefix = 'Post',
   ...props
 }: MetadataModalProps) {
   return (
     <Modal {...props} title='Metadata'>
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-1'>
-          <span className={cx('text-text-muted')}>Post ID:</span>
+          <span className={cx('text-text-muted')}>{postIdTextPrefix} ID:</span>
           <CopyTextInline
             className='max-w-full whitespace-pre-wrap break-words'
             textClassName={cx('max-w-[calc(100%_-_2rem)]')}
-            text={message.id}
-          />
-        </div>
-        <div className='flex flex-col gap-1'>
-          <span className={cx('text-text-muted')}>Owner:</span>
-          <CopyTextInline
-            className='max-w-full whitespace-pre-wrap break-words'
-            textClassName={cx('max-w-[calc(100%_-_2rem)]')}
-            text={message.struct.ownerId}
+            text={post.id}
           />
         </div>
         <div className='flex flex-col gap-1'>
@@ -35,7 +29,15 @@ export default function MetadataModal({
           <CopyTextInline
             className='max-w-full whitespace-pre-wrap break-words'
             textClassName={cx('max-w-[calc(100%_-_2rem)]')}
-            text={message.struct.contentId ?? ''}
+            text={post.struct.contentId ?? ''}
+          />
+        </div>
+        <div className='flex flex-col gap-1'>
+          <span className={cx('text-text-muted')}>Owner:</span>
+          <CopyTextInline
+            className='max-w-full whitespace-pre-wrap break-words'
+            textClassName={cx('max-w-[calc(100%_-_2rem)]')}
+            text={post.struct.ownerId}
           />
         </div>
       </div>
