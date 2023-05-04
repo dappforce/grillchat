@@ -197,8 +197,8 @@ export function CopyTextInline({
 
   return (
     <div {...props} className={cx('flex items-center gap-2', props.className)}>
-      <div className={cx(textContainerClassName)}>
-        {text && (
+      {text && (
+        <div className={cx(textContainerClassName)}>
           <PopOver
             {...commonPopOverProps}
             manualTrigger={{
@@ -207,8 +207,8 @@ export function CopyTextInline({
             }}
             trigger={trigger}
           />
-        )}
-      </div>
+        </div>
+      )}
       <div>
         {withButton && (
           <PopOver
