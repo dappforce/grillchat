@@ -1,4 +1,5 @@
 import LinkText from '@/components/LinkText'
+import { useLocation } from '@/stores/location'
 import { cx } from '@/utils/class-names'
 import { Source_Sans_Pro } from 'next/font/google'
 import { ComponentProps } from 'react'
@@ -15,10 +16,7 @@ const sourceSansPro = Source_Sans_Pro({
 
 export type DefaultLayoutProps = ComponentProps<'div'> & {
   navbarProps?: NavbarProps
-  withBackButton?: {
-    title?: string
-    isTransparent?: boolean
-  }
+  withBackButton?: LayoutNavbarExtensionProps
 }
 
 export default function DefaultLayout({
@@ -43,13 +41,17 @@ export default function DefaultLayout({
   )
 }
 
+type LayoutNavbarExtensionProps = {
+  title?: string
+  isTransparent?: boolean
+  defaultBackTo?: string
+}
 function LayoutNavbarExtension({
   title,
   isTransparent,
-}: {
-  title?: string
-  isTransparent?: boolean
-}) {
+  defaultBackTo,
+}: LayoutNavbarExtensionProps) {
+  const { prevUrl } = useLocation()
   const mdUp = useBreakpointThreshold('md')
 
   return (
@@ -63,7 +65,7 @@ function LayoutNavbarExtension({
         <div className='absolute top-1/2 left-0 -translate-y-1/2'>
           {mdUp || isTransparent ? (
             <LinkText
-              href='/'
+              href={prevUrl || defaultBackTo || '/'}
               variant='secondary'
               className='flex items-center'
             >

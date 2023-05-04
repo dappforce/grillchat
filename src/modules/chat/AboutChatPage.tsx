@@ -9,7 +9,7 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { PostData } from '@subsocial/api/types'
 import Image from 'next/image'
-import { NextRouter, useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { Fragment, useMemo, useState } from 'react'
 import { IconType } from 'react-icons'
 import { HiCircleStack } from 'react-icons/hi2'
@@ -19,14 +19,13 @@ export type AboutChatPageProps = { chatId: string; messageCount: number }
 
 const contentList: {
   title: string
-  content: (data: { chat: PostData; router: NextRouter }) => string | undefined
+  content: (data: { chat: PostData; url: string }) => string | undefined
   withCopyButton?: boolean
 }[] = [
   { title: 'Description', content: ({ chat }) => chat.content?.body },
   {
     title: 'Chat link',
-    content: ({ router }) =>
-      urlJoin(getCurrentUrlOrigin(), getChatPageLink(router)),
+    content: ({ url }) => url,
     withCopyButton: true,
   },
 ]
@@ -60,8 +59,12 @@ export default function AboutChatPage({
   const content = chat?.content
   if (!content) return null
 
+  const chatUrl = urlJoin(getCurrentUrlOrigin(), getChatPageLink(router))
+
   return (
-    <DefaultLayout withBackButton={{ isTransparent: true }}>
+    <DefaultLayout
+      withBackButton={{ isTransparent: true, defaultBackTo: chatUrl }}
+    >
       <Container as='div' className='mt-4 flex flex-col items-center gap-4'>
         <div className='flex flex-col items-center text-center'>
           <Image
@@ -79,7 +82,7 @@ export default function AboutChatPage({
         </div>
         <div className='w-full rounded-2xl bg-background-light p-4'>
           {contentList.map(({ content, title, withCopyButton }) => {
-            const contentValue = content({ chat, router })
+            const contentValue = content({ chat, url: chatUrl })
             if (!contentValue) return null
             const element = (
               <div
@@ -89,7 +92,7 @@ export default function AboutChatPage({
                 )}
               >
                 <span className='text-sm text-text-muted'>{title}</span>
-                <span>{content({ chat, router })}</span>
+                <span>{contentValue}</span>
               </div>
             )
 
