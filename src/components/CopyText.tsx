@@ -1,5 +1,6 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
 import { copyToClipboard } from '@/utils/text'
+import { Placement } from '@floating-ui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Space_Mono } from 'next/font/google'
 import { ComponentProps, useState } from 'react'
@@ -109,6 +110,7 @@ export function CopyText({
 
 export type CopyTextInlineProps = CommonCopyTextProps & {
   tooltip?: string
+  tooltipPlacement?: Placement
   textClassName?: string
   textContainerClassName?: string
   withButton?: boolean
@@ -120,6 +122,7 @@ export function CopyTextInline({
   isCodeText: codeText,
   withHideButton,
   tooltip,
+  tooltipPlacement,
   textClassName,
   textContainerClassName,
   withButton = true,
@@ -140,13 +143,7 @@ export function CopyTextInline({
 
   const fontClassName = codeText && spaceMono.className
   let trigger = (
-    <div
-      className={cx(
-        'w-full flex-1 cursor-pointer',
-        fontClassName,
-        textClassName
-      )}
-    >
+    <div className={cx('w-full cursor-pointer', fontClassName, textClassName)}>
       {text}
     </div>
   )
@@ -164,6 +161,7 @@ export function CopyTextInline({
     panelSize: 'sm',
     yOffset: 12,
     children: <p>Copied!</p>,
+    placement: tooltipPlacement,
   } satisfies Partial<PopOverProps>
 
   if (tooltip) {
@@ -199,11 +197,10 @@ export function CopyTextInline({
 
   return (
     <div {...props} className={cx('flex items-center gap-2', props.className)}>
-      <div>
+      <div className={cx(textContainerClassName)}>
         {text && (
           <PopOver
             {...commonPopOverProps}
-            triggerClassName={cx(textContainerClassName)}
             manualTrigger={{
               isOpen: openTooltipClickTrigger,
               setIsOpen: setOpenTooltipClickTrigger,
@@ -216,7 +213,6 @@ export function CopyTextInline({
         {withButton && (
           <PopOver
             {...commonPopOverProps}
-            triggerClassName={cx(textContainerClassName)}
             manualTrigger={{
               isOpen: openTooltipClickTriggerButton,
               setIsOpen: setOpenTooltipClickTriggerButton,

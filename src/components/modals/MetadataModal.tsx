@@ -21,24 +21,31 @@ export default function MetadataModal({
             {postIdTextPrefix} ID:
           </span>
           <CopyTextInline
-            className='max-w-full whitespace-pre-wrap break-words'
-            textClassName={cx('max-w-[calc(100%_-_2rem)]')}
+            className='max-w-full'
+            textContainerClassName={cx(
+              'max-w-[calc(100%_-_2rem)] whitespace-pre-wrap break-words'
+            )}
             text={post.id}
           />
         </div>
         <div className='flex flex-col gap-1'>
           <span className={cx('text-sm text-text-muted')}>Content ID:</span>
           <CopyTextInline
-            className='max-w-full whitespace-pre-wrap break-words'
-            textClassName={cx('max-w-[calc(100%_-_2rem)]')}
+            className='max-w-full'
+            textContainerClassName={cx(
+              'max-w-[calc(100%_-_2rem)] whitespace-pre-wrap break-words'
+            )}
             text={post.struct.contentId ?? ''}
           />
         </div>
         <div className='flex flex-col gap-1'>
           <span className={cx('text-sm text-text-muted')}>Owner:</span>
           <CopyTextInline
-            className='max-w-full whitespace-pre-wrap break-words'
-            textClassName={cx('max-w-[calc(100%_-_2rem)]')}
+            tooltipPlacement='top'
+            className='max-w-full'
+            textContainerClassName={cx(
+              'max-w-[calc(100%_-_2rem)] whitespace-pre-wrap break-words'
+            )}
             text={post.struct.ownerId}
           />
         </div>
