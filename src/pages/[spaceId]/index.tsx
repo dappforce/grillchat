@@ -61,13 +61,14 @@ async function getLastPosts(commentIdsByPostId: string[][]) {
 async function getPostsData(postIds: string[]) {
   const subsocialApi = await getSubsocialApi()
 
-  const promises = postIds.map((postId) => {
-    return subsocialApi.blockchain.getReplyIdsByPostId(postId)
-  })
-  const postsPromise = getPostsFromCache(postIds)
-
-  const commentIdsByPostId = await Promise.all(promises)
-  const posts = await postsPromise
+  const [commentIdsByPostId, posts] = await Promise.all([
+    Promise.all(
+      postIds.map((postId) => {
+        return subsocialApi.blockchain.getReplyIdsByPostId(postId)
+      })
+    ),
+    getPostsFromCache(postIds),
+  ] as const)
 
   const lastPosts = await getLastPosts(commentIdsByPostId)
 
