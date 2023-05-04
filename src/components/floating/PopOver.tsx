@@ -124,69 +124,63 @@ export default function PopOver({
       >
         {trigger}
       </TriggerElement>
-      {isOpen && (
-        <FloatingFocusManager
-          initialFocus={initialFocus}
-          context={context}
-          modal={false}
+      <FloatingFocusManager
+        initialFocus={initialFocus}
+        context={context}
+        modal={false}
+      >
+        <Transition
+          enter={'transition duration-100 ease-out'}
+          enterFrom='transform opacity-0'
+          enterTo='transform opacity-100'
+          leave='transition duration-75 ease-out'
+          leaveFrom='transform opacity-100'
+          leaveTo='transform opacity-0'
+          show={isOpen}
         >
-          <Transition
-            enter='transition duration-100 ease-out'
-            enterFrom='transform scale-95 opacity-0'
-            enterTo='transform scale-100 opacity-100'
-            leave='transition duration-75 ease-out'
-            leaveFrom='transform scale-100 opacity-100'
-            leaveTo='transform scale-95 opacity-0'
-            show={isOpen}
+          <div
+            style={{
+              position: strategy,
+              top: y ?? 0,
+              left: x ?? 0,
+              width: 'max-content',
+            }}
+            ref={refs.setFloating}
+            className={cx(panelStyles({ panelSize }), color, popOverClassName)}
+            {...getFloatingProps()}
           >
-            <div
-              style={{
-                position: strategy,
-                top: y ?? 0,
-                left: x ?? 0,
-                width: 'max-content',
-              }}
-              ref={refs.setFloating}
-              className={cx(
-                panelStyles({ panelSize }),
-                color,
-                popOverClassName
-              )}
-              {...getFloatingProps()}
-            >
-              <div className='relative z-10'>{children}</div>
-              {withCloseButton && (
-                <Button
-                  onClick={() => setIsOpen(false)}
-                  className='my-1 ml-4 mr-0 p-0 text-2xl text-current'
-                  variant='transparent'
-                >
-                  <HiXMark />
-                </Button>
-              )}
-              {withArrow && (
-                <div
-                  className={cx(
-                    'translate h-5 !w-5 rotate-45',
-                    isArrowPlacementOnBottom
-                      ? '-translate-y-0.5'
-                      : 'translate-y-0.5',
-                    color
-                  )}
-                  style={{
-                    position: 'absolute',
-                    top: isArrowPlacementOnBottom ? arrowY ?? 0 : 'auto',
-                    bottom: isArrowPlacementOnBottom ? 'auto' : arrowY ?? 0,
-                    left: arrowX ?? 0,
-                    width: 'max-content',
-                  }}
-                  ref={arrowRef}
-                />
-              )}
-            </div>
-          </Transition>
-        </FloatingFocusManager>
-      )}
+            <div className='relative z-10'>{children}</div>
+            {withCloseButton && (
+              <Button
+                onClick={() => setIsOpen(false)}
+                className='my-1 ml-4 mr-0 p-0 text-2xl text-current'
+                variant='transparent'
+              >
+                <HiXMark />
+              </Button>
+            )}
+            {withArrow && (
+              <div
+                className={cx(
+                  'translate h-5 !w-5 rotate-45',
+                  isArrowPlacementOnBottom
+                    ? '-translate-y-0.5'
+                    : 'translate-y-0.5',
+                  color
+                )}
+                style={{
+                  position: 'absolute',
+                  top: isArrowPlacementOnBottom ? arrowY ?? 0 : 'auto',
+                  bottom: isArrowPlacementOnBottom ? 'auto' : arrowY ?? 0,
+                  left: arrowX ?? 0,
+                  width: 'max-content',
+                }}
+                ref={arrowRef}
+              />
+            )}
+          </div>
+        </Transition>
+      </FloatingFocusManager>
     </>
   )
 }
