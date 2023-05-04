@@ -105,7 +105,7 @@ function ChatListContent({
 
   useEffect(() => {
     ;(async () => {
-      const [, messageId] = (router.query.messageId || []) as string[]
+      const [messageId] = (router.query.messageId || []) as string[]
       if (!messageId) return
 
       await scrollToChatElement(messageId)
