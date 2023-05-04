@@ -80,7 +80,7 @@ export default function AboutChatPage({
           <h1 className='mt-4 text-2xl font-medium'>{content.title}</h1>
           <span className='text-text-muted'>{messageCount} messages</span>
         </div>
-        <div className='w-full rounded-2xl bg-background-light p-4'>
+        <div className='w-full gap-4 rounded-2xl bg-background-light px-4'>
           {contentList.map(({ content, title, withCopyButton }) => {
             const contentValue = content({ chat, url: chatUrl })
             if (!contentValue) return null
@@ -88,7 +88,7 @@ export default function AboutChatPage({
               <div
                 key={title}
                 className={cx(
-                  'flex flex-col gap-0.5 border-b border-background-lighter last:border-none'
+                  'flex flex-col gap-0.5 border-b border-background-lighter py-4 last:border-none'
                 )}
               >
                 <span className='text-sm text-text-muted'>{title}</span>
