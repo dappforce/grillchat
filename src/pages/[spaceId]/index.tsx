@@ -3,8 +3,7 @@ import {
   getLinkedChatIdsForSpaceId,
   getSpaceIdFromAlias,
 } from '@/constants/chat-room'
-import HomePage from '@/modules/_[spaceId]/HomePage'
-import { HomePageProps } from '@/modules/_[spaceId]/HomePage/HomePage'
+import HomePage, { HomePageProps } from '@/modules/chat/HomePage'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'

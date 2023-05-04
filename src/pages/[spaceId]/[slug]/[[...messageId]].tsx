@@ -1,6 +1,5 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
-import ChatPage from '@/modules/_[spaceId]/ChatPage'
-import { ChatPageProps } from '@/modules/_[spaceId]/ChatPage/ChatPage'
+import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
@@ -23,7 +22,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
     chats.forEach((chat) =>
       paths.push({
-        params: { slug: [createSlug(chat.id, chat.content)] },
+        params: { slug: createSlug(chat.id, chat.content) },
       })
     )
   })
@@ -34,13 +33,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-function getChatIdAndMessageId(slugParams: string[]) {
-  if (slugParams.length <= 0 || slugParams.length > 2) {
+function getValidatedChatIdAndMessageId(
+  slugParam: string,
+  messageIdParam: string[] | undefined
+) {
+  if (messageIdParam && messageIdParam.length > 1) {
     return undefined
   }
+  const messageId = messageIdParam?.[0]
 
-  const [slug, messageId] = slugParams as [string, string | undefined]
-  const chatId = getIdFromSlug(slug)
+  const chatId = getIdFromSlug(slugParam)
   if (!chatId) return undefined
 
   const isInvalidChatId = messageId && isNaN(parseInt(messageId))
@@ -78,8 +80,12 @@ export const getStaticProps = getCommonStaticProps<
     head: { disableZoom: true, title: data.title, description: data.desc },
   }),
   async (context) => {
-    const slugParams = context.params?.slug as string[]
-    const chatIdAndMessageId = getChatIdAndMessageId(slugParams)
+    const slugParam = context.params?.slug as string
+    const messageIdParam = context.params?.messageId as string[] | undefined
+    const chatIdAndMessageId = getValidatedChatIdAndMessageId(
+      slugParam,
+      messageIdParam
+    )
     if (!chatIdAndMessageId) return undefined
 
     const [chatId, messageId] = chatIdAndMessageId
