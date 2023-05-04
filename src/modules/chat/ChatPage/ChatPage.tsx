@@ -7,12 +7,13 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
-import { getHomePageLink } from '@/utils/links'
+import { getChatPageLink, getHomePageLink } from '@/utils/links'
 import { PostData } from '@subsocial/api/types'
 import Image, { ImageProps } from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
+import urlJoin from 'url-join'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
 
 export type ChatPageProps = { chatId: string }
@@ -75,7 +76,7 @@ function NavbarChatInfo({
   const chatTitle = chat?.content?.title
 
   return (
-    <div className='flex items-center'>
+    <div className='flex flex-1 items-center'>
       <div className='mr-2 flex w-9 items-center justify-center'>
         <Button
           size='circle'
@@ -86,7 +87,13 @@ function NavbarChatInfo({
           <HiOutlineChevronLeft />
         </Button>
       </div>
-      <div className='flex items-center gap-2 overflow-hidden'>
+      <Button
+        variant='transparent'
+        interactive='none'
+        size='noPadding'
+        className='flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left'
+        href={urlJoin(getChatPageLink(router), '/about')}
+      >
         <Image
           className={cx(
             getCommonClassNames('chatImageBackground'),
@@ -105,7 +112,7 @@ function NavbarChatInfo({
             {messageCount} messages
           </span>
         </div>
-      </div>
+      </Button>
     </div>
   )
 }
