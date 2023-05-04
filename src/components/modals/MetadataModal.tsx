@@ -17,7 +17,9 @@ export default function MetadataModal({
     <Modal {...props} title='Metadata'>
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-1'>
-          <span className={cx('text-text-muted')}>{postIdTextPrefix} ID:</span>
+          <span className={cx('text-sm text-text-muted')}>
+            {postIdTextPrefix} ID:
+          </span>
           <CopyTextInline
             className='max-w-full whitespace-pre-wrap break-words'
             textClassName={cx('max-w-[calc(100%_-_2rem)]')}
@@ -25,7 +27,7 @@ export default function MetadataModal({
           />
         </div>
         <div className='flex flex-col gap-1'>
-          <span className={cx('text-text-muted')}>Content ID:</span>
+          <span className={cx('text-sm text-text-muted')}>Content ID:</span>
           <CopyTextInline
             className='max-w-full whitespace-pre-wrap break-words'
             textClassName={cx('max-w-[calc(100%_-_2rem)]')}
@@ -33,7 +35,7 @@ export default function MetadataModal({
           />
         </div>
         <div className='flex flex-col gap-1'>
-          <span className={cx('text-text-muted')}>Owner:</span>
+          <span className={cx('text-sm text-text-muted')}>Owner:</span>
           <CopyTextInline
             className='max-w-full whitespace-pre-wrap break-words'
             textClassName={cx('max-w-[calc(100%_-_2rem)]')}

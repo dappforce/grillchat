@@ -1,8 +1,3 @@
-import Button, { ButtonProps } from '@/components/Button'
-import MetadataModal from '@/components/chats/ChatItem/MetadataModal'
-import Container from '@/components/Container'
-import { CopyTextInline } from '@/components/CopyText'
-import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getPostQuery } from '@/services/api/query'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -14,8 +9,15 @@ import { Fragment, useMemo, useState } from 'react'
 import { IconType } from 'react-icons'
 import { HiCircleStack } from 'react-icons/hi2'
 import urlJoin from 'url-join'
+import Button, { ButtonProps } from '../Button'
+import { CopyTextInline } from '../CopyText'
+import Modal, { ModalFunctionalityProps } from '../Modal'
+import MetadataModal from './MetadataModal'
 
-export type AboutChatPageProps = { chatId: string; messageCount: number }
+export type AboutChatModalProps = ModalFunctionalityProps & {
+  chatId: string
+  messageCount?: number
+}
 
 const contentList: {
   title: string
@@ -30,10 +32,11 @@ const contentList: {
   },
 ]
 
-export default function AboutChatPage({
+export default function AboutChatModal({
   chatId,
-  messageCount,
-}: AboutChatPageProps) {
+  messageCount = 0,
+  ...props
+}: AboutChatModalProps) {
   const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId)
   const [isOpenMetadataModal, setIsOpenMetadataModal] = useState(false)
@@ -62,10 +65,8 @@ export default function AboutChatPage({
   const chatUrl = urlJoin(getCurrentUrlOrigin(), getChatPageLink(router))
 
   return (
-    <DefaultLayout
-      withBackButton={{ isTransparent: true, defaultBackTo: chatUrl }}
-    >
-      <Container as='div' className='mt-4 flex flex-col items-center gap-4'>
+    <Modal {...props} withCloseButton>
+      <div className='mt-4 flex flex-col items-center gap-4'>
         <div className='flex flex-col items-center text-center'>
           <Image
             src={getIpfsContentUrl(content.image)}
@@ -80,7 +81,7 @@ export default function AboutChatPage({
           <h1 className='mt-4 text-2xl font-medium'>{content.title}</h1>
           <span className='text-text-muted'>{messageCount} messages</span>
         </div>
-        <div className='flex w-full flex-col gap-3 rounded-2xl bg-background-light px-4 py-4'>
+        <div className='flex w-full flex-col gap-3 rounded-2xl bg-background-lighter px-4 py-4'>
           {contentList.map(({ content, title, withCopyButton }) => {
             const contentValue = content({ chat, url: chatUrl })
             if (!contentValue) return null
@@ -88,7 +89,7 @@ export default function AboutChatPage({
               <div
                 key={title}
                 className={cx(
-                  'flex flex-col gap-0.5 border-b border-background-lighter pb-3 last:border-none last:pb-0'
+                  'flex flex-col gap-0.5 border-b border-background-lightest pb-3 last:border-none last:pb-0'
                 )}
               >
                 <span className='text-sm text-text-muted'>{title}</span>
@@ -112,7 +113,7 @@ export default function AboutChatPage({
             )
           })}
         </div>
-        <div className='w-full overflow-hidden rounded-2xl bg-background-light'>
+        <div className='w-full overflow-hidden rounded-2xl bg-background-lighter'>
           {actionMenu.map(({ icon: Icon, text, className, onClick }) => (
             <Button
               variant='transparent'
@@ -120,8 +121,8 @@ export default function AboutChatPage({
               size='noPadding'
               key={text}
               className={cx(
-                'flex w-full items-center gap-3 rounded-none border-b border-background-lighter p-4 last:border-none',
-                'transition focus-visible:bg-background-lighter hover:bg-background-lighter',
+                'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 last:border-none',
+                'transition focus-visible:bg-background-lightest hover:bg-background-lightest',
                 className
               )}
               onClick={onClick}
@@ -131,13 +132,13 @@ export default function AboutChatPage({
             </Button>
           ))}
         </div>
-      </Container>
+      </div>
       <MetadataModal
         closeModal={() => setIsOpenMetadataModal(false)}
         isOpen={isOpenMetadataModal}
         post={chat}
         postIdTextPrefix='Chat'
       />
-    </DefaultLayout>
+    </Modal>
   )
 }

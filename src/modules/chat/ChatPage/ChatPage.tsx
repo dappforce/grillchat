@@ -7,14 +7,21 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
-import { getChatPageLink, getHomePageLink } from '@/utils/links'
+import { getHomePageLink } from '@/utils/links'
 import { PostData } from '@subsocial/api/types'
+import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
-import urlJoin from 'url-join'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
+
+const AboutChatModal = dynamic(
+  () => import('@/components/modals/AboutChatModal'),
+  {
+    ssr: false,
+  }
+)
 
 export type ChatPageProps = { chatId: string }
 export default function ChatPage({ chatId }: ChatPageProps) {
@@ -70,6 +77,7 @@ function NavbarChatInfo({
   messageCount: number
   chat?: PostData | null
 }) {
+  const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
@@ -92,7 +100,7 @@ function NavbarChatInfo({
         interactive='none'
         size='noPadding'
         className='flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left'
-        href={urlJoin(getChatPageLink(router), '/about')}
+        onClick={() => setIsOpenAboutChatModal(true)}
       >
         <Image
           className={cx(
@@ -113,6 +121,13 @@ function NavbarChatInfo({
           </span>
         </div>
       </Button>
+
+      <AboutChatModal
+        isOpen={isOpenAboutChatModal}
+        closeModal={() => setIsOpenAboutChatModal(false)}
+        chatId={chat?.id}
+        messageCount={messageCount}
+      />
     </div>
   )
 }
