@@ -130,7 +130,7 @@ export default function PopOver({
         modal={false}
       >
         <Transition
-          enter={'transition duration-100 ease-out'}
+          enter='transition duration-100 ease-out'
           enterFrom='transform opacity-0'
           enterTo='transform opacity-100'
           leave='transition duration-75 ease-out'
