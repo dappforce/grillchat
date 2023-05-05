@@ -1,4 +1,4 @@
-import ChatAboutRedirectPage from '@/modules/chat/ChatAboutRedirectPage'
+import AboutChatRedirectPage from '@/modules/chat/AboutChatRedirectPage'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -41,4 +41,4 @@ export const getStaticProps = getCommonStaticProps<{
   }
 )
 
-export default ChatAboutRedirectPage
+export default AboutChatRedirectPage
