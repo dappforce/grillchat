@@ -90,7 +90,7 @@ function NavbarChatInfo({
     if (open !== 'about') return
 
     setIsOpenAboutChatModal(true)
-    router.push(getCurrentUrlWithoutQuery())
+    router.push(getCurrentUrlWithoutQuery(), undefined, { shallow: true })
   }, [router])
 
   const chatTitle = chat?.content?.title
