@@ -3,9 +3,9 @@ import { PostData } from '@subsocial/api/types'
 export function isMessageBlocked(
   message: PostData | undefined | null,
   blockedData: {
-    addresses: string[]
-    contentIds: string[]
-    postIds: string[]
+    addresses: Set<string> | undefined
+    contentIds: Set<string> | undefined
+    postIds: Set<string> | undefined
   }
 ) {
   if (!message) return false
@@ -16,9 +16,9 @@ export function isMessageBlocked(
   const owner = struct.ownerId
 
   return (
-    addresses.includes(owner) ||
-    contentIds.includes(contentId ?? '') ||
-    postIds.includes(id)
+    addresses?.has(owner) ||
+    contentIds?.has(contentId ?? '') ||
+    postIds?.has(id)
   )
 }
 
