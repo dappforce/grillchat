@@ -26,6 +26,14 @@ export function getSpaceIds() {
   return spaceIds.split(',')
 }
 
+export function getModerationUrl() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_MODERATION_URL,
+    'NEXT_PUBLIC_MODERATION_URL',
+    true
+  )
+}
+
 export function getAmpId() {
   return checkEnv(process.env.NEXT_PUBLIC_AMP_ID, 'NEXT_PUBLIC_AMP_ID')
 }
