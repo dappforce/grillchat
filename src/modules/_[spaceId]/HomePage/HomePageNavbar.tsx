@@ -80,7 +80,7 @@ export default function HomePageNavbar({
           onChange={(e) => setSearch(e.target.value)}
           leftElement={(className) => (
             <HiMagnifyingGlass
-              className={cx(className, 'z-10 ml-1 text-text-muted')}
+              className={cx(className, 'z-10 ml-1 text-xl text-text-muted')}
             />
           )}
           rightElement={(className) => (
@@ -119,7 +119,7 @@ export default function HomePageNavbar({
               searchRef.current?.focus()
             }}
           >
-            <HiMagnifyingGlass />
+            <HiMagnifyingGlass className='text-xl' />
           </Button>
           {colorModeToggler}
           <div className='ml-1.5'>{auth}</div>
