@@ -3,8 +3,8 @@ import { Dialog, Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Fragment } from 'react'
 import { HiOutlineChevronLeft, HiXMark } from 'react-icons/hi2'
-import Button from './Button'
-import LinkText from './LinkText'
+import Button from '../Button'
+import LinkText from '../LinkText'
 
 export type ModalFunctionalityProps = {
   isOpen: boolean

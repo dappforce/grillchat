@@ -11,8 +11,8 @@ import { HiCircleStack } from 'react-icons/hi2'
 import urlJoin from 'url-join'
 import Button, { ButtonProps } from '../Button'
 import { CopyTextInline } from '../CopyText'
-import Modal, { ModalFunctionalityProps } from '../Modal'
 import MetadataModal from './MetadataModal'
+import Modal, { ModalFunctionalityProps } from './Modal'
 
 export type AboutChatModalProps = ModalFunctionalityProps & {
   chatId: string
