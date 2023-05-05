@@ -14,7 +14,7 @@
     "format": "prettier --write src",
     "lint": "next lint",
     "prepare": "husky install",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --require dotenv/config --config codegen.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.9.1",
@@ -75,6 +75,7 @@
     "@subsocial/config": "^1.0.0",
     "@svgr/webpack": "^6.5.1",
     "autoprefixer": "^10.4.13",
+    "dotenv": "^16.0.3",
     "husky": "^8.0.0",
     "postcss": "^8.4.21",
     "prettier": "^2.8.4",
