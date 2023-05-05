@@ -2,7 +2,7 @@ import Button from '@/components/Button'
 import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
 import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
-import Modal, { ModalProps } from '@/components/Modal'
+import Modal, { ModalProps } from '@/components/modals/Modal'
 import { LocalStorage } from '@/utils/storage'
 import { useRef, useState } from 'react'
 

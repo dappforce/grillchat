@@ -7,7 +7,11 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
-import { getHomePageLink } from '@/utils/links'
+import {
+  getCurrentUrlWithoutQuery,
+  getHomePageLink,
+  getUrlQuery,
+} from '@/utils/links'
 import { PostData } from '@subsocial/api/types'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
@@ -80,6 +84,14 @@ function NavbarChatInfo({
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const isInIframe = useIsInIframe()
   const router = useRouter()
+
+  useEffect(() => {
+    const open = getUrlQuery('open')
+    if (open !== 'about') return
+
+    setIsOpenAboutChatModal(true)
+    router.push(getCurrentUrlWithoutQuery())
+  }, [router])
 
   const chatTitle = chat?.content?.title
 

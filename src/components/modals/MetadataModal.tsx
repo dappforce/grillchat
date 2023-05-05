@@ -1,5 +1,5 @@
 import { CopyTextInline } from '@/components/CopyText'
-import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl, getSubIdUrl } from '@/utils/ipfs'
 import { PostData } from '@subsocial/api/types'
