@@ -47,6 +47,7 @@ jobs:
           push: true
           build-args: |
             GH_NEXT_PUBLIC_SPACE_IDS=1002
+            GH_NEXT_PUBLIC_MODERATION_URL=https://moderation.subsocial.network/
             GH_NEXT_PUBLIC_AMP_ID=81d0fc2014ce14eed5a475efe9a44035
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
             GH_IPFS_PIN_URL=https://pin.crustcloud.io/psa
