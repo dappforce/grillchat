@@ -7,6 +7,7 @@ import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
+import { prefetchBlockedEntities } from '@/utils/server'
 import { createSlug, getIdFromSlug } from '@/utils/slug'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
@@ -38,7 +39,7 @@ function getRoomIdAndChatId(topicParams: string[]) {
     return undefined
   }
 
-  const [topic, chatId] = topicParams
+  const [topic, chatId] = topicParams as [string, string | undefined]
   const roomId = getIdFromSlug(topic)
   if (!roomId) return undefined
 
@@ -46,6 +47,24 @@ function getRoomIdAndChatId(topicParams: string[]) {
   if (isInvalidChatId) return undefined
 
   return [roomId, chatId] as const
+}
+
+async function getPostsData(roomId: string, chatId: string | undefined) {
+  let roomIdAndChatId = [roomId]
+  if (chatId) roomIdAndChatId.push(chatId)
+
+  const [roomData, chatData] = await getPostsFromCache(roomIdAndChatId)
+
+  const subsocialApi = await getSubsocialApi()
+  const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(roomId)
+
+  const preloadedPostCount = CHAT_PER_PAGE * 2
+  const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
+  const endSlice = commentIds.length
+  const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
+  const posts = await getPostsFromCache(prefetchedCommentIds)
+
+  return { posts, roomData, chatData, commentIds }
 }
 
 export const getStaticProps = getCommonStaticProps<
@@ -70,29 +89,20 @@ export const getStaticProps = getCommonStaticProps<
     let title: string | null = null
     let desc: string | null = null
     try {
-      let roomIdAndChatId = [roomId]
-      if (chatId) roomIdAndChatId.push(chatId)
+      const [{ chatData, commentIds, posts, roomData }] = await Promise.all([
+        getPostsData(roomId, chatId),
+        prefetchBlockedEntities(queryClient, [roomId]),
+      ] as const)
 
-      const [roomData, chatData] = await getPostsFromCache(roomIdAndChatId)
       title = roomData?.content?.title || null
       if (chatData) {
         title = `Message from ${title}`
         desc = chatData?.content?.body || null
       }
 
-      const subsocialApi = await getSubsocialApi()
-      const commentIds = await subsocialApi.blockchain.getReplyIdsByPostId(
-        roomId
-      )
-
-      const preloadedPostCount = CHAT_PER_PAGE * 2
-      const startSlice = Math.max(0, commentIds.length - preloadedPostCount)
-      const endSlice = commentIds.length
-      const prefetchedCommentIds = commentIds.slice(startSlice, endSlice)
-      const posts = await getPostsFromCache(prefetchedCommentIds)
-
       getPostQuery.setQueryData(queryClient, roomId, roomData)
-      if (chatData) getPostQuery.setQueryData(queryClient, chatId, chatData)
+      if (chatId && chatData)
+        getPostQuery.setQueryData(queryClient, chatId, chatData)
 
       queryClient.setQueryData(
         getCommentIdsQueryKey(roomId),

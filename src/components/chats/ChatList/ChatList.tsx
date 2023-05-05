@@ -2,6 +2,7 @@ import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfinite
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
+import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
@@ -82,7 +83,9 @@ function ChatListContent({
     }
   )
 
-  const comments = getPostQuery.useQueries(currentData)
+  const filteredIds = useFilterBlockedMessageIds(postId, currentData)
+
+  const comments = getPostQuery.useQueries(filteredIds)
   const loadedComments = useMemo(() => {
     return comments.filter((post) => post.isLoading === false)
   }, [comments])
@@ -175,6 +178,7 @@ function ChatListContent({
 
               const chatElement = comment && (
                 <ChatItemContainer
+                  rootPostId={postId}
                   onSelectChatAsReply={onSelectChatAsReply}
                   comment={comment}
                   key={comment.id}
