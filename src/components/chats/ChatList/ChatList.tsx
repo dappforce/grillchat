@@ -160,7 +160,9 @@ function ChatListContent({
             dataLength={loadedComments.length}
             next={loadMore}
             className={cx(
-              'relative flex flex-col-reverse gap-2 !overflow-hidden pb-2'
+              'relative flex flex-col-reverse gap-2 !overflow-hidden pb-2',
+              // need to have enough room to open message menu
+              'min-h-[400px]'
             )}
             hasMore={!isAllCommentsLoaded}
             inverse
