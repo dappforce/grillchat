@@ -4,7 +4,7 @@ export type GrillConfig = {
   order?: string[]
   theme?: string
   openChatRoomDirectly?: {
-    id: string
+    chatId: string
     enableBackToHome?: boolean
   }
   customizeIframe?: (iframe: HTMLIFrameElement) => HTMLIFrameElement
@@ -34,7 +34,7 @@ const grill = {
     iframe.style.height = '100%'
 
     let baseUrl = `https://grill.chat/${mergedConfig.spaceId}`
-    const directOpenChatId = mergedConfig.openChatRoomDirectly?.id
+    const directOpenChatId = mergedConfig.openChatRoomDirectly?.chatId
     if (directOpenChatId) {
       baseUrl += `/${directOpenChatId}`
     }
