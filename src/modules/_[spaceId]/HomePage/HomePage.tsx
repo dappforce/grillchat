@@ -1,6 +1,9 @@
+import NoResultImage from '@/assets/graphics/no-result.png'
 import AddIcon from '@/assets/icons/add.png'
 import IntegrateIcon from '@/assets/icons/integrate.png'
+import Button from '@/components/Button'
 import ChatPreview from '@/components/chats/ChatPreview'
+import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getLinkedPostIdsForSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
@@ -19,6 +22,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { HiArrowUpRight } from 'react-icons/hi2'
 import HomePageNavbar from './HomePageNavbar'
 import useSortByConfig from './hooks/useSortByConfig'
 import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
@@ -150,6 +154,7 @@ export default function HomePage({
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {!isInIframe && !search && specialButtons}
+        {searchResults.length === 0 && <NoSearchResultScreen />}
         {searchResults.map((post, idx) => {
           if (!post) return null
           return (
@@ -219,5 +224,25 @@ function ChatPreviewContainer({
       withUnreadCount
       withFocusedStyle={isFocused}
     />
+  )
+}
+
+function NoSearchResultScreen() {
+  return (
+    <Container
+      as='div'
+      className='mt-20 flex !max-w-lg flex-col items-center justify-center gap-4 text-center'
+    >
+      <Image src={NoResultImage} alt='' />
+      <span className='text-3xl font-bold'>😳 No results</span>
+      <p className='text-text-muted'>
+        Sorry, no chats were found with that name. However, our support team is
+        ready to help! Ask them to create a personalized chat tailored to your
+        needs.
+      </p>
+      <Button className='w-full' size='lg'>
+        Contact Support <HiArrowUpRight className='inline' />
+      </Button>
+    </Container>
   )
 }
