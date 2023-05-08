@@ -17,7 +17,7 @@ export function ConfigProvider({ children }: { children: any }) {
   useEffect(() => {
     const theme = getUrlQuery('theme')
     const orderQuery = getUrlQuery('order')
-    const chatRoomOnly = getUrlQuery('chatRoomOnly')
+    const isChatRoomOnly = getUrlQuery('isChatRoomOnly')
 
     if (theme === 'dark' || theme === 'light') {
       setTheme(theme)
@@ -28,7 +28,7 @@ export function ConfigProvider({ children }: { children: any }) {
       setOrder(usedOrder)
     }
 
-    if (chatRoomOnly === '1' || chatRoomOnly === 'true') {
+    if (isChatRoomOnly === '1' || isChatRoomOnly === 'true') {
       setIsChatRoomOnly(true)
     }
   }, [])
