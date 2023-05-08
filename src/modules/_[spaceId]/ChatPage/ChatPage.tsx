@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import ChatRoom from '@/components/chats/ChatRoom'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { useConfigContext } from '@/contexts/ConfigContext'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { getPostQuery } from '@/services/api/query'
@@ -68,21 +69,24 @@ function NavbarChatInfo({
 }) {
   const isInIframe = useIsInIframe()
   const router = useRouter()
+  const { isChatRoomOnly } = useConfigContext()
 
   const topic = post?.content?.title
 
   return (
     <div className='flex items-center'>
-      <div className='mr-2 flex w-9 items-center justify-center'>
-        <Button
-          size='circle'
-          href={getHomePageLink(router)}
-          nextLinkProps={{ replace: isInIframe }}
-          variant='transparent'
-        >
-          <HiOutlineChevronLeft />
-        </Button>
-      </div>
+      {!isChatRoomOnly && (
+        <div className='mr-2 flex w-9 items-center justify-center'>
+          <Button
+            size='circle'
+            href={getHomePageLink(router)}
+            nextLinkProps={{ replace: isInIframe }}
+            variant='transparent'
+          >
+            <HiOutlineChevronLeft />
+          </Button>
+        </div>
+      )}
       <div className='flex items-center gap-2 overflow-hidden'>
         <Image
           className='h-9 w-9 justify-self-end rounded-full bg-background-light bg-gradient-to-b from-[#E0E7FF] to-[#A5B4FC] object-cover'
