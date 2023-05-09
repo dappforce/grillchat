@@ -92,7 +92,7 @@ export default function CustomContextMenu({
         {...getFloatingProps()}
         appear
         show={openMenu}
-        className='z-50 transition-opacity'
+        className='z-30 transition-opacity'
         enter='ease-out duration-150'
         enterFrom='opacity-0'
         enterTo='opacity-100'
