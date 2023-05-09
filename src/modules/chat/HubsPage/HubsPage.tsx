@@ -2,17 +2,11 @@ import AddIcon from '@/assets/icons/add.png'
 import IntegrateIcon from '@/assets/icons/integrate.png'
 import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import { getLinkedChatIdsForSpaceId } from '@/constants/chat-room'
+import { Hub, HUBS } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import { getPostQuery } from '@/services/api/query'
-import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
-import { getIpfsContentUrl } from '@/utils/ipfs'
-import { getChatPageLink } from '@/utils/links'
-import { createSlug } from '@/utils/slug'
 import { removeDoubleSpaces } from '@/utils/strings'
-import { PostData } from '@subsocial/api/types'
 import { matchSorter } from 'match-sorter'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -20,47 +14,34 @@ import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import HomePageNavbar from './HomePageNavbar'
-import useSortByConfig from './hooks/useSortByConfig'
-import useSortedChatIdsByLatestMessage from './hooks/useSortByLatestMessage'
 
 const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
   ssr: false,
 })
 
-export type HomePageProps = {
+export type HubsPageProps = {
   isIntegrateChatButtonOnTop: boolean
-  spaceId: string
+  hubsChatCount: { [key: string]: number }
 }
-export default function HomePage({
+export default function HubsPage({
   isIntegrateChatButtonOnTop,
-  spaceId,
-}: HomePageProps) {
+  hubsChatCount = {},
+}: HubsPageProps) {
   const isInIframe = useIsInIframe()
-  const { data } = getChatIdsBySpaceIdQuery.useQuery(spaceId)
-  const allChatIds = useMemo(() => {
-    return [...(data?.chatIds ?? []), ...getLinkedChatIdsForSpaceId(spaceId)]
-  }, [data, spaceId])
-
-  const sortedIds = useSortedChatIdsByLatestMessage(allChatIds)
-  const order = useSortByConfig(sortedIds)
 
   const [search, setSearch] = useState('')
-  const chatQueries = getPostQuery.useQueries(order)
-
   const searchResults = useMemo(() => {
-    const chats = chatQueries.map(({ data: chat }) => chat)
-    let searchResults = chats as PostData[]
-
+    let searchResults = HUBS
     const processedSearch = removeDoubleSpaces(search)
 
     if (processedSearch) {
-      searchResults = matchSorter(chats, processedSearch, {
-        keys: ['content.title'],
-      }) as PostData[]
+      searchResults = matchSorter(HUBS, processedSearch, {
+        keys: ['title'],
+      })
     }
 
     return searchResults
-  }, [search, chatQueries])
+  }, [search])
 
   const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
   useEffect(() => {
@@ -152,13 +133,14 @@ export default function HomePage({
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {!isInIframe && !search && specialButtons}
-        {searchResults.map((chat, idx) => {
-          if (!chat) return null
+        {searchResults.map((hub, idx) => {
+          if (!hub) return null
           return (
             <ChatPreviewContainer
               isFocused={idx === focusedElementIndex}
-              chat={chat}
-              key={chat.id}
+              hub={hub}
+              chatCount={hubsChatCount[hub.path]}
+              key={hub.path}
             />
           )
         })}
@@ -168,22 +150,20 @@ export default function HomePage({
 }
 
 function ChatPreviewContainer({
-  chat,
+  hub,
   isFocused,
+  chatCount,
 }: {
-  chat: PostData
+  hub: Hub
   isFocused?: boolean
+  chatCount: number | undefined
 }) {
+  console.log(chatCount)
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
-  const content = chat?.content
-
-  const linkTo = getChatPageLink(
-    router,
-    createSlug(chat.id, { title: content?.title })
-  )
+  const linkTo = `/${hub.path}`
 
   useHotkeys(
     'enter',
@@ -200,25 +180,24 @@ function ChatPreviewContainer({
   )
 
   const onChatClick = () => {
-    sendEvent(`click on chat`, {
-      title: content?.title ?? '',
-      chatId: chat.id,
+    sendEvent(`click on hub`, {
+      title: hub.title,
     })
   }
 
   return (
     <ChatPreview
+      isImageCircle={false}
       onClick={onChatClick}
       asContainer
       asLink={{
         replace: isInIframe,
         href: linkTo,
       }}
-      image={content?.image ? getIpfsContentUrl(content.image) : ''}
-      title={content?.title ?? ''}
-      description={content?.body ?? ''}
-      chatId={chat.id}
-      withUnreadCount
+      additionalDesc={chatCount ? `${chatCount} chats` : undefined}
+      image={hub.image}
+      title={hub.title}
+      description={hub.description}
       withFocusedStyle={isFocused}
     />
   )

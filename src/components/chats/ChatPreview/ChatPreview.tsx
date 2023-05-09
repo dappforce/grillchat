@@ -19,6 +19,8 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   title: string
   description: string
   image: ImageProps['src'] | JSX.Element
+  isImageCircle?: boolean
+  additionalDesc?: string
   asLink?: LinkProps
   isInteractive?: boolean
   chatId?: string
@@ -33,6 +35,8 @@ export default function ChatPreview({
   title,
   description,
   image,
+  isImageCircle = true,
+  additionalDesc,
   asContainer,
   asLink,
   isPinned,
@@ -68,6 +72,7 @@ export default function ChatPreview({
           style={{ backgroundClip: 'padding-box' }}
           className={cx(
             getCommonClassNames('chatImageBackground'),
+            isImageCircle ? 'rounded-full' : 'rounded-2xl',
             'h-12 w-12 self-center sm:h-14 sm:w-14'
           )}
         >
@@ -88,22 +93,34 @@ export default function ChatPreview({
           <div className='flex flex-1 flex-col gap-1 overflow-hidden'>
             <div className='flex items-center justify-between'>
               <span className='font-medium'>{title}</span>
-              {isPinned ? (
-                <Image
-                  src={PinIcon}
-                  alt='pin'
-                  width={16}
-                  height={16}
-                  className='ml-2 h-4 w-4 flex-shrink-0'
-                />
-              ) : (
-                chatId && (
-                  <ChatLastMessageTime
-                    chatId={chatId}
-                    className='text-sm text-text-muted'
-                  />
-                )
-              )}
+              {(() => {
+                if (isPinned) {
+                  return (
+                    <Image
+                      src={PinIcon}
+                      alt='pin'
+                      width={16}
+                      height={16}
+                      className='ml-2 h-4 w-4 flex-shrink-0'
+                    />
+                  )
+                } else if (chatId) {
+                  return (
+                    <ChatLastMessageTime
+                      chatId={chatId}
+                      className='text-sm text-text-muted'
+                    />
+                  )
+                } else if (additionalDesc) {
+                  return (
+                    <span className='text-sm text-text-muted'>
+                      {additionalDesc}
+                    </span>
+                  )
+                } else {
+                  return null
+                }
+              })()}
             </div>
             <div className='flex items-baseline justify-between overflow-hidden'>
               {chatId ? (
