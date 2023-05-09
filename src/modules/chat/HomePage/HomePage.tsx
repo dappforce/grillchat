@@ -134,9 +134,11 @@ export default function HomePage({
         customContent: (logo, auth, colorModeToggler) => {
           return (
             <HomePageNavbar
+              chatsCount={allChatIds.length}
+              logo={logo}
               auth={auth}
               colorModeToggler={colorModeToggler}
-              logo={logo}
+              spaceId={spaceId}
               searchProps={{
                 search,
                 setSearch,

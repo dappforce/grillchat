@@ -1,130 +1,89 @@
 import Button from '@/components/Button'
-import Input from '@/components/inputs/Input'
-import { cx } from '@/utils/class-names'
-import { useRef, useState } from 'react'
-import { Options, useHotkeys } from 'react-hotkeys-hook'
-import { BsXCircleFill } from 'react-icons/bs'
-import { HiMagnifyingGlass } from 'react-icons/hi2'
+import NavbarWithSearch, {
+  NavbarWithSearchProps,
+} from '@/components/navbar/Navbar/custom/NavbarWithSearch'
+import { getAliasFromSpaceId } from '@/constants/chat-room'
+import { HUBS } from '@/constants/hubs'
+import useIsInIframe from '@/hooks/useIsInIframe'
+import { cx, getCommonClassNames } from '@/utils/class-names'
+import Image from 'next/image'
+import { HiOutlineChevronLeft } from 'react-icons/hi2'
 
 export type HomePageNavbarProps = {
   logo: JSX.Element
   auth: JSX.Element
   colorModeToggler: JSX.Element
-  searchProps: {
-    search: string
-    setSearch: (search: string) => void
-    removeFocusedElement: () => void
-    onUpClick: () => void
-    onDownClick: () => void
-  }
+  searchProps: NavbarWithSearchProps['searchProps']
+  spaceId: string
+  chatsCount: number
 }
 
 export default function HomePageNavbar({
   auth,
   colorModeToggler,
   logo,
-  searchProps: {
-    search,
-    setSearch,
-    removeFocusedElement,
-    onUpClick,
-    onDownClick,
-  },
+  spaceId,
+  searchProps,
+  chatsCount,
 }: HomePageNavbarProps) {
-  const [isOpenSearch, setIsOpenSearch] = useState(false)
-  const searchRef = useRef<HTMLInputElement | null>(null)
+  const isInIframe = useIsInIframe()
+  const alias = getAliasFromSpaceId(spaceId)
+  const relatedHub = HUBS.find(
+    (hub) => hub.path === alias || hub.path === spaceId
+  )
 
-  const clearOrCloseSearch = () => {
-    removeFocusedElement()
-    if (search) {
-      setSearch('')
-      searchRef.current?.focus()
-    } else {
-      setIsOpenSearch(false)
-    }
-  }
-  useHotkeys('esc', clearOrCloseSearch, {
-    keydown: true,
-    enableOnFormTags: ['INPUT'],
-  })
-
-  const openSearch = () => {
-    setIsOpenSearch(true)
-    searchRef.current?.focus()
-  }
-  useHotkeys('/, ctrl+k', openSearch, {
-    enabled: !isOpenSearch,
-    preventDefault: true,
-  })
-
-  const arrowHotKeyOptions: Options = {
-    enabled: isOpenSearch,
-    preventDefault: true,
-    keydown: true,
-    enableOnFormTags: ['INPUT'],
-  }
-  useHotkeys('up', onUpClick, arrowHotKeyOptions)
-  useHotkeys('down', onDownClick, arrowHotKeyOptions)
-
-  return (
-    <div className='relative'>
-      <div
-        className={cx(
-          'absolute top-1/2 left-0 z-10 w-full -translate-y-1/2 transition-opacity',
-          !isOpenSearch && 'pointer-events-none opacity-0'
-        )}
-      >
-        <Input
-          ref={searchRef}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          leftElement={(className) => (
-            <HiMagnifyingGlass
-              className={cx(className, 'z-10 ml-1 text-xl text-text-muted')}
-            />
-          )}
-          rightElement={(className) => (
-            <Button
-              variant='transparent'
-              size='noPadding'
-              className={cx(
-                className,
-                'z-10 mr-1 cursor-pointer text-xl text-text-muted'
-              )}
-              onClick={clearOrCloseSearch}
-            >
-              <BsXCircleFill />
-            </Button>
-          )}
-          size='sm'
-          pill
-          placeholder='Search rooms'
-          variant='fill'
-          className='bg-background pl-10'
-        />
-      </div>
-      <div
-        className={cx(
-          'relative z-0 flex items-center justify-between transition-opacity',
-          isOpenSearch && 'opacity-0'
-        )}
-      >
-        {logo}
-        <div className='flex items-center gap-2 text-text-muted dark:text-text'>
+  let leftSection = logo
+  if (relatedHub) {
+    leftSection = (
+      <div className='mr-4 flex flex-1 items-center'>
+        <div className='mr-2 flex w-9 items-center justify-center'>
           <Button
             size='circle'
+            href='/hubs'
+            nextLinkProps={{ replace: isInIframe }}
             variant='transparent'
-            onClick={() => {
-              setIsOpenSearch(true)
-              searchRef.current?.focus()
-            }}
           >
-            <HiMagnifyingGlass className='text-xl' />
+            <HiOutlineChevronLeft />
           </Button>
-          {colorModeToggler}
-          <div className='ml-1.5'>{auth}</div>
+        </div>
+        <div className='flex flex-1 items-center gap-2 overflow-hidden'>
+          <Image
+            className={cx(
+              getCommonClassNames('chatImageBackground'),
+              'rounded-xl',
+              'h-9 w-9 flex-shrink-0 justify-self-end'
+            )}
+            width={36}
+            height={36}
+            src={relatedHub.image}
+            alt={relatedHub.title}
+          />
+          <div className='flex flex-col overflow-hidden'>
+            <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
+              {relatedHub.title}
+            </span>
+            <span className='text-xs text-text-muted'>
+              {chatsCount} chats in hub
+            </span>
+          </div>
         </div>
       </div>
-    </div>
+    )
+  }
+
+  return (
+    <NavbarWithSearch
+      customContent={(searchButton) => (
+        <div className='flex w-full items-center justify-between gap-2'>
+          {leftSection}
+          <div className='flex items-center gap-2 text-text-muted dark:text-text'>
+            {searchButton}
+            {colorModeToggler}
+            <div className='ml-1.5'>{auth}</div>
+          </div>
+        </div>
+      )}
+      searchProps={searchProps}
+    />
   )
 }

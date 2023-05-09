@@ -2,6 +2,7 @@ import AddIcon from '@/assets/icons/add.png'
 import IntegrateIcon from '@/assets/icons/integrate.png'
 import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import { Hub, HUBS } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useSendEvent } from '@/stores/analytics'
@@ -13,7 +14,6 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import HomePageNavbar from './HomePageNavbar'
 
 const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
   ssr: false,
@@ -114,10 +114,17 @@ export default function HubsPage({
       navbarProps={{
         customContent: (logo, auth, colorModeToggler) => {
           return (
-            <HomePageNavbar
-              auth={auth}
-              colorModeToggler={colorModeToggler}
-              logo={logo}
+            <NavbarWithSearch
+              customContent={(searchButton) => (
+                <div className='flex w-full items-center justify-between gap-4'>
+                  {logo}
+                  <div className='flex items-center gap-2'>
+                    {searchButton}
+                    {colorModeToggler}
+                    <div className='ml-1.5'>{auth}</div>
+                  </div>
+                </div>
+              )}
               searchProps={{
                 search,
                 setSearch,
@@ -158,7 +165,6 @@ function ChatPreviewContainer({
   isFocused?: boolean
   chatCount: number | undefined
 }) {
-  console.log(chatCount)
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
   const router = useRouter()
