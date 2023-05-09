@@ -76,7 +76,9 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
     )
   }
   const authComponent = renderAuthComponent()
-  const colorModeToggler = <ColorModeToggler />
+  const colorModeToggler = (
+    <ColorModeToggler className='text-text-muted dark:text-text' />
+  )
   const logoLink = (
     <Link href={getHomePageLink(router)} aria-label='Back to home'>
       <Logo className='text-2xl' />
