@@ -233,7 +233,7 @@ function NoSearchResultScreen() {
       as='div'
       className='mt-20 flex !max-w-lg flex-col items-center justify-center gap-4 text-center'
     >
-      <Image src={NoResultImage} alt='' />
+      <Image src={NoResultImage} className='h-80 w-80' alt='' />
       <span className='text-3xl font-bold'>😳 No results</span>
       <p className='text-text-muted'>
         Sorry, no chats were found with that name. However, our support team is
