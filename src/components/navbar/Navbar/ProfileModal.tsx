@@ -47,11 +47,11 @@ const modalTitles: {
 } = {
   account: { title: <span className='font-medium'>My Account</span> },
   logout: {
-    title: '🤔 Did you back up your grill key?',
+    title: '🤔 Did you back up your grill secret key?',
     withBackButton: true,
   },
   'private-key': {
-    title: '🔑 grill key',
+    title: '🔑 Grill secret key',
     withBackButton: true,
   },
   'share-session': {
@@ -153,7 +153,7 @@ function AccountContent({
 
   const buttons: ButtonData[] = [
     {
-      text: 'Show grill key',
+      text: 'Show grill secret key',
       icon: KeyIcon,
       onClick: onShowPrivateKeyClick,
       notification,
@@ -182,7 +182,7 @@ function AccountContent({
           </span>
           <CopyTextInline
             text={truncateAddress(address)}
-            tooltip='Copy my public address'
+            tooltip='Copy my grill public address'
             textToCopy={address}
           />
         </div>
@@ -234,8 +234,8 @@ function PrivateKeyContent() {
   return (
     <div className='flex flex-col items-center gap-4'>
       <p className='mb-2 text-text-muted'>
-        A grill key is like a long password. We recommend keeping it in a safe
-        place, so you can recover your account.
+        A grill secret key is like a long password. We recommend keeping it in a
+        safe place, so you can recover your account.
       </p>
       <CopyText onCopyClick={onCopyClick} isCodeText text={secretKey || ''} />
     </div>
@@ -258,7 +258,7 @@ function LogoutContent({ setCurrentState }: ContentProps) {
   return (
     <div className='mt-4 flex flex-col gap-4'>
       <Button size='lg' onClick={onShowPrivateKeyClick}>
-        No, show me my grill key
+        No, show me my grill secret key
       </Button>
       <Button size='lg' onClick={onLogoutClick} variant='primaryOutline'>
         Yes, log out
