@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
-import { getEmojiAmount, isTextContainsOnlyEmoji } from '@/utils/text'
+import { getEmojiAmount, isTextContainsOnlyEmoji } from '@/utils/strings'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import RepliedMessagePreview from '../RepliedMessagePreview'
 import { ChatItemContentProps } from './types'
