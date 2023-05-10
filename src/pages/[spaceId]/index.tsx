@@ -6,6 +6,7 @@ import HomePage, { HomePageProps } from '@/modules/chat/HomePage'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getMainSpaceId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
@@ -79,12 +80,14 @@ export const getStaticProps = getCommonStaticProps<
 
     try {
       const subsocialApi = await getSubsocialApi()
+
       const chatIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
       const allChatIds = [...chatIds, ...getLinkedChatIdsForSpaceId(spaceId)]
 
       const [{ lastMessages, chats, messageIdsByChatIds }] = await Promise.all([
         getChatPreviewsData(allChatIds),
         prefetchBlockedEntities(queryClient, allChatIds),
+        getSpaceBySpaceIdQuery.fetchQuery(queryClient, spaceId),
       ] as const)
 
       getChatIdsBySpaceIdQuery.setQueryData(queryClient, spaceId, {

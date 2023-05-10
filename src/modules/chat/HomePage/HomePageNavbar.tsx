@@ -2,10 +2,11 @@ import Button from '@/components/Button'
 import NavbarWithSearch, {
   NavbarWithSearchProps,
 } from '@/components/navbar/Navbar/custom/NavbarWithSearch'
-import { getAliasFromSpaceId } from '@/constants/chat-room'
-import { HUBS } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
+import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { cx, getCommonClassNames } from '@/utils/class-names'
+import { getSpaceIds } from '@/utils/env/client'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import Image from 'next/image'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 
@@ -27,10 +28,8 @@ export default function HomePageNavbar({
   chatsCount,
 }: HomePageNavbarProps) {
   const isInIframe = useIsInIframe()
-  const alias = getAliasFromSpaceId(spaceId)
-  const relatedHub = HUBS.find(
-    (hub) => hub.path === alias || hub.path === spaceId
-  )
+  const { data: space } = getSpaceBySpaceIdQuery.useQuery(spaceId)
+  const relatedHub = getSpaceIds().includes(spaceId)
 
   let leftSection = logo
   if (relatedHub) {
@@ -55,12 +54,12 @@ export default function HomePageNavbar({
             )}
             width={36}
             height={36}
-            src={relatedHub.image}
-            alt={relatedHub.title}
+            src={getIpfsContentUrl(space?.content?.image ?? '')}
+            alt={space?.content?.name ?? ''}
           />
           <div className='flex flex-col overflow-hidden'>
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
-              {relatedHub.title}
+              {space?.content?.name ?? ''}
             </span>
             <span className='text-xs text-text-muted'>
               {chatsCount} chats in hub
