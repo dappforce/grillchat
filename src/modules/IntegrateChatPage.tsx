@@ -21,7 +21,7 @@ export default function IntegrateChatPage() {
   return (
     <FixedBottomActionLayout
       title={title}
-      showTransparentNavbar={inView}
+      isTransparentNavbar={inView}
       bottomPanel={
         <Container
           as='div'

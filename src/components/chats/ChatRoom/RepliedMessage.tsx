@@ -5,28 +5,28 @@ import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
-import { getChatItemId, scrollToChatItem } from '../helpers'
+import { getMessageElementId, scrollToMessageElement } from '../helpers'
 
 export type RepliedMessageProps = ComponentProps<'div'> & {
-  replyChatId: string
+  replyMessageId: string
   closeReply: () => void
   scrollContainer?: React.RefObject<HTMLElement | null>
 }
 
 export default function RepliedMessage({
-  replyChatId,
+  replyMessageId,
   closeReply,
   scrollContainer,
 }: RepliedMessageProps) {
-  const { data } = getPostQuery.useQuery(replyChatId)
-  const chatContent = data?.content?.body
-  const chatSenderAddr = data?.struct.ownerId
-  const senderColor = useRandomColor(chatSenderAddr)
-  const name = generateRandomName(chatSenderAddr)
+  const { data: message } = getPostQuery.useQuery(replyMessageId)
+  const messageContent = message?.content?.body
+  const messageSenderAddr = message?.struct.ownerId
+  const senderColor = useRandomColor(messageSenderAddr)
+  const name = generateRandomName(messageSenderAddr)
 
   const onRepliedMessageClick = () => {
-    const element = document.getElementById(getChatItemId(replyChatId))
-    scrollToChatItem(element, scrollContainer?.current ?? null)
+    const element = document.getElementById(getMessageElementId(replyMessageId))
+    scrollToMessageElement(element, scrollContainer?.current ?? null)
   }
 
   return (
@@ -45,7 +45,7 @@ export default function RepliedMessage({
           Reply to {name}
         </span>
         <span className='w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-light opacity-75'>
-          {chatContent}
+          {messageContent}
         </span>
       </div>
       <Button

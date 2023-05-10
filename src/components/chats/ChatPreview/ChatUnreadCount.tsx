@@ -4,24 +4,24 @@ import { cx } from '@/utils/class-names'
 import { ComponentProps, useMemo } from 'react'
 
 export type ChatUnreadCountProps = ComponentProps<'div'> & {
-  postId: string
+  chatId: string
 }
 
 export default function ChatUnreadCount({
-  postId,
+  chatId,
   ...props
 }: ChatUnreadCountProps) {
-  const { getLastReadMessageId } = useLastReadMessageId(postId)
-  const { data: commentIds } = useCommentIdsByPostId(postId)
+  const { getLastReadMessageId } = useLastReadMessageId(chatId)
+  const { data: messageIds } = useCommentIdsByPostId(chatId)
 
   const lastReadId = getLastReadMessageId()
   const unreadCount = useMemo(() => {
-    const commentLength = commentIds?.length
-    if (!lastReadId || !commentLength || commentLength === 0) return 0
-    const lastReadIndex = commentIds?.findIndex((id) => id === lastReadId)
+    const messagesLength = messageIds?.length
+    if (!lastReadId || !messagesLength || messagesLength === 0) return 0
+    const lastReadIndex = messageIds?.findIndex((id) => id === lastReadId)
     if (lastReadIndex === -1) return 0
-    return commentLength - 1 - lastReadIndex
-  }, [commentIds, lastReadId])
+    return messagesLength - 1 - lastReadIndex
+  }, [messageIds, lastReadId])
 
   if (unreadCount <= 0) return null
 

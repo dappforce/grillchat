@@ -9,14 +9,14 @@ export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   repliedMessageId: string
   originalMessage: string
   minimumReplyChar?: number
-  scrollToChatElement?: (chatId: string) => Promise<void>
+  scrollToMessage?: (messageId: string) => Promise<void>
 }
 
 const MINIMUM_REPLY_CHAR = 35
 export default function RepliedMessagePreview({
   repliedMessageId,
   originalMessage,
-  scrollToChatElement,
+  scrollToMessage,
   minimumReplyChar = MINIMUM_REPLY_CHAR,
   ...props
 }: RepliedMessagePreviewProps) {
@@ -35,9 +35,9 @@ export default function RepliedMessagePreview({
   }
 
   const onRepliedMessageClick = async () => {
-    if (!scrollToChatElement) return
+    if (!scrollToMessage) return
     setIsLoading(true)
-    await scrollToChatElement(repliedMessageId)
+    await scrollToMessage(repliedMessageId)
     setIsLoading(false)
   }
 
@@ -48,7 +48,7 @@ export default function RepliedMessagePreview({
       {...props}
       className={cx(
         'flex flex-col overflow-hidden border-l-2 pl-2 text-sm',
-        scrollToChatElement && 'cursor-pointer',
+        scrollToMessage && 'cursor-pointer',
         isLoading && 'animate-pulse',
         props.className
       )}

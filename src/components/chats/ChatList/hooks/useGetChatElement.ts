@@ -4,82 +4,82 @@ import { generateManuallyTriggeredPromise } from '@/utils/promise'
 import { PostData } from '@subsocial/api/types'
 import { UseQueryResult } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef } from 'react'
-import { getChatItemId } from '../../helpers'
+import { getMessageElementId } from '../../helpers'
 
 // TODO: refactor this hook to have better readability
-export default function useGetChatElement({
-  commentIds,
-  commentsQuery,
+export default function useGetMessageElement({
+  messageIds,
+  messageQueries,
   loadMore,
-  loadedCommentsQuery,
+  loadedMessageQueries,
 }: {
-  commentIds: string[]
-  commentsQuery: UseQueryResult<PostData | null, unknown>[]
-  loadedCommentsQuery: UseQueryResult<PostData | null, unknown>[]
+  messageIds: string[]
+  messageQueries: UseQueryResult<PostData | null, unknown>[]
+  loadedMessageQueries: UseQueryResult<PostData | null, unknown>[]
   loadMore: () => void
 }) {
-  const waitAllCommentsLoaded = useWaitCommentsLoading(commentsQuery)
+  const waitAllMessagesLoaded = useWaitMessagesLoading(messageQueries)
 
-  const waitAllCommentsLoadedRef = useWrapInRef(waitAllCommentsLoaded)
-  const commentIdsRef = useWrapInRef(commentIds)
+  const waitAllMessagesLoadedRef = useWrapInRef(waitAllMessagesLoaded)
+  const messageIdsRef = useWrapInRef(messageIds)
 
   const promiseRef = useRef<{
     resolvers: Map<string, VoidFunction[]>
-    waitingCommentIds: Set<string>
-  }>({ resolvers: new Map(), waitingCommentIds: new Set() })
+    waitingMessageIds: Set<string>
+  }>({ resolvers: new Map(), waitingMessageIds: new Set() })
 
-  const loadedCommentIds = useMemo(() => {
+  const loadedMessageIds = useMemo(() => {
     const ids: string[] = []
-    loadedCommentsQuery.forEach((comment) => {
-      if (comment.data?.id) {
-        ids.push(comment.data.id)
+    loadedMessageQueries.forEach((message) => {
+      if (message.data?.id) {
+        ids.push(message.data.id)
       }
     })
     return ids
-  }, [loadedCommentsQuery])
+  }, [loadedMessageQueries])
 
   const awaitableLoadMore = useAwaitableLoadMore(
     loadMore,
-    loadedCommentIds.length
+    loadedMessageIds.length
   )
 
   useEffect(() => {
-    const { waitingCommentIds } = promiseRef.current
-    waitingCommentIds.forEach((commentId) => {
-      if (loadedCommentIds.includes(commentId)) {
-        const resolvers = promiseRef.current.resolvers.get(commentId)
+    const { waitingMessageIds } = promiseRef.current
+    waitingMessageIds.forEach((messageId) => {
+      if (loadedMessageIds.includes(messageId)) {
+        const resolvers = promiseRef.current.resolvers.get(messageId)
         resolvers?.forEach((resolve) => resolve())
-        promiseRef.current.resolvers.delete(commentId)
-        waitingCommentIds.delete(commentId)
+        promiseRef.current.resolvers.delete(messageId)
+        waitingMessageIds.delete(messageId)
       }
     })
-  }, [loadedCommentIds])
+  }, [loadedMessageIds])
 
-  const loadMoreUntilCommentIsLoaded = async (commentId: string) => {
-    const isCommentIdIncluded = commentIdsRef.current.includes(commentId)
-    if (isCommentIdIncluded) return
+  const loadMoreUntilMessageIsLoaded = async (messageId: string) => {
+    const isMessageIdIncluded = messageIdsRef.current.includes(messageId)
+    if (isMessageIdIncluded) return
     await awaitableLoadMore()
-    await loadMoreUntilCommentIsLoaded(commentId)
+    await loadMoreUntilMessageIsLoaded(messageId)
   }
 
-  const getChatElement = async (commentId: string) => {
+  const getChatElement = async (messageId: string) => {
     const { getPromise, getResolver } = generateManuallyTriggeredPromise()
-    const elementId = getChatItemId(commentId)
+    const elementId = getMessageElementId(messageId)
     const element = document.getElementById(elementId)
     if (element) return element
 
-    const isCommentIdIncluded = commentIds.includes(commentId)
-    if (!isCommentIdIncluded) {
-      await loadMoreUntilCommentIsLoaded(commentId)
+    const isMessageIdIncluded = messageIds.includes(messageId)
+    if (!isMessageIdIncluded) {
+      await loadMoreUntilMessageIsLoaded(messageId)
     }
-    const { resolvers, waitingCommentIds } = promiseRef.current
-    if (!resolvers.get(commentId)) {
-      resolvers.set(commentId, [])
+    const { resolvers, waitingMessageIds } = promiseRef.current
+    if (!resolvers.get(messageId)) {
+      resolvers.set(messageId, [])
     }
-    resolvers.get(commentId)?.push(getResolver())
-    waitingCommentIds.add(commentId)
+    resolvers.get(messageId)?.push(getResolver())
+    waitingMessageIds.add(messageId)
     await getPromise()
-    await waitAllCommentsLoadedRef.current()
+    await waitAllMessagesLoadedRef.current()
 
     return document.getElementById(elementId)
   }
@@ -89,7 +89,7 @@ export default function useGetChatElement({
 
 function useAwaitableLoadMore(
   loadMore: () => void,
-  loadedCommentsCount: number
+  loadedMessagesCount: number
 ) {
   const resolverRef = useRef<VoidFunction[]>([])
 
@@ -97,7 +97,7 @@ function useAwaitableLoadMore(
     const resolvers = resolverRef.current
     resolvers.forEach((resolve) => resolve())
     resolverRef.current = []
-  }, [loadedCommentsCount])
+  }, [loadedMessagesCount])
 
   return async () => {
     const { getResolver, getPromise } = generateManuallyTriggeredPromise()
@@ -107,11 +107,11 @@ function useAwaitableLoadMore(
   }
 }
 
-function useWaitCommentsLoading(
-  commentsQuery: UseQueryResult<PostData | null, unknown>[]
+function useWaitMessagesLoading(
+  messagesQuery: UseQueryResult<PostData | null, unknown>[]
 ) {
   const resolverRef = useRef<VoidFunction[]>([])
-  const isLoading = useIsAnyQueriesLoading(commentsQuery)
+  const isLoading = useIsAnyQueriesLoading(messagesQuery)
 
   useEffect(() => {
     if (!isLoading) {

@@ -21,7 +21,7 @@ import {
 } from 'react'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
-  postId: string
+  chatId: string
   onSubmit?: () => void
   replyTo?: string
   clearReplyTo?: () => void
@@ -33,14 +33,14 @@ function processMessage(message: string) {
 
 export default function ChatForm({
   className,
-  postId,
+  chatId,
   onSubmit,
   replyTo,
   clearReplyTo,
   ...props
 }: ChatFormProps) {
-  const { data: post } = getPostQuery.useQuery(postId)
-  const topicName = post?.content?.title ?? ''
+  const { data: chat } = getPostQuery.useQuery(chatId)
+  const chatTitle = chat?.content?.title ?? ''
 
   const sendEvent = useSendEvent()
 
@@ -61,7 +61,7 @@ export default function ChatForm({
     (e) => e.message
   )
 
-  const [message, setMessage] = useState('')
+  const [messageBody, setMessageBody] = useState('')
   const { mutate: sendMessage, error } = useSendMessage()
   useToastError(error, 'Message failed to send, please try again')
 
@@ -79,10 +79,10 @@ export default function ChatForm({
 
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
-  const isDisabled = !processMessage(message)
+  const isDisabled = !processMessage(messageBody)
 
   const resetForm = () => {
-    setMessage('')
+    setMessageBody('')
     clearReplyTo?.()
   }
   const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
@@ -95,28 +95,28 @@ export default function ChatForm({
       ;(navigator.virtualKeyboard as any).show()
     }
 
-    const processedMessage = processMessage(message)
+    const processedMessage = processMessage(messageBody)
     if (isDisabled) return
 
     if (shouldSendMessage) {
       resetForm()
       sendMessage({
         message: processedMessage,
-        rootPostId: postId,
+        chatId: chatId,
         replyTo,
       })
     } else {
       if (isLoggedIn) {
         sendEvent('request energy')
       } else {
-        sendEvent('send first message', { chatId: postId, name: topicName })
+        sendEvent('send first message', { chatId: chatId, name: chatTitle })
       }
       if (!captchaToken) return
       resetForm()
       requestTokenAndSendMessage({
         captchaToken,
-        message: processMessage(message),
-        rootPostId: postId,
+        message: processMessage(messageBody),
+        chatId: chatId,
         replyTo,
       })
       setIsRequestingEnergy(true)
@@ -147,8 +147,8 @@ export default function ChatForm({
             <TextArea
               onEnterToSubmitForm={submitForm}
               ref={textAreaRef}
-              value={message}
-              onChange={(e) => setMessage((e.target as any).value)}
+              value={messageBody}
+              onChange={(e) => setMessageBody((e.target as any).value)}
               placeholder='Message...'
               rows={1}
               autoComplete='off'

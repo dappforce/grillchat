@@ -18,7 +18,7 @@ export default function DefaultChatItem({
   relativeTime,
   senderColor,
   inReplyTo,
-  scrollToChatElement,
+  scrollToMessage,
   ...props
 }: DefaultChatItemProps) {
   const name = generateRandomName(ownerId)
@@ -49,7 +49,7 @@ export default function DefaultChatItem({
             originalMessage={body}
             className='mt-1'
             repliedMessageId={inReplyTo.id}
-            scrollToChatElement={scrollToChatElement}
+            scrollToMessage={scrollToMessage}
           />
         )}
         <p className='whitespace-pre-wrap break-words text-base'>

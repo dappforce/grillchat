@@ -1,6 +1,6 @@
 import PinIcon from '@/assets/icons/pin.png'
 import Container from '@/components/Container'
-import { cx } from '@/utils/class-names'
+import { cx, getCommonClassNames } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
@@ -21,7 +21,7 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   image: ImageProps['src'] | JSX.Element
   asLink?: LinkProps
   isInteractive?: boolean
-  postId?: string
+  chatId?: string
   isPinned?: boolean
   withUnreadCount?: boolean
   asContainer?: boolean
@@ -36,7 +36,7 @@ export default function ChatPreview({
   asContainer,
   asLink,
   isPinned,
-  postId,
+  chatId,
   isInteractive,
   withUnreadCount,
   withBorderBottom = true,
@@ -66,7 +66,10 @@ export default function ChatPreview({
       >
         <div
           style={{ backgroundClip: 'padding-box' }}
-          className='h-12 w-12 self-center overflow-hidden rounded-full bg-background-light bg-gradient-to-b from-[#E0E7FF] to-[#A5B4FC] sm:h-14 sm:w-14'
+          className={cx(
+            getCommonClassNames('chatImageBackground'),
+            'h-12 w-12 self-center sm:h-14 sm:w-14'
+          )}
         >
           {React.isValidElement(image)
             ? image
@@ -94,20 +97,20 @@ export default function ChatPreview({
                   className='ml-2 h-4 w-4 flex-shrink-0'
                 />
               ) : (
-                postId && (
+                chatId && (
                   <ChatLastMessageTime
-                    postId={postId}
+                    chatId={chatId}
                     className='text-sm text-text-muted'
                   />
                 )
               )}
             </div>
             <div className='flex items-baseline justify-between overflow-hidden'>
-              {postId ? (
+              {chatId ? (
                 <ChatLastMessage
                   className='py-0.5'
                   defaultDesc={description}
-                  postId={postId}
+                  chatId={chatId}
                 />
               ) : (
                 <p
@@ -118,8 +121,8 @@ export default function ChatPreview({
                   {description}
                 </p>
               )}
-              {withUnreadCount && postId && (
-                <ChatUnreadCount className='ml-2' postId={postId} />
+              {withUnreadCount && chatId && (
+                <ChatUnreadCount className='ml-2' chatId={chatId} />
               )}
             </div>
           </div>

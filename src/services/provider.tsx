@@ -3,7 +3,7 @@ import { SUBSTRATE_URL } from '@/constants/subsocial'
 import {
   setSubsocialConfig,
   setupTxCallbacks,
-  TxCallbacksParams,
+  TxCallbackInfo,
 } from '@/subsocial-query/subsocial/config'
 import {
   Hydrate,
@@ -21,7 +21,7 @@ setSubsocialConfig('staging', {
 })
 
 setupTxCallbacks({
-  onError: ({ error }: TxCallbacksParams) => {
+  onError: ({ error }: TxCallbackInfo) => {
     const errorMessage =
       typeof error === 'string' ? error : (error as Error)?.message
     toast.custom((t) => (

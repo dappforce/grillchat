@@ -8,17 +8,17 @@ import {
 } from '..'
 import { QueryConfig } from '../types'
 
-export type SubsocialParam<T> = { data: T } & { api: SubsocialApi }
+export type SubsocialQueryData<T> = { data: T } & { api: SubsocialApi }
 
 export function useSubsocialQuery<ReturnValue, Data>(
-  params: { key: string; data: Data | null },
-  func: (params: SubsocialParam<Data>) => Promise<ReturnValue>,
+  queryData: { key: string; data: Data | null },
+  func: (data: SubsocialQueryData<Data>) => Promise<ReturnValue>,
   config?: QueryConfig,
   defaultConfig?: QueryConfig<ReturnValue, Data>
 ) {
   const mergedConfig = mergeQueryConfig(config, defaultConfig)
   return useQuery(
-    [params.key, params.data],
+    [queryData.key, queryData.data],
     queryWrapper<ReturnValue, Data, { api: SubsocialApi }>(func, async () => {
       const { getSubsocialApi } = await import('./connection')
       const api = await getSubsocialApi()
@@ -28,22 +28,22 @@ export function useSubsocialQuery<ReturnValue, Data>(
   )
 }
 
-export function useSubsocialQueries<ReturnValue, Data>(
-  params: { key: string; data: (Data | null)[] },
+export function useSubsocialQueries<Data, ReturnValue>(
+  queryData: { key: string; data: (ReturnValue | null)[] },
   func: (
-    params: SubsocialParam<Data> & { idx: number }
-  ) => Promise<ReturnValue>,
+    data: SubsocialQueryData<ReturnValue> & { idx: number }
+  ) => Promise<Data>,
   config?: QueryConfig,
-  defaultConfig?: QueryConfig<ReturnValue, Data>
+  defaultConfig?: QueryConfig<Data, ReturnValue>
 ) {
   const mergedConfig = mergeQueryConfig(config, defaultConfig)
   return useQueries({
-    queries: params.data.map((singleData, idx) => {
+    queries: queryData.data.map((singleData, idx) => {
       return {
-        queryKey: [params.key, singleData],
+        queryKey: [queryData.key, singleData],
         queryFn: queryWrapper<
-          ReturnValue,
           Data,
+          ReturnValue,
           { api: SubsocialApi; idx: number }
         >(func, async () => {
           const { getSubsocialApi } = await import('./connection')
@@ -56,24 +56,24 @@ export function useSubsocialQueries<ReturnValue, Data>(
   })
 }
 
-export function createSubsocialQuery<Params, ReturnValue>({
+export function createSubsocialQuery<Data, ReturnValue>({
   key,
-  getData,
+  fetcher,
 }: {
   key: string
-  getData: (params: SubsocialParam<Params>) => Promise<ReturnValue>
+  fetcher: (params: SubsocialQueryData<Data>) => Promise<ReturnValue>
 }) {
-  const getQueryKey = createQueryKeys<Params>(key)
+  const getQueryKey = createQueryKeys<Data>(key)
   return {
     getQueryKey,
-    invalidate: createQueryInvalidation<Params>(key),
-    useQuery: (data: Params, config?: QueryConfig<Params, any>) => {
-      return useSubsocialQuery({ key, data }, getData, config)
+    invalidate: createQueryInvalidation<Data>(key),
+    useQuery: (data: Data, config?: QueryConfig<Data, any>) => {
+      return useSubsocialQuery({ key, data }, fetcher, config)
     },
-    useQueries: (data: Params[], config?: QueryConfig<Params, any>) => {
-      return useSubsocialQueries({ key, data }, getData, config)
+    useQueries: (data: Data[], config?: QueryConfig<Data, any>) => {
+      return useSubsocialQueries({ key, data }, fetcher, config)
     },
-    setQueryData: (client: QueryClient, data: Params, value: ReturnValue) => {
+    setQueryData: (client: QueryClient, data: Data, value: ReturnValue) => {
       client.setQueryData(getQueryKey(data), value ?? null)
     },
   }

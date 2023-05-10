@@ -8,14 +8,14 @@ export interface WalletAccount {
   signer?: any
 }
 
-export type OptimisticData<Param> = { param: Param; address: string }
-export interface DefaultSubsocialMutationConfig<Param, Context>
-  extends MutationConfig<Param> {
+export type OptimisticData<Data> = { data: Data; address: string }
+export interface DefaultSubsocialMutationConfig<Data, Context>
+  extends MutationConfig<Data> {
   txCallbacks?: {
-    getContext: (data: OptimisticData<Param>) => Context
-    onStart?: (param: OptimisticData<Param>, context: Context) => void
-    onSend?: (param: OptimisticData<Param>, context: Context) => void
-    onError?: (param: OptimisticData<Param>, context: Context) => void
-    onSuccess?: (param: OptimisticData<Param>, context: Context) => void
+    getContext: (data: OptimisticData<Data>) => Context
+    onStart?: (data: OptimisticData<Data>, context: Context) => void
+    onSend?: (data: OptimisticData<Data>, context: Context) => void
+    onError?: (data: OptimisticData<Data>, context: Context) => void
+    onSuccess?: (data: OptimisticData<Data>, context: Context) => void
   }
 }

@@ -19,17 +19,17 @@ const nextConfig = {
       {
         source: '/',
         destination: '/x',
-        permanent: true,
+        permanent: false,
       },
       {
         source: '/c/:slug',
         destination: '/x/c/:slug',
-        permanent: true,
+        permanent: false,
       },
       {
         source: '/:spaceId/c/:slug',
         destination: '/:spaceId/:slug',
-        permanent: true,
+        permanent: false,
       },
     ]
   },

@@ -1,5 +1,5 @@
 import LinkText from '@/components/LinkText'
-import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { getExplorerUrl } from '@/utils/explorer'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
