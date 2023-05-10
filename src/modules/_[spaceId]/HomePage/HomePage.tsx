@@ -6,6 +6,7 @@ import ChatPreview from '@/components/chats/ChatPreview'
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getLinkedPostIdsForSpaceId } from '@/constants/chat-room'
+import { SUGGEST_NEW_CHAT_ROOM_LINK } from '@/constants/links'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
@@ -240,7 +241,13 @@ function NoSearchResultScreen() {
         ready to help! Ask them to create a personalized chat tailored to your
         needs.
       </p>
-      <Button className='w-full' size='lg'>
+      <Button
+        className='w-full'
+        size='lg'
+        href={SUGGEST_NEW_CHAT_ROOM_LINK}
+        target='_blank'
+        rel='noopener noreferrer'
+      >
         Contact Support <HiArrowUpRight className='inline' />
       </Button>
     </Container>
