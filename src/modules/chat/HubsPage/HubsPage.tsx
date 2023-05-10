@@ -5,18 +5,17 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import { getAliasFromSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
+import useSearch from '@/hooks/useSearch'
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getSpaceIds } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
-import { removeDoubleSpaces } from '@/utils/strings'
 import { SpaceData } from '@subsocial/api/types'
-import { matchSorter } from 'match-sorter'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
@@ -27,6 +26,8 @@ export type HubsPageProps = {
   isIntegrateChatButtonOnTop: boolean
   hubsChatCount: { [id: string]: number }
 }
+
+const searchKeys = ['content.title']
 export default function HubsPage({
   isIntegrateChatButtonOnTop,
   hubsChatCount = {},
@@ -34,37 +35,15 @@ export default function HubsPage({
   const isInIframe = useIsInIframe()
   const hubIds = getSpaceIds()
   const hubQueries = getSpaceBySpaceIdQuery.useQueries(hubIds)
+  const hubs = useMemo(
+    () => hubQueries.map(({ data: hub }) => hub),
+    [hubQueries]
+  )
 
-  const [search, setSearch] = useState('')
-  const searchResults = useMemo(() => {
-    const hubs = hubQueries.map(({ data: hub }) => hub)
-    let searchResults = hubs
-    const processedSearch = removeDoubleSpaces(search)
-
-    if (processedSearch) {
-      searchResults = matchSorter(hubs, processedSearch, {
-        keys: ['content.title'],
-      })
-    }
-
-    return searchResults
-  }, [search, hubQueries])
-
-  const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
-  useEffect(() => {
-    setFocusedElementIndex(-1)
-  }, [search])
-  const removeFocusedElement = () => {
-    setFocusedElementIndex(-1)
-  }
-  const onDownClick = () => {
-    setFocusedElementIndex((prev) =>
-      Math.min(prev + 1, searchResults.length - 1)
-    )
-  }
-  const onUpClick = () => {
-    setFocusedElementIndex((prev) => Math.max(prev - 1, 0))
-  }
+  const { search, setSearch, focusController, searchResults } = useSearch(
+    hubs,
+    searchKeys
+  )
 
   const sendEvent = useSendEvent()
 
@@ -135,9 +114,7 @@ export default function HubsPage({
               searchProps={{
                 search,
                 setSearch,
-                removeFocusedElement,
-                onUpClick,
-                onDownClick,
+                ...focusController,
               }}
             />
           )
@@ -151,7 +128,7 @@ export default function HubsPage({
           if (!hub) return null
           return (
             <ChatPreviewContainer
-              isFocused={idx === focusedElementIndex}
+              isFocused={idx === focusController.focusedElementIndex}
               hub={hub}
               chatCount={hubsChatCount[hub.id]}
               key={hub.id}

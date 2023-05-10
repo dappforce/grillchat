@@ -4,6 +4,7 @@ import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getLinkedChatIdsForSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
+import useSearch from '@/hooks/useSearch'
 import { getPostQuery } from '@/services/api/query'
 import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
@@ -11,13 +12,11 @@ import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getChatPageLink } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
-import { removeDoubleSpaces } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
-import { matchSorter } from 'match-sorter'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import HomePageNavbar from './HomePageNavbar'
 import useSortByConfig from './hooks/useSortByConfig'
@@ -31,6 +30,7 @@ export type HomePageProps = {
   isIntegrateChatButtonOnTop: boolean
   spaceId: string
 }
+const searchKeys = ['content.title']
 export default function HomePage({
   isIntegrateChatButtonOnTop,
   spaceId,
@@ -44,39 +44,16 @@ export default function HomePage({
   const sortedIds = useSortedChatIdsByLatestMessage(allChatIds)
   const order = useSortByConfig(sortedIds)
 
-  const [search, setSearch] = useState('')
   const chatQueries = getPostQuery.useQueries(order)
+  const chats = useMemo(
+    () => chatQueries.map(({ data }) => data),
+    [chatQueries]
+  )
 
-  const searchResults = useMemo(() => {
-    const chats = chatQueries.map(({ data: chat }) => chat)
-    let searchResults = chats as PostData[]
-
-    const processedSearch = removeDoubleSpaces(search)
-
-    if (processedSearch) {
-      searchResults = matchSorter(chats, processedSearch, {
-        keys: ['content.title'],
-      }) as PostData[]
-    }
-
-    return searchResults
-  }, [search, chatQueries])
-
-  const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
-  useEffect(() => {
-    setFocusedElementIndex(-1)
-  }, [search])
-  const removeFocusedElement = () => {
-    setFocusedElementIndex(-1)
-  }
-  const onDownClick = () => {
-    setFocusedElementIndex((prev) =>
-      Math.min(prev + 1, searchResults.length - 1)
-    )
-  }
-  const onUpClick = () => {
-    setFocusedElementIndex((prev) => Math.max(prev - 1, 0))
-  }
+  const { search, searchResults, setSearch, focusController } = useSearch(
+    chats,
+    searchKeys
+  )
 
   const sendEvent = useSendEvent()
 
@@ -142,9 +119,7 @@ export default function HomePage({
               searchProps={{
                 search,
                 setSearch,
-                removeFocusedElement,
-                onUpClick,
-                onDownClick,
+                ...focusController,
               }}
             />
           )
@@ -158,7 +133,7 @@ export default function HomePage({
           if (!chat) return null
           return (
             <ChatPreviewContainer
-              isFocused={idx === focusedElementIndex}
+              isFocused={idx === focusController.focusedElementIndex}
               chat={chat}
               key={chat.id}
             />
