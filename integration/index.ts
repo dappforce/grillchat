@@ -3,7 +3,10 @@ export type GrillConfig = {
   spaceId?: string
   order?: string[]
   theme?: string
-  chatRoomId?: string
+  openChatRoomDirectly?: {
+    chatId: string
+    enableBackToHome?: boolean
+  }
   customizeIframe?: (iframe: HTMLIFrameElement) => HTMLIFrameElement
 }
 
@@ -31,13 +34,20 @@ const grill = {
     iframe.style.height = '100%'
 
     let baseUrl = `https://grill.chat/${mergedConfig.spaceId}`
-    if (mergedConfig.chatRoomId) {
-      baseUrl += `/${mergedConfig.chatRoomId}`
+    const directOpenChatId = mergedConfig.openChatRoomDirectly?.chatId
+    if (directOpenChatId) {
+      baseUrl += `/${directOpenChatId}`
     }
 
     const query = new URLSearchParams()
     if (mergedConfig.order) query.set('order', mergedConfig.order.join(','))
     if (mergedConfig.theme) query.set('theme', mergedConfig.theme)
+    if (
+      directOpenChatId &&
+      !mergedConfig.openChatRoomDirectly?.enableBackToHome
+    )
+      query.set('isChatRoomOnly', 'true')
+
     iframe.src = `${baseUrl}?${query.toString()}`
 
     if (mergedConfig.customizeIframe) {

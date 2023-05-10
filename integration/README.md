@@ -44,14 +44,14 @@ or using cdn
 
 ### Config Options
 
-| Name              | Type                                               | Description                                                                                                                                           |
-| ----------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `targetId`        | `string`                                           | The id of the div that you want to render the chat to. Default to `grill`                                                                             |
-| `spaceId`         | `string`                                           | The id of the space that you want to show the topics from. Default to `x` (grill.chat home page)                                                      |
-| `order`           | `string[]`                                         | The order of the topics (using post ids). e.g. `['1001', '1002']` if the post id exist in the space, it will be sorted based on the order provided    |
-| `theme`           | `string`                                           | The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat>                               |
-| `chatRoomId`      | `string`                                           | The id of the chat room that you want to open. If provided, it will open the chat room directly. If omitted, it will open the home page of the space. |
-| `customizeIframe` | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                                       |
+| Name                   | Type                                               | Description                                                                                                                                                                                                                                                                               |
+| ---------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `targetId`             | `string`                                           | The id of the div that you want to render the chat to. Default to `grill`                                                                                                                                                                                                                 |
+| `spaceId`              | `string`                                           | The id of the space that you want to show the topics from. Default to `x` (grill.chat home page)                                                                                                                                                                                          |
+| `order`                | `string[]`                                         | The order of the topics (using post ids). e.g. `['1001', '1002']` if the post id exist in the space, it will be sorted based on the order provided                                                                                                                                        |
+| `theme`                | `string`                                           | The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat>                                                                                                                                                                   |
+| `openChatRoomDirectly` | `{ chatId: string; enableBackToHome?: boolean }`   | Option to make the iframe open chat room directly, based on provided `chatId`. If you set this, the iframe will open the chat page, and there will be no links to home page. If you still want the user to be able to go back to home page, then you can set `enableBackToHome` to `true` |
+| `customizeIframe`      | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                                                                                                                                                                           |
 
 ## Iframe Integration
 
@@ -89,7 +89,7 @@ Grill.chat has 2 pages that can be the start point.
 
 2. Chat Page
 
-   You can also choose to have your user automatically opens a chat room. This is useful if you want to have a specific topic for your user to discuss.
+   You can also choose to have your user automatically opens a chat room. This is useful if you want to have a specific topic for your user to discuss. You can hide the back button in chat room by using [`isChatRoomOnly` option](#23-other-options)
 
    ```
    https://grill.chat/[spaceId]/[topicId]
@@ -100,7 +100,8 @@ Grill.chat has 2 pages that can be the start point.
 You can also customize the `src` link with query parameters. Below includes the list of query parameters that you can use to customize the chat.
 generate table
 
-| Name  | Description                                                                                                                                                         |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| theme | Theme of the chat. Available options: `light` or `dark`. If not provided, it will use user's system preferences or his last selected theme when accessed Grill.chat |
-| order | Specifies the order of the chat in home page. Pass multiple topic ids in `order` separated by comma. The other chats will be ordered based on last message          |
+| Name           | Description                                                                                                                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| theme          | Theme of the chat. Available options: `light` or `dark`. If not provided, it will use user's system preferences or his last selected theme when accessed Grill.chat                                                |
+| order          | Specifies the order of the chat in home page. Pass multiple topic ids in `order` separated by comma. The other chats will be ordered based on last message                                                         |
+| isChatRoomOnly | If set to `true` or `1`, it will hide the back button in chat page. This should be used alongside [Page Options](#22-page-options), to set the iframe to chat page directly and set the iframe to only 1 chat room |

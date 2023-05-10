@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import ChatRoom from '@/components/chats/ChatRoom'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { useConfigContext } from '@/contexts/ConfigContext'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { getPostQuery } from '@/services/api/query'
@@ -84,6 +85,7 @@ function NavbarChatInfo({
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const isInIframe = useIsInIframe()
   const router = useRouter()
+  const { isChatRoomOnly } = useConfigContext()
 
   useEffect(() => {
     const open = getUrlQuery('open')
@@ -97,16 +99,18 @@ function NavbarChatInfo({
 
   return (
     <div className='flex flex-1 items-center'>
-      <div className='mr-2 flex w-9 items-center justify-center'>
-        <Button
-          size='circle'
-          href={getHomePageLink(router)}
-          nextLinkProps={{ replace: isInIframe }}
-          variant='transparent'
-        >
-          <HiOutlineChevronLeft />
-        </Button>
-      </div>
+      {!isChatRoomOnly && (
+        <div className='mr-2 flex w-9 items-center justify-center'>
+          <Button
+            size='circle'
+            href={getHomePageLink(router)}
+            nextLinkProps={{ replace: isInIframe }}
+            variant='transparent'
+          >
+            <HiOutlineChevronLeft />
+          </Button>
+        </div>
+      )}
       <Button
         variant='transparent'
         interactive='none'

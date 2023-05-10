@@ -8,12 +8,16 @@ export default function useScrollToMessage(
 ) {
   const getElement = useGetMessageElement(getMessageElementArgs)
 
-  return async (chatId: string) => {
+  return async (chatId: string, shouldHighlight = true) => {
     const element = await getElement(chatId)
     if (!element) return
 
     loadMoreController.pause()
-    await scrollToMessageElement(element, scrollContainerRef.current)
+    await scrollToMessageElement(
+      element,
+      scrollContainerRef.current,
+      shouldHighlight
+    )
     loadMoreController.unpause()
   }
 }

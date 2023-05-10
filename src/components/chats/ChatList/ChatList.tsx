@@ -113,8 +113,11 @@ function ChatListContent({
 
       const messageId = getUrlQuery('messageId')
       const isMessageIdsFetched = rawMessageIds !== undefined
-      if (!isMessageIdsFetched || !messageId || !isValidNumber(messageId))
+
+      if (!isMessageIdsFetched || !messageId || !isValidNumber(messageId)) {
+        scrollToChatElement(lastReadId ?? '', false)
         return
+      }
 
       router.replace(getCurrentUrlWithoutQuery(), undefined, {
         shallow: true,
