@@ -52,7 +52,7 @@ export default function ProfileAvatar({
           trigger={null}
           initialFocus={-1}
         >
-          <p>Click on your avatar and save your grill secret key</p>
+          <p>Click on your avatar and save your Grill secret key</p>
         </PopOver>
       </div>
     </>
