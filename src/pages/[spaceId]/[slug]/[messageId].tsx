@@ -32,7 +32,7 @@ export const getStaticProps = getCommonStaticProps<{
       title = `Message from ${chat.content?.title}`
       description = message.content?.body ?? ''
     } catch (err) {
-      console.error('Error fetching for chat about page: ', err)
+      console.error('Error fetching for message page: ', err)
     }
 
     return {

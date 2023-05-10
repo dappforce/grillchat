@@ -11,17 +11,19 @@ export type MetadataModalProps = ModalFunctionalityProps & {
   postIdTextPrefix?: string
 }
 
+type Metadata = {
+  title: string
+  text: string
+  link?: string
+  openInNewTab?: boolean
+}
+
 export default function MetadataModal({
   post,
   postIdTextPrefix = 'Post',
   ...props
 }: MetadataModalProps) {
-  const metadataList: {
-    title: string
-    text: string
-    link?: string
-    openInNewTab?: boolean
-  }[] = [
+  const metadataList: Metadata[] = [
     { title: `${postIdTextPrefix} ID:`, text: post.id },
     {
       title: 'Content ID:',
