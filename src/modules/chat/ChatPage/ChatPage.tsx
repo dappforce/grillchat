@@ -6,14 +6,27 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
-import { getHomePageLink } from '@/utils/links'
+import {
+  getCurrentUrlWithoutQuery,
+  getHomePageLink,
+  getUrlQuery,
+} from '@/utils/links'
 import { PostData } from '@subsocial/api/types'
+import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
+
+const AboutChatModal = dynamic(
+  () => import('@/components/modals/AboutChatModal'),
+  {
+    ssr: false,
+  }
+)
 
 export type ChatPageProps = { chatId: string }
 export default function ChatPage({ chatId }: ChatPageProps) {
@@ -69,14 +82,23 @@ function NavbarChatInfo({
   messageCount: number
   chat?: PostData | null
 }) {
+  const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const isInIframe = useIsInIframe()
   const router = useRouter()
   const { isChatRoomOnly } = useConfigContext()
 
+  useEffect(() => {
+    const open = getUrlQuery('open')
+    if (open !== 'about') return
+
+    setIsOpenAboutChatModal(true)
+    router.push(getCurrentUrlWithoutQuery(), undefined, { shallow: true })
+  }, [router])
+
   const chatTitle = chat?.content?.title
 
   return (
-    <div className='flex items-center'>
+    <div className='flex flex-1 items-center'>
       {!isChatRoomOnly && (
         <div className='mr-2 flex w-9 items-center justify-center'>
           <Button
@@ -89,9 +111,18 @@ function NavbarChatInfo({
           </Button>
         </div>
       )}
-      <div className='flex items-center gap-2 overflow-hidden'>
+      <Button
+        variant='transparent'
+        interactive='none'
+        size='noPadding'
+        className='flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left'
+        onClick={() => setIsOpenAboutChatModal(true)}
+      >
         <Image
-          className='h-9 w-9 justify-self-end rounded-full bg-background-light bg-gradient-to-b from-[#E0E7FF] to-[#A5B4FC] object-cover'
+          className={cx(
+            getCommonClassNames('chatImageBackground'),
+            'h-9 w-9 justify-self-end'
+          )}
           width={36}
           height={36}
           src={image}
@@ -105,7 +136,14 @@ function NavbarChatInfo({
             {messageCount} messages
           </span>
         </div>
-      </div>
+      </Button>
+
+      <AboutChatModal
+        isOpen={isOpenAboutChatModal}
+        closeModal={() => setIsOpenAboutChatModal(false)}
+        chatId={chat?.id}
+        messageCount={messageCount}
+      />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import PinIcon from '@/assets/icons/pin.png'
 import Container from '@/components/Container'
-import { cx } from '@/utils/class-names'
+import { cx, getCommonClassNames } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
@@ -66,7 +66,10 @@ export default function ChatPreview({
       >
         <div
           style={{ backgroundClip: 'padding-box' }}
-          className='h-12 w-12 self-center overflow-hidden rounded-full bg-background-light bg-gradient-to-b from-[#E0E7FF] to-[#A5B4FC] sm:h-14 sm:w-14'
+          className={cx(
+            getCommonClassNames('chatImageBackground'),
+            'h-12 w-12 self-center sm:h-14 sm:w-14'
+          )}
         >
           {React.isValidElement(image)
             ? image
