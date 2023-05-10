@@ -9,6 +9,7 @@ import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getSpaceIds } from '@/utils/env/client'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import { removeDoubleSpaces } from '@/utils/strings'
 import { SpaceData } from '@subsocial/api/types'
 import { matchSorter } from 'match-sorter'
@@ -208,7 +209,7 @@ function ChatPreviewContainer({
         href: linkTo,
       }}
       additionalDesc={chatCount ? `${chatCount} chats` : undefined}
-      image={hub.content?.image ?? ''}
+      image={getIpfsContentUrl(hub.content?.image ?? '')}
       title={hub.content?.name ?? ''}
       description={hub.content?.about ?? ''}
       withFocusedStyle={isFocused}
