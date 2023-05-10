@@ -70,7 +70,11 @@ export default function HubsPage({
     >
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
-        {!isInIframe && !search && <ChatSpecialButtons />}
+        {!isInIframe && !search && (
+          <ChatSpecialButtons
+            isIntegrateChatButtonOnTop={isIntegrateChatButtonOnTop}
+          />
+        )}
         {searchResults.map((hub, idx) => {
           if (!hub) return null
           return (

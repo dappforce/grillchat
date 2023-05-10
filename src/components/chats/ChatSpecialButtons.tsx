@@ -6,7 +6,7 @@ import Image from 'next/image'
 import ChatPreview from './ChatPreview'
 
 export type ChatSpecialButtonsProps = {
-  isIntegrateChatButtonOnTop?: boolean
+  isIntegrateChatButtonOnTop: boolean
 }
 
 export default function ChatSpecialButtons({

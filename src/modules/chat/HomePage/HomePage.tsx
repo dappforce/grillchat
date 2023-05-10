@@ -75,7 +75,11 @@ export default function HomePage({
     >
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
-        {!isInIframe && !search && <ChatSpecialButtons />}
+        {!isInIframe && !search && (
+          <ChatSpecialButtons
+            isIntegrateChatButtonOnTop={isIntegrateChatButtonOnTop}
+          />
+        )}
         {searchResults.map((chat, idx) => {
           if (!chat) return null
           return (
