@@ -1,7 +1,7 @@
 import { cx } from '@/utils/class-names'
 import Image, { ImageProps } from 'next/image'
 import { useState } from 'react'
-import Modal from './Modal'
+import Modal from './modals/Modal'
 
 export type ClickableImageProps = Omit<ImageProps, 'onClick'>
 

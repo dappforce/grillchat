@@ -1,12 +1,12 @@
 import { poolQuery } from '@/subsocial-query'
 import {
   createSubsocialQuery,
-  SubsocialParam,
+  SubsocialQueryData,
 } from '@/subsocial-query/subsocial/query'
 
-const getPostsBySpaceId = poolQuery<
-  SubsocialParam<string>,
-  { spaceId: string; postIds: string[] }
+const getChatIdsBySpaceId = poolQuery<
+  SubsocialQueryData<string>,
+  { spaceId: string; chatIds: string[] }
 >({
   multiCall: async (allParams) => {
     if (allParams.length === 0) return []
@@ -17,9 +17,9 @@ const getPostsBySpaceId = poolQuery<
     const res = await Promise.all(
       spaceIds.map((spaceId) => api.blockchain.postIdsBySpaceId(spaceId))
     )
-    return res.map((postIds, i) => ({
+    return res.map((chatIds, i) => ({
       spaceId: spaceIds[i],
-      postIds,
+      chatIds,
     }))
   },
   resultMapper: {
@@ -27,7 +27,7 @@ const getPostsBySpaceId = poolQuery<
     resultToKey: (result) => result?.spaceId ?? '',
   },
 })
-export const getPostIdsBySpaceIdQuery = createSubsocialQuery({
+export const getChatIdsBySpaceIdQuery = createSubsocialQuery({
   key: 'getPostIdsBySpaceId',
-  getData: getPostsBySpaceId,
+  fetcher: getChatIdsBySpaceId,
 })

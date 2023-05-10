@@ -22,5 +22,5 @@ const getPost = poolQuery<string, PostData>({
 })
 export const getPostQuery = createQuery({
   key: 'getPost',
-  getData: getPost,
+  fetcher: getPost,
 })

@@ -5,40 +5,37 @@ import usePrevious from '../../../../hooks/usePrevious'
 export default function useInfiniteScrollData<Data>(
   data: Data[],
   itemsPerPage: number,
-  config?: { reverse?: boolean; isPausedLoadMore?: boolean }
+  isPausedLoadMore?: boolean
 ) {
   const [currentPage, setCurrentPage] = useState(1)
   const previousDataLength = usePrevious(data.length)
 
   const callResolvers = useRef<VoidFunction[]>([])
   useEffect(() => {
-    if (!config?.isPausedLoadMore) {
+    if (!isPausedLoadMore) {
       callResolvers.current.forEach((resolver) => resolver())
       callResolvers.current = []
     }
-  }, [config?.isPausedLoadMore])
+  }, [isPausedLoadMore])
 
   const currentData = useMemo(() => {
     const newData = data.length - (previousDataLength ?? data.length)
-
     const itemCountInCurrentPage = currentPage * itemsPerPage + newData
-    let start = 0
-    let end = Math.min(itemCountInCurrentPage, data.length)
-    if (config?.reverse) {
-      start = Math.max(data.length - itemCountInCurrentPage, 0)
-      end = data.length
-    }
+
+    let start = Math.max(data.length - itemCountInCurrentPage, 0)
+    let end = data.length
     const slicedData = data.slice(start, end)
-    if (config?.reverse) slicedData.reverse()
+
+    slicedData.reverse()
     return slicedData
-  }, [data, previousDataLength, currentPage, itemsPerPage, config?.reverse])
+  }, [data, previousDataLength, currentPage, itemsPerPage])
 
   const hasMore = currentPage * itemsPerPage < data.length
 
   const loadMore = useCallback(async () => {
     console.log('Load more...')
 
-    if (config?.isPausedLoadMore) {
+    if (isPausedLoadMore) {
       const { getPromise, getResolver } = generateManuallyTriggeredPromise()
       callResolvers.current.push(getResolver())
       await getPromise()
@@ -47,7 +44,7 @@ export default function useInfiniteScrollData<Data>(
     if (hasMore) {
       setCurrentPage((prev) => prev + 1)
     }
-  }, [hasMore, config?.isPausedLoadMore])
+  }, [hasMore, isPausedLoadMore])
 
   return { currentData, hasMore, loadMore }
 }

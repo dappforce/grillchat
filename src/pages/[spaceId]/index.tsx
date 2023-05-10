@@ -1,13 +1,12 @@
 import {
-  getLinkedPostIdsForSpaceId,
-  getSpaceIdFromTopic,
-  getTopicFromSpaceId,
+  getAliasFromSpaceId,
+  getLinkedChatIdsForSpaceId,
+  getSpaceIdFromAlias,
 } from '@/constants/chat-room'
-import HomePage from '@/modules/_[spaceId]/HomePage'
-import { HomePageProps } from '@/modules/_[spaceId]/HomePage/HomePage'
+import HomePage, { HomePageProps } from '@/modules/chat/HomePage'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
-import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getMainSpaceId, getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
@@ -21,9 +20,9 @@ export const getStaticPaths = async () => {
   const spaceIds = getSpaceIds()
 
   const paths = spaceIds.map<{ params: { spaceId: string } }>((spaceId) => {
-    const topic = getTopicFromSpaceId(spaceId)
+    const alias = getAliasFromSpaceId(spaceId)
     return {
-      params: { spaceId: topic || spaceId },
+      params: { spaceId: alias || spaceId },
     }
   })
 
@@ -34,12 +33,12 @@ export const getStaticPaths = async () => {
 }
 
 function getSpaceIdFromParam(paramSpaceId: string) {
-  const spaceIdOrTopic = paramSpaceId ?? getMainSpaceId()
-  let spaceId = spaceIdOrTopic
-  if (!isValidNumber(spaceIdOrTopic)) {
-    const spaceIdFromTopic = getSpaceIdFromTopic(spaceIdOrTopic)
-    if (spaceIdFromTopic) {
-      spaceId = spaceIdFromTopic
+  const spaceIdOrAlias = paramSpaceId ?? getMainSpaceId()
+  let spaceId = spaceIdOrAlias
+  if (!isValidNumber(spaceIdOrAlias)) {
+    const spaceIdFromAlias = getSpaceIdFromAlias(spaceIdOrAlias)
+    if (spaceIdFromAlias) {
+      spaceId = spaceIdFromAlias
     } else {
       return undefined
     }
@@ -47,32 +46,32 @@ function getSpaceIdFromParam(paramSpaceId: string) {
   return spaceId
 }
 
-async function getLastPosts(commentIdsByPostId: string[][]) {
-  const lastPostIds = commentIdsByPostId
+async function getLastMessages(messageIdsByChatIds: string[][]) {
+  const lastMessageIds = messageIdsByChatIds
     .map((ids) => ids[ids.length - 1])
     .filter((id) => !!id)
 
-  let lastPosts: PostData[] = []
-  if (lastPostIds.length > 0) {
-    lastPosts = await getPostsFromCache(lastPostIds)
+  let lastMessages: PostData[] = []
+  if (lastMessageIds.length > 0) {
+    lastMessages = await getPostsFromCache(lastMessageIds)
   }
-  return lastPosts
+  return lastMessages
 }
-async function getPostsData(postIds: string[]) {
+async function getChatPreviewsData(chatIds: string[]) {
   const subsocialApi = await getSubsocialApi()
 
-  const [commentIdsByPostId, posts] = await Promise.all([
+  const [messageIdsByChatIds, chats] = await Promise.all([
     Promise.all(
-      postIds.map((postId) => {
-        return subsocialApi.blockchain.getReplyIdsByPostId(postId)
+      chatIds.map((chatId) => {
+        return subsocialApi.blockchain.getReplyIdsByPostId(chatId)
       })
     ),
-    getPostsFromCache(postIds),
+    getPostsFromCache(chatIds),
   ] as const)
 
-  const lastPosts = await getLastPosts(commentIdsByPostId)
+  const lastMessages = await getLastMessages(messageIdsByChatIds)
 
-  return { posts, lastPosts, commentIdsByPostId }
+  return { chats, lastMessages, messageIdsByChatIds }
 }
 
 export const getStaticProps = getCommonStaticProps<
@@ -90,25 +89,25 @@ export const getStaticProps = getCommonStaticProps<
 
     try {
       const subsocialApi = await getSubsocialApi()
-      const postIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
-      const allPostIds = [...postIds, ...getLinkedPostIdsForSpaceId(spaceId)]
+      const chatIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
+      const allChatIds = [...chatIds, ...getLinkedChatIdsForSpaceId(spaceId)]
 
-      const [{ lastPosts, posts, commentIdsByPostId }] = await Promise.all([
-        getPostsData(allPostIds),
-        prefetchBlockedEntities(queryClient, allPostIds),
+      const [{ lastMessages, chats, messageIdsByChatIds }] = await Promise.all([
+        getChatPreviewsData(allChatIds),
+        prefetchBlockedEntities(queryClient, allChatIds),
       ] as const)
 
-      getPostIdsBySpaceIdQuery.setQueryData(queryClient, spaceId, {
+      getChatIdsBySpaceIdQuery.setQueryData(queryClient, spaceId, {
         spaceId,
-        postIds,
+        chatIds,
       })
-      commentIdsByPostId.forEach((commentIds, idx) => {
+      messageIdsByChatIds.forEach((messageIds, idx) => {
         queryClient.setQueryData(
-          getCommentIdsQueryKey(allPostIds[idx]),
-          commentIds ?? null
+          getCommentIdsQueryKey(allChatIds[idx]),
+          messageIds ?? null
         )
       })
-      ;[...lastPosts, ...posts].forEach((post) => {
+      ;[...lastMessages, ...chats].forEach((post) => {
         getPostQuery.setQueryData(
           queryClient,
           post.id,

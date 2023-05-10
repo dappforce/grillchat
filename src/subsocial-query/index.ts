@@ -1,14 +1,14 @@
 export * from './base'
 export * from './types'
 
-export interface PoolQueryConfig<Param, SingleReturn> {
-  getQueryId?: (param: Param) => string
-  multiCall: (params: Param[]) => Promise<SingleReturn[]>
+export interface PoolQueryConfig<SingleParam, SingleReturn> {
+  getQueryId?: (param: SingleParam) => string
+  multiCall: (params: SingleParam[]) => Promise<SingleReturn[]>
   resultMapper?: {
     resultToKey: (result: SingleReturn) => string
-    paramToKey: (param: Param) => string
+    paramToKey: (param: SingleParam) => string
   }
-  singleCall?: (params: Param) => Promise<SingleReturn>
+  singleCall?: (param: SingleParam) => Promise<SingleReturn>
   waitTime?: number
 }
 
@@ -21,9 +21,9 @@ function generateBatchPromise<BatchData>() {
   return { batchPromise, batchResolver }
 }
 
-export function poolQuery<Param, SingleReturn>(
-  config: PoolQueryConfig<Param, SingleReturn>
-): (param: Param) => Promise<SingleReturn | null> {
+export function poolQuery<SingleParam, SingleReturn>(
+  config: PoolQueryConfig<SingleParam, SingleReturn>
+): (param: SingleParam) => Promise<SingleReturn | null> {
   const {
     getQueryId,
     multiCall,
@@ -31,7 +31,7 @@ export function poolQuery<Param, SingleReturn>(
     waitTime = 250,
     resultMapper,
   } = config
-  let queryPool: Param[] = []
+  let queryPool: SingleParam[] = []
   let timeout: number | undefined
 
   type BatchData =
@@ -81,7 +81,7 @@ export function poolQuery<Param, SingleReturn>(
   }
 
   return async function executedFunction(
-    param: Param
+    param: SingleParam
   ): Promise<SingleReturn | null> {
     const currentIndex = queryPool.length
     queryPool.push(param)

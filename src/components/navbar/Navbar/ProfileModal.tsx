@@ -8,7 +8,7 @@ import Button from '@/components/Button'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
 import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
-import Modal, { ModalFunctionalityProps } from '@/components/Modal'
+import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useRandomColor from '@/hooks/useRandomColor'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
@@ -153,7 +153,7 @@ function AccountContent({
 
   const buttons: ButtonData[] = [
     {
-      text: 'Show Grill secret key',
+      text: 'Show grill secret key',
       icon: KeyIcon,
       onClick: onShowPrivateKeyClick,
       notification,
@@ -234,7 +234,7 @@ function PrivateKeyContent() {
   return (
     <div className='flex flex-col items-center gap-4'>
       <p className='mb-2 text-text-muted'>
-        A Grill secret key is like a long password. We recommend keeping it in a
+        Grill secret key is like a long password. We recommend keeping it in a
         safe place, so you can recover your account.
       </p>
       <CopyText onCopyClick={onCopyClick} isCodeText text={secretKey || ''} />

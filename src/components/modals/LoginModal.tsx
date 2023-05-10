@@ -5,11 +5,11 @@ import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { SyntheticEvent, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import Button from './Button'
-import CaptchaInvisible from './captcha/CaptchaInvisible'
-import TextArea from './inputs/TextArea'
+import Button from '../Button'
+import CaptchaInvisible from '../captcha/CaptchaInvisible'
+import TextArea from '../inputs/TextArea'
+import Toast from '../Toast'
 import Modal, { ModalFunctionalityProps } from './Modal'
-import Toast from './Toast'
 
 export type LoginModalProps = ModalFunctionalityProps & {
   afterLogin?: () => void
@@ -51,7 +51,7 @@ export default function LoginModal({
         <Toast
           t={t}
           title='Login Failed'
-          description='The Grill secret key you provided is not valid'
+          description='The grill secret key you provided is not valid'
         />
       ))
     }

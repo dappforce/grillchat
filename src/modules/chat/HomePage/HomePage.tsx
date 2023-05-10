@@ -2,10 +2,10 @@ import AddIcon from '@/assets/icons/add.png'
 import IntegrateIcon from '@/assets/icons/integrate.png'
 import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import { getLinkedPostIdsForSpaceId } from '@/constants/chat-room'
+import { getLinkedChatIdsForSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getPostQuery } from '@/services/api/query'
-import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -21,7 +21,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import HomePageNavbar from './HomePageNavbar'
 import useSortByConfig from './hooks/useSortByConfig'
-import useSortedPostIdsByLatestMessage from './hooks/useSortByLatestMessage'
+import useSortedChatIdsByLatestMessage from './hooks/useSortByLatestMessage'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
@@ -34,31 +34,31 @@ export default function HomePage({
   spaceId,
 }: HomePageProps) {
   const isInIframe = useIsInIframe()
-  const { data } = getPostIdsBySpaceIdQuery.useQuery(spaceId)
-  const allPostIds = useMemo(() => {
-    return [...(data?.postIds ?? []), ...getLinkedPostIdsForSpaceId(spaceId)]
+  const { data } = getChatIdsBySpaceIdQuery.useQuery(spaceId)
+  const allChatIds = useMemo(() => {
+    return [...(data?.chatIds ?? []), ...getLinkedChatIdsForSpaceId(spaceId)]
   }, [data, spaceId])
 
-  const sortedIds = useSortedPostIdsByLatestMessage(allPostIds)
+  const sortedIds = useSortedChatIdsByLatestMessage(allChatIds)
   const order = useSortByConfig(sortedIds)
 
   const [search, setSearch] = useState('')
-  const postsQuery = getPostQuery.useQueries(order)
+  const chatQueries = getPostQuery.useQueries(order)
 
   const searchResults = useMemo(() => {
-    const postsData = postsQuery.map(({ data: post }) => post)
-    let searchResults = postsData as PostData[]
+    const chats = chatQueries.map(({ data: chat }) => chat)
+    let searchResults = chats as PostData[]
 
     const processedSearch = removeDoubleSpaces(search)
 
     if (processedSearch) {
-      searchResults = matchSorter(postsData, processedSearch, {
+      searchResults = matchSorter(chats, processedSearch, {
         keys: ['content.title'],
       }) as PostData[]
     }
 
     return searchResults
-  }, [search, postsQuery])
+  }, [search, chatQueries])
 
   const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
   useEffect(() => {
@@ -150,13 +150,13 @@ export default function HomePage({
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {!isInIframe && !search && specialButtons}
-        {searchResults.map((post, idx) => {
-          if (!post) return null
+        {searchResults.map((chat, idx) => {
+          if (!chat) return null
           return (
             <ChatPreviewContainer
               isFocused={idx === focusedElementIndex}
-              post={post}
-              key={post.id}
+              chat={chat}
+              key={chat.id}
             />
           )
         })}
@@ -166,21 +166,21 @@ export default function HomePage({
 }
 
 function ChatPreviewContainer({
-  post,
+  chat,
   isFocused,
 }: {
-  post: PostData
+  chat: PostData
   isFocused?: boolean
 }) {
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
-  const content = post?.content
+  const content = chat?.content
 
   const linkTo = getChatPageLink(
     router,
-    createSlug(post.id, { title: content?.title })
+    createSlug(chat.id, { title: content?.title })
   )
 
   useHotkeys(
@@ -200,7 +200,7 @@ function ChatPreviewContainer({
   const onChatClick = () => {
     sendEvent(`click on chat`, {
       title: content?.title ?? '',
-      chatId: post.id,
+      chatId: chat.id,
     })
   }
 
@@ -215,7 +215,7 @@ function ChatPreviewContainer({
       image={content?.image ? getIpfsContentUrl(content.image) : ''}
       title={content?.title ?? ''}
       description={content?.body ?? ''}
-      postId={post.id}
+      chatId={chat.id}
       withUnreadCount
       withFocusedStyle={isFocused}
     />

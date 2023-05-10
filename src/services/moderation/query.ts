@@ -5,21 +5,21 @@ import { createModerationRequest } from './utils'
 
 const moderationRequest = createModerationRequest()
 
-const GET_BLOCKED_IDS_IN_ROOT_POST_ID = graphql(`
-  query GetBlockedIdsInRootPostId($rootPostId: String!) {
-    blockedResourceIds(blocked: true, rootPostId: $rootPostId)
+const GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID = graphql(`
+  query GetBlockedMessageIdsInChatId($chatId: String!) {
+    blockedResourceIds(blocked: true, rootPostId: $chatId)
   }
 `)
-export async function getBlockedIdsInRootPostId(rootPostId: string) {
+export async function getBlockedMessageIdsInChatId(chatId: string) {
   const data = await moderationRequest({
-    document: GET_BLOCKED_IDS_IN_ROOT_POST_ID,
-    variables: { rootPostId },
+    document: GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID,
+    variables: { chatId },
   })
   return data.blockedResourceIds
 }
-export const getBlockedIdsInRootPostIdQuery = createQuery({
-  key: 'getBlockedIdsInRootPostIdQuery',
-  getData: getBlockedIdsInRootPostId,
+export const getBlockedMessageIdsInChatIdQuery = createQuery({
+  key: 'getBlockedMessageIdsInChatId',
+  fetcher: getBlockedMessageIdsInChatId,
 })
 
 const GET_BLOCKED_CIDS = graphql(`
@@ -35,7 +35,7 @@ export async function getBlockedCids() {
 }
 export const getBlockedCidsQuery = createQuery({
   key: 'getBlockedCidsQuery',
-  getData: getBlockedCids,
+  fetcher: getBlockedCids,
 })
 
 const GET_BLOCKED_ADDRESSES = graphql(`
@@ -53,5 +53,5 @@ export async function getBlockedAddresses() {
 }
 export const getBlockedAddressesQuery = createQuery({
   key: 'getBlockedAddressesQuery',
-  getData: getBlockedAddresses,
+  fetcher: getBlockedAddresses,
 })

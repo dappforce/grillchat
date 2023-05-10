@@ -8,14 +8,14 @@ import RepliedMessage from './RepliedMessage'
 export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
-  postId: string
+  chatId: string
 }
 
 export default function ChatRoom({
   className,
   asContainer,
   scrollableContainerClassName,
-  postId,
+  chatId,
   ...props
 }: ChatRoomProps) {
   const [replyTo, setReplyTo] = useState<string | undefined>(undefined)
@@ -38,12 +38,12 @@ export default function ChatRoom({
   return (
     <div {...props} className={cx('flex flex-col', className)}>
       <ChatList
-        newChatNoticeClassName={cx(replyTo && 'bottom-2')}
-        postId={postId}
+        newMessageNoticeClassName={cx(replyTo && 'bottom-2')}
+        chatId={chatId}
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}
         scrollContainerRef={scrollContainerRef}
-        onSelectChatAsReply={setReplyTo}
+        onSelectMessageAsReply={setReplyTo}
         replyTo={replyTo}
       />
       <Component
@@ -52,14 +52,14 @@ export default function ChatRoom({
         {replyTo && (
           <RepliedMessage
             closeReply={closeReply}
-            replyChatId={replyTo}
+            replyMessageId={replyTo}
             scrollContainer={scrollContainerRef}
           />
         )}
         <ChatForm
           replyTo={replyTo}
           onSubmit={scrollToBottom}
-          postId={postId}
+          chatId={chatId}
           clearReplyTo={closeReply}
         />
       </Component>
