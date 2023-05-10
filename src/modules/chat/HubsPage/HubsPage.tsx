@@ -3,11 +3,14 @@ import IntegrateIcon from '@/assets/icons/integrate.png'
 import ChatPreview from '@/components/chats/ChatPreview'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
-import { Hub, HUBS } from '@/constants/hubs'
+import { getAliasFromSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
+import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
+import { getSpaceIds } from '@/utils/env/client'
 import { removeDoubleSpaces } from '@/utils/strings'
+import { SpaceData } from '@subsocial/api/types'
 import { matchSorter } from 'match-sorter'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -21,27 +24,30 @@ const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
 
 export type HubsPageProps = {
   isIntegrateChatButtonOnTop: boolean
-  hubsChatCount: { [key: string]: number }
+  hubsChatCount: { [id: string]: number }
 }
 export default function HubsPage({
   isIntegrateChatButtonOnTop,
   hubsChatCount = {},
 }: HubsPageProps) {
   const isInIframe = useIsInIframe()
+  const hubIds = getSpaceIds()
+  const hubQueries = getSpaceBySpaceIdQuery.useQueries(hubIds)
 
   const [search, setSearch] = useState('')
   const searchResults = useMemo(() => {
-    let searchResults = HUBS
+    const hubs = hubQueries.map(({ data: hub }) => hub)
+    let searchResults = hubs
     const processedSearch = removeDoubleSpaces(search)
 
     if (processedSearch) {
-      searchResults = matchSorter(HUBS, processedSearch, {
-        keys: ['title'],
+      searchResults = matchSorter(hubs, processedSearch, {
+        keys: ['content.title'],
       })
     }
 
     return searchResults
-  }, [search])
+  }, [search, hubQueries])
 
   const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
   useEffect(() => {
@@ -146,8 +152,8 @@ export default function HubsPage({
             <ChatPreviewContainer
               isFocused={idx === focusedElementIndex}
               hub={hub}
-              chatCount={hubsChatCount[hub.path]}
-              key={hub.path}
+              chatCount={hubsChatCount[hub.id]}
+              key={hub.id}
             />
           )
         })}
@@ -161,7 +167,7 @@ function ChatPreviewContainer({
   isFocused,
   chatCount,
 }: {
-  hub: Hub
+  hub: SpaceData
   isFocused?: boolean
   chatCount: number | undefined
 }) {
@@ -169,7 +175,8 @@ function ChatPreviewContainer({
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
-  const linkTo = `/${hub.path}`
+  const path = getAliasFromSpaceId(hub.id) || hub.id
+  const linkTo = `/${path}`
 
   useHotkeys(
     'enter',
@@ -187,7 +194,7 @@ function ChatPreviewContainer({
 
   const onChatClick = () => {
     sendEvent(`click on hub`, {
-      title: hub.title,
+      title: hub.content?.name ?? '',
     })
   }
 
@@ -201,9 +208,9 @@ function ChatPreviewContainer({
         href: linkTo,
       }}
       additionalDesc={chatCount ? `${chatCount} chats` : undefined}
-      image={hub.image}
-      title={hub.title}
-      description={hub.description}
+      image={hub.content?.image ?? ''}
+      title={hub.content?.name ?? ''}
+      description={hub.content?.about ?? ''}
       withFocusedStyle={isFocused}
     />
   )
