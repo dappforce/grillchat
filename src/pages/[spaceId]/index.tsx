@@ -1,5 +1,4 @@
 import {
-  getAliasFromSpaceId,
   getLinkedChatIdsForSpaceId,
   getSpaceIdFromAlias,
 } from '@/constants/chat-room'
@@ -8,26 +7,19 @@ import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { getMainSpaceId, getSpaceIds } from '@/utils/env/client'
+import { getMainSpaceId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { prefetchBlockedEntities } from '@/utils/server'
 import { isValidNumber } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { getPostsFromCache } from '../api/posts'
+import { AppCommonProps } from '../_app'
 
 export const getStaticPaths = async () => {
-  const spaceIds = getSpaceIds()
-
-  const paths = spaceIds.map<{ params: { spaceId: string } }>((spaceId) => {
-    const alias = getAliasFromSpaceId(spaceId)
-    return {
-      params: { spaceId: alias || spaceId },
-    }
-  })
-
+  // Skip pre-rendering, because it will cause slow build time
   return {
-    paths,
+    paths: [],
     fallback: 'blocking',
   }
 }
@@ -75,9 +67,7 @@ async function getChatPreviewsData(chatIds: string[]) {
 }
 
 export const getStaticProps = getCommonStaticProps<
-  {
-    dehydratedState: any
-  } & HomePageProps
+  HomePageProps & AppCommonProps
 >(
   () => ({}),
   async (context) => {
