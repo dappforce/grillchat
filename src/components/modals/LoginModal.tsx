@@ -51,7 +51,7 @@ export default function LoginModal({
         <Toast
           t={t}
           title='Login Failed'
-          description='The Grill secret key you provided is not valid'
+          description='The grill secret key you provided is not valid'
         />
       ))
     }

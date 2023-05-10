@@ -153,7 +153,7 @@ function AccountContent({
 
   const buttons: ButtonData[] = [
     {
-      text: 'Show Grill secret key',
+      text: 'Show grill secret key',
       icon: KeyIcon,
       onClick: onShowPrivateKeyClick,
       notification,
@@ -234,7 +234,7 @@ function PrivateKeyContent() {
   return (
     <div className='flex flex-col items-center gap-4'>
       <p className='mb-2 text-text-muted'>
-        A Grill secret key is like a long password. We recommend keeping it in a
+        Grill secret key is like a long password. We recommend keeping it in a
         safe place, so you can recover your account.
       </p>
       <CopyText onCopyClick={onCopyClick} isCodeText text={secretKey || ''} />
