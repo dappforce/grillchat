@@ -19,9 +19,10 @@ export type AboutChatModalProps = ModalFunctionalityProps & {
   messageCount?: number
 }
 
+type ContentData = { chat: PostData; url: string }
 type Content = {
   title: string
-  content: (data: { chat: PostData; url: string }) => string | undefined
+  content: (data: ContentData) => string | undefined
   withCopyButton?: boolean
 }
 const contentList: Content[] = [
