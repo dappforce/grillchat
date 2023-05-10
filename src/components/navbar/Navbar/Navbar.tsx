@@ -14,7 +14,7 @@ import { ComponentProps, useEffect, useRef, useState } from 'react'
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
 })
-const LoginModal = dynamic(() => import('@/components/modals/LoginModal'), {
+const LoginModal = dynamic(() => import('@/components/modals/login/LoginModal'), {
   ssr: false,
 })
 
