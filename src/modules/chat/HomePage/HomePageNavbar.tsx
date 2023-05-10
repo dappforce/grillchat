@@ -29,19 +29,14 @@ export default function HomePageNavbar({
 }: HomePageNavbarProps) {
   const isInIframe = useIsInIframe()
   const { data: space } = getSpaceBySpaceIdQuery.useQuery(spaceId)
-  const relatedHub = getSpaceIds().includes(spaceId)
+  const isInHub = getSpaceIds().includes(spaceId)
 
   let leftSection = logo
-  if (relatedHub) {
+  if (isInHub && !isInIframe) {
     leftSection = (
       <div className='mr-4 flex flex-1 items-center'>
         <div className='mr-2 flex w-9 items-center justify-center'>
-          <Button
-            size='circle'
-            href='/hubs'
-            nextLinkProps={{ replace: isInIframe }}
-            variant='transparent'
-          >
+          <Button size='circle' href='/hubs' variant='transparent'>
             <HiOutlineChevronLeft />
           </Button>
         </div>
