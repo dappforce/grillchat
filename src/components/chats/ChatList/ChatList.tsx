@@ -8,7 +8,8 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getChatPageLink } from '@/utils/links'
+import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
+import { isValidNumber } from '@/utils/strings'
 import { useRouter } from 'next/router'
 import {
   ComponentProps,
@@ -69,9 +70,10 @@ function ChatListContent({
   const innerRef = useRef<HTMLDivElement>(null)
   const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
 
-  const { data: messageIds = [] } = useCommentIdsByPostId(chatId, {
+  const { data: rawMessageIds } = useCommentIdsByPostId(chatId, {
     subscribe: true,
   })
+  const messageIds = rawMessageIds || []
 
   const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)
   const { currentData: currentPageMessageIds, loadMore } =
@@ -103,18 +105,24 @@ function ChatListContent({
     }
   )
 
+  const hasScrolledToMessageRef = useRef(false)
   useEffect(() => {
     ;(async () => {
-      const [messageId] = (router.query.messageId || []) as string[]
-      if (!messageId) return
+      if (hasScrolledToMessageRef.current) return
+      hasScrolledToMessageRef.current = true
 
-      await scrollToChatElement(messageId)
-      router.replace(getChatPageLink(router), undefined, {
+      const messageId = getUrlQuery('messageId')
+      const isMessageIdsFetched = rawMessageIds !== undefined
+      if (!isMessageIdsFetched || !messageId || !isValidNumber(messageId))
+        return
+
+      router.replace(getCurrentUrlWithoutQuery(), undefined, {
         shallow: true,
       })
+      await scrollToChatElement(messageId)
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [rawMessageIds, hasScrolledToMessageRef])
 
   const isAtBottomRef = useWrapInRef(isAtBottom)
   useEffect(() => {
