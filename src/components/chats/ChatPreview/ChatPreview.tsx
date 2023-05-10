@@ -90,7 +90,7 @@ export default function ChatPreview({
               )}
         </div>
         <div className='flex flex-1 items-center overflow-hidden'>
-          <div className='flex flex-1 flex-col gap-1 overflow-hidden'>
+          <div className='flex flex-1 flex-col overflow-hidden'>
             <div className='flex items-center justify-between'>
               <span className='font-medium'>{title}</span>
               {(() => {
@@ -122,7 +122,7 @@ export default function ChatPreview({
                 }
               })()}
             </div>
-            <div className='flex items-baseline justify-between overflow-hidden'>
+            <div className='mt-1 flex items-baseline justify-between overflow-hidden'>
               {chatId ? (
                 <ChatLastMessage
                   className='py-0.5'
