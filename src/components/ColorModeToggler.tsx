@@ -1,8 +1,9 @@
 import { useConfigContext } from '@/contexts/ConfigContext'
 import useGetTheme from '@/hooks/useGetTheme'
+import { cx } from '@/utils/class-names'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import { HiMoon, HiSun } from 'react-icons/hi2'
+import { HiOutlineMoon, HiOutlineSun } from 'react-icons/hi2'
 import Button, { ButtonProps } from './Button'
 
 export type ColorModeTogglerProps = ButtonProps
@@ -29,9 +30,10 @@ export default function ColorModeToggler({ ...props }: ColorModeTogglerProps) {
       size='circle'
       variant='transparent'
       {...props}
+      className={cx('text-xl', props.className)}
       onClick={handleClick}
     >
-      {theme === 'dark' ? <HiSun /> : <HiMoon />}
+      {theme === 'dark' ? <HiOutlineSun /> : <HiOutlineMoon />}
     </Button>
   )
 }

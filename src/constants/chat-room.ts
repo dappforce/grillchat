@@ -1,6 +1,7 @@
 const ALIAS_TO_SPACE_ID_MAP: Record<string, string> = {
   x: '1002',
   polka: '1005',
+  nft: '1009',
 }
 const SPACE_ID_TO_ALIAS_MAP = Object.entries(ALIAS_TO_SPACE_ID_MAP).reduce(
   (acc, [alias, spaceId]) => {

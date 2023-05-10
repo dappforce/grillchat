@@ -1,26 +1,29 @@
-export type OpenCommConfig = {
+export type GrillConfig = {
   targetId?: string
   spaceId?: string
   order?: string[]
   theme?: string
-  chatRoomId?: string
+  openChatRoomDirectly?: {
+    chatId: string
+    enableBackToHome?: boolean
+  }
   customizeIframe?: (iframe: HTMLIFrameElement) => HTMLIFrameElement
 }
 
 const DEFAULT_CONFIG = {
   spaceId: 'x',
-  targetId: 'opencomm',
-} satisfies OpenCommConfig
+  targetId: 'grill',
+} satisfies GrillConfig
 
-const opencomm = {
+const grill = {
   instance: null as HTMLIFrameElement | null,
 
-  init(configs: OpenCommConfig) {
-    const config = { ...DEFAULT_CONFIG, ...configs }
-    const targetElement = document.getElementById(config.targetId)
+  init(config: GrillConfig) {
+    const mergedConfig = { ...DEFAULT_CONFIG, ...config }
+    const targetElement = document.getElementById(mergedConfig.targetId)
     if (!targetElement) {
       console.error(
-        `OpenComm error: Element with id ${config.targetId} not found`
+        `Grill error: Element with id ${mergedConfig.targetId} not found`
       )
       return
     }
@@ -30,18 +33,25 @@ const opencomm = {
     iframe.style.width = '100%'
     iframe.style.height = '100%'
 
-    let baseUrl = `https://grill.chat/${config.spaceId}`
-    if (config.chatRoomId) {
-      baseUrl += `/${config.chatRoomId}`
+    let baseUrl = `https://grill.chat/${mergedConfig.spaceId}`
+    const directOpenChatId = mergedConfig.openChatRoomDirectly?.chatId
+    if (directOpenChatId) {
+      baseUrl += `/${directOpenChatId}`
     }
 
     const query = new URLSearchParams()
-    if (config.order) query.set('order', config.order.join(','))
-    if (config.theme) query.set('theme', config.theme)
+    if (mergedConfig.order) query.set('order', mergedConfig.order.join(','))
+    if (mergedConfig.theme) query.set('theme', mergedConfig.theme)
+    if (
+      directOpenChatId &&
+      !mergedConfig.openChatRoomDirectly?.enableBackToHome
+    )
+      query.set('isChatRoomOnly', 'true')
+
     iframe.src = `${baseUrl}?${query.toString()}`
 
-    if (config.customizeIframe) {
-      config.customizeIframe?.(iframe)
+    if (mergedConfig.customizeIframe) {
+      mergedConfig.customizeIframe?.(iframe)
     }
 
     this.instance?.remove()
@@ -51,7 +61,7 @@ const opencomm = {
   },
 }
 
-export type OpenComm = typeof opencomm
-;(window as any).opencomm = opencomm
+export type Grill = typeof grill
+;(window as any).GRILL = grill
 
-export default opencomm
+export default grill

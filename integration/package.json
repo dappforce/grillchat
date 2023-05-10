@@ -1,5 +1,5 @@
 {
-  "name": "opencomm",
+  "name": "@subsocial/grill-widget",
   "version": "0.0.1",
   "description": "Small integration script to help you integrate Grill.chat to your app.",
   "main": "dist/index.js",

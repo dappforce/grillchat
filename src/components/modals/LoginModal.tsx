@@ -51,14 +51,14 @@ export default function LoginModal({
         <Toast
           t={t}
           title='Login Failed'
-          description='The private key you provided is not valid'
+          description='The Grill secret key you provided is not valid'
         />
       ))
     }
   }
 
   const desc =
-    'To access GrillChat, you need a private key. If you do not have one, just write your first chat message, and you will be given one.'
+    'To access GrillChat, you need a Grill secret key. If you do not have one, just write your first chat message, and you will be given one.'
 
   return (
     <Modal
@@ -79,7 +79,7 @@ export default function LoginModal({
           onChange={(e) =>
             setPrivateKey((e.target as HTMLTextAreaElement).value)
           }
-          placeholder='Enter your private key'
+          placeholder='Enter your Grill secret key'
         />
         <Button disabled={!privateKey} size='lg'>
           Login
