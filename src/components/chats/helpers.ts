@@ -6,14 +6,17 @@ export function getChatItemId(postId: string) {
 
 export async function scrollToChatItem(
   element: HTMLElement | null,
-  scrollContainer: HTMLElement | null
+  scrollContainer: HTMLElement | null,
+  shouldHighlight?: boolean
 ) {
   if (!element) return
 
   element.scrollIntoView({ behavior: 'smooth', block: 'center' })
   await waitStopScrolling(scrollContainer)
-  element.classList.add('highlighted')
-  element.onanimationend = function () {
-    element.classList.remove('highlighted')
+  if (shouldHighlight) {
+    element.classList.add('highlighted')
+    element.onanimationend = function () {
+      element.classList.remove('highlighted')
+    }
   }
 }

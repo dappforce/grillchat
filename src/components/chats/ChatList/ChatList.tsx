@@ -112,7 +112,10 @@ function ChatListContent({
   useEffect(() => {
     ;(async () => {
       const [, chatId] = router.query.topic as string[]
-      if (!chatId) return
+      if (!chatId) {
+        scrollToChatElement(lastReadId ?? '', false)
+        return
+      }
 
       await scrollToChatElement(chatId)
       router.replace(getChatPageLink(router), undefined, {
