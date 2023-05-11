@@ -2,7 +2,7 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
-import { truncateText } from '@/utils/text'
+import { truncateText } from '@/utils/strings'
 import { ComponentProps, useState } from 'react'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {

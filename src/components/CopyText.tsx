@@ -1,5 +1,5 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
-import { copyToClipboard } from '@/utils/text'
+import { copyToClipboard } from '@/utils/strings'
 import { Placement } from '@floating-ui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Space_Mono } from 'next/font/google'
