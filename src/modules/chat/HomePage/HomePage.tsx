@@ -155,7 +155,9 @@ export default function HomePage({
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {!isInIframe && !search && specialButtons}
-        {searchResults.length === 0 && <NoSearchResultScreen search={search} />}
+        {searchResults.length === 0 && (
+          <NoSearchResultScreen search={search} hubId={spaceId} />
+        )}
         {searchResults.map((chat, idx) => {
           if (!chat) return null
           return (
@@ -228,7 +230,13 @@ function ChatPreviewContainer({
   )
 }
 
-function NoSearchResultScreen({ search }: { search: string }) {
+function NoSearchResultScreen({
+  search,
+  hubId,
+}: {
+  search: string
+  hubId: string
+}) {
   return (
     <Container
       as='div'
@@ -244,7 +252,7 @@ function NoSearchResultScreen({ search }: { search: string }) {
       <Button
         className='w-full'
         size='lg'
-        href={getSuggestNewChatRoomLink(search)}
+        href={getSuggestNewChatRoomLink({ chatName: search, hubId })}
         target='_blank'
         rel='noopener noreferrer'
       >
