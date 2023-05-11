@@ -62,7 +62,7 @@ export default function EmojiChatItem({
       )}
       <div
         className={cx(
-          'flex w-full overflow-hidden',
+          'flex w-full gap-2 overflow-hidden',
           isMyMessage ? 'flex-row-reverse' : 'flex-row'
         )}
       >
