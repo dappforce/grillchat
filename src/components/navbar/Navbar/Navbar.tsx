@@ -1,13 +1,12 @@
-import Button, { ButtonProps } from '@/components/Button'
+import BackButton from '@/components/BackButton'
+import Button from '@/components/Button'
 import ColorModeToggler from '@/components/ColorModeToggler'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
-import useIsInIframe from '@/hooks/useIsInIframe'
 import usePrevious from '@/hooks/usePrevious'
-import { useLocation } from '@/stores/location'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getHomePageLink } from '@/utils/links'
+import { getChatPageLink, getHomePageLink } from '@/utils/links'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -31,9 +30,6 @@ export type NavbarProps = ComponentProps<'div'> & {
 }
 
 export default function Navbar({ customContent, ...props }: NavbarProps) {
-  const isInIframe = useIsInIframe()
-  const prevUrl = useLocation((state) => state.prevUrl)
-
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
@@ -94,15 +90,15 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
     </Link>
   )
 
-  const hasBackToCurrentSession = !!prevUrl
-  const buttonProps: ButtonProps = hasBackToCurrentSession
-    ? { onClick: () => router.back() }
-    : { href: getHomePageLink(router), nextLinkProps: { replace: isInIframe } }
   const backButton = (
     <div className='mr-2 flex w-9 items-center justify-center'>
-      <Button size='circle' {...buttonProps} variant='transparent'>
+      <BackButton
+        defaultBackLink={getChatPageLink(router)}
+        size='circle'
+        variant='transparent'
+      >
         <HiOutlineChevronLeft />
-      </Button>
+      </BackButton>
     </div>
   )
 
