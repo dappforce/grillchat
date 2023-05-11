@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Source Sans Pro', ...defaultTheme.fontFamily.sans],
+        sans: ['var(--source-sans-pro)', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         background: 'rgb(var(--background) / <alpha-value>)',

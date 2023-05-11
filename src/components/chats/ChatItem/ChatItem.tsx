@@ -141,10 +141,9 @@ export default function ChatItem({
   }
 
   const isEmojiOnly = shouldRenderEmojiChatItem(body)
+  const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
   const relativeTime = getTimeRelativeToNow(createdAtTime)
-
-  const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
   return (
     <div

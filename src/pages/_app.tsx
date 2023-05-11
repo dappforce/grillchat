@@ -3,9 +3,11 @@ import { ConfigProvider, useConfigContext } from '@/contexts/ConfigContext'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
+import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
+import { Source_Sans_Pro } from 'next/font/google'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
@@ -15,6 +17,12 @@ export type AppCommonProps = {
   head?: HeadConfigProps
   dehydratedState?: any
 }
+
+const sourceSansPro = Source_Sans_Pro({
+  weight: ['400', '600'],
+  subsets: ['latin'],
+  variable: '--source-sans-pro',
+})
 
 export default function App(props: AppProps<AppCommonProps>) {
   return (
@@ -42,7 +50,9 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <NextNProgress color='#4d46dc' />
         <HeadConfig {...head} />
         <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
-        <Component {...props} />
+        <div className={cx(sourceSansPro.variable, 'font-sans')}>
+          <Component {...props} />
+        </div>
       </QueryProvider>
     </ThemeProvider>
   )
