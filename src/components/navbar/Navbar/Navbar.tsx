@@ -1,8 +1,10 @@
-import Button from '@/components/Button'
+import Button, { ButtonProps } from '@/components/Button'
 import ColorModeToggler from '@/components/ColorModeToggler'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import usePrevious from '@/hooks/usePrevious'
+import { useLocation } from '@/stores/location'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getHomePageLink } from '@/utils/links'
@@ -10,6 +12,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
+import { HiOutlineChevronLeft } from 'react-icons/hi2'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
@@ -19,14 +22,18 @@ const LoginModal = dynamic(() => import('@/components/modals/LoginModal'), {
 })
 
 export type NavbarProps = ComponentProps<'div'> & {
-  customContent?: (
-    logoLink: JSX.Element,
-    authComponent: JSX.Element,
+  customContent?: (elements: {
+    logoLink: JSX.Element
+    authComponent: JSX.Element
     colorModeToggler: JSX.Element
-  ) => JSX.Element
+    backButton: JSX.Element
+  }) => JSX.Element
 }
 
 export default function Navbar({ customContent, ...props }: NavbarProps) {
+  const isInIframe = useIsInIframe()
+  const prevUrl = useLocation((state) => state.prevUrl)
+
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
@@ -76,13 +83,27 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
     )
   }
   const authComponent = renderAuthComponent()
+
   const colorModeToggler = (
     <ColorModeToggler className='text-text-muted dark:text-text' />
   )
+
   const logoLink = (
     <Link href={getHomePageLink(router)} aria-label='Back to home'>
       <Logo className='text-2xl' />
     </Link>
+  )
+
+  const hasBackToCurrentSession = !!prevUrl
+  const buttonProps: ButtonProps = hasBackToCurrentSession
+    ? { onClick: () => router.back() }
+    : { href: getHomePageLink(router), nextLinkProps: { replace: isInIframe } }
+  const backButton = (
+    <div className='mr-2 flex w-9 items-center justify-center'>
+      <Button size='circle' {...buttonProps} variant='transparent'>
+        <HiOutlineChevronLeft />
+      </Button>
+    </div>
   )
 
   return (
@@ -98,7 +119,12 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
           className={cx('grid h-14 items-center py-2', props.className)}
         >
           {customContent ? (
-            customContent(logoLink, authComponent, colorModeToggler)
+            customContent({
+              logoLink,
+              authComponent,
+              colorModeToggler,
+              backButton,
+            })
           ) : (
             <div className='flex items-center justify-between'>
               {logoLink}
