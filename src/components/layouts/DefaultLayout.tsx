@@ -1,18 +1,12 @@
 import LinkText from '@/components/LinkText'
 import { useLocation } from '@/stores/location'
 import { cx } from '@/utils/class-names'
-import { Source_Sans_Pro } from 'next/font/google'
 import { ComponentProps } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import useBreakpointThreshold from '../../hooks/useBreakpointThreshold'
 import Button from '../Button'
 import Navbar, { NavbarProps } from '../navbar/Navbar'
 import NavbarExtension from '../navbar/NavbarExtension'
-
-const sourceSansPro = Source_Sans_Pro({
-  weight: ['400', '600'],
-  subsets: ['latin'],
-})
 
 export type DefaultLayoutProps = ComponentProps<'div'> & {
   navbarProps?: NavbarProps
@@ -27,10 +21,7 @@ export default function DefaultLayout({
 }: DefaultLayoutProps) {
   return (
     <div
-      className={cx(
-        'flex h-screen flex-col bg-background text-text',
-        sourceSansPro.className
-      )}
+      className={cx('flex h-screen flex-col bg-background text-text')}
       style={{ height: '100svh' }}
       {...props}
     >
