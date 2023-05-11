@@ -21,12 +21,16 @@ export type AppCommonProps = {
 const sourceSansPro = Source_Sans_Pro({
   weight: ['400', '600'],
   subsets: ['latin'],
-  variable: '--source-sans-pro',
 })
 
 export default function App(props: AppProps<AppCommonProps>) {
   return (
     <ConfigProvider>
+      <style jsx global>{`
+        html {
+          --source-sans-pro: ${sourceSansPro.style.fontFamily};
+        }
+      `}</style>
       <AppContent {...props} />
     </ConfigProvider>
   )
@@ -50,7 +54,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <NextNProgress color='#4d46dc' />
         <HeadConfig {...head} />
         <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
-        <div className={cx(sourceSansPro.variable, 'font-sans')}>
+        <div className={cx('font-sans')}>
           <Component {...props} />
         </div>
       </QueryProvider>
