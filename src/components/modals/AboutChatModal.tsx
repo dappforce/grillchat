@@ -29,7 +29,7 @@ const contentList: Content[] = [
   { title: 'Description', content: ({ chat }) => chat.content?.body },
   {
     title: 'Chat link',
-    content: ({ url }) => url,
+    content: ({ url }) => urlJoin(url, '/about'),
     withCopyButton: true,
   },
 ]

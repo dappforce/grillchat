@@ -10,7 +10,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
-import { copyToClipboard } from '@/utils/text'
+import { copyToClipboard } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import {
