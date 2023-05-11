@@ -53,7 +53,7 @@ export default function HomePageNavbar({
     setIsOpenSearch(true)
     searchRef.current?.focus()
   }
-  useHotkeys('/, ctrl+k', openSearch, {
+  useHotkeys('/, meta+k, ctrl+k', openSearch, {
     enabled: !isOpenSearch,
     preventDefault: true,
   })
