@@ -41,6 +41,7 @@ export default function HomePageNavbar({
       searchRef.current?.focus()
     } else {
       setIsOpenSearch(false)
+      searchRef.current?.blur()
     }
   }
   useHotkeys('esc', clearOrCloseSearch, {
@@ -52,7 +53,7 @@ export default function HomePageNavbar({
     setIsOpenSearch(true)
     searchRef.current?.focus()
   }
-  useHotkeys('/, ctrl+k', openSearch, {
+  useHotkeys('/, meta+k, ctrl+k', openSearch, {
     enabled: !isOpenSearch,
     preventDefault: true,
   })
