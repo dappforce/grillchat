@@ -6,10 +6,12 @@ import { cx } from '@/utils/class-names'
 
 export default function ChatPageNavbarExtension() {
   const shouldSendMessageWithoutCaptcha = useMyAccount((state) => {
+    const isEnergyLoading = state.address && state.energy === null
+    if (!state.isInitialized || isEnergyLoading) return true
+
     const isLoggedIn = !!state.address
-    const energyNotLoading = state.energy !== null
     const hasEnoughEnergy = (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
-    return isLoggedIn && energyNotLoading && hasEnoughEnergy
+    return isLoggedIn && hasEnoughEnergy
   })
 
   if (shouldSendMessageWithoutCaptcha) return null
