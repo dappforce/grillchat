@@ -37,6 +37,7 @@ export default function NavbarWithSearch({
       searchRef.current?.focus()
     } else {
       setIsOpenSearch(false)
+      searchRef.current?.blur()
     }
   }
   useHotkeys('esc', clearOrCloseSearch, {
