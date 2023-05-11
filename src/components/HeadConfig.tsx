@@ -1,4 +1,3 @@
-import { Source_Sans_Pro } from 'next/font/google'
 import Head from 'next/head'
 
 export type HeadConfigProps = {
@@ -7,11 +6,6 @@ export type HeadConfigProps = {
   description?: string | null
   disableZoom?: boolean
 }
-
-const sourceSansPro = Source_Sans_Pro({
-  weight: ['400', '600'],
-  subsets: ['latin'],
-})
 
 const LIMIT = 45
 function summarize(text: string) {
@@ -49,11 +43,6 @@ export default function HeadConfig({
       ) : (
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       )}
-      <style jsx global>{`
-        html {
-          --source-sans-pro: ${sourceSansPro.style.fontFamily};
-        }
-      `}</style>
       <link rel='icon' href='/favicon.ico' />
       <link
         rel='apple-touch-icon'

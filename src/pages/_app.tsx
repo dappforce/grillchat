@@ -7,6 +7,7 @@ import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
+import { Source_Sans_Pro } from 'next/font/google'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
@@ -17,9 +18,19 @@ export type AppCommonProps = {
   dehydratedState?: any
 }
 
+const sourceSansPro = Source_Sans_Pro({
+  weight: ['400', '600'],
+  subsets: ['latin'],
+})
+
 export default function App(props: AppProps<AppCommonProps>) {
   return (
     <ConfigProvider>
+      <style jsx global>{`
+        html {
+          --source-sans-pro: ${sourceSansPro.style.fontFamily};
+        }
+      `}</style>
       <AppContent {...props} />
     </ConfigProvider>
   )
