@@ -129,12 +129,12 @@ export default function HomePage({
   return (
     <DefaultLayout
       navbarProps={{
-        customContent: (logo, auth, colorModeToggler) => {
+        customContent: ({ logoLink, authComponent, colorModeToggler }) => {
           return (
             <HomePageNavbar
-              auth={auth}
+              auth={authComponent}
               colorModeToggler={colorModeToggler}
-              logo={logo}
+              logo={logoLink}
               searchProps={{
                 search,
                 setSearch,
