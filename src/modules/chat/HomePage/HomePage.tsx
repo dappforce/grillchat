@@ -6,7 +6,7 @@ import ChatPreview from '@/components/chats/ChatPreview'
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getLinkedChatIdsForSpaceId } from '@/constants/chat-room'
-import { SUGGEST_NEW_CHAT_ROOM_LINK } from '@/constants/links'
+import { getSuggestNewChatRoomLink } from '@/constants/links'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getPostQuery } from '@/services/api/query'
 import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
@@ -155,7 +155,7 @@ export default function HomePage({
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col overflow-auto'>
         {!isInIframe && !search && specialButtons}
-        {searchResults.length === 0 && <NoSearchResultScreen />}
+        {searchResults.length === 0 && <NoSearchResultScreen search={search} />}
         {searchResults.map((chat, idx) => {
           if (!chat) return null
           return (
@@ -228,7 +228,7 @@ function ChatPreviewContainer({
   )
 }
 
-function NoSearchResultScreen() {
+function NoSearchResultScreen({ search }: { search: string }) {
   return (
     <Container
       as='div'
@@ -244,7 +244,7 @@ function NoSearchResultScreen() {
       <Button
         className='w-full'
         size='lg'
-        href={SUGGEST_NEW_CHAT_ROOM_LINK}
+        href={getSuggestNewChatRoomLink(search)}
         target='_blank'
         rel='noopener noreferrer'
       >
