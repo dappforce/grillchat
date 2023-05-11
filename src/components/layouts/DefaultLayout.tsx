@@ -11,18 +11,23 @@ import NavbarExtension from '../navbar/NavbarExtension'
 export type DefaultLayoutProps = ComponentProps<'div'> & {
   navbarProps?: NavbarProps
   withBackButton?: LayoutNavbarExtensionProps
+  withFixedHeight?: boolean
 }
 
 export default function DefaultLayout({
   children,
   navbarProps,
   withBackButton,
+  withFixedHeight,
   ...props
 }: DefaultLayoutProps) {
   return (
     <div
-      className={cx('flex h-screen flex-col bg-background text-text')}
-      style={{ height: '100svh' }}
+      className={cx(
+        'flex h-screen flex-col bg-background text-text',
+        withFixedHeight && 'h-screen'
+      )}
+      style={withFixedHeight ? { height: '100svh' } : { minHeight: '100svh' }}
       {...props}
     >
       <Navbar {...navbarProps} />

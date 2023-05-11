@@ -47,6 +47,7 @@ export default function ChatPage({ chatId }: ChatPageProps) {
 
   return (
     <DefaultLayout
+      withFixedHeight
       navbarProps={{
         customContent: (_, authComponent, colorModeToggler) => (
           <div className='flex items-center justify-between gap-4'>
