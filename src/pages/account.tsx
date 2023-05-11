@@ -7,9 +7,9 @@ import { useEffect, useRef } from 'react'
 export const ACCOUNT_SECRET_KEY_URL_PARAMS = 'sk'
 
 export default function AccountPage() {
-  const login = useMyAccount((state) => state.login)
   const isInitialized = useMyAccount((state) => state.isInitialized)
 
+  const loginAnonymously = useMyAccount((state) => state.loginAnonymously)
   const router = useRouter()
   const routeReplace = useRef(router.replace)
 
@@ -23,10 +23,10 @@ export default function AccountPage() {
       routeReplace.current('/')
       return
     }
-    login(decodeSecretKey(encodedSecretKey)).then((data) => {
+    loginAnonymously(decodeSecretKey(encodedSecretKey)).then((data) => {
       routeReplace.current('/')
     })
-  }, [login, isInitialized])
+  }, [loginAnonymously, isInitialized])
 
   return <DefaultLayout />
 }

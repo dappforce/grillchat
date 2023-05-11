@@ -17,7 +17,10 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
   const runCaptcha = async () => {
     let token: string | null = null
     try {
+      console.log({ initToken: token })
+      console.log({ captchaRef: captchaRef.current })
       token = (await captchaRef.current?.executeAsync()) ?? null
+      console.log({ token })
     } catch (e) {
       console.error(e)
     }

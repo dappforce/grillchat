@@ -24,8 +24,8 @@ export default function LoginModal({
   beforeLogin,
   ...props
 }: LoginModalProps) {
-  const login = useMyAccount((state) => state.login)
   const [secretKey, setSecretKey] = useState('')
+  const { loginAnonymously, login } = useMyAccount((state) => state)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
   const {
@@ -47,7 +47,7 @@ export default function LoginModal({
     e.preventDefault()
     beforeLogin?.()
     const processedSecretKey = processSecretKey(secretKey)
-    if (await login(processedSecretKey)) {
+    if (await loginAnonymously(processedSecretKey)) {
       afterLogin?.()
       setSecretKey('')
       props.closeModal()
@@ -74,6 +74,11 @@ export default function LoginModal({
       </span>
     </span>
   )
+  const web3Login = async () => {
+    await login()
+    setPrivateKey('')
+    props.closeModal()
+  }
 
   return (
     <Modal
@@ -133,6 +138,19 @@ export default function LoginModal({
               )
             }}
           </CaptchaInvisible>
+        </div>
+
+        <div className='text-center'>OR</div>
+
+        <div className='w-full'>
+          <Button
+            type='button'
+            className='w-full'
+            onClick={() => web3Login()}
+            size='lg'
+          >
+            Login with Web3Auth
+          </Button>
         </div>
       </form>
     </Modal>

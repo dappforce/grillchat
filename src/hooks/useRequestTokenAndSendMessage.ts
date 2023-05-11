@@ -8,7 +8,7 @@ export default function useRequestTokenAndSendMessage() {
 
   const { mutateAsync: requestToken } = useRequestToken()
   const { mutateAsync: sendMessage } = useSendMessage()
-  const login = useMyAccount((state) => state.login)
+  const login = useMyAccount((state) => state.loginAnonymously)
 
   const requestTokenAndSendMessage = async (
     params: Omit<Parameters<typeof requestToken>[0], 'address'> &

@@ -5,13 +5,33 @@ import {
   loginWithSecretKey,
   Signer,
 } from '@/utils/account'
+import { getWeb3AuthClientId } from '@/utils/env/client'
+import { generateRandomName } from '@/utils/random-name'
 import { LocalStorage } from '@/utils/storage'
+import { SubstrateRPC } from '@/utils/substrate-rpc'
+import * as bottts from '@dicebear/bottts'
+import { createAvatar } from '@dicebear/core'
+import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from '@web3auth/base'
+import { Web3Auth } from '@web3auth/modal'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
 
+const clientId = getWeb3AuthClientId()
+
+type AuthenticatedUser = {
+  name: string
+  encodedSecretKey: string
+  address: string
+  profilePic: string
+  email?: string
+  username?: string
+}
+
 type State = {
-  isInitialized?: boolean
-  isInitializedAddress?: boolean
+  web3Auth: Web3Auth | null
+  authenticatedUser: AuthenticatedUser | null
+  provider: SafeEventEmitterProvider | null
+  authMethod: AUTHENTICATION_METHODS
   address: string | null
   signer: Signer | null
   energy: number | null
@@ -19,6 +39,8 @@ type State = {
   _unsubscribeEnergy: () => void
   _currentSessionSecretKey: string
   _isNewSessionKey: boolean
+  isInitialized?: boolean
+  isInitializedAddress?: boolean
 }
 
 type Session = {
@@ -27,11 +49,15 @@ type Session = {
   isNewSecretKey?: boolean
 }
 type Actions = {
-  login: (
+  isAuthenticated?: boolean
+  loginAnonymously: (
     secretKey?: string,
     isInitialization?: boolean
   ) => Promise<string | false>
-  logout: () => void
+  initializeWeb3Auth: () => Promise<Web3Auth>
+  login: () => Promise<void>
+  logout: () => Promise<void>
+  getPrivateKey: () => Promise<string | undefined>
   _subscribeEnergy: () => Promise<void>
   _setSessionKey: (session: Session) => Promise<void>
   _syncSessionKey: () => Promise<void>
@@ -39,11 +65,19 @@ type Actions = {
   _getSecretKeyForLogin: () => Promise<string>
 }
 
+enum AUTHENTICATION_METHODS {
+  Web3Auth,
+  Anonymous,
+}
 const ACCOUNT_STORAGE_KEY = 'account'
 const SESSION_STORAGE_KEY = 'session'
 
 const initialState: State = {
   isInitializedAddress: true,
+  authenticatedUser: null,
+  provider: null,
+  web3Auth: null,
+  authMethod: AUTHENTICATION_METHODS.Anonymous,
   address: null,
   signer: null,
   energy: null,
@@ -58,7 +92,28 @@ const currentSessionStorage = new LocalStorage(() => SESSION_STORAGE_KEY)
 
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
-  login: async (secretKey, isInitialization) => {
+  initializeWeb3Auth: async () => {
+    const web3auth = new Web3Auth({
+      clientId,
+      chainConfig: {
+        chainNamespace: CHAIN_NAMESPACES.OTHER,
+        // chainId: '0x5',
+        // rpcTarget: 'https://rpc.ankr.com/eth_goerli',
+      },
+      web3AuthNetwork: 'testnet',
+    })
+    web3auth.initModal()
+    if (web3auth.provider) {
+      set({
+        provider: web3auth.provider,
+      })
+    }
+    set({
+      web3Auth: web3auth,
+    })
+    return web3auth
+  },
+  loginAnonymously: async (secretKey, isInitialization) => {
     const { _syncSessionKey, _getSecretKeyForLogin } = get()
     let address: string = ''
     try {
@@ -67,10 +122,24 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       const signer = await loginWithSecretKey(secretKey)
       const encodedSecretKey = encodeSecretKey(secretKey)
       address = signer.address
+      const randomPicture = createAvatar(bottts, {
+        size: 128,
+        seed: address,
+      }).toDataUriSync()
+      const name = generateRandomName(address)
+      const authenticatedUser = {
+        profilePic: randomPicture,
+        address,
+        encodedSecretKey,
+        name,
+      } as AuthenticatedUser
       set({
         address,
         signer,
         encodedSecretKey,
+        authenticatedUser,
+        isAuthenticated: true,
+        authMethod: AUTHENTICATION_METHODS.Anonymous,
         isInitializedAddress: !!isInitialization,
       })
       accountStorage.set(encodedSecretKey)
@@ -81,6 +150,57 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       return false
     }
     return address
+  },
+  login: async () => {
+    let {
+      web3Auth,
+      initializeWeb3Auth,
+      getPrivateKey,
+      _syncSessionKey,
+      _subscribeEnergy,
+    } = get()
+    if (!web3Auth) {
+      web3Auth = await initializeWeb3Auth()
+    }
+    const web3authProvider = await web3Auth.connect()
+
+    set(() => ({
+      provider: web3authProvider,
+    }))
+
+    const privateKey = await getPrivateKey()
+    if (privateKey) {
+      const signer = await loginWithSecretKey(decodeSecretKey(privateKey))
+
+      /// We could ans should rely on the user profile as displayed by Web3Auth as it gives us a better idea of who logged in
+      /// Possible ways would be to use IPFS to update the logged in user on first login and using the web3Auth generated private key,
+      /// we could ensure only the private has access to update the IPFS profile.
+      /// For now, we use anonymouse profile for every logged in use.
+      // const user = await web3Auth.getUserInfo()
+
+      const randomPicture = createAvatar(bottts, {
+        size: 128,
+        seed: signer.address,
+      }).toDataUriSync()
+      const name = generateRandomName(signer.address)
+      const authenticatedUser = {
+        name: name,
+        profilePic: randomPicture,
+        address: signer.address,
+        encodedSecretKey: privateKey,
+      } as AuthenticatedUser
+      set(() => ({
+        signer,
+        address: signer.address,
+        isAuthenticated: true,
+        authenticatedUser,
+        authMethod: AUTHENTICATION_METHODS.Web3Auth,
+        encodedSecretKey: privateKey,
+      }))
+      accountStorage.set(privateKey)
+      await _subscribeEnergy()
+      _syncSessionKey()
+    }
   },
   _subscribeEnergy: async () => {
     const { address, _unsubscribeEnergy } = get()
@@ -94,7 +214,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
     const unsub = substrateApi.query.energy.energyBalance(
-      address,
+      '',
       (energyAmount) => {
         const parsedEnergy = parseFloat(energyAmount.toPrimitive().toString())
         console.log('Current energy: ', parsedEnergy)
@@ -105,12 +225,27 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       }
     )
   },
-  logout: () => {
-    const { _unsubscribeEnergy, _currentSessionSecretKey } = get()
+  logout: async () => {
+    const { _unsubscribeEnergy, _currentSessionSecretKey, authMethod } = get()
     _unsubscribeEnergy()
 
-    accountStorage.remove()
     set({ ...initialState, _isNewSessionKey: false, _currentSessionSecretKey })
+    if (authMethod === AUTHENTICATION_METHODS.Web3Auth) {
+      const { web3Auth } = get()
+      if (!web3Auth) {
+        console.log('User already logged out')
+        return
+      }
+      await web3Auth.logout()
+    }
+    accountStorage.remove()
+    set({
+      ...initialState,
+      _isNewSessionKey: false,
+      _currentSessionSecretKey,
+      isAuthenticated: false,
+      authenticatedUser: null,
+    })
   },
   _getSecretKeyForLogin: async () => {
     const { _isNewSessionKey, _currentSessionSecretKey } = get()
@@ -159,7 +294,8 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
   },
   init: async () => {
-    const { isInitialized, login, _syncSessionWithLocalStorage } = get()
+    const { isInitialized, loginAnonymously, _syncSessionWithLocalStorage } =
+      get()
 
     // Prevent multiple initialization
     if (isInitialized !== undefined) return
@@ -169,7 +305,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     let successLogin = false
     if (encodedSecretKey) {
       const secretKey = decodeSecretKey(encodedSecretKey)
-      const address = await login(secretKey, true)
+      const address = await loginAnonymously(secretKey, true)
 
       if (address) successLogin = true
       else accountStorage.remove()
@@ -179,5 +315,20 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       await _syncSessionWithLocalStorage()
     }
     set({ isInitialized: true })
+  },
+  getPrivateKey: async () => {
+    const { provider } = get()
+    if (!provider) {
+      console.log('Provider not set!')
+      return undefined
+    }
+
+    const rpc = new SubstrateRPC(provider)
+    const [private_key, address] = await rpc.getPrivateKey()
+    set({
+      encodedSecretKey: private_key,
+      address,
+    })
+    return private_key
   },
 }))

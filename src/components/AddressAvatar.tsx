@@ -1,13 +1,11 @@
 import useRandomColor from '@/hooks/useRandomColor'
 import { cx } from '@/utils/class-names'
-import * as bottts from '@dicebear/bottts'
-import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
-import { ComponentProps, forwardRef, useMemo } from 'react'
+import { ComponentProps, forwardRef } from 'react'
 
 export type AddressAvatarProps = ComponentProps<'div'> & {
   address: string
-  avatar?: string
+  avatar: string
 }
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
@@ -16,12 +14,6 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     ref
   ) {
     const backgroundColor = useRandomColor(address, 'dark')
-    const randomAvatar = useMemo(() => {
-      return createAvatar(bottts, {
-        size: 128,
-        seed: address,
-      }).toDataUriSync()
-    }, [address])
 
     return (
       <div
@@ -39,7 +31,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
               sizes='5rem'
               className='relative rounded-full'
               fill
-              src={avatar ?? randomAvatar}
+              src={avatar}
               alt='avatar'
             />
           </div>

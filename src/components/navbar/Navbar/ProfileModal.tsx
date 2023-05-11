@@ -15,7 +15,7 @@ import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useRandomColor from '@/hooks/useRandomColor'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
-import { useWeb3Auth } from '@/stores/web3-auth'
+import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin } from '@/utils/links'
@@ -30,6 +30,7 @@ type NotificationControl = {
 
 export type ProfileModalProps = ModalFunctionalityProps & {
   address: string
+  avatar: string
   notification?: NotificationControl
 }
 
@@ -69,6 +70,7 @@ const modalTitles: {
 
 type ContentProps = {
   address: string
+  avatar: string
   setCurrentState: React.Dispatch<React.SetStateAction<ModalState>>
   notification?: NotificationControl
 }
@@ -85,6 +87,7 @@ const modalContents: {
 export default function ProfileModal({
   address,
   notification,
+  avatar,
   ...props
 }: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
@@ -113,6 +116,7 @@ export default function ProfileModal({
     >
       <Content
         address={address}
+        avatar={avatar}
         setCurrentState={setCurrentState}
         notification={notification}
       />
@@ -123,9 +127,10 @@ export default function ProfileModal({
 function AccountContent({
   address,
   setCurrentState,
+  avatar,
   notification,
 }: ContentProps) {
-  const { authenticatedUser, signer } = useWeb3Auth((state) => state)
+  const { authenticatedUser, signer } = useMyAccount((state) => state)
   const senderColor = useRandomColor(signer?.address)
   const sendEvent = useSendEvent()
   const onShowPrivateKeyClick = async () => {
@@ -183,7 +188,7 @@ function AccountContent({
       <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
         <AddressAvatar
           address={address}
-          avatar={authenticatedUser?.profileImage}
+          avatar={avatar}
           className='h-20 w-20'
         />
         <div className='flex flex-col'>
@@ -203,14 +208,13 @@ function AccountContent({
 }
 
 function PrivateKeyContent() {
-  const { encodedSecretKey, getPrivateKey } = useWeb3Auth()
+  const { encodedSecretKey, getPrivateKey } = useMyAccount()
   const secretKey = decodeSecretKey(encodedSecretKey ?? '')
 
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('click copy_private_key_button')
   }
-  console.log({ encodedSecretKey })
 
   useEffect(() => {
     if (!encodedSecretKey) {
@@ -230,7 +234,7 @@ function PrivateKeyContent() {
 }
 
 function LogoutContent({ setCurrentState }: ContentProps) {
-  const { logout, getPrivateKey } = useWeb3Auth((state) => state)
+  const { logout, getPrivateKey } = useMyAccount((state) => state)
   const sendEvent = useSendEvent()
 
   const onShowPrivateKeyClick = async () => {
@@ -257,7 +261,7 @@ function LogoutContent({ setCurrentState }: ContentProps) {
 }
 
 function ShareSessionContent() {
-  const { encodedSecretKey, getPrivateKey } = useWeb3Auth((state) => state)
+  const { encodedSecretKey, getPrivateKey } = useMyAccount((state) => state)
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('click copy_share_session_link')

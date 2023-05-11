@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 
 export default function useLoginAndRequestToken() {
   const { mutateAsync: requestToken } = useRequestToken()
-  const login = useMyAccount((state) => state.login)
+  const login = useMyAccount((state) => state.loginAnonymously)
 
   const loginAndRequestToken = async (
     params: Omit<Parameters<typeof requestToken>[0], 'address'>
