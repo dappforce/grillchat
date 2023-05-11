@@ -24,7 +24,7 @@ export type HubsPageProps = {
   hubsChatCount: { [id: string]: number }
 }
 
-const searchKeys = ['content.title']
+const searchKeys = ['content.name']
 export default function HubsPage({
   isIntegrateChatButtonOnTop,
   hubsChatCount = {},
