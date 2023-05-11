@@ -1,4 +1,3 @@
-import { useLocation } from '@/stores/location'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
@@ -46,7 +45,6 @@ function LayoutNavbarExtension({
   isTransparent,
   defaultBackTo,
 }: LayoutNavbarExtensionProps) {
-  const { prevUrl } = useLocation()
   const mdUp = useBreakpointThreshold('md')
 
   return (
@@ -59,7 +57,7 @@ function LayoutNavbarExtension({
       <div className='relative flex h-8 items-center justify-center py-1'>
         <div className='absolute top-1/2 left-0 -translate-y-1/2'>
           {mdUp || isTransparent ? (
-            <BackButton noStyle>
+            <BackButton noStyle defaultBackLink={defaultBackTo ?? '/'}>
               <span className='flex items-center font-medium text-text-secondary'>
                 <HiOutlineChevronLeft className='mr-1' />
                 <span>Back</span>
@@ -70,7 +68,7 @@ function LayoutNavbarExtension({
               size='circle'
               className='-ml-2 block text-text-primary'
               variant='transparent'
-              defaultBackLink='/'
+              defaultBackLink={defaultBackTo ?? '/'}
             >
               <HiOutlineChevronLeft />
             </BackButton>
