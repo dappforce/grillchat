@@ -4,6 +4,7 @@ import MessageModal from '@/components/modals/MessageModal'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
+import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
@@ -66,6 +67,7 @@ function ChatListContent({
   const router = useRouter()
   const lastReadId = useFocusedLastMessageId(chatId)
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
+  const prevMessageModalMsgId = usePrevious(messageModalMsgId)
 
   const scrollableContainerId = useId()
   const innerScrollContainerRef = useRef<HTMLDivElement>(null)
@@ -109,6 +111,7 @@ function ChatListContent({
     }
   )
 
+  // TODO: refactor this by putting the url query getter logic to ChatPage
   const hasScrolledToMessageRef = useRef(false)
   useEffect(() => {
     if (hasScrolledToMessageRef.current) return
@@ -124,10 +127,18 @@ function ChatListContent({
       return
     }
 
-    replaceUrl(urlJoin(getChatPageLink(router), `/${messageId}`))
     setMessageModalMsgId(messageId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawMessageIds, hasScrolledToMessageRef])
+
+  useEffect(() => {
+    if (messageModalMsgId) {
+      replaceUrl(urlJoin(getChatPageLink(router), `/${messageModalMsgId}`))
+    } else if (prevMessageModalMsgId && !messageModalMsgId) {
+      replaceUrl(getChatPageLink(router))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prevMessageModalMsgId, messageModalMsgId])
 
   const isAtBottomRef = useWrapInRef(isAtBottom)
   useEffect(() => {
