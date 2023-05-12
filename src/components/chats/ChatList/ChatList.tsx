@@ -10,6 +10,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { isValidNumber } from '@/utils/strings'
+import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import {
   ComponentProps,
@@ -119,9 +120,7 @@ function ChatListContent({
         return
       }
 
-      router.replace(getCurrentUrlWithoutQuery(), undefined, {
-        shallow: true,
-      })
+      replaceUrl(getCurrentUrlWithoutQuery())
       await scrollToChatElement(messageId)
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
