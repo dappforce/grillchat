@@ -24,7 +24,7 @@ import urlJoin from 'url-join'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
 
 const AboutChatModal = dynamic(
-  () => import('@/components/modals/AboutChatModal'),
+  () => import('@/components/modals/about/AboutChatModal'),
   {
     ssr: false,
   }
