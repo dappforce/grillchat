@@ -21,14 +21,6 @@ type Content = {
   content: (data: ContentData) => string | undefined
   withCopyButton?: boolean
 }
-const contentList: Content[] = [
-  { title: 'Description', content: ({ chat }) => chat.content?.body },
-  {
-    title: 'Chat link',
-    content: ({ url }) => urlJoin(url, '/about'),
-    withCopyButton: true,
-  },
-]
 
 export default function AboutChatModal({
   chatId,
@@ -50,6 +42,7 @@ export default function AboutChatModal({
       title: 'Chat link',
       content: chatUrl,
       withCopyButton: true,
+      redirectTo: chatUrl,
     },
   ]
 

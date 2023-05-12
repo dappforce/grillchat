@@ -1,5 +1,6 @@
 import Button, { ButtonProps } from '@/components/Button'
 import { CopyTextInline } from '@/components/CopyText'
+import LinkText from '@/components/LinkText'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -10,6 +11,7 @@ type Content = {
   title: string
   content: string | undefined
   withCopyButton?: boolean
+  redirectTo?: string
 }
 type Action = {
   text: string
@@ -51,7 +53,7 @@ export default function AboutModal({
           <span className='text-text-muted'>{subtitle}</span>
         </div>
         <div className='flex w-full flex-col gap-3 rounded-2xl bg-background-lighter px-4 py-4'>
-          {contentList.map(({ content, title, withCopyButton }) => {
+          {contentList.map(({ content, title, withCopyButton, redirectTo }) => {
             if (!content) return null
             const containerClassName = cx(
               'border-b border-background-lightest pb-3 last:border-none last:pb-0'
@@ -59,15 +61,28 @@ export default function AboutModal({
             const element = (
               <div key={title} className={cx('flex flex-1 flex-col gap-0.5')}>
                 <span className='text-sm text-text-muted'>{title}</span>
-                {withCopyButton ? (
-                  <CopyTextInline
-                    text={content}
-                    withButton={false}
-                    className='text-text-secondary'
-                  />
-                ) : (
-                  <span>{content}</span>
-                )}
+                {(() => {
+                  if (redirectTo) {
+                    return (
+                      <LinkText
+                        variant='secondary'
+                        href={redirectTo}
+                        openInNewTab
+                      >
+                        {content}
+                      </LinkText>
+                    )
+                  } else if (withCopyButton) {
+                    return (
+                      <CopyTextInline
+                        text={content}
+                        withButton={false}
+                        className='text-text-secondary'
+                      />
+                    )
+                  }
+                  return <span>{content}</span>
+                })()}
               </div>
             )
 
