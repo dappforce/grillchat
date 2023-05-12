@@ -4,21 +4,25 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { useConfigContext } from '@/contexts/ConfigContext'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
+  getChatPageLink,
   getCurrentUrlWithoutQuery,
   getHomePageLink,
   getUrlQuery,
 } from '@/utils/links'
+import { replaceUrl } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
+import urlJoin from 'url-join'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
 
 const AboutChatModal = dynamic(
@@ -86,6 +90,22 @@ function NavbarChatInfo({
   const isInIframe = useIsInIframe()
   const router = useRouter()
   const { isChatRoomOnly } = useConfigContext()
+
+  const routerRef = useWrapInRef(router)
+  const isInitialized = useRef(false)
+  useEffect(() => {
+    if (!isInitialized.current) {
+      isInitialized.current = true
+      return
+    }
+
+    const baseUrl = getChatPageLink(routerRef.current)
+    if (isOpenAboutChatModal) {
+      replaceUrl(urlJoin(baseUrl, '/about'))
+    } else {
+      replaceUrl(baseUrl)
+    }
+  }, [isOpenAboutChatModal, routerRef])
 
   useEffect(() => {
     const open = getUrlQuery('open')
