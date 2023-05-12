@@ -12,6 +12,7 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
   getChatPageLink,
   getCurrentUrlWithoutQuery,
+  getHomePageLink,
   getUrlQuery,
 } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
@@ -32,6 +33,7 @@ const AboutChatModal = dynamic(
 
 export type ChatPageProps = { chatId: string }
 export default function ChatPage({ chatId }: ChatPageProps) {
+  const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId)
   const { data: messageIds } = useCommentIdsByPostId(chatId, {
     subscribe: true,
@@ -51,6 +53,7 @@ export default function ChatPage({ chatId }: ChatPageProps) {
     <DefaultLayout
       withFixedHeight
       navbarProps={{
+        defaultBackLink: getHomePageLink(router),
         customContent: ({ backButton, authComponent, colorModeToggler }) => (
           <div className='flex items-center justify-between gap-4'>
             <NavbarChatInfo
