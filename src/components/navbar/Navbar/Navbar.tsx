@@ -6,7 +6,7 @@ import Logo from '@/components/Logo'
 import usePrevious from '@/hooks/usePrevious'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getChatPageLink, getHomePageLink } from '@/utils/links'
+import { getHomePageLink } from '@/utils/links'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -21,6 +21,7 @@ const LoginModal = dynamic(() => import('@/components/modals/LoginModal'), {
 })
 
 export type NavbarProps = ComponentProps<'div'> & {
+  defaultBackLink?: string
   customContent?: (elements: {
     logoLink: JSX.Element
     authComponent: JSX.Element
@@ -29,7 +30,11 @@ export type NavbarProps = ComponentProps<'div'> & {
   }) => JSX.Element
 }
 
-export default function Navbar({ customContent, ...props }: NavbarProps) {
+export default function Navbar({
+  customContent,
+  defaultBackLink,
+  ...props
+}: NavbarProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
@@ -93,7 +98,7 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
   const backButton = (
     <div className='mr-2 flex w-9 items-center justify-center'>
       <BackButton
-        defaultBackLink={getChatPageLink(router)}
+        defaultBackLink={defaultBackLink ?? '/'}
         size='circle'
         variant='transparent'
       >
