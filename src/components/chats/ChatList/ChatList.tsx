@@ -11,7 +11,6 @@ import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { isValidNumber } from '@/utils/strings'
 import { replaceUrl } from '@/utils/window'
-import { useRouter } from 'next/router'
 import {
   ComponentProps,
   Fragment,
@@ -61,7 +60,6 @@ function ChatListContent({
   newMessageNoticeClassName,
   ...props
 }: ChatListProps) {
-  const router = useRouter()
   const lastReadId = useFocusedLastMessageId(chatId)
 
   const scrollableContainerId = useId()
