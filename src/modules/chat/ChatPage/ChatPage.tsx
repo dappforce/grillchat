@@ -2,23 +2,25 @@ import Button from '@/components/Button'
 import ChatRoom from '@/components/chats/ChatRoom'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { useConfigContext } from '@/contexts/ConfigContext'
-import useIsInIframe from '@/hooks/useIsInIframe'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
+  getChatPageLink,
   getCurrentUrlWithoutQuery,
   getHomePageLink,
   getUrlQuery,
 } from '@/utils/links'
+import { replaceUrl } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { HiOutlineChevronLeft } from 'react-icons/hi2'
+import { useEffect, useRef, useState } from 'react'
+import urlJoin from 'url-join'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
 
 const AboutChatModal = dynamic(
@@ -30,6 +32,7 @@ const AboutChatModal = dynamic(
 
 export type ChatPageProps = { chatId: string }
 export default function ChatPage({ chatId }: ChatPageProps) {
+  const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId)
   const { data: messageIds } = useCommentIdsByPostId(chatId, {
     subscribe: true,
@@ -47,10 +50,13 @@ export default function ChatPage({ chatId }: ChatPageProps) {
 
   return (
     <DefaultLayout
+      withFixedHeight
       navbarProps={{
-        customContent: (_, authComponent, colorModeToggler) => (
+        defaultBackLink: getHomePageLink(router),
+        customContent: ({ backButton, authComponent, colorModeToggler }) => (
           <div className='flex items-center justify-between gap-4'>
             <NavbarChatInfo
+              backButton={backButton}
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
               messageCount={messageIds?.length ?? 0}
               chat={chat}
@@ -77,15 +83,32 @@ function NavbarChatInfo({
   image,
   messageCount,
   chat,
+  backButton,
 }: {
   image: ImageProps['src']
   messageCount: number
   chat?: PostData | null
+  backButton: JSX.Element
 }) {
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
-  const isInIframe = useIsInIframe()
   const router = useRouter()
   const { isChatRoomOnly } = useConfigContext()
+
+  const routerRef = useWrapInRef(router)
+  const isInitialized = useRef(false)
+  useEffect(() => {
+    if (!isInitialized.current) {
+      isInitialized.current = true
+      return
+    }
+
+    const baseUrl = getChatPageLink(routerRef.current)
+    if (isOpenAboutChatModal) {
+      replaceUrl(urlJoin(baseUrl, '/about'))
+    } else {
+      replaceUrl(baseUrl)
+    }
+  }, [isOpenAboutChatModal, routerRef])
 
   useEffect(() => {
     const open = getUrlQuery('open')
@@ -99,18 +122,7 @@ function NavbarChatInfo({
 
   return (
     <div className='flex flex-1 items-center'>
-      {!isChatRoomOnly && (
-        <div className='mr-2 flex w-9 items-center justify-center'>
-          <Button
-            size='circle'
-            href={getHomePageLink(router)}
-            nextLinkProps={{ replace: isInIframe }}
-            variant='transparent'
-          >
-            <HiOutlineChevronLeft />
-          </Button>
-        </div>
-      )}
+      {!isChatRoomOnly && backButton}
       <Button
         variant='transparent'
         interactive='none'

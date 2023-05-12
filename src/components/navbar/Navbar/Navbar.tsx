@@ -1,3 +1,4 @@
+import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import ColorModeToggler from '@/components/ColorModeToggler'
 import Container from '@/components/Container'
@@ -10,6 +11,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
+import { HiOutlineChevronLeft } from 'react-icons/hi2'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
@@ -19,14 +21,20 @@ const LoginModal = dynamic(() => import('@/components/modals/LoginModal'), {
 })
 
 export type NavbarProps = ComponentProps<'div'> & {
-  customContent?: (
-    logoLink: JSX.Element,
-    authComponent: JSX.Element,
+  defaultBackLink?: string
+  customContent?: (elements: {
+    logoLink: JSX.Element
+    authComponent: JSX.Element
     colorModeToggler: JSX.Element
-  ) => JSX.Element
+    backButton: JSX.Element
+  }) => JSX.Element
 }
 
-export default function Navbar({ customContent, ...props }: NavbarProps) {
+export default function Navbar({
+  customContent,
+  defaultBackLink,
+  ...props
+}: NavbarProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
@@ -76,13 +84,27 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
     )
   }
   const authComponent = renderAuthComponent()
+
   const colorModeToggler = (
     <ColorModeToggler className='text-text-muted dark:text-text' />
   )
+
   const logoLink = (
     <Link href={getHomePageLink(router)} aria-label='Back to home'>
       <Logo className='text-2xl' />
     </Link>
+  )
+
+  const backButton = (
+    <div className='mr-2 flex w-9 items-center justify-center'>
+      <BackButton
+        defaultBackLink={defaultBackLink ?? '/'}
+        size='circle'
+        variant='transparent'
+      >
+        <HiOutlineChevronLeft />
+      </BackButton>
+    </div>
   )
 
   return (
@@ -98,7 +120,12 @@ export default function Navbar({ customContent, ...props }: NavbarProps) {
           className={cx('grid h-14 items-center py-2', props.className)}
         >
           {customContent ? (
-            customContent(logoLink, authComponent, colorModeToggler)
+            customContent({
+              logoLink,
+              authComponent,
+              colorModeToggler,
+              backButton,
+            })
           ) : (
             <div className='flex items-center justify-between'>
               {logoLink}
