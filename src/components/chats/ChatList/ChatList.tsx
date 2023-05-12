@@ -97,7 +97,7 @@ function ChatListContent({
     innerContainer: innerRef,
   })
 
-  const scrollToChatElement = useScrollToMessage(
+  const scrollToMessage = useScrollToMessage(
     scrollContainerRef,
     {
       messageIds: currentPageMessageIds,
@@ -123,7 +123,7 @@ function ChatListContent({
     if (!isMessageIdsFetched) return
 
     if (!messageId || !isValidNumber(messageId)) {
-      scrollToChatElement(lastReadId ?? '', false)
+      scrollToMessage(lastReadId ?? '', false)
       return
     }
 
@@ -203,7 +203,7 @@ function ChatListContent({
                   message={message}
                   key={message.id}
                   messageBubbleId={getMessageElementId(message.id)}
-                  scrollToMessage={scrollToChatElement}
+                  scrollToMessage={scrollToMessage}
                 />
               )
               if (!showLastUnreadMessageNotice) return chatElement
@@ -224,6 +224,7 @@ function ChatListContent({
         isOpen={!!messageModalMsgId}
         closeModal={() => setMessageModalMsgId('')}
         messageId={messageModalMsgId}
+        scrollToMessage={scrollToMessage}
       />
       <NewMessageNotice
         className={cx('absolute bottom-0 right-6', newMessageNoticeClassName)}
