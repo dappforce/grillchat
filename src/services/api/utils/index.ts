@@ -1,0 +1,1 @@
+export { WalletClient } from './walletClient'

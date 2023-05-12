@@ -4,6 +4,14 @@ export function getServerMnemonic() {
   return checkEnv(process.env.SERVER_MNEMONIC, 'SERVER_MNEMONIC', true)
 }
 
+export function getDiscussionCreatorMnemonic() {
+  return checkEnv(
+    process.env.SERVER_MNEMONIC,
+    'SERVER_DISCUSSION_CREATOR_MNEMONIC',
+    true
+  )
+}
+
 export function getCaptchaSecret() {
   return checkEnv(process.env.CAPTCHA_SECRET, 'CAPTCHA_SECRET', true)
 }
