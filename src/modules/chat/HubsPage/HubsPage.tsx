@@ -45,16 +45,16 @@ export default function HubsPage({
   return (
     <DefaultLayout
       navbarProps={{
-        customContent: (logo, auth, colorModeToggler) => {
+        customContent: ({ logoLink, authComponent, colorModeToggler }) => {
           return (
             <NavbarWithSearch
               customContent={(searchButton) => (
                 <div className='flex w-full items-center justify-between gap-4'>
-                  {logo}
+                  {logoLink}
                   <div className='flex items-center gap-2'>
                     {searchButton}
                     {colorModeToggler}
-                    <div className='ml-1.5'>{auth}</div>
+                    <div className='ml-1.5'>{authComponent}</div>
                   </div>
                 </div>
               )}
