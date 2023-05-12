@@ -1,3 +1,5 @@
+import Button from '@/components/Button'
+import AboutHubModal from '@/components/modals/about/AboutHubModal'
 import NavbarWithSearch, {
   NavbarWithSearchProps,
 } from '@/components/navbar/Navbar/custom/NavbarWithSearch'
@@ -7,6 +9,7 @@ import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getSpaceIds } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import Image from 'next/image'
+import { useState } from 'react'
 
 export type HomePageNavbarProps = {
   logo: JSX.Element
@@ -27,6 +30,8 @@ export default function HomePageNavbar({
   searchProps,
   chatsCount,
 }: HomePageNavbarProps) {
+  const [isOpenAboutModal, setIsOpenAboutModal] = useState(false)
+
   const isInIframe = useIsInIframe()
   const { data: space } = getSpaceBySpaceIdQuery.useQuery(spaceId)
   const isInHub = getSpaceIds().includes(spaceId)
@@ -36,7 +41,13 @@ export default function HomePageNavbar({
     leftSection = (
       <div className='mr-4 flex flex-1 items-center'>
         {backButton}
-        <div className='flex flex-1 items-center gap-2 overflow-hidden'>
+        <Button
+          variant='transparent'
+          interactive='none'
+          size='noPadding'
+          className='flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left'
+          onClick={() => setIsOpenAboutModal(true)}
+        >
           <Image
             className={cx(
               getCommonClassNames('chatImageBackground'),
@@ -56,24 +67,32 @@ export default function HomePageNavbar({
               {chatsCount} chats in hub
             </span>
           </div>
-        </div>
+        </Button>
       </div>
     )
   }
 
   return (
-    <NavbarWithSearch
-      customContent={(searchButton) => (
-        <div className='flex w-full items-center justify-between gap-2'>
-          {leftSection}
-          <div className='flex items-center gap-2 text-text-muted dark:text-text'>
-            {searchButton}
-            {colorModeToggler}
-            <div className='ml-1.5'>{auth}</div>
+    <>
+      <NavbarWithSearch
+        customContent={(searchButton) => (
+          <div className='flex w-full items-center justify-between gap-2'>
+            {leftSection}
+            <div className='flex items-center gap-2 text-text-muted dark:text-text'>
+              {searchButton}
+              {colorModeToggler}
+              <div className='ml-1.5'>{auth}</div>
+            </div>
           </div>
-        </div>
-      )}
-      searchProps={searchProps}
-    />
+        )}
+        searchProps={searchProps}
+      />
+      <AboutHubModal
+        isOpen={isOpenAboutModal}
+        closeModal={() => setIsOpenAboutModal(false)}
+        hubId={spaceId}
+        chatCount={chatsCount}
+      />
+    </>
   )
 }

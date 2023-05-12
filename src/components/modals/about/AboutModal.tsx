@@ -24,7 +24,7 @@ export type AboutModalProps = ModalFunctionalityProps & {
   imageCid: string
   subtitle: string
   contentList: Content[]
-  actionMenu: Action[]
+  actionMenu?: Action[]
 }
 
 export default function AboutModal({
@@ -111,25 +111,27 @@ export default function AboutModal({
             )
           })}
         </div>
-        <div className='w-full overflow-hidden rounded-2xl bg-background-lighter'>
-          {actionMenu.map(({ icon: Icon, text, className, onClick }) => (
-            <Button
-              variant='transparent'
-              interactive='none'
-              size='noPadding'
-              key={text}
-              className={cx(
-                'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 last:border-none',
-                'transition focus-visible:bg-background-lightest hover:bg-background-lightest',
-                className
-              )}
-              onClick={onClick}
-            >
-              <Icon className='text-xl' />
-              <span>{text}</span>
-            </Button>
-          ))}
-        </div>
+        {actionMenu && actionMenu.length > 0 && (
+          <div className='w-full overflow-hidden rounded-2xl bg-background-lighter'>
+            {actionMenu.map(({ icon: Icon, text, className, onClick }) => (
+              <Button
+                variant='transparent'
+                interactive='none'
+                size='noPadding'
+                key={text}
+                className={cx(
+                  'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 last:border-none',
+                  'transition focus-visible:bg-background-lightest hover:bg-background-lightest',
+                  className
+                )}
+                onClick={onClick}
+              >
+                <Icon className='text-xl' />
+                <span>{text}</span>
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
     </Modal>
   )
