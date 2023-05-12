@@ -15,7 +15,7 @@ export default function ChatPageNavbarExtension() {
   if (shouldSendMessageWithoutCaptcha) return null
 
   return (
-    <NavbarExtension className={cx('py-2 sm:py-4')}>
+    <NavbarExtension className={cx('py-2 sm:py-2.5')}>
       <CaptchaTermsAndService className='text-center' />
     </NavbarExtension>
   )
