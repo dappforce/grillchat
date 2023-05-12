@@ -25,8 +25,8 @@ export default function useGetMessageElement({
 
   const promiseRef = useRef<{
     resolvers: Map<string, VoidFunction[]>
-    waitingMessageIds: Set<string>
-  }>({ resolvers: new Map(), waitingMessageIds: new Set() })
+    waitingMessageDataLoadedIds: Set<string>
+  }>({ resolvers: new Map(), waitingMessageDataLoadedIds: new Set() })
 
   const loadedMessageIds = useMemo(() => {
     const ids: string[] = []
@@ -44,48 +44,57 @@ export default function useGetMessageElement({
   )
 
   useEffect(() => {
-    const { waitingMessageIds } = promiseRef.current
-    waitingMessageIds.forEach((messageId) => {
+    const { waitingMessageDataLoadedIds } = promiseRef.current
+
+    waitingMessageDataLoadedIds.forEach((messageId) => {
       if (loadedMessageIds.includes(messageId)) {
         const resolvers = promiseRef.current.resolvers.get(messageId)
         resolvers?.forEach((resolve) => resolve())
+
         promiseRef.current.resolvers.delete(messageId)
-        waitingMessageIds.delete(messageId)
+        waitingMessageDataLoadedIds.delete(messageId)
       }
     })
   }, [loadedMessageIds])
 
-  const loadMoreUntilMessageIsLoaded = async (messageId: string) => {
+  const loadMoreUntilMessageIdIsLoaded = async (messageId: string) => {
     const isMessageIdIncluded = messageIdsRef.current.includes(messageId)
     if (isMessageIdIncluded) return
+
     await awaitableLoadMore()
-    await loadMoreUntilMessageIsLoaded(messageId)
+    await loadMoreUntilMessageIdIsLoaded(messageId)
   }
 
-  const getChatElement = async (messageId: string) => {
-    const { getPromise, getResolver } = generateManuallyTriggeredPromise()
+  const getMessageElement = async (messageId: string) => {
+    const {
+      getPromise: getMessageDataLoadedPromise,
+      getResolver: getMessageDataLoadedResolver,
+    } = generateManuallyTriggeredPromise()
     const elementId = getMessageElementId(messageId)
     const element = document.getElementById(elementId)
     if (element) return element
 
-    const { resolvers, waitingMessageIds } = promiseRef.current
+    const { resolvers, waitingMessageDataLoadedIds: waitingMessageIds } =
+      promiseRef.current
+
     if (!resolvers.get(messageId)) {
       resolvers.set(messageId, [])
     }
-    resolvers.get(messageId)?.push(getResolver())
+    resolvers.get(messageId)?.push(getMessageDataLoadedResolver())
     waitingMessageIds.add(messageId)
 
     const isMessageIdIncluded = messageIds.includes(messageId)
     if (!isMessageIdIncluded) {
-      await loadMoreUntilMessageIsLoaded(messageId)
+      await loadMoreUntilMessageIdIsLoaded(messageId)
     }
-    await getPromise()
+
+    await getMessageDataLoadedPromise()
     await waitAllMessagesLoadedRef.current()
 
     return document.getElementById(elementId)
   }
 
-  return getChatElement
+  return getMessageElement
 }
 
 function useAwaitableLoadMore(
