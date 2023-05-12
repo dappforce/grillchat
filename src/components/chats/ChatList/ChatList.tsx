@@ -125,6 +125,7 @@ function ChatListContent({
     }
 
     replaceUrl(urlJoin(getChatPageLink(router), `/${messageId}`))
+    setMessageModalMsgId(messageId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawMessageIds, hasScrolledToMessageRef])
 
