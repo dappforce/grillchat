@@ -61,13 +61,13 @@ export default function HomePage({
   return (
     <DefaultLayout
       navbarProps={{
-        customContent: (logo, auth, colorModeToggler) => {
+        customContent: ({ logoLink, authComponent, colorModeToggler }) => {
           return (
             <HomePageNavbar
               chatsCount={allChatIds.length}
-              logo={logo}
-              auth={auth}
+              auth={authComponent}
               colorModeToggler={colorModeToggler}
+              logo={logoLink}
               spaceId={spaceId}
               searchProps={{
                 search,
@@ -80,7 +80,7 @@ export default function HomePage({
       }}
     >
       {!isInIframe && <WelcomeModal />}
-      <div className='flex flex-col overflow-auto'>
+      <div className='flex flex-col'>
         {!isInIframe && !search && (
           <ChatSpecialButtons
             isIntegrateChatButtonOnTop={isIntegrateChatButtonOnTop}

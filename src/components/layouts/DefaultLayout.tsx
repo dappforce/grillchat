@@ -1,28 +1,31 @@
-import LinkText from '@/components/LinkText'
-import { useLocation } from '@/stores/location'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import useBreakpointThreshold from '../../hooks/useBreakpointThreshold'
-import Button from '../Button'
+import BackButton from '../BackButton'
 import Navbar, { NavbarProps } from '../navbar/Navbar'
 import NavbarExtension from '../navbar/NavbarExtension'
 
 export type DefaultLayoutProps = ComponentProps<'div'> & {
   navbarProps?: NavbarProps
   withBackButton?: LayoutNavbarExtensionProps
+  withFixedHeight?: boolean
 }
 
 export default function DefaultLayout({
   children,
   navbarProps,
   withBackButton,
+  withFixedHeight,
   ...props
 }: DefaultLayoutProps) {
   return (
     <div
-      className={cx('flex h-screen flex-col bg-background text-text')}
-      style={{ height: '100svh' }}
+      className={cx(
+        'flex flex-col bg-background text-text',
+        withFixedHeight && 'h-screen'
+      )}
+      style={withFixedHeight ? { height: '100svh' } : { minHeight: '100svh' }}
       {...props}
     >
       <Navbar {...navbarProps} />
@@ -42,7 +45,6 @@ function LayoutNavbarExtension({
   isTransparent,
   defaultBackTo,
 }: LayoutNavbarExtensionProps) {
-  const { prevUrl } = useLocation()
   const mdUp = useBreakpointThreshold('md')
 
   return (
@@ -55,23 +57,21 @@ function LayoutNavbarExtension({
       <div className='relative flex h-8 items-center justify-center py-1'>
         <div className='absolute top-1/2 left-0 -translate-y-1/2'>
           {mdUp || isTransparent ? (
-            <LinkText
-              href={prevUrl || defaultBackTo || '/'}
-              variant='secondary'
-              className='flex items-center'
-            >
-              <HiOutlineChevronLeft className='mr-1' />
-              <span>Back</span>
-            </LinkText>
+            <BackButton noStyle defaultBackLink={defaultBackTo ?? '/'}>
+              <span className='flex items-center font-medium text-text-secondary'>
+                <HiOutlineChevronLeft className='mr-1' />
+                <span>Back</span>
+              </span>
+            </BackButton>
           ) : (
-            <Button
-              href='/'
-              size='noPadding'
-              className='block text-text-primary'
+            <BackButton
+              size='circle'
+              className='-ml-2 block text-text-primary'
               variant='transparent'
+              defaultBackLink={defaultBackTo ?? '/'}
             >
               <HiOutlineChevronLeft />
-            </Button>
+            </BackButton>
           )}
         </div>
         {!isTransparent && title && <h1>{title}</h1>}
