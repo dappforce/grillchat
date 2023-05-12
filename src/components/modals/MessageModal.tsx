@@ -45,7 +45,7 @@ export default function MessageModal({
     >
       <div
         className={cx(
-          'rounded-2xl bg-background p-4',
+          'max-h-96 overflow-y-auto rounded-2xl bg-background p-4',
           !message && 'h-28 animate-pulse'
         )}
       >
