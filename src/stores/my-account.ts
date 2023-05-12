@@ -214,7 +214,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
     const unsub = substrateApi.query.energy.energyBalance(
-      '',
+      address,
       (energyAmount) => {
         const parsedEnergy = parseFloat(energyAmount.toPrimitive().toString())
         console.log('Current energy: ', parsedEnergy)
