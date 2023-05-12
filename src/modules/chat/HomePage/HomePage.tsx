@@ -61,12 +61,19 @@ export default function HomePage({
   return (
     <DefaultLayout
       navbarProps={{
-        customContent: ({ logoLink, authComponent, colorModeToggler }) => {
+        defaultBackLink: '/hubs',
+        customContent: ({
+          backButton,
+          logoLink,
+          authComponent,
+          colorModeToggler,
+        }) => {
           return (
             <HomePageNavbar
               chatsCount={allChatIds.length}
               auth={authComponent}
               colorModeToggler={colorModeToggler}
+              backButton={backButton}
               logo={logoLink}
               spaceId={spaceId}
               searchProps={{

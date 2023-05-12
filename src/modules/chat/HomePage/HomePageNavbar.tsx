@@ -1,4 +1,3 @@
-import Button from '@/components/Button'
 import NavbarWithSearch, {
   NavbarWithSearchProps,
 } from '@/components/navbar/Navbar/custom/NavbarWithSearch'
@@ -8,11 +7,11 @@ import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getSpaceIds } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import Image from 'next/image'
-import { HiOutlineChevronLeft } from 'react-icons/hi2'
 
 export type HomePageNavbarProps = {
   logo: JSX.Element
   auth: JSX.Element
+  backButton: JSX.Element
   colorModeToggler: JSX.Element
   searchProps: NavbarWithSearchProps['searchProps']
   spaceId: string
@@ -22,6 +21,7 @@ export type HomePageNavbarProps = {
 export default function HomePageNavbar({
   auth,
   colorModeToggler,
+  backButton,
   logo,
   spaceId,
   searchProps,
@@ -35,11 +35,7 @@ export default function HomePageNavbar({
   if (isInHub && !isInIframe) {
     leftSection = (
       <div className='mr-4 flex flex-1 items-center'>
-        <div className='mr-2 flex w-9 items-center justify-center'>
-          <Button size='circle' href='/hubs' variant='transparent'>
-            <HiOutlineChevronLeft />
-          </Button>
-        </div>
+        {backButton}
         <div className='flex flex-1 items-center gap-2 overflow-hidden'>
           <Image
             className={cx(
