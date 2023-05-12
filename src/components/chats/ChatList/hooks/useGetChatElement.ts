@@ -68,16 +68,17 @@ export default function useGetMessageElement({
     const element = document.getElementById(elementId)
     if (element) return element
 
-    const isMessageIdIncluded = messageIds.includes(messageId)
-    if (!isMessageIdIncluded) {
-      await loadMoreUntilMessageIsLoaded(messageId)
-    }
     const { resolvers, waitingMessageIds } = promiseRef.current
     if (!resolvers.get(messageId)) {
       resolvers.set(messageId, [])
     }
     resolvers.get(messageId)?.push(getResolver())
     waitingMessageIds.add(messageId)
+
+    const isMessageIdIncluded = messageIds.includes(messageId)
+    if (!isMessageIdIncluded) {
+      await loadMoreUntilMessageIsLoaded(messageId)
+    }
     await getPromise()
     await waitAllMessagesLoadedRef.current()
 
