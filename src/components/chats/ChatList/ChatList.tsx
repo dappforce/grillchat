@@ -1,5 +1,6 @@
 import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfiniteScrollData'
 import Container from '@/components/Container'
+import MessageModal from '@/components/modals/MessageModal'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
@@ -8,9 +9,10 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
+import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { isValidNumber } from '@/utils/strings'
 import { replaceUrl } from '@/utils/window'
+import { useRouter } from 'next/router'
 import {
   ComponentProps,
   Fragment,
@@ -21,6 +23,7 @@ import {
   useState,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import urlJoin from 'url-join'
 import { getMessageElementId } from '../helpers'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
@@ -60,7 +63,9 @@ function ChatListContent({
   newMessageNoticeClassName,
   ...props
 }: ChatListProps) {
+  const router = useRouter()
   const lastReadId = useFocusedLastMessageId(chatId)
+  const [messageModalMsgId, setMessageModalMsgId] = useState('')
 
   const scrollableContainerId = useId()
   const innerScrollContainerRef = useRef<HTMLDivElement>(null)
@@ -106,21 +111,20 @@ function ChatListContent({
 
   const hasScrolledToMessageRef = useRef(false)
   useEffect(() => {
-    ;(async () => {
-      if (hasScrolledToMessageRef.current) return
-      hasScrolledToMessageRef.current = true
+    if (hasScrolledToMessageRef.current) return
+    hasScrolledToMessageRef.current = true
 
-      const messageId = getUrlQuery('messageId')
-      const isMessageIdsFetched = rawMessageIds !== undefined
+    const messageId = getUrlQuery('messageId')
+    const isMessageIdsFetched = rawMessageIds !== undefined
 
-      if (!isMessageIdsFetched || !messageId || !isValidNumber(messageId)) {
-        scrollToChatElement(lastReadId ?? '', false)
-        return
-      }
+    if (!isMessageIdsFetched) return
 
-      replaceUrl(getCurrentUrlWithoutQuery())
-      await scrollToChatElement(messageId)
-    })()
+    if (!messageId || !isValidNumber(messageId)) {
+      scrollToChatElement(lastReadId ?? '', false)
+      return
+    }
+
+    replaceUrl(urlJoin(getChatPageLink(router), `/${messageId}`))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawMessageIds, hasScrolledToMessageRef])
 
@@ -204,6 +208,11 @@ function ChatListContent({
           </InfiniteScroll>
         </div>
       </ScrollableContainer>
+      <MessageModal
+        isOpen={!!messageModalMsgId}
+        closeModal={() => setMessageModalMsgId('')}
+        messageId={messageModalMsgId}
+      />
       <NewMessageNotice
         className={cx('absolute bottom-0 right-6', newMessageNoticeClassName)}
         messageIds={messageIds}
