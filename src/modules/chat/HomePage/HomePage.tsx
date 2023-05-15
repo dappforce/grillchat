@@ -244,7 +244,7 @@ function NoSearchResultScreen({
     >
       <Image
         src={NoResultImage}
-        className='h-80 w-80'
+        className='h-64 w-64'
         alt=''
         role='presentation'
       />

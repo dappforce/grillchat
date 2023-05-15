@@ -45,7 +45,7 @@ export default function LaunchCommunityPage() {
       <div className='flex flex-1 flex-col gap-[60px] text-center [&>*]:z-[5]'>
         <div className='mt-4 flex flex-col items-center gap-4'>
           <Image
-            className='w-full max-w-sm rounded-full'
+            className='w-full max-w-xs rounded-full'
             priority
             src={LaunchCommunityImage}
             alt=''
