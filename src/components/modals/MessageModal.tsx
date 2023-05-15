@@ -49,7 +49,13 @@ export default function MessageModal({
           !message && 'h-28 animate-pulse'
         )}
       >
-        {message && <ChatItem isMyMessage={false} message={message} />}
+        {message && (
+          <ChatItem
+            withCustomMenu={false}
+            isMyMessage={false}
+            message={message}
+          />
+        )}
       </div>
       {scrollToMessage && (
         <Button
