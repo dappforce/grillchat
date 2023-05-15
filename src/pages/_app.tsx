@@ -1,8 +1,10 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import EvmProvider from '@/components/modals/login/EvmProvider'
 import { ConfigProvider, useConfigContext } from '@/contexts/ConfigContext'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
+import '@rainbow-me/rainbowkit/styles.css'
 import { getGaId } from '@/utils/env/client'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
@@ -19,7 +21,9 @@ export type AppCommonProps = {
 export default function App(props: AppProps<AppCommonProps>) {
   return (
     <ConfigProvider>
-      <AppContent {...props} />
+      <EvmProvider>
+        <AppContent {...props} />
+      </EvmProvider>
     </ConfigProvider>
   )
 }

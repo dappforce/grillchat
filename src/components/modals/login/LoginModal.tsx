@@ -1,10 +1,11 @@
+import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
+import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { SyntheticEvent, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Toast from '../../Toast'
-import { LoginModalStep, loginModalContents } from './LoginModalContent'
-import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { loginModalContents, LoginModalStep } from './LoginModalContent'
 
 export type LoginModalProps = ModalFunctionalityProps & {
   afterLogin?: () => void
@@ -14,8 +15,8 @@ export type LoginModalProps = ModalFunctionalityProps & {
 
 type ModalTitle = {
   [key in LoginModalStep]: {
-    title: React.ReactNode,
-    desc: React.ReactNode,
+    title: React.ReactNode
+    desc: React.ReactNode
     withBackButton: boolean
   }
 }
@@ -24,18 +25,18 @@ const modalHeader: ModalTitle = {
   login: {
     title: '🔐 Login',
     desc: '',
-    withBackButton: false
+    withBackButton: false,
   },
   'enter-secret-key': {
     title: '🔑 Grill secret key',
     desc: 'To access GrillChat, you need a Grill secret key. If you do not have one, just write your first chat message, and you will be given one.',
-    withBackButton: true
+    withBackButton: true,
   },
-  'wallet-selector': {
-    title: 'Select wallet',
-    desc: '',
-    withBackButton: true
-  },
+  'account-created': {
+    title: '🎉 Account created',
+    desc: 'We have created an anonymous account for you. You can now use grill.chat or connect your traditional Web3 wallet to it. ',
+    withBackButton: false
+  }
 }
 
 export default function LoginModal({
@@ -82,14 +83,22 @@ export default function LoginModal({
       onBackClick={withBackButton ? onBackClick : undefined}
       closeModal={() => {
         props.closeModal()
-        setCurrentStep('login')
       }}
     >
-      <ModalContent 
-        onSubmit={onSubmit}
-        setCurrentStep={setCurrentStep}
-        {...props}
-      />
+      <CaptchaInvisible>
+        {(runCaptcha, termsAndService) => {
+          return (
+            <ModalContent
+              onSubmit={onSubmit}
+              setCurrentStep={setCurrentStep}
+              currentStep={currentStep}
+              runCaptcha={runCaptcha}
+              termsAndService={termsAndService}
+              {...props}
+            />
+          )
+        }}
+      </CaptchaInvisible>
     </Modal>
   )
 }
