@@ -31,6 +31,8 @@ export default function AboutHubModal({
     {
       title: 'Hub link',
       content: hubUrl,
+      redirectTo: hubUrl,
+      withCopyButton: true,
     },
   ]
 
