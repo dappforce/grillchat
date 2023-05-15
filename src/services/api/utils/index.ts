@@ -1,1 +1,1 @@
-export { WalletClient } from './walletClient'
+export { WalletClient } from './wallet-client'

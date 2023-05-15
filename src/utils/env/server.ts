@@ -6,7 +6,7 @@ export function getServerMnemonic() {
 
 export function getDiscussionCreatorMnemonic() {
   return checkEnv(
-    process.env.SERVER_MNEMONIC,
+    process.env.SERVER_DISCUSSION_CREATOR_MNEMONIC,
     'SERVER_DISCUSSION_CREATOR_MNEMONIC',
     true
   )
