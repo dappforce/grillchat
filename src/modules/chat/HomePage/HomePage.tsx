@@ -255,7 +255,7 @@ function NoSearchResultScreen({
         needs.
       </p>
       <Button
-        className='w-full'
+        className='mt-4 w-full'
         size='lg'
         href={getSuggestNewChatRoomLink({ chatName: search, hubId })}
         target='_blank'
