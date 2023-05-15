@@ -65,7 +65,7 @@ export default function MessageModal({
           size='lg'
           variant='primary'
         >
-          Go to message
+          Scroll to message
         </Button>
       )}
     </Modal>
