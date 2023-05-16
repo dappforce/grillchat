@@ -4,6 +4,7 @@ const ALIAS_TO_SPACE_ID_MAP: Record<string, string> = {
   nft: '1009',
   polkassembly: '1010',
   events: '1011',
+  lp: '1012',
 }
 
 const SPACE_ID_TO_ALIAS_MAP = Object.entries(ALIAS_TO_SPACE_ID_MAP).reduce(
