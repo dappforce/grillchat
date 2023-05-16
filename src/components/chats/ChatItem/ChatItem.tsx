@@ -1,10 +1,9 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import CommonCustomContextMenu, {
-  CommonCustomContextMenuProps,
+  CommonContextMenu,
 } from '@/components/floating/CommonCustomContextMenu'
 import Toast from '@/components/Toast'
 import useRandomColor from '@/hooks/useRandomColor'
-import useWrapInRef from '@/hooks/useWrapInRef'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
@@ -13,13 +12,7 @@ import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
-import {
-  ComponentProps,
-  SyntheticEvent,
-  useMemo,
-  useReducer,
-  useState,
-} from 'react'
+import { ComponentProps, SyntheticEvent, useReducer, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
@@ -40,6 +33,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   isMyMessage: boolean
   messageBubbleId?: string
   scrollToMessage?: (chatId: string) => Promise<void>
+  withCustomMenu?: boolean
 }
 
 type CheckMarkModalReducerState = {
@@ -62,6 +56,7 @@ export default function ChatItem({
   isMyMessage,
   scrollToMessage,
   messageBubbleId,
+  withCustomMenu = true,
   ...props
 }: ChatItemProps) {
   const router = useRouter()
@@ -83,16 +78,18 @@ export default function ChatItem({
     if (isOptimisticId(messageId)) return
     onSelectMessageAsReply?.(messageId)
   }
-  const setMessageAsReplyRef = useWrapInRef(setMessageAsReply)
-  const menus = useMemo<CommonCustomContextMenuProps['menus']>(() => {
+
+  const getChatMenus = (): CommonContextMenu[] => {
+    const replyMenu: CommonContextMenu = {
+      text: 'Reply',
+      icon: (
+        <BsFillReplyFill className='flex-shrink-0 text-xl text-text-muted' />
+      ),
+      onClick: () => setMessageAsReply(messageId),
+    }
+
     return [
-      {
-        text: 'Reply',
-        icon: (
-          <BsFillReplyFill className='flex-shrink-0 text-xl text-text-muted' />
-        ),
-        onClick: () => setMessageAsReplyRef.current?.(messageId),
-      },
+      ...(onSelectMessageAsReply ? [replyMenu] : []),
       {
         text: 'Copy Text',
         icon: (
@@ -127,7 +124,8 @@ export default function ChatItem({
         onClick: () => setOpenMetadata(true),
       },
     ]
-  }, [body, messageId, setMessageAsReplyRef, router])
+  }
+  const menus = withCustomMenu ? getChatMenus() : []
 
   if (!body) return null
 
@@ -158,7 +156,8 @@ export default function ChatItem({
         <AddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
       <CommonCustomContextMenu menus={menus}>
-        {(_, onContextMenu, referenceProps) => {
+        {(config) => {
+          const { onContextMenu, referenceProps } = config || {}
           return (
             <div
               className={cx('flex flex-col overflow-hidden', props.className)}

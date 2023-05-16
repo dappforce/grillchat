@@ -244,7 +244,7 @@ function NoSearchResultScreen({
     >
       <Image
         src={NoResultImage}
-        className='h-80 w-80'
+        className='h-64 w-64'
         alt=''
         role='presentation'
       />
@@ -255,7 +255,7 @@ function NoSearchResultScreen({
         needs.
       </p>
       <Button
-        className='w-full'
+        className='mt-4 w-full'
         size='lg'
         href={getSuggestNewChatRoomLink({ chatName: search, hubId })}
         target='_blank'

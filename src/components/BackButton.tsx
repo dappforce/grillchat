@@ -18,9 +18,10 @@ export default function BackButton({
   const router = useRouter()
 
   const hasBackToCurrentSession = !!prevUrl
-  const buttonProps: ButtonProps = hasBackToCurrentSession
-    ? { onClick: () => router.back() }
-    : { href: defaultBackLink, nextLinkProps: { replace: isInIframe } }
+  const buttonProps: ButtonProps =
+    hasBackToCurrentSession && !isInIframe
+      ? { onClick: () => router.back() }
+      : { href: defaultBackLink, nextLinkProps: { replace: isInIframe } }
 
   return (
     <Button

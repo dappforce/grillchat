@@ -1,0 +1,8 @@
+node_modules/
+.env**
+.git/
+.vscode/
+docker/
+deployment/
+.github/
+.prett*
