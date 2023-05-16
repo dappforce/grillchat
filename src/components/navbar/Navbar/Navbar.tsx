@@ -72,20 +72,21 @@ export default function Navbar({
   }
 
   const renderAuthComponent = () => {
-    if (!enableLoginButton) return <></>
     if (!isInitialized) return <div className='w-9' />
 
-    return isLoggedIn ? (
-      <ProfileAvatar
-        popOverControl={{
-          isOpen: openPrivateKeyNotice,
-          setIsOpen: setOpenPrivateKeyNotice,
-        }}
-        address={address}
-      />
-    ) : (
-      <Button onClick={login}>Login</Button>
-    )
+    if (isLoggedIn) {
+      return (
+        <ProfileAvatar
+          popOverControl={{
+            isOpen: openPrivateKeyNotice,
+            setIsOpen: setOpenPrivateKeyNotice,
+          }}
+          address={address}
+        />
+      )
+    }
+
+    return enableLoginButton ? <Button onClick={login}>Login</Button> : <></>
   }
   const authComponent = renderAuthComponent()
 

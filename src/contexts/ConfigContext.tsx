@@ -33,13 +33,10 @@ export function useConfigContext() {
 function validateStringConfig<T = string>(
   value: string,
   validValues: string[],
-  transformer: (value: string) => T = (value) => value as T,
-  defaultValue: T | undefined = undefined
+  transformer: (value: string) => T = (value) => value as T
 ) {
   if (!validValues.includes(value)) return undefined
-  const transformed = transformer(value)
-  if (!transformed) return defaultValue
-  return transformed
+  return transformer(value)
 }
 
 const latestVersion = '0.1'
