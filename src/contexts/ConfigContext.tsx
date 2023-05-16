@@ -17,16 +17,18 @@ export function ConfigProvider({ children }: { children: any }) {
     order: [],
   })
 
-  const isAfterUpdate = useRef(false)
+  const configRef = useRef<State | null>(null)
   useEffect(() => {
-    isAfterUpdate.current = true
-    setState(getConfig())
+    const config = getConfig()
+    setState(config)
+    configRef.current = config
   }, [])
 
   useEffect(() => {
-    if (!isAfterUpdate.current) return
-    window.top?.postMessage('grill:ready', '*')
-    isAfterUpdate.current = false
+    // check if current state is updated to the read config
+    if (configRef.current === state) {
+      window.top?.postMessage('grill:ready', '*')
+    }
   }, [state])
 
   return (

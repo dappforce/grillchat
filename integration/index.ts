@@ -116,11 +116,6 @@ const grill = {
     }
 
     widgetElement.appendChild(iframe)
-
-    // fallback if the message is not received
-    setTimeout(() => {
-      iframe.style.opacity = '1'
-    }, 1000)
   },
 }
 
