@@ -1,17 +1,40 @@
 import { Keyring } from '@polkadot/api'
-import { cryptoWaitReady } from '@polkadot/util-crypto'
-import { type SafeEventEmitterProvider } from '@web3auth/base'
+import { CHAIN_NAMESPACES, type SafeEventEmitterProvider } from '@web3auth/base'
+import { Web3Auth } from '@web3auth/modal'
 import { encodeSecretKey } from './account'
+import { getWeb3AuthClientId } from './env/client'
+
+const clientId = getWeb3AuthClientId()
+export async function initializeWeb3Auth() {
+  const web3auth = new Web3Auth({
+    clientId,
+    chainConfig: {
+      chainNamespace: CHAIN_NAMESPACES.OTHER,
+      // chainId: '0x5',
+      // rpcTarget: 'https://rpc.ankr.com/eth_goerli',
+    },
+    web3AuthNetwork: 'testnet',
+  })
+  web3auth.initModal()
+  return web3auth
+}
+async function wait() {
+  const { cryptoWaitReady } = await import('@polkadot/util-crypto')
+  await cryptoWaitReady()
+}
 
 export class SubstrateRPC {
   private provider: SafeEventEmitterProvider
 
   constructor(provider: SafeEventEmitterProvider) {
     this.provider = provider
-    cryptoWaitReady()
+    wait()
   }
 
-  async getPrivateKey(): Promise<[string, string]> {
+  async getPrivateKey(): Promise<{
+    privateKey?: string
+    address?: string
+  }> {
     try {
       const privateKey = (await this.provider.request({
         method: 'private_key',
@@ -23,9 +46,10 @@ export class SubstrateRPC {
       // keyPair.address is the account address.
       const account = keyPair?.address
 
-      return [encodeSecretKey(`${privateKey}`), account]
+      return { privateKey: encodeSecretKey(`${privateKey}`), address: account }
     } catch (error) {
-      throw error
+      console.log({ error })
+      return {}
     }
   }
 }

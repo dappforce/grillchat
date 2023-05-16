@@ -8,7 +8,7 @@ export default function useRequestTokenAndSendMessage() {
 
   const { mutateAsync: requestToken } = useRequestToken()
   const { mutateAsync: sendMessage } = useSendMessage()
-  const login = useMyAccount((state) => state.loginAnonymously)
+  const loginAnonymously = useMyAccount((state) => state.loginAnonymously)
 
   const requestTokenAndSendMessage = async (
     params: Omit<Parameters<typeof requestToken>[0], 'address'> &
@@ -17,7 +17,7 @@ export default function useRequestTokenAndSendMessage() {
     const { captchaToken, ...sendMessageParams } = params
     let usedAddress: string = address ?? ''
     if (!address) {
-      const address = await login()
+      const address = await loginAnonymously()
       if (!address) throw new Error('Failed to login')
       usedAddress = address
     }

@@ -20,7 +20,6 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
       console.log({ initToken: token })
       console.log({ captchaRef: captchaRef.current })
       token = (await captchaRef.current?.executeAsync()) ?? null
-      console.log({ token })
     } catch (e) {
       console.error(e)
     }

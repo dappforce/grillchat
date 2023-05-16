@@ -11,7 +11,7 @@ import { getHomePageLink } from '@/utils/links'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ComponentProps, useCallback, useEffect, useRef, useState } from 'react'
+import { ComponentProps, useEffect, useRef, useState } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
@@ -46,9 +46,9 @@ export default function Navbar({
   )
   const router = useRouter()
 
-  const isInIframe = useIsInIframe()
-  const { address, authenticatedUser } = useMyAccount((state) => state)
+  const address = useMyAccount((state) => state.address)
   const prevAddress = usePrevious(address)
+  const isLoggedIn = !!address
 
   const [openLoginModal, setOpenLoginModal] = useState(false)
   const [openPrivateKeyNotice, setOpenPrivateKeyNotice] = useState(false)
@@ -70,22 +70,19 @@ export default function Navbar({
     }, 10_000)
   }, [address, isInitializedAddress, prevAddress])
 
-  const renderAuthComponent = useCallback(() => {
+  const renderAuthComponent = () => {
     if (!isInitialized) return <div className='w-9' />
-
-    if (isLoggedIn) {
-      return (
-        <ProfileAvatar
-          popOverControl={{
-            isOpen: openPrivateKeyNotice,
-            setIsOpen: setOpenPrivateKeyNotice,
-          }}
-          address={address}
-        />
-      )
-    }
-
-    return enableLoginButton ? <Button onClick={login}>Login</Button> : <></>
+    return isLoggedIn ? (
+      <ProfileAvatar
+        popOverControl={{
+          isOpen: openPrivateKeyNotice,
+          setIsOpen: setOpenPrivateKeyNotice,
+        }}
+        address={address}
+      />
+    ) : (
+      <Button onClick={() => setOpenLoginModal(true)}>Login</Button>
+    )
   }
   const authComponent = renderAuthComponent()
 

@@ -6,7 +6,6 @@ import Toast from '@/components/Toast'
 import useRandomColor from '@/hooks/useRandomColor'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
@@ -63,7 +62,6 @@ export default function ChatItem({
   const router = useRouter()
   const messageId = message.id
   const isSent = !isOptimisticId(messageId)
-  const authUser = useMyAccount((state) => state.authenticatedUser)
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
   const { body, inReplyTo } = message.content || {}
@@ -149,11 +147,7 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <AddressAvatar
-          address={ownerId}
-          avatar={authUser!.profilePic}
-          className='flex-shrink-0'
-        />
+        <AddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
       <CommonCustomContextMenu menus={menus}>
         {(config) => {

@@ -1,14 +1,12 @@
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
-import { useMyAccount } from '@/stores/my-account'
+import { AUTHENTICATION_METHODS, useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { SyntheticEvent, useRef, useState } from 'react'
-import { toast } from 'react-hot-toast'
 import Button from '../Button'
 import CaptchaInvisible from '../captcha/CaptchaInvisible'
 import TextArea from '../inputs/TextArea'
-import Toast from '../Toast'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
 export type LoginModalProps = ModalFunctionalityProps & {
@@ -24,8 +22,9 @@ export default function LoginModal({
   beforeLogin,
   ...props
 }: LoginModalProps) {
-  const [secretKey, setSecretKey] = useState('')
-  const { loginAnonymously, login } = useMyAccount((state) => state)
+  const login = useMyAccount((state) => state.login)
+  const loginAnonymously = useMyAccount((state) => state.loginAnonymously)
+  const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
   const {
@@ -60,8 +59,6 @@ export default function LoginModal({
         />
       ))
     }
-  }
-
   const desc = (
     <span className='flex flex-col'>
       <span>
@@ -74,11 +71,6 @@ export default function LoginModal({
       </span>
     </span>
   )
-  const web3Login = async () => {
-    await login()
-    setPrivateKey('')
-    props.closeModal()
-  }
 
   return (
     <Modal
@@ -89,7 +81,10 @@ export default function LoginModal({
       withCloseButton
       description={desc}
     >
-      <form onSubmit={onSubmit} className='mt-2 flex flex-col gap-4'>
+      <form
+        onSubmit={onSubmit('Anonymous')}
+        className='mt-2 flex flex-col gap-4'
+      >
         <TextArea
           ref={inputRef}
           value={secretKey}
@@ -146,7 +141,7 @@ export default function LoginModal({
           <Button
             type='button'
             className='w-full'
-            onClick={() => web3Login()}
+            onClick={onSubmit('Web3Auth')}
             size='lg'
           >
             Login with Web3Auth

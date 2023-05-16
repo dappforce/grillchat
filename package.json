@@ -44,7 +44,6 @@
     "eslint-config-next": "13.2.1",
     "graphql": "^16.6.0",
     "graphql-request": "^6.0.0",
-    "ethers": "^6.3.0",
     "linkify-react": "^4.1.0",
     "linkifyjs": "^4.1.0",
     "lodash.truncate": "^4.4.2",

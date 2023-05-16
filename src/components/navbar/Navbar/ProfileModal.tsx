@@ -19,6 +19,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin } from '@/utils/links'
+import { generateRandomName } from '@/utils/random-name'
 import React, { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
@@ -30,7 +31,6 @@ type NotificationControl = {
 
 export type ProfileModalProps = ModalFunctionalityProps & {
   address: string
-  avatar: string
   notification?: NotificationControl
 }
 
@@ -70,7 +70,6 @@ const modalTitles: {
 
 type ContentProps = {
   address: string
-  avatar: string
   setCurrentState: React.Dispatch<React.SetStateAction<ModalState>>
   notification?: NotificationControl
 }
@@ -87,7 +86,6 @@ const modalContents: {
 export default function ProfileModal({
   address,
   notification,
-  avatar,
   ...props
 }: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
@@ -116,7 +114,6 @@ export default function ProfileModal({
     >
       <Content
         address={address}
-        avatar={avatar}
         setCurrentState={setCurrentState}
         notification={notification}
       />
@@ -127,13 +124,11 @@ export default function ProfileModal({
 function AccountContent({
   address,
   setCurrentState,
-  avatar,
   notification,
 }: ContentProps) {
-  const { authenticatedUser, signer } = useMyAccount((state) => state)
-  const senderColor = useRandomColor(signer?.address)
+  const senderColor = useRandomColor(address)
   const sendEvent = useSendEvent()
-  const onShowPrivateKeyClick = async () => {
+  const onShowPrivateKeyClick = () => {
     sendEvent('click show_private_key_button')
     setCurrentState('private-key')
   }
@@ -186,14 +181,10 @@ function AccountContent({
   return (
     <div className='mt-2 flex flex-col'>
       <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
-        <AddressAvatar
-          address={address}
-          avatar={avatar}
-          className='h-20 w-20'
-        />
+        <AddressAvatar address={address} className='h-20 w-20' />
         <div className='flex flex-col'>
           <span className='text-lg' style={{ color: senderColor }}>
-            {authenticatedUser?.name}
+            {generateRandomName(address)}
           </span>
           <CopyTextInline
             text={truncateAddress(address)}
@@ -208,19 +199,13 @@ function AccountContent({
 }
 
 function PrivateKeyContent() {
-  const { encodedSecretKey, getPrivateKey } = useMyAccount()
+  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
   const secretKey = decodeSecretKey(encodedSecretKey ?? '')
 
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('click copy_private_key_button')
   }
-
-  useEffect(() => {
-    if (!encodedSecretKey) {
-      getPrivateKey()
-    }
-  }, [encodedSecretKey, getPrivateKey])
 
   return (
     <div className='flex flex-col items-center gap-4'>
@@ -234,14 +219,12 @@ function PrivateKeyContent() {
 }
 
 function LogoutContent({ setCurrentState }: ContentProps) {
-  const { logout, getPrivateKey } = useMyAccount((state) => state)
+  const logout = useMyAccount((state) => state.logout)
   const sendEvent = useSendEvent()
 
   const onShowPrivateKeyClick = async () => {
-    await getPrivateKey().then(() => {
-      sendEvent('click no_show_me_my_private_key_button')
-      setCurrentState('private-key')
-    })
+    sendEvent('click no_show_me_my_private_key_button')
+    setCurrentState('private-key')
   }
   const onLogoutClick = () => {
     sendEvent('click yes_log_out_button')
@@ -261,7 +244,7 @@ function LogoutContent({ setCurrentState }: ContentProps) {
 }
 
 function ShareSessionContent() {
-  const { encodedSecretKey, getPrivateKey } = useMyAccount((state) => state)
+  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
     sendEvent('click copy_share_session_link')
@@ -271,12 +254,6 @@ function ShareSessionContent() {
     getCurrentUrlOrigin(),
     `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${encodedSecretKey}`
   )
-
-  useEffect(() => {
-    if (!encodedSecretKey) {
-      getPrivateKey()
-    }
-  }, [encodedSecretKey, getPrivateKey])
 
   return (
     <div className='mt-2 flex flex-col gap-4'>
