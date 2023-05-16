@@ -106,7 +106,21 @@ const grill = {
     this.instance?.remove()
 
     this.instance = iframe
+
+    iframe.style.opacity = '0'
+    iframe.style.transition = 'opacity 0.15s ease-in-out'
+    window.onmessage = (event) => {
+      if (event.data === 'grill:ready') {
+        iframe.style.opacity = '1'
+      }
+    }
+
     widgetElement.appendChild(iframe)
+
+    // fallback if the message is not received
+    setTimeout(() => {
+      iframe.style.opacity = '1'
+    }, 1000)
   },
 }
 

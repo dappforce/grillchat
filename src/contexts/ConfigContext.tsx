@@ -19,6 +19,7 @@ export function ConfigProvider({ children }: { children: any }) {
 
   useEffect(() => {
     setState(getConfig())
+    window.top?.postMessage('grill:ready', '*')
   }, [])
 
   return (
