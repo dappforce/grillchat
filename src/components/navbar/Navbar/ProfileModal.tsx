@@ -187,7 +187,7 @@ function AccountContent({
           />
         </div>
       </div>
-      <div className='flex w-full flex-col gap-6 py-6 px-3'>
+      <div className='flex w-full flex-col py-2'>
         {buttons.map(({ icon: Icon, onClick, text, href, notification }) => (
           <Button
             key={text}
@@ -198,9 +198,8 @@ function AccountContent({
             size='noPadding'
             interactive='none'
             className={cx(
-              'relative flex items-center px-6 [&>*]:z-10',
-              'after:absolute after:top-1/2 after:left-0 after:h-full after:w-full after:-translate-y-1/2 after:rounded-lg after:bg-transparent after:py-6 after:transition-colors',
-              'outline-none focus:after:bg-background-lighter hover:after:bg-background-lighter'
+              'relative flex items-center rounded-none px-6 py-3 outline-none transition-colors',
+              'hover:bg-background-lighter focus:bg-background-lighter'
             )}
             onClick={() => {
               notification?.setNotifDone()
@@ -316,7 +315,7 @@ function AboutContent() {
         </LinkText>
         .
       </p>
-      <div className='rounded-2xl border border-background-warning py-2 px-4 text-text-warning'>
+      <div className='rounded-2xl border border-background-warning px-4 py-2 text-text-warning'>
         xSocial is an experimental environment for innovative web3 social
         features before they are deployed on{' '}
         <LinkText
