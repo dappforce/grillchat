@@ -1,6 +1,6 @@
 import { Theme } from '@/@types/theme'
 import { getUrlQuery } from '@/utils/links'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 type State = {
   theme?: Theme
@@ -17,10 +17,17 @@ export function ConfigProvider({ children }: { children: any }) {
     order: [],
   })
 
+  const isAfterUpdate = useRef(false)
   useEffect(() => {
+    isAfterUpdate.current = true
     setState(getConfig())
-    window.top?.postMessage('grill:ready', '*')
   }, [])
+
+  useEffect(() => {
+    if (!isAfterUpdate.current) return
+    window.top?.postMessage('grill:ready', '*')
+    isAfterUpdate.current = false
+  }, [state])
 
   return (
     <ConfigContext.Provider value={state}>{children}</ConfigContext.Provider>
