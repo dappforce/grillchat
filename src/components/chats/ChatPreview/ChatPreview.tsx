@@ -50,6 +50,31 @@ export default function ChatPreview({
   const Component = asContainer ? Container<'div'> : 'div'
   const ContentContainer = asLink ? Link : 'div'
 
+  const renderAdditionalData = () => {
+    if (isPinned) {
+      return (
+        <Image
+          src={PinIcon}
+          alt='pin'
+          width={16}
+          height={16}
+          className='ml-2 h-4 w-4 flex-shrink-0'
+        />
+      )
+    } else if (chatId) {
+      return (
+        <ChatLastMessageTime
+          chatId={chatId}
+          className='text-sm text-text-muted'
+        />
+      )
+    } else if (additionalDesc) {
+      return <span className='text-sm text-text-muted'>{additionalDesc}</span>
+    } else {
+      return null
+    }
+  }
+
   return (
     <Component
       {...props}
@@ -93,34 +118,7 @@ export default function ChatPreview({
           <div className='flex flex-1 flex-col overflow-hidden'>
             <div className='flex items-center justify-between'>
               <span className='font-medium'>{title}</span>
-              {(() => {
-                if (isPinned) {
-                  return (
-                    <Image
-                      src={PinIcon}
-                      alt='pin'
-                      width={16}
-                      height={16}
-                      className='ml-2 h-4 w-4 flex-shrink-0'
-                    />
-                  )
-                } else if (chatId) {
-                  return (
-                    <ChatLastMessageTime
-                      chatId={chatId}
-                      className='text-sm text-text-muted'
-                    />
-                  )
-                } else if (additionalDesc) {
-                  return (
-                    <span className='text-sm text-text-muted'>
-                      {additionalDesc}
-                    </span>
-                  )
-                } else {
-                  return null
-                }
-              })()}
+              {renderAdditionalData()}
             </div>
             <div className='mt-1 flex items-baseline justify-between overflow-hidden'>
               {chatId ? (

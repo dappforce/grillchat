@@ -77,12 +77,13 @@ export default function HubsPage({
         )}
         {searchResults.map((hub, idx) => {
           if (!hub) return null
+          const hubId = hub.id
           return (
             <ChatPreviewContainer
               isFocused={idx === focusController.focusedElementIndex}
               hub={hub}
-              chatCount={hubsChatCount[hub.id]}
-              key={hub.id}
+              chatCount={hubsChatCount[hubId]}
+              key={hubId}
             />
           )
         })}
@@ -107,6 +108,8 @@ function ChatPreviewContainer({
   const path = getAliasFromSpaceId(hub.id) || hub.id
   const linkTo = `/${path}`
 
+  const content = hub.content
+
   useHotkeys(
     'enter',
     () => {
@@ -123,7 +126,7 @@ function ChatPreviewContainer({
 
   const onChatClick = () => {
     sendEvent(`click on hub`, {
-      title: hub.content?.name ?? '',
+      title: content?.name ?? '',
     })
   }
 
@@ -137,9 +140,9 @@ function ChatPreviewContainer({
         href: linkTo,
       }}
       additionalDesc={chatCount ? `${chatCount} chats` : undefined}
-      image={getIpfsContentUrl(hub.content?.image ?? '')}
-      title={hub.content?.name ?? ''}
-      description={hub.content?.about ?? ''}
+      image={getIpfsContentUrl(content?.image ?? '')}
+      title={content?.name ?? ''}
+      description={content?.about ?? ''}
       withFocusedStyle={isFocused}
     />
   )

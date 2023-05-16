@@ -28,7 +28,7 @@ export default function ChatSpecialButtons({
       }
       className={cx(
         'bg-background-light md:rounded-none md:bg-background-light/50',
-        isIntegrateChatButtonOnTop ? '' : 'md:rounded-b-3xl'
+        !isIntegrateChatButtonOnTop && 'md:rounded-b-3xl'
       )}
       withBorderBottom={isIntegrateChatButtonOnTop}
       title='Integrate chat into an existing app'
@@ -50,7 +50,7 @@ export default function ChatSpecialButtons({
       }
       className={cx(
         'bg-background-light md:rounded-none md:bg-background-light/50',
-        isIntegrateChatButtonOnTop ? 'md:rounded-b-3xl' : ''
+        isIntegrateChatButtonOnTop && 'md:rounded-b-3xl'
       )}
       withBorderBottom={!isIntegrateChatButtonOnTop}
       title='Launch your community'

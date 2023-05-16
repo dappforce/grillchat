@@ -36,6 +36,8 @@ export default function HomePageNavbar({
   const { data: space } = getSpaceBySpaceIdQuery.useQuery(spaceId)
   const isInHub = getSpaceIds().includes(spaceId)
 
+  const content = space?.content
+
   let leftSection = logo
   if (isInHub && !isInIframe) {
     leftSection = (
@@ -56,12 +58,12 @@ export default function HomePageNavbar({
             )}
             width={36}
             height={36}
-            src={getIpfsContentUrl(space?.content?.image ?? '')}
-            alt={space?.content?.name ?? ''}
+            src={getIpfsContentUrl(content?.image ?? '')}
+            alt={content?.name ?? ''}
           />
           <div className='flex flex-col overflow-hidden'>
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
-              {space?.content?.name ?? ''}
+              {content?.name ?? ''}
             </span>
             <span className='text-xs text-text-muted'>
               {chatsCount} chats in hub
