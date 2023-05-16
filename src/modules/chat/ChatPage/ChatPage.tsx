@@ -94,7 +94,7 @@ function NavbarChatInfo({
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const prevIsOpenAboutChatModal = usePrevious(isOpenAboutChatModal)
   const router = useRouter()
-  const { isChatRoomOnly } = useConfigContext()
+  const { enableBackButton = true } = useConfigContext()
 
   const routerRef = useWrapInRef(router)
   const isInitialized = useRef(false)
@@ -124,7 +124,7 @@ function NavbarChatInfo({
 
   return (
     <div className='flex flex-1 items-center'>
-      {!isChatRoomOnly && backButton}
+      {enableBackButton && backButton}
       <Button
         variant='transparent'
         interactive='none'

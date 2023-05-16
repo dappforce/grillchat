@@ -34,6 +34,7 @@ type Channel = {
   }
 }
 
+type Theme = 'light' | 'dark'
 export type GrillConfig = {
   widgetElementId?: string
   hub?: {
@@ -42,7 +43,7 @@ export type GrillConfig = {
   }
   channel?: Channel
   order?: string[]
-  theme?: string
+  theme?: Theme
   onWidgetCreated?: (iframe: HTMLIFrameElement) => HTMLIFrameElement
 }
 
