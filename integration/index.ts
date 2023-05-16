@@ -36,7 +36,7 @@ type Channel = {
 
 export type GrillConfig = {
   widgetElementId?: string
-  hub: {
+  hub?: {
     /** The `space id` or `domain name` of your space. */
     id: string
   }
@@ -81,10 +81,10 @@ const grill = {
     if (mergedConfig.theme) query.set('theme', mergedConfig.theme)
 
     if (channelConfig) {
-      if (!channelConfig.settings.enableBackButton)
-        query.set('enableBackButton', 'false')
-      if (!channelConfig.settings.enableLoginButton)
-        query.set('enableLoginButton', 'false')
+      if (channelConfig.settings.enableBackButton)
+        query.set('enableBackButton', 'true')
+      if (channelConfig.settings.enableLoginButton)
+        query.set('enableLoginButton', 'true')
       if (channelConfig.settings.autoFocus !== undefined)
         query.set(
           'autoFocus',

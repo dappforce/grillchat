@@ -44,14 +44,43 @@ or using cdn
 
 ### Config Options
 
-| Name                   | Type                                               | Description                                                                                                                                                                                                                                                                               |
-| ---------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `targetId`             | `string`                                           | The id of the div that you want to render the chat to. Default to `grill`                                                                                                                                                                                                                 |
-| `spaceId`              | `string`                                           | The id of the space that you want to show the topics from. Default to `x` (grill.chat home page)                                                                                                                                                                                          |
-| `order`                | `string[]`                                         | The order of the topics (using post ids). e.g. `['1001', '1002']` if the post id exist in the space, it will be sorted based on the order provided                                                                                                                                        |
-| `theme`                | `string`                                           | The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat>                                                                                                                                                                   |
-| `openChatRoomDirectly` | `{ chatId: string; enableBackToHome?: boolean }`   | Option to make the iframe open chat room directly, based on provided `chatId`. If you set this, the iframe will open the chat page, and there will be no links to home page. If you still want the user to be able to go back to home page, then you can set `enableBackToHome` to `true` |
-| `customizeIframe`      | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                                                                                                                                                                           |
+| Name              | Type                                               | Description                                                                                                                                        |
+| ----------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `widgetElementId` | `string`                                           | The `id` of the div that you want to render the chat to. Default to `grill`                                                                        |
+| `hub`             | `{ id: string }`                                   | The `id` or the `domain name` of the space that you want to show the topics from. Default to `{ id: 'x' }` (grill.chat home page)                  |
+| `channel`         | `Channel`                                          | Option to make the iframe open chat room (a channel) directly. Read more about this option [here](#channel-option)                                 |
+| `order`           | `string[]`                                         | The order of the topics (using post ids). e.g. `['1001', '1002']` if the post id exist in the space, it will be sorted based on the order provided |
+| `theme`           | `string`                                           | The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat>                            |
+| `customizeIframe` | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                                    |
+
+#### Channel Option
+
+Channel option is used to make the iframe open chat room (a channel) directly. This is useful if you want to have a specific topic for your user to discuss.
+
+This channel accepts `Channel` type:
+
+```ts
+type Channel = {
+  type: 'channel'
+  id: string
+  settings: ChannelSettings
+}
+```
+
+| Name       | Type              | Description                                                                          |
+| ---------- | ----------------- | ------------------------------------------------------------------------------------ |
+| `type`     | `'channel'`       | The type of the channel. This should be set to `'channel'`                           |
+| `id`       | `string`          | The id of the channel. This should be the post id of the topic that you want to open |
+| `settings` | `ChannelSettings` | The settings of the channel. Read more about this [here](#channel-settings)          |
+
+##### Channel Settings
+
+Channel settings is used to customize the channel iframe. Below includes the list of settings that you can use to customize the channel.
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `enableBackButton` | `boolean` | If set to `true`, it will show the back button in the channel iframe. Default to `false` |
+| `enableLoginButton` | `boolean` | If set to `true`, it will show the login button in the channel iframe. Default to `false` |
+| `autoFocus` | `boolean` | If set to `true`, it will focus the input when the iframe is loaded. The default behavior is `on`, except on touch devices. If set `true` or `false`, it will unify behavior on touch and non-touch devices. |
 
 ## Iframe Integration
 
