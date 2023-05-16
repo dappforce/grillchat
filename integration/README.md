@@ -127,10 +127,13 @@ Grill.chat has 2 pages that can be the start point.
 #### 2.3. Other options
 
 You can also customize the `src` link with query parameters. Below includes the list of query parameters that you can use to customize the chat.
-generate table
 
-| Name           | Description                                                                                                                                                                                                        |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| theme          | Theme of the chat. Available options: `light` or `dark`. If not provided, it will use user's system preferences or his last selected theme when accessed Grill.chat                                                |
-| order          | Specifies the order of the chat in home page. Pass multiple topic ids in `order` separated by comma. The other chats will be ordered based on last message                                                         |
-| isChatRoomOnly | If set to `true` or `1`, it will hide the back button in chat page. This should be used alongside [Page Options](#22-page-options), to set the iframe to chat page directly and set the iframe to only 1 chat room |
+```ts
+{
+  order?: string // comma separated post ids
+  theme?: 'light' | 'dark'
+  enableBackButton?: 'true' | 'false'
+  enableLoginButton?: 'true' | 'false'
+  autoFocus?: 'true' | 'false'
+}
+```
