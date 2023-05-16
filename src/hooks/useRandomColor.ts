@@ -7,7 +7,7 @@ export default function useRandomColor(
   seed: string | null | undefined,
   theme?: Theme
 ) {
-  const { theme: currentThemeConfig } = useConfigContext()
+  const { theme: configTheme } = useConfigContext()
   const currentTheme = useGetTheme()
-  return generateRandomColor(seed, theme ?? currentThemeConfig ?? currentTheme)
+  return generateRandomColor(seed, theme ?? configTheme ?? currentTheme)
 }

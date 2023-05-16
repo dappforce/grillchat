@@ -5,7 +5,7 @@ export default function useSortByConfig(originalOrder: string[]) {
   const { order } = useConfigContext()
   const mounted = useMounted()
 
-  if (mounted) {
+  if (mounted && order) {
     if (order.length === 0) return originalOrder
     const filteredOrder = order.filter((item) => originalOrder.includes(item))
     return [
