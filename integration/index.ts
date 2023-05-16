@@ -90,10 +90,8 @@ const grill = {
         ...DEFAULT_CHANNEL_SETTINGS,
         ...channelConfig.settings,
       }
-      if (channelSettings.enableBackButton)
-        query.set('enableBackButton', channelSettings.enableBackButton + '')
-      if (channelSettings.enableLoginButton)
-        query.set('enableLoginButton', channelSettings.enableLoginButton + '')
+      query.set('enableBackButton', channelSettings.enableBackButton + '')
+      query.set('enableLoginButton', channelSettings.enableLoginButton + '')
       if (channelSettings.autoFocus !== undefined)
         query.set('autoFocus', channelSettings.enableLoginButton + '')
     }
