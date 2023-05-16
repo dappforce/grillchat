@@ -51,6 +51,11 @@ const DEFAULT_CONFIG = {
   hub: { id: 'x' },
 } satisfies GrillConfig
 
+const DEFAULT_CHANNEL_SETTINGS: Channel['settings'] = {
+  enableBackButton: false,
+  enableLoginButton: false,
+}
+
 const grill = {
   instance: null as HTMLIFrameElement | null,
 
@@ -81,15 +86,16 @@ const grill = {
     if (mergedConfig.theme) query.set('theme', mergedConfig.theme)
 
     if (channelConfig) {
-      if (channelConfig.settings.enableBackButton)
-        query.set('enableBackButton', 'true')
-      if (channelConfig.settings.enableLoginButton)
-        query.set('enableLoginButton', 'true')
-      if (channelConfig.settings.autoFocus !== undefined)
-        query.set(
-          'autoFocus',
-          channelConfig.settings.autoFocus ? 'true' : 'false'
-        )
+      const channelSettings = {
+        ...DEFAULT_CHANNEL_SETTINGS,
+        ...channelConfig.settings,
+      }
+      if (channelSettings.enableBackButton)
+        query.set('enableBackButton', channelSettings.enableBackButton + '')
+      if (channelSettings.enableLoginButton)
+        query.set('enableLoginButton', channelSettings.enableLoginButton + '')
+      if (channelSettings.autoFocus !== undefined)
+        query.set('autoFocus', channelSettings.enableLoginButton + '')
     }
 
     iframe.src = `${baseUrl}?${query.get()}`
