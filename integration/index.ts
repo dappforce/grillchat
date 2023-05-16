@@ -1,29 +1,70 @@
+type QueryParams = {
+  order?: string
+  theme?: string
+  enableBackButton?: string
+  enableLoginButton?: string
+  autoFocus?: string
+}
+
+class QueryParamsBuilder {
+  private query: URLSearchParams
+
+  constructor() {
+    this.query = new URLSearchParams()
+    this.query.set('version', '0.1')
+  }
+
+  set(key: keyof QueryParams, value: string) {
+    this.query.set(key, value)
+    return this
+  }
+
+  get() {
+    return this.query.toString()
+  }
+}
+
+type Channel = {
+  type: 'channel'
+  id: string
+  settings: {
+    enableBackButton?: boolean
+    enableLoginButton?: boolean
+    autoFocus?: boolean
+  }
+}
+
 export type GrillConfig = {
-  targetId?: string
-  spaceId?: string
+  widgetElementId?: string
+  hub?: {
+    /** The `space id` or `domain name` of your space. */
+    id: string
+  }
+  channel?: Channel
   order?: string[]
   theme?: string
-  openChatRoomDirectly?: {
-    chatId: string
-    enableBackToHome?: boolean
-  }
-  customizeIframe?: (iframe: HTMLIFrameElement) => HTMLIFrameElement
+  onWidgetCreated?: (iframe: HTMLIFrameElement) => HTMLIFrameElement
 }
 
 const DEFAULT_CONFIG = {
-  spaceId: 'x',
-  targetId: 'grill',
+  widgetElementId: 'grill',
+  hub: { id: 'x' },
 } satisfies GrillConfig
+
+const DEFAULT_CHANNEL_SETTINGS: Channel['settings'] = {
+  enableBackButton: false,
+  enableLoginButton: false,
+}
 
 const grill = {
   instance: null as HTMLIFrameElement | null,
 
   init(config: GrillConfig) {
     const mergedConfig = { ...DEFAULT_CONFIG, ...config }
-    const targetElement = document.getElementById(mergedConfig.targetId)
-    if (!targetElement) {
+    const widgetElement = document.getElementById(mergedConfig.widgetElementId)
+    if (!widgetElement) {
       console.error(
-        `Grill error: Element with id ${mergedConfig.targetId} not found`
+        `Grill error: Element with id ${mergedConfig.widgetElementId} not found`
       )
       return
     }
@@ -33,31 +74,38 @@ const grill = {
     iframe.style.width = '100%'
     iframe.style.height = '100%'
 
-    let baseUrl = `https://grill.chat/${mergedConfig.spaceId}`
-    const directOpenChatId = mergedConfig.openChatRoomDirectly?.chatId
-    if (directOpenChatId) {
-      baseUrl += `/${directOpenChatId}`
+    let baseUrl = `https://grill.chat/${mergedConfig.hub.id}`
+    const channelConfig = mergedConfig.channel
+    if (channelConfig) {
+      baseUrl += `/${channelConfig.id}`
     }
 
-    const query = new URLSearchParams()
+    const query = new QueryParamsBuilder()
+
     if (mergedConfig.order) query.set('order', mergedConfig.order.join(','))
     if (mergedConfig.theme) query.set('theme', mergedConfig.theme)
-    if (
-      directOpenChatId &&
-      !mergedConfig.openChatRoomDirectly?.enableBackToHome
-    )
-      query.set('isChatRoomOnly', 'true')
 
-    iframe.src = `${baseUrl}?${query.toString()}`
+    if (channelConfig) {
+      const channelSettings = {
+        ...DEFAULT_CHANNEL_SETTINGS,
+        ...channelConfig.settings,
+      }
+      query.set('enableBackButton', channelSettings.enableBackButton + '')
+      query.set('enableLoginButton', channelSettings.enableLoginButton + '')
+      if (channelSettings.autoFocus !== undefined)
+        query.set('autoFocus', channelSettings.enableLoginButton + '')
+    }
 
-    if (mergedConfig.customizeIframe) {
-      mergedConfig.customizeIframe?.(iframe)
+    iframe.src = `${baseUrl}?${query.get()}`
+
+    if (mergedConfig.onWidgetCreated) {
+      mergedConfig.onWidgetCreated?.(iframe)
     }
 
     this.instance?.remove()
 
     this.instance = iframe
-    targetElement.appendChild(iframe)
+    widgetElement.appendChild(iframe)
   },
 }
 
