@@ -92,7 +92,7 @@ const grill = {
         )
     }
 
-    iframe.src = `${baseUrl}?${query.toString()}`
+    iframe.src = `${baseUrl}?${query.get()}`
 
     if (mergedConfig.onWidgetCreated) {
       mergedConfig.onWidgetCreated?.(iframe)
