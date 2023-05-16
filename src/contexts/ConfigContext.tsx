@@ -40,6 +40,7 @@ function validateStringConfig<T = string>(
 }
 
 const latestVersion = '0.1'
+type SchemaGetter = { [key: string]: () => State }
 const schemaGetter = {
   '0.1': () => {
     const theme = getUrlQuery('theme')
@@ -70,7 +71,7 @@ const schemaGetter = {
       ),
     }
   },
-} satisfies { [key: string]: () => State }
+} satisfies SchemaGetter
 
 function getConfig() {
   const version = getUrlQuery('version')
