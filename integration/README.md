@@ -44,14 +44,13 @@ or using cdn
 
 ### Config Options
 
-| Name              | Type                                               | Description                                                                                                                                        |
-| ----------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `widgetElementId` | `string`                                           | The `id` of the div that you want to render the chat to. Default to `grill`                                                                        |
-| `hub`             | `{ id: string }`                                   | The `id` or the `domain name` of the space that you want to show the topics from. Default to `{ id: 'x' }` (grill.chat home page)                  |
-| `channel`         | `Channel`                                          | Option to make the iframe open chat room (a channel) directly. Read more about this option [here](#channel-option)                                 |
-| `order`           | `string[]`                                         | The order of the topics (using post ids). e.g. `['1001', '1002']` if the post id exist in the space, it will be sorted based on the order provided |
-| `theme`           | `string`                                           | The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat>                            |
-| `customizeIframe` | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                                    |
+| Name              | Type                                               | Description                                                                                                                       |
+| ----------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `widgetElementId` | `string`                                           | The `id` of the div that you want to render the chat to. Default to `grill`                                                       |
+| `hub`             | `{ id: string }`                                   | The `id` or the `domain name` of the space that you want to show the topics from. Default to `{ id: 'x' }` (grill.chat home page) |
+| `channel`         | `Channel`                                          | Option to make the iframe open chat room (a channel) directly. Read more about this option [here](#channel-option)                |
+| `theme`           | `string`                                           | The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat>           |
+| `customizeIframe` | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                   |
 
 #### Channel Option
 
@@ -130,7 +129,6 @@ You can also customize the `src` link with query parameters. Below includes the 
 
 ```ts
 {
-  order?: string // comma separated post ids
   theme?: 'light' | 'dark'
   enableBackButton?: 'true' | 'false'
   enableLoginButton?: 'true' | 'false'
