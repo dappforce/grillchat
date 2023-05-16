@@ -67,6 +67,7 @@ export const getStaticProps = getCommonStaticProps<
       ] as const)
 
       title = chatData?.content?.title || null
+      desc = chatData?.content?.body || null
 
       getPostQuery.setQueryData(queryClient, chatId, chatData)
       queryClient.setQueryData(
