@@ -25,7 +25,7 @@ export type NavbarProps = ComponentProps<'div'> & {
   defaultBackLink?: string
   customContent?: (elements: {
     logoLink: JSX.Element
-    authComponent: JSX.Element | null
+    authComponent: JSX.Element
     colorModeToggler: JSX.Element
     backButton: JSX.Element
   }) => JSX.Element
@@ -72,7 +72,7 @@ export default function Navbar({
   }
 
   const renderAuthComponent = () => {
-    if (!enableLoginButton) return null
+    if (!enableLoginButton) return <></>
     if (!isInitialized) return <div className='w-9' />
 
     return isLoggedIn ? (
