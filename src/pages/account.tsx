@@ -18,8 +18,9 @@ export default function AccountPage() {
       routeReplace.current('/')
       return
     }
-    login(decodeSecretKey(encodedSecretKey))
-    routeReplace.current('/')
+    login(decodeSecretKey(encodedSecretKey)).then(() => {
+      routeReplace.current('/')
+    })
   }, [login])
 
   return <DefaultLayout />
