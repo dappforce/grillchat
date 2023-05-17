@@ -86,7 +86,7 @@ You can customize the look and feel of Grill UI via channel settings.
 | ---- | ---- | ----------- |
 | `enableBackButton` | `boolean` | If set to `true`, it will show the back button in the channel iframe. Default to `false` |
 | `enableLoginButton` | `boolean` | If set to `true`, it will show the login button in the channel iframe. Default to `false` |
-| `enableInputAutofocus` | `boolean` | If set to `true`, it will autofocus the input when the iframe is loaded. The default behavior is `true`, except on touch devices. If set `true`, it will autofocus the input on all devices. |
+| `enableInputAutofocus` | `boolean` | If set to `true`, it will autofocus on the message input when the iframe is loaded. The default behavior is `true`, except on touch devices. If set `true`, it will autofocus the input on all devices. |
 
 ## Iframe Integration
 
