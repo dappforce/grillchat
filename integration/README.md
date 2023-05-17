@@ -15,7 +15,7 @@ Grill Widget is a tiny package (< 1kb compressed) that you can use to integrate 
 yarn add @subsocial/grill-widget
 ```
 
-or using cdn
+or using CDN
 
 ```html
 <script src="https://unpkg.com/@subsocial/grill-widget" defer></script>
@@ -49,13 +49,15 @@ or using cdn
 
 ### Config Options
 
+All config options are optional. If you don't pass any config, it will use the default config.
+
 | Name              | Type                                               | Description                                                                                                                       |
 | ----------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `widgetElementId` | `string`                                           | The `id` of the div that you want to render the chat to. Default to `grill`                                                       |
 | `hub`             | `{ id: string }`                                   | The `id` or the `domain name` of the space that you want to show the topics from. Default to `{ id: 'x' }` (grill.chat home page) |
-| `channel`         | `Channel`                                          | Option to make the iframe open chat room (a channel) directly. Read more about this option [here](#channel-option)                |
+| `channel`         | [`Channel`](#channel-option)                       | Option to make the iframe open chat room (a channel) directly. Read more about this option [here](#channel-option)                |
 | `theme`           | `'light' or 'dark'`                                | The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat>           |
-| `customizeIframe` | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                   |
+| `onWidgetCreated` | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                   |
 
 #### Channel Option
 
@@ -71,20 +73,20 @@ type Channel = {
 }
 ```
 
-| Name       | Type              | Description                                                                          |
-| ---------- | ----------------- | ------------------------------------------------------------------------------------ |
-| `type`     | `'channel'`       | The type of the channel. This should be set to `'channel'`                           |
-| `id`       | `string`          | The id of the channel. This should be the post id of the topic that you want to open |
-| `settings` | `ChannelSettings` | The settings of the channel. Read more about this [here](#channel-settings)          |
+| Name       | Type                                   | Description                                                                          |
+| ---------- | -------------------------------------- | ------------------------------------------------------------------------------------ |
+| `type`     | `'channel'`                            | The type of the channel. This should be set to `'channel'`                           |
+| `id`       | `string`                               | The id of the channel. This should be the post id of the topic that you want to open |
+| `settings` | [`ChannelSettings`](#channel-settings) | The settings of the channel. Read more about this [here](#channel-settings)          |
 
 ##### Channel Settings
 
-Channel settings is used to customize the channel iframe. Below includes the list of settings that you can use to customize the channel.
+You can customize the look and feel of Grill UI via channel settings.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | `enableBackButton` | `boolean` | If set to `true`, it will show the back button in the channel iframe. Default to `false` |
 | `enableLoginButton` | `boolean` | If set to `true`, it will show the login button in the channel iframe. Default to `false` |
-| `inputAutofocus` | `boolean` | If set to `true`, it will focus the input when the iframe is loaded. The default behavior is `on`, except on touch devices. If set `true` or `false`, it will unify behavior on touch and non-touch devices. |
+| `inputAutofocus` | `boolean` | If set to `true`, it will autofocus the input when the iframe is loaded. The default behavior is `true`, except on touch devices. If set `true`, it will autofocus the input on all devices. |
 
 ## Iframe Integration
 
@@ -104,7 +106,7 @@ The `src` link can be customized to your needs. Below includes the list of optio
 
 #### 2.1. Space Options
 
-Grill.chat home page contains list of topics for user to choose from. This topics are listed from all the posts in a subsocial space. You can create space in xSocial chain using [Gazer](https://x.gazer.app/)
+Grill.chat home page contains list of topics for user to choose from. This topics are listed from all the posts in a subsocial space. You can create space in xSocial chain using [Gazer](https://x.gazer.app/) - a CMS for Subsocial Network.
 
 For example, if you create a space with ID `1002`, then you can set the iframe `src` to `https://grill.chat/1002` to only show topics from that space.
 
@@ -122,7 +124,7 @@ Grill.chat has 2 pages that can be the start point.
 
 2. Chat Page
 
-   You can also choose to have your user automatically opens a chat room. This is useful if you want to have a specific topic for your user to discuss. You can hide the back button in chat room by using [`isChatRoomOnly` option](#23-other-options)
+   You can also choose to have your user automatically opens a chat room. This is useful if you want to have a specific topic for your user to discuss.
 
    ```
    https://grill.chat/[spaceId]/[topicId]
