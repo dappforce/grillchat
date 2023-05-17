@@ -39,6 +39,7 @@ export default function HomePage({
   spaceId,
 }: HomePageProps) {
   const isInIframe = useIsInIframe()
+
   const { data } = getChatIdsBySpaceIdQuery.useQuery(spaceId)
   const allChatIds = useMemo(() => {
     return [...(data?.chatIds ?? []), ...getLinkedChatIdsForSpaceId(spaceId)]
