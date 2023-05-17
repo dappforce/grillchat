@@ -23,7 +23,7 @@ or using CDN
    <div id="grill"></div>
    ```
 
-2. Call `grill.init(config)`. The [config](#config-options) is optional. Example:
+2. Call `grill.init(config)`. The [config](#customization) is optional. Example:
 
    a) Use as a JS/TS module
 
@@ -43,7 +43,17 @@ or using CDN
 
 3. That's it 🥳!
 
-### Config Options
+### Customization
+
+You can customize a Grill UI by passing a config object to GRILL.init() function. For example:
+
+```ts
+import grill from '@subsocial/grill-widget'
+grill.init({
+  theme: 'light',
+  // other options...
+})
+```
 
 All config options are optional. If you don't pass any config, it will use the default config.
 
