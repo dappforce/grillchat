@@ -8,9 +8,14 @@ export const ACCOUNT_SECRET_KEY_URL_PARAMS = 'sk'
 
 export default function AccountPage() {
   const login = useMyAccount((state) => state.login)
+  const isInitialized = useMyAccount((state) => state.isInitialized)
+
   const router = useRouter()
   const routeReplace = useRef(router.replace)
+
   useEffect(() => {
+    if (!isInitialized) return
+
     const { search } = window.location
     const searchParams = new URLSearchParams(search)
     const encodedSecretKey = searchParams.get(ACCOUNT_SECRET_KEY_URL_PARAMS)
@@ -18,9 +23,10 @@ export default function AccountPage() {
       routeReplace.current('/')
       return
     }
-    login(decodeSecretKey(encodedSecretKey))
-    routeReplace.current('/')
-  }, [login])
+    login(decodeSecretKey(encodedSecretKey)).then((data) => {
+      routeReplace.current('/')
+    })
+  }, [login, isInitialized])
 
   return <DefaultLayout />
 }
