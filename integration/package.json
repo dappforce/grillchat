@@ -1,6 +1,6 @@
 {
   "name": "@subsocial/grill-widget",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Small integration script to help you integrate Grill.chat to your app.",
   "repository": "https://github.com/dappforce/grillchat/tree/main/integration",
   "main": "dist/index.js",
@@ -9,7 +9,7 @@
   "unpkg": "dist/index.global.js",
   "scripts": {
     "build": "rm -rf dist && tsup index.ts --format cjs,esm,iife --dts --minify",
-    "publish": "yarn build && npm publish --access public"
+    "publish:npm": "yarn build && npm publish --access public"
   },
   "keywords": [
     "Grill.chat",
