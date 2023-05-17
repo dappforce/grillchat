@@ -1,9 +1,14 @@
-import { WalletClient } from '@/services/api/utils'
-import { getTxSubDispatchErrorMessage } from '@/services/api/utils/extrinsic'
+import {
+  getCommonErrorMessage,
+  getTxSubDispatchErrorMessage,
+  WalletClient,
+} from '@/services/api/utils'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCrustIpfsAuth, getIpfsPinUrl } from '@/utils/env/server'
-import { ApiPromise } from '@polkadot/api'
-import { SubsocialIpfsApi } from '@subsocial/api'
+import { IpfsWrapper } from '@/utils/ipfs'
+import { ApiPromise, SubmittableResult } from '@polkadot/api'
+import { stringToHex } from '@polkadot/util'
+import { asAccountId, SubsocialIpfsApi } from '@subsocial/api'
 import { IpfsPostContent } from '@subsocial/api/types'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -15,6 +20,8 @@ const bodySchema = z.object({
     title: z.string(),
     body: z.string(),
     image: z.string(),
+    canonical: z.string().optional(),
+    tags: z.array(z.string()).optional(),
   }),
 })
 
@@ -39,11 +46,12 @@ export type ApiDiscussionResponse = {
 export type SaveDiscussionContentResponse = {
   success: boolean
   errors?: any
+  message?: string
   cid?: string
 }
 
 export const CRUST_IPFS_CONFIG = {
-  ipfsNodeUrl: 'https://gw-seattle.crustcloud.io',
+  ipfsNodeUrl: 'https://gw-seattle.crustcloud.io', // TODO should be moves to ENV vars in all use cases
   ipfsClusterUrl: getIpfsPinUrl(),
 }
 
@@ -67,12 +75,11 @@ export async function saveDiscussionContent(
       success: true,
       cid,
     }
-  } catch (e: unknown) {
+  } catch (e: any) {
     return {
       success: false,
-      errors: e
-        ? { message: 'Error has been occurred in ipfs', ...e }.message
-        : '',
+      message: getCommonErrorMessage(e),
+      errors: [e],
     }
   }
 }
@@ -89,50 +96,12 @@ async function createDiscussionAndGetPostId({
   api: ApiPromise
 }): Promise<ApiDiscussionResponse> {
   return new Promise(async (resolve, reject) => {
-    const eventsUnsub = await api.query.system.events((events) => {
-      events.forEach((record) => {
-        const { event, phase } = record
-
-        try {
-          if (
-            phase.isApplyExtrinsic &&
-            event.section === 'resource-commenting' &&
-            event.method === 'ResourceDiscussionLinked'
-          ) {
-            const parsedData = event.data.toJSON() as {
-              resource_id: string
-              account_id: string
-              post_id: string
-            }
-
-            if (parsedData && resourceId === parsedData.resource_id) {
-              resolve({
-                success: true,
-                data: {
-                  postId: parsedData.post_id,
-                },
-              })
-              eventsUnsub()
-            }
-          }
-        } catch (e) {
-          resolve({
-            success: false,
-            message: e
-              ? { message: 'Error has been occurred in ipfs', ...e }.message
-              : '',
-            errors: [e],
-          })
-        }
-      })
-    })
-
-    const unsub = await api.tx.resourceDiscussion
-      .create_resource_discussion(resourceId, spaceId, contentCid)
+    const unsub = await api.tx.resourceDiscussions
+      .createResourceDiscussion(resourceId, spaceId, IpfsWrapper(contentCid))
       .signAndSend(
-        WalletClient.getInstance().account.discussionCreator.address,
-        async (resp: any) => {
-          const { status, txHash, txIndex, dispatchError, isCompleted } = resp
+        WalletClient.getInstance().account.discussionCreator,
+        async (resp: SubmittableResult) => {
+          const { status, events, dispatchError, isCompleted } = resp
 
           if (dispatchError) {
             resolve({
@@ -143,7 +112,36 @@ async function createDiscussionAndGetPostId({
             return
           }
 
-          if (status.isInBlock) {
+          if (status.isFinalized || status.isInBlock) {
+            for (const { event, phase } of events) {
+              try {
+                if (
+                  phase.isApplyExtrinsic &&
+                  event.section === 'resourceDiscussions' &&
+                  event.method === 'ResourceDiscussionLinked'
+                ) {
+                  const [resourceIdHex, author, postId] =
+                    event.data.toJSON() as [string, string, number]
+
+                  if (stringToHex(resourceId) === resourceIdHex) {
+                    resolve({
+                      success: true,
+                      data: {
+                        postId: postId.toString(),
+                      },
+                    })
+                    unsub()
+                  }
+                }
+              } catch (e) {
+                resolve({
+                  success: false,
+                  message: getCommonErrorMessage(e),
+                  errors: [e],
+                })
+              }
+            }
+
             unsub()
             return
           } else {
@@ -166,7 +164,14 @@ export async function getOrCreateDiscussion({
   let existingDiscussionId: string | null = null
   try {
     const subsocialApi = await (await getSubsocialApi()).substrateApi
-    existingDiscussionId = (await subsocialApi.query.timestamp.now()).toString() // Change to call to pallet resource-commenting
+    existingDiscussionId = (
+      await subsocialApi.query.resourceDiscussions.resourceDiscussion(
+        resourceId,
+        asAccountId(
+          WalletClient.getInstance().account.discussionCreator.address
+        )
+      )
+    ).toString()
 
     if (existingDiscussionId)
       return {
@@ -190,9 +195,7 @@ export async function getOrCreateDiscussion({
   } catch (e) {
     return {
       success: false,
-      message: e
-        ? { message: 'Error has been occurred in ipfs', ...e }.message
-        : '',
+      message: getCommonErrorMessage(e),
       errors: [e],
     }
   }
@@ -222,13 +225,23 @@ export default async function handler(
     content: {
       title: content.title,
       body: content.body,
-      image: content.image,
-      tags: [],
-      canonical: '', // TODO must be reviewed
+      image: content.image ?? '',
+      tags: content.tags ?? [],
+      canonical: content.canonical ?? '',
     },
     spaceId,
     resourceId,
   })
 
-  res.status(response.success ? 200 : 500).send(response)
+  return res.status(response.success ? 200 : 500).send(response)
 }
+// TODO remove as it's an example
+// const resp = await createDiscussion({
+//   resourceId: `twitter://tweet:1684342600642`,
+//   spaceId: '1003',
+//   content: {
+//     title: `Awesome test discussion ${timestamp}`,
+//     body: `It's really awesome!`,
+//     image: 'QmXhyHD9HMEtKAq1P8SJvM5r8DXcnxt2g4JCwgHtnARVx4',
+//   },
+// })
