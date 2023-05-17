@@ -8,6 +8,7 @@ import Button from '@/components/Button'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
 import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
+import MenuList, { MenuListProps } from '@/components/MenuList'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useRandomColor from '@/hooks/useRandomColor'
@@ -119,14 +120,6 @@ export default function ProfileModal({
   )
 }
 
-type ButtonData = {
-  text: string
-  icon: React.ComponentType<{ className?: string }>
-  onClick?: () => void
-  href?: string
-  notification?: NotificationControl
-}
-
 function AccountContent({
   address,
   setCurrentState,
@@ -151,12 +144,24 @@ function AccountContent({
     setCurrentState('about')
   }
 
-  const buttons: ButtonData[] = [
+  const menus: MenuListProps['menus'] = [
     {
-      text: 'Show grill secret key',
+      text: (
+        <>
+          <span>Show grill secret key</span>
+          {notification?.showNotif && (
+            <span className='relative ml-2 h-2 w-2'>
+              <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
+              <span className='relative block h-full w-full rounded-full bg-background-warning' />
+            </span>
+          )}
+        </>
+      ),
       icon: KeyIcon,
-      onClick: onShowPrivateKeyClick,
-      notification,
+      onClick: () => {
+        notification?.setNotifDone()
+        onShowPrivateKeyClick()
+      },
     },
     { text: 'Share session', icon: ShareIcon, onClick: onShareSessionClick },
     {
@@ -187,36 +192,7 @@ function AccountContent({
           />
         </div>
       </div>
-      <div className='flex w-full flex-col py-2'>
-        {buttons.map(({ icon: Icon, onClick, text, href, notification }) => (
-          <Button
-            key={text}
-            href={href}
-            target='_blank'
-            rel='noopener noreferrer'
-            variant='transparent'
-            size='noPadding'
-            interactive='none'
-            className={cx(
-              'relative flex items-center rounded-none px-6 py-3 outline-none transition-colors',
-              'hover:bg-background-lighter focus:bg-background-lighter'
-            )}
-            onClick={() => {
-              notification?.setNotifDone()
-              onClick?.()
-            }}
-          >
-            <Icon className='mr-6 text-xl text-text-muted' />
-            <span>{text}</span>
-            {notification?.showNotif && (
-              <span className='relative ml-2 h-2 w-2'>
-                <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
-                <span className='relative block h-full w-full rounded-full bg-background-warning' />
-              </span>
-            )}
-          </Button>
-        ))}
-      </div>
+      <MenuList menus={menus} />
     </div>
   )
 }
