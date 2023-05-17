@@ -1,6 +1,42 @@
 import { cx } from '@/utils/class-names'
+import { cva, VariantProps } from 'class-variance-authority'
 import React, { ComponentProps, isValidElement } from 'react'
 import Button from './Button'
+
+type MenuListVariants = {
+  size: {
+    md: string
+    sm: string
+  }
+}
+const menuListStyles = cva<MenuListVariants>('flex w-full flex-col', {
+  variants: {
+    size: {
+      md: 'p-3',
+      sm: 'p-1.5',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+})
+const menuListItemStyles = cva<MenuListVariants>(
+  cx(
+    'relative flex items-center rounded-lg outline-none transition-colors',
+    'focus:bg-background-lighter hover:bg-background-lighter'
+  ),
+  {
+    variants: {
+      size: {
+        md: 'px-6 py-3 gap-6',
+        sm: 'px-3 py-2 gap-4',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+    },
+  }
+)
 
 type Menu = {
   text: string | JSX.Element
@@ -8,13 +44,14 @@ type Menu = {
   onClick?: () => void
   href?: string
 }
-export type MenuListProps = ComponentProps<'div'> & {
-  menus: Menu[]
-}
+export type MenuListProps = ComponentProps<'div'> &
+  VariantProps<typeof menuListStyles> & {
+    menus: Menu[]
+  }
 
-export default function MenuList({ menus }: MenuListProps) {
+export default function MenuList({ menus, size, ...props }: MenuListProps) {
   return (
-    <div className='flex w-full flex-col p-3'>
+    <div {...props} className={cx(menuListStyles({ size }), props.className)}>
       {menus.map(({ icon: Icon, onClick, text, href }, idx) => (
         <Button
           key={idx}
@@ -24,13 +61,10 @@ export default function MenuList({ menus }: MenuListProps) {
           variant='transparent'
           size='noPadding'
           interactive='none'
-          className={cx(
-            'relative flex items-center rounded-lg px-6 py-3 outline-none transition-colors',
-            'focus:bg-background-lighter hover:bg-background-lighter'
-          )}
+          className={menuListItemStyles({ size })}
           onClick={onClick}
         >
-          <Icon className='mr-6 text-xl text-text-muted' />
+          <Icon className='text-xl text-text-muted' />
           {isValidElement(text) ? text : <span>{text}</span>}
         </Button>
       ))}

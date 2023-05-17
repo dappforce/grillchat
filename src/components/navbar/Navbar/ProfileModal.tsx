@@ -147,7 +147,7 @@ function AccountContent({
   const menus: MenuListProps['menus'] = [
     {
       text: (
-        <>
+        <span>
           <span>Show grill secret key</span>
           {notification?.showNotif && (
             <span className='relative ml-2 h-2 w-2'>
@@ -155,7 +155,7 @@ function AccountContent({
               <span className='relative block h-full w-full rounded-full bg-background-warning' />
             </span>
           )}
-        </>
+        </span>
       ),
       icon: KeyIcon,
       onClick: () => {
