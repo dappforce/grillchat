@@ -25,6 +25,11 @@ or using cdn
 ### Usage
 
 1. Add div with id of `grill` to your app
+
+   ```html
+   <div id="grill"></div>
+   ```
+
 2. Call `grill.init()` with config (config is optional)
 
    a) Use as a JS/TS module
