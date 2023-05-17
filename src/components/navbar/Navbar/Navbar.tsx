@@ -96,7 +96,7 @@ export default function Navbar({
   )
 
   const backButton = (
-    <div className='mr-2 flex w-9 items-center justify-center'>
+    <div className='mr-2 flex w-9 items-center justify-center text-lg'>
       <BackButton
         defaultBackLink={defaultBackLink ?? '/'}
         size='circle'
