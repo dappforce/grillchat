@@ -24,6 +24,7 @@ const ProfilePreview = ({ address, className }: ProfilePreviewProps) => {
           text={truncateAddress(address)}
           tooltip='Copy my Grill public address'
           textToCopy={address}
+          textClassName='font-mono'
         />
       </div>
     </div>

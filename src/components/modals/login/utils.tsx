@@ -1,8 +1,12 @@
-import { _TypedDataEncoder } from "@ethersproject/hash"
-import { decodeAddress } from "@polkadot/keyring"
-import { useSignMessage } from "wagmi"
+import { _TypedDataEncoder } from '@ethersproject/hash'
+import { decodeAddress } from '@polkadot/keyring'
+import { useState } from 'react'
+import { useSignMessage } from 'wagmi'
 
-export function buildMsgParams(evmAddress: string, substrateAddress: Uint8Array) {
+export function buildMsgParams(
+  evmAddress: string,
+  substrateAddress: Uint8Array
+) {
   const domain = {
     name: 'SubSocial Evm Address Linkage',
     version: '1',
@@ -27,15 +31,28 @@ export function buildMsgParams(evmAddress: string, substrateAddress: Uint8Array)
 }
 
 export const useSignEvmLinkMessage = () => {
-  const { signMessage, data, isLoading } = useSignMessage()
+  const { signMessageAsync } = useSignMessage()
+  const [isSigningMessage, setIsSigningMessage] = useState(false)
 
-  const signEvmLinkMessage = (emvAddress?: string, substrateAddress?: string | null) => {
+  const signEvmLinkMessage = async (
+    emvAddress?: string,
+    substrateAddress?: string | null
+  ) => {
     if (!emvAddress || !substrateAddress) return
 
     const decodedAddress = decodeAddress(substrateAddress)
     const message = buildMsgParams(emvAddress, decodedAddress)
-    signMessage({ message })
+    try {
+      setIsSigningMessage(true)
+      const data = await signMessageAsync({ message })
+
+      setIsSigningMessage(false)
+      return data.toString()
+    } catch {
+      setIsSigningMessage(false)
+      return
+    }
   }
 
-  return { signEvmLinkMessage, isLoading }
+  return { signEvmLinkMessage, isSigningMessage }
 }

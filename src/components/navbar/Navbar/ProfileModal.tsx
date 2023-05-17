@@ -23,6 +23,7 @@ import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
 import { useAccount, useDisconnect } from 'wagmi'
 import { CustomConnectButton } from '../../modals/login/CustomConnectButton'
+import { useSignEvmLinkMessage } from '../../modals/login/utils'
 
 type NotificationControl = {
   showNotif: boolean
@@ -220,7 +221,7 @@ function AccountContent({
             className={cx(
               'relative flex items-center px-6 [&>*]:z-10',
               'after:absolute after:top-1/2 after:left-0 after:h-full after:w-full after:-translate-y-1/2 after:rounded-lg after:bg-transparent after:py-6 after:transition-colors',
-              'outline-none focus:after:bg-background-lighter hover:after:bg-background-lighter'
+              'outline-none focus:after:bg-background-lighter hover:after:bg-background-lighter '
             )}
             onClick={() => {
               notification?.setNotifDone()
@@ -243,12 +244,8 @@ function AccountContent({
 }
 
 function ConnectedEvmAddressContent({ setCurrentState }: ContentProps) {
-  const sendEvent = useSendEvent()
   const { address: evmAddress } = useAccount()
-
-  const onCopyClick = () => {
-    sendEvent('click copy_private_key_button')
-  }
+  const { signEvmLinkMessage, isSigningMessage } = useSignEvmLinkMessage()
 
   return (
     <div>
@@ -260,6 +257,7 @@ function ConnectedEvmAddressContent({ setCurrentState }: ContentProps) {
               tooltip='Copy my Grill public address'
               tooltipPlacement='top'
               textToCopy={evmAddress}
+              textClassName='font-mono'
             />
             <LinkText
               openInNewTab
@@ -281,7 +279,11 @@ function ConnectedEvmAddressContent({ setCurrentState }: ContentProps) {
           </Button>
         </div>
       ) : (
-        <CustomConnectButton className='w-full' />
+        <CustomConnectButton
+          className='w-full'
+          signEvmLinkMessage={signEvmLinkMessage}
+          isSigningMessage={isSigningMessage}
+        />
       )}
     </div>
   )

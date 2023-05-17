@@ -1,19 +1,19 @@
 import Button from '@/components/Button'
 import { useMyAccount } from '@/stores/my-account'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useSignEvmLinkMessage } from './utils'
 
 type CustomConnectButtonProps = {
   className?: string
+  signEvmLinkMessage: (emvAddress?: string, substrateAddress?: string | null) => Promise<string | undefined>
+  isSigningMessage: boolean
 }
 
 export const CustomConnectButton = ({
   className,
+  signEvmLinkMessage,
+  isSigningMessage
 }: CustomConnectButtonProps) => {
-  const { signEvmLinkMessage, isLoading } = useSignEvmLinkMessage()
   const mySubstrateAddress = useMyAccount((state) => state.address)
-
-  console.log(isLoading)
 
   return (
     <ConnectButton.Custom>
@@ -38,7 +38,7 @@ export const CustomConnectButton = ({
               onClick={openConnectModal}
               size={'lg'}
               className={className}
-              disabled={isLoading}
+              disabled={isSigningMessage}
             >
               Connect EVM Wallet
             </Button>
@@ -51,7 +51,7 @@ export const CustomConnectButton = ({
               onClick={openChainModal}
               size={'lg'}
               className={className}
-              disabled={isLoading}
+              disabled={isSigningMessage}
             >
               Wrong network
             </Button>
@@ -60,12 +60,12 @@ export const CustomConnectButton = ({
 
         return (
           <Button
-            onClick={() =>
-              signEvmLinkMessage(account.address, mySubstrateAddress)
+            onClick={async () =>
+              await signEvmLinkMessage(account.address, mySubstrateAddress)
             }
             size={'lg'}
             className={className}
-            disabled={isLoading}
+            disabled={isSigningMessage}
           >
             Connect EVM Wallet
           </Button>

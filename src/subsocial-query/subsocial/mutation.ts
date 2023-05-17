@@ -47,8 +47,6 @@ export function useSubsocialMutation<Data, Context>(
     const substrateApi = await subsocialApi.substrateApi
     const ipfsApi = subsocialApi.ipfs
 
-    console.log('hello')
-
     try {
       return await createTxAndSend(
         transactionGenerator,
@@ -85,10 +83,8 @@ async function createTxAndSend<Data, Context>(
   },
   optimisticCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
-  console.log('before transactionGenerator func')
-  
   const { tx, summary } = await transactionGenerator(data, apis)
-  console.log('before send tx func')
+  
   return sendTransaction(
     {
       tx,

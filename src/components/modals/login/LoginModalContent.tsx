@@ -11,11 +11,10 @@ import {
   Dispatch,
   SetStateAction,
   SyntheticEvent,
-  useEffect,
   useRef,
   useState,
 } from 'react'
-import { useAccount, useSignMessage } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { CustomConnectButton } from './CustomConnectButton'
 import { useLinkEvmAccount } from './linkEvmAccountHook'
 import { useSignEvmLinkMessage } from './utils'
@@ -59,10 +58,7 @@ export const LoginContent = ({
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 text-5xl' />
         <div className='flex flex-col gap-4'>
-          <Button
-            onClick={() => setCurrentStep('enter-secret-key')}
-            size='lg'
-          >
+          <Button onClick={() => setCurrentStep('enter-secret-key')} size='lg'>
             Enter Grill secret key
           </Button>
           <Button
@@ -119,27 +115,23 @@ export const EnterSecretKeyContent = ({ onSubmit }: ContentProps) => {
 }
 
 export const AccountCreatedContent = () => {
-  const { signEvmLinkMessage, isLoading } = useSignEvmLinkMessage()
+  const { signEvmLinkMessage, isSigningMessage } = useSignEvmLinkMessage()
+
   const { address: evmAddress } = useAccount({
-    onConnect: ({ address: connectedEvmAddress }) =>
-      signEvmLinkMessage(connectedEvmAddress, address),
+    onConnect: async ({ address: connectedEvmAddress }) => {
+      const data = await signEvmLinkMessage(connectedEvmAddress, address)
+
+      if (data) {
+        linkAccount({
+          evmAccount: evmAddress as string,
+          evmSignature: data,
+        })
+      }
+    },
   })
-  const { mutate: linkAccount, error: linkEvmError } = useLinkEvmAccount()
+
+  const { mutate: linkAccount } = useLinkEvmAccount()
   const address = useMyAccount((state) => state.address)
-
-  const myAddress = useMyAccount((state) => state.address)
-  const { data } = useSignMessage()
-
-  useEffect(() => {
-    if (!isLoading && data) {
-      console.log(isLoading, data)
-
-      linkAccount({
-        evmAccount: evmAddress as string,
-        evmSignature: data,
-      })
-    }
-  }, [isLoading, data])
 
   return (
     <div className='flex flex-col'>
@@ -157,7 +149,11 @@ export const AccountCreatedContent = () => {
         Now you can connect EVM wallet to benefit from EVM features such as
         ERC20 tokens, NFTs and more.
       </p>
-      <CustomConnectButton className='w-full' />
+      <CustomConnectButton
+        className='w-full'
+        signEvmLinkMessage={signEvmLinkMessage}
+        isSigningMessage={isSigningMessage}
+      />
     </div>
   )
 }

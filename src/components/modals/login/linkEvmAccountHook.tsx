@@ -23,8 +23,6 @@ export function useLinkEvmAccount(
 
       const { evmAccount, evmSignature } = params
 
-      console.log(evmAccount, evmSignature)
-
       return {
         tx: substrateApi.tx.evmAccounts.linkEthAddress(
           evmAccount,
