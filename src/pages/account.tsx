@@ -10,6 +10,7 @@ export default function AccountPage() {
   const login = useMyAccount((state) => state.login)
   const router = useRouter()
   const routeReplace = useRef(router.replace)
+
   useEffect(() => {
     const { search } = window.location
     const searchParams = new URLSearchParams(search)
