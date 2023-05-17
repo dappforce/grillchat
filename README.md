@@ -68,3 +68,9 @@ Below is the list of environment variables that you can use to customize your ch
 | NEXT_PUBLIC_CAPTCHA_SITE_KEY | ReCaptcha sitekey                                                                                                                                                                                                                                                                                                     | Yes       |
 | NEXT_PUBLIC_AMP_ID           | Amplitude analytics ID (disabled if no ID is provided)                                                                                                                                                                                                                                                                | No        |
 | NEXT_PUBLIC_GA_ID            | Google Analytics ID (disabled if no ID is provided)                                                                                                                                                                                                                                                                   | No        |
+
+## How to Manage Your Space
+
+[Grill.chat](https://grill.chat) home page contains list of topics for user to choose from. This topics are listed from all the posts in a [subsocial space](https://docs.subsocial.network/docs/develop/concepts/spaces/). You can create space in xSocial chain using [Gazer](https://x.gazer.app/) - a CMS for Subsocial Network.
+
+You can add chat rooms into your space by creating [posts](https://docs.subsocial.network/docs/develop/concepts/postsAndComments) inside it. After you created your post, you can check that it is listed in Grill.chat by going to `https://grill.chat/{your space id}`.
