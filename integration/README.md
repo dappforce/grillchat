@@ -7,7 +7,7 @@ There are currently two options that you can use to integrate [Grill.chat](http:
 
 ## Grill Widget
 
-Grill Widget is a tiny package that you can use to integrate Grill.chat to your app. It wraps all the config available in a simple function call.
+Grill Widget is a tiny package (< 1kb compressed) that you can use to integrate Grill.chat to your app. It wraps all the config available in a simple function call.
 
 ### Installation
 
@@ -79,7 +79,7 @@ Channel settings is used to customize the channel iframe. Below includes the lis
 | ---- | ---- | ----------- |
 | `enableBackButton` | `boolean` | If set to `true`, it will show the back button in the channel iframe. Default to `false` |
 | `enableLoginButton` | `boolean` | If set to `true`, it will show the login button in the channel iframe. Default to `false` |
-| `autoFocus` | `boolean` | If set to `true`, it will focus the input when the iframe is loaded. The default behavior is `on`, except on touch devices. If set `true` or `false`, it will unify behavior on touch and non-touch devices. |
+| `inputAutofocus` | `boolean` | If set to `true`, it will focus the input when the iframe is loaded. The default behavior is `on`, except on touch devices. If set `true` or `false`, it will unify behavior on touch and non-touch devices. |
 
 ## Iframe Integration
 
@@ -132,6 +132,6 @@ You can also customize the `src` link with query parameters. Below includes the 
   theme?: 'light' | 'dark'
   enableBackButton?: 'true' | 'false'
   enableLoginButton?: 'true' | 'false'
-  autoFocus?: 'true' | 'false'
+  inputAutofocus?: 'true' | 'false'
 }
 ```

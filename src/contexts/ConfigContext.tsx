@@ -7,7 +7,7 @@ type State = {
   order?: string[]
   enableBackButton?: boolean
   enableLoginButton?: boolean
-  autoFocus?: boolean
+  inputAutofocus?: boolean
 }
 const ConfigContext = createContext<State>({ theme: undefined, order: [] })
 
@@ -57,7 +57,7 @@ const schemaGetter = {
     const order = getUrlQuery('order')
     const enableBackButton = getUrlQuery('enableBackButton')
     const enableLoginButton = getUrlQuery('enableLoginButton')
-    const autoFocus = getUrlQuery('autoFocus')
+    const inputAutofocus = getUrlQuery('inputAutofocus')
 
     const usedOrder = order.split(',').filter((value) => !!value)
 
@@ -74,8 +74,8 @@ const schemaGetter = {
         ['true', 'false'],
         (value) => value === 'true'
       ),
-      autoFocus: validateStringConfig(
-        autoFocus,
+      inputAutofocus: validateStringConfig(
+        inputAutofocus,
         ['true', 'false'],
         (value) => value === 'true'
       ),

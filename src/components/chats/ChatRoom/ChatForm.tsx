@@ -66,14 +66,14 @@ export default function ChatForm({
   const { mutate: sendMessage, error } = useSendMessage()
   useToastError(error, 'Message failed to send, please try again')
 
-  const { autoFocus } = useConfigContext()
+  const { inputAutofocus } = useConfigContext()
   useEffect(() => {
-    if (autoFocus === true) textAreaRef.current?.focus()
-    else if (autoFocus === undefined) {
+    if (inputAutofocus === true) textAreaRef.current?.focus()
+    else if (inputAutofocus === undefined) {
       if (isTouchDevice()) return
       textAreaRef.current?.focus()
     }
-  }, [autoFocus])
+  }, [inputAutofocus])
   useEffect(() => {
     if (replyTo) textAreaRef.current?.focus()
   }, [replyTo])
