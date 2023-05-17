@@ -69,16 +69,6 @@ All config options are optional. If you don't pass any config, it will use the d
 
 Channel option is used to make the iframe open chat room (a channel) directly. This is useful if you want to have a specific topic for your user to discuss.
 
-This channel accepts `Channel` type:
-
-```ts
-type Channel = {
-  type: 'channel'
-  id: string
-  settings: ChannelSettings
-}
-```
-
 | Name       | Type                                   | Description                                                                          |
 | ---------- | -------------------------------------- | ------------------------------------------------------------------------------------ |
 | `type`     | `'channel'`                            | The type of the channel. This should be set to `'channel'`                           |
