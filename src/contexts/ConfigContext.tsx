@@ -1,13 +1,13 @@
 import { Theme } from '@/@types/theme'
 import { getUrlQuery } from '@/utils/links'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 type State = {
   theme?: Theme
   order?: string[]
   enableBackButton?: boolean
   enableLoginButton?: boolean
-  autoFocus?: boolean
+  enableInputAutofocus?: boolean
 }
 const ConfigContext = createContext<State>({ theme: undefined, order: [] })
 
@@ -17,9 +17,19 @@ export function ConfigProvider({ children }: { children: any }) {
     order: [],
   })
 
+  const configRef = useRef<State | null>(null)
   useEffect(() => {
-    setState(getConfig())
+    const config = getConfig()
+    setState(config)
+    configRef.current = config
   }, [])
+
+  useEffect(() => {
+    // check if current state is updated to the read config
+    if (configRef.current === state) {
+      window.top?.postMessage('grill:ready', '*')
+    }
+  }, [state])
 
   return (
     <ConfigContext.Provider value={state}>{children}</ConfigContext.Provider>
@@ -47,7 +57,7 @@ const schemaGetter = {
     const order = getUrlQuery('order')
     const enableBackButton = getUrlQuery('enableBackButton')
     const enableLoginButton = getUrlQuery('enableLoginButton')
-    const autoFocus = getUrlQuery('autoFocus')
+    const enableInputAutofocus = getUrlQuery('enableInputAutofocus')
 
     const usedOrder = order.split(',').filter((value) => !!value)
 
@@ -64,8 +74,8 @@ const schemaGetter = {
         ['true', 'false'],
         (value) => value === 'true'
       ),
-      autoFocus: validateStringConfig(
-        autoFocus,
+      enableInputAutofocus: validateStringConfig(
+        enableInputAutofocus,
         ['true', 'false'],
         (value) => value === 'true'
       ),
