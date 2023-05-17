@@ -1,26 +1,28 @@
 import BulbIcon from '@/assets/icons/bulb.svg'
+import EthIcon from '@/assets/icons/eth.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
+import ExternalLinkIcon from '@/assets/icons/external-link.svg'
 import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
-import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
 import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
-import useRandomColor from '@/hooks/useRandomColor'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin } from '@/utils/links'
-import { generateRandomName } from '@/utils/random-name'
 import React, { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
+import { useAccount, useDisconnect } from 'wagmi'
+import { CustomConnectButton } from '../../modals/login/CustomConnectButton'
 
 type NotificationControl = {
   showNotif: boolean
@@ -38,6 +40,8 @@ type ModalState =
   | 'logout'
   | 'share-session'
   | 'about'
+  | 'connect-evm-address'
+  | 'disconect-evm-confirmation'
 const modalTitles: {
   [key in ModalState]: {
     title: React.ReactNode
@@ -64,6 +68,15 @@ const modalTitles: {
     desc: null,
     withBackButton: true,
   },
+  'connect-evm-address': {
+    title: '🔑 Link Your EVM Address',
+    desc: 'A connected Ethereum address is associated with your Grill account via an of-chain proof, allowing you to display and use NFTs. ',
+    withBackButton: true,
+  },
+  'disconect-evm-confirmation': {
+    title: '🤔 Disconnect this address?',
+    desc: null,
+  },
 }
 
 type ContentProps = {
@@ -79,6 +92,8 @@ const modalContents: {
   logout: LogoutContent,
   'share-session': ShareSessionContent,
   about: AboutContent,
+  'connect-evm-address': ConnectedEvmAddressContent,
+  'disconect-evm-confirmation': DisconnectEvmConfirmationContent,
 }
 
 export default function ProfileModal({
@@ -87,6 +102,7 @@ export default function ProfileModal({
   ...props
 }: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
+  const { disconnect } = useDisconnect()
 
   useEffect(() => {
     if (props.isOpen) setCurrentState('account')
@@ -109,6 +125,10 @@ export default function ProfileModal({
       withFooter={withFooter}
       withCloseButton
       onBackClick={withBackButton ? onBackClick : undefined}
+      closeModal={() => {
+        props.closeModal()
+        disconnect()
+      }}
     >
       <Content
         address={address}
@@ -132,8 +152,11 @@ function AccountContent({
   setCurrentState,
   notification,
 }: ContentProps) {
-  const senderColor = useRandomColor(address)
   const sendEvent = useSendEvent()
+  const onConnectEvmAddressClick = () => {
+    sendEvent('click connect_evm_address')
+    setCurrentState('connect-evm-address')
+  }
   const onShowPrivateKeyClick = () => {
     sendEvent('click show_private_key_button')
     setCurrentState('private-key')
@@ -152,6 +175,12 @@ function AccountContent({
   }
 
   const buttons: ButtonData[] = [
+    {
+      text: 'Connect EVM address',
+      icon: EthIcon,
+      onClick: onConnectEvmAddressClick,
+      notification,
+    },
     {
       text: 'Show grill secret key',
       icon: KeyIcon,
@@ -174,19 +203,10 @@ function AccountContent({
 
   return (
     <div className='mt-2 flex flex-col'>
-      <div className='flex items-center gap-4 border-b border-background-lightest px-6 pb-6'>
-        <AddressAvatar address={address} className='h-20 w-20' />
-        <div className='flex flex-col'>
-          <span className='text-lg' style={{ color: senderColor }}>
-            {generateRandomName(address)}
-          </span>
-          <CopyTextInline
-            text={truncateAddress(address)}
-            tooltip='Copy my Grill public address'
-            textToCopy={address}
-          />
-        </div>
-      </div>
+      <ProfilePreview
+        address={address}
+        className='border-b border-background-lightest px-6 pb-6'
+      />
       <div className='flex w-full flex-col gap-6 py-6 px-3'>
         {buttons.map(({ icon: Icon, onClick, text, href, notification }) => (
           <Button
@@ -218,6 +238,86 @@ function AccountContent({
           </Button>
         ))}
       </div>
+    </div>
+  )
+}
+
+function ConnectedEvmAddressContent({ setCurrentState }: ContentProps) {
+  const sendEvent = useSendEvent()
+  const { address: evmAddress } = useAccount()
+
+  const onCopyClick = () => {
+    sendEvent('click copy_private_key_button')
+  }
+
+  return (
+    <div>
+      {evmAddress ? (
+        <div>
+          <div className='flex justify-between'>
+            <CopyTextInline
+              text={truncateAddress(evmAddress)}
+              tooltip='Copy my Grill public address'
+              tooltipPlacement='top'
+              textToCopy={evmAddress}
+            />
+            <LinkText
+              openInNewTab
+              href={`https://etherscan.io/address/${evmAddress}`}
+              variant='primary'
+            >
+              <span className='flex items-center'>
+                Etherscan <ExternalLinkIcon className='ml-2 text-text-muted' />
+              </span>
+            </LinkText>
+          </div>
+          <Button
+            onClick={() => setCurrentState('disconect-evm-confirmation')}
+            className='mt-6 w-full border-red-500'
+            variant='primaryOutline'
+            size='lg'
+          >
+            Disconnect
+          </Button>
+        </div>
+      ) : (
+        <CustomConnectButton className='w-full' />
+      )}
+    </div>
+  )
+}
+
+function DisconnectEvmConfirmationContent({ setCurrentState }: ContentProps) {
+  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
+  const { disconnect } = useDisconnect()
+
+  const sendEvent = useSendEvent()
+  const onButtonClick = (eventName: string) => {
+    setCurrentState('connect-evm-address')
+    sendEvent(`click ${eventName}`)
+  }
+
+  const onDisconnectClick = () => {
+    disconnect()
+    onButtonClick('disconnect-evm-address')
+  }
+
+  return (
+    <div className='mt-4 flex flex-col gap-4'>
+      <Button
+        size='lg'
+        onClick={() => onButtonClick('keep-evm-address-connected')}
+      >
+        No, keep it connected
+      </Button>
+      <Button
+        size='lg'
+        onClick={onDisconnectClick}
+        variant='primaryOutline'
+        className='border-red-500'
+      >
+        Yes, disconnect
+      </Button>
     </div>
   )
 }

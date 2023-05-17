@@ -2,10 +2,11 @@ import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
-import { SyntheticEvent, useRef, useState } from 'react'
+import { SyntheticEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Toast from '../../Toast'
 import { loginModalContents, LoginModalStep } from './LoginModalContent'
+import { useDisconnect } from 'wagmi'
 
 export type LoginModalProps = ModalFunctionalityProps & {
   afterLogin?: () => void
@@ -48,6 +49,7 @@ export default function LoginModal({
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [currentStep, setCurrentStep] = useState<LoginModalStep>('login')
+  const { disconnect } = useDisconnect()
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
@@ -69,6 +71,10 @@ export default function LoginModal({
 
   const onBackClick = () => setCurrentStep('login')
 
+  useEffect(() => {
+    if (props.isOpen) setCurrentStep('login')
+  }, [props.isOpen])
+
   const ModalContent = loginModalContents[currentStep]
   const { title, desc, withBackButton } = modalHeader[currentStep]
 
@@ -83,6 +89,7 @@ export default function LoginModal({
       onBackClick={withBackButton ? onBackClick : undefined}
       closeModal={() => {
         props.closeModal()
+        disconnect()
       }}
     >
       <CaptchaInvisible>

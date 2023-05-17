@@ -1,9 +1,12 @@
 import Button from '@/components/Button'
 import TextArea from '@/components/inputs/TextArea'
+import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
+import ProfilePreview from '@/components/ProfilePreview'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
+import { useMyAccount } from '@/stores/my-account'
 import {
   Dispatch,
   SetStateAction,
@@ -13,18 +16,11 @@ import {
   useState,
 } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
-import { useLinkEvmAccount } from './linkEvmAccountHook'
-import { _TypedDataEncoder } from '@ethersproject/hash'
-import { decodeAddress } from '@polkadot/keyring'
-import Logo from '@/components/Logo'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { CustomConnectButton } from './CustomConnectButton'
-import { useMyAccount } from '@/stores/my-account'
+import { useLinkEvmAccount } from './linkEvmAccountHook'
+import { useSignEvmLinkMessage } from './utils'
 
-export type LoginModalStep =
-  | 'login'
-  | 'enter-secret-key'
-  | 'account-created'
+export type LoginModalStep = 'login' | 'enter-secret-key' | 'account-created'
 
 type ContentProps = ModalFunctionalityProps & {
   setCurrentStep: Dispatch<SetStateAction<LoginModalStep>>
@@ -60,11 +56,18 @@ export const LoginContent = ({
 
   return (
     <div>
-      <div className='w-full flex-col flex justify-center'>
-        <Logo className='text-5xl mb-8' />
+      <div className='flex w-full flex-col justify-center'>
+        <Logo className='mb-8 text-5xl' />
         <div className='flex flex-col gap-4'>
           <Button
+            onClick={() => setCurrentStep('enter-secret-key')}
+            size='lg'
+          >
+            Enter Grill secret key
+          </Button>
+          <Button
             type='button'
+            variant='primaryOutline'
             size='lg'
             className='w-full'
             isLoading={isLoading}
@@ -73,8 +76,10 @@ export const LoginContent = ({
               const token = await runCaptcha()
               if (!token) return
               setHasStartCaptcha(false)
-              const newAddress = await loginAndRequestToken({ captchaToken: token })
-              if(newAddress) {
+              const newAddress = await loginAndRequestToken({
+                captchaToken: token,
+              })
+              if (newAddress) {
                 setCurrentStep('account-created')
               }
               // props.closeModal()
@@ -82,13 +87,7 @@ export const LoginContent = ({
           >
             Create an account
           </Button>
-          <Button
-            onClick={() => setCurrentStep('enter-secret-key')}
-            variant='primaryOutline'
-            size='lg'
-          >
-            Enter Grill secret key
-          </Button>
+
           {termsAndService('mt-4')}
         </div>
       </div>
@@ -107,6 +106,7 @@ export const EnterSecretKeyContent = ({ onSubmit }: ContentProps) => {
         value={privateKey}
         rows={3}
         size='sm'
+        autoFocus
         className='bg-background'
         onChange={(e) => setPrivateKey((e.target as HTMLTextAreaElement).value)}
         placeholder='Enter your Grill secret key'
@@ -118,57 +118,17 @@ export const EnterSecretKeyContent = ({ onSubmit }: ContentProps) => {
   )
 }
 
-function buildMsgParams(evmAddress: string, substrateAddress: Uint8Array) {
-  const domain = {
-    name: 'SubSocial Evm Address Linkage',
-    version: '1',
-    salt: '0x1333ee260a234d3a246b85239e279bbdc7618db7188f2dd73f7322963fcd4d02',
-  }
-
-  const types = {
-    Transaction: [
-      { name: 'transactionName', type: 'string' },
-      { name: 'substrateAddress', type: 'bytes' },
-      { name: 'evmAddress', type: 'bytes' },
-    ],
-  }
-
-  const value = {
-    transactionName: 'LinkEvmAddress',
-    substrateAddress,
-    evmAddress,
-  }
-
-  return JSON.stringify(_TypedDataEncoder.getPayload(domain, types, value))
-}
-
 export const AccountCreatedContent = () => {
-  const { address: evmAddress, connector } = useAccount()
+  const { signEvmLinkMessage, isLoading } = useSignEvmLinkMessage()
+  const { address: evmAddress } = useAccount({
+    onConnect: ({ address: connectedEvmAddress }) =>
+      signEvmLinkMessage(connectedEvmAddress, address),
+  })
   const { mutate: linkAccount, error: linkEvmError } = useLinkEvmAccount()
+  const address = useMyAccount((state) => state.address)
 
   const myAddress = useMyAccount((state) => state.address)
-  const {
-    data,
-    error: singProofError,
-    isLoading,
-    signMessage,
-    variables,
-  } = useSignMessage()
-
-  const signMesageForLinkAccount = () => {
-    if(!evmAddress) return
-
-    const decodedAddress = decodeAddress(myAddress)
-    const message = buildMsgParams(evmAddress, decodedAddress)
-    signMessage({ message })
-  }
-
-  useEffect(() => {
-    if(evmAddress) {
-      signMesageForLinkAccount()
-    }
-  }, [evmAddress])
-
+  const { data } = useSignMessage()
 
   useEffect(() => {
     if (!isLoading && data) {
@@ -181,10 +141,25 @@ export const AccountCreatedContent = () => {
     }
   }, [isLoading, data])
 
-
-  return <div className='w-full'>
-    <CustomConnectButton className='w-full' />
-  </div>
+  return (
+    <div className='flex flex-col'>
+      {address && (
+        <div className='mt-2 mb-6 rounded-2xl bg-slate-700 p-4'>
+          <ProfilePreview address={address} />
+        </div>
+      )}
+      <div className='flex items-center'>
+        <div className='w-full border-b border-background-lightest'></div>
+        <p className='min-w-fit px-4 text-text-muted'>WHAT’S NEXT?</p>
+        <div className='w-full border-b border-background-lightest'></div>
+      </div>
+      <p className='mb-4 mt-6 text-text-muted'>
+        Now you can connect EVM wallet to benefit from EVM features such as
+        ERC20 tokens, NFTs and more.
+      </p>
+      <CustomConnectButton className='w-full' />
+    </div>
+  )
 }
 
 type LoginModalContents = {
@@ -194,5 +169,5 @@ type LoginModalContents = {
 export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'enter-secret-key': EnterSecretKeyContent,
-  'account-created': AccountCreatedContent
+  'account-created': AccountCreatedContent,
 }

@@ -58,11 +58,11 @@ const EvmProvider = ({ children }: EvmProviderProps) => {
   }
 
   return (
-    <>
-      <WagmiConfig config={wagmiConfig}>
-        <RainbowKitProvider theme={theme} chains={chains}>{children}</RainbowKitProvider>
-      </WagmiConfig>
-    </>
+    <WagmiConfig config={wagmiConfig}>
+      <RainbowKitProvider theme={theme} chains={chains}>
+        {children}
+      </RainbowKitProvider>
+    </WagmiConfig>
   )
 }
 
