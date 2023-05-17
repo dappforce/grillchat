@@ -134,6 +134,8 @@ const grill = {
 }
 
 export type Grill = typeof grill
-;(window as any).GRILL = grill
+if (typeof window !== 'undefined') {
+  ;(window as any).GRILL = grill
+}
 
 export default grill
