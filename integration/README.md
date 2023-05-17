@@ -45,7 +45,7 @@ or using CDN
 
 ### Customization
 
-You can customize a Grill UI by passing a config object to GRILL.init() function. For example:
+You can customize a Grill UI by passing a config object to `grill.init()` function. For example:
 
 ```ts
 import grill from '@subsocial/grill-widget'
