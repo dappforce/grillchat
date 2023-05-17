@@ -24,7 +24,7 @@ or using cdn
 
 ### Usage
 
-1. Add div with id of `grill` to your app
+1. Add the div HTML tag with an id of `grill` to your app. Example:
 
    ```html
    <div id="grill"></div>
