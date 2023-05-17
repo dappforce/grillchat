@@ -3,7 +3,7 @@ type QueryParams = {
   theme?: string
   enableBackButton?: string
   enableLoginButton?: string
-  inputAutofocus?: string
+  enableInputAutofocus?: string
 }
 
 class QueryParamsBuilder {
@@ -30,7 +30,7 @@ type Channel = {
   settings: {
     enableBackButton?: boolean
     enableLoginButton?: boolean
-    inputAutofocus?: boolean
+    enableInputAutofocus?: boolean
   }
 }
 
@@ -93,8 +93,11 @@ const grill = {
       }
       query.set('enableBackButton', channelSettings.enableBackButton + '')
       query.set('enableLoginButton', channelSettings.enableLoginButton + '')
-      if (channelSettings.inputAutofocus !== undefined)
-        query.set('inputAutofocus', channelSettings.inputAutofocus + '')
+      if (channelSettings.enableInputAutofocus !== undefined)
+        query.set(
+          'enableInputAutofocus',
+          channelSettings.enableInputAutofocus + ''
+        )
     }
 
     iframe.src = `${baseUrl}?${query.get()}`
