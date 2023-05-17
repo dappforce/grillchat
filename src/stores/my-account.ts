@@ -11,9 +11,10 @@ import { Web3Auth } from '@web3auth/modal'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
 
+let web3Auth: Web3Auth | null = null
+
 type State = {
-  web3Auth: Web3Auth | null
-  authMethod?: AUTHENTICATION_METHODS
+  authMethod?: AuthenticationMethods
   address: string | null
   signer: Signer | null
   energy: number | null
@@ -35,7 +36,7 @@ type Actions = {
     secretKey?: string,
     isInitialization?: boolean
   ) => Promise<string | false>
-  login: () => Promise<string | undefined>
+  loginWithWeb3Auth: () => Promise<string | false>
   logout: () => Promise<void>
   _subscribeEnergy: () => Promise<void>
   _setSessionKey: (session: Session) => Promise<void>
@@ -44,14 +45,13 @@ type Actions = {
   _getSecretKeyForLogin: () => Promise<string>
 }
 
-export type AUTHENTICATION_METHODS = 'Web3Auth' | 'Anonymous'
+export type AuthenticationMethods = 'web3auth' | 'anonymous'
 
 const ACCOUNT_STORAGE_KEY = 'account'
 const SESSION_STORAGE_KEY = 'session'
 
 const initialState: State = {
   isInitializedAddress: true,
-  web3Auth: null,
   address: null,
   signer: null,
   energy: null,
@@ -79,7 +79,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         address,
         signer,
         encodedSecretKey,
-        authMethod: 'Anonymous',
+        authMethod: 'anonymous',
         isInitializedAddress: !!isInitialization,
       })
       accountStorage.set(encodedSecretKey)
@@ -91,16 +91,15 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
     return address
   },
-  login: async () => {
-    let { web3Auth, _syncSessionKey, _subscribeEnergy } = get()
+  loginWithWeb3Auth: async () => {
+    let { _syncSessionKey, _subscribeEnergy } = get()
     if (!web3Auth) {
-      web3Auth = await initializeWeb3Auth()
+      web3Auth = initializeWeb3Auth()
     }
 
-    // const privateKey = await getPrivateKey()
     if (!web3Auth!.provider) {
       console.log('Provider not set!')
-      return undefined
+      return false
     }
 
     const rpc = new SubstrateRPC(web3Auth!.provider)
@@ -113,7 +112,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         signer,
         address: signer.address,
         isAuthenticated: true,
-        authMethod: 'Web3Auth',
+        authMethod: 'web3auth',
         web3Auth,
         encodedSecretKey,
       }))
@@ -122,6 +121,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       _syncSessionKey()
       return signer.address
     }
+    return false
   },
   _subscribeEnergy: async () => {
     const { address, _unsubscribeEnergy } = get()
@@ -151,8 +151,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     _unsubscribeEnergy()
 
     set({ ...initialState, _isNewSessionKey: false, _currentSessionSecretKey })
-    if (authMethod === 'Web3Auth') {
-      const { web3Auth } = get()
+    if (authMethod === 'web3auth') {
       if (!web3Auth) {
         console.log('User already logged out')
         return

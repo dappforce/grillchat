@@ -1,11 +1,11 @@
-import { Keyring } from '@polkadot/api'
+import { Keyring } from '@polkadot/keyring'
 import { CHAIN_NAMESPACES, type SafeEventEmitterProvider } from '@web3auth/base'
-import { Web3Auth } from '@web3auth/modal'
-import { encodeSecretKey } from './account'
+
 import { getWeb3AuthClientId } from './env/client'
 
 const clientId = getWeb3AuthClientId()
 export async function initializeWeb3Auth() {
+  const { Web3Auth } = await import('@web3auth/modal')
   const web3auth = new Web3Auth({
     clientId,
     chainConfig: {
@@ -42,13 +42,8 @@ export class SubstrateRPC {
       const keyring = new Keyring({ ss58Format: 42, type: 'sr25519' })
 
       const keyPair = keyring.addFromUri('0x' + privateKey)
-
-      // keyPair.address is the account address.
-      const account = keyPair?.address
-
-      return { privateKey: encodeSecretKey(`${privateKey}`), address: account }
+      return { privateKey, address: keyPair.address }
     } catch (error) {
-      console.log({ error })
       return {}
     }
   }

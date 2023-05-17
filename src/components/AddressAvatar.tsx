@@ -12,11 +12,11 @@ export type AddressAvatarProps = ComponentProps<'div'> & {
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   function AddressAvatar(
-    { address, avatar: userAvatar, ...props }: AddressAvatarProps,
+    { address, avatar, ...props }: AddressAvatarProps,
     ref
   ) {
     const backgroundColor = useRandomColor(address, 'dark')
-    const avatar = useMemo(() => {
+    const generatedAvatar = useMemo(() => {
       return createAvatar(bottts, {
         size: 128,
         seed: address,
@@ -39,7 +39,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
               sizes='5rem'
               className='relative'
               fill
-              src={avatar}
+              src={avatar ?? generatedAvatar}
               alt='avatar'
             />
           </div>

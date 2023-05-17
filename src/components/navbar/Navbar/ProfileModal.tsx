@@ -222,7 +222,7 @@ function LogoutContent({ setCurrentState }: ContentProps) {
   const logout = useMyAccount((state) => state.logout)
   const sendEvent = useSendEvent()
 
-  const onShowPrivateKeyClick = async () => {
+  const onShowPrivateKeyClick = () => {
     sendEvent('click no_show_me_my_private_key_button')
     setCurrentState('private-key')
   }

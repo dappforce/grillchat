@@ -1,7 +1,7 @@
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
-import { AUTHENTICATION_METHODS, useMyAccount } from '@/stores/my-account'
+import { AuthenticationMethods, useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { SyntheticEvent, useRef, useState } from 'react'
 import Button from '../Button'
@@ -22,7 +22,7 @@ export default function LoginModal({
   beforeLogin,
   ...props
 }: LoginModalProps) {
-  const login = useMyAccount((state) => state.login)
+  const loginWithWeb3Auth = useMyAccount((state) => state.loginWithWeb3Auth)
   const loginAnonymously = useMyAccount((state) => state.loginAnonymously)
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -82,7 +82,7 @@ export default function LoginModal({
       description={desc}
     >
       <form
-        onSubmit={onSubmit('Anonymous')}
+        onSubmit={onSubmit('anonymous')}
         className='mt-2 flex flex-col gap-4'
       >
         <TextArea
@@ -141,7 +141,7 @@ export default function LoginModal({
           <Button
             type='button'
             className='w-full'
-            onClick={onSubmit('Web3Auth')}
+            onClick={onSubmit('web3auth')}
             size='lg'
           >
             Login with Web3Auth
