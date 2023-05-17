@@ -1,11 +1,12 @@
 import { Keyring } from '@polkadot/keyring'
-import { CHAIN_NAMESPACES, type SafeEventEmitterProvider } from '@web3auth/base'
+import { type SafeEventEmitterProvider } from '@web3auth/base'
 
 import { getWeb3AuthClientId } from './env/client'
 
 const clientId = getWeb3AuthClientId()
 export async function initializeWeb3Auth() {
   const { Web3Auth } = await import('@web3auth/modal')
+  const { CHAIN_NAMESPACES } = await import('@web3auth/base')
   const web3auth = new Web3Auth({
     clientId,
     chainConfig: {

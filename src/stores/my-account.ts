@@ -94,7 +94,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   loginWithWeb3Auth: async () => {
     let { _syncSessionKey, _subscribeEnergy } = get()
     if (!web3Auth) {
-      web3Auth = initializeWeb3Auth()
+      web3Auth = await initializeWeb3Auth()
     }
 
     if (!web3Auth!.provider) {
