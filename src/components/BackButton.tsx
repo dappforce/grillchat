@@ -1,15 +1,18 @@
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useLocation } from '@/stores/location'
+import { getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import Button, { ButtonProps } from './Button'
 
 export type BackButtonProps = ButtonProps & {
   defaultBackLink?: string
+  forceUseDefaultBackLink?: boolean
   noStyle?: boolean
 }
 
 export default function BackButton({
-  defaultBackLink,
+  defaultBackLink = '/',
+  forceUseDefaultBackLink,
   noStyle,
   ...props
 }: BackButtonProps) {
@@ -18,10 +21,18 @@ export default function BackButton({
   const router = useRouter()
 
   const hasBackToCurrentSession = !!prevUrl
-  const buttonProps: ButtonProps =
-    hasBackToCurrentSession && !isInIframe
-      ? { onClick: () => router.back() }
-      : { href: defaultBackLink, nextLinkProps: { replace: isInIframe } }
+
+  const prevUrlPathname = prevUrl?.replace(getCurrentUrlOrigin(), '')
+  const isDefaultBackLinkSameAsPrevUrl = defaultBackLink === prevUrlPathname
+
+  const shouldUseRouterBack =
+    hasBackToCurrentSession &&
+    !isInIframe &&
+    (!forceUseDefaultBackLink || isDefaultBackLinkSameAsPrevUrl)
+
+  const buttonProps: ButtonProps = shouldUseRouterBack
+    ? { onClick: () => router.back() }
+    : { href: defaultBackLink, nextLinkProps: { replace: isInIframe } }
 
   return (
     <Button

@@ -1,6 +1,7 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { getPostsFromCache } from '@/pages/api/posts'
+import { AppCommonProps } from '@/pages/_app'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
@@ -42,14 +43,10 @@ async function getChatsData(chatId: string) {
 }
 
 export const getStaticProps = getCommonStaticProps<
-  {
-    dehydratedState: any
-    title: string | null
-    desc: string | null
-  } & ChatPageProps
+  ChatPageProps & AppCommonProps
 >(
-  (data) => ({
-    head: { disableZoom: true, title: data.title, description: data.desc },
+  () => ({
+    head: { disableZoom: true },
   }),
   async (context) => {
     const slugParam = context.params?.slug as string
@@ -85,8 +82,10 @@ export const getStaticProps = getCommonStaticProps<
       props: {
         dehydratedState: dehydrate(queryClient),
         chatId,
-        title,
-        desc,
+        head: {
+          title,
+          description: desc,
+        },
       },
       revalidate: 2,
     }

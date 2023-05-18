@@ -7,6 +7,7 @@ export function getUrlQuery(queryName: string) {
 }
 
 export function getCurrentUrlOrigin() {
+  if (typeof window === 'undefined') return ''
   return window.location.origin
 }
 
