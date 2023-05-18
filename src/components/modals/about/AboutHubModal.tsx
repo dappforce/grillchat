@@ -40,6 +40,7 @@ export default function AboutHubModal({
     <AboutModal
       {...props}
       title={content.name}
+      isImageCircle={false}
       subtitle={`${chatCount} chats in hub`}
       imageCid={content.image}
       contentList={contentList}
