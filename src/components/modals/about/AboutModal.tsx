@@ -22,6 +22,7 @@ type Action = {
 export type AboutModalProps = ModalFunctionalityProps & {
   title: string
   imageCid: string
+  isImageCircle?: boolean
   subtitle: string
   contentList: Content[]
   actionMenu?: Action[]
@@ -30,6 +31,7 @@ export type AboutModalProps = ModalFunctionalityProps & {
 export default function AboutModal({
   title,
   subtitle,
+  isImageCircle = true,
   imageCid,
   contentList,
   actionMenu,
@@ -43,6 +45,7 @@ export default function AboutModal({
             src={getIpfsContentUrl(imageCid)}
             className={cx(
               getCommonClassNames('chatImageBackground'),
+              isImageCircle ? 'rounded-full' : 'rounded-2xl',
               'h-20 w-20'
             )}
             height={80}
