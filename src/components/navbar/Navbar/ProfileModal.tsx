@@ -301,7 +301,7 @@ function AboutContent() {
         <Logo className='text-5xl' />
       </div>
       <p className='text-text-muted'>
-        Engage in discussions anonymously without fear of social persecution.
+        Engage in discussions anonymously without fear of social prosecution.
         Grill.chat runs on the{' '}
         <LinkText
           openInNewTab

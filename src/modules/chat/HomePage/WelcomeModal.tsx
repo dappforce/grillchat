@@ -39,7 +39,7 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
       }
       description={
         <span className='block text-center'>
-          Engage in discussions anonymously without fear of social persecution.
+          Engage in discussions anonymously without fear of social prosecution.
           Grill.chat runs on the{' '}
           <LinkText
             variant='primary'
