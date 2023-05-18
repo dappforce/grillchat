@@ -4,8 +4,8 @@ import { ConfigProvider, useConfigContext } from '@/contexts/ConfigContext'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
-import '@rainbow-me/rainbowkit/styles.css'
 import { getGaId } from '@/utils/env/client'
+import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
@@ -21,9 +21,7 @@ export type AppCommonProps = {
 export default function App(props: AppProps<AppCommonProps>) {
   return (
     <ConfigProvider>
-      <EvmProvider>
-        <AppContent {...props} />
-      </EvmProvider>
+      <AppContent {...props} />
     </ConfigProvider>
   )
 }
@@ -46,7 +44,9 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <NextNProgress color='#4d46dc' />
         <HeadConfig {...head} />
         <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
-        <Component {...props} />
+        <EvmProvider>
+          <Component {...props} />
+        </EvmProvider>
       </QueryProvider>
     </ThemeProvider>
   )

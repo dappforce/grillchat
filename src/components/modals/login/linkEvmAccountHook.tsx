@@ -1,7 +1,9 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
+import { getLinkedEvmAddressQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
+import { useQueryClient } from '@tanstack/react-query'
 
 type LinkEvmAccountProps = {
   evmAccount: string
@@ -13,6 +15,7 @@ export function useLinkEvmAccount(
 ) {
   const address = useMyAccount((state) => state.address ?? '')
   const signer = useMyAccount((state) => state.signer)
+  const client = useQueryClient()
 
   const waitHasBalance = useWaitHasEnergy()
 
@@ -31,6 +34,16 @@ export function useLinkEvmAccount(
         summary: 'Linking evm address',
       }
     },
-    config
+    config,
+    {
+      txCallbacks: {
+        getContext: (_params) => { 
+          return ''
+         },
+        onSuccess: ({ address }) => {
+          getLinkedEvmAddressQuery.invalidate(client, address)
+        },
+      },
+    }
   )
 }

@@ -25,6 +25,8 @@ import { useAccount, useDisconnect } from 'wagmi'
 import { CustomConnectButton } from '../../modals/login/CustomConnectButton'
 import { useSignEvmLinkMessage } from '../../modals/login/utils'
 
+const evmAddress = '0xDB9e87Fafcdd66f5AFF56C812fd0645Ab2B608e5'
+
 type NotificationControl = {
   showNotif: boolean
   setNotifDone: () => void
@@ -206,6 +208,7 @@ function AccountContent({
     <div className='mt-2 flex flex-col'>
       <ProfilePreview
         address={address}
+        evmAddress={evmAddress}
         className='border-b border-background-lightest px-6 pb-6'
       />
       <div className='flex w-full flex-col gap-6 py-6 px-3'>

@@ -22,6 +22,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import HomePageNavbar from './HomePageNavbar'
 import useSortByConfig from './hooks/useSortByConfig'
 import useSortedChatIdsByLatestMessage from './hooks/useSortByLatestMessage'
+import { getLinkedEvmAddressQuery } from '@/services/subsocial/evmAddresses'
 
 const WelcomeModal = dynamic(() => import('./WelcomeModal'), { ssr: false })
 
@@ -35,6 +36,7 @@ export default function HomePage({
 }: HomePageProps) {
   const isInIframe = useIsInIframe()
   const { data } = getChatIdsBySpaceIdQuery.useQuery(spaceId)
+  getLinkedEvmAddressQuery.useQuery('5HY2ukgx3MJtGfwQacwK3Z1ZPReCp3x3vwf1n3aPBeTuLDrA')
   const allChatIds = useMemo(() => {
     return [...(data?.chatIds ?? []), ...getLinkedChatIdsForSpaceId(spaceId)]
   }, [data, spaceId])
