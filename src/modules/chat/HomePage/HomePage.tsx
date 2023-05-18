@@ -1,7 +1,6 @@
 import NoResultImage from '@/assets/graphics/no-result.png'
 import Button from '@/components/Button'
 import ChatPreview from '@/components/chats/ChatPreview'
-import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getLinkedChatIdsForSpaceId } from '@/constants/chat-room'
@@ -30,14 +29,10 @@ const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
 })
 
 export type HomePageProps = {
-  isIntegrateChatButtonOnTop: boolean
   spaceId: string
 }
 const searchKeys = ['content.title']
-export default function HomePage({
-  isIntegrateChatButtonOnTop,
-  spaceId,
-}: HomePageProps) {
+export default function HomePage({ spaceId }: HomePageProps) {
   const isInIframe = useIsInIframe()
 
   const { data } = getChatIdsBySpaceIdQuery.useQuery(spaceId)
@@ -89,11 +84,6 @@ export default function HomePage({
     >
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col'>
-        {!isInIframe && !search && (
-          <ChatSpecialButtons
-            isIntegrateChatButtonOnTop={isIntegrateChatButtonOnTop}
-          />
-        )}
         {searchResults.length === 0 && (
           <NoSearchResultScreen search={search} hubId={spaceId} />
         )}

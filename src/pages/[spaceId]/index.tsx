@@ -114,7 +114,6 @@ export const getStaticProps = getCommonStaticProps<
     return {
       props: {
         dehydratedState: dehydrate(queryClient),
-        isIntegrateChatButtonOnTop: Math.random() > 0.5,
         spaceId,
       },
       revalidate: 2,
