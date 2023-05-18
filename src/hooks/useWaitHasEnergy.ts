@@ -1,41 +1,33 @@
 import { useMyAccount } from '@/stores/my-account'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import usePrevious from './usePrevious'
 
 export default function useWaitHasEnergy() {
   const address = useMyAccount((state) => state.address)
   const energy = useMyAccount((state) => state.energy)
-  const previousEnergy = usePrevious(energy)
 
-  const hasEnergyResolver = useRef<() => void | undefined>()
+  const hasEnergyResolvers = useRef<(() => void)[]>([])
 
-  const generatePromise = useCallback(
+  const generateNewPromise = useCallback(
     () =>
       new Promise<void>((resolve) => {
-        hasEnergyResolver.current = () => resolve()
+        hasEnergyResolvers.current.push(() => resolve())
       }),
     []
   )
-  const [hasEnergyPromise, setHasEnergyPromise] =
-    useState<Promise<void>>(generatePromise)
+  // save current and previous account's promises, so there are no dangling promises
+  const [hasEnergyPromises, setHasEnergyPromises] = useState<Promise<void>[]>(
+    () => [generateNewPromise()]
+  )
 
   useEffect(() => {
-    setHasEnergyPromise(generatePromise())
-  }, [address, generatePromise])
+    setHasEnergyPromises((prev) => [...prev, generateNewPromise()])
+  }, [address, generateNewPromise])
 
   useEffect(() => {
-    if (energy && energy > 0) {
-      if (hasEnergyResolver.current) {
-        const resolveHasEnergy = () => {
-          hasEnergyResolver.current?.()
-          hasEnergyResolver.current = undefined
-        }
-        resolveHasEnergy()
-      }
-    } else {
-      setHasEnergyPromise(generatePromise())
-    }
-  }, [energy, generatePromise, previousEnergy])
+    if (!energy || energy <= 0) return
+    hasEnergyResolvers.current.forEach((resolve) => resolve())
+    hasEnergyResolvers.current = []
+  }, [energy, generateNewPromise])
 
-  return () => hasEnergyPromise
+  return () => hasEnergyPromises[hasEnergyPromises.length - 1]
 }
