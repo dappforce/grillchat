@@ -25,11 +25,14 @@ export default function BackButton({
   const prevUrlPathname = prevUrl?.replace(getCurrentUrlOrigin(), '')
   const isDefaultBackLinkSameAsPrevUrl = defaultBackLink === prevUrlPathname
 
-  const buttonProps: ButtonProps =
+  const shouldUseRouterBack =
     hasBackToCurrentSession &&
+    !isInIframe &&
     (!forceUseDefaultBackLink || isDefaultBackLinkSameAsPrevUrl)
-      ? { onClick: () => router.back() }
-      : { href: defaultBackLink, nextLinkProps: { replace: isInIframe } }
+
+  const buttonProps: ButtonProps = shouldUseRouterBack
+    ? { onClick: () => router.back() }
+    : { href: defaultBackLink, nextLinkProps: { replace: isInIframe } }
 
   return (
     <Button

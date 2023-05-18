@@ -3,6 +3,7 @@ import ChatRoom from '@/components/chats/ChatRoom'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { useConfigContext } from '@/contexts/ConfigContext'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
+import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
@@ -93,8 +94,9 @@ function NavbarChatInfo({
   backButton: JSX.Element
 }) {
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
+  const prevIsOpenAboutChatModal = usePrevious(isOpenAboutChatModal)
   const router = useRouter()
-  const { isChatRoomOnly } = useConfigContext()
+  const { enableBackButton = true } = useConfigContext()
 
   const routerRef = useWrapInRef(router)
   const isInitialized = useRef(false)
@@ -107,10 +109,10 @@ function NavbarChatInfo({
     const baseUrl = getChatPageLink(routerRef.current)
     if (isOpenAboutChatModal) {
       replaceUrl(urlJoin(baseUrl, '/about'))
-    } else {
+    } else if (!isOpenAboutChatModal && prevIsOpenAboutChatModal) {
       replaceUrl(baseUrl)
     }
-  }, [isOpenAboutChatModal, routerRef])
+  }, [isOpenAboutChatModal, prevIsOpenAboutChatModal, routerRef])
 
   useEffect(() => {
     const open = getUrlQuery('open')
@@ -124,7 +126,7 @@ function NavbarChatInfo({
 
   return (
     <div className='flex flex-1 items-center'>
-      {!isChatRoomOnly && backButton}
+      {enableBackButton && backButton}
       <Button
         variant='transparent'
         interactive='none'

@@ -3,6 +3,7 @@ import Button from '@/components/Button'
 import ColorModeToggler from '@/components/ColorModeToggler'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
+import { useConfigContext } from '@/contexts/ConfigContext'
 import usePrevious from '@/hooks/usePrevious'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -38,6 +39,7 @@ export default function Navbar({
   backButtonProps,
   ...props
 }: NavbarProps) {
+  const { enableLoginButton = true } = useConfigContext()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
@@ -74,17 +76,20 @@ export default function Navbar({
 
   const renderAuthComponent = () => {
     if (!isInitialized) return <div className='w-9' />
-    return isLoggedIn ? (
-      <ProfileAvatar
-        popOverControl={{
-          isOpen: openPrivateKeyNotice,
-          setIsOpen: setOpenPrivateKeyNotice,
-        }}
-        address={address}
-      />
-    ) : (
-      <Button onClick={login}>Login</Button>
-    )
+
+    if (isLoggedIn) {
+      return (
+        <ProfileAvatar
+          popOverControl={{
+            isOpen: openPrivateKeyNotice,
+            setIsOpen: setOpenPrivateKeyNotice,
+          }}
+          address={address}
+        />
+      )
+    }
+
+    return enableLoginButton ? <Button onClick={login}>Login</Button> : <></>
   }
   const authComponent = renderAuthComponent()
 
@@ -116,7 +121,7 @@ export default function Navbar({
         )}
       >
         <Container
-          className={cx('grid h-14 items-center py-2', props.className)}
+          className={cx('grid h-14 items-center py-1.5', props.className)}
         >
           {customContent ? (
             customContent({
