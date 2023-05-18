@@ -57,7 +57,10 @@ export default function HomePage({ spaceId }: HomePageProps) {
   return (
     <DefaultLayout
       navbarProps={{
-        defaultBackLink: '/hubs',
+        backButtonProps: {
+          defaultBackLink: '/hubs',
+          forceUseDefaultBackLink: true,
+        },
         customContent: ({
           backButton,
           logoLink,

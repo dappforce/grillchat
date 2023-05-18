@@ -52,7 +52,9 @@ export default function ChatPage({ chatId }: ChatPageProps) {
     <DefaultLayout
       withFixedHeight
       navbarProps={{
-        defaultBackLink: getHomePageLink(router),
+        backButtonProps: {
+          defaultBackLink: getHomePageLink(router),
+        },
         customContent: ({ backButton, authComponent, colorModeToggler }) => (
           <div className='flex items-center justify-between gap-4'>
             <NavbarChatInfo
