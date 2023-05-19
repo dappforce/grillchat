@@ -1,5 +1,4 @@
 import { getPostQuery } from '@/services/api/query'
-import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
@@ -51,7 +50,6 @@ export default function AboutChatModal({
     {
       text: 'Show Metadata',
       icon: HiCircleStack,
-      className: cx('text-text-secondary'),
       onClick: () => setIsOpenMetadataModal(true),
     },
   ]

@@ -64,7 +64,7 @@ export default function AboutModal({
                 )}
                 onClick={onClick}
               >
-                <Icon className='text-xl' />
+                <Icon className='text-xl text-text-muted' />
                 <span>{text}</span>
               </Button>
             ))}
