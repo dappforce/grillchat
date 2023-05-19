@@ -3,6 +3,7 @@ import { buttonStyles } from '@/components/Button'
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea from '@/components/inputs/TextArea'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/chat'
+import { useConfigContext } from '@/contexts/ConfigContext'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
@@ -65,10 +66,14 @@ export default function ChatForm({
   const { mutate: sendMessage, error } = useSendMessage()
   useToastError(error, 'Message failed to send, please try again')
 
+  const { enableInputAutofocus } = useConfigContext()
   useEffect(() => {
-    if (isTouchDevice()) return
-    textAreaRef.current?.focus()
-  }, [])
+    if (enableInputAutofocus === true) textAreaRef.current?.focus()
+    else if (enableInputAutofocus === undefined) {
+      if (isTouchDevice()) return
+      textAreaRef.current?.focus()
+    }
+  }, [enableInputAutofocus])
   useEffect(() => {
     if (replyTo) textAreaRef.current?.focus()
   }, [replyTo])

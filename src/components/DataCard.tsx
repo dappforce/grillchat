@@ -42,7 +42,9 @@ export default function DataCard({ data, ...props }: DataCardProps) {
                   className={textClassName}
                 >
                   {content}
-                  <HiArrowUpRight className='inline text-sm text-text-secondary/70' />
+                  {openInNewTab && (
+                    <HiArrowUpRight className='inline text-sm text-text-secondary/70' />
+                  )}
                 </LinkText>
               )
             } else if (withCopyButton) {

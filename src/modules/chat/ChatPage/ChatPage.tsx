@@ -25,7 +25,7 @@ import urlJoin from 'url-join'
 import ChatPageNavbarExtension from './ChatPageNavbarExtension'
 
 const AboutChatModal = dynamic(
-  () => import('@/components/modals/AboutChatModal'),
+  () => import('@/components/modals/about/AboutChatModal'),
   {
     ssr: false,
   }
@@ -53,7 +53,9 @@ export default function ChatPage({ chatId }: ChatPageProps) {
     <DefaultLayout
       withFixedHeight
       navbarProps={{
-        defaultBackLink: getHomePageLink(router),
+        backButtonProps: {
+          defaultBackLink: getHomePageLink(router),
+        },
         customContent: ({ backButton, authComponent, colorModeToggler }) => (
           <div className='flex items-center justify-between gap-4'>
             <NavbarChatInfo
@@ -94,7 +96,7 @@ function NavbarChatInfo({
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const prevIsOpenAboutChatModal = usePrevious(isOpenAboutChatModal)
   const router = useRouter()
-  const { isChatRoomOnly } = useConfigContext()
+  const { enableBackButton = true } = useConfigContext()
 
   const routerRef = useWrapInRef(router)
   const isInitialized = useRef(false)
@@ -124,7 +126,7 @@ function NavbarChatInfo({
 
   return (
     <div className='flex flex-1 items-center'>
-      {!isChatRoomOnly && backButton}
+      {enableBackButton && backButton}
       <Button
         variant='transparent'
         interactive='none'

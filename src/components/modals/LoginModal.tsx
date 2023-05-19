@@ -57,8 +57,18 @@ export default function LoginModal({
     }
   }
 
-  const desc =
-    'To access GrillChat, you need a Grill secret key. If you do not have one, just write your first chat message, and you will be given one.'
+  const desc = (
+    <span className='flex flex-col'>
+      <span>
+        To access GrillChat, you need a Grill secret key. If you do not have
+        one, just write your first chat message, and you will be given one.
+      </span>
+      <span className='text-text-red'>
+        DO NOT enter the private key of an account that holds any funds, assets,
+        NFTs, etc.
+      </span>
+    </span>
+  )
 
   return (
     <Modal

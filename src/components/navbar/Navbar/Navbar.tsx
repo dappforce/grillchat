@@ -3,6 +3,7 @@ import Button from '@/components/Button'
 import ColorModeToggler from '@/components/ColorModeToggler'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
+import { useConfigContext } from '@/contexts/ConfigContext'
 import usePrevious from '@/hooks/usePrevious'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -21,7 +22,10 @@ const LoginModal = dynamic(() => import('@/components/modals/LoginModal'), {
 })
 
 export type NavbarProps = ComponentProps<'div'> & {
-  defaultBackLink?: string
+  backButtonProps?: {
+    defaultBackLink: string
+    forceUseDefaultBackLink?: boolean
+  }
   customContent?: (elements: {
     logoLink: JSX.Element
     authComponent: JSX.Element
@@ -32,9 +36,10 @@ export type NavbarProps = ComponentProps<'div'> & {
 
 export default function Navbar({
   customContent,
-  defaultBackLink,
+  backButtonProps,
   ...props
 }: NavbarProps) {
+  const { enableLoginButton = true } = useConfigContext()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
@@ -71,17 +76,20 @@ export default function Navbar({
 
   const renderAuthComponent = () => {
     if (!isInitialized) return <div className='w-9' />
-    return isLoggedIn ? (
-      <ProfileAvatar
-        popOverControl={{
-          isOpen: openPrivateKeyNotice,
-          setIsOpen: setOpenPrivateKeyNotice,
-        }}
-        address={address}
-      />
-    ) : (
-      <Button onClick={login}>Login</Button>
-    )
+
+    if (isLoggedIn) {
+      return (
+        <ProfileAvatar
+          popOverControl={{
+            isOpen: openPrivateKeyNotice,
+            setIsOpen: setOpenPrivateKeyNotice,
+          }}
+          address={address}
+        />
+      )
+    }
+
+    return enableLoginButton ? <Button onClick={login}>Login</Button> : <></>
   }
   const authComponent = renderAuthComponent()
 
@@ -96,12 +104,8 @@ export default function Navbar({
   )
 
   const backButton = (
-    <div className='mr-2 flex w-9 items-center justify-center text-lg'>
-      <BackButton
-        defaultBackLink={defaultBackLink ?? '/'}
-        size='circle'
-        variant='transparent'
-      >
+    <div className='mr-2 flex w-9 items-center justify-center'>
+      <BackButton {...backButtonProps} size='circle' variant='transparent'>
         <HiOutlineChevronLeft />
       </BackButton>
     </div>
