@@ -22,9 +22,7 @@ const subscription = (
   subscribedPostIds.add(postId)
 
   let unsub: Promise<() => void> = (async () => {
-    const { getSubsocialApi } = await import(
-      '@/subsocial-query/subsocial/connection'
-    )
+    const { getSubsocialApi } = await import('@/utils/subsocial')
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
 
