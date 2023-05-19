@@ -1,45 +1,39 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import CommonCustomContextMenu, {
-  CommonCustomContextMenuProps,
+  CommonContextMenu,
 } from '@/components/floating/CommonCustomContextMenu'
 import Toast from '@/components/Toast'
 import useRandomColor from '@/hooks/useRandomColor'
-import useWrapInRef from '@/hooks/useWrapInRef'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
-import { copyToClipboard } from '@/utils/text'
+import { copyToClipboard } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
-import {
-  ComponentProps,
-  SyntheticEvent,
-  useMemo,
-  useReducer,
-  useState,
-} from 'react'
+import { ComponentProps, SyntheticEvent, useReducer, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import urlJoin from 'url-join'
+import MetadataModal from '../../modals/MetadataModal'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
-import MetadataModal from './MetadataModal'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
 } from './variants/EmojiChatItem'
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
-  comment: PostData
-  onSelectChatAsReply?: (chatId: string) => void
+  message: PostData
+  onSelectMessageAsReply?: (chatId: string) => void
   isMyMessage: boolean
-  chatBubbleId?: string
-  scrollToChatElement?: (chatId: string) => Promise<void>
+  messageBubbleId?: string
+  scrollToMessage?: (chatId: string) => Promise<void>
+  withCustomMenu?: boolean
 }
 
 type CheckMarkModalReducerState = {
@@ -57,19 +51,20 @@ const checkMarkModalReducer = (
 }
 
 export default function ChatItem({
-  comment,
-  onSelectChatAsReply,
+  message,
+  onSelectMessageAsReply,
   isMyMessage,
-  scrollToChatElement,
-  chatBubbleId,
+  scrollToMessage,
+  messageBubbleId,
+  withCustomMenu = true,
   ...props
 }: ChatItemProps) {
   const router = useRouter()
-  const commentId = comment.id
-  const isSent = !isOptimisticId(commentId)
+  const messageId = message.id
+  const isSent = !isOptimisticId(messageId)
   const [openMetadata, setOpenMetadata] = useState(false)
-  const { createdAtTime, createdAtBlock, ownerId, contentId } = comment.struct
-  const { body, inReplyTo } = comment.content || {}
+  const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
+  const { body, inReplyTo } = message.content || {}
   const senderColor = useRandomColor(ownerId)
 
   const sendEvent = useSendEvent()
@@ -79,20 +74,22 @@ export default function ChatItem({
     variant: '',
   })
 
-  const setChatAsReply = (commentId: string) => {
-    if (isOptimisticId(commentId)) return
-    onSelectChatAsReply?.(commentId)
+  const setMessageAsReply = (messageId: string) => {
+    if (isOptimisticId(messageId)) return
+    onSelectMessageAsReply?.(messageId)
   }
-  const onSelectChatAsReplyRef = useWrapInRef(setChatAsReply)
-  const menus = useMemo<CommonCustomContextMenuProps['menus']>(() => {
+
+  const getChatMenus = (): CommonContextMenu[] => {
+    const replyMenu: CommonContextMenu = {
+      text: 'Reply',
+      icon: (
+        <BsFillReplyFill className='flex-shrink-0 text-xl text-text-muted' />
+      ),
+      onClick: () => setMessageAsReply(messageId),
+    }
+
     return [
-      {
-        text: 'Reply',
-        icon: (
-          <BsFillReplyFill className='flex-shrink-0 text-xl text-text-muted' />
-        ),
-        onClick: () => onSelectChatAsReplyRef.current?.(commentId),
-      },
+      ...(onSelectMessageAsReply ? [replyMenu] : []),
       {
         text: 'Copy Text',
         icon: (
@@ -113,21 +110,22 @@ export default function ChatItem({
             getCurrentUrlOrigin(),
             getChatPageLink(router)
           )
-          copyToClipboard(urlJoin(chatPageLink, commentId))
+          copyToClipboard(urlJoin(chatPageLink, messageId))
           toast.custom((t) => (
             <Toast t={t} title='Message link copied to clipboard!' />
           ))
         },
       },
       {
-        text: 'Metadata',
+        text: 'Show Metadata',
         icon: (
           <HiCircleStack className='flex-shrink-0 text-xl text-text-muted' />
         ),
         onClick: () => setOpenMetadata(true),
       },
     ]
-  }, [body, commentId, onSelectChatAsReplyRef, router])
+  }
+  const menus = withCustomMenu ? getChatMenus() : []
 
   if (!body) return null
 
@@ -141,10 +139,9 @@ export default function ChatItem({
   }
 
   const isEmojiOnly = shouldRenderEmojiChatItem(body)
+  const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
   const relativeTime = getTimeRelativeToNow(createdAtTime)
-
-  const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
   return (
     <div
@@ -159,14 +156,15 @@ export default function ChatItem({
         <AddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
       <CommonCustomContextMenu menus={menus}>
-        {(_, onContextMenu, referenceProps) => {
+        {(config) => {
+          const { onContextMenu, referenceProps } = config || {}
           return (
             <div
               className={cx('flex flex-col overflow-hidden', props.className)}
               onContextMenu={onContextMenu}
-              onDoubleClick={() => setChatAsReply(commentId)}
+              onDoubleClick={() => setMessageAsReply(messageId)}
               {...referenceProps}
-              id={chatBubbleId}
+              id={messageBubbleId}
             >
               <ChatItemContentVariant
                 body={body}
@@ -177,7 +175,7 @@ export default function ChatItem({
                 relativeTime={relativeTime}
                 senderColor={senderColor}
                 inReplyTo={inReplyTo}
-                scrollToChatElement={scrollToChatElement}
+                scrollToMessage={scrollToMessage}
               />
             </div>
           )
@@ -193,7 +191,7 @@ export default function ChatItem({
       <MetadataModal
         isOpen={openMetadata}
         closeModal={() => setOpenMetadata(false)}
-        comment={comment}
+        post={message}
       />
     </div>
   )

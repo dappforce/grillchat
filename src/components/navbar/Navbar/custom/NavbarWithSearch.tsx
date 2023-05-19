@@ -6,10 +6,8 @@ import { Options, useHotkeys } from 'react-hotkeys-hook'
 import { BsXCircleFill } from 'react-icons/bs'
 import { HiMagnifyingGlass } from 'react-icons/hi2'
 
-export type HomePageNavbarProps = {
-  logo: JSX.Element
-  auth: JSX.Element
-  colorModeToggler: JSX.Element
+export type NavbarWithSearchProps = {
+  customContent: (searchButton: JSX.Element) => JSX.Element
   searchProps: {
     search: string
     setSearch: (search: string) => void
@@ -19,10 +17,8 @@ export type HomePageNavbarProps = {
   }
 }
 
-export default function HomePageNavbar({
-  auth,
-  colorModeToggler,
-  logo,
+export default function NavbarWithSearch({
+  customContent,
   searchProps: {
     search,
     setSearch,
@@ -30,7 +26,7 @@ export default function HomePageNavbar({
     onUpClick,
     onDownClick,
   },
-}: HomePageNavbarProps) {
+}: NavbarWithSearchProps) {
   const [isOpenSearch, setIsOpenSearch] = useState(false)
   const searchRef = useRef<HTMLInputElement | null>(null)
 
@@ -41,6 +37,7 @@ export default function HomePageNavbar({
       searchRef.current?.focus()
     } else {
       setIsOpenSearch(false)
+      searchRef.current?.blur()
     }
   }
   useHotkeys('esc', clearOrCloseSearch, {
@@ -52,7 +49,7 @@ export default function HomePageNavbar({
     setIsOpenSearch(true)
     searchRef.current?.focus()
   }
-  useHotkeys('/, ctrl+k', openSearch, {
+  useHotkeys('/, meta+k, ctrl+k', openSearch, {
     enabled: !isOpenSearch,
     preventDefault: true,
   })
@@ -65,6 +62,20 @@ export default function HomePageNavbar({
   }
   useHotkeys('up', onUpClick, arrowHotKeyOptions)
   useHotkeys('down', onDownClick, arrowHotKeyOptions)
+
+  const searchButton = (
+    <Button
+      size='circle'
+      variant='transparent'
+      className='text-text-muted dark:text-text'
+      onClick={() => {
+        setIsOpenSearch(true)
+        searchRef.current?.focus()
+      }}
+    >
+      <HiMagnifyingGlass className='text-xl' />
+    </Button>
+  )
 
   return (
     <div className='relative'>
@@ -109,21 +120,7 @@ export default function HomePageNavbar({
           isOpenSearch && 'opacity-0'
         )}
       >
-        {logo}
-        <div className='flex items-center gap-2 text-text-muted dark:text-text'>
-          <Button
-            size='circle'
-            variant='transparent'
-            onClick={() => {
-              setIsOpenSearch(true)
-              searchRef.current?.focus()
-            }}
-          >
-            <HiMagnifyingGlass className='text-xl' />
-          </Button>
-          {colorModeToggler}
-          <div className='ml-1.5'>{auth}</div>
-        </div>
+        {customContent(searchButton)}
       </div>
     </div>
   )

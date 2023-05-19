@@ -1,15 +1,16 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
-import { copyToClipboard } from '@/utils/text'
+import { copyToClipboard } from '@/utils/strings'
+import { Placement } from '@floating-ui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Space_Mono } from 'next/font/google'
 import { ComponentProps, useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
-import PopOver from './floating/PopOver'
+import PopOver, { PopOverProps } from './floating/PopOver'
 
 type CommonCopyTextProps = ComponentProps<'div'> & {
-  text: string
+  text: string | JSX.Element | null
   textToCopy?: string
   onCopyClick?: () => void
   isCodeText?: boolean
@@ -32,13 +33,20 @@ const copyTextStyles = cva('', {
   },
 })
 
+function getTextToCopy({
+  text,
+  textToCopy,
+}: Pick<CommonCopyTextProps, 'text' | 'textToCopy'>) {
+  return textToCopy || (typeof text === 'string' ? text : '')
+}
+
 export type CopyTextProps = CommonCopyTextProps &
   VariantProps<typeof copyTextStyles>
 export function CopyText({
   text,
   textToCopy,
   onCopyClick,
-  isCodeText: codeText,
+  isCodeText,
   withHideButton,
   size,
   ...props
@@ -47,7 +55,7 @@ export function CopyText({
   const [isHidden, setIsHidden] = useState(false)
 
   const handleClick = () => {
-    copyToClipboard(textToCopy || text)
+    copyToClipboard(getTextToCopy({ text, textToCopy }))
 
     onCopyClick?.()
     setIsCopied(true)
@@ -56,7 +64,7 @@ export function CopyText({
     }, 1000)
   }
 
-  const fontClassName = codeText && spaceMono.className
+  const fontClassName = isCodeText && spaceMono.className
 
   return (
     <div
@@ -69,7 +77,7 @@ export function CopyText({
           fontClassName
         )}
       >
-        <span
+        <div
           className={cx(
             'cursor-pointer select-all break-all py-2 px-4',
             copyTextStyles({ size }),
@@ -77,7 +85,7 @@ export function CopyText({
           )}
         >
           {text}
-        </span>
+        </div>
         {withHideButton && (
           <Button
             size='noPadding'
@@ -102,7 +110,10 @@ export function CopyText({
 
 export type CopyTextInlineProps = CommonCopyTextProps & {
   tooltip?: string
+  tooltipPlacement?: Placement
   textClassName?: string
+  textContainerClassName?: string
+  withButton?: boolean
 }
 export function CopyTextInline({
   text,
@@ -111,17 +122,31 @@ export function CopyTextInline({
   isCodeText: codeText,
   withHideButton,
   tooltip,
+  tooltipPlacement,
   textClassName,
+  textContainerClassName,
+  withButton = true,
   ...props
 }: CopyTextInlineProps) {
   const [openTooltipClickTrigger, setOpenTooltipClickTrigger] = useState(false)
   const [openTooltipHoverTrigger, setOpenTooltipHoverTrigger] = useState(false)
+
+  const [openTooltipClickTriggerButton, setOpenTooltipClickTriggerButton] =
+    useState(false)
+  const [openTooltipHoverTriggerButton, setOpenTooltipHoverTriggerButton] =
+    useState(false)
+
   const handleClick = () => {
-    copyToClipboard(textToCopy || text)
+    copyToClipboard(getTextToCopy({ text, textToCopy }))
     onCopyClick?.()
   }
 
   const fontClassName = codeText && spaceMono.className
+  let trigger = (
+    <div className={cx('w-full cursor-pointer', fontClassName, textClassName)}>
+      {text}
+    </div>
+  )
   let copyButton = (
     <Button
       variant='transparent'
@@ -132,38 +157,70 @@ export function CopyTextInline({
     </Button>
   )
 
+  const commonPopOverProps = {
+    panelSize: 'sm',
+    yOffset: 12,
+    children: <p>Copied!</p>,
+    placement: tooltipPlacement,
+  } satisfies Partial<PopOverProps>
+
   if (tooltip) {
-    copyButton = (
+    let commonHoverPopOverProps = {
+      ...commonPopOverProps,
+      triggerOnHover: true,
+      children: <p>{tooltip}</p>,
+    } satisfies Partial<PopOverProps>
+
+    trigger = (
       <PopOver
-        panelSize='sm'
-        yOffset={12}
-        triggerOnHover
+        {...commonHoverPopOverProps}
         manualTrigger={{
           isOpen: openTooltipClickTrigger ? false : openTooltipHoverTrigger,
           setIsOpen: setOpenTooltipHoverTrigger,
         }}
+        trigger={trigger}
+      />
+    )
+    copyButton = (
+      <PopOver
+        {...commonHoverPopOverProps}
+        manualTrigger={{
+          isOpen: openTooltipClickTriggerButton
+            ? false
+            : openTooltipHoverTriggerButton,
+          setIsOpen: setOpenTooltipHoverTriggerButton,
+        }}
         trigger={copyButton}
-      >
-        <p>{tooltip}</p>
-      </PopOver>
+      />
     )
   }
 
   return (
-    <div {...props} className={cx('flex items-center', props.className)}>
-      <span className={cx(fontClassName, textClassName)}>{text}</span>
-      <PopOver
-        triggerClassName='ml-2'
-        manualTrigger={{
-          isOpen: openTooltipClickTrigger,
-          setIsOpen: setOpenTooltipClickTrigger,
-        }}
-        yOffset={12}
-        trigger={copyButton}
-        panelSize='sm'
-      >
-        <p>Copied!</p>
-      </PopOver>
+    <div {...props} className={cx('flex items-center gap-2', props.className)}>
+      {text && (
+        <div className={cx(textContainerClassName)}>
+          <PopOver
+            {...commonPopOverProps}
+            manualTrigger={{
+              isOpen: openTooltipClickTrigger,
+              setIsOpen: setOpenTooltipClickTrigger,
+            }}
+            trigger={trigger}
+          />
+        </div>
+      )}
+      <div>
+        {withButton && (
+          <PopOver
+            {...commonPopOverProps}
+            manualTrigger={{
+              isOpen: openTooltipClickTriggerButton,
+              setIsOpen: setOpenTooltipClickTriggerButton,
+            }}
+            trigger={copyButton}
+          />
+        )}
+      </div>
     </div>
   )
 }

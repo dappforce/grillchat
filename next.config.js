@@ -5,6 +5,10 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    scrollRestoration: true,
+  },
+
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/i,
@@ -19,17 +23,17 @@ const nextConfig = {
       {
         source: '/',
         destination: '/x',
-        permanent: true,
+        permanent: false,
       },
       {
         source: '/c/:slug',
         destination: '/x/c/:slug',
-        permanent: true,
+        permanent: false,
       },
       {
         source: '/:spaceId/c/:slug',
         destination: '/:spaceId/:slug',
-        permanent: true,
+        permanent: false,
       },
     ]
   },

@@ -3,8 +3,8 @@ import { Dialog, Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Fragment } from 'react'
 import { HiOutlineChevronLeft, HiXMark } from 'react-icons/hi2'
-import Button from './Button'
-import LinkText from './LinkText'
+import Button from '../Button'
+import LinkText from '../LinkText'
 
 export type ModalFunctionalityProps = {
   isOpen: boolean
@@ -80,7 +80,7 @@ export default function Modal({
           <div className='fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm' />
         </Transition.Child>
 
-        <div className='fixed inset-0 overflow-y-auto'>
+        <div className='fixed inset-0 w-screen overflow-y-auto'>
           <div className='flex min-h-full items-center justify-center p-4 text-center'>
             <Transition.Child
               as={Fragment}
@@ -123,7 +123,7 @@ export default function Modal({
                           <Button
                             size='circle'
                             variant='transparent'
-                            className='mr-2 -ml-2 text-lg'
+                            className='-ml-2 mr-2 text-lg'
                             onClick={onBackClick}
                           >
                             <HiOutlineChevronLeft />

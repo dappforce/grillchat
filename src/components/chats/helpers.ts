@@ -1,19 +1,22 @@
 import { waitStopScrolling } from '@/utils/window'
 
-export function getChatItemId(postId: string) {
-  return `chat-item-${postId}`
+export function getMessageElementId(messageId: string) {
+  return `message-${messageId}`
 }
 
-export async function scrollToChatItem(
+export async function scrollToMessageElement(
   element: HTMLElement | null,
-  scrollContainer: HTMLElement | null
+  scrollContainer: HTMLElement | null,
+  shouldHighlight?: boolean
 ) {
   if (!element) return
 
   element.scrollIntoView({ behavior: 'smooth', block: 'center' })
   await waitStopScrolling(scrollContainer)
-  element.classList.add('highlighted')
-  element.onanimationend = function () {
-    element.classList.remove('highlighted')
+  if (shouldHighlight) {
+    element.classList.add('highlighted')
+    element.onanimationend = function () {
+      element.classList.remove('highlighted')
+    }
   }
 }

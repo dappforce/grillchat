@@ -1,6 +1,6 @@
 import PinIcon from '@/assets/icons/pin.png'
 import Container from '@/components/Container'
-import { cx } from '@/utils/class-names'
+import { cx, getCommonClassNames } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
@@ -19,9 +19,11 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   title: string
   description: string
   image: ImageProps['src'] | JSX.Element
+  isImageCircle?: boolean
+  additionalDesc?: string
   asLink?: LinkProps
   isInteractive?: boolean
-  postId?: string
+  chatId?: string
   isPinned?: boolean
   withUnreadCount?: boolean
   asContainer?: boolean
@@ -33,10 +35,12 @@ export default function ChatPreview({
   title,
   description,
   image,
+  isImageCircle = true,
+  additionalDesc,
   asContainer,
   asLink,
   isPinned,
-  postId,
+  chatId,
   isInteractive,
   withUnreadCount,
   withBorderBottom = true,
@@ -45,6 +49,31 @@ export default function ChatPreview({
 }: ChatPreviewProps) {
   const Component = asContainer ? Container<'div'> : 'div'
   const ContentContainer = asLink ? Link : 'div'
+
+  const renderAdditionalData = () => {
+    if (isPinned) {
+      return (
+        <Image
+          src={PinIcon}
+          alt='pin'
+          width={16}
+          height={16}
+          className='ml-2 h-4 w-4 flex-shrink-0'
+        />
+      )
+    } else if (chatId) {
+      return (
+        <ChatLastMessageTime
+          chatId={chatId}
+          className='text-sm text-text-muted'
+        />
+      )
+    } else if (additionalDesc) {
+      return <span className='text-sm text-text-muted'>{additionalDesc}</span>
+    } else {
+      return null
+    }
+  }
 
   return (
     <Component
@@ -66,7 +95,11 @@ export default function ChatPreview({
       >
         <div
           style={{ backgroundClip: 'padding-box' }}
-          className='h-12 w-12 self-center overflow-hidden rounded-full bg-background-light bg-gradient-to-b from-[#E0E7FF] to-[#A5B4FC] sm:h-14 sm:w-14'
+          className={cx(
+            getCommonClassNames('chatImageBackground'),
+            isImageCircle ? 'rounded-full' : 'rounded-2xl',
+            'h-12 w-12 self-center sm:h-14 sm:w-14'
+          )}
         >
           {React.isValidElement(image)
             ? image
@@ -82,32 +115,17 @@ export default function ChatPreview({
               )}
         </div>
         <div className='flex flex-1 items-center overflow-hidden'>
-          <div className='flex flex-1 flex-col gap-1 overflow-hidden'>
+          <div className='flex flex-1 flex-col overflow-hidden'>
             <div className='flex items-center justify-between'>
               <span className='font-medium'>{title}</span>
-              {isPinned ? (
-                <Image
-                  src={PinIcon}
-                  alt='pin'
-                  width={16}
-                  height={16}
-                  className='ml-2 h-4 w-4 flex-shrink-0'
-                />
-              ) : (
-                postId && (
-                  <ChatLastMessageTime
-                    postId={postId}
-                    className='text-sm text-text-muted'
-                  />
-                )
-              )}
+              {renderAdditionalData()}
             </div>
-            <div className='flex items-baseline justify-between overflow-hidden'>
-              {postId ? (
+            <div className='mt-1 flex items-baseline justify-between overflow-hidden'>
+              {chatId ? (
                 <ChatLastMessage
                   className='py-0.5'
                   defaultDesc={description}
-                  postId={postId}
+                  chatId={chatId}
                 />
               ) : (
                 <p
@@ -118,8 +136,8 @@ export default function ChatPreview({
                   {description}
                 </p>
               )}
-              {withUnreadCount && postId && (
-                <ChatUnreadCount className='ml-2' postId={postId} />
+              {withUnreadCount && chatId && (
+                <ChatUnreadCount className='ml-2' chatId={chatId} />
               )}
             </div>
           </div>

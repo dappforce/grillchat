@@ -9,5 +9,5 @@ export type ChatItemContentProps = ComponentProps<'div'> & {
   body: string
   inReplyTo?: { id: string }
   onCheckMarkClick: (e: SyntheticEvent) => void
-  scrollToChatElement?: (chatId: string) => Promise<void>
+  scrollToMessage?: (messageId: string) => Promise<void>
 }

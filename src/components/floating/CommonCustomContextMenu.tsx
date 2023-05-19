@@ -1,25 +1,34 @@
 import Button from '../Button'
 import CustomContextMenu, { CustomContextMenuProps } from './CustomContextMenu'
 
-type DefaultContextMenuProps = {
-  menus: { text: string; icon?: React.ReactNode; onClick: () => void }[]
+export type CommonContextMenu = {
+  text: string
+  icon?: React.ReactNode
+  onClick: () => void
+}
+type CommonContextMenuItemProps = {
+  menus: CommonContextMenu[]
   closeMenu: () => void
 }
 export type CommonCustomContextMenuProps = Omit<
   CustomContextMenuProps,
   'menuPanel'
 > &
-  Omit<DefaultContextMenuProps, 'closeMenu'>
+  Omit<CommonContextMenuItemProps, 'closeMenu'>
 
 export default function CommonCustomContextMenu({
   children,
   allowedPlacements,
   ...props
 }: CommonCustomContextMenuProps) {
+  if (props.menus.length === 0) {
+    return children()
+  }
+
   return (
     <CustomContextMenu
       menuPanel={(closeMenu) => (
-        <CommonContextMenu closeMenu={closeMenu} {...props} />
+        <CommonContextMenuItem closeMenu={closeMenu} {...props} />
       )}
       allowedPlacements={allowedPlacements}
     >
@@ -28,7 +37,10 @@ export default function CommonCustomContextMenu({
   )
 }
 
-function CommonContextMenu({ menus, closeMenu }: DefaultContextMenuProps) {
+function CommonContextMenuItem({
+  menus,
+  closeMenu,
+}: CommonContextMenuItemProps) {
   return (
     <ul className='flex w-52 flex-col overflow-hidden rounded-lg bg-background-light py-1 shadow-[0_5px_50px_-12px_rgb(0,0,0,.25)] dark:shadow-[0_5px_50px_-12px_rgb(0,0,0)]'>
       {menus.map(({ onClick, text, icon }) => (

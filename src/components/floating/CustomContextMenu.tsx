@@ -12,11 +12,11 @@ import { MouseEvent, MouseEventHandler, useState } from 'react'
 
 type ReferenceProps = Record<string, unknown>
 export type CustomContextMenuProps = {
-  children: (
-    toggleMenu: () => void,
-    onContextMenu: MouseEventHandler<Element>,
+  children: (config?: {
+    toggleMenu: () => void
+    onContextMenu: MouseEventHandler<Element>
     referenceProps: ReferenceProps
-  ) => React.ReactNode
+  }) => JSX.Element
   menuPanel: (closeMenu: () => void) => React.ReactNode
   allowedPlacements?: Placement[]
 }
@@ -73,15 +73,15 @@ export default function CustomContextMenu({
 
   return (
     <>
-      {children(
+      {children({
         toggleMenu,
         onContextMenu,
-        getReferenceProps({
+        referenceProps: getReferenceProps({
           ref: refs.setReference,
           ...getReferenceProps(),
           onClick: onReferenceClick,
-        })
-      )}
+        }),
+      })}
       <Transition
         ref={refs.setFloating}
         style={{
@@ -92,7 +92,7 @@ export default function CustomContextMenu({
         {...getFloatingProps()}
         appear
         show={openMenu}
-        className='z-50 transition-opacity'
+        className='z-30 transition-opacity'
         enter='ease-out duration-150'
         enterFrom='opacity-0'
         enterTo='opacity-100'

@@ -7,6 +7,7 @@ export function getUrlQuery(queryName: string) {
 }
 
 export function getCurrentUrlOrigin() {
+  if (typeof window === 'undefined') return ''
   return window.location.origin
 }
 
@@ -26,8 +27,9 @@ export function getHomePageLink(currentPath: CurrentPath) {
 
 export function getChatPageLink(currentPath: CurrentPath, chatSlug?: string) {
   const spaceId = getSpaceIdFromUrl(currentPath)
-  if (!chatSlug && Array.isArray(currentPath.query.topic)) {
-    chatSlug = currentPath.query.topic[0]
+  const currentSlug = currentPath.query.slug
+  if (!chatSlug && typeof currentSlug === 'string') {
+    chatSlug = currentSlug
   }
   return `/${spaceId}/${chatSlug}`
 }

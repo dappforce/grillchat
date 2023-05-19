@@ -34,7 +34,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
       return {
         tx: substrateApi.tx.posts.createPost(
           null,
-          { Comment: { parentId: null, rootPostId: params.rootPostId } },
+          { Comment: { parentId: null, rootPostId: params.chatId } },
           IpfsWrapper(cid)
         ),
         summary: 'Sending message',
@@ -43,21 +43,21 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     config,
     {
       txCallbacks: {
-        // Removal of optimistic comment generated is done by the subscription of commentIds
-        // this is done to prevent a bit of flickering because the optimistic comment is done first, before the comment data finished fetching
-        getContext: ({ param, address }) =>
+        // Removal of optimistic message generated is done by the subscription of messageIds
+        // this is done to prevent a bit of flickering because the optimistic message is done first, before the message data finished fetching
+        getContext: ({ data: params, address }) =>
           generateOptimisticId<OptimisticMessageIdData>({
             address,
-            message: param.message,
+            message: params.message,
           }),
-        onStart: ({ address, param }, tempId) => {
+        onStart: ({ address, data: params }, tempId) => {
           preventWindowUnload()
-          addOptimisticData({ address, param, tempId, client })
+          addOptimisticData({ address, params, tempId, client })
         },
         onSend: allowWindowUnload,
-        onError: ({ address, param }, tempId) => {
+        onError: ({ address, data: params }, tempId) => {
           allowWindowUnload()
-          deleteOptimisticData({ tempId, address, client, param })
+          deleteOptimisticData({ tempId, address, client, params })
         },
       },
     }
