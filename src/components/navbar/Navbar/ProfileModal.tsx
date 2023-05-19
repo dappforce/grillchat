@@ -24,6 +24,7 @@ import urlJoin from 'url-join'
 import { useAccount, useDisconnect } from 'wagmi'
 import { CustomConnectButton } from '../../modals/login/CustomConnectButton'
 import { useSignEvmLinkMessage } from '../../modals/login/utils'
+import { getLinkedEvmAddressQuery } from '@/services/subsocial/evmAddresses'
 
 const evmAddress = '0xDB9e87Fafcdd66f5AFF56C812fd0645Ab2B608e5'
 
@@ -86,6 +87,7 @@ type ContentProps = {
   address: string
   setCurrentState: React.Dispatch<React.SetStateAction<ModalState>>
   notification?: NotificationControl
+  evmAddress?: string
 }
 const modalContents: {
   [key in ModalState]: (props: ContentProps) => JSX.Element
@@ -106,6 +108,8 @@ export default function ProfileModal({
 }: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
   const { disconnect } = useDisconnect()
+  const { data: linkedEvmAddress } = getLinkedEvmAddressQuery.useQuery(address)
+
 
   useEffect(() => {
     if (props.isOpen) setCurrentState('account')
@@ -137,6 +141,7 @@ export default function ProfileModal({
         address={address}
         setCurrentState={setCurrentState}
         notification={notification}
+        evmAddress={linkedEvmAddress}
       />
     </Modal>
   )
@@ -154,8 +159,10 @@ function AccountContent({
   address,
   setCurrentState,
   notification,
+  evmAddress
 }: ContentProps) {
   const sendEvent = useSendEvent()
+  
   const onConnectEvmAddressClick = () => {
     sendEvent('click connect_evm_address')
     setCurrentState('connect-evm-address')
@@ -246,8 +253,7 @@ function AccountContent({
   )
 }
 
-function ConnectedEvmAddressContent({ setCurrentState }: ContentProps) {
-  const { address: evmAddress } = useAccount()
+function ConnectedEvmAddressContent({ setCurrentState, evmAddress }: ContentProps) {
   const { signEvmLinkMessage, isSigningMessage } = useSignEvmLinkMessage()
 
   return (
@@ -293,7 +299,6 @@ function ConnectedEvmAddressContent({ setCurrentState }: ContentProps) {
 }
 
 function DisconnectEvmConfirmationContent({ setCurrentState }: ContentProps) {
-  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
   const { disconnect } = useDisconnect()
 
   const sendEvent = useSendEvent()

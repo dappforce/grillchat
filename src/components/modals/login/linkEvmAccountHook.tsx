@@ -27,7 +27,7 @@ export function useLinkEvmAccount(
       const { evmAccount, evmSignature } = params
 
       return {
-        tx: substrateApi.tx.evmAccounts.linkEthAddress(
+        tx: substrateApi.tx.evmAccounts.linkEvmAddress(
           evmAccount,
           evmSignature
         ),
@@ -37,9 +37,7 @@ export function useLinkEvmAccount(
     config,
     {
       txCallbacks: {
-        getContext: (_params) => { 
-          return ''
-         },
+        getContext: () => '',
         onSuccess: ({ address }) => {
           getLinkedEvmAddressQuery.invalidate(client, address)
         },

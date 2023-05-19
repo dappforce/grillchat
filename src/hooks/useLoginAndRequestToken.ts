@@ -14,7 +14,7 @@ export default function useLoginAndRequestToken() {
     if (!address) throw new Error('Failed to login')
 
     // TODO: uncomment when push
-    // await requestToken({ address, captchaToken })
+    await requestToken({ address, captchaToken })
 
     return address
   }

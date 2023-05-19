@@ -120,7 +120,6 @@ export const AccountCreatedContent = () => {
   const { address: evmAddress } = useAccount({
     onConnect: async ({ address: connectedEvmAddress }) => {
       const data = await signEvmLinkMessage(connectedEvmAddress, address)
-
       if (data) {
         linkAccount({
           evmAccount: evmAddress as string,

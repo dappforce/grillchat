@@ -84,7 +84,6 @@ async function createTxAndSend<Data, Context>(
   optimisticCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
   const { tx, summary } = await transactionGenerator(data, apis)
-  
   return sendTransaction(
     {
       tx,

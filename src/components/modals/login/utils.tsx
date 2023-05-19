@@ -1,7 +1,7 @@
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { _TypedDataEncoder } from '@ethersproject/hash'
-import { decodeAddress, encodeAddress } from '@polkadot/keyring'
-import { BN, numberToHex, u8aToHex } from '@polkadot/util'
+import { decodeAddress } from '@polkadot/keyring'
+import { BN, u8aToHex } from '@polkadot/util'
 import { useState } from 'react'
 import { useSignMessage } from 'wagmi'
 
@@ -16,6 +16,7 @@ export const buildMsgParams = async (substrateAddress: string) => {
   const nonce = account.nonce.add(new BN(1)).toString()
 
   return `Link to Subsocial address ${decodedAddress.replace('0x', '')} (in hex) with nonce ${nonce}`
+
 }
 
 export const useSignEvmLinkMessage = () => {

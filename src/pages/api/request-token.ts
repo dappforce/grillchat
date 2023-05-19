@@ -111,6 +111,7 @@ export default async function handler(
   try {
     hash = await sendToken(body.data.address)
   } catch (e: any) {
+    console.log(e)
     if (typeof e.message === 'string' && e.message.startsWith('1010:')) {
       return res.status(400).send({
         success: false,
