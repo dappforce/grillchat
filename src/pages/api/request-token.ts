@@ -67,7 +67,8 @@ async function verifyCaptcha(captchaToken: string) {
 async function sendToken(address: string) {
   const signer = await getServerAccount()
   if (!signer) throw new Error('Invalid Mnemonic')
-  if (!isEnoughBalance()) throw new Error('Account balance is not enough')
+  if (!(await isEnoughBalance()))
+    throw new Error('Account balance is not enough')
 
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi
