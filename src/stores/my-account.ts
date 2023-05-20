@@ -7,7 +7,7 @@ import {
 } from '@/utils/account'
 import { LocalStorage } from '@/utils/storage'
 import { initializeWeb3Auth, SubstrateRPC } from '@/utils/substrate-rpc'
-import { Web3Auth } from '@web3auth/modal'
+import { type Web3Auth } from '@web3auth/modal'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
 

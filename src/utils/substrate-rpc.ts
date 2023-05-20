@@ -45,6 +45,7 @@ export class SubstrateRPC {
       const keyPair = keyring.addFromUri('0x' + privateKey)
       return { privateKey, address: keyPair.address }
     } catch (error) {
+      console.error(error)
       return {}
     }
   }
