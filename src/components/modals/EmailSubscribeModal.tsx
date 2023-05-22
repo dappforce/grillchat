@@ -1,7 +1,11 @@
 import { useConfigContext } from '@/contexts/ConfigContext'
 import usePrevious from '@/hooks/usePrevious'
+import { getPostQuery } from '@/services/api/query'
+import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { useMessageCount } from '@/stores/message'
 import { useEffect, useState } from 'react'
+import Button from '../Button'
+import Input from '../inputs/Input'
 import Modal from './Modal'
 
 export type EmailSubscribeModalProps = {
@@ -13,8 +17,13 @@ export default function EmailSubscribeModal({
   chatId,
   hubId,
 }: EmailSubscribeModalProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const { data: hub } = getSpaceBySpaceIdQuery.useQuery(hubId)
+  const { data: chat } = getPostQuery.useQuery(chatId)
+
+  const [isOpen, setIsOpen] = useState(true)
   const { subscribeMessageCountThreshold } = useConfigContext()
+
+  const [email, setEmail] = useState('')
 
   const messageCount = useMessageCount()
   const prevMessageCount = usePrevious(messageCount)
@@ -32,14 +41,28 @@ export default function EmailSubscribeModal({
     }
   }, [prevMessageCount, messageCount, subscribeMessageCountThreshold])
 
+  const chatTitle = chat?.content?.title ?? chatId
+  const hubTitle = hub?.content?.name ?? hubId
+
   return (
     <Modal
-      title='Subscribe to '
-      description=''
+      title={`Subscribe to ${chatTitle}`}
+      description={`Don't miss any new messages in ${chatTitle} in ${hubTitle}!`}
       isOpen={isOpen}
       closeModal={() => setIsOpen(false)}
     >
-      asdfasdf
+      <form className='flex flex-col'>
+        <Input
+          containerClassName='mt-2'
+          label='Your email'
+          placeholder='abc@xyz.com'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Button type='submit' size='lg' className='mt-6' disabled={!email}>
+          Subscribe
+        </Button>
+      </form>
     </Modal>
   )
 }

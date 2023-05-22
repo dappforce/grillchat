@@ -49,6 +49,7 @@ export const getStaticProps = getCommonStaticProps<
     head: { disableZoom: true },
   }),
   async (context) => {
+    const spaceId = context.params?.spaceId as string
     const slugParam = context.params?.slug as string
     const chatId = getValidatedChatId(slugParam)
     if (!chatId) return undefined
@@ -82,6 +83,7 @@ export const getStaticProps = getCommonStaticProps<
       props: {
         dehydratedState: dehydrate(queryClient),
         chatId,
+        hubId: spaceId,
         head: {
           title,
           description: desc,

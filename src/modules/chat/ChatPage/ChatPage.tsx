@@ -31,8 +31,8 @@ const AboutChatModal = dynamic(
   }
 )
 
-export type ChatPageProps = { chatId: string }
-export default function ChatPage({ chatId }: ChatPageProps) {
+export type ChatPageProps = { chatId: string; hubId: string }
+export default function ChatPage({ chatId, hubId }: ChatPageProps) {
   const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId)
   const { data: messageIds } = useCommentIdsByPostId(chatId, {
@@ -74,6 +74,7 @@ export default function ChatPage({ chatId }: ChatPageProps) {
     >
       <ChatPageNavbarExtension />
       <ChatRoom
+        hubId={hubId}
         chatId={chatId}
         asContainer
         className='flex-1 overflow-hidden'
