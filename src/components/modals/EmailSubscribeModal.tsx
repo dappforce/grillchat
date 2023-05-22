@@ -4,7 +4,15 @@ import { useMessageCount } from '@/stores/message'
 import { useEffect, useState } from 'react'
 import Modal from './Modal'
 
-export default function EmailSubscribeModal() {
+export type EmailSubscribeModalProps = {
+  hubId: string
+  chatId: string
+}
+
+export default function EmailSubscribeModal({
+  chatId,
+  hubId,
+}: EmailSubscribeModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { subscribeMessageCountThreshold } = useConfigContext()
 
@@ -25,8 +33,13 @@ export default function EmailSubscribeModal() {
   }, [prevMessageCount, messageCount, subscribeMessageCountThreshold])
 
   return (
-    <Modal isOpen={isOpen} closeModal={() => setIsOpen(false)}>
-      <div>asdfasdf</div>
+    <Modal
+      title='Subscribe to '
+      description=''
+      isOpen={isOpen}
+      closeModal={() => setIsOpen(false)}
+    >
+      asdfasdf
     </Modal>
   )
 }
