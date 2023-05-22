@@ -45,7 +45,7 @@ describe('Resource Linking Unit', () => {
 
     const configResource: GrillConfig = {
       widgetElementId: 'grill',
-      hub: { id: '1002' },
+      hub: { id: '1003' },
       channel: {
         type: 'resource',
         resource: new SocialResource({
@@ -77,10 +77,8 @@ describe('Resource Linking Unit', () => {
 
     grill.init(configResource)
 
-    console.log(document.getElementsByTagName('iframe')?.item(0)?.src)
-
     expect(document.getElementsByTagName('iframe')?.item(0)?.src).toEqual(
-      'https://grill.chat/1002/resource' +
+      'https://grill.chat/1003/resource' +
         '?version=0.1' +
         '&theme=light&enableBackButton=false' +
         '&enableLoginButton=false' +
