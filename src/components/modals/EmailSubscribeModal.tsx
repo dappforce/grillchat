@@ -1,6 +1,8 @@
 import { useConfigContext } from '@/contexts/ConfigContext'
 import usePrevious from '@/hooks/usePrevious'
+import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
+import { useSubscribeWithEmail } from '@/services/subsocial-offchain/mutation'
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { useMessageCount } from '@/stores/message'
 import { FormEventHandler, useEffect, useState } from 'react'
@@ -24,6 +26,10 @@ export default function EmailSubscribeModal({
   const { subscribeMessageCountThreshold } = useConfigContext()
 
   const [email, setEmail] = useState('')
+  const { mutate: subscribeWithEmail, error } = useSubscribeWithEmail({
+    onSuccess: () => setIsOpen(false),
+  })
+  useToastError(error, 'Failed to subscribe to chat')
 
   const messageCount = useMessageCount()
   const prevMessageCount = usePrevious(messageCount)
@@ -46,6 +52,7 @@ export default function EmailSubscribeModal({
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
+    subscribeWithEmail({ email, chatId, hubId })
   }
 
   return (
