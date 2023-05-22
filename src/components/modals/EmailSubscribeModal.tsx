@@ -3,7 +3,13 @@ import useToastError from '@/hooks/useToastError'
 import { useSubscribeWithEmail } from '@/services/subsocial-offchain/mutation'
 import { useMessageCount } from '@/stores/message'
 import { LocalStorage } from '@/utils/storage'
-import { FormEventHandler, useEffect, useState } from 'react'
+import { validateEmail } from '@/utils/strings'
+import {
+  ChangeEventHandler,
+  FormEventHandler,
+  useEffect,
+  useState,
+} from 'react'
 import Button from '../Button'
 import Input from '../inputs/Input'
 import Modal from './Modal'
@@ -20,10 +26,13 @@ export default function EmailSubscribeModal({
   chatId,
   hubId,
 }: EmailSubscribeModalProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const { subscribeMessageCountThreshold } = useConfigContext()
 
+  // if form becomes more complex, use third-party libraries to manage form states.
   const [email, setEmail] = useState('')
+  const [emailError, setEmailError] = useState('')
+
   const { mutate: subscribeWithEmail, error } = useSubscribeWithEmail({
     onSuccess: () => {
       setIsOpen(false)
@@ -49,8 +58,25 @@ export default function EmailSubscribeModal({
     }
   }, [messageCount, subscribeMessageCountThreshold])
 
+  const onEmailChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const email = e.target.value
+    setEmail(email)
+
+    const isValidEmail = validateEmail(email)
+    if (!isValidEmail) {
+      setEmailError('Invalid email')
+    } else {
+      setEmailError('')
+    }
+  }
+
   const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
+    if (!email) {
+      setEmailError('Email is required')
+      return
+    }
+
     subscribeWithEmail({ email, chatId, hubId })
   }
 
@@ -68,9 +94,15 @@ export default function EmailSubscribeModal({
           label='Your email'
           placeholder='abc@xyz.com'
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={onEmailChange}
+          error={emailError}
         />
-        <Button type='submit' size='lg' className='mt-6' disabled={!email}>
+        <Button
+          type='submit'
+          size='lg'
+          className='mt-6'
+          disabled={!email || !!emailError}
+        >
           Subscribe
         </Button>
       </form>
