@@ -26,7 +26,7 @@ export default function EmailSubscribeModal({
   chatId,
   hubId,
 }: EmailSubscribeModalProps) {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
   const { subscribeMessageCountThreshold } = useConfigContext()
 
   // if form becomes more complex, use third-party libraries to manage form states.
