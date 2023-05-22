@@ -33,7 +33,11 @@ export default function EmailSubscribeModal({
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
 
-  const { mutate: subscribeWithEmail, error } = useSubscribeWithEmail({
+  const {
+    mutate: subscribeWithEmail,
+    error,
+    isLoading,
+  } = useSubscribeWithEmail({
     onSuccess: () => {
       setIsOpen(false)
       subscribedStorage.set('true')
@@ -102,6 +106,7 @@ export default function EmailSubscribeModal({
           size='lg'
           className='mt-6'
           disabled={!email || !!emailError}
+          isLoading={isLoading}
         >
           Subscribe
         </Button>
