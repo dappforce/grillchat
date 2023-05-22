@@ -43,7 +43,7 @@ describe('Resource Linking Unit', () => {
 
     expect(document.getElementById('grill')?.id).toEqual('grill')
 
-    const configResource: GrillConfig<SocialResource> = {
+    const configResource: GrillConfig = {
       widgetElementId: 'grill',
       hub: { id: '1002' },
       channel: {
@@ -70,7 +70,6 @@ describe('Resource Linking Unit', () => {
       },
     }
 
-    // @ts-ignore
     grill.init(configResource)
 
     expect(document.getElementsByTagName('iframe')?.item(0)?.src).toEqual(

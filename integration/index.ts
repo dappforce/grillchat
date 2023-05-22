@@ -7,8 +7,6 @@ type QueryParams = {
   enableInputAutofocus?: string
 }
 
-export const ChannelType = { channel: 'channel', resource: 'resource' } as const
-
 type SocialResourceLike = { toResourceId: () => string }
 
 class QueryParamsBuilder {
@@ -41,28 +39,23 @@ type ChannelSettings = {
 type ChanelTypeChannel = {
   /** The type of the channel. This should be set to `'channel'` */
   type: 'channel'
-} & {
   /** The id of the channel. This should be the post id of the topic that you want to open */
   id: string
-  /** The settings of the channel to customize the look and feel of the UI */
-  settings: ChannelSettings
 }
-type ChanelTypeResource<R extends SocialResourceLike> = {
+type ChanelTypeResource = {
   /** The type of the channel. This should be set to `'channel'` */
   type: 'resource'
-} & {
   /** The SocialResource instance of the channel. This should be created from @subsocial/resource-discussions if necessary */
-  resource: R
-  /** The settings of the channel to customize the look and feel of the UI */
-  settings: ChannelSettings
+  resource: SocialResourceLike
 }
 
-type Channel<C extends SocialResourceLike | never = never> =
+type Channel = { settings: ChannelSettings } & (
   | ChanelTypeChannel
-  | ChanelTypeResource<C>
+  | ChanelTypeResource
+)
 
 type Theme = 'light' | 'dark'
-export type GrillConfig<C extends SocialResourceLike | never = never> = {
+export type GrillConfig = {
   /** The `id` of the div that you want to render the chat to. Default to `grill` */
   widgetElementId?: string
   /** Info of the space you want to use */
@@ -71,7 +64,7 @@ export type GrillConfig<C extends SocialResourceLike | never = never> = {
     id: string
   }
   /** Option to make the iframe open chat room (a channel) directly */
-  channel: Channel<C>
+  channel?: Channel
   order?: string[]
   /** The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat> */
   theme?: Theme
@@ -82,7 +75,6 @@ export type GrillConfig<C extends SocialResourceLike | never = never> = {
 const DEFAULT_CONFIG = {
   widgetElementId: 'grill',
   hub: { id: 'x' },
-  // @ts-ignore
 } satisfies GrillConfig
 
 const DEFAULT_CHANNEL_SETTINGS: Channel['settings'] = {
@@ -110,20 +102,20 @@ const grill = {
 
     let baseUrl = `https://grill.chat/${mergedConfig.hub.id}`
     const channelConfig = mergedConfig.channel
-    let resourceId = null
+    let resourceId: string | null = null
 
-    switch (channelConfig.type) {
-      case 'channel':
-        baseUrl += `/${channelConfig.id}`
-        break
-      case 'resource':
-        baseUrl += `/resource`
-        resourceId = (
-          channelConfig as ChanelTypeResource<SocialResourceLike>
-        ).resource.toResourceId()
-        break
-      default:
-        throw new Error('Unsupportable channel type')
+    if (channelConfig) {
+      switch (channelConfig.type) {
+        case 'channel':
+          baseUrl += `/${channelConfig.id}`
+          break
+        case 'resource':
+          baseUrl += `/resource`
+          resourceId = channelConfig.resource.toResourceId()
+          break
+        default:
+          throw new Error('Unsupportable channel type')
+      }
     }
 
     const query = new QueryParamsBuilder()
