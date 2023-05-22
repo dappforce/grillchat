@@ -3,9 +3,9 @@ import {
   getTxSubDispatchErrorMessage,
   WalletClient,
 } from '@/services/api/utils'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCrustIpfsAuth, getIpfsPinUrl } from '@/utils/env/server'
 import { IpfsWrapper } from '@/utils/ipfs'
+import { getSubsocialApi } from '@/utils/subsocial'
 import { ApiPromise, SubmittableResult } from '@polkadot/api'
 import { stringToHex } from '@polkadot/util'
 import { asAccountId, SubsocialIpfsApi } from '@subsocial/api'

@@ -62,6 +62,11 @@ describe('Resource Linking Unit', () => {
           enableLoginButton: false,
           enableInputAutofocus: true,
         },
+        metadata: {
+          title: 'New awesome discussion',
+          body: 'Really awesome topic!',
+          image: 'QmcdXcXQnkdLFE8tKveymXBoGRfbTbkqjhSWD5A4mrU4tX',
+        },
       },
       theme: 'light',
       onWidgetCreated: (iframe: HTMLIFrameElement) => {
@@ -72,8 +77,16 @@ describe('Resource Linking Unit', () => {
 
     grill.init(configResource)
 
+    console.log(document.getElementsByTagName('iframe')?.item(0)?.src)
+
     expect(document.getElementsByTagName('iframe')?.item(0)?.src).toEqual(
-      'https://grill.chat/1002/resource?version=0.1&theme=light&enableBackButton=false&enableLoginButton=false&resourceId=chain%253A%252F%252FchainType%253Asubstrate%252FchainName%253Axsocial%252FresourceType%253Ablock%252FblockNumber%253A3444000&enableInputAutofocus=true'
+      'https://grill.chat/1002/resource' +
+        '?version=0.1' +
+        '&theme=light&enableBackButton=false' +
+        '&enableLoginButton=false' +
+        '&resourceId=chain%253A%252F%252FchainType%253Asubstrate%252FchainName%253Axsocial%252FresourceType%253Ablock%252FblockNumber%253A3444000' +
+        '&metadata=%257B%2522title%2522%253A%2522New%2520awesome%2520discussion%2522%252C%2522body%2522%253A%2522Really%2520awesome%2520topic%21%2522%252C%2522image%2522%253A%2522QmcdXcXQnkdLFE8tKveymXBoGRfbTbkqjhSWD5A4mrU4tX%2522%257D' +
+        '&enableInputAutofocus=true'
     )
   })
 })

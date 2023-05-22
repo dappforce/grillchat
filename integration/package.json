@@ -18,7 +18,7 @@
     "chat"
   ],
   "devDependencies": {
-    "@subsocial/resource-discussions": "^0.0.1",
+    "@subsocial/resource-discussions": "../../forks/subsocial-js-fork/packages/resource-discussions",
     "@swc/core": "^1.3.55",
     "@testing-library/jest-dom": "^5.16.5",
     "@types/jest": "^26.0.20",

@@ -2,12 +2,14 @@ type QueryParams = {
   order?: string
   theme?: string
   resourceId?: string
+  metadata?: string
   enableBackButton?: string
   enableLoginButton?: string
   enableInputAutofocus?: string
 }
 
 type SocialResourceLike = { toResourceId: () => string }
+type ResourceMetadata = { title: string; body: string; image: string }
 
 class QueryParamsBuilder {
   private query: URLSearchParams
@@ -47,6 +49,8 @@ type ChanelTypeResource = {
   type: 'resource'
   /** The SocialResource instance of the channel. This should be created from @subsocial/resource-discussions if necessary */
   resource: SocialResourceLike
+  /** The metadata for new channel, if it's not existing and will be created automatically. */
+  metadata: ResourceMetadata
 }
 
 type Channel = { settings: ChannelSettings } & (
@@ -59,7 +63,7 @@ export type GrillConfig = {
   /** The `id` of the div that you want to render the chat to. Default to `grill` */
   widgetElementId?: string
   /** Info of the space you want to use */
-  hub?: {
+  hub: {
     /** The `space id` or `domain name` of your space. */
     id: string
   }
@@ -103,6 +107,7 @@ const grill = {
     let baseUrl = `https://grill.chat/${mergedConfig.hub.id}`
     const channelConfig = mergedConfig.channel
     let resourceId: string | null = null
+    let resourceMetadata: ResourceMetadata | null = null
 
     if (channelConfig) {
       switch (channelConfig.type) {
@@ -112,6 +117,7 @@ const grill = {
         case 'resource':
           baseUrl += `/resource`
           resourceId = channelConfig.resource.toResourceId()
+          resourceMetadata = channelConfig.metadata
           break
         default:
           throw new Error('Unsupportable channel type')
@@ -132,6 +138,17 @@ const grill = {
       query.set('enableBackButton', channelSettings.enableBackButton + '')
       query.set('enableLoginButton', channelSettings.enableLoginButton + '')
       if (resourceId) query.set('resourceId', encodeURIComponent(resourceId))
+
+      if (resourceMetadata)
+        try {
+          query.set(
+            'metadata',
+            encodeURIComponent(JSON.stringify(resourceMetadata))
+          )
+        } catch (e) {
+          throw new Error('Resource metadata has invalid value.')
+        }
+
       if (channelSettings.enableInputAutofocus !== undefined)
         query.set(
           'enableInputAutofocus',
