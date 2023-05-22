@@ -1,7 +1,7 @@
 import { useConfigContext } from '@/contexts/ConfigContext'
 import useToastError from '@/hooks/useToastError'
 import { useSubscribeWithEmail } from '@/services/subsocial-offchain/mutation'
-import { useMessageCount } from '@/stores/message'
+import { useMessageData } from '@/stores/message'
 import { LocalStorage } from '@/utils/storage'
 import { validateEmail } from '@/utils/strings'
 import {
@@ -45,7 +45,7 @@ export default function EmailSubscribeModal({
   })
   useToastError(error, 'Failed to subscribe to chat')
 
-  const messageCount = useMessageCount()
+  const messageCount = useMessageData((state) => state.messageCount)
 
   useEffect(() => {
     const isSubscribed = subscribedStorage.get() === 'true'
