@@ -1,4 +1,5 @@
 import type { SubsocialApi } from '@subsocial/api'
+import { getSubsocialApi } from './connection'
 
 export interface SubsocialConnectionConfig {
   substrateUrl: string
@@ -31,6 +32,7 @@ export const setSubsocialConfig = (
   customConfig?: Partial<SubsocialConnectionConfig>
 ) => {
   config = { ...presets[preset], ...customConfig }
+  return getSubsocialApi
 }
 
 export interface TxCallbackInfo {

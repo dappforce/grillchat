@@ -2,9 +2,7 @@ import { useCallback } from 'react'
 
 export default function useWaitNewBlock() {
   const waitNewBlock = useCallback(async () => {
-    const { getSubsocialApi } = await import(
-      '@/subsocial-query/subsocial/connection'
-    )
+    const { getSubsocialApi } = await import('@/utils/subsocial')
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
     const currentBlock = await substrateApi.rpc.chain.getBlock()
