@@ -3,7 +3,7 @@ import usePrevious from '@/hooks/usePrevious'
 import { getPostQuery } from '@/services/api/query'
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { useMessageCount } from '@/stores/message'
-import { useEffect, useState } from 'react'
+import { FormEventHandler, useEffect, useState } from 'react'
 import Button from '../Button'
 import Input from '../inputs/Input'
 import Modal from './Modal'
@@ -44,6 +44,10 @@ export default function EmailSubscribeModal({
   const chatTitle = chat?.content?.title ?? chatId
   const hubTitle = hub?.content?.name ?? hubId
 
+  const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault()
+  }
+
   return (
     <Modal
       title={`Subscribe to ${chatTitle}`}
@@ -51,7 +55,7 @@ export default function EmailSubscribeModal({
       isOpen={isOpen}
       closeModal={() => setIsOpen(false)}
     >
-      <form className='flex flex-col'>
+      <form className='flex flex-col' onSubmit={onSubmit}>
         <Input
           containerClassName='mt-2'
           label='Your email'
