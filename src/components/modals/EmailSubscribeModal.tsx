@@ -22,7 +22,7 @@ export default function EmailSubscribeModal({
   const { data: hub } = getSpaceBySpaceIdQuery.useQuery(hubId)
   const { data: chat } = getPostQuery.useQuery(chatId)
 
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
   const { subscribeMessageCountThreshold } = useConfigContext()
 
   const [email, setEmail] = useState('')
