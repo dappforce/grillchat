@@ -3,6 +3,7 @@ import ExitIcon from '@/assets/icons/exit.svg'
 import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
+import AboutGrillDesc from '@/components/AboutGrillDesc'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
@@ -275,22 +276,7 @@ function AboutContent() {
       <div className='flex justify-center'>
         <Logo className='text-5xl' />
       </div>
-      <p className='text-text-muted'>
-        Engage in discussions anonymously without fear of social prosecution.
-        Grill.chat runs on the{' '}
-        <LinkText
-          openInNewTab
-          href='https://subsocial.network/xsocial'
-          variant='primary'
-        >
-          xSocial
-        </LinkText>{' '}
-        blockchain and backs up its content to{' '}
-        <LinkText openInNewTab href='https://ipfs.tech/' variant='primary'>
-          IPFS
-        </LinkText>
-        .
-      </p>
+      <AboutGrillDesc className='text-text-muted' />
       <div className='rounded-2xl border border-background-warning px-4 py-2 text-text-warning'>
         xSocial is an experimental environment for innovative web3 social
         features before they are deployed on{' '}
