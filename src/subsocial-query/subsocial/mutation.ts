@@ -68,7 +68,7 @@ export function useSubsocialMutation<Data, Context>(
   })
 }
 
-async function createTxAndSend<Data, Context>(
+async function createTxAndSend<Data>(
   transactionGenerator: (
     data: Data,
     apis: Apis
@@ -152,7 +152,7 @@ function sendTransaction<Data, Context>(
               explorerLink,
             })
           } else {
-            txCallbacks?.onSuccess()
+            txCallbacks?.onSuccess(result)
             globalTxCallbacks.onSuccess({
               explorerLink,
               summary,
@@ -195,7 +195,7 @@ function generateTxCallbacks<Data, Context>(
   const context = getContext(data)
   return {
     onError: () => onError?.(data, context),
-    onSuccess: () => onSuccess?.(data, context),
+    onSuccess: (txResult: any) => onSuccess?.(data, context, txResult),
     onSend: () => onSend?.(data, context),
     onStart: () => onStart?.(data, context),
   }
