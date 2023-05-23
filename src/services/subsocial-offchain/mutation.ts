@@ -17,8 +17,6 @@ export async function subscribeWithEmail({
     spaceId: hubId,
     channelId: chatId,
   })
-  const data = res.data
-  console.log(data)
-  return data
+  return res.data
 }
 export const useSubscribeWithEmail = mutationWrapper(subscribeWithEmail)
