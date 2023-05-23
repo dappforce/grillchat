@@ -2,6 +2,7 @@ import { useConfigContext } from '@/contexts/ConfigContext'
 import useToastError from '@/hooks/useToastError'
 import { useSubscribeWithEmail } from '@/services/subsocial-offchain/mutation'
 import { useMessageData } from '@/stores/message'
+import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
 import { validateEmail } from '@/utils/strings'
 import {
@@ -91,8 +92,10 @@ export default function EmailSubscribeModal({
       closeModal={() => {}}
       size='full-screen'
       containerClassName='p-0'
-      panelClassName='rounded-none'
-      contentClassName='min-h-screen flex flex-col justify-center items-center py-8'
+      panelClassName='rounded-none flex items-center justify-center'
+      contentClassName={cx(
+        'min-h-screen flex flex-col justify-center items-center py-8 max-w-xl'
+      )}
     >
       <h1
         className='bg-gradient-to-b from-[#E4B7EC] to-[#806EF8] bg-clip-text text-center text-4.5xl font-bold leading-none'
