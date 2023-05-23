@@ -92,7 +92,7 @@ export default function EmailSubscribeModal({
       size='full-screen'
       containerClassName='p-0'
       panelClassName='rounded-none'
-      contentClassName='h-screen flex flex-col justify-center items-center'
+      contentClassName='min-h-screen flex flex-col justify-center items-center py-8'
     >
       <h1
         className='bg-gradient-to-b from-[#E4B7EC] to-[#806EF8] bg-clip-text text-center text-4.5xl font-bold leading-none'
