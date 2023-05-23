@@ -1,3 +1,4 @@
+import { useLinkEvmAccount } from '@/services/subsocial/evmAddresses/mutation'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { _TypedDataEncoder } from '@ethersproject/hash'
 import { decodeAddress } from '@polkadot/keyring'
@@ -43,4 +44,27 @@ export const useSignEvmLinkMessage = () => {
   }
 
   return { signEvmLinkMessage, isSigningMessage }
+}
+
+export const useSignMessageAndLinkEvmAddress = (setModalStep?: () => void) => {
+  const { signEvmLinkMessage, isSigningMessage } = useSignEvmLinkMessage()
+  const { mutate: linkEvmAddress } = useLinkEvmAccount(setModalStep)
+
+  const signAndLinkEvmAddress = async (evmAddress?: string, substrateAddress?: string | null) => {
+    if(!evmAddress) return 
+    
+    const data = await signEvmLinkMessage(
+      evmAddress,
+      substrateAddress
+    )
+
+    if (data) {
+      linkEvmAddress({
+        evmAddress,
+        evmSignature: data,
+      })
+    }
+  }
+  
+  return { signAndLinkEvmAddress, isSigningMessage }
 }

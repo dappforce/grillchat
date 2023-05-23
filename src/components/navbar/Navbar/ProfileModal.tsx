@@ -23,7 +23,7 @@ import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
 import { useAccount, useDisconnect } from 'wagmi'
 import { CustomConnectButton } from '../../modals/login/CustomConnectButton'
-import { useSignEvmLinkMessage } from '../../modals/login/utils'
+import { useSignEvmLinkMessage, useSignMessageAndLinkEvmAddress } from '../../modals/login/utils'
 import { getLinkedEvmAddressQuery } from '@/services/subsocial/evmAddresses'
 
 const evmAddress = '0xDB9e87Fafcdd66f5AFF56C812fd0645Ab2B608e5'
@@ -254,7 +254,7 @@ function AccountContent({
 }
 
 function ConnectedEvmAddressContent({ setCurrentState, evmAddress }: ContentProps) {
-  const { signEvmLinkMessage, isSigningMessage } = useSignEvmLinkMessage()
+  const { signAndLinkEvmAddress, isSigningMessage } = useSignMessageAndLinkEvmAddress()
 
   return (
     <div>
@@ -290,7 +290,7 @@ function ConnectedEvmAddressContent({ setCurrentState, evmAddress }: ContentProp
       ) : (
         <CustomConnectButton
           className='w-full'
-          signEvmLinkMessage={signEvmLinkMessage}
+          signAndLinkEvmAddress={signAndLinkEvmAddress}
           isSigningMessage={isSigningMessage}
         />
       )}

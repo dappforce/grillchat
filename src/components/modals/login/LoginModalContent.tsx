@@ -1,3 +1,4 @@
+import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
 import Button from '@/components/Button'
 import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
@@ -7,6 +8,7 @@ import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useMyAccount } from '@/stores/my-account'
+import Image from 'next/image'
 import {
   Dispatch,
   SetStateAction,
@@ -16,10 +18,13 @@ import {
 } from 'react'
 import { useAccount } from 'wagmi'
 import { CustomConnectButton } from './CustomConnectButton'
-import { useLinkEvmAccount } from './linkEvmAccountHook'
-import { useSignEvmLinkMessage } from './utils'
+import { useSignMessageAndLinkEvmAddress } from './utils'
 
-export type LoginModalStep = 'login' | 'enter-secret-key' | 'account-created'
+export type LoginModalStep =
+  | 'login'
+  | 'enter-secret-key'
+  | 'account-created'
+  | 'evm-address-linked'
 
 type ContentProps = ModalFunctionalityProps & {
   setCurrentStep: Dispatch<SetStateAction<LoginModalStep>>
@@ -31,12 +36,9 @@ type ContentProps = ModalFunctionalityProps & {
 }
 
 export const LoginContent = ({
-  onSubmit,
   setCurrentStep,
-  currentStep,
   runCaptcha,
   termsAndService,
-  ...props
 }: ContentProps) => {
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
 
@@ -114,22 +116,10 @@ export const EnterSecretKeyContent = ({ onSubmit }: ContentProps) => {
   )
 }
 
-export const AccountCreatedContent = () => {
-  const { signEvmLinkMessage, isSigningMessage } = useSignEvmLinkMessage()
-
-  const { address: evmAddress } = useAccount({
-    onConnect: async ({ address: connectedEvmAddress }) => {
-      const data = await signEvmLinkMessage(connectedEvmAddress, address)
-      if (data) {
-        linkAccount({
-          evmAccount: evmAddress as string,
-          evmSignature: data,
-        })
-      }
-    },
-  })
-
-  const { mutate: linkAccount } = useLinkEvmAccount()
+export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
+  const { signAndLinkEvmAddress, isSigningMessage } =
+    useSignMessageAndLinkEvmAddress(() => setCurrentStep('evm-address-linked'))
+    
   const address = useMyAccount((state) => state.address)
 
   return (
@@ -150,12 +140,21 @@ export const AccountCreatedContent = () => {
       </p>
       <CustomConnectButton
         className='w-full'
-        signEvmLinkMessage={signEvmLinkMessage}
+        signAndLinkEvmAddress={signAndLinkEvmAddress}
         isSigningMessage={isSigningMessage}
       />
     </div>
   )
 }
+
+export const EvmAddressLinked = ({ closeModal }: ContentProps) => (
+  <div className='flex flex-col items-center gap-6'>
+    <Image src={LinkedEvmAddressImage} alt='' className='w-full max-w-sm' />
+    <Button size={'lg'} onClick={() => closeModal()} className='w-full'>
+      Got it!
+    </Button>
+  </div>
+)
 
 type LoginModalContents = {
   [key in LoginModalStep]: (props: ContentProps) => JSX.Element
@@ -165,4 +164,5 @@ export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'enter-secret-key': EnterSecretKeyContent,
   'account-created': AccountCreatedContent,
+  'evm-address-linked': EvmAddressLinked,
 }

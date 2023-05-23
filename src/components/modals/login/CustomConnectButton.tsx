@@ -2,36 +2,26 @@ import Button from '@/components/Button'
 import { useMyAccount } from '@/stores/my-account'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
-import { useLinkEvmAccount } from './linkEvmAccountHook'
 
 type CustomConnectButtonProps = {
   className?: string
-  signEvmLinkMessage: (
+  signAndLinkEvmAddress: (
     emvAddress?: string,
     substrateAddress?: string | null
-  ) => Promise<string | undefined>
+  ) => Promise<void>
   isSigningMessage: boolean
 }
 
 export const CustomConnectButton = ({
   className,
-  signEvmLinkMessage,
+  signAndLinkEvmAddress,
   isSigningMessage,
 }: CustomConnectButtonProps) => {
   const mySubstrateAddress = useMyAccount((state) => state.address)
   useAccount({
-    onConnect: async ({ address }) => {
-      const data = await signEvmLinkMessage(address, mySubstrateAddress)
-
-      if (data) {
-        linkEvmAccount({
-          evmAccount: address as string,
-          evmSignature: data,
-        })
-      }
-    },
+    onConnect: async ({ address }) =>
+      signAndLinkEvmAddress(address, mySubstrateAddress),
   })
-  const { mutate: linkEvmAccount } = useLinkEvmAccount()
 
   return (
     <ConnectButton.Custom>
@@ -78,19 +68,9 @@ export const CustomConnectButton = ({
 
         return (
           <Button
-            onClick={async () => {
-              const data = await signEvmLinkMessage(
-                account.address,
-                mySubstrateAddress
-              )
-
-              if (data) {
-                linkEvmAccount({
-                  evmAccount: account.address,
-                  evmSignature: data,
-                })
-              }
-            }}
+            onClick={async () =>
+              signAndLinkEvmAddress(account.address, mySubstrateAddress)
+            }
             size={'lg'}
             className={className}
             disabled={isSigningMessage}

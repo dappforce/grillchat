@@ -18,7 +18,8 @@ type ModalTitle = {
   [key in LoginModalStep]: {
     title: React.ReactNode
     desc: React.ReactNode
-    withBackButton: boolean
+    withBackButton?: boolean
+    withFooter?: boolean
   }
 }
 
@@ -26,17 +27,21 @@ const modalHeader: ModalTitle = {
   login: {
     title: '🔐 Login',
     desc: '',
-    withBackButton: false,
+    withFooter: true
   },
   'enter-secret-key': {
     title: '🔑 Grill secret key',
     desc: 'To access GrillChat, you need a Grill secret key. If you do not have one, just write your first chat message, and you will be given one.',
     withBackButton: true,
+    withFooter: true
   },
   'account-created': {
     title: '🎉 Account created',
     desc: 'We have created an anonymous account for you. You can now use grill.chat or connect your traditional Web3 wallet to it. ',
-    withBackButton: false
+  },
+  'evm-address-linked': {
+    title: '🎉 EVM Wallet connected',
+    desc: `Now you can use all of Grill's EVM features such as ERC20 tokens, NFTs, and more.`,
   }
 }
 
@@ -76,12 +81,12 @@ export default function LoginModal({
   }, [props.isOpen])
 
   const ModalContent = loginModalContents[currentStep]
-  const { title, desc, withBackButton } = modalHeader[currentStep]
+  const { title, desc, withBackButton, withFooter } = modalHeader[currentStep]
 
   return (
     <Modal
       {...props}
-      withFooter
+      withFooter={withFooter}
       initialFocus={isTouchDevice() ? undefined : inputRef}
       title={title}
       withCloseButton

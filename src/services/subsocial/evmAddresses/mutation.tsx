@@ -6,11 +6,12 @@ import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { useQueryClient } from '@tanstack/react-query'
 
 type LinkEvmAccountProps = {
-  evmAccount: string
+  evmAddress: string
   evmSignature: string
 }
 
 export function useLinkEvmAccount(
+  setModalStep?: () => void,
   config?: MutationConfig<LinkEvmAccountProps>
 ) {
   const address = useMyAccount((state) => state.address ?? '')
@@ -24,11 +25,11 @@ export function useLinkEvmAccount(
     async (params, { substrateApi }) => {
       await waitHasBalance()
 
-      const { evmAccount, evmSignature } = params
+      const { evmAddress, evmSignature } = params
 
       return {
         tx: substrateApi.tx.evmAccounts.linkEvmAddress(
-          evmAccount,
+          evmAddress,
           evmSignature
         ),
         summary: 'Linking evm address',
@@ -40,6 +41,7 @@ export function useLinkEvmAccount(
         getContext: () => '',
         onSuccess: ({ address }) => {
           getLinkedEvmAddressQuery.invalidate(client, address)
+          setModalStep?.()
         },
       },
     }
