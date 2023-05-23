@@ -26,7 +26,7 @@ export default function EmailSubscribeModal({
   chatId,
   hubId,
 }: EmailSubscribeModalProps) {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
   const { subscribeMessageCountThreshold } = useConfigContext()
 
   // if form becomes more complex, use third-party libraries to manage form states.
@@ -105,7 +105,6 @@ export default function EmailSubscribeModal({
       </p>
       <form className='mt-8 flex w-full flex-col' onSubmit={onSubmit}>
         <Input
-          containerClassName='mt-2'
           placeholder='Your email address'
           value={email}
           onChange={onEmailChange}
@@ -114,7 +113,7 @@ export default function EmailSubscribeModal({
         <Button
           type='submit'
           size='lg'
-          className='mt-6'
+          className='mt-4'
           disabled={!email || !!emailError}
           isLoading={isLoading}
         >
