@@ -120,6 +120,8 @@ export default async function handler(
   try {
     hash = await sendToken(body.data.address)
   } catch (e: any) {
+    console.error('Failed to send token', e)
+
     if (typeof e.message === 'string' && e.message.startsWith('1010:')) {
       return res.status(400).send({
         success: false,
@@ -128,6 +130,7 @@ export default async function handler(
         errors: e.message,
       })
     }
+
     return res.status(500).send({
       success: false,
       message: 'Failed to send token',
