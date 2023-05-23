@@ -48,7 +48,9 @@ export default function ChatForm({
   const chatTitle = chat?.content?.title ?? ''
 
   const sendEvent = useSendEvent()
-  const { incrementMessageCount } = useMessageData()
+  const incrementMessageCount = useMessageData(
+    (state) => state.incrementMessageCount
+  )
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
