@@ -4,10 +4,12 @@ import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
+import useGetTheme from '@/hooks/useGetTheme'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useMyAccount } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import {
   Dispatch,
@@ -16,7 +18,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import { useAccount } from 'wagmi'
 import { CustomConnectButton } from './CustomConnectButton'
 import { useSignMessageAndLinkEvmAddress } from './utils'
 
@@ -117,15 +118,23 @@ export const EnterSecretKeyContent = ({ onSubmit }: ContentProps) => {
 }
 
 export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
+  const theme = useGetTheme()
+  const address = useMyAccount((state) => state.address)
+
   const { signAndLinkEvmAddress, isSigningMessage } =
     useSignMessageAndLinkEvmAddress(() => setCurrentStep('evm-address-linked'))
-    
-  const address = useMyAccount((state) => state.address)
+
+  const isDarkTheme = theme === 'dark'
 
   return (
     <div className='flex flex-col'>
       {address && (
-        <div className='mt-2 mb-6 rounded-2xl bg-slate-700 p-4'>
+        <div
+          className={cx(
+            'mt-2 mb-6 rounded-2xl p-4',
+            isDarkTheme ? 'bg-slate-700' : 'bg-slate-200'
+          )}
+        >
           <ProfilePreview address={address} />
         </div>
       )}
