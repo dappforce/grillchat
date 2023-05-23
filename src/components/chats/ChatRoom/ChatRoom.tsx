@@ -1,3 +1,4 @@
+import Button from '@/components/Button'
 import Container from '@/components/Container'
 import { cx } from '@/utils/class-names'
 import { ComponentProps, useRef, useState } from 'react'
@@ -35,6 +36,9 @@ export default function ChatRoom({
 
   const closeReply = () => setReplyTo(undefined)
 
+  // TODO: change this to correct data
+  const hasJoined = false
+
   return (
     <div {...props} className={cx('flex flex-col', className)}>
       <ChatList
@@ -56,12 +60,16 @@ export default function ChatRoom({
             scrollContainer={scrollContainerRef}
           />
         )}
-        <ChatForm
-          replyTo={replyTo}
-          onSubmit={scrollToBottom}
-          chatId={chatId}
-          clearReplyTo={closeReply}
-        />
+        {hasJoined ? (
+          <ChatForm
+            replyTo={replyTo}
+            onSubmit={scrollToBottom}
+            chatId={chatId}
+            clearReplyTo={closeReply}
+          />
+        ) : (
+          <Button size='lg'>Join</Button>
+        )}
       </Component>
     </div>
   )

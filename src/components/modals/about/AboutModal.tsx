@@ -19,6 +19,7 @@ export type AboutModalProps = ModalFunctionalityProps & {
   subtitle: string
   contentList: DataCardProps['data']
   actionMenu?: Action[]
+  bottomElement?: JSX.Element | null
 }
 
 export default function AboutModal({
@@ -28,6 +29,7 @@ export default function AboutModal({
   imageCid,
   contentList,
   actionMenu,
+  bottomElement,
   ...props
 }: AboutModalProps) {
   return (
@@ -59,7 +61,7 @@ export default function AboutModal({
                 key={text}
                 className={cx(
                   'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 last:border-none',
-                  'transition focus-visible:bg-background-lightest hover:bg-background-lightest',
+                  'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
                   className
                 )}
                 onClick={onClick}
@@ -70,6 +72,7 @@ export default function AboutModal({
             ))}
           </div>
         )}
+        {bottomElement}
       </div>
     </Modal>
   )

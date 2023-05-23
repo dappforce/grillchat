@@ -1,10 +1,12 @@
+import Button from '@/components/Button'
 import { getPostQuery } from '@/services/api/query'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
-import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { HiCircleStack } from 'react-icons/hi2'
+import { RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
+import ConfirmationModal from '../ConfirmationModal'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'
 import AboutModal, { AboutModalProps } from './AboutModal'
@@ -12,13 +14,6 @@ import AboutModal, { AboutModalProps } from './AboutModal'
 export type AboutChatModalProps = ModalFunctionalityProps & {
   chatId: string
   messageCount?: number
-}
-
-type ContentData = { chat: PostData; url: string }
-type Content = {
-  title: string
-  content: (data: ContentData) => string | undefined
-  withCopyButton?: boolean
 }
 
 export default function AboutChatModal({
@@ -29,6 +24,7 @@ export default function AboutChatModal({
   const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId)
   const [isOpenMetadataModal, setIsOpenMetadataModal] = useState(false)
+  const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
 
   const content = chat?.content
   if (!content) return null
@@ -46,6 +42,8 @@ export default function AboutChatModal({
     },
   ]
 
+  const hasJoined = true
+
   const actionMenu: AboutModalProps['actionMenu'] = [
     {
       text: 'Show Metadata',
@@ -53,6 +51,17 @@ export default function AboutChatModal({
       onClick: () => setIsOpenMetadataModal(true),
     },
   ]
+  if (hasJoined) {
+    actionMenu.push({
+      text: 'Leave Chat',
+      icon: RxExit,
+      onClick: () => setIsOpenConfirmation(true),
+    })
+  }
+
+  const leaveChat = () => {
+    // TODO: implementation here
+  }
 
   return (
     <>
@@ -63,6 +72,20 @@ export default function AboutChatModal({
         actionMenu={actionMenu}
         contentList={contentList}
         imageCid={content?.image ?? ''}
+        bottomElement={
+          !hasJoined ? (
+            <Button size='lg' className='mt-2 w-full'>
+              Join
+            </Button>
+          ) : null
+        }
+      />
+      <ConfirmationModal
+        isOpen={isOpenConfirmation}
+        closeModal={() => setIsOpenConfirmation(false)}
+        title='🤔 Are you sure you want to leave this chat?'
+        primaryButton={{ text: 'No, stay here' }}
+        secondaryButton={{ text: 'Yes, leave chat', onClick: leaveChat }}
       />
       <MetadataModal
         closeModal={() => setIsOpenMetadataModal(false)}
