@@ -2,7 +2,7 @@
   --background: 236 239 244;
   --background-light: 248 250 252;
   --background-lighter: 236 239 244;
-  --background-lightest: 195 201 213;
+  --background-lightest: 219 222 230;
   --background-primary: 77 70 220;
   --background-primary-light: 216 214 255;
   --background-warning: 225 181 62;
@@ -23,7 +23,7 @@
   --background: 17 23 41;
   --background-light: 32 41 58;
   --background-lighter: 44 56 79;
-  --background-lightest: 74 85 103;
+  --background-lightest: 54 74 102;
   --background-primary: 77 70 220;
   --background-primary-light: 77 70 220;
   --background-warning: 225 181 62;
@@ -57,7 +57,7 @@ html {
 @tailwind utilities;
 
 .highlighted {
-  @apply relative after:pointer-events-none after:absolute after:top-0 after:left-0 after:h-full after:w-full after:rounded-2xl after:bg-background-primary/20;
+  @apply relative after:pointer-events-none after:absolute after:left-0 after:top-0 after:h-full after:w-full after:rounded-2xl after:bg-background-primary/20;
 }
 .highlighted::after {
   animation: highlighted-blue 4s ease-in-out 1;
