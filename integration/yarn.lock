@@ -737,11 +737,12 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@subsocial/resource-discussions@../../forks/subsocial-js-fork/packages/resource-discussions":
-  version "0.0.1"
+"@subsocial/resource-discussions@^0.0.1-beta.5":
+  version "0.0.1-beta.5"
+  resolved "https://registry.yarnpkg.com/@subsocial/resource-discussions/-/resource-discussions-0.0.1-beta.5.tgz#96b5f0e54d7f28c0edd87ab97c3204d4b1926681"
+  integrity sha512-k5AnhKuJsNjTb7KU6AkPVDLCA2DzTkXUeAM1Seqfpc8y6fnl5dC1qq9CSjcCUdC+V7DKbNQP1snvsQSbX1t5GQ==
   dependencies:
     graphology "^0.25.1"
-    graphology-types "^0.24.7"
 
 "@swc/core-darwin-arm64@1.3.59":
   version "1.3.59"
@@ -1539,9 +1540,9 @@ domexception@^4.0.0:
     webidl-conversions "^7.0.0"
 
 electron-to-chromium@^1.4.284:
-  version "1.4.402"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.402.tgz#9aa7bbb63081513127870af6d22f829344c5ba57"
-  integrity sha512-gWYvJSkohOiBE6ecVYXkrDgNaUjo47QEKK0kQzmWyhkH+yoYiG44bwuicTGNSIQRG3WDMsWVZJLRnJnLNkbWvA==
+  version "1.4.404"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.404.tgz#16baf653a7a2613e221da61480ad02fe84e40231"
+  integrity sha512-te57sWvQdpxmyd1GiswaodKdXdPgn9cN4ht8JlNa04QgtrfnUdWEo1261rY2vaC6TKaiHn0E7QerJWPKFCvMVw==
 
 emittery@^0.13.1:
   version "0.13.1"
@@ -1861,11 +1862,6 @@ graceful-fs@^4.2.9:
   version "4.2.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
-
-graphology-types@^0.24.7:
-  version "0.24.7"
-  resolved "https://registry.yarnpkg.com/graphology-types/-/graphology-types-0.24.7.tgz#7d630a800061666bfa70066310f56612e08b7bee"
-  integrity sha512-tdcqOOpwArNjEr0gNQKCXwaNCWnQJrog14nJNQPeemcLnXQUUGrsCWpWkVKt46zLjcS6/KGoayeJfHHyPDlvwA==
 
 graphology@^0.25.1:
   version "0.25.1"
