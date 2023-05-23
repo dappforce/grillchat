@@ -33,6 +33,7 @@ export default function AboutHubModal({
       content: hubUrl,
       redirectTo: hubUrl,
       withCopyButton: true,
+      openInNewTab: true,
     },
   ]
 
