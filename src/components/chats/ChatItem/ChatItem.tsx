@@ -1,6 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import CommonCustomContextMenu, {
-  CommonContextMenu,
+  CommonCustomContextMenuProps,
 } from '@/components/floating/CommonCustomContextMenu'
 import Toast from '@/components/Toast'
 import useRandomColor from '@/hooks/useRandomColor'
@@ -79,12 +79,10 @@ export default function ChatItem({
     onSelectMessageAsReply?.(messageId)
   }
 
-  const getChatMenus = (): CommonContextMenu[] => {
-    const replyMenu: CommonContextMenu = {
+  const getChatMenus = (): CommonCustomContextMenuProps['menus'] => {
+    const replyMenu: CommonCustomContextMenuProps['menus'][number] = {
       text: 'Reply',
-      icon: (
-        <BsFillReplyFill className='flex-shrink-0 text-xl text-text-muted' />
-      ),
+      icon: BsFillReplyFill,
       onClick: () => setMessageAsReply(messageId),
     }
 
@@ -92,9 +90,7 @@ export default function ChatItem({
       ...(onSelectMessageAsReply ? [replyMenu] : []),
       {
         text: 'Copy Text',
-        icon: (
-          <MdContentCopy className='flex-shrink-0 text-xl text-text-muted' />
-        ),
+        icon: MdContentCopy,
         onClick: () => {
           copyToClipboard(body ?? '')
           toast.custom((t) => (
@@ -104,7 +100,7 @@ export default function ChatItem({
       },
       {
         text: 'Copy Message Link',
-        icon: <HiLink className='flex-shrink-0 text-xl text-text-muted' />,
+        icon: HiLink,
         onClick: () => {
           const chatPageLink = urlJoin(
             getCurrentUrlOrigin(),
@@ -118,9 +114,7 @@ export default function ChatItem({
       },
       {
         text: 'Show Metadata',
-        icon: (
-          <HiCircleStack className='flex-shrink-0 text-xl text-text-muted' />
-        ),
+        icon: HiCircleStack,
         onClick: () => setOpenMetadata(true),
       },
     ]

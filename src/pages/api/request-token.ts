@@ -1,5 +1,6 @@
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
+import { validateAddress } from '@/utils/account'
 import { getCaptchaSecret, getServerMnemonic } from '@/utils/env/server'
+import { getSubsocialApi } from '@/utils/subsocial'
 import { Keyring } from '@polkadot/keyring'
 import { waitReady } from '@polkadot/wasm-crypto'
 import type { NextApiRequest, NextApiResponse } from 'next'
@@ -66,7 +67,8 @@ async function verifyCaptcha(captchaToken: string) {
 async function sendToken(address: string) {
   const signer = await getServerAccount()
   if (!signer) throw new Error('Invalid Mnemonic')
-  if (!isEnoughBalance()) throw new Error('Account balance is not enough')
+  if (!(await isEnoughBalance()))
+    throw new Error('Account balance is not enough')
 
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi
@@ -96,6 +98,13 @@ export default async function handler(
       errors: body.error.errors,
     })
   }
+
+  const isValidAddress = await validateAddress(body.data.address)
+  if (!isValidAddress)
+    return res.status(400).send({
+      success: false,
+      message: 'Invalid address format',
+    })
 
   try {
     await verifyCaptcha(body.data.captchaToken)

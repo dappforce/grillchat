@@ -19,22 +19,10 @@ export function cx(...params: Parameters<typeof clsx>) {
 }
 
 export const interactionRingStyles = cva(
-  'disabled:hover:ring-0 disabled:ring-offset-0 hover:ring-1 focus-visible:!ring-2 focus-visible:outline-none',
+  'disabled:hover:ring-0 disabled:ring-offset-0 hover:ring-2 focus-visible:!ring-2 focus-visible:outline-none',
   {
-    variants: {
-      color: {
-        'background-light': cx('ring-offset-background-light'),
-        background: cx('ring-offset-background'),
-      },
-      variant: {
-        'no-offset': cx('focus-visible:ring-offset-0 hover:ring-offset-0'),
-        'small-offset': cx('focus-visible:ring-offset-2 hover:ring-offset-2'),
-      },
-    },
-    defaultVariants: {
-      color: 'background-light',
-      variant: 'no-offset',
-    },
+    variants: {},
+    defaultVariants: {},
   }
 )
 

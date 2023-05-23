@@ -30,6 +30,7 @@ module.exports = {
         'text-secondary': 'rgb(var(--text-secondary) / <alpha-value>)',
         'text-dark': 'rgb(var(--text-dark) / <alpha-value>)',
         'text-warning': 'rgb(var(--text-warning) / <alpha-value>)',
+        'text-red': 'rgb(var(--text-red) / <alpha-value>)',
 
         'border-gray': 'rgb(var(--border-gray) / <alpha-value>)',
       },

@@ -1,5 +1,6 @@
 import MessageRedirectPage from '@/modules/chat/MessageRedirectPage'
 import { getPostsFromCache } from '@/pages/api/posts'
+import { AppCommonProps } from '@/pages/_app'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
 import { GetStaticPaths } from 'next'
@@ -11,13 +12,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-export const getStaticProps = getCommonStaticProps<{
-  title: string | null
-  description: string | null
-}>(
-  (data) => ({
-    head: data,
-  }),
+export const getStaticProps = getCommonStaticProps<AppCommonProps>(
+  () => ({}),
   async (context) => {
     const messageId = context.params?.messageId as string | undefined
     const slug = context.params?.slug as string
@@ -37,8 +33,10 @@ export const getStaticProps = getCommonStaticProps<{
 
     return {
       props: {
-        title,
-        description,
+        head: {
+          title,
+          description,
+        },
       },
       revalidate: 2,
     }

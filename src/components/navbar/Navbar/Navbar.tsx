@@ -22,7 +22,10 @@ const LoginModal = dynamic(() => import('@/components/modals/LoginModal'), {
 })
 
 export type NavbarProps = ComponentProps<'div'> & {
-  defaultBackLink?: string
+  backButtonProps?: {
+    defaultBackLink: string
+    forceUseDefaultBackLink?: boolean
+  }
   customContent?: (elements: {
     logoLink: JSX.Element
     authComponent: JSX.Element
@@ -33,7 +36,7 @@ export type NavbarProps = ComponentProps<'div'> & {
 
 export default function Navbar({
   customContent,
-  defaultBackLink,
+  backButtonProps,
   ...props
 }: NavbarProps) {
   const { enableLoginButton = true } = useConfigContext()
@@ -102,11 +105,7 @@ export default function Navbar({
 
   const backButton = (
     <div className='mr-2 flex w-9 items-center justify-center'>
-      <BackButton
-        defaultBackLink={defaultBackLink ?? '/'}
-        size='circle'
-        variant='transparent'
-      >
+      <BackButton {...backButtonProps} size='circle' variant='transparent'>
         <HiOutlineChevronLeft />
       </BackButton>
     </div>

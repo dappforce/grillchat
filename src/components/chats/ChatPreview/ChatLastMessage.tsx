@@ -1,4 +1,5 @@
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
+import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import useLastMessage from './hooks/useLastMessage'
@@ -13,9 +14,14 @@ export default function ChatLastMessage({
   defaultDesc,
   ...props
 }: ChatLastMessageProps) {
+  const { data: messageIds } = useCommentIdsByPostId(chatId)
+
   const { data: lastMessage } = useLastMessage(chatId)
   const isMessageBlocked = useIsMessageBlocked(lastMessage, chatId)
   const text = lastMessage?.content?.body || defaultDesc
+
+  const defaultDescOrMessageCount =
+    defaultDesc || `${messageIds?.length} messages`
 
   return (
     <p
@@ -25,7 +31,7 @@ export default function ChatLastMessage({
         props.className
       )}
     >
-      {isMessageBlocked ? '<message moderated>' : text}
+      {isMessageBlocked ? defaultDescOrMessageCount : text}
     </p>
   )
 }
