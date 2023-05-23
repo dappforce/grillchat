@@ -19,7 +19,7 @@ export type AppCommonProps = {
 }
 
 const sourceSansPro = Source_Sans_Pro({
-  weight: ['400', '600'],
+  weight: ['400', '600', '700'],
   subsets: ['latin'],
 })
 

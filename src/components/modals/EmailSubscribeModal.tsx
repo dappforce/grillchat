@@ -26,7 +26,7 @@ export default function EmailSubscribeModal({
   chatId,
   hubId,
 }: EmailSubscribeModalProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const { subscribeMessageCountThreshold } = useConfigContext()
 
   // if form becomes more complex, use third-party libraries to manage form states.
@@ -86,17 +86,27 @@ export default function EmailSubscribeModal({
 
   return (
     <Modal
-      title='Subscribe to Grill.chat'
-      description="Don't miss any new updates happening in Grill.chat!"
       isOpen={isOpen}
       // make modal closable only by subscribing
       closeModal={() => {}}
+      size='full-screen'
+      containerClassName='p-0'
+      panelClassName='rounded-none'
+      contentClassName='h-screen flex flex-col justify-center items-center'
     >
-      <form className='flex flex-col' onSubmit={onSubmit}>
+      <h1
+        className='bg-gradient-to-b from-[#E4B7EC] to-[#806EF8] bg-clip-text text-center text-4.5xl font-bold leading-none'
+        style={{ WebkitTextFillColor: 'transparent' }}
+      >
+        Get free unlimited access
+      </h1>
+      <p className='mt-4 text-center text-2xl text-text-muted'>
+        to the chat when you sign up for our newsletter
+      </p>
+      <form className='mt-8 flex w-full flex-col' onSubmit={onSubmit}>
         <Input
           containerClassName='mt-2'
-          label='Your email'
-          placeholder='abc@xyz.com'
+          placeholder='Your email address'
           value={email}
           onChange={onEmailChange}
           error={emailError}
@@ -108,9 +118,14 @@ export default function EmailSubscribeModal({
           disabled={!email || !!emailError}
           isLoading={isLoading}
         >
-          Subscribe
+          Sign Up & Continue Chatting
         </Button>
       </form>
+      <ul className='mt-8 w-full list-inside list-disc text-text-muted'>
+        <li>Unsubscribe at any time</li>
+        <li>No spam or shilling</li>
+        <li>Will not sell your data</li>
+      </ul>
     </Modal>
   )
 }
