@@ -24,75 +24,80 @@ export default function DataCard({ data, ...props }: DataCardProps) {
         props.className
       )}
     >
-      {data.map(
-        ({ content, title, withCopyButton, redirectTo, openInNewTab }) => {
-          if (!content) return null
-          const containerClassName = cx(
-            'border-b border-background-lightest pb-3 last:border-none last:pb-0'
-          )
-          const textClassName = cx('whitespace-pre-wrap break-words')
+      {data.map((currentData) => {
+        const { content, title, withCopyButton } = currentData
+        if (!content) return null
 
-          const renderContent = () => {
-            if (redirectTo) {
-              return (
-                <LinkText
-                  variant='secondary'
-                  href={redirectTo}
-                  openInNewTab={openInNewTab}
-                  className={textClassName}
-                >
-                  {content}
-                  {openInNewTab && (
-                    <HiArrowUpRight className='inline text-sm text-text-secondary/70' />
-                  )}
-                </LinkText>
-              )
-            } else if (withCopyButton) {
-              return (
-                <CopyTextInline
-                  text={content}
-                  withButton={false}
-                  className={cx('text-text-secondary', textClassName)}
-                />
-              )
-            }
-            return <span className={textClassName}>{content}</span>
-          }
-          const element = (
-            <div
-              key={title}
-              className={cx('flex flex-1 flex-col gap-0.5 overflow-hidden')}
-            >
-              <span className='text-sm text-text-muted'>{title}</span>
-              {renderContent()}
-            </div>
-          )
+        const containerClassName = cx(
+          'border-b border-background-lightest pb-3 last:border-none last:pb-0'
+        )
 
-          return (
-            <div
-              key={title}
-              className={cx('flex w-full items-center', containerClassName)}
-            >
-              {withCopyButton ? (
-                <div className={cx('flex w-full items-center')}>
-                  {element}
-                  <div className='ml-2'>
-                    <CopyTextInline
-                      textClassName='flex-1'
-                      className='w-full'
-                      textContainerClassName='w-full'
-                      text={''}
-                      textToCopy={content}
-                    />
-                  </div>
+        const element = (
+          <div
+            key={title}
+            className={cx('flex flex-1 flex-col gap-0.5 overflow-hidden')}
+          >
+            <span className='text-sm text-text-muted'>{title}</span>
+            <Content {...currentData} />
+          </div>
+        )
+
+        return (
+          <div
+            key={title}
+            className={cx('flex w-full items-center', containerClassName)}
+          >
+            {withCopyButton ? (
+              <div className={cx('flex w-full items-center')}>
+                {element}
+                <div className='ml-2'>
+                  <CopyTextInline
+                    textClassName='flex-1'
+                    className='w-full'
+                    textContainerClassName='w-full'
+                    text={''}
+                    textToCopy={content}
+                  />
                 </div>
-              ) : (
-                element
-              )}
-            </div>
-          )
-        }
-      )}
+              </div>
+            ) : (
+              element
+            )}
+          </div>
+        )
+      })}
     </div>
   )
+}
+
+function Content({ content, openInNewTab, redirectTo, withCopyButton }: Data) {
+  const textClassName = cx('whitespace-pre-wrap break-words')
+
+  if (!content) return null
+
+  if (redirectTo) {
+    return (
+      <LinkText
+        variant='secondary'
+        href={redirectTo}
+        openInNewTab={openInNewTab}
+        className={textClassName}
+      >
+        {content}
+        {openInNewTab && (
+          <HiArrowUpRight className='inline text-sm text-text-secondary/70' />
+        )}
+      </LinkText>
+    )
+  } else if (withCopyButton) {
+    return (
+      <CopyTextInline
+        text={content}
+        withButton={false}
+        className={cx('text-text-secondary', textClassName)}
+      />
+    )
+  }
+
+  return <span className={textClassName}>{content}</span>
 }
