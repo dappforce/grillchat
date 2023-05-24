@@ -2,6 +2,7 @@ import ChatPreview from '@/components/chats/ChatPreview'
 import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
+import Tabs, { TabsProps } from '@/components/Tabs'
 import { getAliasFromSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useSearch from '@/hooks/useSearch'
@@ -12,7 +13,6 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import { SpaceData } from '@subsocial/api/types'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
@@ -24,23 +24,42 @@ export type HubsPageProps = {
   hubsChatCount: { [id: string]: number }
 }
 
-const searchKeys = ['content.name']
-export default function HubsPage({
-  isIntegrateChatButtonOnTop,
-  hubsChatCount = {},
-}: HubsPageProps) {
-  const isInIframe = useIsInIframe()
-  const hubIds = getSpaceIds()
-  const hubQueries = getSpaceBySpaceIdQuery.useQueries(hubIds)
-  const hubs = useMemo(
-    () => hubQueries.map(({ data: hub }) => hub),
-    [hubQueries]
-  )
+type CommonContentProps = {
+  getSearchResults: ReturnType<typeof useSearch>['getSearchResults']
+}
 
-  const { search, setSearch, focusController, searchResults } = useSearch(
-    hubs,
-    searchKeys
-  )
+export default function HubsPage(props: HubsPageProps) {
+  const isInIframe = useIsInIframe()
+  const { search, setSearch, getSearchResults, focusController } = useSearch()
+
+  const renderHubsContent = (children: JSX.Element) => {
+    return (
+      <HubsContentWrapper
+        search={search}
+        isIntegrateChatButtonOnTop={props.isIntegrateChatButtonOnTop}
+      >
+        {children}
+      </HubsContentWrapper>
+    )
+  }
+
+  const tabs: TabsProps['tabs'] = [
+    {
+      id: 'my-chats',
+      text: 'My Chats',
+      content: renderHubsContent(<span>asdfasdf</span>),
+    },
+    {
+      id: 'hubs',
+      text: 'Hubs',
+      content: renderHubsContent(
+        <HubsContent
+          getSearchResults={getSearchResults}
+          hubsChatCount={props.hubsChatCount}
+        />
+      ),
+    },
+  ]
 
   return (
     <DefaultLayout
@@ -68,27 +87,66 @@ export default function HubsPage({
         },
       }}
     >
+      <Tabs
+        className='border-b border-border-gray bg-background-light px-4 md:bg-background-light/50'
+        panelClassName='mt-0 px-0'
+        asContainer
+        tabs={tabs}
+      />
       {!isInIframe && <WelcomeModal />}
-      <div className='flex flex-col overflow-auto'>
-        {!isInIframe && !search && (
-          <ChatSpecialButtons
-            isIntegrateChatButtonOnTop={isIntegrateChatButtonOnTop}
-          />
-        )}
-        {searchResults.map((hub, idx) => {
-          if (!hub) return null
-          const hubId = hub.id
-          return (
-            <ChatPreviewContainer
-              isFocused={idx === focusController.focusedElementIndex}
-              hub={hub}
-              chatCount={hubsChatCount[hubId]}
-              key={hubId}
-            />
-          )
-        })}
-      </div>
     </DefaultLayout>
+  )
+}
+
+function HubsContentWrapper({
+  isIntegrateChatButtonOnTop,
+  children,
+  search,
+}: {
+  isIntegrateChatButtonOnTop: boolean
+  children: JSX.Element
+  search: string
+}) {
+  const isInIframe = useIsInIframe()
+  return (
+    <div className='flex flex-col'>
+      {!isInIframe && !search && (
+        <ChatSpecialButtons
+          isIntegrateChatButtonOnTop={isIntegrateChatButtonOnTop}
+        />
+      )}
+      {children}
+    </div>
+  )
+}
+
+function HubsContent({
+  hubsChatCount = {},
+  getSearchResults,
+}: CommonContentProps & Pick<HubsPageProps, 'hubsChatCount'>) {
+  const hubIds = getSpaceIds()
+
+  const hubQueries = getSpaceBySpaceIdQuery.useQueries(hubIds)
+  const hubs = hubQueries.map(({ data: hub }) => hub)
+  const { searchResults, focusedElementIndex } = getSearchResults(hubs, [
+    'content.name',
+  ])
+
+  return (
+    <div className='flex flex-col overflow-auto'>
+      {searchResults.map((hub, idx) => {
+        if (!hub) return null
+        const hubId = hub.id
+        return (
+          <ChatPreviewContainer
+            isFocused={idx === focusedElementIndex}
+            hub={hub}
+            chatCount={hubsChatCount[hubId]}
+            key={hubId}
+          />
+        )
+      })}
+    </div>
   )
 }
 
