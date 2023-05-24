@@ -57,7 +57,7 @@ export default function EmailSubscribeModal({
       !isSubscribed &&
       messageCount &&
       isValidThreshold &&
-      messageCount > subscribeMessageCountThreshold
+      messageCount >= subscribeMessageCountThreshold
     ) {
       setIsOpen(true)
     }
