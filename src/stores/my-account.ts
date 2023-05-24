@@ -12,6 +12,11 @@ import { useAnalytics } from './analytics'
 import { create } from './utils'
 
 let web3Auth: Web3Auth | null = null
+async function getWeb3Auth() {
+  if (web3Auth) return web3Auth
+  web3Auth = await initializeWeb3Auth()
+  return web3Auth
+}
 
 type State = {
   authMethod?: AuthenticationMethods
@@ -93,9 +98,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   },
   loginWithWeb3Auth: async () => {
     let { _syncSessionKey, _subscribeEnergy } = get()
-    if (!web3Auth) {
-      web3Auth = await initializeWeb3Auth()
-    }
+    const web3Auth = await getWeb3Auth()
 
     if (!web3Auth!.provider) {
       console.log('Provider not set!')
@@ -152,10 +155,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
 
     set({ ...initialState, _isNewSessionKey: false, _currentSessionSecretKey })
     if (authMethod === 'web3auth') {
-      if (!web3Auth) {
-        console.log('User already logged out')
-        return
-      }
+      const web3Auth = await getWeb3Auth()
       await web3Auth.logout()
     }
     accountStorage.remove()
