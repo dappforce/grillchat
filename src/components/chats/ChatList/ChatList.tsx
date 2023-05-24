@@ -11,7 +11,7 @@ import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
-import { isValidNumber } from '@/utils/strings'
+import { validateNumber } from '@/utils/strings'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import {
@@ -122,7 +122,7 @@ function ChatListContent({
 
     if (!isMessageIdsFetched) return
 
-    if (!messageId || !isValidNumber(messageId)) {
+    if (!messageId || !validateNumber(messageId)) {
       scrollToMessage(lastReadId ?? '', false)
       return
     }

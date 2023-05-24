@@ -8,6 +8,7 @@ type State = {
   enableBackButton?: boolean
   enableLoginButton?: boolean
   enableInputAutofocus?: boolean
+  subscribeMessageCountThreshold?: number
 }
 const ConfigContext = createContext<State>({ theme: undefined, order: [] })
 
@@ -27,7 +28,7 @@ export function ConfigProvider({ children }: { children: any }) {
   useEffect(() => {
     // check if current state is updated to the read config
     if (configRef.current === state) {
-      window.top?.postMessage('grill:ready', '*')
+      window.parent?.postMessage('grill:ready', '*')
     }
   }, [state])
 
@@ -42,10 +43,10 @@ export function useConfigContext() {
 
 function validateStringConfig<T = string>(
   value: string,
-  validValues: string[],
+  validValues: string[] | null,
   transformer: (value: string) => T = (value) => value as T
 ) {
-  if (!validValues.includes(value)) return undefined
+  if (validValues && !validValues.includes(value)) return undefined
   return transformer(value)
 }
 
@@ -58,6 +59,10 @@ const schemaGetter = {
     const enableBackButton = getUrlQuery('enableBackButton')
     const enableLoginButton = getUrlQuery('enableLoginButton')
     const enableInputAutofocus = getUrlQuery('enableInputAutofocus')
+
+    const subscribeMessageCountThreshold = getUrlQuery(
+      'subscribeMessageCountThreshold'
+    )
 
     const usedOrder = order.split(',').filter((value) => !!value)
 
@@ -78,6 +83,15 @@ const schemaGetter = {
         enableInputAutofocus,
         ['true', 'false'],
         (value) => value === 'true'
+      ),
+      subscribeMessageCountThreshold: validateStringConfig(
+        subscribeMessageCountThreshold,
+        null,
+        (value) => {
+          const parsedValue = parseInt(value)
+          if (isNaN(parsedValue)) return undefined
+          return parsedValue
+        }
       ),
     }
   },

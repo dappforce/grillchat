@@ -1,4 +1,5 @@
 import { createUserId } from '@/services/api/mutations'
+import { getIsInIframe } from '@/utils/window'
 import { type BrowserClient } from '@amplitude/analytics-types'
 import { create } from './utils'
 
@@ -42,10 +43,20 @@ export const useAnalytics = create<State & Actions>()((set, get) => ({
   sendEvent: async (name: string, properties?: Record<string, string>) => {
     const { amp, userId } = get()
     const { event } = await import('nextjs-google-analytics')
-    amp?.logEvent(name, properties)
+
+    const isInIframe = getIsInIframe()
+    const commonProperties = {
+      from: isInIframe ? window.parent.location.origin : 'grill-app',
+    }
+    const mergedProperties = {
+      ...commonProperties,
+      ...properties,
+    }
+
+    amp?.logEvent(name, mergedProperties)
     event(name, {
       userId,
-      category: properties ? JSON.stringify(properties) : undefined,
+      category: mergedProperties ? JSON.stringify(mergedProperties) : undefined,
     })
   },
   init: async () => {

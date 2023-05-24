@@ -50,7 +50,7 @@ export default function LaunchCommunityPage() {
             src={LaunchCommunityImage}
             alt=''
           />
-          <h1 className='text-3xl font-bold' ref={ref}>
+          <h1 className='text-3xl font-semibold' ref={ref}>
             {title}
           </h1>
           <p className='text-text-muted'>
@@ -59,7 +59,7 @@ export default function LaunchCommunityPage() {
             <LinkText
               href={GITHUB_LINK}
               variant='primary'
-              className='font-bold'
+              className='font-semibold'
               onClick={() => sendEvent('click github_link')}
               openInNewTab
             >
@@ -93,7 +93,7 @@ export default function LaunchCommunityPage() {
             Create a branded hub for your community by configuring a custom
             domain with your{' '}
             <LinkText
-              className='font-bold'
+              className='font-semibold'
               variant='primary'
               href='https://polkaverse.com/dd'
               openInNewTab

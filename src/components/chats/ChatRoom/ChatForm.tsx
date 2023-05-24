@@ -2,6 +2,7 @@ import Send from '@/assets/icons/send.svg'
 import { buttonStyles } from '@/components/Button'
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea from '@/components/inputs/TextArea'
+import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/chat'
 import { useConfigContext } from '@/contexts/ConfigContext'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
@@ -10,6 +11,7 @@ import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { getPostQuery } from '@/services/api/query'
 import { useSendMessage } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
+import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
@@ -23,6 +25,7 @@ import {
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
+  hubId: string
   onSubmit?: () => void
   replyTo?: string
   clearReplyTo?: () => void
@@ -35,6 +38,7 @@ function processMessage(message: string) {
 export default function ChatForm({
   className,
   chatId,
+  hubId,
   onSubmit,
   replyTo,
   clearReplyTo,
@@ -44,6 +48,9 @@ export default function ChatForm({
   const chatTitle = chat?.content?.title ?? ''
 
   const sendEvent = useSendEvent()
+  const incrementMessageCount = useMessageData(
+    (state) => state.incrementMessageCount
+  )
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
@@ -129,64 +136,68 @@ export default function ChatForm({
     }
 
     onSubmit?.()
+    incrementMessageCount()
   }
 
   return (
-    <CaptchaInvisible>
-      {(runCaptcha) => {
-        const submitForm = async (e?: SyntheticEvent) => {
-          if (shouldSendMessage) {
-            handleSubmit(null, e)
-            return
+    <>
+      <CaptchaInvisible>
+        {(runCaptcha) => {
+          const submitForm = async (e?: SyntheticEvent) => {
+            if (shouldSendMessage) {
+              handleSubmit(null, e)
+              return
+            }
+            const token = await runCaptcha()
+            handleSubmit(token, e)
           }
-          const token = await runCaptcha()
-          handleSubmit(token, e)
-        }
 
-        return (
-          <form
-            onSubmit={submitForm}
-            {...props}
-            className={cx('flex w-full', className)}
-          >
-            <TextArea
-              onEnterToSubmitForm={submitForm}
-              ref={textAreaRef}
-              value={messageBody}
-              onChange={(e) => setMessageBody((e.target as any).value)}
-              placeholder='Message...'
-              rows={1}
-              autoComplete='off'
-              autoCapitalize='sentences'
-              autoCorrect='off'
-              spellCheck='false'
-              variant='fill'
-              pill
-              rightElement={(classNames) => (
-                <div
-                  onTouchEnd={(e) => {
-                    if (shouldSendMessage) {
-                      e.preventDefault()
-                      submitForm()
-                    }
-                  }}
-                  onClick={submitForm}
-                  className={cx(
-                    buttonStyles({
-                      size: 'circle',
-                      variant: isDisabled ? 'mutedOutline' : 'primary',
-                    }),
-                    classNames,
-                    'cursor-pointer'
-                  )}
-                >
-                  <Send className='relative top-px h-4 w-4' />
-                </div>
-              )}
-            />
-          </form>
-        )
-      }}
-    </CaptchaInvisible>
+          return (
+            <form
+              onSubmit={submitForm}
+              {...props}
+              className={cx('flex w-full', className)}
+            >
+              <TextArea
+                onEnterToSubmitForm={submitForm}
+                ref={textAreaRef}
+                value={messageBody}
+                onChange={(e) => setMessageBody((e.target as any).value)}
+                placeholder='Message...'
+                rows={1}
+                autoComplete='off'
+                autoCapitalize='sentences'
+                autoCorrect='off'
+                spellCheck='false'
+                variant='fill'
+                pill
+                rightElement={(classNames) => (
+                  <div
+                    onTouchEnd={(e) => {
+                      if (shouldSendMessage) {
+                        e.preventDefault()
+                        submitForm()
+                      }
+                    }}
+                    onClick={submitForm}
+                    className={cx(
+                      buttonStyles({
+                        size: 'circle',
+                        variant: isDisabled ? 'mutedOutline' : 'primary',
+                      }),
+                      classNames,
+                      'cursor-pointer'
+                    )}
+                  >
+                    <Send className='relative top-px h-4 w-4' />
+                  </div>
+                )}
+              />
+            </form>
+          )
+        }}
+      </CaptchaInvisible>
+      <EmailSubscribeModal chatId={chatId} hubId={hubId} />
+    </>
   )
 }

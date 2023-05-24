@@ -44,7 +44,7 @@ export default function IntegrateChatPage() {
         <div className='mt-14 flex flex-col items-center gap-4'>
           <ChatboxLight className='w-80 max-w-full dark:hidden' />
           <Chatbox className='hidden w-80 max-w-full dark:block' />
-          <h1 ref={ref} className='text-3xl font-bold'>
+          <h1 ref={ref} className='text-3xl font-semibold'>
             {title}
           </h1>
           <p className='text-text-muted'>
