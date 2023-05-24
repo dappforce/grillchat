@@ -2,8 +2,16 @@ import { useAnalytics } from './analytics'
 import { useLocation } from './location'
 import { useMessageData } from './message'
 import { useMyAccount } from './my-account'
+import { useParentData } from './parent'
 
-const storesRegistry = [useAnalytics, useLocation, useMessageData, useMyAccount]
+// order of the registry can be important if you have dependencies between stores in the init function.
+const storesRegistry = [
+  useParentData,
+  useAnalytics,
+  useLocation,
+  useMyAccount,
+  useMessageData,
+]
 
 export const initAllStores = () => {
   storesRegistry.forEach((store) => {

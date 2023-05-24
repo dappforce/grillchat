@@ -1,13 +1,11 @@
 import { createUserId } from '@/services/api/mutations'
-import { getUrlQuery } from '@/utils/links'
-import { getIsInIframe } from '@/utils/window'
 import { type BrowserClient } from '@amplitude/analytics-types'
+import { useParentData } from './parent'
 import { create } from './utils'
 
 type State = {
   amp: BrowserClient | null
   userId: string | undefined
-  parentOrigin: string
 }
 type Actions = {
   sendEvent: (name: string, properties?: Record<string, string>) => void
@@ -19,7 +17,6 @@ type Actions = {
 const initialState: State = {
   amp: null,
   userId: undefined,
-  parentOrigin: 'grill-app',
 }
 
 export const useAnalytics = create<State & Actions>()((set, get) => ({
@@ -44,9 +41,10 @@ export const useAnalytics = create<State & Actions>()((set, get) => ({
     _updateUserId(address)
   },
   sendEvent: async (name: string, properties?: Record<string, string>) => {
-    const { amp, userId, parentOrigin } = get()
+    const { amp, userId } = get()
     const { event } = await import('nextjs-google-analytics')
 
+    const { parentOrigin } = useParentData.getState()
     const commonProperties = { from: parentOrigin }
     const mergedProperties = {
       ...commonProperties,
@@ -63,13 +61,7 @@ export const useAnalytics = create<State & Actions>()((set, get) => ({
     const { createAmplitudeInstance } = await import('@/analytics/amplitude')
     const amp = await createAmplitudeInstance()
 
-    const isInIframe = getIsInIframe()
-    let parentOrigin = 'grill-app'
-    if (isInIframe) {
-      parentOrigin = getUrlQuery('parent') || 'iframe'
-    }
-
-    set({ amp, parentOrigin })
+    set({ amp })
   },
 }))
 
