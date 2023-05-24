@@ -3,12 +3,12 @@ import {
   getTxSubDispatchErrorMessage,
   WalletManager,
 } from '@/services/api/utils'
-import { getCrustIpfsAuth, getIpfsPinUrl } from '@/utils/env/server'
 import { IpfsWrapper } from '@/utils/ipfs'
+import { getIpfsApi } from '@/utils/server'
 import { getSubsocialApi } from '@/utils/subsocial'
 import { ApiPromise, SubmittableResult } from '@polkadot/api'
 import { stringToHex } from '@polkadot/util'
-import { asAccountId, SubsocialIpfsApi } from '@subsocial/api'
+import { asAccountId } from '@subsocial/api'
 import { IpfsPostContent } from '@subsocial/api/types'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -48,27 +48,14 @@ export type SaveDiscussionContentResponse = {
   cid?: string
 }
 
-export const CRUST_IPFS_CONFIG = {
-  ipfsNodeUrl: 'https://gw-seattle.crustcloud.io', // TODO should be moves to ENV vars in all use cases
-  ipfsClusterUrl: getIpfsPinUrl(),
-}
-
-const headers = { authorization: `Bearer ${getCrustIpfsAuth()}` }
-
-const ipfs = new SubsocialIpfsApi({
-  ...CRUST_IPFS_CONFIG,
-  headers,
-})
-ipfs.setWriteHeaders(headers)
-ipfs.setPinHeaders(headers)
-
 export async function saveDiscussionContent(
   contentBody: IpfsPostContent
 ): Promise<SaveDiscussionContentResponse> {
   let cid: string
+  const { saveAndPinJson } = getIpfsApi()
+
   try {
-    cid = await ipfs.saveJson(contentBody)
-    ipfs.pinContent(cid, { 'meta.gatewayId': 1 }).then()
+    cid = await saveAndPinJson(contentBody)
     return {
       success: true,
       cid,
@@ -93,7 +80,7 @@ async function createDiscussionAndGetPostId({
   contentCid: string
   api: ApiPromise
 }): Promise<ApiDiscussionResponse> {
-  return new Promise(async (resolve, reject) => {
+  return new Promise(async (resolve) => {
     const unsub = await api.tx.resourceDiscussions
       .createResourceDiscussion(resourceId, spaceId, IpfsWrapper(contentCid))
       .signAndSend(
@@ -120,8 +107,11 @@ async function createDiscussionAndGetPostId({
                   event.section === 'resourceDiscussions' &&
                   event.method === 'ResourceDiscussionLinked'
                 ) {
-                  const [resourceIdHex, author, postId] =
-                    event.data.toJSON() as [string, string, number]
+                  const [resourceIdHex, , postId] = event.data.toJSON() as [
+                    string,
+                    string,
+                    number
+                  ]
 
                   if (stringToHex(resourceId) === resourceIdHex) {
                     resolve({
@@ -160,7 +150,7 @@ export async function getOrCreateDiscussion({
   resourceId,
   spaceId,
   content,
-}: DiscussionInput): Promise<ApiDiscussionResponse | never> {
+}: DiscussionInput): Promise<ApiDiscussionResponse> {
   let existingDiscussionId: string | null = null
   try {
     const subsocialApi = await (await getSubsocialApi()).substrateApi
