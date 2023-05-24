@@ -1,19 +1,13 @@
-import ChatPreview from '@/components/chats/ChatPreview'
 import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import Tabs, { TabsProps } from '@/components/Tabs'
-import { getAliasFromSpaceId } from '@/constants/chat-room'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useSearch from '@/hooks/useSearch'
-import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
-import { useSendEvent } from '@/stores/analytics'
-import { getSpaceIds } from '@/utils/env/client'
-import { getIpfsContentUrl } from '@/utils/ipfs'
-import { SpaceData } from '@subsocial/api/types'
+import { getMainSpaceId } from '@/utils/env/client'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/router'
-import { useHotkeys } from 'react-hotkeys-hook'
+import HotChatsContent from './HotChatsContent'
+import HubsContent from './HubsContent'
 
 const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
   ssr: false,
@@ -24,10 +18,11 @@ export type HubsPageProps = {
   hubsChatCount: { [id: string]: number }
 }
 
-type CommonContentProps = {
+export type CommonHubContentProps = {
   getSearchResults: ReturnType<typeof useSearch>['getSearchResults']
 }
 
+const hotChatsHubId = getMainSpaceId()
 export default function HubsPage(props: HubsPageProps) {
   const isInIframe = useIsInIframe()
   const { search, setSearch, getSearchResults, focusController } = useSearch()
@@ -48,6 +43,16 @@ export default function HubsPage(props: HubsPageProps) {
       id: 'my-chats',
       text: 'My Chats',
       content: renderHubsContent(<span>asdfasdf</span>),
+    },
+    {
+      id: 'hot-chats',
+      text: 'Hot Chats',
+      content: renderHubsContent(
+        <HotChatsContent
+          getSearchResults={getSearchResults}
+          hubId={hotChatsHubId}
+        />
+      ),
     },
     {
       id: 'hubs',
@@ -117,91 +122,5 @@ function HubsContentWrapper({
       )}
       {children}
     </div>
-  )
-}
-
-function HubsContent({
-  hubsChatCount = {},
-  getSearchResults,
-}: CommonContentProps & Pick<HubsPageProps, 'hubsChatCount'>) {
-  const hubIds = getSpaceIds()
-
-  const hubQueries = getSpaceBySpaceIdQuery.useQueries(hubIds)
-  const hubs = hubQueries.map(({ data: hub }) => hub)
-  const { searchResults, focusedElementIndex } = getSearchResults(hubs, [
-    'content.name',
-  ])
-
-  return (
-    <div className='flex flex-col overflow-auto'>
-      {searchResults.map((hub, idx) => {
-        if (!hub) return null
-        const hubId = hub.id
-        return (
-          <ChatPreviewContainer
-            isFocused={idx === focusedElementIndex}
-            hub={hub}
-            chatCount={hubsChatCount[hubId]}
-            key={hubId}
-          />
-        )
-      })}
-    </div>
-  )
-}
-
-function ChatPreviewContainer({
-  hub,
-  isFocused,
-  chatCount,
-}: {
-  hub: SpaceData
-  isFocused?: boolean
-  chatCount: number | undefined
-}) {
-  const sendEvent = useSendEvent()
-  const isInIframe = useIsInIframe()
-  const router = useRouter()
-
-  const path = getAliasFromSpaceId(hub.id) || hub.id
-  const linkTo = `/${path}`
-
-  const content = hub.content
-
-  useHotkeys(
-    'enter',
-    () => {
-      const method = isInIframe ? 'replace' : 'push'
-      router[method](linkTo)
-    },
-    {
-      enabled: isFocused,
-      preventDefault: true,
-      enableOnFormTags: ['INPUT'],
-      keydown: true,
-    }
-  )
-
-  const onChatClick = () => {
-    sendEvent(`click on hub`, {
-      title: content?.name ?? '',
-    })
-  }
-
-  return (
-    <ChatPreview
-      isImageCircle={false}
-      onClick={onChatClick}
-      asContainer
-      asLink={{
-        replace: isInIframe,
-        href: linkTo,
-      }}
-      additionalDesc={chatCount ? `${chatCount} chats` : undefined}
-      image={getIpfsContentUrl(content?.image ?? '')}
-      title={content?.name ?? ''}
-      description={content?.about ?? ''}
-      withFocusedStyle={isFocused}
-    />
   )
 }
