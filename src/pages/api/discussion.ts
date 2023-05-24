@@ -1,7 +1,7 @@
 import {
   getCommonErrorMessage,
   getTxSubDispatchErrorMessage,
-  WalletClient,
+  WalletManager,
 } from '@/services/api/utils'
 import { getCrustIpfsAuth, getIpfsPinUrl } from '@/utils/env/server'
 import { IpfsWrapper } from '@/utils/ipfs'
@@ -20,8 +20,6 @@ const bodySchema = z.object({
     title: z.string(),
     body: z.string(),
     image: z.string(),
-    canonical: z.string().optional(),
-    tags: z.array(z.string()).optional(),
   }),
 })
 
@@ -99,7 +97,9 @@ async function createDiscussionAndGetPostId({
     const unsub = await api.tx.resourceDiscussions
       .createResourceDiscussion(resourceId, spaceId, IpfsWrapper(contentCid))
       .signAndSend(
-        WalletClient.getInstance().account.discussionCreator,
+        (
+          await WalletManager.getInstance()
+        ).account.discussionCreator,
         async (resp: SubmittableResult) => {
           const { status, events, dispatchError, isCompleted } = resp
 
@@ -168,7 +168,9 @@ export async function getOrCreateDiscussion({
       await subsocialApi.query.resourceDiscussions.resourceDiscussion(
         resourceId,
         asAccountId(
-          WalletClient.getInstance().account.discussionCreator.address
+          (
+            await WalletManager.getInstance()
+          ).account.discussionCreator.address
         )
       )
     ).toString()
@@ -217,8 +219,6 @@ export default async function handler(
     })
   }
 
-  await WalletClient.getInstance().init()
-
   const { resourceId, spaceId, content } = body.data
 
   const response: ApiDiscussionResponse = await getOrCreateDiscussion({
@@ -226,8 +226,8 @@ export default async function handler(
       title: content.title,
       body: content.body,
       image: content.image ?? '',
-      tags: content.tags ?? [],
-      canonical: content.canonical ?? '',
+      tags: [],
+      canonical: '',
     },
     spaceId,
     resourceId,
@@ -235,13 +235,3 @@ export default async function handler(
 
   return res.status(response.success ? 200 : 500).send(response)
 }
-// TODO remove as it's an example
-// const resp = await createDiscussion({
-//   resourceId: `twitter://tweet:1684342600642`,
-//   spaceId: '1003',
-//   content: {
-//     title: `Awesome test discussion ${timestamp}`,
-//     body: `It's really awesome!`,
-//     image: 'QmXhyHD9HMEtKAq1P8SJvM5r8DXcnxt2g4JCwgHtnARVx4',
-//   },
-// })

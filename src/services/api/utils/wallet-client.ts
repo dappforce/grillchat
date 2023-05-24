@@ -8,18 +8,19 @@ export type WalletClientAccounts = {
   discussionCreator: KeyringPair | null
 }
 
-export class WalletClient {
-  private static instance: WalletClient
+export class WalletManager {
+  private static instance: WalletManager
 
   private accs: WalletClientAccounts = {
     discussionCreator: null,
   }
 
-  static getInstance(): WalletClient {
-    if (!WalletClient.instance) {
-      WalletClient.instance = new WalletClient()
+  static async getInstance(): Promise<WalletManager> {
+    if (!WalletManager.instance) {
+      WalletManager.instance = new WalletManager()
+      await WalletManager.instance.init()
     }
-    return WalletClient.instance
+    return WalletManager.instance
   }
 
   public static async createKeyringPairFromMnem(mnem: string) {
@@ -49,16 +50,17 @@ export class WalletClient {
   }
 
   get account() {
-    if (!this.clientValid()) throw Error('WalletClient is not initialized yet.')
+    if (!this.clientValid())
+      throw Error('WalletManager is not initialized yet.')
 
     return {
       discussionCreator: this.accs.discussionCreator!,
     }
   }
 
-  public async init(): Promise<WalletClient> {
+  public async init(): Promise<WalletManager> {
     if (this.clientValid()) return this
-    this.accs.discussionCreator = await WalletClient.createKeyringPairFromMnem(
+    this.accs.discussionCreator = await WalletManager.createKeyringPairFromMnem(
       getDiscussionCreatorMnemonic()
     )
     return this

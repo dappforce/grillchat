@@ -33,7 +33,6 @@ export default function StubChatPage() {
 
       setMetadata(parsedMetadata)
 
-      console.log(parsedMetadata)
       const { data } = await createDiscussion({
         spaceId,
         content: parsedMetadata,
