@@ -1,6 +1,8 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import { ConfigProvider, useConfigContext } from '@/contexts/ConfigContext'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import { QueryProvider } from '@/services/provider'
+import { useSendEvent } from '@/stores/analytics'
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
@@ -46,6 +48,13 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
     isInitialized.current = true
     initAllStores()
   }, [])
+
+  const sendEvent = useSendEvent()
+  const isInIframe = useIsInIframe()
+  useEffect(() => {
+    if (!isInIframe) return
+    sendEvent('loaded in iframe')
+  }, [isInIframe, sendEvent])
 
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>

@@ -1,6 +1,7 @@
 import { useConfigContext } from '@/contexts/ConfigContext'
 import useToastError from '@/hooks/useToastError'
 import { useSubscribeWithEmail } from '@/services/subsocial-offchain/mutation'
+import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
@@ -33,6 +34,7 @@ export default function EmailSubscribeModal({
   // if form becomes more complex, use third-party libraries to manage form states.
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
+  const sendEvent = useSendEvent()
 
   const {
     mutate: subscribeWithEmail,
@@ -59,9 +61,10 @@ export default function EmailSubscribeModal({
       isValidThreshold &&
       messageCount >= subscribeMessageCountThreshold
     ) {
+      sendEvent('open email_subscribe_modal')
       setIsOpen(true)
     }
-  }, [messageCount, subscribeMessageCountThreshold])
+  }, [messageCount, subscribeMessageCountThreshold, sendEvent])
 
   const onEmailChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const email = e.target.value
@@ -82,6 +85,7 @@ export default function EmailSubscribeModal({
       return
     }
 
+    sendEvent('subscribe with email')
     subscribeWithEmail({ email, chatId, hubId })
   }
 
