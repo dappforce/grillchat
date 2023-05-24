@@ -25,7 +25,6 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     async (params, { substrateApi }) => {
       console.log('waiting energy...')
       await waitHasEnergy()
-      console.log('energy updated')
       const { cid, success } = await saveFile({
         body: params.message,
         inReplyTo: ReplyWrapper(params.replyTo),
