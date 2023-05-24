@@ -1,4 +1,5 @@
 import { LocalStorage } from '@/utils/storage'
+import { useParentData } from './parent'
 import { create } from './utils'
 
 const MESSAGE_COUNT_STORAGE_KEY = 'message-count'
@@ -7,7 +8,6 @@ const messageCountStorage = new LocalStorage(
 )
 
 type State = {
-  currentOrigin: string
   messageCount: number
 }
 
@@ -16,27 +16,26 @@ type Actions = {
 }
 
 const INITIAL_STATE: State = {
-  currentOrigin: '',
   messageCount: 0,
 }
 
 export const useMessageData = create<State & Actions>()((set, get) => ({
   ...INITIAL_STATE,
   incrementMessageCount: () => {
-    const { currentOrigin, messageCount } = get()
-    if (!currentOrigin) return
+    const { messageCount } = get()
+    const { parentOrigin } = useParentData.getState()
+    if (!parentOrigin) return
 
     const incrementedCount = messageCount + 1
-    messageCountStorage.set(incrementedCount.toString(), currentOrigin)
+    messageCountStorage.set(incrementedCount.toString(), parentOrigin)
     set({ messageCount: incrementedCount })
   },
   init: () => {
-    const currentOrigin =
-      window.parent?.location.origin ?? window.location.origin
+    const { parentOrigin } = useParentData.getState()
 
-    let messageCount = parseInt(messageCountStorage.get(currentOrigin) || '0')
+    let messageCount = parseInt(messageCountStorage.get(parentOrigin) || '0')
     if (isNaN(messageCount)) messageCount = 0
 
-    set({ currentOrigin, messageCount })
+    set({ messageCount })
   },
 }))
