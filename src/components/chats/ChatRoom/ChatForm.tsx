@@ -25,7 +25,6 @@ import {
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
-  hubId: string
   onSubmit?: () => void
   replyTo?: string
   clearReplyTo?: () => void
@@ -38,7 +37,6 @@ function processMessage(message: string) {
 export default function ChatForm({
   className,
   chatId,
-  hubId,
   onSubmit,
   replyTo,
   clearReplyTo,
@@ -197,7 +195,7 @@ export default function ChatForm({
           )
         }}
       </CaptchaInvisible>
-      <EmailSubscribeModal chatId={chatId} hubId={hubId} />
+      <EmailSubscribeModal chatId={chatId} />
     </>
   )
 }

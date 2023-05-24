@@ -34,14 +34,9 @@ type ChatMetadata = { title: string; body: string; image: string }
 
 export type ChatPageProps = {
   chatId?: string
-  hubId: string
   stubMetadata?: ChatMetadata
 }
-export default function ChatPage({
-  chatId = '',
-  hubId,
-  stubMetadata,
-}: ChatPageProps) {
+export default function ChatPage({ chatId = '', stubMetadata }: ChatPageProps) {
   const router = useRouter()
 
   const { data: chat } = getPostQuery.useQuery(chatId)
@@ -85,7 +80,6 @@ export default function ChatPage({
     >
       <ChatPageNavbarExtension />
       <ChatRoom
-        hubId={hubId}
         chatId={chatId}
         asContainer
         className='flex-1 overflow-hidden'
