@@ -3,9 +3,9 @@ import HubsPage from '@/modules/chat/HubsPage'
 import { HubsPageProps } from '@/modules/chat/HubsPage/HubsPage'
 import { AppCommonProps } from '@/pages/_app'
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
-import { getSubsocialApi } from '@/utils/subsocial'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 
 export const getStaticProps = getCommonStaticProps<

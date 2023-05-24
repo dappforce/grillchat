@@ -1,8 +1,8 @@
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import {
   MinimalUsageQueue,
   MinimalUsageQueueWithTimeLimit,
 } from '@/utils/data-structure'
-import { getSubsocialApi } from '@/utils/subsocial'
 import {
   IpfsCommonContent,
   PostContent,
