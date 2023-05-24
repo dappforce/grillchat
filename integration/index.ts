@@ -1,4 +1,5 @@
 type QueryParams = {
+  parent?: string
   order?: string
   theme?: string
   resourceId?: string
@@ -126,6 +127,7 @@ const grill = {
 
     const query = new QueryParamsBuilder()
 
+    query.set('parent', window.location.origin)
     if (mergedConfig.order) query.set('order', mergedConfig.order.join(','))
     if (mergedConfig.theme) query.set('theme', mergedConfig.theme)
 
