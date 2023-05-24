@@ -1,6 +1,5 @@
 import { getPostQuery } from '@/services/api/query'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
-import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { HiCircleStack } from 'react-icons/hi2'
@@ -12,13 +11,6 @@ import AboutModal, { AboutModalProps } from './AboutModal'
 export type AboutChatModalProps = ModalFunctionalityProps & {
   chatId: string
   messageCount?: number
-}
-
-type ContentData = { chat: PostData; url: string }
-type Content = {
-  title: string
-  content: (data: ContentData) => string | undefined
-  withCopyButton?: boolean
 }
 
 export default function AboutChatModal({

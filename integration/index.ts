@@ -1,10 +1,15 @@
 type QueryParams = {
   order?: string
   theme?: string
+  resourceId?: string
+  metadata?: string
   enableBackButton?: string
   enableLoginButton?: string
   enableInputAutofocus?: string
 }
+
+type SocialResourceLike = { toResourceId: () => string }
+type ResourceMetadata = { title: string; body: string; image: string }
 
 class QueryParamsBuilder {
   private query: URLSearchParams
@@ -24,28 +29,41 @@ class QueryParamsBuilder {
   }
 }
 
-type Channel = {
+type ChannelSettings = {
+  /** If set to `true`, it will show the back button in the channel iframe. Default to `false` */
+  enableBackButton?: boolean
+  /** If set to `true`, it will show the login button in the channel iframe. Default to `false` */
+  enableLoginButton?: boolean
+  /** If set to `true`, it will autofocus on the message input when the iframe is loaded. The default behavior is `true`, except on touch devices. If set `true`, it will autofocus the input on all devices. */
+  enableInputAutofocus?: boolean
+}
+
+type ChanelTypeChannel = {
   /** The type of the channel. This should be set to `'channel'` */
   type: 'channel'
   /** The id of the channel. This should be the post id of the topic that you want to open */
   id: string
-  /** The settings of the channel to customize the look and feel of the UI */
-  settings: {
-    /** If set to `true`, it will show the back button in the channel iframe. Default to `false` */
-    enableBackButton?: boolean
-    /** If set to `true`, it will show the login button in the channel iframe. Default to `false` */
-    enableLoginButton?: boolean
-    /** If set to `true`, it will autofocus on the message input when the iframe is loaded. The default behavior is `true`, except on touch devices. If set `true`, it will autofocus the input on all devices. */
-    enableInputAutofocus?: boolean
-  }
 }
+type ChanelTypeResource = {
+  /** The type of the channel. This should be set to `'channel'` */
+  type: 'resource'
+  /** The SocialResource instance of the channel. This should be created from @subsocial/resource-discussions if necessary */
+  resource: SocialResourceLike
+  /** The metadata for new channel, if it's not existing and will be created automatically. */
+  metadata: ResourceMetadata
+}
+
+type Channel = { settings: ChannelSettings } & (
+  | ChanelTypeChannel
+  | ChanelTypeResource
+)
 
 type Theme = 'light' | 'dark'
 export type GrillConfig = {
   /** The `id` of the div that you want to render the chat to. Default to `grill` */
   widgetElementId?: string
   /** Info of the space you want to use */
-  hub?: {
+  hub: {
     /** The `space id` or `domain name` of your space. */
     id: string
   }
@@ -88,8 +106,22 @@ const grill = {
 
     let baseUrl = `https://grill.chat/${mergedConfig.hub.id}`
     const channelConfig = mergedConfig.channel
+    let resourceId: string | null = null
+    let resourceMetadata: ResourceMetadata | null = null
+
     if (channelConfig) {
-      baseUrl += `/${channelConfig.id}`
+      switch (channelConfig.type) {
+        case 'channel':
+          baseUrl += `/${channelConfig.id}`
+          break
+        case 'resource':
+          baseUrl += `/resource`
+          resourceId = channelConfig.resource.toResourceId()
+          resourceMetadata = channelConfig.metadata
+          break
+        default:
+          throw new Error('Unsupportable channel type')
+      }
     }
 
     const query = new QueryParamsBuilder()
@@ -102,8 +134,21 @@ const grill = {
         ...DEFAULT_CHANNEL_SETTINGS,
         ...channelConfig.settings,
       }
+
       query.set('enableBackButton', channelSettings.enableBackButton + '')
       query.set('enableLoginButton', channelSettings.enableLoginButton + '')
+      if (resourceId) query.set('resourceId', encodeURIComponent(resourceId))
+
+      if (resourceMetadata)
+        try {
+          query.set(
+            'metadata',
+            encodeURIComponent(JSON.stringify(resourceMetadata))
+          )
+        } catch (e) {
+          throw new Error('Resource metadata has invalid value.')
+        }
+
       if (channelSettings.enableInputAutofocus !== undefined)
         query.set(
           'enableInputAutofocus',

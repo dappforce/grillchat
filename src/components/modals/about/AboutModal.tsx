@@ -59,7 +59,7 @@ export default function AboutModal({
                 key={text}
                 className={cx(
                   'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 last:border-none',
-                  'transition focus-visible:bg-background-lightest hover:bg-background-lightest',
+                  'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
                   className
                 )}
                 onClick={onClick}
