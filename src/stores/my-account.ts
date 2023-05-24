@@ -87,7 +87,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     _unsubscribeEnergy()
     if (!address) return
 
-    const { getSubsocialApi } = await import('@/utils/subsocial')
+    const { getSubsocialApi } = await import(
+      '@/subsocial-query/subsocial/connection'
+    )
 
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
