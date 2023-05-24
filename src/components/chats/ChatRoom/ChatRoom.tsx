@@ -9,7 +9,6 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
   chatId: string
-  hubId?: string
 }
 
 export default function ChatRoom({
@@ -17,7 +16,6 @@ export default function ChatRoom({
   asContainer,
   scrollableContainerClassName,
   chatId,
-  hubId,
   ...props
 }: ChatRoomProps) {
   const [replyTo, setReplyTo] = useState<string | undefined>(undefined)
@@ -61,7 +59,6 @@ export default function ChatRoom({
         <ChatForm
           replyTo={replyTo}
           onSubmit={scrollToBottom}
-          hubId={hubId}
           chatId={chatId}
           clearReplyTo={closeReply}
         />

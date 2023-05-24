@@ -17,7 +17,6 @@ import Input from '../inputs/Input'
 import Modal from './Modal'
 
 export type EmailSubscribeModalProps = {
-  hubId: string
   chatId: string
 }
 
@@ -26,7 +25,6 @@ const subscribedStorage = new LocalStorage(() => SUBSCRIBED_STORAGE_KEY)
 
 export default function EmailSubscribeModal({
   chatId,
-  hubId,
 }: EmailSubscribeModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { subscribeMessageCountThreshold } = useConfigContext()
@@ -86,7 +84,7 @@ export default function EmailSubscribeModal({
     }
 
     sendEvent('subscribe with email')
-    subscribeWithEmail({ email, chatId, hubId })
+    subscribeWithEmail({ email, chatId })
   }
 
   return (
