@@ -1,5 +1,6 @@
 import { createUserId } from '@/services/api/mutations'
 import { type BrowserClient } from '@amplitude/analytics-types'
+import { useParentData } from './parent'
 import { create } from './utils'
 
 type State = {
@@ -42,15 +43,24 @@ export const useAnalytics = create<State & Actions>()((set, get) => ({
   sendEvent: async (name: string, properties?: Record<string, string>) => {
     const { amp, userId } = get()
     const { event } = await import('nextjs-google-analytics')
-    amp?.logEvent(name, properties)
+
+    const { parentOrigin } = useParentData.getState()
+    const commonProperties = { from: parentOrigin }
+    const mergedProperties = {
+      ...commonProperties,
+      ...properties,
+    }
+
+    amp?.logEvent(name, mergedProperties)
     event(name, {
       userId,
-      category: properties ? JSON.stringify(properties) : undefined,
+      category: mergedProperties ? JSON.stringify(mergedProperties) : undefined,
     })
   },
   init: async () => {
     const { createAmplitudeInstance } = await import('@/analytics/amplitude')
     const amp = await createAmplitudeInstance()
+
     set({ amp })
   },
 }))

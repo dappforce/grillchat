@@ -16,7 +16,6 @@ import {
   getUrlQuery,
 } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
-import { PostData } from '@subsocial/api/types'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import { useRouter } from 'next/router'
@@ -31,9 +30,15 @@ const AboutChatModal = dynamic(
   }
 )
 
-export type ChatPageProps = { chatId: string }
-export default function ChatPage({ chatId }: ChatPageProps) {
+type ChatMetadata = { title: string; body: string; image: string }
+
+export type ChatPageProps = {
+  chatId?: string
+  stubMetadata?: ChatMetadata
+}
+export default function ChatPage({ chatId = '', stubMetadata }: ChatPageProps) {
   const router = useRouter()
+
   const { data: chat } = getPostQuery.useQuery(chatId)
   const { data: messageIds } = useCommentIdsByPostId(chatId, {
     subscribe: true,
@@ -47,7 +52,7 @@ export default function ChatPage({ chatId }: ChatPageProps) {
     setLastReadMessageId(lastId)
   }, [setLastReadMessageId, messageIds])
 
-  const content = chat?.content
+  const content = chat?.content ?? stubMetadata
 
   return (
     <DefaultLayout
@@ -62,7 +67,8 @@ export default function ChatPage({ chatId }: ChatPageProps) {
               backButton={backButton}
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
               messageCount={messageIds?.length ?? 0}
-              chat={chat}
+              chatMetadata={content}
+              chatId={chatId}
             />
             <div className='flex items-center gap-4'>
               {colorModeToggler}
@@ -85,13 +91,15 @@ export default function ChatPage({ chatId }: ChatPageProps) {
 function NavbarChatInfo({
   image,
   messageCount,
-  chat,
   backButton,
+  chatMetadata,
+  chatId,
 }: {
   image: ImageProps['src']
   messageCount: number
-  chat?: PostData | null
   backButton: JSX.Element
+  chatMetadata?: ChatMetadata
+  chatId?: string
 }) {
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const prevIsOpenAboutChatModal = usePrevious(isOpenAboutChatModal)
@@ -122,7 +130,7 @@ function NavbarChatInfo({
     router.push(getCurrentUrlWithoutQuery(), undefined, { shallow: true })
   }, [router])
 
-  const chatTitle = chat?.content?.title
+  const chatTitle = chatMetadata?.title
 
   return (
     <div className='flex flex-1 items-center'>
@@ -131,7 +139,10 @@ function NavbarChatInfo({
         variant='transparent'
         interactive='none'
         size='noPadding'
-        className='flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left'
+        className={cx(
+          'flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left',
+          !chatId && 'cursor-pointer'
+        )}
         onClick={() => setIsOpenAboutChatModal(true)}
       >
         <Image
@@ -154,12 +165,14 @@ function NavbarChatInfo({
         </div>
       </Button>
 
-      <AboutChatModal
-        isOpen={isOpenAboutChatModal}
-        closeModal={() => setIsOpenAboutChatModal(false)}
-        chatId={chat?.id}
-        messageCount={messageCount}
-      />
+      {chatId && (
+        <AboutChatModal
+          isOpen={isOpenAboutChatModal}
+          closeModal={() => setIsOpenAboutChatModal(false)}
+          chatId={chatId}
+          messageCount={messageCount}
+        />
+      )}
     </div>
   )
 }

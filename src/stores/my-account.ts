@@ -87,7 +87,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     _unsubscribeEnergy()
     if (!address) return
 
-    const { getSubsocialApi } = await import('@/utils/subsocial')
+    const { getSubsocialApi } = await import(
+      '@/subsocial-query/subsocial/connection'
+    )
 
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
@@ -95,6 +97,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       address,
       (energyAmount) => {
         const parsedEnergy = parseFloat(energyAmount.toPrimitive().toString())
+        console.log('Current energy: ', parsedEnergy)
         set({
           energy: parsedEnergy,
           _unsubscribeEnergy: () => unsub.then((unsub) => unsub()),

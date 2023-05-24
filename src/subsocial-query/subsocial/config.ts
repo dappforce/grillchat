@@ -1,5 +1,5 @@
+import { SUBSTRATE_URL } from '@/constants/subsocial'
 import type { SubsocialApi } from '@subsocial/api'
-import { getSubsocialApi } from './connection'
 
 export interface SubsocialConnectionConfig {
   substrateUrl: string
@@ -8,31 +8,14 @@ export interface SubsocialConnectionConfig {
   postConnectConfig?: (api: SubsocialApi) => void
 }
 
-const DEFAULT_STAGING_CONFIG: SubsocialConnectionConfig = {
-  substrateUrl: 'wss://rco-para.subsocial.network',
+// TODO: research better way to have this config set outside of this subsocial-query folder
+let config: SubsocialConnectionConfig = {
+  substrateUrl: SUBSTRATE_URL,
   ipfsNodeUrl: 'https://ipfs.subsocial.network',
+  ipfsAdminNodeUrl: 'https://gw.crustfiles.app',
 }
-const DEFAULT_PROD_CONFIG: SubsocialConnectionConfig = {
-  substrateUrl: 'wss://para.f3joule.space',
-  ipfsNodeUrl: 'https://ipfs.subsocial.network',
-}
-
-const presets = {
-  staging: DEFAULT_STAGING_CONFIG,
-  prod: DEFAULT_PROD_CONFIG,
-}
-const DEFAULT_CONFIG_PRESET: keyof typeof presets = 'staging'
-
-let config: SubsocialConnectionConfig = presets[DEFAULT_CONFIG_PRESET]
 export function getConnectionConfig() {
   return config
-}
-export const setSubsocialConfig = (
-  preset: keyof typeof presets,
-  customConfig?: Partial<SubsocialConnectionConfig>
-) => {
-  config = { ...presets[preset], ...customConfig }
-  return getSubsocialApi
 }
 
 export interface TxCallbackInfo {

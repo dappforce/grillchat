@@ -94,7 +94,7 @@ function NoSearchResultScreen({
         alt=''
         role='presentation'
       />
-      <span className='text-3xl font-bold'>😳 No results</span>
+      <span className='text-3xl font-semibold'>😳 No results</span>
       <p className='text-text-muted'>
         Sorry, no chats were found with that name. However, our support team is
         ready to help! Ask them to create a personalized chat tailored to your

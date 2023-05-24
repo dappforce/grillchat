@@ -24,7 +24,8 @@ const panelStyles = cva(
         sm: cx('max-w-sm'),
         md: cx('max-w-md'),
         lg: cx('max-w-lg'),
-        'full-screen': cx('max-w-screen-lg'),
+        'screen-lg': cx('max-w-screen-lg'),
+        'full-screen': cx('max-w-none'),
       },
     },
     defaultVariants: { size: 'lg' },
@@ -40,6 +41,8 @@ export type ModalProps = ModalFunctionalityProps &
     title?: React.ReactNode
     onBackClick?: () => void
     description?: React.ReactNode
+    containerClassName?: string
+    panelClassName?: string
     contentClassName?: string
     initialFocus?: React.RefObject<HTMLElement>
     withFooter?: boolean
@@ -49,6 +52,8 @@ export default function Modal({
   children,
   titleClassName,
   contentClassName,
+  panelClassName,
+  containerClassName,
   size,
   descriptionClassName,
   closeModal,
@@ -81,7 +86,12 @@ export default function Modal({
         </Transition.Child>
 
         <div className='fixed inset-0 w-screen overflow-y-auto'>
-          <div className='flex min-h-full items-center justify-center p-4 text-center'>
+          <div
+            className={cx(
+              'flex min-h-full items-center justify-center p-4 text-center',
+              containerClassName
+            )}
+          >
             <Transition.Child
               as={Fragment}
               enter='ease-out duration-300'
@@ -91,7 +101,9 @@ export default function Modal({
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className={cx(panelStyles({ size }))}>
+              <Dialog.Panel
+                className={cx(panelStyles({ size }), panelClassName)}
+              >
                 <div
                   className={cx(
                     'p-6 text-left align-middle',

@@ -7,11 +7,11 @@ import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getMainSpaceId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { prefetchBlockedEntities } from '@/utils/server'
-import { isValidNumber } from '@/utils/strings'
-import { getSubsocialApi } from '@/utils/subsocial'
+import { validateNumber } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { getPostsFromCache } from '../api/posts'
@@ -28,7 +28,7 @@ export const getStaticPaths = async () => {
 function getSpaceIdFromParam(paramSpaceId: string) {
   const spaceIdOrAlias = paramSpaceId ?? getMainSpaceId()
   let spaceId = spaceIdOrAlias
-  if (!isValidNumber(spaceIdOrAlias)) {
+  if (!validateNumber(spaceIdOrAlias)) {
     const spaceIdFromAlias = getSpaceIdFromAlias(spaceIdOrAlias)
     if (spaceIdFromAlias) {
       spaceId = spaceIdFromAlias

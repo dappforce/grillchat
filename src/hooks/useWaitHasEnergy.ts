@@ -7,27 +7,26 @@ export default function useWaitHasEnergy() {
 
   const hasEnergyResolvers = useRef<(() => void)[]>([])
 
-  const generateNewPromise = useCallback(
-    () =>
-      new Promise<void>((resolve) => {
-        hasEnergyResolvers.current.push(() => resolve())
-      }),
-    []
-  )
+  const generateNewPromise = useCallback(() => {
+    return new Promise<void>((resolve) => {
+      hasEnergyResolvers.current.push(() => resolve())
+    })
+  }, [])
   // save current and previous account's promises, so there are no dangling promises
   const [hasEnergyPromises, setHasEnergyPromises] = useState<Promise<void>[]>(
     () => [generateNewPromise()]
   )
 
   useEffect(() => {
-    setHasEnergyPromises((prev) => [...prev, generateNewPromise()])
+    const newPromise = generateNewPromise()
+    setHasEnergyPromises((prev) => [...prev, newPromise])
   }, [address, generateNewPromise])
 
   useEffect(() => {
     if (!energy || energy <= 0) return
     hasEnergyResolvers.current.forEach((resolve) => resolve())
     hasEnergyResolvers.current = []
-  }, [energy, generateNewPromise])
+  }, [energy, generateNewPromise, hasEnergyPromises])
 
   return () => hasEnergyPromises[hasEnergyPromises.length - 1]
 }
