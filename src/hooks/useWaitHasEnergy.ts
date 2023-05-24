@@ -25,7 +25,6 @@ export default function useWaitHasEnergy() {
 
   useEffect(() => {
     if (!energy || energy <= 0) return
-    console.log('Energy updated', energy)
     hasEnergyResolvers.current.forEach((resolve) => resolve())
     hasEnergyResolvers.current = []
   }, [energy, generateNewPromise])
