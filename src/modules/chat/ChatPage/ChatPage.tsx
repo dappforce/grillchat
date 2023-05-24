@@ -34,7 +34,7 @@ type ChatMetadata = { title: string; body: string; image: string }
 
 export type ChatPageProps = {
   chatId?: string
-  hubId: string
+  hubId?: string
   stubMetadata?: ChatMetadata
 }
 export default function ChatPage({

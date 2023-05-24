@@ -9,7 +9,7 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
   chatId: string
-  hubId: string
+  hubId?: string
 }
 
 export default function ChatRoom({
