@@ -18,12 +18,14 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
   const { mutateAsync: saveFile } = useSaveFile()
 
-  const waitHasBalance = useWaitHasEnergy()
+  const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<SendMessageParams, string>(
     async () => ({ address, signer }),
     async (params, { substrateApi }) => {
-      await waitHasBalance()
+      console.log('waiting energy...')
+      await waitHasEnergy()
+      console.log('energy updated')
       const { cid, success } = await saveFile({
         body: params.message,
         inReplyTo: ReplyWrapper(params.replyTo),
