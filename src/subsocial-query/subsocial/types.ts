@@ -16,6 +16,10 @@ export interface DefaultSubsocialMutationConfig<Data, Context>
     onStart?: (data: OptimisticData<Data>, context: Context) => void
     onSend?: (data: OptimisticData<Data>, context: Context) => void
     onError?: (data: OptimisticData<Data>, context: Context) => void
-    onSuccess?: (data: OptimisticData<Data>, context: Context) => void
+    onSuccess?: (
+      data: OptimisticData<Data>,
+      context: Context,
+      txResult: any
+    ) => void
   }
 }

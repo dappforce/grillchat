@@ -9,6 +9,9 @@ module.exports = {
       fontFamily: {
         sans: ['var(--source-sans-pro)', ...defaultTheme.fontFamily.sans],
       },
+      fontSize: {
+        '4.5xl': '2.5rem',
+      },
       colors: {
         background: 'rgb(var(--background) / <alpha-value>)',
         'background-light': 'rgb(var(--background-light) / <alpha-value>)',

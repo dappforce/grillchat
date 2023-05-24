@@ -1,7 +1,9 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import { ConfigProvider, useConfigContext } from '@/contexts/ConfigContext'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import { QueryProvider } from '@/services/provider'
-import { initAllStores } from '@/stores/utils'
+import { useSendEvent } from '@/stores/analytics'
+import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
@@ -19,7 +21,7 @@ export type AppCommonProps = {
 }
 
 const sourceSansPro = Source_Sans_Pro({
-  weight: ['400', '600'],
+  weight: ['400', '600', '700'],
   subsets: ['latin'],
 })
 
@@ -46,6 +48,13 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
     isInitialized.current = true
     initAllStores()
   }, [])
+
+  const sendEvent = useSendEvent()
+  const isInIframe = useIsInIframe()
+  useEffect(() => {
+    if (!isInIframe) return
+    sendEvent('loaded in iframe')
+  }, [isInIframe, sendEvent])
 
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>

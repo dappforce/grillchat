@@ -7,7 +7,7 @@ import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getCommonStaticProps } from '@/utils/page'
 import { prefetchBlockedEntities } from '@/utils/server'
 import { getIdFromSlug } from '@/utils/slug'
-import { isValidNumber } from '@/utils/strings'
+import { validateNumber } from '@/utils/strings'
 import { getSubsocialApi } from '@/utils/subsocial'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
@@ -22,7 +22,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 function getValidatedChatId(slugParam: string) {
   const chatId = getIdFromSlug(slugParam)
-  if (!chatId || !isValidNumber(chatId)) return undefined
+  if (!chatId || !validateNumber(chatId)) return undefined
 
   return chatId
 }
@@ -49,6 +49,7 @@ export const getStaticProps = getCommonStaticProps<
     head: { disableZoom: true },
   }),
   async (context) => {
+    const spaceId = context.params?.spaceId as string
     const slugParam = context.params?.slug as string
     const chatId = getValidatedChatId(slugParam)
     if (!chatId) return undefined
@@ -82,6 +83,7 @@ export const getStaticProps = getCommonStaticProps<
       props: {
         dehydratedState: dehydrate(queryClient),
         chatId,
+        hubId: spaceId,
         head: {
           title,
           description: desc,

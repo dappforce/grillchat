@@ -1,5 +1,4 @@
 import { getPostQuery } from '@/services/api/query'
-import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
@@ -35,6 +34,7 @@ export default function AboutChatModal({
       content: chatUrl,
       withCopyButton: true,
       redirectTo: chatUrl,
+      openInNewTab: true,
     },
   ]
 
@@ -42,7 +42,6 @@ export default function AboutChatModal({
     {
       text: 'Show Metadata',
       icon: HiCircleStack,
-      className: cx('text-text-secondary'),
       onClick: () => setIsOpenMetadataModal(true),
     },
   ]

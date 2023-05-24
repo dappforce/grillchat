@@ -27,7 +27,7 @@ export const buttonStyles = cva('relative rounded-full transition', {
       all: cx(
         // TODO: find solution why filter makes element move around in safari
         // 'hover:brightness-110 focus:brightness-110',
-        interactionRingStyles({ color: 'background', variant: 'small-offset' })
+        interactionRingStyles()
       ),
       'brightness-only': cx(
         ''
@@ -72,7 +72,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     children = (
       <>
         <span className='opacity-0'>{children}</span>
-        <div className='absolute top-1/2 left-1/2 flex -translate-y-1/2 -translate-x-1/2 items-center'>
+        <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center'>
           <span className='mr-2'>Loading</span> <Spinner className='h-6 w-6' />
         </div>
       </>
