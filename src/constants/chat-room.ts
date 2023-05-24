@@ -4,7 +4,6 @@ const ALIAS_TO_SPACE_ID_MAP: Record<string, string> = {
   // nft: '1009',
   polkassembly: '1010',
   events: '1011',
-  lp: '1012',
   'polkadot-study': '1014',
   zeitgeist: '1015',
 }
