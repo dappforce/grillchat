@@ -1,7 +1,7 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import { ConfigProvider, useConfigContext } from '@/contexts/ConfigContext'
 import { QueryProvider } from '@/services/provider'
-import { initAllStores } from '@/stores/utils'
+import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
