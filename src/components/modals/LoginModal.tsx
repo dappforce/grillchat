@@ -5,9 +5,11 @@ import { AuthenticationMethods, useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { getWeb3AuthClientId } from '@/utils/env/client'
 import { SyntheticEvent, useRef, useState } from 'react'
+import { toast } from 'react-hot-toast'
 import Button from '../Button'
 import CaptchaInvisible from '../captcha/CaptchaInvisible'
 import TextArea from '../inputs/TextArea'
+import Toast from '../Toast'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
 export type LoginModalProps = ModalFunctionalityProps & {
