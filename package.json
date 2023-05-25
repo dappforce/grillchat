@@ -22,7 +22,7 @@
     "@dicebear/core": "^5.3.4",
     "@floating-ui/react": "^0.22.2",
     "@headlessui/react": "^1.7.11",
-    "@subsocial/api": "^0.8.10",
+    "@subsocial/api": "^0.8.12",
     "@tanstack/react-query": "^4.24.10",
     "@types/lodash.truncate": "^4.4.7",
     "@types/node": "18.14.1",
