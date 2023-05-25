@@ -8,6 +8,7 @@ import { getMainSpaceId } from '@/utils/env/client'
 import dynamic from 'next/dynamic'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
+import MyChatsContent from './MyChatsContent'
 
 const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
   ssr: false,
@@ -42,7 +43,9 @@ export default function HubsPage(props: HubsPageProps) {
     {
       id: 'my-chats',
       text: 'My Chats',
-      content: renderHubsContent(<span>asdfasdf</span>),
+      content: renderHubsContent(
+        <MyChatsContent getSearchResults={getSearchResults} />
+      ),
     },
     {
       id: 'hot-chats',
