@@ -70,11 +70,11 @@ export default function ChatRoom({
           />
         ) : (
           <JoinChatWrapper>
-            {({ isLoading, mutate }) => (
+            {({ isLoading, mutateAsync }) => (
               <Button
                 size='lg'
                 isLoading={isLoading}
-                onClick={() => mutate({ chatId })}
+                onClick={() => mutateAsync({ chatId })}
               >
                 Join
               </Button>

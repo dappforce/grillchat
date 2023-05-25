@@ -94,6 +94,6 @@ export function useLeaveChat(config?: MutationConfig<LeaveChatParams>) {
   )
 }
 export const LeaveChatWrapper = createMutationWrapper(
-  useJoinChat,
+  useLeaveChat,
   'Failed to leave chat'
 )

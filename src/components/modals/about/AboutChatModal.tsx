@@ -77,11 +77,11 @@ export default function AboutChatModal({
         bottomElement={
           !isJoinedToChat ? (
             <JoinChatWrapper>
-              {({ mutate, isLoading }) => (
+              {({ mutateAsync, isLoading }) => (
                 <Button
                   size='lg'
                   isLoading={isLoading}
-                  onClick={() => mutate({ chatId })}
+                  onClick={() => mutateAsync({ chatId })}
                   className='mt-2 w-full'
                 >
                   Join
@@ -92,7 +92,7 @@ export default function AboutChatModal({
         }
       />
       <LeaveChatWrapper>
-        {({ isLoading, mutate }) => (
+        {({ isLoading, mutateAsync }) => (
           <ConfirmationModal
             isOpen={isOpenConfirmation}
             closeModal={() => setIsOpenConfirmation(false)}
@@ -100,7 +100,9 @@ export default function AboutChatModal({
             primaryButtonProps={{ children: 'No, stay here' }}
             secondaryButtonProps={{
               children: 'Yes, leave chat',
-              onClick: () => mutate({ chatId }),
+              onClick: async () => {
+                await mutateAsync({ chatId })
+              },
               isLoading,
             }}
           />

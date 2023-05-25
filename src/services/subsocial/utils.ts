@@ -27,13 +27,13 @@ export function createMutationWrapper<Data, ReturnValue>(
     children,
   }: {
     children: (params: {
-      mutate: (variables: Data) => void
+      mutateAsync: (variables: Data) => Promise<ReturnValue>
       isLoading: boolean
     }) => JSX.Element
   }) {
-    const { mutate, isLoading, error } = useMutationHook()
+    const { mutateAsync, isLoading, error } = useMutationHook()
     useToastError(error, errorMessage)
 
-    return children({ mutate, isLoading })
+    return children({ mutateAsync, isLoading })
   }
 }
