@@ -36,6 +36,8 @@ async function getFollowedPostIdsByAddress({
   api,
   data: address,
 }: SubsocialQueryData<string>) {
+  if (!address) return []
+
   const substrateApi = await api.substrateApi
   const rawFollowedPosts =
     await substrateApi.query.postFollows.postsFollowedByAccount(address)

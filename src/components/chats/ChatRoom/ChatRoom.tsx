@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import Container from '@/components/Container'
+import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import useToastError from '@/hooks/useToastError'
 import { useJoinChat } from '@/services/subsocial/posts/mutation'
 import { cx } from '@/utils/class-names'
@@ -41,8 +42,7 @@ export default function ChatRoom({
 
   const closeReply = () => setReplyTo(undefined)
 
-  // TODO: change this to correct data
-  const hasJoined = false
+  const hasJoined = useIsJoinedToChat(chatId)
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
