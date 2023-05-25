@@ -1,4 +1,5 @@
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
+import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import { getPostQuery } from '@/services/api/query'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
@@ -11,9 +12,8 @@ export default function MyChatsContent({
   getSearchResults,
 }: MyChatsContentProps) {
   const address = useMyAccount((state) => state.address)
-  const { data: chatIds } = getFollowedPostIdsByAddressQuery.useQuery(
-    address ?? ''
-  )
+  const { data: chatIds, isLoading } =
+    getFollowedPostIdsByAddressQuery.useQuery(address ?? '')
 
   const sortedIds = useSortChatIdsByLatestMessage(chatIds)
 
@@ -24,10 +24,30 @@ export default function MyChatsContent({
     'content.title',
   ])
 
+  if (isLoading) {
+    return <Loading />
+  } else if (!address || searchResults.length === 0) {
+    return <NoResult />
+  }
+
   return (
     <ChatPreviewList
       chats={searchResults}
       focusedElementIndex={focusedElementIndex}
     />
   )
+}
+
+function Loading() {
+  return (
+    <div className='flex flex-col'>
+      <ChatPreviewSkeleton asContainer />
+      <ChatPreviewSkeleton asContainer />
+      <ChatPreviewSkeleton asContainer />
+    </div>
+  )
+}
+
+function NoResult() {
+  return <div>asdfasdf</div>
 }
