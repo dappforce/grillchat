@@ -44,7 +44,7 @@ export default function HubsPage(props: HubsPageProps) {
       id: 'my-chats',
       text: 'My Chats',
       content: renderHubsContent(
-        <MyChatsContent getSearchResults={getSearchResults} />
+        <MyChatsContent search={search} getSearchResults={getSearchResults} />
       ),
     },
     {

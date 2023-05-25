@@ -2,6 +2,7 @@ import NoResultImage from '@/assets/graphics/no-result.png'
 import Button from '@/components/Button'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
+import NoChatsFound from '@/components/chats/NoChatsFound'
 import Container from '@/components/Container'
 import { getPostQuery } from '@/services/api/query'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
@@ -10,10 +11,13 @@ import Image from 'next/image'
 import useSortChatIdsByLatestMessage from '../hooks/useSortChatIdsByLatestMessage'
 import { CommonHubContentProps } from './HubsPage'
 
-export type MyChatsContentProps = CommonHubContentProps
+export type MyChatsContentProps = CommonHubContentProps & {
+  search: string
+}
 
 export default function MyChatsContent({
   getSearchResults,
+  search,
 }: MyChatsContentProps) {
   const address = useMyAccount((state) => state.address)
   const { data: chatIds, isLoading } =
@@ -31,7 +35,8 @@ export default function MyChatsContent({
   if (isLoading) {
     return <Loading />
   } else if (!address || searchResults.length === 0) {
-    return <NoSearchResultScreen />
+    if (search) return <NoChatsFound search={search} />
+    return <NoChats />
   }
 
   return (
@@ -52,7 +57,7 @@ function Loading() {
   )
 }
 
-function NoSearchResultScreen() {
+function NoChats() {
   return (
     <Container
       as='div'
