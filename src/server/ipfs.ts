@@ -1,24 +1,5 @@
-import {
-  getBlockedAddressesQuery,
-  getBlockedCidsQuery,
-  getBlockedMessageIdsInChatIdQuery,
-} from '@/services/moderation/query'
+import { getCrustIpfsAuth, getIpfsPinUrl } from '@/utils/env/server'
 import { SubsocialIpfsApi } from '@subsocial/api'
-import { QueryClient } from '@tanstack/react-query'
-import { getCrustIpfsAuth, getIpfsPinUrl } from './env/server'
-
-export function prefetchBlockedEntities(
-  queryClient: QueryClient,
-  chatIds: string[]
-) {
-  return Promise.all([
-    getBlockedCidsQuery.fetchQuery(queryClient, null),
-    getBlockedAddressesQuery.fetchQuery(queryClient, null),
-    ...chatIds.map((id) =>
-      getBlockedMessageIdsInChatIdQuery.fetchQuery(queryClient, id)
-    ),
-  ])
-}
 
 export function getIpfsApi() {
   const CRUST_IPFS_CONFIG = {
