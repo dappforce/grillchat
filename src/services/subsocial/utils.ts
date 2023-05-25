@@ -32,7 +32,7 @@ export function createMutationWrapper<Data, ReturnValue>(
     }) => JSX.Element
   }) {
     const { mutate, isLoading, error } = useMutationHook()
-    useToastError(error, 'Failed to join chat')
+    useToastError(error, errorMessage)
 
     return children({ mutate, isLoading })
   }

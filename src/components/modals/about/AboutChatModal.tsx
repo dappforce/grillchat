@@ -1,7 +1,10 @@
 import Button from '@/components/Button'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
-import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
+import {
+  JoinChatWrapper,
+  LeaveChatWrapper,
+} from '@/services/subsocial/posts/mutation'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
@@ -62,10 +65,6 @@ export default function AboutChatModal({
     })
   }
 
-  const leaveChat = () => {
-    // TODO: implementation here
-  }
-
   return (
     <>
       <AboutModal
@@ -92,13 +91,21 @@ export default function AboutChatModal({
           ) : null
         }
       />
-      <ConfirmationModal
-        isOpen={isOpenConfirmation}
-        closeModal={() => setIsOpenConfirmation(false)}
-        title='🤔 Are you sure you want to leave this chat?'
-        primaryButton={{ text: 'No, stay here' }}
-        secondaryButton={{ text: 'Yes, leave chat', onClick: leaveChat }}
-      />
+      <LeaveChatWrapper>
+        {({ isLoading, mutate }) => (
+          <ConfirmationModal
+            isOpen={isOpenConfirmation}
+            closeModal={() => setIsOpenConfirmation(false)}
+            title='🤔 Are you sure you want to leave this chat?'
+            primaryButtonProps={{ children: 'No, stay here' }}
+            secondaryButtonProps={{
+              children: 'Yes, leave chat',
+              onClick: () => mutate({ chatId }),
+              isLoading,
+            }}
+          />
+        )}
+      </LeaveChatWrapper>
       <MetadataModal
         closeModal={() => setIsOpenMetadataModal(false)}
         isOpen={isOpenMetadataModal}

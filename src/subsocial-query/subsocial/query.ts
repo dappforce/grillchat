@@ -81,7 +81,10 @@ export function createSubsocialQuery<Data, ReturnValue>({
     setQueryData: (
       client: QueryClient,
       data: Data,
-      value: Updater<ReturnValue | null | undefined, ReturnValue | null>
+      value: Updater<
+        ReturnValue | null | undefined,
+        ReturnValue | null | undefined
+      >
     ) => {
       client.setQueryData(getQueryKey(data), value ?? null)
     },

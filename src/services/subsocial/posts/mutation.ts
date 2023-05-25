@@ -1,8 +1,8 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { useQueryClient } from '@tanstack/react-query'
+import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import { getFollowedPostIdsByAddressQuery } from './query'
 
@@ -11,13 +11,12 @@ export type JoinChatParams = {
 }
 export function useJoinChat(config?: MutationConfig<JoinChatParams>) {
   const client = useQueryClient()
-  const address = useMyAccount((state) => state.address ?? '')
-  const signer = useMyAccount((state) => state.signer)
+  const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<JoinChatParams, null>(
-    async () => ({ address, signer }),
+    getWallet,
     async ({ chatId }, { substrateApi }) => {
       console.log('waiting energy...')
       await waitHasEnergy()
@@ -35,9 +34,7 @@ export function useJoinChat(config?: MutationConfig<JoinChatParams>) {
           getFollowedPostIdsByAddressQuery.setQueryData(
             client,
             address,
-            (ids) => {
-              return [...(ids ?? []), data.chatId]
-            }
+            (ids) => [...(ids ?? []), data.chatId]
           )
         },
         onError: ({ address }) => {
@@ -53,4 +50,50 @@ export function useJoinChat(config?: MutationConfig<JoinChatParams>) {
 export const JoinChatWrapper = createMutationWrapper(
   useJoinChat,
   'Failed to join chat'
+)
+
+export type LeaveChatParams = {
+  chatId: string
+}
+export function useLeaveChat(config?: MutationConfig<LeaveChatParams>) {
+  const client = useQueryClient()
+  const getWallet = useWalletGetter()
+
+  const waitHasEnergy = useWaitHasEnergy()
+
+  return useSubsocialMutation<JoinChatParams, null>(
+    getWallet,
+    async ({ chatId }, { substrateApi }) => {
+      console.log('waiting energy...')
+      await waitHasEnergy()
+
+      return {
+        tx: substrateApi.tx.postFollows.unfollowPost(chatId),
+        summary: 'Leaving chat',
+      }
+    },
+    config,
+    {
+      txCallbacks: {
+        getContext: () => null,
+        onSend: ({ address, data }) => {
+          getFollowedPostIdsByAddressQuery.setQueryData(
+            client,
+            address,
+            (ids) => ids?.filter((id) => id !== data.chatId)
+          )
+        },
+        onError: ({ address }) => {
+          getFollowedPostIdsByAddressQuery.invalidate(client, address)
+        },
+        onSuccess: ({ address }) => {
+          getFollowedPostIdsByAddressQuery.invalidate(client, address)
+        },
+      },
+    }
+  )
+}
+export const LeaveChatWrapper = createMutationWrapper(
+  useJoinChat,
+  'Failed to leave chat'
 )

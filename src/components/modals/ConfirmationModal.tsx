@@ -8,23 +8,15 @@ export type ConfirmationModalProps = ModalFunctionalityProps & {
   title: string
   description?: string
   autoCloseAfterAction?: boolean
-  primaryButton: {
-    text?: string
-    onClick?: ClickHandler
-    variant?: ButtonProps['variant']
-  }
-  secondaryButton: {
-    text?: string
-    onClick?: ClickHandler
-    variant?: ButtonProps['variant']
-  }
+  primaryButtonProps: ButtonProps & { onClick?: ClickHandler }
+  secondaryButtonProps: ButtonProps & { onClick?: ClickHandler }
 }
 
 export default function ConfirmationModal({
   title,
   description,
-  primaryButton,
-  secondaryButton,
+  primaryButtonProps,
+  secondaryButtonProps,
   autoCloseAfterAction = true,
   ...props
 }: ConfirmationModalProps) {
@@ -43,18 +35,19 @@ export default function ConfirmationModal({
         <Button
           isLoading={isLoading}
           size='lg'
-          variant={primaryButton?.variant ?? 'primary'}
-          onClick={handleClick(primaryButton?.onClick)}
+          variant={primaryButtonProps?.variant ?? 'primary'}
+          {...primaryButtonProps}
+          onClick={handleClick(primaryButtonProps?.onClick)}
         >
-          {primaryButton.text ?? 'Yes'}
+          {primaryButtonProps.children ?? 'Yes'}
         </Button>
         <Button
           isLoading={isLoading}
           size='lg'
-          variant={secondaryButton?.variant ?? 'primaryOutline'}
-          onClick={handleClick(secondaryButton?.onClick)}
+          variant={secondaryButtonProps?.variant ?? 'primaryOutline'}
+          onClick={handleClick(secondaryButtonProps?.onClick)}
         >
-          {secondaryButton?.text ?? 'No'}
+          {secondaryButtonProps.children ?? 'No'}
         </Button>
       </div>
     </Modal>
