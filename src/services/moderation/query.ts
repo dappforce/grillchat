@@ -7,7 +7,11 @@ const moderationRequest = createModerationRequest()
 
 const GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID = graphql(`
   query GetBlockedMessageIdsInChatId($ctxSpaceId: String!, $chatId: String!) {
-    blockedResourceIds(blocked: true, rootPostId: $chatId)
+    blockedResourceIds(
+      ctxSpaceId: $ctxSpaceId
+      blocked: true
+      rootPostId: $chatId
+    )
   }
 `)
 export async function getBlockedMessageIdsInChatId({
@@ -30,7 +34,11 @@ export const getBlockedMessageIdsInChatIdQuery = createQuery({
 
 const GET_BLOCKED_CIDS = graphql(`
   query GetBlockedCids($ctxSpaceId: String!) {
-    blockedResourceIds(blocked: true, resourceType: CID)
+    blockedResourceIds(
+      ctxSpaceId: $ctxSpaceId
+      blocked: true
+      resourceType: CID
+    )
   }
 `)
 export async function getBlockedCids({ hubId }: { hubId: string }) {
@@ -47,7 +55,11 @@ export const getBlockedCidsQuery = createQuery({
 
 const GET_BLOCKED_ADDRESSES = graphql(`
   query GetBlockedAddresses($ctxSpaceId: String!) {
-    blockedResourceIds(blocked: true, resourceType: Address)
+    blockedResourceIds(
+      ctxSpaceId: $ctxSpaceId
+      blocked: true
+      resourceType: Address
+    )
   }
 `)
 export async function getBlockedAddresses({ hubId }: { hubId: string }) {
