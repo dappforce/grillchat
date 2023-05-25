@@ -69,20 +69,24 @@ export default function Navbar({
       setOpenPrivateKeyNotice(true)
     }, 10_000)
   }, [address, isInitializedAddress, prevAddress])
-
+  const login = () => {
+    setOpenLoginModal(true)
+  }
   const renderAuthComponent = () => {
     if (!isInitialized) return <div className='w-9' />
-    return isLoggedIn ? (
-      <ProfileAvatar
-        popOverControl={{
-          isOpen: openPrivateKeyNotice,
-          setIsOpen: setOpenPrivateKeyNotice,
-        }}
-        address={address}
-      />
-    ) : (
-      <Button onClick={() => setOpenLoginModal(true)}>Login</Button>
-    )
+    if (isLoggedIn) {
+      return (
+        <ProfileAvatar
+          popOverControl={{
+            isOpen: openPrivateKeyNotice,
+            setIsOpen: setOpenPrivateKeyNotice,
+          }}
+          address={address}
+        />
+      )
+    }
+
+    return enableLoginButton ? <Button onClick={login}>Login</Button> : <></>
   }
   const authComponent = renderAuthComponent()
 

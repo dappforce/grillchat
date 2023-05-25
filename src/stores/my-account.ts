@@ -106,10 +106,10 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
 
     const rpc = new SubstrateRPC(web3Auth!.provider)
-    const { privateKey: encodedSecretKey } = await rpc.getPrivateKey()!
+    const { privateKey } = await rpc.getPrivateKey()
 
-    if (encodedSecretKey) {
-      const signer = await loginWithSecretKey(decodeSecretKey(encodedSecretKey))
+    if (privateKey) {
+      const signer = await loginWithSecretKey(privateKey)
 
       set(() => ({
         signer,
@@ -117,9 +117,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         isAuthenticated: true,
         authMethod: 'web3auth',
         web3Auth,
-        encodedSecretKey,
+        encodedSecretKey: encodeSecretKey(privateKey),
       }))
-      accountStorage.set(encodedSecretKey)
+      accountStorage.set(encodeSecretKey(privateKey))
       await _subscribeEnergy()
       _syncSessionKey()
       return signer.address
@@ -153,7 +153,6 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const { _unsubscribeEnergy, _currentSessionSecretKey, authMethod } = get()
     _unsubscribeEnergy()
 
-    set({ ...initialState, _isNewSessionKey: false, _currentSessionSecretKey })
     if (authMethod === 'web3auth') {
       const web3Auth = await getWeb3Auth()
       await web3Auth.logout()

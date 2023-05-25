@@ -43,8 +43,8 @@ export function getGaId() {
 }
 
 export function getWeb3AuthClientId() {
-  return (
-    checkEnv(process.env.NEXT_WEB3AUTH_CLIENT_ID, 'NEXT_WEB3AUTH_CLIENT_ID') ??
-    'BLxj7JujmtinIZnqY0f6NL_tZaQGwiktzxLgJJMzOEKhJIKANng6G-5UbxmkUwrflLNSe23_ZTG4f3krwweqRFA'
+  return checkEnv(
+    process.env.NEXT_WEB3AUTH_CLIENT_ID,
+    'NEXT_WEB3AUTH_CLIENT_ID'
   )
 }

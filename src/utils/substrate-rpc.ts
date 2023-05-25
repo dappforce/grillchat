@@ -11,8 +11,6 @@ export async function initializeWeb3Auth() {
     clientId,
     chainConfig: {
       chainNamespace: CHAIN_NAMESPACES.OTHER,
-      // chainId: '0x5',
-      // rpcTarget: 'https://rpc.ankr.com/eth_goerli',
     },
     web3AuthNetwork: 'testnet',
   })

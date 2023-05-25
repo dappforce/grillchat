@@ -3,6 +3,7 @@ import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { AuthenticationMethods, useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
+import { getWeb3AuthClientId } from '@/utils/env/client'
 import { SyntheticEvent, useRef, useState } from 'react'
 import Button from '../Button'
 import CaptchaInvisible from '../captcha/CaptchaInvisible'
@@ -16,6 +17,7 @@ export type LoginModalProps = ModalFunctionalityProps & {
 }
 
 const PRIVATE_KEY_LENGTH = 64
+const hasWeb3AuthID = getWeb3AuthClientId()
 
 export default function LoginModal({
   afterLogin,
@@ -137,16 +139,18 @@ export default function LoginModal({
 
         <div className='text-center'>OR</div>
 
-        <div className='w-full'>
-          <Button
-            type='button'
-            className='w-full'
-            onClick={onSubmit('web3auth')}
-            size='lg'
-          >
-            Login with Web3Auth
-          </Button>
-        </div>
+        {!!hasWeb3AuthID && (
+          <div className='w-full'>
+            <Button
+              type='button'
+              className='w-full'
+              onClick={onSubmit('web3auth')}
+              size='lg'
+            >
+              Login with Web3Auth
+            </Button>
+          </div>
+        )}
       </form>
     </Modal>
   )
