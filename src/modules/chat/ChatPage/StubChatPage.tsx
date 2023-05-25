@@ -50,5 +50,5 @@ export default function StubChatPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router])
 
-  return <ChatPage stubMetadata={metadata} />
+  return <ChatPage hubId='' stubMetadata={metadata} />
 }

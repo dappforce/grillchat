@@ -33,10 +33,15 @@ const AboutChatModal = dynamic(
 type ChatMetadata = { title: string; body: string; image: string }
 
 export type ChatPageProps = {
+  hubId: string
   chatId?: string
   stubMetadata?: ChatMetadata
 }
-export default function ChatPage({ chatId = '', stubMetadata }: ChatPageProps) {
+export default function ChatPage({
+  hubId,
+  chatId = '',
+  stubMetadata,
+}: ChatPageProps) {
   const router = useRouter()
 
   const { data: chat } = getPostQuery.useQuery(chatId)
@@ -80,6 +85,7 @@ export default function ChatPage({ chatId = '', stubMetadata }: ChatPageProps) {
     >
       <ChatPageNavbarExtension />
       <ChatRoom
+        hubId={hubId}
         chatId={chatId}
         asContainer
         className='flex-1 overflow-hidden'

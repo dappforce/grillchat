@@ -61,7 +61,7 @@ export const getStaticProps = getCommonStaticProps<
     try {
       const [{ messageIds, messages, chatData }] = await Promise.all([
         getChatsData(chatId),
-        prefetchBlockedEntities(queryClient, [chatId]),
+        prefetchBlockedEntities(queryClient, spaceId, [chatId]),
       ] as const)
 
       title = chatData?.content?.title || null
