@@ -3,6 +3,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { useQueryClient } from '@tanstack/react-query'
+import { createMutationWrapper } from '../utils'
 import { getFollowedPostIdsByAddressQuery } from './query'
 
 export type JoinChatParams = {
@@ -49,3 +50,7 @@ export function useJoinChat(config?: MutationConfig<JoinChatParams>) {
     }
   )
 }
+export const JoinChatWrapper = createMutationWrapper(
+  useJoinChat,
+  'Failed to join chat'
+)

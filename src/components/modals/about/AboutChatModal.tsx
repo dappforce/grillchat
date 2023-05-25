@@ -1,5 +1,7 @@
 import Button from '@/components/Button'
+import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
+import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
@@ -26,6 +28,8 @@ export default function AboutChatModal({
   const [isOpenMetadataModal, setIsOpenMetadataModal] = useState(false)
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
 
+  const isJoinedToChat = useIsJoinedToChat(chatId)
+
   const content = chat?.content
   if (!content) return null
 
@@ -42,8 +46,6 @@ export default function AboutChatModal({
     },
   ]
 
-  const hasJoined = true
-
   const actionMenu: AboutModalProps['actionMenu'] = [
     {
       text: 'Show Metadata',
@@ -51,7 +53,8 @@ export default function AboutChatModal({
       onClick: () => setIsOpenMetadataModal(true),
     },
   ]
-  if (hasJoined) {
+
+  if (isJoinedToChat) {
     actionMenu.push({
       text: 'Leave Chat',
       icon: RxExit,
@@ -73,10 +76,19 @@ export default function AboutChatModal({
         contentList={contentList}
         imageCid={content?.image ?? ''}
         bottomElement={
-          !hasJoined ? (
-            <Button size='lg' className='mt-2 w-full'>
-              Join
-            </Button>
+          !isJoinedToChat ? (
+            <JoinChatWrapper>
+              {({ mutate, isLoading }) => (
+                <Button
+                  size='lg'
+                  isLoading={isLoading}
+                  onClick={() => mutate({ chatId })}
+                  className='mt-2 w-full'
+                >
+                  Join
+                </Button>
+              )}
+            </JoinChatWrapper>
           ) : null
         }
       />

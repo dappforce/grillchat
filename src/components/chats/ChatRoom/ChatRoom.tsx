@@ -1,8 +1,7 @@
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
-import useToastError from '@/hooks/useToastError'
-import { useJoinChat } from '@/services/subsocial/posts/mutation'
+import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { cx } from '@/utils/class-names'
 import { ComponentProps, useRef, useState } from 'react'
 import ChatList from '../ChatList/ChatList'
@@ -22,9 +21,6 @@ export default function ChatRoom({
   chatId,
   ...props
 }: ChatRoomProps) {
-  const { mutate: joinChat, isLoading, error } = useJoinChat()
-  useToastError(error, 'Failed to join chat')
-
   const [replyTo, setReplyTo] = useState<string | undefined>(undefined)
 
   const Component = asContainer ? Container<'div'> : 'div'
@@ -73,13 +69,17 @@ export default function ChatRoom({
             clearReplyTo={closeReply}
           />
         ) : (
-          <Button
-            size='lg'
-            isLoading={isLoading}
-            onClick={() => joinChat({ chatId })}
-          >
-            Join
-          </Button>
+          <JoinChatWrapper>
+            {({ isLoading, mutate }) => (
+              <Button
+                size='lg'
+                isLoading={isLoading}
+                onClick={() => mutate({ chatId })}
+              >
+                Join
+              </Button>
+            )}
+          </JoinChatWrapper>
         )}
       </Component>
     </div>
