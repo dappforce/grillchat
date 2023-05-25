@@ -1,8 +1,12 @@
+import NoResultImage from '@/assets/graphics/no-result.png'
+import Button from '@/components/Button'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
+import Container from '@/components/Container'
 import { getPostQuery } from '@/services/api/query'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
+import Image from 'next/image'
 import useSortChatIdsByLatestMessage from '../hooks/useSortChatIdsByLatestMessage'
 import { CommonHubContentProps } from './HubsPage'
 
@@ -27,7 +31,7 @@ export default function MyChatsContent({
   if (isLoading) {
     return <Loading />
   } else if (!address || searchResults.length === 0) {
-    return <NoResult />
+    return <NoSearchResultScreen />
   }
 
   return (
@@ -48,6 +52,34 @@ function Loading() {
   )
 }
 
-function NoResult() {
-  return <div>asdfasdf</div>
+function NoSearchResultScreen() {
+  return (
+    <Container
+      as='div'
+      className='mt-20 flex !max-w-lg flex-col items-center justify-center gap-4 text-center'
+    >
+      <Image
+        src={NoResultImage}
+        className='h-64 w-64'
+        alt=''
+        role='presentation'
+      />
+      <span className='text-3xl font-semibold'>😳 No results</span>
+      <p className='text-text-muted'>
+        It looks like you haven&apos;t joined any chats yet. Don&apos;t worry,
+        we&apos;ve got you covered!
+      </p>
+      <Button className='mt-4 w-full' size='lg' href='#hot-chats'>
+        View Hot Chats
+      </Button>
+      <Button
+        className='w-full'
+        variant='primaryOutline'
+        size='lg'
+        href='#hubs'
+      >
+        Explore Hubs
+      </Button>
+    </Container>
+  )
 }
