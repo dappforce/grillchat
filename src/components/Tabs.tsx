@@ -13,15 +13,17 @@ export type TabsProps = ComponentProps<'div'> & {
   asContainer?: boolean
   tabs: Tab[]
   panelClassName?: string
+  defaultTab?: number
 }
 
 export default function Tabs({
   asContainer,
   tabs,
   panelClassName,
+  defaultTab = 0,
   ...props
 }: TabsProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [selectedIndex, setSelectedIndex] = useState(defaultTab)
   useEffect(() => {
     const hash = window.location.hash
     const index = tabs.findIndex(({ id }) => `#${id}` === hash)

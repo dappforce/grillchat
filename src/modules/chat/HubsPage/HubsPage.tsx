@@ -100,6 +100,7 @@ export default function HubsPage(props: HubsPageProps) {
         panelClassName='mt-0 px-0'
         asContainer
         tabs={tabs}
+        defaultTab={1}
       />
       {!isInIframe && <WelcomeModal />}
     </DefaultLayout>
