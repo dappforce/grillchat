@@ -18,7 +18,10 @@ export default function useSearch() {
 
     return {
       searchResults,
-      focusedElementIndex: focusedElementIndex % searchResults.length,
+      focusedElementIndex:
+        focusedElementIndex === -1
+          ? focusedElementIndex
+          : focusedElementIndex % searchResults.length,
     }
   }
 
