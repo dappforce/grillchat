@@ -8,7 +8,7 @@ import LinkText from './LinkText'
 type Tab = {
   id: string
   text: string
-  content: (setSelectedTab: (selectedTab: number) => void) => JSX.Element
+  content: (changeTab: (selectedTab: number) => void) => JSX.Element
 }
 export type TabsProps = ComponentProps<'div'> & {
   asContainer?: boolean

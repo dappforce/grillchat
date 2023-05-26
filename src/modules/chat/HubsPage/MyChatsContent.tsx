@@ -13,12 +13,12 @@ import { CommonHubContentProps } from './HubsPage'
 
 export type MyChatsContentProps = CommonHubContentProps & {
   search: string
-  setSelectedTab: (selectedTab: number) => void
+  changeTab: (selectedTab: number) => void
 }
 
 export default function MyChatsContent({
   getSearchResults,
-  setSelectedTab,
+  changeTab,
   search,
 }: MyChatsContentProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
@@ -40,7 +40,7 @@ export default function MyChatsContent({
     return <Loading />
   } else if (!address || searchResults.length === 0) {
     if (search) return <NoChatsFound search={search} />
-    return <NoChats setSelectedTab={setSelectedTab} />
+    return <NoChats changeTab={changeTab} />
   }
 
   return (
@@ -61,9 +61,7 @@ function Loading() {
   )
 }
 
-function NoChats({
-  setSelectedTab,
-}: Pick<MyChatsContentProps, 'setSelectedTab'>) {
+function NoChats({ changeTab }: Pick<MyChatsContentProps, 'changeTab'>) {
   return (
     <Container
       as='div'
@@ -80,18 +78,14 @@ function NoChats({
         It looks like you haven&apos;t joined any chats yet. Don&apos;t worry,
         we&apos;ve got you covered!
       </p>
-      <Button
-        className='mt-4 w-full'
-        size='lg'
-        onClick={() => setSelectedTab(1)}
-      >
+      <Button className='mt-4 w-full' size='lg' onClick={() => changeTab(1)}>
         View Hot Chats
       </Button>
       <Button
         className='w-full'
         variant='primaryOutline'
         size='lg'
-        onClick={() => setSelectedTab(2)}
+        onClick={() => changeTab(2)}
       >
         Explore Hubs
       </Button>

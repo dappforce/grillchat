@@ -46,7 +46,7 @@ export default function HubsPage(props: HubsPageProps) {
       content: (setSelectedTab) =>
         renderHubsContent(
           <MyChatsContent
-            setSelectedTab={setSelectedTab}
+            changeTab={setSelectedTab}
             search={search}
             getSearchResults={getSearchResults}
           />
