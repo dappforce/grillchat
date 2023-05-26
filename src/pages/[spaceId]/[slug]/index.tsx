@@ -1,4 +1,5 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
+import { getSpaceIdFromAlias } from '@/constants/chat-room'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
@@ -49,10 +50,12 @@ export const getStaticProps = getCommonStaticProps<
     head: { disableZoom: true },
   }),
   async (context) => {
-    const spaceId = context.params?.spaceId as string
+    const spaceIdOrAlias = context.params?.spaceId as string
     const slugParam = context.params?.slug as string
     const chatId = getValidatedChatId(slugParam)
     if (!chatId) return undefined
+
+    const spaceId = getSpaceIdFromAlias(spaceIdOrAlias) || spaceIdOrAlias
 
     const queryClient = new QueryClient()
 
