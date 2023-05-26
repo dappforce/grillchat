@@ -43,29 +43,36 @@ export default function HubsPage(props: HubsPageProps) {
     {
       id: 'my-chats',
       text: 'My Chats',
-      content: renderHubsContent(
-        <MyChatsContent search={search} getSearchResults={getSearchResults} />
-      ),
+      content: (setSelectedTab) =>
+        renderHubsContent(
+          <MyChatsContent
+            setSelectedTab={setSelectedTab}
+            search={search}
+            getSearchResults={getSearchResults}
+          />
+        ),
     },
     {
       id: 'hot-chats',
       text: 'Hot Chats',
-      content: renderHubsContent(
-        <HotChatsContent
-          getSearchResults={getSearchResults}
-          hubId={hotChatsHubId}
-        />
-      ),
+      content: () =>
+        renderHubsContent(
+          <HotChatsContent
+            getSearchResults={getSearchResults}
+            hubId={hotChatsHubId}
+          />
+        ),
     },
     {
       id: 'hubs',
       text: 'Hubs',
-      content: renderHubsContent(
-        <HubsContent
-          getSearchResults={getSearchResults}
-          hubsChatCount={props.hubsChatCount}
-        />
-      ),
+      content: () =>
+        renderHubsContent(
+          <HubsContent
+            getSearchResults={getSearchResults}
+            hubsChatCount={props.hubsChatCount}
+          />
+        ),
     },
   ]
 

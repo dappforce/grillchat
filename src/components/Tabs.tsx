@@ -1,4 +1,5 @@
 import { cx } from '@/utils/class-names'
+import { replaceUrl } from '@/utils/window'
 import { Tab } from '@headlessui/react'
 import { ComponentProps, Fragment, useEffect, useState } from 'react'
 import Container from './Container'
@@ -7,7 +8,7 @@ import LinkText from './LinkText'
 type Tab = {
   id: string
   text: string
-  content: JSX.Element
+  content: (setSelectedTab: (selectedTab: number) => void) => JSX.Element
 }
 export type TabsProps = ComponentProps<'div'> & {
   asContainer?: boolean
@@ -30,6 +31,12 @@ export default function Tabs({
     if (index > -1) setSelectedIndex(index)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const changeTab = (index: number) => {
+    setSelectedIndex(index)
+    const id = tabs[index].id
+    replaceUrl(`#${id}`)
+  }
 
   const component = asContainer ? Container : 'div'
 
@@ -61,7 +68,7 @@ export default function Tabs({
       </Tab.List>
       <Tab.Panels as={component} className={cx('mt-2', panelClassName)}>
         {tabs.map(({ id, content }) => (
-          <Tab.Panel key={id}>{content}</Tab.Panel>
+          <Tab.Panel key={id}>{content(changeTab)}</Tab.Panel>
         ))}
       </Tab.Panels>
     </Tab.Group>
