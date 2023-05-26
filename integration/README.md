@@ -91,7 +91,7 @@ Channel option is used to make the iframe open chat room (a channel) directly. T
 >
 > To use the type, install the package via:
 >
-> `js yarn add @subsocial/resource-discussions`
+> `yarn add @subsocial/resource-discussions`
 >
 > Then, use `SocialResource` for the `resource` parameter, like [here](#resource-discussion-examples).
 
