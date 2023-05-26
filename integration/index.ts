@@ -116,8 +116,8 @@ const grill = {
           baseUrl += `/${channelConfig.id}`
           break
         case 'resource':
-          baseUrl += `/resource`
           resourceId = channelConfig.resource.toResourceId()
+          baseUrl += `/resource/${resourceId}`
           resourceMetadata = channelConfig.metadata
           break
         default:
@@ -139,7 +139,6 @@ const grill = {
 
       query.set('enableBackButton', channelSettings.enableBackButton + '')
       query.set('enableLoginButton', channelSettings.enableLoginButton + '')
-      if (resourceId) query.set('resourceId', encodeURIComponent(resourceId))
 
       if (resourceMetadata)
         try {
