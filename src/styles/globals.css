@@ -48,14 +48,8 @@
 * {
   @apply scrollbar-thin scrollbar-track-background scrollbar-thumb-background-lightest scrollbar-track-rounded-full scrollbar-thumb-rounded-full dark:scrollbar-thumb-background-lighter;
 }
-html,
-body {
-  height: 100%;
+html {
   overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-}
-body {
-  overflow-y: auto;
 }
 
 @tailwind base;
