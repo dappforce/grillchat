@@ -35,8 +35,8 @@ export default function App(props: AppProps<AppCommonProps>) {
         }
       `}</style>
       {/* Fix issue with iframe height not calculated correctly in iframe */}
-      <style jsx global>
-        {isInIframe
+      <style jsx global>{`
+        ${isInIframe
           ? `
           html,
           body {
@@ -49,7 +49,7 @@ export default function App(props: AppProps<AppCommonProps>) {
           }
         `
           : ''}
-      </style>
+      `}</style>
       <AppContent {...props} />
     </ConfigProvider>
   )
