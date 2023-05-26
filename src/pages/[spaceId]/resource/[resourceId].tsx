@@ -19,7 +19,10 @@ export const getStaticProps = getCommonStaticProps(
 
     const linkedResource = await getDiscussion(resourceId as string)
     if (!linkedResource) {
-      return undefined
+      return {
+        props: {},
+        revalidate: 2,
+      }
     }
 
     return {
