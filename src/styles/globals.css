@@ -51,11 +51,11 @@
 html,
 body {
   height: 100%;
-  overflow: auto;
+  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 }
 body {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 @tailwind base;
