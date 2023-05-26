@@ -23,7 +23,7 @@ export default function StubChatPage() {
       const spaceId = getSpaceIdFromAlias(spaceIdOrAlias) || spaceIdOrAlias
 
       const metadata = decodeURIComponent(getUrlQuery('metadata'))
-      const resourceId = decodeURIComponent(getUrlQuery('resourceId'))
+      const resourceId = router.query.resourceId as string
 
       const parsedMetadata = metadata ? JSON.parse(metadata) : undefined
       if (!parsedMetadata || !resourceId) {
