@@ -69,18 +69,22 @@ All config options are optional. If you don't pass any config, it will use the d
 
 Channel option is used to make the iframe open chat room (a channel) directly. This is useful if you want to have a specific topic for your user to discuss.
 
-| Name       | Type                                   | Description                                                                 |
-| ---------- | -------------------------------------- | --------------------------------------------------------------------------- |
-| `type`     | `'channel'` &#124; `'resource'`        | The type of the channel. This should be set to `'channel'`                  |
-| `settings` | [`ChannelSettings`](#channel-settings) | The settings of the channel. Read more about this [here](#channel-settings) |
+| Name       | Type                                   | Description                                                                                                                |
+| ---------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `type`     | `'channel'` &#124; `'resource'`        | The type of the channel. Check options for [channel](#type-channel-options) and [resource](#type-resource-options) bellow. |
+| `settings` | [`ChannelSettings`](#channel-settings) | The settings of the channel. Read more about this [here](#channel-settings)                                                |
 
-#### Type `'channel'` Options - open static chat room by id
+#### Type `'channel'` Options
+
+The type opens static chat room by id
 
 | Name | Type     | Description                                                                             |
 | ---- | -------- | --------------------------------------------------------------------------------------- |
 | `id` | `string` | The id of the channel. This should be the channel id of the topic that you want to open |
 
-#### Type `'resource'` Options - create new or open existed chat room by resource.
+#### Type `'resource'` Options
+
+The type creates new or opens existed chat room by resource.
 
 | Name       | Type                     | Description                                                                                                                                                                                |
 | ---------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
