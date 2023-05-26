@@ -33,11 +33,9 @@ export default function App(props: AppProps<AppCommonProps>) {
         html {
           --source-sans-pro: ${sourceSansPro.style.fontFamily};
         }
-      `}</style>
-      {/* Fix issue with iframe height not calculated correctly in iframe */}
-      <style jsx global>{`
         ${isInIframe
-          ? `
+          ? // Fix issue with iframe height not calculated correctly in iframe
+            `
           html,
           body {
             height: 100%;
