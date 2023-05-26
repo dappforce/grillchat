@@ -1,5 +1,7 @@
+import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import useToastError from '@/hooks/useToastError'
 import { UseMutationResult } from '@tanstack/react-query'
+import useCommonTxSteps from './hooks'
 
 const OPTIMISTIC_ID_PREFIX = 'optimistic-'
 const ID_DATA_SEPARATOR = '|||'
@@ -23,17 +25,36 @@ export function createMutationWrapper<Data, ReturnValue>(
   useMutationHook: () => UseMutationResult<ReturnValue, Error, Data, unknown>,
   errorMessage: string
 ) {
-  return function ({
+  return function MutationWrapper({
     children,
   }: {
     children: (params: {
-      mutateAsync: (variables: Data) => Promise<ReturnValue>
+      mutateAsync: (variables: Data) => Promise<ReturnValue | undefined>
       isLoading: boolean
     }) => JSX.Element
   }) {
-    const { mutateAsync, isLoading, error } = useMutationHook()
+    const {
+      mutation: { mutateAsync, isLoading, error },
+      needToRunCaptcha,
+    } = useCommonTxSteps(useMutationHook)
     useToastError(error, errorMessage)
 
-    return children({ mutateAsync, isLoading })
+    return (
+      <CaptchaInvisible>
+        {(runCaptcha) =>
+          children({
+            mutateAsync: async (data) => {
+              let captchaToken
+              if (needToRunCaptcha) {
+                captchaToken = await runCaptcha()
+                if (!captchaToken) return
+              }
+              return mutateAsync({ captchaToken, ...data })
+            },
+            isLoading,
+          })
+        }
+      </CaptchaInvisible>
+    )
   }
 }
