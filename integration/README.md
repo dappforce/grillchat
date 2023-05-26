@@ -88,8 +88,11 @@ Channel option is used to make the iframe open chat room (a channel) directly. T
 | `metadata` | `{ title, body, image }` | The metadata will be used as the content for the discussion post within the blockchain.                                                                                                    |
 
 > **Warning**
+>
 > To use the type, install the package via:
+>
 > `js yarn add @subsocial/resource-discussions`
+>
 > Then, use `SocialResource` for the `resource` parameter, like [here](#resource-discussion-examples).
 
 #### Channel Settings
