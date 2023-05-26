@@ -29,17 +29,15 @@ export function getCommonStaticProps<ReturnValue>(
       }
     }
     if ('redirect' in data) {
-      return {
-        redirect: data.redirect,
-      }
+      return data
     }
 
     return {
+      ...data,
       props: {
         ...getParams(data.props),
         ...data.props,
       },
-      revalidate: data.revalidate,
     }
   }
 }
