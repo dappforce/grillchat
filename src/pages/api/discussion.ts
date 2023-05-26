@@ -162,7 +162,7 @@ export async function getDiscussion(resourceId: string) {
 
     return existingDiscussionId
   } catch (err) {
-    return ''
+    return null
   }
 }
 
