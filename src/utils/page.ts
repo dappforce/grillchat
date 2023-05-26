@@ -5,6 +5,7 @@ import {
   GetStaticProps,
   GetStaticPropsContext,
   PreviewData,
+  Redirect,
 } from 'next'
 import { ParsedUrlQuery } from 'querystring'
 
@@ -36,7 +37,7 @@ export function getCommonServerSideProps<ReturnValue>(
   params: AppCommonProps,
   callback?: (
     context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
-  ) => Promise<ReturnValue | undefined>
+  ) => Promise<{ props: ReturnValue; redirect?: Redirect } | undefined>
 ): GetServerSideProps<AppCommonProps & ReturnValue> {
   return async (context) => {
     const data = callback ? await callback(context) : undefined
@@ -47,9 +48,10 @@ export function getCommonServerSideProps<ReturnValue>(
     }
 
     return {
+      redirect: data.redirect,
       props: {
         ...params,
-        ...data,
+        ...data.props,
       },
     }
   }

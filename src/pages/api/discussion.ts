@@ -146,15 +146,10 @@ async function createDiscussionAndGetPostId({
   })
 }
 
-export async function getOrCreateDiscussion({
-  resourceId,
-  spaceId,
-  content,
-}: DiscussionInput): Promise<ApiDiscussionResponse> {
-  let existingDiscussionId: string | null = null
+export async function getDiscussion(resourceId: string) {
   try {
     const subsocialApi = await (await getSubsocialApi()).substrateApi
-    existingDiscussionId = (
+    const existingDiscussionId = (
       await subsocialApi.query.resourceDiscussions.resourceDiscussion(
         resourceId,
         asAccountId(
@@ -164,6 +159,22 @@ export async function getOrCreateDiscussion({
         )
       )
     ).toString()
+
+    return existingDiscussionId
+  } catch (err) {
+    return ''
+  }
+}
+
+export async function getOrCreateDiscussion({
+  resourceId,
+  spaceId,
+  content,
+}: DiscussionInput): Promise<ApiDiscussionResponse> {
+  let existingDiscussionId: string | null = null
+  try {
+    existingDiscussionId = await getDiscussion(resourceId)
+    const subsocialApi = await (await getSubsocialApi()).substrateApi
 
     if (existingDiscussionId)
       return {
