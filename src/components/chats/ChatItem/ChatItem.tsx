@@ -119,7 +119,7 @@ export default function ChatItem({
       },
     ]
   }
-  const menus = withCustomMenu ? getChatMenus() : []
+  const menus = withCustomMenu && isSent ? getChatMenus() : []
 
   if (!body) return null
 
