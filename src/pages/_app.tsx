@@ -35,8 +35,9 @@ export default function App(props: AppProps<AppCommonProps>) {
         }
       `}</style>
       {/* Fix issue with iframe height not calculated correctly in iframe */}
-      {isInIframe && (
-        <style jsx global>{`
+      <style jsx global>
+        {isInIframe
+          ? `
           html,
           body {
             height: 100%;
@@ -46,8 +47,9 @@ export default function App(props: AppProps<AppCommonProps>) {
           body {
             overflow-y: scroll;
           }
-        `}</style>
-      )}
+        `
+          : ''}
+      </style>
       <AppContent {...props} />
     </ConfigProvider>
   )
