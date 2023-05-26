@@ -10,7 +10,7 @@ type QueryParams = {
 }
 
 type SocialResourceLike = { toResourceId: () => string }
-type ResourceMetadata = { title: string; body: string; image: string }
+type ResourceMetadata = { title: string; body?: string; image?: string }
 
 class QueryParamsBuilder {
   private query: URLSearchParams
@@ -54,7 +54,7 @@ type ChanelTypeResource = {
   metadata: ResourceMetadata
 }
 
-type Channel = { settings: ChannelSettings } & (
+type Channel = { settings?: ChannelSettings } & (
   | ChanelTypeChannel
   | ChanelTypeResource
 )
