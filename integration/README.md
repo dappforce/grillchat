@@ -181,7 +181,7 @@ const config = {
 new SocialResource({
   schema: 'chain',
   chainType: 'evm',
-  chainName: '1', // Ethereum chainId: 1
+  chainName: 'ethereum',
   resourceType: 'account',
   resourceValue: {
     accountAddress: '0x0000000000000000000000000',
@@ -195,13 +195,13 @@ new SocialResource({
 new SocialResource({
   schema: 'chain',
   chainType: 'evm',
-  chainName: '137', // Polygon chainId: 1
+  chainName: 'polygon',
   resourceType: 'nft',
   resourceValue: {
-      nftStandart: 'ERC-721'
-      collectionId: '0x0000000000000000000000000',
-      tokenId: '112'
-  }
+    nftStandart: 'ERC-721',
+    collectionId: '0x0000000000000000000000000',
+    tokenId: '112',
+  },
 })
 ```
 
