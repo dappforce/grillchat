@@ -6,7 +6,6 @@ import { SyntheticEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import Toast from '../../Toast'
 import { loginModalContents, LoginModalStep } from './LoginModalContent'
-import { useDisconnect } from 'wagmi'
 
 export type LoginModalProps = ModalFunctionalityProps & {
   afterLogin?: () => void
@@ -60,7 +59,6 @@ export default function LoginModal({
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [currentStep, setCurrentStep] = useState<LoginModalStep>('login')
-  // const { disconnect } = useDisconnect()
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
@@ -100,7 +98,6 @@ export default function LoginModal({
       onBackClick={withBackButton ? onBackClick : undefined}
       closeModal={() => {
         props.closeModal()
-        // disconnect()
       }}
     >
       <CaptchaInvisible>

@@ -14,6 +14,7 @@ import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { getLinkedEvmAddressQuery } from '@/services/subsocial/evmAddresses'
+import { useUnlinkEvmAddress } from '@/services/subsocial/evmAddresses/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
@@ -44,7 +45,7 @@ type ModalState =
   | 'about'
   | 'connect-evm-address'
   | 'evm-connecting-error'
-// | 'disconect-evm-confirmation'
+  | 'disconect-evm-confirmation'
 const modalTitles: {
   [key in ModalState]: {
     title: React.ReactNode
@@ -81,6 +82,11 @@ const modalTitles: {
     desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
     withBackButton: false,
   },
+  'disconect-evm-confirmation': {
+    title: '🤔 Disconnect this address?',
+    desc: undefined,
+    withBackButton: false,
+  },
 }
 
 type ContentProps = {
@@ -99,6 +105,7 @@ const modalContents: {
   about: AboutContent,
   'connect-evm-address': ConnectedEvmAddressContent,
   'evm-connecting-error': EvmLoginError,
+  'disconect-evm-confirmation': DisconnectEvmConfirmationContent,
 }
 
 export default function ProfileModal({
@@ -258,7 +265,7 @@ function ConnectedEvmAddressContent({
   setCurrentState,
 }: ContentProps) {
   const { address: addressFromExt } = useAccount()
-  
+
   const { signAndLinkEvmAddress, isSigningMessage } =
     useSignMessageAndLinkEvmAddress({
       setModalStep: () => setCurrentState('connect-evm-address'),
@@ -267,11 +274,14 @@ function ConnectedEvmAddressContent({
 
   const addressFromExtLovercased = addressFromExt?.toLowerCase()
 
-  const isNotEqAddresses = addressFromExtLovercased && evmAddress && evmAddress !== addressFromExtLovercased
+  const isNotEqAddresses =
+    addressFromExtLovercased &&
+    evmAddress &&
+    evmAddress !== addressFromExtLovercased
 
   const connectionButton = (
     <CustomConnectButton
-      className={cx('w-full', {['mt-4']: isNotEqAddresses})}
+      className={cx('w-full', { ['mt-4']: isNotEqAddresses })}
       signAndLinkEvmAddress={signAndLinkEvmAddress}
       signAndLinkOnConnect={!isNotEqAddresses}
       isSigningMessage={isSigningMessage}
@@ -303,14 +313,14 @@ function ConnectedEvmAddressContent({
             </LinkText>
           </div>
           {isNotEqAddresses && connectionButton}
-          {/* <Button
+          <Button
             onClick={() => setCurrentState('disconect-evm-confirmation')}
             className='mt-6 w-full border-red-500'
             variant='primaryOutline'
             size='lg'
           >
             Disconnect
-          </Button> */}
+          </Button>
         </div>
       ) : (
         connectionButton
@@ -319,39 +329,42 @@ function ConnectedEvmAddressContent({
   )
 }
 
-// function DisconnectEvmConfirmationContent({ setCurrentState }: ContentProps) {
-//   const { disconnect } = useDisconnect()
+function DisconnectEvmConfirmationContent({
+  setCurrentState,
+  evmAddress,
+}: ContentProps) {
+  const sendEvent = useSendEvent()
+  const { mutate: unlinkEvmAddress } = useUnlinkEvmAddress(() =>
+    setCurrentState('connect-evm-address')
+  )
 
-//   const sendEvent = useSendEvent()
-//   const onButtonClick = (eventName: string) => {
-//     setCurrentState('connect-evm-address')
-//     sendEvent(`click ${eventName}`)
-//   }
+  const onButtonClick = () => {
+    setCurrentState('connect-evm-address')
+    sendEvent(`click keep-evm-address-connected`)
+  }
 
-//   const onDisconnectClick = () => {
-//     disconnect()
-//     onButtonClick('disconnect-evm-address')
-//   }
+  const onDisconnectClick = () => {
+    if (!evmAddress) return
+    sendEvent('click disconnect-evm-address')
+    unlinkEvmAddress({ evmAddress })
+  }
 
-//   return (
-//     <div className='mt-4 flex flex-col gap-4'>
-//       <Button
-//         size='lg'
-//         onClick={() => onButtonClick('keep-evm-address-connected')}
-//       >
-//         No, keep it connected
-//       </Button>
-//       <Button
-//         size='lg'
-//         onClick={onDisconnectClick}
-//         variant='primaryOutline'
-//         className='border-red-500'
-//       >
-//         Yes, disconnect
-//       </Button>
-//     </div>
-//   )
-// }
+  return (
+    <div className='mt-4 flex flex-col gap-4'>
+      <Button size='lg' onClick={onButtonClick}>
+        No, keep it connected
+      </Button>
+      <Button
+        size='lg'
+        onClick={onDisconnectClick}
+        variant='primaryOutline'
+        className='border-red-500'
+      >
+        Yes, disconnect
+      </Button>
+    </div>
+  )
+}
 
 function PrivateKeyContent() {
   const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)

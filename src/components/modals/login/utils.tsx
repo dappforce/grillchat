@@ -1,4 +1,4 @@
-import { useLinkEvmAccount } from '@/services/subsocial/evmAddresses/mutation'
+import { useLinkEvmAddress } from '@/services/subsocial/evmAddresses/mutation'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { decodeAddress } from '@polkadot/keyring'
 import { BN, u8aToHex } from '@polkadot/util'
@@ -65,9 +65,12 @@ export const useSignMessageAndLinkEvmAddress = ({
     isSigningMessage,
     isError: isSignMessageError,
   } = useSignEvmLinkMessage()
-  
-  const { mutate: linkEvmAddress } =
-    useLinkEvmAccount(setModalStep, undefined, onError)
+
+  const { mutate: linkEvmAddress } = useLinkEvmAddress(
+    setModalStep,
+    undefined,
+    onError
+  )
 
   useEffect(() => {
     if (isSignMessageError) {
