@@ -114,7 +114,6 @@ export default function ProfileModal({
   ...props
 }: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
-  // const { disconnect } = useDisconnect()
   const { data: linkedEvmAddress } = getLinkedEvmAddressQuery.useQuery(address)
 
   useEffect(() => {
@@ -139,7 +138,6 @@ export default function ProfileModal({
       onBackClick={withBackButton ? onBackClick : undefined}
       closeModal={() => {
         props.closeModal()
-        // disconnect()
       }}
     >
       <Content
@@ -266,18 +264,20 @@ function ConnectedEvmAddressContent({
 }: ContentProps) {
   const { address: addressFromExt } = useAccount()
 
+  const addressFromExtLovercased = addressFromExt?.toLowerCase()
+
+  const isNotEqAddresses =
+    !!addressFromExtLovercased &&
+    !!evmAddress &&
+    evmAddress !== addressFromExtLovercased
+
   const { signAndLinkEvmAddress, isSigningMessage } =
     useSignMessageAndLinkEvmAddress({
       setModalStep: () => setCurrentState('connect-evm-address'),
       onError: () => setCurrentState('evm-connecting-error'),
+      linkedEvmAddress: evmAddress
     })
 
-  const addressFromExtLovercased = addressFromExt?.toLowerCase()
-
-  const isNotEqAddresses =
-    addressFromExtLovercased &&
-    evmAddress &&
-    evmAddress !== addressFromExtLovercased
 
   const connectionButton = (
     <CustomConnectButton
@@ -475,11 +475,12 @@ function AboutContent() {
   )
 }
 
-function EvmLoginError({ setCurrentState }: ContentProps) {
+function EvmLoginError({ setCurrentState, evmAddress }: ContentProps) {
   const { signAndLinkEvmAddress, isSigningMessage } =
     useSignMessageAndLinkEvmAddress({
       setModalStep: () => setCurrentState('connect-evm-address'),
       onError: () => setCurrentState('evm-connecting-error'),
+      linkedEvmAddress: evmAddress
     })
 
   return (

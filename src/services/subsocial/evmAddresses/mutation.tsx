@@ -6,34 +6,51 @@ import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { useQueryClient } from '@tanstack/react-query'
 import { useDisconnect } from 'wagmi'
 
-type LinkEvmAccountProps = {
+type LinkEvmAddressMutationProps = {
   evmAddress: string
   evmSignature: string
 }
 
-export function useLinkEvmAddress(
-  setModalStep?: () => void,
-  config?: MutationConfig<LinkEvmAccountProps>,
+type LinkEvmAddressProps = {
+  setModalStep?: () => void
+  config?: MutationConfig<LinkEvmAddressMutationProps>
   onError?: () => void
-) {
+  linkedEvmAddress?: string
+}
+
+export function useLinkEvmAddress({
+  setModalStep,
+  config,
+  onError,
+  linkedEvmAddress,
+}: LinkEvmAddressProps) {
   const address = useMyAccount((state) => state.address ?? '')
   const signer = useMyAccount((state) => state.signer)
   const client = useQueryClient()
 
   const waitHasBalance = useWaitHasEnergy()
 
-  return useSubsocialMutation<LinkEvmAccountProps, string>(
+  return useSubsocialMutation<LinkEvmAddressMutationProps, string>(
     async () => ({ address, signer }),
     async (params, { substrateApi }) => {
       await waitHasBalance()
 
       const { evmAddress, evmSignature } = params
 
+      const linkEvmAddressTx = substrateApi.tx.evmAccounts.linkEvmAddress(
+        evmAddress,
+        evmSignature
+      )
+
+      const tx = linkedEvmAddress
+        ? substrateApi.tx.utility.batch([
+            substrateApi.tx.evmAccounts.unlinkEvmAddress(linkedEvmAddress),
+            linkEvmAddressTx,
+          ])
+        : linkEvmAddressTx
+
       return {
-        tx: substrateApi.tx.evmAccounts.linkEvmAddress(
-          evmAddress,
-          evmSignature
-        ),
+        tx,
         summary: 'Linking evm address',
       }
     },
@@ -77,9 +94,7 @@ export function useUnlinkEvmAddress(
       const { evmAddress } = params
 
       return {
-        tx: substrateApi.tx.evmAccounts.unlinkEvmAddress(
-          evmAddress,
-        ),
+        tx: substrateApi.tx.evmAccounts.unlinkEvmAddress(evmAddress),
         summary: 'Unlinking evm address',
       }
     },

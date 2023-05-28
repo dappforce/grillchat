@@ -54,11 +54,13 @@ export const useSignEvmLinkMessage = () => {
 type SignMessageAndLinkAddressProps = {
   setModalStep?: () => void
   onError?: () => void
+  linkedEvmAddress?: string
 }
 
 export const useSignMessageAndLinkEvmAddress = ({
   setModalStep,
   onError,
+  linkedEvmAddress
 }: SignMessageAndLinkAddressProps) => {
   const {
     signEvmLinkMessage,
@@ -66,11 +68,11 @@ export const useSignMessageAndLinkEvmAddress = ({
     isError: isSignMessageError,
   } = useSignEvmLinkMessage()
 
-  const { mutate: linkEvmAddress } = useLinkEvmAddress(
+  const { mutate: linkEvmAddress } = useLinkEvmAddress({
     setModalStep,
-    undefined,
-    onError
-  )
+    onError,
+    linkedEvmAddress
+  })
 
   useEffect(() => {
     if (isSignMessageError) {
