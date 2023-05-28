@@ -1,5 +1,6 @@
 import { Chain, Wallet } from '@rainbow-me/rainbowkit'
 import { TalismanConnector } from '@talismn/wagmi-connector'
+import TalismanImage from '@/assets/graphics/talisman.png'
 
 export interface MyWalletOptions {
   chains: Chain[]
@@ -16,14 +17,14 @@ export const talismanWallet = ({ chains, shimDisconnect }: MyWalletOptions): Wal
   },
   createConnector: () => {
     const connector = new TalismanConnector({
-      chains: chains as any, // they are compatible
+      chains: chains as any, 
       options: {
         shimDisconnect
       }
     })
 
     return {
-      connector: connector as any // they are compatible
+      connector: connector as any
     }
   }
 })

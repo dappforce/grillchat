@@ -9,6 +9,8 @@ import { metaMaskWallet } from '@rainbow-me/rainbowkit/wallets'
 import { configureChains, createConfig, WagmiConfig } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
+import { talismanWallet } from './wallets/talisman'
+import { subWalletWallet } from './wallets/subWallet'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet],
@@ -18,7 +20,11 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 const connectors = connectorsForWallets([
   {
     groupName: 'Recommended',
-    wallets: [metaMaskWallet({ chains })],
+    wallets: [
+      metaMaskWallet({ chains }),
+      talismanWallet({ chains }),
+      // subWalletWallet({ chains }),
+    ],
   },
 ])
 

@@ -1,7 +1,7 @@
 import Button, { ButtonProps } from '@/components/Button'
 import { useMyAccount } from '@/stores/my-account'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 type CustomConnectButtonProps = ButtonProps & {
   className?: string
@@ -23,12 +23,11 @@ export const CustomConnectButton = ({
   ...buttonProps
 }: CustomConnectButtonProps) => {
   const mySubstrateAddress = useMyAccount((state) => state.address)
-  useAccount({
-    onConnect: async ({ address }) =>
-      signAndLinkOnConnect &&
-      signAndLinkEvmAddress(address, mySubstrateAddress),
+  const { isConnected } = useAccount({
+    onConnect: async ({ address }) => {
+      !isConnected && signAndLinkOnConnect && signAndLinkEvmAddress(address, mySubstrateAddress)
+    },
   })
-  const { disconnect } = useDisconnect()
 
   return (
     <ConnectButton.Custom>
@@ -79,8 +78,7 @@ export const CustomConnectButton = ({
           <Button
             onClick={async () => {
               signAndLinkEvmAddress(account.address, mySubstrateAddress)
-            }
-            }
+            }}
             size={'lg'}
             className={className}
             disabled={isSigningMessage}
