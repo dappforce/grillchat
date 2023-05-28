@@ -1,10 +1,12 @@
-import Button from '@/components/Button'
+import Button, { ButtonProps } from '@/components/Button'
 import { useMyAccount } from '@/stores/my-account'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
 
-type CustomConnectButtonProps = {
+type CustomConnectButtonProps = ButtonProps & {
   className?: string
+  label?: string
+  signAndLinkOnConnect?: boolean
   signAndLinkEvmAddress: (
     emvAddress?: string,
     substrateAddress?: string | null
@@ -15,11 +17,15 @@ type CustomConnectButtonProps = {
 export const CustomConnectButton = ({
   className,
   signAndLinkEvmAddress,
+  label = 'Connect EVM Wallet',
   isSigningMessage,
+  signAndLinkOnConnect = true,
+  ...buttonProps
 }: CustomConnectButtonProps) => {
   const mySubstrateAddress = useMyAccount((state) => state.address)
   useAccount({
     onConnect: async ({ address }) =>
+      signAndLinkOnConnect &&
       signAndLinkEvmAddress(address, mySubstrateAddress),
   })
 
@@ -47,8 +53,9 @@ export const CustomConnectButton = ({
               size={'lg'}
               className={className}
               disabled={isSigningMessage}
+              {...buttonProps}
             >
-              Connect EVM Wallet
+              {label}
             </Button>
           )
         }
@@ -60,6 +67,7 @@ export const CustomConnectButton = ({
               size={'lg'}
               className={className}
               disabled={isSigningMessage}
+              {...buttonProps}
             >
               Wrong network
             </Button>
@@ -74,8 +82,9 @@ export const CustomConnectButton = ({
             size={'lg'}
             className={className}
             disabled={isSigningMessage}
+            {...buttonProps}
           >
-            Connect EVM Wallet
+            {label}
           </Button>
         )
       }}

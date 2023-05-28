@@ -42,6 +42,12 @@ const modalHeader: ModalTitle = {
   'evm-address-linked': {
     title: '🎉 EVM Wallet connected',
     desc: `Now you can use all of Grill's EVM features such as ERC20 tokens, NFTs, and more.`,
+  },
+  'evm-connecting-error': {
+    title: '😕 Something went wrong',
+    desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
+    withBackButton: false,
+    withFooter: false
   }
 }
 
@@ -54,7 +60,7 @@ export default function LoginModal({
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [currentStep, setCurrentStep] = useState<LoginModalStep>('login')
-  const { disconnect } = useDisconnect()
+  // const { disconnect } = useDisconnect()
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
@@ -94,7 +100,7 @@ export default function LoginModal({
       onBackClick={withBackButton ? onBackClick : undefined}
       closeModal={() => {
         props.closeModal()
-        disconnect()
+        // disconnect()
       }}
     >
       <CaptchaInvisible>

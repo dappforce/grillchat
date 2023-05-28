@@ -12,7 +12,8 @@ type LinkEvmAccountProps = {
 
 export function useLinkEvmAccount(
   setModalStep?: () => void,
-  config?: MutationConfig<LinkEvmAccountProps>
+  config?: MutationConfig<LinkEvmAccountProps>,
+  onError?: () => void
 ) {
   const address = useMyAccount((state) => state.address ?? '')
   const signer = useMyAccount((state) => state.signer)
@@ -43,6 +44,9 @@ export function useLinkEvmAccount(
           getLinkedEvmAddressQuery.invalidate(client, address)
           setModalStep?.()
         },
+        onError: () => {
+          onError?.()
+        }
       },
     }
   )

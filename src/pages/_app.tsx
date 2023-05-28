@@ -1,5 +1,4 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
-import EvmProvider from '@/components/modals/login/EvmProvider'
 import { ConfigProvider, useConfigContext } from '@/contexts/ConfigContext'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
@@ -8,10 +7,13 @@ import { getGaId } from '@/utils/env/client'
 import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
+import dynamic from 'next/dynamic'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
+
+const EvmProvider = dynamic(import('@/components/modals/login/EvmProvider'), { ssr: false })
 
 export type AppCommonProps = {
   head?: HeadConfigProps

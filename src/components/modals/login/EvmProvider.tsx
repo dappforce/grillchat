@@ -4,7 +4,6 @@ import {
   darkTheme,
   lightTheme,
   RainbowKitProvider,
-  Theme
 } from '@rainbow-me/rainbowkit'
 import { metaMaskWallet } from '@rainbow-me/rainbowkit/wallets'
 import { configureChains, createConfig, WagmiConfig } from 'wagmi'
@@ -24,7 +23,7 @@ const connectors = connectorsForWallets([
 ])
 
 const wagmiConfig = createConfig({
-  autoConnect: false,
+  autoConnect: true,
   connectors,
   publicClient,
   webSocketPublicClient,
@@ -42,20 +41,12 @@ const radiiConfig = {
   },
 }
 
-type EvmProviderProps = {
-  children: React.ReactNode
-}
-
-const EvmProvider = ({ children }: EvmProviderProps) => {
-  const appTheme = useGetTheme()
-
+const getRainbowkitThemes = () => {
   const darkThemeParams = darkTheme()
   const lightThemeParams = lightTheme()
 
-
-
-  const theme: Theme = {
-    darkMode: {
+  return {
+    dark: {
       blurs: {
         ...darkThemeParams.blurs,
       },
@@ -71,9 +62,9 @@ const EvmProvider = ({ children }: EvmProviderProps) => {
       shadows: {
         ...darkThemeParams.shadows,
       },
-      ...radiiConfig
+      ...radiiConfig,
     },
-    lightMode: {
+    light: {
       blurs: {
         ...lightThemeParams.blurs,
       },
@@ -89,13 +80,26 @@ const EvmProvider = ({ children }: EvmProviderProps) => {
       shadows: {
         ...lightThemeParams.shadows,
       },
-      ...radiiConfig
+      ...radiiConfig,
     },
   }
+}
+
+type EvmProviderProps = {
+  children: React.ReactNode
+}
+
+const EvmProvider = ({ children }: EvmProviderProps) => {
+  const appTheme = useGetTheme()
+
+  const rainbowkitThemes = getRainbowkitThemes()
 
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider theme={appTheme === 'dark' ? theme.darkMode : theme.lightMode} chains={chains}>
+      <RainbowKitProvider
+        theme={rainbowkitThemes[appTheme || 'dark']}
+        chains={chains}
+      >
         {children}
       </RainbowKitProvider>
     </WagmiConfig>

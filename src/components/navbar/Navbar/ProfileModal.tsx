@@ -13,6 +13,7 @@ import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
+import { getLinkedEvmAddressQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, truncateAddress } from '@/utils/account'
@@ -23,10 +24,7 @@ import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
 import { useAccount, useDisconnect } from 'wagmi'
 import { CustomConnectButton } from '../../modals/login/CustomConnectButton'
-import { useSignEvmLinkMessage, useSignMessageAndLinkEvmAddress } from '../../modals/login/utils'
-import { getLinkedEvmAddressQuery } from '@/services/subsocial/evmAddresses'
-
-const evmAddress = '0xDB9e87Fafcdd66f5AFF56C812fd0645Ab2B608e5'
+import { useSignMessageAndLinkEvmAddress } from '../../modals/login/utils'
 
 type NotificationControl = {
   showNotif: boolean
@@ -45,7 +43,8 @@ type ModalState =
   | 'share-session'
   | 'about'
   | 'connect-evm-address'
-  | 'disconect-evm-confirmation'
+  | 'evm-connecting-error'
+// | 'disconect-evm-confirmation'
 const modalTitles: {
   [key in ModalState]: {
     title: React.ReactNode
@@ -77,9 +76,10 @@ const modalTitles: {
     desc: 'A connected Ethereum address is associated with your Grill account via an of-chain proof, allowing you to display and use NFTs. ',
     withBackButton: true,
   },
-  'disconect-evm-confirmation': {
-    title: '🤔 Disconnect this address?',
-    desc: null,
+  'evm-connecting-error': {
+    title: '😕 Something went wrong',
+    desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
+    withBackButton: false,
   },
 }
 
@@ -98,7 +98,7 @@ const modalContents: {
   'share-session': ShareSessionContent,
   about: AboutContent,
   'connect-evm-address': ConnectedEvmAddressContent,
-  'disconect-evm-confirmation': DisconnectEvmConfirmationContent,
+  'evm-connecting-error': EvmLoginError,
 }
 
 export default function ProfileModal({
@@ -107,9 +107,8 @@ export default function ProfileModal({
   ...props
 }: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
-  const { disconnect } = useDisconnect()
+  // const { disconnect } = useDisconnect()
   const { data: linkedEvmAddress } = getLinkedEvmAddressQuery.useQuery(address)
-
 
   useEffect(() => {
     if (props.isOpen) setCurrentState('account')
@@ -119,22 +118,21 @@ export default function ProfileModal({
   const { title, desc, withBackButton } = modalTitles[currentState] || {}
   const Content = modalContents[currentState]
 
-  const shouldRemoveDefaultPadding = currentState === 'account'
-  const withFooter = currentState === 'account'
+  const isAccountState = currentState === 'account'
 
   return (
     <Modal
       {...props}
       title={title}
       description={desc}
-      contentClassName={cx(shouldRemoveDefaultPadding && 'px-0 pb-0')}
-      titleClassName={cx(shouldRemoveDefaultPadding && 'px-6')}
-      withFooter={withFooter}
+      contentClassName={cx(isAccountState && 'px-0 pb-0')}
+      titleClassName={cx(isAccountState && 'px-6')}
+      withFooter={isAccountState}
       withCloseButton
       onBackClick={withBackButton ? onBackClick : undefined}
       closeModal={() => {
         props.closeModal()
-        disconnect()
+        // disconnect()
       }}
     >
       <Content
@@ -159,10 +157,11 @@ function AccountContent({
   address,
   setCurrentState,
   notification,
-  evmAddress
+  evmAddress,
 }: ContentProps) {
   const sendEvent = useSendEvent()
-  
+  const { disconnect } = useDisconnect()
+
   const onConnectEvmAddressClick = () => {
     sendEvent('click connect_evm_address')
     setCurrentState('connect-evm-address')
@@ -176,6 +175,7 @@ function AccountContent({
     setCurrentState('share-session')
   }
   const onLogoutClick = () => {
+    disconnect()
     sendEvent('click log_out_button')
     setCurrentState('logout')
   }
@@ -192,7 +192,7 @@ function AccountContent({
       notification,
     },
     {
-      text: 'Show grill secret key',
+      text: 'Show Grill secret key',
       icon: KeyIcon,
       onClick: onShowPrivateKeyClick,
       notification,
@@ -253,8 +253,32 @@ function AccountContent({
   )
 }
 
-function ConnectedEvmAddressContent({ setCurrentState, evmAddress }: ContentProps) {
-  const { signAndLinkEvmAddress, isSigningMessage } = useSignMessageAndLinkEvmAddress()
+function ConnectedEvmAddressContent({
+  evmAddress,
+  setCurrentState,
+}: ContentProps) {
+  const { address: addressFromExt } = useAccount()
+  
+  const { signAndLinkEvmAddress, isSigningMessage } =
+    useSignMessageAndLinkEvmAddress({
+      setModalStep: () => setCurrentState('connect-evm-address'),
+      onError: () => setCurrentState('evm-connecting-error'),
+    })
+
+  const addressFromExtLovercased = addressFromExt?.toLowerCase()
+
+  const isNotEqAddresses = addressFromExtLovercased && evmAddress && evmAddress !== addressFromExtLovercased
+
+  const connectionButton = (
+    <CustomConnectButton
+      className={cx('w-full', {['mt-4']: isNotEqAddresses})}
+      signAndLinkEvmAddress={signAndLinkEvmAddress}
+      signAndLinkOnConnect={!isNotEqAddresses}
+      isSigningMessage={isSigningMessage}
+      label={isNotEqAddresses ? 'Link another account' : undefined}
+      variant={isNotEqAddresses ? 'primaryOutline' : 'primary'}
+    />
+  )
 
   return (
     <div>
@@ -278,59 +302,56 @@ function ConnectedEvmAddressContent({ setCurrentState, evmAddress }: ContentProp
               </span>
             </LinkText>
           </div>
-          <Button
+          {isNotEqAddresses && connectionButton}
+          {/* <Button
             onClick={() => setCurrentState('disconect-evm-confirmation')}
             className='mt-6 w-full border-red-500'
             variant='primaryOutline'
             size='lg'
           >
             Disconnect
-          </Button>
+          </Button> */}
         </div>
       ) : (
-        <CustomConnectButton
-          className='w-full'
-          signAndLinkEvmAddress={signAndLinkEvmAddress}
-          isSigningMessage={isSigningMessage}
-        />
+        connectionButton
       )}
     </div>
   )
 }
 
-function DisconnectEvmConfirmationContent({ setCurrentState }: ContentProps) {
-  const { disconnect } = useDisconnect()
+// function DisconnectEvmConfirmationContent({ setCurrentState }: ContentProps) {
+//   const { disconnect } = useDisconnect()
 
-  const sendEvent = useSendEvent()
-  const onButtonClick = (eventName: string) => {
-    setCurrentState('connect-evm-address')
-    sendEvent(`click ${eventName}`)
-  }
+//   const sendEvent = useSendEvent()
+//   const onButtonClick = (eventName: string) => {
+//     setCurrentState('connect-evm-address')
+//     sendEvent(`click ${eventName}`)
+//   }
 
-  const onDisconnectClick = () => {
-    disconnect()
-    onButtonClick('disconnect-evm-address')
-  }
+//   const onDisconnectClick = () => {
+//     disconnect()
+//     onButtonClick('disconnect-evm-address')
+//   }
 
-  return (
-    <div className='mt-4 flex flex-col gap-4'>
-      <Button
-        size='lg'
-        onClick={() => onButtonClick('keep-evm-address-connected')}
-      >
-        No, keep it connected
-      </Button>
-      <Button
-        size='lg'
-        onClick={onDisconnectClick}
-        variant='primaryOutline'
-        className='border-red-500'
-      >
-        Yes, disconnect
-      </Button>
-    </div>
-  )
-}
+//   return (
+//     <div className='mt-4 flex flex-col gap-4'>
+//       <Button
+//         size='lg'
+//         onClick={() => onButtonClick('keep-evm-address-connected')}
+//       >
+//         No, keep it connected
+//       </Button>
+//       <Button
+//         size='lg'
+//         onClick={onDisconnectClick}
+//         variant='primaryOutline'
+//         className='border-red-500'
+//       >
+//         Yes, disconnect
+//       </Button>
+//     </div>
+//   )
+// }
 
 function PrivateKeyContent() {
   const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
@@ -438,5 +459,23 @@ function AboutContent() {
         </LinkText>
       </div>
     </div>
+  )
+}
+
+function EvmLoginError({ setCurrentState }: ContentProps) {
+  const { signAndLinkEvmAddress, isSigningMessage } =
+    useSignMessageAndLinkEvmAddress({
+      setModalStep: () => setCurrentState('connect-evm-address'),
+      onError: () => setCurrentState('evm-connecting-error'),
+    })
+
+  return (
+    <CustomConnectButton
+      isSigningMessage={isSigningMessage}
+      signAndLinkOnConnect={false}
+      signAndLinkEvmAddress={signAndLinkEvmAddress}
+      className='w-full'
+      label='Try again'
+    />
   )
 }

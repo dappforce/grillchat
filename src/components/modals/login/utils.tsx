@@ -1,9 +1,8 @@
 import { useLinkEvmAccount } from '@/services/subsocial/evmAddresses/mutation'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { _TypedDataEncoder } from '@ethersproject/hash'
 import { decodeAddress } from '@polkadot/keyring'
 import { BN, u8aToHex } from '@polkadot/util'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSignMessage } from 'wagmi'
 
 export const buildMsgParams = async (substrateAddress: string) => {
@@ -16,18 +15,23 @@ export const buildMsgParams = async (substrateAddress: string) => {
 
   const nonce = account.nonce.add(new BN(1)).toString()
 
-  return `Link to Subsocial address ${decodedAddress.replace('0x', '')} (in hex) with nonce ${nonce}`
-
+  return `Link to Subsocial address ${decodedAddress.replace(
+    '0x',
+    ''
+  )} (in hex) with nonce ${nonce}`
 }
 
 export const useSignEvmLinkMessage = () => {
   const { signMessageAsync } = useSignMessage()
   const [isSigningMessage, setIsSigningMessage] = useState(false)
+  const [isError, setIsError] = useState(false)
 
   const signEvmLinkMessage = async (
     emvAddress?: string,
     substrateAddress?: string | null
   ) => {
+    setIsError(false)
+
     if (!emvAddress || !substrateAddress) return
 
     const message = await buildMsgParams(substrateAddress)
@@ -38,25 +42,46 @@ export const useSignEvmLinkMessage = () => {
       setIsSigningMessage(false)
       return data.toString()
     } catch {
+      setIsError(true)
       setIsSigningMessage(false)
       return
     }
   }
 
-  return { signEvmLinkMessage, isSigningMessage }
+  return { signEvmLinkMessage, isSigningMessage, isError }
 }
 
-export const useSignMessageAndLinkEvmAddress = (setModalStep?: () => void) => {
-  const { signEvmLinkMessage, isSigningMessage } = useSignEvmLinkMessage()
-  const { mutate: linkEvmAddress } = useLinkEvmAccount(setModalStep)
+type SignMessageAndLinkAddressProps = {
+  setModalStep?: () => void
+  onError?: () => void
+}
 
-  const signAndLinkEvmAddress = async (evmAddress?: string, substrateAddress?: string | null) => {
-    if(!evmAddress) return 
-    
-    const data = await signEvmLinkMessage(
-      evmAddress,
-      substrateAddress
-    )
+export const useSignMessageAndLinkEvmAddress = ({
+  setModalStep,
+  onError,
+}: SignMessageAndLinkAddressProps) => {
+  const {
+    signEvmLinkMessage,
+    isSigningMessage,
+    isError: isSignMessageError,
+  } = useSignEvmLinkMessage()
+  
+  const { mutate: linkEvmAddress } =
+    useLinkEvmAccount(setModalStep, undefined, onError)
+
+  useEffect(() => {
+    if (isSignMessageError) {
+      onError?.()
+    }
+  }, [isSignMessageError])
+
+  const signAndLinkEvmAddress = async (
+    evmAddress?: string,
+    substrateAddress?: string | null
+  ) => {
+    if (!evmAddress) return
+
+    const data = await signEvmLinkMessage(evmAddress, substrateAddress)
 
     if (data) {
       linkEvmAddress({
@@ -65,6 +90,6 @@ export const useSignMessageAndLinkEvmAddress = (setModalStep?: () => void) => {
       })
     }
   }
-  
+
   return { signAndLinkEvmAddress, isSigningMessage }
 }
