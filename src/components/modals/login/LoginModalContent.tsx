@@ -1,4 +1,7 @@
 import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
+import CreateAccountIcon from '@/assets/icons/create-account.svg'
+import KeyIcon from '@/assets/icons/key.svg'
+import WalletIcon from '@/assets/icons/wallet.svg'
 import Button from '@/components/Button'
 import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
@@ -63,7 +66,10 @@ export const LoginContent = ({
         <Logo className='mb-8 text-5xl' />
         <div className='flex flex-col gap-4'>
           <Button onClick={() => setCurrentStep('enter-secret-key')} size='lg'>
-            Enter Grill secret key
+            <div className='flex items-center justify-center gap-2'>
+              <KeyIcon />
+              Enter Grill secret key
+            </div>
           </Button>
           <Button
             type='button'
@@ -85,7 +91,10 @@ export const LoginContent = ({
               // props.closeModal()
             }}
           >
-            Create an account
+            <div className='flex items-center justify-center gap-2'>
+              <CreateAccountIcon />
+              Create an account
+            </div>
           </Button>
 
           {termsAndService('mt-4')}
@@ -125,7 +134,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
   const { signAndLinkEvmAddress, isSigningMessage } =
     useSignMessageAndLinkEvmAddress({
       setModalStep: () => setCurrentStep('evm-address-linked'),
-      onError: () => setCurrentStep('evm-connecting-error')
+      onError: () => setCurrentStep('evm-connecting-error'),
     })
 
   const isDarkTheme = theme === 'dark'
@@ -148,13 +157,19 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
         <div className='w-full border-b border-background-lightest'></div>
       </div>
       <p className='mb-4 mt-6 text-text-muted'>
-        Now you can connect EVM wallet to benefit from EVM features such as
-        ERC20 tokens, NFTs and more.
+        Now, you can connect an EVM wallet to benefit from EVM features such as
+        ERC20 tokens, NFTs, and more.
       </p>
       <CustomConnectButton
         className='w-full'
         signAndLinkEvmAddress={signAndLinkEvmAddress}
         isSigningMessage={isSigningMessage}
+        label={
+          <div className='flex items-center justify-center gap-2'>
+            <WalletIcon />
+            Connect Wallet
+          </div>
+        }
       />
     </div>
   )

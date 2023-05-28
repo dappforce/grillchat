@@ -74,7 +74,7 @@ const modalTitles: {
   },
   'connect-evm-address': {
     title: '🔑 Link Your EVM Address',
-    desc: 'A connected Ethereum address is associated with your Grill account via an of-chain proof, allowing you to display and use NFTs. ',
+    desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display NFTs, and interact with ERC20s and smart contracts. ',
     withBackButton: true,
   },
   'evm-connecting-error': {

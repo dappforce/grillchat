@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi'
 
 type CustomConnectButtonProps = ButtonProps & {
   className?: string
-  label?: string
+  label?: React.ReactNode
   signAndLinkOnConnect?: boolean
   signAndLinkEvmAddress: (
     emvAddress?: string,

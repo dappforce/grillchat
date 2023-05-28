@@ -30,13 +30,13 @@ const modalHeader: ModalTitle = {
   },
   'enter-secret-key': {
     title: '🔑 Grill secret key',
-    desc: 'To access GrillChat, you need a Grill secret key. If you do not have one, just write your first chat message, and you will be given one.',
+    desc: 'To access Grill.chat, you need a Grill secret key. If you do not have one, just write your first chat message, and you will be given one.',
     withBackButton: true,
     withFooter: true
   },
   'account-created': {
     title: '🎉 Account created',
-    desc: 'We have created an anonymous account for you. You can now use grill.chat or connect your traditional Web3 wallet to it. ',
+    desc: 'We have created an anonymous account for you. You can now use Grill.chat!',
   },
   'evm-address-linked': {
     title: '🎉 EVM Wallet connected',
