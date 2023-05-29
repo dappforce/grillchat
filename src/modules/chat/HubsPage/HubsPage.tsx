@@ -28,11 +28,15 @@ export default function HubsPage(props: HubsPageProps) {
   const isInIframe = useIsInIframe()
   const { search, setSearch, getSearchResults, focusController } = useSearch()
 
-  const renderHubsContent = (children: JSX.Element) => {
+  const renderHubsContent = (
+    children: JSX.Element,
+    showSpecialButtons?: boolean
+  ) => {
     return (
       <HubsContentWrapper
         search={search}
         isIntegrateChatButtonOnTop={props.isIntegrateChatButtonOnTop}
+        showSpecialButtons={showSpecialButtons}
       >
         {children}
       </HubsContentWrapper>
@@ -71,7 +75,8 @@ export default function HubsPage(props: HubsPageProps) {
           <HubsContent
             getSearchResults={getSearchResults}
             hubsChatCount={props.hubsChatCount}
-          />
+          />,
+          true
         ),
     },
   ]
@@ -119,15 +124,17 @@ function HubsContentWrapper({
   isIntegrateChatButtonOnTop,
   children,
   search,
+  showSpecialButtons,
 }: {
   isIntegrateChatButtonOnTop: boolean
   children: JSX.Element
   search: string
+  showSpecialButtons?: boolean
 }) {
   const isInIframe = useIsInIframe()
   return (
     <div className='flex flex-col'>
-      {!isInIframe && !search && (
+      {showSpecialButtons && !isInIframe && !search && (
         <ChatSpecialButtons
           isIntegrateChatButtonOnTop={isIntegrateChatButtonOnTop}
         />
