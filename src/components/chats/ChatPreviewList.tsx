@@ -89,6 +89,7 @@ function ChatPreviewContainer({
       title={content?.title ?? ''}
       description={content?.body ?? ''}
       chatId={chat.id}
+      hubId={hubId}
       withUnreadCount
       withFocusedStyle={isFocused}
     />
