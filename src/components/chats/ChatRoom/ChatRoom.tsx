@@ -1,9 +1,15 @@
 import Container from '@/components/Container'
 import { cx } from '@/utils/class-names'
+import dynamic from 'next/dynamic'
 import { ComponentProps, useRef, useState } from 'react'
-import ChatList from '../ChatList/ChatList'
 import ChatForm from './ChatForm'
-import RepliedMessage from './RepliedMessage'
+
+const ChatList = dynamic(() => import('../ChatList/ChatList'), {
+  ssr: false,
+})
+const RepliedMessage = dynamic(() => import('./RepliedMessage'), {
+  ssr: false,
+})
 
 export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
