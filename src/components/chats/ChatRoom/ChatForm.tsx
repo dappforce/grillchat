@@ -158,6 +158,7 @@ export default function ChatForm({
             >
               <TextArea
                 onEnterToSubmitForm={submitForm}
+                disabled={!chatId}
                 ref={textAreaRef}
                 value={messageBody}
                 onChange={(e) => setMessageBody((e.target as any).value)}

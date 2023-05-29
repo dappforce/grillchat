@@ -111,7 +111,7 @@ export default function AboutChatModal({
       <MetadataModal
         closeModal={() => setIsOpenMetadataModal(false)}
         isOpen={isOpenMetadataModal}
-        post={chat}
+        entity={chat}
         postIdTextPrefix='Chat'
       />
     </>

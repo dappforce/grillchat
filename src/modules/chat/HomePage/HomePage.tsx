@@ -12,13 +12,13 @@ const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
 })
 
 export type HomePageProps = {
-  spaceId: string
+  hubId: string
 }
 const searchKeys = ['content.title']
-export default function HomePage({ spaceId }: HomePageProps) {
+export default function HomePage({ hubId }: HomePageProps) {
   const isInIframe = useIsInIframe()
 
-  const { chats, allChatIds } = useSortedChats(spaceId)
+  const { chats, allChatIds } = useSortedChats(hubId)
 
   const { search, getSearchResults, setSearch, focusController } = useSearch()
   const { focusedElementIndex, searchResults } = getSearchResults(
@@ -46,7 +46,7 @@ export default function HomePage({ spaceId }: HomePageProps) {
               colorModeToggler={colorModeToggler}
               backButton={backButton}
               logo={logoLink}
-              spaceId={spaceId}
+              spaceId={hubId}
               searchProps={{
                 search,
                 setSearch,
@@ -60,7 +60,7 @@ export default function HomePage({ spaceId }: HomePageProps) {
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col'>
         {searchResults.length === 0 && (
-          <NoChatsFound search={search} hubId={spaceId} />
+          <NoChatsFound search={search} hubId={hubId} />
         )}
         <ChatPreviewList
           chats={searchResults}

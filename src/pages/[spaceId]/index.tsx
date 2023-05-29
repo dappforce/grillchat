@@ -49,7 +49,7 @@ export const getStaticProps = getCommonStaticProps<
     return {
       props: {
         dehydratedState: dehydrate(queryClient),
-        spaceId,
+        hubId: spaceId,
       },
       revalidate: 2,
     }

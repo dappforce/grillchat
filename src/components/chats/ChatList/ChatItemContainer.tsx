@@ -7,16 +7,18 @@ import ChatItem, { ChatItemProps } from '../ChatItem'
 export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
   containerProps?: ComponentProps<'div'>
   chatId: string
+  hubId: string
 }
 
 export default function ChatItemContainer({
   containerProps,
   chatId,
+  hubId,
   ...props
 }: ChatItemContainerProps) {
   const { message } = props
 
-  const isMessageBlocked = useIsMessageBlocked(message, chatId)
+  const isMessageBlocked = useIsMessageBlocked(hubId, message, chatId)
   const address = useMyAccount((state) => state.address)
   if (!message?.content?.body || isMessageBlocked) return null
 
