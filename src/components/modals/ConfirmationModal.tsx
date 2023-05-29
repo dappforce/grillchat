@@ -20,32 +20,43 @@ export default function ConfirmationModal({
   autoCloseAfterAction = true,
   ...props
 }: ConfirmationModalProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingPrimary, setIsLoadingPrimary] = useState(false)
+  const [isLoadingSecondary, setIsLoadingSecondary] = useState(false)
 
-  const handleClick = (clickHandler?: ClickHandler) => async () => {
-    setIsLoading(true)
-    await clickHandler?.()
-    setIsLoading(false)
-    autoCloseAfterAction && props.closeModal()
-  }
+  const handleClick =
+    (
+      clickHandler: ClickHandler | undefined,
+      buttonType: 'primary' | 'secondary'
+    ) =>
+    async () => {
+      const setIsLoading =
+        buttonType === 'primary' ? setIsLoadingPrimary : setIsLoadingSecondary
+
+      setIsLoading(true)
+      await clickHandler?.()
+      setIsLoading(false)
+      autoCloseAfterAction && props.closeModal()
+    }
 
   return (
     <Modal {...props} title={title} description={description} withCloseButton>
       <div className='mt-2 flex flex-col gap-4'>
         <Button
-          isLoading={isLoading}
+          isLoading={isLoadingPrimary}
+          disabled={isLoadingSecondary}
           size='lg'
           variant={primaryButtonProps?.variant ?? 'primary'}
           {...primaryButtonProps}
-          onClick={handleClick(primaryButtonProps?.onClick)}
+          onClick={handleClick(primaryButtonProps?.onClick, 'primary')}
         >
           {primaryButtonProps.children ?? 'Yes'}
         </Button>
         <Button
-          isLoading={isLoading}
+          isLoading={isLoadingSecondary}
+          disabled={isLoadingPrimary}
           size='lg'
           variant={secondaryButtonProps?.variant ?? 'primaryOutline'}
-          onClick={handleClick(secondaryButtonProps?.onClick)}
+          onClick={handleClick(secondaryButtonProps?.onClick, 'secondary')}
         >
           {secondaryButtonProps.children ?? 'No'}
         </Button>
