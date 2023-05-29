@@ -29,16 +29,16 @@ const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
 })
 
 export type HomePageProps = {
-  spaceId: string
+  hubId: string
 }
 const searchKeys = ['content.title']
-export default function HomePage({ spaceId }: HomePageProps) {
+export default function HomePage({ hubId }: HomePageProps) {
   const isInIframe = useIsInIframe()
 
-  const { data } = getChatIdsBySpaceIdQuery.useQuery(spaceId)
+  const { data } = getChatIdsBySpaceIdQuery.useQuery(hubId)
   const allChatIds = useMemo(() => {
-    return [...(data?.chatIds ?? []), ...getLinkedChatIdsForSpaceId(spaceId)]
-  }, [data, spaceId])
+    return [...(data?.chatIds ?? []), ...getLinkedChatIdsForSpaceId(hubId)]
+  }, [data, hubId])
 
   const sortedIds = useSortedChatIdsByLatestMessage(allChatIds)
   const order = useSortByConfig(sortedIds)
@@ -74,7 +74,7 @@ export default function HomePage({ spaceId }: HomePageProps) {
               colorModeToggler={colorModeToggler}
               backButton={backButton}
               logo={logoLink}
-              spaceId={spaceId}
+              spaceId={hubId}
               searchProps={{
                 search,
                 setSearch,
@@ -88,12 +88,13 @@ export default function HomePage({ spaceId }: HomePageProps) {
       {!isInIframe && <WelcomeModal />}
       <div className='flex flex-col'>
         {searchResults.length === 0 && (
-          <NoSearchResultScreen search={search} hubId={spaceId} />
+          <NoSearchResultScreen search={search} hubId={hubId} />
         )}
         {searchResults.map((chat, idx) => {
           if (!chat) return null
           return (
             <ChatPreviewContainer
+              hubId={hubId}
               isFocused={idx === focusController.focusedElementIndex}
               chat={chat}
               key={chat.id}
@@ -108,9 +109,11 @@ export default function HomePage({ spaceId }: HomePageProps) {
 function ChatPreviewContainer({
   chat,
   isFocused,
+  hubId,
 }: {
   chat: PostData
   isFocused?: boolean
+  hubId: string
 }) {
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
@@ -156,6 +159,7 @@ function ChatPreviewContainer({
       title={content?.title ?? ''}
       description={content?.body ?? ''}
       chatId={chat.id}
+      hubId={hubId}
       withUnreadCount
       withFocusedStyle={isFocused}
     />

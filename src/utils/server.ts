@@ -9,14 +9,18 @@ import { getCrustIpfsAuth, getIpfsPinUrl } from './env/server'
 
 export async function prefetchBlockedEntities(
   queryClient: QueryClient,
+  hubId: string,
   chatIds: string[]
 ) {
   try {
     return await Promise.all([
-      getBlockedCidsQuery.fetchQuery(queryClient, null),
-      getBlockedAddressesQuery.fetchQuery(queryClient, null),
+      getBlockedCidsQuery.fetchQuery(queryClient, { hubId }),
+      getBlockedAddressesQuery.fetchQuery(queryClient, { hubId }),
       ...chatIds.map((chatId) =>
-        getBlockedMessageIdsInChatIdQuery.fetchQuery(queryClient, chatId)
+        getBlockedMessageIdsInChatIdQuery.fetchQuery(queryClient, {
+          chatId,
+          hubId,
+        })
       ),
     ])
   } catch (err) {
