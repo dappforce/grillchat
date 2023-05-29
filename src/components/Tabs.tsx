@@ -46,7 +46,7 @@ export default function Tabs({
 
   const component = asContainer ? Container : 'div'
   const usedSelectedIndex =
-    hideBeforeHashLoaded || isHashLoaded ? selectedIndex : -1
+    !hideBeforeHashLoaded || isHashLoaded ? selectedIndex : -1
 
   return (
     <Tab.Group selectedIndex={usedSelectedIndex} onChange={setSelectedIndex}>
