@@ -185,7 +185,7 @@ export default function ChatItem({
       <MetadataModal
         isOpen={openMetadata}
         closeModal={() => setOpenMetadata(false)}
-        post={message}
+        entity={message}
       />
     </div>
   )
