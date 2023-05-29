@@ -177,6 +177,8 @@ const config = {
 }
 ```
 
+#### Resource config structure
+
 The resource config has a conditional structure, which means that each subsequent config value
 depends on the previous one through a config hierarchy. You can envision this hierarchy as
 a directed graph tree with a variety of values and a strict config structure.
@@ -185,7 +187,9 @@ you can provide your own values. However, in such a case, your resource config w
 only have a basic list of resourceValue properties.
 
 <details>
-  <summary>In this list, you can find all the currently supported config value conditions:</summary>
+  <summary>In this list, you can find all the currently supported config value conditions.</summary>
+   <blockquote>
+   <details><summary>schema: social</summary>
 
 - `social -> twitter -> post -> id`;
 - `social -> twitter -> profile -> id`;
@@ -201,10 +205,22 @@ only have a basic list of resourceValue properties.
 - `social -> linkedin -> profile -> id`;
 - `social -> any_social_app -> post -> id`;
 - `social -> any_social_app -> profile -> id`;
+
+  </details>
+  </blockquote>
+
+<blockquote>
+   <details><summary>schema: chain</summary>
+
+#### Any chain type -> any chain name
+
 - `chain -> any_chainType -> any_chainType_any_chainName -> block -> blockNumber`;
 - `chain -> any_chainType -> any_chainType_any_chainName -> tx -> txHash`;
 - `chain -> any_chainType -> any_chainType_any_chainName -> token -> tokenAddress`;
 - `chain -> any_chainType -> any_chainType_any_chainName -> account`;
+
+#### EVM chain type
+
 - `chain -> evm -> ethereum -> block -> blockNumber`;
 - `chain -> evm -> ethereum -> tx -> txHash`;
 - `chain -> evm -> ethereum -> token -> tokenAddress`;
@@ -248,6 +264,9 @@ only have a basic list of resourceValue properties.
 - `chain -> evm -> any_evm_chainName -> nft -> collectionId`;
 - `chain -> evm -> any_evm_chainName -> nft -> nftId`;
 - `chain -> evm -> any_evm_chainName -> nft -> standard`;
+
+#### Substrate chain type
+
 - `chain -> substrate -> subsocial -> block -> blockNumber`;
 - `chain -> substrate -> subsocial -> tx -> txHash`;
 - `chain -> substrate -> subsocial -> token -> tokenAddress`;
@@ -358,6 +377,9 @@ only have a basic list of resourceValue properties.
 - `chain -> substrate -> any_substrate_chainName -> tx -> txHash`;
 - `chain -> substrate -> any_substrate_chainName -> token -> tokenAddress`;
 - `chain -> substrate -> any_substrate_chainName -> account`;
+
+  </details>
+  </blockquote>
 
 </details>
 
