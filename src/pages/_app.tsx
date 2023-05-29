@@ -26,12 +26,27 @@ const sourceSansPro = Source_Sans_Pro({
 })
 
 export default function App(props: AppProps<AppCommonProps>) {
+  const isInIframe = useIsInIframe()
   return (
     <ConfigProvider>
       <style jsx global>{`
         html {
           --source-sans-pro: ${sourceSansPro.style.fontFamily};
         }
+        ${isInIframe
+          ? // Fix issue with iframe height not calculated correctly in iframe
+            `
+          html,
+          body {
+            height: 100%;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          body {
+            overflow-y: scroll;
+          }
+        `
+          : ''}
       `}</style>
       <AppContent {...props} />
     </ConfigProvider>
