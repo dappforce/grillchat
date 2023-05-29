@@ -164,6 +164,10 @@ const config = {
       enableLoginButton: false,
       enableInputAutofocus: true,
     },
+    metadata: {
+      title: 'Elon Musk',
+      body: 'Onchain discussion about Elon Musk',
+    },
   },
   theme: 'light',
   onWidgetCreated: (iframe) => {
@@ -250,7 +254,7 @@ new Resource({
   chainName: 'kusama',
   resourceType: 'nft',
   resourceValue: {
-    nftStandart: 'rmrk2',
+    standart: 'rmrk2',
     collectionId: '22708b368d163c8007',
     tokenId: '00000020',
   },
