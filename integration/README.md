@@ -86,10 +86,10 @@ The type opens static chat room by id
 
 The type creates new or opens existed chat room by resource.
 
-| Name       | Type                     | Description                                                                                                                                                                                |
-| ---------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `resource` | `SocialResource`         | The resource that will be linked to the postId in the blockchain should be the SocialResource. You can find examples suitable for various scenarios [here](#resource-discussion-examples). |
-| `metadata` | `{ title, body, image }` | The metadata will be used as the content for the discussion post within the blockchain.                                                                                                    |
+| Name       | Type                     | Description                                                                                                                                                                          |
+| ---------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `resource` | `Resource`               | The resource that will be linked to the postId in the blockchain should be the Resource. You can find examples suitable for various scenarios [here](#resource-discussion-examples). |
+| `metadata` | `{ title, body, image }` | The metadata will be used as the content for the discussion post within the blockchain.                                                                                              |
 
 > **Warning**
 >
@@ -97,7 +97,7 @@ The type creates new or opens existed chat room by resource.
 >
 > `yarn add @subsocial/resource-discussions`
 >
-> Then, use `SocialResource` for the `resource` parameter, like [here](#resource-discussion-examples).
+> Then, use `Resource` for the `resource` parameter, like [here](#resource-discussion-examples).
 
 #### Channel Settings
 
@@ -153,7 +153,7 @@ const config = {
   hub: { id: '1002' },
   channel: {
     type: 'resource',
-    resource: new SocialResource({
+    resource: new Resource({
       schema: 'social',
       app: 'twitter',
       resourceType: 'profile',
@@ -173,12 +173,12 @@ const config = {
 }
 ```
 
-##### SocialResource Examples
+##### Resource Examples
 
 1. EVM account address on Ethereum
 
 ```ts
-new SocialResource({
+new Resource({
   schema: 'chain',
   chainType: 'evm',
   chainName: 'ethereum',
@@ -192,13 +192,13 @@ new SocialResource({
 2. NFT on Polygon
 
 ```ts
-new SocialResource({
+new Resource({
   schema: 'chain',
   chainType: 'evm',
   chainName: 'polygon',
   resourceType: 'nft',
   resourceValue: {
-    nftStandart: 'ERC-721',
+    standart: 'ERC-721',
     collectionId: '0x0000000000000000000000000',
     tokenId: '112',
   },
@@ -208,7 +208,7 @@ new SocialResource({
 3. Block on Kusama
 
 ```ts
-new SocialResource({
+new Resource({
   schema: 'chain',
   chainType: 'substrate',
   chainName: 'kusama',
@@ -222,7 +222,7 @@ new SocialResource({
 4. Elon Mask Twitter profile
 
 ```ts
-new SocialResource({
+new Resource({
   schema: 'social',
   app: 'twitter',
   resourceType: 'profile',
@@ -233,7 +233,7 @@ new SocialResource({
 5. Youtube video
 
 ```ts
-new SocialResource({
+new Resource({
   schema: 'social',
   app: 'youtube',
   resourceType: 'post',
@@ -244,7 +244,7 @@ new SocialResource({
 6. RMRK2 NFT on Kusama
 
 ```ts
-new SocialResource({
+new Resource({
   schema: 'chain',
   chainType: 'substrate',
   chainName: 'kusama',
@@ -260,7 +260,7 @@ new SocialResource({
 7. Zeitgeist Market
 
 ```ts
-new SocialResource({
+new Resource({
   schema: 'chain',
   chainType: 'substrate',
   chainName: 'zeitgeist',

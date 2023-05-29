@@ -9,7 +9,7 @@ type QueryParams = {
   enableInputAutofocus?: string
 }
 
-type SocialResourceLike = { toResourceId: () => string }
+type ResourceLike = { toResourceId: () => string }
 type ResourceMetadata = { title: string; body?: string; image?: string }
 
 class QueryParamsBuilder {
@@ -48,8 +48,8 @@ type ChanelTypeChannel = {
 type ChanelTypeResource = {
   /** The type of the channel. This should be set to `'channel'` */
   type: 'resource'
-  /** The SocialResource instance of the channel. This should be created from @subsocial/resource-discussions if necessary */
-  resource: SocialResourceLike
+  /** The Resource instance of the channel. This should be created from @subsocial/resource-discussions if necessary */
+  resource: ResourceLike
   /** The metadata for new channel, if it's not existing and will be created automatically. */
   metadata: ResourceMetadata
 }
