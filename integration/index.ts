@@ -117,7 +117,7 @@ const grill = {
           break
         case 'resource':
           resourceId = channelConfig.resource.toResourceId()
-          baseUrl += `/resource/${resourceId}`
+          baseUrl += `/resource/${encodeURIComponent(resourceId)}`
           resourceMetadata = channelConfig.metadata
           break
         default:
