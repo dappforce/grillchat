@@ -3,10 +3,14 @@ import { useMyAccount } from '@/stores/my-account'
 import { useMemo } from 'react'
 
 export default function useIsJoinedToChat(chatId: string, address?: string) {
+  const isInitialized = useMyAccount((state) => state.isInitialized)
   const myAddress = useMyAccount((state) => state.address)
   const usedAddress = address || myAddress
 
-  const { data } = getFollowedPostIdsByAddressQuery.useQuery(usedAddress ?? '')
+  const { data, isLoading } = getFollowedPostIdsByAddressQuery.useQuery(
+    usedAddress ?? '',
+    { enabled: isInitialized }
+  )
 
   const followedPostIdsSet = useMemo(() => {
     const set = new Set<string>()
@@ -14,5 +18,5 @@ export default function useIsJoinedToChat(chatId: string, address?: string) {
     return set
   }, [data])
 
-  return followedPostIdsSet.has(chatId)
+  return { isJoined: followedPostIdsSet.has(chatId), isLoading }
 }

@@ -28,6 +28,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   onSubmit?: () => void
   replyTo?: string
   clearReplyTo?: () => void
+  disabled?: boolean
 }
 
 function processMessage(message: string) {
@@ -38,6 +39,7 @@ export default function ChatForm({
   className,
   chatId,
   onSubmit,
+  disabled,
   replyTo,
   clearReplyTo,
   ...props
@@ -158,7 +160,7 @@ export default function ChatForm({
             >
               <TextArea
                 onEnterToSubmitForm={submitForm}
-                disabled={!chatId}
+                disabled={!chatId || disabled}
                 ref={textAreaRef}
                 value={messageBody}
                 onChange={(e) => setMessageBody((e.target as any).value)}

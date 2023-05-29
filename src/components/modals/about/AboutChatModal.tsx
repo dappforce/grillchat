@@ -31,7 +31,7 @@ export default function AboutChatModal({
   const [isOpenMetadataModal, setIsOpenMetadataModal] = useState(false)
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
 
-  const isJoinedToChat = useIsJoinedToChat(chatId)
+  const { isJoined, isLoading } = useIsJoinedToChat(chatId)
 
   const content = chat?.content
   if (!content) return null
@@ -57,7 +57,7 @@ export default function AboutChatModal({
     },
   ]
 
-  if (isJoinedToChat) {
+  if (isJoined) {
     actionMenu.push({
       text: 'Leave Chat',
       icon: RxExit,
@@ -75,7 +75,7 @@ export default function AboutChatModal({
         contentList={contentList}
         imageCid={content?.image ?? ''}
         bottomElement={
-          !isJoinedToChat ? (
+          !isJoined && !isLoading ? (
             <JoinChatWrapper>
               {({ mutateAsync, isLoading }) => (
                 <Button

@@ -46,7 +46,7 @@ export default function ChatRoom({
 
   const closeReply = () => setReplyTo(undefined)
 
-  const hasJoined = useIsJoinedToChat(chatId)
+  const { isJoined, isLoading: isLoadingJoinedChat } = useIsJoinedToChat(chatId)
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
@@ -70,7 +70,7 @@ export default function ChatRoom({
             scrollContainer={scrollContainerRef}
           />
         )}
-        {hasJoined ? (
+        {isJoined ? (
           <ChatForm
             replyTo={replyTo}
             onSubmit={scrollToBottom}
@@ -82,7 +82,7 @@ export default function ChatRoom({
             {({ isLoading, mutateAsync }) => (
               <Button
                 size='lg'
-                isLoading={isLoading}
+                isLoading={isLoading || isLoadingJoinedChat}
                 onClick={() => mutateAsync({ chatId })}
               >
                 Join
