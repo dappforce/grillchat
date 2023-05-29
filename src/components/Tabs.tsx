@@ -15,6 +15,7 @@ export type TabsProps = ComponentProps<'div'> & {
   tabs: Tab[]
   panelClassName?: string
   defaultTab?: number
+  hideBeforeHashLoaded?: boolean
 }
 
 export default function Tabs({
@@ -22,13 +23,18 @@ export default function Tabs({
   tabs,
   panelClassName,
   defaultTab = 0,
+  hideBeforeHashLoaded,
   ...props
 }: TabsProps) {
   const [selectedIndex, setSelectedIndex] = useState(defaultTab)
+  const [isHashLoaded, setIsHashLoaded] = useState(false)
+
   useEffect(() => {
     const hash = window.location.hash
     const index = tabs.findIndex(({ id }) => `#${id}` === hash)
     if (index > -1) setSelectedIndex(index)
+
+    setIsHashLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -39,9 +45,11 @@ export default function Tabs({
   }
 
   const component = asContainer ? Container : 'div'
+  const usedSelectedIndex =
+    hideBeforeHashLoaded || isHashLoaded ? selectedIndex : -1
 
   return (
-    <Tab.Group selectedIndex={selectedIndex} onChange={setSelectedIndex}>
+    <Tab.Group selectedIndex={usedSelectedIndex} onChange={setSelectedIndex}>
       <Tab.List
         as={component}
         className={cx('flex items-end gap-4', props.className)}

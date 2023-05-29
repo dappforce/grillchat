@@ -21,7 +21,7 @@ export async function prefetchChatPreviewsData(
 
   const [{ lastMessages, chats, messageIdsByChatIds }] = await Promise.all([
     getChatPreviewsData(allChatIds),
-    prefetchBlockedEntities(queryClient, allChatIds),
+    prefetchBlockedEntities(queryClient, hubId, allChatIds),
     getSpaceBySpaceIdQuery.fetchQuery(queryClient, hubId),
   ] as const)
 

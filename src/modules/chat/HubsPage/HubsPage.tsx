@@ -108,6 +108,7 @@ export default function HubsPage(props: HubsPageProps) {
         asContainer
         tabs={tabs}
         defaultTab={1}
+        hideBeforeHashLoaded
       />
       {!isInIframe && <WelcomeModal />}
     </DefaultLayout>
