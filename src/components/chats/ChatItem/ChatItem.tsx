@@ -119,7 +119,7 @@ export default function ChatItem({
       },
     ]
   }
-  const menus = withCustomMenu ? getChatMenus() : []
+  const menus = withCustomMenu && isSent ? getChatMenus() : []
 
   if (!body) return null
 
@@ -185,7 +185,7 @@ export default function ChatItem({
       <MetadataModal
         isOpen={openMetadata}
         closeModal={() => setOpenMetadata(false)}
-        post={message}
+        entity={message}
       />
     </div>
   )

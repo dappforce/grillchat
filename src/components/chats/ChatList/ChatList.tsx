@@ -38,6 +38,7 @@ import { NewMessageNotice } from './NewMessageNotice'
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
+  hubId: string
   chatId: string
   scrollContainerRef?: React.RefObject<HTMLDivElement>
   replyTo?: string
@@ -57,6 +58,7 @@ const DEFAULT_SCROLL_THRESHOLD = 500
 function ChatListContent({
   asContainer,
   scrollableContainerClassName,
+  hubId,
   chatId,
   scrollContainerRef: _scrollContainerRef,
   replyTo,
@@ -85,7 +87,11 @@ function ChatListContent({
   const { currentData: currentPageMessageIds, loadMore } =
     useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
 
-  const filteredIds = useFilterBlockedMessageIds(chatId, currentPageMessageIds)
+  const filteredIds = useFilterBlockedMessageIds(
+    hubId,
+    chatId,
+    currentPageMessageIds
+  )
 
   const messageQueries = getPostQuery.useQueries(filteredIds)
   const loadedMessageQueries = useMemo(() => {
@@ -198,6 +204,7 @@ function ChatListContent({
 
               const chatElement = message && (
                 <ChatItemContainer
+                  hubId={hubId}
                   chatId={chatId}
                   onSelectMessageAsReply={onSelectMessageAsReply}
                   message={message}

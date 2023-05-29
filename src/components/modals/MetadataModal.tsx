@@ -1,35 +1,35 @@
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { getIpfsContentUrl, getSubIdUrl } from '@/utils/ipfs'
-import { PostData } from '@subsocial/api/types'
+import { PostData, SpaceData } from '@subsocial/api/types'
 import DataCard, { DataCardProps } from '../DataCard'
 
 export type MetadataModalProps = ModalFunctionalityProps & {
-  post: PostData
+  entity: PostData | SpaceData
   postIdTextPrefix?: string
 }
 
 export default function MetadataModal({
-  post,
+  entity,
   postIdTextPrefix = 'Post',
   ...props
 }: MetadataModalProps) {
   const metadataList: DataCardProps['data'] = [
     {
       title: `${postIdTextPrefix} ID:`,
-      content: post.id,
+      content: entity.id,
       withCopyButton: true,
     },
     {
       title: 'Content ID:',
-      content: post.struct.contentId ?? '',
-      redirectTo: getIpfsContentUrl(post.struct.contentId ?? ''),
+      content: entity.struct.contentId ?? '',
+      redirectTo: getIpfsContentUrl(entity.struct.contentId ?? ''),
       openInNewTab: true,
       withCopyButton: true,
     },
     {
       title: 'Owner:',
-      content: post.struct.ownerId ?? '',
-      redirectTo: getSubIdUrl(post.struct.ownerId ?? ''),
+      content: entity.struct.ownerId ?? '',
+      redirectTo: getSubIdUrl(entity.struct.ownerId ?? ''),
       openInNewTab: true,
       withCopyButton: true,
     },
