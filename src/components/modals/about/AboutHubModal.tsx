@@ -21,11 +21,7 @@ export default function AboutHubModal({
   const content = hub?.content
   if (!content) return null
 
-  const hubUrl = urlJoin(
-    getCurrentUrlOrigin(),
-    getHomePageLink(router),
-    '/about'
-  )
+  const hubUrl = urlJoin(getCurrentUrlOrigin(), getHomePageLink(router))
   const contentList: AboutModalProps['contentList'] = [
     { title: 'Description', content: content.about },
     {
