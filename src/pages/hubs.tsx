@@ -3,7 +3,7 @@ import HubsPage from '@/modules/chat/HubsPage'
 import { HubsPageProps } from '@/modules/chat/HubsPage/HubsPage'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
-import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getMainSpaceId, getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
@@ -36,7 +36,7 @@ export const getStaticProps = getCommonStaticProps<
       ])
 
       hubsData.forEach((hub) => {
-        getSpaceBySpaceIdQuery.setQueryData(queryClient, hub.id, hub)
+        getSpaceQuery.setQueryData(queryClient, hub.id, hub)
       })
     } catch (err) {
       console.error('Error fetching for hubs page: ', err)

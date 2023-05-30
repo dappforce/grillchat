@@ -3,7 +3,7 @@ import { getPostsFromCache } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
-import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
@@ -22,7 +22,7 @@ export async function prefetchChatPreviewsData(
   const [{ lastMessages, chats, messageIdsByChatIds }] = await Promise.all([
     getChatPreviewsData(allChatIds),
     prefetchBlockedEntities(queryClient, hubId, allChatIds),
-    getSpaceBySpaceIdQuery.fetchQuery(queryClient, hubId),
+    getSpaceQuery.fetchQuery(queryClient, hubId),
   ] as const)
 
   messageIdsByChatIds.forEach((messageIds, idx) => {

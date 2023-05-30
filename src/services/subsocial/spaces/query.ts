@@ -5,7 +5,7 @@ import {
 } from '@/subsocial-query/subsocial/query'
 import { SpaceData } from '@subsocial/api/types'
 
-const getSpaceBySpaceId = poolQuery<SubsocialQueryData<string>, SpaceData>({
+const getSpace = poolQuery<SubsocialQueryData<string>, SpaceData>({
   multiCall: async (allParams) => {
     if (allParams.length === 0) return []
     const [{ api }] = allParams
@@ -19,7 +19,7 @@ const getSpaceBySpaceId = poolQuery<SubsocialQueryData<string>, SpaceData>({
     resultToKey: (result) => result?.id ?? '',
   },
 })
-export const getSpaceBySpaceIdQuery = createSubsocialQuery({
-  key: 'getSpaceBySpaceId',
-  fetcher: getSpaceBySpaceId,
+export const getSpaceQuery = createSubsocialQuery({
+  key: 'getSpace',
+  fetcher: getSpace,
 })
