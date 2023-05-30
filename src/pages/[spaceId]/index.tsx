@@ -70,7 +70,7 @@ async function getChatPreviewsData(chatIds: string[]) {
 export const getStaticProps = getCommonStaticProps<
   HomePageProps & AppCommonProps
 >(
-  () => ({}),
+  () => ({ alwaysShowScrollbarOffset: true }),
   async (context) => {
     const queryClient = new QueryClient()
 

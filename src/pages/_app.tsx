@@ -16,6 +16,7 @@ import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 
 export type AppCommonProps = {
+  alwaysShowScrollbarOffset?: boolean
   head?: HeadConfigProps
   dehydratedState?: any
 }
@@ -27,12 +28,22 @@ const sourceSansPro = Source_Sans_Pro({
 
 export default function App(props: AppProps<AppCommonProps>) {
   const isInIframe = useIsInIframe()
+
+  const scrollbarStyling = props.pageProps.alwaysShowScrollbarOffset
+    ? `
+      body {
+        overflow-y: scroll;
+      }
+    `
+    : ''
+
   return (
     <ConfigProvider>
       <style jsx global>{`
         html {
           --source-sans-pro: ${sourceSansPro.style.fontFamily};
         }
+
         ${isInIframe
           ? // Fix issue with iframe height not calculated correctly in iframe
             `
@@ -42,11 +53,10 @@ export default function App(props: AppProps<AppCommonProps>) {
             overflow: auto;
             -webkit-overflow-scrolling: touch;
           }
-          body {
-            overflow-y: scroll;
-          }
         `
           : ''}
+
+        ${scrollbarStyling}
       `}</style>
       <AppContent {...props} />
     </ConfigProvider>
