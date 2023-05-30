@@ -51,3 +51,15 @@ export async function convertHexAddressToSubstrateAddress(hexAddress: string) {
   const { encodeAddress } = await import('@polkadot/keyring')
   return encodeAddress(hexAddress, 42)
 }
+
+export async function validateAddress(address: string) {
+  const { decodeAddress, encodeAddress } = await import('@polkadot/keyring')
+  const { hexToU8a, isHex } = await import('@polkadot/util')
+
+  try {
+    encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address))
+    return true
+  } catch (error) {
+    return false
+  }
+}

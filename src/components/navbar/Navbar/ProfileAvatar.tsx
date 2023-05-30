@@ -44,7 +44,7 @@ export default function ProfileAvatar({
         />
         <PopOver
           manualTrigger={popOverControl}
-          popOverClassName='font-bold'
+          popOverClassName='font-semibold'
           yOffset={16}
           placement='bottom-end'
           panelColor='warning'

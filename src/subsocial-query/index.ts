@@ -85,8 +85,8 @@ export function poolQuery<SingleParam, SingleReturn>(
   ): Promise<SingleReturn | null> {
     const currentIndex = queryPool.length
     queryPool.push(param)
-    window.clearTimeout(timeout)
-    timeout = window.setTimeout(later, waitTime)
+    clearTimeout(timeout)
+    timeout = setTimeout(later, waitTime) as unknown as number
 
     const result = await batchPromise
     if (Array.isArray(result)) {

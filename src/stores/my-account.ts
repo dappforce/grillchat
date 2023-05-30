@@ -97,6 +97,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       address,
       (energyAmount) => {
         const parsedEnergy = parseFloat(energyAmount.toPrimitive().toString())
+        console.log('Current energy: ', parsedEnergy)
         set({
           energy: parsedEnergy,
           _unsubscribeEnergy: () => unsub.then((unsub) => unsub()),

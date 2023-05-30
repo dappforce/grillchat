@@ -1,28 +1,59 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import { ConfigProvider, useConfigContext } from '@/contexts/ConfigContext'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import { QueryProvider } from '@/services/provider'
-import { initAllStores } from '@/stores/utils'
+import { useSendEvent } from '@/stores/analytics'
+import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
+import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
 import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
+import { Source_Sans_Pro } from 'next/font/google'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 
-const EvmProvider = dynamic(import('@/components/modals/login/EvmProvider'), { ssr: false })
+const EvmProvider = dynamic(import('@/components/modals/login/EvmProvider'), {
+  ssr: false,
+})
 
 export type AppCommonProps = {
   head?: HeadConfigProps
   dehydratedState?: any
 }
 
+const sourceSansPro = Source_Sans_Pro({
+  weight: ['400', '600', '700'],
+  subsets: ['latin'],
+})
+
 export default function App(props: AppProps<AppCommonProps>) {
+  const isInIframe = useIsInIframe()
   return (
     <ConfigProvider>
+      <style jsx global>{`
+        html {
+          --source-sans-pro: ${sourceSansPro.style.fontFamily};
+        }
+        ${isInIframe
+          ? // Fix issue with iframe height not calculated correctly in iframe
+            `
+          html,
+          body {
+            height: 100%;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          body {
+            overflow-y: scroll;
+          }
+        `
+          : ''}
+      `}</style>
       <AppContent {...props} />
     </ConfigProvider>
   )
@@ -39,6 +70,13 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
     initAllStores()
   }, [])
 
+  const sendEvent = useSendEvent()
+  const isInIframe = useIsInIframe()
+  useEffect(() => {
+    if (!isInIframe) return
+    sendEvent('loaded in iframe')
+  }, [isInIframe, sendEvent])
+
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
@@ -47,7 +85,9 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <HeadConfig {...head} />
         <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
         <EvmProvider>
-          <Component {...props} />
+          <div className={cx('font-sans')}>
+            <Component {...props} />
+          </div>
         </EvmProvider>
       </QueryProvider>
     </ThemeProvider>

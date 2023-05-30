@@ -34,8 +34,12 @@ export function waitStopScrolling(scrollContainer?: HTMLElement | null) {
 
 export function getIsInIframe() {
   try {
-    return window.self !== window.top
+    return window.self !== window.parent
   } catch (e) {
     return true
   }
+}
+
+export function replaceUrl(url: string) {
+  window.history.replaceState({}, '', url)
 }

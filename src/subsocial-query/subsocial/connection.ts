@@ -1,4 +1,4 @@
-import { SubsocialApi } from '@subsocial/api'
+import { type SubsocialApi } from '@subsocial/api'
 import { getConnectionConfig, SubsocialConnectionConfig } from './config'
 
 let subsocialApi: Promise<SubsocialApi> | null = null
@@ -10,6 +10,7 @@ export const getSubsocialApi = async (renew?: boolean) => {
 }
 
 async function connectToSubsocialApi(config: SubsocialConnectionConfig) {
+  const { SubsocialApi } = await import('@subsocial/api')
   const { ipfsNodeUrl, substrateUrl, postConnectConfig, ipfsAdminNodeUrl } =
     config
   const api = await SubsocialApi.create({
@@ -17,6 +18,6 @@ async function connectToSubsocialApi(config: SubsocialConnectionConfig) {
     substrateNodeUrl: substrateUrl,
     ipfsAdminNodeUrl,
   })
-  postConnectConfig && postConnectConfig(api)
+  postConnectConfig?.(api)
   return api
 }

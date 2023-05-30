@@ -12,13 +12,13 @@ export default function ColorModeToggler({ ...props }: ColorModeTogglerProps) {
   const { setTheme } = useTheme()
   const theme = useGetTheme()
   const [mounted, setMounted] = useState(false)
-  const { theme: themeInConfig } = useConfigContext()
+  const { theme: configTheme } = useConfigContext()
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  if (!mounted || themeInConfig) return null
+  if (!mounted || configTheme) return null
 
   const handleClick = (e: any) => {
     setTheme(theme === 'dark' ? 'light' : 'dark')

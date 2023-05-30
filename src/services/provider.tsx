@@ -1,7 +1,5 @@
 import Toast from '@/components/Toast'
-import { SUBSTRATE_URL } from '@/constants/subsocial'
 import {
-  setSubsocialConfig,
   setupTxCallbacks,
   TxCallbackInfo,
 } from '@/subsocial-query/subsocial/config'
@@ -13,12 +11,6 @@ import {
 import { useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
-
-setSubsocialConfig('staging', {
-  substrateUrl: SUBSTRATE_URL,
-  ipfsNodeUrl: 'https://ipfs.subsocial.network',
-  ipfsAdminNodeUrl: 'https://gw.crustfiles.app',
-})
 
 setupTxCallbacks({
   onError: ({ error }: TxCallbackInfo) => {

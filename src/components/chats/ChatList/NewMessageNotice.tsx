@@ -10,7 +10,7 @@ export type NewMessageNoticeProps = ButtonProps & {
   messageIds: string[]
 }
 
-const IS_AT_BOTTOM_OFFSET = 300
+const IS_AT_BOTTOM_OFFSET = 50
 
 export function NewMessageNotice({
   scrollContainerRef,

@@ -1,5 +1,5 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
-import { copyToClipboard } from '@/utils/text'
+import { copyToClipboard } from '@/utils/strings'
 import { Placement } from '@floating-ui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Space_Mono } from 'next/font/google'
@@ -79,7 +79,7 @@ export function CopyText({
       >
         <div
           className={cx(
-            'cursor-pointer select-all break-all py-2 px-4',
+            'cursor-pointer select-all break-all px-4 py-2',
             copyTextStyles({ size }),
             isHidden && 'blur-sm'
           )}
@@ -91,8 +91,8 @@ export function CopyText({
             size='noPadding'
             variant='transparent'
             className={cx(
-              'block rounded-r-2xl rounded-l-none px-4 text-2xl',
-              interactionRingStyles({ variant: 'no-offset' })
+              'block rounded-l-none rounded-r-2xl px-4 text-2xl',
+              interactionRingStyles()
             )}
             interactive='brightness-only'
             onClick={() => setIsHidden((prev) => !prev)}

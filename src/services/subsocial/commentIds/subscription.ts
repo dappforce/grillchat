@@ -164,15 +164,21 @@ function filterOptimisticIds(
 ) {
   if (!optimisticIds) return
 
+  // remove post if its already replacing one optimistic ids
+  // this is needed for case where same user sends multiple same messages
+  const mutableNewPosts = [...newPosts]
   return optimisticIds.filter((id) => {
     const idData = extractOptimisticIdData<OptimisticMessageIdData>(id)
     if (!idData) return
-    const foundData = newPosts.find((post) => {
+
+    const foundData = mutableNewPosts.find((post) => {
       return (
         post.content?.body === idData.message &&
         post.struct.ownerId === idData.address
       )
     })
+    if (foundData) mutableNewPosts.splice(mutableNewPosts.indexOf(foundData), 1)
+
     return !foundData
   })
 }

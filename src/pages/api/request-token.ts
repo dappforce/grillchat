@@ -1,4 +1,5 @@
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
+import { validateAddress } from '@/utils/account'
 import { getCaptchaSecret, getServerMnemonic } from '@/utils/env/server'
 import { Keyring } from '@polkadot/keyring'
 import { waitReady } from '@polkadot/wasm-crypto'
@@ -66,7 +67,8 @@ async function verifyCaptcha(captchaToken: string) {
 async function sendToken(address: string) {
   const signer = await getServerAccount()
   if (!signer) throw new Error('Invalid Mnemonic')
-  if (!isEnoughBalance()) throw new Error('Account balance is not enough')
+  if (!(await isEnoughBalance()))
+    throw new Error('Account balance is not enough')
 
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi
@@ -97,6 +99,13 @@ export default async function handler(
     })
   }
 
+  const isValidAddress = await validateAddress(body.data.address)
+  if (!isValidAddress)
+    return res.status(400).send({
+      success: false,
+      message: 'Invalid address format',
+    })
+
   try {
     await verifyCaptcha(body.data.captchaToken)
   } catch (e: any) {
@@ -111,7 +120,8 @@ export default async function handler(
   try {
     hash = await sendToken(body.data.address)
   } catch (e: any) {
-    console.log(e)
+    console.error('Failed to send token', e)
+
     if (typeof e.message === 'string' && e.message.startsWith('1010:')) {
       return res.status(400).send({
         success: false,
@@ -120,6 +130,7 @@ export default async function handler(
         errors: e.message,
       })
     }
+
     return res.status(500).send({
       success: false,
       message: 'Failed to send token',

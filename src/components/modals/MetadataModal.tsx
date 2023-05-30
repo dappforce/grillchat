@@ -1,85 +1,43 @@
-import { CopyTextInline } from '@/components/CopyText'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl, getSubIdUrl } from '@/utils/ipfs'
-import { PostData } from '@subsocial/api/types'
-import { HiArrowUpRight } from 'react-icons/hi2'
-import LinkText from '../LinkText'
+import { PostData, SpaceData } from '@subsocial/api/types'
+import DataCard, { DataCardProps } from '../DataCard'
 
 export type MetadataModalProps = ModalFunctionalityProps & {
-  post: PostData
+  entity: PostData | SpaceData
   postIdTextPrefix?: string
 }
 
-type Metadata = {
-  title: string
-  text: string
-  link?: string
-  openInNewTab?: boolean
-}
-
 export default function MetadataModal({
-  post,
+  entity,
   postIdTextPrefix = 'Post',
   ...props
 }: MetadataModalProps) {
-  const metadataList: Metadata[] = [
-    { title: `${postIdTextPrefix} ID:`, text: post.id },
+  const metadataList: DataCardProps['data'] = [
+    {
+      title: `${postIdTextPrefix} ID:`,
+      content: entity.id,
+      withCopyButton: true,
+    },
     {
       title: 'Content ID:',
-      text: post.struct.contentId ?? '',
-      link: getIpfsContentUrl(post.struct.contentId ?? ''),
+      content: entity.struct.contentId ?? '',
+      redirectTo: getIpfsContentUrl(entity.struct.contentId ?? ''),
       openInNewTab: true,
+      withCopyButton: true,
     },
     {
       title: 'Owner:',
-      text: post.struct.ownerId ?? '',
-      link: getSubIdUrl(post.struct.ownerId ?? ''),
+      content: entity.struct.ownerId ?? '',
+      redirectTo: getSubIdUrl(entity.struct.ownerId ?? ''),
       openInNewTab: true,
+      withCopyButton: true,
     },
   ]
 
   return (
     <Modal {...props} title='Metadata' withCloseButton>
-      <div className='flex flex-col gap-4'>
-        {metadataList.map(({ text, title, link, openInNewTab }, idx) => {
-          const isLastElement = idx === metadataList.length - 1
-          const textClassName = cx(
-            'max-w-[calc(100%_-_2rem)] whitespace-pre-wrap break-words font-normal'
-          )
-          let textElement = <span className={textClassName}>{text}</span>
-          if (link) {
-            textElement = (
-              <LinkText
-                variant='secondary'
-                href={link}
-                openInNewTab={openInNewTab}
-                className={cx(textClassName)}
-              >
-                {text} {openInNewTab && <HiArrowUpRight className='inline' />}
-              </LinkText>
-            )
-          }
-
-          return (
-            <div className='flex flex-col gap-1' key={title}>
-              <span className={cx('text-sm text-text-muted')}>{title}</span>
-              <div className='flex items-center justify-between'>
-                {textElement}
-                <CopyTextInline
-                  tooltipPlacement={isLastElement ? 'top' : 'bottom'}
-                  className='max-w-full'
-                  textContainerClassName={cx(
-                    'max-w-[calc(100%_-_2rem)] whitespace-pre-wrap break-words'
-                  )}
-                  text={null}
-                  textToCopy={text}
-                />
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      <DataCard data={metadataList} />
     </Modal>
   )
 }

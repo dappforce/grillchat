@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
-import { getEmojiAmount, isTextContainsOnlyEmoji } from '@/utils/text'
+import { getEmojiAmount, validateTextContainsOnlyEmoji } from '@/utils/strings'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import RepliedMessagePreview from '../RepliedMessagePreview'
 import { ChatItemContentProps } from './types'
@@ -16,7 +16,8 @@ const MAX_EMOJI_AMOUNT = 3
 
 export function shouldRenderEmojiChatItem(body: string) {
   return (
-    isTextContainsOnlyEmoji(body) && getEmojiAmount(body) <= MAX_EMOJI_AMOUNT
+    validateTextContainsOnlyEmoji(body) &&
+    getEmojiAmount(body) <= MAX_EMOJI_AMOUNT
   )
 }
 
@@ -62,7 +63,7 @@ export default function EmojiChatItem({
       )}
       <div
         className={cx(
-          'flex w-full overflow-hidden',
+          'flex w-full gap-2 overflow-hidden',
           isMyMessage ? 'flex-row-reverse' : 'flex-row'
         )}
       >
@@ -81,7 +82,7 @@ export default function EmojiChatItem({
           )}
         >
           {inReplyTo?.id && (
-            <div className='w-full overflow-hidden rounded-xl bg-background-light py-2 px-2.5'>
+            <div className='w-full overflow-hidden rounded-xl bg-background-light px-2.5 py-2'>
               <RepliedMessagePreview
                 originalMessage={body}
                 repliedMessageId={inReplyTo.id}

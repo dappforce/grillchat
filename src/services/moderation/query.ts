@@ -6,14 +6,24 @@ import { createModerationRequest } from './utils'
 const moderationRequest = createModerationRequest()
 
 const GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID = graphql(`
-  query GetBlockedMessageIdsInChatId($chatId: String!) {
-    blockedResourceIds(blocked: true, rootPostId: $chatId)
+  query GetBlockedMessageIdsInChatId($ctxSpaceId: String!, $chatId: String!) {
+    blockedResourceIds(
+      ctxSpaceId: $ctxSpaceId
+      blocked: true
+      rootPostId: $chatId
+    )
   }
 `)
-export async function getBlockedMessageIdsInChatId(chatId: string) {
+export async function getBlockedMessageIdsInChatId({
+  chatId,
+  hubId,
+}: {
+  hubId: string
+  chatId: string
+}) {
   const data = await moderationRequest({
     document: GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID,
-    variables: { chatId },
+    variables: { chatId, ctxSpaceId: hubId },
   })
   return data.blockedResourceIds
 }
@@ -23,13 +33,18 @@ export const getBlockedMessageIdsInChatIdQuery = createQuery({
 })
 
 const GET_BLOCKED_CIDS = graphql(`
-  query GetBlockedCids {
-    blockedResourceIds(blocked: true, resourceType: CID)
+  query GetBlockedCids($ctxSpaceId: String!) {
+    blockedResourceIds(
+      ctxSpaceId: $ctxSpaceId
+      blocked: true
+      resourceType: CID
+    )
   }
 `)
-export async function getBlockedCids() {
+export async function getBlockedCids({ hubId }: { hubId: string }) {
   const data = await moderationRequest({
     document: GET_BLOCKED_CIDS,
+    variables: { ctxSpaceId: hubId },
   })
   return data.blockedResourceIds
 }
@@ -39,12 +54,19 @@ export const getBlockedCidsQuery = createQuery({
 })
 
 const GET_BLOCKED_ADDRESSES = graphql(`
-  query GetBlockedAddresses {
-    blockedResourceIds(blocked: true, resourceType: Address)
+  query GetBlockedAddresses($ctxSpaceId: String!) {
+    blockedResourceIds(
+      ctxSpaceId: $ctxSpaceId
+      blocked: true
+      resourceType: Address
+    )
   }
 `)
-export async function getBlockedAddresses() {
-  const data = await moderationRequest({ document: GET_BLOCKED_ADDRESSES })
+export async function getBlockedAddresses({ hubId }: { hubId: string }) {
+  const data = await moderationRequest({
+    document: GET_BLOCKED_ADDRESSES,
+    variables: { ctxSpaceId: hubId },
+  })
   const blockedHexAddresses = data.blockedResourceIds
   const addresses = blockedHexAddresses.map((hexAddress: string) =>
     convertHexAddressToSubstrateAddress(hexAddress)

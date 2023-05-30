@@ -1,5 +1,4 @@
 import {
-  getAliasFromSpaceId,
   getLinkedChatIdsForSpaceId,
   getSpaceIdFromAlias,
 } from '@/constants/chat-room'
@@ -7,27 +6,21 @@ import HomePage, { HomePageProps } from '@/modules/chat/HomePage'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { getMainSpaceId, getSpaceIds } from '@/utils/env/client'
+import { getMainSpaceId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { prefetchBlockedEntities } from '@/utils/server'
-import { isValidNumber } from '@/utils/strings'
+import { validateNumber } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { getPostsFromCache } from '../api/posts'
+import { AppCommonProps } from '../_app'
 
 export const getStaticPaths = async () => {
-  const spaceIds = getSpaceIds()
-
-  const paths = spaceIds.map<{ params: { spaceId: string } }>((spaceId) => {
-    const alias = getAliasFromSpaceId(spaceId)
-    return {
-      params: { spaceId: alias || spaceId },
-    }
-  })
-
+  // Skip pre-rendering, because it will cause slow build time
   return {
-    paths,
+    paths: [],
     fallback: 'blocking',
   }
 }
@@ -35,7 +28,7 @@ export const getStaticPaths = async () => {
 function getSpaceIdFromParam(paramSpaceId: string) {
   const spaceIdOrAlias = paramSpaceId ?? getMainSpaceId()
   let spaceId = spaceIdOrAlias
-  if (!isValidNumber(spaceIdOrAlias)) {
+  if (!validateNumber(spaceIdOrAlias)) {
     const spaceIdFromAlias = getSpaceIdFromAlias(spaceIdOrAlias)
     if (spaceIdFromAlias) {
       spaceId = spaceIdFromAlias
@@ -75,9 +68,7 @@ async function getChatPreviewsData(chatIds: string[]) {
 }
 
 export const getStaticProps = getCommonStaticProps<
-  {
-    dehydratedState: any
-  } & HomePageProps
+  HomePageProps & AppCommonProps
 >(
   () => ({}),
   async (context) => {
@@ -89,12 +80,14 @@ export const getStaticProps = getCommonStaticProps<
 
     try {
       const subsocialApi = await getSubsocialApi()
+
       const chatIds = await subsocialApi.blockchain.postIdsBySpaceId(spaceId)
       const allChatIds = [...chatIds, ...getLinkedChatIdsForSpaceId(spaceId)]
 
       const [{ lastMessages, chats, messageIdsByChatIds }] = await Promise.all([
         getChatPreviewsData(allChatIds),
-        prefetchBlockedEntities(queryClient, allChatIds),
+        prefetchBlockedEntities(queryClient, spaceId, allChatIds),
+        getSpaceBySpaceIdQuery.fetchQuery(queryClient, spaceId),
       ] as const)
 
       getChatIdsBySpaceIdQuery.setQueryData(queryClient, spaceId, {
@@ -121,8 +114,7 @@ export const getStaticProps = getCommonStaticProps<
     return {
       props: {
         dehydratedState: dehydrate(queryClient),
-        isIntegrateChatButtonOnTop: Math.random() > 0.5,
-        spaceId,
+        hubId: spaceId,
       },
       revalidate: 2,
     }

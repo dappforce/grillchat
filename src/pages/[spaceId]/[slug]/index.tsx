@@ -1,13 +1,15 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
+import { getSpaceIdFromAlias } from '@/constants/chat-room'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { getPostsFromCache } from '@/pages/api/posts'
+import { AppCommonProps } from '@/pages/_app'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCommonStaticProps } from '@/utils/page'
 import { prefetchBlockedEntities } from '@/utils/server'
 import { getIdFromSlug } from '@/utils/slug'
-import { isValidNumber } from '@/utils/strings'
+import { validateNumber } from '@/utils/strings'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
 
@@ -21,7 +23,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 function getValidatedChatId(slugParam: string) {
   const chatId = getIdFromSlug(slugParam)
-  if (!chatId || !isValidNumber(chatId)) return undefined
+  if (!chatId || !validateNumber(chatId)) return undefined
 
   return chatId
 }
@@ -42,19 +44,18 @@ async function getChatsData(chatId: string) {
 }
 
 export const getStaticProps = getCommonStaticProps<
-  {
-    dehydratedState: any
-    title: string | null
-    desc: string | null
-  } & ChatPageProps
+  ChatPageProps & AppCommonProps
 >(
-  (data) => ({
-    head: { disableZoom: true, title: data.title, description: data.desc },
+  () => ({
+    head: { disableZoom: true },
   }),
   async (context) => {
+    const spaceIdOrAlias = context.params?.spaceId as string
     const slugParam = context.params?.slug as string
     const chatId = getValidatedChatId(slugParam)
     if (!chatId) return undefined
+
+    const spaceId = getSpaceIdFromAlias(spaceIdOrAlias) || spaceIdOrAlias
 
     const queryClient = new QueryClient()
 
@@ -63,10 +64,11 @@ export const getStaticProps = getCommonStaticProps<
     try {
       const [{ messageIds, messages, chatData }] = await Promise.all([
         getChatsData(chatId),
-        prefetchBlockedEntities(queryClient, [chatId]),
+        prefetchBlockedEntities(queryClient, spaceId, [chatId]),
       ] as const)
 
       title = chatData?.content?.title || null
+      desc = chatData?.content?.body || null
 
       getPostQuery.setQueryData(queryClient, chatId, chatData)
       queryClient.setQueryData(
@@ -84,8 +86,11 @@ export const getStaticProps = getCommonStaticProps<
       props: {
         dehydratedState: dehydrate(queryClient),
         chatId,
-        title,
-        desc,
+        hubId: spaceId,
+        head: {
+          title,
+          description: desc,
+        },
       },
       revalidate: 2,
     }

@@ -1,14 +1,21 @@
 import Container from '@/components/Container'
 import { cx } from '@/utils/class-names'
+import dynamic from 'next/dynamic'
 import { ComponentProps, useRef, useState } from 'react'
-import ChatList from '../ChatList/ChatList'
 import ChatForm from './ChatForm'
-import RepliedMessage from './RepliedMessage'
+
+const ChatList = dynamic(() => import('../ChatList/ChatList'), {
+  ssr: false,
+})
+const RepliedMessage = dynamic(() => import('./RepliedMessage'), {
+  ssr: false,
+})
 
 export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
   chatId: string
+  hubId: string
 }
 
 export default function ChatRoom({
@@ -16,6 +23,7 @@ export default function ChatRoom({
   asContainer,
   scrollableContainerClassName,
   chatId,
+  hubId,
   ...props
 }: ChatRoomProps) {
   const [replyTo, setReplyTo] = useState<string | undefined>(undefined)
@@ -38,6 +46,7 @@ export default function ChatRoom({
   return (
     <div {...props} className={cx('flex flex-col', className)}>
       <ChatList
+        hubId={hubId}
         newMessageNoticeClassName={cx(replyTo && 'bottom-2')}
         chatId={chatId}
         asContainer={asContainer}

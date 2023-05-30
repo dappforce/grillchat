@@ -7,7 +7,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Source Sans Pro', ...defaultTheme.fontFamily.sans],
+        sans: ['var(--source-sans-pro)', ...defaultTheme.fontFamily.sans],
+      },
+      fontSize: {
+        '4.5xl': '2.5rem',
       },
       colors: {
         background: 'rgb(var(--background) / <alpha-value>)',
@@ -30,6 +33,7 @@ module.exports = {
         'text-secondary': 'rgb(var(--text-secondary) / <alpha-value>)',
         'text-dark': 'rgb(var(--text-dark) / <alpha-value>)',
         'text-warning': 'rgb(var(--text-warning) / <alpha-value>)',
+        'text-red': 'rgb(var(--text-red) / <alpha-value>)',
 
         'border-gray': 'rgb(var(--border-gray) / <alpha-value>)',
       },

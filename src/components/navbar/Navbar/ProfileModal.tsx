@@ -5,10 +5,12 @@ import ExternalLinkIcon from '@/assets/icons/external-link.svg'
 import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
+import AboutGrillDesc from '@/components/AboutGrillDesc'
 import Button from '@/components/Button'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
 import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
+import { MenuListProps } from '@/components/MenuList'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
@@ -150,14 +152,6 @@ export default function ProfileModal({
   )
 }
 
-type ButtonData = {
-  text: string
-  icon: React.ComponentType<{ className?: string }>
-  onClick?: () => void
-  href?: string
-  notification?: NotificationControl
-}
-
 function AccountContent({
   address,
   setCurrentState,
@@ -189,7 +183,7 @@ function AccountContent({
     setCurrentState('about')
   }
 
-  const buttons: ButtonData[] = [
+  const menus: MenuListProps['menus'] = [
     {
       text: 'Connect EVM address',
       icon: EthIcon,
@@ -197,10 +191,22 @@ function AccountContent({
       notification,
     },
     {
-      text: 'Show Grill secret key',
+      text: (
+        <span>
+          <span>Show grill secret key</span>
+          {notification?.showNotif && (
+            <span className='relative ml-2 h-2 w-2'>
+              <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
+              <span className='relative block h-full w-full rounded-full bg-background-warning' />
+            </span>
+          )}
+        </span>
+      ),
       icon: KeyIcon,
-      onClick: onShowPrivateKeyClick,
-      notification,
+      onClick: () => {
+        notification?.setNotifDone()
+        onShowPrivateKeyClick()
+      },
     },
     { text: 'Share session', icon: ShareIcon, onClick: onShareSessionClick },
     {
@@ -275,9 +281,8 @@ function ConnectedEvmAddressContent({
     useSignMessageAndLinkEvmAddress({
       setModalStep: () => setCurrentState('connect-evm-address'),
       onError: () => setCurrentState('evm-connecting-error'),
-      linkedEvmAddress: evmAddress
+      linkedEvmAddress: evmAddress,
     })
-
 
   const connectionButton = (
     <CustomConnectButton
@@ -444,23 +449,8 @@ function AboutContent() {
       <div className='flex justify-center'>
         <Logo className='text-5xl' />
       </div>
-      <p className='text-text-muted'>
-        Engage in discussions anonymously without fear of social persecution.
-        Grill.chat runs on the{' '}
-        <LinkText
-          openInNewTab
-          href='https://subsocial.network/xsocial'
-          variant='primary'
-        >
-          xSocial
-        </LinkText>{' '}
-        blockchain and backs up its content to{' '}
-        <LinkText openInNewTab href='https://ipfs.tech/' variant='primary'>
-          IPFS
-        </LinkText>
-        .
-      </p>
-      <div className='rounded-2xl border border-background-warning py-2 px-4 text-text-warning'>
+      <AboutGrillDesc className='text-text-muted' />
+      <div className='rounded-2xl border border-background-warning px-4 py-2 text-text-warning'>
         xSocial is an experimental environment for innovative web3 social
         features before they are deployed on{' '}
         <LinkText
@@ -480,7 +470,7 @@ function EvmLoginError({ setCurrentState, evmAddress }: ContentProps) {
     useSignMessageAndLinkEvmAddress({
       setModalStep: () => setCurrentState('connect-evm-address'),
       onError: () => setCurrentState('evm-connecting-error'),
-      linkedEvmAddress: evmAddress
+      linkedEvmAddress: evmAddress,
     })
 
   return (

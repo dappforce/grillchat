@@ -1,25 +1,29 @@
-import Button from '../Button'
+import MenuList, { MenuListProps } from '../MenuList'
 import CustomContextMenu, { CustomContextMenuProps } from './CustomContextMenu'
 
-type DefaultContextMenuProps = {
-  menus: { text: string; icon?: React.ReactNode; onClick: () => void }[]
+type CommonContextMenuItemProps = {
+  menus: MenuListProps['menus']
   closeMenu: () => void
 }
 export type CommonCustomContextMenuProps = Omit<
   CustomContextMenuProps,
   'menuPanel'
 > &
-  Omit<DefaultContextMenuProps, 'closeMenu'>
+  Omit<CommonContextMenuItemProps, 'closeMenu'>
 
 export default function CommonCustomContextMenu({
   children,
   allowedPlacements,
   ...props
 }: CommonCustomContextMenuProps) {
+  if (props.menus.length === 0) {
+    return children()
+  }
+
   return (
     <CustomContextMenu
       menuPanel={(closeMenu) => (
-        <CommonContextMenu closeMenu={closeMenu} {...props} />
+        <CommonContextMenuItem closeMenu={closeMenu} {...props} />
       )}
       allowedPlacements={allowedPlacements}
     >
@@ -28,26 +32,23 @@ export default function CommonCustomContextMenu({
   )
 }
 
-function CommonContextMenu({ menus, closeMenu }: DefaultContextMenuProps) {
+function CommonContextMenuItem({
+  menus,
+  closeMenu,
+}: CommonContextMenuItemProps) {
+  const augmentedMenus = menus.map((menu) => ({
+    ...menu,
+    onClick: () => {
+      menu.onClick?.()
+      closeMenu()
+    },
+  }))
+
   return (
-    <ul className='flex w-52 flex-col overflow-hidden rounded-lg bg-background-light py-1 shadow-[0_5px_50px_-12px_rgb(0,0,0,.25)] dark:shadow-[0_5px_50px_-12px_rgb(0,0,0)]'>
-      {menus.map(({ onClick, text, icon }) => (
-        <li key={text}>
-          <Button
-            onClick={() => {
-              onClick()
-              closeMenu()
-            }}
-            variant='transparent'
-            size='noPadding'
-            className='flex w-full items-center gap-4 rounded-none py-2 px-4 text-left transition focus:bg-background-lighter hover:bg-background-lighter'
-            interactive='none'
-          >
-            {icon}
-            {text}
-          </Button>
-        </li>
-      ))}
-    </ul>
+    <MenuList
+      size='sm'
+      className='w-52 overflow-hidden rounded-lg bg-background-light shadow-[0_5px_50px_-12px_rgb(0,0,0,.25)] dark:shadow-[0_5px_50px_-12px_rgb(0,0,0)]'
+      menus={augmentedMenus}
+    />
   )
 }

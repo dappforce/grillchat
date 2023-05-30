@@ -44,7 +44,7 @@ export default function IntegrateChatPage() {
         <div className='mt-14 flex flex-col items-center gap-4'>
           <ChatboxLight className='w-80 max-w-full dark:hidden' />
           <Chatbox className='hidden w-80 max-w-full dark:block' />
-          <h1 ref={ref} className='text-3xl font-bold'>
+          <h1 ref={ref} className='text-3xl font-semibold'>
             {title}
           </h1>
           <p className='text-text-muted'>
@@ -81,7 +81,7 @@ export default function IntegrateChatPage() {
             Migrate your community on-chain, instead of forcing it to live
             through Web2 tools like Twitter and Telegram
           </p>
-          <Image src={MigrateImage} alt='' className='w-full max-w-sm' />
+          <Image src={MigrateImage} alt='' className='w-full max-w-xs' />
         </div>
         <div className='mt-4 flex flex-col items-center gap-4'>
           <h2 className='text-2xl'>🏄‍♂️ Experience the benefits</h2>
@@ -89,7 +89,7 @@ export default function IntegrateChatPage() {
             On-chain communities allow for user reputation, increased
             transparency, and improved user freedom
           </p>
-          <Image src={BenefitsImage} alt='' className='w-full max-w-sm' />
+          <Image src={BenefitsImage} alt='' className='w-full max-w-xs' />
         </div>
       </div>
     </FixedBottomActionLayout>
