@@ -6,15 +6,16 @@
     "node": ">= 16"
   },
   "scripts": {
-    "dev": "yarn codegen && next dev",
-    "build": "yarn codegen && next build",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "analyze": "ANALYZE=true yarn build",
     "precommit": "pretty-quick --staged",
     "format": "prettier --write src",
     "lint": "next lint",
     "prepare": "husky install",
-    "codegen": "graphql-codegen --require dotenv/config --config codegen.ts"
+    "codegen:moderation": "graphql-codegen --require dotenv/config --config codegen-moderation.ts",
+    "codegen:squid": "graphql-codegen --require dotenv/config --config codegen-squid.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.9.1",
