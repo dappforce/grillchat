@@ -78,7 +78,7 @@ describe('Resource Linking Unit', () => {
     grill.init(configResource)
 
     expect(document.getElementsByTagName('iframe')?.item(0)?.src).toEqual(
-      'https://grill.chat/1003/resource/chain%253A%252F%252FchainType%253Asubstrate%252FchainName%253Axsocial%252FresourceType%253Ablock%252FblockNumber%253A3444000' +
+      'https://grill.chat/1003/resource/chain%3A%2F%2FchainType%3Asubstrate%2FchainName%3Axsocial%2FresourceType%3Ablock%2FblockNumber%3A3444000' +
         '?version=0.1' +
         '&parent=http%3A%2F%2Flocalhost' +
         '&theme=light&enableBackButton=false' +
