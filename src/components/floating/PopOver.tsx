@@ -37,6 +37,7 @@ const panelStyles = cva(
 const panelColors = {
   warning: cx('bg-background-warning text-text-dark'),
   default: cx('text-text bg-background-lightest'),
+  info: cx('bg-background-info text-text-dark'),
 }
 
 export type PopOverProps = VariantProps<typeof panelStyles> & {

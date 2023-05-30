@@ -47,12 +47,12 @@ export default function ProfileAvatar({
           popOverClassName='font-semibold'
           yOffset={16}
           placement='bottom-end'
-          panelColor='warning'
+          panelColor='info'
           withCloseButton
           trigger={null}
           initialFocus={-1}
         >
-          <p>Click on your avatar and save your Grill secret key</p>
+          <p>Connect an EVM wallet to unlock more features</p>
         </PopOver>
       </div>
     </>
