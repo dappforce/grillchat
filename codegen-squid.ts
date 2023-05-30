@@ -9,9 +9,12 @@ const config: CodegenConfig = {
   documents: 'src/services/subsocial/*.ts',
   ignoreNoDocuments: true,
   generates: {
-    'src/services/subsocial/gql/': {
-      preset: 'client',
-      plugins: [],
+    'src/services/subsocial/gql.ts': {
+      plugins: [
+        'typescript',
+        'typescript-operations',
+        'typescript-document-nodes',
+      ],
     },
   },
 }

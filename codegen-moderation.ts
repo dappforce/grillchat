@@ -9,9 +9,12 @@ const config: CodegenConfig = {
   documents: 'src/services/moderation/*.ts',
   ignoreNoDocuments: true,
   generates: {
-    'src/services/moderation/gql/': {
-      preset: 'client',
-      plugins: [],
+    'src/services/moderation/gql.ts': {
+      plugins: [
+        'typescript',
+        'typescript-operations',
+        'typescript-document-nodes',
+      ],
     },
   },
 }
