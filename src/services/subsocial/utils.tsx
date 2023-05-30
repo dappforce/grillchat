@@ -1,14 +1,35 @@
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import useToastError from '@/hooks/useToastError'
+import { createQuery } from '@/subsocial-query'
+import {
+  createSubsocialQuery,
+  SubsocialQueryData,
+} from '@/subsocial-query/subsocial/query'
 import { getSquidUrl } from '@/utils/env/client'
 import { UseMutationResult } from '@tanstack/react-query'
-import request, { RequestOptions, Variables } from 'graphql-request'
 import useCommonTxSteps from './hooks'
 
-export function createSubsocialGraphqlRequest() {
-  return <T, V extends Variables = Variables>(config: RequestOptions<V, T>) => {
-    return request({ url: getSquidUrl(), ...config })
+type DynamicSubsocialQueryFetcher<Data, ReturnValue> = {
+  blockchain: (data: SubsocialQueryData<Data>) => Promise<ReturnValue>
+  squid: (data: Data) => Promise<ReturnValue>
+}
+export function createDynamicSubsocialQuery<Data, ReturnValue>(
+  key: string,
+  fetcher: DynamicSubsocialQueryFetcher<Data, ReturnValue>
+) {
+  const isExistSquidUrl = !!getSquidUrl()
+
+  if (isExistSquidUrl) {
+    return createQuery({
+      key,
+      fetcher: fetcher.squid,
+    })
   }
+
+  return createSubsocialQuery({
+    key,
+    fetcher: fetcher.blockchain,
+  })
 }
 
 const OPTIMISTIC_ID_PREFIX = 'optimistic-'

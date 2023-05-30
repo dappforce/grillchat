@@ -7,9 +7,8 @@ const config: CodegenConfig = {
   overwrite: true,
   schema: moderationUrl,
   documents: 'src/services/moderation/*.ts',
-  ignoreNoDocuments: true,
   generates: {
-    'src/services/moderation/gql.ts': {
+    'src/services/moderation/generated.ts': {
       plugins: [
         'typescript',
         'typescript-operations',

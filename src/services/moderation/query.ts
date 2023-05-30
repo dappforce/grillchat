@@ -8,10 +8,8 @@ import {
   GetBlockedCidsQueryVariables,
   GetBlockedMessageIdsInChatIdQuery,
   GetBlockedMessageIdsInChatIdQueryVariables,
-} from './gql'
-import { createModerationRequest } from './utils'
-
-const moderationRequest = createModerationRequest()
+} from './generated'
+import { moderationRequest } from './utils'
 
 const GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID = gql`
   query GetBlockedMessageIdsInChatId($ctxSpaceId: String!, $chatId: String!) {
