@@ -24,6 +24,7 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   asLink?: LinkProps
   isInteractive?: boolean
   chatId?: string
+  hubId?: string
   isPinned?: boolean
   withUnreadCount?: boolean
   asContainer?: boolean
@@ -41,6 +42,7 @@ export default function ChatPreview({
   asLink,
   isPinned,
   chatId,
+  hubId,
   isInteractive,
   withUnreadCount,
   withBorderBottom = true,
@@ -121,8 +123,9 @@ export default function ChatPreview({
               {renderAdditionalData()}
             </div>
             <div className='mt-1 flex items-baseline justify-between overflow-hidden'>
-              {chatId ? (
+              {chatId && hubId ? (
                 <ChatLastMessage
+                  hubId={hubId}
                   className='py-0.5'
                   defaultDesc={description}
                   chatId={chatId}

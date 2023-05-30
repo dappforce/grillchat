@@ -7,17 +7,25 @@ import { SubsocialIpfsApi } from '@subsocial/api'
 import { QueryClient } from '@tanstack/react-query'
 import { getCrustIpfsAuth, getIpfsPinUrl } from './env/server'
 
-export function prefetchBlockedEntities(
+export async function prefetchBlockedEntities(
   queryClient: QueryClient,
+  hubId: string,
   chatIds: string[]
 ) {
-  return Promise.all([
-    getBlockedCidsQuery.fetchQuery(queryClient, null),
-    getBlockedAddressesQuery.fetchQuery(queryClient, null),
-    ...chatIds.map((id) =>
-      getBlockedMessageIdsInChatIdQuery.fetchQuery(queryClient, id)
-    ),
-  ])
+  try {
+    return await Promise.all([
+      getBlockedCidsQuery.fetchQuery(queryClient, { hubId }),
+      getBlockedAddressesQuery.fetchQuery(queryClient, { hubId }),
+      ...chatIds.map((chatId) =>
+        getBlockedMessageIdsInChatIdQuery.fetchQuery(queryClient, {
+          chatId,
+          hubId,
+        })
+      ),
+    ])
+  } catch (err) {
+    console.log('Error prefetching blocked entities', err)
+  }
 }
 
 export function getIpfsApi() {

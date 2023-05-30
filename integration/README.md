@@ -177,6 +177,98 @@ const config = {
 }
 ```
 
+#### Resource config structure
+
+The resource config has a conditional structure, which means that each subsequent config value
+depends on the previous one through a config hierarchy. You can envision this hierarchy as
+a directed graph tree with a variety of values and a strict config structure.
+There are various supported combinations of config values. On the other hand,
+you can provide your own values. However, in such a case, your resource config will
+only have a basic list of resourceValue properties.
+
+<details>
+  <summary>In this list, you can find all the currently supported config value conditions.</summary>
+   <blockquote>
+   <details><summary>schema: social</summary>
+
+- `social -> twitter -> post -> id`;
+- `social -> twitter -> profile -> id`;
+
+---
+
+- `social -> youtube -> post -> id`;
+- `social -> youtube -> profile -> id`;
+
+---
+
+- `social -> any_social_app -> post -> id`;
+- `social -> any_social_app -> profile -> id`;
+
+  </details>
+  </blockquote>
+
+<blockquote>
+   <details><summary>schema: chain</summary>
+
+#### Any chain type -> any chain name
+
+- `chain -> any_chainType -> any_chainType_any_chainName -> block -> blockNumber`;
+- `chain -> any_chainType -> any_chainType_any_chainName -> tx -> txHash`;
+- `chain -> any_chainType -> any_chainType_any_chainName -> token -> tokenAddress`;
+- `chain -> any_chainType -> any_chainType_any_chainName -> account`;
+
+#### EVM chain type
+
+- `chain -> evm -> ethereum -> block -> blockNumber`;
+- `chain -> evm -> ethereum -> tx -> txHash`;
+- `chain -> evm -> ethereum -> token -> tokenAddress`;
+- `chain -> evm -> ethereum -> nft -> collectionId`;
+- `chain -> evm -> ethereum -> nft -> nftId`;
+- `chain -> evm -> ethereum -> nft -> standard`;
+
+---
+
+- `chain -> evm -> any_evm_chainName -> block -> blockNumber`;
+- `chain -> evm -> any_evm_chainName -> tx -> txHash`;
+- `chain -> evm -> any_evm_chainName -> token -> tokenAddress`;
+- `chain -> evm -> any_evm_chainName -> account`;
+- `chain -> evm -> any_evm_chainName -> nft -> collectionId`;
+- `chain -> evm -> any_evm_chainName -> nft -> nftId`;
+- `chain -> evm -> any_evm_chainName -> nft -> standard`;
+
+#### Substrate chain type
+
+- `chain -> substrate -> subsocial -> block -> blockNumber`;
+- `chain -> substrate -> subsocial -> tx -> txHash`;
+- `chain -> substrate -> subsocial -> token -> tokenAddress`;
+- `chain -> substrate -> subsocial -> nft -> collectionId`;
+- `chain -> substrate -> subsocial -> nft -> nftId`;
+- `chain -> substrate -> subsocial -> nft -> standard`;
+- `chain -> substrate -> subsocial -> proposal -> id`;
+
+---
+
+- `chain -> substrate -> zeitgeist -> block -> blockNumber`;
+- `chain -> substrate -> zeitgeist -> tx -> txHash`;
+- `chain -> substrate -> zeitgeist -> token -> tokenAddress`;
+- `chain -> substrate -> zeitgeist -> nft -> collectionId`;
+- `chain -> substrate -> zeitgeist -> nft -> nftId`;
+- `chain -> substrate -> zeitgeist -> nft -> standard`;
+- `chain -> substrate -> zeitgeist -> proposal -> id`;
+- `chain -> substrate -> zeitgeist -> market -> id`;
+
+---
+
+- `chain -> substrate -> any_substrate_chainName -> block -> blockNumber`;
+- `chain -> substrate -> any_substrate_chainName -> tx -> txHash`;
+- `chain -> substrate -> any_substrate_chainName -> token -> tokenAddress`;
+- `chain -> substrate -> any_substrate_chainName -> account`;
+
+  </details>
+  </blockquote>
+
+</details>
+
 ##### Resource Examples
 
 1. EVM account address on Ethereum

@@ -86,7 +86,7 @@ export const getStaticProps = getCommonStaticProps<
 
       const [{ lastMessages, chats, messageIdsByChatIds }] = await Promise.all([
         getChatPreviewsData(allChatIds),
-        prefetchBlockedEntities(queryClient, allChatIds),
+        prefetchBlockedEntities(queryClient, spaceId, allChatIds),
         getSpaceBySpaceIdQuery.fetchQuery(queryClient, spaceId),
       ] as const)
 
@@ -114,7 +114,7 @@ export const getStaticProps = getCommonStaticProps<
     return {
       props: {
         dehydratedState: dehydrate(queryClient),
-        spaceId,
+        hubId: spaceId,
       },
       revalidate: 2,
     }
