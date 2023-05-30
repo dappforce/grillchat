@@ -1,7 +1,15 @@
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import useToastError from '@/hooks/useToastError'
+import { getSquidUrl } from '@/utils/env/client'
 import { UseMutationResult } from '@tanstack/react-query'
+import request, { RequestOptions, Variables } from 'graphql-request'
 import useCommonTxSteps from './hooks'
+
+export function createSubsocialGraphqlRequest() {
+  return <T, V extends Variables = Variables>(config: RequestOptions<V, T>) => {
+    return request({ url: getSquidUrl(), ...config })
+  }
+}
 
 const OPTIMISTIC_ID_PREFIX = 'optimistic-'
 const ID_DATA_SEPARATOR = '|||'
