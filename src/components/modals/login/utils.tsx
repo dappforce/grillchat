@@ -3,7 +3,7 @@ import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { decodeAddress } from '@polkadot/keyring'
 import { BN, u8aToHex } from '@polkadot/util'
 import { useEffect, useState } from 'react'
-import { useSignMessage } from 'wagmi'
+import { useDisconnect, useSignMessage } from 'wagmi'
 
 export const buildMsgParams = async (substrateAddress: string) => {
   const decodedAddress = u8aToHex(decodeAddress(substrateAddress))
@@ -60,25 +60,30 @@ type SignMessageAndLinkAddressProps = {
 export const useSignMessageAndLinkEvmAddress = ({
   setModalStep,
   onError,
-  linkedEvmAddress
+  linkedEvmAddress,
 }: SignMessageAndLinkAddressProps) => {
   const {
     signEvmLinkMessage,
     isSigningMessage,
     isError: isSignMessageError,
   } = useSignEvmLinkMessage()
+  const { disconnect } = useDisconnect()
 
-  const { mutate: linkEvmAddress } = useLinkEvmAddress({
-    setModalStep,
-    onError,
-    linkedEvmAddress
-  })
+  const { mutate: linkEvmAddress, isLoading: isLinkingEvmAddress } =
+    useLinkEvmAddress({
+      setModalStep,
+      onError,
+      linkedEvmAddress,
+    })
 
   useEffect(() => {
     if (isSignMessageError) {
+      if (!linkedEvmAddress) {
+        disconnect()
+      }
       onError?.()
     }
-  }, [isSignMessageError])
+  }, [isSignMessageError, linkEvmAddress])
 
   const signAndLinkEvmAddress = async (
     evmAddress?: string,
@@ -96,5 +101,8 @@ export const useSignMessageAndLinkEvmAddress = ({
     }
   }
 
-  return { signAndLinkEvmAddress, isSigningMessage }
+  return {
+    signAndLinkEvmAddress,
+    isLoading: isSigningMessage || isLinkingEvmAddress,
+  }
 }

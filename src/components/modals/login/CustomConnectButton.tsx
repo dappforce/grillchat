@@ -11,21 +11,23 @@ type CustomConnectButtonProps = ButtonProps & {
     emvAddress?: string,
     substrateAddress?: string | null
   ) => Promise<void>
-  isSigningMessage: boolean
+  isLoading: boolean
 }
 
 export const CustomConnectButton = ({
   className,
   signAndLinkEvmAddress,
   label = 'Connect EVM Wallet',
-  isSigningMessage,
+  isLoading,
   signAndLinkOnConnect = true,
   ...buttonProps
 }: CustomConnectButtonProps) => {
   const mySubstrateAddress = useMyAccount((state) => state.address)
   const { isConnected } = useAccount({
     onConnect: async ({ address }) => {
-      !isConnected && signAndLinkOnConnect && signAndLinkEvmAddress(address, mySubstrateAddress)
+      !isConnected &&
+        signAndLinkOnConnect &&
+        signAndLinkEvmAddress(address, mySubstrateAddress)
     },
   })
 
@@ -51,8 +53,9 @@ export const CustomConnectButton = ({
             <Button
               onClick={openConnectModal}
               size={'lg'}
+              isLoading={isLoading}
               className={className}
-              disabled={isSigningMessage}
+              disabled={isLoading}
               {...buttonProps}
             >
               {label}
@@ -66,7 +69,8 @@ export const CustomConnectButton = ({
               onClick={openChainModal}
               size={'lg'}
               className={className}
-              disabled={isSigningMessage}
+              isLoading={isLoading}
+              disabled={isLoading}
               {...buttonProps}
             >
               Wrong network
@@ -81,7 +85,8 @@ export const CustomConnectButton = ({
             }}
             size={'lg'}
             className={className}
-            disabled={isSigningMessage}
+            isLoading={isLoading}
+            disabled={isLoading}
             {...buttonProps}
           >
             {label}

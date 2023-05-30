@@ -131,11 +131,10 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
   const theme = useGetTheme()
   const address = useMyAccount((state) => state.address)
 
-  const { signAndLinkEvmAddress, isSigningMessage } =
-    useSignMessageAndLinkEvmAddress({
-      setModalStep: () => setCurrentStep('evm-address-linked'),
-      onError: () => setCurrentStep('evm-connecting-error'),
-    })
+  const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
+    setModalStep: () => setCurrentStep('evm-address-linked'),
+    onError: () => setCurrentStep('evm-connecting-error'),
+  })
 
   const isDarkTheme = theme === 'dark'
 
@@ -163,7 +162,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
       <CustomConnectButton
         className='w-full'
         signAndLinkEvmAddress={signAndLinkEvmAddress}
-        isSigningMessage={isSigningMessage}
+        isLoading={isLoading}
         label={
           <div className='flex items-center justify-center gap-2'>
             <WalletIcon />
@@ -185,15 +184,14 @@ export const EvmAddressLinked = ({ closeModal }: ContentProps) => (
 )
 
 export const EvmLoginError = ({ setCurrentStep }: ContentProps) => {
-  const { signAndLinkEvmAddress, isSigningMessage } =
-    useSignMessageAndLinkEvmAddress({
-      setModalStep: () => setCurrentStep('evm-address-linked'),
-    })
+  const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
+    setModalStep: () => setCurrentStep('evm-address-linked'),
+  })
 
   return (
     <CustomConnectButton
-      isSigningMessage={isSigningMessage}
-      signAndLinkOnConnect={false}
+      isLoading={isLoading}
+      signAndLinkOnConnect={true}
       signAndLinkEvmAddress={signAndLinkEvmAddress}
       className='w-full'
       label='Try again'

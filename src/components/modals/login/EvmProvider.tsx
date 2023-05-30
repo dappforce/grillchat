@@ -7,10 +7,7 @@ import {
 } from '@rainbow-me/rainbowkit'
 import {
   argentWallet,
-  bitskiWallet,
-  braveWallet,
   coinbaseWallet,
-  dawnWallet,
   ledgerWallet,
   metaMaskWallet,
 } from '@rainbow-me/rainbowkit/wallets'

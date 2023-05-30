@@ -10,7 +10,7 @@ import Button from '@/components/Button'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
 import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
-import { MenuListProps } from '@/components/MenuList'
+import MenuList, { MenuListProps } from '@/components/MenuList'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
@@ -117,8 +117,12 @@ export default function ProfileModal({
 }: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
   const { data: linkedEvmAddress } = getLinkedEvmAddressQuery.useQuery(address)
+  const { disconnect } = useDisconnect()
 
   useEffect(() => {
+    if (!linkedEvmAddress) {
+      disconnect()
+    }
     if (props.isOpen) setCurrentState('account')
   }, [props.isOpen])
 
@@ -187,8 +191,10 @@ function AccountContent({
     {
       text: 'Connect EVM address',
       icon: EthIcon,
-      onClick: onConnectEvmAddressClick,
-      notification,
+      onClick: () => {
+        notification?.setNotifDone()
+        onConnectEvmAddressClick()
+      },
     },
     {
       text: (
@@ -229,37 +235,7 @@ function AccountContent({
         evmAddress={evmAddress}
         className='border-b border-background-lightest px-6 pb-6'
       />
-      <div className='flex w-full flex-col gap-6 py-6 px-3'>
-        {buttons.map(({ icon: Icon, onClick, text, href, notification }) => (
-          <Button
-            key={text}
-            href={href}
-            target='_blank'
-            rel='noopener noreferrer'
-            variant='transparent'
-            size='noPadding'
-            interactive='none'
-            className={cx(
-              'relative flex items-center px-6 [&>*]:z-10',
-              'after:absolute after:top-1/2 after:left-0 after:h-full after:w-full after:-translate-y-1/2 after:rounded-lg after:bg-transparent after:py-6 after:transition-colors',
-              'outline-none focus:after:bg-background-lighter hover:after:bg-background-lighter '
-            )}
-            onClick={() => {
-              notification?.setNotifDone()
-              onClick?.()
-            }}
-          >
-            <Icon className='mr-6 text-xl text-text-muted' />
-            <span>{text}</span>
-            {notification?.showNotif && (
-              <span className='relative ml-2 h-2 w-2'>
-                <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
-                <span className='relative block h-full w-full rounded-full bg-background-warning' />
-              </span>
-            )}
-          </Button>
-        ))}
-      </div>
+      <MenuList menus={menus} />
     </div>
   )
 }
@@ -277,19 +253,18 @@ function ConnectedEvmAddressContent({
     !!evmAddress &&
     evmAddress !== addressFromExtLovercased
 
-  const { signAndLinkEvmAddress, isSigningMessage } =
-    useSignMessageAndLinkEvmAddress({
-      setModalStep: () => setCurrentState('connect-evm-address'),
-      onError: () => setCurrentState('evm-connecting-error'),
-      linkedEvmAddress: evmAddress,
-    })
+  const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
+    setModalStep: () => setCurrentState('connect-evm-address'),
+    onError: () => setCurrentState('evm-connecting-error'),
+    linkedEvmAddress: evmAddress,
+  })
 
   const connectionButton = (
     <CustomConnectButton
       className={cx('w-full', { ['mt-4']: isNotEqAddresses })}
       signAndLinkEvmAddress={signAndLinkEvmAddress}
       signAndLinkOnConnect={!isNotEqAddresses}
-      isSigningMessage={isSigningMessage}
+      isLoading={isLoading}
       label={isNotEqAddresses ? 'Link another account' : undefined}
       variant={isNotEqAddresses ? 'primaryOutline' : 'primary'}
     />
@@ -466,17 +441,16 @@ function AboutContent() {
 }
 
 function EvmLoginError({ setCurrentState, evmAddress }: ContentProps) {
-  const { signAndLinkEvmAddress, isSigningMessage } =
-    useSignMessageAndLinkEvmAddress({
-      setModalStep: () => setCurrentState('connect-evm-address'),
-      onError: () => setCurrentState('evm-connecting-error'),
-      linkedEvmAddress: evmAddress,
-    })
+  const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
+    setModalStep: () => setCurrentState('connect-evm-address'),
+    onError: () => setCurrentState('evm-connecting-error'),
+    linkedEvmAddress: evmAddress,
+  })
 
   return (
     <CustomConnectButton
-      isSigningMessage={isSigningMessage}
-      signAndLinkOnConnect={false}
+      isLoading={isLoading}
+      signAndLinkOnConnect={!evmAddress}
       signAndLinkEvmAddress={signAndLinkEvmAddress}
       className='w-full'
       label='Try again'
