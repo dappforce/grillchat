@@ -85,7 +85,7 @@ function Content({ content, openInNewTab, redirectTo, withCopyButton }: Data) {
       >
         {content}
         {openInNewTab && (
-          <HiArrowUpRight className='ml-1 inline text-sm text-text-secondary/70' />
+          <HiArrowUpRight className='relative -top-px ml-1 inline text-sm text-text-secondary/70' />
         )}
       </LinkText>
     )
