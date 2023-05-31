@@ -1,9 +1,7 @@
+import { getTxSubDispatchErrorMessage } from '@/server/blockchain'
+import { getCommonErrorMessage } from '@/server/common'
 import { getIpfsApi } from '@/server/ipfs'
-import {
-  getCommonErrorMessage,
-  getTxSubDispatchErrorMessage,
-  WalletManager,
-} from '@/services/api/utils'
+import { WalletManager } from '@/server/wallet-client'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { ApiPromise, SubmittableResult } from '@polkadot/api'
