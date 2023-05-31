@@ -69,12 +69,15 @@ export const useSignMessageAndLinkEvmAddress = ({
   } = useSignEvmLinkMessage()
   const { disconnect } = useDisconnect()
 
-  const { mutate: linkEvmAddress, isLoading: isLinkingEvmAddress } =
-    useLinkEvmAddress({
-      setModalStep,
-      onError,
-      linkedEvmAddress,
-    })
+  const {
+    mutate: linkEvmAddress,
+    isLoading: isLinkingEvmAddress,
+    onCallbackLoading,
+  } = useLinkEvmAddress({
+    setModalStep,
+    onError,
+    linkedEvmAddress,
+  })
 
   useEffect(() => {
     if (isSignMessageError) {
@@ -103,6 +106,6 @@ export const useSignMessageAndLinkEvmAddress = ({
 
   return {
     signAndLinkEvmAddress,
-    isLoading: isSigningMessage || isLinkingEvmAddress,
+    isLoading: onCallbackLoading || isSigningMessage || isLinkingEvmAddress,
   }
 }

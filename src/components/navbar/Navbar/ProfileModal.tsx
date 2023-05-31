@@ -116,7 +116,7 @@ export default function ProfileModal({
   ...props
 }: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
-  const { data: linkedEvmAddress } = getLinkedEvmAddressQuery.useQuery(address)
+  const { data: linkedEvmAddress, isLoading } = getLinkedEvmAddressQuery.useQuery(address)
   const { disconnect } = useDisconnect()
 
   useEffect(() => {
@@ -314,7 +314,7 @@ function DisconnectEvmConfirmationContent({
   evmAddress,
 }: ContentProps) {
   const sendEvent = useSendEvent()
-  const { mutate: unlinkEvmAddress } = useUnlinkEvmAddress(() =>
+  const { mutate: unlinkEvmAddress, onCallbackLoading, isLoading } = useUnlinkEvmAddress(() =>
     setCurrentState('connect-evm-address')
   )
 
@@ -339,6 +339,7 @@ function DisconnectEvmConfirmationContent({
         onClick={onDisconnectClick}
         variant='primaryOutline'
         className='border-red-500'
+        isLoading={onCallbackLoading || isLoading}
       >
         Yes, disconnect
       </Button>

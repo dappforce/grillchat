@@ -4,6 +4,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { useDisconnect } from 'wagmi'
 
 type LinkEvmAddressMutationProps = {
@@ -27,10 +28,11 @@ export function useLinkEvmAddress({
   const address = useMyAccount((state) => state.address ?? '')
   const signer = useMyAccount((state) => state.signer)
   const client = useQueryClient()
+  const [ onCallbackLoading, setOnCallbackLoading ] = useState(false)
 
   const waitHasBalance = useWaitHasEnergy()
 
-  return useSubsocialMutation<LinkEvmAddressMutationProps, string>(
+  const mutation = useSubsocialMutation<LinkEvmAddressMutationProps, string>(
     async () => ({ address, signer }),
     async (params, { substrateApi }) => {
       await waitHasBalance()
@@ -58,16 +60,24 @@ export function useLinkEvmAddress({
     {
       txCallbacks: {
         getContext: () => '',
-        onSuccess: ({ address }) => {
-          getLinkedEvmAddressQuery.invalidate(client, address)
+        onStart: () => setOnCallbackLoading(true),
+        onSuccess: async ({ address }) => {
+          await getLinkedEvmAddressQuery.fetchQuery(client, address)
+          setOnCallbackLoading(false)
           setModalStep?.()
         },
         onError: () => {
+          setOnCallbackLoading(false)
           onError?.()
         },
       },
     }
   )
+
+  return {
+    ...mutation,
+    onCallbackLoading
+  }
 }
 
 type UnlinkEvmAddress = {
@@ -83,10 +93,11 @@ export function useUnlinkEvmAddress(
   const signer = useMyAccount((state) => state.signer)
   const client = useQueryClient()
   const { disconnect } = useDisconnect()
+  const [ onCallbackLoading, setOnCallbackLoading ] = useState(false)
 
   const waitHasBalance = useWaitHasEnergy()
 
-  return useSubsocialMutation<UnlinkEvmAddress, string>(
+  const mutation =  useSubsocialMutation<UnlinkEvmAddress, string>(
     async () => ({ address, signer }),
     async (params, { substrateApi }) => {
       await waitHasBalance()
@@ -102,15 +113,23 @@ export function useUnlinkEvmAddress(
     {
       txCallbacks: {
         getContext: () => '',
-        onSuccess: ({ address }) => {
-          getLinkedEvmAddressQuery.invalidate(client, address)
+        onStart: () => setOnCallbackLoading(true),
+        onSuccess: async ({ address }) => {
+          await getLinkedEvmAddressQuery.fetchQuery(client, address)
+          setOnCallbackLoading(false)
           disconnect()
           setModalStep?.()
         },
         onError: () => {
+          setOnCallbackLoading(false)
           onError?.()
         },
       },
     }
   )
+
+  return {
+    ...mutation,
+    onCallbackLoading
+  }
 }
