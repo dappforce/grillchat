@@ -11,6 +11,7 @@ type Action = {
   icon: IconType
   className?: string
   onClick: ButtonProps['onClick']
+  disabled?: boolean
 }
 export type AboutModalProps = ModalFunctionalityProps & {
   title: string
@@ -53,23 +54,26 @@ export default function AboutModal({
         <DataCard data={contentList} />
         {actionMenu && actionMenu.length > 0 && (
           <div className='w-full overflow-hidden rounded-2xl bg-background-lighter'>
-            {actionMenu.map(({ icon: Icon, text, className, onClick }) => (
-              <Button
-                variant='transparent'
-                interactive='none'
-                size='noPadding'
-                key={text}
-                className={cx(
-                  'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 last:border-none',
-                  'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
-                  className
-                )}
-                onClick={onClick}
-              >
-                <Icon className='text-xl text-text-muted' />
-                <span>{text}</span>
-              </Button>
-            ))}
+            {actionMenu.map(
+              ({ icon: Icon, text, className, onClick, disabled }) => (
+                <Button
+                  disabled={disabled}
+                  variant='transparent'
+                  interactive='none'
+                  size='noPadding'
+                  key={text}
+                  className={cx(
+                    'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 last:border-none',
+                    'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
+                    className
+                  )}
+                  onClick={onClick}
+                >
+                  <Icon className='text-xl' />
+                  <span>{text}</span>
+                </Button>
+              )
+            )}
           </div>
         )}
         {bottomElement}
