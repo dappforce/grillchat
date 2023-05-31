@@ -59,8 +59,8 @@ export function makeCombinedCallback(
   attr: string
 ) {
   return (...data: any[]) => {
-    defaultConfig && defaultConfig[attr] && defaultConfig[attr](...data)
-    config && config[attr] && config[attr](...data)
+    defaultConfig?.[attr]?.(...data)
+    config?.[attr]?.(...data)
   }
 }
 
