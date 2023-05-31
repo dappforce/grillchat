@@ -3,8 +3,8 @@ import HubsPage from '@/modules/chat/HubsPage'
 import { HubsPageProps } from '@/modules/chat/HubsPage/HubsPage'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
+import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getMainSpaceId, getSpaceIds } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
@@ -20,19 +20,17 @@ export const getStaticProps = getCommonStaticProps<
     const queryClient = new QueryClient()
 
     try {
-      const subsocialApi = await getSubsocialApi()
-      const hubsData = await Promise.all(
-        hubIds.map((hubId) => getSpaceQuery.fetchQuery(queryClient, hubId))
-      )
+      const hubsData = await getSpaceQuery.fetchQueries(queryClient, hubIds)
 
       await Promise.all([
         prefetchChatPreviewsData(queryClient, getMainSpaceId()),
         ...hubsData.map(async (hub) => {
           if (!hub) return
 
-          const chatIds = await subsocialApi.blockchain.postIdsBySpaceId(hub.id)
+          const res = await getChatIdsBySpaceIdQuery.fetchQuery(null, hub.id)
           const linkedChats = getLinkedChatIdsForSpaceId(hub.id)
-          hubsChatCount[hub.id] = chatIds.length + linkedChats.length
+          hubsChatCount[hub.id] =
+            (res?.chatIds.length ?? 0) + linkedChats.length
         }),
       ])
     } catch (err) {
