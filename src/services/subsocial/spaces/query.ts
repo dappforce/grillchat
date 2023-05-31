@@ -28,7 +28,7 @@ const getSpaceFromBlockchain = poolQuery<SubsocialQueryData<string>, SpaceData>(
 export const GET_SPACES = gql`
   ${SPACE_FRAGMENT}
   query getSpaces($ids: [String!]) {
-    spaces(where: { id_in: $ids }) {
+    spaces(where: { id_in: $ids, hidden_eq: false }) {
       ...SpaceFragment
     }
   }

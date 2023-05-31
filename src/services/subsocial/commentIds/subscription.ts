@@ -1,5 +1,6 @@
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { getPostQuery, getPosts } from '@/services/api/query'
+import { getPosts } from '@/services/api/fetcher'
+import { getPostQuery } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'

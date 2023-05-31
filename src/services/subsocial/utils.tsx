@@ -1,6 +1,7 @@
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import useToastError from '@/hooks/useToastError'
 import { createQuery } from '@/subsocial-query'
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import {
   createSubsocialQuery,
   SubsocialQueryData,
@@ -30,6 +31,22 @@ export function createDynamicSubsocialQuery<Data, ReturnValue>(
     key,
     fetcher: fetcher.blockchain,
   })
+}
+
+type DataSource = 'blockchain' | 'squid'
+export function standaloneDynamicFetcherWrapper<Data, ReturnValue>(
+  fetcher: DynamicSubsocialQueryFetcher<Data, ReturnValue>
+) {
+  return async (data: Data, dataSource: DataSource = 'squid') => {
+    const isExistSquidUrl = !!getSquidUrl()
+
+    if (isExistSquidUrl && dataSource === 'squid') {
+      return fetcher.squid(data)
+    }
+
+    const api = await getSubsocialApi()
+    return fetcher.blockchain({ data, api })
+  }
 }
 
 const OPTIMISTIC_ID_PREFIX = 'optimistic-'

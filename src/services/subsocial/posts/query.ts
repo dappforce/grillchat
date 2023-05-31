@@ -28,7 +28,7 @@ const getChatIdsBySpaceId = poolQuery<
   },
 })
 export const getChatIdsBySpaceIdQuery = createSubsocialQuery({
-  key: 'getPostIdsBySpaceId',
+  key: 'getChatIdsBySpaceId',
   fetcher: getChatIdsBySpaceId,
 })
 

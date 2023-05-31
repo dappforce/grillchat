@@ -1,200 +1,198 @@
-import gql from 'graphql-tag'
-export type Maybe<T> = T | null
-export type InputMaybe<T> = Maybe<T>
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K]
-}
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>
-}
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>
-}
-export type MakeEmpty<
-  T extends { [key: string]: unknown },
-  K extends keyof T
-> = { [_ in K]?: never }
-export type Incremental<T> =
-  | T
-  | {
-      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never
-    }
+import gql from 'graphql-tag';
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string | number; output: string }
-  String: { input: string; output: string }
-  Boolean: { input: boolean; output: boolean }
-  Int: { input: number; output: number }
-  Float: { input: number; output: number }
-  BigInt: { input: any; output: any }
-  DateTime: { input: any; output: any }
-  JSON: { input: any; output: any }
-}
+  ID: { input: string | number; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  BigInt: { input: any; output: any; }
+  DateTime: { input: any; output: any; }
+  JSON: { input: any; output: any; }
+};
 
 /** The Account entity */
 export type Account = {
-  __typename?: 'Account'
+  __typename?: 'Account';
   /** A One-To-Many relationship with the Activities which have been performed by an Account (foreign key - "account") */
-  activities: Array<Activity>
+  activities: Array<Activity>;
   /**
    * A One-To-Many relationship between an Account and the Activities it has performed in the network through NewsFeed (foreign key - "account").
    * Each Activity has the "event<EventName>" and "post" fields, which can be used for adding created Posts to a user's Feed.
    */
-  feeds: Array<NewsFeed>
+  feeds: Array<NewsFeed>;
   /** A One-To-Many relationship between the current Account and a follower Account through AccountFollowers (foreign key - "followingAccount") */
-  followers: Array<AccountFollowers>
+  followers: Array<AccountFollowers>;
   /** The total number of followers that an Account has (followers.length) */
-  followersCount: Scalars['Int']['output']
+  followersCount: Scalars['Int']['output'];
   /** A One-To-Many relationship between the current Account and an Account being followed through AccountFollowers (foreign key - "followerAccount") */
-  followingAccounts: Array<AccountFollowers>
+  followingAccounts: Array<AccountFollowers>;
   /** The total number of all accounts being followed by the current Account (followingAccounts.length) */
-  followingAccountsCount: Scalars['Int']['output']
+  followingAccountsCount: Scalars['Int']['output'];
   /** The total number of Posts that an Account is following (currently, a post is only followed by its creator) */
-  followingPostsCount: Scalars['Int']['output']
+  followingPostsCount: Scalars['Int']['output'];
   /** The total number of Spaces that an Account is following */
-  followingSpacesCount: Scalars['Int']['output']
+  followingSpacesCount: Scalars['Int']['output'];
   /** The account's public key converted to ss58 format for the Subsocial chain (prefix "28") */
-  id: Scalars['String']['output']
+  id: Scalars['String']['output'];
   /** A Many-To-Many relationship between an Account and Activities done in the network through Notification (foreign key - "account"). */
-  notifications: Array<Notification>
+  notifications: Array<Notification>;
   /** A One-To-Many relationship with the Posts which are owned by an Account (foreign key - "ownedByAccount") */
-  ownedPosts: Array<Post>
+  ownedPosts: Array<Post>;
   /** The total number of Posts owned by an Account (ownedPosts.length) */
-  ownedPostsCount: Scalars['Int']['output']
+  ownedPostsCount: Scalars['Int']['output'];
   /** A One-To-Many relationship with the Posts which are created by an Account (foreign key - "createdByAccount") */
-  posts: Array<Post>
+  posts: Array<Post>;
   /** A One-To-One relationship with the particular Space entity which is defined as the Account Profile */
-  profileSpace?: Maybe<Space>
+  profileSpace?: Maybe<Space>;
   /** A One-To-Many relationship with the Reactions that are made by an Account (foreign key - "account") */
-  reactions: Array<Reaction>
+  reactions: Array<Reaction>;
   /** A One-To-Many relationship with the Spaces that have been created by an Account (foreign key - "createdByAccount") */
-  spacesCreated: Array<Space>
+  spacesCreated: Array<Space>;
   /** A One-To-Many relationship between an Account and the Spaces that it follows through SpaceFollowers (foreign key - "followerAccount") */
-  spacesFollowed: Array<SpaceFollowers>
+  spacesFollowed: Array<SpaceFollowers>;
   /** A One-To-Many relationship with the Spaces that are currently owned by an Account  (foreign key - "ownedByAccount") */
-  spacesOwned: Array<Space>
+  spacesOwned: Array<Space>;
   /** The block height when an Account was updated by the Profiles.ProfileUpdated event */
-  updatedAtBlock?: Maybe<Scalars['BigInt']['output']>
+  updatedAtBlock?: Maybe<Scalars['BigInt']['output']>;
   /** The DateTime when an Account was updated by the Profiles.ProfileUpdated event */
-  updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+  updatedAtTime?: Maybe<Scalars['DateTime']['output']>;
   /** A list of the usernames that an Account owns. */
-  usernames?: Maybe<Array<Maybe<Scalars['String']['output']>>>
-}
+  usernames?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+};
+
 
 /** The Account entity */
 export type AccountActivitiesArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<ActivityOrderByInput>>
-  where?: InputMaybe<ActivityWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ActivityOrderByInput>>;
+  where?: InputMaybe<ActivityWhereInput>;
+};
+
 
 /** The Account entity */
 export type AccountFeedsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<NewsFeedOrderByInput>>
-  where?: InputMaybe<NewsFeedWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<NewsFeedOrderByInput>>;
+  where?: InputMaybe<NewsFeedWhereInput>;
+};
+
 
 /** The Account entity */
 export type AccountFollowersArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<AccountFollowersOrderByInput>>
-  where?: InputMaybe<AccountFollowersWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<AccountFollowersOrderByInput>>;
+  where?: InputMaybe<AccountFollowersWhereInput>;
+};
+
 
 /** The Account entity */
 export type AccountFollowingAccountsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<AccountFollowersOrderByInput>>
-  where?: InputMaybe<AccountFollowersWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<AccountFollowersOrderByInput>>;
+  where?: InputMaybe<AccountFollowersWhereInput>;
+};
+
 
 /** The Account entity */
 export type AccountNotificationsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<NotificationOrderByInput>>
-  where?: InputMaybe<NotificationWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<NotificationOrderByInput>>;
+  where?: InputMaybe<NotificationWhereInput>;
+};
+
 
 /** The Account entity */
 export type AccountOwnedPostsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<PostOrderByInput>>
-  where?: InputMaybe<PostWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostOrderByInput>>;
+  where?: InputMaybe<PostWhereInput>;
+};
+
 
 /** The Account entity */
 export type AccountPostsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<PostOrderByInput>>
-  where?: InputMaybe<PostWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostOrderByInput>>;
+  where?: InputMaybe<PostWhereInput>;
+};
+
 
 /** The Account entity */
 export type AccountReactionsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<ReactionOrderByInput>>
-  where?: InputMaybe<ReactionWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ReactionOrderByInput>>;
+  where?: InputMaybe<ReactionWhereInput>;
+};
+
 
 /** The Account entity */
 export type AccountSpacesCreatedArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<SpaceOrderByInput>>
-  where?: InputMaybe<SpaceWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceOrderByInput>>;
+  where?: InputMaybe<SpaceWhereInput>;
+};
+
 
 /** The Account entity */
 export type AccountSpacesFollowedArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<SpaceFollowersOrderByInput>>
-  where?: InputMaybe<SpaceFollowersWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceFollowersOrderByInput>>;
+  where?: InputMaybe<SpaceFollowersWhereInput>;
+};
+
 
 /** The Account entity */
 export type AccountSpacesOwnedArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<SpaceOrderByInput>>
-  where?: InputMaybe<SpaceWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceOrderByInput>>;
+  where?: InputMaybe<SpaceWhereInput>;
+};
 
 export type AccountEdge = {
-  __typename?: 'AccountEdge'
-  cursor: Scalars['String']['output']
-  node: Account
-}
+  __typename?: 'AccountEdge';
+  cursor: Scalars['String']['output'];
+  node: Account;
+};
 
 /** The junction table for the Many-to-Many relationship between follower and following Accounts */
 export type AccountFollowers = {
-  __typename?: 'AccountFollowers'
-  followerAccount: Account
-  followingAccount: Account
-  id: Scalars['String']['output']
-}
+  __typename?: 'AccountFollowers';
+  followerAccount: Account;
+  followingAccount: Account;
+  id: Scalars['String']['output'];
+};
 
 export type AccountFollowersConnection = {
-  __typename?: 'AccountFollowersConnection'
-  edges: Array<AccountFollowersEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'AccountFollowersConnection';
+  edges: Array<AccountFollowersEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 export type AccountFollowersEdge = {
-  __typename?: 'AccountFollowersEdge'
-  cursor: Scalars['String']['output']
-  node: AccountFollowers
-}
+  __typename?: 'AccountFollowersEdge';
+  cursor: Scalars['String']['output'];
+  node: AccountFollowers;
+};
 
 export enum AccountFollowersOrderByInput {
   FollowerAccountFollowersCountAsc = 'followerAccount_followersCount_ASC',
@@ -230,34 +228,34 @@ export enum AccountFollowersOrderByInput {
   FollowingAccountUpdatedAtTimeAsc = 'followingAccount_updatedAtTime_ASC',
   FollowingAccountUpdatedAtTimeDesc = 'followingAccount_updatedAtTime_DESC',
   IdAsc = 'id_ASC',
-  IdDesc = 'id_DESC',
+  IdDesc = 'id_DESC'
 }
 
 export type AccountFollowersWhereInput = {
-  AND?: InputMaybe<Array<AccountFollowersWhereInput>>
-  OR?: InputMaybe<Array<AccountFollowersWhereInput>>
-  followerAccount?: InputMaybe<AccountWhereInput>
-  followerAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followingAccount?: InputMaybe<AccountWhereInput>
-  followingAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<AccountFollowersWhereInput>>;
+  OR?: InputMaybe<Array<AccountFollowersWhereInput>>;
+  followerAccount?: InputMaybe<AccountWhereInput>;
+  followerAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followingAccount?: InputMaybe<AccountWhereInput>;
+  followingAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
 
 export enum AccountOrderByInput {
   FollowersCountAsc = 'followersCount_ASC',
@@ -327,195 +325,189 @@ export enum AccountOrderByInput {
   UpdatedAtBlockAsc = 'updatedAtBlock_ASC',
   UpdatedAtBlockDesc = 'updatedAtBlock_DESC',
   UpdatedAtTimeAsc = 'updatedAtTime_ASC',
-  UpdatedAtTimeDesc = 'updatedAtTime_DESC',
+  UpdatedAtTimeDesc = 'updatedAtTime_DESC'
 }
 
 export type AccountWhereInput = {
-  AND?: InputMaybe<Array<AccountWhereInput>>
-  OR?: InputMaybe<Array<AccountWhereInput>>
-  activities_every?: InputMaybe<ActivityWhereInput>
-  activities_none?: InputMaybe<ActivityWhereInput>
-  activities_some?: InputMaybe<ActivityWhereInput>
-  feeds_every?: InputMaybe<NewsFeedWhereInput>
-  feeds_none?: InputMaybe<NewsFeedWhereInput>
-  feeds_some?: InputMaybe<NewsFeedWhereInput>
-  followersCount_eq?: InputMaybe<Scalars['Int']['input']>
-  followersCount_gt?: InputMaybe<Scalars['Int']['input']>
-  followersCount_gte?: InputMaybe<Scalars['Int']['input']>
-  followersCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  followersCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followersCount_lt?: InputMaybe<Scalars['Int']['input']>
-  followersCount_lte?: InputMaybe<Scalars['Int']['input']>
-  followersCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  followersCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  followers_every?: InputMaybe<AccountFollowersWhereInput>
-  followers_none?: InputMaybe<AccountFollowersWhereInput>
-  followers_some?: InputMaybe<AccountFollowersWhereInput>
-  followingAccountsCount_eq?: InputMaybe<Scalars['Int']['input']>
-  followingAccountsCount_gt?: InputMaybe<Scalars['Int']['input']>
-  followingAccountsCount_gte?: InputMaybe<Scalars['Int']['input']>
-  followingAccountsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  followingAccountsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followingAccountsCount_lt?: InputMaybe<Scalars['Int']['input']>
-  followingAccountsCount_lte?: InputMaybe<Scalars['Int']['input']>
-  followingAccountsCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  followingAccountsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  followingAccounts_every?: InputMaybe<AccountFollowersWhereInput>
-  followingAccounts_none?: InputMaybe<AccountFollowersWhereInput>
-  followingAccounts_some?: InputMaybe<AccountFollowersWhereInput>
-  followingPostsCount_eq?: InputMaybe<Scalars['Int']['input']>
-  followingPostsCount_gt?: InputMaybe<Scalars['Int']['input']>
-  followingPostsCount_gte?: InputMaybe<Scalars['Int']['input']>
-  followingPostsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  followingPostsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followingPostsCount_lt?: InputMaybe<Scalars['Int']['input']>
-  followingPostsCount_lte?: InputMaybe<Scalars['Int']['input']>
-  followingPostsCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  followingPostsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  followingSpacesCount_eq?: InputMaybe<Scalars['Int']['input']>
-  followingSpacesCount_gt?: InputMaybe<Scalars['Int']['input']>
-  followingSpacesCount_gte?: InputMaybe<Scalars['Int']['input']>
-  followingSpacesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  followingSpacesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followingSpacesCount_lt?: InputMaybe<Scalars['Int']['input']>
-  followingSpacesCount_lte?: InputMaybe<Scalars['Int']['input']>
-  followingSpacesCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  followingSpacesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-  notifications_every?: InputMaybe<NotificationWhereInput>
-  notifications_none?: InputMaybe<NotificationWhereInput>
-  notifications_some?: InputMaybe<NotificationWhereInput>
-  ownedPostsCount_eq?: InputMaybe<Scalars['Int']['input']>
-  ownedPostsCount_gt?: InputMaybe<Scalars['Int']['input']>
-  ownedPostsCount_gte?: InputMaybe<Scalars['Int']['input']>
-  ownedPostsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  ownedPostsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  ownedPostsCount_lt?: InputMaybe<Scalars['Int']['input']>
-  ownedPostsCount_lte?: InputMaybe<Scalars['Int']['input']>
-  ownedPostsCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  ownedPostsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  ownedPosts_every?: InputMaybe<PostWhereInput>
-  ownedPosts_none?: InputMaybe<PostWhereInput>
-  ownedPosts_some?: InputMaybe<PostWhereInput>
-  posts_every?: InputMaybe<PostWhereInput>
-  posts_none?: InputMaybe<PostWhereInput>
-  posts_some?: InputMaybe<PostWhereInput>
-  profileSpace?: InputMaybe<SpaceWhereInput>
-  profileSpace_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  reactions_every?: InputMaybe<ReactionWhereInput>
-  reactions_none?: InputMaybe<ReactionWhereInput>
-  reactions_some?: InputMaybe<ReactionWhereInput>
-  spacesCreated_every?: InputMaybe<SpaceWhereInput>
-  spacesCreated_none?: InputMaybe<SpaceWhereInput>
-  spacesCreated_some?: InputMaybe<SpaceWhereInput>
-  spacesFollowed_every?: InputMaybe<SpaceFollowersWhereInput>
-  spacesFollowed_none?: InputMaybe<SpaceFollowersWhereInput>
-  spacesFollowed_some?: InputMaybe<SpaceFollowersWhereInput>
-  spacesOwned_every?: InputMaybe<SpaceWhereInput>
-  spacesOwned_none?: InputMaybe<SpaceWhereInput>
-  spacesOwned_some?: InputMaybe<SpaceWhereInput>
-  updatedAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  updatedAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updatedAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  updatedAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  updatedAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updatedAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  usernames_containsAll?: InputMaybe<
-    Array<InputMaybe<Scalars['String']['input']>>
-  >
-  usernames_containsAny?: InputMaybe<
-    Array<InputMaybe<Scalars['String']['input']>>
-  >
-  usernames_containsNone?: InputMaybe<
-    Array<InputMaybe<Scalars['String']['input']>>
-  >
-  usernames_isNull?: InputMaybe<Scalars['Boolean']['input']>
-}
+  AND?: InputMaybe<Array<AccountWhereInput>>;
+  OR?: InputMaybe<Array<AccountWhereInput>>;
+  activities_every?: InputMaybe<ActivityWhereInput>;
+  activities_none?: InputMaybe<ActivityWhereInput>;
+  activities_some?: InputMaybe<ActivityWhereInput>;
+  feeds_every?: InputMaybe<NewsFeedWhereInput>;
+  feeds_none?: InputMaybe<NewsFeedWhereInput>;
+  feeds_some?: InputMaybe<NewsFeedWhereInput>;
+  followersCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  followersCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followersCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  followers_every?: InputMaybe<AccountFollowersWhereInput>;
+  followers_none?: InputMaybe<AccountFollowersWhereInput>;
+  followers_some?: InputMaybe<AccountFollowersWhereInput>;
+  followingAccountsCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  followingAccountsCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  followingAccountsCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  followingAccountsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  followingAccountsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followingAccountsCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  followingAccountsCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  followingAccountsCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  followingAccountsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  followingAccounts_every?: InputMaybe<AccountFollowersWhereInput>;
+  followingAccounts_none?: InputMaybe<AccountFollowersWhereInput>;
+  followingAccounts_some?: InputMaybe<AccountFollowersWhereInput>;
+  followingPostsCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  followingPostsCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  followingPostsCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  followingPostsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  followingPostsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followingPostsCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  followingPostsCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  followingPostsCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  followingPostsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  followingSpacesCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  followingSpacesCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  followingSpacesCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  followingSpacesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  followingSpacesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followingSpacesCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  followingSpacesCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  followingSpacesCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  followingSpacesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  notifications_every?: InputMaybe<NotificationWhereInput>;
+  notifications_none?: InputMaybe<NotificationWhereInput>;
+  notifications_some?: InputMaybe<NotificationWhereInput>;
+  ownedPostsCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  ownedPostsCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  ownedPostsCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  ownedPostsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  ownedPostsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  ownedPostsCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  ownedPostsCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  ownedPostsCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  ownedPostsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  ownedPosts_every?: InputMaybe<PostWhereInput>;
+  ownedPosts_none?: InputMaybe<PostWhereInput>;
+  ownedPosts_some?: InputMaybe<PostWhereInput>;
+  posts_every?: InputMaybe<PostWhereInput>;
+  posts_none?: InputMaybe<PostWhereInput>;
+  posts_some?: InputMaybe<PostWhereInput>;
+  profileSpace?: InputMaybe<SpaceWhereInput>;
+  profileSpace_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  reactions_every?: InputMaybe<ReactionWhereInput>;
+  reactions_none?: InputMaybe<ReactionWhereInput>;
+  reactions_some?: InputMaybe<ReactionWhereInput>;
+  spacesCreated_every?: InputMaybe<SpaceWhereInput>;
+  spacesCreated_none?: InputMaybe<SpaceWhereInput>;
+  spacesCreated_some?: InputMaybe<SpaceWhereInput>;
+  spacesFollowed_every?: InputMaybe<SpaceFollowersWhereInput>;
+  spacesFollowed_none?: InputMaybe<SpaceFollowersWhereInput>;
+  spacesFollowed_some?: InputMaybe<SpaceFollowersWhereInput>;
+  spacesOwned_every?: InputMaybe<SpaceWhereInput>;
+  spacesOwned_none?: InputMaybe<SpaceWhereInput>;
+  spacesOwned_some?: InputMaybe<SpaceWhereInput>;
+  updatedAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  updatedAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  updatedAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  updatedAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  usernames_containsAll?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  usernames_containsAny?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  usernames_containsNone?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  usernames_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+};
 
 export type AccountsConnection = {
-  __typename?: 'AccountsConnection'
-  edges: Array<AccountEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'AccountsConnection';
+  edges: Array<AccountEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 export type ActivitiesConnection = {
-  __typename?: 'ActivitiesConnection'
-  edges: Array<ActivityEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'ActivitiesConnection';
+  edges: Array<ActivityEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 /** The Activity entity, which represents any activity on the blockchain (within the list of tracked events). */
 export type Activity = {
-  __typename?: 'Activity'
+  __typename?: 'Activity';
   /** A One-To-One relationship with the Account that initiated the current activity (it's usually a caller Account) */
-  account: Account
+  account: Account;
   /** The total number of Activities of the same event type for a specific Account. */
-  aggCount: Scalars['BigInt']['output']
+  aggCount: Scalars['BigInt']['output'];
   /** Is this Activity the most recent in the list of Activities of this type (same event) from this account? */
-  aggregated?: Maybe<Scalars['Boolean']['output']>
+  aggregated?: Maybe<Scalars['Boolean']['output']>;
   /** The block height when an activity was done */
-  blockNumber: Scalars['BigInt']['output']
+  blockNumber: Scalars['BigInt']['output'];
   /** The DateTime when the current activity was done */
-  date: Scalars['DateTime']['output']
+  date: Scalars['DateTime']['output'];
   /** The event's name */
-  event: EventName
+  event: EventName;
   /** The event's index in the block */
-  eventIndex: Scalars['Int']['output']
+  eventIndex: Scalars['Int']['output'];
   /** A One-to-One relationship with the following Account if the event is `AccountFollowed` or `AccountUnfollowed`. */
-  followingAccount?: Maybe<Account>
+  followingAccount?: Maybe<Account>;
   /** The ID of an Activity. It has the following structure: <blockNumber>-<indexInBlock>-<md5Hash(eventName)>` (e.g. 1093209-1001-1ee8fd8482c322254acff29a8f52f5e1) */
-  id: Scalars['String']['output']
+  id: Scalars['String']['output'];
   /** A One-to-One relationship with the previous owner's Account if the event is "SpaceOwnershipTransferAccepted" */
-  newOwner?: Maybe<Account>
+  newOwner?: Maybe<Account>;
   /** A One-to-One relationship with the new owner's Account if the event is "SpaceOwnershipTransferAccepted" */
-  oldOwner?: Maybe<Account>
+  oldOwner?: Maybe<Account>;
   /** A One-to-One relationship with the Post that is involved in the current Activity */
-  post?: Maybe<Post>
+  post?: Maybe<Post>;
   /** A One-to-One relationship with the Reaction that is involved in the current Activity */
-  reaction?: Maybe<Reaction>
+  reaction?: Maybe<Reaction>;
   /** A One-to-One relationship with the Space that is involved in the current Activity */
-  space?: Maybe<Space>
+  space?: Maybe<Space>;
   /** A One-to-One relationship with the previous Space if the event is `PostMoved` or `DomainMetaUpdated` */
-  spacePrev?: Maybe<Space>
+  spacePrev?: Maybe<Space>;
   /** The username of Space or Account which was registered or updated in this particular Activity. */
-  username?: Maybe<Scalars['String']['output']>
-}
+  username?: Maybe<Scalars['String']['output']>;
+};
 
 export type ActivityEdge = {
-  __typename?: 'ActivityEdge'
-  cursor: Scalars['String']['output']
-  node: Activity
-}
+  __typename?: 'ActivityEdge';
+  cursor: Scalars['String']['output'];
+  node: Activity;
+};
 
 export enum ActivityOrderByInput {
   AccountFollowersCountAsc = 'account_followersCount_ASC',
@@ -775,128 +767,128 @@ export enum ActivityOrderByInput {
   SpaceUsernameAsc = 'space_username_ASC',
   SpaceUsernameDesc = 'space_username_DESC',
   UsernameAsc = 'username_ASC',
-  UsernameDesc = 'username_DESC',
+  UsernameDesc = 'username_DESC'
 }
 
 export type ActivityWhereInput = {
-  AND?: InputMaybe<Array<ActivityWhereInput>>
-  OR?: InputMaybe<Array<ActivityWhereInput>>
-  account?: InputMaybe<AccountWhereInput>
-  account_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  aggCount_eq?: InputMaybe<Scalars['BigInt']['input']>
-  aggCount_gt?: InputMaybe<Scalars['BigInt']['input']>
-  aggCount_gte?: InputMaybe<Scalars['BigInt']['input']>
-  aggCount_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  aggCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  aggCount_lt?: InputMaybe<Scalars['BigInt']['input']>
-  aggCount_lte?: InputMaybe<Scalars['BigInt']['input']>
-  aggCount_not_eq?: InputMaybe<Scalars['BigInt']['input']>
-  aggCount_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  aggregated_eq?: InputMaybe<Scalars['Boolean']['input']>
-  aggregated_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  aggregated_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  blockNumber_eq?: InputMaybe<Scalars['BigInt']['input']>
-  blockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>
-  blockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>
-  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  blockNumber_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  blockNumber_lt?: InputMaybe<Scalars['BigInt']['input']>
-  blockNumber_lte?: InputMaybe<Scalars['BigInt']['input']>
-  blockNumber_not_eq?: InputMaybe<Scalars['BigInt']['input']>
-  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  date_eq?: InputMaybe<Scalars['DateTime']['input']>
-  date_gt?: InputMaybe<Scalars['DateTime']['input']>
-  date_gte?: InputMaybe<Scalars['DateTime']['input']>
-  date_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  date_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  date_lt?: InputMaybe<Scalars['DateTime']['input']>
-  date_lte?: InputMaybe<Scalars['DateTime']['input']>
-  date_not_eq?: InputMaybe<Scalars['DateTime']['input']>
-  date_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  eventIndex_eq?: InputMaybe<Scalars['Int']['input']>
-  eventIndex_gt?: InputMaybe<Scalars['Int']['input']>
-  eventIndex_gte?: InputMaybe<Scalars['Int']['input']>
-  eventIndex_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  eventIndex_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  eventIndex_lt?: InputMaybe<Scalars['Int']['input']>
-  eventIndex_lte?: InputMaybe<Scalars['Int']['input']>
-  eventIndex_not_eq?: InputMaybe<Scalars['Int']['input']>
-  eventIndex_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  event_eq?: InputMaybe<EventName>
-  event_in?: InputMaybe<Array<EventName>>
-  event_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  event_not_eq?: InputMaybe<EventName>
-  event_not_in?: InputMaybe<Array<EventName>>
-  followingAccount?: InputMaybe<AccountWhereInput>
-  followingAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-  newOwner?: InputMaybe<AccountWhereInput>
-  newOwner_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  oldOwner?: InputMaybe<AccountWhereInput>
-  oldOwner_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  post?: InputMaybe<PostWhereInput>
-  post_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  reaction?: InputMaybe<ReactionWhereInput>
-  reaction_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  space?: InputMaybe<SpaceWhereInput>
-  spacePrev?: InputMaybe<SpaceWhereInput>
-  spacePrev_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  space_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  username_contains?: InputMaybe<Scalars['String']['input']>
-  username_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  username_endsWith?: InputMaybe<Scalars['String']['input']>
-  username_eq?: InputMaybe<Scalars['String']['input']>
-  username_gt?: InputMaybe<Scalars['String']['input']>
-  username_gte?: InputMaybe<Scalars['String']['input']>
-  username_in?: InputMaybe<Array<Scalars['String']['input']>>
-  username_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  username_lt?: InputMaybe<Scalars['String']['input']>
-  username_lte?: InputMaybe<Scalars['String']['input']>
-  username_not_contains?: InputMaybe<Scalars['String']['input']>
-  username_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  username_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  username_not_eq?: InputMaybe<Scalars['String']['input']>
-  username_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  username_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  username_startsWith?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<ActivityWhereInput>>;
+  OR?: InputMaybe<Array<ActivityWhereInput>>;
+  account?: InputMaybe<AccountWhereInput>;
+  account_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  aggCount_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  aggCount_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  aggCount_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  aggCount_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  aggCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  aggCount_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  aggCount_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  aggCount_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  aggCount_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  aggregated_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  aggregated_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  aggregated_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  blockNumber_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  blockNumber_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  date_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  date_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  date_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  date_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  date_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  date_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  date_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  date_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  date_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  eventIndex_eq?: InputMaybe<Scalars['Int']['input']>;
+  eventIndex_gt?: InputMaybe<Scalars['Int']['input']>;
+  eventIndex_gte?: InputMaybe<Scalars['Int']['input']>;
+  eventIndex_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  eventIndex_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  eventIndex_lt?: InputMaybe<Scalars['Int']['input']>;
+  eventIndex_lte?: InputMaybe<Scalars['Int']['input']>;
+  eventIndex_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  eventIndex_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  event_eq?: InputMaybe<EventName>;
+  event_in?: InputMaybe<Array<EventName>>;
+  event_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  event_not_eq?: InputMaybe<EventName>;
+  event_not_in?: InputMaybe<Array<EventName>>;
+  followingAccount?: InputMaybe<AccountWhereInput>;
+  followingAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  newOwner?: InputMaybe<AccountWhereInput>;
+  newOwner_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  oldOwner?: InputMaybe<AccountWhereInput>;
+  oldOwner_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  post?: InputMaybe<PostWhereInput>;
+  post_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  reaction?: InputMaybe<ReactionWhereInput>;
+  reaction_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  space?: InputMaybe<SpaceWhereInput>;
+  spacePrev?: InputMaybe<SpaceWhereInput>;
+  spacePrev_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  space_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  username_contains?: InputMaybe<Scalars['String']['input']>;
+  username_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  username_endsWith?: InputMaybe<Scalars['String']['input']>;
+  username_eq?: InputMaybe<Scalars['String']['input']>;
+  username_gt?: InputMaybe<Scalars['String']['input']>;
+  username_gte?: InputMaybe<Scalars['String']['input']>;
+  username_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  username_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  username_lt?: InputMaybe<Scalars['String']['input']>;
+  username_lte?: InputMaybe<Scalars['String']['input']>;
+  username_not_contains?: InputMaybe<Scalars['String']['input']>;
+  username_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  username_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  username_not_eq?: InputMaybe<Scalars['String']['input']>;
+  username_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  username_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  username_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
 
 /** The junction table for Many-to-Many relationship between follower Account and following Comment */
 export type CommentFollowers = {
-  __typename?: 'CommentFollowers'
-  followerAccount: Account
-  followingComment: Post
-  id: Scalars['String']['output']
-}
+  __typename?: 'CommentFollowers';
+  followerAccount: Account;
+  followingComment: Post;
+  id: Scalars['String']['output'];
+};
 
 export type CommentFollowersConnection = {
-  __typename?: 'CommentFollowersConnection'
-  edges: Array<CommentFollowersEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'CommentFollowersConnection';
+  edges: Array<CommentFollowersEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 export type CommentFollowersEdge = {
-  __typename?: 'CommentFollowersEdge'
-  cursor: Scalars['String']['output']
-  node: CommentFollowers
-}
+  __typename?: 'CommentFollowersEdge';
+  cursor: Scalars['String']['output'];
+  node: CommentFollowers;
+};
 
 export enum CommentFollowersOrderByInput {
   FollowerAccountFollowersCountAsc = 'followerAccount_followersCount_ASC',
@@ -976,58 +968,58 @@ export enum CommentFollowersOrderByInput {
   FollowingCommentUpvotesCountAsc = 'followingComment_upvotesCount_ASC',
   FollowingCommentUpvotesCountDesc = 'followingComment_upvotesCount_DESC',
   IdAsc = 'id_ASC',
-  IdDesc = 'id_DESC',
+  IdDesc = 'id_DESC'
 }
 
 export type CommentFollowersWhereInput = {
-  AND?: InputMaybe<Array<CommentFollowersWhereInput>>
-  OR?: InputMaybe<Array<CommentFollowersWhereInput>>
-  followerAccount?: InputMaybe<AccountWhereInput>
-  followerAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followingComment?: InputMaybe<PostWhereInput>
-  followingComment_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<CommentFollowersWhereInput>>;
+  OR?: InputMaybe<Array<CommentFollowersWhereInput>>;
+  followerAccount?: InputMaybe<AccountWhereInput>;
+  followerAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followingComment?: InputMaybe<PostWhereInput>;
+  followingComment_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type EsError = {
-  __typename?: 'ESError'
+  __typename?: 'ESError';
   /** Error message text message. */
-  reason: Scalars['String']['output']
+  reason: Scalars['String']['output'];
   /** Error status code. */
-  status?: Maybe<Scalars['Int']['output']>
-}
+  status?: Maybe<Scalars['Int']['output']>;
+};
 
 export enum ElasticSearchIndexType {
   All = 'all',
   Posts = 'posts',
-  Spaces = 'spaces',
+  Spaces = 'spaces'
 }
 
 export type ElasticSearchQueryResultEntity = {
-  __typename?: 'ElasticSearchQueryResultEntity'
+  __typename?: 'ElasticSearchQueryResultEntity';
   /** Occurred error. */
-  err?: Maybe<EsError>
+  err?: Maybe<EsError>;
   /** Search results list. */
-  hits: Array<Maybe<HitItem>>
+  hits: Array<Maybe<HitItem>>;
   /** General information about particular search query result. */
-  total: SearchTotals
-}
+  total: SearchTotals;
+};
 
 /**
  * # enum EventName
@@ -1130,52 +1122,52 @@ export enum EventName {
   SpaceUnfollowed = 'SpaceUnfollowed',
   SpaceUpdated = 'SpaceUpdated',
   UserNameRegistered = 'UserNameRegistered',
-  UserNameUpdated = 'UserNameUpdated',
+  UserNameUpdated = 'UserNameUpdated'
 }
 
 export type HitItem = {
-  __typename?: 'HitItem'
+  __typename?: 'HitItem';
   /** Document source */
-  _content: HitItemContent
+  _content: HitItemContent;
   /** Document ID (equal to on-chain entity ID) */
-  _id: Scalars['String']['output']
+  _id: Scalars['String']['output'];
   /** Index particular document is located in */
-  _index: Scalars['String']['output']
+  _index: Scalars['String']['output'];
   /** Search score of particular document */
-  _score: Scalars['Float']['output']
-}
+  _score: Scalars['Float']['output'];
+};
 
 export type HitItemContent = {
-  __typename?: 'HitItemContent'
+  __typename?: 'HitItemContent';
   /** Value of field `about` (actual only for Space entity) */
-  about?: Maybe<Scalars['String']['output']>
+  about?: Maybe<Scalars['String']['output']>;
   /** Value of field `body` (actual only for Post entity) */
-  body?: Maybe<Scalars['String']['output']>
+  body?: Maybe<Scalars['String']['output']>;
   /** Value of field `name` (actual only for Space entity) */
-  name?: Maybe<Scalars['String']['output']>
+  name?: Maybe<Scalars['String']['output']>;
   /** Value of field `spaceId` (actual only for Post entity) */
-  spaceId?: Maybe<Scalars['String']['output']>
+  spaceId?: Maybe<Scalars['String']['output']>;
   /** List of tags */
-  tags?: Maybe<Array<Scalars['String']['output']>>
+  tags?: Maybe<Array<Scalars['String']['output']>>;
   /** Value of field `title` (actual only for Post entity) */
-  title?: Maybe<Scalars['String']['output']>
+  title?: Maybe<Scalars['String']['output']>;
   /** Value of field `username` (actual only for Space entity) */
-  username?: Maybe<Scalars['String']['output']>
-}
+  username?: Maybe<Scalars['String']['output']>;
+};
 
 export type IpfsFetchLog = {
-  __typename?: 'IpfsFetchLog'
-  blockHeight: Scalars['Int']['output']
-  cid?: Maybe<Scalars['String']['output']>
-  errorMsg?: Maybe<Scalars['String']['output']>
-  id: Scalars['String']['output']
-}
+  __typename?: 'IpfsFetchLog';
+  blockHeight: Scalars['Int']['output'];
+  cid?: Maybe<Scalars['String']['output']>;
+  errorMsg?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+};
 
 export type IpfsFetchLogEdge = {
-  __typename?: 'IpfsFetchLogEdge'
-  cursor: Scalars['String']['output']
-  node: IpfsFetchLog
-}
+  __typename?: 'IpfsFetchLogEdge';
+  cursor: Scalars['String']['output'];
+  node: IpfsFetchLog;
+};
 
 export enum IpfsFetchLogOrderByInput {
   BlockHeightAsc = 'blockHeight_ASC',
@@ -1185,94 +1177,94 @@ export enum IpfsFetchLogOrderByInput {
   ErrorMsgAsc = 'errorMsg_ASC',
   ErrorMsgDesc = 'errorMsg_DESC',
   IdAsc = 'id_ASC',
-  IdDesc = 'id_DESC',
+  IdDesc = 'id_DESC'
 }
 
 export type IpfsFetchLogWhereInput = {
-  AND?: InputMaybe<Array<IpfsFetchLogWhereInput>>
-  OR?: InputMaybe<Array<IpfsFetchLogWhereInput>>
-  blockHeight_eq?: InputMaybe<Scalars['Int']['input']>
-  blockHeight_gt?: InputMaybe<Scalars['Int']['input']>
-  blockHeight_gte?: InputMaybe<Scalars['Int']['input']>
-  blockHeight_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  blockHeight_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  blockHeight_lt?: InputMaybe<Scalars['Int']['input']>
-  blockHeight_lte?: InputMaybe<Scalars['Int']['input']>
-  blockHeight_not_eq?: InputMaybe<Scalars['Int']['input']>
-  blockHeight_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  cid_contains?: InputMaybe<Scalars['String']['input']>
-  cid_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  cid_endsWith?: InputMaybe<Scalars['String']['input']>
-  cid_eq?: InputMaybe<Scalars['String']['input']>
-  cid_gt?: InputMaybe<Scalars['String']['input']>
-  cid_gte?: InputMaybe<Scalars['String']['input']>
-  cid_in?: InputMaybe<Array<Scalars['String']['input']>>
-  cid_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  cid_lt?: InputMaybe<Scalars['String']['input']>
-  cid_lte?: InputMaybe<Scalars['String']['input']>
-  cid_not_contains?: InputMaybe<Scalars['String']['input']>
-  cid_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  cid_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  cid_not_eq?: InputMaybe<Scalars['String']['input']>
-  cid_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  cid_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  cid_startsWith?: InputMaybe<Scalars['String']['input']>
-  errorMsg_contains?: InputMaybe<Scalars['String']['input']>
-  errorMsg_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  errorMsg_endsWith?: InputMaybe<Scalars['String']['input']>
-  errorMsg_eq?: InputMaybe<Scalars['String']['input']>
-  errorMsg_gt?: InputMaybe<Scalars['String']['input']>
-  errorMsg_gte?: InputMaybe<Scalars['String']['input']>
-  errorMsg_in?: InputMaybe<Array<Scalars['String']['input']>>
-  errorMsg_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  errorMsg_lt?: InputMaybe<Scalars['String']['input']>
-  errorMsg_lte?: InputMaybe<Scalars['String']['input']>
-  errorMsg_not_contains?: InputMaybe<Scalars['String']['input']>
-  errorMsg_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  errorMsg_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  errorMsg_not_eq?: InputMaybe<Scalars['String']['input']>
-  errorMsg_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  errorMsg_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  errorMsg_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<IpfsFetchLogWhereInput>>;
+  OR?: InputMaybe<Array<IpfsFetchLogWhereInput>>;
+  blockHeight_eq?: InputMaybe<Scalars['Int']['input']>;
+  blockHeight_gt?: InputMaybe<Scalars['Int']['input']>;
+  blockHeight_gte?: InputMaybe<Scalars['Int']['input']>;
+  blockHeight_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  blockHeight_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  blockHeight_lt?: InputMaybe<Scalars['Int']['input']>;
+  blockHeight_lte?: InputMaybe<Scalars['Int']['input']>;
+  blockHeight_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  blockHeight_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  cid_contains?: InputMaybe<Scalars['String']['input']>;
+  cid_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  cid_endsWith?: InputMaybe<Scalars['String']['input']>;
+  cid_eq?: InputMaybe<Scalars['String']['input']>;
+  cid_gt?: InputMaybe<Scalars['String']['input']>;
+  cid_gte?: InputMaybe<Scalars['String']['input']>;
+  cid_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  cid_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  cid_lt?: InputMaybe<Scalars['String']['input']>;
+  cid_lte?: InputMaybe<Scalars['String']['input']>;
+  cid_not_contains?: InputMaybe<Scalars['String']['input']>;
+  cid_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  cid_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  cid_not_eq?: InputMaybe<Scalars['String']['input']>;
+  cid_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  cid_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  cid_startsWith?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_contains?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_endsWith?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_eq?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_gt?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_gte?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  errorMsg_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  errorMsg_lt?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_lte?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_not_contains?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_not_eq?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  errorMsg_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  errorMsg_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type IpfsFetchLogsConnection = {
-  __typename?: 'IpfsFetchLogsConnection'
-  edges: Array<IpfsFetchLogEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'IpfsFetchLogsConnection';
+  edges: Array<IpfsFetchLogEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 /** The junction table for Many-to-Many relationship between Account and Activity */
 export type NewsFeed = {
-  __typename?: 'NewsFeed'
-  account: Account
-  activity: Activity
-  id: Scalars['String']['output']
-}
+  __typename?: 'NewsFeed';
+  account: Account;
+  activity: Activity;
+  id: Scalars['String']['output'];
+};
 
 export type NewsFeedEdge = {
-  __typename?: 'NewsFeedEdge'
-  cursor: Scalars['String']['output']
-  node: NewsFeed
-}
+  __typename?: 'NewsFeedEdge';
+  cursor: Scalars['String']['output'];
+  node: NewsFeed;
+};
 
 export enum NewsFeedOrderByInput {
   AccountFollowersCountAsc = 'account_followersCount_ASC',
@@ -1308,55 +1300,55 @@ export enum NewsFeedOrderByInput {
   ActivityUsernameAsc = 'activity_username_ASC',
   ActivityUsernameDesc = 'activity_username_DESC',
   IdAsc = 'id_ASC',
-  IdDesc = 'id_DESC',
+  IdDesc = 'id_DESC'
 }
 
 export type NewsFeedWhereInput = {
-  AND?: InputMaybe<Array<NewsFeedWhereInput>>
-  OR?: InputMaybe<Array<NewsFeedWhereInput>>
-  account?: InputMaybe<AccountWhereInput>
-  account_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  activity?: InputMaybe<ActivityWhereInput>
-  activity_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<NewsFeedWhereInput>>;
+  OR?: InputMaybe<Array<NewsFeedWhereInput>>;
+  account?: InputMaybe<AccountWhereInput>;
+  account_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  activity?: InputMaybe<ActivityWhereInput>;
+  activity_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type NewsFeedsConnection = {
-  __typename?: 'NewsFeedsConnection'
-  edges: Array<NewsFeedEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'NewsFeedsConnection';
+  edges: Array<NewsFeedEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 /** The junction table for Many-to-Many relationship between Account and Notification */
 export type Notification = {
-  __typename?: 'Notification'
-  account: Account
-  activity: Activity
-  id: Scalars['String']['output']
-}
+  __typename?: 'Notification';
+  account: Account;
+  activity: Activity;
+  id: Scalars['String']['output'];
+};
 
 export type NotificationEdge = {
-  __typename?: 'NotificationEdge'
-  cursor: Scalars['String']['output']
-  node: Notification
-}
+  __typename?: 'NotificationEdge';
+  cursor: Scalars['String']['output'];
+  node: Notification;
+};
 
 export enum NotificationOrderByInput {
   AccountFollowersCountAsc = 'account_followersCount_ASC',
@@ -1392,193 +1384,196 @@ export enum NotificationOrderByInput {
   ActivityUsernameAsc = 'activity_username_ASC',
   ActivityUsernameDesc = 'activity_username_DESC',
   IdAsc = 'id_ASC',
-  IdDesc = 'id_DESC',
+  IdDesc = 'id_DESC'
 }
 
 export type NotificationWhereInput = {
-  AND?: InputMaybe<Array<NotificationWhereInput>>
-  OR?: InputMaybe<Array<NotificationWhereInput>>
-  account?: InputMaybe<AccountWhereInput>
-  account_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  activity?: InputMaybe<ActivityWhereInput>
-  activity_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<NotificationWhereInput>>;
+  OR?: InputMaybe<Array<NotificationWhereInput>>;
+  account?: InputMaybe<AccountWhereInput>;
+  account_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  activity?: InputMaybe<ActivityWhereInput>;
+  activity_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type NotificationsConnection = {
-  __typename?: 'NotificationsConnection'
-  edges: Array<NotificationEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'NotificationsConnection';
+  edges: Array<NotificationEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 export type PageInfo = {
-  __typename?: 'PageInfo'
-  endCursor: Scalars['String']['output']
-  hasNextPage: Scalars['Boolean']['output']
-  hasPreviousPage: Scalars['Boolean']['output']
-  startCursor: Scalars['String']['output']
-}
+  __typename?: 'PageInfo';
+  endCursor: Scalars['String']['output'];
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  startCursor: Scalars['String']['output'];
+};
 
 /** The Post entity */
 export type Post = {
-  __typename?: 'Post'
+  __typename?: 'Post';
   /** The body text of the Post (IPFS content) */
-  body?: Maybe<Scalars['String']['output']>
+  body?: Maybe<Scalars['String']['output']>;
   /** Post canonical URL (IPFS content) */
-  canonical?: Maybe<Scalars['String']['output']>
+  canonical?: Maybe<Scalars['String']['output']>;
   /**
    * A One-To-Many relationship between a Comment Post or Comment Reply and the Accounts that follow the Comment through CommentFollowers (foreign key - "followingComment")
    * (currently, a post is only followed by its creator)
    */
-  commentFollowers: Array<CommentFollowers>
+  commentFollowers: Array<CommentFollowers>;
   /** The CID of the content on IPFS. */
-  content?: Maybe<Scalars['String']['output']>
+  content?: Maybe<Scalars['String']['output']>;
   /** The block height when a Post was created. */
-  createdAtBlock?: Maybe<Scalars['BigInt']['output']>
+  createdAtBlock?: Maybe<Scalars['BigInt']['output']>;
   /** The DateTime when a Post was created. */
-  createdAtTime?: Maybe<Scalars['DateTime']['output']>
+  createdAtTime?: Maybe<Scalars['DateTime']['output']>;
   /** A One-To-One relationship with the Account entity of a Post's creator. */
-  createdByAccount: Account
+  createdByAccount: Account;
   /** The day when a Post was created. */
-  createdOnDay?: Maybe<Scalars['DateTime']['output']>
+  createdOnDay?: Maybe<Scalars['DateTime']['output']>;
   /** The total number of DownVote reactions to the current Post. */
-  downvotesCount: Scalars['Int']['output']
+  downvotesCount: Scalars['Int']['output'];
   /** The properties of a Post from its IPFS content which are not supported by the current squid's DB schema. */
-  experimental?: Maybe<Scalars['JSON']['output']>
+  experimental?: Maybe<Scalars['JSON']['output']>;
   /** The total number of followers that a Post has. */
-  followersCount: Scalars['Int']['output']
+  followersCount: Scalars['Int']['output'];
   /** The Post format (IPFS content) */
-  format?: Maybe<Scalars['String']['output']>
+  format?: Maybe<Scalars['String']['output']>;
   /** Is the current post hidden? */
-  hidden: Scalars['Boolean']['output']
+  hidden: Scalars['Boolean']['output'];
   /** The total number of hidden replies to the current Post. */
-  hiddenRepliesCount: Scalars['Int']['output']
+  hiddenRepliesCount: Scalars['Int']['output'];
   /** The Post ID, the same as it is on the blockchain. */
-  id: Scalars['String']['output']
+  id: Scalars['String']['output'];
   /** The URL for the Post's cover image (IPFS content) */
-  image?: Maybe<Scalars['String']['output']>
+  image?: Maybe<Scalars['String']['output']>;
   /** Is the current Post a Comment to a Regular Post or a Comment Post? */
-  isComment: Scalars['Boolean']['output']
+  isComment: Scalars['Boolean']['output'];
   /** Is the Post body longer than the summary? */
-  isShowMore?: Maybe<Scalars['Boolean']['output']>
+  isShowMore?: Maybe<Scalars['Boolean']['output']>;
   /** The type of Post (Comment, SharedPost, or RegularPost) */
-  kind?: Maybe<PostKind>
+  kind?: Maybe<PostKind>;
   /** The link of the Post (IPFS content) */
-  link?: Maybe<Scalars['String']['output']>
+  link?: Maybe<Scalars['String']['output']>;
   /** ! Deprecated field and will be removed ! */
-  meta?: Maybe<Scalars['String']['output']>
+  meta?: Maybe<Scalars['String']['output']>;
   /** A One-To-One relationship with the Account entity of a Post's owner. Currently we do not have Post transfer functionality. */
-  ownedByAccount: Account
+  ownedByAccount: Account;
   /** A One-to-One relationship with a Post. This field only has a value if the current Post is a Reply to a Comment and contains a relationship with a Comment Post or another Reply (in case there is discussion within context of some Comment). */
-  parentPost?: Maybe<Post>
+  parentPost?: Maybe<Post>;
   /**
    * A One-To-Many relationship between a Regular Post and the Accounts that follow the post through PostFollowers (foreign key - "followingPost")
    * (currently, a post is only followed by its creator)
    */
-  postFollowers: Array<PostFollowers>
+  postFollowers: Array<PostFollowers>;
   /** ! Deprecated field and will be removed ! */
-  proposalIndex?: Maybe<Scalars['Int']['output']>
+  proposalIndex?: Maybe<Scalars['Int']['output']>;
   /** The total number of public (non-hidden) replies to the current Post. */
-  publicRepliesCount: Scalars['Int']['output']
+  publicRepliesCount: Scalars['Int']['output'];
   /** A One-To-Many relationship with Reactions for the current Post (foreign key - "post") */
-  reactions: Array<Reaction>
+  reactions: Array<Reaction>;
   /** The total number of all reactions to the current Post. */
-  reactionsCount: Scalars['Int']['output']
+  reactionsCount: Scalars['Int']['output'];
   /** The total number of replies to the current Post. */
-  repliesCount: Scalars['Int']['output']
+  repliesCount: Scalars['Int']['output'];
   /** A One-to-One relationship with a Post. This field only has a value if the current Post is a Comment or a Reply to a Comment, and contains a relationship with a top level Regular Post. */
-  rootPost?: Maybe<Post>
+  rootPost?: Maybe<Post>;
   /** A One-to-One relationship with a Post which has been shared. The Current Post is a new Post which has been created as a result of the sharing action, and can contain an additional body as a comment on the shared Post. "sharedPost" is relationhip with the Post that was shared. */
-  sharedPost?: Maybe<Post>
+  sharedPost?: Maybe<Post>;
   /** How many times the current Post has been shared. */
-  sharesCount: Scalars['Int']['output']
+  sharesCount: Scalars['Int']['output'];
   /** Post slug URL (IPFS content) */
-  slug?: Maybe<Scalars['String']['output']>
+  slug?: Maybe<Scalars['String']['output']>;
   /** A One-To-One relationship with a Space that the current Post has been created in. It can be null if the Post is deleted (moved to Space with ID === null) */
-  space?: Maybe<Space>
+  space?: Maybe<Space>;
   /** The summary of the Post body */
-  summary?: Maybe<Scalars['String']['output']>
+  summary?: Maybe<Scalars['String']['output']>;
   /** A list of a Post's tags, converted to a string with "comma" as a separator (IPFS content) */
-  tagsOriginal?: Maybe<Scalars['String']['output']>
+  tagsOriginal?: Maybe<Scalars['String']['output']>;
   /** The title of the Post (IPFS content) */
-  title?: Maybe<Scalars['String']['output']>
+  title?: Maybe<Scalars['String']['output']>;
   /** The details of the tweet, such as creation time, username of the poster, etc. (IPFS content) */
-  tweetDetails?: Maybe<TweetDetails>
+  tweetDetails?: Maybe<TweetDetails>;
   /** The ID of the tweet attached to the current Post (IPFS content) */
-  tweetId?: Maybe<Scalars['String']['output']>
+  tweetId?: Maybe<Scalars['String']['output']>;
   /** The time when a Post was created. */
-  updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+  updatedAtTime?: Maybe<Scalars['DateTime']['output']>;
   /** The total number of UpVote reactions to the current Post. */
-  upvotesCount: Scalars['Int']['output']
-}
+  upvotesCount: Scalars['Int']['output'];
+};
+
 
 /** The Post entity */
 export type PostCommentFollowersArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<CommentFollowersOrderByInput>>
-  where?: InputMaybe<CommentFollowersWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<CommentFollowersOrderByInput>>;
+  where?: InputMaybe<CommentFollowersWhereInput>;
+};
+
 
 /** The Post entity */
 export type PostPostFollowersArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<PostFollowersOrderByInput>>
-  where?: InputMaybe<PostFollowersWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostFollowersOrderByInput>>;
+  where?: InputMaybe<PostFollowersWhereInput>;
+};
+
 
 /** The Post entity */
 export type PostReactionsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<ReactionOrderByInput>>
-  where?: InputMaybe<ReactionWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ReactionOrderByInput>>;
+  where?: InputMaybe<ReactionWhereInput>;
+};
 
 export type PostEdge = {
-  __typename?: 'PostEdge'
-  cursor: Scalars['String']['output']
-  node: Post
-}
+  __typename?: 'PostEdge';
+  cursor: Scalars['String']['output'];
+  node: Post;
+};
 
 /** The junction table for Many-to-Many relationship between follower Account and following Post */
 export type PostFollowers = {
-  __typename?: 'PostFollowers'
-  followerAccount: Account
-  followingPost: Post
-  id: Scalars['String']['output']
-}
+  __typename?: 'PostFollowers';
+  followerAccount: Account;
+  followingPost: Post;
+  id: Scalars['String']['output'];
+};
 
 export type PostFollowersConnection = {
-  __typename?: 'PostFollowersConnection'
-  edges: Array<PostFollowersEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'PostFollowersConnection';
+  edges: Array<PostFollowersEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 export type PostFollowersEdge = {
-  __typename?: 'PostFollowersEdge'
-  cursor: Scalars['String']['output']
-  node: PostFollowers
-}
+  __typename?: 'PostFollowersEdge';
+  cursor: Scalars['String']['output'];
+  node: PostFollowers;
+};
 
 export enum PostFollowersOrderByInput {
   FollowerAccountFollowersCountAsc = 'followerAccount_followersCount_ASC',
@@ -1658,34 +1653,34 @@ export enum PostFollowersOrderByInput {
   FollowingPostUpvotesCountAsc = 'followingPost_upvotesCount_ASC',
   FollowingPostUpvotesCountDesc = 'followingPost_upvotesCount_DESC',
   IdAsc = 'id_ASC',
-  IdDesc = 'id_DESC',
+  IdDesc = 'id_DESC'
 }
 
 export type PostFollowersWhereInput = {
-  AND?: InputMaybe<Array<PostFollowersWhereInput>>
-  OR?: InputMaybe<Array<PostFollowersWhereInput>>
-  followerAccount?: InputMaybe<AccountWhereInput>
-  followerAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followingPost?: InputMaybe<PostWhereInput>
-  followingPost_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<PostFollowersWhereInput>>;
+  OR?: InputMaybe<Array<PostFollowersWhereInput>>;
+  followerAccount?: InputMaybe<AccountWhereInput>;
+  followerAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followingPost?: InputMaybe<PostWhereInput>;
+  followingPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
 
 /**
  * Post types.
@@ -1696,7 +1691,7 @@ export type PostFollowersWhereInput = {
 export enum PostKind {
   Comment = 'Comment',
   RegularPost = 'RegularPost',
-  SharedPost = 'SharedPost',
+  SharedPost = 'SharedPost'
 }
 
 export enum PostOrderByInput {
@@ -2035,775 +2030,824 @@ export enum PostOrderByInput {
   UpdatedAtTimeAsc = 'updatedAtTime_ASC',
   UpdatedAtTimeDesc = 'updatedAtTime_DESC',
   UpvotesCountAsc = 'upvotesCount_ASC',
-  UpvotesCountDesc = 'upvotesCount_DESC',
+  UpvotesCountDesc = 'upvotesCount_DESC'
 }
 
 export type PostWhereInput = {
-  AND?: InputMaybe<Array<PostWhereInput>>
-  OR?: InputMaybe<Array<PostWhereInput>>
-  body_contains?: InputMaybe<Scalars['String']['input']>
-  body_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  body_endsWith?: InputMaybe<Scalars['String']['input']>
-  body_eq?: InputMaybe<Scalars['String']['input']>
-  body_gt?: InputMaybe<Scalars['String']['input']>
-  body_gte?: InputMaybe<Scalars['String']['input']>
-  body_in?: InputMaybe<Array<Scalars['String']['input']>>
-  body_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  body_lt?: InputMaybe<Scalars['String']['input']>
-  body_lte?: InputMaybe<Scalars['String']['input']>
-  body_not_contains?: InputMaybe<Scalars['String']['input']>
-  body_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  body_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  body_not_eq?: InputMaybe<Scalars['String']['input']>
-  body_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  body_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  body_startsWith?: InputMaybe<Scalars['String']['input']>
-  canonical_contains?: InputMaybe<Scalars['String']['input']>
-  canonical_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  canonical_endsWith?: InputMaybe<Scalars['String']['input']>
-  canonical_eq?: InputMaybe<Scalars['String']['input']>
-  canonical_gt?: InputMaybe<Scalars['String']['input']>
-  canonical_gte?: InputMaybe<Scalars['String']['input']>
-  canonical_in?: InputMaybe<Array<Scalars['String']['input']>>
-  canonical_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  canonical_lt?: InputMaybe<Scalars['String']['input']>
-  canonical_lte?: InputMaybe<Scalars['String']['input']>
-  canonical_not_contains?: InputMaybe<Scalars['String']['input']>
-  canonical_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  canonical_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  canonical_not_eq?: InputMaybe<Scalars['String']['input']>
-  canonical_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  canonical_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  canonical_startsWith?: InputMaybe<Scalars['String']['input']>
-  commentFollowers_every?: InputMaybe<CommentFollowersWhereInput>
-  commentFollowers_none?: InputMaybe<CommentFollowersWhereInput>
-  commentFollowers_some?: InputMaybe<CommentFollowersWhereInput>
-  content_contains?: InputMaybe<Scalars['String']['input']>
-  content_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  content_endsWith?: InputMaybe<Scalars['String']['input']>
-  content_eq?: InputMaybe<Scalars['String']['input']>
-  content_gt?: InputMaybe<Scalars['String']['input']>
-  content_gte?: InputMaybe<Scalars['String']['input']>
-  content_in?: InputMaybe<Array<Scalars['String']['input']>>
-  content_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  content_lt?: InputMaybe<Scalars['String']['input']>
-  content_lte?: InputMaybe<Scalars['String']['input']>
-  content_not_contains?: InputMaybe<Scalars['String']['input']>
-  content_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  content_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  content_not_eq?: InputMaybe<Scalars['String']['input']>
-  content_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  content_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  content_startsWith?: InputMaybe<Scalars['String']['input']>
-  createdAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  createdAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  createdAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  createdAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  createdByAccount?: InputMaybe<AccountWhereInput>
-  createdByAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdOnDay_eq?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_gt?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_gte?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  createdOnDay_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdOnDay_lt?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_lte?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_not_eq?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  downvotesCount_eq?: InputMaybe<Scalars['Int']['input']>
-  downvotesCount_gt?: InputMaybe<Scalars['Int']['input']>
-  downvotesCount_gte?: InputMaybe<Scalars['Int']['input']>
-  downvotesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  downvotesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  downvotesCount_lt?: InputMaybe<Scalars['Int']['input']>
-  downvotesCount_lte?: InputMaybe<Scalars['Int']['input']>
-  downvotesCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  downvotesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  experimental_eq?: InputMaybe<Scalars['JSON']['input']>
-  experimental_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  experimental_jsonContains?: InputMaybe<Scalars['JSON']['input']>
-  experimental_jsonHasKey?: InputMaybe<Scalars['JSON']['input']>
-  experimental_not_eq?: InputMaybe<Scalars['JSON']['input']>
-  followersCount_eq?: InputMaybe<Scalars['Int']['input']>
-  followersCount_gt?: InputMaybe<Scalars['Int']['input']>
-  followersCount_gte?: InputMaybe<Scalars['Int']['input']>
-  followersCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  followersCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followersCount_lt?: InputMaybe<Scalars['Int']['input']>
-  followersCount_lte?: InputMaybe<Scalars['Int']['input']>
-  followersCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  followersCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  format_contains?: InputMaybe<Scalars['String']['input']>
-  format_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  format_endsWith?: InputMaybe<Scalars['String']['input']>
-  format_eq?: InputMaybe<Scalars['String']['input']>
-  format_gt?: InputMaybe<Scalars['String']['input']>
-  format_gte?: InputMaybe<Scalars['String']['input']>
-  format_in?: InputMaybe<Array<Scalars['String']['input']>>
-  format_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  format_lt?: InputMaybe<Scalars['String']['input']>
-  format_lte?: InputMaybe<Scalars['String']['input']>
-  format_not_contains?: InputMaybe<Scalars['String']['input']>
-  format_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  format_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  format_not_eq?: InputMaybe<Scalars['String']['input']>
-  format_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  format_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  format_startsWith?: InputMaybe<Scalars['String']['input']>
-  hiddenRepliesCount_eq?: InputMaybe<Scalars['Int']['input']>
-  hiddenRepliesCount_gt?: InputMaybe<Scalars['Int']['input']>
-  hiddenRepliesCount_gte?: InputMaybe<Scalars['Int']['input']>
-  hiddenRepliesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  hiddenRepliesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  hiddenRepliesCount_lt?: InputMaybe<Scalars['Int']['input']>
-  hiddenRepliesCount_lte?: InputMaybe<Scalars['Int']['input']>
-  hiddenRepliesCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  hiddenRepliesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  hidden_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hidden_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  hidden_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-  image_contains?: InputMaybe<Scalars['String']['input']>
-  image_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  image_endsWith?: InputMaybe<Scalars['String']['input']>
-  image_eq?: InputMaybe<Scalars['String']['input']>
-  image_gt?: InputMaybe<Scalars['String']['input']>
-  image_gte?: InputMaybe<Scalars['String']['input']>
-  image_in?: InputMaybe<Array<Scalars['String']['input']>>
-  image_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  image_lt?: InputMaybe<Scalars['String']['input']>
-  image_lte?: InputMaybe<Scalars['String']['input']>
-  image_not_contains?: InputMaybe<Scalars['String']['input']>
-  image_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  image_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  image_not_eq?: InputMaybe<Scalars['String']['input']>
-  image_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  image_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  image_startsWith?: InputMaybe<Scalars['String']['input']>
-  isComment_eq?: InputMaybe<Scalars['Boolean']['input']>
-  isComment_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  isComment_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  isShowMore_eq?: InputMaybe<Scalars['Boolean']['input']>
-  isShowMore_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  isShowMore_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  kind_eq?: InputMaybe<PostKind>
-  kind_in?: InputMaybe<Array<PostKind>>
-  kind_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  kind_not_eq?: InputMaybe<PostKind>
-  kind_not_in?: InputMaybe<Array<PostKind>>
-  link_contains?: InputMaybe<Scalars['String']['input']>
-  link_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  link_endsWith?: InputMaybe<Scalars['String']['input']>
-  link_eq?: InputMaybe<Scalars['String']['input']>
-  link_gt?: InputMaybe<Scalars['String']['input']>
-  link_gte?: InputMaybe<Scalars['String']['input']>
-  link_in?: InputMaybe<Array<Scalars['String']['input']>>
-  link_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  link_lt?: InputMaybe<Scalars['String']['input']>
-  link_lte?: InputMaybe<Scalars['String']['input']>
-  link_not_contains?: InputMaybe<Scalars['String']['input']>
-  link_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  link_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  link_not_eq?: InputMaybe<Scalars['String']['input']>
-  link_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  link_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  link_startsWith?: InputMaybe<Scalars['String']['input']>
-  meta_contains?: InputMaybe<Scalars['String']['input']>
-  meta_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  meta_endsWith?: InputMaybe<Scalars['String']['input']>
-  meta_eq?: InputMaybe<Scalars['String']['input']>
-  meta_gt?: InputMaybe<Scalars['String']['input']>
-  meta_gte?: InputMaybe<Scalars['String']['input']>
-  meta_in?: InputMaybe<Array<Scalars['String']['input']>>
-  meta_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  meta_lt?: InputMaybe<Scalars['String']['input']>
-  meta_lte?: InputMaybe<Scalars['String']['input']>
-  meta_not_contains?: InputMaybe<Scalars['String']['input']>
-  meta_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  meta_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  meta_not_eq?: InputMaybe<Scalars['String']['input']>
-  meta_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  meta_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  meta_startsWith?: InputMaybe<Scalars['String']['input']>
-  ownedByAccount?: InputMaybe<AccountWhereInput>
-  ownedByAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  parentPost?: InputMaybe<PostWhereInput>
-  parentPost_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  postFollowers_every?: InputMaybe<PostFollowersWhereInput>
-  postFollowers_none?: InputMaybe<PostFollowersWhereInput>
-  postFollowers_some?: InputMaybe<PostFollowersWhereInput>
-  proposalIndex_eq?: InputMaybe<Scalars['Int']['input']>
-  proposalIndex_gt?: InputMaybe<Scalars['Int']['input']>
-  proposalIndex_gte?: InputMaybe<Scalars['Int']['input']>
-  proposalIndex_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  proposalIndex_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  proposalIndex_lt?: InputMaybe<Scalars['Int']['input']>
-  proposalIndex_lte?: InputMaybe<Scalars['Int']['input']>
-  proposalIndex_not_eq?: InputMaybe<Scalars['Int']['input']>
-  proposalIndex_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  publicRepliesCount_eq?: InputMaybe<Scalars['Int']['input']>
-  publicRepliesCount_gt?: InputMaybe<Scalars['Int']['input']>
-  publicRepliesCount_gte?: InputMaybe<Scalars['Int']['input']>
-  publicRepliesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  publicRepliesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  publicRepliesCount_lt?: InputMaybe<Scalars['Int']['input']>
-  publicRepliesCount_lte?: InputMaybe<Scalars['Int']['input']>
-  publicRepliesCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  publicRepliesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  reactionsCount_eq?: InputMaybe<Scalars['Int']['input']>
-  reactionsCount_gt?: InputMaybe<Scalars['Int']['input']>
-  reactionsCount_gte?: InputMaybe<Scalars['Int']['input']>
-  reactionsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  reactionsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  reactionsCount_lt?: InputMaybe<Scalars['Int']['input']>
-  reactionsCount_lte?: InputMaybe<Scalars['Int']['input']>
-  reactionsCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  reactionsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  reactions_every?: InputMaybe<ReactionWhereInput>
-  reactions_none?: InputMaybe<ReactionWhereInput>
-  reactions_some?: InputMaybe<ReactionWhereInput>
-  repliesCount_eq?: InputMaybe<Scalars['Int']['input']>
-  repliesCount_gt?: InputMaybe<Scalars['Int']['input']>
-  repliesCount_gte?: InputMaybe<Scalars['Int']['input']>
-  repliesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  repliesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  repliesCount_lt?: InputMaybe<Scalars['Int']['input']>
-  repliesCount_lte?: InputMaybe<Scalars['Int']['input']>
-  repliesCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  repliesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  rootPost?: InputMaybe<PostWhereInput>
-  rootPost_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  sharedPost?: InputMaybe<PostWhereInput>
-  sharedPost_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  sharesCount_eq?: InputMaybe<Scalars['Int']['input']>
-  sharesCount_gt?: InputMaybe<Scalars['Int']['input']>
-  sharesCount_gte?: InputMaybe<Scalars['Int']['input']>
-  sharesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  sharesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  sharesCount_lt?: InputMaybe<Scalars['Int']['input']>
-  sharesCount_lte?: InputMaybe<Scalars['Int']['input']>
-  sharesCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  sharesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  slug_contains?: InputMaybe<Scalars['String']['input']>
-  slug_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  slug_endsWith?: InputMaybe<Scalars['String']['input']>
-  slug_eq?: InputMaybe<Scalars['String']['input']>
-  slug_gt?: InputMaybe<Scalars['String']['input']>
-  slug_gte?: InputMaybe<Scalars['String']['input']>
-  slug_in?: InputMaybe<Array<Scalars['String']['input']>>
-  slug_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  slug_lt?: InputMaybe<Scalars['String']['input']>
-  slug_lte?: InputMaybe<Scalars['String']['input']>
-  slug_not_contains?: InputMaybe<Scalars['String']['input']>
-  slug_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  slug_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  slug_not_eq?: InputMaybe<Scalars['String']['input']>
-  slug_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  slug_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  slug_startsWith?: InputMaybe<Scalars['String']['input']>
-  space?: InputMaybe<SpaceWhereInput>
-  space_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  summary_contains?: InputMaybe<Scalars['String']['input']>
-  summary_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  summary_endsWith?: InputMaybe<Scalars['String']['input']>
-  summary_eq?: InputMaybe<Scalars['String']['input']>
-  summary_gt?: InputMaybe<Scalars['String']['input']>
-  summary_gte?: InputMaybe<Scalars['String']['input']>
-  summary_in?: InputMaybe<Array<Scalars['String']['input']>>
-  summary_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  summary_lt?: InputMaybe<Scalars['String']['input']>
-  summary_lte?: InputMaybe<Scalars['String']['input']>
-  summary_not_contains?: InputMaybe<Scalars['String']['input']>
-  summary_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  summary_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  summary_not_eq?: InputMaybe<Scalars['String']['input']>
-  summary_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  summary_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  summary_startsWith?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_contains?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_endsWith?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_eq?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_gt?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_gte?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_in?: InputMaybe<Array<Scalars['String']['input']>>
-  tagsOriginal_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  tagsOriginal_lt?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_lte?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_not_contains?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_not_eq?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  tagsOriginal_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_startsWith?: InputMaybe<Scalars['String']['input']>
-  title_contains?: InputMaybe<Scalars['String']['input']>
-  title_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  title_endsWith?: InputMaybe<Scalars['String']['input']>
-  title_eq?: InputMaybe<Scalars['String']['input']>
-  title_gt?: InputMaybe<Scalars['String']['input']>
-  title_gte?: InputMaybe<Scalars['String']['input']>
-  title_in?: InputMaybe<Array<Scalars['String']['input']>>
-  title_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  title_lt?: InputMaybe<Scalars['String']['input']>
-  title_lte?: InputMaybe<Scalars['String']['input']>
-  title_not_contains?: InputMaybe<Scalars['String']['input']>
-  title_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  title_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  title_not_eq?: InputMaybe<Scalars['String']['input']>
-  title_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  title_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  title_startsWith?: InputMaybe<Scalars['String']['input']>
-  tweetDetails?: InputMaybe<TweetDetailsWhereInput>
-  tweetDetails_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  tweetId_contains?: InputMaybe<Scalars['String']['input']>
-  tweetId_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  tweetId_endsWith?: InputMaybe<Scalars['String']['input']>
-  tweetId_eq?: InputMaybe<Scalars['String']['input']>
-  tweetId_gt?: InputMaybe<Scalars['String']['input']>
-  tweetId_gte?: InputMaybe<Scalars['String']['input']>
-  tweetId_in?: InputMaybe<Array<Scalars['String']['input']>>
-  tweetId_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  tweetId_lt?: InputMaybe<Scalars['String']['input']>
-  tweetId_lte?: InputMaybe<Scalars['String']['input']>
-  tweetId_not_contains?: InputMaybe<Scalars['String']['input']>
-  tweetId_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  tweetId_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  tweetId_not_eq?: InputMaybe<Scalars['String']['input']>
-  tweetId_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  tweetId_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  tweetId_startsWith?: InputMaybe<Scalars['String']['input']>
-  updatedAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  updatedAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updatedAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  upvotesCount_eq?: InputMaybe<Scalars['Int']['input']>
-  upvotesCount_gt?: InputMaybe<Scalars['Int']['input']>
-  upvotesCount_gte?: InputMaybe<Scalars['Int']['input']>
-  upvotesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  upvotesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  upvotesCount_lt?: InputMaybe<Scalars['Int']['input']>
-  upvotesCount_lte?: InputMaybe<Scalars['Int']['input']>
-  upvotesCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  upvotesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-}
+  AND?: InputMaybe<Array<PostWhereInput>>;
+  OR?: InputMaybe<Array<PostWhereInput>>;
+  body_contains?: InputMaybe<Scalars['String']['input']>;
+  body_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  body_endsWith?: InputMaybe<Scalars['String']['input']>;
+  body_eq?: InputMaybe<Scalars['String']['input']>;
+  body_gt?: InputMaybe<Scalars['String']['input']>;
+  body_gte?: InputMaybe<Scalars['String']['input']>;
+  body_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  body_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  body_lt?: InputMaybe<Scalars['String']['input']>;
+  body_lte?: InputMaybe<Scalars['String']['input']>;
+  body_not_contains?: InputMaybe<Scalars['String']['input']>;
+  body_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  body_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  body_not_eq?: InputMaybe<Scalars['String']['input']>;
+  body_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  body_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  body_startsWith?: InputMaybe<Scalars['String']['input']>;
+  canonical_contains?: InputMaybe<Scalars['String']['input']>;
+  canonical_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  canonical_endsWith?: InputMaybe<Scalars['String']['input']>;
+  canonical_eq?: InputMaybe<Scalars['String']['input']>;
+  canonical_gt?: InputMaybe<Scalars['String']['input']>;
+  canonical_gte?: InputMaybe<Scalars['String']['input']>;
+  canonical_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  canonical_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  canonical_lt?: InputMaybe<Scalars['String']['input']>;
+  canonical_lte?: InputMaybe<Scalars['String']['input']>;
+  canonical_not_contains?: InputMaybe<Scalars['String']['input']>;
+  canonical_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  canonical_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  canonical_not_eq?: InputMaybe<Scalars['String']['input']>;
+  canonical_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  canonical_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  canonical_startsWith?: InputMaybe<Scalars['String']['input']>;
+  commentFollowers_every?: InputMaybe<CommentFollowersWhereInput>;
+  commentFollowers_none?: InputMaybe<CommentFollowersWhereInput>;
+  commentFollowers_some?: InputMaybe<CommentFollowersWhereInput>;
+  content_contains?: InputMaybe<Scalars['String']['input']>;
+  content_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  content_endsWith?: InputMaybe<Scalars['String']['input']>;
+  content_eq?: InputMaybe<Scalars['String']['input']>;
+  content_gt?: InputMaybe<Scalars['String']['input']>;
+  content_gte?: InputMaybe<Scalars['String']['input']>;
+  content_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  content_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  content_lt?: InputMaybe<Scalars['String']['input']>;
+  content_lte?: InputMaybe<Scalars['String']['input']>;
+  content_not_contains?: InputMaybe<Scalars['String']['input']>;
+  content_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  content_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  content_not_eq?: InputMaybe<Scalars['String']['input']>;
+  content_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  content_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  content_startsWith?: InputMaybe<Scalars['String']['input']>;
+  createdAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  createdAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  createdAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  createdAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  createdByAccount?: InputMaybe<AccountWhereInput>;
+  createdByAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdOnDay_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  createdOnDay_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdOnDay_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  downvotesCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  downvotesCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  downvotesCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  downvotesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  downvotesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  downvotesCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  downvotesCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  downvotesCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  downvotesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  experimental_eq?: InputMaybe<Scalars['JSON']['input']>;
+  experimental_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  experimental_jsonContains?: InputMaybe<Scalars['JSON']['input']>;
+  experimental_jsonHasKey?: InputMaybe<Scalars['JSON']['input']>;
+  experimental_not_eq?: InputMaybe<Scalars['JSON']['input']>;
+  followersCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  followersCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followersCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  format_contains?: InputMaybe<Scalars['String']['input']>;
+  format_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  format_endsWith?: InputMaybe<Scalars['String']['input']>;
+  format_eq?: InputMaybe<Scalars['String']['input']>;
+  format_gt?: InputMaybe<Scalars['String']['input']>;
+  format_gte?: InputMaybe<Scalars['String']['input']>;
+  format_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  format_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  format_lt?: InputMaybe<Scalars['String']['input']>;
+  format_lte?: InputMaybe<Scalars['String']['input']>;
+  format_not_contains?: InputMaybe<Scalars['String']['input']>;
+  format_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  format_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  format_not_eq?: InputMaybe<Scalars['String']['input']>;
+  format_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  format_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  format_startsWith?: InputMaybe<Scalars['String']['input']>;
+  hiddenRepliesCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  hiddenRepliesCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  hiddenRepliesCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  hiddenRepliesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  hiddenRepliesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  hiddenRepliesCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  hiddenRepliesCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  hiddenRepliesCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  hiddenRepliesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  hidden_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hidden_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  hidden_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  image_contains?: InputMaybe<Scalars['String']['input']>;
+  image_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  image_endsWith?: InputMaybe<Scalars['String']['input']>;
+  image_eq?: InputMaybe<Scalars['String']['input']>;
+  image_gt?: InputMaybe<Scalars['String']['input']>;
+  image_gte?: InputMaybe<Scalars['String']['input']>;
+  image_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  image_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  image_lt?: InputMaybe<Scalars['String']['input']>;
+  image_lte?: InputMaybe<Scalars['String']['input']>;
+  image_not_contains?: InputMaybe<Scalars['String']['input']>;
+  image_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  image_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  image_not_eq?: InputMaybe<Scalars['String']['input']>;
+  image_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  image_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  image_startsWith?: InputMaybe<Scalars['String']['input']>;
+  isComment_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  isComment_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  isComment_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  isShowMore_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  isShowMore_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  isShowMore_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  kind_eq?: InputMaybe<PostKind>;
+  kind_in?: InputMaybe<Array<PostKind>>;
+  kind_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  kind_not_eq?: InputMaybe<PostKind>;
+  kind_not_in?: InputMaybe<Array<PostKind>>;
+  link_contains?: InputMaybe<Scalars['String']['input']>;
+  link_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  link_endsWith?: InputMaybe<Scalars['String']['input']>;
+  link_eq?: InputMaybe<Scalars['String']['input']>;
+  link_gt?: InputMaybe<Scalars['String']['input']>;
+  link_gte?: InputMaybe<Scalars['String']['input']>;
+  link_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  link_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  link_lt?: InputMaybe<Scalars['String']['input']>;
+  link_lte?: InputMaybe<Scalars['String']['input']>;
+  link_not_contains?: InputMaybe<Scalars['String']['input']>;
+  link_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  link_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  link_not_eq?: InputMaybe<Scalars['String']['input']>;
+  link_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  link_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  link_startsWith?: InputMaybe<Scalars['String']['input']>;
+  meta_contains?: InputMaybe<Scalars['String']['input']>;
+  meta_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  meta_endsWith?: InputMaybe<Scalars['String']['input']>;
+  meta_eq?: InputMaybe<Scalars['String']['input']>;
+  meta_gt?: InputMaybe<Scalars['String']['input']>;
+  meta_gte?: InputMaybe<Scalars['String']['input']>;
+  meta_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  meta_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  meta_lt?: InputMaybe<Scalars['String']['input']>;
+  meta_lte?: InputMaybe<Scalars['String']['input']>;
+  meta_not_contains?: InputMaybe<Scalars['String']['input']>;
+  meta_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  meta_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  meta_not_eq?: InputMaybe<Scalars['String']['input']>;
+  meta_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  meta_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  meta_startsWith?: InputMaybe<Scalars['String']['input']>;
+  ownedByAccount?: InputMaybe<AccountWhereInput>;
+  ownedByAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  parentPost?: InputMaybe<PostWhereInput>;
+  parentPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  postFollowers_every?: InputMaybe<PostFollowersWhereInput>;
+  postFollowers_none?: InputMaybe<PostFollowersWhereInput>;
+  postFollowers_some?: InputMaybe<PostFollowersWhereInput>;
+  proposalIndex_eq?: InputMaybe<Scalars['Int']['input']>;
+  proposalIndex_gt?: InputMaybe<Scalars['Int']['input']>;
+  proposalIndex_gte?: InputMaybe<Scalars['Int']['input']>;
+  proposalIndex_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  proposalIndex_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  proposalIndex_lt?: InputMaybe<Scalars['Int']['input']>;
+  proposalIndex_lte?: InputMaybe<Scalars['Int']['input']>;
+  proposalIndex_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  proposalIndex_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  publicRepliesCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  publicRepliesCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  publicRepliesCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  publicRepliesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  publicRepliesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  publicRepliesCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  publicRepliesCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  publicRepliesCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  publicRepliesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  reactionsCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  reactionsCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  reactionsCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  reactionsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  reactionsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  reactionsCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  reactionsCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  reactionsCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  reactionsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  reactions_every?: InputMaybe<ReactionWhereInput>;
+  reactions_none?: InputMaybe<ReactionWhereInput>;
+  reactions_some?: InputMaybe<ReactionWhereInput>;
+  repliesCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  repliesCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  repliesCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  repliesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  repliesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  repliesCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  repliesCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  repliesCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  repliesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  rootPost?: InputMaybe<PostWhereInput>;
+  rootPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  sharedPost?: InputMaybe<PostWhereInput>;
+  sharedPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  sharesCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  sharesCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  sharesCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  sharesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  sharesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  sharesCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  sharesCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  sharesCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  sharesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  slug_contains?: InputMaybe<Scalars['String']['input']>;
+  slug_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  slug_endsWith?: InputMaybe<Scalars['String']['input']>;
+  slug_eq?: InputMaybe<Scalars['String']['input']>;
+  slug_gt?: InputMaybe<Scalars['String']['input']>;
+  slug_gte?: InputMaybe<Scalars['String']['input']>;
+  slug_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  slug_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  slug_lt?: InputMaybe<Scalars['String']['input']>;
+  slug_lte?: InputMaybe<Scalars['String']['input']>;
+  slug_not_contains?: InputMaybe<Scalars['String']['input']>;
+  slug_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  slug_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  slug_not_eq?: InputMaybe<Scalars['String']['input']>;
+  slug_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  slug_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  slug_startsWith?: InputMaybe<Scalars['String']['input']>;
+  space?: InputMaybe<SpaceWhereInput>;
+  space_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  summary_contains?: InputMaybe<Scalars['String']['input']>;
+  summary_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  summary_endsWith?: InputMaybe<Scalars['String']['input']>;
+  summary_eq?: InputMaybe<Scalars['String']['input']>;
+  summary_gt?: InputMaybe<Scalars['String']['input']>;
+  summary_gte?: InputMaybe<Scalars['String']['input']>;
+  summary_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  summary_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  summary_lt?: InputMaybe<Scalars['String']['input']>;
+  summary_lte?: InputMaybe<Scalars['String']['input']>;
+  summary_not_contains?: InputMaybe<Scalars['String']['input']>;
+  summary_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  summary_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  summary_not_eq?: InputMaybe<Scalars['String']['input']>;
+  summary_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  summary_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  summary_startsWith?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_contains?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_endsWith?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_eq?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_gt?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_gte?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  tagsOriginal_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  tagsOriginal_lt?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_lte?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_not_contains?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_not_eq?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  tagsOriginal_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_startsWith?: InputMaybe<Scalars['String']['input']>;
+  title_contains?: InputMaybe<Scalars['String']['input']>;
+  title_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  title_endsWith?: InputMaybe<Scalars['String']['input']>;
+  title_eq?: InputMaybe<Scalars['String']['input']>;
+  title_gt?: InputMaybe<Scalars['String']['input']>;
+  title_gte?: InputMaybe<Scalars['String']['input']>;
+  title_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  title_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  title_lt?: InputMaybe<Scalars['String']['input']>;
+  title_lte?: InputMaybe<Scalars['String']['input']>;
+  title_not_contains?: InputMaybe<Scalars['String']['input']>;
+  title_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  title_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  title_not_eq?: InputMaybe<Scalars['String']['input']>;
+  title_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  title_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  title_startsWith?: InputMaybe<Scalars['String']['input']>;
+  tweetDetails?: InputMaybe<TweetDetailsWhereInput>;
+  tweetDetails_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  tweetId_contains?: InputMaybe<Scalars['String']['input']>;
+  tweetId_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  tweetId_endsWith?: InputMaybe<Scalars['String']['input']>;
+  tweetId_eq?: InputMaybe<Scalars['String']['input']>;
+  tweetId_gt?: InputMaybe<Scalars['String']['input']>;
+  tweetId_gte?: InputMaybe<Scalars['String']['input']>;
+  tweetId_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  tweetId_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  tweetId_lt?: InputMaybe<Scalars['String']['input']>;
+  tweetId_lte?: InputMaybe<Scalars['String']['input']>;
+  tweetId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  tweetId_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  tweetId_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  tweetId_not_eq?: InputMaybe<Scalars['String']['input']>;
+  tweetId_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  tweetId_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  tweetId_startsWith?: InputMaybe<Scalars['String']['input']>;
+  updatedAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  updatedAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  upvotesCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  upvotesCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  upvotesCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  upvotesCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  upvotesCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  upvotesCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  upvotesCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  upvotesCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  upvotesCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+};
 
 export type PostsConnection = {
-  __typename?: 'PostsConnection'
-  edges: Array<PostEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'PostsConnection';
+  edges: Array<PostEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 export type Query = {
-  __typename?: 'Query'
-  accountById?: Maybe<Account>
+  __typename?: 'Query';
+  accountById?: Maybe<Account>;
   /** @deprecated Use accountById */
-  accountByUniqueInput?: Maybe<Account>
-  accountFollowers: Array<AccountFollowers>
-  accountFollowersById?: Maybe<AccountFollowers>
+  accountByUniqueInput?: Maybe<Account>;
+  accountFollowers: Array<AccountFollowers>;
+  accountFollowersById?: Maybe<AccountFollowers>;
   /** @deprecated Use accountFollowersById */
-  accountFollowersByUniqueInput?: Maybe<AccountFollowers>
-  accountFollowersConnection: AccountFollowersConnection
-  accounts: Array<Account>
-  accountsConnection: AccountsConnection
-  activities: Array<Activity>
-  activitiesConnection: ActivitiesConnection
-  activityById?: Maybe<Activity>
+  accountFollowersByUniqueInput?: Maybe<AccountFollowers>;
+  accountFollowersConnection: AccountFollowersConnection;
+  accounts: Array<Account>;
+  accountsConnection: AccountsConnection;
+  activities: Array<Activity>;
+  activitiesConnection: ActivitiesConnection;
+  activityById?: Maybe<Activity>;
   /** @deprecated Use activityById */
-  activityByUniqueInput?: Maybe<Activity>
-  commentFollowers: Array<CommentFollowers>
-  commentFollowersById?: Maybe<CommentFollowers>
+  activityByUniqueInput?: Maybe<Activity>;
+  commentFollowers: Array<CommentFollowers>;
+  commentFollowersById?: Maybe<CommentFollowers>;
   /** @deprecated Use commentFollowersById */
-  commentFollowersByUniqueInput?: Maybe<CommentFollowers>
-  commentFollowersConnection: CommentFollowersConnection
-  ipfsFetchLogById?: Maybe<IpfsFetchLog>
+  commentFollowersByUniqueInput?: Maybe<CommentFollowers>;
+  commentFollowersConnection: CommentFollowersConnection;
+  ipfsFetchLogById?: Maybe<IpfsFetchLog>;
   /** @deprecated Use ipfsFetchLogById */
-  ipfsFetchLogByUniqueInput?: Maybe<IpfsFetchLog>
-  ipfsFetchLogs: Array<IpfsFetchLog>
-  ipfsFetchLogsConnection: IpfsFetchLogsConnection
-  newsFeedById?: Maybe<NewsFeed>
+  ipfsFetchLogByUniqueInput?: Maybe<IpfsFetchLog>;
+  ipfsFetchLogs: Array<IpfsFetchLog>;
+  ipfsFetchLogsConnection: IpfsFetchLogsConnection;
+  newsFeedById?: Maybe<NewsFeed>;
   /** @deprecated Use newsFeedById */
-  newsFeedByUniqueInput?: Maybe<NewsFeed>
-  newsFeeds: Array<NewsFeed>
-  newsFeedsConnection: NewsFeedsConnection
-  notificationById?: Maybe<Notification>
+  newsFeedByUniqueInput?: Maybe<NewsFeed>;
+  newsFeeds: Array<NewsFeed>;
+  newsFeedsConnection: NewsFeedsConnection;
+  notificationById?: Maybe<Notification>;
   /** @deprecated Use notificationById */
-  notificationByUniqueInput?: Maybe<Notification>
-  notifications: Array<Notification>
-  notificationsConnection: NotificationsConnection
-  postById?: Maybe<Post>
+  notificationByUniqueInput?: Maybe<Notification>;
+  notifications: Array<Notification>;
+  notificationsConnection: NotificationsConnection;
+  postById?: Maybe<Post>;
   /** @deprecated Use postById */
-  postByUniqueInput?: Maybe<Post>
-  postFollowers: Array<PostFollowers>
-  postFollowersById?: Maybe<PostFollowers>
+  postByUniqueInput?: Maybe<Post>;
+  postFollowers: Array<PostFollowers>;
+  postFollowersById?: Maybe<PostFollowers>;
   /** @deprecated Use postFollowersById */
-  postFollowersByUniqueInput?: Maybe<PostFollowers>
-  postFollowersConnection: PostFollowersConnection
-  posts: Array<Post>
-  postsConnection: PostsConnection
-  reactionById?: Maybe<Reaction>
+  postFollowersByUniqueInput?: Maybe<PostFollowers>;
+  postFollowersConnection: PostFollowersConnection;
+  posts: Array<Post>;
+  postsConnection: PostsConnection;
+  reactionById?: Maybe<Reaction>;
   /** @deprecated Use reactionById */
-  reactionByUniqueInput?: Maybe<Reaction>
-  reactions: Array<Reaction>
-  reactionsConnection: ReactionsConnection
-  searchQuery: ElasticSearchQueryResultEntity
-  spaceById?: Maybe<Space>
+  reactionByUniqueInput?: Maybe<Reaction>;
+  reactions: Array<Reaction>;
+  reactionsConnection: ReactionsConnection;
+  searchQuery: ElasticSearchQueryResultEntity;
+  spaceById?: Maybe<Space>;
   /** @deprecated Use spaceById */
-  spaceByUniqueInput?: Maybe<Space>
-  spaceFollowers: Array<SpaceFollowers>
-  spaceFollowersById?: Maybe<SpaceFollowers>
+  spaceByUniqueInput?: Maybe<Space>;
+  spaceFollowers: Array<SpaceFollowers>;
+  spaceFollowersById?: Maybe<SpaceFollowers>;
   /** @deprecated Use spaceFollowersById */
-  spaceFollowersByUniqueInput?: Maybe<SpaceFollowers>
-  spaceFollowersConnection: SpaceFollowersConnection
-  spaces: Array<Space>
-  spacesConnection: SpacesConnection
-  squidStatus?: Maybe<SquidStatus>
-}
+  spaceFollowersByUniqueInput?: Maybe<SpaceFollowers>;
+  spaceFollowersConnection: SpaceFollowersConnection;
+  spaces: Array<Space>;
+  spacesConnection: SpacesConnection;
+  squidStatus?: Maybe<SquidStatus>;
+};
+
 
 export type QueryAccountByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryAccountByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QueryAccountFollowersArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<AccountFollowersOrderByInput>>
-  where?: InputMaybe<AccountFollowersWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<AccountFollowersOrderByInput>>;
+  where?: InputMaybe<AccountFollowersWhereInput>;
+};
+
 
 export type QueryAccountFollowersByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryAccountFollowersByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QueryAccountFollowersConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<AccountFollowersOrderByInput>
-  where?: InputMaybe<AccountFollowersWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<AccountFollowersOrderByInput>;
+  where?: InputMaybe<AccountFollowersWhereInput>;
+};
+
 
 export type QueryAccountsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<AccountOrderByInput>>
-  where?: InputMaybe<AccountWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<AccountOrderByInput>>;
+  where?: InputMaybe<AccountWhereInput>;
+};
+
 
 export type QueryAccountsConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<AccountOrderByInput>
-  where?: InputMaybe<AccountWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<AccountOrderByInput>;
+  where?: InputMaybe<AccountWhereInput>;
+};
+
 
 export type QueryActivitiesArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<ActivityOrderByInput>>
-  where?: InputMaybe<ActivityWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ActivityOrderByInput>>;
+  where?: InputMaybe<ActivityWhereInput>;
+};
+
 
 export type QueryActivitiesConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<ActivityOrderByInput>
-  where?: InputMaybe<ActivityWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<ActivityOrderByInput>;
+  where?: InputMaybe<ActivityWhereInput>;
+};
+
 
 export type QueryActivityByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryActivityByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QueryCommentFollowersArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<CommentFollowersOrderByInput>>
-  where?: InputMaybe<CommentFollowersWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<CommentFollowersOrderByInput>>;
+  where?: InputMaybe<CommentFollowersWhereInput>;
+};
+
 
 export type QueryCommentFollowersByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryCommentFollowersByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QueryCommentFollowersConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<CommentFollowersOrderByInput>
-  where?: InputMaybe<CommentFollowersWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<CommentFollowersOrderByInput>;
+  where?: InputMaybe<CommentFollowersWhereInput>;
+};
+
 
 export type QueryIpfsFetchLogByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryIpfsFetchLogByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QueryIpfsFetchLogsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<IpfsFetchLogOrderByInput>>
-  where?: InputMaybe<IpfsFetchLogWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<IpfsFetchLogOrderByInput>>;
+  where?: InputMaybe<IpfsFetchLogWhereInput>;
+};
+
 
 export type QueryIpfsFetchLogsConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<IpfsFetchLogOrderByInput>
-  where?: InputMaybe<IpfsFetchLogWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<IpfsFetchLogOrderByInput>;
+  where?: InputMaybe<IpfsFetchLogWhereInput>;
+};
+
 
 export type QueryNewsFeedByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryNewsFeedByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QueryNewsFeedsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<NewsFeedOrderByInput>>
-  where?: InputMaybe<NewsFeedWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<NewsFeedOrderByInput>>;
+  where?: InputMaybe<NewsFeedWhereInput>;
+};
+
 
 export type QueryNewsFeedsConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<NewsFeedOrderByInput>
-  where?: InputMaybe<NewsFeedWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<NewsFeedOrderByInput>;
+  where?: InputMaybe<NewsFeedWhereInput>;
+};
+
 
 export type QueryNotificationByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryNotificationByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QueryNotificationsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<NotificationOrderByInput>>
-  where?: InputMaybe<NotificationWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<NotificationOrderByInput>>;
+  where?: InputMaybe<NotificationWhereInput>;
+};
+
 
 export type QueryNotificationsConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<NotificationOrderByInput>
-  where?: InputMaybe<NotificationWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<NotificationOrderByInput>;
+  where?: InputMaybe<NotificationWhereInput>;
+};
+
 
 export type QueryPostByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryPostByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QueryPostFollowersArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<PostFollowersOrderByInput>>
-  where?: InputMaybe<PostFollowersWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostFollowersOrderByInput>>;
+  where?: InputMaybe<PostFollowersWhereInput>;
+};
+
 
 export type QueryPostFollowersByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryPostFollowersByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QueryPostFollowersConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<PostFollowersOrderByInput>
-  where?: InputMaybe<PostFollowersWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<PostFollowersOrderByInput>;
+  where?: InputMaybe<PostFollowersWhereInput>;
+};
+
 
 export type QueryPostsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<PostOrderByInput>>
-  where?: InputMaybe<PostWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostOrderByInput>>;
+  where?: InputMaybe<PostWhereInput>;
+};
+
 
 export type QueryPostsConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<PostOrderByInput>
-  where?: InputMaybe<PostWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<PostOrderByInput>;
+  where?: InputMaybe<PostWhereInput>;
+};
+
 
 export type QueryReactionByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryReactionByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QueryReactionsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<ReactionOrderByInput>>
-  where?: InputMaybe<ReactionWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ReactionOrderByInput>>;
+  where?: InputMaybe<ReactionWhereInput>;
+};
+
 
 export type QueryReactionsConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<ReactionOrderByInput>
-  where?: InputMaybe<ReactionWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<ReactionOrderByInput>;
+  where?: InputMaybe<ReactionWhereInput>;
+};
+
 
 export type QuerySearchQueryArgs = {
-  indexes?: Array<ElasticSearchIndexType>
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  q?: InputMaybe<Scalars['String']['input']>
-  spaceId?: InputMaybe<Scalars['String']['input']>
-  tags?: InputMaybe<Array<Scalars['String']['input']>>
-}
+  indexes?: Array<ElasticSearchIndexType>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  q?: InputMaybe<Scalars['String']['input']>;
+  spaceId?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
 
 export type QuerySpaceByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QuerySpaceByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QuerySpaceFollowersArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<SpaceFollowersOrderByInput>>
-  where?: InputMaybe<SpaceFollowersWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceFollowersOrderByInput>>;
+  where?: InputMaybe<SpaceFollowersWhereInput>;
+};
+
 
 export type QuerySpaceFollowersByIdArgs = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
 
 export type QuerySpaceFollowersByUniqueInputArgs = {
-  where: WhereIdInput
-}
+  where: WhereIdInput;
+};
+
 
 export type QuerySpaceFollowersConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<SpaceFollowersOrderByInput>
-  where?: InputMaybe<SpaceFollowersWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<SpaceFollowersOrderByInput>;
+  where?: InputMaybe<SpaceFollowersWhereInput>;
+};
+
 
 export type QuerySpacesArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<SpaceOrderByInput>>
-  where?: InputMaybe<SpaceWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceOrderByInput>>;
+  where?: InputMaybe<SpaceWhereInput>;
+};
+
 
 export type QuerySpacesConnectionArgs = {
-  after?: InputMaybe<Scalars['String']['input']>
-  first?: InputMaybe<Scalars['Int']['input']>
-  orderBy: Array<SpaceOrderByInput>
-  where?: InputMaybe<SpaceWhereInput>
-}
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<SpaceOrderByInput>;
+  where?: InputMaybe<SpaceWhereInput>;
+};
 
 /** The Post Reaction entity */
 export type Reaction = {
-  __typename?: 'Reaction'
+  __typename?: 'Reaction';
   /** A One-to-One relationship with the Account that created the Reaction. */
-  account: Account
+  account: Account;
   /** The block height when a Reaction was created. */
-  createdAtBlock: Scalars['BigInt']['output']
+  createdAtBlock: Scalars['BigInt']['output'];
   /** The DateTime when a Reaction was created. */
-  createdAtTime: Scalars['DateTime']['output']
+  createdAtTime: Scalars['DateTime']['output'];
   /** The ID of a Reaction, which will have the same value and reaction ID on the blockchain. */
-  id: Scalars['String']['output']
+  id: Scalars['String']['output'];
   /** The type of Reaction (Upvote, Downvote). */
-  kind: ReactionKind
+  kind: ReactionKind;
   /** A One-to-One relationship with the Post that the current reaction has been made for. */
-  post: Post
+  post: Post;
   /**
    * The status of a Reaction (Active, Deleted). This is a synthetic value.
    * It does not exist on the blockchain and is only used in the squid.
    */
-  status: Status
+  status: Status;
   /** The Block height when a Reaction was updated. */
-  updatedAtBlock?: Maybe<Scalars['BigInt']['output']>
+  updatedAtBlock?: Maybe<Scalars['BigInt']['output']>;
   /** The DateTime when a Reaction was updated. */
-  updatedAtTime?: Maybe<Scalars['DateTime']['output']>
-}
+  updatedAtTime?: Maybe<Scalars['DateTime']['output']>;
+};
 
 export type ReactionEdge = {
-  __typename?: 'ReactionEdge'
-  cursor: Scalars['String']['output']
-  node: Reaction
-}
+  __typename?: 'ReactionEdge';
+  cursor: Scalars['String']['output'];
+  node: Reaction;
+};
 
 export enum ReactionKind {
   Downvote = 'Downvote',
-  Upvote = 'Upvote',
+  Upvote = 'Upvote'
 }
 
 export enum ReactionOrderByInput {
@@ -2896,225 +2940,227 @@ export enum ReactionOrderByInput {
   UpdatedAtBlockAsc = 'updatedAtBlock_ASC',
   UpdatedAtBlockDesc = 'updatedAtBlock_DESC',
   UpdatedAtTimeAsc = 'updatedAtTime_ASC',
-  UpdatedAtTimeDesc = 'updatedAtTime_DESC',
+  UpdatedAtTimeDesc = 'updatedAtTime_DESC'
 }
 
 export type ReactionWhereInput = {
-  AND?: InputMaybe<Array<ReactionWhereInput>>
-  OR?: InputMaybe<Array<ReactionWhereInput>>
-  account?: InputMaybe<AccountWhereInput>
-  account_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  createdAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  createdAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  createdAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-  kind_eq?: InputMaybe<ReactionKind>
-  kind_in?: InputMaybe<Array<ReactionKind>>
-  kind_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  kind_not_eq?: InputMaybe<ReactionKind>
-  kind_not_in?: InputMaybe<Array<ReactionKind>>
-  post?: InputMaybe<PostWhereInput>
-  post_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  status_eq?: InputMaybe<Status>
-  status_in?: InputMaybe<Array<Status>>
-  status_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  status_not_eq?: InputMaybe<Status>
-  status_not_in?: InputMaybe<Array<Status>>
-  updatedAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  updatedAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updatedAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  updatedAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  updatedAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updatedAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-}
+  AND?: InputMaybe<Array<ReactionWhereInput>>;
+  OR?: InputMaybe<Array<ReactionWhereInput>>;
+  account?: InputMaybe<AccountWhereInput>;
+  account_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  createdAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  createdAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  createdAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  kind_eq?: InputMaybe<ReactionKind>;
+  kind_in?: InputMaybe<Array<ReactionKind>>;
+  kind_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  kind_not_eq?: InputMaybe<ReactionKind>;
+  kind_not_in?: InputMaybe<Array<ReactionKind>>;
+  post?: InputMaybe<PostWhereInput>;
+  post_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  status_eq?: InputMaybe<Status>;
+  status_in?: InputMaybe<Array<Status>>;
+  status_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  status_not_eq?: InputMaybe<Status>;
+  status_not_in?: InputMaybe<Array<Status>>;
+  updatedAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  updatedAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  updatedAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  updatedAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+};
 
 export type ReactionsConnection = {
-  __typename?: 'ReactionsConnection'
-  edges: Array<ReactionEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'ReactionsConnection';
+  edges: Array<ReactionEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 export type ReferencedTweetDetails = {
-  __typename?: 'ReferencedTweetDetails'
-  id?: Maybe<Scalars['String']['output']>
-  type?: Maybe<Scalars['String']['output']>
-}
+  __typename?: 'ReferencedTweetDetails';
+  id?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+};
 
 export type SearchTotals = {
-  __typename?: 'SearchTotals'
+  __typename?: 'SearchTotals';
   /** Number of search hits per page, which has been used for this particular request. */
-  limit: Scalars['Int']['output']
+  limit: Scalars['Int']['output'];
   /** Maximum score within results scope of this particular search request. */
-  maxScore: Scalars['Float']['output']
+  maxScore: Scalars['Float']['output'];
   /** Page offset, which has been used for this particular request. */
-  offset: Scalars['Int']['output']
+  offset: Scalars['Int']['output'];
   /** Total number of hits matched to this particular request */
-  totalResults: Scalars['Int']['output']
-}
+  totalResults: Scalars['Int']['output'];
+};
 
 /** The Space entity */
 export type Space = {
-  __typename?: 'Space'
+  __typename?: 'Space';
   /** The about text (bio) of a Space (IPFS content) */
-  about?: Maybe<Scalars['String']['output']>
+  about?: Maybe<Scalars['String']['output']>;
   /** Is this a public space where anyone can post? */
-  canEveryoneCreatePosts?: Maybe<Scalars['Boolean']['output']>
+  canEveryoneCreatePosts?: Maybe<Scalars['Boolean']['output']>;
   /** Are followers allowed to post in the Space? */
-  canFollowerCreatePosts?: Maybe<Scalars['Boolean']['output']>
+  canFollowerCreatePosts?: Maybe<Scalars['Boolean']['output']>;
   /** The CID of the content on IPFS */
-  content?: Maybe<Scalars['String']['output']>
+  content?: Maybe<Scalars['String']['output']>;
   /** The block height when a Space was created. */
-  createdAtBlock?: Maybe<Scalars['BigInt']['output']>
+  createdAtBlock?: Maybe<Scalars['BigInt']['output']>;
   /** The DateTime when a Space was created. */
-  createdAtTime?: Maybe<Scalars['DateTime']['output']>
+  createdAtTime?: Maybe<Scalars['DateTime']['output']>;
   /** A One-To-One relationship with the Account entity that created a Space. */
-  createdByAccount: Account
+  createdByAccount: Account;
   /** The day when a Space was created. */
-  createdOnDay?: Maybe<Scalars['DateTime']['output']>
+  createdOnDay?: Maybe<Scalars['DateTime']['output']>;
   /** The email address of a Space (IPFS content) */
-  email?: Maybe<Scalars['String']['output']>
+  email?: Maybe<Scalars['String']['output']>;
   /** Space permissions rule */
-  everyonePermissions?: Maybe<SpacePermissions>
+  everyonePermissions?: Maybe<SpacePermissions>;
   /** The properties of a Space from its IPFS content which are not supported by the current squid's DB schema. */
-  experimental?: Maybe<Scalars['JSON']['output']>
+  experimental?: Maybe<Scalars['JSON']['output']>;
   /** Space permissions rule */
-  followerPermissions?: Maybe<SpacePermissions>
+  followerPermissions?: Maybe<SpacePermissions>;
   /** A Many-To-Many relationship between a Space and the Accounts that follow it through SpaceFollowers (foreign key - "followingSpace") */
-  followers: Array<SpaceFollowers>
+  followers: Array<SpaceFollowers>;
   /** The total number of Accounts following a Space */
-  followersCount: Scalars['Int']['output']
+  followersCount: Scalars['Int']['output'];
   /** Space format (IPFS content) */
-  format?: Maybe<Scalars['String']['output']>
+  format?: Maybe<Scalars['String']['output']>;
   /** The username of a Space (will be removed in further versions as it is deprecated. You should use the username field instead.) (IPFS content) */
-  handle?: Maybe<Scalars['String']['output']>
+  handle?: Maybe<Scalars['String']['output']>;
   /** Is the Space hidden? */
-  hidden: Scalars['Boolean']['output']
+  hidden: Scalars['Boolean']['output'];
   /** The total number of hidden Posts in the current Space (post.length) */
-  hiddenPostsCount: Scalars['Int']['output']
+  hiddenPostsCount: Scalars['Int']['output'];
   /** The ID of a Space, which will have the same value and Space ID on the blockchain. */
-  id: Scalars['String']['output']
+  id: Scalars['String']['output'];
   /** The URL of the Space's image (IPFS content) */
-  image?: Maybe<Scalars['String']['output']>
+  image?: Maybe<Scalars['String']['output']>;
   /** A list of a Space's interests converted to a string with "comma" as a separator (IPFS content) */
-  interestsOriginal?: Maybe<Scalars['String']['output']>
+  interestsOriginal?: Maybe<Scalars['String']['output']>;
   /** Is the Space's "About" section longer than its summary? */
-  isShowMore?: Maybe<Scalars['Boolean']['output']>
+  isShowMore?: Maybe<Scalars['Boolean']['output']>;
   /** A list of the Space's links converted to a string with "comma" as a separator (IPFS content) */
-  linksOriginal?: Maybe<Scalars['String']['output']>
+  linksOriginal?: Maybe<Scalars['String']['output']>;
   /** The name of a Space (IPFS content) */
-  name?: Maybe<Scalars['String']['output']>
+  name?: Maybe<Scalars['String']['output']>;
   /** Space permissions rule */
-  nonePermissions?: Maybe<SpacePermissions>
+  nonePermissions?: Maybe<SpacePermissions>;
   /** A One-To-One relationship with the Account entity that owns a Space. */
-  ownedByAccount: Account
+  ownedByAccount: Account;
   /** A One-To-Many relationship with the Posts created within the current Space (foreign key - "space") */
-  posts: Array<Post>
+  posts: Array<Post>;
   /** The total number of all Posts (public and hidden) in the current Space (post.length) */
-  postsCount: Scalars['Int']['output']
+  postsCount: Scalars['Int']['output'];
   /** A One-To-One relationship with the Account which uses the current Space as its profile. */
-  profileSpace?: Maybe<Account>
+  profileSpace?: Maybe<Account>;
   /** The total number of public (non-hidden) Posts in the current Space (post.length) */
-  publicPostsCount: Scalars['Int']['output']
+  publicPostsCount: Scalars['Int']['output'];
   /** Space permissions rule */
-  spaceOwnerPermissions?: Maybe<SpacePermissions>
+  spaceOwnerPermissions?: Maybe<SpacePermissions>;
   /** The summary of the content of a Space (IPFS content) */
-  summary?: Maybe<Scalars['String']['output']>
+  summary?: Maybe<Scalars['String']['output']>;
   /** A list of a Space's tags, converted to a string with "comma" as a separator (IPFS content) */
-  tagsOriginal?: Maybe<Scalars['String']['output']>
+  tagsOriginal?: Maybe<Scalars['String']['output']>;
   /** The block height when a Space was updated. */
-  updatedAtBlock?: Maybe<Scalars['BigInt']['output']>
+  updatedAtBlock?: Maybe<Scalars['BigInt']['output']>;
   /** The DateTime when a Space was updated. */
-  updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+  updatedAtTime?: Maybe<Scalars['DateTime']['output']>;
   /** The username of a Space (IPFS content) */
-  username?: Maybe<Scalars['String']['output']>
-}
+  username?: Maybe<Scalars['String']['output']>;
+};
+
 
 /** The Space entity */
 export type SpaceFollowersArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<SpaceFollowersOrderByInput>>
-  where?: InputMaybe<SpaceFollowersWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceFollowersOrderByInput>>;
+  where?: InputMaybe<SpaceFollowersWhereInput>;
+};
+
 
 /** The Space entity */
 export type SpacePostsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  orderBy?: InputMaybe<Array<PostOrderByInput>>
-  where?: InputMaybe<PostWhereInput>
-}
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostOrderByInput>>;
+  where?: InputMaybe<PostWhereInput>;
+};
 
 export type SpaceEdge = {
-  __typename?: 'SpaceEdge'
-  cursor: Scalars['String']['output']
-  node: Space
-}
+  __typename?: 'SpaceEdge';
+  cursor: Scalars['String']['output'];
+  node: Space;
+};
 
 /** The junction table for Many-to-Many relationship between follower Account and following Space */
 export type SpaceFollowers = {
-  __typename?: 'SpaceFollowers'
-  followerAccount: Account
-  followingSpace: Space
-  id: Scalars['String']['output']
-}
+  __typename?: 'SpaceFollowers';
+  followerAccount: Account;
+  followingSpace: Space;
+  id: Scalars['String']['output'];
+};
 
 export type SpaceFollowersConnection = {
-  __typename?: 'SpaceFollowersConnection'
-  edges: Array<SpaceFollowersEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'SpaceFollowersConnection';
+  edges: Array<SpaceFollowersEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 export type SpaceFollowersEdge = {
-  __typename?: 'SpaceFollowersEdge'
-  cursor: Scalars['String']['output']
-  node: SpaceFollowers
-}
+  __typename?: 'SpaceFollowersEdge';
+  cursor: Scalars['String']['output'];
+  node: SpaceFollowers;
+};
 
 export enum SpaceFollowersOrderByInput {
   FollowerAccountFollowersCountAsc = 'followerAccount_followersCount_ASC',
@@ -3186,34 +3232,34 @@ export enum SpaceFollowersOrderByInput {
   FollowingSpaceUsernameAsc = 'followingSpace_username_ASC',
   FollowingSpaceUsernameDesc = 'followingSpace_username_DESC',
   IdAsc = 'id_ASC',
-  IdDesc = 'id_DESC',
+  IdDesc = 'id_DESC'
 }
 
 export type SpaceFollowersWhereInput = {
-  AND?: InputMaybe<Array<SpaceFollowersWhereInput>>
-  OR?: InputMaybe<Array<SpaceFollowersWhereInput>>
-  followerAccount?: InputMaybe<AccountWhereInput>
-  followerAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followingSpace?: InputMaybe<SpaceWhereInput>
-  followingSpace_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<SpaceFollowersWhereInput>>;
+  OR?: InputMaybe<Array<SpaceFollowersWhereInput>>;
+  followerAccount?: InputMaybe<AccountWhereInput>;
+  followerAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followingSpace?: InputMaybe<SpaceWhereInput>;
+  followingSpace_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
 
 export enum SpaceOrderByInput {
   AboutAsc = 'about_ASC',
@@ -3563,812 +3609,737 @@ export enum SpaceOrderByInput {
   UpdatedAtTimeAsc = 'updatedAtTime_ASC',
   UpdatedAtTimeDesc = 'updatedAtTime_DESC',
   UsernameAsc = 'username_ASC',
-  UsernameDesc = 'username_DESC',
+  UsernameDesc = 'username_DESC'
 }
 
 /** The permission settings of a Space */
 export type SpacePermissions = {
-  __typename?: 'SpacePermissions'
-  createComments?: Maybe<Scalars['Boolean']['output']>
-  createPosts?: Maybe<Scalars['Boolean']['output']>
-  createSubspaces?: Maybe<Scalars['Boolean']['output']>
-  deleteAnyPost?: Maybe<Scalars['Boolean']['output']>
-  deleteAnySubspace?: Maybe<Scalars['Boolean']['output']>
-  deleteOwnComments?: Maybe<Scalars['Boolean']['output']>
-  deleteOwnPosts?: Maybe<Scalars['Boolean']['output']>
-  deleteOwnSubspaces?: Maybe<Scalars['Boolean']['output']>
-  downvote?: Maybe<Scalars['Boolean']['output']>
-  hideAnyComment?: Maybe<Scalars['Boolean']['output']>
-  hideAnyPost?: Maybe<Scalars['Boolean']['output']>
-  hideAnySubspace?: Maybe<Scalars['Boolean']['output']>
-  hideOwnComments?: Maybe<Scalars['Boolean']['output']>
-  hideOwnPosts?: Maybe<Scalars['Boolean']['output']>
-  hideOwnSubspaces?: Maybe<Scalars['Boolean']['output']>
-  manageRoles?: Maybe<Scalars['Boolean']['output']>
-  overridePostPermissions?: Maybe<Scalars['Boolean']['output']>
-  overrideSubspacePermissions?: Maybe<Scalars['Boolean']['output']>
-  representSpaceExternally?: Maybe<Scalars['Boolean']['output']>
-  representSpaceInternally?: Maybe<Scalars['Boolean']['output']>
-  share?: Maybe<Scalars['Boolean']['output']>
-  suggestEntityStatus?: Maybe<Scalars['Boolean']['output']>
-  updateAnyPost?: Maybe<Scalars['Boolean']['output']>
-  updateAnySubspace?: Maybe<Scalars['Boolean']['output']>
-  updateEntityStatus?: Maybe<Scalars['Boolean']['output']>
-  updateOwnComments?: Maybe<Scalars['Boolean']['output']>
-  updateOwnPosts?: Maybe<Scalars['Boolean']['output']>
-  updateOwnSubspaces?: Maybe<Scalars['Boolean']['output']>
-  updateSpace?: Maybe<Scalars['Boolean']['output']>
-  updateSpaceSettings?: Maybe<Scalars['Boolean']['output']>
-  upvote?: Maybe<Scalars['Boolean']['output']>
-}
+  __typename?: 'SpacePermissions';
+  createComments?: Maybe<Scalars['Boolean']['output']>;
+  createPosts?: Maybe<Scalars['Boolean']['output']>;
+  createSubspaces?: Maybe<Scalars['Boolean']['output']>;
+  deleteAnyPost?: Maybe<Scalars['Boolean']['output']>;
+  deleteAnySubspace?: Maybe<Scalars['Boolean']['output']>;
+  deleteOwnComments?: Maybe<Scalars['Boolean']['output']>;
+  deleteOwnPosts?: Maybe<Scalars['Boolean']['output']>;
+  deleteOwnSubspaces?: Maybe<Scalars['Boolean']['output']>;
+  downvote?: Maybe<Scalars['Boolean']['output']>;
+  hideAnyComment?: Maybe<Scalars['Boolean']['output']>;
+  hideAnyPost?: Maybe<Scalars['Boolean']['output']>;
+  hideAnySubspace?: Maybe<Scalars['Boolean']['output']>;
+  hideOwnComments?: Maybe<Scalars['Boolean']['output']>;
+  hideOwnPosts?: Maybe<Scalars['Boolean']['output']>;
+  hideOwnSubspaces?: Maybe<Scalars['Boolean']['output']>;
+  manageRoles?: Maybe<Scalars['Boolean']['output']>;
+  overridePostPermissions?: Maybe<Scalars['Boolean']['output']>;
+  overrideSubspacePermissions?: Maybe<Scalars['Boolean']['output']>;
+  representSpaceExternally?: Maybe<Scalars['Boolean']['output']>;
+  representSpaceInternally?: Maybe<Scalars['Boolean']['output']>;
+  share?: Maybe<Scalars['Boolean']['output']>;
+  suggestEntityStatus?: Maybe<Scalars['Boolean']['output']>;
+  updateAnyPost?: Maybe<Scalars['Boolean']['output']>;
+  updateAnySubspace?: Maybe<Scalars['Boolean']['output']>;
+  updateEntityStatus?: Maybe<Scalars['Boolean']['output']>;
+  updateOwnComments?: Maybe<Scalars['Boolean']['output']>;
+  updateOwnPosts?: Maybe<Scalars['Boolean']['output']>;
+  updateOwnSubspaces?: Maybe<Scalars['Boolean']['output']>;
+  updateSpace?: Maybe<Scalars['Boolean']['output']>;
+  updateSpaceSettings?: Maybe<Scalars['Boolean']['output']>;
+  upvote?: Maybe<Scalars['Boolean']['output']>;
+};
 
 export type SpacePermissionsWhereInput = {
-  createComments_eq?: InputMaybe<Scalars['Boolean']['input']>
-  createComments_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createComments_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  createPosts_eq?: InputMaybe<Scalars['Boolean']['input']>
-  createPosts_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createPosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  createSubspaces_eq?: InputMaybe<Scalars['Boolean']['input']>
-  createSubspaces_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createSubspaces_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  deleteAnyPost_eq?: InputMaybe<Scalars['Boolean']['input']>
-  deleteAnyPost_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  deleteAnyPost_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  deleteAnySubspace_eq?: InputMaybe<Scalars['Boolean']['input']>
-  deleteAnySubspace_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  deleteAnySubspace_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  deleteOwnComments_eq?: InputMaybe<Scalars['Boolean']['input']>
-  deleteOwnComments_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  deleteOwnComments_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  deleteOwnPosts_eq?: InputMaybe<Scalars['Boolean']['input']>
-  deleteOwnPosts_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  deleteOwnPosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  deleteOwnSubspaces_eq?: InputMaybe<Scalars['Boolean']['input']>
-  deleteOwnSubspaces_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  deleteOwnSubspaces_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  downvote_eq?: InputMaybe<Scalars['Boolean']['input']>
-  downvote_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  downvote_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideAnyComment_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideAnyComment_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  hideAnyComment_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideAnyPost_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideAnyPost_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  hideAnyPost_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideAnySubspace_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideAnySubspace_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  hideAnySubspace_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideOwnComments_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideOwnComments_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  hideOwnComments_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideOwnPosts_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideOwnPosts_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  hideOwnPosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideOwnSubspaces_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hideOwnSubspaces_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  hideOwnSubspaces_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  manageRoles_eq?: InputMaybe<Scalars['Boolean']['input']>
-  manageRoles_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  manageRoles_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  overridePostPermissions_eq?: InputMaybe<Scalars['Boolean']['input']>
-  overridePostPermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  overridePostPermissions_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  overrideSubspacePermissions_eq?: InputMaybe<Scalars['Boolean']['input']>
-  overrideSubspacePermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  overrideSubspacePermissions_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  representSpaceExternally_eq?: InputMaybe<Scalars['Boolean']['input']>
-  representSpaceExternally_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  representSpaceExternally_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  representSpaceInternally_eq?: InputMaybe<Scalars['Boolean']['input']>
-  representSpaceInternally_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  representSpaceInternally_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  share_eq?: InputMaybe<Scalars['Boolean']['input']>
-  share_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  share_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  suggestEntityStatus_eq?: InputMaybe<Scalars['Boolean']['input']>
-  suggestEntityStatus_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  suggestEntityStatus_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateAnyPost_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateAnyPost_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updateAnyPost_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateAnySubspace_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateAnySubspace_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updateAnySubspace_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateEntityStatus_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateEntityStatus_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updateEntityStatus_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateOwnComments_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateOwnComments_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updateOwnComments_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateOwnPosts_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateOwnPosts_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updateOwnPosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateOwnSubspaces_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateOwnSubspaces_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updateOwnSubspaces_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateSpaceSettings_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateSpaceSettings_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updateSpaceSettings_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateSpace_eq?: InputMaybe<Scalars['Boolean']['input']>
-  updateSpace_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updateSpace_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  upvote_eq?: InputMaybe<Scalars['Boolean']['input']>
-  upvote_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  upvote_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-}
+  createComments_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  createComments_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createComments_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  createPosts_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  createPosts_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createPosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  createSubspaces_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  createSubspaces_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createSubspaces_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteAnyPost_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteAnyPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteAnyPost_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteAnySubspace_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteAnySubspace_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteAnySubspace_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteOwnComments_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteOwnComments_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteOwnComments_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteOwnPosts_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteOwnPosts_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteOwnPosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteOwnSubspaces_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteOwnSubspaces_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  deleteOwnSubspaces_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  downvote_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  downvote_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  downvote_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideAnyComment_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideAnyComment_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  hideAnyComment_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideAnyPost_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideAnyPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  hideAnyPost_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideAnySubspace_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideAnySubspace_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  hideAnySubspace_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideOwnComments_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideOwnComments_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  hideOwnComments_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideOwnPosts_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideOwnPosts_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  hideOwnPosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideOwnSubspaces_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hideOwnSubspaces_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  hideOwnSubspaces_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  manageRoles_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  manageRoles_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  manageRoles_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  overridePostPermissions_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  overridePostPermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  overridePostPermissions_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  overrideSubspacePermissions_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  overrideSubspacePermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  overrideSubspacePermissions_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  representSpaceExternally_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  representSpaceExternally_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  representSpaceExternally_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  representSpaceInternally_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  representSpaceInternally_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  representSpaceInternally_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  share_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  share_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  share_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  suggestEntityStatus_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  suggestEntityStatus_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  suggestEntityStatus_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateAnyPost_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateAnyPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updateAnyPost_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateAnySubspace_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateAnySubspace_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updateAnySubspace_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateEntityStatus_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateEntityStatus_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updateEntityStatus_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateOwnComments_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateOwnComments_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updateOwnComments_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateOwnPosts_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateOwnPosts_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updateOwnPosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateOwnSubspaces_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateOwnSubspaces_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updateOwnSubspaces_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateSpaceSettings_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateSpaceSettings_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updateSpaceSettings_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateSpace_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  updateSpace_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updateSpace_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  upvote_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  upvote_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  upvote_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+};
 
 export type SpaceWhereInput = {
-  AND?: InputMaybe<Array<SpaceWhereInput>>
-  OR?: InputMaybe<Array<SpaceWhereInput>>
-  about_contains?: InputMaybe<Scalars['String']['input']>
-  about_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  about_endsWith?: InputMaybe<Scalars['String']['input']>
-  about_eq?: InputMaybe<Scalars['String']['input']>
-  about_gt?: InputMaybe<Scalars['String']['input']>
-  about_gte?: InputMaybe<Scalars['String']['input']>
-  about_in?: InputMaybe<Array<Scalars['String']['input']>>
-  about_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  about_lt?: InputMaybe<Scalars['String']['input']>
-  about_lte?: InputMaybe<Scalars['String']['input']>
-  about_not_contains?: InputMaybe<Scalars['String']['input']>
-  about_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  about_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  about_not_eq?: InputMaybe<Scalars['String']['input']>
-  about_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  about_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  about_startsWith?: InputMaybe<Scalars['String']['input']>
-  canEveryoneCreatePosts_eq?: InputMaybe<Scalars['Boolean']['input']>
-  canEveryoneCreatePosts_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  canEveryoneCreatePosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  canFollowerCreatePosts_eq?: InputMaybe<Scalars['Boolean']['input']>
-  canFollowerCreatePosts_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  canFollowerCreatePosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  content_contains?: InputMaybe<Scalars['String']['input']>
-  content_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  content_endsWith?: InputMaybe<Scalars['String']['input']>
-  content_eq?: InputMaybe<Scalars['String']['input']>
-  content_gt?: InputMaybe<Scalars['String']['input']>
-  content_gte?: InputMaybe<Scalars['String']['input']>
-  content_in?: InputMaybe<Array<Scalars['String']['input']>>
-  content_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  content_lt?: InputMaybe<Scalars['String']['input']>
-  content_lte?: InputMaybe<Scalars['String']['input']>
-  content_not_contains?: InputMaybe<Scalars['String']['input']>
-  content_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  content_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  content_not_eq?: InputMaybe<Scalars['String']['input']>
-  content_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  content_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  content_startsWith?: InputMaybe<Scalars['String']['input']>
-  createdAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  createdAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>
-  createdAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  createdAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  createdAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>
-  createdAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  createdByAccount?: InputMaybe<AccountWhereInput>
-  createdByAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdOnDay_eq?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_gt?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_gte?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  createdOnDay_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdOnDay_lt?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_lte?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_not_eq?: InputMaybe<Scalars['DateTime']['input']>
-  createdOnDay_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  email_contains?: InputMaybe<Scalars['String']['input']>
-  email_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  email_endsWith?: InputMaybe<Scalars['String']['input']>
-  email_eq?: InputMaybe<Scalars['String']['input']>
-  email_gt?: InputMaybe<Scalars['String']['input']>
-  email_gte?: InputMaybe<Scalars['String']['input']>
-  email_in?: InputMaybe<Array<Scalars['String']['input']>>
-  email_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  email_lt?: InputMaybe<Scalars['String']['input']>
-  email_lte?: InputMaybe<Scalars['String']['input']>
-  email_not_contains?: InputMaybe<Scalars['String']['input']>
-  email_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  email_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  email_not_eq?: InputMaybe<Scalars['String']['input']>
-  email_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  email_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  email_startsWith?: InputMaybe<Scalars['String']['input']>
-  everyonePermissions?: InputMaybe<SpacePermissionsWhereInput>
-  everyonePermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  experimental_eq?: InputMaybe<Scalars['JSON']['input']>
-  experimental_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  experimental_jsonContains?: InputMaybe<Scalars['JSON']['input']>
-  experimental_jsonHasKey?: InputMaybe<Scalars['JSON']['input']>
-  experimental_not_eq?: InputMaybe<Scalars['JSON']['input']>
-  followerPermissions?: InputMaybe<SpacePermissionsWhereInput>
-  followerPermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followersCount_eq?: InputMaybe<Scalars['Int']['input']>
-  followersCount_gt?: InputMaybe<Scalars['Int']['input']>
-  followersCount_gte?: InputMaybe<Scalars['Int']['input']>
-  followersCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  followersCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  followersCount_lt?: InputMaybe<Scalars['Int']['input']>
-  followersCount_lte?: InputMaybe<Scalars['Int']['input']>
-  followersCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  followersCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  followers_every?: InputMaybe<SpaceFollowersWhereInput>
-  followers_none?: InputMaybe<SpaceFollowersWhereInput>
-  followers_some?: InputMaybe<SpaceFollowersWhereInput>
-  format_contains?: InputMaybe<Scalars['String']['input']>
-  format_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  format_endsWith?: InputMaybe<Scalars['String']['input']>
-  format_eq?: InputMaybe<Scalars['String']['input']>
-  format_gt?: InputMaybe<Scalars['String']['input']>
-  format_gte?: InputMaybe<Scalars['String']['input']>
-  format_in?: InputMaybe<Array<Scalars['String']['input']>>
-  format_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  format_lt?: InputMaybe<Scalars['String']['input']>
-  format_lte?: InputMaybe<Scalars['String']['input']>
-  format_not_contains?: InputMaybe<Scalars['String']['input']>
-  format_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  format_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  format_not_eq?: InputMaybe<Scalars['String']['input']>
-  format_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  format_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  format_startsWith?: InputMaybe<Scalars['String']['input']>
-  handle_contains?: InputMaybe<Scalars['String']['input']>
-  handle_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  handle_endsWith?: InputMaybe<Scalars['String']['input']>
-  handle_eq?: InputMaybe<Scalars['String']['input']>
-  handle_gt?: InputMaybe<Scalars['String']['input']>
-  handle_gte?: InputMaybe<Scalars['String']['input']>
-  handle_in?: InputMaybe<Array<Scalars['String']['input']>>
-  handle_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  handle_lt?: InputMaybe<Scalars['String']['input']>
-  handle_lte?: InputMaybe<Scalars['String']['input']>
-  handle_not_contains?: InputMaybe<Scalars['String']['input']>
-  handle_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  handle_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  handle_not_eq?: InputMaybe<Scalars['String']['input']>
-  handle_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  handle_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  handle_startsWith?: InputMaybe<Scalars['String']['input']>
-  hiddenPostsCount_eq?: InputMaybe<Scalars['Int']['input']>
-  hiddenPostsCount_gt?: InputMaybe<Scalars['Int']['input']>
-  hiddenPostsCount_gte?: InputMaybe<Scalars['Int']['input']>
-  hiddenPostsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  hiddenPostsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  hiddenPostsCount_lt?: InputMaybe<Scalars['Int']['input']>
-  hiddenPostsCount_lte?: InputMaybe<Scalars['Int']['input']>
-  hiddenPostsCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  hiddenPostsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  hidden_eq?: InputMaybe<Scalars['Boolean']['input']>
-  hidden_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  hidden_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  id_contains?: InputMaybe<Scalars['String']['input']>
-  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_eq?: InputMaybe<Scalars['String']['input']>
-  id_gt?: InputMaybe<Scalars['String']['input']>
-  id_gte?: InputMaybe<Scalars['String']['input']>
-  id_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  id_lt?: InputMaybe<Scalars['String']['input']>
-  id_lte?: InputMaybe<Scalars['String']['input']>
-  id_not_contains?: InputMaybe<Scalars['String']['input']>
-  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  id_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  id_not_eq?: InputMaybe<Scalars['String']['input']>
-  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  id_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  id_startsWith?: InputMaybe<Scalars['String']['input']>
-  image_contains?: InputMaybe<Scalars['String']['input']>
-  image_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  image_endsWith?: InputMaybe<Scalars['String']['input']>
-  image_eq?: InputMaybe<Scalars['String']['input']>
-  image_gt?: InputMaybe<Scalars['String']['input']>
-  image_gte?: InputMaybe<Scalars['String']['input']>
-  image_in?: InputMaybe<Array<Scalars['String']['input']>>
-  image_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  image_lt?: InputMaybe<Scalars['String']['input']>
-  image_lte?: InputMaybe<Scalars['String']['input']>
-  image_not_contains?: InputMaybe<Scalars['String']['input']>
-  image_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  image_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  image_not_eq?: InputMaybe<Scalars['String']['input']>
-  image_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  image_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  image_startsWith?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_contains?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_endsWith?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_eq?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_gt?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_gte?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_in?: InputMaybe<Array<Scalars['String']['input']>>
-  interestsOriginal_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  interestsOriginal_lt?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_lte?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_not_contains?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_not_containsInsensitive?: InputMaybe<
-    Scalars['String']['input']
-  >
-  interestsOriginal_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_not_eq?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  interestsOriginal_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  interestsOriginal_startsWith?: InputMaybe<Scalars['String']['input']>
-  isShowMore_eq?: InputMaybe<Scalars['Boolean']['input']>
-  isShowMore_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  isShowMore_not_eq?: InputMaybe<Scalars['Boolean']['input']>
-  linksOriginal_contains?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_endsWith?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_eq?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_gt?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_gte?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_in?: InputMaybe<Array<Scalars['String']['input']>>
-  linksOriginal_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  linksOriginal_lt?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_lte?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_not_contains?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_not_eq?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  linksOriginal_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  linksOriginal_startsWith?: InputMaybe<Scalars['String']['input']>
-  name_contains?: InputMaybe<Scalars['String']['input']>
-  name_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  name_endsWith?: InputMaybe<Scalars['String']['input']>
-  name_eq?: InputMaybe<Scalars['String']['input']>
-  name_gt?: InputMaybe<Scalars['String']['input']>
-  name_gte?: InputMaybe<Scalars['String']['input']>
-  name_in?: InputMaybe<Array<Scalars['String']['input']>>
-  name_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  name_lt?: InputMaybe<Scalars['String']['input']>
-  name_lte?: InputMaybe<Scalars['String']['input']>
-  name_not_contains?: InputMaybe<Scalars['String']['input']>
-  name_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  name_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  name_not_eq?: InputMaybe<Scalars['String']['input']>
-  name_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  name_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  name_startsWith?: InputMaybe<Scalars['String']['input']>
-  nonePermissions?: InputMaybe<SpacePermissionsWhereInput>
-  nonePermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  ownedByAccount?: InputMaybe<AccountWhereInput>
-  ownedByAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  postsCount_eq?: InputMaybe<Scalars['Int']['input']>
-  postsCount_gt?: InputMaybe<Scalars['Int']['input']>
-  postsCount_gte?: InputMaybe<Scalars['Int']['input']>
-  postsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  postsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  postsCount_lt?: InputMaybe<Scalars['Int']['input']>
-  postsCount_lte?: InputMaybe<Scalars['Int']['input']>
-  postsCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  postsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  posts_every?: InputMaybe<PostWhereInput>
-  posts_none?: InputMaybe<PostWhereInput>
-  posts_some?: InputMaybe<PostWhereInput>
-  profileSpace?: InputMaybe<AccountWhereInput>
-  profileSpace_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  publicPostsCount_eq?: InputMaybe<Scalars['Int']['input']>
-  publicPostsCount_gt?: InputMaybe<Scalars['Int']['input']>
-  publicPostsCount_gte?: InputMaybe<Scalars['Int']['input']>
-  publicPostsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  publicPostsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  publicPostsCount_lt?: InputMaybe<Scalars['Int']['input']>
-  publicPostsCount_lte?: InputMaybe<Scalars['Int']['input']>
-  publicPostsCount_not_eq?: InputMaybe<Scalars['Int']['input']>
-  publicPostsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>
-  spaceOwnerPermissions?: InputMaybe<SpacePermissionsWhereInput>
-  spaceOwnerPermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  summary_contains?: InputMaybe<Scalars['String']['input']>
-  summary_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  summary_endsWith?: InputMaybe<Scalars['String']['input']>
-  summary_eq?: InputMaybe<Scalars['String']['input']>
-  summary_gt?: InputMaybe<Scalars['String']['input']>
-  summary_gte?: InputMaybe<Scalars['String']['input']>
-  summary_in?: InputMaybe<Array<Scalars['String']['input']>>
-  summary_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  summary_lt?: InputMaybe<Scalars['String']['input']>
-  summary_lte?: InputMaybe<Scalars['String']['input']>
-  summary_not_contains?: InputMaybe<Scalars['String']['input']>
-  summary_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  summary_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  summary_not_eq?: InputMaybe<Scalars['String']['input']>
-  summary_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  summary_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  summary_startsWith?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_contains?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_endsWith?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_eq?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_gt?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_gte?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_in?: InputMaybe<Array<Scalars['String']['input']>>
-  tagsOriginal_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  tagsOriginal_lt?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_lte?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_not_contains?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_not_eq?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  tagsOriginal_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  tagsOriginal_startsWith?: InputMaybe<Scalars['String']['input']>
-  updatedAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  updatedAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updatedAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>
-  updatedAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>
-  updatedAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  updatedAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  updatedAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>
-  updatedAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>
-  username_contains?: InputMaybe<Scalars['String']['input']>
-  username_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  username_endsWith?: InputMaybe<Scalars['String']['input']>
-  username_eq?: InputMaybe<Scalars['String']['input']>
-  username_gt?: InputMaybe<Scalars['String']['input']>
-  username_gte?: InputMaybe<Scalars['String']['input']>
-  username_in?: InputMaybe<Array<Scalars['String']['input']>>
-  username_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  username_lt?: InputMaybe<Scalars['String']['input']>
-  username_lte?: InputMaybe<Scalars['String']['input']>
-  username_not_contains?: InputMaybe<Scalars['String']['input']>
-  username_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  username_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  username_not_eq?: InputMaybe<Scalars['String']['input']>
-  username_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  username_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  username_startsWith?: InputMaybe<Scalars['String']['input']>
-}
+  AND?: InputMaybe<Array<SpaceWhereInput>>;
+  OR?: InputMaybe<Array<SpaceWhereInput>>;
+  about_contains?: InputMaybe<Scalars['String']['input']>;
+  about_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  about_endsWith?: InputMaybe<Scalars['String']['input']>;
+  about_eq?: InputMaybe<Scalars['String']['input']>;
+  about_gt?: InputMaybe<Scalars['String']['input']>;
+  about_gte?: InputMaybe<Scalars['String']['input']>;
+  about_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  about_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  about_lt?: InputMaybe<Scalars['String']['input']>;
+  about_lte?: InputMaybe<Scalars['String']['input']>;
+  about_not_contains?: InputMaybe<Scalars['String']['input']>;
+  about_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  about_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  about_not_eq?: InputMaybe<Scalars['String']['input']>;
+  about_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  about_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  about_startsWith?: InputMaybe<Scalars['String']['input']>;
+  canEveryoneCreatePosts_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  canEveryoneCreatePosts_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  canEveryoneCreatePosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  canFollowerCreatePosts_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  canFollowerCreatePosts_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  canFollowerCreatePosts_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  content_contains?: InputMaybe<Scalars['String']['input']>;
+  content_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  content_endsWith?: InputMaybe<Scalars['String']['input']>;
+  content_eq?: InputMaybe<Scalars['String']['input']>;
+  content_gt?: InputMaybe<Scalars['String']['input']>;
+  content_gte?: InputMaybe<Scalars['String']['input']>;
+  content_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  content_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  content_lt?: InputMaybe<Scalars['String']['input']>;
+  content_lte?: InputMaybe<Scalars['String']['input']>;
+  content_not_contains?: InputMaybe<Scalars['String']['input']>;
+  content_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  content_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  content_not_eq?: InputMaybe<Scalars['String']['input']>;
+  content_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  content_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  content_startsWith?: InputMaybe<Scalars['String']['input']>;
+  createdAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  createdAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  createdAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  createdAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  createdByAccount?: InputMaybe<AccountWhereInput>;
+  createdByAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdOnDay_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  createdOnDay_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdOnDay_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdOnDay_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  email_contains?: InputMaybe<Scalars['String']['input']>;
+  email_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  email_endsWith?: InputMaybe<Scalars['String']['input']>;
+  email_eq?: InputMaybe<Scalars['String']['input']>;
+  email_gt?: InputMaybe<Scalars['String']['input']>;
+  email_gte?: InputMaybe<Scalars['String']['input']>;
+  email_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  email_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  email_lt?: InputMaybe<Scalars['String']['input']>;
+  email_lte?: InputMaybe<Scalars['String']['input']>;
+  email_not_contains?: InputMaybe<Scalars['String']['input']>;
+  email_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  email_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  email_not_eq?: InputMaybe<Scalars['String']['input']>;
+  email_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  email_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  email_startsWith?: InputMaybe<Scalars['String']['input']>;
+  everyonePermissions?: InputMaybe<SpacePermissionsWhereInput>;
+  everyonePermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  experimental_eq?: InputMaybe<Scalars['JSON']['input']>;
+  experimental_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  experimental_jsonContains?: InputMaybe<Scalars['JSON']['input']>;
+  experimental_jsonHasKey?: InputMaybe<Scalars['JSON']['input']>;
+  experimental_not_eq?: InputMaybe<Scalars['JSON']['input']>;
+  followerPermissions?: InputMaybe<SpacePermissionsWhereInput>;
+  followerPermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followersCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  followersCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  followersCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  followersCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  followers_every?: InputMaybe<SpaceFollowersWhereInput>;
+  followers_none?: InputMaybe<SpaceFollowersWhereInput>;
+  followers_some?: InputMaybe<SpaceFollowersWhereInput>;
+  format_contains?: InputMaybe<Scalars['String']['input']>;
+  format_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  format_endsWith?: InputMaybe<Scalars['String']['input']>;
+  format_eq?: InputMaybe<Scalars['String']['input']>;
+  format_gt?: InputMaybe<Scalars['String']['input']>;
+  format_gte?: InputMaybe<Scalars['String']['input']>;
+  format_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  format_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  format_lt?: InputMaybe<Scalars['String']['input']>;
+  format_lte?: InputMaybe<Scalars['String']['input']>;
+  format_not_contains?: InputMaybe<Scalars['String']['input']>;
+  format_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  format_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  format_not_eq?: InputMaybe<Scalars['String']['input']>;
+  format_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  format_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  format_startsWith?: InputMaybe<Scalars['String']['input']>;
+  handle_contains?: InputMaybe<Scalars['String']['input']>;
+  handle_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  handle_endsWith?: InputMaybe<Scalars['String']['input']>;
+  handle_eq?: InputMaybe<Scalars['String']['input']>;
+  handle_gt?: InputMaybe<Scalars['String']['input']>;
+  handle_gte?: InputMaybe<Scalars['String']['input']>;
+  handle_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  handle_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  handle_lt?: InputMaybe<Scalars['String']['input']>;
+  handle_lte?: InputMaybe<Scalars['String']['input']>;
+  handle_not_contains?: InputMaybe<Scalars['String']['input']>;
+  handle_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  handle_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  handle_not_eq?: InputMaybe<Scalars['String']['input']>;
+  handle_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  handle_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  handle_startsWith?: InputMaybe<Scalars['String']['input']>;
+  hiddenPostsCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  hiddenPostsCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  hiddenPostsCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  hiddenPostsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  hiddenPostsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  hiddenPostsCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  hiddenPostsCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  hiddenPostsCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  hiddenPostsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  hidden_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  hidden_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  hidden_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  image_contains?: InputMaybe<Scalars['String']['input']>;
+  image_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  image_endsWith?: InputMaybe<Scalars['String']['input']>;
+  image_eq?: InputMaybe<Scalars['String']['input']>;
+  image_gt?: InputMaybe<Scalars['String']['input']>;
+  image_gte?: InputMaybe<Scalars['String']['input']>;
+  image_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  image_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  image_lt?: InputMaybe<Scalars['String']['input']>;
+  image_lte?: InputMaybe<Scalars['String']['input']>;
+  image_not_contains?: InputMaybe<Scalars['String']['input']>;
+  image_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  image_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  image_not_eq?: InputMaybe<Scalars['String']['input']>;
+  image_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  image_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  image_startsWith?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_contains?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_endsWith?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_eq?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_gt?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_gte?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  interestsOriginal_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  interestsOriginal_lt?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_lte?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_not_contains?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_not_eq?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  interestsOriginal_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  interestsOriginal_startsWith?: InputMaybe<Scalars['String']['input']>;
+  isShowMore_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  isShowMore_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  isShowMore_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  linksOriginal_contains?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_endsWith?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_eq?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_gt?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_gte?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  linksOriginal_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  linksOriginal_lt?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_lte?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_not_contains?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_not_eq?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  linksOriginal_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  linksOriginal_startsWith?: InputMaybe<Scalars['String']['input']>;
+  name_contains?: InputMaybe<Scalars['String']['input']>;
+  name_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  name_endsWith?: InputMaybe<Scalars['String']['input']>;
+  name_eq?: InputMaybe<Scalars['String']['input']>;
+  name_gt?: InputMaybe<Scalars['String']['input']>;
+  name_gte?: InputMaybe<Scalars['String']['input']>;
+  name_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  name_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  name_lt?: InputMaybe<Scalars['String']['input']>;
+  name_lte?: InputMaybe<Scalars['String']['input']>;
+  name_not_contains?: InputMaybe<Scalars['String']['input']>;
+  name_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  name_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  name_not_eq?: InputMaybe<Scalars['String']['input']>;
+  name_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  name_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  name_startsWith?: InputMaybe<Scalars['String']['input']>;
+  nonePermissions?: InputMaybe<SpacePermissionsWhereInput>;
+  nonePermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  ownedByAccount?: InputMaybe<AccountWhereInput>;
+  ownedByAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  postsCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  postsCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  postsCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  postsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  postsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  postsCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  postsCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  postsCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  postsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  posts_every?: InputMaybe<PostWhereInput>;
+  posts_none?: InputMaybe<PostWhereInput>;
+  posts_some?: InputMaybe<PostWhereInput>;
+  profileSpace?: InputMaybe<AccountWhereInput>;
+  profileSpace_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  publicPostsCount_eq?: InputMaybe<Scalars['Int']['input']>;
+  publicPostsCount_gt?: InputMaybe<Scalars['Int']['input']>;
+  publicPostsCount_gte?: InputMaybe<Scalars['Int']['input']>;
+  publicPostsCount_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  publicPostsCount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  publicPostsCount_lt?: InputMaybe<Scalars['Int']['input']>;
+  publicPostsCount_lte?: InputMaybe<Scalars['Int']['input']>;
+  publicPostsCount_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  publicPostsCount_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  spaceOwnerPermissions?: InputMaybe<SpacePermissionsWhereInput>;
+  spaceOwnerPermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  summary_contains?: InputMaybe<Scalars['String']['input']>;
+  summary_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  summary_endsWith?: InputMaybe<Scalars['String']['input']>;
+  summary_eq?: InputMaybe<Scalars['String']['input']>;
+  summary_gt?: InputMaybe<Scalars['String']['input']>;
+  summary_gte?: InputMaybe<Scalars['String']['input']>;
+  summary_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  summary_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  summary_lt?: InputMaybe<Scalars['String']['input']>;
+  summary_lte?: InputMaybe<Scalars['String']['input']>;
+  summary_not_contains?: InputMaybe<Scalars['String']['input']>;
+  summary_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  summary_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  summary_not_eq?: InputMaybe<Scalars['String']['input']>;
+  summary_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  summary_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  summary_startsWith?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_contains?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_endsWith?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_eq?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_gt?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_gte?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  tagsOriginal_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  tagsOriginal_lt?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_lte?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_not_contains?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_not_eq?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  tagsOriginal_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  tagsOriginal_startsWith?: InputMaybe<Scalars['String']['input']>;
+  updatedAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  updatedAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  updatedAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  updatedAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  updatedAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  username_contains?: InputMaybe<Scalars['String']['input']>;
+  username_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  username_endsWith?: InputMaybe<Scalars['String']['input']>;
+  username_eq?: InputMaybe<Scalars['String']['input']>;
+  username_gt?: InputMaybe<Scalars['String']['input']>;
+  username_gte?: InputMaybe<Scalars['String']['input']>;
+  username_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  username_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  username_lt?: InputMaybe<Scalars['String']['input']>;
+  username_lte?: InputMaybe<Scalars['String']['input']>;
+  username_not_contains?: InputMaybe<Scalars['String']['input']>;
+  username_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  username_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  username_not_eq?: InputMaybe<Scalars['String']['input']>;
+  username_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  username_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  username_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type SpacesConnection = {
-  __typename?: 'SpacesConnection'
-  edges: Array<SpaceEdge>
-  pageInfo: PageInfo
-  totalCount: Scalars['Int']['output']
-}
+  __typename?: 'SpacesConnection';
+  edges: Array<SpaceEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 export type SquidStatus = {
-  __typename?: 'SquidStatus'
+  __typename?: 'SquidStatus';
   /** The height of the processed part of the chain */
-  height?: Maybe<Scalars['Int']['output']>
-}
+  height?: Maybe<Scalars['Int']['output']>;
+};
 
 export enum Status {
   Active = 'Active',
-  Deleted = 'Deleted',
+  Deleted = 'Deleted'
 }
 
 export type TweetAttachmentsDetails = {
-  __typename?: 'TweetAttachmentsDetails'
-  mediaKeys?: Maybe<Array<Maybe<Scalars['String']['output']>>>
-  pollIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>
-}
+  __typename?: 'TweetAttachmentsDetails';
+  mediaKeys?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  pollIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+};
 
 /** Detailed information about the Tweet attached to a Post */
 export type TweetDetails = {
-  __typename?: 'TweetDetails'
-  attachments?: Maybe<TweetAttachmentsDetails>
-  authorId?: Maybe<Scalars['String']['output']>
-  conversationId?: Maybe<Scalars['String']['output']>
-  createdAt?: Maybe<Scalars['String']['output']>
-  editHistoryTweetIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>
-  inReplyToUserId?: Maybe<Scalars['String']['output']>
-  lang?: Maybe<Scalars['String']['output']>
-  referencedTweets?: Maybe<Array<Maybe<ReferencedTweetDetails>>>
-  username?: Maybe<Scalars['String']['output']>
-}
+  __typename?: 'TweetDetails';
+  attachments?: Maybe<TweetAttachmentsDetails>;
+  authorId?: Maybe<Scalars['String']['output']>;
+  conversationId?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  editHistoryTweetIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  inReplyToUserId?: Maybe<Scalars['String']['output']>;
+  lang?: Maybe<Scalars['String']['output']>;
+  referencedTweets?: Maybe<Array<Maybe<ReferencedTweetDetails>>>;
+  username?: Maybe<Scalars['String']['output']>;
+};
 
 export type TweetDetailsWhereInput = {
-  attachments_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  authorId_contains?: InputMaybe<Scalars['String']['input']>
-  authorId_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  authorId_endsWith?: InputMaybe<Scalars['String']['input']>
-  authorId_eq?: InputMaybe<Scalars['String']['input']>
-  authorId_gt?: InputMaybe<Scalars['String']['input']>
-  authorId_gte?: InputMaybe<Scalars['String']['input']>
-  authorId_in?: InputMaybe<Array<Scalars['String']['input']>>
-  authorId_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  authorId_lt?: InputMaybe<Scalars['String']['input']>
-  authorId_lte?: InputMaybe<Scalars['String']['input']>
-  authorId_not_contains?: InputMaybe<Scalars['String']['input']>
-  authorId_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  authorId_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  authorId_not_eq?: InputMaybe<Scalars['String']['input']>
-  authorId_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  authorId_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  authorId_startsWith?: InputMaybe<Scalars['String']['input']>
-  conversationId_contains?: InputMaybe<Scalars['String']['input']>
-  conversationId_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  conversationId_endsWith?: InputMaybe<Scalars['String']['input']>
-  conversationId_eq?: InputMaybe<Scalars['String']['input']>
-  conversationId_gt?: InputMaybe<Scalars['String']['input']>
-  conversationId_gte?: InputMaybe<Scalars['String']['input']>
-  conversationId_in?: InputMaybe<Array<Scalars['String']['input']>>
-  conversationId_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  conversationId_lt?: InputMaybe<Scalars['String']['input']>
-  conversationId_lte?: InputMaybe<Scalars['String']['input']>
-  conversationId_not_contains?: InputMaybe<Scalars['String']['input']>
-  conversationId_not_containsInsensitive?: InputMaybe<
-    Scalars['String']['input']
-  >
-  conversationId_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  conversationId_not_eq?: InputMaybe<Scalars['String']['input']>
-  conversationId_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  conversationId_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  conversationId_startsWith?: InputMaybe<Scalars['String']['input']>
-  createdAt_contains?: InputMaybe<Scalars['String']['input']>
-  createdAt_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  createdAt_endsWith?: InputMaybe<Scalars['String']['input']>
-  createdAt_eq?: InputMaybe<Scalars['String']['input']>
-  createdAt_gt?: InputMaybe<Scalars['String']['input']>
-  createdAt_gte?: InputMaybe<Scalars['String']['input']>
-  createdAt_in?: InputMaybe<Array<Scalars['String']['input']>>
-  createdAt_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  createdAt_lt?: InputMaybe<Scalars['String']['input']>
-  createdAt_lte?: InputMaybe<Scalars['String']['input']>
-  createdAt_not_contains?: InputMaybe<Scalars['String']['input']>
-  createdAt_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  createdAt_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  createdAt_not_eq?: InputMaybe<Scalars['String']['input']>
-  createdAt_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  createdAt_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  createdAt_startsWith?: InputMaybe<Scalars['String']['input']>
-  editHistoryTweetIds_containsAll?: InputMaybe<
-    Array<InputMaybe<Scalars['String']['input']>>
-  >
-  editHistoryTweetIds_containsAny?: InputMaybe<
-    Array<InputMaybe<Scalars['String']['input']>>
-  >
-  editHistoryTweetIds_containsNone?: InputMaybe<
-    Array<InputMaybe<Scalars['String']['input']>>
-  >
-  editHistoryTweetIds_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  inReplyToUserId_contains?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_endsWith?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_eq?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_gt?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_gte?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_in?: InputMaybe<Array<Scalars['String']['input']>>
-  inReplyToUserId_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  inReplyToUserId_lt?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_lte?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_not_contains?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_not_containsInsensitive?: InputMaybe<
-    Scalars['String']['input']
-  >
-  inReplyToUserId_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_not_eq?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  inReplyToUserId_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  inReplyToUserId_startsWith?: InputMaybe<Scalars['String']['input']>
-  lang_contains?: InputMaybe<Scalars['String']['input']>
-  lang_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  lang_endsWith?: InputMaybe<Scalars['String']['input']>
-  lang_eq?: InputMaybe<Scalars['String']['input']>
-  lang_gt?: InputMaybe<Scalars['String']['input']>
-  lang_gte?: InputMaybe<Scalars['String']['input']>
-  lang_in?: InputMaybe<Array<Scalars['String']['input']>>
-  lang_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  lang_lt?: InputMaybe<Scalars['String']['input']>
-  lang_lte?: InputMaybe<Scalars['String']['input']>
-  lang_not_contains?: InputMaybe<Scalars['String']['input']>
-  lang_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  lang_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  lang_not_eq?: InputMaybe<Scalars['String']['input']>
-  lang_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  lang_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  lang_startsWith?: InputMaybe<Scalars['String']['input']>
-  referencedTweets_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  username_contains?: InputMaybe<Scalars['String']['input']>
-  username_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  username_endsWith?: InputMaybe<Scalars['String']['input']>
-  username_eq?: InputMaybe<Scalars['String']['input']>
-  username_gt?: InputMaybe<Scalars['String']['input']>
-  username_gte?: InputMaybe<Scalars['String']['input']>
-  username_in?: InputMaybe<Array<Scalars['String']['input']>>
-  username_isNull?: InputMaybe<Scalars['Boolean']['input']>
-  username_lt?: InputMaybe<Scalars['String']['input']>
-  username_lte?: InputMaybe<Scalars['String']['input']>
-  username_not_contains?: InputMaybe<Scalars['String']['input']>
-  username_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>
-  username_not_endsWith?: InputMaybe<Scalars['String']['input']>
-  username_not_eq?: InputMaybe<Scalars['String']['input']>
-  username_not_in?: InputMaybe<Array<Scalars['String']['input']>>
-  username_not_startsWith?: InputMaybe<Scalars['String']['input']>
-  username_startsWith?: InputMaybe<Scalars['String']['input']>
-}
+  attachments_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  authorId_contains?: InputMaybe<Scalars['String']['input']>;
+  authorId_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  authorId_endsWith?: InputMaybe<Scalars['String']['input']>;
+  authorId_eq?: InputMaybe<Scalars['String']['input']>;
+  authorId_gt?: InputMaybe<Scalars['String']['input']>;
+  authorId_gte?: InputMaybe<Scalars['String']['input']>;
+  authorId_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  authorId_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  authorId_lt?: InputMaybe<Scalars['String']['input']>;
+  authorId_lte?: InputMaybe<Scalars['String']['input']>;
+  authorId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  authorId_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  authorId_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  authorId_not_eq?: InputMaybe<Scalars['String']['input']>;
+  authorId_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  authorId_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  authorId_startsWith?: InputMaybe<Scalars['String']['input']>;
+  conversationId_contains?: InputMaybe<Scalars['String']['input']>;
+  conversationId_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  conversationId_endsWith?: InputMaybe<Scalars['String']['input']>;
+  conversationId_eq?: InputMaybe<Scalars['String']['input']>;
+  conversationId_gt?: InputMaybe<Scalars['String']['input']>;
+  conversationId_gte?: InputMaybe<Scalars['String']['input']>;
+  conversationId_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  conversationId_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  conversationId_lt?: InputMaybe<Scalars['String']['input']>;
+  conversationId_lte?: InputMaybe<Scalars['String']['input']>;
+  conversationId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  conversationId_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  conversationId_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  conversationId_not_eq?: InputMaybe<Scalars['String']['input']>;
+  conversationId_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  conversationId_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  conversationId_startsWith?: InputMaybe<Scalars['String']['input']>;
+  createdAt_contains?: InputMaybe<Scalars['String']['input']>;
+  createdAt_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  createdAt_endsWith?: InputMaybe<Scalars['String']['input']>;
+  createdAt_eq?: InputMaybe<Scalars['String']['input']>;
+  createdAt_gt?: InputMaybe<Scalars['String']['input']>;
+  createdAt_gte?: InputMaybe<Scalars['String']['input']>;
+  createdAt_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  createdAt_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAt_lt?: InputMaybe<Scalars['String']['input']>;
+  createdAt_lte?: InputMaybe<Scalars['String']['input']>;
+  createdAt_not_contains?: InputMaybe<Scalars['String']['input']>;
+  createdAt_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  createdAt_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  createdAt_not_eq?: InputMaybe<Scalars['String']['input']>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  createdAt_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  createdAt_startsWith?: InputMaybe<Scalars['String']['input']>;
+  editHistoryTweetIds_containsAll?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  editHistoryTweetIds_containsAny?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  editHistoryTweetIds_containsNone?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  editHistoryTweetIds_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  inReplyToUserId_contains?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_endsWith?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_eq?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_gt?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_gte?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  inReplyToUserId_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  inReplyToUserId_lt?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_lte?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_not_eq?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  inReplyToUserId_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  inReplyToUserId_startsWith?: InputMaybe<Scalars['String']['input']>;
+  lang_contains?: InputMaybe<Scalars['String']['input']>;
+  lang_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  lang_endsWith?: InputMaybe<Scalars['String']['input']>;
+  lang_eq?: InputMaybe<Scalars['String']['input']>;
+  lang_gt?: InputMaybe<Scalars['String']['input']>;
+  lang_gte?: InputMaybe<Scalars['String']['input']>;
+  lang_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  lang_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  lang_lt?: InputMaybe<Scalars['String']['input']>;
+  lang_lte?: InputMaybe<Scalars['String']['input']>;
+  lang_not_contains?: InputMaybe<Scalars['String']['input']>;
+  lang_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  lang_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  lang_not_eq?: InputMaybe<Scalars['String']['input']>;
+  lang_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  lang_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  lang_startsWith?: InputMaybe<Scalars['String']['input']>;
+  referencedTweets_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  username_contains?: InputMaybe<Scalars['String']['input']>;
+  username_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  username_endsWith?: InputMaybe<Scalars['String']['input']>;
+  username_eq?: InputMaybe<Scalars['String']['input']>;
+  username_gt?: InputMaybe<Scalars['String']['input']>;
+  username_gte?: InputMaybe<Scalars['String']['input']>;
+  username_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  username_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  username_lt?: InputMaybe<Scalars['String']['input']>;
+  username_lte?: InputMaybe<Scalars['String']['input']>;
+  username_not_contains?: InputMaybe<Scalars['String']['input']>;
+  username_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  username_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  username_not_eq?: InputMaybe<Scalars['String']['input']>;
+  username_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  username_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  username_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type WhereIdInput = {
-  id: Scalars['String']['input']
-}
+  id: Scalars['String']['input'];
+};
+
+export type GetPostsQueryVariables = Exact<{
+  ids?: Maybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
+
+
+export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, tweetId?: string | null, createdByAccount: { __typename?: 'Account', id: string }, tweetDetails?: { __typename?: 'TweetDetails', username?: string | null } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null }> };
 
 export type GetSpacesQueryVariables = Exact<{
-  ids?: Maybe<Array<Scalars['String']['input']> | Scalars['String']['input']>
-}>
+  ids?: Maybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
 
-export type GetSpacesQuery = {
-  __typename?: 'Query'
-  spaces: Array<{
-    __typename?: 'Space'
-    canEveryoneCreatePosts?: boolean | null
-    canFollowerCreatePosts?: boolean | null
-    content?: string | null
-    createdAtBlock?: any | null
-    createdAtTime?: any | null
-    email?: string | null
-    name?: string | null
-    summary?: string | null
-    isShowMore?: boolean | null
-    linksOriginal?: string | null
-    hidden: boolean
-    id: string
-    updatedAtTime?: any | null
-    postsCount: number
-    image?: string | null
-    tagsOriginal?: string | null
-    about?: string | null
-    createdByAccount: { __typename?: 'Account'; id: string }
-    ownedByAccount: { __typename?: 'Account'; id: string }
-  }>
-}
 
-export type SpaceFragmentFragment = {
-  __typename?: 'Space'
-  canEveryoneCreatePosts?: boolean | null
-  canFollowerCreatePosts?: boolean | null
-  content?: string | null
-  createdAtBlock?: any | null
-  createdAtTime?: any | null
-  email?: string | null
-  name?: string | null
-  summary?: string | null
-  isShowMore?: boolean | null
-  linksOriginal?: string | null
-  hidden: boolean
-  id: string
-  updatedAtTime?: any | null
-  postsCount: number
-  image?: string | null
-  tagsOriginal?: string | null
-  about?: string | null
-  createdByAccount: { __typename?: 'Account'; id: string }
-  ownedByAccount: { __typename?: 'Account'; id: string }
-}
+export type GetSpacesQuery = { __typename?: 'Query', spaces: Array<{ __typename?: 'Space', canEveryoneCreatePosts?: boolean | null, canFollowerCreatePosts?: boolean | null, content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, email?: string | null, name?: string | null, summary?: string | null, isShowMore?: boolean | null, linksOriginal?: string | null, hidden: boolean, id: string, updatedAtTime?: any | null, postsCount: number, image?: string | null, tagsOriginal?: string | null, about?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string } }> };
 
-export type PostFragmentFragment = {
-  __typename?: 'Post'
-  content?: string | null
-  createdAtBlock?: any | null
-  createdAtTime?: any | null
-  title?: string | null
-  body?: string | null
-  summary?: string | null
-  isShowMore?: boolean | null
-  image?: string | null
-  link?: string | null
-  downvotesCount: number
-  hidden: boolean
-  id: string
-  isComment: boolean
-  kind?: PostKind | null
-  repliesCount: number
-  sharesCount: number
-  upvotesCount: number
-  updatedAtTime?: any | null
-  canonical?: string | null
-  tagsOriginal?: string | null
-  tweetId?: string | null
-  createdByAccount: { __typename?: 'Account'; id: string }
-  tweetDetails?: {
-    __typename?: 'TweetDetails'
-    username?: string | null
-  } | null
-  ownedByAccount: { __typename?: 'Account'; id: string }
-  space?: { __typename?: 'Space'; id: string } | null
-  rootPost?: { __typename?: 'Post'; id: string } | null
-  sharedPost?: { __typename?: 'Post'; id: string } | null
-}
+export type SpaceFragmentFragment = { __typename?: 'Space', canEveryoneCreatePosts?: boolean | null, canFollowerCreatePosts?: boolean | null, content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, email?: string | null, name?: string | null, summary?: string | null, isShowMore?: boolean | null, linksOriginal?: string | null, hidden: boolean, id: string, updatedAtTime?: any | null, postsCount: number, image?: string | null, tagsOriginal?: string | null, about?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string } };
+
+export type PostFragmentFragment = { __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, tweetId?: string | null, createdByAccount: { __typename?: 'Account', id: string }, tweetDetails?: { __typename?: 'TweetDetails', username?: string | null } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null };
 
 export const SpaceFragment = gql`
-  fragment SpaceFragment on Space {
-    canEveryoneCreatePosts
-    canFollowerCreatePosts
-    content
-    createdAtBlock
-    createdAtTime
-    createdByAccount {
-      id
-    }
-    email
-    name
-    summary
-    isShowMore
-    linksOriginal
-    hidden
+    fragment SpaceFragment on Space {
+  canEveryoneCreatePosts
+  canFollowerCreatePosts
+  content
+  createdAtBlock
+  createdAtTime
+  createdByAccount {
     id
-    updatedAtTime
-    postsCount
-    image
-    tagsOriginal
-    about
-    ownedByAccount {
-      id
-    }
   }
-`
+  email
+  name
+  summary
+  isShowMore
+  linksOriginal
+  hidden
+  id
+  updatedAtTime
+  postsCount
+  image
+  tagsOriginal
+  about
+  ownedByAccount {
+    id
+  }
+}
+    `;
 export const PostFragment = gql`
-  fragment PostFragment on Post {
-    content
-    createdAtBlock
-    createdAtTime
-    createdByAccount {
-      id
-    }
-    title
-    body
-    summary
-    isShowMore
-    image
-    link
-    downvotesCount
-    hidden
+    fragment PostFragment on Post {
+  content
+  createdAtBlock
+  createdAtTime
+  createdByAccount {
     id
-    isComment
-    kind
-    repliesCount
-    sharesCount
-    upvotesCount
-    updatedAtTime
-    canonical
-    tagsOriginal
-    tweetId
-    tweetDetails {
-      username
-    }
-    ownedByAccount {
-      id
-    }
-    space {
-      id
-    }
-    rootPost {
-      id
-    }
-    sharedPost {
-      id
-    }
   }
-`
+  title
+  body
+  summary
+  isShowMore
+  image
+  link
+  downvotesCount
+  hidden
+  id
+  isComment
+  kind
+  repliesCount
+  sharesCount
+  upvotesCount
+  updatedAtTime
+  canonical
+  tagsOriginal
+  tweetId
+  tweetDetails {
+    username
+  }
+  ownedByAccount {
+    id
+  }
+  space {
+    id
+  }
+  rootPost {
+    id
+  }
+  sharedPost {
+    id
+  }
+}
+    `;
+export const GetPosts = gql`
+    query getPosts($ids: [String!]) {
+  posts(where: {id_in: $ids, hidden_eq: false}) {
+    ...PostFragment
+  }
+}
+    ${PostFragment}`;
 export const GetSpaces = gql`
-  query getSpaces($ids: [String!]) {
-    spaces(where: { id_in: $ids }) {
-      ...SpaceFragment
-    }
+    query getSpaces($ids: [String!]) {
+  spaces(where: {id_in: $ids, hidden_eq: false}) {
+    ...SpaceFragment
   }
-  ${SpaceFragment}
-`
+}
+    ${SpaceFragment}`;

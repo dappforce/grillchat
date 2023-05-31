@@ -1,5 +1,5 @@
 import { getLinkedChatIdsForSpaceId } from '@/constants/chat-room'
-import { getPostsFromCache } from '@/pages/api/posts'
+import { getPostsServer } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
@@ -49,7 +49,7 @@ export async function getChatPreviewsData(chatIds: string[]) {
         return subsocialApi.blockchain.getReplyIdsByPostId(chatId)
       })
     ),
-    getPostsFromCache(chatIds),
+    getPostsServer(chatIds),
   ] as const)
 
   const lastMessages = await getLastMessages(messageIdsByChatIds)
@@ -63,7 +63,7 @@ async function getLastMessages(messageIdsByChatIds: string[][]) {
 
   let lastMessages: PostData[] = []
   if (lastMessageIds.length > 0) {
-    lastMessages = await getPostsFromCache(lastMessageIds)
+    lastMessages = await getPostsServer(lastMessageIds)
   }
   return lastMessages
 }

@@ -1,7 +1,7 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getSpaceIdFromAlias } from '@/constants/chat-room'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
-import { getPostsFromCache } from '@/pages/api/posts'
+import { getPostsServer } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation'
 import { getPostQuery } from '@/services/api/query'
@@ -29,7 +29,7 @@ function getValidatedChatId(slugParam: string) {
 }
 
 async function getChatsData(chatId: string) {
-  const [chatData] = await getPostsFromCache([chatId])
+  const [chatData] = await getPostsServer([chatId])
 
   const subsocialApi = await getSubsocialApi()
   const messageIds = await subsocialApi.blockchain.getReplyIdsByPostId(chatId)
@@ -38,7 +38,7 @@ async function getChatsData(chatId: string) {
   const startSlice = Math.max(0, messageIds.length - preloadedPostCount)
   const endSlice = messageIds.length
   const prefetchedMessageIds = messageIds.slice(startSlice, endSlice)
-  const messages = await getPostsFromCache(prefetchedMessageIds)
+  const messages = await getPostsServer(prefetchedMessageIds)
 
   return { messages, chatData, messageIds }
 }
