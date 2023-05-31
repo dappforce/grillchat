@@ -13,6 +13,7 @@ import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import Image from 'next/image'
 import {
   Dispatch,
@@ -174,14 +175,39 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
   )
 }
 
-export const EvmAddressLinked = ({ closeModal }: ContentProps) => (
-  <div className='flex flex-col items-center gap-6'>
-    <Image src={LinkedEvmAddressImage} alt='' className='w-full max-w-sm' />
-    <Button size={'lg'} onClick={() => closeModal()} className='w-full'>
-      Got it!
-    </Button>
-  </div>
-)
+export const EvmAddressLinked = ({ closeModal }: ContentProps) => {
+  const twitterUrl = twitterShareUrl(
+    'https://grill.chat',
+    encodeURIComponent(`I just linked my \#EVM wallet to Grill.chat! Now, I can have a consistent identity and take advantage of new features such as interacting with #ERC20s and #NFTs`),
+    { tags: ['Ethereum', 'Grillchat', 'Subsocial'] }
+  )
+
+  return (
+    <div className='flex flex-col items-center gap-6'>
+      <Image
+        src={LinkedEvmAddressImage}
+        alt=''
+        className='w-full max-w-[260px]'
+      />
+      <Button
+        size={'lg'}
+        variant='primary'
+        onClick={() => openNewWindow(twitterUrl)}
+        className='w-full'
+      >
+        Tweet about it!
+      </Button>
+      <Button
+        size={'lg'}
+        variant='primaryOutline'
+        onClick={() => closeModal()}
+        className='w-full'
+      >
+        Got it!
+      </Button>
+    </div>
+  )
+}
 
 export const EvmLoginError = ({ setCurrentStep }: ContentProps) => {
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
