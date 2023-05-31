@@ -71,6 +71,11 @@ export function createSubsocialQuery<Data, ReturnValue>({
   const getQueryKey = createQueryKeys<Data>(key)
 
   async function fetchQuery(client: QueryClient | null, data: Data) {
+    const cachedData = client?.getQueryData(getQueryKey(data))
+    if (cachedData) {
+      return cachedData as ReturnValue
+    }
+
     const { getSubsocialApi } = await import('./connection')
     const api = await getSubsocialApi()
     const res = await fetcher({ api, data })
