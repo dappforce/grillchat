@@ -1,6 +1,6 @@
 # Grill Widget
 
-Grill Widget is a tiny package (< 1kb compressed) that you can use to integrate [Grill.chat](https://grill.chat) to your app. It wraps all the config available in a simple function call.
+Grill Widget is a tiny package (< 1kb compressed) that you can use to integrate [Grill.chat](https://grill.chat) into your app. It wraps all of the available configs in a simple function call.
 
 ## Installation
 
@@ -12,7 +12,7 @@ or using CDN
 
 ```html
 <script src="https://unpkg.com/@subsocial/grill-widget" defer></script>
-<!-- this script will expose `GRILL` variable to window.  -->
+<!-- this script will expose the `GRILL` variable to the window.  -->
 ```
 
 ## Usage
@@ -41,11 +41,11 @@ or using CDN
    window.GRILL.init(config)
    ```
 
-3. That's it 🥳!
+3. That's it! 🥳
 
 ## Customization
 
-You can customize a Grill UI by passing a config object to `grill.init()` function. For example:
+You can customize the Grill UI by passing a config object to the `grill.init()` function. For example:
 
 ```ts
 import grill from '@subsocial/grill-widget'
@@ -62,38 +62,38 @@ All config options are optional. If you don't pass any config, it will use the d
 | `widgetElementId` | `string`                                           | The `id` of the div that you want to render the chat to. Default to `grill`                                                                                                                                                                                             |
 | `hub`             | `{ id: string }`                                   | The `id` or the `domain name` of the space that you want to show the topics from. You can read on how to [manage your space here](https://github.com/dappforce/grillchat/blob/main/README.md#how-to-manage-your-space). Default to `{ id: 'x' }` (grill.chat home page) |
 | `channel`         | [`Channel`](#channel-option)                       | Option to make the iframe open chat room (a channel) directly. Read more about this option [here](#channel-option)                                                                                                                                                      |
-| `theme`           | `'light' or 'dark'`                                | The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat>                                                                                                                                                 |
+| `theme`           | `'light' or 'dark'`                                | The theme of the chat. If omitted, it will use the system preferences or the last <https://grill.chat> theme selected by the user.                                                                                                                                                |
 | `onWidgetCreated` | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                                                                                                                                                         |
 
 ### Channel Option
 
-Channel option is used to make the iframe open chat room (a channel) directly. This is useful if you want to have a specific topic for your user to discuss.
+The channel option is used to make the iframe open a chat room (a channel) directly. This is useful if you want to have a specific topic for your user to discuss.
 
 | Name       | Type                                   | Description                                                                                                                |
 | ---------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `type`     | `'channel'` &#124; `'resource'`        | The type of the channel. Check options for [channel](#type-channel-options) and [resource](#type-resource-options) bellow. |
-| `settings` | [`ChannelSettings`](#channel-settings) | The settings of the channel. Read more about this [here](#channel-settings)                                                |
+| `type`     | `'channel'` &#124; `'resource'`        | The channel type. Check the options for [channels](#type-channel-options) and [resources](#type-resource-options) below. |
+| `settings` | [`ChannelSettings`](#channel-settings) | The settings of the channel. Read more about this [here](#channel-settings).                                                |
 
 #### Type `'channel'` Options
 
-The type opens static chat room by id
+This type opens a static chat room by id.
 
 | Name | Type     | Description                                                                             |
 | ---- | -------- | --------------------------------------------------------------------------------------- |
-| `id` | `string` | The id of the channel. This should be the channel id of the topic that you want to open |
+| `id` | `string` | The id of the channel. This should be the channel id of the topic that you want to open. |
 
 #### Type `'resource'` Options
 
-The type creates new or opens existed chat room by resource.
+This type creates a new, or opens an existing, chat room by resource.
 
 | Name       | Type                     | Description                                                                                                                                                                          |
 | ---------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `resource` | `Resource`               | The resource that will be linked to the postId in the blockchain should be the Resource. You can find examples suitable for various scenarios [here](#resource-discussion-examples). |
-| `metadata` | `{ title, body, image }` | The metadata will be used as the content for the discussion post within the blockchain.                                                                                              |
+| `resource` | `Resource`               | The resource linked to the postId on the blockchain should be the Resource. You can find examples suitable for various scenarios [here](#resource-discussion-examples). |
+| `metadata` | `{ title, body, image }` | The metadata will be used as the content for the discussion post on the blockchain.                                                                                              |
 
 > **Warning**
 >
-> To use the type, install the package via:
+> To use this type, install the package via:
 >
 > `yarn add @subsocial/resource-discussions`
 >
@@ -101,13 +101,13 @@ The type creates new or opens existed chat room by resource.
 
 #### Channel Settings
 
-You can customize the look and feel of Grill UI via channel settings.
+You can customize the look and feel of the Grill UI via channel settings.
 
 | Name                   | Type      | Description                                                                                                                                                                                             |
 | ---------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `enableBackButton`     | `boolean` | If set to `true`, it will show the back button in the channel iframe. Default to `false`                                                                                                                |
-| `enableLoginButton`    | `boolean` | If set to `true`, it will show the login button in the channel iframe. Default to `false`                                                                                                               |
-| `enableInputAutofocus` | `boolean` | If set to `true`, it will autofocus on the message input when the iframe is loaded. The default behavior is `true`, except on touch devices. If set `true`, it will autofocus the input on all devices. |
+| `enableLoginButton`    | `boolean` | If set to `true`, it will show the login button in the channel iframe. Defaults to `false`.                                                                                                               |
+| `enableInputAutofocus` | `boolean` | If set to `true`, it will autofocus on the message input when the iframe is loaded. The default behavior is `true`, except on touch devices. If set to `true`, it will autofocus the input on all devices. |
 
 ### Examples
 
@@ -183,11 +183,11 @@ The resource config has a conditional structure, which means that each subsequen
 depends on the previous one through a config hierarchy. You can envision this hierarchy as
 a directed graph tree with a variety of values and a strict config structure.
 There are various supported combinations of config values. On the other hand,
-you can provide your own values. However, in such a case, your resource config will
+you can provide your own values. However, in that case, your resource config will
 only have a basic list of resourceValue properties.
 
 <details>
-  <summary>In this list, you can find all the currently supported config value conditions.</summary>
+  <summary>In this list, you can find all of the currently supported config value conditions.</summary>
    <blockquote>
    <details><summary>schema: social</summary>
 
@@ -294,7 +294,7 @@ new Resource({
   chainName: 'polygon',
   resourceType: 'nft',
   resourceValue: {
-    standart: 'ERC-721',
+    standard: 'ERC-721',
     collectionId: '0x0000000000000000000000000',
     tokenId: '112',
   },
@@ -315,7 +315,7 @@ new Resource({
 })
 ```
 
-4. Elon Mask Twitter profile
+4. Elon Musk Twitter profile
 
 ```ts
 new Resource({
@@ -346,7 +346,7 @@ new Resource({
   chainName: 'kusama',
   resourceType: 'nft',
   resourceValue: {
-    standart: 'rmrk2',
+    standard: 'rmrk2',
     collectionId: '22708b368d163c8007',
     tokenId: '00000020',
   },
