@@ -13,11 +13,13 @@ import ChatPreview from './ChatPreview/ChatPreview'
 export type ChatPreviewListProps = ComponentProps<'div'> & {
   chats: (PostData | undefined | null)[]
   focusedElementIndex?: number
+  hubId?: string
 }
 
 export default function ChatPreviewList({
   chats,
   focusedElementIndex,
+  hubId,
 }: ChatPreviewListProps) {
   return (
     <div className='flex flex-col'>
@@ -28,6 +30,7 @@ export default function ChatPreviewList({
             isFocused={idx === focusedElementIndex}
             chat={chat}
             key={chat.id}
+            hubId={hubId}
           />
         )
       })}
@@ -38,9 +41,11 @@ export default function ChatPreviewList({
 function ChatPreviewContainer({
   chat,
   isFocused,
+  hubId,
 }: {
   chat: PostData
   isFocused?: boolean
+  hubId?: string
 }) {
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
@@ -48,8 +53,8 @@ function ChatPreviewContainer({
 
   const content = chat?.content
 
-  const hubId = chat.struct.spaceId
-  const aliasOrHub = getAliasFromSpaceId(hubId ?? '') ?? hubId
+  const usedHubId = hubId || chat.struct.spaceId
+  const aliasOrHub = getAliasFromSpaceId(usedHubId ?? '') ?? usedHubId
   const linkTo = getChatPageLink(
     router,
     createSlug(chat.id, { title: content?.title }),
@@ -89,7 +94,7 @@ function ChatPreviewContainer({
       title={content?.title ?? ''}
       description={content?.body ?? ''}
       chatId={chat.id}
-      hubId={hubId}
+      hubId={usedHubId}
       withUnreadCount
       withFocusedStyle={isFocused}
     />

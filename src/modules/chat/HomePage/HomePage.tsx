@@ -63,6 +63,7 @@ export default function HomePage({ hubId }: HomePageProps) {
           <NoChatsFound search={search} hubId={hubId} />
         )}
         <ChatPreviewList
+          hubId={hubId}
           chats={searchResults}
           focusedElementIndex={focusedElementIndex}
         />
