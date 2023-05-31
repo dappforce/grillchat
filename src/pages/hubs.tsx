@@ -21,23 +21,20 @@ export const getStaticProps = getCommonStaticProps<
 
     try {
       const subsocialApi = await getSubsocialApi()
-      const hubsData = await subsocialApi.findSpaces({
-        ids: hubIds,
-        visibility: 'onlyVisible',
-      })
+      const hubsData = await Promise.all(
+        hubIds.map((hubId) => getSpaceQuery.fetchQuery(queryClient, hubId))
+      )
 
       await Promise.all([
         prefetchChatPreviewsData(queryClient, getMainSpaceId()),
         ...hubsData.map(async (hub) => {
+          if (!hub) return
+
           const chatIds = await subsocialApi.blockchain.postIdsBySpaceId(hub.id)
           const linkedChats = getLinkedChatIdsForSpaceId(hub.id)
           hubsChatCount[hub.id] = chatIds.length + linkedChats.length
         }),
       ])
-
-      hubsData.forEach((hub) => {
-        getSpaceQuery.setQueryData(queryClient, hub.id, hub)
-      })
     } catch (err) {
       console.error('Error fetching for hubs page: ', err)
     }
