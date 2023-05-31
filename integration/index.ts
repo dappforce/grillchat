@@ -158,6 +158,7 @@ const grill = {
     }
 
     iframe.src = `${baseUrl}?${query.get()}`
+    iframe.allow = 'clipboard-write'
 
     if (mergedConfig.onWidgetCreated) {
       mergedConfig.onWidgetCreated?.(iframe)
