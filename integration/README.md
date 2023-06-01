@@ -366,3 +366,16 @@ new Resource({
   },
 })
 ```
+
+8. Kusama Proposal
+```ts
+new Resource({
+  schema: 'chain',
+  chainType: 'substrate',
+  chainName: 'kusama',
+  resourceType: 'proposal',
+  resourceValue: {
+    id: '1'
+  },
+})
+```
