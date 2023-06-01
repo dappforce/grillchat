@@ -3,7 +3,7 @@ import { buttonStyles } from '@/components/Button'
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
-import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/chat'
+import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { useConfigContext } from '@/contexts/ConfigContext'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import useToastError from '@/hooks/useToastError'
@@ -28,6 +28,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   onSubmit?: () => void
   replyTo?: string
   clearReplyTo?: () => void
+  disabled?: boolean
 }
 
 function processMessage(message: string) {
@@ -38,6 +39,7 @@ export default function ChatForm({
   className,
   chatId,
   onSubmit,
+  disabled,
   replyTo,
   clearReplyTo,
   ...props
@@ -158,7 +160,7 @@ export default function ChatForm({
             >
               <TextArea
                 onEnterToSubmitForm={submitForm}
-                disabled={!chatId}
+                disabled={!chatId || disabled}
                 ref={textAreaRef}
                 value={messageBody}
                 onChange={(e) => setMessageBody((e.target as any).value)}
