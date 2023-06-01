@@ -184,7 +184,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
       </div>
       <p className='mb-4 mt-6 text-text-muted'>
         Now, you can connect an EVM wallet to benefit from EVM features such as
-        ERC20 tokens, NFTs, and more.
+        ERC-20 tokens, NFTs, and other smart contracts.
       </p>
       <CustomConnectButton
         className='w-full'
@@ -204,9 +204,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
 export const EvmAddressLinked = ({ closeModal }: ContentProps) => {
   const twitterUrl = twitterShareUrl(
     'https://grill.chat',
-    encodeURIComponent(
-      `I just linked my \#EVM wallet to Grill.chat! Now, I can have a consistent identity and take advantage of new features such as interacting with #ERC20s and #NFTs`
-    ),
+    `I just linked my #EVM wallet to Grill.chat! Now, I can have a consistent identity and take advantage of new features such as interacting with #ERC20, #NFT, and other smart contracts 🥳`,
     { tags: ['Ethereum', 'Grillchat', 'Subsocial'] }
   )
 
@@ -224,14 +222,6 @@ export const EvmAddressLinked = ({ closeModal }: ContentProps) => {
         className='w-full'
       >
         Tweet about it!
-      </Button>
-      <Button
-        size={'lg'}
-        variant='primaryOutline'
-        onClick={() => closeModal()}
-        className='w-full'
-      >
-        Got it!
       </Button>
     </div>
   )

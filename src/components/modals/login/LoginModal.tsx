@@ -40,7 +40,7 @@ const modalHeader: ModalTitle = {
   },
   'evm-address-linked': {
     title: '🎉 EVM Wallet connected',
-    desc: `Now you can use all of Grill's EVM features such as ERC20 tokens, NFTs, and more.`,
+    desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
   },
   'evm-connecting-error': {
     title: '😕 Something went wrong',
