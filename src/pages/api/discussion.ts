@@ -46,6 +46,39 @@ export type SaveDiscussionContentResponse = {
   cid?: string
 }
 
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ApiDiscussionResponse>
+) {
+  if (req.method !== 'POST') return res.status(404).end()
+
+  const body = bodySchema.safeParse(req.body)
+
+  if (!body.success) {
+    return res.status(400).send({
+      success: false,
+      message: 'Invalid request body',
+      errors: body.error.errors,
+    })
+  }
+
+  const { resourceId, spaceId, content } = body.data
+
+  const response: ApiDiscussionResponse = await getOrCreateDiscussion({
+    content: {
+      title: content.title,
+      body: content.body,
+      image: content.image ?? '',
+      tags: [],
+      canonical: '',
+    },
+    spaceId,
+    resourceId,
+  })
+
+  return res.status(response.success ? 200 : 500).send(response)
+}
+
 export async function saveDiscussionContent(
   contentBody: IpfsPostContent
 ): Promise<SaveDiscussionContentResponse> {
@@ -200,37 +233,4 @@ export async function getOrCreateDiscussion({
       errors: [e],
     }
   }
-}
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiDiscussionResponse>
-) {
-  if (req.method !== 'POST') return res.status(404).end()
-
-  const body = bodySchema.safeParse(req.body)
-
-  if (!body.success) {
-    return res.status(400).send({
-      success: false,
-      message: 'Invalid request body',
-      errors: body.error.errors,
-    })
-  }
-
-  const { resourceId, spaceId, content } = body.data
-
-  const response: ApiDiscussionResponse = await getOrCreateDiscussion({
-    content: {
-      title: content.title,
-      body: content.body,
-      image: content.image ?? '',
-      tags: [],
-      canonical: '',
-    },
-    spaceId,
-    resourceId,
-  })
-
-  return res.status(response.success ? 200 : 500).send(response)
 }
