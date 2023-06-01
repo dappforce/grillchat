@@ -737,10 +737,10 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@subsocial/resource-discussions@^0.0.2-beta.1":
-  version "0.0.2-beta.1"
-  resolved "https://registry.yarnpkg.com/@subsocial/resource-discussions/-/resource-discussions-0.0.2-beta.1.tgz#5728864e19bcdc8133be8a0f5202c88aeec4204c"
-  integrity sha512-RCaJ7sfJQWZibw0w8CzHJP+46Ygif/pzkPFxBYY4axofoKGf8FYuac8IEfb2SCfCwqwDOhra/O32BpM6ejXw5Q==
+"@subsocial/resource-discussions@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@subsocial/resource-discussions/-/resource-discussions-0.0.3.tgz#18a13c8ad27b039328e8fc8ac330b7f923a271cc"
+  integrity sha512-XCrDFbypAyTibLgvEPYJkqI1uDoX+wmnyqis8Hrher6Y9QFGiG7gPnNk/Bmv5zmiEiz9HJ5k+C6IwbiS5B+KyQ==
   dependencies:
     graphology "^0.25.1"
 
