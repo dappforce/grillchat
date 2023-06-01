@@ -17,13 +17,15 @@ export type LoginModalProps = ModalFunctionalityProps & {
   openModal: () => void
 }
 
+const PRIVATE_KEY_LENGTH = 64
+
 export default function LoginModal({
   afterLogin,
   beforeLogin,
   ...props
 }: LoginModalProps) {
   const login = useMyAccount((state) => state.login)
-  const [privateKey, setPrivateKey] = useState('')
+  const [secretKey, setSecretKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
   const {
@@ -39,12 +41,15 @@ export default function LoginModal({
 
   const isLoading = loadingRequestToken || hasStartCaptcha
 
+  const processSecretKey = (secretKey: string) => secretKey.trim()
+
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
     beforeLogin?.()
-    if (await login(privateKey)) {
+    const processedSecretKey = processSecretKey(secretKey)
+    if (await login(processedSecretKey)) {
       afterLogin?.()
-      setPrivateKey('')
+      setSecretKey('')
       props.closeModal()
     } else {
       toast.custom((t) => (
@@ -82,16 +87,23 @@ export default function LoginModal({
       <form onSubmit={onSubmit} className='mt-2 flex flex-col gap-4'>
         <TextArea
           ref={inputRef}
-          value={privateKey}
+          value={secretKey}
           rows={3}
           size='sm'
           className='bg-background'
           onChange={(e) =>
-            setPrivateKey((e.target as HTMLTextAreaElement).value)
+            setSecretKey((e.target as HTMLTextAreaElement).value)
           }
           placeholder='Enter your Grill secret key'
         />
-        <Button disabled={!privateKey} size='lg'>
+        <Button
+          disabled={
+            !secretKey ||
+            processSecretKey(secretKey).length !== PRIVATE_KEY_LENGTH
+          }
+          type='submit'
+          size='lg'
+        >
           Login
         </Button>
         <div className='w-full'>
