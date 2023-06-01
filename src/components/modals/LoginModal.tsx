@@ -17,6 +17,8 @@ export type LoginModalProps = ModalFunctionalityProps & {
   openModal: () => void
 }
 
+const PRIVATE_KEY_LENGTH = 64
+
 export default function LoginModal({
   afterLogin,
   beforeLogin,
@@ -91,7 +93,11 @@ export default function LoginModal({
           }
           placeholder='Enter your Grill secret key'
         />
-        <Button disabled={!privateKey} size='lg'>
+        <Button
+          disabled={!privateKey || privateKey.length < PRIVATE_KEY_LENGTH}
+          type='submit'
+          size='lg'
+        >
           Login
         </Button>
         <div className='w-full'>
