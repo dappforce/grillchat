@@ -269,9 +269,9 @@ only have a basic list of resourceValue properties.
 
 </details>
 
-##### Resource Examples
+#### Resource Examples
 
-1. EVM account address on Ethereum
+##### 1. EVM account address on Ethereum
 
 ```ts
 new Resource({
@@ -285,7 +285,7 @@ new Resource({
 })
 ```
 
-2. NFT on Polygon
+##### 2. NFT on Polygon
 
 ```ts
 new Resource({
@@ -301,7 +301,7 @@ new Resource({
 })
 ```
 
-3. Block on Kusama
+##### 3. Block on Kusama
 
 ```ts
 new Resource({
@@ -315,7 +315,7 @@ new Resource({
 })
 ```
 
-4. Elon Musk Twitter profile
+##### 4. Elon Musk Twitter profile
 
 ```ts
 new Resource({
@@ -326,7 +326,7 @@ new Resource({
 })
 ```
 
-5. Youtube video
+##### 5. Youtube video
 
 ```ts
 new Resource({
@@ -337,7 +337,7 @@ new Resource({
 })
 ```
 
-6. RMRK2 NFT on Kusama
+##### 6. RMRK2 NFT on Kusama
 
 ```ts
 new Resource({
@@ -353,7 +353,7 @@ new Resource({
 })
 ```
 
-7. Zeitgeist Market
+##### 7. Zeitgeist Market
 
 ```ts
 new Resource({
@@ -367,7 +367,7 @@ new Resource({
 })
 ```
 
-8. Kusama Proposal
+##### 8. Kusama Proposal
 ```ts
 new Resource({
   schema: 'chain',
