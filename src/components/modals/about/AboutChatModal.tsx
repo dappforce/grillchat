@@ -91,11 +91,11 @@ export default function AboutChatModal({
           return (
             <AboutModal
               {...props}
-              title={content?.title ?? ''}
+              title={content?.title}
               subtitle={`${messageCount} messages`}
               actionMenu={getActionMenu(mutateAsync, isLoading)}
               contentList={contentList}
-              imageCid={content?.image ?? ''}
+              image={content?.image}
             />
           )
         }}

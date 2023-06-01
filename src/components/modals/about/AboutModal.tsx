@@ -14,8 +14,8 @@ type Action = {
   disabled?: boolean
 }
 export type AboutModalProps = ModalFunctionalityProps & {
-  title: string
-  imageCid: string
+  title: string | undefined
+  image: string | undefined
   isImageCircle?: boolean
   subtitle: string
   contentList: DataCardProps['data']
@@ -27,7 +27,7 @@ export default function AboutModal({
   title,
   subtitle,
   isImageCircle = true,
-  imageCid,
+  image,
   contentList,
   actionMenu,
   bottomElement,
@@ -38,7 +38,7 @@ export default function AboutModal({
       <div className='mt-4 flex flex-col items-center gap-4'>
         <div className='flex flex-col items-center text-center'>
           <Image
-            src={getIpfsContentUrl(imageCid)}
+            src={getIpfsContentUrl(image ?? '')}
             className={cx(
               getCommonClassNames('chatImageBackground'),
               isImageCircle ? 'rounded-full' : 'rounded-2xl',
