@@ -1,4 +1,5 @@
 export function getIpfsContentUrl(cid: string) {
+  if (!cid || cid.startsWith('http')) return cid
   return `https://ipfs.subsocial.network/ipfs/${cid}`
 }
 
