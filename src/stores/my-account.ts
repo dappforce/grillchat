@@ -62,8 +62,8 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const { _syncSessionKey, _getSecretKeyForLogin } = get()
     let address: string = ''
     try {
+      console.log('secretKey', secretKey)
       secretKey = secretKey || (await _getSecretKeyForLogin())
-
       const signer = await loginWithSecretKey(secretKey)
       const encodedSecretKey = encodeSecretKey(secretKey)
       address = signer.address

@@ -7,6 +7,7 @@ import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
+import Toast from '@/components/Toast'
 import useGetTheme from '@/hooks/useGetTheme'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
@@ -22,6 +23,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { toast } from 'react-hot-toast'
 import { CustomConnectButton } from './CustomConnectButton'
 import { useSignMessageAndLinkEvmAddress } from './utils'
 
@@ -35,10 +37,11 @@ export type LoginModalStep =
 type ContentProps = ModalFunctionalityProps & {
   setCurrentStep: Dispatch<SetStateAction<LoginModalStep>>
   currentStep: LoginModalStep
-  onSubmit: (e: SyntheticEvent) => Promise<void>
   openModal: () => void
   runCaptcha: () => Promise<string | null>
   termsAndService: (className?: string) => JSX.Element
+  afterLogin?: () => void
+  beforeLogin?: () => void
 }
 
 export const LoginContent = ({
@@ -105,9 +108,32 @@ export const LoginContent = ({
   )
 }
 
-export const EnterSecretKeyContent = ({ onSubmit }: ContentProps) => {
+export const EnterSecretKeyContent = ({
+  beforeLogin,
+  afterLogin,
+  closeModal,
+}: ContentProps) => {
+  const login = useMyAccount((state) => state.login)
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  const onSubmit = async (e: SyntheticEvent) => {
+    e.preventDefault()
+    beforeLogin?.()
+    if (await login(privateKey)) {
+      afterLogin?.()
+      setPrivateKey('')
+      closeModal()
+    } else {
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          title='Login Failed'
+          description='The Grill secret key you provided is not valid'
+        />
+      ))
+    }
+  }
 
   return (
     <form onSubmit={onSubmit} className='mt-2 flex flex-col gap-4'>
@@ -178,7 +204,9 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
 export const EvmAddressLinked = ({ closeModal }: ContentProps) => {
   const twitterUrl = twitterShareUrl(
     'https://grill.chat',
-    encodeURIComponent(`I just linked my \#EVM wallet to Grill.chat! Now, I can have a consistent identity and take advantage of new features such as interacting with #ERC20s and #NFTs`),
+    encodeURIComponent(
+      `I just linked my \#EVM wallet to Grill.chat! Now, I can have a consistent identity and take advantage of new features such as interacting with #ERC20s and #NFTs`
+    ),
     { tags: ['Ethereum', 'Grillchat', 'Subsocial'] }
   )
 

@@ -55,28 +55,8 @@ export default function LoginModal({
   beforeLogin,
   ...props
 }: LoginModalProps) {
-  const login = useMyAccount((state) => state.login)
-  const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [currentStep, setCurrentStep] = useState<LoginModalStep>('login')
-
-  const onSubmit = async (e: SyntheticEvent) => {
-    e.preventDefault()
-    beforeLogin?.()
-    if (await login(privateKey)) {
-      afterLogin?.()
-      setPrivateKey('')
-      props.closeModal()
-    } else {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          title='Login Failed'
-          description='The Grill secret key you provided is not valid'
-        />
-      ))
-    }
-  }
 
   const onBackClick = () => setCurrentStep('login')
 
@@ -104,7 +84,6 @@ export default function LoginModal({
         {(runCaptcha, termsAndService) => {
           return (
             <ModalContent
-              onSubmit={onSubmit}
               setCurrentStep={setCurrentStep}
               currentStep={currentStep}
               runCaptcha={runCaptcha}
