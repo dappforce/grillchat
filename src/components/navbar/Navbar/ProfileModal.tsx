@@ -45,51 +45,9 @@ type ModalState =
   | 'logout'
   | 'share-session'
   | 'about'
-  | 'connect-evm-address'
-  | 'evm-connecting-error'
-  | 'disconect-evm-confirmation'
-const modalTitles: {
-  [key in ModalState]: {
-    title: React.ReactNode
-    desc?: React.ReactNode
-    withBackButton?: boolean
-  }
-} = {
-  account: { title: <span className='font-medium'>My Account</span> },
-  logout: {
-    title: '🤔 Did you back up your Grill secret key?',
-    withBackButton: true,
-  },
-  'private-key': {
-    title: '🔑 Grill secret key',
-    withBackButton: true,
-  },
-  'share-session': {
-    title: '💻 Share session',
-    desc: 'Use this link or scan the QR code to quickly log in to this account on another device.',
-    withBackButton: true,
-  },
-  about: {
-    title: 'About app',
-    desc: null,
-    withBackButton: true,
-  },
-  'connect-evm-address': {
-    title: '🔑 Link Your EVM Address',
-    desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display NFTs, and interact with ERC20s and smart contracts. ',
-    withBackButton: true,
-  },
-  'evm-connecting-error': {
-    title: '😕 Something went wrong',
-    desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
-    withBackButton: false,
-  },
-  'disconect-evm-confirmation': {
-    title: '🤔 Disconnect this address?',
-    desc: undefined,
-    withBackButton: false,
-  },
-}
+  | 'link-evm-address'
+  | 'evm-linking-error'
+  | 'unlink-evm-confirmation'
 
 type ContentProps = {
   address: string
@@ -105,9 +63,9 @@ const modalContents: {
   logout: LogoutContent,
   'share-session': ShareSessionContent,
   about: AboutContent,
-  'connect-evm-address': ConnectedEvmAddressContent,
-  'evm-connecting-error': EvmLoginError,
-  'disconect-evm-confirmation': DisconnectEvmConfirmationContent,
+  'link-evm-address': LinkEvmAddressContent,
+  'evm-linking-error': EvmLoginError,
+  'unlink-evm-confirmation': UnlinkEvmConfirmationContent,
 }
 
 export default function ProfileModal({
@@ -116,7 +74,7 @@ export default function ProfileModal({
   ...props
 }: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
-  const { data: linkedEvmAddress, isLoading } = getLinkedEvmAddressQuery.useQuery(address)
+  const { data: linkedEvmAddress } = getLinkedEvmAddressQuery.useQuery(address)
   const { disconnect } = useDisconnect()
 
   useEffect(() => {
@@ -125,6 +83,49 @@ export default function ProfileModal({
     }
     if (props.isOpen) setCurrentState('account')
   }, [props.isOpen])
+
+  const modalTitles: {
+    [key in ModalState]: {
+      title: React.ReactNode
+      desc?: React.ReactNode
+      withBackButton?: boolean
+    }
+  } = {
+    account: { title: <span className='font-medium'>My Account</span> },
+    logout: {
+      title: '🤔 Did you back up your Grill secret key?',
+      withBackButton: true,
+    },
+    'private-key': {
+      title: '🔑 Grill secret key',
+      withBackButton: true,
+    },
+    'share-session': {
+      title: '💻 Share session',
+      desc: 'Use this link or scan the QR code to quickly log in to this account on another device.',
+      withBackButton: true,
+    },
+    about: {
+      title: 'About app',
+      desc: null,
+      withBackButton: true,
+    },
+    'link-evm-address': {
+      title: linkedEvmAddress ? '🔑 My EVM address' : '🔑 Link EVM Address',
+      desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display NFTs, and interact with ERC20s and smart contracts. ',
+      withBackButton: true,
+    },
+    'evm-linking-error': {
+      title: '😕 Something went wrong',
+      desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
+      withBackButton: false,
+    },
+    'unlink-evm-confirmation': {
+      title: '🤔 Disconnect this address?',
+      desc: undefined,
+      withBackButton: false,
+    },
+  }
 
   const onBackClick = () => setCurrentState('account')
   const { title, desc, withBackButton } = modalTitles[currentState] || {}
@@ -167,7 +168,7 @@ function AccountContent({
 
   const onConnectEvmAddressClick = () => {
     sendEvent('click connect_evm_address')
-    setCurrentState('connect-evm-address')
+    setCurrentState('link-evm-address')
   }
   const onShowPrivateKeyClick = () => {
     sendEvent('click show_private_key_button')
@@ -189,7 +190,7 @@ function AccountContent({
 
   const menus: MenuListProps['menus'] = [
     {
-      text: 'Connect EVM address',
+      text: evmAddress ? 'My EVM Address' : 'Link EVM address',
       icon: EthIcon,
       onClick: () => {
         notification?.setNotifDone()
@@ -240,7 +241,7 @@ function AccountContent({
   )
 }
 
-function ConnectedEvmAddressContent({
+function LinkEvmAddressContent({
   evmAddress,
   setCurrentState,
 }: ContentProps) {
@@ -254,8 +255,8 @@ function ConnectedEvmAddressContent({
     evmAddress !== addressFromExtLovercased
 
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
-    setModalStep: () => setCurrentState('connect-evm-address'),
-    onError: () => setCurrentState('evm-connecting-error'),
+    setModalStep: () => setCurrentState('link-evm-address'),
+    onError: () => setCurrentState('evm-linking-error'),
     linkedEvmAddress: evmAddress,
   })
 
@@ -277,7 +278,7 @@ function ConnectedEvmAddressContent({
           <div className='flex justify-between'>
             <CopyTextInline
               text={truncateAddress(evmAddress)}
-              tooltip='Copy my Grill public address'
+              tooltip='Copy my EVM address'
               tooltipPlacement='top'
               textToCopy={evmAddress}
               textClassName='font-mono'
@@ -294,12 +295,12 @@ function ConnectedEvmAddressContent({
           </div>
           {isNotEqAddresses && connectionButton}
           <Button
-            onClick={() => setCurrentState('disconect-evm-confirmation')}
+            onClick={() => setCurrentState('unlink-evm-confirmation')}
             className='mt-6 w-full border-red-500'
             variant='primaryOutline'
             size='lg'
           >
-            Disconnect
+            Unlink EVM address
           </Button>
         </div>
       ) : (
@@ -309,17 +310,19 @@ function ConnectedEvmAddressContent({
   )
 }
 
-function DisconnectEvmConfirmationContent({
+function UnlinkEvmConfirmationContent({
   setCurrentState,
   evmAddress,
 }: ContentProps) {
   const sendEvent = useSendEvent()
-  const { mutate: unlinkEvmAddress, onCallbackLoading, isLoading } = useUnlinkEvmAddress(() =>
-    setCurrentState('connect-evm-address')
-  )
+  const {
+    mutate: unlinkEvmAddress,
+    onCallbackLoading,
+    isLoading,
+  } = useUnlinkEvmAddress(() => setCurrentState('link-evm-address'))
 
   const onButtonClick = () => {
-    setCurrentState('connect-evm-address')
+    setCurrentState('link-evm-address')
     sendEvent(`click keep-evm-address-connected`)
   }
 
@@ -332,7 +335,7 @@ function DisconnectEvmConfirmationContent({
   return (
     <div className='mt-4 flex flex-col gap-4'>
       <Button size='lg' onClick={onButtonClick}>
-        No, keep it connected
+        No, keep it linked
       </Button>
       <Button
         size='lg'
@@ -341,7 +344,7 @@ function DisconnectEvmConfirmationContent({
         className='border-red-500'
         isLoading={onCallbackLoading || isLoading}
       >
-        Yes, disconnect
+        Yes, unlink
       </Button>
     </div>
   )
@@ -443,8 +446,8 @@ function AboutContent() {
 
 function EvmLoginError({ setCurrentState, evmAddress }: ContentProps) {
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
-    setModalStep: () => setCurrentState('connect-evm-address'),
-    onError: () => setCurrentState('evm-connecting-error'),
+    setModalStep: () => setCurrentState('link-evm-address'),
+    onError: () => setCurrentState('evm-linking-error'),
     linkedEvmAddress: evmAddress,
   })
 

@@ -32,7 +32,7 @@ export type LoginModalStep =
   | 'enter-secret-key'
   | 'account-created'
   | 'evm-address-linked'
-  | 'evm-connecting-error'
+  | 'evm-linking-error'
 
 type ContentProps = ModalFunctionalityProps & {
   setCurrentStep: Dispatch<SetStateAction<LoginModalStep>>
@@ -160,7 +160,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
 
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
     setModalStep: () => setCurrentStep('evm-address-linked'),
-    onError: () => setCurrentStep('evm-connecting-error'),
+    onError: () => setCurrentStep('evm-linking-error'),
   })
 
   const isDarkTheme = theme === 'dark'
@@ -252,5 +252,5 @@ export const loginModalContents: LoginModalContents = {
   'enter-secret-key': EnterSecretKeyContent,
   'account-created': AccountCreatedContent,
   'evm-address-linked': EvmAddressLinked,
-  'evm-connecting-error': EvmLoginError,
+  'evm-linking-error': EvmLoginError,
 }

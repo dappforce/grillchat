@@ -1,10 +1,7 @@
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
-import { SyntheticEvent, useEffect, useRef, useState } from 'react'
-import { toast } from 'react-hot-toast'
-import Toast from '../../Toast'
+import { useEffect, useRef, useState } from 'react'
 import { loginModalContents, LoginModalStep } from './LoginModalContent'
 
 export type LoginModalProps = ModalFunctionalityProps & {
@@ -26,13 +23,13 @@ const modalHeader: ModalTitle = {
   login: {
     title: '🔐 Login',
     desc: '',
-    withFooter: true
+    withFooter: true,
   },
   'enter-secret-key': {
     title: '🔑 Grill secret key',
     desc: 'To access Grill.chat, you need a Grill secret key. If you do not have one, just write your first chat message, and you will be given one.',
     withBackButton: true,
-    withFooter: true
+    withFooter: true,
   },
   'account-created': {
     title: '🎉 Account created',
@@ -42,12 +39,12 @@ const modalHeader: ModalTitle = {
     title: '🎉 EVM Wallet connected',
     desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
   },
-  'evm-connecting-error': {
+  'evm-linking-error': {
     title: '😕 Something went wrong',
     desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
     withBackButton: false,
-    withFooter: false
-  }
+    withFooter: false,
+  },
 }
 
 export default function LoginModal({
