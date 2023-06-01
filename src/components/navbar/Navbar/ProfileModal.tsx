@@ -7,6 +7,7 @@ import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import AboutGrillDesc from '@/components/AboutGrillDesc'
 import Button from '@/components/Button'
+import { CommonEVMLoginErrorContent, CommonEvmAddressLinked } from '@/components/CommonModalContent'
 import { CopyText, CopyTextInline } from '@/components/CopyText'
 import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
@@ -48,6 +49,7 @@ type ModalState =
   | 'link-evm-address'
   | 'evm-linking-error'
   | 'unlink-evm-confirmation'
+  | 'evm-address-linked'
 
 type ContentProps = {
   address: string
@@ -66,6 +68,7 @@ const modalContents: {
   'link-evm-address': LinkEvmAddressContent,
   'evm-linking-error': EvmLoginError,
   'unlink-evm-confirmation': UnlinkEvmConfirmationContent,
+  'evm-address-linked': CommonEvmAddressLinked,
 }
 
 export default function ProfileModal({
@@ -121,9 +124,14 @@ export default function ProfileModal({
       withBackButton: false,
     },
     'unlink-evm-confirmation': {
-      title: '🤔 Disconnect this address?',
+      title: '🤔 Unlink EVM address?',
       desc: undefined,
       withBackButton: false,
+    },
+    'evm-address-linked': {
+      title: '🎉 EVM address linked',
+      desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
+      withBackButton: false
     },
   }
 
@@ -166,8 +174,8 @@ function AccountContent({
   const sendEvent = useSendEvent()
   const { disconnect } = useDisconnect()
 
-  const onConnectEvmAddressClick = () => {
-    sendEvent('click connect_evm_address')
+  const onLinkEvmAddressClick = () => {
+    sendEvent('click link_evm_address')
     setCurrentState('link-evm-address')
   }
   const onShowPrivateKeyClick = () => {
@@ -194,7 +202,7 @@ function AccountContent({
       icon: EthIcon,
       onClick: () => {
         notification?.setNotifDone()
-        onConnectEvmAddressClick()
+        onLinkEvmAddressClick()
       },
     },
     {
@@ -241,10 +249,7 @@ function AccountContent({
   )
 }
 
-function LinkEvmAddressContent({
-  evmAddress,
-  setCurrentState,
-}: ContentProps) {
+function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
   const { address: addressFromExt } = useAccount()
 
   const addressFromExtLovercased = addressFromExt?.toLowerCase()
@@ -255,7 +260,7 @@ function LinkEvmAddressContent({
     evmAddress !== addressFromExtLovercased
 
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
-    setModalStep: () => setCurrentState('link-evm-address'),
+    setModalStep: () => setCurrentState('evm-address-linked'),
     onError: () => setCurrentState('evm-linking-error'),
     linkedEvmAddress: evmAddress,
   })
@@ -323,12 +328,12 @@ function UnlinkEvmConfirmationContent({
 
   const onButtonClick = () => {
     setCurrentState('link-evm-address')
-    sendEvent(`click keep-evm-address-connected`)
+    sendEvent(`click keep-evm-address-linked`)
   }
 
   const onDisconnectClick = () => {
     if (!evmAddress) return
-    sendEvent('click disconnect-evm-address')
+    sendEvent('click unlink-evm-address')
     unlinkEvmAddress({ evmAddress })
   }
 
@@ -445,19 +450,11 @@ function AboutContent() {
 }
 
 function EvmLoginError({ setCurrentState, evmAddress }: ContentProps) {
-  const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
-    setModalStep: () => setCurrentState('link-evm-address'),
-    onError: () => setCurrentState('evm-linking-error'),
-    linkedEvmAddress: evmAddress,
-  })
-
   return (
-    <CustomConnectButton
-      isLoading={isLoading}
+    <CommonEVMLoginErrorContent
+      setModalStep={() => setCurrentState('link-evm-address')}
+      onError={() => setCurrentState('evm-linking-error')}
       signAndLinkOnConnect={!evmAddress}
-      signAndLinkEvmAddress={signAndLinkEvmAddress}
-      className='w-full'
-      label='Try again'
     />
   )
 }

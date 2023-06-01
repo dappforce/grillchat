@@ -1,8 +1,11 @@
-import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
 import CreateAccountIcon from '@/assets/icons/create-account.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
 import Button from '@/components/Button'
+import {
+  CommonEvmAddressLinked,
+  CommonEVMLoginErrorContent,
+} from '@/components/CommonModalContent'
 import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
@@ -14,8 +17,6 @@ import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
-import Image from 'next/image'
 import {
   Dispatch,
   SetStateAction,
@@ -201,47 +202,12 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
   )
 }
 
-export const EvmAddressLinked = ({ closeModal }: ContentProps) => {
-  const twitterUrl = twitterShareUrl(
-    'https://grill.chat',
-    `I just linked my #EVM wallet to Grill.chat! Now, I can have a consistent identity and take advantage of new features such as interacting with #ERC20, #NFT, and other smart contracts 🥳`,
-    { tags: ['Ethereum', 'Grillchat', 'Subsocial'] }
-  )
-
-  return (
-    <div className='flex flex-col items-center gap-6'>
-      <Image
-        src={LinkedEvmAddressImage}
-        alt=''
-        className='w-full max-w-[260px]'
-      />
-      <Button
-        size={'lg'}
-        variant='primary'
-        onClick={() => openNewWindow(twitterUrl)}
-        className='w-full'
-      >
-        Tweet about it!
-      </Button>
-    </div>
-  )
-}
-
-export const EvmLoginError = ({ setCurrentStep }: ContentProps) => {
-  const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
-    setModalStep: () => setCurrentStep('evm-address-linked'),
-  })
-
-  return (
-    <CustomConnectButton
-      isLoading={isLoading}
-      signAndLinkOnConnect={true}
-      signAndLinkEvmAddress={signAndLinkEvmAddress}
-      className='w-full'
-      label='Try again'
-    />
-  )
-}
+export const EvmLoginError = ({ setCurrentStep }: ContentProps) => (
+  <CommonEVMLoginErrorContent
+    setModalStep={() => setCurrentStep('evm-address-linked')}
+    signAndLinkOnConnect={true}
+  />
+)
 
 type LoginModalContents = {
   [key in LoginModalStep]: (props: ContentProps) => JSX.Element
@@ -251,6 +217,6 @@ export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'enter-secret-key': EnterSecretKeyContent,
   'account-created': AccountCreatedContent,
-  'evm-address-linked': EvmAddressLinked,
+  'evm-address-linked': CommonEvmAddressLinked,
   'evm-linking-error': EvmLoginError,
 }

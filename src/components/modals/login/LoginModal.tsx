@@ -36,7 +36,7 @@ const modalHeader: ModalTitle = {
     desc: 'We have created an anonymous account for you. You can now use Grill.chat!',
   },
   'evm-address-linked': {
-    title: '🎉 EVM Wallet connected',
+    title: '🎉 EVM address linked',
     desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
   },
   'evm-linking-error': {
