@@ -85,9 +85,9 @@ function ChatPreviewContainer({
         replace: isInIframe,
         href: linkTo,
       }}
-      image={content?.image ? getIpfsContentUrl(content.image) : ''}
-      title={content?.title ?? ''}
-      description={content?.body ?? ''}
+      image={content?.image && getIpfsContentUrl(content.image)}
+      title={content?.title}
+      description={content?.body}
       chatId={chat.id}
       hubId={hubId}
       withUnreadCount

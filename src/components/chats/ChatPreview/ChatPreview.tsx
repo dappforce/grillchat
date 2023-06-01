@@ -16,9 +16,9 @@ const ChatLastMessageTime = dynamic(() => import('./ChatLastMessageTime'), {
 })
 
 export type ChatPreviewProps = ComponentProps<'div'> & {
-  title: string
-  description: string
-  image: ImageProps['src'] | JSX.Element
+  title: string | undefined
+  description: string | undefined
+  image: ImageProps['src'] | JSX.Element | undefined
   isImageCircle?: boolean
   additionalDesc?: string
   asLink?: LinkProps
@@ -119,7 +119,7 @@ export default function ChatPreview({
         <div className='flex flex-1 items-center overflow-hidden'>
           <div className='flex flex-1 flex-col overflow-hidden'>
             <div className='flex items-center justify-between'>
-              <span className='font-medium'>{title}</span>
+              {title && <span className='font-medium'>{title}</span>}
               {renderAdditionalData()}
             </div>
             <div className='mt-1 flex items-baseline justify-between overflow-hidden'>
@@ -127,7 +127,7 @@ export default function ChatPreview({
                 <ChatLastMessage
                   hubId={hubId}
                   className='py-0.5'
-                  defaultDesc={description}
+                  defaultDesc={description ?? ''}
                   chatId={chatId}
                 />
               ) : (

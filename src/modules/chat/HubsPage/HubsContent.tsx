@@ -89,8 +89,8 @@ function ChatPreviewContainer({
       }}
       additionalDesc={chatCount ? `${chatCount} chats` : undefined}
       image={getIpfsContentUrl(content?.image ?? '')}
-      title={content?.name ?? ''}
-      description={content?.about ?? ''}
+      title={content?.name}
+      description={content?.about}
       withFocusedStyle={isFocused}
     />
   )
