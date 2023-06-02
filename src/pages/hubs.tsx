@@ -12,7 +12,7 @@ import { dehydrate, QueryClient } from '@tanstack/react-query'
 export const getStaticProps = getCommonStaticProps<
   HubsPageProps & AppCommonProps
 >(
-  () => ({}),
+  () => ({ alwaysShowScrollbarOffset: true }),
   async () => {
     const hubsChatCount: HubsPageProps['hubsChatCount'] = {}
     const hubIds = getSpaceIds()
