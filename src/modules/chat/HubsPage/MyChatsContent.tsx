@@ -55,7 +55,7 @@ function Loading() {
   return (
     <div className='flex flex-col'>
       {Array.from({ length: 3 }).map((_, idx) => (
-        <ChatPreviewSkeleton key={idx} />
+        <ChatPreviewSkeleton asContainer key={idx} />
       ))}
     </div>
   )
