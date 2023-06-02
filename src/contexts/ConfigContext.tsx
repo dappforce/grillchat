@@ -8,7 +8,6 @@ type State = {
   enableBackButton?: boolean
   enableLoginButton?: boolean
   enableInputAutofocus?: boolean
-  enableJoinButton?: boolean
   subscribeMessageCountThreshold?: number
 }
 const ConfigContext = createContext<State>({ theme: undefined, order: [] })
