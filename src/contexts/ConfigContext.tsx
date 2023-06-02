@@ -8,6 +8,7 @@ type State = {
   enableBackButton?: boolean
   enableLoginButton?: boolean
   enableInputAutofocus?: boolean
+  enableJoinButton?: boolean
   subscribeMessageCountThreshold?: number
 }
 const ConfigContext = createContext<State>({ theme: undefined, order: [] })
@@ -59,6 +60,7 @@ const schemaGetter = {
     const enableBackButton = getUrlQuery('enableBackButton')
     const enableLoginButton = getUrlQuery('enableLoginButton')
     const enableInputAutofocus = getUrlQuery('enableInputAutofocus')
+    const enableJoinButton = getUrlQuery('enableJoinButton')
 
     const subscribeMessageCountThreshold = getUrlQuery(
       'subscribeMessageCountThreshold'
@@ -81,6 +83,11 @@ const schemaGetter = {
       ),
       enableInputAutofocus: validateStringConfig(
         enableInputAutofocus,
+        ['true', 'false'],
+        (value) => value === 'true'
+      ),
+      enableJoinButton: validateStringConfig(
+        enableJoinButton,
         ['true', 'false'],
         (value) => value === 'true'
       ),
