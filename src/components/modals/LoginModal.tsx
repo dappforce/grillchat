@@ -28,7 +28,7 @@ export default function LoginModal({
 }: LoginModalProps) {
   const loginWithWeb3Auth = useMyAccount((state) => state.loginWithWeb3Auth)
   const loginAnonymously = useMyAccount((state) => state.loginAnonymously)
-  const [privateKey, setPrivateKey] = useState('')
+  const [secretKey, setSecretKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
   const {
@@ -46,23 +46,31 @@ export default function LoginModal({
 
   const processSecretKey = (secretKey: string) => secretKey.trim()
 
-  const onSubmit = async (e: SyntheticEvent) => {
-    e.preventDefault()
-    beforeLogin?.()
-    const processedSecretKey = processSecretKey(secretKey)
-    if (await loginAnonymously(processedSecretKey)) {
-      afterLogin?.()
-      setSecretKey('')
-      props.closeModal()
-    } else {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          title='Login Failed'
-          description='The grill secret key you provided is not valid'
-        />
-      ))
+  const onSubmit =
+    (authMethod?: AuthenticationMethods) => async (e: SyntheticEvent) => {
+      e.preventDefault()
+      beforeLogin?.()
+      const processedSecretKey = processSecretKey(secretKey)
+      let loginRes
+      loginRes =
+        authMethod === 'web3auth'
+          ? await loginWithWeb3Auth()
+          : await loginAnonymously(processedSecretKey)
+      if (loginRes) {
+        afterLogin?.()
+        setSecretKey('')
+        props.closeModal()
+      } else {
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            title='Login Failed'
+            description='The grill secret key you provided is not valid'
+          />
+        ))
+      }
     }
+
   const desc = (
     <span className='flex flex-col'>
       <span>
