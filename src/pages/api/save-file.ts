@@ -1,9 +1,9 @@
 import { getCrustIpfsAuth, getIpfsPinUrl } from '@/utils/env/server'
 import { SubsocialIpfsApi } from '@subsocial/api'
-import { IpfsPostContent } from '@subsocial/api/types'
+import { CommentContentForIpfs, IpfsPostContent } from '@subsocial/api/types'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-export type SaveFileRequest = IpfsPostContent
+export type SaveFileRequest = IpfsPostContent | CommentContentForIpfs
 
 export type SaveFileResponse = {
   success: boolean

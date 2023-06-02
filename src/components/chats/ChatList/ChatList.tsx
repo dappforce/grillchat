@@ -73,6 +73,9 @@ function ChatListContent({
     true
   )
   const comments = getPostQuery.useQueries(currentData)
+
+  // TODO We need to merge comments loaded from blockchain and optimistic DB here:
+
   const loadedComments = useMemo(() => {
     return comments.filter((post) => post.isLoading === false)
   }, [comments])

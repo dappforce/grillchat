@@ -1,5 +1,6 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
+import { WsChatProvider } from '@/optimism/WsChatProvider'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/utils'
 import '@/styles/globals.css'
@@ -31,16 +32,18 @@ export default function App({
   }, [])
 
   return (
-    <ThemeProvider attribute='class'>
-      <ThemeURLChecker />
-      <QueryProvider dehydratedState={dehydratedState}>
-        <ToasterConfig />
-        <NextNProgress color='#4d46dc' />
-        <HeadConfig {...head} />
-        <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
-        <Component {...props} />
-      </QueryProvider>
-    </ThemeProvider>
+    <WsChatProvider>
+      <ThemeProvider attribute='class'>
+        <ThemeURLChecker />
+        <QueryProvider dehydratedState={dehydratedState}>
+          <ToasterConfig />
+          <NextNProgress color='#4d46dc' />
+          <HeadConfig {...head} />
+          <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
+          <Component {...props} />
+        </QueryProvider>
+      </ThemeProvider>
+    </WsChatProvider>
   )
 }
 
