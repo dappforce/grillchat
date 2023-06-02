@@ -1,11 +1,12 @@
 import { removeDoubleSpaces } from '@/utils/strings'
 import { matchSorter } from 'match-sorter'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-export default function useSearch<T>(data: T[], searchKeys: string[]) {
+export default function useSearch() {
   const [search, setSearch] = useState('')
+  const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
 
-  const searchResults = useMemo(() => {
+  const getSearchResults = <T>(data: T[], searchKeys: string[]) => {
     let searchResults = data
     const processedSearch = removeDoubleSpaces(search)
 
@@ -15,31 +16,34 @@ export default function useSearch<T>(data: T[], searchKeys: string[]) {
       })
     }
 
-    return searchResults
-  }, [search, data, searchKeys])
+    return {
+      searchResults,
+      focusedElementIndex:
+        focusedElementIndex === -1
+          ? focusedElementIndex
+          : focusedElementIndex % searchResults.length,
+    }
+  }
 
-  const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
-  useEffect(() => {
-    setFocusedElementIndex(-1)
-  }, [search])
   const removeFocusedElement = () => {
     setFocusedElementIndex(-1)
   }
   const onDownClick = () => {
-    setFocusedElementIndex((prev) =>
-      Math.min(prev + 1, searchResults.length - 1)
-    )
+    setFocusedElementIndex((prev) => prev + 1)
   }
   const onUpClick = () => {
-    setFocusedElementIndex((prev) => Math.max(prev - 1, 0))
+    setFocusedElementIndex((prev) => prev - 1)
   }
+
+  useEffect(() => {
+    setFocusedElementIndex(-1)
+  }, [search])
 
   return {
     search,
     setSearch,
-    searchResults,
+    getSearchResults,
     focusController: {
-      focusedElementIndex,
       removeFocusedElement,
       onDownClick,
       onUpClick,

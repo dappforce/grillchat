@@ -1,6 +1,6 @@
 import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
 import NavbarExtension from '@/components/navbar/NavbarExtension'
-import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/chat'
+import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 

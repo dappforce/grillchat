@@ -1,4 +1,4 @@
-import { getIpfsApi } from '@/utils/server'
+import { getIpfsApi } from '@/server/ipfs'
 import { IpfsPostContent } from '@subsocial/api/types'
 import { NextApiRequest, NextApiResponse } from 'next'
 

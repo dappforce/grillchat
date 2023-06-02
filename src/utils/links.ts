@@ -25,8 +25,12 @@ export function getHomePageLink(currentPath: CurrentPath) {
   return `/${spaceId ?? ''}`
 }
 
-export function getChatPageLink(currentPath: CurrentPath, chatSlug?: string) {
-  const spaceId = getSpaceIdFromUrl(currentPath)
+export function getChatPageLink(
+  currentPath: CurrentPath,
+  chatSlug?: string,
+  defaultSpaceId?: string
+) {
+  const spaceId = getSpaceIdFromUrl(currentPath) ?? defaultSpaceId
   const currentSlug = currentPath.query.slug
   if (!chatSlug && typeof currentSlug === 'string') {
     chatSlug = currentSlug

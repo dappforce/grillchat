@@ -31,3 +31,20 @@ export const getChatIdsBySpaceIdQuery = createSubsocialQuery({
   key: 'getPostIdsBySpaceId',
   fetcher: getChatIdsBySpaceId,
 })
+
+async function getFollowedPostIdsByAddress({
+  api,
+  data: address,
+}: SubsocialQueryData<string>) {
+  if (!address) return []
+
+  const substrateApi = await api.substrateApi
+  const rawFollowedPosts =
+    await substrateApi.query.postFollows.postsFollowedByAccount(address)
+  const followedPostIds = rawFollowedPosts.toPrimitive() as number[]
+  return followedPostIds.map((id) => id.toString())
+}
+export const getFollowedPostIdsByAddressQuery = createSubsocialQuery({
+  key: 'getFollowedPostIdsByAddress',
+  fetcher: getFollowedPostIdsByAddress,
+})
