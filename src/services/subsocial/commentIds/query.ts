@@ -3,7 +3,6 @@ import {
   useSubsocialQueries,
   useSubsocialQuery,
 } from '@/subsocial-query/subsocial/query'
-import { useRef } from 'react'
 import {
   useSubscribeCommentIdsByPostId,
   useSubscribeCommentIdsByPostIds,
@@ -17,17 +16,7 @@ export function useCommentIdsByPostId(
   postId: string,
   config?: QueryConfig & { subscribe?: boolean }
 ) {
-  const resolverRef = useRef<(ids: string[]) => void>(() => undefined)
-  const promiseRef = useRef(
-    new Promise<string[]>((resolve) => {
-      resolverRef.current = (ids: string[]) => resolve(ids)
-    })
-  )
-  useSubscribeCommentIdsByPostId(
-    postId,
-    !!config?.subscribe,
-    resolverRef.current
-  )
+  useSubscribeCommentIdsByPostId(postId, !!config?.subscribe)
   return useSubsocialQuery(
     {
       key: commentIdsByPostIdKey,
@@ -37,7 +26,9 @@ export function useCommentIdsByPostId(
       if (!config?.subscribe) {
         return api.blockchain.getReplyIdsByPostId(data)
       }
-      return promiseRef.current
+
+      // if subscribing, loading infinitely until the data is set manually from subscription handler
+      return new Promise<string[]>(() => undefined)
     },
     config
   )
@@ -47,27 +38,19 @@ export function useCommentIdsByPostIds(
   postIds: string[],
   config?: QueryConfig & { subscribe?: boolean }
 ) {
-  const resolverRef = useRef<(ids: string[][]) => void>(() => undefined)
-  const promiseRef = useRef(
-    new Promise<string[][]>((resolve) => {
-      resolverRef.current = (ids: string[][]) => resolve(ids)
-    })
-  )
-  useSubscribeCommentIdsByPostIds(
-    postIds,
-    !!config?.subscribe,
-    resolverRef.current
-  )
+  useSubscribeCommentIdsByPostIds(postIds, !!config?.subscribe)
   return useSubsocialQueries(
     {
       key: commentIdsByPostIdKey,
       data: postIds,
     },
-    async ({ api, data, idx }) => {
+    async ({ api, data }) => {
       if (!config?.subscribe) {
         return api.blockchain.getReplyIdsByPostId(data)
       }
-      return (await promiseRef.current)[idx]
+
+      // if subscribing, loading infinitely until the data is set manually from subscription handler
+      return new Promise<string[]>(() => undefined)
     },
     config
   )
