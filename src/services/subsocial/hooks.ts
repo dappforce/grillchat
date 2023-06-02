@@ -17,7 +17,7 @@ export default function useCommonTxSteps<Data, ReturnValue>(
 
   const { mutateAsync } = useMutationHook()
   const { mutateAsync: requestToken } = useRequestToken()
-  const login = useMyAccount((state) => state.login)
+  const loginAnonymously = useMyAccount((state) => state.loginAnonymously)
   const hasEnoughEnergy = useMyAccount(
     (state) => (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
   )
@@ -28,7 +28,7 @@ export default function useCommonTxSteps<Data, ReturnValue>(
     const { captchaToken } = params
     let usedAddress: string = address ?? ''
     if (!address) {
-      const address = await login()
+      const address = await loginAnonymously()
       if (!address) throw new Error('Failed to login')
       usedAddress = address
     }
