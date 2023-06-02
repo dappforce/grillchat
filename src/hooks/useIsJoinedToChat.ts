@@ -2,6 +2,7 @@ import { useConfigContext } from '@/contexts/ConfigContext'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
 import { useMemo } from 'react'
+import useIsInIframe from './useIsInIframe'
 
 const isJoinedValue = {
   isJoined: true,
@@ -10,6 +11,8 @@ const isJoinedValue = {
 
 export default function useIsJoinedToChat(chatId: string, address?: string) {
   const { enableJoinButton } = useConfigContext()
+  const isInIframe = useIsInIframe()
+
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const myAddress = useMyAccount((state) => state.address)
   const usedAddress = address || myAddress
@@ -25,7 +28,7 @@ export default function useIsJoinedToChat(chatId: string, address?: string) {
     return set
   }, [data])
 
-  if (enableJoinButton) {
+  if (isInIframe && !enableJoinButton) {
     return isJoinedValue
   }
 
