@@ -1,3 +1,4 @@
+import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
 import {
@@ -32,6 +33,7 @@ export default function AboutChatModal({
   const [isOpenMetadataModal, setIsOpenMetadataModal] = useState(false)
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
 
+  const isInIframe = useIsInIframe()
   const { isJoined, isLoading } = useIsJoinedToChat(chatId)
 
   const content = chat?.content
@@ -62,7 +64,7 @@ export default function AboutChatModal({
       },
     ]
 
-    if (isLoading) return actionMenu
+    if (isLoading || isInIframe) return actionMenu
 
     if (isJoined) {
       actionMenu.push({
