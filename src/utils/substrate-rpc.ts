@@ -1,4 +1,3 @@
-import { Keyring } from '@polkadot/keyring'
 import { type SafeEventEmitterProvider } from '@web3auth/base'
 
 import { encodeSecretKey } from './account'
@@ -36,6 +35,7 @@ export class SubstrateRPC {
     address?: string
   }> {
     try {
+      const { Keyring } = await import('@polkadot/keyring')
       const privateKey = (await this.provider.request({
         method: 'private_key',
       })) as string
