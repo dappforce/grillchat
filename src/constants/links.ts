@@ -1,4 +1,5 @@
-export const SUGGEST_FEATURE_LINK = 'https://grill.hellonext.co'
+export const SUGGEST_FEATURE_LINK =
+  'https://grill.chat/x/grill-improvements-1316'
 
 export function getSuggestNewChatRoomLink(prefill: {
   chatName?: string
