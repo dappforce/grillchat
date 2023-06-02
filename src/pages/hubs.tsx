@@ -48,6 +48,7 @@ export const getStaticProps = getCommonStaticProps<
         hubsChatCount,
         isIntegrateChatButtonOnTop: Math.random() > 0.5,
       },
+      revalidate: 2,
     }
   }
 )
