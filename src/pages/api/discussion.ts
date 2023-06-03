@@ -1,3 +1,4 @@
+import { getIpfsApi } from '@/server/ipfs'
 import {
   getCommonErrorMessage,
   getTxSubDispatchErrorMessage,
@@ -5,7 +6,6 @@ import {
 } from '@/services/api/utils'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { IpfsWrapper } from '@/utils/ipfs'
-import { getIpfsApi } from '@/utils/server'
 import { ApiPromise, SubmittableResult } from '@polkadot/api'
 import { stringToHex } from '@polkadot/util'
 import { asAccountId } from '@subsocial/api'

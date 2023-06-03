@@ -35,9 +35,10 @@ const sourceSansPro = Source_Sans_Pro({
 export default function App(props: AppProps<AppCommonProps>) {
   const isInIframe = useIsInIframe()
 
+  const scrollbarSelector = isInIframe ? 'body' : 'html'
   const scrollbarStyling = props.pageProps.alwaysShowScrollbarOffset
     ? `
-      body {
+      ${scrollbarSelector} {
         overflow-y: scroll;
       }
     `

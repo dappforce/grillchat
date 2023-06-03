@@ -62,34 +62,34 @@ All config options are optional. If you don't pass any config, it will use the d
 | `widgetElementId` | `string`                                           | The `id` of the div that you want to render the chat to. Default to `grill`                                                                                                                                                                                             |
 | `hub`             | `{ id: string }`                                   | The `id` or the `domain name` of the space that you want to show the topics from. You can read on how to [manage your space here](https://github.com/dappforce/grillchat/blob/main/README.md#how-to-manage-your-space). Default to `{ id: 'x' }` (grill.chat home page) |
 | `channel`         | [`Channel`](#channel-option)                       | Option to make the iframe open chat room (a channel) directly. Read more about this option [here](#channel-option)                                                                                                                                                      |
-| `theme`           | `'light' or 'dark'`                                | The theme of the chat. If omitted, it will use the system preferences or the last <https://grill.chat> theme selected by the user.                                                                                                                                                |
+| `theme`           | `'light' or 'dark'`                                | The theme of the chat. If omitted, it will use the system preferences or the last <https://grill.chat> theme selected by the user.                                                                                                                                      |
 | `onWidgetCreated` | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                                                                                                                                                         |
 
 ### Channel Option
 
 The channel option is used to make the iframe open a chat room (a channel) directly. This is useful if you want to have a specific topic for your user to discuss.
 
-| Name       | Type                                   | Description                                                                                                                |
-| ---------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Name       | Type                                   | Description                                                                                                              |
+| ---------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `type`     | `'channel'` &#124; `'resource'`        | The channel type. Check the options for [channels](#type-channel-options) and [resources](#type-resource-options) below. |
-| `settings` | [`ChannelSettings`](#channel-settings) | The settings of the channel. Read more about this [here](#channel-settings).                                                |
+| `settings` | [`ChannelSettings`](#channel-settings) | The settings of the channel. Read more about this [here](#channel-settings).                                             |
 
 #### Type `'channel'` Options
 
 This type opens a static chat room by id.
 
-| Name | Type     | Description                                                                             |
-| ---- | -------- | --------------------------------------------------------------------------------------- |
+| Name | Type     | Description                                                                              |
+| ---- | -------- | ---------------------------------------------------------------------------------------- |
 | `id` | `string` | The id of the channel. This should be the channel id of the topic that you want to open. |
 
 #### Type `'resource'` Options
 
 This type creates a new, or opens an existing, chat room by resource.
 
-| Name       | Type                     | Description                                                                                                                                                                          |
-| ---------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Name       | Type                     | Description                                                                                                                                                             |
+| ---------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `resource` | `Resource`               | The resource linked to the postId on the blockchain should be the Resource. You can find examples suitable for various scenarios [here](#resource-discussion-examples). |
-| `metadata` | `{ title, body, image }` | The metadata will be used as the content for the discussion post on the blockchain.                                                                                              |
+| `metadata` | `{ title, body, image }` | The metadata will be used as the content for the discussion post on the blockchain.                                                                                     |
 
 > **Warning**
 >
@@ -103,10 +103,10 @@ This type creates a new, or opens an existing, chat room by resource.
 
 You can customize the look and feel of the Grill UI via channel settings.
 
-| Name                   | Type      | Description                                                                                                                                                                                             |
-| ---------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enableBackButton`     | `boolean` | If set to `true`, it will show the back button in the channel iframe. Default to `false`                                                                                                                |
-| `enableLoginButton`    | `boolean` | If set to `true`, it will show the login button in the channel iframe. Defaults to `false`.                                                                                                               |
+| Name                   | Type      | Description                                                                                                                                                                                                |
+| ---------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enableBackButton`     | `boolean` | If set to `true`, it will show the back button in the channel iframe. Default to `false`                                                                                                                   |
+| `enableLoginButton`    | `boolean` | If set to `true`, it will show the login button in the channel iframe. Defaults to `false`.                                                                                                                |
 | `enableInputAutofocus` | `boolean` | If set to `true`, it will autofocus on the message input when the iframe is loaded. The default behavior is `true`, except on touch devices. If set to `true`, it will autofocus the input on all devices. |
 
 ### Examples
@@ -150,7 +150,7 @@ const config = {
 ```ts
 const config = {
   widgetElementId: 'grill',
-  hub: { id: '1002' },
+  hub: { id: 'YOUR-HUB_ID' },
   channel: {
     type: 'resource',
     resource: new Resource({
@@ -269,9 +269,9 @@ only have a basic list of resourceValue properties.
 
 </details>
 
-##### Resource Examples
+#### Resource Examples
 
-1. EVM account address on Ethereum
+##### 1. EVM account address on Ethereum
 
 ```ts
 new Resource({
@@ -285,7 +285,46 @@ new Resource({
 })
 ```
 
-2. NFT on Polygon
+<details>
+  <summary>Full config example</summary>
+
+```ts
+const config = {
+  widgetElementId: 'grill',
+  hub: { id: 'YOUR-HUB_ID' },
+  channel: {
+    type: 'resource',
+    resource: new Resource({
+      schema: 'chain',
+      chainType: 'evm',
+      chainName: 'ethereum',
+      resourceType: 'account',
+      resourceValue: {
+        accountAddress: '0x0000000000000000000000000',
+      },
+    }),
+    settings: {
+      enableBackButton: false,
+      enableLoginButton: false,
+      enableInputAutofocus: true,
+    },
+    metadata: {
+      title: 'Ethereum account',
+      body: '...',
+      image: '',
+    },
+  },
+  theme: 'light',
+  onWidgetCreated: (iframe) => {
+    iframe.classList.add('my-custom-class')
+    return iframe
+  },
+}
+```
+
+</details>
+
+##### 2. NFT on Polygon
 
 ```ts
 new Resource({
@@ -301,7 +340,48 @@ new Resource({
 })
 ```
 
-3. Block on Kusama
+<details>
+  <summary>Full config example</summary>
+
+```ts
+const config = {
+  widgetElementId: 'grill',
+  hub: { id: 'YOUR-HUB_ID' },
+  channel: {
+    type: 'resource',
+    resource: new Resource({
+      schema: 'chain',
+      chainType: 'evm',
+      chainName: 'polygon',
+      resourceType: 'nft',
+      resourceValue: {
+        standard: 'ERC-721',
+        collectionId: '0x0000000000000000000000000',
+        tokenId: '112',
+      },
+    }),
+    settings: {
+      enableBackButton: false,
+      enableLoginButton: false,
+      enableInputAutofocus: true,
+    },
+    metadata: {
+      title: 'ERC-721 NFT on Polygon',
+      body: '...',
+      image: '',
+    },
+  },
+  theme: 'dark',
+  onWidgetCreated: (iframe) => {
+    iframe.classList.add('my-custom-class')
+    return iframe
+  },
+}
+```
+
+</details>
+
+##### 3. Block on Kusama
 
 ```ts
 new Resource({
@@ -315,7 +395,46 @@ new Resource({
 })
 ```
 
-4. Elon Musk Twitter profile
+<details>
+  <summary>Full config example</summary>
+
+```ts
+const config = {
+  widgetElementId: 'grill',
+  hub: { id: 'YOUR-HUB_ID' },
+  channel: {
+    type: 'resource',
+    resource: new Resource({
+      schema: 'chain',
+      chainType: 'substrate',
+      chainName: 'kusama',
+      resourceType: 'block',
+      resourceValue: {
+        blockNumber: '1',
+      },
+    }),
+    settings: {
+      enableBackButton: false,
+      enableLoginButton: false,
+      enableInputAutofocus: true,
+    },
+    metadata: {
+      title: 'Block #1 on Kusama',
+      body: '...',
+      image: '',
+    },
+  },
+  theme: 'dark',
+  onWidgetCreated: (iframe) => {
+    iframe.classList.add('my-custom-class')
+    return iframe
+  },
+}
+```
+
+</details>
+
+##### 4. Elon Musk Twitter profile
 
 ```ts
 new Resource({
@@ -326,7 +445,43 @@ new Resource({
 })
 ```
 
-5. Youtube video
+<details>
+  <summary>Full config example</summary>
+
+```ts
+const config = {
+  widgetElementId: 'grill',
+  hub: { id: 'YOUR-HUB_ID' },
+  channel: {
+    type: 'resource',
+    resource: new Resource({
+      schema: 'social',
+      app: 'twitter',
+      resourceType: 'profile',
+      resourceValue: { id: 'elonmusk' },
+    }),
+    settings: {
+      enableBackButton: false,
+      enableLoginButton: false,
+      enableInputAutofocus: true,
+    },
+    metadata: {
+      title: 'Elon Musk Twitter profile',
+      body: '...',
+      image: '',
+    },
+  },
+  theme: 'dark',
+  onWidgetCreated: (iframe) => {
+    iframe.classList.add('my-custom-class')
+    return iframe
+  },
+}
+```
+
+</details>
+
+##### 5. Youtube video
 
 ```ts
 new Resource({
@@ -337,7 +492,43 @@ new Resource({
 })
 ```
 
-6. RMRK2 NFT on Kusama
+<details>
+  <summary>Full config example</summary>
+
+```ts
+const config = {
+  widgetElementId: 'grill',
+  hub: { id: 'YOUR-HUB_ID' },
+  channel: {
+    type: 'resource',
+    resource: new Resource({
+      schema: 'social',
+      app: 'youtube',
+      resourceType: 'post',
+      resourceValue: { id: '58QuLi9ff9g' },
+    }),
+    settings: {
+      enableBackButton: false,
+      enableLoginButton: false,
+      enableInputAutofocus: true,
+    },
+    metadata: {
+      title: 'Youtube video title',
+      body: '...',
+      image: '',
+    },
+  },
+  theme: 'dark',
+  onWidgetCreated: (iframe) => {
+    iframe.classList.add('my-custom-class')
+    return iframe
+  },
+}
+```
+
+</details>
+
+##### 6. RMRK2 NFT on Kusama
 
 ```ts
 new Resource({
@@ -353,7 +544,48 @@ new Resource({
 })
 ```
 
-7. Zeitgeist Market
+<details>
+  <summary>Full config example</summary>
+
+```ts
+const config = {
+  widgetElementId: 'grill',
+  hub: { id: 'YOUR-HUB_ID' },
+  channel: {
+    type: 'resource',
+    resource: new Resource({
+      schema: 'chain',
+      chainType: 'substrate',
+      chainName: 'kusama',
+      resourceType: 'nft',
+      resourceValue: {
+        standard: 'rmrk2',
+        collectionId: '22708b368d163c8007',
+        tokenId: '00000020',
+      },
+    })
+    settings: {
+      enableBackButton: false,
+      enableLoginButton: false,
+      enableInputAutofocus: true,
+    },
+    metadata: {
+      title: 'RMRK2 NFT on Kusama',
+      body: '...',
+      image: ''
+    },
+  },
+  theme: 'dark',
+  onWidgetCreated: (iframe) => {
+    iframe.classList.add('my-custom-class')
+    return iframe
+  },
+}
+```
+
+</details>
+
+##### 7. Zeitgeist Market
 
 ```ts
 new Resource({
@@ -366,3 +598,95 @@ new Resource({
   },
 })
 ```
+
+<details>
+  <summary>Full config example</summary>
+
+```ts
+const config = {
+  widgetElementId: 'grill',
+  hub: { id: 'YOUR-HUB_ID' },
+  channel: {
+    type: 'resource',
+    resource: new Resource({
+      schema: 'chain',
+      chainType: 'substrate',
+      chainName: 'zeitgeist',
+      resourceType: 'market',
+      resourceValue: {
+        id: '111',
+      },
+    }),
+    settings: {
+      enableBackButton: false,
+      enableLoginButton: false,
+      enableInputAutofocus: true,
+    },
+    metadata: {
+      title: 'Zeitgeist Market #111',
+      body: '...',
+      image: '',
+    },
+  },
+  theme: 'dark',
+  onWidgetCreated: (iframe) => {
+    iframe.classList.add('my-custom-class')
+    return iframe
+  },
+}
+```
+
+</details>
+
+##### 8. Kusama Proposal
+
+```ts
+new Resource({
+  schema: 'chain',
+  chainType: 'substrate',
+  chainName: 'kusama',
+  resourceType: 'proposal',
+  resourceValue: {
+    id: '1',
+  },
+})
+```
+
+<details>
+  <summary>Full config example</summary>
+
+```ts
+const config = {
+  widgetElementId: 'grill',
+  hub: { id: 'YOUR-HUB_ID' },
+  channel: {
+    type: 'resource',
+    resource: new Resource({
+      schema: 'chain',
+      chainType: 'substrate',
+      chainName: 'kusama',
+      resourceType: 'proposal',
+      resourceValue: {
+        id: '1',
+      },
+    }),
+    settings: {
+      enableBackButton: false,
+      enableLoginButton: false,
+      enableInputAutofocus: true,
+    },
+    metadata: {
+      title: 'Proposal #1 on Kusama',
+      body: '...',
+      image: '',
+    },
+  },
+  theme: 'light',
+  onWidgetCreated: (iframe) => {
+    iframe.classList.add('my-custom-class')
+    return iframe
+  },
+}
+```
+
+</details>

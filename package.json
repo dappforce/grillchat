@@ -23,6 +23,7 @@
     "@ethersproject/hash": "^5.7.0",
     "@floating-ui/react": "^0.22.2",
     "@headlessui/react": "^1.7.11",
+    "@subsocial/api": "^0.8.12",
     "@polkadot/keyring": "^12.1.2",
     "@polkadot/util": "^12.1.2",
     "@rainbow-me/rainbowkit": "^1.0.0",

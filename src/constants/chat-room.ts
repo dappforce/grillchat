@@ -6,6 +6,7 @@ const ALIAS_TO_SPACE_ID_MAP: Record<string, string> = {
   events: '1011',
   'polkadot-study': '1014',
   zeitgeist: '1015',
+  kodadot: '1020',
 }
 
 const SPACE_ID_TO_ALIAS_MAP = Object.entries(ALIAS_TO_SPACE_ID_MAP).reduce(

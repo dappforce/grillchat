@@ -1,5 +1,4 @@
 import Button from '@/components/Button'
-import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
 import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
 import Modal, { ModalProps } from '@/components/modals/Modal'
@@ -56,10 +55,9 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
         </span>
       }
     >
-      <Button ref={buttonRef} onClick={closeModal} size='lg' className='mt-2'>
+      <Button ref={buttonRef} onClick={closeModal} size='lg' className='mt-4'>
         Go to chats!
       </Button>
-      <CaptchaTermsAndService className='mt-6 text-center' />
     </Modal>
   )
 }

@@ -88,7 +88,7 @@ const DEFAULT_CHANNEL_SETTINGS: Channel['settings'] = {
 }
 
 const grill = {
-  instance: null as HTMLIFrameElement | null,
+  instances: {} as Record<string, HTMLIFrameElement | null>,
 
   init(config: GrillConfig) {
     const mergedConfig = { ...DEFAULT_CONFIG, ...config }
@@ -164,9 +164,8 @@ const grill = {
       mergedConfig.onWidgetCreated?.(iframe)
     }
 
-    this.instance?.remove()
-
-    this.instance = iframe
+    this.instances[mergedConfig.widgetElementId]?.remove()
+    this.instances[mergedConfig.widgetElementId] = iframe
 
     iframe.style.opacity = '0'
     iframe.style.transition = 'opacity 0.15s ease-in-out'

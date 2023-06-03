@@ -1,27 +1,25 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useSaveFile } from '@/services/api/mutations'
-import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PostContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
+import { useWalletGetter } from '../hooks'
 import { generateOptimisticId } from '../utils'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
 import { OptimisticMessageIdData, SendMessageParams } from './types'
 
 export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const client = useQueryClient()
-  const address = useMyAccount((state) => state.address ?? '')
-  const signer = useMyAccount((state) => state.signer)
+  const getWallet = useWalletGetter()
 
   const { mutateAsync: saveFile } = useSaveFile()
-
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<SendMessageParams, string>(
-    async () => ({ address, signer }),
+    getWallet,
     async (params, { substrateApi }) => {
       console.log('waiting energy...')
       await waitHasEnergy()
