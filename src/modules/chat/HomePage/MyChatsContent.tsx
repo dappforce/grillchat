@@ -9,7 +9,7 @@ import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
 import Image from 'next/image'
 import useSortChatIdsByLatestMessage from '../hooks/useSortChatIdsByLatestMessage'
-import { CommonHubContentProps } from './HubsPage'
+import { CommonHubContentProps } from './HomePage'
 
 export type MyChatsContentProps = CommonHubContentProps & {
   search: string

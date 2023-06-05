@@ -1,4 +1,4 @@
-import { getLinkedChatIdsForSpaceId } from '@/constants/chat-room'
+import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { getPostQuery } from '@/services/api/query'
 import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useMemo } from 'react'
@@ -8,7 +8,7 @@ import useSortChatIdsByLatestMessage from './useSortChatIdsByLatestMessage'
 export default function useSortedChats(hubId: string) {
   const { data } = getChatIdsBySpaceIdQuery.useQuery(hubId)
   const allChatIds = useMemo(() => {
-    return [...(data?.chatIds ?? []), ...getLinkedChatIdsForSpaceId(hubId)]
+    return [...(data?.chatIds ?? []), ...getLinkedChatIdsForHubId(hubId)]
   }, [data, hubId])
 
   const sortedIds = useSortChatIdsByLatestMessage(allChatIds)

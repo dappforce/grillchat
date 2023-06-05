@@ -1,11 +1,10 @@
-import { getLinkedChatIdsForSpaceId } from '@/constants/chat-room'
-import HubsPage from '@/modules/chat/HubsPage'
-import { HubsPageProps } from '@/modules/chat/HubsPage/HubsPage'
+import { getLinkedChatIdsForHubId } from '@/constants/hubs'
+import HubsPage, { HubsPageProps } from '@/modules/chat/HomePage'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { getMainSpaceId, getSpaceIds } from '@/utils/env/client'
+import { getHubIds, getMainHubId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 
@@ -15,7 +14,7 @@ export const getStaticProps = getCommonStaticProps<
   () => ({ alwaysShowScrollbarOffset: true }),
   async () => {
     const hubsChatCount: HubsPageProps['hubsChatCount'] = {}
-    const hubIds = getSpaceIds()
+    const hubIds = getHubIds()
 
     const queryClient = new QueryClient()
 
@@ -27,10 +26,10 @@ export const getStaticProps = getCommonStaticProps<
       })
 
       await Promise.all([
-        prefetchChatPreviewsData(queryClient, getMainSpaceId()),
+        prefetchChatPreviewsData(queryClient, getMainHubId()),
         ...hubsData.map(async (hub) => {
           const chatIds = await subsocialApi.blockchain.postIdsBySpaceId(hub.id)
-          const linkedChats = getLinkedChatIdsForSpaceId(hub.id)
+          const linkedChats = getLinkedChatIdsForHubId(hub.id)
           hubsChatCount[hub.id] = chatIds.length + linkedChats.length
         }),
       ])

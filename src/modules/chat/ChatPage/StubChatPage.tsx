@@ -1,4 +1,4 @@
-import { getSpaceIdFromAlias } from '@/constants/chat-room'
+import { getHubIdFromAlias } from '@/constants/hubs'
 import { useCreateDiscussion } from '@/services/api/mutations'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
@@ -17,10 +17,10 @@ export default function StubChatPage() {
 
   useEffect(() => {
     async function handleDiscussion() {
-      const spaceIdOrAlias = router.query.spaceId as string
-      if (!router.isReady || !spaceIdOrAlias) return
+      const hubIdOrAlias = router.query.hubId as string
+      if (!router.isReady || !hubIdOrAlias) return
 
-      const spaceId = getSpaceIdFromAlias(spaceIdOrAlias) || spaceIdOrAlias
+      const hubId = getHubIdFromAlias(hubIdOrAlias) || hubIdOrAlias
 
       const metadata = decodeURIComponent(getUrlQuery('metadata'))
       const resourceId = router.query.resourceId as string
@@ -34,7 +34,7 @@ export default function StubChatPage() {
       setMetadata(parsedMetadata)
 
       const { data } = await createDiscussion({
-        spaceId,
+        spaceId: hubId,
         content: parsedMetadata,
         resourceId,
       })
