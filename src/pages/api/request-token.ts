@@ -128,6 +128,7 @@ async function sendToken(address: string) {
 
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi
+
   const tx = await substrateApi.tx.energy
     .generateEnergy(address, BURN_AMOUNT)
     .signAndSend(signer, { nonce: -1 })

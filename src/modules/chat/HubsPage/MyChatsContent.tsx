@@ -54,9 +54,9 @@ export default function MyChatsContent({
 function Loading() {
   return (
     <div className='flex flex-col'>
-      <ChatPreviewSkeleton asContainer />
-      <ChatPreviewSkeleton asContainer />
-      <ChatPreviewSkeleton asContainer />
+      {Array.from({ length: 3 }).map((_, idx) => (
+        <ChatPreviewSkeleton asContainer key={idx} />
+      ))}
     </div>
   )
 }

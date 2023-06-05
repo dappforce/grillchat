@@ -11,10 +11,11 @@ type Action = {
   icon: IconType
   className?: string
   onClick: ButtonProps['onClick']
+  disabled?: boolean
 }
 export type AboutModalProps = ModalFunctionalityProps & {
-  title: string
-  imageCid: string
+  title: string | undefined
+  image: string | undefined
   isImageCircle?: boolean
   subtitle: string
   contentList: DataCardProps['data']
@@ -26,7 +27,7 @@ export default function AboutModal({
   title,
   subtitle,
   isImageCircle = true,
-  imageCid,
+  image,
   contentList,
   actionMenu,
   bottomElement,
@@ -37,7 +38,7 @@ export default function AboutModal({
       <div className='mt-4 flex flex-col items-center gap-4'>
         <div className='flex flex-col items-center text-center'>
           <Image
-            src={getIpfsContentUrl(imageCid)}
+            src={getIpfsContentUrl(image ?? '')}
             className={cx(
               getCommonClassNames('chatImageBackground'),
               isImageCircle ? 'rounded-full' : 'rounded-2xl',
@@ -53,23 +54,26 @@ export default function AboutModal({
         <DataCard data={contentList} />
         {actionMenu && actionMenu.length > 0 && (
           <div className='w-full overflow-hidden rounded-2xl bg-background-lighter'>
-            {actionMenu.map(({ icon: Icon, text, className, onClick }) => (
-              <Button
-                variant='transparent'
-                interactive='none'
-                size='noPadding'
-                key={text}
-                className={cx(
-                  'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 last:border-none',
-                  'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
-                  className
-                )}
-                onClick={onClick}
-              >
-                <Icon className='text-xl text-text-muted' />
-                <span>{text}</span>
-              </Button>
-            ))}
+            {actionMenu.map(
+              ({ icon: Icon, text, className, onClick, disabled }) => (
+                <Button
+                  disabled={disabled}
+                  variant='transparent'
+                  interactive='none'
+                  size='noPadding'
+                  key={text}
+                  className={cx(
+                    'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 last:border-none',
+                    'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
+                    className
+                  )}
+                  onClick={onClick}
+                >
+                  <Icon className='text-xl' />
+                  <span>{text}</span>
+                </Button>
+              )
+            )}
           </div>
         )}
         {bottomElement}

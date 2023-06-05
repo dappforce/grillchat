@@ -43,23 +43,36 @@ export function poolQuery<SingleParam, SingleReturn>(
   let { batchPromise, batchResolver } = generateBatchPromise<BatchData>()
 
   const later = async function () {
-    timeout = undefined
+    const resetQueryPoolData = () => {
+      timeout = undefined
+
+      const currentBatchResolver = batchResolver
+      const currentQueryPool = queryPool
+
+      queryPool = []
+      ;({ batchPromise, batchResolver } = generateBatchPromise<BatchData>())
+
+      return { currentBatchResolver, currentQueryPool }
+    }
+
+    const { currentBatchResolver, currentQueryPool } = resetQueryPoolData()
+
     let response: Promise<SingleReturn[]>
-    if (singleCall && queryPool.length === 1) {
-      const queries = queryPool.map((singleParam) => {
+    if (singleCall && currentQueryPool.length === 1) {
+      const queries = currentQueryPool.map((singleParam) => {
         return singleCall(singleParam)
       })
       response = Promise.all(queries)
     } else {
-      let allParams = queryPool
+      let allParams = currentQueryPool
       if (getQueryId) {
         allParams = []
         const uniqueQueries = new Set()
-        for (let i = queryPool.length - 1; i >= 0; i--) {
-          const queryId = getQueryId(queryPool[i])
+        for (let i = currentQueryPool.length - 1; i >= 0; i--) {
+          const queryId = getQueryId(currentQueryPool[i])
           if (uniqueQueries.has(queryId)) continue
           uniqueQueries.add(queryId)
-          allParams.push(queryPool[i])
+          allParams.push(currentQueryPool[i])
         }
       }
       response = multiCall(allParams)
@@ -75,9 +88,7 @@ export function poolQuery<SingleParam, SingleReturn>(
       })
       result = resultMap
     }
-    batchResolver(result)
-    queryPool = []
-    ;({ batchPromise, batchResolver } = generateBatchPromise<BatchData>())
+    currentBatchResolver(result)
   }
 
   return async function executedFunction(

@@ -9,8 +9,8 @@ type QueryParams = {
   enableInputAutofocus?: string
 }
 
-type SocialResourceLike = { toResourceId: () => string }
-type ResourceMetadata = { title: string; body: string; image: string }
+type ResourceLike = { toResourceId: () => string }
+type ResourceMetadata = { title: string; body?: string; image?: string }
 
 class QueryParamsBuilder {
   private query: URLSearchParams
@@ -48,13 +48,13 @@ type ChanelTypeChannel = {
 type ChanelTypeResource = {
   /** The type of the channel. This should be set to `'channel'` */
   type: 'resource'
-  /** The SocialResource instance of the channel. This should be created from @subsocial/resource-discussions if necessary */
-  resource: SocialResourceLike
+  /** The Resource instance of the channel. This should be created from @subsocial/resource-discussions if necessary */
+  resource: ResourceLike
   /** The metadata for new channel, if it's not existing and will be created automatically. */
   metadata: ResourceMetadata
 }
 
-type Channel = { settings: ChannelSettings } & (
+type Channel = { settings?: ChannelSettings } & (
   | ChanelTypeChannel
   | ChanelTypeResource
 )
@@ -88,7 +88,7 @@ const DEFAULT_CHANNEL_SETTINGS: Channel['settings'] = {
 }
 
 const grill = {
-  instance: null as HTMLIFrameElement | null,
+  instances: {} as Record<string, HTMLIFrameElement | null>,
 
   init(config: GrillConfig) {
     const mergedConfig = { ...DEFAULT_CONFIG, ...config }
@@ -158,14 +158,14 @@ const grill = {
     }
 
     iframe.src = `${baseUrl}?${query.get()}`
+    iframe.allow = 'clipboard-write'
 
     if (mergedConfig.onWidgetCreated) {
       mergedConfig.onWidgetCreated?.(iframe)
     }
 
-    this.instance?.remove()
-
-    this.instance = iframe
+    this.instances[mergedConfig.widgetElementId]?.remove()
+    this.instances[mergedConfig.widgetElementId] = iframe
 
     iframe.style.opacity = '0'
     iframe.style.transition = 'opacity 0.15s ease-in-out'

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { describe, expect, test } from '@jest/globals'
-import { SocialResource } from '@subsocial/resource-discussions'
+import { Resource } from '@subsocial/resource-discussions'
 import '@testing-library/jest-dom/extend-expect'
 import grill, { GrillConfig } from '../index'
 
@@ -34,7 +34,7 @@ describe('Resource Linking Unit', () => {
     grill.init(configChannel)
 
     expect(document.getElementsByTagName('iframe')?.item(0)?.src).toEqual(
-      'https://grill.chat/1002/2673?version=0.1&theme=light&enableBackButton=false&enableLoginButton=false&enableInputAutofocus=true'
+      'https://grill.chat/1002/2673?version=0.1&parent=http%3A%2F%2Flocalhost&theme=light&enableBackButton=false&enableLoginButton=false&enableInputAutofocus=true'
     )
   })
 
@@ -48,7 +48,7 @@ describe('Resource Linking Unit', () => {
       hub: { id: '1003' },
       channel: {
         type: 'resource',
-        resource: new SocialResource({
+        resource: new Resource({
           schema: 'chain',
           chainType: 'substrate',
           chainName: 'xsocial',
@@ -78,11 +78,11 @@ describe('Resource Linking Unit', () => {
     grill.init(configResource)
 
     expect(document.getElementsByTagName('iframe')?.item(0)?.src).toEqual(
-      'https://grill.chat/1003/resource' +
+      'https://grill.chat/1003/resource/chain%3A%2F%2FchainType%3Asubstrate%2FchainName%3Axsocial%2FresourceType%3Ablock%2FblockNumber%3A3444000' +
         '?version=0.1' +
+        '&parent=http%3A%2F%2Flocalhost' +
         '&theme=light&enableBackButton=false' +
         '&enableLoginButton=false' +
-        '&resourceId=chain%253A%252F%252FchainType%253Asubstrate%252FchainName%253Axsocial%252FresourceType%253Ablock%252FblockNumber%253A3444000' +
         '&metadata=%257B%2522title%2522%253A%2522New%2520awesome%2520discussion%2522%252C%2522body%2522%253A%2522Really%2520awesome%2520topic%21%2522%252C%2522image%2522%253A%2522QmcdXcXQnkdLFE8tKveymXBoGRfbTbkqjhSWD5A4mrU4tX%2522%257D' +
         '&enableInputAutofocus=true'
     )

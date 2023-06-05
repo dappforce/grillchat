@@ -54,7 +54,7 @@ function ChatPreviewContainer({
   const content = chat?.content
 
   const usedHubId = hubId || chat.struct.spaceId
-  const aliasOrHub = getAliasFromSpaceId(usedHubId ?? '') ?? usedHubId
+  const aliasOrHub = getAliasFromSpaceId(hubId ?? '') || hubId
   const linkTo = getChatPageLink(
     router,
     createSlug(chat.id, { title: content?.title }),
@@ -90,9 +90,9 @@ function ChatPreviewContainer({
         replace: isInIframe,
         href: linkTo,
       }}
-      image={content?.image ? getIpfsContentUrl(content.image) : ''}
-      title={content?.title ?? ''}
-      description={content?.body ?? ''}
+      image={content?.image && getIpfsContentUrl(content.image)}
+      title={content?.title}
+      description={content?.body}
       chatId={chat.id}
       hubId={usedHubId}
       withUnreadCount

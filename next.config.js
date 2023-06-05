@@ -45,6 +45,10 @@ const nextConfig = {
         port: '',
         pathname: '/ipfs/**',
       },
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
     ],
   },
 }

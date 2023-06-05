@@ -8,6 +8,7 @@ import { LocalStorage } from '@/utils/storage'
 import { validateEmail } from '@/utils/strings'
 import {
   ChangeEventHandler,
+  FocusEventHandler,
   FormEventHandler,
   useEffect,
   useState,
@@ -69,10 +70,18 @@ export default function EmailSubscribeModal({
     setEmail(email)
 
     const isValidEmail = validateEmail(email)
-    if (!isValidEmail) {
-      setEmailError('Invalid email')
-    } else {
+    if (isValidEmail) {
       setEmailError('')
+    }
+  }
+
+  const onEmailBlur: FocusEventHandler<HTMLInputElement> = (e) => {
+    const email = e.target.value
+
+    const isValidEmail = validateEmail(email)
+    // only show error message when user blurs from the input
+    if (!isValidEmail) {
+      setEmailError('Invalid email address')
     }
   }
 
@@ -80,6 +89,11 @@ export default function EmailSubscribeModal({
     e.preventDefault()
     if (!email) {
       setEmailError('Email is required')
+      return
+    }
+    const isValidEmail = validateEmail(email)
+    if (!isValidEmail) {
+      setEmailError('Invalid email address')
       return
     }
 
@@ -113,6 +127,7 @@ export default function EmailSubscribeModal({
           placeholder='Your email address'
           value={email}
           onChange={onEmailChange}
+          onBlur={onEmailBlur}
           error={emailError}
         />
         <Button

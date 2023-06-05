@@ -1,15 +1,17 @@
-import Button from '@/components/Button'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
 import {
+  JoinChatParams,
   JoinChatWrapper,
   LeaveChatWrapper,
 } from '@/services/subsocial/posts/mutation'
+import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { HiCircleStack } from 'react-icons/hi2'
-import { RxExit } from 'react-icons/rx'
+import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import ConfirmationModal from '../ConfirmationModal'
 import MetadataModal from '../MetadataModal'
@@ -31,6 +33,7 @@ export default function AboutChatModal({
   const [isOpenMetadataModal, setIsOpenMetadataModal] = useState(false)
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
 
+  const isInIframe = useIsInIframe()
   const { isJoined, isLoading } = useIsJoinedToChat(chatId)
 
   const content = chat?.content
@@ -49,48 +52,56 @@ export default function AboutChatModal({
     },
   ]
 
-  const actionMenu: AboutModalProps['actionMenu'] = [
-    {
-      text: 'Show Metadata',
-      icon: HiCircleStack,
-      onClick: () => setIsOpenMetadataModal(true),
-    },
-  ]
+  const getActionMenu = (
+    joinChat: (variables: JoinChatParams) => Promise<string | undefined>,
+    isJoiningChat?: boolean
+  ) => {
+    const actionMenu: AboutModalProps['actionMenu'] = [
+      {
+        text: 'Show Metadata',
+        icon: HiCircleStack,
+        onClick: () => setIsOpenMetadataModal(true),
+      },
+    ]
 
-  if (isJoined) {
-    actionMenu.push({
-      text: 'Leave Chat',
-      icon: RxExit,
-      onClick: () => setIsOpenConfirmation(true),
-    })
+    if (isLoading || isInIframe) return actionMenu
+
+    if (isJoined) {
+      actionMenu.push({
+        text: 'Leave Chat',
+        icon: RxExit,
+        onClick: () => setIsOpenConfirmation(true),
+        className: cx('text-text-red'),
+      })
+    } else {
+      actionMenu.push({
+        text: 'Join Chat',
+        icon: RxEnter,
+        disabled: isJoiningChat,
+        className: cx('text-text-secondary'),
+        onClick: () => joinChat({ chatId }),
+      })
+    }
+
+    return actionMenu
   }
 
   return (
     <>
-      <AboutModal
-        {...props}
-        title={content?.title ?? ''}
-        subtitle={`${messageCount} messages`}
-        actionMenu={actionMenu}
-        contentList={contentList}
-        imageCid={content?.image ?? ''}
-        bottomElement={
-          !isJoined && !isLoading ? (
-            <JoinChatWrapper>
-              {({ mutateAsync, isLoading }) => (
-                <Button
-                  size='lg'
-                  isLoading={isLoading}
-                  onClick={() => mutateAsync({ chatId })}
-                  className='mt-2 w-full'
-                >
-                  Join
-                </Button>
-              )}
-            </JoinChatWrapper>
-          ) : null
-        }
-      />
+      <JoinChatWrapper>
+        {({ mutateAsync, isLoading }) => {
+          return (
+            <AboutModal
+              {...props}
+              title={content?.title}
+              subtitle={`${messageCount} messages`}
+              actionMenu={getActionMenu(mutateAsync, isLoading)}
+              contentList={contentList}
+              image={content?.image}
+            />
+          )
+        }}
+      </JoinChatWrapper>
       <LeaveChatWrapper>
         {({ isLoading, mutateAsync }) => (
           <ConfirmationModal

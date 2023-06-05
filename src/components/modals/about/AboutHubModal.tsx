@@ -52,7 +52,7 @@ export default function AboutHubModal({
         title={content.name}
         isImageCircle={false}
         subtitle={`${chatCount} chats in hub`}
-        imageCid={content.image}
+        image={content.image}
         contentList={contentList}
         actionMenu={actionMenu}
       />
