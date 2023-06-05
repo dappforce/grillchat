@@ -24,7 +24,6 @@ export const useLocation = create<State>()((set, get) => ({
       const prevUrl = get().currentUrl
       const trackedHistoryLength = startHistoryLength + history.length
 
-      console.log(trackedHistoryLength, window.history.length)
       const isPopped = trackedHistoryLength > window.history.length
       const isReplaced = trackedHistoryLength === window.history.length
       if (isPopped) {
