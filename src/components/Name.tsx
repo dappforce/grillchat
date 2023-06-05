@@ -1,13 +1,21 @@
 import { getEvmAddressQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
+import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
 
 type NameProps = {
   ownerId: string
   senderColor: string
+  additionalText?: string
+  className?: string
 }
 
-const Name = ({ ownerId, senderColor }: NameProps) => {
+const Name = ({
+  ownerId,
+  senderColor,
+  className,
+  additionalText,
+}: NameProps) => {
   const { data: accountData, isLoading } = getEvmAddressQuery.useQuery(ownerId)
 
   const { ensName } = accountData || {}
@@ -25,12 +33,14 @@ const Name = ({ ownerId, senderColor }: NameProps) => {
     )
   }
 
+  const textColor = ensName ? generateRandomColor(ensName) : senderColor
+
   return (
     <span
-      className='mr-2 text-sm text-text-secondary'
-      style={{ color: senderColor }}
+      className={className ? className : 'mr-2 text-sm text-text-secondary'}
+      style={{ color: textColor }}
     >
-      {name}
+      {additionalText} {name}
     </span>
   )
 }

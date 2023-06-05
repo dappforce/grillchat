@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
 import { generateRandomName } from '@/utils/random-name'
@@ -41,9 +42,12 @@ export default function RepliedMessage({
         style={{ borderColor: senderColor }}
         className='flex flex-1 flex-col items-start gap-0.5 overflow-hidden border-l-2 pl-2 text-sm'
       >
-        <span className='font-medium' style={{ color: senderColor }}>
-          Reply to {name}
-        </span>
+        <Name
+          ownerId={messageSenderAddr || ''}
+          senderColor={senderColor}
+          additionalText='Reply to'
+          className='font-medium'
+        />
         <span className='w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-light opacity-75'>
           {messageContent}
         </span>
