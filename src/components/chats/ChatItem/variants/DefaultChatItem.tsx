@@ -1,9 +1,7 @@
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import Name from '@/components/Name'
-import { getEvmAddressQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
-import { generateRandomName } from '@/utils/random-name'
 import Linkify from 'linkify-react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import RepliedMessagePreview from '../RepliedMessagePreview'
@@ -23,11 +21,6 @@ export default function DefaultChatItem({
   scrollToMessage,
   ...props
 }: DefaultChatItemProps) {
-  const { data: accountData } = getEvmAddressQuery.useQuery(ownerId)
-
-  const { ensName } = accountData || {}
-  const name = ensName ? ensName : generateRandomName(ownerId)
-
   return (
     <div className={cx('flex flex-col', props.className)}>
       <div

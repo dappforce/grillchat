@@ -2,7 +2,6 @@ import Button from '@/components/Button'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
-import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
@@ -23,7 +22,6 @@ export default function RepliedMessage({
   const messageContent = message?.content?.body
   const messageSenderAddr = message?.struct.ownerId
   const senderColor = useRandomColor(messageSenderAddr)
-  const name = generateRandomName(messageSenderAddr)
 
   const onRepliedMessageClick = () => {
     const element = document.getElementById(getMessageElementId(replyMessageId))
