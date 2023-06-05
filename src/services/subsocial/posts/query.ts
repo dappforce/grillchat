@@ -1,9 +1,9 @@
+import { followedIdsStorage } from '@/stores/my-account'
 import { poolQuery } from '@/subsocial-query'
 import {
   createSubsocialQuery,
   SubsocialQueryData,
 } from '@/subsocial-query/subsocial/query'
-import { LocalStorage } from '@/utils/storage'
 
 const getChatIdsBySpaceId = poolQuery<
   SubsocialQueryData<string>,
@@ -33,10 +33,6 @@ export const getChatIdsBySpaceIdQuery = createSubsocialQuery({
   fetcher: getChatIdsBySpaceId,
 })
 
-const FOLLOWED_IDS_STORAGE_KEY = 'followedPostIds'
-export const followedIdsStorage = new LocalStorage(
-  (address: string) => `${FOLLOWED_IDS_STORAGE_KEY}:${address}`
-)
 async function getFollowedPostIdsByAddress({
   api,
   data: address,
