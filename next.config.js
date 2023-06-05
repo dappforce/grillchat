@@ -18,6 +18,12 @@ const nextConfig = {
 
     return config
   },
+  async rewrites() {
+    return [
+      { source: '/my-chats', destination: '/hubs' },
+      { source: '/hot-chats', destination: '/hubs' },
+    ]
+  },
   async redirects() {
     return [
       {

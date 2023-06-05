@@ -5,7 +5,9 @@ import Tabs, { TabsProps } from '@/components/Tabs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useSearch from '@/hooks/useSearch'
 import { getMainSpaceId } from '@/utils/env/client'
+import { replaceUrl } from '@/utils/window'
 import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
@@ -81,6 +83,25 @@ export default function HubsPage(props: HubsPageProps) {
     },
   ]
 
+  const [isTabUrlLoaded, setIsTabUrlLoaded] = useState(false)
+  const [selectedTab, setSelectedTab] = useState(0)
+  useEffect(() => {
+    const currentPathname = window.location.pathname.substring(1)
+
+    const index = tabs.findIndex(({ id }) => id === currentPathname)
+    if (index > -1) setSelectedTab(index)
+
+    setIsTabUrlLoaded(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const usedSelectedTab = isTabUrlLoaded ? selectedTab : -1
+  const usedSetSelectedTab = (selectedTab: number) => {
+    setSelectedTab(selectedTab)
+    const selectedTabId = tabs[selectedTab]?.id
+    if (selectedTabId) replaceUrl(`/${selectedTabId}`)
+  }
+
   return (
     <DefaultLayout
       navbarProps={{
@@ -108,12 +129,16 @@ export default function HubsPage(props: HubsPageProps) {
       }}
     >
       <Tabs
-        className='border-b border-border-gray bg-background-light px-4 md:bg-background-light/50'
+        className='border-b border-border-gray bg-background-light md:bg-background-light/50'
         panelClassName='mt-0 px-0'
         asContainer
         tabs={tabs}
         defaultTab={1}
-        hideBeforeHashLoaded
+        withHashIntegration={false}
+        manualTabControl={{
+          selectedTab: usedSelectedTab,
+          setSelectedTab: usedSetSelectedTab,
+        }}
       />
       {!isInIframe && <WelcomeModal />}
     </DefaultLayout>
