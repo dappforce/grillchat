@@ -1,7 +1,7 @@
 import EthIcon from '@/assets/icons/eth.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
 import useRandomColor from '@/hooks/useRandomColor'
-import { getEvmAddressQuery } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import AddressAvatar from './AddressAvatar'
@@ -21,7 +21,7 @@ const ProfilePreview = ({
 }: ProfilePreviewProps) => {
   const senderColor = useRandomColor(address)
 
-  const { data } = getEvmAddressQuery.useQuery(address || '')
+  const { data } = getAccountDataQuery.useQuery(address || '')
   const { ensName } = data || {}
 
   return (

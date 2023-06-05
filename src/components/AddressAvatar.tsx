@@ -1,5 +1,5 @@
 import useRandomColor from '@/hooks/useRandomColor'
-import { getEvmAddressQuery } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
@@ -19,7 +19,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     const [ensAvatarLoading, setEnsAvatarLoading] = useState(true)
 
     const { data: accountData, isLoading } =
-      getEvmAddressQuery.useQuery(address)
+      getAccountDataQuery.useQuery(address)
 
     const { ensName, withEnsAvatar } = accountData || {}
 

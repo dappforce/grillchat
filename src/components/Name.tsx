@@ -1,4 +1,4 @@
-import { getEvmAddressQuery } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
@@ -16,7 +16,7 @@ const Name = ({
   className,
   additionalText,
 }: NameProps) => {
-  const { data: accountData, isLoading } = getEvmAddressQuery.useQuery(ownerId)
+  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(ownerId)
 
   const { evmAddress, ensName } = accountData || {}
   const name = ensName ? ensName : generateRandomName(ownerId)

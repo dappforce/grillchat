@@ -1,6 +1,6 @@
 import { CommonEvmAddressLinked } from '@/components/auth/CommonModalContent'
 import Modal from '@/components/modals/Modal'
-import { getEvmAddressQuery } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import { useDisconnect } from 'wagmi'
@@ -34,7 +34,7 @@ export default function ProfileModal({
   ...props
 }: ProfileModalProps) {
   const [currentState, setCurrentState] = useState<ModalState>('account')
-  const { data: accountData } = getEvmAddressQuery.useQuery(address)
+  const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { disconnect } = useDisconnect()
 
   const { evmAddress: linkedEvmAddress } = accountData || {}

@@ -1,7 +1,7 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import {
-  getEvmAddressQuery,
-  mutateEvmAddressesCache,
+  getAccountDataQuery,
+  mutateAccountsDataCache,
 } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
@@ -65,8 +65,8 @@ export function useLinkEvmAddress({
         getContext: () => '',
         onStart: () => setOnCallbackLoading(true),
         onSuccess: async ({ address }) => {
-          await mutateEvmAddressesCache(address)
-          await getEvmAddressQuery.fetchQuery(client, address)
+          await mutateAccountsDataCache(address)
+          await getAccountDataQuery.fetchQuery(client, address)
 
           setOnCallbackLoading(false)
           setModalStep?.()
@@ -120,8 +120,8 @@ export function useUnlinkEvmAddress(
         getContext: () => '',
         onStart: () => setOnCallbackLoading(true),
         onSuccess: async ({ address }) => {
-          await mutateEvmAddressesCache(address)
-          await getEvmAddressQuery.fetchQuery(client, address)
+          await mutateAccountsDataCache(address)
+          await getAccountDataQuery.fetchQuery(client, address)
 
           setOnCallbackLoading(false)
           disconnect()

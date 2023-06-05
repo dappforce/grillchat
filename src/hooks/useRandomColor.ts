@@ -1,6 +1,6 @@
 import { Theme } from '@/@types/theme'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getEvmAddressQuery } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { generateRandomColor } from '@/utils/random-colors'
 import useGetTheme from './useGetTheme'
 
@@ -10,7 +10,7 @@ export default function useRandomColor(
 ) {
   const { theme: configTheme } = useConfigContext()
   const currentTheme = useGetTheme()
-  const { data: accountData } = getEvmAddressQuery.useQuery(seed || '')
+  const { data: accountData } = getAccountDataQuery.useQuery(seed || '')
 
   const { evmAddress } = accountData || {}
 

@@ -1,13 +1,13 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getSpaceIdFromAlias } from '@/constants/chat-room'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
-import { getAccountsDataFromCache } from '@/pages/api/evm-addresses'
+import { getAccountsDataFromCache } from '@/pages/api/accounts-data'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
-import { getEvmAddressQuery } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -87,7 +87,7 @@ export const getStaticProps = getCommonStaticProps<
       })
 
       accountsAddresses.map((accountAddresses) =>
-        getEvmAddressQuery.setQueryData(
+        getAccountDataQuery.setQueryData(
           queryClient,
           accountAddresses.evmAddress,
           accountAddresses
