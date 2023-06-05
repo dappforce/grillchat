@@ -84,7 +84,7 @@ export default function HubsPage(props: HubsPageProps) {
   ]
 
   const [isTabUrlLoaded, setIsTabUrlLoaded] = useState(false)
-  const [selectedTab, setSelectedTab] = useState(0)
+  const [selectedTab, setSelectedTab] = useState(1)
   useEffect(() => {
     const currentPathname = window.location.pathname.substring(1)
 
@@ -133,7 +133,6 @@ export default function HubsPage(props: HubsPageProps) {
         panelClassName='mt-0 px-0'
         asContainer
         tabs={tabs}
-        defaultTab={1}
         withHashIntegration={false}
         manualTabControl={{
           selectedTab: usedSelectedTab,
