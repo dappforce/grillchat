@@ -1,7 +1,7 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getSpaceIdFromAlias } from '@/constants/chat-room'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
-import { getEvmAddressesFromCache } from '@/pages/api/evm-addresses'
+import { getAccountsDataFromCache } from '@/pages/api/evm-addresses'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation'
@@ -44,7 +44,7 @@ async function getChatsData(chatId: string) {
 
   const owners = messages.map((message) => message.struct.ownerId)
 
-  const accountsAddresses = await getEvmAddressesFromCache(owners)
+  const accountsAddresses = await getAccountsDataFromCache(owners)
 
   return { messages, chatData, messageIds, accountsAddresses }
 }

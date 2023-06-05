@@ -7,7 +7,7 @@ import gql from 'graphql-tag'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
-export type AccountAddresses = {
+export type AccountData = {
   grillAddress: string
   evmAddress: string
   ensName: string | null
@@ -20,7 +20,7 @@ const querySchema = z.object({
 
 export type ApiPostsParams = z.infer<typeof querySchema>
 
-export type ApiPostsResponse = {
+export type ApiAccountDataResponse = {
   success: boolean
   message: string
   errors?: any
@@ -29,7 +29,7 @@ export type ApiPostsResponse = {
 }
 
 const MAX_CACHE_ITEMS = 500_000
-const postsCache = new MinimalUsageQueueWithTimeLimit<AccountAddresses>(
+const accountsDataCache = new MinimalUsageQueueWithTimeLimit<AccountData>(
   MAX_CACHE_ITEMS,
   5
 )
@@ -45,21 +45,10 @@ const GET_ENS_NAMES = gql(`
   }
 `)
 
-type Domain = {
-  name: string
-  resolvedAddress: { id: string }
-}
-
-type EnsDomainRequestResult = {
-  domains: Domain[]
-}
-
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiPostsResponse>
+  res: NextApiResponse<ApiAccountDataResponse>
 ) {
-  if (req.method !== 'GET') return res.status(404).end()
-
   const query = req.query.addresses
   const params = querySchema.safeParse({
     addresses: Array.isArray(query) ? query : [query],
@@ -73,10 +62,13 @@ export default async function handler(
     })
   }
 
-  const evmAddresses = await getEvmAddressesFromCache(params.data.addresses)
+  const accountsData = await getAccountsDataFromCache(
+    params.data.addresses,
+    req.method || 'GET'
+  )
   return res
     .status(200)
-    .send({ success: true, message: 'OK', data: evmAddresses })
+    .send({ success: true, message: 'OK', data: accountsData })
 }
 
 async function checkEnsAvatar(ensName: string | null) {
@@ -90,6 +82,15 @@ async function checkEnsAvatar(ensName: string | null) {
   } catch {
     return false
   }
+}
+
+type Domain = {
+  name: string
+  resolvedAddress: { id: string }
+}
+
+type EnsDomainRequestResult = {
+  domains: Domain[]
 }
 
 async function getEnsNames(evmAddresses: string[]) {
@@ -110,57 +111,74 @@ async function getEnsNames(evmAddresses: string[]) {
   return domainsEntity
 }
 
-export async function getEvmAddressesFromCache(addresses: string[]) {
-  const evmAddressBySubstrateAddress: AccountAddresses[] = []
-  const needToFetchIds: string[] = []
+async function fetchAccountsData(addresses: string[]) {
+  let newlyFetchedData: AccountData[] = []
 
-  let newlyFetchedData: AccountAddresses[] = []
-  addresses.forEach((address) => {
-    const cachedData = postsCache.get(address)
-    if (cachedData) {
-      evmAddressBySubstrateAddress.push(cachedData)
-    } else {
-      needToFetchIds.push(address)
-    }
-  })
+  try {
+    const subsocialApi = await getSubsocialApi()
 
-  if (needToFetchIds.length > 0) {
-    try {
-      const subsocialApi = await getSubsocialApi()
+    const api = await subsocialApi.blockchain.api
+    const evmAddressses = await api.query.evmAccounts.evmAddressByAccount.multi(
+      addresses
+    )
 
-      const api = await subsocialApi.blockchain.api
-      const evmAddressses =
-        await api.query.evmAccounts.evmAddressByAccount.multi(needToFetchIds)
+    const evmAddresssesHuman = evmAddressses.map((x) => x.toHuman() as string)
 
-      const evmAddresssesHuman = evmAddressses.map((x) => x.toHuman() as string)
+    const domains = await getEnsNames(evmAddresssesHuman)
 
-      const domains = await getEnsNames(evmAddresssesHuman)
+    const needToFetchIdsPromise = addresses.map(async (address, i) => {
+      const evmAddress = evmAddresssesHuman[i]
 
-      const needToFetchIdsPromise = needToFetchIds.map(async (address, i) => {
-        const evmAddress = evmAddresssesHuman[i]
+      const ensName = domains?.[evmAddress] || null
 
-        const ensName = domains?.[evmAddress] || null
+      const accountData = {
+        grillAddress: address,
+        evmAddress: evmAddresssesHuman[i],
+        ensName,
+        withEnsAvatar: await checkEnsAvatar(ensName),
+      }
 
-        const accountAddresses = {
-          grillAddress: address,
-          evmAddress: evmAddresssesHuman[i],
-          ensName,
-          withEnsAvatar: await checkEnsAvatar(ensName),
-        }
+      newlyFetchedData.push(accountData)
+      accountsDataCache.add(address, accountData)
+    })
 
-        newlyFetchedData.push(accountAddresses)
-        postsCache.add(address, accountAddresses)
-      })
+    await Promise.all(needToFetchIdsPromise)
 
-      await Promise.all(needToFetchIdsPromise)
-    } catch (e) {
-      console.error(
-        'Error fetching posts from Subsocial API: ',
-        needToFetchIds,
-        e
-      )
-      return evmAddressBySubstrateAddress
-    }
+    return newlyFetchedData
+  } catch (e) {
+    console.error(
+      'Error fetching accounts data from Subsocial API: ',
+      addresses,
+      e
+    )
+    return []
   }
-  return [...evmAddressBySubstrateAddress, ...newlyFetchedData]
+}
+
+export async function getAccountsDataFromCache(
+  addresses: string[],
+  method?: string
+) {
+  if (method === 'POST') {
+    return fetchAccountsData(addresses)
+  } else {
+    const evmAddressBySubstrateAddress: AccountData[] = []
+    const needToFetchIds: string[] = []
+
+    let newlyFetchedData: AccountData[] = []
+    addresses.forEach((address) => {
+      const cachedData = accountsDataCache.get(address)
+      if (cachedData) {
+        evmAddressBySubstrateAddress.push(cachedData)
+      } else {
+        needToFetchIds.push(address)
+      }
+    })
+
+    if (needToFetchIds.length > 0) {
+      newlyFetchedData = await fetchAccountsData(needToFetchIds)
+    }
+
+    return [...evmAddressBySubstrateAddress, ...newlyFetchedData]
+  }
 }
