@@ -5,7 +5,6 @@ import { request } from 'graphql-request'
 import gql from 'graphql-tag'
 
 import { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
 import { z } from 'zod'
 
 export type AccountAddresses = {
@@ -53,6 +52,31 @@ type Domain = {
 
 type EnsDomainRequestResult = {
   domains: Domain[]
+}
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ApiPostsResponse>
+) {
+  if (req.method !== 'GET') return res.status(404).end()
+
+  const query = req.query.addresses
+  const params = querySchema.safeParse({
+    addresses: Array.isArray(query) ? query : [query],
+  })
+
+  if (!params.success) {
+    return res.status(400).send({
+      success: false,
+      message: 'Invalid request body',
+      errors: params.error.errors,
+    })
+  }
+
+  const evmAddresses = await getEvmAddressesFromCache(params.data.addresses)
+  return res
+    .status(200)
+    .send({ success: true, message: 'OK', data: evmAddresses })
 }
 
 async function checkEnsAvatar(ensName: string | null) {
@@ -139,33 +163,4 @@ export async function getEvmAddressesFromCache(addresses: string[]) {
     }
   }
   return [...evmAddressBySubstrateAddress, ...newlyFetchedData]
-}
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiPostsResponse>
-) {
-  if (req.method !== 'GET') return res.status(404).end()
-
-  await NextCors(req, res, {
-    methods: ['GET'],
-    origin: '*',
-  })
-  const query = req.query.addresses
-  const params = querySchema.safeParse({
-    addresses: Array.isArray(query) ? query : [query],
-  })
-
-  if (!params.success) {
-    return res.status(400).send({
-      success: false,
-      message: 'Invalid request body',
-      errors: params.error.errors,
-    })
-  }
-
-  const evmAddresses = await getEvmAddressesFromCache(params.data.addresses)
-  return res
-    .status(200)
-    .send({ success: true, message: 'OK', data: evmAddresses })
 }
