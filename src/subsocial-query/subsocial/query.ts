@@ -16,7 +16,7 @@ import { QueryConfig } from '../types'
 export type SubsocialQueryData<T> = { data: T } & { api: SubsocialApi }
 
 export function useSubsocialQuery<Data, ReturnValue>(
-  queryData: { key: string; data: Data | null },
+  queryData: { key: string; data: Data },
   func: (data: SubsocialQueryData<Data>) => Promise<ReturnValue>,
   config?: QueryConfig,
   defaultConfig?: QueryConfig<Data, ReturnValue>
@@ -34,7 +34,7 @@ export function useSubsocialQuery<Data, ReturnValue>(
 }
 
 export function useSubsocialQueries<Data, ReturnValue>(
-  queryData: { key: string; data: (Data | null)[] },
+  queryData: { key: string; data: Data[] },
   func: (
     data: SubsocialQueryData<Data> & { idx: number }
   ) => Promise<ReturnValue>,
@@ -68,7 +68,9 @@ export function createSubsocialQuery<Data, ReturnValue>({
 }: {
   key: string
   fetcher: (params: SubsocialQueryData<Data>) => Promise<ReturnValue>
-  defaultConfigGenerator?: (params: Data) => QueryConfig<Data, ReturnValue>
+  defaultConfigGenerator?: (
+    params: Data | null
+  ) => QueryConfig<Data, ReturnValue>
 }) {
   const getQueryKey = createQueryKeys<Data>(key)
   return {
@@ -76,17 +78,13 @@ export function createSubsocialQuery<Data, ReturnValue>({
     invalidate: createQueryInvalidation<Data>(key),
     useQuery: (data: Data, config?: QueryConfig<Data, ReturnValue>) => {
       const defaultConfig = defaultConfigGenerator?.(data)
-      return useSubsocialQuery({ key, data }, fetcher, {
-        ...defaultConfig,
-        ...config,
-      })
+      const mergedConfig = mergeQueryConfig(config, defaultConfig)
+      return useSubsocialQuery({ key, data }, fetcher, mergedConfig)
     },
     useQueries: (data: Data[], config?: QueryConfig<Data, ReturnValue>) => {
-      const defaultConfig = defaultConfigGenerator?.(data[0])
-      return useSubsocialQueries({ key, data }, fetcher, {
-        ...defaultConfig,
-        ...config,
-      })
+      const defaultConfig = defaultConfigGenerator?.(null)
+      const mergedConfig = mergeQueryConfig(config, defaultConfig)
+      return useSubsocialQueries({ key, data }, fetcher, mergedConfig)
     },
     setQueryData: (
       client: QueryClient,

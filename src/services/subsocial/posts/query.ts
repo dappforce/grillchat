@@ -56,6 +56,8 @@ export const getFollowedPostIdsByAddressQuery = createSubsocialQuery({
   key: 'getFollowedPostIdsByAddress',
   fetcher: getFollowedPostIdsByAddress,
   defaultConfigGenerator: (address) => {
+    if (!address) return {}
+
     const placeholderData = followedIdsStorage.get(address)
     if (!placeholderData) return {}
 
