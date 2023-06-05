@@ -18,7 +18,7 @@ const Name = ({
 }: NameProps) => {
   const { data: accountData, isLoading } = getEvmAddressQuery.useQuery(ownerId)
 
-  const { ensName } = accountData || {}
+  const { evmAddress, ensName } = accountData || {}
   const name = ensName ? ensName : generateRandomName(ownerId)
 
   if (!accountData && isLoading) {
@@ -33,7 +33,7 @@ const Name = ({
     )
   }
 
-  const textColor = ensName ? generateRandomColor(ensName) : senderColor
+  const textColor = evmAddress ? generateRandomColor(evmAddress) : senderColor
 
   return (
     <span
