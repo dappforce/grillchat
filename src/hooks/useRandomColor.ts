@@ -1,5 +1,5 @@
 import { Theme } from '@/@types/theme'
-import { useConfigContext } from '@/contexts/ConfigContext'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { generateRandomColor } from '@/utils/random-colors'
 import useGetTheme from './useGetTheme'
 

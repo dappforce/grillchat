@@ -5,7 +5,7 @@ import { BN, u8aToHex } from '@polkadot/util'
 import { useEffect, useState } from 'react'
 import { useDisconnect, useSignMessage } from 'wagmi'
 
-export const buildMsgParams = async (substrateAddress: string) => {
+const buildMsgParams = async (substrateAddress: string) => {
   const decodedAddress = u8aToHex(decodeAddress(substrateAddress))
   const subsocialApi = await getSubsocialApi()
 
@@ -15,13 +15,12 @@ export const buildMsgParams = async (substrateAddress: string) => {
 
   const nonce = account.nonce.add(new BN(1)).toString()
 
-  return `Link to Subsocial address ${decodedAddress.replace(
-    '0x',
-    ''
-  )} (in hex) with nonce ${nonce}`
+  const decodedAddressHex = decodedAddress.replace('0x', '')
+
+  return `Link to Subsocial address ${decodedAddressHex} (in hex) with nonce ${nonce}`
 }
 
-export const useSignEvmLinkMessage = () => {
+const useSignEvmLinkMessage = () => {
   const { signMessageAsync } = useSignMessage()
   const [isSigningMessage, setIsSigningMessage] = useState(false)
   const [isError, setIsError] = useState(false)

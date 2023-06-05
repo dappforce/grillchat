@@ -15,7 +15,6 @@ import { configureChains, createConfig, WagmiConfig } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { talismanWallet } from './wallets/talisman'
-// import { subWalletWallet } from './wallets/subWallet'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet],
@@ -31,7 +30,6 @@ const connectors = connectorsForWallets([
       argentWallet({ chains }),
       coinbaseWallet({ chains, appName: '' }),
       ledgerWallet({ chains }),
-      // subWalletWallet({ chains }),
     ],
   },
 ])

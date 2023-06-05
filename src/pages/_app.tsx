@@ -1,6 +1,6 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
-import { ConfigProvider, useConfigContext } from '@/contexts/ConfigContext'
 import useIsInIframe from '@/hooks/useIsInIframe'
+import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
 import { QueryProvider } from '@/services/provider'
 import { useSendEvent } from '@/stores/analytics'
 import { initAllStores } from '@/stores/registry'
@@ -17,7 +17,7 @@ import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 
-const EvmProvider = dynamic(import('@/components/modals/login/EvmProvider'), {
+const EvmProvider = dynamic(import('@/providers/evm/EvmProvider'), {
   ssr: false,
 })
 

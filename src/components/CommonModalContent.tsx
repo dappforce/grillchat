@@ -1,9 +1,9 @@
 import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import Image from 'next/image'
+import { useSignMessageAndLinkEvmAddress } from '../hooks/useSignMessageAndLinkEvmAddress'
 import Button from './Button'
-import { CustomConnectButton } from './modals/login/CustomConnectButton'
-import { useSignMessageAndLinkEvmAddress } from './modals/login/utils'
+import { CustomConnectButton } from './login/CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
   setModalStep?: () => void
@@ -14,11 +14,11 @@ type CommonEVMLoginErrorProps = {
 export const CommonEVMLoginErrorContent = ({
   setModalStep,
   onError,
-  signAndLinkOnConnect
+  signAndLinkOnConnect,
 }: CommonEVMLoginErrorProps) => {
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
     setModalStep,
-    onError
+    onError,
   })
 
   return (

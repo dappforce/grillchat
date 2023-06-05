@@ -25,8 +25,8 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
-import { CustomConnectButton } from './CustomConnectButton'
-import { useSignMessageAndLinkEvmAddress } from './utils'
+import { useSignMessageAndLinkEvmAddress } from '../../../hooks/useSignMessageAndLinkEvmAddress'
+import { CustomConnectButton } from '../CustomConnectButton'
 
 export type LoginModalStep =
   | 'login'
@@ -171,7 +171,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
       {address && (
         <div
           className={cx(
-            'mt-2 mb-6 rounded-2xl p-4',
+            'mb-6 mt-2 rounded-2xl p-4',
             isDarkTheme ? 'bg-slate-700' : 'bg-slate-200'
           )}
         >
