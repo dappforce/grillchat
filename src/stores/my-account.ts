@@ -39,6 +39,7 @@ type Actions = {
   _getSecretKeyForLogin: () => Promise<string>
 }
 
+const ACCOUNT_ADDRESS_STORAGE_KEY = 'accountPublicKey'
 const ACCOUNT_STORAGE_KEY = 'account'
 const SESSION_STORAGE_KEY = 'session'
 
@@ -53,7 +54,10 @@ const initialState: State = {
   _isNewSessionKey: true,
 }
 
-export const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
+export const accountAddressStorage = new LocalStorage(
+  () => ACCOUNT_ADDRESS_STORAGE_KEY
+)
+const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
 const currentSessionStorage = new LocalStorage(() => SESSION_STORAGE_KEY)
 
 export const useMyAccount = create<State & Actions>()((set, get) => ({
@@ -74,6 +78,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         isInitializedAddress: !!isInitialization,
       })
       accountStorage.set(encodedSecretKey)
+      accountAddressStorage.set(signer.address)
       get()._subscribeEnergy()
       _syncSessionKey()
     } catch (e) {
@@ -110,6 +115,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     _unsubscribeEnergy()
 
     accountStorage.remove()
+    accountAddressStorage.remove()
     set({ ...initialState, _isNewSessionKey: false, _currentSessionSecretKey })
   },
   _getSecretKeyForLogin: async () => {

@@ -5,7 +5,7 @@ import Tabs, { TabsProps } from '@/components/Tabs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
-import { accountStorage, useMyAccount } from '@/stores/my-account'
+import { accountAddressStorage, useMyAccount } from '@/stores/my-account'
 import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
 import dynamic from 'next/dynamic'
@@ -29,7 +29,7 @@ export type CommonHubContentProps = {
 }
 
 const hotChatsHubId = getMainHubId()
-const addressFromStorage = accountStorage.get()
+const addressFromStorage = accountAddressStorage.get()
 
 export default function HubsPage(props: HubsPageProps) {
   const isInIframe = useIsInIframe()
