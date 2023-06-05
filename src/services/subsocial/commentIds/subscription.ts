@@ -3,7 +3,7 @@ import { getPostQuery, getPosts } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
-import { getEvmAddresses, getEvmAddressQuery } from '../evmAddresses'
+import { getAccountDataQuery, getAccountsData } from '../evmAddresses'
 import { extractOptimisticIdData, isOptimisticId } from '../utils'
 import { getCommentIdsQueryKey } from './query'
 import { OptimisticMessageIdData } from './types'
@@ -68,10 +68,10 @@ const subscription = (
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
 
-      const accountsAddresses = await getEvmAddresses(Array.from(addressesSet))
+      const accountsAddresses = await getAccountsData(Array.from(addressesSet))
 
       accountsAddresses.forEach((accountAddresses) => {
-        getEvmAddressQuery.setQueryData(
+        getAccountDataQuery.setQueryData(
           queryClient,
           accountAddresses.grillAddress,
           accountAddresses
