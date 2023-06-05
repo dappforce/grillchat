@@ -86,7 +86,7 @@ export const getStaticProps = getCommonStaticProps<
       props: {
         dehydratedState: dehydrate(queryClient),
         chatId,
-        hubId: hubId,
+        hubId,
         head: {
           title,
           description: desc,
