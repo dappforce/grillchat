@@ -1,11 +1,13 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getSpaceIdFromAlias } from '@/constants/chat-room'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
+import { getEvmAddressesFromCache } from '@/pages/api/evm-addresses'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
+import { getEvmAddressQuery } from '@/services/subsocial/evmAddresses'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -40,7 +42,11 @@ async function getChatsData(chatId: string) {
   const prefetchedMessageIds = messageIds.slice(startSlice, endSlice)
   const messages = await getPostsFromCache(prefetchedMessageIds)
 
-  return { messages, chatData, messageIds }
+  const owners = messages.map((message) => message.struct.ownerId)
+
+  const accountsAddresses = await getEvmAddressesFromCache(owners)
+
+  return { messages, chatData, messageIds, accountsAddresses }
 }
 
 export const getStaticProps = getCommonStaticProps<
@@ -62,10 +68,11 @@ export const getStaticProps = getCommonStaticProps<
     let title: string | null = null
     let desc: string | null = null
     try {
-      const [{ messageIds, messages, chatData }] = await Promise.all([
-        getChatsData(chatId),
-        prefetchBlockedEntities(queryClient, spaceId, [chatId]),
-      ] as const)
+      const [{ messageIds, messages, chatData, accountsAddresses }] =
+        await Promise.all([
+          getChatsData(chatId),
+          prefetchBlockedEntities(queryClient, spaceId, [chatId]),
+        ] as const)
 
       title = chatData?.content?.title || null
       desc = chatData?.content?.body || null
@@ -78,6 +85,14 @@ export const getStaticProps = getCommonStaticProps<
       messages.forEach((post) => {
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
+
+      accountsAddresses.map((accountAddresses) =>
+        getEvmAddressQuery.setQueryData(
+          queryClient,
+          accountAddresses.evmAddress,
+          accountAddresses
+        )
+      )
     } catch (err) {
       console.error('Error fetching for chat page: ', err)
     }
