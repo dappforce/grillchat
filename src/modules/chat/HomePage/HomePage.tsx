@@ -9,6 +9,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
@@ -92,20 +93,27 @@ export default function HubsPage(props: HubsPageProps) {
 
   const [isTabUrlLoaded, setIsTabUrlLoaded] = useState(false)
   const [selectedTab, setSelectedTab] = useState(1)
+  const { isReady } = useRouter()
   useEffect(() => {
-    const currentPathname = window.location.pathname.substring(1)
-    if (!currentPathname && followedPostIds?.length) {
-      setSelectedTab(0)
-      replaceUrl('/my-chats')
-      return
-    }
+    if (!isReady) return
 
-    const index = tabs.findIndex(({ id }) => id === currentPathname)
-    if (index > -1) setSelectedTab(index)
+    const currentPathname = window.location.pathname.substring(1)
+    if (!currentPathname) {
+      if (followedPostIds?.length) {
+        setSelectedTab(0)
+        replaceUrl('/my-chats')
+      } else {
+        setSelectedTab(1)
+        replaceUrl('/hot-chats')
+      }
+    } else {
+      const index = tabs.findIndex(({ id }) => id === currentPathname)
+      if (index > -1) setSelectedTab(index)
+    }
 
     setIsTabUrlLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [isReady])
 
   const usedSelectedTab = isTabUrlLoaded ? selectedTab : -1
   const usedSetSelectedTab = (selectedTab: number) => {

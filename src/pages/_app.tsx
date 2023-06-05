@@ -86,7 +86,11 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
     <ThemeProvider attribute='class' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
         <ToasterConfig />
-        <NextNProgress color='#4d46dc' />
+        <NextNProgress
+          color='#4d46dc'
+          options={{ showSpinner: false }}
+          showOnShallow={false}
+        />
         <HeadConfig {...head} />
         <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
         <div className={cx('font-sans')}>

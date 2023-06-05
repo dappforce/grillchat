@@ -51,9 +51,9 @@ export default function Tabs({
 
   const changeTab = (index: number) => {
     setSelectedTab(index)
-    const id = tabs[index].id
 
     if (withHashIntegration) {
+      const id = tabs[index].id
       replaceUrl(`#${id}`)
     }
   }
@@ -95,11 +95,13 @@ export default function Tabs({
             )}
           </Tab>
         ))}
+        {usedSelectedTab === -1 && <Tab key='empty' />}
       </Tab.List>
       <Tab.Panels as={component} className={cx('mt-2', panelClassName)}>
         {tabs.map(({ id, content }) => (
           <Tab.Panel key={id}>{content(changeTab)}</Tab.Panel>
         ))}
+        {usedSelectedTab === -1 && <Tab.Panel key='empty' />}
       </Tab.Panels>
     </Tab.Group>
   )
