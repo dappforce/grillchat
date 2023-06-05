@@ -53,7 +53,7 @@ const initialState: State = {
   _isNewSessionKey: true,
 }
 
-const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
+export const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
 const currentSessionStorage = new LocalStorage(() => SESSION_STORAGE_KEY)
 
 export const useMyAccount = create<State & Actions>()((set, get) => ({

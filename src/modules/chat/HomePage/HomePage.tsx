@@ -5,7 +5,7 @@ import Tabs, { TabsProps } from '@/components/Tabs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
-import { useMyAccount } from '@/stores/my-account'
+import { accountStorage, useMyAccount } from '@/stores/my-account'
 import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
 import dynamic from 'next/dynamic'
@@ -29,6 +29,8 @@ export type CommonHubContentProps = {
 }
 
 const hotChatsHubId = getMainHubId()
+const addressFromStorage = accountStorage.get()
+
 export default function HubsPage(props: HubsPageProps) {
   const isInIframe = useIsInIframe()
   const { search, setSearch, getSearchResults, focusController } = useSearch()
@@ -88,7 +90,7 @@ export default function HubsPage(props: HubsPageProps) {
 
   const myAddress = useMyAccount((state) => state.address)
   const { data: followedPostIds } = getFollowedPostIdsByAddressQuery.useQuery(
-    myAddress ?? ''
+    myAddress ?? addressFromStorage ?? ''
   )
 
   const [isTabUrlLoaded, setIsTabUrlLoaded] = useState(false)
