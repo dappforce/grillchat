@@ -93,8 +93,8 @@ export function createQuery<Data, ReturnValue>({
     invalidate: createQueryInvalidation<Data>(key),
     useQuery: (
       data: Data | null,
-      config?: QueryConfig<ReturnValue, Data>,
-      defaultConfig?: QueryConfig<ReturnValue, Data>
+      config?: QueryConfig<Data, ReturnValue>,
+      defaultConfig?: QueryConfig<Data, ReturnValue>
     ) => {
       const mergedConfig = mergeQueryConfig(config, defaultConfig)
       return useQuery(
@@ -108,8 +108,8 @@ export function createQuery<Data, ReturnValue>({
     },
     useQueries: (
       data: (Data | null)[],
-      config?: QueryConfig<ReturnValue, Data>,
-      defaultConfig?: QueryConfig<ReturnValue, Data>
+      config?: QueryConfig<Data, ReturnValue>,
+      defaultConfig?: QueryConfig<Data, ReturnValue>
     ) => {
       const mergedConfig = mergeQueryConfig(config, defaultConfig)
       return useQueries({

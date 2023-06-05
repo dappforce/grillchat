@@ -3,6 +3,7 @@ import {
   createSubsocialQuery,
   SubsocialQueryData,
 } from '@/subsocial-query/subsocial/query'
+import { LocalStorage } from '@/utils/storage'
 
 const getChatIdsBySpaceId = poolQuery<
   SubsocialQueryData<string>,
@@ -32,6 +33,10 @@ export const getChatIdsBySpaceIdQuery = createSubsocialQuery({
   fetcher: getChatIdsBySpaceId,
 })
 
+const FOLLOWED_IDS_STORAGE_KEY = 'followedPostIds'
+export const followedIdsStorage = new LocalStorage(
+  (address: string) => `${FOLLOWED_IDS_STORAGE_KEY}:${address}`
+)
 async function getFollowedPostIdsByAddress({
   api,
   data: address,
@@ -41,10 +46,31 @@ async function getFollowedPostIdsByAddress({
   const substrateApi = await api.substrateApi
   const rawFollowedPosts =
     await substrateApi.query.postFollows.postsFollowedByAccount(address)
-  const followedPostIds = rawFollowedPosts.toPrimitive() as number[]
-  return followedPostIds.map((id) => id.toString())
+  const followedPostIdsNumber = rawFollowedPosts.toPrimitive() as number[]
+  const followedPostIds = followedPostIdsNumber.map((id) => id.toString())
+
+  followedIdsStorage.set(JSON.stringify(followedPostIds), address)
+  return followedPostIds
 }
 export const getFollowedPostIdsByAddressQuery = createSubsocialQuery({
   key: 'getFollowedPostIdsByAddress',
   fetcher: getFollowedPostIdsByAddress,
+  defaultConfigGenerator: (address) => {
+    const placeholderData = followedIdsStorage.get(address)
+    if (!placeholderData) return {}
+
+    try {
+      const parsedData = JSON.parse(placeholderData)
+      if (
+        !Array.isArray(parsedData) ||
+        !parsedData.every((id) => typeof id === 'string')
+      )
+        throw new Error('Invalid data')
+      return {
+        placeholderData: parsedData as string[],
+      }
+    } catch {
+      return {}
+    }
+  },
 })

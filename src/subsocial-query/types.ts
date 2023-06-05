@@ -1,6 +1,6 @@
 import { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
 
-export type QueryConfig<ReturnValue = any, Data = any> = Omit<
+export type QueryConfig<Data = any, ReturnValue = any> = Omit<
   UseQueryOptions<ReturnValue, unknown, ReturnValue, (string | Data | null)[]>,
   'queryFn' | 'queryKey'
 >

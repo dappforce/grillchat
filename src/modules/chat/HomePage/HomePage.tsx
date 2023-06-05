@@ -4,6 +4,8 @@ import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch
 import Tabs, { TabsProps } from '@/components/Tabs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useSearch from '@/hooks/useSearch'
+import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
+import { useMyAccount } from '@/stores/my-account'
 import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
 import dynamic from 'next/dynamic'
@@ -83,10 +85,20 @@ export default function HubsPage(props: HubsPageProps) {
     },
   ]
 
+  const myAddress = useMyAccount((state) => state.address)
+  const { data: followedPostIds } = getFollowedPostIdsByAddressQuery.useQuery(
+    myAddress ?? ''
+  )
+
   const [isTabUrlLoaded, setIsTabUrlLoaded] = useState(false)
   const [selectedTab, setSelectedTab] = useState(1)
   useEffect(() => {
     const currentPathname = window.location.pathname.substring(1)
+    if (!currentPathname && followedPostIds?.length) {
+      setSelectedTab(0)
+      replaceUrl('/my-chats')
+      return
+    }
 
     const index = tabs.findIndex(({ id }) => id === currentPathname)
     if (index > -1) setSelectedTab(index)
