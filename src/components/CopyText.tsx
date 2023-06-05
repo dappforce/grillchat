@@ -143,7 +143,10 @@ export function CopyTextInline({
 
   const fontClassName = codeText && spaceMono.className
   let trigger = (
-    <div className={cx('w-full cursor-pointer', fontClassName, textClassName)}>
+    <div
+      className={cx('w-full cursor-pointer', fontClassName, textClassName)}
+      onClick={handleClick}
+    >
       {text}
     </div>
   )
