@@ -3,7 +3,7 @@ import CommonCustomContextMenu from '@/components/floating/CommonCustomContextMe
 import { cx } from '@/utils/class-names'
 import { ImAttachment } from 'react-icons/im'
 
-export type AttachmentInputProps = ButtonProps & {}
+export type AttachmentInputProps = ButtonProps
 
 export default function AttachmentInput({ ...props }: AttachmentInputProps) {
   return (
@@ -11,6 +11,7 @@ export default function AttachmentInput({ ...props }: AttachmentInputProps) {
       <CommonCustomContextMenu
         menus={[{ icon: ImAttachment, text: 'asdfasdf' }]}
         allowedPlacements={['top-start']}
+        yOffset={20}
       >
         {(config) => {
           const { onContextMenu, referenceProps } = config || {}

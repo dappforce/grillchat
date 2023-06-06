@@ -13,7 +13,6 @@ export type CommonCustomContextMenuProps = Omit<
 
 export default function CommonCustomContextMenu({
   children,
-  allowedPlacements,
   ...props
 }: CommonCustomContextMenuProps) {
   if (props.menus.length === 0) {
@@ -23,9 +22,9 @@ export default function CommonCustomContextMenu({
   return (
     <CustomContextMenu
       menuPanel={(closeMenu) => (
-        <CommonContextMenuItem closeMenu={closeMenu} {...props} />
+        <CommonContextMenuItem closeMenu={closeMenu} menus={props.menus} />
       )}
-      allowedPlacements={allowedPlacements}
+      {...props}
     >
       {children}
     </CustomContextMenu>

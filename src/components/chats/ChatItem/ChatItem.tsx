@@ -149,7 +149,11 @@ export default function ChatItem({
       {!isMyMessage && (
         <AddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
-      <CommonCustomContextMenu menus={menus}>
+      <CommonCustomContextMenu
+        menus={menus}
+        alignment='end'
+        useClickPointAsAnchor
+      >
         {(config) => {
           const { onContextMenu, referenceProps } = config || {}
           return (

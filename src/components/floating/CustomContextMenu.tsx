@@ -1,6 +1,8 @@
 import { isTouchDevice } from '@/utils/device'
 import {
+  Alignment,
   autoPlacement,
+  offset,
   Placement,
   useClientPoint,
   useDismiss,
@@ -18,32 +20,40 @@ export type CustomContextMenuProps = {
     referenceProps: ReferenceProps
   }) => JSX.Element
   menuPanel: (closeMenu: () => void) => React.ReactNode
+  alignment?: Alignment
   allowedPlacements?: Placement[]
+  useClickPointAsAnchor?: boolean
+  yOffset?: number
 }
 
 export default function CustomContextMenu({
   children,
   menuPanel,
+  alignment,
   allowedPlacements,
+  useClickPointAsAnchor,
+  yOffset = 0,
 }: CustomContextMenuProps) {
   const [openMenu, setOpenMenu] = useState(false)
   const { x, y, strategy, refs, context } = useFloating({
     open: openMenu,
     onOpenChange: setOpenMenu,
     middleware: [
+      offset({ mainAxis: yOffset }),
       autoPlacement({
         crossAxis: true,
-        alignment: 'end',
+        alignment,
         allowedPlacements,
       }),
     ],
   })
 
-  const [clientClickX, setClientClickX] = useState(0)
-  const [clientClickY, setClientClickY] = useState(0)
+  const [clientClickX, setClientClickX] = useState<number | undefined>()
+  const [clientClickY, setClientClickY] = useState<number | undefined>()
   const clientPoint = useClientPoint(context, {
     x: clientClickX,
     y: clientClickY,
+    enabled: !!useClickPointAsAnchor,
   })
 
   const dismiss = useDismiss(context)
@@ -53,7 +63,7 @@ export default function CustomContextMenu({
   ])
 
   const toggleMenu = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {
-    if (!openMenu && e) {
+    if (!openMenu && e && useClickPointAsAnchor) {
       setClientClickX(e.clientX)
       setClientClickY(e.clientY)
     }
