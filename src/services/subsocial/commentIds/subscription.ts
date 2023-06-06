@@ -68,9 +68,9 @@ const subscription = (
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
 
-      const accountsAddresses = await getAccountsData(Array.from(addressesSet))
+      const accountData = await getAccountsData(Array.from(addressesSet))
 
-      accountsAddresses.forEach((accountAddresses) => {
+      accountData.forEach((accountAddresses) => {
         getAccountDataQuery.setQueryData(
           queryClient,
           accountAddresses.grillAddress,

@@ -42,11 +42,12 @@ async function getChatsData(chatId: string) {
   const prefetchedMessageIds = messageIds.slice(startSlice, endSlice)
   const messages = await getPostsFromCache(prefetchedMessageIds)
 
-  const owners = messages
-    .slice(0, CHAT_PER_PAGE)
-    .map((message) => message.struct.ownerId)
+  const owners = messages.map((message) => message.struct.ownerId)
 
-  const accountsAddresses = await getAccountsDataFromCache(owners)
+  const ownersSet = new Set(owners)
+  const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)
+
+  const accountsAddresses = await getAccountsDataFromCache(chatPageOwnerIds)
 
   return { messages, chatData, messageIds, accountsAddresses }
 }

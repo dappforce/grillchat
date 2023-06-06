@@ -1,7 +1,6 @@
 import EthIcon from '@/assets/icons/eth.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
 import useRandomColor from '@/hooks/useRandomColor'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import AddressAvatar from './AddressAvatar'
@@ -20,9 +19,6 @@ const ProfilePreview = ({
   evmAddress,
 }: ProfilePreviewProps) => {
   const senderColor = useRandomColor(address)
-
-  const { data } = getAccountDataQuery.useQuery(address || '')
-  const { ensName } = data || {}
 
   return (
     <div className={cx('flex items-center gap-4', className)}>
