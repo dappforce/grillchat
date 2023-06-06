@@ -84,7 +84,6 @@ export default function Tabs({
                     'relative z-10 block cursor-pointer py-4 font-medium text-text-muted transition-colors',
                     'after:absolute after:bottom-0 after:left-0 after:h-1 after:w-full after:origin-bottom after:scale-y-0 after:rounded-t-full after:bg-text-primary after:opacity-0 after:transition',
                     'group-hover:text-text-primary group-hover:after:scale-y-100 group-hover:after:opacity-100',
-                    'group-focus-visible:text-text-primary group-focus-visible:after:scale-y-100 group-focus-visible:after:opacity-100',
                     selected &&
                       'text-text-primary after:scale-y-100 after:opacity-100'
                   )}

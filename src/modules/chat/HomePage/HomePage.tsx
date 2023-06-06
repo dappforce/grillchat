@@ -96,9 +96,8 @@ export default function HubsPage(props: HubsPageProps) {
 
   const [isTabUrlLoaded, setIsTabUrlLoaded] = useState(false)
   const [selectedTab, setSelectedTab] = useState(1)
-  const { isReady } = useRouter()
   useEffect(() => {
-    if (!isReady) return
+    if (!router.isReady) return
 
     const currentPathname = window.location.pathname.substring(1)
     if (!currentPathname) {
@@ -116,7 +115,7 @@ export default function HubsPage(props: HubsPageProps) {
 
     setIsTabUrlLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady])
+  }, [router])
 
   const usedSelectedTab = isTabUrlLoaded ? selectedTab : -1
   const usedSetSelectedTab = (selectedTab: number) => {
