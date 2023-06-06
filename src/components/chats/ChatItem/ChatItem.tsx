@@ -1,7 +1,7 @@
 import AddressAvatar from '@/components/AddressAvatar'
-import CommonCustomContextMenu, {
-  CommonCustomContextMenuProps,
-} from '@/components/floating/CommonCustomContextMenu'
+import FloatingMenus, {
+  FloatingMenusProps,
+} from '@/components/floating/FloatingMenus'
 import Toast from '@/components/Toast'
 import useRandomColor from '@/hooks/useRandomColor'
 import { isOptimisticId } from '@/services/subsocial/utils'
@@ -79,8 +79,8 @@ export default function ChatItem({
     onSelectMessageAsReply?.(messageId)
   }
 
-  const getChatMenus = (): CommonCustomContextMenuProps['menus'] => {
-    const replyMenu: CommonCustomContextMenuProps['menus'][number] = {
+  const getChatMenus = (): FloatingMenusProps['menus'] => {
+    const replyMenu: FloatingMenusProps['menus'][number] = {
       text: 'Reply',
       icon: BsFillReplyFill,
       onClick: () => setMessageAsReply(messageId),
@@ -149,17 +149,16 @@ export default function ChatItem({
       {!isMyMessage && (
         <AddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
-      <CommonCustomContextMenu
-        menus={menus}
-        alignment='end'
-        useClickPointAsAnchor
-      >
+      <FloatingMenus menus={menus} alignment='end' useClickPointAsAnchor>
         {(config) => {
-          const { onContextMenu, referenceProps } = config || {}
+          const { toggleDisplay, referenceProps } = config || {}
           return (
             <div
               className={cx('flex flex-col overflow-hidden', props.className)}
-              onContextMenu={onContextMenu}
+              onContextMenu={(e) => {
+                e.preventDefault()
+                toggleDisplay?.(e)
+              }}
               onDoubleClick={() => setMessageAsReply(messageId)}
               {...referenceProps}
               id={messageBubbleId}
@@ -178,7 +177,7 @@ export default function ChatItem({
             </div>
           )
         }}
-      </CommonCustomContextMenu>
+      </FloatingMenus>
       <CheckMarkExplanationModal
         isOpen={checkMarkModalState.isOpen}
         variant={checkMarkModalState.variant || 'recording'}

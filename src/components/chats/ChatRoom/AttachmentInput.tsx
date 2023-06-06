@@ -1,5 +1,5 @@
 import Button, { ButtonProps } from '@/components/Button'
-import CommonCustomContextMenu from '@/components/floating/CommonCustomContextMenu'
+import FloatingMenus from '@/components/floating/FloatingMenus'
 import { cx } from '@/utils/class-names'
 import { ImAttachment } from 'react-icons/im'
 
@@ -8,27 +8,27 @@ export type AttachmentInputProps = ButtonProps
 export default function AttachmentInput({ ...props }: AttachmentInputProps) {
   return (
     <>
-      <CommonCustomContextMenu
+      <FloatingMenus
         menus={[{ icon: ImAttachment, text: 'asdfasdf' }]}
         allowedPlacements={['top-start']}
         yOffset={20}
       >
         {(config) => {
-          const { onContextMenu, referenceProps } = config || {}
+          const { toggleDisplay, referenceProps } = config || {}
           return (
             <Button
               size='circle'
               variant='transparent'
               {...referenceProps}
               {...props}
-              onClick={onContextMenu}
+              onClick={toggleDisplay}
               className={cx('text-lg text-text-muted', props.className)}
             >
               <ImAttachment />
             </Button>
           )
         }}
-      </CommonCustomContextMenu>
+      </FloatingMenus>
     </>
   )
 }

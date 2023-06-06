@@ -1,40 +1,34 @@
 import MenuList, { MenuListProps } from '../MenuList'
-import CustomContextMenu, { CustomContextMenuProps } from './CustomContextMenu'
+import FloatingWrapper, { FloatingWrapperProps } from './FloatingWrapper'
 
-type CommonContextMenuItemProps = {
+type FloatingMenuItemProps = {
   menus: MenuListProps['menus']
   closeMenu: () => void
 }
-export type CommonCustomContextMenuProps = Omit<
-  CustomContextMenuProps,
-  'menuPanel'
-> &
-  Omit<CommonContextMenuItemProps, 'closeMenu'>
+export type FloatingMenusProps = Omit<FloatingWrapperProps, 'panel'> &
+  Omit<FloatingMenuItemProps, 'closeMenu'>
 
-export default function CommonCustomContextMenu({
+export default function FloatingMenus({
   children,
   ...props
-}: CommonCustomContextMenuProps) {
+}: FloatingMenusProps) {
   if (props.menus.length === 0) {
     return children()
   }
 
   return (
-    <CustomContextMenu
-      menuPanel={(closeMenu) => (
-        <CommonContextMenuItem closeMenu={closeMenu} menus={props.menus} />
-      )}
+    <FloatingWrapper
       {...props}
+      panel={(closeMenu) => (
+        <FloatingMenuPanel closeMenu={closeMenu} menus={props.menus} />
+      )}
     >
       {children}
-    </CustomContextMenu>
+    </FloatingWrapper>
   )
 }
 
-function CommonContextMenuItem({
-  menus,
-  closeMenu,
-}: CommonContextMenuItemProps) {
+function FloatingMenuPanel({ menus, closeMenu }: FloatingMenuItemProps) {
   const augmentedMenus = menus.map((menu) => ({
     ...menu,
     onClick: () => {

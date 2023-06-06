@@ -13,27 +13,26 @@ import { Transition } from '@headlessui/react'
 import { MouseEvent, MouseEventHandler, useState } from 'react'
 
 type ReferenceProps = Record<string, unknown>
-export type CustomContextMenuProps = {
+export type FloatingWrapperProps = {
   children: (config?: {
-    toggleMenu: () => void
-    onContextMenu: MouseEventHandler<Element>
+    toggleDisplay: (e?: MouseEvent<Element, globalThis.MouseEvent>) => void
     referenceProps: ReferenceProps
   }) => JSX.Element
-  menuPanel: (closeMenu: () => void) => React.ReactNode
+  panel: (closeMenu: () => void) => React.ReactNode
   alignment?: Alignment
   allowedPlacements?: Placement[]
   useClickPointAsAnchor?: boolean
   yOffset?: number
 }
 
-export default function CustomContextMenu({
+export default function FloatingWrapper({
   children,
-  menuPanel,
+  panel,
   alignment,
   allowedPlacements,
   useClickPointAsAnchor,
   yOffset = 0,
-}: CustomContextMenuProps) {
+}: FloatingWrapperProps) {
   const [openMenu, setOpenMenu] = useState(false)
   const { x, y, strategy, refs, context } = useFloating({
     open: openMenu,
@@ -62,7 +61,7 @@ export default function CustomContextMenu({
     dismiss,
   ])
 
-  const toggleMenu = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {
+  const toggleDisplay = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {
     if (!openMenu && e && useClickPointAsAnchor) {
       setClientClickX(e.clientX)
       setClientClickY(e.clientY)
@@ -70,22 +69,16 @@ export default function CustomContextMenu({
     setOpenMenu((prev) => !prev)
   }
 
-  const onContextMenu: MouseEventHandler<Element> = (e) => {
-    e.preventDefault()
-    toggleMenu(e)
-  }
-
   const closeMenu = () => setOpenMenu(false)
   const onReferenceClick: MouseEventHandler<Element> = (e) => {
-    if (isTouchDevice()) toggleMenu(e)
+    if (isTouchDevice()) toggleDisplay(e)
     else closeMenu()
   }
 
   return (
     <>
       {children({
-        toggleMenu,
-        onContextMenu,
+        toggleDisplay,
         referenceProps: getReferenceProps({
           ref: refs.setReference,
           ...getReferenceProps(),
@@ -110,7 +103,7 @@ export default function CustomContextMenu({
         leaveFrom='opacity-100'
         leaveTo='opacity-0'
       >
-        {menuPanel(closeMenu)}
+        {panel(closeMenu)}
       </Transition>
     </>
   )
