@@ -165,6 +165,14 @@ export default function ChatForm({
 
           const renderSendButton = (classNames: string) => (
             <Button
+              onTouchEnd={(e) => {
+                // For mobile, to prevent keyboard from hiding
+                if (shouldSendMessage) {
+                  e.preventDefault()
+                  submitForm()
+                }
+              }}
+              tabIndex={-1}
               onClick={submitForm}
               size='circle'
               variant={
