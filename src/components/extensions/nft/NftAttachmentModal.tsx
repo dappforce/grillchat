@@ -13,7 +13,7 @@ export default function NftAttachmentModal({
       title='🖼 Attach NFT'
       description='Should be a link to an NFT page from any popular marketplace, such as Opensea, Rarible or another'
     >
-      <Input placeholder='Paste image URL' />
+      <Input placeholder='Paste NFT URL' />
     </CommonExtensionModal>
   )
 }
