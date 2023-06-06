@@ -5,6 +5,7 @@ import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import { ComponentProps, useRef, useState } from 'react'
+import AttachmentInput from './AttachmentInput'
 import ChatForm from './ChatForm'
 
 const ChatList = dynamic(() => import('../ChatList/ChatList'), {
@@ -71,12 +72,15 @@ export default function ChatRoom({
           />
         )}
         {isJoined ? (
-          <ChatForm
-            replyTo={replyTo}
-            onSubmit={scrollToBottom}
-            chatId={chatId}
-            clearReplyTo={closeReply}
-          />
+          <div className='flex items-center gap-2'>
+            <AttachmentInput />
+            <ChatForm
+              chatId={chatId}
+              onSubmit={scrollToBottom}
+              replyTo={replyTo}
+              clearReplyTo={closeReply}
+            />
+          </div>
         ) : (
           <JoinChatWrapper>
             {({ isLoading, mutateAsync }) => (
