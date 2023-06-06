@@ -1,4 +1,4 @@
-import { CommonEvmAddressLinked } from '@/components/CommonModalContent'
+import { CommonEvmAddressLinked } from '@/components/auth/CommonModalContent'
 import Modal from '@/components/modals/Modal'
 import { getLinkedEvmAddressQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'

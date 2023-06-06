@@ -56,11 +56,11 @@ type SignMessageAndLinkAddressProps = {
   linkedEvmAddress?: string
 }
 
-export const useSignMessageAndLinkEvmAddress = ({
+export default function useSignMessageAndLinkEvmAddress({
   setModalStep,
   onError,
   linkedEvmAddress,
-}: SignMessageAndLinkAddressProps) => {
+}: SignMessageAndLinkAddressProps) {
   const {
     signEvmLinkMessage,
     isSigningMessage,

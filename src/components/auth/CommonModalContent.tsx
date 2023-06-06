@@ -1,9 +1,9 @@
 import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
+import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import Image from 'next/image'
-import { useSignMessageAndLinkEvmAddress } from '../hooks/useSignMessageAndLinkEvmAddress'
-import Button from './Button'
-import { CustomConnectButton } from './login/CustomConnectButton'
+import Button from '../Button'
+import { CustomConnectButton } from './CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
   setModalStep?: () => void

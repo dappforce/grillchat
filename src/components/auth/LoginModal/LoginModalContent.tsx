@@ -1,11 +1,11 @@
 import CreateAccountIcon from '@/assets/icons/create-account.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
-import Button from '@/components/Button'
 import {
   CommonEvmAddressLinked,
   CommonEVMLoginErrorContent,
-} from '@/components/CommonModalContent'
+} from '@/components/auth/CommonModalContent'
+import Button from '@/components/Button'
 import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
@@ -13,6 +13,7 @@ import ProfilePreview from '@/components/ProfilePreview'
 import Toast from '@/components/Toast'
 import useGetTheme from '@/hooks/useGetTheme'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
+import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useMyAccount } from '@/stores/my-account'
@@ -25,7 +26,6 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
-import { useSignMessageAndLinkEvmAddress } from '../../../hooks/useSignMessageAndLinkEvmAddress'
 import { CustomConnectButton } from '../CustomConnectButton'
 
 export type LoginModalStep =

@@ -17,7 +17,7 @@ import { HiOutlineChevronLeft } from 'react-icons/hi2'
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
 })
-const LoginModal = dynamic(() => import('@/components/login/LoginModal'), {
+const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), {
   ssr: false,
 })
 

@@ -1,12 +1,12 @@
 import Button from '@/components/Button'
 import { CopyTextInline } from '@/components/CopyText'
 import LinkText from '@/components/LinkText'
-import { CustomConnectButton } from '@/components/login/CustomConnectButton'
-import { useSignMessageAndLinkEvmAddress } from '@/hooks/useSignMessageAndLinkEvmAddress'
+import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { HiArrowUpRight } from 'react-icons/hi2'
 import { useAccount } from 'wagmi'
+import { CustomConnectButton } from '../../CustomConnectButton'
 import { ContentProps } from '../types'
 
 function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
