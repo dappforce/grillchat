@@ -1,7 +1,7 @@
 import Send from '@/assets/icons/send.svg'
 import { buttonStyles } from '@/components/Button'
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
-import TextArea from '@/components/inputs/TextArea'
+import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
@@ -29,6 +29,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   replyTo?: string
   clearReplyTo?: () => void
   disabled?: boolean
+  inputProps?: TextAreaProps
 }
 
 function processMessage(message: string) {
@@ -42,6 +43,7 @@ export default function ChatForm({
   disabled,
   replyTo,
   clearReplyTo,
+  inputProps,
   ...props
 }: ChatFormProps) {
   const { data: chat } = getPostQuery.useQuery(chatId)
@@ -114,21 +116,21 @@ export default function ChatForm({
       resetForm()
       sendMessage({
         message: processedMessage,
-        chatId: chatId,
+        chatId,
         replyTo,
       })
     } else {
       if (isLoggedIn) {
         sendEvent('request energy')
       } else {
-        sendEvent('send first message', { chatId: chatId, name: chatTitle })
+        sendEvent('send first message', { chatId, name: chatTitle })
       }
       if (!captchaToken) return
       resetForm()
       requestTokenAndSendMessage({
         captchaToken,
         message: processMessage(messageBody),
-        chatId: chatId,
+        chatId,
         replyTo,
       })
       setIsRequestingEnergy(true)
@@ -159,11 +161,6 @@ export default function ChatForm({
               className={cx('flex w-full', className)}
             >
               <TextArea
-                onEnterToSubmitForm={submitForm}
-                disabled={!chatId || disabled}
-                ref={textAreaRef}
-                value={messageBody}
-                onChange={(e) => setMessageBody((e.target as any).value)}
                 placeholder='Message...'
                 rows={1}
                 autoComplete='off'
@@ -172,6 +169,12 @@ export default function ChatForm({
                 spellCheck='false'
                 variant='fill'
                 pill
+                {...inputProps}
+                onChange={(e) => setMessageBody((e.target as any).value)}
+                onEnterToSubmitForm={submitForm}
+                disabled={!chatId || disabled}
+                value={messageBody}
+                ref={textAreaRef}
                 rightElement={(classNames) => (
                   <div
                     onTouchEnd={(e) => {

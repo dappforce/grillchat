@@ -5,8 +5,8 @@ import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import { ComponentProps, useRef, useState } from 'react'
+import ChatForm from '../ChatForm'
 import AttachmentInput from './AttachmentInput'
-import ChatForm from './ChatForm'
 
 const ChatList = dynamic(() => import('../ChatList/ChatList'), {
   ssr: false,
