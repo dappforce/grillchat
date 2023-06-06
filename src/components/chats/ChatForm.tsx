@@ -1,5 +1,5 @@
 import Send from '@/assets/icons/send.svg'
-import Button, { ButtonProps, buttonStyles } from '@/components/Button'
+import Button, { ButtonProps } from '@/components/Button'
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
@@ -164,26 +164,19 @@ export default function ChatForm({
           }
 
           const renderSendButton = (classNames: string) => (
-            <div
-              onTouchEnd={(e) => {
-                if (shouldSendMessage) {
-                  e.preventDefault()
-                  submitForm()
-                }
-              }}
+            <Button
               onClick={submitForm}
-              className={cx(
-                buttonStyles({
-                  size: 'circle',
-                  variant: isDisabled ? 'mutedOutline' : 'primary',
-                }),
-                classNames,
-                'cursor-pointer',
-                sendButtonProps?.className
-              )}
+              size='circle'
+              variant={
+                sendButtonProps?.disabled || isDisabled
+                  ? 'mutedOutline'
+                  : 'primary'
+              }
+              {...sendButtonProps}
+              className={cx(classNames, sendButtonProps?.className)}
             >
               <Send className='relative top-px h-4 w-4' />
-            </div>
+            </Button>
           )
 
           return (
