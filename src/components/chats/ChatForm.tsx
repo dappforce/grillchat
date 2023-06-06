@@ -1,5 +1,5 @@
 import Send from '@/assets/icons/send.svg'
-import { buttonStyles } from '@/components/Button'
+import Button, { ButtonProps, buttonStyles } from '@/components/Button'
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
@@ -9,7 +9,10 @@ import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
-import { useSendMessage } from '@/services/subsocial/commentIds'
+import {
+  SendMessageParams,
+  useSendMessage,
+} from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
@@ -30,6 +33,9 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   clearReplyTo?: () => void
   disabled?: boolean
   inputProps?: TextAreaProps
+  getAdditionalTxParams?: () => SendMessageParams
+  sendButtonText?: string
+  sendButtonProps?: ButtonProps
 }
 
 function processMessage(message: string) {
@@ -44,6 +50,9 @@ export default function ChatForm({
   replyTo,
   clearReplyTo,
   inputProps,
+  getAdditionalTxParams,
+  sendButtonText,
+  sendButtonProps,
   ...props
 }: ChatFormProps) {
   const { data: chat } = getPostQuery.useQuery(chatId)
@@ -112,13 +121,15 @@ export default function ChatForm({
     const processedMessage = processMessage(messageBody)
     if (isDisabled) return
 
+    const sendMessageParams = {
+      message: processedMessage,
+      chatId,
+      replyTo,
+      ...getAdditionalTxParams?.(),
+    }
     if (shouldSendMessage) {
       resetForm()
-      sendMessage({
-        message: processedMessage,
-        chatId,
-        replyTo,
-      })
+      sendMessage(sendMessageParams)
     } else {
       if (isLoggedIn) {
         sendEvent('request energy')
@@ -129,9 +140,7 @@ export default function ChatForm({
       resetForm()
       requestTokenAndSendMessage({
         captchaToken,
-        message: processMessage(messageBody),
-        chatId,
-        replyTo,
+        ...sendMessageParams,
       })
       setIsRequestingEnergy(true)
       sendEvent('request energy and send message')
@@ -154,11 +163,34 @@ export default function ChatForm({
             handleSubmit(token, e)
           }
 
+          const renderSendButton = (classNames: string) => (
+            <div
+              onTouchEnd={(e) => {
+                if (shouldSendMessage) {
+                  e.preventDefault()
+                  submitForm()
+                }
+              }}
+              onClick={submitForm}
+              className={cx(
+                buttonStyles({
+                  size: 'circle',
+                  variant: isDisabled ? 'mutedOutline' : 'primary',
+                }),
+                classNames,
+                'cursor-pointer',
+                sendButtonProps?.className
+              )}
+            >
+              <Send className='relative top-px h-4 w-4' />
+            </div>
+          )
+
           return (
             <form
               onSubmit={submitForm}
               {...props}
-              className={cx('flex w-full', className)}
+              className={cx('flex w-full flex-col gap-4', className)}
             >
               <TextArea
                 placeholder='Message...'
@@ -175,28 +207,18 @@ export default function ChatForm({
                 disabled={!chatId || disabled}
                 value={messageBody}
                 ref={textAreaRef}
-                rightElement={(classNames) => (
-                  <div
-                    onTouchEnd={(e) => {
-                      if (shouldSendMessage) {
-                        e.preventDefault()
-                        submitForm()
-                      }
-                    }}
-                    onClick={submitForm}
-                    className={cx(
-                      buttonStyles({
-                        size: 'circle',
-                        variant: isDisabled ? 'mutedOutline' : 'primary',
-                      }),
-                      classNames,
-                      'cursor-pointer'
-                    )}
-                  >
-                    <Send className='relative top-px h-4 w-4' />
-                  </div>
-                )}
+                rightElement={!sendButtonText ? renderSendButton : undefined}
               />
+              {sendButtonText && (
+                <Button
+                  disabled={isDisabled}
+                  size='lg'
+                  onClick={submitForm}
+                  {...sendButtonProps}
+                >
+                  {sendButtonText}
+                </Button>
+              )}
             </form>
           )
         }}
