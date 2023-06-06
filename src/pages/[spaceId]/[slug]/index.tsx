@@ -42,7 +42,9 @@ async function getChatsData(chatId: string) {
   const prefetchedMessageIds = messageIds.slice(startSlice, endSlice)
   const messages = await getPostsFromCache(prefetchedMessageIds)
 
-  const owners = messages.map((message) => message.struct.ownerId)
+  const owners = messages
+    .slice(0, CHAT_PER_PAGE)
+    .map((message) => message.struct.ownerId)
 
   const accountsAddresses = await getAccountsDataFromCache(owners)
 
@@ -82,6 +84,7 @@ export const getStaticProps = getCommonStaticProps<
         getCommentIdsQueryKey(chatId),
         messageIds ?? null
       )
+
       messages.forEach((post) => {
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
