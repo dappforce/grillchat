@@ -33,6 +33,7 @@ const addressFromStorage = accountAddressStorage.get()
 
 export default function HubsPage(props: HubsPageProps) {
   const isInIframe = useIsInIframe()
+  const router = useRouter()
   const { search, setSearch, getSearchResults, focusController } = useSearch()
 
   const renderHubsContent = (
@@ -121,7 +122,8 @@ export default function HubsPage(props: HubsPageProps) {
   const usedSetSelectedTab = (selectedTab: number) => {
     setSelectedTab(selectedTab)
     const selectedTabId = tabs[selectedTab]?.id
-    if (selectedTabId) replaceUrl(`/${selectedTabId}`)
+    if (selectedTabId)
+      router.push(`/${selectedTabId}`, undefined, { shallow: true })
   }
 
   return (
