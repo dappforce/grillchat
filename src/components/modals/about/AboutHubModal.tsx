@@ -1,4 +1,5 @@
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
+import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin, getHubPageLink } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
@@ -40,6 +41,7 @@ export default function AboutHubModal({
   const actionMenu: AboutModalProps['actionMenu'] = [
     {
       text: 'Show Metadata',
+      iconClassName: cx('text-text-muted'),
       icon: HiCircleStack,
       onClick: () => setIsOpenMetadataModal(true),
     },

@@ -59,6 +59,7 @@ export default function AboutChatModal({
     const actionMenu: AboutModalProps['actionMenu'] = [
       {
         text: 'Show Metadata',
+        iconClassName: cx('text-text-muted'),
         icon: HiCircleStack,
         onClick: () => setIsOpenMetadataModal(true),
       },

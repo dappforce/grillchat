@@ -10,6 +10,7 @@ type Action = {
   text: string
   icon: IconType
   className?: string
+  iconClassName?: string
   onClick: ButtonProps['onClick']
   disabled?: boolean
 }
@@ -55,7 +56,14 @@ export default function AboutModal({
         {actionMenu && actionMenu.length > 0 && (
           <div className='w-full overflow-hidden rounded-2xl bg-background-lighter'>
             {actionMenu.map(
-              ({ icon: Icon, text, className, onClick, disabled }) => (
+              ({
+                icon: Icon,
+                text,
+                className,
+                onClick,
+                disabled,
+                iconClassName,
+              }) => (
                 <Button
                   disabled={disabled}
                   variant='transparent'
@@ -69,7 +77,7 @@ export default function AboutModal({
                   )}
                   onClick={onClick}
                 >
-                  <Icon className='text-xl' />
+                  <Icon className={cx('text-xl', iconClassName)} />
                   <span>{text}</span>
                 </Button>
               )
