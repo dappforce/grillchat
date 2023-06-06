@@ -10,7 +10,9 @@ export default function NftAttachmentModal({
   return (
     <CommonExtensionModal
       {...props}
-      chatId=''
+      formProps={{
+        chatId: '1001',
+      }}
       title='🖼 Attach NFT'
       description='Should be a link to an NFT page from any popular marketplace, such as Opensea, Rarible or another'
     >

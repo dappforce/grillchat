@@ -190,7 +190,7 @@ export default function ChatForm({
             <form
               onSubmit={submitForm}
               {...props}
-              className={cx('flex w-full flex-col gap-4', className)}
+              className={cx('flex w-full flex-col gap-2', className)}
             >
               <TextArea
                 placeholder='Message...'
