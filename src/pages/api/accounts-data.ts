@@ -162,14 +162,14 @@ export async function getAccountsDataFromCache(
   if (method === 'POST') {
     return fetchAccountsData(addresses)
   } else {
-    const evmAddressBySubstrateAddress: AccountData[] = []
+    const evmAddressByGrillAddress: AccountData[] = []
     const needToFetchIds: string[] = []
 
     let newlyFetchedData: AccountData[] = []
     addresses.forEach((address) => {
       const cachedData = accountsDataCache.get(address)
       if (cachedData) {
-        evmAddressBySubstrateAddress.push(cachedData)
+        evmAddressByGrillAddress.push(cachedData)
       } else {
         needToFetchIds.push(address)
       }
@@ -179,6 +179,6 @@ export async function getAccountsDataFromCache(
       newlyFetchedData = await fetchAccountsData(needToFetchIds)
     }
 
-    return [...evmAddressBySubstrateAddress, ...newlyFetchedData]
+    return [...evmAddressByGrillAddress, ...newlyFetchedData]
   }
 }
