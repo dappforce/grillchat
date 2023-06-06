@@ -27,7 +27,11 @@ export default function AttachmentInput({ ...props }: AttachmentInputProps) {
               {...referenceProps}
               {...props}
               onClick={toggleDisplay}
-              className={cx('text-lg text-text-muted', props.className)}
+              className={cx(
+                'text-lg text-text-muted',
+                'hover:text-background-primary focus:text-background-primary',
+                props.className
+              )}
             >
               <ImAttachment />
             </Button>
