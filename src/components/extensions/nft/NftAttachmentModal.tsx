@@ -13,7 +13,7 @@ export default function NftAttachmentModal({
       chatId=''
       title='🖼 Attach NFT'
       description='Should be a link to an NFT page from any popular marketplace, such as Opensea, Rarible or another'
-      // sendButtonText='Send 50 ETH'
+      sendButtonText='Send 50 ETH'
     >
       <Input placeholder='Paste NFT URL' />
     </CommonExtensionModal>

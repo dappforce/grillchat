@@ -22,10 +22,13 @@ export default function CommonExtensionModal({
         {props.children}
       </div>
       <ChatForm
-        className={cx(!sendButtonText ? '' : 'pb-5 md:pb-6')}
+        className={cx(!sendButtonText ? '' : 'pb-5 md:pb-6', 'p-1')}
         chatId='1001'
         inputProps={{
-          className: cx('rounded-none bg-transparent pl-5 md:pl-6 py-5 pr-20'),
+          className: cx(
+            'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20',
+            !sendButtonText && 'rounded-b-2xl'
+          ),
         }}
         sendButtonProps={{
           className: cx(!sendButtonText ? 'mr-4' : 'mx-5 md:px-6'),
