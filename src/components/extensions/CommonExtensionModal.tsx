@@ -1,19 +1,21 @@
 import { cx } from '@/utils/class-names'
-import ChatForm from '../chats/ChatForm'
+import ChatForm, { ChatFormProps } from '../chats/ChatForm'
 import Modal, { ModalProps } from '../modals/Modal'
 
-export type CommonExtensionModalProps = ModalProps & {
-  chatId: string
-  sendButtonText?: string
-  disableSendButton?: boolean
-  autofocus?: boolean
-}
+export type CommonExtensionModalProps = ModalProps &
+  Pick<
+    ChatFormProps,
+    'buildAdditionalTxParams' | 'chatId' | 'sendButtonText' | 'autofocus'
+  > & {
+    disableSendButton?: boolean
+  }
 
 export default function CommonExtensionModal({
   chatId,
   sendButtonText,
   disableSendButton,
   autofocus,
+  buildAdditionalTxParams,
   ...props
 }: CommonExtensionModalProps) {
   const commonClassName = cx('px-5 md:px-6')
@@ -46,6 +48,7 @@ export default function CommonExtensionModal({
           disabled: disableSendButton,
           className: cx(!isUsingBigButton ? 'mr-4' : 'mx-5 md:px-6'),
         }}
+        buildAdditionalTxParams={buildAdditionalTxParams}
       />
     </Modal>
   )

@@ -1,3 +1,4 @@
+import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 
 export type NftImageProps = Omit<ComponentProps<'img'>, 'src'> & {
@@ -19,6 +20,11 @@ export default function NftImage({ image, ...props }: NftImageProps) {
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img {...props} src={imageUrl} alt='' />
+    <img
+      {...props}
+      src={imageUrl}
+      alt=''
+      className={cx('h-full w-full object-contain', props.className)}
+    />
   )
 }

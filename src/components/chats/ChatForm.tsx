@@ -33,7 +33,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   clearReplyTo?: () => void
   disabled?: boolean
   inputProps?: TextAreaProps
-  getAdditionalTxParams?: () => SendMessageParams
+  buildAdditionalTxParams?: () => Partial<SendMessageParams>
   sendButtonText?: string
   sendButtonProps?: ButtonProps
   autofocus?: boolean
@@ -52,7 +52,7 @@ export default function ChatForm({
   clearReplyTo,
   inputProps,
   autofocus = true,
-  getAdditionalTxParams,
+  buildAdditionalTxParams,
   sendButtonText,
   sendButtonProps,
   ...props
@@ -131,7 +131,7 @@ export default function ChatForm({
       message: processedMessage,
       chatId,
       replyTo,
-      ...getAdditionalTxParams?.(),
+      ...buildAdditionalTxParams?.(),
     }
     if (shouldSendMessage) {
       resetForm()
