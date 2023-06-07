@@ -25,7 +25,7 @@ import {
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import urlJoin from 'url-join'
-import { getMessageElementId } from '../helpers'
+import { getMessageElementId } from '../utils'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'

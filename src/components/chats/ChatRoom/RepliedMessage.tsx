@@ -5,7 +5,7 @@ import { getPostQuery } from '@/services/api/query'
 import { ComponentProps } from 'react'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
-import { getMessageElementId, scrollToMessageElement } from '../helpers'
+import { getMessageElementId, scrollToMessageElement } from '../utils'
 
 export type RepliedMessageProps = ComponentProps<'div'> & {
   replyMessageId: string
