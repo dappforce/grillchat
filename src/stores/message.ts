@@ -9,18 +9,24 @@ const messageCountStorage = new LocalStorage(
 
 type State = {
   messageCount: number
+  messageBody: string
 }
 
 type Actions = {
   incrementMessageCount: () => void
+  setMessageBody: (message: string) => void
 }
 
 const INITIAL_STATE: State = {
   messageCount: 0,
+  messageBody: '',
 }
 
 export const useMessageData = create<State & Actions>()((set, get) => ({
   ...INITIAL_STATE,
+  setMessageBody: (message: string) => {
+    set({ messageBody: message })
+  },
   incrementMessageCount: () => {
     const { messageCount } = get()
     const { parentOrigin } = useParentData.getState()

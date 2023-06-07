@@ -80,7 +80,9 @@ export default function ChatForm({
     (e) => e.message
   )
 
-  const [messageBody, setMessageBody] = useState('')
+  const messageBody = useMessageData((state) => state.messageBody)
+  const setMessageBody = useMessageData((state) => state.setMessageBody)
+
   const { mutate: sendMessage, error } = useSendMessage()
   useToastError(error, 'Message failed to send, please try again')
 

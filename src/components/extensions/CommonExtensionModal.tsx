@@ -1,18 +1,22 @@
 import { cx } from '@/utils/class-names'
-import ChatForm, { ChatFormProps } from '../chats/ChatForm'
+import ChatForm from '../chats/ChatForm'
 import Modal, { ModalProps } from '../modals/Modal'
 
 export type CommonExtensionModalProps = ModalProps & {
-  formProps: ChatFormProps
+  chatId: string
+  sendButtonText?: string
+  disableSendButton?: boolean
 }
 
 export default function CommonExtensionModal({
-  formProps,
+  chatId,
+  sendButtonText,
+  disableSendButton,
   ...props
 }: CommonExtensionModalProps) {
   const commonClassName = cx('px-5 md:px-6')
 
-  const isUsingBigButton = !!formProps.sendButtonText
+  const isUsingBigButton = !!sendButtonText
 
   return (
     <Modal
@@ -26,27 +30,18 @@ export default function CommonExtensionModal({
         {props.children}
       </div>
       <ChatForm
-        {...formProps}
-        className={cx(
-          'p-1',
-          isUsingBigButton && 'pb-5 md:pb-6',
-          formProps.className
-        )}
+        chatId={chatId}
+        className={cx('p-1', isUsingBigButton && 'pb-5 md:pb-6')}
         inputProps={{
-          ...formProps.inputProps,
           className: cx(
             'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20',
             !isUsingBigButton && 'rounded-b-2xl',
-            isUsingBigButton && '!ring-0',
-            formProps.inputProps?.className
+            isUsingBigButton && '!ring-0'
           ),
         }}
         sendButtonProps={{
-          ...formProps.sendButtonProps,
-          className: cx(
-            !isUsingBigButton ? 'mr-4' : 'mx-5 md:px-6',
-            formProps.sendButtonProps?.className
-          ),
+          disabled: disableSendButton,
+          className: cx(!isUsingBigButton ? 'mr-4' : 'mx-5 md:px-6'),
         }}
       />
     </Modal>

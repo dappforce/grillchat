@@ -10,9 +10,12 @@ import CommonExtensionModal from '../CommonExtensionModal'
 import NftImage from './NftImage'
 import { parseNftMarketplaceLink } from './utils'
 
-export type NftAttachmentModalProps = ModalFunctionalityProps
+export type NftAttachmentModalProps = ModalFunctionalityProps & {
+  chatId: string
+}
 
 export default function NftAttachmentModal({
+  chatId,
   ...props
 }: NftAttachmentModalProps) {
   const [nftLink, setNftLink] = useState('')
@@ -47,12 +50,8 @@ export default function NftAttachmentModal({
   return (
     <CommonExtensionModal
       {...props}
-      formProps={{
-        chatId: '1001',
-        sendButtonProps: {
-          disabled: !nftLink || !!nftLinkError,
-        },
-      }}
+      chatId={chatId}
+      disableSendButton={!nftLink || !!nftLinkError}
       title='🖼 Attach NFT'
       description='Should be a link to an NFT page from any popular marketplace, such as Opensea, Rarible or another'
     >

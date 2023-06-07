@@ -7,9 +7,14 @@ import { useState } from 'react'
 import { ImAttachment } from 'react-icons/im'
 import { IoImageOutline } from 'react-icons/io5'
 
-export type AttachmentInputProps = ButtonProps
+export type AttachmentInputProps = ButtonProps & {
+  chatId: string
+}
 
-export default function AttachmentInput({ ...props }: AttachmentInputProps) {
+export default function AttachmentInput({
+  chatId,
+  ...props
+}: AttachmentInputProps) {
   const [openAttachmentModalId, setOpenAttachmentModalId] = useState<
     '' | 'nft' | 'image'
   >('nft')
@@ -50,6 +55,7 @@ export default function AttachmentInput({ ...props }: AttachmentInputProps) {
         }}
       </FloatingMenus>
       <NftAttachmentModal
+        chatId={chatId}
         isOpen={openAttachmentModalId === 'nft'}
         closeModal={() => setOpenAttachmentModalId('')}
       />
