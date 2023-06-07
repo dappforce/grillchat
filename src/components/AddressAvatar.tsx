@@ -6,7 +6,7 @@ import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
 import { ComponentProps, forwardRef, useMemo, useState } from 'react'
 
-const resolveEnsAvatarSrc = (ensName: string) =>
+export const resolveEnsAvatarSrc = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}`
 
 export type AddressAvatarProps = ComponentProps<'div'> & {
@@ -82,4 +82,5 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     )
   }
 )
+
 export default AddressAvatar
