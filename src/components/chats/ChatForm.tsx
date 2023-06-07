@@ -32,6 +32,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   replyTo?: string
   clearReplyTo?: () => void
   disabled?: boolean
+  mustHaveMessage?: boolean
   inputProps?: TextAreaProps
   buildAdditionalTxParams?: () => Partial<SendMessageParams>
   sendButtonText?: string
@@ -49,6 +50,7 @@ export default function ChatForm({
   onSubmit,
   disabled,
   replyTo,
+  mustHaveMessage = true,
   clearReplyTo,
   inputProps,
   autofocus = true,
@@ -108,7 +110,7 @@ export default function ChatForm({
 
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
-  const isDisabled = !processMessage(messageBody)
+  const isDisabled = mustHaveMessage && !processMessage(messageBody)
 
   const resetForm = () => {
     setMessageBody('')
