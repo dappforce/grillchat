@@ -13,10 +13,25 @@ const inputStyles = cva('', {
       false: 'rounded-2xl',
     },
     size: {
-      sm: 'pl-4 py-2 pr-8',
-      md: 'py-3 pl-5 pr-12',
+      sm: 'px-4 py-2',
+      md: 'py-3 px-5',
+    },
+    rightElement: {
+      true: '',
     },
   },
+  compoundVariants: [
+    {
+      size: 'sm',
+      rightElement: true,
+      className: 'pr-8',
+    },
+    {
+      size: 'md',
+      rightElement: true,
+      className: 'pr-12',
+    },
+  ],
   defaultVariants: {
     variant: 'outlined',
     pill: false,
