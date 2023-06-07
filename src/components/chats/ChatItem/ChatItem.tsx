@@ -1,3 +1,4 @@
+import DonateCoinIcon from '@/assets/icons/donate-coin.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import FloatingMenus, {
   FloatingMenusProps,
@@ -66,6 +67,7 @@ export default function ChatItem({
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
   const { body, inReplyTo } = message.content || {}
   const senderColor = useRandomColor(ownerId)
+  const [openDonateModal, setOpenDonateModal] = useState(false)
 
   const sendEvent = useSendEvent()
 
@@ -88,6 +90,13 @@ export default function ChatItem({
 
     return [
       ...(onSelectMessageAsReply ? [replyMenu] : []),
+      {
+        text: 'Donate',
+        icon: DonateCoinIcon,
+        onClick: () => {
+          setOpenDonateModal(true)
+        },
+      },
       {
         text: 'Copy Text',
         icon: MdContentCopy,
@@ -189,6 +198,11 @@ export default function ChatItem({
         isOpen={openMetadata}
         closeModal={() => setOpenMetadata(false)}
         entity={message}
+      />
+      <DonateModal
+        isOpen={openDonateModal}
+        closeModal={() => setOpenDonateModal(false)}
+        recipient={ownerId}
       />
     </div>
   )
