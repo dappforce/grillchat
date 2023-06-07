@@ -1,5 +1,6 @@
 import Input from '@/components/inputs/Input'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { getNftDataQuery } from '@/services/moralis/query'
 import { useState } from 'react'
 import CommonExtensionModal from '../CommonExtensionModal'
 
@@ -10,6 +11,8 @@ export default function NftAttachmentModal({
 }: NftAttachmentModalProps) {
   const [nftLink, setNftLink] = useState('')
   const [nftLinkError, setNftLinkError] = useState('asdasd')
+
+  getNftDataQuery.useQuery({ chain: '', collectionId: '', nftId: '', url: '' })
 
   return (
     <CommonExtensionModal
