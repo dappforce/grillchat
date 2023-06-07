@@ -30,6 +30,7 @@ export default function CommonExtensionModal({
         {props.children}
       </div>
       <ChatForm
+        autoFocus={false}
         chatId={chatId}
         className={cx('p-1', isUsingBigButton && 'pb-5 md:pb-6')}
         inputProps={{

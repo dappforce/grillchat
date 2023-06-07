@@ -36,6 +36,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   getAdditionalTxParams?: () => SendMessageParams
   sendButtonText?: string
   sendButtonProps?: ButtonProps
+  autoFocus?: boolean
 }
 
 function processMessage(message: string) {
@@ -50,6 +51,7 @@ export default function ChatForm({
   replyTo,
   clearReplyTo,
   inputProps,
+  autoFocus = true,
   getAdditionalTxParams,
   sendButtonText,
   sendButtonProps,
@@ -88,12 +90,13 @@ export default function ChatForm({
 
   const { enableInputAutofocus } = useConfigContext()
   useEffect(() => {
+    if (!autoFocus) return
     if (enableInputAutofocus === true) textAreaRef.current?.focus()
     else if (enableInputAutofocus === undefined) {
       if (isTouchDevice()) return
       textAreaRef.current?.focus()
     }
-  }, [enableInputAutofocus])
+  }, [enableInputAutofocus, autoFocus])
   useEffect(() => {
     if (replyTo) textAreaRef.current?.focus()
   }, [replyTo])
