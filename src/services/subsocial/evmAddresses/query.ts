@@ -13,12 +13,6 @@ export async function getAccountsData(addresses: string[]) {
   return res.data.data as AccountData[]
 }
 
-export async function mutateAccountsDataCache(address: string) {
-  const res = await axios.post('/api/accounts-data?' + `addresses=${address}`)
-
-  return res.data.data as AccountData[]
-}
-
 const getAccountData = poolQuery<string, AccountData>({
   multiCall: async (addresses) => {
     if (addresses.length === 0) return []
