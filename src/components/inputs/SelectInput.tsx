@@ -5,6 +5,7 @@ import { Fragment } from 'react'
 import { IoIosArrowDown } from 'react-icons/io'
 
 export type ListItem = {
+  id: string
   icon: StaticImageData
   label: string
 }

@@ -12,12 +12,12 @@ import {
   metaMaskWallet,
 } from '@rainbow-me/rainbowkit/wallets'
 import { configureChains, createConfig, WagmiConfig } from 'wagmi'
-import { mainnet } from 'wagmi/chains'
+import { mainnet, polygon } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { talismanWallet } from './wallets/talisman'
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet],
+  [polygon, mainnet],
   [publicProvider()]
 )
 
