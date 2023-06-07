@@ -161,7 +161,7 @@ function filterOptimisticIds(
 
     const foundData = mutableNewPosts.find((post) => {
       return (
-        post.content?.body === idData.message &&
+        JSON.stringify(post.content) === JSON.stringify(idData.messageData) &&
         post.struct.ownerId === idData.address
       )
     })

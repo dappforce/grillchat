@@ -5,7 +5,11 @@ import Modal, { ModalProps } from '../modals/Modal'
 export type CommonExtensionModalProps = ModalProps &
   Pick<
     ChatFormProps,
-    'buildAdditionalTxParams' | 'chatId' | 'sendButtonText' | 'autofocus'
+    | 'buildAdditionalTxParams'
+    | 'chatId'
+    | 'sendButtonText'
+    | 'autofocus'
+    | 'onSubmit'
   > & {
     disableSendButton?: boolean
   }
@@ -16,6 +20,7 @@ export default function CommonExtensionModal({
   disableSendButton,
   autofocus,
   buildAdditionalTxParams,
+  onSubmit,
   ...props
 }: CommonExtensionModalProps) {
   const commonClassName = cx('px-5 md:px-6')
@@ -49,6 +54,10 @@ export default function CommonExtensionModal({
           className: cx(!isUsingBigButton ? 'mr-4' : 'mx-5 md:px-6'),
         }}
         buildAdditionalTxParams={buildAdditionalTxParams}
+        onSubmit={() => {
+          onSubmit?.()
+          props.closeModal()
+        }}
       />
     </Modal>
   )

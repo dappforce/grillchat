@@ -48,7 +48,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         getContext: ({ data: params, address }) =>
           generateOptimisticId<OptimisticMessageIdData>({
             address,
-            message: params.message,
+            messageData: params,
           }),
         onStart: ({ address, data: params }, tempId) => {
           preventWindowUnload()
