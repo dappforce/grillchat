@@ -43,7 +43,7 @@ export default function AboutHubModal({
 
   const actionMenu: AboutModalProps['actionMenu'] = [
     {
-      text: 'Show QR',
+      text: 'Show QR code',
       iconClassName: 'text-text-muted',
       icon: HiQrCode,
       onClick: () => setOpenedModalType('qr'),
@@ -60,6 +60,7 @@ export default function AboutHubModal({
     <>
       <AboutModal
         {...props}
+        isOpen={props.isOpen && openedModalType === ''}
         title={content.name}
         isImageCircle={false}
         subtitle={`${chatCount} chats in hub`}
@@ -68,6 +69,7 @@ export default function AboutHubModal({
         actionMenu={actionMenu}
       />
       <MetadataModal
+        onBackClick={() => setOpenedModalType('')}
         closeModal={() => setOpenedModalType('')}
         isOpen={openedModalType === 'metadata'}
         entity={hub}
@@ -76,8 +78,15 @@ export default function AboutHubModal({
       <Modal
         isOpen={openedModalType === 'qr'}
         closeModal={() => setOpenedModalType('')}
+        title='Hub Qr Code'
+        description='You can use this QR code to quickly share the hub with anyone.'
+        withCloseButton
+        onBackClick={() => setOpenedModalType('')}
       >
-        <QrCode url={hubUrl} />
+        <div className='mb-4 mt-6 flex flex-col'>
+          <QrCode url={hubUrl} />
+          <p className='mt-3 text-center text-2xl'>{content.name}</p>
+        </div>
       </Modal>
     </>
   )

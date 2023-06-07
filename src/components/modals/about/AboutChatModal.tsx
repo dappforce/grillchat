@@ -62,7 +62,7 @@ export default function AboutChatModal({
   ) => {
     const actionMenu: AboutModalProps['actionMenu'] = [
       {
-        text: 'Show QR',
+        text: 'Show QR code',
         iconClassName: 'text-text-muted',
         icon: HiQrCode,
         onClick: () => setOpenedModalType('qr'),
@@ -104,6 +104,7 @@ export default function AboutChatModal({
           return (
             <AboutModal
               {...props}
+              isOpen={props.isOpen && openedModalType === ''}
               title={content?.title}
               subtitle={`${messageCount} messages`}
               actionMenu={getActionMenu(mutateAsync, isLoading)}
@@ -131,6 +132,7 @@ export default function AboutChatModal({
         )}
       </LeaveChatWrapper>
       <MetadataModal
+        onBackClick={() => setOpenedModalType('')}
         closeModal={() => setOpenedModalType('')}
         isOpen={openedModalType === 'metadata'}
         entity={chat}
@@ -139,8 +141,15 @@ export default function AboutChatModal({
       <Modal
         isOpen={openedModalType === 'qr'}
         closeModal={() => setOpenedModalType('')}
+        title='Chat Qr Code'
+        description='You can use this QR code to quickly share the chat with anyone.'
+        withCloseButton
+        onBackClick={() => setOpenedModalType('')}
       >
-        <QrCode url={chatUrl} />
+        <div className='mb-4 mt-6 flex flex-col'>
+          <QrCode url={chatUrl} />
+          <p className='mt-3 text-center text-xl'>{content.title}</p>
+        </div>
       </Modal>
     </>
   )
