@@ -1,4 +1,3 @@
-import QrCode from '@/components/QrCode'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
@@ -16,7 +15,8 @@ import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import ConfirmationModal from '../ConfirmationModal'
 import MetadataModal from '../MetadataModal'
-import Modal, { ModalFunctionalityProps } from '../Modal'
+import { ModalFunctionalityProps } from '../Modal'
+import QrCodeModal from '../QrCodeModal'
 import AboutModal, { AboutModalProps } from './AboutModal'
 
 export type AboutChatModalProps = ModalFunctionalityProps & {
@@ -138,19 +138,16 @@ export default function AboutChatModal({
         entity={chat}
         postIdTextPrefix='Chat'
       />
-      <Modal
+      <QrCodeModal
         isOpen={openedModalType === 'qr'}
         closeModal={() => setOpenedModalType('')}
         title='Chat Qr Code'
         description='You can use this QR code to quickly share the chat with anyone.'
         withCloseButton
         onBackClick={() => setOpenedModalType('')}
-      >
-        <div className='mb-4 mt-6 flex flex-col'>
-          <QrCode url={chatUrl} />
-          <p className='mt-3 text-center text-xl'>{content.title}</p>
-        </div>
-      </Modal>
+        url={chatUrl}
+        urlTitle={content.title}
+      />
     </>
   )
 }

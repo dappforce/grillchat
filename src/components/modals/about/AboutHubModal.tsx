@@ -1,4 +1,3 @@
-import QrCode from '@/components/QrCode'
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { getCurrentUrlOrigin, getHomePageLink } from '@/utils/links'
 import { useRouter } from 'next/router'
@@ -6,7 +5,8 @@ import { useState } from 'react'
 import { HiCircleStack, HiQrCode } from 'react-icons/hi2'
 import urlJoin from 'url-join'
 import MetadataModal from '../MetadataModal'
-import Modal, { ModalFunctionalityProps } from '../Modal'
+import { ModalFunctionalityProps } from '../Modal'
+import QrCodeModal from '../QrCodeModal'
 import AboutModal, { AboutModalProps } from './AboutModal'
 
 export type AboutHubModalProps = ModalFunctionalityProps & {
@@ -75,19 +75,16 @@ export default function AboutHubModal({
         entity={hub}
         postIdTextPrefix='Hub'
       />
-      <Modal
+      <QrCodeModal
         isOpen={openedModalType === 'qr'}
         closeModal={() => setOpenedModalType('')}
         title='Hub Qr Code'
         description='You can use this QR code to quickly share the hub with anyone.'
         withCloseButton
         onBackClick={() => setOpenedModalType('')}
-      >
-        <div className='mb-4 mt-6 flex flex-col'>
-          <QrCode url={hubUrl} />
-          <p className='mt-3 text-center text-2xl'>{content.name}</p>
-        </div>
-      </Modal>
+        url={hubUrl}
+        urlTitle={content.name}
+      />
     </>
   )
 }
