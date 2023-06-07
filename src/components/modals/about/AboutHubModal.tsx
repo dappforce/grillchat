@@ -44,11 +44,13 @@ export default function AboutHubModal({
   const actionMenu: AboutModalProps['actionMenu'] = [
     {
       text: 'Show QR',
+      iconClassName: 'text-text-muted',
       icon: HiQrCode,
       onClick: () => setOpenedModalType('qr'),
     },
     {
       text: 'Show Metadata',
+      iconClassName: 'text-text-muted',
       icon: HiCircleStack,
       onClick: () => setOpenedModalType('metadata'),
     },
