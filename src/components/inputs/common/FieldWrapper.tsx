@@ -91,7 +91,7 @@ export default function FieldWrapper({
     'hover:brightness-110',
     'focus:brightness-110',
     'disabled:cursor-not-allowed disabled:brightness-75',
-    inputStyles({ pill, variant, size }),
+    inputStyles({ pill, variant, size, rightElement: !!rightElement }),
     interactionRingStyles()
   )
   const errorClassNames = cx('ring-1 ring-red-500')
@@ -141,9 +141,9 @@ export default function FieldWrapper({
       <div
         className={cx('relative flex w-full flex-col', inputParentClassName)}
       >
-        {leftElement && leftElement(leftElementClassNames)}
+        {leftElement?.(leftElementClassNames)}
         {children(usedId, inputClassNames)}
-        {rightElement && rightElement(rightElementClassNames)}
+        {rightElement?.(rightElementClassNames)}
       </div>
       {(helperText || hasErrorMessage) && (
         <p
