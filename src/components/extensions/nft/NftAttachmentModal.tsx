@@ -54,7 +54,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   return (
     <CommonExtensionModal
       {...otherProps}
-      mustHaveMessage={false}
+      mustHaveMessageBody={false}
       chatId={chatId}
       disableSendButton={!nftLink || !!nftLinkError}
       title='🖼 Attach NFT'
