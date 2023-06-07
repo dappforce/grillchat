@@ -4,11 +4,9 @@ import QRCode from 'react-qr-code'
 
 export interface QrCodeProps extends ComponentProps<'div'> {
   url: string
-  loading?: boolean
-  size?: number
 }
 
-export default function QrCode({ url, loading, size, ...props }: QrCodeProps) {
+export default function QrCode({ url, ...props }: QrCodeProps) {
   return (
     <div
       {...props}
