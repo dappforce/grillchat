@@ -1,8 +1,10 @@
 import Input from '@/components/inputs/Input'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useDebounce from '@/hooks/useDebounce'
+import { getNftDataQuery } from '@/services/moralis/query'
 import { useMemo, useState } from 'react'
 import CommonExtensionModal from '../CommonExtensionModal'
+import NftImage from './NftImage'
 import { parseNftMarketplaceLink } from './utils'
 
 export type NftAttachmentModalProps = ModalFunctionalityProps
@@ -16,9 +18,19 @@ export default function NftAttachmentModal({
   const debouncedLink = useDebounce(nftLink, 300)
   const parsedLinkData = useMemo(() => {
     if (!debouncedLink) return null
-    setNftLinkError(true)
-    return parseNftMarketplaceLink(debouncedLink)
+    try {
+      const data = parseNftMarketplaceLink(debouncedLink)
+      return data
+    } catch (err) {
+      console.log('Error parsing nft link', err)
+      setNftLinkError(true)
+      return null
+    }
   }, [debouncedLink])
+
+  console.log(parsedLinkData)
+
+  const { data } = getNftDataQuery.useQuery(parsedLinkData)
 
   return (
     <CommonExtensionModal
@@ -41,6 +53,7 @@ export default function NftAttachmentModal({
         }}
         error={!!nftLinkError}
       />
+      <NftImage image={data?.image ?? ''} />
       {nftLinkError && (
         <div className='mt-5 rounded-2xl bg-background-red px-4 py-3 text-text-red'>
           <p>😥 Sorry, error, cannot parse your NFT URL.</p>
