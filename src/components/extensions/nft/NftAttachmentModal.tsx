@@ -9,7 +9,7 @@ export default function NftAttachmentModal({
   ...props
 }: NftAttachmentModalProps) {
   const [nftLink, setNftLink] = useState('')
-  const [nftLinkError, setNftLinkError] = useState('')
+  const [nftLinkError, setNftLinkError] = useState('asdasd')
 
   return (
     <CommonExtensionModal
@@ -27,7 +27,13 @@ export default function NftAttachmentModal({
         placeholder='Paste NFT URL'
         value={nftLink}
         onChange={(e) => setNftLink(e.target.value)}
+        error={!!nftLinkError}
       />
+      {nftLinkError && (
+        <div className='mt-5 rounded-2xl bg-background-red px-4 py-3 text-text-red'>
+          <p>😥 Sorry, error, cannot parse your NFT URL.</p>
+        </div>
+      )}
     </CommonExtensionModal>
   )
 }
