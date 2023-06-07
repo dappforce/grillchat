@@ -33,8 +33,8 @@ export default function AboutChatModal({
   const { data: chat } = getPostQuery.useQuery(chatId)
 
   const [openedModalType, setOpenedModalType] = useState<
-    '' | 'metadata' | 'qr'
-  >('')
+    'metadata' | 'qr' | null
+  >(null)
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
 
   const isInIframe = useIsInIframe()
@@ -104,7 +104,7 @@ export default function AboutChatModal({
           return (
             <AboutModal
               {...props}
-              isOpen={props.isOpen && openedModalType === ''}
+              isOpen={props.isOpen && openedModalType === null}
               title={content?.title}
               subtitle={`${messageCount} messages`}
               actionMenu={getActionMenu(mutateAsync, isLoading)}
@@ -132,19 +132,19 @@ export default function AboutChatModal({
         )}
       </LeaveChatWrapper>
       <MetadataModal
-        onBackClick={() => setOpenedModalType('')}
-        closeModal={() => setOpenedModalType('')}
+        onBackClick={() => setOpenedModalType(null)}
+        closeModal={() => setOpenedModalType(null)}
         isOpen={openedModalType === 'metadata'}
         entity={chat}
         postIdTextPrefix='Chat'
       />
       <QrCodeModal
         isOpen={openedModalType === 'qr'}
-        closeModal={() => setOpenedModalType('')}
+        closeModal={() => setOpenedModalType(null)}
         title='Chat QR Code'
         description='You can use this QR code to quickly share the chat with anyone.'
         withCloseButton
-        onBackClick={() => setOpenedModalType('')}
+        onBackClick={() => setOpenedModalType(null)}
         url={chatUrl}
         urlTitle={content.title}
       />

@@ -23,8 +23,8 @@ export default function AboutHubModal({
   const { data: hub } = getSpaceBySpaceIdQuery.useQuery(hubId)
 
   const [openedModalType, setOpenedModalType] = useState<
-    '' | 'metadata' | 'qr'
-  >('')
+    'metadata' | 'qr' | null
+  >(null)
 
   const content = hub?.content
   if (!content) return null
@@ -60,7 +60,7 @@ export default function AboutHubModal({
     <>
       <AboutModal
         {...props}
-        isOpen={props.isOpen && openedModalType === ''}
+        isOpen={props.isOpen && openedModalType === null}
         title={content.name}
         isImageCircle={false}
         subtitle={`${chatCount} chats in hub`}
@@ -69,19 +69,19 @@ export default function AboutHubModal({
         actionMenu={actionMenu}
       />
       <MetadataModal
-        onBackClick={() => setOpenedModalType('')}
-        closeModal={() => setOpenedModalType('')}
+        onBackClick={() => setOpenedModalType(null)}
+        closeModal={() => setOpenedModalType(null)}
         isOpen={openedModalType === 'metadata'}
         entity={hub}
         postIdTextPrefix='Hub'
       />
       <QrCodeModal
         isOpen={openedModalType === 'qr'}
-        closeModal={() => setOpenedModalType('')}
+        closeModal={() => setOpenedModalType(null)}
         title='Hub QR Code'
         description='You can use this QR code to quickly share the hub with anyone.'
         withCloseButton
-        onBackClick={() => setOpenedModalType('')}
+        onBackClick={() => setOpenedModalType(null)}
         url={hubUrl}
         urlTitle={content.name}
       />
