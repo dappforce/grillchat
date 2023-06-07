@@ -33,9 +33,8 @@ export default function AboutChatModal({
   const { data: chat } = getPostQuery.useQuery(chatId)
 
   const [openedModalType, setOpenedModalType] = useState<
-    'metadata' | 'qr' | null
+    'metadata' | 'qr' | 'confirmation-leave' | null
   >(null)
-  const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
 
   const isInIframe = useIsInIframe()
   const { isJoined, isLoading } = useIsJoinedToChat(chatId)
@@ -81,7 +80,7 @@ export default function AboutChatModal({
       actionMenu.push({
         text: 'Leave Chat',
         icon: RxExit,
-        onClick: () => setIsOpenConfirmation(true),
+        onClick: () => setOpenedModalType('confirmation-leave'),
         className: cx('text-text-red'),
       })
     } else {
@@ -117,8 +116,8 @@ export default function AboutChatModal({
       <LeaveChatWrapper>
         {({ isLoading, mutateAsync }) => (
           <ConfirmationModal
-            isOpen={isOpenConfirmation}
-            closeModal={() => setIsOpenConfirmation(false)}
+            isOpen={openedModalType === 'confirmation-leave'}
+            closeModal={() => setOpenedModalType(null)}
             title='🤔 Are you sure you want to leave this chat?'
             primaryButtonProps={{ children: 'No, stay here' }}
             secondaryButtonProps={{
