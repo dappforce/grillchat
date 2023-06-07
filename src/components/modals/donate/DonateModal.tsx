@@ -69,6 +69,7 @@ const AmountInput = ({ amount, setAmount }: AmountInputProps) => {
       <Input
         step={0.1}
         min={0}
+        value={amount}
         onChange={onInputChange}
         rightElement={() => (
           <div>
@@ -118,8 +119,6 @@ export default function DonateModal({ recipient, ...props }: DonateModalProps) {
     await sendTransferTx(evmRecipientAddress, amount.replace(',', '.'))
   }
 
-  console.log(amount)
-
   return (
     <Modal
       title='💰 Donate'
@@ -135,7 +134,12 @@ export default function DonateModal({ recipient, ...props }: DonateModalProps) {
             isDarkTheme ? 'bg-slate-700' : 'bg-slate-200'
           )}
         >
-          <ProfilePreview address={recipient} />
+          <ProfilePreview
+            address={recipient}
+            avatarClassName='h-12 w-12'
+            withGrillAddress={false}
+            evmAddress={evmRecipientAddress}
+          />
         </div>
         <div className='flex flex-col gap-6'>
           <Dropdown

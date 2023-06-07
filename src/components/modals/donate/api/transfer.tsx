@@ -5,7 +5,7 @@ import { polygonContractsByToken } from './config'
 export const useTransfer = (token: string) => {
   const { isConnected } = useAccount()
   const { connectAsync, connectors } = useConnect()
-  const { writeAsync, isError, isLoading, isSuccess } = useContractWrite({
+  const { writeAsync } = useContractWrite({
     ...polygonContractsByToken[token],
     functionName: 'transfer',
   } as any)
@@ -15,11 +15,9 @@ export const useTransfer = (token: string) => {
       await connectAsync({ connector: connectors[0] })
     }
     try {
-      const data = await writeAsync({
+      await writeAsync({
         args: [recipient, parseEther(`${parseFloat(amount)}`)],
       })
-
-      const { hash } = data
     } catch (e) {
       console.error(e)
     }

@@ -11,18 +11,25 @@ type ProfilePreviewProps = {
   address: string
   className?: string
   evmAddress?: string
+  avatarClassName?: string
+  withGrillAddress?: boolean
 }
 
 const ProfilePreview = ({
   address,
   className,
   evmAddress,
+  avatarClassName,
+  withGrillAddress = true,
 }: ProfilePreviewProps) => {
   const senderColor = useRandomColor(address)
 
   return (
     <div className={cx('flex items-center gap-4', className)}>
-      <AddressAvatar address={address} className='h-20 w-20' />
+      <AddressAvatar
+        address={address}
+        className={cx(avatarClassName ? avatarClassName : 'h-20 w-20')}
+      />
       <div className='flex flex-col gap-3'>
         <Name
           ownerId={address}
@@ -30,15 +37,17 @@ const ProfilePreview = ({
           senderColor={senderColor}
         />
         <div className='flex flex-col gap-1'>
-          <div className='flex flex-row items-center gap-2'>
-            <GrillIcon />
-            <CopyTextInline
-              text={truncateAddress(address)}
-              tooltip='Copy my Grill public address'
-              textToCopy={address}
-              textClassName='font-mono leading-none'
-            />
-          </div>
+          {withGrillAddress && (
+            <div className='flex flex-row items-center gap-2'>
+              <GrillIcon />
+              <CopyTextInline
+                text={truncateAddress(address)}
+                tooltip='Copy my Grill public address'
+                textToCopy={address}
+                textClassName='font-mono leading-none'
+              />
+            </div>
+          )}
           {evmAddress && (
             <div className='flex flex-row items-center gap-2'>
               <EthIcon />
