@@ -4,6 +4,7 @@ import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
+import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
@@ -17,7 +18,6 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { isTouchDevice } from '@/utils/device'
 import {
   ComponentProps,
   SyntheticEvent,
@@ -36,7 +36,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   getAdditionalTxParams?: () => SendMessageParams
   sendButtonText?: string
   sendButtonProps?: ButtonProps
-  autoFocus?: boolean
+  autofocus?: boolean
 }
 
 function processMessage(message: string) {
@@ -51,7 +51,7 @@ export default function ChatForm({
   replyTo,
   clearReplyTo,
   inputProps,
-  autoFocus = true,
+  autofocus = true,
   getAdditionalTxParams,
   sendButtonText,
   sendButtonProps,
@@ -89,14 +89,15 @@ export default function ChatForm({
   useToastError(error, 'Message failed to send, please try again')
 
   const { enableInputAutofocus } = useConfigContext()
+  const { autofocus: runAutofocus } = useAutofocus()
   useEffect(() => {
-    if (!autoFocus) return
-    if (enableInputAutofocus === true) textAreaRef.current?.focus()
-    else if (enableInputAutofocus === undefined) {
-      if (isTouchDevice()) return
-      textAreaRef.current?.focus()
-    }
-  }, [enableInputAutofocus, autoFocus])
+    if (!autofocus || enableInputAutofocus === false) return
+    runAutofocus({
+      ref: textAreaRef,
+      autofocusInTouchDevices: enableInputAutofocus === true,
+    })
+  }, [runAutofocus, autofocus, enableInputAutofocus])
+
   useEffect(() => {
     if (replyTo) textAreaRef.current?.focus()
   }, [replyTo])

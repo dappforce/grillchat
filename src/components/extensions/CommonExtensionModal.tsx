@@ -6,12 +6,14 @@ export type CommonExtensionModalProps = ModalProps & {
   chatId: string
   sendButtonText?: string
   disableSendButton?: boolean
+  autofocus?: boolean
 }
 
 export default function CommonExtensionModal({
   chatId,
   sendButtonText,
   disableSendButton,
+  autofocus,
   ...props
 }: CommonExtensionModalProps) {
   const commonClassName = cx('px-5 md:px-6')
@@ -30,7 +32,7 @@ export default function CommonExtensionModal({
         {props.children}
       </div>
       <ChatForm
-        autoFocus={false}
+        autofocus={!!autofocus}
         chatId={chatId}
         className={cx('p-1', isUsingBigButton && 'pb-5 md:pb-6')}
         inputProps={{
