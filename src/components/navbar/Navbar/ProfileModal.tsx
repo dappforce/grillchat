@@ -11,6 +11,7 @@ import LinkText from '@/components/LinkText'
 import Logo from '@/components/Logo'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import QrCode from '@/components/QrCode'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useRandomColor from '@/hooks/useRandomColor'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
@@ -21,7 +22,6 @@ import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin } from '@/utils/links'
 import { generateRandomName } from '@/utils/random-name'
 import React, { useEffect, useState } from 'react'
-import QRCode from 'react-qr-code'
 import urlJoin from 'url-join'
 
 type NotificationControl = {
@@ -257,14 +257,7 @@ function ShareSessionContent() {
 
   return (
     <div className='mt-2 flex flex-col gap-4'>
-      <div className='mx-auto mb-2 h-40 w-40 rounded-2xl bg-white p-4'>
-        <QRCode
-          value={shareSessionLink}
-          size={256}
-          className='h-full w-full'
-          viewBox='0 0 256 256'
-        />
-      </div>
+      <QrCode url={shareSessionLink} />
       <CopyText text={shareSessionLink} onCopyClick={onCopyClick} />
     </div>
   )

@@ -1,11 +1,12 @@
+import QrCode from '@/components/QrCode'
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { getCurrentUrlOrigin, getHomePageLink } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { HiCircleStack } from 'react-icons/hi2'
+import { HiCircleStack, HiQrCode } from 'react-icons/hi2'
 import urlJoin from 'url-join'
 import MetadataModal from '../MetadataModal'
-import { ModalFunctionalityProps } from '../Modal'
+import Modal, { ModalFunctionalityProps } from '../Modal'
 import AboutModal, { AboutModalProps } from './AboutModal'
 
 export type AboutHubModalProps = ModalFunctionalityProps & {
@@ -20,7 +21,10 @@ export default function AboutHubModal({
 }: AboutHubModalProps) {
   const router = useRouter()
   const { data: hub } = getSpaceBySpaceIdQuery.useQuery(hubId)
-  const [isOpenMetadataModal, setIsOpenMetadataModal] = useState(false)
+
+  const [openedModalType, setOpenedModalType] = useState<
+    '' | 'metadata' | 'qr'
+  >('')
 
   const content = hub?.content
   if (!content) return null
@@ -39,9 +43,14 @@ export default function AboutHubModal({
 
   const actionMenu: AboutModalProps['actionMenu'] = [
     {
+      text: 'Show QR',
+      icon: HiQrCode,
+      onClick: () => setOpenedModalType('qr'),
+    },
+    {
       text: 'Show Metadata',
       icon: HiCircleStack,
-      onClick: () => setIsOpenMetadataModal(true),
+      onClick: () => setOpenedModalType('metadata'),
     },
   ]
 
@@ -57,11 +66,17 @@ export default function AboutHubModal({
         actionMenu={actionMenu}
       />
       <MetadataModal
-        closeModal={() => setIsOpenMetadataModal(false)}
-        isOpen={isOpenMetadataModal}
+        closeModal={() => setOpenedModalType('')}
+        isOpen={openedModalType === 'metadata'}
         entity={hub}
         postIdTextPrefix='Hub'
       />
+      <Modal
+        isOpen={openedModalType === 'qr'}
+        closeModal={() => setOpenedModalType('')}
+      >
+        <QrCode url={hubUrl} />
+      </Modal>
     </>
   )
 }
