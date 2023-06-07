@@ -1,15 +1,20 @@
 import { NftProperties } from '@subsocial/api/types'
 
-export const chains = ['ethereum', 'polygon'] as const
+export const nftChains = ['ethereum', 'polygon'] as const
 
 const marketplaceParser: {
   marketplaceName: string
   checker: (link: string) => boolean
+  chainMapper: Record<(typeof nftChains)[number], string>
   parser: (link: string) => NftProperties
 }[] = [
   {
     marketplaceName: 'opensea',
     checker: (link: string) => link.includes('opensea.io/assets/'),
+    chainMapper: {
+      ethereum: 'ethereum',
+      polygon: 'matic',
+    },
     parser: (link: string) => {
       const linkParts = link.split('opensea.io/assets/')
       const [chain, collectionId, nftId] = linkParts[1].split('/')
@@ -31,5 +36,20 @@ export function parseNftMarketplaceLink(link: string): NftProperties {
     throw new Error('NFT marketplace not found')
   }
 
-  return marketplace.parser(link)
+  const parsed = marketplace.parser(link)
+  let mappedChain = ''
+  Object.entries(marketplace.chainMapper).forEach(
+    ([chain, chainFromMarketplace]) => {
+      if (parsed.chain === chainFromMarketplace) {
+        mappedChain = chain
+      }
+    }
+  )
+
+  if (!mappedChain) {
+    throw new Error(`${parsed.chain} chain is not supported yet.`)
+  }
+
+  parsed.chain = mappedChain
+  return parsed
 }
