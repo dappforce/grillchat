@@ -1,8 +1,9 @@
 import Input from '@/components/inputs/Input'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { getNftDataQuery } from '@/services/moralis/query'
-import { useState } from 'react'
+import useDebounce from '@/hooks/useDebounce'
+import { useMemo, useState } from 'react'
 import CommonExtensionModal from '../CommonExtensionModal'
+import { parseNftMarketplaceLink } from './utils'
 
 export type NftAttachmentModalProps = ModalFunctionalityProps
 
@@ -10,9 +11,14 @@ export default function NftAttachmentModal({
   ...props
 }: NftAttachmentModalProps) {
   const [nftLink, setNftLink] = useState('')
-  const [nftLinkError, setNftLinkError] = useState('asdasd')
+  const [nftLinkError, setNftLinkError] = useState(false)
 
-  getNftDataQuery.useQuery({ chain: '', collectionId: '', nftId: '', url: '' })
+  const debouncedLink = useDebounce(nftLink, 300)
+  const parsedLinkData = useMemo(() => {
+    if (!debouncedLink) return null
+    setNftLinkError(true)
+    return parseNftMarketplaceLink(debouncedLink)
+  }, [debouncedLink])
 
   return (
     <CommonExtensionModal
@@ -29,7 +35,10 @@ export default function NftAttachmentModal({
       <Input
         placeholder='Paste NFT URL'
         value={nftLink}
-        onChange={(e) => setNftLink(e.target.value)}
+        onChange={(e) => {
+          setNftLink(e.target.value)
+          setNftLinkError(false)
+        }}
         error={!!nftLinkError}
       />
       {nftLinkError && (
