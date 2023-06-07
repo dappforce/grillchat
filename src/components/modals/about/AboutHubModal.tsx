@@ -78,7 +78,7 @@ export default function AboutHubModal({
       <QrCodeModal
         isOpen={openedModalType === 'qr'}
         closeModal={() => setOpenedModalType('')}
-        title='Hub Qr Code'
+        title='Hub QR Code'
         description='You can use this QR code to quickly share the hub with anyone.'
         withCloseButton
         onBackClick={() => setOpenedModalType('')}

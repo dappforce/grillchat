@@ -141,7 +141,7 @@ export default function AboutChatModal({
       <QrCodeModal
         isOpen={openedModalType === 'qr'}
         closeModal={() => setOpenedModalType('')}
-        title='Chat Qr Code'
+        title='Chat QR Code'
         description='You can use this QR code to quickly share the chat with anyone.'
         withCloseButton
         onBackClick={() => setOpenedModalType('')}
