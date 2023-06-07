@@ -8,9 +8,10 @@ import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
+import { formatUnits } from 'ethers'
 import { ChangeEventHandler, useState } from 'react'
 import Modal, { ModalFunctionalityProps } from '../Modal'
-import { useTransfer } from './api/transfer'
+import { useGetBalance, useTransfer } from './api/transfer'
 
 const chainItems = [
   {
@@ -51,19 +52,34 @@ const tokensItems = [
 type AmountInputProps = {
   setAmount: (amount: string) => void
   amount: string
+  token: string
+  tokenSymbol: string
 }
 
-const AmountInput = ({ amount, setAmount }: AmountInputProps) => {
+const AmountInput = ({
+  amount,
+  setAmount,
+  token,
+  tokenSymbol,
+}: AmountInputProps) => {
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setAmount(e.target.value)
   }
+
+  const { balance, decimals } = useGetBalance(token)
 
   return (
     <div>
       <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-gray-400'>
         <div>Amount</div>
         <div>
-          Balance: <span className='font-bold text-white'>50 USDC</span>
+          Balance:{' '}
+          <span className='font-bold text-white'>
+            {decimals && balance
+              ? formatUnits(balance, decimals).slice(0, 6)
+              : 0}{' '}
+            {tokenSymbol}
+          </span>
         </div>
       </div>
       <Input
@@ -154,7 +170,12 @@ export default function DonateModal({ recipient, ...props }: DonateModalProps) {
             fieldLabel='Token'
             items={tokensItems}
           />
-          <AmountInput amount={amount} setAmount={setAmount} />
+          <AmountInput
+            amount={amount}
+            setAmount={setAmount}
+            token={selectedToken.id}
+            tokenSymbol={selectedToken.label}
+          />
         </div>
       </div>
       <div className='mb-3 mt-6 ring-1 ring-gray-600'></div>
