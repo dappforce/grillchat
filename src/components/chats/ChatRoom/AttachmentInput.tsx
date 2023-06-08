@@ -16,8 +16,8 @@ export default function AttachmentInput({
   ...props
 }: AttachmentInputProps) {
   const [openAttachmentModalId, setOpenAttachmentModalId] = useState<
-    '' | 'nft' | 'image'
-  >('nft')
+    null | 'nft' | 'image'
+  >(null)
 
   return (
     <>
@@ -57,7 +57,7 @@ export default function AttachmentInput({
       <NftAttachmentModal
         chatId={chatId}
         isOpen={openAttachmentModalId === 'nft'}
-        closeModal={() => setOpenAttachmentModalId('')}
+        closeModal={() => setOpenAttachmentModalId(null)}
       />
     </>
   )
