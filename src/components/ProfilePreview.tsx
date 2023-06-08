@@ -44,7 +44,7 @@ const ProfilePreview = ({
                 text={truncateAddress(address)}
                 tooltip='Copy my Grill public address'
                 textToCopy={address}
-                textClassName='font-mono leading-none'
+                textClassName='font-mono leading-none text-[15px] leading-[14px]'
               />
             </div>
           )}
@@ -55,7 +55,7 @@ const ProfilePreview = ({
                 text={truncateAddress(evmAddress)}
                 tooltip='Copy my EVM address'
                 textToCopy={evmAddress}
-                textClassName='font-mono leading-none'
+                textClassName='font-mono leading-none text-[15px] leading-[14px]'
               />
             </div>
           )}

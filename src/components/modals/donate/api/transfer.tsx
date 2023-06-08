@@ -67,7 +67,6 @@ export const useGetBalance = (token: string) => {
         functionName: 'decimals',
       },
     ],
-    watch: true,
   })
 
   const { balance, decimals } = useMemo(() => {
@@ -76,7 +75,7 @@ export const useGetBalance = (token: string) => {
     const [balance, decimals] = data.map((item) => item.result)
 
     return { balance: balance, decimals }
-  }, [!!data, isLoading, token, myGrillAddress])
+  }, [!!data, isLoading, token, evmAddress, myGrillAddress])
 
   return {
     balance: balance?.toString(),

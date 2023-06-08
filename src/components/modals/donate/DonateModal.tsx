@@ -14,6 +14,7 @@ import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { ChangeEventHandler, useState } from 'react'
 import { ModalFunctionalityProps } from '../Modal'
@@ -21,9 +22,9 @@ import { useGetBalance, useTransfer } from './api/transfer'
 
 const chainItems = [
   {
-    id: 'poligon',
+    id: 'polygon',
     icon: Poligon,
-    label: 'Poligon',
+    label: 'Polygon',
   },
   {
     id: 'astar',
@@ -61,21 +62,21 @@ const tokensItems = [
 type AmountInputProps = {
   setAmount: (amount: string) => void
   amount: string
-  token: string
   tokenSymbol: string
+  balance?: string
+  decimals?: number
 }
 
 const AmountInput = ({
   amount,
   setAmount,
-  token,
   tokenSymbol,
+  balance,
+  decimals,
 }: AmountInputProps) => {
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setAmount(e.target.value)
   }
-
-  const { balance, decimals } = useGetBalance(token)
 
   return (
     <div>
@@ -138,6 +139,8 @@ export default function DonateModal({
   const [amount, setAmount] = useState<string>('0')
   const address = useMyAccount((state) => state.address)
 
+  const { balance, decimals } = useGetBalance(selectedToken.id)
+
   const { data: recipientAccountData } = getAccountDataQuery.useQuery(recipient)
   const { data: myAccountData } = getAccountDataQuery.useQuery(address)
 
@@ -182,6 +185,12 @@ export default function DonateModal({
     return { txPrevented: true }
   }
 
+  const disableSendButton =
+    !balance ||
+    new BigNumber(balance || '0').eq(0) ||
+    !amount ||
+    new BigNumber(amount || '0').eq(0)
+
   return (
     <CommonExtensionModal
       {...props}
@@ -189,7 +198,7 @@ export default function DonateModal({
         chatId: '3056',
         replyTo: messageId,
         sendButtonProps: {
-          disabled: false,
+          disabled: disableSendButton,
         },
         sendButtonText: 'Send',
         beforeMesageSend: onButtonClick,
@@ -228,8 +237,9 @@ export default function DonateModal({
           <AmountInput
             amount={amount}
             setAmount={setAmount}
-            token={selectedToken.id}
             tokenSymbol={selectedToken.label}
+            balance={balance}
+            decimals={decimals}
           />
         </div>
       </div>

@@ -32,7 +32,7 @@ const DonatePreview = ({ extensionProps, isMyMessage }: DonatePreviewProps) => {
             </div>
             <HiArrowUpRight />
           </div>
-          <div className='text-sm'>~ $34.57</div>
+          <div className='text-sm'>≈ $34.57</div>
         </div>
       </LinkText>
     </div>
