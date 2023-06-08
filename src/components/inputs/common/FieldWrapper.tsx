@@ -94,7 +94,7 @@ export default function FieldWrapper({
     inputStyles({ pill, variant, size, containsRightElement: !!rightElement }),
     interactionRingStyles()
   )
-  const errorClassNames = cx('ring-1 ring-red-500')
+  const errorClassNames = cx('ring-1 ring-red-500 border-transparent')
   const inputClassNames = cx(commonClassNames, error && errorClassNames)
 
   const rightElementClassNames = cx(
