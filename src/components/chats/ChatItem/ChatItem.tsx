@@ -3,6 +3,7 @@ import AddressAvatar from '@/components/AddressAvatar'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
+import DonateModal from '@/components/modals/donate/DonateModal'
 import Toast from '@/components/Toast'
 import useRandomColor from '@/hooks/useRandomColor'
 import { isOptimisticId } from '@/services/subsocial/utils'

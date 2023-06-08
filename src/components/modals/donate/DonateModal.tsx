@@ -1,16 +1,16 @@
 import Poligon from '@/assets/graphics/poligon.png'
 import USDC from '@/assets/graphics/usdc.png'
 import Button from '@/components/Button'
+import CommonExtensionModal from '@/components/extensions/CommonExtensionModal'
 import Input from '@/components/inputs/Input'
 import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
-import TextArea from '@/components/inputs/TextArea'
 import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { formatUnits } from 'ethers'
 import { ChangeEventHandler, useState } from 'react'
-import Modal, { ModalFunctionalityProps } from '../Modal'
+import { ModalFunctionalityProps } from '../Modal'
 import { useGetBalance, useTransfer } from './api/transfer'
 
 const chainItems = [
@@ -136,14 +136,20 @@ export default function DonateModal({ recipient, ...props }: DonateModalProps) {
   }
 
   return (
-    <Modal
+    <CommonExtensionModal
+      {...props}
+      formProps={{
+        chatId: '3056',
+        sendButtonProps: {
+          disabled: false,
+        },
+        sendButtonText: 'Send',
+      }}
       title='💰 Donate'
       withCloseButton
-      titleClassName='px-6'
-      contentClassName='px-0'
       {...props}
     >
-      <div className='px-6'>
+      <div>
         <div
           className={cx(
             'mb-6 mt-2 rounded-2xl p-4',
@@ -178,20 +184,6 @@ export default function DonateModal({ recipient, ...props }: DonateModalProps) {
           />
         </div>
       </div>
-      <div className='mb-3 mt-6 ring-1 ring-gray-600'></div>
-      <TextArea
-        className={cx(
-          'mb-4 border-none px-6',
-          'hover:ring-0 focus-visible:!ring-0 active:border-none'
-        )}
-        placeholder='Message...'
-        rows={1}
-      />
-      <div className='px-6'>
-        <Button onClick={onButtonClick} className='w-full' size='lg'>
-          Send
-        </Button>
-      </div>
-    </Modal>
+    </CommonExtensionModal>
   )
 }
