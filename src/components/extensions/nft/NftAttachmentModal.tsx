@@ -78,29 +78,31 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
             <p>😥 Sorry, error, cannot parse your NFT URL.</p>
           </div>
         ) : (
-          <div className='relative aspect-square w-full'>
-            {data?.image && (
-              <Button
-                className='absolute right-4 top-4 z-20 bg-background-light text-xl text-text-red'
-                size='circle'
-                onClick={() => setNftLink('')}
-              >
-                <HiTrash />
-              </Button>
-            )}
-            <div className='relative h-full w-full overflow-hidden rounded-2xl'>
-              {isLoading && (
-                <div className='absolute inset-0 z-10 aspect-square w-full animate-pulse bg-background-lighter' />
-              )}
+          nftLink && (
+            <div className='relative aspect-square w-full'>
               {data?.image && (
-                <NftImage
-                  className='absolute inset-0'
-                  image={data?.image ?? ''}
-                  onLoad={() => setIsLoading(false)}
-                />
+                <Button
+                  className='absolute right-4 top-4 z-20 bg-background-light text-xl text-text-red'
+                  size='circle'
+                  onClick={() => setNftLink('')}
+                >
+                  <HiTrash />
+                </Button>
               )}
+              <div className='relative h-full w-full overflow-hidden rounded-2xl'>
+                {isLoading && (
+                  <div className='absolute inset-0 z-10 aspect-square w-full animate-pulse bg-background-lighter' />
+                )}
+                {data?.image && (
+                  <NftImage
+                    className='absolute inset-0'
+                    image={data?.image ?? ''}
+                    onLoad={() => setIsLoading(false)}
+                  />
+                )}
+              </div>
             </div>
-          </div>
+          )
         )}
       </div>
     </CommonExtensionModal>
