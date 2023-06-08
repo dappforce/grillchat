@@ -1,3 +1,4 @@
+import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
 import {
@@ -9,12 +10,13 @@ import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { HiCircleStack } from 'react-icons/hi2'
+import { HiCircleStack, HiQrCode } from 'react-icons/hi2'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import ConfirmationModal from '../ConfirmationModal'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'
+import QrCodeModal from '../QrCodeModal'
 import AboutModal, { AboutModalProps } from './AboutModal'
 
 export type AboutChatModalProps = ModalFunctionalityProps & {
@@ -29,9 +31,12 @@ export default function AboutChatModal({
 }: AboutChatModalProps) {
   const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId)
-  const [isOpenMetadataModal, setIsOpenMetadataModal] = useState(false)
-  const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
 
+  const [openedModalType, setOpenedModalType] = useState<
+    'metadata' | 'qr' | 'confirmation-leave' | null
+  >(null)
+
+  const isInIframe = useIsInIframe()
   const { isJoined, isLoading } = useIsJoinedToChat(chatId)
 
   const content = chat?.content
@@ -56,19 +61,26 @@ export default function AboutChatModal({
   ) => {
     const actionMenu: AboutModalProps['actionMenu'] = [
       {
+        text: 'Show QR code',
+        iconClassName: 'text-text-muted',
+        icon: HiQrCode,
+        onClick: () => setOpenedModalType('qr'),
+      },
+      {
         text: 'Show Metadata',
+        iconClassName: 'text-text-muted',
         icon: HiCircleStack,
-        onClick: () => setIsOpenMetadataModal(true),
+        onClick: () => setOpenedModalType('metadata'),
       },
     ]
 
-    if (isLoading) return actionMenu
+    if (isLoading || isInIframe) return actionMenu
 
     if (isJoined) {
       actionMenu.push({
         text: 'Leave Chat',
         icon: RxExit,
-        onClick: () => setIsOpenConfirmation(true),
+        onClick: () => setOpenedModalType('confirmation-leave'),
         className: cx('text-text-red'),
       })
     } else {
@@ -91,6 +103,7 @@ export default function AboutChatModal({
           return (
             <AboutModal
               {...props}
+              isOpen={props.isOpen && openedModalType === null}
               title={content?.title}
               subtitle={`${messageCount} messages`}
               actionMenu={getActionMenu(mutateAsync, isLoading)}
@@ -103,8 +116,8 @@ export default function AboutChatModal({
       <LeaveChatWrapper>
         {({ isLoading, mutateAsync }) => (
           <ConfirmationModal
-            isOpen={isOpenConfirmation}
-            closeModal={() => setIsOpenConfirmation(false)}
+            isOpen={openedModalType === 'confirmation-leave'}
+            closeModal={() => setOpenedModalType(null)}
             title='🤔 Are you sure you want to leave this chat?'
             primaryButtonProps={{ children: 'No, stay here' }}
             secondaryButtonProps={{
@@ -118,10 +131,21 @@ export default function AboutChatModal({
         )}
       </LeaveChatWrapper>
       <MetadataModal
-        closeModal={() => setIsOpenMetadataModal(false)}
-        isOpen={isOpenMetadataModal}
+        onBackClick={() => setOpenedModalType(null)}
+        closeModal={() => setOpenedModalType(null)}
+        isOpen={openedModalType === 'metadata'}
         entity={chat}
         postIdTextPrefix='Chat'
+      />
+      <QrCodeModal
+        isOpen={openedModalType === 'qr'}
+        closeModal={() => setOpenedModalType(null)}
+        title='Chat QR Code'
+        description='You can use this QR code to quickly share the chat with anyone.'
+        withCloseButton
+        onBackClick={() => setOpenedModalType(null)}
+        url={chatUrl}
+        urlTitle={content.title}
       />
     </>
   )

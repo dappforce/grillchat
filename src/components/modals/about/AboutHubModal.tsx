@@ -2,10 +2,11 @@ import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { getCurrentUrlOrigin, getHomePageLink } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { HiCircleStack } from 'react-icons/hi2'
+import { HiCircleStack, HiQrCode } from 'react-icons/hi2'
 import urlJoin from 'url-join'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'
+import QrCodeModal from '../QrCodeModal'
 import AboutModal, { AboutModalProps } from './AboutModal'
 
 export type AboutHubModalProps = ModalFunctionalityProps & {
@@ -20,7 +21,10 @@ export default function AboutHubModal({
 }: AboutHubModalProps) {
   const router = useRouter()
   const { data: hub } = getSpaceBySpaceIdQuery.useQuery(hubId)
-  const [isOpenMetadataModal, setIsOpenMetadataModal] = useState(false)
+
+  const [openedModalType, setOpenedModalType] = useState<
+    'metadata' | 'qr' | null
+  >(null)
 
   const content = hub?.content
   if (!content) return null
@@ -39,9 +43,16 @@ export default function AboutHubModal({
 
   const actionMenu: AboutModalProps['actionMenu'] = [
     {
+      text: 'Show QR code',
+      iconClassName: 'text-text-muted',
+      icon: HiQrCode,
+      onClick: () => setOpenedModalType('qr'),
+    },
+    {
       text: 'Show Metadata',
+      iconClassName: 'text-text-muted',
       icon: HiCircleStack,
-      onClick: () => setIsOpenMetadataModal(true),
+      onClick: () => setOpenedModalType('metadata'),
     },
   ]
 
@@ -49,6 +60,7 @@ export default function AboutHubModal({
     <>
       <AboutModal
         {...props}
+        isOpen={props.isOpen && openedModalType === null}
         title={content.name}
         isImageCircle={false}
         subtitle={`${chatCount} chats in hub`}
@@ -57,10 +69,21 @@ export default function AboutHubModal({
         actionMenu={actionMenu}
       />
       <MetadataModal
-        closeModal={() => setIsOpenMetadataModal(false)}
-        isOpen={isOpenMetadataModal}
+        onBackClick={() => setOpenedModalType(null)}
+        closeModal={() => setOpenedModalType(null)}
+        isOpen={openedModalType === 'metadata'}
         entity={hub}
         postIdTextPrefix='Hub'
+      />
+      <QrCodeModal
+        isOpen={openedModalType === 'qr'}
+        closeModal={() => setOpenedModalType(null)}
+        title='Hub QR Code'
+        description='You can use this QR code to quickly share the hub with anyone.'
+        withCloseButton
+        onBackClick={() => setOpenedModalType(null)}
+        url={hubUrl}
+        urlTitle={content.name}
       />
     </>
   )

@@ -3,8 +3,8 @@ import Button from '@/components/Button'
 import ColorModeToggler from '@/components/ColorModeToggler'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
-import { useConfigContext } from '@/contexts/ConfigContext'
 import usePrevious from '@/hooks/usePrevious'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getHomePageLink } from '@/utils/links'
@@ -17,7 +17,7 @@ import { HiOutlineChevronLeft } from 'react-icons/hi2'
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
 })
-const LoginModal = dynamic(() => import('@/components/modals/LoginModal'), {
+const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), {
   ssr: false,
 })
 

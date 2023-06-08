@@ -4,8 +4,8 @@ export type Signer = ReturnType<Keyring['addFromSeed']>
 
 async function getKeyring() {
   const { Keyring } = await import('@polkadot/keyring')
-  const { cryptoWaitReady } = await import('@polkadot/util-crypto')
-  await cryptoWaitReady()
+  const { waitReady } = await import('@polkadot/wasm-crypto')
+  await waitReady()
 
   const keyring = new Keyring({ type: 'sr25519' })
   return keyring
@@ -34,7 +34,7 @@ export async function loginWithSecretKey(secretKey: string): Promise<Signer> {
 }
 
 export function truncateAddress(address: string) {
-  return `${address.slice(0, 6)}...${address.slice(-6)}`
+  return `${address.slice(0, 6)}…${address.slice(-6)}`
 }
 
 export function encodeSecretKey(secretKey: string) {

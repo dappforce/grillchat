@@ -49,7 +49,7 @@ function ChatPreviewContainer({
   const content = chat?.content
 
   const hubId = chat.struct.spaceId
-  const aliasOrHub = getAliasFromSpaceId(hubId ?? '') ?? hubId
+  const aliasOrHub = getAliasFromSpaceId(hubId ?? '') || hubId
   const linkTo = getChatPageLink(
     router,
     createSlug(chat.id, { title: content?.title }),

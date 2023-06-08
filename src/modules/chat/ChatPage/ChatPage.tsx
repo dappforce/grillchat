@@ -1,10 +1,10 @@
 import Button from '@/components/Button'
 import ChatRoom from '@/components/chats/ChatRoom'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import { useConfigContext } from '@/contexts/ConfigContext'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx, getCommonClassNames } from '@/utils/class-names'
@@ -63,9 +63,7 @@ export default function ChatPage({
     <DefaultLayout
       withFixedHeight
       navbarProps={{
-        backButtonProps: {
-          defaultBackLink: getHomePageLink(router),
-        },
+        backButtonProps: { defaultBackLink: getHomePageLink(router) },
         customContent: ({ backButton, authComponent, colorModeToggler }) => (
           <div className='flex items-center justify-between gap-4'>
             <NavbarChatInfo
