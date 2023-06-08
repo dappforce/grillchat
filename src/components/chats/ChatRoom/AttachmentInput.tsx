@@ -40,6 +40,7 @@ export default function AttachmentInput({
             <Button
               size='circle'
               variant='transparent'
+              interactive='brightness-only'
               {...referenceProps}
               {...props}
               onClick={toggleDisplay}
