@@ -19,6 +19,7 @@ export default function NftChatItem(props: Props) {
     <CommonChatItem
       {...props}
       myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
+      className='max-w-sm'
     >
       {({ isMyMessage }) => (
         <div className='flex flex-col [&:not(:first-child)]:mt-1'>
@@ -26,9 +27,9 @@ export default function NftChatItem(props: Props) {
             className={cx('relative flex w-full items-center justify-center')}
           >
             <NftImage
-              containerClassName='rounded-[4px] overflow-hidden'
-              placeholderClassName='w-full min-w-[230px]'
-              className='w-full min-w-[230px] object-contain'
+              containerClassName='rounded-[4px] overflow-hidden w-full'
+              placeholderClassName='w-full min-w-[300px] w-full h-[300px] aspect-auto'
+              className='w-full min-w-[300px] object-contain'
               image={nftData?.image ?? ''}
             />
             <span className='absolute right-2 top-2 rounded-full bg-text-dark/50 px-2 py-0.5 text-xs text-text-muted'>
@@ -41,7 +42,7 @@ export default function NftChatItem(props: Props) {
               <span className='text-xs'>
                 #
                 {truncate(nftProperties?.nftId, {
-                  length: 1000,
+                  length: 8,
                 })}
               </span>
             </div>

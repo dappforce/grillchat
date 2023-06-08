@@ -35,6 +35,7 @@ type CommonChatItemProps = ExtensionChatItemProps & {
   children: JSX.Element | ((derivativesData: DerivativesData) => JSX.Element)
   myMessageConfig?: MyMessageConfig
   othersMessage?: OthersMessageConfig
+  className?: string
 }
 
 const defaultMyMessageConfig: MyMessageConfig = {
@@ -51,6 +52,7 @@ export default function CommonChatItem({
   children,
   scrollToMessage,
   onCheckMarkClick,
+  className,
 }: CommonChatItemProps) {
   const myAddress = useMyAccount((state) => state.address)
   const { struct, content } = message
@@ -100,7 +102,8 @@ export default function CommonChatItem({
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl',
           isMyMessage
             ? 'bg-background-primary-light text-text dark:bg-background-primary dark:text-text-on-primary'
-            : 'bg-background-light'
+            : 'bg-background-light',
+          className
         )}
       >
         {!isMyMessage && (
