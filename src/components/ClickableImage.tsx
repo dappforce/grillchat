@@ -25,6 +25,7 @@ export default function ClickableImage({
           alt={props.alt ?? ''}
         />
       )}
+      {/* TODO: fix issue where tall images will have transparent space which makes the modal can't be closed when clicking on the that part */}
       <Modal
         isOpen={isOpenModal}
         closeModal={() => setIsOpenModal(false)}
