@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import ClickableImage from '@/components/ClickableImage'
+import LinkText from '@/components/LinkText'
 import { getNftDataQuery } from '@/services/moralis/query'
 import { cx } from '@/utils/class-names'
 import truncate from 'lodash.truncate'
@@ -46,7 +47,9 @@ export default function NftChatItem(props: Props) {
           </div>
           <div className='mt-1.5 flex flex-col gap-1 px-2.5'>
             <div className='flex items-center justify-between gap-2'>
-              <span>{nftData?.name ?? nftData?.collectionName}</span>
+              <LinkText href={nftProperties?.url ?? ''} openInNewTab>
+                {nftData?.name ?? nftData?.collectionName}
+              </LinkText>
               <span className='text-xs'>
                 #
                 {truncate(nftProperties?.nftId, {
