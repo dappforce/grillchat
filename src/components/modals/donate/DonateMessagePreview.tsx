@@ -10,6 +10,7 @@ import {
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import Linkify from 'linkify-react'
+import { useTheme } from 'next-themes'
 import { HiArrowUpRight } from 'react-icons/hi2'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 
@@ -68,6 +69,7 @@ export default function DonateMessagePreview({
   scrollToMessage,
   ...props
 }: DefaultChatItemProps) {
+  const { theme } = useTheme()
   const { properties } = extensions?.[0] || {}
 
   return (
@@ -90,9 +92,14 @@ export default function DonateMessagePreview({
             className='mt-1'
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
+            replyToExtension={!!properties}
           />
         )}
-        <p className='whitespace-pre-wrap break-words text-base'>
+        <p
+          className={cx('whitespace-pre-wrap break-words text-base', {
+            ['text-white']: theme === 'light',
+          })}
+        >
           <Linkify
             options={{
               render: ({ content, attributes }) => (
@@ -109,7 +116,7 @@ export default function DonateMessagePreview({
             }}
           >
             {body}
-            <div className='mt-[5px] w-full ring-[0.4px] ring-[#F9A11E]'></div>
+            <div className='mt-[5px] w-full ring-[0.4px] ring-[#f39424]'></div>
             <DonatePreview
               extensionProps={properties}
               isMyMessage={isMyMessage}
@@ -125,6 +132,7 @@ export default function DonateMessagePreview({
               variant='transparent'
               size='noPadding'
               interactive='brightness-only'
+              className={cx({ ['text-white']: !!properties })}
               onClick={onCheckMarkClick}
             >
               {isSent ? (

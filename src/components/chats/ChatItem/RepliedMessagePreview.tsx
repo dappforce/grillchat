@@ -3,6 +3,7 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { truncateText } from '@/utils/strings'
+import { useTheme } from 'next-themes'
 import { ComponentProps, useState } from 'react'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
@@ -10,6 +11,7 @@ export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   originalMessage: string
   minimumReplyChar?: number
   scrollToMessage?: (messageId: string) => Promise<void>
+  replyToExtension?: boolean
 }
 
 const MINIMUM_REPLY_CHAR = 35
@@ -18,13 +20,15 @@ export default function RepliedMessagePreview({
   originalMessage,
   scrollToMessage,
   minimumReplyChar = MINIMUM_REPLY_CHAR,
+  replyToExtension = false,
   ...props
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { data } = getPostQuery.useQuery(repliedMessageId)
   const replySender = data?.struct.ownerId
   const replySenderColor = useRandomColor(replySender)
-
+  const { theme } = useTheme()
+  console.log(theme)
   if (!data) {
     return null
   }
@@ -50,12 +54,14 @@ export default function RepliedMessagePreview({
       <div
         className={cx(
           'bg-gradient-to-br from-[#C43333] to-[#F9A11E]',
-          'rounded-2xl px-2 py-[0.15rem]'
+          'rounded-2xl px-3 py-[0.15rem] text-white'
         )}
       >
         {amount} {token}
       </div>
     ) : null
+
+  console.log(theme === 'light', id === 'subsocial-donations')
 
   return (
     <div
@@ -78,9 +84,20 @@ export default function RepliedMessagePreview({
         senderColor={replySenderColor}
         className='font-medium'
       />
-      <div className='flex items-center gap-2'>
+      <div
+        className={cx('flex items-center gap-2', {
+          ['text-white']: theme === 'light' && replyToExtension,
+        })}
+      >
         {donateRepliedPreview}
-        <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
+        <span
+          className={cx(
+            'overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75',
+            {
+              ['text-white']: theme === 'light' && replyToExtension,
+            }
+          )}
+        >
           {showedText}
         </span>
       </div>

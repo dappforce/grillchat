@@ -99,7 +99,7 @@ export default function SelectInput({
                               role='presentation'
                             />
                             <span
-                              className={cx('ml-3 block truncate', {
+                              className={cx('ml-3 block truncate text-base', {
                                 ['text-gray-500']: item.disabledItem,
                               })}
                             >
