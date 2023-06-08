@@ -1,5 +1,6 @@
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
-import { getCurrentUrlOrigin, getHomePageLink } from '@/utils/links'
+import { cx } from '@/utils/class-names'
+import { getCurrentUrlOrigin, getHubPageLink } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { HiCircleStack, HiQrCode } from 'react-icons/hi2'
@@ -29,7 +30,7 @@ export default function AboutHubModal({
   const content = hub?.content
   if (!content) return null
 
-  const hubUrl = urlJoin(getCurrentUrlOrigin(), getHomePageLink(router))
+  const hubUrl = urlJoin(getCurrentUrlOrigin(), getHubPageLink(router))
   const contentList: AboutModalProps['contentList'] = [
     { title: 'Description', content: content.about },
     {
@@ -50,7 +51,7 @@ export default function AboutHubModal({
     },
     {
       text: 'Show Metadata',
-      iconClassName: 'text-text-muted',
+      iconClassName: cx('text-text-muted'),
       icon: HiCircleStack,
       onClick: () => setOpenedModalType('metadata'),
     },

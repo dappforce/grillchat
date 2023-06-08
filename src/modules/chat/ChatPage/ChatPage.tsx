@@ -12,7 +12,7 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
   getChatPageLink,
   getCurrentUrlWithoutQuery,
-  getHomePageLink,
+  getHubPageLink,
   getUrlQuery,
 } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
@@ -63,7 +63,10 @@ export default function ChatPage({
     <DefaultLayout
       withFixedHeight
       navbarProps={{
-        backButtonProps: { defaultBackLink: getHomePageLink(router) },
+        backButtonProps: {
+          defaultBackLink: getHubPageLink(router),
+          forceUseDefaultBackLink: false,
+        },
         customContent: ({ backButton, authComponent, colorModeToggler }) => (
           <div className='flex items-center justify-between gap-4'>
             <NavbarChatInfo

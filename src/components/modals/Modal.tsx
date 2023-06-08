@@ -106,7 +106,7 @@ export default function Modal({
               >
                 <div
                   className={cx(
-                    'p-6 text-left align-middle',
+                    'p-5 text-left align-middle md:p-6',
                     'transform',
                     'flex flex-col',
                     contentClassName

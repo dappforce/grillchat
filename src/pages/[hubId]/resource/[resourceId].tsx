@@ -11,9 +11,9 @@ export const getStaticPaths: GetStaticPaths = () => ({
 export const getStaticProps = getCommonStaticProps(
   () => ({}),
   async (context) => {
-    const { spaceId, resourceId } = context.params || {}
+    const { hubId, resourceId } = context.params || {}
 
-    if (!spaceId || !resourceId) {
+    if (!hubId || !resourceId) {
       return undefined
     }
 
@@ -27,7 +27,7 @@ export const getStaticProps = getCommonStaticProps(
 
     return {
       redirect: {
-        destination: `/${spaceId}/${linkedResource}`,
+        destination: `/${hubId}/${linkedResource}`,
         permanent: false,
       },
       revalidate: 2,

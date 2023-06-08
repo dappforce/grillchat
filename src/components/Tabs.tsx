@@ -3,7 +3,6 @@ import { replaceUrl } from '@/utils/window'
 import { Tab } from '@headlessui/react'
 import { ComponentProps, Fragment, useEffect, useState } from 'react'
 import Container from './Container'
-import LinkText from './LinkText'
 
 type Tab = {
   id: string
@@ -15,7 +14,12 @@ export type TabsProps = ComponentProps<'div'> & {
   tabs: Tab[]
   panelClassName?: string
   defaultTab?: number
+  withHashIntegration?: boolean
   hideBeforeHashLoaded?: boolean
+  manualTabControl?: {
+    selectedTab: number
+    setSelectedTab: (selectedTab: number) => void
+  }
 }
 
 export default function Tabs({
@@ -24,60 +28,79 @@ export default function Tabs({
   panelClassName,
   defaultTab = 0,
   hideBeforeHashLoaded,
+  withHashIntegration = true,
+  manualTabControl,
   ...props
 }: TabsProps) {
   const [selectedIndex, setSelectedIndex] = useState(defaultTab)
+  const selectedTab = manualTabControl?.selectedTab ?? selectedIndex
+  const setSelectedTab = manualTabControl?.setSelectedTab ?? setSelectedIndex
+
   const [isHashLoaded, setIsHashLoaded] = useState(false)
 
   useEffect(() => {
+    if (!withHashIntegration) return
+
     const hash = window.location.hash
     const index = tabs.findIndex(({ id }) => `#${id}` === hash)
-    if (index > -1) setSelectedIndex(index)
+    if (index > -1) setSelectedTab(index)
 
     setIsHashLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const changeTab = (index: number) => {
-    setSelectedIndex(index)
-    const id = tabs[index].id
-    replaceUrl(`#${id}`)
+    setSelectedTab(index)
+
+    if (withHashIntegration) {
+      const id = tabs[index].id
+      replaceUrl(`#${id}`)
+    }
   }
 
   const component = asContainer ? Container : 'div'
-  const usedSelectedIndex =
-    !hideBeforeHashLoaded || isHashLoaded ? selectedIndex : -1
+  const usedSelectedTab =
+    !hideBeforeHashLoaded || !withHashIntegration || isHashLoaded
+      ? selectedTab
+      : -1
 
   return (
-    <Tab.Group selectedIndex={usedSelectedIndex} onChange={setSelectedIndex}>
+    <Tab.Group selectedIndex={usedSelectedTab} onChange={setSelectedTab}>
       <Tab.List
         as={component}
-        className={cx('flex items-end gap-4', props.className)}
+        className={cx('flex items-end', props.className)}
       >
         {tabs.map(({ text, id }) => (
           <Tab key={id} as={Fragment}>
             {({ selected }) => (
-              <LinkText
+              <span
                 className={cx(
-                  'relative py-4 font-medium text-text-muted !outline-none transition-colors',
-                  'after:absolute after:bottom-0 after:left-0 after:h-1 after:w-full after:origin-bottom after:scale-y-0 after:rounded-t-full after:bg-text-primary after:opacity-0 after:transition',
-                  'hover:text-text-primary hover:after:scale-y-100 hover:after:opacity-100',
-                  'focus-visible:text-text-primary focus-visible:after:scale-y-100 focus-visible:after:opacity-100',
-                  selected &&
-                    'text-text-primary after:scale-y-100 after:opacity-100'
+                  'group relative block cursor-pointer rounded-t-2xl px-3 outline-none after:absolute after:bottom-0 after:left-0 after:h-[90%] after:w-full after:rounded-t-2xl after:bg-background-light after:opacity-0 after:transition-opacity',
+                  'focus-visible:after:opacity-100'
                 )}
-                href={`#${id}`}
               >
-                {text}
-              </LinkText>
+                <span
+                  className={cx(
+                    'relative z-10 block py-3 font-medium text-text-muted transition-colors',
+                    'after:absolute after:bottom-0 after:left-0 after:h-1 after:w-full after:origin-bottom after:scale-y-0 after:rounded-t-full after:bg-text-primary after:opacity-0 after:transition',
+                    'group-hover:text-text-primary group-hover:after:scale-y-100 group-hover:after:opacity-100',
+                    selected &&
+                      'text-text-primary after:scale-y-100 after:opacity-100'
+                  )}
+                >
+                  {text}
+                </span>
+              </span>
             )}
           </Tab>
         ))}
+        {usedSelectedTab === -1 && <Tab key='empty' />}
       </Tab.List>
       <Tab.Panels as={component} className={cx('mt-2', panelClassName)}>
         {tabs.map(({ id, content }) => (
           <Tab.Panel key={id}>{content(changeTab)}</Tab.Panel>
         ))}
+        {usedSelectedTab === -1 && <Tab.Panel key='empty' />}
       </Tab.Panels>
     </Tab.Group>
   )

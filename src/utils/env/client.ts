@@ -8,22 +8,22 @@ export function getCaptchaSiteKey() {
   )
 }
 
-export function getMainSpaceId() {
-  const spaceIds = checkEnv(
+export function getMainHubId() {
+  const hubIds = checkEnv(
     process.env.NEXT_PUBLIC_SPACE_IDS,
     'NEXT_PUBLIC_SPACE_IDS',
     true
   )
-  return spaceIds.split(',')[0]
+  return hubIds.split(',')[0]
 }
 
-export function getSpaceIds() {
-  const spaceIds = checkEnv(
+export function getHubIds() {
+  const hubIds = checkEnv(
     process.env.NEXT_PUBLIC_SPACE_IDS,
     'NEXT_PUBLIC_SPACE_IDS',
     true
   )
-  return spaceIds.split(',')
+  return hubIds.split(',')
 }
 
 export function getModerationUrl() {

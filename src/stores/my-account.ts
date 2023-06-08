@@ -39,9 +39,6 @@ type Actions = {
   _getSecretKeyForLogin: () => Promise<string>
 }
 
-const ACCOUNT_STORAGE_KEY = 'account'
-const SESSION_STORAGE_KEY = 'session'
-
 const initialState: State = {
   isInitializedAddress: true,
   address: null,
@@ -53,6 +50,17 @@ const initialState: State = {
   _isNewSessionKey: true,
 }
 
+const ACCOUNT_ADDRESS_STORAGE_KEY = 'accountPublicKey'
+const ACCOUNT_STORAGE_KEY = 'account'
+const SESSION_STORAGE_KEY = 'session'
+const FOLLOWED_IDS_STORAGE_KEY = 'followedPostIds'
+
+export const accountAddressStorage = new LocalStorage(
+  () => ACCOUNT_ADDRESS_STORAGE_KEY
+)
+export const followedIdsStorage = new LocalStorage(
+  (address: string) => `${FOLLOWED_IDS_STORAGE_KEY}:${address}`
+)
 const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
 const currentSessionStorage = new LocalStorage(() => SESSION_STORAGE_KEY)
 
@@ -73,6 +81,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         isInitializedAddress: !!isInitialization,
       })
       accountStorage.set(encodedSecretKey)
+      accountAddressStorage.set(signer.address)
       get()._subscribeEnergy()
       _syncSessionKey()
     } catch (e) {
@@ -105,10 +114,13 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     )
   },
   logout: () => {
-    const { _unsubscribeEnergy, _currentSessionSecretKey } = get()
+    const { _unsubscribeEnergy, address, _currentSessionSecretKey } = get()
     _unsubscribeEnergy()
 
     accountStorage.remove()
+    accountAddressStorage.remove()
+    if (address) followedIdsStorage.remove(address)
+
     set({ ...initialState, _isNewSessionKey: false, _currentSessionSecretKey })
   },
   _getSecretKeyForLogin: async () => {

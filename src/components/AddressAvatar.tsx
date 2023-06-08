@@ -35,7 +35,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       return (
         <div
           className={cx(
-            'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none'
+            'relative flex flex-shrink-0 animate-pulse items-stretch gap-2.5 overflow-hidden outline-none'
           )}
         >
           <div

@@ -68,7 +68,7 @@ export default function AboutChatModal({
       },
       {
         text: 'Show Metadata',
-        iconClassName: 'text-text-muted',
+        iconClassName: cx('text-text-muted'),
         icon: HiCircleStack,
         onClick: () => setOpenedModalType('metadata'),
       },
