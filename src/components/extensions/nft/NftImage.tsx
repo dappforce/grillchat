@@ -1,9 +1,13 @@
 import { cx } from '@/utils/class-names'
-import { ComponentProps, useLayoutEffect, useState } from 'react'
+import Image, { ImageProps } from 'next/image'
+import { useLayoutEffect, useState } from 'react'
 
-export type NftImageProps = Omit<ComponentProps<'img'>, 'src'> & {
-  image: string
+export type NftImageProps = Omit<ImageProps, 'src' | 'alt'> & {
+  alt?: string
+  image?: string
   containerClassName?: string
+  loadingClassName?: string
+  placeholderClassName?: string
 }
 
 function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
@@ -19,6 +23,8 @@ function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
 export default function NftImage({
   image,
   containerClassName,
+  loadingClassName,
+  placeholderClassName,
   ...props
 }: NftImageProps) {
   const [isLoading, setIsLoading] = useState(false)
@@ -28,21 +34,24 @@ export default function NftImage({
     setIsLoading(true)
   }, [image])
 
-  if (!image) return null
-
   return (
     <div className={cx('relative', containerClassName)}>
       {isLoading && (
-        <div className='absolute inset-0 h-full w-full animate-pulse rounded-2xl bg-background-lighter' />
+        <div
+          className={cx(
+            'absolute inset-0 h-full w-full animate-pulse bg-background-lighter',
+            loadingClassName
+          )}
+        />
       )}
-      {image && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          alt=''
+      {image ? (
+        <Image
           key={image}
           {...props}
-          src={imageUrl}
-          loading='lazy'
+          width={500}
+          height={500}
+          alt={props.alt || ''}
+          src={imageUrl ?? ''}
           className={cx(
             'relative transition-opacity',
             isLoading && 'opacity-0',
@@ -53,6 +62,8 @@ export default function NftImage({
             props.onLoad?.(e)
           }}
         />
+      ) : (
+        <div className={cx('aspect-square w-full', placeholderClassName)} />
       )}
     </div>
   )

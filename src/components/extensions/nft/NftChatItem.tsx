@@ -9,8 +9,7 @@ type Props = ExtensionChatItemProps
 export default function NftChatItem(props: Props) {
   const { message } = props
   const { struct, content } = message
-  const { ownerId } = struct
-  const { inReplyTo, body, extensions } = content || {}
+  const { extensions } = content || {}
 
   const nftProperties = extensions?.[0]?.properties
   const { data: nftData } = getNftDataQuery.useQuery(nftProperties ?? null)
@@ -24,7 +23,9 @@ export default function NftChatItem(props: Props) {
         <div className='not:first:mt-1 flex flex-col'>
           <div className='relative flex w-full items-center justify-center'>
             <NftImage
-              className='max-h-[340px] w-full min-w-[230px] rounded-[4px] object-contain'
+              containerClassName='rounded-[4px] overflow-hidden'
+              placeholderClassName='w-full min-w-[230px]'
+              className='max-h-[340px] w-full min-w-[230px] object-contain'
               image={nftData?.image ?? ''}
             />
             <span className='absolute right-2 top-2 rounded-full bg-text-dark/50 px-2 py-0.5 text-xs text-text-muted'>
