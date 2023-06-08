@@ -12,7 +12,7 @@ export type BackButtonProps = ButtonProps & {
 
 export default function BackButton({
   defaultBackLink = '/',
-  forceUseDefaultBackLink,
+  forceUseDefaultBackLink = true,
   noStyle,
   ...props
 }: BackButtonProps) {
