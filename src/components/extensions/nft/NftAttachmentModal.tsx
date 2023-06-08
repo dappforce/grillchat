@@ -51,12 +51,14 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
     if (props.isOpen) autofocus()
   }, [props.isOpen, autofocus])
 
+  const isValidNft = !!data?.image && !isLoading
+
   return (
     <CommonExtensionModal
       {...otherProps}
       mustHaveMessageBody={false}
       chatId={chatId}
-      disableSendButton={!nftLink || !!nftLinkError}
+      disableSendButton={isValidNft}
       title='🖼 Attach NFT'
       description='Should be a link to an NFT page from any popular marketplace, such as Opensea, Rarible or another'
       buildAdditionalTxParams={() => {
@@ -80,22 +82,20 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
         ) : (
           nftLink && (
             <div className='relative aspect-square w-full'>
-              {data?.image && (
-                <Button
-                  className='absolute right-4 top-4 z-20 bg-background-light text-xl text-text-red'
-                  size='circle'
-                  onClick={() => setNftLink('')}
-                >
-                  <HiTrash />
-                </Button>
-              )}
-              <div className='relative h-full w-full overflow-hidden rounded-2xl'>
+              <Button
+                className='absolute right-4 top-4 z-20 bg-background-light text-xl text-text-red'
+                size='circle'
+                onClick={() => setNftLink('')}
+              >
+                <HiTrash />
+              </Button>
+              <div className='relative h-full w-full'>
                 {isLoading && (
-                  <div className='absolute inset-0 z-10 aspect-square w-full animate-pulse bg-background-lighter' />
+                  <div className='absolute inset-0 z-10 h-full w-full animate-pulse rounded-2xl bg-background-lighter' />
                 )}
                 {data?.image && (
                   <NftImage
-                    className='absolute inset-0'
+                    className='absolute inset-0 rounded-2xl border border-background-primary bg-background'
                     image={data?.image ?? ''}
                     onLoad={() => setIsLoading(false)}
                   />
