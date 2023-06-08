@@ -28,7 +28,7 @@ export default function ClickableImage({
       <Modal
         isOpen={isOpenModal}
         closeModal={() => setIsOpenModal(false)}
-        panelClassName='bg-transparent'
+        panelClassName='bg-transparent shadow-none'
         contentClassName='p-0'
         size='screen-md'
       >

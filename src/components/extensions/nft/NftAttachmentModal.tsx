@@ -95,7 +95,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
               <NftImage
                 image={data?.image ?? ''}
                 loadingClassName='rounded-2xl'
-                className='aspect-square w-full rounded-2xl border border-background-primary bg-background object-contain'
+                className='aspect-square w-full rounded-2xl bg-background object-contain'
                 onLoad={() => setShowLoading(false)}
               />
             </div>
