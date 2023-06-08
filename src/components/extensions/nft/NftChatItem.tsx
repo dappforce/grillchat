@@ -19,7 +19,7 @@ export default function NftChatItem(props: Props) {
     <CommonChatItem
       {...props}
       myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
-      className='max-w-sm'
+      className='max-w-xs'
     >
       {({ isMyMessage }) => (
         <div className='flex flex-col [&:not(:first-child)]:mt-1'>
