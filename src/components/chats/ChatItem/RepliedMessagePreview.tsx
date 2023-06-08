@@ -1,7 +1,7 @@
+import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
-import { generateRandomName } from '@/utils/random-name'
 import { truncateText } from '@/utils/strings'
 import { ComponentProps, useState } from 'react'
 
@@ -41,8 +41,6 @@ export default function RepliedMessagePreview({
     setIsLoading(false)
   }
 
-  const name = generateRandomName(data?.struct.ownerId)
-
   return (
     <div
       {...props}
@@ -59,7 +57,12 @@ export default function RepliedMessagePreview({
         props.onClick?.(e)
       }}
     >
-      <span style={{ color: replySenderColor }}>{name}</span>
+      {/* <span style={{ color: replySenderColor }}>{name}</span> */}
+      <Name
+        ownerId={data?.struct.ownerId}
+        senderColor={replySenderColor}
+        className='font-medium'
+      />
       <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
         {showedText}
       </span>

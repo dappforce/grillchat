@@ -14,6 +14,8 @@ export default function useLoginAndRequestToken() {
     if (!address) throw new Error('Failed to login')
 
     await requestToken({ address, captchaToken })
+
+    return address
   }
 
   return useMutation(loginAndRequestToken)

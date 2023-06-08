@@ -1,5 +1,5 @@
-import { useConfigContext } from '@/contexts/ConfigContext'
 import useMounted from '@/hooks/useMounted'
+import { useConfigContext } from '@/providers/ConfigProvider'
 
 export default function useSortChatIdsByConfig(chatIds: string[]) {
   const { order } = useConfigContext()

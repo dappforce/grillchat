@@ -46,6 +46,7 @@ export function useSubsocialMutation<Data, Context>(
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
     const ipfsApi = subsocialApi.ipfs
+
     try {
       return await createTxAndSend(
         transactionGenerator,

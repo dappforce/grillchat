@@ -63,7 +63,6 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     let address: string = ''
     try {
       secretKey = secretKey || (await _getSecretKeyForLogin())
-
       const signer = await loginWithSecretKey(secretKey)
       const encodedSecretKey = encodeSecretKey(secretKey)
       address = signer.address
