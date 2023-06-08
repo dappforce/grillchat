@@ -67,7 +67,7 @@ export default function DonateMessagePreview({
         {!isMyMessage && (
           <div className='flex items-center'>
             <Name ownerId={ownerId} senderColor={senderColor} />
-            <span className='text-xs text-text-muted'>{relativeTime}</span>
+            <span className='text-xs text-[#F9DBC3]'>{relativeTime}</span>
           </div>
         )}
         {inReplyTo && (

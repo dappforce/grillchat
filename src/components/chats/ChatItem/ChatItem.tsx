@@ -7,8 +7,10 @@ import DonateMessagePreview from '@/components/modals/donate/DonateMessagePrevie
 import DonateModal from '@/components/modals/donate/DonateModal'
 import Toast from '@/components/Toast'
 import useRandomColor from '@/hooks/useRandomColor'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
@@ -74,6 +76,14 @@ export default function ChatItem({
   const { body, inReplyTo, extersions } = message.content || {}
   const senderColor = useRandomColor(ownerId)
   const [openDonateModal, setOpenDonateModal] = useState(false)
+  const address = useMyAccount((state) => state.address)
+
+  const { data: messageOwnerAccountData } =
+    getAccountDataQuery.useQuery(ownerId)
+  const { data: myAccountData } = getAccountDataQuery.useQuery(address)
+
+  const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
+  const { evmAddress: myEvmAddress } = myAccountData || {}
 
   const sendEvent = useSendEvent()
 
@@ -94,15 +104,22 @@ export default function ChatItem({
       onClick: () => setMessageAsReply(messageId),
     }
 
+    const donateMenuItem: FloatingMenusProps['menus'][number] = {
+      text: 'Donate',
+      icon: DonateCoinIcon,
+      onClick: () => {
+        setOpenDonateModal(true)
+      },
+    }
+
+    const showDonateMenuItem =
+      myEvmAddress &&
+      messageOwnerEvmAddress &&
+      myEvmAddress !== messageOwnerEvmAddress
+
     return [
       ...(onSelectMessageAsReply ? [replyMenu] : []),
-      {
-        text: 'Donate',
-        icon: DonateCoinIcon,
-        onClick: () => {
-          setOpenDonateModal(true)
-        },
-      },
+      ...(showDonateMenuItem ? [donateMenuItem] : []),
       {
         text: 'Copy Text',
         icon: MdContentCopy,
