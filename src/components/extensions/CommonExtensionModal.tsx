@@ -44,12 +44,11 @@ export default function CommonExtensionModal({
         autofocus={!!autofocus}
         chatId={chatId}
         mustHaveMessageBody={mustHaveMessageBody}
-        className={cx('p-1', isUsingBigButton && 'pb-5 md:pb-6')}
+        className={cx(isUsingBigButton && 'pb-5 md:pb-6')}
         inputProps={{
           className: cx(
-            'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20',
-            !isUsingBigButton && 'rounded-b-2xl',
-            isUsingBigButton && '!ring-0'
+            'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20 !ring-0',
+            !isUsingBigButton && 'rounded-b-2xl'
           ),
         }}
         sendButtonProps={{
