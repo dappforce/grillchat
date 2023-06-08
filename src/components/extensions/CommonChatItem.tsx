@@ -22,15 +22,31 @@ type DerivativesData = {
   relativeTime: string
   isSent: boolean
 }
-type CommonChatItemProps = ExtensionChatItemProps & {
-  children: JSX.Element | ((derivativesData: DerivativesData) => JSX.Element)
-  myMessageChildrenPosition?: 'top' | 'bottom'
-  othersMessageChildrenPosition?: 'bottom'
+
+type MyMessageConfig = {
+  children?: 'top' | 'bottom'
+  checkMark?: 'outside' | 'inside'
+}
+type OthersMessageConfig = {
+  children?: 'bottom'
 }
 
+type CommonChatItemProps = ExtensionChatItemProps & {
+  children: JSX.Element | ((derivativesData: DerivativesData) => JSX.Element)
+  myMessageConfig?: MyMessageConfig
+  othersMessage?: OthersMessageConfig
+}
+
+const defaultMyMessageConfig: MyMessageConfig = {
+  children: 'bottom',
+  checkMark: 'inside',
+}
+const defaultOthersMessageConfig: OthersMessageConfig = {
+  children: 'bottom',
+}
 export default function CommonChatItem({
-  myMessageChildrenPosition = 'top',
-  othersMessageChildrenPosition = 'bottom',
+  myMessageConfig = defaultMyMessageConfig,
+  othersMessage = defaultOthersMessageConfig,
   message,
   children,
   scrollToMessage,
@@ -50,8 +66,35 @@ export default function CommonChatItem({
       ? children({ isMyMessage, relativeTime, isSent })
       : children
 
+  const checkMarkElement = (
+    <div
+      className={cx(
+        'flex items-center gap-1 px-2.5 last:pb-1.5',
+        isMyMessage && 'self-end'
+      )}
+    >
+      <span className='text-xs text-text-muted dark:text-text-muted-on-primary'>
+        {relativeTime}
+      </span>
+      <Button
+        variant='transparent'
+        size='noPadding'
+        interactive='brightness-only'
+        onClick={onCheckMarkClick}
+      >
+        {isSent ? (
+          <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
+        ) : (
+          <IoCheckmarkOutline
+            className={cx('text-muted text-sm dark:text-text-muted-on-primary')}
+          />
+        )}
+      </Button>
+    </div>
+  )
+
   return (
-    <div className={cx('flex flex-col')}>
+    <div className={cx('flex flex-col gap-2')}>
       <div
         className={cx(
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl',
@@ -61,85 +104,63 @@ export default function CommonChatItem({
         )}
       >
         {!isMyMessage && (
-          <div className='flex items-center px-2.5 pt-1.5'>
+          <div className='flex items-center px-2.5 first:pt-1.5'>
             <Name ownerId={ownerId} />
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}
 
-        {isMyMessage && myMessageChildrenPosition === 'top' && childrenElement}
+        {isMyMessage && myMessageConfig.children === 'top' && childrenElement}
 
         {inReplyTo && (
           <RepliedMessagePreview
             originalMessage={body ?? ''}
-            className='mx-2.5 mt-1'
+            className='mx-2.5 mt-1 first:pt-1.5'
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
           />
         )}
 
-        {!isMyMessage &&
-          othersMessageChildrenPosition === 'bottom' &&
-          childrenElement}
-
-        <p
-          className={cx(
-            'whitespace-pre-wrap break-words px-2.5 text-base',
-            !isMyMessage && 'pb-1.5'
-          )}
-        >
-          <Linkify
-            options={{
-              render: ({ content, attributes }) => (
-                <LinkText
-                  {...attributes}
-                  href={attributes.href}
-                  variant={isMyMessage ? 'default' : 'secondary'}
-                  className={cx('underline')}
-                  openInNewTab
-                >
-                  {content}
-                </LinkText>
-              ),
-            }}
-          >
-            {body}
-          </Linkify>
-        </p>
-
-        {isMyMessage &&
-          myMessageChildrenPosition === 'bottom' &&
-          childrenElement}
-
-        {isMyMessage && (
-          <div
+        {body && (
+          <p
             className={cx(
-              'flex items-center gap-1 px-2.5 pb-1.5',
-              isMyMessage && 'self-end'
+              'whitespace-pre-wrap break-words px-2.5 text-base first:pt-1.5 last:pb-1.5'
             )}
           >
-            <span className='text-xs text-text-muted dark:text-text-muted-on-primary'>
-              {relativeTime}
-            </span>
-            <Button
-              variant='transparent'
-              size='noPadding'
-              interactive='brightness-only'
-              onClick={onCheckMarkClick}
+            <Linkify
+              options={{
+                render: ({ content, attributes }) => (
+                  <LinkText
+                    {...attributes}
+                    href={attributes.href}
+                    variant={isMyMessage ? 'default' : 'secondary'}
+                    className={cx('underline')}
+                    openInNewTab
+                  >
+                    {content}
+                  </LinkText>
+                ),
+              }}
             >
-              {isSent ? (
-                <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
-              ) : (
-                <IoCheckmarkOutline
-                  className={cx(
-                    'text-muted text-sm dark:text-text-muted-on-primary'
-                  )}
-                />
-              )}
-            </Button>
-          </div>
+              {body}
+            </Linkify>
+          </p>
         )}
+
+        {!isMyMessage && othersMessage.children === 'bottom' && childrenElement}
+
+        {isMyMessage &&
+          myMessageConfig.children === 'bottom' &&
+          childrenElement}
+
+        {isMyMessage &&
+          myMessageConfig.checkMark === 'inside' &&
+          checkMarkElement}
       </div>
+
+      {isMyMessage &&
+        myMessageConfig.checkMark === 'outside' &&
+        checkMarkElement}
     </div>
   )
 }

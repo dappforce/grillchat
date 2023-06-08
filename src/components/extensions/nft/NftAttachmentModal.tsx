@@ -61,7 +61,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
       chatId={chatId}
       disableSendButton={!isValidNft}
       title='🖼 Attach NFT'
-      description='Should be a link to an NFT page from any popular marketplace, such as Opensea, Rarible or another'
+      description="Paste the URL of an NFT's page on any popular marketplace such as Opensea, Rarible, etc."
       buildAdditionalTxParams={() => {
         if (!parsedLinkData) return {}
         return {
@@ -69,7 +69,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
         }
       }}
     >
-      <div className='flex flex-col gap-5'>
+      <div className='flex flex-col gap-3 md:gap-5'>
         <AutofocusInput
           inputRef={ref}
           value={nftLink}

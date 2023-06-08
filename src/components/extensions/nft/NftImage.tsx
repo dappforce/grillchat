@@ -42,8 +42,9 @@ export default function NftImage({
           key={image}
           {...props}
           src={imageUrl}
+          loading='lazy'
           className={cx(
-            'relative z-10 transition-opacity',
+            'relative transition-opacity',
             isLoading && 'opacity-0',
             props.className
           )}
