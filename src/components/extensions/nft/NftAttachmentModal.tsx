@@ -5,7 +5,7 @@ import useAutofocus from '@/hooks/useAutofocus'
 import useDebounce from '@/hooks/useDebounce'
 import { getNftDataQuery } from '@/services/moralis/query'
 import { NftProperties } from '@subsocial/api/types'
-import { RefObject, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HiTrash } from 'react-icons/hi2'
 import CommonExtensionModal from '../CommonExtensionModal'
 import NftImage from './NftImage'
@@ -55,11 +55,6 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
     }
   }, [isLoading, data])
 
-  const { ref, autofocus } = useAutofocus()
-  useEffect(() => {
-    if (props.isOpen) autofocus()
-  }, [props.isOpen, autofocus])
-
   const isValidNft = !!data?.image && !showLoading
 
   return (
@@ -68,7 +63,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
       mustHaveMessageBody={false}
       chatId={chatId}
       disableSendButton={!isValidNft}
-      title='🖼 Attach NFT'
+      title='🖼 Attach An NFT'
       description="Paste the URL of an NFT's page on any popular marketplace such as Opensea, Rarible, etc."
       buildAdditionalTxParams={() => {
         if (!parsedLinkData) return {}
@@ -78,8 +73,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
       }}
     >
       <div className='flex flex-col gap-3 md:gap-5'>
-        <AutofocusInput
-          inputRef={ref}
+        <NftLinkInput
           value={nftLink}
           onChange={(e) => setNftLink(e.target.value)}
           error={!!nftLinkError}
@@ -112,9 +106,11 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   )
 }
 
-function AutofocusInput({
-  inputRef,
-  ...props
-}: InputProps & { inputRef: RefObject<any> }) {
-  return <Input {...props} ref={inputRef} placeholder='Paste NFT URL' />
+function NftLinkInput({ ...props }: InputProps) {
+  const { ref, autofocus } = useAutofocus()
+  useEffect(() => {
+    autofocus()
+  }, [autofocus])
+
+  return <Input {...props} ref={ref} placeholder='Paste NFT URL' />
 }
