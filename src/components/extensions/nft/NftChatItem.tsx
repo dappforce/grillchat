@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import { getNftDataQuery } from '@/services/moralis/query'
 import { cx } from '@/utils/class-names'
+import truncate from 'lodash.truncate'
 import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
 import NftImage from './NftImage'
 
@@ -8,7 +9,7 @@ type Props = ExtensionChatItemProps
 
 export default function NftChatItem(props: Props) {
   const { message } = props
-  const { struct, content } = message
+  const { content } = message
   const { extensions } = content || {}
 
   const nftProperties = extensions?.[0]?.properties
@@ -20,12 +21,14 @@ export default function NftChatItem(props: Props) {
       myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
     >
       {({ isMyMessage }) => (
-        <div className='not:first:mt-1 flex flex-col'>
-          <div className='relative flex w-full items-center justify-center'>
+        <div className='flex flex-col [&:not(:first-child)]:mt-1'>
+          <div
+            className={cx('relative flex w-full items-center justify-center')}
+          >
             <NftImage
               containerClassName='rounded-[4px] overflow-hidden'
               placeholderClassName='w-full min-w-[230px]'
-              className='max-h-[340px] w-full min-w-[230px] object-contain'
+              className='w-full min-w-[230px] object-contain'
               image={nftData?.image ?? ''}
             />
             <span className='absolute right-2 top-2 rounded-full bg-text-dark/50 px-2 py-0.5 text-xs text-text-muted'>
@@ -35,7 +38,12 @@ export default function NftChatItem(props: Props) {
           <div className='mt-1.5 flex flex-col gap-1 px-2.5'>
             <div className='flex items-center justify-between gap-2'>
               <span>{nftData?.name ?? nftData?.collectionName}</span>
-              <span className='text-xs'>#{nftProperties?.nftId}</span>
+              <span className='text-xs'>
+                #
+                {truncate(nftProperties?.nftId, {
+                  length: 1000,
+                })}
+              </span>
             </div>
             <div
               className={cx(
