@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import ClickableImage from '@/components/ClickableImage'
 import { getNftDataQuery } from '@/services/moralis/query'
 import { cx } from '@/utils/class-names'
 import truncate from 'lodash.truncate'
@@ -26,11 +27,18 @@ export default function NftChatItem(props: Props) {
           <div
             className={cx('relative flex w-full items-center justify-center')}
           >
-            <NftImage
-              containerClassName='rounded-[4px] overflow-hidden w-full'
-              placeholderClassName='w-full min-w-[300px] w-full h-[300px] aspect-auto'
-              className='w-full min-w-[300px] object-contain'
-              image={nftData?.image ?? ''}
+            <ClickableImage
+              src={nftData?.image ?? ''}
+              alt=''
+              trigger={(onClick) => (
+                <NftImage
+                  containerClassName='rounded-[4px] overflow-hidden w-full cursor-pointer'
+                  placeholderClassName={cx('w-[320px] aspect-square')}
+                  className='w-[320px] object-contain'
+                  image={nftData?.image ?? ''}
+                  onClick={onClick}
+                />
+              )}
             />
             <span className='absolute right-2 top-2 rounded-full bg-text-dark/50 px-2 py-0.5 text-xs text-neutral-300'>
               NFT

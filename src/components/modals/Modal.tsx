@@ -24,6 +24,7 @@ const panelStyles = cva(
         sm: cx('max-w-sm'),
         md: cx('max-w-md'),
         lg: cx('max-w-lg'),
+        'screen-md': cx('max-w-screen-md'),
         'screen-lg': cx('max-w-screen-lg'),
         'full-screen': cx('max-w-none'),
       },

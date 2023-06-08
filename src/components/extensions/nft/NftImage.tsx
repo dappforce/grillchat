@@ -4,7 +4,7 @@ import { useLayoutEffect, useState } from 'react'
 
 export type NftImageProps = Omit<ImageProps, 'src' | 'alt'> & {
   alt?: string
-  image?: string
+  image?: ImageProps['src']
   containerClassName?: string
   loadingClassName?: string
   placeholderClassName?: string
@@ -28,7 +28,10 @@ export default function NftImage({
   ...props
 }: NftImageProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const imageUrl = resolveIpfsUri(image, 'https://ipfs.subsocial.network/ipfs/')
+  let usedImage = image
+  if (typeof image === 'string') {
+    usedImage = resolveIpfsUri(image, 'https://ipfs.subsocial.network/ipfs/')
+  }
 
   useLayoutEffect(() => {
     setIsLoading(true)
@@ -46,12 +49,12 @@ export default function NftImage({
       )}
       {image ? (
         <Image
-          key={image}
+          key={usedImage?.toString() ?? ''}
           {...props}
           width={500}
           height={500}
           alt={props.alt || ''}
-          src={imageUrl ?? ''}
+          src={usedImage ?? ''}
           className={cx(
             'relative transition-opacity',
             isLoading && 'opacity-0',
