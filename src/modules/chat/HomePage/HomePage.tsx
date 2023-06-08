@@ -152,7 +152,7 @@ export default function HubsPage(props: HubsPageProps) {
       }}
     >
       <Tabs
-        className='border-b border-border-gray bg-background-light md:bg-background-light/50'
+        className='border-b border-border-gray bg-background-light px-1 md:bg-background-light/50'
         panelClassName='mt-0 px-0'
         asContainer
         tabs={tabs}
