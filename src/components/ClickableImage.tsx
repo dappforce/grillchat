@@ -18,7 +18,7 @@ export default function ClickableImage({ ...props }: ClickableImageProps) {
       <Modal
         isOpen={isOpenModal}
         closeModal={() => setIsOpenModal(false)}
-        contentClassName='p-0'
+        contentClassName='!p-0'
         size='screen-lg'
       >
         <Image

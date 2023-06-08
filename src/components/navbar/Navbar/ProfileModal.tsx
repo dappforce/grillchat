@@ -106,7 +106,7 @@ export default function ProfileModal({
       {...props}
       title={title}
       description={desc}
-      contentClassName={cx(shouldRemoveDefaultPadding && 'px-0 pb-0')}
+      contentClassName={cx(shouldRemoveDefaultPadding && '!px-0 !pb-0')}
       titleClassName={cx(shouldRemoveDefaultPadding && 'px-6')}
       withFooter={withFooter}
       withCloseButton

@@ -110,7 +110,7 @@ export default function EmailSubscribeModal({
       containerClassName='p-0'
       panelClassName='rounded-none flex items-center justify-center'
       contentClassName={cx(
-        'min-h-screen flex flex-col justify-center items-center py-8 max-w-xl'
+        'min-h-screen flex flex-col justify-center items-center !py-8 max-w-xl'
       )}
     >
       <h1
