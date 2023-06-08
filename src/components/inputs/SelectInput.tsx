@@ -83,13 +83,14 @@ export default function SelectInput({
                       className={() =>
                         cx(
                           'relative flex items-center rounded-lg text-white outline-none transition-colors',
-                          'gap-4 px-3 py-2 hover:bg-background-lighter focus:bg-background-lighter'
+                          'gap-4 px-3 py-2 hover:bg-background-lighter focus:bg-background-lighter',
+                          { ['hover:bg-background-light']: item.disabledItem }
                         )
                       }
                       value={item}
                     >
                       {() => (
-                        <>
+                        <div className='flex w-full items-center justify-between gap-1'>
                           <div className='flex items-center'>
                             <Image
                               src={item.icon}
@@ -97,11 +98,18 @@ export default function SelectInput({
                               alt=''
                               role='presentation'
                             />
-                            <span className={cx('ml-3 block truncate')}>
+                            <span
+                              className={cx('ml-3 block truncate', {
+                                ['text-gray-500']: item.disabledItem,
+                              })}
+                            >
                               {item.label}
                             </span>
                           </div>
-                        </>
+                          {item.disabledItem && (
+                            <div className='text-gray-500'>Soon</div>
+                          )}
+                        </div>
                       )}
                     </Listbox.Option>
                   ))}

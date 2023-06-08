@@ -3,17 +3,20 @@ import { getSpaceIdFromAlias } from '@/constants/chat-room'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { getAccountsDataFromCache } from '@/pages/api/accounts-data'
 import { getPostsFromCache } from '@/pages/api/posts'
+import { getPricesFromCache } from '@/pages/api/prices'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { coingeckoTokenIds } from '@/services/subsocial/prices/query'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
 import { validateNumber } from '@/utils/strings'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
+import { getPriceQuery } from '../../../services/subsocial/prices/query'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   // For chats page, skip pre-rendering, because it will cause super slow build time
@@ -47,9 +50,11 @@ async function getChatsData(chatId: string) {
   const ownersSet = new Set(owners)
   const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)
 
+  const prices = await getPricesFromCache(Object.values(coingeckoTokenIds))
+
   const accountsAddresses = await getAccountsDataFromCache(chatPageOwnerIds)
 
-  return { messages, chatData, messageIds, accountsAddresses }
+  return { messages, chatData, messageIds, accountsAddresses, prices }
 }
 
 export const getStaticProps = getCommonStaticProps<
@@ -71,7 +76,7 @@ export const getStaticProps = getCommonStaticProps<
     let title: string | null = null
     let desc: string | null = null
     try {
-      const [{ messageIds, messages, chatData, accountsAddresses }] =
+      const [{ messageIds, messages, chatData, accountsAddresses, prices }] =
         await Promise.all([
           getChatsData(chatId),
           prefetchBlockedEntities(queryClient, spaceId, [chatId]),
@@ -90,13 +95,17 @@ export const getStaticProps = getCommonStaticProps<
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
 
-      accountsAddresses.map((accountAddresses) =>
+      accountsAddresses.forEach((accountAddresses) =>
         getAccountDataQuery.setQueryData(
           queryClient,
           accountAddresses.evmAddress,
           accountAddresses
         )
       )
+
+      prices.forEach((price) => {
+        getPriceQuery.setQueryData(queryClient, price.id, price)
+      })
     } catch (err) {
       console.error('Error fetching for chat page: ', err)
     }

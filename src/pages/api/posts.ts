@@ -82,6 +82,7 @@ export async function getPostsFromCache(
   const posts = await getPostStructsFromCache(validIds)
   const contentMap: { [key: string]: IpfsCommonContent } = {}
   const needToFetchContentIds: string[] = []
+
   posts.forEach((post) => {
     if (!isPostValid(post)) return
     const cid = post.contentId

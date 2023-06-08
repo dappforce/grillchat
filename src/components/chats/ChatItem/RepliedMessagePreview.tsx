@@ -30,6 +30,8 @@ export default function RepliedMessagePreview({
   }
 
   let showedText = data.content?.body ?? ''
+
+  const { id, properties } = data.content?.extersions?.[0] || {}
   if (originalMessage.length < minimumReplyChar) {
     showedText = truncateText(showedText, minimumReplyChar)
   }
@@ -40,6 +42,20 @@ export default function RepliedMessagePreview({
     await scrollToMessage(repliedMessageId)
     setIsLoading(false)
   }
+
+  const { amount, token } = properties || {}
+
+  const donateRepliedPreview =
+    id === 'subsocial-donations' ? (
+      <div
+        className={cx(
+          'bg-gradient-to-br from-[#C43333] to-[#F9A11E]',
+          'rounded-2xl px-2 py-[0.15rem]'
+        )}
+      >
+        {amount} {token}
+      </div>
+    ) : null
 
   return (
     <div
@@ -62,9 +78,12 @@ export default function RepliedMessagePreview({
         senderColor={replySenderColor}
         className='font-medium'
       />
-      <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
-        {showedText}
-      </span>
+      <div className='flex items-center gap-2'>
+        {donateRepliedPreview}
+        <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
+          {showedText}
+        </span>
+      </div>
     </div>
   )
 }

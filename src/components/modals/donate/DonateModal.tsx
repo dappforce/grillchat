@@ -78,6 +78,9 @@ const AmountInput = ({
     setAmount(e.target.value)
   }
 
+  const balanceValue =
+    decimals && balance ? formatUnits(balance, decimals) : '0'
+
   return (
     <div>
       <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-gray-400'>
@@ -85,10 +88,7 @@ const AmountInput = ({
         <div>
           Balance:{' '}
           <span className='font-bold text-white'>
-            {decimals && balance
-              ? formatUnits(balance, decimals).slice(0, 6)
-              : 0}{' '}
-            {tokenSymbol}
+            {balanceValue.slice(0, 6)} {tokenSymbol}
           </span>
         </div>
       </div>
@@ -105,6 +105,7 @@ const AmountInput = ({
                 'absolute bottom-0 right-4 top-0 my-auto p-1 text-indigo-400',
                 'hover:text-indigo-500 hover:ring-0'
               )}
+              onClick={() => balance && setAmount(balanceValue)}
             >
               Max
             </Button>

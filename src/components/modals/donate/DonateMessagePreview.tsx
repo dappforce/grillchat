@@ -3,7 +3,12 @@ import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePre
 import { ChatItemContentProps } from '@/components/chats/ChatItem/variants/types'
 import LinkText from '@/components/LinkText'
 import Name from '@/components/Name'
+import {
+  coingeckoTokenIds,
+  getPriceQuery,
+} from '@/services/subsocial/prices/query'
 import { cx } from '@/utils/class-names'
+import BigNumber from 'bignumber.js'
 import Linkify from 'linkify-react'
 import { HiArrowUpRight } from 'react-icons/hi2'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
@@ -17,6 +22,15 @@ const DonatePreview = ({ extensionProps, isMyMessage }: DonatePreviewProps) => {
   if (!extensionProps) return null
 
   const { token, amount, txHash } = extensionProps
+
+  const tokenId = coingeckoTokenIds[(token as string).toLowerCase()]
+
+  const { data } = getPriceQuery.useQuery(tokenId)
+
+  const price = data?.current_price
+
+  const amountInDollars =
+    price && amount ? new BigNumber(price).multipliedBy(amount).toFixed(4) : '0'
 
   return (
     <div className={cx('px-5 pt-5', { ['mb-3']: !isMyMessage })}>
@@ -32,7 +46,7 @@ const DonatePreview = ({ extensionProps, isMyMessage }: DonatePreviewProps) => {
             </div>
             <HiArrowUpRight />
           </div>
-          <div className='text-sm'>≈ $34.57</div>
+          <div className='text-sm'>≈ ${amountInDollars}</div>
         </div>
       </LinkText>
     </div>
