@@ -65,6 +65,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
       disableSendButton={!isValidNft}
       title='🖼 Attach An NFT'
       description="Paste the URL of an NFT's page on any popular marketplace such as Opensea, Rarible, etc."
+      onSubmit={() => setNftLink('')}
       buildAdditionalTxParams={() => {
         if (!parsedLinkData) return {}
         return {
