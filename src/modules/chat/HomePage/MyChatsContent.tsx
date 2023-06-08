@@ -24,8 +24,11 @@ export default function MyChatsContent({
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const address = useMyAccount((state) => state.address)
 
-  const { data: chatIds, isLoading } =
-    getFollowedPostIdsByAddressQuery.useQuery(address ?? '')
+  const {
+    data: chatIds,
+    isLoading,
+    isPlaceholderData,
+  } = getFollowedPostIdsByAddressQuery.useQuery(address ?? '')
 
   const sortedIds = useSortChatIdsByLatestMessage(chatIds)
 
@@ -36,7 +39,7 @@ export default function MyChatsContent({
     'content.title',
   ])
 
-  if (!isInitialized || isLoading) {
+  if (!isInitialized || isLoading || isPlaceholderData) {
     return <Loading />
   } else if (!address || searchResults.length === 0) {
     if (search) return <NoChatsFound search={search} />
