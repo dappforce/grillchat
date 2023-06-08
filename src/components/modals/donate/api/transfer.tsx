@@ -7,25 +7,36 @@ import {
   useConnect,
   useContractReads,
   useContractWrite,
+  useSendTransaction,
 } from 'wagmi'
 import { polygonContractsByToken } from './config'
 
 export const useTransfer = (token: string) => {
   const { isConnected } = useAccount()
   const { connectAsync, connectors } = useConnect()
+  const { sendTransactionAsync } = useSendTransaction()
   const { writeAsync } = useContractWrite({
     ...polygonContractsByToken[token],
     functionName: 'transfer',
   } as any)
 
-  const sendTransferTx = async (recipient: string, amount: string) => {
+  const sendTransferTx = async (
+    recipient: string,
+    amount: string,
+    isNativeToken?: boolean
+  ) => {
     if (!isConnected) {
       await connectAsync({ connector: connectors[0] })
     }
     try {
-      const { hash } = await writeAsync({
-        args: [recipient, parseEther(`${parseFloat(amount)}`)],
-      })
+      const { hash } = isNativeToken
+        ? await sendTransactionAsync({
+            to: recipient,
+            value: parseEther(`${parseFloat(amount)}`),
+          })
+        : await writeAsync({
+            args: [recipient, parseEther(`${parseFloat(amount)}`)],
+          })
 
       return hash
     } catch (e) {

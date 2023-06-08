@@ -6,13 +6,8 @@ import Input from '@/components/inputs/Input'
 import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
-import {
-  OptimisticMessageIdData,
-  SendMessageParams,
-} from '@/services/subsocial/commentIds'
-import { addOptimisticData } from '@/services/subsocial/commentIds/optimistic'
+import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { generateOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useQueryClient } from '@tanstack/react-query'
@@ -44,6 +39,7 @@ const tokensItems = [
     id: 'matic',
     icon: USDC,
     label: 'MATIC',
+    isNativeToken: true,
   },
   {
     id: 'usdc',
@@ -151,7 +147,8 @@ export default function DonateModal({
 
     const hash = await sendTransferTx(
       evmRecipientAddress,
-      amount.replace(',', '.')
+      amount.replace(',', '.'),
+      selectedToken.isNativeToken
     )
 
     if (hash && address) {
@@ -163,7 +160,7 @@ export default function DonateModal({
             properties: {
               chain: selectedChain.id,
               from: myEvmAddress,
-              to: recipient,
+              to: evmRecipientAddress,
               token: selectedToken.label,
               amount: amount,
               txHash: hash,
@@ -171,14 +168,9 @@ export default function DonateModal({
           },
         ],
       }
-      const tempId = generateOptimisticId<OptimisticMessageIdData>({
-        address,
-        message: params.message,
-      })
 
-      addOptimisticData({ address, params, tempId, client })
-
-      props.closeModal()
+      // props.closeModal()
+      return params
     }
   }
 
@@ -192,7 +184,7 @@ export default function DonateModal({
           disabled: false,
         },
         sendButtonText: 'Send',
-        customOnSubmit: onButtonClick,
+        beforeMesageSend: onButtonClick,
       }}
       title='💰 Donate'
       withCloseButton

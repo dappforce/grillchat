@@ -10,15 +10,16 @@ import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 
 type DonatePreviewProps = {
   extensionProps?: any
+  isMyMessage: boolean
 }
 
-const DonatePreview = ({ extensionProps }: DonatePreviewProps) => {
+const DonatePreview = ({ extensionProps, isMyMessage }: DonatePreviewProps) => {
   if (!extensionProps) return null
 
   const { token, amount, txHash } = extensionProps
 
   return (
-    <div className='px-5 pt-6'>
+    <div className={cx('px-5 pt-5', { ['mb-3']: !isMyMessage })}>
       <LinkText
         openInNewTab
         href={`https://polygonscan.com/tx/${txHash}`}
@@ -95,7 +96,10 @@ export default function DonateMessagePreview({
           >
             {body}
             <div className='mt-[5px] w-full ring-[0.4px] ring-[#F9A11E]'></div>
-            <DonatePreview extensionProps={properties} />
+            <DonatePreview
+              extensionProps={properties}
+              isMyMessage={isMyMessage}
+            />
           </Linkify>
         </p>
         {isMyMessage && (

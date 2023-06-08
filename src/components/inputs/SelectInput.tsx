@@ -8,6 +8,7 @@ export type ListItem = {
   id: string
   icon: StaticImageData
   label: string
+  isNativeToken?: boolean
 }
 
 type SelectInputProps = {

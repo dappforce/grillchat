@@ -36,7 +36,9 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   getAdditionalTxParams?: () => SendMessageParams
   sendButtonText?: string
   sendButtonProps?: ButtonProps
-  customOnSubmit?: (messageParams: SendMessageParams) => void
+  beforeMesageSend?: (
+    messageParams: SendMessageParams
+  ) => Promise<SendMessageParams | undefined>
 }
 
 function processMessage(message: string) {
@@ -54,7 +56,7 @@ export default function ChatForm({
   getAdditionalTxParams,
   sendButtonText,
   sendButtonProps,
-  customOnSubmit,
+  beforeMesageSend,
   ...props
 }: ChatFormProps) {
   const { data: chat } = getPostQuery.useQuery(chatId)
@@ -110,34 +112,11 @@ export default function ChatForm({
     setMessageBody('')
     clearReplyTo?.()
   }
-  const onSendMessage = (
+
+  const handleSubmit = async (
     captchaToken: string | null,
-    sendMessageParams: SendMessageParams
+    e?: SyntheticEvent
   ) => {
-    if (shouldSendMessage) {
-      resetForm()
-      sendMessage(sendMessageParams)
-    } else {
-      if (isLoggedIn) {
-        sendEvent('request energy')
-      } else {
-        sendEvent('send first message', { chatId, name: chatTitle })
-      }
-      if (!captchaToken) return
-      resetForm()
-      requestTokenAndSendMessage({
-        captchaToken,
-        ...sendMessageParams,
-      })
-      setIsRequestingEnergy(true)
-      sendEvent('request energy and send message')
-    }
-
-    onSubmit?.()
-    incrementMessageCount()
-  }
-
-  const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
     e?.preventDefault()
     if (
       shouldSendMessage &&
@@ -157,9 +136,31 @@ export default function ChatForm({
       ...getAdditionalTxParams?.(),
     }
 
-    customOnSubmit
-      ? customOnSubmit(sendMessageParams)
-      : onSendMessage(captchaToken, sendMessageParams)
+    const newMessageParams = await beforeMesageSend?.(sendMessageParams)
+
+    const messageParams = newMessageParams || sendMessageParams
+
+    if (shouldSendMessage) {
+      resetForm()
+      sendMessage(messageParams)
+    } else {
+      if (isLoggedIn) {
+        sendEvent('request energy')
+      } else {
+        sendEvent('send first message', { chatId, name: chatTitle })
+      }
+      if (!captchaToken) return
+      resetForm()
+      requestTokenAndSendMessage({
+        captchaToken,
+        ...messageParams,
+      })
+      setIsRequestingEnergy(true)
+      sendEvent('request energy and send message')
+    }
+
+    onSubmit?.()
+    incrementMessageCount()
   }
 
   return (
