@@ -76,7 +76,7 @@ export const useGetBalance = (token: string) => {
     const [balance, decimals] = data.map((item) => item.result)
 
     return { balance: balance, decimals }
-  }, [!!data, isLoading, token])
+  }, [!!data, isLoading, token, myGrillAddress])
 
   return {
     balance: balance?.toString(),

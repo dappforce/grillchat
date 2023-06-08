@@ -26,6 +26,11 @@ import {
   useState,
 } from 'react'
 
+type BeforeMessageResult = {
+  newMessageParams?: SendMessageParams
+  txPrevented: boolean
+}
+
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
   onSubmit?: () => void
@@ -38,7 +43,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   sendButtonProps?: ButtonProps
   beforeMesageSend?: (
     messageParams: SendMessageParams
-  ) => Promise<SendMessageParams | undefined>
+  ) => Promise<BeforeMessageResult>
 }
 
 function processMessage(message: string) {
@@ -136,7 +141,10 @@ export default function ChatForm({
       ...getAdditionalTxParams?.(),
     }
 
-    const newMessageParams = await beforeMesageSend?.(sendMessageParams)
+    const { newMessageParams, txPrevented } =
+      (await beforeMesageSend?.(sendMessageParams)) || {}
+    console.log('Chat form', txPrevented)
+    if (txPrevented) return
 
     const messageParams = newMessageParams || sendMessageParams
 

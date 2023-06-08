@@ -9,6 +9,7 @@ export type ListItem = {
   icon: StaticImageData
   label: string
   isNativeToken?: boolean
+  disabledItem?: boolean
 }
 
 type SelectInputProps = {
@@ -46,7 +47,7 @@ export default function SelectInput({
                 <span className='flex items-center'>
                   <Image
                     src={selected.icon}
-                    className='h-38 w-38'
+                    className='rounded-full'
                     alt=''
                     role='presentation'
                   />
@@ -78,6 +79,7 @@ export default function SelectInput({
                   {items.map((item, i) => (
                     <Listbox.Option
                       key={i}
+                      disabled={item.disabledItem}
                       className={() =>
                         cx(
                           'relative flex items-center rounded-lg text-white outline-none transition-colors',
@@ -91,7 +93,7 @@ export default function SelectInput({
                           <div className='flex items-center'>
                             <Image
                               src={item.icon}
-                              className='h-38 w-38'
+                              className='rounded-full'
                               alt=''
                               role='presentation'
                             />

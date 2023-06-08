@@ -1,5 +1,9 @@
-import Poligon from '@/assets/graphics/poligon.png'
-import USDC from '@/assets/graphics/usdc.png'
+import Astar from '@/assets/graphics/chains/astar.png'
+import Moonbeam from '@/assets/graphics/chains/moonbeam.png'
+import Poligon from '@/assets/graphics/chains/poligon.png'
+import ETH from '@/assets/graphics/tokens/eth.png'
+import MATIC from '@/assets/graphics/tokens/matic.png'
+import USDC from '@/assets/graphics/tokens/usdc.png'
 import Button from '@/components/Button'
 import CommonExtensionModal from '@/components/extensions/CommonExtensionModal'
 import Input from '@/components/inputs/Input'
@@ -10,7 +14,6 @@ import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { useQueryClient } from '@tanstack/react-query'
 import { formatUnits } from 'ethers'
 import { ChangeEventHandler, useState } from 'react'
 import { ModalFunctionalityProps } from '../Modal'
@@ -18,26 +21,28 @@ import { useGetBalance, useTransfer } from './api/transfer'
 
 const chainItems = [
   {
-    id: 'Poligon',
+    id: 'poligon',
     icon: Poligon,
     label: 'Poligon',
   },
   {
-    id: 'Poligon',
-    icon: Poligon,
-    label: 'Poligon1',
+    id: 'astar',
+    icon: Astar,
+    label: 'Astar',
+    disabledItem: true,
   },
   {
-    id: 'Poligon',
-    icon: Poligon,
-    label: 'Poligon2',
+    id: 'moonbeam',
+    icon: Moonbeam,
+    label: 'Moonbeam',
+    disabledItem: true,
   },
 ]
 
 const tokensItems = [
   {
     id: 'matic',
-    icon: USDC,
+    icon: MATIC,
     label: 'MATIC',
     isNativeToken: true,
   },
@@ -48,7 +53,7 @@ const tokensItems = [
   },
   {
     id: 'eth',
-    icon: USDC,
+    icon: ETH,
     label: 'ETH',
   },
 ]
@@ -132,7 +137,6 @@ export default function DonateModal({
   const [selectedToken, setSelectedToken] = useState<ListItem>(tokensItems[0])
   const [amount, setAmount] = useState<string>('0')
   const address = useMyAccount((state) => state.address)
-  const client = useQueryClient()
 
   const { data: recipientAccountData } = getAccountDataQuery.useQuery(recipient)
   const { data: myAccountData } = getAccountDataQuery.useQuery(address)
@@ -143,7 +147,9 @@ export default function DonateModal({
   const { sendTransferTx } = useTransfer(selectedToken.id)
 
   const onButtonClick = async (messageParams: SendMessageParams) => {
-    if (!evmRecipientAddress || !myEvmAddress || !amount) return
+    if (!evmRecipientAddress || !myEvmAddress || !amount) {
+      return { txPrevented: true }
+    }
 
     const hash = await sendTransferTx(
       evmRecipientAddress,
@@ -152,7 +158,7 @@ export default function DonateModal({
     )
 
     if (hash && address) {
-      const params: SendMessageParams = {
+      const newMessageParams: SendMessageParams = {
         ...messageParams,
         extensions: [
           {
@@ -169,9 +175,11 @@ export default function DonateModal({
         ],
       }
 
-      // props.closeModal()
-      return params
+      props.closeModal()
+      return { newMessageParams, txPrevented: false }
     }
+
+    return { txPrevented: true }
   }
 
   return (
