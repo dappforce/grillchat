@@ -25,7 +25,7 @@ export function getSpaceIdFromAlias(alias: string) {
 
 const LINKED_CHAT_IDS_FOR_SPACE_ID: Record<string, string[]> = {
   '1005': ['754', '2808', '2052'],
-  '1002': ['3477', '3454'],
+  '1002': ['3477', '3454', '4923'],
 }
 export function getLinkedChatIdsForSpaceId(spaceId: string) {
   return LINKED_CHAT_IDS_FOR_SPACE_ID[spaceId] ?? []
