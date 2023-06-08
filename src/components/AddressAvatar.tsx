@@ -17,6 +17,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   function AddressAvatar({ address, ...props }: AddressAvatarProps, ref) {
     const backgroundColor = useRandomColor(address, 'dark')
     const [ensAvatarLoading, setEnsAvatarLoading] = useState(true)
+    const [isLoadingError, setIsLoadingError] = useState(false)
 
     const { data: accountData, isLoading } =
       getAccountDataQuery.useQuery(address)
@@ -50,7 +51,9 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     }
 
     const avatarSrc =
-      withEnsAvatar && ensName ? resolveEnsAvatarSrc(ensName) : avatar
+      withEnsAvatar && ensName && !isLoadingError
+        ? resolveEnsAvatarSrc(ensName)
+        : avatar
 
     return (
       <div
@@ -74,6 +77,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
               fill
               src={avatarSrc}
               onLoad={() => setEnsAvatarLoading(false)}
+              onError={() => setIsLoadingError(true)}
               alt='avatar'
             />
           </div>
