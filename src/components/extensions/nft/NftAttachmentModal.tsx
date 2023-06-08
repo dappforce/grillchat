@@ -52,13 +52,14 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   }, [props.isOpen, autofocus])
 
   const isValidNft = !!data?.image && !isLoading
+  console.log(isValidNft, data?.image, isLoading)
 
   return (
     <CommonExtensionModal
       {...otherProps}
       mustHaveMessageBody={false}
       chatId={chatId}
-      disableSendButton={isValidNft}
+      disableSendButton={!isValidNft}
       title='🖼 Attach NFT'
       description='Should be a link to an NFT page from any popular marketplace, such as Opensea, Rarible or another'
       buildAdditionalTxParams={() => {
