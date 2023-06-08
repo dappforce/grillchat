@@ -21,7 +21,7 @@ declare module '@subsocial/api/types' {
       kind: 'Post'
       id: string
     }
-    extensions: NftExtension[]
+    extensions?: NftExtension[]
   }
   export declare type EntityPostData<
     S extends HasId,
