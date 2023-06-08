@@ -11,7 +11,6 @@ type Action = {
   icon: IconType
   iconClassName?: string
   className?: string
-  iconClassName?: string
   onClick: ButtonProps['onClick']
   disabled?: boolean
 }
