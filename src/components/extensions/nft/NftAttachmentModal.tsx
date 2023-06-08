@@ -90,18 +90,11 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
               >
                 <HiTrash />
               </Button>
-              <div className='relative h-full w-full'>
-                {isLoading && (
-                  <div className='absolute inset-0 z-10 h-full w-full animate-pulse rounded-2xl bg-background-lighter' />
-                )}
-                {data?.image && (
-                  <NftImage
-                    className='absolute inset-0 rounded-2xl border border-background-primary bg-background'
-                    image={data?.image ?? ''}
-                    onLoad={() => setIsLoading(false)}
-                  />
-                )}
-              </div>
+              <NftImage
+                image={data?.image ?? ''}
+                className='aspect-square w-full rounded-2xl border border-background-primary bg-background object-contain'
+                onLoad={() => setIsLoading(false)}
+              />
             </div>
           )
         )}

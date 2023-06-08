@@ -1,8 +1,9 @@
 import { cx } from '@/utils/class-names'
-import { ComponentProps } from 'react'
+import { ComponentProps, useLayoutEffect, useState } from 'react'
 
 export type NftImageProps = Omit<ComponentProps<'img'>, 'src'> & {
   image: string
+  containerClassName?: string
 }
 
 function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
@@ -15,16 +16,43 @@ function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
   return uri
 }
 
-export default function NftImage({ image, ...props }: NftImageProps) {
+export default function NftImage({
+  image,
+  containerClassName,
+  ...props
+}: NftImageProps) {
+  const [isLoading, setIsLoading] = useState(false)
   const imageUrl = resolveIpfsUri(image, 'https://ipfs.subsocial.network/ipfs/')
 
+  useLayoutEffect(() => {
+    setIsLoading(true)
+  }, [image])
+
+  if (!image) return null
+
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      {...props}
-      src={imageUrl}
-      alt=''
-      className={cx('h-full w-full object-contain', props.className)}
-    />
+    <div className={cx('relative', containerClassName)}>
+      {isLoading && (
+        <div className='absolute inset-0 h-full w-full animate-pulse rounded-2xl bg-background-lighter' />
+      )}
+      {image && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          alt=''
+          key={image}
+          {...props}
+          src={imageUrl}
+          className={cx(
+            'relative z-10 transition-opacity',
+            isLoading && 'opacity-0',
+            props.className
+          )}
+          onLoad={(e) => {
+            setIsLoading(false)
+            props.onLoad?.(e)
+          }}
+        />
+      )}
+    </div>
   )
 }

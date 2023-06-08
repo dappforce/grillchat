@@ -42,7 +42,6 @@ export default function RepliedMessage({
       >
         <Name
           ownerId={messageSenderAddr || ''}
-          senderColor={senderColor}
           additionalText='Reply to'
           className='font-medium'
         />

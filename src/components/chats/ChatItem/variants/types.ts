@@ -3,7 +3,6 @@ import { ComponentProps, SyntheticEvent } from 'react'
 export type ChatItemContentProps = ComponentProps<'div'> & {
   isMyMessage: boolean
   isSent: boolean
-  senderColor: string
   relativeTime: string
   ownerId: string
   body: string

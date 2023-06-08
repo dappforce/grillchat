@@ -3,7 +3,6 @@ import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
 import Toast from '@/components/Toast'
-import useRandomColor from '@/hooks/useRandomColor'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
@@ -19,6 +18,7 @@ import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import urlJoin from 'url-join'
 import MetadataModal from '../../modals/MetadataModal'
+import ChatItemWithExtension from './ChatItemWithExtension'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
@@ -64,8 +64,7 @@ export default function ChatItem({
   const isSent = !isOptimisticId(messageId)
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
-  const { body, inReplyTo } = message.content || {}
-  const senderColor = useRandomColor(ownerId)
+  const { body, inReplyTo, extensions } = message.content || {}
 
   const sendEvent = useSendEvent()
 
@@ -121,7 +120,7 @@ export default function ChatItem({
   }
   const menus = withCustomMenu && isSent ? getChatMenus() : []
 
-  if (!body) return null
+  if (!body && (!extensions || extensions.length === 0)) return null
 
   const onCheckMarkClick = (e: SyntheticEvent) => {
     e.stopPropagation()
@@ -132,7 +131,7 @@ export default function ChatItem({
     dispatch(checkMarkType)
   }
 
-  const isEmojiOnly = shouldRenderEmojiChatItem(body)
+  const isEmojiOnly = shouldRenderEmojiChatItem(body ?? '')
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
   const relativeTime = getTimeRelativeToNow(createdAtTime)
@@ -163,17 +162,24 @@ export default function ChatItem({
               {...referenceProps}
               id={messageBubbleId}
             >
-              <ChatItemContentVariant
-                body={body}
-                isMyMessage={isMyMessage}
-                isSent={isSent}
-                onCheckMarkClick={onCheckMarkClick}
-                ownerId={ownerId}
-                relativeTime={relativeTime}
-                senderColor={senderColor}
-                inReplyTo={inReplyTo}
-                scrollToMessage={scrollToMessage}
-              />
+              {extensions ? (
+                <ChatItemWithExtension
+                  onCheckMarkClick={onCheckMarkClick}
+                  scrollToMessage={scrollToMessage}
+                  message={message}
+                />
+              ) : (
+                <ChatItemContentVariant
+                  body={body ?? ''}
+                  isMyMessage={isMyMessage}
+                  isSent={isSent}
+                  onCheckMarkClick={onCheckMarkClick}
+                  ownerId={ownerId}
+                  relativeTime={relativeTime}
+                  inReplyTo={inReplyTo}
+                  scrollToMessage={scrollToMessage}
+                />
+              )}
             </div>
           )
         }}

@@ -27,7 +27,6 @@ export default function EmojiChatItem({
   onCheckMarkClick,
   body,
   relativeTime,
-  senderColor,
   ownerId,
   inReplyTo,
   scrollToMessage,
@@ -50,7 +49,7 @@ export default function EmojiChatItem({
     >
       {!isMyMessage && (
         <div className='flex items-center pl-1'>
-          <Name ownerId={ownerId} senderColor={senderColor} />
+          <Name ownerId={ownerId} />
           <span className='text-xs text-text-muted'>{relativeTime}</span>
         </div>
       )}

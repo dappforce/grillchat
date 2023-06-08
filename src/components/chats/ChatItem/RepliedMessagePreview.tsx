@@ -57,12 +57,7 @@ export default function RepliedMessagePreview({
         props.onClick?.(e)
       }}
     >
-      {/* <span style={{ color: replySenderColor }}>{name}</span> */}
-      <Name
-        ownerId={data?.struct.ownerId}
-        senderColor={replySenderColor}
-        className='font-medium'
-      />
+      <Name ownerId={data?.struct.ownerId} className='font-medium' />
       <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
         {showedText}
       </span>
