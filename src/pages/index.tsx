@@ -1,5 +1,5 @@
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
-import HubsPage, { HubsPageProps } from '@/modules/chat/HomePage'
+import HomePage, { HubsPageProps } from '@/modules/chat/HomePage'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
@@ -51,4 +51,4 @@ export const getStaticProps = getCommonStaticProps<
     }
   }
 )
-export default HubsPage
+export default HomePage

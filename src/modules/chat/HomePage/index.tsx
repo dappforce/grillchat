@@ -1,4 +1,4 @@
-import HubsPage from './HomePage'
+import HomePage from './HomePage'
 
 export * from './HomePage'
-export default HubsPage
+export default HomePage
