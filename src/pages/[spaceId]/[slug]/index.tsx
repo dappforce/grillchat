@@ -102,9 +102,14 @@ export const getStaticProps = getCommonStaticProps<
           accountAddresses
         )
       )
-
       prices.forEach((price) => {
-        getPriceQuery.setQueryData(queryClient, price.id, price)
+        console.log(typeof price)
+        if (price) {
+          getPriceQuery.setQueryData(queryClient, price.id, {
+            id: price.id,
+            current_price: price.current_price?.toString() || null,
+          })
+        }
       })
     } catch (err) {
       console.error('Error fetching for chat page: ', err)

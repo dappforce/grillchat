@@ -9,7 +9,7 @@ export const coingeckoTokenIds: Record<string, string> = {
 
 export type Price = {
   id: string
-  current_price: number
+  current_price: string | null
 }
 
 export async function getPrices(tokenIds: string[]) {

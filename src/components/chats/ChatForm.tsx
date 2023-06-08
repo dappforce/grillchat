@@ -143,7 +143,7 @@ export default function ChatForm({
 
     const { newMessageParams, txPrevented } =
       (await beforeMesageSend?.(sendMessageParams)) || {}
-    console.log('Chat form', txPrevented)
+
     if (txPrevented) return
 
     const messageParams = newMessageParams || sendMessageParams

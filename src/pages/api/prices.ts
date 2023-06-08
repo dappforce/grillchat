@@ -49,7 +49,6 @@ export default async function handler(
 
   const prices = await getPricesFromCache(params.data.tokensIds)
 
-  console.log('Price', priceCache, prices)
   return res.status(200).send({ success: true, message: 'OK', data: prices })
 }
 
@@ -70,7 +69,7 @@ export async function getPricesFromCache(tokenIds: string[]) {
   if (needToFetchIds.length > 0) {
     try {
       const res = await axios.get(
-        `${coingeckoUrl}&ids=${needToFetchIds.join('&ids=')}`
+        `${coingeckoUrl}&ids=${needToFetchIds.join(',')}`
       )
       if (res.status !== 200) {
         console.error(
@@ -79,7 +78,7 @@ export async function getPricesFromCache(tokenIds: string[]) {
         )
       }
 
-      res.data.map((priceItem: Price) => {
+      res.data.forEach((priceItem: Price) => {
         priceCache.add(priceItem.id, priceItem)
       })
 
