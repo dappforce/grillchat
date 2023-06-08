@@ -20,12 +20,12 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   const [nftLink, setNftLink] = useState('')
   const [nftLinkError, setNftLinkError] = useState(false)
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [showLoading, setShowLoading] = useState(false)
 
   useEffect(() => {
     setNftLinkError(false)
     setParsedLinkData(null)
-    if (nftLink) setIsLoading(true)
+    if (nftLink) setShowLoading(true)
   }, [nftLink])
 
   const debouncedLink = useDebounce(nftLink, 300)
@@ -45,15 +45,22 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
     }
   }, [debouncedLink])
 
-  const { data } = getNftDataQuery.useQuery(parsedLinkData, {
+  const { data, isLoading } = getNftDataQuery.useQuery(parsedLinkData, {
     onError: () => setNftLinkError(true),
   })
+  useEffect(() => {
+    if (isLoading || !data) return
+    if (!data?.image) {
+      setNftLinkError(true)
+    }
+  }, [isLoading, data])
+
   const { ref, autofocus } = useAutofocus()
   useEffect(() => {
     if (props.isOpen) autofocus()
   }, [props.isOpen, autofocus])
 
-  const isValidNft = !!data?.image && !isLoading
+  const isValidNft = !!data?.image && !showLoading
 
   return (
     <CommonExtensionModal
@@ -95,7 +102,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
                 image={data?.image ?? ''}
                 loadingClassName='rounded-2xl'
                 className='aspect-square w-full rounded-2xl border border-background-primary bg-background object-contain'
-                onLoad={() => setIsLoading(false)}
+                onLoad={() => setShowLoading(false)}
               />
             </div>
           )
