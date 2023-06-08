@@ -3,6 +3,11 @@ import * as types from '@subsocial/api/types'
 import { PostStruct } from '@subsocial/api/types'
 import { PostContent as SubsocialPostContent } from '@subsocial/api/types/dto'
 
+export type Extension = {
+  id: string
+  properties: any
+}
+
 declare module '@subsocial/api/types' {
   export default types
 
@@ -11,6 +16,7 @@ declare module '@subsocial/api/types' {
       kind: 'Post'
       id: string
     }
+    extersions: Extension[]
   }
   export declare type EntityPostData<
     S extends HasId,

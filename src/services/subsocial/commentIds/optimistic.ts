@@ -26,6 +26,7 @@ export function addOptimisticData({
     content: {
       body: params.message,
       inReplyTo: ReplyWrapper(params.replyTo),
+      extersions: params.extensions,
     },
   } as PostData)
   client.setQueryData<string[]>(getCommentIdsQueryKey(params.chatId), (ids) => {

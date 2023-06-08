@@ -57,7 +57,6 @@ export default function RepliedMessagePreview({
         props.onClick?.(e)
       }}
     >
-      {/* <span style={{ color: replySenderColor }}>{name}</span> */}
       <Name
         ownerId={data?.struct.ownerId}
         senderColor={replySenderColor}

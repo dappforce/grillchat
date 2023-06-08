@@ -36,6 +36,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   getAdditionalTxParams?: () => SendMessageParams
   sendButtonText?: string
   sendButtonProps?: ButtonProps
+  customOnSubmit?: (messageParams: SendMessageParams) => void
 }
 
 function processMessage(message: string) {
@@ -53,6 +54,7 @@ export default function ChatForm({
   getAdditionalTxParams,
   sendButtonText,
   sendButtonProps,
+  customOnSubmit,
   ...props
 }: ChatFormProps) {
   const { data: chat } = getPostQuery.useQuery(chatId)
@@ -108,25 +110,10 @@ export default function ChatForm({
     setMessageBody('')
     clearReplyTo?.()
   }
-  const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
-    e?.preventDefault()
-    if (
-      shouldSendMessage &&
-      'virtualKeyboard' in navigator &&
-      typeof (navigator.virtualKeyboard as any).show === 'function'
-    ) {
-      ;(navigator.virtualKeyboard as any).show()
-    }
-
-    const processedMessage = processMessage(messageBody)
-    if (isDisabled) return
-
-    const sendMessageParams = {
-      message: processedMessage,
-      chatId,
-      replyTo,
-      ...getAdditionalTxParams?.(),
-    }
+  const onSendMessage = (
+    captchaToken: string | null,
+    sendMessageParams: SendMessageParams
+  ) => {
     if (shouldSendMessage) {
       resetForm()
       sendMessage(sendMessageParams)
@@ -148,6 +135,31 @@ export default function ChatForm({
 
     onSubmit?.()
     incrementMessageCount()
+  }
+
+  const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
+    e?.preventDefault()
+    if (
+      shouldSendMessage &&
+      'virtualKeyboard' in navigator &&
+      typeof (navigator.virtualKeyboard as any).show === 'function'
+    ) {
+      ;(navigator.virtualKeyboard as any).show()
+    }
+
+    const processedMessage = processMessage(messageBody)
+    if (isDisabled) return
+
+    const sendMessageParams = {
+      message: processedMessage,
+      chatId,
+      replyTo,
+      ...getAdditionalTxParams?.(),
+    }
+
+    customOnSubmit
+      ? customOnSubmit(sendMessageParams)
+      : onSendMessage(captchaToken, sendMessageParams)
   }
 
   return (

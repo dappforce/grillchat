@@ -23,11 +23,14 @@ export const useTransfer = (token: string) => {
       await connectAsync({ connector: connectors[0] })
     }
     try {
-      await writeAsync({
+      const { hash } = await writeAsync({
         args: [recipient, parseEther(`${parseFloat(amount)}`)],
       })
+
+      return hash
     } catch (e) {
       console.error(e)
+      return
     }
   }
 

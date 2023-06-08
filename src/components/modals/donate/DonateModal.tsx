@@ -6,8 +6,16 @@ import Input from '@/components/inputs/Input'
 import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
+import {
+  OptimisticMessageIdData,
+  SendMessageParams,
+} from '@/services/subsocial/commentIds'
+import { addOptimisticData } from '@/services/subsocial/commentIds/optimistic'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { generateOptimisticId } from '@/services/subsocial/utils'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { useQueryClient } from '@tanstack/react-query'
 import { formatUnits } from 'ethers'
 import { ChangeEventHandler, useState } from 'react'
 import { ModalFunctionalityProps } from '../Modal'
@@ -114,25 +122,64 @@ const AmountInput = ({
 
 type DonateModalProps = ModalFunctionalityProps & {
   recipient: string
+  messageId: string
 }
 
-export default function DonateModal({ recipient, ...props }: DonateModalProps) {
+export default function DonateModal({
+  recipient,
+  messageId,
+  ...props
+}: DonateModalProps) {
   const theme = useGetTheme()
   const isDarkTheme = theme === 'dark'
   const [selectedChain, setSelectedChain] = useState<ListItem>(chainItems[0])
   const [selectedToken, setSelectedToken] = useState<ListItem>(tokensItems[0])
   const [amount, setAmount] = useState<string>('0')
+  const address = useMyAccount((state) => state.address)
+  const client = useQueryClient()
 
-  const { data } = getAccountDataQuery.useQuery(recipient)
+  const { data: recipientAccountData } = getAccountDataQuery.useQuery(recipient)
+  const { data: myAccountData } = getAccountDataQuery.useQuery(address)
 
-  const { evmAddress: evmRecipientAddress } = data || {}
+  const { evmAddress: evmRecipientAddress } = recipientAccountData || {}
+  const { evmAddress: myEvmAddress } = myAccountData || {}
 
   const { sendTransferTx } = useTransfer(selectedToken.id)
 
-  const onButtonClick = async () => {
-    if (!evmRecipientAddress || !amount) return
+  const onButtonClick = async (messageParams: SendMessageParams) => {
+    if (!evmRecipientAddress || !myEvmAddress || !amount) return
 
-    await sendTransferTx(evmRecipientAddress, amount.replace(',', '.'))
+    const hash = await sendTransferTx(
+      evmRecipientAddress,
+      amount.replace(',', '.')
+    )
+
+    if (hash && address) {
+      const params: SendMessageParams = {
+        ...messageParams,
+        extensions: [
+          {
+            id: 'subsocial-donations',
+            properties: {
+              chain: selectedChain.id,
+              from: myEvmAddress,
+              to: recipient,
+              token: selectedToken.label,
+              amount: amount,
+              txHash: hash,
+            },
+          },
+        ],
+      }
+      const tempId = generateOptimisticId<OptimisticMessageIdData>({
+        address,
+        message: params.message,
+      })
+
+      addOptimisticData({ address, params, tempId, client })
+
+      props.closeModal()
+    }
   }
 
   return (
@@ -140,10 +187,12 @@ export default function DonateModal({ recipient, ...props }: DonateModalProps) {
       {...props}
       formProps={{
         chatId: '3056',
+        replyTo: messageId,
         sendButtonProps: {
           disabled: false,
         },
         sendButtonText: 'Send',
+        customOnSubmit: onButtonClick,
       }}
       title='💰 Donate'
       withCloseButton

@@ -3,6 +3,7 @@ import AddressAvatar from '@/components/AddressAvatar'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
+import DonateMessagePreview from '@/components/modals/donate/DonateMessagePreview'
 import DonateModal from '@/components/modals/donate/DonateModal'
 import Toast from '@/components/Toast'
 import useRandomColor from '@/hooks/useRandomColor'
@@ -28,6 +29,10 @@ import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
 } from './variants/EmojiChatItem'
+
+const extencionsVariants: Record<string, (props: any) => JSX.Element> = {
+  'subsocial-donations': DonateMessagePreview,
+}
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   message: PostData
@@ -66,7 +71,7 @@ export default function ChatItem({
   const isSent = !isOptimisticId(messageId)
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
-  const { body, inReplyTo } = message.content || {}
+  const { body, inReplyTo, extersions } = message.content || {}
   const senderColor = useRandomColor(ownerId)
   const [openDonateModal, setOpenDonateModal] = useState(false)
 
@@ -143,7 +148,11 @@ export default function ChatItem({
   }
 
   const isEmojiOnly = shouldRenderEmojiChatItem(body)
-  const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
+  const DefaultContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
+
+  const ChatItemContentVariant = extersions
+    ? extencionsVariants[extersions[0].id]
+    : DefaultContentVariant
 
   const relativeTime = getTimeRelativeToNow(createdAtTime)
 
@@ -182,6 +191,7 @@ export default function ChatItem({
                 relativeTime={relativeTime}
                 senderColor={senderColor}
                 inReplyTo={inReplyTo}
+                extensions={extersions}
                 scrollToMessage={scrollToMessage}
               />
             </div>
@@ -204,6 +214,7 @@ export default function ChatItem({
         isOpen={openDonateModal}
         closeModal={() => setOpenDonateModal(false)}
         recipient={ownerId}
+        messageId={messageId}
       />
     </div>
   )
