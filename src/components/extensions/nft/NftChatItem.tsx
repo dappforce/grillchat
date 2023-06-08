@@ -23,13 +23,13 @@ export default function NftChatItem(props: Props) {
       {({ isMyMessage }) => (
         <div className='not:first:mt-1 flex flex-col'>
           <div className='relative flex w-full items-center justify-center'>
-            <span className='absolute right-2 top-2 rounded-full bg-text-dark/50 px-2 py-0.5 text-xs text-text-muted'>
-              NFT
-            </span>
             <NftImage
               className='max-h-[340px] w-full min-w-[230px] rounded-[4px] object-contain'
               image={nftData?.image ?? ''}
             />
+            <span className='absolute right-2 top-2 rounded-full bg-text-dark/50 px-2 py-0.5 text-xs text-text-muted'>
+              NFT
+            </span>
           </div>
           <div className='mt-1.5 flex flex-col gap-1 px-2.5'>
             <div className='flex items-center justify-between gap-2'>
