@@ -5,14 +5,14 @@ import Tabs, { TabsProps } from '@/components/Tabs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useSearch from '@/hooks/useSearch'
 import { getMainSpaceId } from '@/utils/env/client'
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
 
-const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
-  ssr: false,
-})
+// const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
+//   ssr: false,
+// })
 
 export type HubsPageProps = {
   isIntegrateChatButtonOnTop: boolean
@@ -115,7 +115,7 @@ export default function HubsPage(props: HubsPageProps) {
         defaultTab={1}
         hideBeforeHashLoaded
       />
-      {!isInIframe && <WelcomeModal />}
+      {/* {!isInIframe && <WelcomeModal />} */}
     </DefaultLayout>
   )
 }
