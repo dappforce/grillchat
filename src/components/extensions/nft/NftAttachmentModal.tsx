@@ -18,12 +18,12 @@ export type NftAttachmentModalProps = ModalFunctionalityProps & {
 export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   const { chatId, ...otherProps } = props
   const [nftLink, setNftLink] = useState('')
-  const [nftLinkError, setNftLinkError] = useState(false)
+  const [nftLinkError, setNftLinkError] = useState('')
 
   const [showLoading, setShowLoading] = useState(false)
 
   useEffect(() => {
-    setNftLinkError(false)
+    setNftLinkError('')
     setParsedLinkData(null)
     if (nftLink) setShowLoading(true)
   }, [nftLink])
@@ -41,17 +41,17 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
       setParsedLinkData(data)
     } catch (err) {
       console.log('Error parsing nft link', err)
-      setNftLinkError(true)
+      setNftLinkError('😥 Sorry, we cannot parse this URL.')
     }
   }, [debouncedLink])
 
   const { data, isLoading } = getNftDataQuery.useQuery(parsedLinkData, {
-    onError: () => setNftLinkError(true),
+    onError: () => setNftLinkError('😥 Sorry, we cannot get this NFT data'),
   })
   useEffect(() => {
     if (isLoading || !data) return
     if (!data?.image) {
-      setNftLinkError(true)
+      setNftLinkError('😥 Sorry, we cannot get this NFT data')
     }
   }, [isLoading, data])
 
@@ -86,7 +86,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
         />
         {nftLinkError ? (
           <div className='rounded-2xl bg-background-red px-4 py-3 text-text-red'>
-            <p>😥 Sorry, error, cannot parse your NFT URL.</p>
+            <p>{nftLinkError}</p>
           </div>
         ) : (
           nftLink && (
