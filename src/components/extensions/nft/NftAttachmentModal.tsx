@@ -45,14 +45,15 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
     }
   }, [debouncedLink])
 
-  const { data } = getNftDataQuery.useQuery(parsedLinkData)
+  const { data } = getNftDataQuery.useQuery(parsedLinkData, {
+    onError: () => setNftLinkError(true),
+  })
   const { ref, autofocus } = useAutofocus()
   useEffect(() => {
     if (props.isOpen) autofocus()
   }, [props.isOpen, autofocus])
 
   const isValidNft = !!data?.image && !isLoading
-  console.log(isValidNft, data?.image, isLoading)
 
   return (
     <CommonExtensionModal
