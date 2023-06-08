@@ -8,16 +8,15 @@ import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { accountAddressStorage, useMyAccount } from '@/stores/my-account'
 import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
 
-const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
-  ssr: false,
-})
+// const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
+//   ssr: false,
+// })
 
 export type HubsPageProps = {
   isIntegrateChatButtonOnTop: boolean
@@ -32,7 +31,7 @@ const hotChatsHubId = getMainHubId()
 const addressFromStorage = accountAddressStorage.get()
 
 export default function HubsPage(props: HubsPageProps) {
-  const isInIframe = useIsInIframe()
+  // const isInIframe = useIsInIframe()
   const router = useRouter()
   const { search, setSearch, getSearchResults, focusController } = useSearch()
 
@@ -162,7 +161,7 @@ export default function HubsPage(props: HubsPageProps) {
           setSelectedTab: usedSetSelectedTab,
         }}
       />
-      {!isInIframe && <WelcomeModal />}
+      {/* {!isInIframe && <WelcomeModal />} */}
     </DefaultLayout>
   )
 }
