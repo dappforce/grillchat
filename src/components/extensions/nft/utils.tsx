@@ -36,7 +36,8 @@ export function parseNftMarketplaceLink(link: string): NftProperties {
     throw new Error('NFT marketplace not found')
   }
 
-  const parsed = marketplace.parser(link)
+  const removedQueryParams = link.split('?')[0]
+  const parsed = marketplace.parser(removedQueryParams)
   let mappedChain = ''
   Object.entries(marketplace.chainMapper).forEach(
     ([chain, chainFromMarketplace]) => {
