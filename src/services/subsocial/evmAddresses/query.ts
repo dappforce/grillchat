@@ -1,16 +1,29 @@
-import { SubsocialQueryData, createSubsocialQuery } from '@/subsocial-query/subsocial/query'
+import { AccountData } from '@/pages/api/accounts-data'
+import { createQuery, poolQuery } from '@/subsocial-query'
 
-const getLinkedEvmAddress = async (params: SubsocialQueryData<string>): Promise<string> => {
-  const { api: subsocialApi, data } = params
+import axios from 'axios'
 
-  const api = await subsocialApi.blockchain.api
+export async function getAccountsData(addresses: string[]) {
+  const requestedIds = addresses.filter((id) => !!id)
+  if (requestedIds.length === 0) return []
+  const res = await axios.get(
+    '/api/accounts-data?' + requestedIds.map((n) => `addresses=${n}`).join('&')
+  )
 
-  const linkedAddresses = await api.query.evmAccounts.evmAddressByAccount(data)
-
-  return linkedAddresses?.toString()
+  return res.data.data as AccountData[]
 }
 
-export const getLinkedEvmAddressQuery = createSubsocialQuery({
-  key: 'getLinkedEvmAddress',
-  fetcher: getLinkedEvmAddress,
+const getAccountData = poolQuery<string, AccountData>({
+  multiCall: async (addresses) => {
+    if (addresses.length === 0) return []
+    return getAccountsData(addresses)
+  },
+  resultMapper: {
+    paramToKey: (address) => address,
+    resultToKey: (result) => result?.grillAddress ?? '',
+  },
+})
+export const getAccountDataQuery = createQuery({
+  key: 'getAccountData',
+  fetcher: getAccountData,
 })

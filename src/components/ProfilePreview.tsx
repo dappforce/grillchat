@@ -3,9 +3,9 @@ import GrillIcon from '@/assets/icons/grill.svg'
 import useRandomColor from '@/hooks/useRandomColor'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
-import { generateRandomName } from '@/utils/random-name'
 import AddressAvatar from './AddressAvatar'
 import { CopyTextInline } from './CopyText'
+import Name from './Name'
 
 type ProfilePreviewProps = {
   address: string
@@ -24,9 +24,11 @@ const ProfilePreview = ({
     <div className={cx('flex items-center gap-4', className)}>
       <AddressAvatar address={address} className='h-20 w-20' />
       <div className='flex flex-col gap-3'>
-        <span className='text-lg leading-none' style={{ color: senderColor }}>
-          {generateRandomName(address)}
-        </span>
+        <Name
+          ownerId={address}
+          className='text-lg leading-none'
+          senderColor={senderColor}
+        />
         <div className='flex flex-col gap-1'>
           <div className='flex flex-row items-center gap-2'>
             <GrillIcon />

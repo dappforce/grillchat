@@ -1,9 +1,11 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import { getLinkedEvmAddressQuery } from '@/services/subsocial/evmAddresses'
+import { AccountData } from '@/pages/api/accounts-data'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { useQueryClient } from '@tanstack/react-query'
+import axios from 'axios'
 import { useState } from 'react'
 import { useDisconnect } from 'wagmi'
 
@@ -28,7 +30,7 @@ export function useLinkEvmAddress({
   const address = useMyAccount((state) => state.address ?? '')
   const signer = useMyAccount((state) => state.signer)
   const client = useQueryClient()
-  const [ onCallbackLoading, setOnCallbackLoading ] = useState(false)
+  const [onCallbackLoading, setOnCallbackLoading] = useState(false)
 
   const waitHasBalance = useWaitHasEnergy()
 
@@ -62,7 +64,9 @@ export function useLinkEvmAddress({
         getContext: () => '',
         onStart: () => setOnCallbackLoading(true),
         onSuccess: async ({ address }) => {
-          await getLinkedEvmAddressQuery.fetchQuery(client, address)
+          await mutateAccountsDataCache(address)
+          await getAccountDataQuery.fetchQuery(client, address)
+
           setOnCallbackLoading(false)
           setModalStep?.()
         },
@@ -76,7 +80,7 @@ export function useLinkEvmAddress({
 
   return {
     ...mutation,
-    onCallbackLoading
+    onCallbackLoading,
   }
 }
 
@@ -93,11 +97,11 @@ export function useUnlinkEvmAddress(
   const signer = useMyAccount((state) => state.signer)
   const client = useQueryClient()
   const { disconnect } = useDisconnect()
-  const [ onCallbackLoading, setOnCallbackLoading ] = useState(false)
+  const [onCallbackLoading, setOnCallbackLoading] = useState(false)
 
   const waitHasBalance = useWaitHasEnergy()
 
-  const mutation =  useSubsocialMutation<UnlinkEvmAddress, string>(
+  const mutation = useSubsocialMutation<UnlinkEvmAddress, string>(
     async () => ({ address, signer }),
     async (params, { substrateApi }) => {
       await waitHasBalance()
@@ -115,7 +119,9 @@ export function useUnlinkEvmAddress(
         getContext: () => '',
         onStart: () => setOnCallbackLoading(true),
         onSuccess: async ({ address }) => {
-          await getLinkedEvmAddressQuery.fetchQuery(client, address)
+          await mutateAccountsDataCache(address)
+          await getAccountDataQuery.fetchQuery(client, address)
+
           setOnCallbackLoading(false)
           disconnect()
           setModalStep?.()
@@ -130,6 +136,12 @@ export function useUnlinkEvmAddress(
 
   return {
     ...mutation,
-    onCallbackLoading
+    onCallbackLoading,
   }
+}
+
+async function mutateAccountsDataCache(address: string) {
+  const res = await axios.post('/api/accounts-data?' + `addresses=${address}`)
+
+  return res.data.data as AccountData[]
 }

@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
+import Name from '@/components/Name'
 import { cx } from '@/utils/class-names'
-import { generateRandomName } from '@/utils/random-name'
 import Linkify from 'linkify-react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import RepliedMessagePreview from '../RepliedMessagePreview'
@@ -21,13 +21,11 @@ export default function DefaultChatItem({
   scrollToMessage,
   ...props
 }: DefaultChatItemProps) {
-  const name = generateRandomName(ownerId)
-
   return (
     <div className={cx('flex flex-col', props.className)}>
       <div
         className={cx(
-          'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl py-1.5 px-2.5',
+          'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl px-2.5 py-1.5',
           isMyMessage
             ? 'bg-background-primary-light text-text dark:bg-background-primary dark:text-text-on-primary'
             : 'bg-background-light'
@@ -35,12 +33,7 @@ export default function DefaultChatItem({
       >
         {!isMyMessage && (
           <div className='flex items-center'>
-            <span
-              className='mr-2 text-sm text-text-secondary'
-              style={{ color: senderColor }}
-            >
-              {name}
-            </span>
+            <Name ownerId={ownerId} senderColor={senderColor} />
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}
