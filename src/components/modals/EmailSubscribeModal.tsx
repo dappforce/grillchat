@@ -1,5 +1,5 @@
-import { useConfigContext } from '@/contexts/ConfigContext'
 import useToastError from '@/hooks/useToastError'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { useSubscribeWithEmail } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'

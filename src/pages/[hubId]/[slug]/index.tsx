@@ -1,11 +1,13 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getHubIdFromAlias } from '@/constants/hubs'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
+import { getAccountsDataFromCache } from '@/pages/api/accounts-data'
 import { getPostsFromCache } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -40,7 +42,14 @@ async function getChatsData(chatId: string) {
   const prefetchedMessageIds = messageIds.slice(startSlice, endSlice)
   const messages = await getPostsFromCache(prefetchedMessageIds)
 
-  return { messages, chatData, messageIds }
+  const owners = messages.map((message) => message.struct.ownerId)
+
+  const ownersSet = new Set(owners)
+  const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)
+
+  const accountsAddresses = await getAccountsDataFromCache(chatPageOwnerIds)
+
+  return { messages, chatData, messageIds, accountsAddresses }
 }
 
 export const getStaticProps = getCommonStaticProps<
@@ -62,10 +71,11 @@ export const getStaticProps = getCommonStaticProps<
     let title: string | null = null
     let desc: string | null = null
     try {
-      const [{ messageIds, messages, chatData }] = await Promise.all([
-        getChatsData(chatId),
-        prefetchBlockedEntities(queryClient, hubId, [chatId]),
-      ] as const)
+      const [{ messageIds, messages, chatData, accountsAddresses }] =
+        await Promise.all([
+          getChatsData(chatId),
+          prefetchBlockedEntities(queryClient, hubId, [chatId]),
+        ] as const)
 
       title = chatData?.content?.title || null
       desc = chatData?.content?.body || null
@@ -75,9 +85,18 @@ export const getStaticProps = getCommonStaticProps<
         getCommentIdsQueryKey(chatId),
         messageIds ?? null
       )
+
       messages.forEach((post) => {
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
+
+      accountsAddresses.map((accountAddresses) =>
+        getAccountDataQuery.setQueryData(
+          queryClient,
+          accountAddresses.evmAddress,
+          accountAddresses
+        )
+      )
     } catch (err) {
       console.error('Error fetching for chat page: ', err)
     }

@@ -51,6 +51,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'metadata.ens.domains',
+        port: '',
+      },
     ],
   },
 }

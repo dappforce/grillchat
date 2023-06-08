@@ -9,6 +9,7 @@ import { IconType } from 'react-icons'
 type Action = {
   text: string
   icon: IconType
+  iconClassName?: string
   className?: string
   iconClassName?: string
   onClick: ButtonProps['onClick']
@@ -58,11 +59,11 @@ export default function AboutModal({
             {actionMenu.map(
               ({
                 icon: Icon,
+                iconClassName,
                 text,
                 className,
                 onClick,
                 disabled,
-                iconClassName,
               }) => (
                 <Button
                   disabled={disabled}
