@@ -11,6 +11,7 @@ export type CommonExtensionModalProps = ModalProps &
     | 'autofocus'
     | 'onSubmit'
     | 'mustHaveMessageBody'
+    | 'replyTo'
   > & {
     disableSendButton?: boolean
   }
@@ -22,6 +23,7 @@ export default function CommonExtensionModal({
   mustHaveMessageBody = false,
   autofocus,
   buildAdditionalTxParams,
+  replyTo,
   onSubmit,
   ...props
 }: CommonExtensionModalProps) {
@@ -45,6 +47,7 @@ export default function CommonExtensionModal({
         chatId={chatId}
         mustHaveMessageBody={mustHaveMessageBody}
         className={cx(isUsingBigButton && 'pb-5 md:pb-6')}
+        replyTo={replyTo}
         inputProps={{
           className: cx(
             'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20 !ring-0',
