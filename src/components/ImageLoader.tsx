@@ -2,7 +2,7 @@ import { cx } from '@/utils/class-names'
 import Image, { ImageProps } from 'next/image'
 import { useLayoutEffect, useState } from 'react'
 
-export type NftImageProps = Omit<ImageProps, 'src' | 'alt'> & {
+export type ImageLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   alt?: string
   image?: ImageProps['src']
   containerClassName?: string
@@ -20,13 +20,13 @@ function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
   return uri
 }
 
-export default function NftImage({
+export default function ImageLoader({
   image,
   containerClassName,
   loadingClassName,
   placeholderClassName,
   ...props
-}: NftImageProps) {
+}: ImageLoaderProps) {
   const [isLoading, setIsLoading] = useState(false)
   let usedImage = image
   if (typeof image === 'string') {
@@ -50,9 +50,9 @@ export default function NftImage({
       {image ? (
         <Image
           key={usedImage?.toString() ?? ''}
-          {...props}
           width={500}
           height={500}
+          {...props}
           alt={props.alt || ''}
           src={usedImage ?? ''}
           className={cx(

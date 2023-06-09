@@ -1,4 +1,4 @@
-import NftImage from '@/components/extensions/nft/NftImage'
+import ImageLoader from '@/components/ImageLoader'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
@@ -73,7 +73,7 @@ export default function RepliedMessagePreview({
       }}
     >
       {hasNftExtension && (
-        <NftImage
+        <ImageLoader
           containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
           className={cx('aspect-square w-10')}
           placeholderClassName={cx('w-10 aspect-square')}

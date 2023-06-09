@@ -1,7 +1,7 @@
 import { cx } from '@/utils/class-names'
 import Image, { ImageProps } from 'next/image'
 import { useState } from 'react'
-import NftImage from './extensions/nft/NftImage'
+import ImageLoader from './ImageLoader'
 import Modal from './modals/Modal'
 
 export type ClickableImageProps = Omit<ImageProps, 'onClick'> & {
@@ -33,7 +33,7 @@ export default function ClickableImage({
         contentClassName='p-0'
         size='screen-md'
       >
-        <NftImage
+        <ImageLoader
           {...props}
           image={props.src ?? ''}
           className='max-h-[95vh] w-full max-w-screen-md object-contain'

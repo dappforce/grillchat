@@ -1,4 +1,4 @@
-import NftImage from '@/components/extensions/nft/NftImage'
+import ImageLoader from '@/components/ImageLoader'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { getNftDataQuery } from '@/services/moralis/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
@@ -53,7 +53,7 @@ export default function ChatLastMessage({
         )}
       >
         {hasNftExtension && (
-          <NftImage
+          <ImageLoader
             containerClassName={cx('rounded-sm overflow-hidden flex-shrink-0')}
             className={cx('aspect-square w-4')}
             placeholderClassName={cx('w-10 aspect-square')}

@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import { ChatFormProps } from '@/components/chats/ChatForm'
+import ImageLoader from '@/components/ImageLoader'
 import Input, { InputProps } from '@/components/inputs/Input'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useAutofocus from '@/hooks/useAutofocus'
@@ -9,7 +10,6 @@ import { NftProperties } from '@subsocial/api/types'
 import { useEffect, useState } from 'react'
 import { HiTrash } from 'react-icons/hi2'
 import CommonExtensionModal from '../CommonExtensionModal'
-import NftImage from './NftImage'
 import { parseNftMarketplaceLink } from './utils'
 
 export type NftAttachmentModalProps = ModalFunctionalityProps &
@@ -93,7 +93,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
               >
                 <HiTrash />
               </Button>
-              <NftImage
+              <ImageLoader
                 image={data?.image ?? ''}
                 loadingClassName='rounded-2xl'
                 className='aspect-square w-full rounded-2xl bg-background object-contain'

@@ -1,11 +1,11 @@
 import Button from '@/components/Button'
 import ClickableImage from '@/components/ClickableImage'
+import ImageLoader from '@/components/ImageLoader'
 import LinkText from '@/components/LinkText'
 import { getNftDataQuery } from '@/services/moralis/query'
 import { cx } from '@/utils/class-names'
 import truncate from 'lodash.truncate'
 import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
-import NftImage from './NftImage'
 
 type Props = ExtensionChatItemProps
 
@@ -32,7 +32,7 @@ export default function NftChatItem(props: Props) {
               src={nftData?.image ?? ''}
               alt=''
               trigger={(onClick) => (
-                <NftImage
+                <ImageLoader
                   containerClassName='rounded-[4px] overflow-hidden w-full cursor-pointer'
                   placeholderClassName={cx('w-[320px] aspect-square')}
                   className='w-[320px] object-contain'
