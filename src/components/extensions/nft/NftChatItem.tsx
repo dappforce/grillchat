@@ -2,7 +2,7 @@ import Button from '@/components/Button'
 import ClickableImage from '@/components/ClickableImage'
 import ImageLoader from '@/components/ImageLoader'
 import LinkText from '@/components/LinkText'
-import { getNftDataQuery } from '@/services/moralis/query'
+import { getNftDataQuery, getNftPriceQuery } from '@/services/external/query'
 import { cx } from '@/utils/class-names'
 import truncate from 'lodash.truncate'
 import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
@@ -16,6 +16,7 @@ export default function NftChatItem(props: Props) {
 
   const nftProperties = extensions?.[0]?.properties
   const { data: nftData } = getNftDataQuery.useQuery(nftProperties ?? null)
+  const { data: nftPrice } = getNftPriceQuery.useQuery(nftProperties ?? null)
 
   return (
     <CommonChatItem
@@ -64,7 +65,7 @@ export default function NftChatItem(props: Props) {
               )}
             >
               <span>{nftData?.collectionName}</span>
-              <span>{nftData?.price}</span>
+              <span>{nftPrice}</span>
             </div>
             <Button
               className='my-2 mb-3'

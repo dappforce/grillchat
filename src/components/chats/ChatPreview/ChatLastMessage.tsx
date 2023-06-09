@@ -1,6 +1,6 @@
 import ImageLoader from '@/components/ImageLoader'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
-import { getNftDataQuery } from '@/services/moralis/query'
+import { getNftDataQuery } from '@/services/external/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
