@@ -8,5 +8,5 @@ export type SendMessageParams = {
 }
 export type OptimisticMessageIdData = {
   address: string
-  message: string
+  message?: string
 }
