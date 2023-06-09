@@ -5,7 +5,6 @@ import FloatingMenus from '@/components/floating/FloatingMenus'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import { ImAttachment } from 'react-icons/im'
-import { IoImageOutline } from 'react-icons/io5'
 import { ChatFormProps } from '../ChatForm'
 
 export type AttachmentInputProps = ButtonProps & Pick<ChatFormProps, 'chatId'>
@@ -27,7 +26,7 @@ export default function AttachmentInput({
             text: 'NFT',
             onClick: () => setOpenAttachmentModalId('nft'),
           },
-          { icon: IoImageOutline, text: 'Image' },
+          // { icon: IoImageOutline, text: 'Image' },
         ]}
         allowedPlacements={['top-start']}
         yOffset={20}
