@@ -1,4 +1,4 @@
-import { getAliasFromSpaceId } from '@/constants/chat-room'
+import { getAliasFromHubId } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useSendEvent } from '@/stores/analytics'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -49,7 +49,7 @@ function ChatPreviewContainer({
   const content = chat?.content
 
   const hubId = chat.struct.spaceId
-  const aliasOrHub = getAliasFromSpaceId(hubId ?? '') || hubId
+  const aliasOrHub = getAliasFromHubId(hubId ?? '') || hubId
   const linkTo = getChatPageLink(
     router,
     createSlug(chat.id, { title: content?.title }),

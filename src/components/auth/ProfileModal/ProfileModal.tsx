@@ -105,7 +105,7 @@ export default function ProfileModal({
       {...props}
       title={title}
       description={desc}
-      contentClassName={cx(isAccountState && 'px-0 pb-0')}
+      contentClassName={cx(isAccountState && '!px-0 !pb-0')}
       titleClassName={cx(isAccountState && 'px-6')}
       withFooter={isAccountState}
       withCloseButton

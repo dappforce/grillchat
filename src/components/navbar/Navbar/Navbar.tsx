@@ -7,7 +7,7 @@ import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getHomePageLink } from '@/utils/links'
+import { getHubPageLink } from '@/utils/links'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -98,7 +98,7 @@ export default function Navbar({
   )
 
   const logoLink = (
-    <Link href={getHomePageLink(router)} aria-label='Back to home'>
+    <Link href={getHubPageLink(router)} aria-label='Back'>
       <Logo className='text-2xl' />
     </Link>
   )

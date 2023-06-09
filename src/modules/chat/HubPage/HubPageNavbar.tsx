@@ -6,35 +6,35 @@ import NavbarWithSearch, {
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
 import { cx, getCommonClassNames } from '@/utils/class-names'
-import { getSpaceIds } from '@/utils/env/client'
+import { getHubIds } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import Image from 'next/image'
 import { useState } from 'react'
 
-export type HomePageNavbarProps = {
+export type HubPageNavbarProps = {
   logo: JSX.Element
   auth: JSX.Element
   backButton: JSX.Element
   colorModeToggler: JSX.Element
   searchProps: NavbarWithSearchProps['searchProps']
-  spaceId: string
+  hubId: string
   chatsCount: number
 }
 
-export default function HomePageNavbar({
+export default function HubPageNavbar({
   auth,
   colorModeToggler,
   backButton,
   logo,
-  spaceId,
+  hubId,
   searchProps,
   chatsCount,
-}: HomePageNavbarProps) {
+}: HubPageNavbarProps) {
   const [isOpenAboutModal, setIsOpenAboutModal] = useState(false)
 
   const isInIframe = useIsInIframe()
-  const { data: space } = getSpaceBySpaceIdQuery.useQuery(spaceId)
-  const isInHub = getSpaceIds().includes(spaceId)
+  const { data: space } = getSpaceBySpaceIdQuery.useQuery(hubId)
+  const isInHub = getHubIds().includes(hubId)
 
   const content = space?.content
 
@@ -92,7 +92,7 @@ export default function HomePageNavbar({
       <AboutHubModal
         isOpen={isOpenAboutModal}
         closeModal={() => setIsOpenAboutModal(false)}
-        hubId={spaceId}
+        hubId={hubId}
         chatCount={chatsCount}
       />
     </>

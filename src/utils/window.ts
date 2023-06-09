@@ -41,5 +41,9 @@ export function getIsInIframe() {
 }
 
 export function replaceUrl(url: string) {
-  window.history.replaceState({}, '', url)
+  window.history.replaceState(
+    { ...window.history.state, url, as: url },
+    '',
+    url
+  )
 }
