@@ -1,6 +1,7 @@
 import { cx } from '@/utils/class-names'
 import Image, { ImageProps } from 'next/image'
 import { useLayoutEffect, useState } from 'react'
+import Spinner from './Spinner'
 
 export type ImageLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   alt?: string
@@ -29,7 +30,7 @@ export default function ImageLoader({
   withSpinner,
   ...props
 }: ImageLoaderProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  let [isLoading, setIsLoading] = useState(false)
   let usedImage = image
   if (typeof image === 'string') {
     usedImage = resolveIpfsUri(image, 'https://ipfs.subsocial.network/ipfs/')
@@ -38,6 +39,8 @@ export default function ImageLoader({
   useLayoutEffect(() => {
     setIsLoading(true)
   }, [image])
+
+  isLoading = true
 
   return (
     <div className={cx('relative', containerClassName)}>
@@ -50,7 +53,7 @@ export default function ImageLoader({
         >
           {withSpinner && (
             <div className='absolute inset-0 flex items-center justify-center'>
-              <div className='h-10 w-10 animate-spin rounded-full border-4 border-background-primary' />
+              <Spinner className='h-8 w-8 text-text-primary' />
             </div>
           )}
         </div>
