@@ -5,6 +5,7 @@ export const coingeckoTokenIds: Record<string, string> = {
   eth: 'ethereum',
   matic: 'matic-network',
   usdc: 'usd-coin',
+  usdt: 'tether',
 }
 
 export type Price = {
