@@ -38,7 +38,7 @@ export const getStaticProps = getCommonStaticProps<
         getSpaceBySpaceIdQuery.setQueryData(queryClient, hub.id, hub)
       })
     } catch (err) {
-      console.error('Error fetching for hubs page: ', err)
+      console.error('Error fetching for home page: ', err)
     }
 
     return {
