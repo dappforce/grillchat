@@ -13,10 +13,10 @@ import NftImage from './NftImage'
 import { parseNftMarketplaceLink } from './utils'
 
 export type NftAttachmentModalProps = ModalFunctionalityProps &
-  Pick<ChatFormProps, 'replyTo' | 'chatId'>
+  Pick<ChatFormProps, 'chatId'>
 
 export default function NftAttachmentModal(props: NftAttachmentModalProps) {
-  const { chatId, replyTo, ...otherProps } = props
+  const { chatId, ...otherProps } = props
   const [nftLink, setNftLink] = useState('')
   const [nftLinkError, setNftLinkError] = useState('')
 
@@ -66,7 +66,6 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
       title='🖼 Attach An NFT'
       description="Paste the URL of an NFT's page on any popular marketplace such as Opensea, Rarible, etc."
       onSubmit={() => setNftLink('')}
-      replyTo={replyTo}
       buildAdditionalTxParams={() => {
         if (!parsedLinkData) return {}
         return {

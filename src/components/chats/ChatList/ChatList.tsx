@@ -42,7 +42,6 @@ export type ChatListProps = ComponentProps<'div'> & {
   chatId: string
   scrollContainerRef?: React.RefObject<HTMLDivElement>
   replyTo?: string
-  onSelectMessageAsReply?: (chatId: string) => void
   newMessageNoticeClassName?: string
 }
 
@@ -62,7 +61,6 @@ function ChatListContent({
   chatId,
   scrollContainerRef: _scrollContainerRef,
   replyTo,
-  onSelectMessageAsReply,
   newMessageNoticeClassName,
   ...props
 }: ChatListProps) {
@@ -206,7 +204,6 @@ function ChatListContent({
                 <ChatItemContainer
                   hubId={hubId}
                   chatId={chatId}
-                  onSelectMessageAsReply={onSelectMessageAsReply}
                   message={message}
                   key={message.id}
                   messageBubbleId={getMessageElementId(message.id)}

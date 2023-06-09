@@ -5,6 +5,7 @@ import FloatingMenus, {
 import Toast from '@/components/Toast'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
+import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
@@ -29,7 +30,6 @@ import EmojiChatItem, {
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   message: PostData
-  onSelectMessageAsReply?: (chatId: string) => void
   isMyMessage: boolean
   messageBubbleId?: string
   scrollToMessage?: (chatId: string) => Promise<void>
@@ -52,13 +52,14 @@ const checkMarkModalReducer = (
 
 export default function ChatItem({
   message,
-  onSelectMessageAsReply,
   isMyMessage,
   scrollToMessage,
   messageBubbleId,
   withCustomMenu = true,
   ...props
 }: ChatItemProps) {
+  const setReplyTo = useMessageData((state) => state.setReplyTo)
+
   const router = useRouter()
   const messageId = message.id
   const isSent = !isOptimisticId(messageId)
@@ -75,18 +76,16 @@ export default function ChatItem({
 
   const setMessageAsReply = (messageId: string) => {
     if (isOptimisticId(messageId)) return
-    onSelectMessageAsReply?.(messageId)
+    setReplyTo(messageId)
   }
 
   const getChatMenus = (): FloatingMenusProps['menus'] => {
-    const replyMenu: FloatingMenusProps['menus'][number] = {
-      text: 'Reply',
-      icon: BsFillReplyFill,
-      onClick: () => setMessageAsReply(messageId),
-    }
-
     return [
-      ...(onSelectMessageAsReply ? [replyMenu] : []),
+      {
+        text: 'Reply',
+        icon: BsFillReplyFill,
+        onClick: () => setMessageAsReply(messageId),
+      },
       {
         text: 'Copy Text',
         icon: MdContentCopy,

@@ -29,8 +29,6 @@ import {
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
   onSubmit?: () => void
-  replyTo?: string
-  clearReplyTo?: () => void
   disabled?: boolean
   mustHaveMessageBody?: boolean
   inputProps?: TextAreaProps
@@ -49,9 +47,7 @@ export default function ChatForm({
   chatId,
   onSubmit,
   disabled,
-  replyTo,
   mustHaveMessageBody = true,
-  clearReplyTo,
   inputProps,
   autofocus = true,
   buildAdditionalTxParams,
@@ -59,6 +55,9 @@ export default function ChatForm({
   sendButtonProps,
   ...props
 }: ChatFormProps) {
+  const replyTo = useMessageData((state) => state.replyTo)
+  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+
   const { data: chat } = getPostQuery.useQuery(chatId)
   const chatTitle = chat?.content?.title ?? ''
 

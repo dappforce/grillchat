@@ -8,12 +8,10 @@ import { ImAttachment } from 'react-icons/im'
 import { IoImageOutline } from 'react-icons/io5'
 import { ChatFormProps } from '../ChatForm'
 
-export type AttachmentInputProps = ButtonProps &
-  Pick<ChatFormProps, 'chatId' | 'replyTo'>
+export type AttachmentInputProps = ButtonProps & Pick<ChatFormProps, 'chatId'>
 
 export default function AttachmentInput({
   chatId,
-  replyTo,
   ...props
 }: AttachmentInputProps) {
   const [openAttachmentModalId, setOpenAttachmentModalId] = useState<
@@ -57,7 +55,6 @@ export default function AttachmentInput({
         }}
       </FloatingMenus>
       <NftAttachmentModal
-        replyTo={replyTo}
         chatId={chatId}
         isOpen={openAttachmentModalId === 'nft'}
         closeModal={() => setOpenAttachmentModalId(null)}

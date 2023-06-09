@@ -4,6 +4,7 @@ import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
 import { getNftDataQuery } from '@/services/moralis/query'
+import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import { BsFillReplyFill } from 'react-icons/bs'
@@ -12,15 +13,15 @@ import { getMessageElementId, scrollToMessageElement } from '../utils'
 
 export type RepliedMessageProps = ComponentProps<'div'> & {
   replyMessageId: string
-  closeReply: () => void
   scrollContainer?: React.RefObject<HTMLElement | null>
 }
 
 export default function RepliedMessage({
   replyMessageId,
-  closeReply,
   scrollContainer,
 }: RepliedMessageProps) {
+  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+
   const { data: message } = getPostQuery.useQuery(replyMessageId)
   const messageSenderAddr = message?.struct.ownerId
   const senderColor = useRandomColor(messageSenderAddr)
@@ -80,7 +81,7 @@ export default function RepliedMessage({
         variant='transparent'
         onClick={(e) => {
           e.stopPropagation()
-          closeReply()
+          clearReplyTo()
         }}
       >
         <HiXMark className='text-2xl' />
