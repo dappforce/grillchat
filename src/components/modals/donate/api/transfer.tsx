@@ -1,5 +1,8 @@
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
+import { isTouchDevice } from '@/utils/device'
+import { connectorsForWallets } from '@rainbow-me/rainbowkit'
+import { walletConnectWallet } from '@rainbow-me/rainbowkit/wallets'
 import { useMemo } from 'react'
 import { parseUnits } from 'viem'
 import {
@@ -10,7 +13,6 @@ import {
   useNetwork,
   useSendTransaction,
 } from 'wagmi'
-import { InjectedConnector } from 'wagmi/connectors/injected'
 import { chainIdByChainName, polygonContractsByToken } from './config'
 
 export const useTransfer = (token: string, chainName: string) => {
@@ -34,10 +36,24 @@ export const useTransfer = (token: string, chainName: string) => {
     decimals?: number
   ) => {
     if (!isConnected) {
-      await connectAsync({
-        connector: new InjectedConnector(),
-        chainId: chainIdByChainName[chainName],
-      })
+      const connectorsCustom = connectorsForWallets([
+        {
+          groupName: 'Recommended',
+          wallets: [walletConnectWallet({ chains })],
+        },
+      ])()
+
+      try {
+        console.log('hello')
+        const result = await connectAsync({
+          connector: isTouchDevice() ? connectorsCustom[0] : connectors[0],
+          chainId: chainIdByChainName[chainName],
+        })
+
+        console.log('Result ', result.account)
+      } catch (e) {
+        console.error(e)
+      }
     }
 
     try {
