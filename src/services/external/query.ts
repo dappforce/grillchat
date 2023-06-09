@@ -45,8 +45,21 @@ export const getNftDataQuery = createQuery({
   fetcher: getNftData,
 })
 
+const openseaChainMapper: Record<(typeof nftChains)[number], string> = {
+  ethereum: 'ethereum',
+  polygon: 'matic',
+  arbitrum: 'arbitrum',
+  avalanche: 'avalanche',
+  bsc: 'bsc',
+  optimism: 'optimism',
+  fantom: '',
+}
 async function getNftPrice(nft: NftProperties | null) {
-  if (!nft) return 'Not found'
+  if (!nft) return 'Price not found'
+
+  const mappedChain =
+    openseaChainMapper[nft.chain as keyof typeof openseaChainMapper]
+  if (!mappedChain) return 'Price not found'
 
   const apiUrl = `https://api.opensea.io/v2/orders/${nft.chain}/seaport/listings?asset_contract_address=${nft.collectionId}&limit=1&token_ids=${nft.nftId}&order_by=eth_price&order_direction=asc`
   const response = await axios.get(apiUrl, {
