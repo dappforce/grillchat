@@ -84,8 +84,6 @@ export const useGetBalance = (token: string) => {
     ],
   })
 
-  console.log(evmAddress, token, data, polygonContractsByToken[token])
-
   const { balance, decimals } = useMemo(() => {
     if (!data) return {}
 

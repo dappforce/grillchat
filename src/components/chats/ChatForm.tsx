@@ -133,9 +133,7 @@ export default function ChatForm({
       ;(navigator.virtualKeyboard as any).show()
     }
 
-    const processedMessage = !allowEmptyMessage
-      ? processMessage(messageBody)
-      : undefined
+    const processedMessage = processMessage(messageBody)
 
     if (isDisabled) return
 

@@ -35,21 +35,22 @@ const DonatePreview = ({ extensionProps, isMyMessage }: DonatePreviewProps) => {
 
   return (
     <div className={cx('px-5 pt-5', { ['mb-3']: !isMyMessage })}>
-      <LinkText
-        openInNewTab
-        href={`https://polygonscan.com/tx/${txHash}`}
-        variant='primary'
-      >
-        <div className='flex flex-col items-center gap-2 text-white'>
-          <div className='flex items-start gap-2'>
-            <div className='text-3xl font-bold leading-[26px]'>
-              {amount} {token}
-            </div>
-            <HiArrowUpRight />
+      <div className='flex flex-col items-center gap-2 text-white'>
+        <div className='flex items-start gap-2'>
+          <div className='text-3xl font-bold leading-[26px]'>
+            {amount} {token}
           </div>
-          <div className='text-sm'>≈ ${amountInDollars}</div>
+          <LinkText
+            openInNewTab
+            href={`https://polygonscan.com/tx/${txHash}`}
+            variant='primary'
+            className='text-white'
+          >
+            <HiArrowUpRight />
+          </LinkText>
         </div>
-      </LinkText>
+        <div className='text-sm'>≈ ${amountInDollars}</div>
+      </div>
     </div>
   )
 }
