@@ -7,13 +7,16 @@ import {
   useConnect,
   useContractReads,
   useContractWrite,
+  useNetwork,
   useSendTransaction,
 } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
 import { chainIdByChainName, polygonContractsByToken } from './config'
 
 export const useTransfer = (token: string, chainName: string) => {
   const { isConnected } = useAccount()
   const { connectAsync, connectors } = useConnect()
+  const { chains } = useNetwork()
   const { sendTransactionAsync } = useSendTransaction()
 
   const { abi, address } = polygonContractsByToken[token]
@@ -32,7 +35,7 @@ export const useTransfer = (token: string, chainName: string) => {
   ) => {
     if (!isConnected) {
       await connectAsync({
-        connector: connectors[0],
+        connector: new InjectedConnector(),
         chainId: chainIdByChainName[chainName],
       })
     }
