@@ -40,8 +40,6 @@ export default function ImageLoader({
     setIsLoading(true)
   }, [image])
 
-  isLoading = true
-
   return (
     <div className={cx('relative', containerClassName)}>
       {isLoading && (
