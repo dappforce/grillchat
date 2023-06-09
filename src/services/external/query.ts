@@ -13,15 +13,12 @@ async function getNftData(nft: NftProperties | null) {
   if (!nft) return null
 
   const moralis = await getMoralisApi()
-  const [response] = await Promise.all([
-    moralis?.EvmApi.nft.getNFTMetadata({
-      address: nft.collectionId,
-      tokenId: nft.nftId,
-      chain: moralisChainMapper[nft.chain],
-      normalizeMetadata: true,
-    }),
-    // getNftPrice(nft),
-  ])
+  const response = await moralis?.EvmApi.nft.getNFTMetadata({
+    address: nft.collectionId,
+    tokenId: nft.nftId,
+    chain: moralisChainMapper[nft.chain],
+    normalizeMetadata: true,
+  })
   const metadata = response?.raw.normalized_metadata
 
   return {
