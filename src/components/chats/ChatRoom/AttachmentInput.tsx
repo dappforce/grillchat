@@ -1,6 +1,5 @@
 import NftIcon from '@/assets/icons/nft.svg'
 import Button, { ButtonProps } from '@/components/Button'
-import NftAttachmentModal from '@/components/extensions/nft/NftAttachmentModal'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
@@ -49,10 +48,10 @@ export default function AttachmentInput({ ...props }: AttachmentInputProps) {
           )
         }}
       </FloatingMenus>
-      <NftAttachmentModal
+      {/* <NftAttachmentModal
         isOpen={openAttachmentModalId === 'nft'}
         closeModal={() => setOpenAttachmentModalId('')}
-      />
+      /> */}
     </>
   )
 }
