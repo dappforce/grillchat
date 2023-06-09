@@ -116,7 +116,9 @@ export default function DonateMessagePreview({
             }}
           >
             {body}
-            <div className='mt-[5px] w-full ring-[0.4px] ring-[#f39424]'></div>
+            {body && (
+              <div className='mt-[5px] w-full ring-[0.4px] ring-[#f39424]'></div>
+            )}
             <DonatePreview
               extensionProps={properties}
               isMyMessage={isMyMessage}

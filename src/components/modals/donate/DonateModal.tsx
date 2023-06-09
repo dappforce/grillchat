@@ -148,8 +148,6 @@ export default function DonateModal({
   const { evmAddress: evmRecipientAddress } = recipientAccountData || {}
   const { evmAddress: myEvmAddress } = myAccountData || {}
 
-  console.log(selectedChain.id)
-
   const { sendTransferTx } = useTransfer(selectedToken.id, selectedChain.id)
 
   const onButtonClick = async (messageParams: SendMessageParams) => {
@@ -200,6 +198,7 @@ export default function DonateModal({
       formProps={{
         chatId: '3056',
         replyTo: messageId,
+        allowEmptyMessage: true,
         sendButtonProps: {
           disabled: disableSendButton,
         },

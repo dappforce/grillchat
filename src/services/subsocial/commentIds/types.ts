@@ -1,7 +1,7 @@
 import { Extension } from '@/@types/subsocial'
 
 export type SendMessageParams = {
-  message: string
+  message?: string
   chatId: string
   replyTo?: string
   extensions?: Extension[]

@@ -41,6 +41,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   getAdditionalTxParams?: () => SendMessageParams
   sendButtonText?: string
   sendButtonProps?: ButtonProps
+  allowEmptyMessage?: boolean
   beforeMesageSend?: (
     messageParams: SendMessageParams
   ) => Promise<BeforeMessageResult>
@@ -61,6 +62,7 @@ export default function ChatForm({
   getAdditionalTxParams,
   sendButtonText,
   sendButtonProps,
+  allowEmptyMessage = false,
   beforeMesageSend,
   ...props
 }: ChatFormProps) {
@@ -111,7 +113,7 @@ export default function ChatForm({
 
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
-  const isDisabled = !processMessage(messageBody)
+  const isDisabled = !processMessage(messageBody) && !allowEmptyMessage
 
   const resetForm = () => {
     setMessageBody('')
@@ -131,7 +133,10 @@ export default function ChatForm({
       ;(navigator.virtualKeyboard as any).show()
     }
 
-    const processedMessage = processMessage(messageBody)
+    const processedMessage = !allowEmptyMessage
+      ? processMessage(messageBody)
+      : undefined
+
     if (isDisabled) return
 
     const sendMessageParams = {

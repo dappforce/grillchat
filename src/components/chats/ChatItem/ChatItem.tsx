@@ -153,7 +153,7 @@ export default function ChatItem({
   }
   const menus = withCustomMenu && isSent ? getChatMenus() : []
 
-  if (!body) return null
+  if (!body && !extersions) return null
 
   const onCheckMarkClick = (e: SyntheticEvent) => {
     e.stopPropagation()
@@ -164,7 +164,7 @@ export default function ChatItem({
     dispatch(checkMarkType)
   }
 
-  const isEmojiOnly = shouldRenderEmojiChatItem(body)
+  const isEmojiOnly = shouldRenderEmojiChatItem(body || '')
   const DefaultContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
   const ChatItemContentVariant = extersions
@@ -200,7 +200,7 @@ export default function ChatItem({
               id={messageBubbleId}
             >
               <ChatItemContentVariant
-                body={body}
+                body={body || ''}
                 isMyMessage={isMyMessage}
                 isSent={isSent}
                 onCheckMarkClick={onCheckMarkClick}
