@@ -15,7 +15,13 @@ export default function SkeletonFallback({
   return isLoading === false || (isLoading === undefined && children) ? (
     children
   ) : (
-    <div className={cx(className)} {...props} />
+    <div
+      className={cx(
+        'my-[0.25em] h-[1em] w-48 rounded-full bg-black/20',
+        className
+      )}
+      {...props}
+    />
   )
 }
 
@@ -23,7 +29,7 @@ export interface IntegratedSkeletonProps<T>
   extends Omit<SkeletonFallbackProps, 'children'> {
   content: T | null | undefined
   defaultContent?: any
-  children?: (content: T) => JSX.Element | string | number
+  children?: (content: T) => JSX.Element | string | number | null | undefined
 }
 
 export function useIntegratedSkeleton(
@@ -45,7 +51,7 @@ export function useIntegratedSkeleton(
               if (shouldRenderDefaultContent) {
                 return defaultContent
               } else if (children) {
-                return children(content)
+                return children(content) ?? null
               } else {
                 return content
               }

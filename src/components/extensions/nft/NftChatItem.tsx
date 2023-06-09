@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import ClickableImage from '@/components/ClickableImage'
 import ImageLoader from '@/components/ImageLoader'
 import LinkText from '@/components/LinkText'
+import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getNftDataQuery, getNftPriceQuery } from '@/services/external/query'
 import { cx } from '@/utils/class-names'
 import truncate from 'lodash.truncate'
@@ -15,8 +16,15 @@ export default function NftChatItem(props: Props) {
   const { extensions } = content || {}
 
   const nftProperties = extensions?.[0]?.properties
-  const { data: nftData } = getNftDataQuery.useQuery(nftProperties ?? null)
-  const { data: nftPrice } = getNftPriceQuery.useQuery(nftProperties ?? null)
+  const { data: nftData, isLoading: isLoadingNftData } =
+    getNftDataQuery.useQuery(nftProperties ?? null)
+  const { data: nftPrice, isLoading: isLoadingNftPrice } =
+    getNftPriceQuery.useQuery(nftProperties ?? null)
+
+  const { IntegratedSkeleton: NftDataSkeleton } =
+    useIntegratedSkeleton(isLoadingNftData)
+  const { IntegratedSkeleton: NftPriceSkeleton } =
+    useIntegratedSkeleton(isLoadingNftPrice)
 
   return (
     <CommonChatItem
@@ -49,7 +57,9 @@ export default function NftChatItem(props: Props) {
           <div className='mt-1.5 flex flex-col gap-1 px-2.5'>
             <div className='flex items-center justify-between gap-2'>
               <LinkText href={nftProperties?.url ?? ''} openInNewTab>
-                {nftData?.name ?? nftData?.collectionName}
+                <NftDataSkeleton content={nftData}>
+                  {(data) => data?.name ?? data?.collectionName}
+                </NftDataSkeleton>
               </LinkText>
               <span className='text-xs'>
                 #
@@ -64,8 +74,12 @@ export default function NftChatItem(props: Props) {
                 isMyMessage ? 'text-text-muted-on-primary' : 'text-text-muted'
               )}
             >
-              <span>{nftData?.collectionName}</span>
-              <span>{nftPrice}</span>
+              <NftDataSkeleton content={nftData} className={cx('w-16')}>
+                {(data) => <span>{data?.collectionName}</span>}
+              </NftDataSkeleton>
+              <NftPriceSkeleton content={nftPrice} className={cx('w-16')}>
+                {(data) => <span>{data}</span>}
+              </NftPriceSkeleton>
             </div>
             <Button
               className='my-2 mb-3'
