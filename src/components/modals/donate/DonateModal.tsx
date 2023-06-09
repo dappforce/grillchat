@@ -43,10 +43,9 @@ const chainItems = [
 
 const tokensItems = [
   {
-    id: 'matic',
-    icon: MATIC,
-    label: 'MATIC',
-    isNativeToken: true,
+    id: 'usdt',
+    icon: USDT,
+    label: 'USDT',
   },
   {
     id: 'usdc',
@@ -54,14 +53,15 @@ const tokensItems = [
     label: 'USDC',
   },
   {
+    id: 'matic',
+    icon: MATIC,
+    label: 'MATIC',
+    isNativeToken: true,
+  },
+  {
     id: 'eth',
     icon: ETH,
     label: 'ETH',
-  },
-  {
-    id: 'usdt',
-    icon: USDT,
-    label: 'USDT',
   },
 ]
 
