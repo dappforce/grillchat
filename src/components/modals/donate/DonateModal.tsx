@@ -164,7 +164,8 @@ export default function DonateModal({
     const hash = await sendTransferTx(
       evmRecipientAddress,
       amount.replace(',', '.'),
-      selectedToken.isNativeToken
+      selectedToken.isNativeToken,
+      decimals
     )
 
     if (hash && address) {

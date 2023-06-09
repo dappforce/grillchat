@@ -17,11 +17,11 @@ export const polygonContractsByToken: ContractConfigByToken = {
     abi: maticAbi,
   },
   usdc: {
-    address: '0xDD9185DB084f5C4fFf3b4f70E7bA62123b812226',
+    address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
     abi: usdcAbi,
   },
   usdt: {
-    address: '0x7FFB3d637014488b63fb9858E279385685AFc1e2',
+    address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
     abi: usdtAbi,
   },
   eth: {

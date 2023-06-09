@@ -1,7 +1,7 @@
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { useMemo } from 'react'
-import { parseEther } from 'viem'
+import { parseUnits } from 'viem'
 import {
   useAccount,
   useConnect,
@@ -15,15 +15,20 @@ export const useTransfer = (token: string, chainName: string) => {
   const { isConnected } = useAccount()
   const { connectAsync, connectors } = useConnect()
   const { sendTransactionAsync } = useSendTransaction()
+
+  const { abi, address } = polygonContractsByToken[token]
+
   const { writeAsync } = useContractWrite({
-    ...polygonContractsByToken[token],
+    address,
+    abi,
     functionName: 'transfer',
   } as any)
 
   const sendTransferTx = async (
     recipient: string,
     amount: string,
-    isNativeToken?: boolean
+    isNativeToken?: boolean,
+    decimals?: number
   ) => {
     if (!isConnected) {
       await connectAsync({
@@ -33,13 +38,15 @@ export const useTransfer = (token: string, chainName: string) => {
     }
 
     try {
+      if (!decimals) return
+
       const { hash } = isNativeToken
         ? await sendTransactionAsync({
             to: recipient,
-            value: parseEther(`${parseFloat(amount)}`),
+            value: parseUnits(`${parseFloat(amount)}`, decimals),
           })
         : await writeAsync({
-            args: [recipient, parseEther(`${parseFloat(amount)}`)],
+            args: [recipient, parseUnits(`${parseFloat(amount)}`, decimals)],
           })
 
       return hash
@@ -59,19 +66,25 @@ export const useGetBalance = (token: string) => {
 
   const { evmAddress } = accountData || {}
 
+  const { address, abi } = polygonContractsByToken[token]
+
   const { data, isLoading } = useContractReads({
     contracts: [
       {
-        ...polygonContractsByToken[token],
+        address,
+        abi,
         functionName: 'balanceOf',
         args: evmAddress ? [evmAddress] : [],
       },
       {
-        ...polygonContractsByToken[token],
+        address,
+        abi,
         functionName: 'decimals',
       },
     ],
   })
+
+  console.log(evmAddress, token, data, polygonContractsByToken[token])
 
   const { balance, decimals } = useMemo(() => {
     if (!data) return {}
