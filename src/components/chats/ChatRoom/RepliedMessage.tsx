@@ -36,7 +36,8 @@ export default function RepliedMessage({
   const hasNftExtension =
     firstExtension && firstExtension.id === 'subsocial-evm-nft'
 
-  const messageContent = message?.content?.body || hasNftExtension ? 'NFT' : ''
+  const messageContent =
+    message?.content?.body || (hasNftExtension ? 'NFT' : '')
 
   const { data: nftData } = getNftDataQuery.useQuery(
     firstExtension?.properties ?? null
@@ -53,7 +54,7 @@ export default function RepliedMessage({
       <div className='flex flex-1 items-center gap-2 overflow-hidden border-l-2 pl-2'>
         {hasNftExtension && (
           <NftImage
-            containerClassName={cx('rounded-md overflow-hidden')}
+            containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
             className={cx('aspect-square w-10')}
             placeholderClassName={cx('w-10 aspect-square')}
             image={nftData?.image}
