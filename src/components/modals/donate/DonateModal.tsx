@@ -4,6 +4,7 @@ import Poligon from '@/assets/graphics/chains/poligon.png'
 import ETH from '@/assets/graphics/tokens/eth.png'
 import MATIC from '@/assets/graphics/tokens/matic.png'
 import USDC from '@/assets/graphics/tokens/usdc.png'
+import USDT from '@/assets/graphics/tokens/usdt.png'
 import Button from '@/components/Button'
 import CommonExtensionModal from '@/components/extensions/CommonExtensionModal'
 import Input from '@/components/inputs/Input'
@@ -56,6 +57,11 @@ const tokensItems = [
     id: 'eth',
     icon: ETH,
     label: 'ETH',
+  },
+  {
+    id: 'usdt',
+    icon: USDT,
+    label: 'USDT',
   },
 ]
 

@@ -1,7 +1,8 @@
 import type { Abi, Address, Narrow } from 'abitype'
-import ethAbi from './abi/eth'
+import ethAbi from './abi/ethAbi'
 import maticAbi from './abi/maticAbi'
 import usdcAbi from './abi/usdcAbi'
+import usdtAbi from './abi/usdtAbi'
 
 type ContractConfig = {
   address: Address
@@ -18,6 +19,10 @@ export const polygonContractsByToken: ContractConfigByToken = {
   usdc: {
     address: '0xDD9185DB084f5C4fFf3b4f70E7bA62123b812226',
     abi: usdcAbi,
+  },
+  usdt: {
+    address: '0x7FFB3d637014488b63fb9858E279385685AFc1e2',
+    abi: usdtAbi,
   },
   eth: {
     address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
