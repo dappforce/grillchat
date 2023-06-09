@@ -1,3 +1,4 @@
+import { nftChains } from '@/components/extensions/nft/utils'
 import { createQuery } from '@/subsocial-query'
 import { getOpenSeaApiKey } from '@/utils/env/client'
 import { EvmChain } from '@moralisweb3/common-evm-utils'
@@ -5,19 +6,27 @@ import { NftProperties } from '@subsocial/api/types'
 import axios from 'axios'
 import { getMoralisApi } from './utils'
 
-const moralisChainMapper: Record<string, EvmChain> = {
+const moralisChainMapper: Record<(typeof nftChains)[number], EvmChain> = {
   ethereum: EvmChain.ETHEREUM,
   polygon: EvmChain.POLYGON,
+  arbitrum: EvmChain.ARBITRUM,
+  avalanche: EvmChain.AVALANCHE,
+  bsc: EvmChain.BSC,
+  optimism: EvmChain.OPTIMISM,
 }
 
 async function getNftData(nft: NftProperties | null) {
   if (!nft) return null
 
   const moralis = await getMoralisApi()
+
+  const chain = moralisChainMapper[nft.chain as keyof typeof moralisChainMapper]
+  if (!chain) return null
+
   const response = await moralis?.EvmApi.nft.getNFTMetadata({
     address: nft.collectionId,
     tokenId: nft.nftId,
-    chain: moralisChainMapper[nft.chain],
+    chain,
     normalizeMetadata: true,
   })
   const metadata = response?.raw.normalized_metadata

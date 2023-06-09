@@ -1,6 +1,13 @@
 import { NftProperties } from '@subsocial/api/types'
 
-export const nftChains = ['ethereum', 'polygon'] as const
+export const nftChains = [
+  'ethereum',
+  'polygon',
+  'arbitrum',
+  'avalanche',
+  'bsc',
+  'optimism',
+] as const
 
 const marketplaceParser: {
   marketplaceName: string
@@ -14,6 +21,10 @@ const marketplaceParser: {
     chainMapper: {
       ethereum: 'ethereum',
       polygon: 'matic',
+      arbitrum: 'arbitrum',
+      avalanche: 'avalanche',
+      bsc: 'bsc',
+      optimism: 'optimism',
     },
     parser: (link: string) => {
       const linkParts = link.split('opensea.io/assets/')
