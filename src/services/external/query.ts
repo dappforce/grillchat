@@ -55,6 +55,7 @@ const openseaChainMapper: Record<(typeof nftChains)[number], string> = {
   fantom: '',
 }
 async function getNftPrice(nft: NftProperties | null) {
+  if (!getOpenSeaApiKey()) return ''
   if (!nft) return 'Price not found'
 
   const mappedChain =
