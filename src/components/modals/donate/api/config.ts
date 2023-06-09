@@ -24,3 +24,8 @@ export const polygonContractsByToken: ContractConfigByToken = {
     abi: ethAbi,
   },
 }
+
+export const chainIdByChainName: Record<string, number> = {
+  polygon: 137,
+  'ethereum-mainnet': 1,
+}

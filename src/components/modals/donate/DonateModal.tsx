@@ -148,7 +148,9 @@ export default function DonateModal({
   const { evmAddress: evmRecipientAddress } = recipientAccountData || {}
   const { evmAddress: myEvmAddress } = myAccountData || {}
 
-  const { sendTransferTx } = useTransfer(selectedToken.id)
+  console.log(selectedChain.id)
+
+  const { sendTransferTx } = useTransfer(selectedToken.id, selectedChain.id)
 
   const onButtonClick = async (messageParams: SendMessageParams) => {
     if (!evmRecipientAddress || !myEvmAddress || !amount) {

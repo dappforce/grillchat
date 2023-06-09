@@ -9,9 +9,9 @@ import {
   useContractWrite,
   useSendTransaction,
 } from 'wagmi'
-import { polygonContractsByToken } from './config'
+import { chainIdByChainName, polygonContractsByToken } from './config'
 
-export const useTransfer = (token: string) => {
+export const useTransfer = (token: string, chainName: string) => {
   const { isConnected } = useAccount()
   const { connectAsync, connectors } = useConnect()
   const { sendTransactionAsync } = useSendTransaction()
@@ -26,8 +26,12 @@ export const useTransfer = (token: string) => {
     isNativeToken?: boolean
   ) => {
     if (!isConnected) {
-      await connectAsync({ connector: connectors[0] })
+      await connectAsync({
+        connector: connectors[0],
+        chainId: chainIdByChainName[chainName],
+      })
     }
+
     try {
       const { hash } = isNativeToken
         ? await sendTransactionAsync({

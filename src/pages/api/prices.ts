@@ -82,7 +82,7 @@ export async function getPricesFromCache(tokenIds: string[]) {
         priceCache.add(priceItem.id, priceItem)
       })
 
-      newlyFetchedData.push(res.data)
+      newlyFetchedData.push(...res.data)
     } catch (e) {
       console.error(
         'Error fetching accounts data from Subsocial API: ',

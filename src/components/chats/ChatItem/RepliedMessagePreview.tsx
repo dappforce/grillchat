@@ -28,7 +28,7 @@ export default function RepliedMessagePreview({
   const replySender = data?.struct.ownerId
   const replySenderColor = useRandomColor(replySender)
   const { theme } = useTheme()
-  console.log(theme)
+
   if (!data) {
     return null
   }
@@ -60,8 +60,6 @@ export default function RepliedMessagePreview({
         {amount} {token}
       </div>
     ) : null
-
-  console.log(theme === 'light', id === 'subsocial-donations')
 
   return (
     <div
