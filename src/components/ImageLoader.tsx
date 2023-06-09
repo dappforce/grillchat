@@ -68,7 +68,10 @@ export default function ImageLoader({
             isLoading && 'opacity-0',
             props.className
           )}
-          onError={() => setIsLoading(false)}
+          onError={(e) => {
+            setIsLoading(false)
+            props.onError?.(e)
+          }}
           onLoad={(e) => {
             setIsLoading(false)
             props.onLoad?.(e)
