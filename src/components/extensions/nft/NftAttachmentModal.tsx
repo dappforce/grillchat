@@ -94,6 +94,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
                 <HiTrash />
               </Button>
               <ImageLoader
+                withSpinner
                 image={data?.image ?? ''}
                 loadingClassName='rounded-2xl'
                 className='aspect-square w-full rounded-2xl bg-background object-contain'

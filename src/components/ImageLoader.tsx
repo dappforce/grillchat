@@ -8,6 +8,7 @@ export type ImageLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   containerClassName?: string
   loadingClassName?: string
   placeholderClassName?: string
+  withSpinner?: boolean
 }
 
 function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
@@ -25,6 +26,7 @@ export default function ImageLoader({
   containerClassName,
   loadingClassName,
   placeholderClassName,
+  withSpinner,
   ...props
 }: ImageLoaderProps) {
   const [isLoading, setIsLoading] = useState(false)
@@ -42,10 +44,16 @@ export default function ImageLoader({
       {isLoading && (
         <div
           className={cx(
-            'absolute inset-0 h-full w-full animate-pulse bg-background-lighter',
+            'absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-background-lighter',
             loadingClassName
           )}
-        />
+        >
+          {withSpinner && (
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <div className='h-10 w-10 animate-spin rounded-full border-4 border-background-primary' />
+            </div>
+          )}
+        </div>
       )}
       {image ? (
         <Image
