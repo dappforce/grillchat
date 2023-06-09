@@ -13,6 +13,7 @@ const moralisChainMapper: Record<(typeof nftChains)[number], EvmChain> = {
   avalanche: EvmChain.AVALANCHE,
   bsc: EvmChain.BSC,
   optimism: EvmChain.OPTIMISM,
+  fantom: EvmChain.FANTOM,
 }
 
 async function getNftData(nft: NftProperties | null) {
