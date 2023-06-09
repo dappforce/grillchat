@@ -11,13 +11,15 @@ export const nftChains = [
 ] as const
 
 const marketplaceParser: {
-  marketplaceName: string
+  name: string
+  link: string
   checker: (link: string) => boolean
   chainMapper: Record<string, (typeof nftChains)[number]>
   parser: (link: string) => NftProperties
 }[] = [
   {
-    marketplaceName: 'opensea',
+    name: 'Opensea.io',
+    link: 'https://opensea.io',
     checker: (link: string) => link.includes('opensea.io/assets/'),
     chainMapper: {
       ethereum: 'ethereum',
@@ -40,7 +42,8 @@ const marketplaceParser: {
     },
   },
   {
-    marketplaceName: 'rarible',
+    name: 'Rarible.com',
+    link: 'https://rarible.com',
     chainMapper: {
       ethereum: 'ethereum',
       polygon: 'polygon',
@@ -65,7 +68,8 @@ const marketplaceParser: {
     },
   },
   {
-    marketplaceName: 'blur',
+    name: 'Blur.io',
+    link: 'https://blur.io',
     chainMapper: {
       ethereum: 'ethereum',
     },
@@ -83,7 +87,8 @@ const marketplaceParser: {
     },
   },
   {
-    marketplaceName: 'x2y2',
+    name: 'x2y2.io',
+    link: 'https://x2y2.io',
     chainMapper: {
       eth: 'ethereum',
     },
@@ -101,7 +106,8 @@ const marketplaceParser: {
     },
   },
   {
-    marketplaceName: 'looksRare',
+    name: 'Looksrare.org',
+    link: 'https://looksrare.org',
     chainMapper: {
       ethereum: 'ethereum',
     },
@@ -119,7 +125,8 @@ const marketplaceParser: {
     },
   },
   {
-    marketplaceName: 'tofunft',
+    name: 'Tofunft.com',
+    link: 'https://tofunft.com',
     chainMapper: {
       eth: 'ethereum',
       bsc: 'bsc',
@@ -143,6 +150,14 @@ const marketplaceParser: {
     },
   },
 ]
+
+const marketplacesInfo = marketplaceParser.map((m) => ({
+  name: m.name,
+  link: m.link,
+}))
+export function getSupportedMarketplaces() {
+  return marketplacesInfo
+}
 
 export function parseNftMarketplaceLink(link: string): NftProperties {
   const marketplace = marketplaceParser.find((m) => m.checker(link))

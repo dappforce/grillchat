@@ -3,7 +3,7 @@ import { cva, VariantProps } from 'class-variance-authority'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps, forwardRef } from 'react'
 
-const linkTextStyles = cva('font-medium', {
+export const linkTextStyles = cva('font-medium cursor-pointer', {
   variants: {
     variant: {
       primary: 'text-text-primary',
