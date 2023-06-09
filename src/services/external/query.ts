@@ -1,4 +1,5 @@
 import { createQuery } from '@/subsocial-query'
+import { getOpenSeaApiKey } from '@/utils/env/client'
 import { EvmChain } from '@moralisweb3/common-evm-utils'
 import { NftProperties } from '@subsocial/api/types'
 import axios from 'axios'
@@ -40,7 +41,7 @@ async function getNftPrice(nft: NftProperties | null) {
   const apiUrl = `https://api.opensea.io/v2/orders/${nft.chain}/seaport/listings?asset_contract_address=${nft.collectionId}&limit=1&token_ids=${nft.nftId}&order_by=eth_price&order_direction=asc`
   const response = await axios.get(apiUrl, {
     headers: {
-      'X-API-KEY': '207875fb75e042ee8b313d83aad47f34',
+      'X-API-KEY': getOpenSeaApiKey(),
     },
   })
 
