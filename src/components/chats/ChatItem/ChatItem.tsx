@@ -43,6 +43,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   messageBubbleId?: string
   scrollToMessage?: (chatId: string) => Promise<void>
   withCustomMenu?: boolean
+  chatId: string
 }
 
 type CheckMarkModalReducerState = {
@@ -66,6 +67,7 @@ export default function ChatItem({
   scrollToMessage,
   messageBubbleId,
   withCustomMenu = true,
+  chatId,
   ...props
 }: ChatItemProps) {
   const router = useRouter()
@@ -232,6 +234,7 @@ export default function ChatItem({
         closeModal={() => setOpenDonateModal(false)}
         recipient={ownerId}
         messageId={messageId}
+        chatId={chatId}
       />
     </div>
   )

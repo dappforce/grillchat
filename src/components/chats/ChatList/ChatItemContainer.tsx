@@ -36,7 +36,7 @@ export default function ChatItemContainer({
         containerProps?.className
       )}
     >
-      <ChatItem {...props} isMyMessage={isMyMessage} />
+      <ChatItem {...props} chatId={chatId} isMyMessage={isMyMessage} />
     </div>
   )
 }

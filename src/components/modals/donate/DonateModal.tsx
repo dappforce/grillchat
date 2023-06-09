@@ -132,11 +132,13 @@ const AmountInput = ({
 type DonateModalProps = ModalFunctionalityProps & {
   recipient: string
   messageId: string
+  chatId: string
 }
 
 export default function DonateModal({
   recipient,
   messageId,
+  chatId,
   ...props
 }: DonateModalProps) {
   const theme = useGetTheme()
@@ -203,7 +205,7 @@ export default function DonateModal({
     <CommonExtensionModal
       {...props}
       formProps={{
-        chatId: '3056',
+        chatId,
         replyTo: messageId,
         allowEmptyMessage: true,
         sendButtonProps: {
