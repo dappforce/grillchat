@@ -75,7 +75,7 @@ export default function ChatItem({
   const isSent = !isOptimisticId(messageId)
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
-  const { body, inReplyTo, extersions } = message.content || {}
+  const { body, inReplyTo, extensions } = message.content || {}
   const senderColor = useRandomColor(ownerId)
   const [openDonateModal, setOpenDonateModal] = useState(false)
   const address = useMyAccount((state) => state.address)
@@ -155,7 +155,7 @@ export default function ChatItem({
   }
   const menus = withCustomMenu && isSent ? getChatMenus() : []
 
-  if (!body && !extersions) return null
+  if (!body && !extensions) return null
 
   const onCheckMarkClick = (e: SyntheticEvent) => {
     e.stopPropagation()
@@ -169,8 +169,8 @@ export default function ChatItem({
   const isEmojiOnly = shouldRenderEmojiChatItem(body || '')
   const DefaultContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
-  const ChatItemContentVariant = extersions
-    ? extencionsVariants[extersions[0].id]
+  const ChatItemContentVariant = extensions
+    ? extencionsVariants[extensions[0].id]
     : DefaultContentVariant
 
   const relativeTime = getTimeRelativeToNow(createdAtTime)
@@ -210,7 +210,7 @@ export default function ChatItem({
                 relativeTime={relativeTime}
                 senderColor={senderColor}
                 inReplyTo={inReplyTo}
-                extensions={extersions}
+                extensions={extensions}
                 scrollToMessage={scrollToMessage}
               />
             </div>

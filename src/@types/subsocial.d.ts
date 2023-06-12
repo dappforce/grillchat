@@ -16,7 +16,7 @@ declare module '@subsocial/api/types' {
       kind: 'Post'
       id: string
     }
-    extersions: Extension[]
+    extensions: Extension[]
   }
   export declare type EntityPostData<
     S extends HasId,

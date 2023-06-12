@@ -181,6 +181,7 @@ export default function DonateModal({
               from: myEvmAddress,
               to: evmRecipientAddress,
               token: selectedToken.label,
+              decimals,
               amount: amount,
               txHash: hash,
             },

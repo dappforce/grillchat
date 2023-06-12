@@ -44,13 +44,10 @@ export const useTransfer = (token: string, chainName: string) => {
       ])()
 
       try {
-        console.log('hello')
-        const result = await connectAsync({
+        await connectAsync({
           connector: isTouchDevice() ? connectorsCustom[0] : connectors[0],
           chainId: chainIdByChainName[chainName],
         })
-
-        console.log('Result ', result.account)
       } catch (e) {
         console.error(e)
       }

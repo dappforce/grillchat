@@ -35,7 +35,7 @@ export default function RepliedMessagePreview({
 
   let showedText = data.content?.body ?? ''
 
-  const { id, properties } = data.content?.extersions?.[0] || {}
+  const { id, properties } = data.content?.extensions?.[0] || {}
   if (originalMessage.length < minimumReplyChar) {
     showedText = truncateText(showedText, minimumReplyChar)
   }
