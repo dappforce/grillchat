@@ -10,7 +10,7 @@ import {
   useInteractions,
 } from '@floating-ui/react'
 import { Transition } from '@headlessui/react'
-import { MouseEvent, MouseEventHandler, useState } from 'react'
+import { MouseEvent, MouseEventHandler, useRef, useState } from 'react'
 
 type ReferenceProps = Record<string, unknown>
 export type FloatingWrapperProps = {
@@ -47,11 +47,11 @@ export default function FloatingWrapper({
     ],
   })
 
-  const [clientClickX, setClientClickX] = useState<number | undefined>()
-  const [clientClickY, setClientClickY] = useState<number | undefined>()
+  const clientClickX = useRef<number | undefined>(undefined)
+  const clientClickY = useRef<number | undefined>(undefined)
   const clientPoint = useClientPoint(context, {
-    x: clientClickX,
-    y: clientClickY,
+    x: clientClickX.current,
+    y: clientClickY.current,
     enabled: !!useClickPointAsAnchor,
   })
 
@@ -63,8 +63,8 @@ export default function FloatingWrapper({
 
   const toggleDisplay = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {
     if (!openMenu && e && useClickPointAsAnchor) {
-      setClientClickX(e.clientX)
-      setClientClickY(e.clientY)
+      clientClickX.current = e.clientX
+      clientClickY.current = e.clientY
     }
     setOpenMenu((prev) => !prev)
   }

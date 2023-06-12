@@ -20,7 +20,7 @@ export default function ChatItemContainer({
   const { body, extensions } = message?.content || {}
   const isMessageBlocked = useIsMessageBlocked(hubId, message, chatId)
   const address = useMyAccount((state) => state.address)
-  if ((!body && !extensions) || isMessageBlocked) return null
+  if (isMessageBlocked) return null
 
   const ownerId = message.struct.ownerId
   const senderAddress = ownerId ?? ''
@@ -31,7 +31,7 @@ export default function ChatItemContainer({
     <div
       {...containerProps}
       className={cx(
-        'w-11/12 md:w-10/12',
+        'w-11/12 md:w-8/12',
         isMyMessage && 'self-end',
         containerProps?.className
       )}

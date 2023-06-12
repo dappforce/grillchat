@@ -2,17 +2,32 @@ import { cx } from '@/utils/class-names'
 import ChatForm, { ChatFormProps } from '../chats/ChatForm'
 import Modal, { ModalProps } from '../modals/Modal'
 
-export type CommonExtensionModalProps = ModalProps & {
-  formProps: ChatFormProps
-}
+export type CommonExtensionModalProps = ModalProps &
+  Pick<
+    ChatFormProps,
+    | 'buildAdditionalTxParams'
+    | 'chatId'
+    | 'sendButtonText'
+    | 'autofocus'
+    | 'onSubmit'
+    | 'mustHaveMessageBody'
+  > & {
+    disableSendButton?: boolean
+  }
 
 export default function CommonExtensionModal({
-  formProps,
+  chatId,
+  sendButtonText,
+  disableSendButton,
+  mustHaveMessageBody = false,
+  autofocus,
+  buildAdditionalTxParams,
+  onSubmit,
   ...props
 }: CommonExtensionModalProps) {
   const commonClassName = cx('px-5 md:px-6')
 
-  const isUsingBigButton = !!formProps.sendButtonText
+  const isUsingBigButton = !!sendButtonText
 
   return (
     <Modal
@@ -26,27 +41,24 @@ export default function CommonExtensionModal({
         {props.children}
       </div>
       <ChatForm
-        {...formProps}
-        className={cx(
-          'p-1',
-          isUsingBigButton && 'pb-5 md:pb-6',
-          formProps.className
-        )}
+        autofocus={!!autofocus}
+        chatId={chatId}
+        mustHaveMessageBody={mustHaveMessageBody}
+        className={cx(isUsingBigButton && 'pb-5 md:pb-6')}
         inputProps={{
-          ...formProps.inputProps,
           className: cx(
-            'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20',
-            !isUsingBigButton && 'rounded-b-2xl',
-            isUsingBigButton && '!ring-0',
-            formProps.inputProps?.className
+            'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20 !ring-0',
+            !isUsingBigButton && 'rounded-b-2xl'
           ),
         }}
         sendButtonProps={{
-          ...formProps.sendButtonProps,
-          className: cx(
-            !isUsingBigButton ? 'mr-4' : 'mx-5 md:px-6',
-            formProps.sendButtonProps?.className
-          ),
+          disabled: disableSendButton,
+          className: cx(!isUsingBigButton ? 'mr-4' : 'mx-5 md:px-6'),
+        }}
+        buildAdditionalTxParams={buildAdditionalTxParams}
+        onSubmit={() => {
+          onSubmit?.()
+          props.closeModal()
         }}
       />
     </Modal>

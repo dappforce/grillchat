@@ -1,12 +1,12 @@
-import { Extension } from '@/@types/subsocial'
+import { PostContent } from '@subsocial/api/types'
 
 export type SendMessageParams = {
   message?: string
   chatId: string
   replyTo?: string
-  extensions?: Extension[]
+  extensions?: PostContent['extensions']
 }
 export type OptimisticMessageIdData = {
   address: string
-  message?: string
+  messageData: PostContent
 }

@@ -16,7 +16,6 @@ export default function DefaultChatItem({
   body,
   ownerId,
   relativeTime,
-  senderColor,
   inReplyTo,
   scrollToMessage,
   ...props
@@ -33,7 +32,7 @@ export default function DefaultChatItem({
       >
         {!isMyMessage && (
           <div className='flex items-center'>
-            <Name ownerId={ownerId} senderColor={senderColor} />
+            <Name ownerId={ownerId} />
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}

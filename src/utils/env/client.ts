@@ -41,3 +41,17 @@ export function getAmpId() {
 export function getGaId() {
   return checkEnv(process.env.NEXT_PUBLIC_GA_ID, 'NEXT_PUBLIC_GA_ID')
 }
+
+export function getMoralisApiKey() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_MORALIS_API_KEY,
+    'NEXT_PUBLIC_MORALIS_API_KEY'
+  )
+}
+
+export function getOpenSeaApiKey() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_OPENSEA_API_KEY,
+    'NEXT_PUBLIC_OPENSEA_API_KEY'
+  )
+}

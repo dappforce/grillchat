@@ -2,6 +2,7 @@ import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery, getPosts } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import jsonabc from 'jsonabc'
 import { useEffect, useRef } from 'react'
 import { getAccountDataQuery, getAccountsData } from '../evmAddresses'
 import { extractOptimisticIdData, isOptimisticId } from '../utils'
@@ -160,8 +161,13 @@ function filterOptimisticIds(
     if (!idData) return
 
     const foundData = mutableNewPosts.find((post) => {
+      function sortAndStringify(data: any) {
+        return JSON.stringify(jsonabc.sortObj(data ?? {}))
+      }
+
       return (
-        post.content?.body === idData.message &&
+        sortAndStringify(post.content ?? {}) ===
+          sortAndStringify(idData.messageData) &&
         post.struct.ownerId === idData.address
       )
     })

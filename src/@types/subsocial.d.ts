@@ -11,12 +11,22 @@ export type Extension = {
 declare module '@subsocial/api/types' {
   export default types
 
+  export type NftProperties = {
+    chain: string
+    collectionId: string
+    nftId: string
+    url: string
+  }
+  export type NftExtension = {
+    id: 'subsocial-evm-nft'
+    properties: NftProperties
+  }
   export interface PostContent extends SubsocialPostContent {
     inReplyTo?: {
       kind: 'Post'
       id: string
     }
-    extensions: Extension[]
+    extensions?: NftExtension[]
   }
   export declare type EntityPostData<
     S extends HasId,

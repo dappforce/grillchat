@@ -4,6 +4,7 @@ import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
+import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
@@ -17,7 +18,6 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { isTouchDevice } from '@/utils/device'
 import {
   ComponentProps,
   SyntheticEvent,
@@ -34,17 +34,17 @@ type BeforeMessageResult = {
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
   onSubmit?: () => void
-  replyTo?: string
-  clearReplyTo?: () => void
   disabled?: boolean
+  mustHaveMessageBody?: boolean
   inputProps?: TextAreaProps
-  getAdditionalTxParams?: () => SendMessageParams
+  buildAdditionalTxParams?: () => Partial<SendMessageParams>
   sendButtonText?: string
   sendButtonProps?: ButtonProps
   allowEmptyMessage?: boolean
   beforeMesageSend?: (
     messageParams: SendMessageParams
   ) => Promise<BeforeMessageResult>
+  autofocus?: boolean
 }
 
 function processMessage(message: string) {
@@ -56,16 +56,19 @@ export default function ChatForm({
   chatId,
   onSubmit,
   disabled,
-  replyTo,
-  clearReplyTo,
+  mustHaveMessageBody = true,
   inputProps,
-  getAdditionalTxParams,
+  autofocus = true,
+  buildAdditionalTxParams,
   sendButtonText,
   sendButtonProps,
   allowEmptyMessage = false,
   beforeMesageSend,
   ...props
 }: ChatFormProps) {
+  const replyTo = useMessageData((state) => state.replyTo)
+  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+
   const { data: chat } = getPostQuery.useQuery(chatId)
   const chatTitle = chat?.content?.title ?? ''
 
@@ -91,18 +94,22 @@ export default function ChatForm({
     (e) => e.message
   )
 
-  const [messageBody, setMessageBody] = useState('')
+  const messageBody = useMessageData((state) => state.messageBody)
+  const setMessageBody = useMessageData((state) => state.setMessageBody)
+
   const { mutate: sendMessage, error } = useSendMessage()
   useToastError(error, 'Message failed to send, please try again')
 
   const { enableInputAutofocus } = useConfigContext()
+  const { autofocus: runAutofocus } = useAutofocus()
   useEffect(() => {
-    if (enableInputAutofocus === true) textAreaRef.current?.focus()
-    else if (enableInputAutofocus === undefined) {
-      if (isTouchDevice()) return
-      textAreaRef.current?.focus()
-    }
-  }, [enableInputAutofocus])
+    if (!autofocus || enableInputAutofocus === false) return
+    runAutofocus({
+      ref: textAreaRef,
+      autofocusInTouchDevices: enableInputAutofocus === true,
+    })
+  }, [runAutofocus, autofocus, enableInputAutofocus])
+
   useEffect(() => {
     if (replyTo) textAreaRef.current?.focus()
   }, [replyTo])
@@ -113,7 +120,7 @@ export default function ChatForm({
 
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
-  const isDisabled = !processMessage(messageBody) && !allowEmptyMessage
+  const isDisabled = mustHaveMessageBody && !processMessage(messageBody)
 
   const resetForm = () => {
     setMessageBody('')
@@ -141,7 +148,7 @@ export default function ChatForm({
       message: processedMessage,
       chatId,
       replyTo,
-      ...getAdditionalTxParams?.(),
+      ...buildAdditionalTxParams?.(),
     }
 
     const { newMessageParams, txPrevented } =

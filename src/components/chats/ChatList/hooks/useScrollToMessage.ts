@@ -1,4 +1,4 @@
-import { scrollToMessageElement } from '../../helpers'
+import { scrollToMessageElement } from '../../utils'
 import useGetMessageElement from './useGetChatElement'
 
 export default function useScrollToMessage(

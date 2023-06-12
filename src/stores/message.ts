@@ -9,18 +9,34 @@ const messageCountStorage = new LocalStorage(
 
 type State = {
   messageCount: number
+  messageBody: string
+  replyTo: string | undefined
 }
 
 type Actions = {
   incrementMessageCount: () => void
+  setMessageBody: (message: string) => void
+  setReplyTo: (replyTo: string) => void
+  clearReplyTo: () => void
 }
 
 const INITIAL_STATE: State = {
   messageCount: 0,
+  messageBody: '',
+  replyTo: '',
 }
 
 export const useMessageData = create<State & Actions>()((set, get) => ({
   ...INITIAL_STATE,
+  setMessageBody: (messageBody: string) => {
+    set({ messageBody: messageBody })
+  },
+  setReplyTo: (replyTo: string) => {
+    set({ replyTo })
+  },
+  clearReplyTo: () => {
+    set({ replyTo: undefined })
+  },
   incrementMessageCount: () => {
     const { messageCount } = get()
     const { parentOrigin } = useParentData.getState()

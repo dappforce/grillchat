@@ -4,7 +4,7 @@ import { generateManuallyTriggeredPromise } from '@/utils/promise'
 import { PostData } from '@subsocial/api/types'
 import { UseQueryResult } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef } from 'react'
-import { getMessageElementId } from '../../helpers'
+import { getMessageElementId } from '../../utils'
 
 // TODO: refactor this hook to have better readability
 export default function useGetMessageElement({

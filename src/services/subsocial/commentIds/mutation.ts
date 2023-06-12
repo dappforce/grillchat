@@ -11,6 +11,13 @@ import { generateOptimisticId } from '../utils'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
 import { OptimisticMessageIdData, SendMessageParams } from './types'
 
+function generateMessageContent(params: SendMessageParams) {
+  return {
+    body: params.message,
+    inReplyTo: ReplyWrapper(params.replyTo),
+    extensions: params.extensions,
+  } as PostContent
+}
 export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const client = useQueryClient()
   const getWallet = useWalletGetter()
@@ -23,11 +30,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     async (params, { substrateApi }) => {
       console.log('waiting energy...')
       await waitHasEnergy()
-      const { cid, success } = await saveFile({
-        body: params.message,
-        inReplyTo: ReplyWrapper(params.replyTo),
-        extensions: params.extensions,
-      } as PostContent)
+      const { cid, success } = await saveFile(generateMessageContent(params))
 
       if (!success) throw new Error('Failed to save file to IPFS')
 
@@ -45,11 +48,12 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
       txCallbacks: {
         // Removal of optimistic message generated is done by the subscription of messageIds
         // this is done to prevent a bit of flickering because the optimistic message is done first, before the message data finished fetching
-        getContext: ({ data: params, address }) =>
-          generateOptimisticId<OptimisticMessageIdData>({
+        getContext: ({ data: params, address }) => {
+          return generateOptimisticId<OptimisticMessageIdData>({
             address,
-            message: params.message,
-          }),
+            messageData: generateMessageContent(params),
+          })
+        },
         onStart: ({ address, data: params }, tempId) => {
           preventWindowUnload()
           addOptimisticData({ address, params, tempId, client })
