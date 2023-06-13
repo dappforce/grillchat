@@ -1,9 +1,9 @@
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
-import { getPostsFromCache } from '@/pages/api/posts'
+import { getPostsServer } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
-import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
-import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
+import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
@@ -13,16 +13,16 @@ export async function prefetchChatPreviewsData(
   queryClient: QueryClient,
   hubId: string
 ) {
-  const res = await getChatIdsBySpaceIdQuery.fetchQuery(queryClient, hubId)
+  const res = await getPostIdsBySpaceIdQuery.fetchQuery(queryClient, hubId)
   const allChatIds = [
-    ...(res?.chatIds ?? []),
+    ...(res?.postIds ?? []),
     ...getLinkedChatIdsForHubId(hubId),
   ]
 
   const [{ lastMessages, chats, messageIdsByChatIds }] = await Promise.all([
     getChatPreviewsData(allChatIds),
     prefetchBlockedEntities(queryClient, hubId, allChatIds),
-    getSpaceBySpaceIdQuery.fetchQuery(queryClient, hubId),
+    getSpaceQuery.fetchQuery(queryClient, hubId),
   ] as const)
 
   messageIdsByChatIds.forEach((messageIds, idx) => {
@@ -49,7 +49,7 @@ export async function getChatPreviewsData(chatIds: string[]) {
         return subsocialApi.blockchain.getReplyIdsByPostId(chatId)
       })
     ),
-    getPostsFromCache(chatIds),
+    getPostsServer(chatIds),
   ] as const)
 
   const lastMessages = await getLastMessages(messageIdsByChatIds)
@@ -63,7 +63,7 @@ async function getLastMessages(messageIdsByChatIds: string[][]) {
 
   let lastMessages: PostData[] = []
   if (lastMessageIds.length > 0) {
-    lastMessages = await getPostsFromCache(lastMessageIds)
+    lastMessages = await getPostsServer(lastMessageIds)
   }
   return lastMessages
 }

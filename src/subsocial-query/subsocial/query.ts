@@ -73,6 +73,23 @@ export function createSubsocialQuery<Data, ReturnValue>({
   ) => QueryConfig<Data, ReturnValue>
 }) {
   const getQueryKey = createQueryKeys<Data>(key)
+
+  async function fetchQuery(client: QueryClient | null, data: Data) {
+    const cachedData = client?.getQueryData(getQueryKey(data))
+    if (cachedData) {
+      return cachedData as ReturnValue
+    }
+
+    const { getSubsocialApi } = await import('./connection')
+    const api = await getSubsocialApi()
+    const res = await fetcher({ api, data })
+
+    if (client) {
+      client.setQueryData(getQueryKey(data), res ?? null)
+    }
+    return res
+  }
+
   return {
     getQueryKey,
     invalidate: createQueryInvalidation<Data>(key),
@@ -96,12 +113,11 @@ export function createSubsocialQuery<Data, ReturnValue>({
     ) => {
       client.setQueryData(getQueryKey(data), value ?? null)
     },
-    fetchQuery: async (client: QueryClient, data: Data) => {
-      const { getSubsocialApi } = await import('./connection')
-      const api = await getSubsocialApi()
-      const res = await fetcher({ api, data })
-      client.setQueryData(getQueryKey(data), res ?? null)
-      return res
+    fetchQuery,
+    fetchQueries: async (client: QueryClient, data: Data[]) => {
+      return Promise.all(
+        data.map((singleData) => fetchQuery(client, singleData))
+      )
     },
   }
 }

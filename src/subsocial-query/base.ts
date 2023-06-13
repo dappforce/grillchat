@@ -59,8 +59,8 @@ export function makeCombinedCallback(
   attr: string
 ) {
   return (...data: any[]) => {
-    defaultConfig && defaultConfig[attr] && defaultConfig[attr](...data)
-    config && config[attr] && config[attr](...data)
+    defaultConfig?.[attr]?.(...data)
+    config?.[attr]?.(...data)
   }
 }
 
@@ -92,6 +92,13 @@ export function createQuery<Data, ReturnValue>({
   ) => QueryConfig<Data, ReturnValue>
 }) {
   const getQueryKey = createQueryKeys<Data>(key)
+
+  async function fetchQuery(client: QueryClient, data: Data) {
+    const res = await fetcher(data)
+    client.setQueryData(getQueryKey(data), res ?? null)
+    return res
+  }
+
   return {
     getQueryKey,
     invalidate: createQueryInvalidation<Data>(key),
@@ -126,10 +133,11 @@ export function createQuery<Data, ReturnValue>({
     setQueryData: (client: QueryClient, data: Data, value: ReturnValue) => {
       client.setQueryData(getQueryKey(data), value ?? null)
     },
-    fetchQuery: async (client: QueryClient, data: Data) => {
-      const res = await fetcher(data)
-      client.setQueryData(getQueryKey(data), res ?? null)
-      return res
+    fetchQuery,
+    fetchQueries: async (client: QueryClient, data: Data[]) => {
+      return Promise.all(
+        data.map((singleData) => fetchQuery(client, singleData))
+      )
     },
   }
 }

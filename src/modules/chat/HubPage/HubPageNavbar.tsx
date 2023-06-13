@@ -4,7 +4,7 @@ import NavbarWithSearch, {
   NavbarWithSearchProps,
 } from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getHubIds } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -33,7 +33,7 @@ export default function HubPageNavbar({
   const [isOpenAboutModal, setIsOpenAboutModal] = useState(false)
 
   const isInIframe = useIsInIframe()
-  const { data: space } = getSpaceBySpaceIdQuery.useQuery(hubId)
+  const { data: space } = getSpaceQuery.useQuery(hubId)
   const isInHub = getHubIds().includes(hubId)
 
   const content = space?.content

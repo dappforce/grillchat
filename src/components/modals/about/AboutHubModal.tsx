@@ -1,4 +1,4 @@
-import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin, getHubPageLink } from '@/utils/links'
 import { useRouter } from 'next/router'
@@ -21,8 +21,7 @@ export default function AboutHubModal({
   ...props
 }: AboutHubModalProps) {
   const router = useRouter()
-  const { data: hub } = getSpaceBySpaceIdQuery.useQuery(hubId)
-
+  const { data: hub } = getSpaceQuery.useQuery(hubId)
   const [openedModalType, setOpenedModalType] = useState<
     'metadata' | 'qr' | null
   >(null)

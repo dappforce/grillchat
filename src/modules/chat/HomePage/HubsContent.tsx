@@ -1,7 +1,7 @@
 import ChatPreview from '@/components/chats/ChatPreview'
 import { getAliasFromHubId } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
 import { getHubIds } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -16,7 +16,7 @@ export default function HubsContent({
 }: CommonHubContentProps & Pick<HubsPageProps, 'hubsChatCount'>) {
   const hubIds = getHubIds()
 
-  const hubQueries = getSpaceBySpaceIdQuery.useQueries(hubIds)
+  const hubQueries = getSpaceQuery.useQueries(hubIds)
   const hubs = hubQueries.map(({ data: hub }) => hub)
   const { searchResults, focusedElementIndex } = getSearchResults(hubs, [
     'content.name',
