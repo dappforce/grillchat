@@ -44,7 +44,7 @@ export default function SearchChannelsWrapper({
     return <div className='flex flex-col'>{children}</div>
   }
 
-  if (isLoading) return <ChatPreviewSkeleton.SkeletonList />
+  if (!localSearch && isLoading) return <ChatPreviewSkeleton.SkeletonList />
 
   if (!usedSearchResults || usedSearchResults.length === 0) {
     return <NoChatsFound search={search} />
