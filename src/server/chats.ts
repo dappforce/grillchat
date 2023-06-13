@@ -2,7 +2,7 @@ import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
-import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { PostData } from '@subsocial/api/types'
@@ -13,9 +13,9 @@ export async function prefetchChatPreviewsData(
   queryClient: QueryClient,
   hubId: string
 ) {
-  const res = await getChatIdsBySpaceIdQuery.fetchQuery(queryClient, hubId)
+  const res = await getPostIdsBySpaceIdQuery.fetchQuery(queryClient, hubId)
   const allChatIds = [
-    ...(res?.chatIds ?? []),
+    ...(res?.postIds ?? []),
     ...getLinkedChatIdsForHubId(hubId),
   ]
 

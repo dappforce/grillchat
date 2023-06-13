@@ -2,7 +2,7 @@ import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import HomePage, { HubsPageProps } from '@/modules/chat/HomePage'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
-import { getChatIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getHubIds, getMainHubId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
@@ -26,10 +26,10 @@ export const getStaticProps = getCommonStaticProps<
         ...hubsData.map(async (hub) => {
           if (!hub) return
 
-          const res = await getChatIdsBySpaceIdQuery.fetchQuery(null, hub.id)
+          const res = await getPostIdsBySpaceIdQuery.fetchQuery(null, hub.id)
           const linkedChats = getLinkedChatIdsForHubId(hub.id)
           hubsChatCount[hub.id] =
-            (res?.chatIds.length ?? 0) + linkedChats.length
+            (res?.postIds.length ?? 0) + linkedChats.length
         }),
       ])
     } catch (err) {
