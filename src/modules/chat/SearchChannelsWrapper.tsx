@@ -34,7 +34,7 @@ export default function SearchChannelsWrapper({
 
   let usedSearchResults = searchResults
   if (localSearch) {
-    const filteredData = searchResults?.filter(Boolean) ?? []
+    const filteredData = (localSearch.data?.filter(Boolean) ?? []) as PostData[]
     usedSearchResults = matchSorter(filteredData, cleanedSearch, {
       keys: localSearch.searchKeys,
     })
