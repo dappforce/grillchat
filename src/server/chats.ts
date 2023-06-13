@@ -1,4 +1,4 @@
-import { getLinkedChatIdsForSpaceId } from '@/constants/chat-room'
+import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
@@ -16,7 +16,7 @@ export async function prefetchChatPreviewsData(
   const res = await getChatIdsBySpaceIdQuery.fetchQuery(queryClient, hubId)
   const allChatIds = [
     ...(res?.chatIds ?? []),
-    ...getLinkedChatIdsForSpaceId(hubId),
+    ...getLinkedChatIdsForHubId(hubId),
   ]
 
   const [{ lastMessages, chats, messageIdsByChatIds }] = await Promise.all([

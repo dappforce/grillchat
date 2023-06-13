@@ -2,7 +2,7 @@ import AddressAvatar from '@/components/AddressAvatar'
 import PopOver from '@/components/floating/PopOver'
 import { cx } from '@/utils/class-names'
 import { ComponentProps, useEffect, useState } from 'react'
-import ProfileModal from './ProfileModal'
+import ProfileModal from '../../auth/ProfileModal'
 
 export type ProfileAvatarProps = ComponentProps<'div'> & {
   address: string
@@ -47,12 +47,12 @@ export default function ProfileAvatar({
           popOverClassName='font-semibold'
           yOffset={16}
           placement='bottom-end'
-          panelColor='warning'
+          panelColor='info'
           withCloseButton
           trigger={null}
           initialFocus={-1}
         >
-          <p>Click on your avatar and save your Grill secret key</p>
+          <p>Connect an EVM wallet to unlock more features</p>
         </PopOver>
       </div>
     </>

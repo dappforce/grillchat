@@ -1,5 +1,5 @@
-import { useConfigContext } from '@/contexts/ConfigContext'
 import useGetTheme from '@/hooks/useGetTheme'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { cx } from '@/utils/class-names'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'

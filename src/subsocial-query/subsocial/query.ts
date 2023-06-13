@@ -15,11 +15,11 @@ import { QueryConfig } from '../types'
 
 export type SubsocialQueryData<T> = { data: T } & { api: SubsocialApi }
 
-export function useSubsocialQuery<ReturnValue, Data>(
-  queryData: { key: string; data: Data | null },
+export function useSubsocialQuery<Data, ReturnValue>(
+  queryData: { key: string; data: Data },
   func: (data: SubsocialQueryData<Data>) => Promise<ReturnValue>,
   config?: QueryConfig,
-  defaultConfig?: QueryConfig<ReturnValue, Data>
+  defaultConfig?: QueryConfig<Data, ReturnValue>
 ) {
   const mergedConfig = mergeQueryConfig(config, defaultConfig)
   return useQuery(
@@ -34,10 +34,10 @@ export function useSubsocialQuery<ReturnValue, Data>(
 }
 
 export function useSubsocialQueries<Data, ReturnValue>(
-  queryData: { key: string; data: (ReturnValue | null)[] },
+  queryData: { key: string; data: Data[] },
   func: (
-    data: SubsocialQueryData<ReturnValue> & { idx: number }
-  ) => Promise<Data>,
+    data: SubsocialQueryData<Data> & { idx: number }
+  ) => Promise<ReturnValue>,
   config?: QueryConfig,
   defaultConfig?: QueryConfig<Data, ReturnValue>
 ) {
@@ -47,8 +47,8 @@ export function useSubsocialQueries<Data, ReturnValue>(
       return {
         queryKey: [queryData.key, singleData],
         queryFn: queryWrapper<
-          Data,
           ReturnValue,
+          Data,
           { api: SubsocialApi; idx: number }
         >(func, async () => {
           const { getSubsocialApi } = await import('./connection')
@@ -64,9 +64,13 @@ export function useSubsocialQueries<Data, ReturnValue>(
 export function createSubsocialQuery<Data, ReturnValue>({
   key,
   fetcher,
+  defaultConfigGenerator,
 }: {
   key: string
   fetcher: (params: SubsocialQueryData<Data>) => Promise<ReturnValue>
+  defaultConfigGenerator?: (
+    params: Data | null
+  ) => QueryConfig<Data, ReturnValue>
 }) {
   const getQueryKey = createQueryKeys<Data>(key)
 
@@ -89,11 +93,15 @@ export function createSubsocialQuery<Data, ReturnValue>({
   return {
     getQueryKey,
     invalidate: createQueryInvalidation<Data>(key),
-    useQuery: (data: Data, config?: QueryConfig<Data, any>) => {
-      return useSubsocialQuery({ key, data }, fetcher, config)
+    useQuery: (data: Data, config?: QueryConfig<Data, ReturnValue>) => {
+      const defaultConfig = defaultConfigGenerator?.(data)
+      const mergedConfig = mergeQueryConfig(config, defaultConfig)
+      return useSubsocialQuery({ key, data }, fetcher, mergedConfig)
     },
-    useQueries: (data: Data[], config?: QueryConfig<Data, any>) => {
-      return useSubsocialQueries({ key, data }, fetcher, config)
+    useQueries: (data: Data[], config?: QueryConfig<Data, ReturnValue>) => {
+      const defaultConfig = defaultConfigGenerator?.(null)
+      const mergedConfig = mergeQueryConfig(config, defaultConfig)
+      return useSubsocialQueries({ key, data }, fetcher, mergedConfig)
     },
     setQueryData: (
       client: QueryClient,

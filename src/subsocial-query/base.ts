@@ -83,9 +83,13 @@ export default function mutationWrapper<ReturnValue, Data>(
 export function createQuery<Data, ReturnValue>({
   key,
   fetcher,
+  defaultConfigGenerator,
 }: {
   key: string
   fetcher: (data: Data) => Promise<ReturnValue>
+  defaultConfigGenerator?: (
+    params: Data | null
+  ) => QueryConfig<Data, ReturnValue>
 }) {
   const getQueryKey = createQueryKeys<Data>(key)
 
@@ -98,11 +102,8 @@ export function createQuery<Data, ReturnValue>({
   return {
     getQueryKey,
     invalidate: createQueryInvalidation<Data>(key),
-    useQuery: (
-      data: Data | null,
-      config?: QueryConfig<ReturnValue, Data>,
-      defaultConfig?: QueryConfig<ReturnValue, Data>
-    ) => {
+    useQuery: (data: Data, config?: QueryConfig<Data, ReturnValue>) => {
+      const defaultConfig = defaultConfigGenerator?.(data)
       const mergedConfig = mergeQueryConfig(config, defaultConfig)
       return useQuery(
         [key, data],
@@ -113,11 +114,8 @@ export function createQuery<Data, ReturnValue>({
         mergedConfig
       )
     },
-    useQueries: (
-      data: (Data | null)[],
-      config?: QueryConfig<ReturnValue, Data>,
-      defaultConfig?: QueryConfig<ReturnValue, Data>
-    ) => {
+    useQueries: (data: Data[], config?: QueryConfig<Data, ReturnValue>) => {
+      const defaultConfig = defaultConfigGenerator?.(null)
       const mergedConfig = mergeQueryConfig(config, defaultConfig)
       return useQueries({
         queries: data.map((singleData) => {

@@ -33,8 +33,6 @@ export default function useInfiniteScrollData<Data>(
   const hasMore = currentPage * itemsPerPage < data.length
 
   const loadMore = useCallback(async () => {
-    console.log('Load more...')
-
     if (isPausedLoadMore) {
       const { getPromise, getResolver } = generateManuallyTriggeredPromise()
       callResolvers.current.push(getResolver())

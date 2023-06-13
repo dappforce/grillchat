@@ -4,6 +4,7 @@ import { getPostQuery } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
+import { getAccountDataQuery, getAccountsData } from '../evmAddresses'
 import { extractOptimisticIdData, isOptimisticId } from '../utils'
 import { getCommentIdsQueryKey } from './query'
 import { OptimisticMessageIdData } from './types'
@@ -27,6 +28,7 @@ const subscription = (
     )
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
+    const addressesSet = new Set<string>()
 
     return substrateApi.query.posts.replyIdsByPostId(postId, async (ids) => {
       const newIds = Array.from(ids.toPrimitive() as any).map((id) => id + '')
@@ -60,11 +62,23 @@ const subscription = (
         updateQueryData()
         return
       }
-
       const newPosts = await getPosts(newIdsAfterLastSubscribed)
       newPosts.forEach((post) => {
+        const owner = post.struct.ownerId
+        addressesSet.add(owner)
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
+
+      const accountData = await getAccountsData(Array.from(addressesSet))
+
+      accountData.forEach((accountAddresses) => {
+        getAccountDataQuery.setQueryData(
+          queryClient,
+          accountAddresses.grillAddress,
+          accountAddresses
+        )
+      })
+
       queryClient.setQueryData<string[]>(
         getCommentIdsQueryKey(postId),
         (oldIds) => {
