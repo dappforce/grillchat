@@ -10,6 +10,8 @@ export type BackButtonProps = ButtonProps & {
   noStyle?: boolean
 }
 
+const homeLinks = ['/', '/my-chats', '/hubs', '/hot-chats']
+
 export default function BackButton({
   defaultBackLink = '/',
   forceUseDefaultBackLink = true,
@@ -23,7 +25,10 @@ export default function BackButton({
   const hasBackToCurrentSession = !!prevUrl
 
   const prevUrlPathname = prevUrl?.replace(getCurrentUrlOrigin(), '')
-  const isDefaultBackLinkSameAsPrevUrl = defaultBackLink === prevUrlPathname
+  let isDefaultBackLinkSameAsPrevUrl = defaultBackLink === prevUrlPathname
+  if (homeLinks.includes(defaultBackLink)) {
+    isDefaultBackLinkSameAsPrevUrl = homeLinks.includes(prevUrlPathname ?? '')
+  }
 
   const shouldUseRouterBack =
     hasBackToCurrentSession &&
