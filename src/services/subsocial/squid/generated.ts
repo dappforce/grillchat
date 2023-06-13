@@ -4913,6 +4913,7 @@ export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 
 
 export type GetPostsByContentQueryVariables = Exact<{
   search: Scalars['String']['input'];
+  spaceIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
@@ -5007,9 +5008,9 @@ export const GetPosts = gql`
 }
     ${PostFragment}`;
 export const GetPostsByContent = gql`
-    query getPostsByContent($search: String!) {
+    query getPostsByContent($search: String!, $spaceIds: [String!]!) {
   posts(
-    where: {hidden_eq: false, title_containsInsensitive: $search, OR: {body_containsInsensitive: $search}}
+    where: {hidden_eq: false, isComment_eq: false, title_containsInsensitive: $search, space: {id_in: $spaceIds}}
   ) {
     ...PostFragment
   }

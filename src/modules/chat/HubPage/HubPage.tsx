@@ -41,6 +41,10 @@ export default function HubPage({ hubId }: HubPageProps) {
       }}
     >
       <SearchChannelsWrapper
+        localSearch={{
+          data: chats,
+          searchKeys: ['content.title'],
+        }}
         getFocusedElementIndex={getFocusedElementIndex}
         search={search}
       >

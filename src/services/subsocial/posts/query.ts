@@ -4,6 +4,7 @@ import {
   createSubsocialQuery,
   SubsocialQueryData,
 } from '@/subsocial-query/subsocial/query'
+import { getHubIds } from '@/utils/env/client'
 import { gql } from 'graphql-request'
 import { POST_FRAGMENT } from '../squid/fragments'
 import {
@@ -83,15 +84,13 @@ export const getFollowedPostIdsByAddressQuery = createSubsocialQuery({
 
 export const GET_POSTS_BY_CONTENT = gql`
   ${POST_FRAGMENT}
-  query getPostsByContent($search: String!) {
+  query getPostsByContent($search: String!, $spaceIds: [String!]!) {
     posts(
       where: {
         hidden_eq: false
         isComment_eq: false
-        AND: {
-          title_containsInsensitive: $search
-          OR: { body_containsInsensitive: $search }
-        }
+        title_containsInsensitive: $search
+        space: { id_in: $spaceIds }
       }
     ) {
       ...PostFragment
@@ -105,7 +104,7 @@ async function getPostsByContent(search: string) {
     GetPostsByContentQueryVariables
   >({
     document: GET_POSTS_BY_CONTENT,
-    variables: { search },
+    variables: { search, spaceIds: getHubIds() },
   })
   return res.posts.map((post) => mapPostFragment(post))
 }

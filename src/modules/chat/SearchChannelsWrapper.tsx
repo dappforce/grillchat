@@ -4,38 +4,56 @@ import NoChatsFound from '@/components/chats/NoChatsFound'
 import useDebounce from '@/hooks/useDebounce'
 import useSearch from '@/hooks/useSearch'
 import { getPostsBySpaceContentQuery } from '@/services/subsocial/posts'
+import { removeDoubleSpaces } from '@/utils/strings'
+import { PostData } from '@subsocial/api/types'
+import { matchSorter } from 'match-sorter'
 
 export type SearchChannelsWrapperProps = {
   children: JSX.Element
   search: string
   getFocusedElementIndex: ReturnType<typeof useSearch>['getFocusedElementIndex']
+  localSearch?: {
+    data: (PostData | null | undefined)[]
+    searchKeys: string[]
+  }
 }
 
 export default function SearchChannelsWrapper({
   children,
   search,
   getFocusedElementIndex,
+  localSearch,
 }: SearchChannelsWrapperProps) {
-  const debouncedSearch = useDebounce(search)
+  const cleanedSearch = removeDoubleSpaces(search)
+
+  const debouncedSearch = useDebounce(cleanedSearch)
   const { data: searchResults, isLoading } =
-    getPostsBySpaceContentQuery.useQuery(search, {
-      enabled: search === debouncedSearch,
+    getPostsBySpaceContentQuery.useQuery(cleanedSearch, {
+      enabled: !localSearch && cleanedSearch === debouncedSearch,
     })
 
-  if (!search) {
+  let usedSearchResults = searchResults
+  if (localSearch) {
+    const filteredData = searchResults?.filter(Boolean) ?? []
+    usedSearchResults = matchSorter(filteredData, cleanedSearch, {
+      keys: localSearch.searchKeys,
+    })
+  }
+
+  if (!cleanedSearch) {
     return <div className='flex flex-col'>{children}</div>
   }
 
   if (isLoading) return <ChatPreviewSkeleton.SkeletonList />
 
-  if (!searchResults || searchResults.length === 0) {
+  if (!usedSearchResults || usedSearchResults.length === 0) {
     return <NoChatsFound search={search} />
   }
 
   return (
     <ChatPreviewList
-      chats={searchResults}
-      focusedElementIndex={getFocusedElementIndex(searchResults)}
+      chats={usedSearchResults}
+      focusedElementIndex={getFocusedElementIndex(usedSearchResults)}
     />
   )
 }
