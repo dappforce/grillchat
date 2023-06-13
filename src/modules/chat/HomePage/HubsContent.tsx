@@ -8,28 +8,23 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import { SpaceData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { CommonHubContentProps, HubsPageProps } from './HomePage'
+import { HubsPageProps } from './HomePage'
 
 export default function HubsContent({
   hubsChatCount = {},
-  getSearchResults,
-}: CommonHubContentProps & Pick<HubsPageProps, 'hubsChatCount'>) {
+}: Pick<HubsPageProps, 'hubsChatCount'>) {
   const hubIds = getHubIds()
 
   const hubQueries = getSpaceQuery.useQueries(hubIds)
   const hubs = hubQueries.map(({ data: hub }) => hub)
-  const { searchResults, focusedElementIndex } = getSearchResults(hubs, [
-    'content.name',
-  ])
 
   return (
     <div className='flex flex-col overflow-auto'>
-      {searchResults.map((hub, idx) => {
+      {hubs.map((hub) => {
         if (!hub) return null
         const hubId = hub.id
         return (
           <ChatPreviewContainer
-            isFocused={idx === focusedElementIndex}
             hub={hub}
             chatCount={hubsChatCount[hubId]}
             key={hubId}

@@ -23,6 +23,7 @@ export type Account = {
   __typename?: 'Account';
   /** A One-To-Many relationship with the Activities which have been performed by an Account (foreign key - "account") */
   activities: Array<Activity>;
+  extensions: Array<ContentExtension>;
   /**
    * A One-To-Many relationship between an Account and the Activities it has performed in the network through NewsFeed (foreign key - "account").
    * Each Activity has the "event<EventName>" and "post" fields, which can be used for adding created Posts to a user's Feed.
@@ -42,6 +43,8 @@ export type Account = {
   followingSpacesCount: Scalars['Int']['output'];
   /** The account's public key converted to ss58 format for the Subsocial chain (prefix "28") */
   id: Scalars['String']['output'];
+  /** A list of linked Evm Accounts */
+  linkedEvmAccounts: Array<EvmSubstrateAccountLink>;
   /** A Many-To-Many relationship between an Account and Activities done in the network through Notification (foreign key - "account"). */
   notifications: Array<Notification>;
   /** A One-To-Many relationship with the Posts which are owned by an Account (foreign key - "ownedByAccount") */
@@ -79,6 +82,15 @@ export type AccountActivitiesArgs = {
 
 
 /** The Account entity */
+export type AccountExtensionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ContentExtensionOrderByInput>>;
+  where?: InputMaybe<ContentExtensionWhereInput>;
+};
+
+
+/** The Account entity */
 export type AccountFeedsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -102,6 +114,15 @@ export type AccountFollowingAccountsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<AccountFollowersOrderByInput>>;
   where?: InputMaybe<AccountFollowersWhereInput>;
+};
+
+
+/** The Account entity */
+export type AccountLinkedEvmAccountsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EvmSubstrateAccountLinkOrderByInput>>;
+  where?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
 };
 
 
@@ -334,6 +355,9 @@ export type AccountWhereInput = {
   activities_every?: InputMaybe<ActivityWhereInput>;
   activities_none?: InputMaybe<ActivityWhereInput>;
   activities_some?: InputMaybe<ActivityWhereInput>;
+  extensions_every?: InputMaybe<ContentExtensionWhereInput>;
+  extensions_none?: InputMaybe<ContentExtensionWhereInput>;
+  extensions_some?: InputMaybe<ContentExtensionWhereInput>;
   feeds_every?: InputMaybe<NewsFeedWhereInput>;
   feeds_none?: InputMaybe<NewsFeedWhereInput>;
   feeds_some?: InputMaybe<NewsFeedWhereInput>;
@@ -396,6 +420,9 @@ export type AccountWhereInput = {
   id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
   id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
   id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  linkedEvmAccounts_every?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+  linkedEvmAccounts_none?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+  linkedEvmAccounts_some?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
   notifications_every?: InputMaybe<NotificationWhereInput>;
   notifications_none?: InputMaybe<NotificationWhereInput>;
   notifications_some?: InputMaybe<NotificationWhereInput>;
@@ -483,6 +510,8 @@ export type Activity = {
   event: EventName;
   /** The event's index in the block */
   eventIndex: Scalars['Int']['output'];
+  /** The ContentExtension which was created in this particular Activity. */
+  extension?: Maybe<ContentExtension>;
   /** A One-to-One relationship with the following Account if the event is `AccountFollowed` or `AccountUnfollowed`. */
   followingAccount?: Maybe<Account>;
   /** The ID of an Activity. It has the following structure: <blockNumber>-<indexInBlock>-<md5Hash(eventName)>` (e.g. 1093209-1001-1ee8fd8482c322254acff29a8f52f5e1) */
@@ -538,6 +567,26 @@ export enum ActivityOrderByInput {
   EventIndexDesc = 'eventIndex_DESC',
   EventAsc = 'event_ASC',
   EventDesc = 'event_DESC',
+  ExtensionAmountAsc = 'extension_amount_ASC',
+  ExtensionAmountDesc = 'extension_amount_DESC',
+  ExtensionChainAsc = 'extension_chain_ASC',
+  ExtensionChainDesc = 'extension_chain_DESC',
+  ExtensionCollectionIdAsc = 'extension_collectionId_ASC',
+  ExtensionCollectionIdDesc = 'extension_collectionId_DESC',
+  ExtensionDecimalsAsc = 'extension_decimals_ASC',
+  ExtensionDecimalsDesc = 'extension_decimals_DESC',
+  ExtensionExtensionSchemaIdAsc = 'extension_extensionSchemaId_ASC',
+  ExtensionExtensionSchemaIdDesc = 'extension_extensionSchemaId_DESC',
+  ExtensionIdAsc = 'extension_id_ASC',
+  ExtensionIdDesc = 'extension_id_DESC',
+  ExtensionNftIdAsc = 'extension_nftId_ASC',
+  ExtensionNftIdDesc = 'extension_nftId_DESC',
+  ExtensionTokenAsc = 'extension_token_ASC',
+  ExtensionTokenDesc = 'extension_token_DESC',
+  ExtensionTxHashAsc = 'extension_txHash_ASC',
+  ExtensionTxHashDesc = 'extension_txHash_DESC',
+  ExtensionUrlAsc = 'extension_url_ASC',
+  ExtensionUrlDesc = 'extension_url_DESC',
   FollowingAccountFollowersCountAsc = 'followingAccount_followersCount_ASC',
   FollowingAccountFollowersCountDesc = 'followingAccount_followersCount_DESC',
   FollowingAccountFollowingAccountsCountAsc = 'followingAccount_followingAccountsCount_ASC',
@@ -819,6 +868,8 @@ export type ActivityWhereInput = {
   event_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   event_not_eq?: InputMaybe<EventName>;
   event_not_in?: InputMaybe<Array<EventName>>;
+  extension?: InputMaybe<ContentExtensionWhereInput>;
+  extension_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   followingAccount?: InputMaybe<AccountWhereInput>;
   followingAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   id_contains?: InputMaybe<Scalars['String']['input']>;
@@ -997,6 +1048,338 @@ export type CommentFollowersWhereInput = {
   id_startsWith?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ContentExtension = {
+  __typename?: 'ContentExtension';
+  amount?: Maybe<Scalars['BigInt']['output']>;
+  chain?: Maybe<Scalars['String']['output']>;
+  collectionId?: Maybe<Scalars['String']['output']>;
+  createdBy: Account;
+  decimals?: Maybe<Scalars['Int']['output']>;
+  extensionSchemaId: ContentExtensionSchemaId;
+  fromEvm?: Maybe<EvmAccount>;
+  fromSubstrate?: Maybe<Account>;
+  id: Scalars['String']['output'];
+  nftId?: Maybe<Scalars['String']['output']>;
+  parentPost: Post;
+  toEvm?: Maybe<EvmAccount>;
+  toSubstrate?: Maybe<Account>;
+  token?: Maybe<Scalars['String']['output']>;
+  txHash?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+export type ContentExtensionEdge = {
+  __typename?: 'ContentExtensionEdge';
+  cursor: Scalars['String']['output'];
+  node: ContentExtension;
+};
+
+export enum ContentExtensionOrderByInput {
+  AmountAsc = 'amount_ASC',
+  AmountDesc = 'amount_DESC',
+  ChainAsc = 'chain_ASC',
+  ChainDesc = 'chain_DESC',
+  CollectionIdAsc = 'collectionId_ASC',
+  CollectionIdDesc = 'collectionId_DESC',
+  CreatedByFollowersCountAsc = 'createdBy_followersCount_ASC',
+  CreatedByFollowersCountDesc = 'createdBy_followersCount_DESC',
+  CreatedByFollowingAccountsCountAsc = 'createdBy_followingAccountsCount_ASC',
+  CreatedByFollowingAccountsCountDesc = 'createdBy_followingAccountsCount_DESC',
+  CreatedByFollowingPostsCountAsc = 'createdBy_followingPostsCount_ASC',
+  CreatedByFollowingPostsCountDesc = 'createdBy_followingPostsCount_DESC',
+  CreatedByFollowingSpacesCountAsc = 'createdBy_followingSpacesCount_ASC',
+  CreatedByFollowingSpacesCountDesc = 'createdBy_followingSpacesCount_DESC',
+  CreatedByIdAsc = 'createdBy_id_ASC',
+  CreatedByIdDesc = 'createdBy_id_DESC',
+  CreatedByOwnedPostsCountAsc = 'createdBy_ownedPostsCount_ASC',
+  CreatedByOwnedPostsCountDesc = 'createdBy_ownedPostsCount_DESC',
+  CreatedByUpdatedAtBlockAsc = 'createdBy_updatedAtBlock_ASC',
+  CreatedByUpdatedAtBlockDesc = 'createdBy_updatedAtBlock_DESC',
+  CreatedByUpdatedAtTimeAsc = 'createdBy_updatedAtTime_ASC',
+  CreatedByUpdatedAtTimeDesc = 'createdBy_updatedAtTime_DESC',
+  DecimalsAsc = 'decimals_ASC',
+  DecimalsDesc = 'decimals_DESC',
+  ExtensionSchemaIdAsc = 'extensionSchemaId_ASC',
+  ExtensionSchemaIdDesc = 'extensionSchemaId_DESC',
+  FromEvmIdAsc = 'fromEvm_id_ASC',
+  FromEvmIdDesc = 'fromEvm_id_DESC',
+  FromSubstrateFollowersCountAsc = 'fromSubstrate_followersCount_ASC',
+  FromSubstrateFollowersCountDesc = 'fromSubstrate_followersCount_DESC',
+  FromSubstrateFollowingAccountsCountAsc = 'fromSubstrate_followingAccountsCount_ASC',
+  FromSubstrateFollowingAccountsCountDesc = 'fromSubstrate_followingAccountsCount_DESC',
+  FromSubstrateFollowingPostsCountAsc = 'fromSubstrate_followingPostsCount_ASC',
+  FromSubstrateFollowingPostsCountDesc = 'fromSubstrate_followingPostsCount_DESC',
+  FromSubstrateFollowingSpacesCountAsc = 'fromSubstrate_followingSpacesCount_ASC',
+  FromSubstrateFollowingSpacesCountDesc = 'fromSubstrate_followingSpacesCount_DESC',
+  FromSubstrateIdAsc = 'fromSubstrate_id_ASC',
+  FromSubstrateIdDesc = 'fromSubstrate_id_DESC',
+  FromSubstrateOwnedPostsCountAsc = 'fromSubstrate_ownedPostsCount_ASC',
+  FromSubstrateOwnedPostsCountDesc = 'fromSubstrate_ownedPostsCount_DESC',
+  FromSubstrateUpdatedAtBlockAsc = 'fromSubstrate_updatedAtBlock_ASC',
+  FromSubstrateUpdatedAtBlockDesc = 'fromSubstrate_updatedAtBlock_DESC',
+  FromSubstrateUpdatedAtTimeAsc = 'fromSubstrate_updatedAtTime_ASC',
+  FromSubstrateUpdatedAtTimeDesc = 'fromSubstrate_updatedAtTime_DESC',
+  IdAsc = 'id_ASC',
+  IdDesc = 'id_DESC',
+  NftIdAsc = 'nftId_ASC',
+  NftIdDesc = 'nftId_DESC',
+  ParentPostBodyAsc = 'parentPost_body_ASC',
+  ParentPostBodyDesc = 'parentPost_body_DESC',
+  ParentPostCanonicalAsc = 'parentPost_canonical_ASC',
+  ParentPostCanonicalDesc = 'parentPost_canonical_DESC',
+  ParentPostContentAsc = 'parentPost_content_ASC',
+  ParentPostContentDesc = 'parentPost_content_DESC',
+  ParentPostCreatedAtBlockAsc = 'parentPost_createdAtBlock_ASC',
+  ParentPostCreatedAtBlockDesc = 'parentPost_createdAtBlock_DESC',
+  ParentPostCreatedAtTimeAsc = 'parentPost_createdAtTime_ASC',
+  ParentPostCreatedAtTimeDesc = 'parentPost_createdAtTime_DESC',
+  ParentPostCreatedOnDayAsc = 'parentPost_createdOnDay_ASC',
+  ParentPostCreatedOnDayDesc = 'parentPost_createdOnDay_DESC',
+  ParentPostDownvotesCountAsc = 'parentPost_downvotesCount_ASC',
+  ParentPostDownvotesCountDesc = 'parentPost_downvotesCount_DESC',
+  ParentPostFollowersCountAsc = 'parentPost_followersCount_ASC',
+  ParentPostFollowersCountDesc = 'parentPost_followersCount_DESC',
+  ParentPostFormatAsc = 'parentPost_format_ASC',
+  ParentPostFormatDesc = 'parentPost_format_DESC',
+  ParentPostHiddenRepliesCountAsc = 'parentPost_hiddenRepliesCount_ASC',
+  ParentPostHiddenRepliesCountDesc = 'parentPost_hiddenRepliesCount_DESC',
+  ParentPostHiddenAsc = 'parentPost_hidden_ASC',
+  ParentPostHiddenDesc = 'parentPost_hidden_DESC',
+  ParentPostIdAsc = 'parentPost_id_ASC',
+  ParentPostIdDesc = 'parentPost_id_DESC',
+  ParentPostImageAsc = 'parentPost_image_ASC',
+  ParentPostImageDesc = 'parentPost_image_DESC',
+  ParentPostIsCommentAsc = 'parentPost_isComment_ASC',
+  ParentPostIsCommentDesc = 'parentPost_isComment_DESC',
+  ParentPostIsShowMoreAsc = 'parentPost_isShowMore_ASC',
+  ParentPostIsShowMoreDesc = 'parentPost_isShowMore_DESC',
+  ParentPostKindAsc = 'parentPost_kind_ASC',
+  ParentPostKindDesc = 'parentPost_kind_DESC',
+  ParentPostLinkAsc = 'parentPost_link_ASC',
+  ParentPostLinkDesc = 'parentPost_link_DESC',
+  ParentPostMetaAsc = 'parentPost_meta_ASC',
+  ParentPostMetaDesc = 'parentPost_meta_DESC',
+  ParentPostProposalIndexAsc = 'parentPost_proposalIndex_ASC',
+  ParentPostProposalIndexDesc = 'parentPost_proposalIndex_DESC',
+  ParentPostPublicRepliesCountAsc = 'parentPost_publicRepliesCount_ASC',
+  ParentPostPublicRepliesCountDesc = 'parentPost_publicRepliesCount_DESC',
+  ParentPostReactionsCountAsc = 'parentPost_reactionsCount_ASC',
+  ParentPostReactionsCountDesc = 'parentPost_reactionsCount_DESC',
+  ParentPostRepliesCountAsc = 'parentPost_repliesCount_ASC',
+  ParentPostRepliesCountDesc = 'parentPost_repliesCount_DESC',
+  ParentPostSharesCountAsc = 'parentPost_sharesCount_ASC',
+  ParentPostSharesCountDesc = 'parentPost_sharesCount_DESC',
+  ParentPostSlugAsc = 'parentPost_slug_ASC',
+  ParentPostSlugDesc = 'parentPost_slug_DESC',
+  ParentPostSummaryAsc = 'parentPost_summary_ASC',
+  ParentPostSummaryDesc = 'parentPost_summary_DESC',
+  ParentPostTagsOriginalAsc = 'parentPost_tagsOriginal_ASC',
+  ParentPostTagsOriginalDesc = 'parentPost_tagsOriginal_DESC',
+  ParentPostTitleAsc = 'parentPost_title_ASC',
+  ParentPostTitleDesc = 'parentPost_title_DESC',
+  ParentPostTweetIdAsc = 'parentPost_tweetId_ASC',
+  ParentPostTweetIdDesc = 'parentPost_tweetId_DESC',
+  ParentPostUpdatedAtTimeAsc = 'parentPost_updatedAtTime_ASC',
+  ParentPostUpdatedAtTimeDesc = 'parentPost_updatedAtTime_DESC',
+  ParentPostUpvotesCountAsc = 'parentPost_upvotesCount_ASC',
+  ParentPostUpvotesCountDesc = 'parentPost_upvotesCount_DESC',
+  ToEvmIdAsc = 'toEvm_id_ASC',
+  ToEvmIdDesc = 'toEvm_id_DESC',
+  ToSubstrateFollowersCountAsc = 'toSubstrate_followersCount_ASC',
+  ToSubstrateFollowersCountDesc = 'toSubstrate_followersCount_DESC',
+  ToSubstrateFollowingAccountsCountAsc = 'toSubstrate_followingAccountsCount_ASC',
+  ToSubstrateFollowingAccountsCountDesc = 'toSubstrate_followingAccountsCount_DESC',
+  ToSubstrateFollowingPostsCountAsc = 'toSubstrate_followingPostsCount_ASC',
+  ToSubstrateFollowingPostsCountDesc = 'toSubstrate_followingPostsCount_DESC',
+  ToSubstrateFollowingSpacesCountAsc = 'toSubstrate_followingSpacesCount_ASC',
+  ToSubstrateFollowingSpacesCountDesc = 'toSubstrate_followingSpacesCount_DESC',
+  ToSubstrateIdAsc = 'toSubstrate_id_ASC',
+  ToSubstrateIdDesc = 'toSubstrate_id_DESC',
+  ToSubstrateOwnedPostsCountAsc = 'toSubstrate_ownedPostsCount_ASC',
+  ToSubstrateOwnedPostsCountDesc = 'toSubstrate_ownedPostsCount_DESC',
+  ToSubstrateUpdatedAtBlockAsc = 'toSubstrate_updatedAtBlock_ASC',
+  ToSubstrateUpdatedAtBlockDesc = 'toSubstrate_updatedAtBlock_DESC',
+  ToSubstrateUpdatedAtTimeAsc = 'toSubstrate_updatedAtTime_ASC',
+  ToSubstrateUpdatedAtTimeDesc = 'toSubstrate_updatedAtTime_DESC',
+  TokenAsc = 'token_ASC',
+  TokenDesc = 'token_DESC',
+  TxHashAsc = 'txHash_ASC',
+  TxHashDesc = 'txHash_DESC',
+  UrlAsc = 'url_ASC',
+  UrlDesc = 'url_DESC'
+}
+
+export enum ContentExtensionSchemaId {
+  SubsocialDonations = 'subsocial_donations',
+  SubsocialEvmNft = 'subsocial_evm_nft'
+}
+
+export type ContentExtensionWhereInput = {
+  AND?: InputMaybe<Array<ContentExtensionWhereInput>>;
+  OR?: InputMaybe<Array<ContentExtensionWhereInput>>;
+  amount_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  amount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  amount_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  chain_contains?: InputMaybe<Scalars['String']['input']>;
+  chain_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  chain_endsWith?: InputMaybe<Scalars['String']['input']>;
+  chain_eq?: InputMaybe<Scalars['String']['input']>;
+  chain_gt?: InputMaybe<Scalars['String']['input']>;
+  chain_gte?: InputMaybe<Scalars['String']['input']>;
+  chain_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  chain_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  chain_lt?: InputMaybe<Scalars['String']['input']>;
+  chain_lte?: InputMaybe<Scalars['String']['input']>;
+  chain_not_contains?: InputMaybe<Scalars['String']['input']>;
+  chain_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  chain_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  chain_not_eq?: InputMaybe<Scalars['String']['input']>;
+  chain_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  chain_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  chain_startsWith?: InputMaybe<Scalars['String']['input']>;
+  collectionId_contains?: InputMaybe<Scalars['String']['input']>;
+  collectionId_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  collectionId_endsWith?: InputMaybe<Scalars['String']['input']>;
+  collectionId_eq?: InputMaybe<Scalars['String']['input']>;
+  collectionId_gt?: InputMaybe<Scalars['String']['input']>;
+  collectionId_gte?: InputMaybe<Scalars['String']['input']>;
+  collectionId_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  collectionId_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  collectionId_lt?: InputMaybe<Scalars['String']['input']>;
+  collectionId_lte?: InputMaybe<Scalars['String']['input']>;
+  collectionId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  collectionId_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  collectionId_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  collectionId_not_eq?: InputMaybe<Scalars['String']['input']>;
+  collectionId_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  collectionId_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  collectionId_startsWith?: InputMaybe<Scalars['String']['input']>;
+  createdBy?: InputMaybe<AccountWhereInput>;
+  createdBy_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  decimals_eq?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  decimals_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  decimals_lt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_lte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not_eq?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  extensionSchemaId_eq?: InputMaybe<ContentExtensionSchemaId>;
+  extensionSchemaId_in?: InputMaybe<Array<ContentExtensionSchemaId>>;
+  extensionSchemaId_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  extensionSchemaId_not_eq?: InputMaybe<ContentExtensionSchemaId>;
+  extensionSchemaId_not_in?: InputMaybe<Array<ContentExtensionSchemaId>>;
+  fromEvm?: InputMaybe<EvmAccountWhereInput>;
+  fromEvm_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  fromSubstrate?: InputMaybe<AccountWhereInput>;
+  fromSubstrate_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  nftId_contains?: InputMaybe<Scalars['String']['input']>;
+  nftId_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  nftId_endsWith?: InputMaybe<Scalars['String']['input']>;
+  nftId_eq?: InputMaybe<Scalars['String']['input']>;
+  nftId_gt?: InputMaybe<Scalars['String']['input']>;
+  nftId_gte?: InputMaybe<Scalars['String']['input']>;
+  nftId_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  nftId_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  nftId_lt?: InputMaybe<Scalars['String']['input']>;
+  nftId_lte?: InputMaybe<Scalars['String']['input']>;
+  nftId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  nftId_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  nftId_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  nftId_not_eq?: InputMaybe<Scalars['String']['input']>;
+  nftId_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  nftId_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  nftId_startsWith?: InputMaybe<Scalars['String']['input']>;
+  parentPost?: InputMaybe<PostWhereInput>;
+  parentPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  toEvm?: InputMaybe<EvmAccountWhereInput>;
+  toEvm_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  toSubstrate?: InputMaybe<AccountWhereInput>;
+  toSubstrate_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  token_contains?: InputMaybe<Scalars['String']['input']>;
+  token_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  token_endsWith?: InputMaybe<Scalars['String']['input']>;
+  token_eq?: InputMaybe<Scalars['String']['input']>;
+  token_gt?: InputMaybe<Scalars['String']['input']>;
+  token_gte?: InputMaybe<Scalars['String']['input']>;
+  token_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  token_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  token_lt?: InputMaybe<Scalars['String']['input']>;
+  token_lte?: InputMaybe<Scalars['String']['input']>;
+  token_not_contains?: InputMaybe<Scalars['String']['input']>;
+  token_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  token_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  token_not_eq?: InputMaybe<Scalars['String']['input']>;
+  token_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  token_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  token_startsWith?: InputMaybe<Scalars['String']['input']>;
+  txHash_contains?: InputMaybe<Scalars['String']['input']>;
+  txHash_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  txHash_endsWith?: InputMaybe<Scalars['String']['input']>;
+  txHash_eq?: InputMaybe<Scalars['String']['input']>;
+  txHash_gt?: InputMaybe<Scalars['String']['input']>;
+  txHash_gte?: InputMaybe<Scalars['String']['input']>;
+  txHash_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  txHash_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  txHash_lt?: InputMaybe<Scalars['String']['input']>;
+  txHash_lte?: InputMaybe<Scalars['String']['input']>;
+  txHash_not_contains?: InputMaybe<Scalars['String']['input']>;
+  txHash_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  txHash_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  txHash_not_eq?: InputMaybe<Scalars['String']['input']>;
+  txHash_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  txHash_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  txHash_startsWith?: InputMaybe<Scalars['String']['input']>;
+  url_contains?: InputMaybe<Scalars['String']['input']>;
+  url_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  url_endsWith?: InputMaybe<Scalars['String']['input']>;
+  url_eq?: InputMaybe<Scalars['String']['input']>;
+  url_gt?: InputMaybe<Scalars['String']['input']>;
+  url_gte?: InputMaybe<Scalars['String']['input']>;
+  url_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  url_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  url_lt?: InputMaybe<Scalars['String']['input']>;
+  url_lte?: InputMaybe<Scalars['String']['input']>;
+  url_not_contains?: InputMaybe<Scalars['String']['input']>;
+  url_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  url_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  url_not_eq?: InputMaybe<Scalars['String']['input']>;
+  url_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  url_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  url_startsWith?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ContentExtensionsConnection = {
+  __typename?: 'ContentExtensionsConnection';
+  edges: Array<ContentExtensionEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
 export type EsError = {
   __typename?: 'ESError';
   /** Error message text message. */
@@ -1041,6 +1424,8 @@ export type ElasticSearchQueryResultEntity = {
  *   * AccountFollows.AccountUnfollowed
  *   * Domains.DomainRegistered
  *   * Domains.DomainMetaUpdated
+ *   * EvmAddressUnlinkedFromAccount
+ *   * EvmAddressLinkedToAccount
  *
  * ***
  *
@@ -1086,6 +1471,10 @@ export type ElasticSearchQueryResultEntity = {
  * * CommentReplyReactionDeleted - *synthetic*
  * * UserNameRegistered - *synthetic*
  * * UserNameUpdated - *synthetic*
+ * * ExtensionDonationCreated - *synthetic*
+ * * ExtensionEvmNftShared - *synthetic*
+ * * EvmAddressLinkedToAccount
+ * * EvmAddressUnlinkedFromAccount
  */
 export enum EventName {
   AccountFollowed = 'AccountFollowed',
@@ -1104,6 +1493,10 @@ export enum EventName {
   CommentReplyUpdated = 'CommentReplyUpdated',
   CommentShared = 'CommentShared',
   CommentUpdated = 'CommentUpdated',
+  EvmAddressLinkedToAccount = 'EvmAddressLinkedToAccount',
+  EvmAddressUnlinkedFromAccount = 'EvmAddressUnlinkedFromAccount',
+  ExtensionDonationCreated = 'ExtensionDonationCreated',
+  ExtensionEvmNftShared = 'ExtensionEvmNftShared',
   PostCreated = 'PostCreated',
   PostDeleted = 'PostDeleted',
   PostFollowed = 'PostFollowed',
@@ -1124,6 +1517,169 @@ export enum EventName {
   UserNameRegistered = 'UserNameRegistered',
   UserNameUpdated = 'UserNameUpdated'
 }
+
+/** The Account entity */
+export type EvmAccount = {
+  __typename?: 'EvmAccount';
+  /** The account's public key */
+  id: Scalars['String']['output'];
+  /** A list of linked Substrate Accounts */
+  linkedSubstrateAccounts: Array<EvmSubstrateAccountLink>;
+};
+
+
+/** The Account entity */
+export type EvmAccountLinkedSubstrateAccountsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EvmSubstrateAccountLinkOrderByInput>>;
+  where?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+};
+
+export type EvmAccountEdge = {
+  __typename?: 'EvmAccountEdge';
+  cursor: Scalars['String']['output'];
+  node: EvmAccount;
+};
+
+export enum EvmAccountOrderByInput {
+  IdAsc = 'id_ASC',
+  IdDesc = 'id_DESC'
+}
+
+export type EvmAccountWhereInput = {
+  AND?: InputMaybe<Array<EvmAccountWhereInput>>;
+  OR?: InputMaybe<Array<EvmAccountWhereInput>>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  linkedSubstrateAccounts_every?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+  linkedSubstrateAccounts_none?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+  linkedSubstrateAccounts_some?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+};
+
+export type EvmAccountsConnection = {
+  __typename?: 'EvmAccountsConnection';
+  edges: Array<EvmAccountEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** The junction table for Many-to-Many relationship between Substrate Account and Ethereum Account */
+export type EvmSubstrateAccountLink = {
+  __typename?: 'EvmSubstrateAccountLink';
+  active: Scalars['Boolean']['output'];
+  /** The block height when a Space was created. */
+  createdAtBlock?: Maybe<Scalars['BigInt']['output']>;
+  /** The DateTime when a Space was created. */
+  createdAtTime?: Maybe<Scalars['DateTime']['output']>;
+  evmAccount: EvmAccount;
+  id: Scalars['String']['output'];
+  substrateAccount: Account;
+};
+
+export type EvmSubstrateAccountLinkEdge = {
+  __typename?: 'EvmSubstrateAccountLinkEdge';
+  cursor: Scalars['String']['output'];
+  node: EvmSubstrateAccountLink;
+};
+
+export enum EvmSubstrateAccountLinkOrderByInput {
+  ActiveAsc = 'active_ASC',
+  ActiveDesc = 'active_DESC',
+  CreatedAtBlockAsc = 'createdAtBlock_ASC',
+  CreatedAtBlockDesc = 'createdAtBlock_DESC',
+  CreatedAtTimeAsc = 'createdAtTime_ASC',
+  CreatedAtTimeDesc = 'createdAtTime_DESC',
+  EvmAccountIdAsc = 'evmAccount_id_ASC',
+  EvmAccountIdDesc = 'evmAccount_id_DESC',
+  IdAsc = 'id_ASC',
+  IdDesc = 'id_DESC',
+  SubstrateAccountFollowersCountAsc = 'substrateAccount_followersCount_ASC',
+  SubstrateAccountFollowersCountDesc = 'substrateAccount_followersCount_DESC',
+  SubstrateAccountFollowingAccountsCountAsc = 'substrateAccount_followingAccountsCount_ASC',
+  SubstrateAccountFollowingAccountsCountDesc = 'substrateAccount_followingAccountsCount_DESC',
+  SubstrateAccountFollowingPostsCountAsc = 'substrateAccount_followingPostsCount_ASC',
+  SubstrateAccountFollowingPostsCountDesc = 'substrateAccount_followingPostsCount_DESC',
+  SubstrateAccountFollowingSpacesCountAsc = 'substrateAccount_followingSpacesCount_ASC',
+  SubstrateAccountFollowingSpacesCountDesc = 'substrateAccount_followingSpacesCount_DESC',
+  SubstrateAccountIdAsc = 'substrateAccount_id_ASC',
+  SubstrateAccountIdDesc = 'substrateAccount_id_DESC',
+  SubstrateAccountOwnedPostsCountAsc = 'substrateAccount_ownedPostsCount_ASC',
+  SubstrateAccountOwnedPostsCountDesc = 'substrateAccount_ownedPostsCount_DESC',
+  SubstrateAccountUpdatedAtBlockAsc = 'substrateAccount_updatedAtBlock_ASC',
+  SubstrateAccountUpdatedAtBlockDesc = 'substrateAccount_updatedAtBlock_DESC',
+  SubstrateAccountUpdatedAtTimeAsc = 'substrateAccount_updatedAtTime_ASC',
+  SubstrateAccountUpdatedAtTimeDesc = 'substrateAccount_updatedAtTime_DESC'
+}
+
+export type EvmSubstrateAccountLinkWhereInput = {
+  AND?: InputMaybe<Array<EvmSubstrateAccountLinkWhereInput>>;
+  OR?: InputMaybe<Array<EvmSubstrateAccountLinkWhereInput>>;
+  active_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  active_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  active_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtBlock_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  createdAtBlock_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtBlock_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  createdAtBlock_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  createdAtTime_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_gt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_gte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  createdAtTime_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAtTime_lt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_lte?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTime_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  evmAccount?: InputMaybe<EvmAccountWhereInput>;
+  evmAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  substrateAccount?: InputMaybe<AccountWhereInput>;
+  substrateAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type EvmSubstrateAccountLinksConnection = {
+  __typename?: 'EvmSubstrateAccountLinksConnection';
+  edges: Array<EvmSubstrateAccountLinkEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
 
 export type HitItem = {
   __typename?: 'HitItem';
@@ -1454,6 +2010,8 @@ export type Post = {
   downvotesCount: Scalars['Int']['output'];
   /** The properties of a Post from its IPFS content which are not supported by the current squid's DB schema. */
   experimental?: Maybe<Scalars['JSON']['output']>;
+  /** The extensions published with this Post. */
+  extensions: Array<ContentExtension>;
   /** The total number of followers that a Post has. */
   followersCount: Scalars['Int']['output'];
   /** The Post format (IPFS content) */
@@ -1528,6 +2086,15 @@ export type PostCommentFollowersArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<CommentFollowersOrderByInput>>;
   where?: InputMaybe<CommentFollowersWhereInput>;
+};
+
+
+/** The Post entity */
+export type PostExtensionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ContentExtensionOrderByInput>>;
+  where?: InputMaybe<ContentExtensionWhereInput>;
 };
 
 
@@ -2133,6 +2700,9 @@ export type PostWhereInput = {
   experimental_jsonContains?: InputMaybe<Scalars['JSON']['input']>;
   experimental_jsonHasKey?: InputMaybe<Scalars['JSON']['input']>;
   experimental_not_eq?: InputMaybe<Scalars['JSON']['input']>;
+  extensions_every?: InputMaybe<ContentExtensionWhereInput>;
+  extensions_none?: InputMaybe<ContentExtensionWhereInput>;
+  extensions_some?: InputMaybe<ContentExtensionWhereInput>;
   followersCount_eq?: InputMaybe<Scalars['Int']['input']>;
   followersCount_gt?: InputMaybe<Scalars['Int']['input']>;
   followersCount_gte?: InputMaybe<Scalars['Int']['input']>;
@@ -2447,6 +3017,21 @@ export type Query = {
   /** @deprecated Use commentFollowersById */
   commentFollowersByUniqueInput?: Maybe<CommentFollowers>;
   commentFollowersConnection: CommentFollowersConnection;
+  contentExtensionById?: Maybe<ContentExtension>;
+  /** @deprecated Use contentExtensionById */
+  contentExtensionByUniqueInput?: Maybe<ContentExtension>;
+  contentExtensions: Array<ContentExtension>;
+  contentExtensionsConnection: ContentExtensionsConnection;
+  evmAccountById?: Maybe<EvmAccount>;
+  /** @deprecated Use evmAccountById */
+  evmAccountByUniqueInput?: Maybe<EvmAccount>;
+  evmAccounts: Array<EvmAccount>;
+  evmAccountsConnection: EvmAccountsConnection;
+  evmSubstrateAccountLinkById?: Maybe<EvmSubstrateAccountLink>;
+  /** @deprecated Use evmSubstrateAccountLinkById */
+  evmSubstrateAccountLinkByUniqueInput?: Maybe<EvmSubstrateAccountLink>;
+  evmSubstrateAccountLinks: Array<EvmSubstrateAccountLink>;
+  evmSubstrateAccountLinksConnection: EvmSubstrateAccountLinksConnection;
   ipfsFetchLogById?: Maybe<IpfsFetchLog>;
   /** @deprecated Use ipfsFetchLogById */
   ipfsFetchLogByUniqueInput?: Maybe<IpfsFetchLog>;
@@ -2593,6 +3178,84 @@ export type QueryCommentFollowersConnectionArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: Array<CommentFollowersOrderByInput>;
   where?: InputMaybe<CommentFollowersWhereInput>;
+};
+
+
+export type QueryContentExtensionByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryContentExtensionByUniqueInputArgs = {
+  where: WhereIdInput;
+};
+
+
+export type QueryContentExtensionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ContentExtensionOrderByInput>>;
+  where?: InputMaybe<ContentExtensionWhereInput>;
+};
+
+
+export type QueryContentExtensionsConnectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<ContentExtensionOrderByInput>;
+  where?: InputMaybe<ContentExtensionWhereInput>;
+};
+
+
+export type QueryEvmAccountByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryEvmAccountByUniqueInputArgs = {
+  where: WhereIdInput;
+};
+
+
+export type QueryEvmAccountsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EvmAccountOrderByInput>>;
+  where?: InputMaybe<EvmAccountWhereInput>;
+};
+
+
+export type QueryEvmAccountsConnectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<EvmAccountOrderByInput>;
+  where?: InputMaybe<EvmAccountWhereInput>;
+};
+
+
+export type QueryEvmSubstrateAccountLinkByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryEvmSubstrateAccountLinkByUniqueInputArgs = {
+  where: WhereIdInput;
+};
+
+
+export type QueryEvmSubstrateAccountLinksArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EvmSubstrateAccountLinkOrderByInput>>;
+  where?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+};
+
+
+export type QueryEvmSubstrateAccountLinksConnectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<EvmSubstrateAccountLinkOrderByInput>;
+  where?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
 };
 
 
@@ -4242,14 +4905,21 @@ export type WhereIdInput = {
 };
 
 export type GetPostsQueryVariables = Exact<{
-  ids?: Maybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+  ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 
 export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, tweetId?: string | null, createdByAccount: { __typename?: 'Account', id: string }, tweetDetails?: { __typename?: 'TweetDetails', username?: string | null } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null }> };
 
+export type GetPostsByContentQueryVariables = Exact<{
+  search: Scalars['String']['input'];
+}>;
+
+
+export type GetPostsByContentQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, tweetId?: string | null, createdByAccount: { __typename?: 'Account', id: string }, tweetDetails?: { __typename?: 'TweetDetails', username?: string | null } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null }> };
+
 export type GetSpacesQueryVariables = Exact<{
-  ids?: Maybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+  ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 
@@ -4332,6 +5002,15 @@ export const PostFragment = gql`
 export const GetPosts = gql`
     query getPosts($ids: [String!]) {
   posts(where: {id_in: $ids, hidden_eq: false}) {
+    ...PostFragment
+  }
+}
+    ${PostFragment}`;
+export const GetPostsByContent = gql`
+    query getPostsByContent($search: String!) {
+  posts(
+    where: {hidden_eq: false, title_containsInsensitive: $search, OR: {body_containsInsensitive: $search}}
+  ) {
     ...PostFragment
   }
 }

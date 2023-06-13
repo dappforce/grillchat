@@ -1,9 +1,17 @@
 import { followedIdsStorage } from '@/stores/my-account'
-import { poolQuery } from '@/subsocial-query'
+import { createQuery, poolQuery } from '@/subsocial-query'
 import {
   createSubsocialQuery,
   SubsocialQueryData,
 } from '@/subsocial-query/subsocial/query'
+import { gql } from 'graphql-request'
+import { POST_FRAGMENT } from '../squid/fragments'
+import {
+  GetPostsByContentQuery,
+  GetPostsByContentQueryVariables,
+} from '../squid/generated'
+import { mapPostFragment } from '../squid/mappers'
+import { squidRequest } from '../squid/utils'
 
 const getPostIdsBySpaceId = poolQuery<
   SubsocialQueryData<string>,
@@ -71,4 +79,37 @@ export const getFollowedPostIdsByAddressQuery = createSubsocialQuery({
       return {}
     }
   },
+})
+
+export const GET_POSTS_BY_CONTENT = gql`
+  ${POST_FRAGMENT}
+  query getPostsByContent($search: String!) {
+    posts(
+      where: {
+        hidden_eq: false
+        isComment_eq: false
+        AND: {
+          title_containsInsensitive: $search
+          OR: { body_containsInsensitive: $search }
+        }
+      }
+    ) {
+      ...PostFragment
+    }
+  }
+`
+async function getPostsByContent(search: string) {
+  if (!search) return []
+  const res = await squidRequest<
+    GetPostsByContentQuery,
+    GetPostsByContentQueryVariables
+  >({
+    document: GET_POSTS_BY_CONTENT,
+    variables: { search },
+  })
+  return res.posts.map((post) => mapPostFragment(post))
+}
+export const getPostsBySpaceContentQuery = createQuery({
+  key: 'getPostsBySpaceContent',
+  fetcher: getPostsByContent,
 })
