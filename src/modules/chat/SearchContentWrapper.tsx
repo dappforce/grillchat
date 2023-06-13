@@ -2,6 +2,7 @@ import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import NoChatsFound from '@/components/chats/NoChatsFound'
+import useDebounce from '@/hooks/useDebounce'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useSearch from '@/hooks/useSearch'
 import { getPostsBySpaceContentQuery } from '@/services/subsocial/posts'
@@ -22,8 +23,12 @@ export default function SearchContentWrapper({
   getFocusedElementIndex,
 }: SearchContentWrapperProps) {
   const isInIframe = useIsInIframe()
+
+  const debouncedSearch = useDebounce(search)
   const { data: searchResults, isLoading } =
-    getPostsBySpaceContentQuery.useQuery(search)
+    getPostsBySpaceContentQuery.useQuery(search, {
+      enabled: search === debouncedSearch,
+    })
 
   if (!search) {
     return (
