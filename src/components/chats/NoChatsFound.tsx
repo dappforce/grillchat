@@ -23,11 +23,11 @@ export default function NoChatsFound({ search, hubId }: NoChatsFoundProps) {
   return (
     <Container
       as='div'
-      className='mt-20 flex !max-w-lg flex-col items-center justify-center gap-4 text-center'
+      className='mb-8 mt-12 flex !max-w-lg flex-col items-center justify-center gap-4 text-center md:mt-20'
     >
       <Image
         src={NoResultImage}
-        className='h-64 w-64'
+        className='h-48 w-48'
         alt=''
         role='presentation'
       />

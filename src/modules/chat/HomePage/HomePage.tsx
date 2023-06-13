@@ -26,42 +26,28 @@ export default function HubsPage(props: HubsPageProps) {
   const { search, setSearch, getFocusedElementIndex, focusController } =
     useSearch()
 
-  const renderHubsContent = (children: JSX.Element) => {
-    return (
-      <SearchChannelsWrapper
-        search={search}
-        getFocusedElementIndex={getFocusedElementIndex}
-      >
-        {children}
-      </SearchChannelsWrapper>
-    )
-  }
-
   const tabs: TabsProps['tabs'] = [
     {
       id: 'my-chats',
       text: 'My Chats',
-      content: (setSelectedTab) =>
-        renderHubsContent(
-          <MyChatsContent changeTab={setSelectedTab} search={search} />
-        ),
+      content: (setSelectedTab) => (
+        <MyChatsContent changeTab={setSelectedTab} />
+      ),
     },
     {
       id: 'hot-chats',
       text: 'Hot Chats',
-      content: () =>
-        renderHubsContent(<HotChatsContent hubId={hotChatsHubId} />),
+      content: () => <HotChatsContent hubId={hotChatsHubId} />,
     },
     {
       id: 'hubs',
       text: 'Hubs',
-      content: () =>
-        renderHubsContent(
-          <HubsContent
-            isIntegrateChatButtonOnTop={props.isIntegrateChatButtonOnTop}
-            hubsChatCount={props.hubsChatCount}
-          />
-        ),
+      content: () => (
+        <HubsContent
+          isIntegrateChatButtonOnTop={props.isIntegrateChatButtonOnTop}
+          hubsChatCount={props.hubsChatCount}
+        />
+      ),
     },
   ]
 
@@ -127,17 +113,22 @@ export default function HubsPage(props: HubsPageProps) {
         },
       }}
     >
-      <Tabs
-        className='border-b border-border-gray bg-background-light px-1 md:bg-background-light/50'
-        panelClassName='mt-0 px-0'
-        asContainer
-        tabs={tabs}
-        withHashIntegration={false}
-        manualTabControl={{
-          selectedTab: usedSelectedTab,
-          setSelectedTab: usedSetSelectedTab,
-        }}
-      />
+      <SearchChannelsWrapper
+        search={search}
+        getFocusedElementIndex={getFocusedElementIndex}
+      >
+        <Tabs
+          className='border-b border-border-gray bg-background-light px-1 md:bg-background-light/50'
+          panelClassName='mt-0 px-0'
+          asContainer
+          tabs={tabs}
+          withHashIntegration={false}
+          manualTabControl={{
+            selectedTab: usedSelectedTab,
+            setSelectedTab: usedSetSelectedTab,
+          }}
+        />
+      </SearchChannelsWrapper>
     </DefaultLayout>
   )
 }
