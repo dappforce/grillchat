@@ -9,6 +9,7 @@ import { IconType } from 'react-icons'
 type Action = {
   text: string
   icon: IconType
+  iconClassName?: string
   className?: string
   onClick: ButtonProps['onClick']
   disabled?: boolean
@@ -55,7 +56,14 @@ export default function AboutModal({
         {actionMenu && actionMenu.length > 0 && (
           <div className='w-full overflow-hidden rounded-2xl bg-background-lighter'>
             {actionMenu.map(
-              ({ icon: Icon, text, className, onClick, disabled }) => (
+              ({
+                icon: Icon,
+                iconClassName,
+                text,
+                className,
+                onClick,
+                disabled,
+              }) => (
                 <Button
                   disabled={disabled}
                   variant='transparent'
@@ -69,7 +77,7 @@ export default function AboutModal({
                   )}
                   onClick={onClick}
                 >
-                  <Icon className='text-xl' />
+                  <Icon className={cx('text-xl', iconClassName)} />
                   <span>{text}</span>
                 </Button>
               )

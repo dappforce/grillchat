@@ -1,7 +1,7 @@
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import NoChatsFound from '@/components/chats/NoChatsFound'
 import useSortedChats from '../hooks/useSortedChats'
-import { CommonHubContentProps } from './HubsPage'
+import { CommonHubContentProps } from './HomePage'
 
 export type HotChatsContentProps = CommonHubContentProps & {
   hubId: string

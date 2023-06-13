@@ -1,22 +1,22 @@
 import ChatPreview from '@/components/chats/ChatPreview'
-import { getAliasFromSpaceId } from '@/constants/chat-room'
+import { getAliasFromHubId } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import { getSpaceBySpaceIdQuery } from '@/services/subsocial/spaces'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
-import { getSpaceIds } from '@/utils/env/client'
+import { getHubIds } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { SpaceData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { CommonHubContentProps, HubsPageProps } from './HubsPage'
+import { CommonHubContentProps, HubsPageProps } from './HomePage'
 
 export default function HubsContent({
   hubsChatCount = {},
   getSearchResults,
 }: CommonHubContentProps & Pick<HubsPageProps, 'hubsChatCount'>) {
-  const hubIds = getSpaceIds()
+  const hubIds = getHubIds()
 
-  const hubQueries = getSpaceBySpaceIdQuery.useQueries(hubIds)
+  const hubQueries = getSpaceQuery.useQueries(hubIds)
   const hubs = hubQueries.map(({ data: hub }) => hub)
   const { searchResults, focusedElementIndex } = getSearchResults(hubs, [
     'content.name',
@@ -53,7 +53,7 @@ function ChatPreviewContainer({
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
-  const path = getAliasFromSpaceId(hub.id) || hub.id
+  const path = getAliasFromHubId(hub.id) || hub.id
   const linkTo = `/${path}`
 
   const content = hub.content

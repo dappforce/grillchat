@@ -1,12 +1,11 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import {
-  getAccountDataQuery,
-  mutateAccountsDataCache,
-} from '@/services/subsocial/evmAddresses'
+import { AccountData } from '@/pages/api/accounts-data'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { useQueryClient } from '@tanstack/react-query'
+import axios from 'axios'
 import { useState } from 'react'
 import { useDisconnect } from 'wagmi'
 
@@ -139,4 +138,10 @@ export function useUnlinkEvmAddress(
     ...mutation,
     onCallbackLoading,
   }
+}
+
+async function mutateAccountsDataCache(address: string) {
+  const res = await axios.post('/api/accounts-data?' + `addresses=${address}`)
+
+  return res.data.data as AccountData[]
 }

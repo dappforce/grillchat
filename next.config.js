@@ -18,21 +18,23 @@ const nextConfig = {
 
     return config
   },
+  async rewrites() {
+    return [
+      { source: '/hubs', destination: '/' },
+      { source: '/my-chats', destination: '/' },
+      { source: '/hot-chats', destination: '/' },
+    ]
+  },
   async redirects() {
     return [
-      {
-        source: '/',
-        destination: '/x',
-        permanent: false,
-      },
       {
         source: '/c/:slug',
         destination: '/x/c/:slug',
         permanent: false,
       },
       {
-        source: '/:spaceId/c/:slug',
-        destination: '/:spaceId/:slug',
+        source: '/:hubId/c/:slug',
+        destination: '/:hubId/:slug',
         permanent: false,
       },
     ]

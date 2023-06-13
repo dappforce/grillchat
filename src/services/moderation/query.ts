@@ -1,11 +1,17 @@
 import { createQuery } from '@/subsocial-query'
 import { convertHexAddressToSubstrateAddress } from '@/utils/account'
-import { graphql } from './gql'
-import { createModerationRequest } from './utils'
+import { gql } from 'graphql-request'
+import {
+  GetBlockedAddressesQuery,
+  GetBlockedAddressesQueryVariables,
+  GetBlockedCidsQuery,
+  GetBlockedCidsQueryVariables,
+  GetBlockedMessageIdsInChatIdQuery,
+  GetBlockedMessageIdsInChatIdQueryVariables,
+} from './generated'
+import { moderationRequest } from './utils'
 
-const moderationRequest = createModerationRequest()
-
-const GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID = graphql(`
+const GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID = gql`
   query GetBlockedMessageIdsInChatId($ctxSpaceId: String!, $chatId: String!) {
     blockedResourceIds(
       ctxSpaceId: $ctxSpaceId
@@ -13,7 +19,7 @@ const GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID = graphql(`
       rootPostId: $chatId
     )
   }
-`)
+`
 export async function getBlockedMessageIdsInChatId({
   chatId,
   hubId,
@@ -21,7 +27,10 @@ export async function getBlockedMessageIdsInChatId({
   hubId: string
   chatId: string
 }) {
-  const data = await moderationRequest({
+  const data = await moderationRequest<
+    GetBlockedMessageIdsInChatIdQuery,
+    GetBlockedMessageIdsInChatIdQueryVariables
+  >({
     document: GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID,
     variables: { chatId, ctxSpaceId: hubId },
   })
@@ -32,7 +41,7 @@ export const getBlockedMessageIdsInChatIdQuery = createQuery({
   fetcher: getBlockedMessageIdsInChatId,
 })
 
-const GET_BLOCKED_CIDS = graphql(`
+export const GET_BLOCKED_CIDS = gql`
   query GetBlockedCids($ctxSpaceId: String!) {
     blockedResourceIds(
       ctxSpaceId: $ctxSpaceId
@@ -40,9 +49,12 @@ const GET_BLOCKED_CIDS = graphql(`
       resourceType: CID
     )
   }
-`)
+`
 export async function getBlockedCids({ hubId }: { hubId: string }) {
-  const data = await moderationRequest({
+  const data = await moderationRequest<
+    GetBlockedCidsQuery,
+    GetBlockedCidsQueryVariables
+  >({
     document: GET_BLOCKED_CIDS,
     variables: { ctxSpaceId: hubId },
   })
@@ -53,7 +65,7 @@ export const getBlockedCidsQuery = createQuery({
   fetcher: getBlockedCids,
 })
 
-const GET_BLOCKED_ADDRESSES = graphql(`
+const GET_BLOCKED_ADDRESSES = gql`
   query GetBlockedAddresses($ctxSpaceId: String!) {
     blockedResourceIds(
       ctxSpaceId: $ctxSpaceId
@@ -61,9 +73,12 @@ const GET_BLOCKED_ADDRESSES = graphql(`
       resourceType: Address
     )
   }
-`)
+`
 export async function getBlockedAddresses({ hubId }: { hubId: string }) {
-  const data = await moderationRequest({
+  const data = await moderationRequest<
+    GetBlockedAddressesQuery,
+    GetBlockedAddressesQueryVariables
+  >({
     document: GET_BLOCKED_ADDRESSES,
     variables: { ctxSpaceId: hubId },
   })

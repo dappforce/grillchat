@@ -6,7 +6,7 @@ import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
 import { ComponentProps, forwardRef, useMemo, useState } from 'react'
 
-const resolveEnsAvatarSrc = (ensName: string) =>
+export const resolveEnsAvatarSrc = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}`
 
 export type AddressAvatarProps = ComponentProps<'div'> & {
@@ -17,6 +17,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   function AddressAvatar({ address, ...props }: AddressAvatarProps, ref) {
     const backgroundColor = useRandomColor(address, 'dark')
     const [ensAvatarLoading, setEnsAvatarLoading] = useState(true)
+    const [isLoadingError, setIsLoadingError] = useState(false)
 
     const { data: accountData, isLoading } =
       getAccountDataQuery.useQuery(address)
@@ -34,7 +35,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       return (
         <div
           className={cx(
-            'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none'
+            'relative flex flex-shrink-0 animate-pulse items-stretch gap-2.5 overflow-hidden outline-none'
           )}
         >
           <div
@@ -50,7 +51,9 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     }
 
     const avatarSrc =
-      withEnsAvatar && ensName ? resolveEnsAvatarSrc(ensName) : avatar
+      withEnsAvatar && ensName && !isLoadingError
+        ? resolveEnsAvatarSrc(ensName)
+        : avatar
 
     return (
       <div
@@ -74,6 +77,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
               fill
               src={avatarSrc}
               onLoad={() => setEnsAvatarLoading(false)}
+              onError={() => setIsLoadingError(true)}
               alt='avatar'
             />
           </div>
@@ -82,4 +86,5 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     )
   }
 )
+
 export default AddressAvatar

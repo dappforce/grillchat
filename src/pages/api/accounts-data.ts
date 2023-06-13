@@ -1,3 +1,4 @@
+import { resolveEnsAvatarSrc } from '@/components/AddressAvatar'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { MinimalUsageQueueWithTimeLimit } from '@/utils/data-structure'
 import axios from 'axios'
@@ -18,7 +19,7 @@ const querySchema = z.object({
   addresses: z.array(z.string()),
 })
 
-export type ApiPostsParams = z.infer<typeof querySchema>
+export type ApiAccountsDataParams = z.infer<typeof querySchema>
 
 export type ApiAccountDataResponse = {
   success: boolean
@@ -62,10 +63,13 @@ export default async function handler(
     })
   }
 
-  const accountsData = await getAccountsDataFromCache(
-    params.data.addresses,
-    req.method || 'GET'
-  )
+  const addresses = params.data.addresses
+
+  const accountsData =
+    req.method === 'POST'
+      ? await fetchAccountsData(addresses)
+      : await getAccountsDataFromCache(addresses)
+
   return res
     .status(200)
     .send({ success: true, message: 'OK', data: accountsData })
@@ -75,9 +79,7 @@ async function checkEnsAvatar(ensName: string | null) {
   if (!ensName) return false
 
   try {
-    const result = await axios.get(
-      `https://metadata.ens.domains/mainnet/avatar/${ensName}`
-    )
+    const result = await axios.get(resolveEnsAvatarSrc(ensName))
     return !result.data?.message
   } catch {
     return false
@@ -155,30 +157,23 @@ async function fetchAccountsData(addresses: string[]) {
   }
 }
 
-export async function getAccountsDataFromCache(
-  addresses: string[],
-  method?: string
-) {
-  if (method === 'POST') {
-    return fetchAccountsData(addresses)
-  } else {
-    const evmAddressByGrillAddress: AccountData[] = []
-    const needToFetchIds: string[] = []
+export async function getAccountsDataFromCache(addresses: string[]) {
+  const evmAddressByGrillAddress: AccountData[] = []
+  const needToFetchIds: string[] = []
 
-    let newlyFetchedData: AccountData[] = []
-    addresses.forEach((address) => {
-      const cachedData = accountsDataCache.get(address)
-      if (cachedData) {
-        evmAddressByGrillAddress.push(cachedData)
-      } else {
-        needToFetchIds.push(address)
-      }
-    })
-
-    if (needToFetchIds.length > 0) {
-      newlyFetchedData = await fetchAccountsData(needToFetchIds)
+  let newlyFetchedData: AccountData[] = []
+  addresses.forEach((address) => {
+    const cachedData = accountsDataCache.get(address)
+    if (cachedData) {
+      evmAddressByGrillAddress.push(cachedData)
+    } else {
+      needToFetchIds.push(address)
     }
+  })
 
-    return [...evmAddressByGrillAddress, ...newlyFetchedData]
+  if (needToFetchIds.length > 0) {
+    newlyFetchedData = await fetchAccountsData(needToFetchIds)
   }
+
+  return [...evmAddressByGrillAddress, ...newlyFetchedData]
 }
