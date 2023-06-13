@@ -8,7 +8,7 @@ import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import SearchContentWrapper from '../SearchContentWrapper'
+import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
@@ -26,19 +26,14 @@ export default function HubsPage(props: HubsPageProps) {
   const { search, setSearch, getFocusedElementIndex, focusController } =
     useSearch()
 
-  const renderHubsContent = (
-    children: JSX.Element,
-    showSpecialButtons?: boolean
-  ) => {
+  const renderHubsContent = (children: JSX.Element) => {
     return (
-      <SearchContentWrapper
+      <SearchChannelsWrapper
         search={search}
-        isIntegrateChatButtonOnTop={props.isIntegrateChatButtonOnTop}
-        showSpecialButtons={showSpecialButtons}
         getFocusedElementIndex={getFocusedElementIndex}
       >
         {children}
-      </SearchContentWrapper>
+      </SearchChannelsWrapper>
     )
   }
 
@@ -62,8 +57,10 @@ export default function HubsPage(props: HubsPageProps) {
       text: 'Hubs',
       content: () =>
         renderHubsContent(
-          <HubsContent hubsChatCount={props.hubsChatCount} />,
-          true
+          <HubsContent
+            isIntegrateChatButtonOnTop={props.isIntegrateChatButtonOnTop}
+            hubsChatCount={props.hubsChatCount}
+          />
         ),
     },
   ]

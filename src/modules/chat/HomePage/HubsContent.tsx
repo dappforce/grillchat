@@ -1,4 +1,5 @@
 import ChatPreview from '@/components/chats/ChatPreview'
+import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import { getAliasFromHubId } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
@@ -12,25 +13,35 @@ import { HubsPageProps } from './HomePage'
 
 export default function HubsContent({
   hubsChatCount = {},
-}: Pick<HubsPageProps, 'hubsChatCount'>) {
+  isIntegrateChatButtonOnTop,
+}: Pick<HubsPageProps, 'hubsChatCount' | 'isIntegrateChatButtonOnTop'>) {
+  const isInIframe = useIsInIframe()
   const hubIds = getHubIds()
 
   const hubQueries = getSpaceQuery.useQueries(hubIds)
   const hubs = hubQueries.map(({ data: hub }) => hub)
 
   return (
-    <div className='flex flex-col overflow-auto'>
-      {hubs.map((hub) => {
-        if (!hub) return null
-        const hubId = hub.id
-        return (
-          <ChatPreviewContainer
-            hub={hub}
-            chatCount={hubsChatCount[hubId]}
-            key={hubId}
-          />
-        )
-      })}
+    <div className='flex flex-col'>
+      {!isInIframe && (
+        <ChatSpecialButtons
+          isIntegrateChatButtonOnTop={!!isIntegrateChatButtonOnTop}
+        />
+      )}
+
+      <div className='flex flex-col overflow-auto'>
+        {hubs.map((hub) => {
+          if (!hub) return null
+          const hubId = hub.id
+          return (
+            <ChatPreviewContainer
+              hub={hub}
+              chatCount={hubsChatCount[hubId]}
+              key={hubId}
+            />
+          )
+        })}
+      </div>
     </div>
   )
 }

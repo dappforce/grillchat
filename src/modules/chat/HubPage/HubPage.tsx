@@ -2,7 +2,7 @@ import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import useSearch from '@/hooks/useSearch'
 import useSortedChats from '../hooks/useSortedChats'
-import SearchContentWrapper from '../SearchContentWrapper'
+import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import HubPageNavbar from './HubPageNavbar'
 
 export type HubPageProps = {
@@ -40,12 +40,12 @@ export default function HubPage({ hubId }: HubPageProps) {
         },
       }}
     >
-      <SearchContentWrapper
+      <SearchChannelsWrapper
         getFocusedElementIndex={getFocusedElementIndex}
         search={search}
       >
         <ChatPreviewList chats={chats} />
-      </SearchContentWrapper>
+      </SearchChannelsWrapper>
     </DefaultLayout>
   )
 }
