@@ -56,6 +56,7 @@ export default function CommonExtensionModal({
         mustHaveMessageBody={mustHaveMessageBody}
         className={cx(isUsingBigButton && 'pb-5 md:pb-6')}
         beforeMesageSend={beforeMesageSend}
+        sendButtonText={sendButtonText}
         inputProps={{
           className: cx(
             'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20 !ring-0',
