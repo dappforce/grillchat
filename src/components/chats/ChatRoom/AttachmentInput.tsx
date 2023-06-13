@@ -20,6 +20,7 @@ export default function AttachmentInput({
   return (
     <>
       <FloatingMenus
+        showOnHover
         menus={[
           {
             icon: NftIcon,
