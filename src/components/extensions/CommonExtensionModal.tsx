@@ -1,6 +1,12 @@
+import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
 import ChatForm, { ChatFormProps } from '../chats/ChatForm'
 import Modal, { ModalProps } from '../modals/Modal'
+
+export type BeforeMessageResult = {
+  newMessageParams?: SendMessageParams
+  txPrevented: boolean
+}
 
 export type CommonExtensionModalProps = ModalProps &
   Pick<
@@ -13,6 +19,9 @@ export type CommonExtensionModalProps = ModalProps &
     | 'mustHaveMessageBody'
   > & {
     disableSendButton?: boolean
+    beforeMesageSend?: (
+      messageParams: SendMessageParams
+    ) => Promise<BeforeMessageResult>
   }
 
 export default function CommonExtensionModal({
@@ -22,6 +31,7 @@ export default function CommonExtensionModal({
   mustHaveMessageBody = false,
   autofocus,
   buildAdditionalTxParams,
+  beforeMesageSend,
   onSubmit,
   ...props
 }: CommonExtensionModalProps) {
@@ -45,6 +55,7 @@ export default function CommonExtensionModal({
         chatId={chatId}
         mustHaveMessageBody={mustHaveMessageBody}
         className={cx(isUsingBigButton && 'pb-5 md:pb-6')}
+        beforeMesageSend={beforeMesageSend}
         inputProps={{
           className: cx(
             'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20 !ring-0',

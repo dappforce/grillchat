@@ -60,20 +60,6 @@ export default function RepliedMessagePreview({
     setIsLoading(false)
   }
 
-  const { amount, token } = properties || {}
-
-  const donateRepliedPreview =
-    id === 'subsocial-donations' ? (
-      <div
-        className={cx(
-          'bg-gradient-to-br from-[#C43333] to-[#F9A11E]',
-          'rounded-2xl px-3 py-[0.15rem] text-white'
-        )}
-      >
-        {amount} {token}
-      </div>
-    ) : null
-
   return (
     <div
       {...props}

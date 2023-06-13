@@ -102,16 +102,11 @@ export default function ChatItem({
   }
 
   const getChatMenus = (): FloatingMenusProps['menus'] => {
-    const replyMenu: FloatingMenusProps['menus'][number] = {
-      text: 'Reply',
-      icon: BsFillReplyFill,
-      onClick: () => setMessageAsReply(messageId),
-    }
-
     const donateMenuItem: FloatingMenusProps['menus'][number] = {
       text: 'Donate',
       icon: DonateCoinIcon,
       onClick: () => {
+        setMessageAsReply(messageId)
         setOpenDonateModal(true)
       },
     }
@@ -122,13 +117,12 @@ export default function ChatItem({
       myEvmAddress !== messageOwnerEvmAddress
 
     return [
-      ...(onSelectMessageAsReply ? [replyMenu] : []),
-      ...(showDonateMenuItem ? [donateMenuItem] : []),
       {
         text: 'Reply',
         icon: BsFillReplyFill,
         onClick: () => setMessageAsReply(messageId),
       },
+      ...(showDonateMenuItem ? [donateMenuItem] : []),
       {
         text: 'Copy Text',
         icon: MdContentCopy,
@@ -175,10 +169,6 @@ export default function ChatItem({
 
   const isEmojiOnly = shouldRenderEmojiChatItem(body ?? '')
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
-
-  const ChatItemContentVariant = extensions
-    ? extencionsVariants[extensions[0].id]
-    : DefaultContentVariant
 
   const relativeTime = getTimeRelativeToNow(createdAtTime)
 

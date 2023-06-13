@@ -25,11 +25,7 @@ import {
   useRef,
   useState,
 } from 'react'
-
-type BeforeMessageResult = {
-  newMessageParams?: SendMessageParams
-  txPrevented: boolean
-}
+import { BeforeMessageResult } from '../extensions/CommonExtensionModal'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string

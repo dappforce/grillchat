@@ -3,11 +3,6 @@ import * as types from '@subsocial/api/types'
 import { PostStruct } from '@subsocial/api/types'
 import { PostContent as SubsocialPostContent } from '@subsocial/api/types/dto'
 
-export type Extension = {
-  id: string
-  properties: any
-}
-
 declare module '@subsocial/api/types' {
   export default types
 
@@ -17,16 +12,31 @@ declare module '@subsocial/api/types' {
     nftId: string
     url: string
   }
-  export type NftExtension = {
-    id: 'subsocial-evm-nft'
-    properties: NftProperties
+
+  export type DonateProperies = {
+    chain: string
+    from: string
+    to: string
+    token: string
+    decimals: number
+    amount: string
+    txHash: string
+  }
+
+  export type ExtensionId = 'subsocial-evm-nft' | 'subsocial-donations'
+
+  export type ExtensionProperties = NftProperties | DonateProperies
+
+  export type Extension<T extends ExtensionProperties> = {
+    id: ExtensionId
+    properties: T
   }
   export interface PostContent extends SubsocialPostContent {
     inReplyTo?: {
       kind: 'Post'
       id: string
     }
-    extensions?: NftExtension[]
+    extensions?: Extension[]
   }
   export declare type EntityPostData<
     S extends HasId,

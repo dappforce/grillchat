@@ -170,7 +170,7 @@ export default function DonateModal({
       decimals
     )
 
-    if (hash && address) {
+    if (hash && address && decimals) {
       const newMessageParams: SendMessageParams = {
         ...messageParams,
         extensions: [
@@ -205,16 +205,10 @@ export default function DonateModal({
   return (
     <CommonExtensionModal
       {...props}
-      formProps={{
-        chatId,
-        replyTo: messageId,
-        allowEmptyMessage: true,
-        sendButtonProps: {
-          disabled: disableSendButton,
-        },
-        sendButtonText: 'Send',
-        beforeMesageSend: onButtonClick,
-      }}
+      chatId={chatId}
+      disableSendButton={disableSendButton}
+      sendButtonText='Send'
+      beforeMesageSend={onButtonClick}
       title='💰 Donate'
       withCloseButton
       {...props}
