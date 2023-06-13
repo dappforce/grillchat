@@ -61,7 +61,7 @@ export default function FloatingWrapper({
 
   const hover = useHover(context, {
     handleClose: safePolygon(),
-    enabled: !!showOnHover,
+    enabled: !isTouchDevice() && !!showOnHover,
   })
   const dismiss = useDismiss(context)
   const { getReferenceProps, getFloatingProps } = useInteractions([
