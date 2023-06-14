@@ -108,7 +108,7 @@ export default function CommonChatItem({
       >
         {!isMyMessage && (
           <div className='flex items-center px-2.5 first:pt-1.5'>
-            <Name ownerId={ownerId} />
+            <Name address={ownerId} />
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}
