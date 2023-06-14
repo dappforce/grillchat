@@ -13,6 +13,8 @@ export default function ClickableAddressAvatar({
 }: ClickableAddressAvatarProps) {
   const [isOpenAccountModal, setIsOpenAccountModal] = useState(false)
 
+  // TODO: add onclick for opening donate modal
+
   return (
     <>
       <AddressAvatar
