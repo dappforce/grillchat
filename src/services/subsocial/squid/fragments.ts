@@ -53,10 +53,6 @@ export const POST_FRAGMENT = gql`
     updatedAtTime
     canonical
     tagsOriginal
-    tweetId
-    tweetDetails {
-      username
-    }
     ownedByAccount {
       id
     }
