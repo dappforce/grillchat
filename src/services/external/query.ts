@@ -41,7 +41,7 @@ async function getNftData(nft: NftProperties | null) {
 
   return {
     name: metadata?.name,
-    image: metadata?.image,
+    image,
     collectionName: response?.raw.name,
     price: 0,
   }

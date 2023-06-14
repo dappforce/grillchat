@@ -69,5 +69,12 @@ export const POST_FRAGMENT = gql`
     sharedPost {
       id
     }
+    extensions {
+      chain
+      extensionSchemaId
+      nftId
+      collectionId
+      url
+    }
   }
 `

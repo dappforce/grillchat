@@ -1,5 +1,14 @@
-import { PostData, SpaceData } from '@subsocial/api/types'
-import { PostFragmentFragment, SpaceFragmentFragment } from './generated'
+import {
+  NftExtension,
+  PostContentExtension,
+  PostData,
+  SpaceData,
+} from '@subsocial/api/types'
+import {
+  ContentExtensionSchemaId,
+  PostFragmentFragment,
+  SpaceFragmentFragment,
+} from './generated'
 
 const SQUID_SEPARATOR = ','
 const getTokensFromUnifiedString = (data: string | null) =>
@@ -34,6 +43,27 @@ export const mapSpaceFragment = (space: SpaceFragmentFragment): SpaceData => {
   }
 }
 
+const mapPostExtensions = (
+  extensions: PostFragmentFragment['extensions']
+): PostContentExtension[] => {
+  const mappedExtensions = extensions?.map((ext) => {
+    switch (ext.extensionSchemaId) {
+      case ContentExtensionSchemaId.SubsocialEvmNft:
+        const extension: NftExtension = {
+          id: 'subsocial-evm-nft',
+          properties: {
+            chain: ext.chain ?? '',
+            collectionId: ext.collectionId ?? '',
+            nftId: ext.nftId ?? '',
+            url: ext.url ?? '',
+          },
+        }
+        return extension
+    }
+  })
+  return mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
+}
+
 export const mapPostFragment = (post: PostFragmentFragment): PostData => {
   return {
     id: post.id,
@@ -64,6 +94,7 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
       canonical: post.canonical ?? '',
       isShowMore: post.isShowMore ?? false,
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
+      extensions: mapPostExtensions(post.extensions),
     },
   }
 }

@@ -40,6 +40,53 @@ export default function ImageLoader({
     setIsLoading(true)
   }, [image])
 
+  const renderImageElement = () => {
+    const commonClassName = cx(
+      'relative transition-opacity',
+      isLoading && 'opacity-0',
+      props.className
+    )
+
+    if (typeof usedImage === 'string' && usedImage.startsWith('data:image')) {
+      return (
+        <iframe
+          src={usedImage}
+          className={cx(commonClassName, 'aspect-square')}
+          onError={(e) => {
+            setIsLoading(false)
+            props.onError?.(e as any)
+          }}
+          onLoad={(e) => {
+            setIsLoading(false)
+            props.onLoad?.(e as any)
+          }}
+        />
+      )
+    } else {
+      return (
+        <Image
+          key={usedImage?.toString() ?? ''}
+          width={500}
+          height={500}
+          {...props}
+          alt={props.alt || ''}
+          src={usedImage ?? ''}
+          className={commonClassName}
+          onError={(e) => {
+            setIsLoading(false)
+            props.onError?.(e)
+          }}
+          onLoad={(e) => {
+            setIsLoading(false)
+            props.onLoad?.(e)
+          }}
+        />
+      )
+    }
+  }
+
+  const imageElement = renderImageElement()
+
   return (
     <div className={cx('relative', containerClassName)}>
       {isLoading && (
@@ -57,27 +104,7 @@ export default function ImageLoader({
         </div>
       )}
       {image ? (
-        <Image
-          key={usedImage?.toString() ?? ''}
-          width={500}
-          height={500}
-          {...props}
-          alt={props.alt || ''}
-          src={usedImage ?? ''}
-          className={cx(
-            'relative transition-opacity',
-            isLoading && 'opacity-0',
-            props.className
-          )}
-          onError={(e) => {
-            setIsLoading(false)
-            props.onError?.(e)
-          }}
-          onLoad={(e) => {
-            setIsLoading(false)
-            props.onLoad?.(e)
-          }}
-        />
+        imageElement
       ) : (
         <div className={cx('aspect-square w-full', placeholderClassName)} />
       )}
