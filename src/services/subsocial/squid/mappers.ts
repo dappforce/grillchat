@@ -46,7 +46,7 @@ export const mapSpaceFragment = (space: SpaceFragmentFragment): SpaceData => {
 
 const mapPostExtensions = (
   extensions: PostFragmentFragment['extensions']
-): PostContentExtension[] => {
+): PostContentExtension[] | undefined => {
   const mappedExtensions = extensions?.map((ext) => {
     switch (ext.extensionSchemaId) {
       case ContentExtensionSchemaId.SubsocialEvmNft:
@@ -62,7 +62,9 @@ const mapPostExtensions = (
         return extension
     }
   })
-  return mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
+  const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
+  if (exts.length === 0) return undefined
+  return exts
 }
 
 export const mapPostFragment = (post: PostFragmentFragment): PostData => {
