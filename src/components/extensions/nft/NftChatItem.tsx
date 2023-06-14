@@ -100,6 +100,7 @@ export default function NftChatItem(props: Props) {
               href={nftProperties?.url ?? ''}
               target='_blank'
               rel='noopener noreferrer'
+              onClick={(e) => e.stopPropagation()}
             >
               View on Marketplace
             </Button>
