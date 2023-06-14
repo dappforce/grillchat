@@ -67,13 +67,15 @@ const currentSessionStorage = new LocalStorage(() => SESSION_STORAGE_KEY)
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
   login: async (secretKey, isInitialization) => {
+    const { toSubsocialAddress } = await import('@subsocial/utils')
     const { _syncSessionKey, _getSecretKeyForLogin } = get()
     let address: string = ''
     try {
       secretKey = secretKey || (await _getSecretKeyForLogin())
       const signer = await loginWithSecretKey(secretKey)
       const encodedSecretKey = encodeSecretKey(secretKey)
-      address = signer.address
+      address = toSubsocialAddress(signer.address)!
+
       set({
         address,
         signer,
