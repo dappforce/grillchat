@@ -32,6 +32,13 @@ async function getNftData(nft: NftProperties | null) {
   })
   const metadata = response?.raw.normalized_metadata
 
+  let image = metadata?.image
+  if (!image) {
+    const rawMetadata = response?.raw.metadata
+    const parsedMetadata = JSON.parse(rawMetadata ?? '{}')
+    image = parsedMetadata?.image || parsedMetadata.image_data
+  }
+
   return {
     name: metadata?.name,
     image: metadata?.image,
