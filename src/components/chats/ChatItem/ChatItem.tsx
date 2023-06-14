@@ -1,10 +1,10 @@
 import DonateCoinIcon from '@/assets/icons/donate-coin.svg'
 import AddressAvatar from '@/components/AddressAvatar'
+import DonateMessagePreview from '@/components/extensions/donate/DonateMessagePreview'
+import DonateModal from '@/components/extensions/donate/DonateModal'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
-import DonateMessagePreview from '@/components/modals/donate/DonateMessagePreview'
-import DonateModal from '@/components/modals/donate/DonateModal'
 import Toast from '@/components/Toast'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'

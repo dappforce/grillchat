@@ -11,6 +11,8 @@ import Linkify from 'linkify-react'
 import { SyntheticEvent } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 
+const TEXT_COLOR = '#FCEEE2'
+
 export type ExtensionChatItemProps = {
   message: PostData
   onCheckMarkClick: (e: SyntheticEvent) => void
@@ -36,6 +38,7 @@ type CommonChatItemProps = ExtensionChatItemProps & {
   myMessageConfig?: MyMessageConfig
   othersMessage?: OthersMessageConfig
   className?: string
+  textColor?: string
 }
 
 const defaultMyMessageConfig: MyMessageConfig = {
@@ -52,6 +55,7 @@ export default function CommonChatItem({
   children,
   scrollToMessage,
   onCheckMarkClick,
+  textColor,
   className,
 }: CommonChatItemProps) {
   const myAddress = useMyAccount((state) => state.address)
@@ -108,8 +112,10 @@ export default function CommonChatItem({
       >
         {!isMyMessage && (
           <div className='flex items-center px-2.5 first:pt-1.5'>
-            <Name ownerId={ownerId} />
-            <span className='text-xs text-text-muted'>{relativeTime}</span>
+            <Name ownerId={ownerId} color={textColor && '#FFFFFF'} />
+            <span className={cx(`text-xs text-[${textColor}]`)}>
+              {relativeTime}
+            </span>
           </div>
         )}
 
@@ -121,6 +127,7 @@ export default function CommonChatItem({
             className='mx-2.5 mt-1 first:mt-2.5'
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
+            textColor={textColor}
           />
         )}
 

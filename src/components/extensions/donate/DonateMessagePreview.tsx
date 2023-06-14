@@ -6,9 +6,7 @@ import {
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { HiArrowUpRight } from 'react-icons/hi2'
-import CommonChatItem, {
-  ExtensionChatItemProps,
-} from '../../extensions/CommonChatItem'
+import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
 
 type DonatePreviewProps = {
   extensionProps?: any
@@ -69,6 +67,7 @@ export default function DonateMessagePreview({
       onCheckMarkClick={onCheckMarkClick}
       scrollToMessage={scrollToMessage}
       myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
+      textColor='#FCEEE2'
       className={cx(
         'relative flex flex-col overflow-hidden',
         'bg-gradient-to-br from-[#C43333] to-[#F9A11E]',

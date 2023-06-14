@@ -7,9 +7,10 @@ type NameProps = {
   ownerId: string
   additionalText?: string
   className?: string
+  color?: string
 }
 
-const Name = ({ ownerId, className, additionalText }: NameProps) => {
+const Name = ({ ownerId, className, additionalText, color }: NameProps) => {
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(ownerId)
 
   const { evmAddress, ensName } = accountData || {}
@@ -35,7 +36,7 @@ const Name = ({ ownerId, className, additionalText }: NameProps) => {
   return (
     <span
       className={className ? className : 'mr-2 text-sm text-text-secondary'}
-      style={{ color: textColor }}
+      style={{ color: color || textColor }}
     >
       {additionalText} {name}
     </span>

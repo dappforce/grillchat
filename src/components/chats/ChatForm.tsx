@@ -213,7 +213,6 @@ export default function ChatForm({
               <Send className='relative top-px h-4 w-4' />
             </Button>
           )
-          console.log(sendButtonText)
 
           return (
             <form

@@ -1,11 +1,10 @@
-import ImageLoader from '@/components/ImageLoader'
+import { repliedMessagePreviewPatrs } from '@/components/extensions/RepliedMessagePreviewParts'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
-import { getNftDataQuery } from '@/services/external/query'
 import { cx } from '@/utils/class-names'
 import { truncateText } from '@/utils/strings'
-import { useTheme } from 'next-themes'
+import { ExtensionId } from '@subsocial/api/types'
 import { ComponentProps, useState } from 'react'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
@@ -14,6 +13,7 @@ export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   minimumReplyChar?: number
   scrollToMessage?: (messageId: string) => Promise<void>
   replyToExtension?: boolean
+  textColor?: string
 }
 
 const MINIMUM_REPLY_CHAR = 35
@@ -23,30 +23,34 @@ export default function RepliedMessagePreview({
   scrollToMessage,
   minimumReplyChar = MINIMUM_REPLY_CHAR,
   replyToExtension = false,
+  textColor,
   ...props
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { data: message } = getPostQuery.useQuery(repliedMessageId)
   const replySender = message?.struct.ownerId
   const replySenderColor = useRandomColor(replySender)
-  const { theme } = useTheme()
 
-  // TODO: extract to better flexibility for other extensions
   const extensions = message?.content?.extensions
-  const firstExtension = extensions?.[0]
-  const hasNftExtension =
-    firstExtension && firstExtension.id === 'subsocial-evm-nft'
 
-  const messageContent =
-    message?.content?.body || (hasNftExtension ? 'NFT' : '')
-
-  const { data: nftData } = getNftDataQuery.useQuery(
-    firstExtension?.properties ?? null
-  )
+  const messageContent = message?.content?.body
 
   if (!message) {
     return null
   }
+
+  const extensionId = extensions?.[0]?.id as ExtensionId | undefined
+
+  const extensionRepliedPart = extensionId
+    ? repliedMessagePreviewPatrs[extensionId]
+    : undefined
+
+  const { element: ExtensionElement, config } = extensionRepliedPart || {}
+  const { place, emptyBodyText } = config || {}
+
+  const extensionPart = ExtensionElement && (
+    <ExtensionElement message={message} extensions={extensions} />
+  )
 
   let showedText = messageContent ?? ''
   if (originalMessage.length < minimumReplyChar) {
@@ -60,6 +64,12 @@ export default function RepliedMessagePreview({
     setIsLoading(false)
   }
 
+  const bodyText = (
+    <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
+      {showedText || emptyBodyText}
+    </span>
+  )
+
   return (
     <div
       {...props}
@@ -69,26 +79,28 @@ export default function RepliedMessagePreview({
         isLoading && 'animate-pulse',
         props.className
       )}
-      style={{ borderColor: replySenderColor, ...props.style }}
+      style={{ borderColor: textColor || replySenderColor, ...props.style }}
       onClick={(e) => {
         e.stopPropagation()
         onRepliedMessageClick()
         props.onClick?.(e)
       }}
     >
-      {hasNftExtension && (
-        <ImageLoader
-          containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
-          className={cx('aspect-square w-10')}
-          placeholderClassName={cx('w-10 aspect-square')}
-          image={nftData?.image}
-        />
-      )}
+      {place === 'inside' && extensionPart && extensionPart}
       <div className='flex flex-col'>
-        <Name ownerId={message?.struct.ownerId} className='font-medium' />
-        <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
-          {showedText}
-        </span>
+        <Name
+          ownerId={message?.struct.ownerId}
+          className='font-medium'
+          color={textColor}
+        />
+        {place === 'body' && extensionPart ? (
+          <div className={cx('flex items-center gap-2')}>
+            {extensionPart}
+            {bodyText}
+          </div>
+        ) : (
+          bodyText
+        )}
       </div>
     </div>
   )

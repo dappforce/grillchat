@@ -18,7 +18,7 @@ import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { ChangeEventHandler, useState } from 'react'
-import { ModalFunctionalityProps } from '../Modal'
+import { ModalFunctionalityProps } from '../../modals/Modal'
 import { useGetBalance, useTransfer } from './api/transfer'
 
 const chainItems = [
