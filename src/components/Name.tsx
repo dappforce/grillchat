@@ -13,7 +13,7 @@ const Name = ({ address, className, additionalText }: NameProps) => {
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
 
   const { evmAddress, ensName } = accountData || {}
-  const name = ensName ? ensName : generateRandomName(address)
+  const name = ensName || generateRandomName(address)
 
   const usedAddress = evmAddress || address
   const senderColor = useRandomColor(usedAddress)
