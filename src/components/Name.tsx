@@ -1,25 +1,22 @@
+import useRandomColor from '@/hooks/useRandomColor'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
-import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
 
 type NameProps = {
-  ownerId: string
-  senderColor: string
+  address: string
   additionalText?: string
   className?: string
 }
 
-const Name = ({
-  ownerId,
-  senderColor,
-  className,
-  additionalText,
-}: NameProps) => {
-  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(ownerId)
+const Name = ({ address, className, additionalText }: NameProps) => {
+  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
 
   const { evmAddress, ensName } = accountData || {}
-  const name = ensName ? ensName : generateRandomName(ownerId)
+  const name = ensName ? ensName : generateRandomName(address)
+
+  const usedAddress = evmAddress || address
+  const senderColor = useRandomColor(usedAddress)
 
   if (!accountData && isLoading) {
     return (
@@ -33,12 +30,10 @@ const Name = ({
     )
   }
 
-  const textColor = evmAddress ? generateRandomColor(evmAddress) : senderColor
-
   return (
     <span
       className={className ? className : 'mr-2 text-sm text-text-secondary'}
-      style={{ color: textColor }}
+      style={{ color: senderColor }}
     >
       {additionalText} {name}
     </span>

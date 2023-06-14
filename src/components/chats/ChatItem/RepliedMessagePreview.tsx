@@ -22,7 +22,7 @@ export default function RepliedMessagePreview({
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { data } = getPostQuery.useQuery(repliedMessageId)
-  const replySender = data?.struct.ownerId
+  const replySender = data?.struct.ownerId ?? ''
   const replySenderColor = useRandomColor(replySender)
 
   if (!data) {
@@ -57,12 +57,7 @@ export default function RepliedMessagePreview({
         props.onClick?.(e)
       }}
     >
-      {/* <span style={{ color: replySenderColor }}>{name}</span> */}
-      <Name
-        ownerId={data?.struct.ownerId}
-        senderColor={replySenderColor}
-        className='font-medium'
-      />
+      <Name address={replySender} className='font-medium' />
       <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
         {showedText}
       </span>

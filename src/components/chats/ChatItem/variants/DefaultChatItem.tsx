@@ -33,7 +33,7 @@ export default function DefaultChatItem({
       >
         {!isMyMessage && (
           <div className='flex items-center'>
-            <Name ownerId={ownerId} senderColor={senderColor} />
+            <Name address={ownerId} />
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}
