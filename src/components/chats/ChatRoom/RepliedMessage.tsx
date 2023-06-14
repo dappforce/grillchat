@@ -41,8 +41,7 @@ export default function RepliedMessage({
         className='flex flex-1 flex-col items-start gap-0.5 overflow-hidden border-l-2 pl-2 text-sm'
       >
         <Name
-          ownerId={messageSenderAddr || ''}
-          senderColor={senderColor}
+          address={messageSenderAddr || ''}
           additionalText='Reply to'
           className='font-medium'
         />
