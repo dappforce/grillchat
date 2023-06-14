@@ -6,7 +6,7 @@
     "node": ">= 16"
   },
   "scripts": {
-    "dev": "next dev --port 3001",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "analyze": "ANALYZE=true yarn build",
