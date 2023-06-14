@@ -16,7 +16,7 @@ const Name = ({ address, className, additionalText }: NameProps) => {
   const name = ensName || generateRandomName(address)
 
   const usedAddress = evmAddress || address
-  const senderColor = useRandomColor(usedAddress)
+  const textColor = useRandomColor(usedAddress)
 
   if (!accountData && isLoading) {
     return (
@@ -33,7 +33,7 @@ const Name = ({ address, className, additionalText }: NameProps) => {
   return (
     <span
       className={className ? className : 'mr-2 text-sm text-text-secondary'}
-      style={{ color: senderColor }}
+      style={{ color: textColor }}
     >
       {additionalText} {name}
     </span>
