@@ -43,7 +43,7 @@ export default function CommonExtensionModal({
     <Modal
       {...props}
       withCloseButton
-      contentClassName='pb-0 px-0'
+      contentClassName='pb-0 !px-0'
       titleClassName={commonClassName}
       descriptionClassName={commonClassName}
     >

@@ -1,5 +1,5 @@
 import AboutChatRedirectPage from '@/modules/chat/AboutChatRedirectPage'
-import { getPostsFromCache } from '@/pages/api/posts'
+import { getPostsServer } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -22,7 +22,7 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
     let description = ''
 
     try {
-      const [chat] = await getPostsFromCache([chatId])
+      const [chat] = await getPostsServer([chatId])
       title = chat.content?.title ?? ''
       description = chat.content?.body ?? ''
     } catch (err) {

@@ -18,14 +18,21 @@ export const useLocation = create<State>()((set, get) => ({
   ...initialState,
   init: () => {
     set({ currentUrl: window.location.href })
-    Router.events.on('routeChangeComplete', () => {
-      if (startHistoryLength === undefined) {
-        startHistoryLength = window.history.length
-      }
+    startHistoryLength = window.history.length
 
+    Router.events.on('routeChangeComplete', () => {
       const prevUrl = get().currentUrl
-      if (startHistoryLength + history.length > window.history.length) {
+      const trackedHistoryLength = startHistoryLength + history.length
+
+      const isPopped = trackedHistoryLength > window.history.length
+      const isReplaced = trackedHistoryLength === window.history.length
+      if (isPopped) {
         history.pop()
+      } else if (isReplaced) {
+        if (history.length > 0) {
+          history.pop()
+          history.push(prevUrl)
+        }
       } else {
         history.push(prevUrl)
       }

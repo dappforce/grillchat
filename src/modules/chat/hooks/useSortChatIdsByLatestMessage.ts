@@ -8,10 +8,12 @@ export default function useSortChatIdsByLatestMessage(chatIds: string[] = []) {
     subscribe: true,
   })
   const latestMessageIds = useMemo(() => {
-    return messageIdsQueries?.map((query) => {
-      const ids = query.data
-      return ids?.[ids?.length - 1] ?? null
-    })
+    return messageIdsQueries
+      ?.map((query) => {
+        const ids = query.data
+        return ids?.[ids?.length - 1] ?? null
+      })
+      .filter((id) => !!id) as string[]
   }, [messageIdsQueries])
 
   const lastMessageQueries = getPostQuery.useQueries(latestMessageIds ?? [])

@@ -4,9 +4,11 @@ import {
   autoPlacement,
   offset,
   Placement,
+  safePolygon,
   useClientPoint,
   useDismiss,
   useFloating,
+  useHover,
   useInteractions,
 } from '@floating-ui/react'
 import { Transition } from '@headlessui/react'
@@ -19,6 +21,7 @@ export type FloatingWrapperProps = {
     referenceProps: ReferenceProps
   }) => JSX.Element
   panel: (closeMenu: () => void) => React.ReactNode
+  showOnHover?: boolean
   alignment?: Alignment
   allowedPlacements?: Placement[]
   useClickPointAsAnchor?: boolean
@@ -29,6 +32,7 @@ export default function FloatingWrapper({
   children,
   panel,
   alignment,
+  showOnHover,
   allowedPlacements,
   useClickPointAsAnchor,
   yOffset = 0,
@@ -55,10 +59,15 @@ export default function FloatingWrapper({
     enabled: !!useClickPointAsAnchor,
   })
 
+  const hover = useHover(context, {
+    handleClose: safePolygon(),
+    enabled: !isTouchDevice() && !!showOnHover,
+  })
   const dismiss = useDismiss(context)
   const { getReferenceProps, getFloatingProps } = useInteractions([
     clientPoint,
     dismiss,
+    hover,
   ])
 
   const toggleDisplay = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {

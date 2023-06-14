@@ -1,12 +1,13 @@
+import { followedIdsStorage } from '@/stores/my-account'
 import { poolQuery } from '@/subsocial-query'
 import {
   createSubsocialQuery,
   SubsocialQueryData,
 } from '@/subsocial-query/subsocial/query'
 
-const getChatIdsBySpaceId = poolQuery<
+const getPostIdsBySpaceId = poolQuery<
   SubsocialQueryData<string>,
-  { spaceId: string; chatIds: string[] }
+  { spaceId: string; postIds: string[] }
 >({
   multiCall: async (allParams) => {
     if (allParams.length === 0) return []
@@ -17,9 +18,9 @@ const getChatIdsBySpaceId = poolQuery<
     const res = await Promise.all(
       spaceIds.map((spaceId) => api.blockchain.postIdsBySpaceId(spaceId))
     )
-    return res.map((chatIds, i) => ({
+    return res.map((postIds, i) => ({
       spaceId: spaceIds[i],
-      chatIds,
+      postIds,
     }))
   },
   resultMapper: {
@@ -27,9 +28,9 @@ const getChatIdsBySpaceId = poolQuery<
     resultToKey: (result) => result?.spaceId ?? '',
   },
 })
-export const getChatIdsBySpaceIdQuery = createSubsocialQuery({
+export const getPostIdsBySpaceIdQuery = createSubsocialQuery({
   key: 'getPostIdsBySpaceId',
-  fetcher: getChatIdsBySpaceId,
+  fetcher: getPostIdsBySpaceId,
 })
 
 async function getFollowedPostIdsByAddress({
@@ -41,10 +42,33 @@ async function getFollowedPostIdsByAddress({
   const substrateApi = await api.substrateApi
   const rawFollowedPosts =
     await substrateApi.query.postFollows.postsFollowedByAccount(address)
-  const followedPostIds = rawFollowedPosts.toPrimitive() as number[]
-  return followedPostIds.map((id) => id.toString())
+  const followedPostIdsNumber = rawFollowedPosts.toPrimitive() as number[]
+  const followedPostIds = followedPostIdsNumber.map((id) => id.toString())
+
+  followedIdsStorage.set(JSON.stringify(followedPostIds), address)
+  return followedPostIds
 }
 export const getFollowedPostIdsByAddressQuery = createSubsocialQuery({
   key: 'getFollowedPostIdsByAddress',
   fetcher: getFollowedPostIdsByAddress,
+  defaultConfigGenerator: (address) => {
+    if (!address) return {}
+
+    const placeholderData = followedIdsStorage.get(address)
+    if (!placeholderData) return {}
+
+    try {
+      const parsedData = JSON.parse(placeholderData)
+      if (
+        !Array.isArray(parsedData) ||
+        !parsedData.every((id) => typeof id === 'string')
+      )
+        throw new Error('Invalid data')
+      return {
+        placeholderData: parsedData as string[],
+      }
+    } catch {
+      return {}
+    }
+  },
 })
