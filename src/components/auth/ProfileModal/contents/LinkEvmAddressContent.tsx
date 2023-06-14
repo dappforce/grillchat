@@ -12,12 +12,12 @@ import { ContentProps } from '../types'
 function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
   const { address: addressFromExt } = useAccount()
 
-  const addressFromExtLovercased = addressFromExt?.toLowerCase()
+  const addressFromExtLowercased = addressFromExt?.toLowerCase()
 
   const isNotEqAddresses =
-    !!addressFromExtLovercased &&
+    !!addressFromExtLowercased &&
     !!evmAddress &&
-    evmAddress !== addressFromExtLovercased
+    evmAddress !== addressFromExtLowercased
 
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
     setModalStep: () => setCurrentState('evm-address-linked'),

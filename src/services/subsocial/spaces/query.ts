@@ -42,6 +42,10 @@ const getSpaceFromSquid = poolQuery<string, SpaceData>({
     })
     return res.spaces.map((space) => mapSpaceFragment(space))
   },
+  resultMapper: {
+    paramToKey: (param) => param,
+    resultToKey: (result) => result?.id ?? '',
+  },
 })
 
 export const getSpaceQuery = createDynamicSubsocialQuery('getSpace', {

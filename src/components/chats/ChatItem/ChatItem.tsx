@@ -1,4 +1,4 @@
-import AddressAvatar from '@/components/AddressAvatar'
+import ClickableAddressAvatar from '@/components/ClickableAddressAvatar'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
@@ -145,7 +145,7 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <AddressAvatar address={ownerId} className='flex-shrink-0' />
+        <ClickableAddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
       <FloatingMenus menus={menus} alignment='end' useClickPointAsAnchor>
         {(config) => {

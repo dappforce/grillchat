@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 type State = {
   theme?: Theme
   order?: string[]
+  channels?: Set<string>
   enableBackButton?: boolean
   enableLoginButton?: boolean
   enableInputAutofocus?: boolean
@@ -56,6 +57,8 @@ const schemaGetter = {
   '0.1': () => {
     const theme = getUrlQuery('theme')
     const order = getUrlQuery('order')
+    const channels = getUrlQuery('channels')
+
     const enableBackButton = getUrlQuery('enableBackButton')
     const enableLoginButton = getUrlQuery('enableLoginButton')
     const enableInputAutofocus = getUrlQuery('enableInputAutofocus')
@@ -64,10 +67,12 @@ const schemaGetter = {
       'subscribeMessageCountThreshold'
     )
 
+    const usedChannels = new Set(channels.split(',').filter((value) => !!value))
     const usedOrder = order.split(',').filter((value) => !!value)
 
     return {
       order: usedOrder,
+      channels: usedChannels.size > 0 ? usedChannels : undefined,
       theme: validateStringConfig(theme, ['dark', 'light']),
       enableBackButton: validateStringConfig(
         enableBackButton,

@@ -5,17 +5,11 @@ import useSearch from '@/hooks/useSearch'
 import useSortedChats from '../hooks/useSortedChats'
 import HubPageNavbar from './HubPageNavbar'
 
-// const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
-//   ssr: false,
-// })
-
 export type HubPageProps = {
   hubId: string
 }
 const searchKeys = ['content.title']
 export default function HubPage({ hubId }: HubPageProps) {
-  // const isInIframe = useIsInIframe()
-
   const { chats, allChatIds } = useSortedChats(hubId)
 
   const { search, getSearchResults, setSearch, focusController } = useSearch()
@@ -51,7 +45,6 @@ export default function HubPage({ hubId }: HubPageProps) {
         },
       }}
     >
-      {/* {!isInIframe && <WelcomeModal />} */}
       <div className='flex flex-col'>
         {searchResults.length === 0 && (
           <NoChatsFound search={search} hubId={hubId} />

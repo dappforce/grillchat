@@ -87,7 +87,6 @@ function AccountContent({
     <div className='mt-2 flex flex-col'>
       <ProfilePreview
         address={address}
-        evmAddress={evmAddress}
         className='border-b border-background-lightest px-6 pb-6'
       />
       <MenuList menus={menus} />

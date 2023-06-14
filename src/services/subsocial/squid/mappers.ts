@@ -1,4 +1,5 @@
 import {
+  CommentStruct,
   NftExtension,
   PostContentExtension,
   PostData,
@@ -65,26 +66,29 @@ const mapPostExtensions = (
 }
 
 export const mapPostFragment = (post: PostFragmentFragment): PostData => {
+  const struct: CommentStruct = {
+    createdAtBlock: parseInt(post.createdAtBlock),
+    createdAtTime: new Date(post.createdAtTime).getTime(),
+    createdByAccount: post.createdByAccount.id,
+    downvotesCount: post.downvotesCount,
+    hidden: post.hidden,
+    id: post.id,
+    isComment: post.isComment,
+    isRegularPost: post.kind === 'RegularPost',
+    isSharedPost: post.kind === 'SharedPost',
+    ownerId: post.ownedByAccount.id,
+    upvotesCount: post.upvotesCount,
+    contentId: post.content ?? '',
+    repliesCount: post.repliesCount,
+    sharesCount: post.sharesCount,
+    spaceId: post.space?.id ?? '',
+    isUpdated: !!post.updatedAtTime,
+    rootPostId: post.rootPost?.id ?? '',
+  }
+
   return {
     id: post.id,
-    struct: {
-      createdAtBlock: parseInt(post.createdAtBlock),
-      createdAtTime: new Date(post.createdAtTime).getTime(),
-      createdByAccount: post.createdByAccount.id,
-      downvotesCount: post.downvotesCount,
-      hidden: post.hidden,
-      id: post.id,
-      isComment: post.isComment,
-      isRegularPost: post.kind === 'RegularPost',
-      isSharedPost: post.kind === 'SharedPost',
-      ownerId: post.ownedByAccount.id,
-      upvotesCount: post.upvotesCount,
-      contentId: post.content ?? '',
-      repliesCount: post.repliesCount,
-      sharesCount: post.sharesCount,
-      spaceId: post.space?.id ?? '',
-      isUpdated: !!post.updatedAtTime,
-    },
+    struct,
     content: {
       summary: post.summary ?? '',
       image: post.image ?? '',
