@@ -1,6 +1,7 @@
 import {
   CommentStruct,
   NftExtension,
+  PostContent,
   PostContentExtension,
   PostData,
   SpaceData,
@@ -46,7 +47,7 @@ export const mapSpaceFragment = (space: SpaceFragmentFragment): SpaceData => {
 
 const mapPostExtensions = (
   extensions: PostFragmentFragment['extensions']
-): PostContentExtension[] | undefined => {
+): PostContentExtension[] | null => {
   const mappedExtensions = extensions?.map((ext) => {
     switch (ext.extensionSchemaId) {
       case ContentExtensionSchemaId.SubsocialEvmNft:
@@ -63,7 +64,7 @@ const mapPostExtensions = (
     }
   })
   const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
-  if (exts.length === 0) return undefined
+  if (exts.length === 0) return null
   return exts
 }
 
@@ -101,6 +102,6 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
       isShowMore: post.isShowMore ?? false,
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
       extensions: mapPostExtensions(post.extensions),
-    },
+    } as PostContent,
   }
 }
