@@ -51,6 +51,7 @@ export const POST_FRAGMENT = gql`
     sharesCount
     upvotesCount
     updatedAtTime
+    experimental
     canonical
     tagsOriginal
     tweetId

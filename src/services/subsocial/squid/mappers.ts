@@ -66,6 +66,7 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
       body: post.body || '',
       canonical: post.canonical ?? '',
       isShowMore: post.isShowMore ?? false,
+      inReplyTo: post.experimental?.inReplyTo ?? null,
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
     },
   }
