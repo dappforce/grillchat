@@ -18,7 +18,7 @@ const marketplaceParser: {
   parser: (link: string) => NftProperties
 }[] = [
   {
-    name: 'Opensea.io',
+    name: 'OpenSea.io',
     link: 'https://opensea.io',
     checker: (link: string) => link.includes('opensea.io/assets/'),
     chainMapper: {
@@ -106,7 +106,7 @@ const marketplaceParser: {
     },
   },
   {
-    name: 'Looksrare.org',
+    name: 'LooksRare.org',
     link: 'https://looksrare.org',
     chainMapper: {
       ethereum: 'ethereum',
@@ -125,7 +125,7 @@ const marketplaceParser: {
     },
   },
   {
-    name: 'Tofunft.com',
+    name: 'TofuNFT.com',
     link: 'https://tofunft.com',
     chainMapper: {
       eth: 'ethereum',

@@ -141,7 +141,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
       <Modal
         isOpen={isOpenPopularMarketplaces}
         closeModal={() => setIsOpenPopularMarketplaces(false)}
-        title='🛍️ Supported Marketplaces'
+        title='🛍️ Supported NFT Marketplaces'
         withCloseButton
       >
         <div className='mt-2 flex flex-col gap-2'>
