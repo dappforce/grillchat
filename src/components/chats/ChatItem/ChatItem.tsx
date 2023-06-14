@@ -1,4 +1,4 @@
-import AddressAvatar from '@/components/AddressAvatar'
+import ClickableAddressAvatar from '@/components/ClickableAddressAvatar'
 import CommonCustomContextMenu, {
   CommonCustomContextMenuProps,
 } from '@/components/floating/CommonCustomContextMenu'
@@ -147,7 +147,7 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <AddressAvatar address={ownerId} className='flex-shrink-0' />
+        <ClickableAddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
       <CommonCustomContextMenu menus={menus}>
         {(config) => {
