@@ -79,15 +79,22 @@ export default function ChatRoom({
           />
         ) : (
           <JoinChatWrapper>
-            {({ isLoading, mutateAsync }) => (
-              <Button
-                size='lg'
-                isLoading={isLoading || isLoadingJoinedChat}
-                onClick={() => mutateAsync({ chatId })}
-              >
-                Join
-              </Button>
-            )}
+            {({ isLoading, mutateAsync }) => {
+              const isButtonLoading = isLoading || isLoadingJoinedChat
+              return (
+                <Button
+                  size='lg'
+                  className={cx(
+                    isButtonLoading &&
+                      'bg-background-light text-text-muted !opacity-50 !brightness-100'
+                  )}
+                  isLoading={isButtonLoading}
+                  onClick={() => mutateAsync({ chatId })}
+                >
+                  Join
+                </Button>
+              )
+            }}
           </JoinChatWrapper>
         )}
       </Component>
