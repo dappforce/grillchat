@@ -80,7 +80,7 @@ export default function ChatRoom({
         ) : (
           <JoinChatWrapper>
             {({ isLoading, mutateAsync }) => {
-              const isButtonLoading = isLoading || isLoadingJoinedChat || true
+              const isButtonLoading = isLoading || isLoadingJoinedChat
               return (
                 <Button
                   size='lg'
