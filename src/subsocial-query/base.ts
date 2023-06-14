@@ -93,9 +93,15 @@ export function createQuery<Data, ReturnValue>({
 }) {
   const getQueryKey = createQueryKeys<Data>(key)
 
-  async function fetchQuery(client: QueryClient, data: Data) {
+  async function fetchQuery(client: QueryClient | null, data: Data) {
+    const cachedData = client?.getQueryData(getQueryKey(data))
+    if (cachedData) {
+      return cachedData as ReturnValue
+    }
+
     const res = await fetcher(data)
-    client.setQueryData(getQueryKey(data), res ?? null)
+    if (client) client.setQueryData(getQueryKey(data), res ?? null)
+
     return res
   }
 
