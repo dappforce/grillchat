@@ -151,7 +151,7 @@ export default function DonateModal({
   const { balance, decimals } = useGetBalance(selectedToken.id)
 
   const { data: recipientAccountData } = getAccountDataQuery.useQuery(recipient)
-  const { data: myAccountData } = getAccountDataQuery.useQuery(address)
+  const { data: myAccountData } = getAccountDataQuery.useQuery(address || '')
 
   const { evmAddress: evmRecipientAddress } = recipientAccountData || {}
   const { evmAddress: myEvmAddress } = myAccountData || {}

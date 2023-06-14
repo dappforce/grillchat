@@ -78,7 +78,9 @@ export const useTransfer = (token: string, chainName: string) => {
 export const useGetBalance = (token: string) => {
   const myGrillAddress = useMyAccount((state) => state.address)
 
-  const { data: accountData } = getAccountDataQuery.useQuery(myGrillAddress)
+  const { data: accountData } = getAccountDataQuery.useQuery(
+    myGrillAddress || ''
+  )
 
   const { evmAddress } = accountData || {}
 

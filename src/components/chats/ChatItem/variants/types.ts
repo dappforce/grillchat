@@ -1,4 +1,4 @@
-import { Extension } from '@/@types/subsocial'
+import { PostContent } from '@subsocial/api/types'
 import { ComponentProps, SyntheticEvent } from 'react'
 
 export type ChatItemContentProps = ComponentProps<'div'> & {
@@ -8,7 +8,7 @@ export type ChatItemContentProps = ComponentProps<'div'> & {
   ownerId: string
   body: string
   inReplyTo?: { id: string }
-  extensions?: Extension[]
+  extensions?: PostContent['extensions']
   onCheckMarkClick: (e: SyntheticEvent) => void
   scrollToMessage?: (messageId: string) => Promise<void>
 }

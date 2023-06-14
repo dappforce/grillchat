@@ -84,7 +84,7 @@ export default function ChatItem({
 
   const { data: messageOwnerAccountData } =
     getAccountDataQuery.useQuery(ownerId)
-  const { data: myAccountData } = getAccountDataQuery.useQuery(address)
+  const { data: myAccountData } = getAccountDataQuery.useQuery(address || '')
 
   const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
   const { evmAddress: myEvmAddress } = myAccountData || {}
