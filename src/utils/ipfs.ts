@@ -1,5 +1,20 @@
+import { CID } from 'ipfs-http-client'
+
+enum CID_KIND {
+  CBOR = 113,
+  UNIXFS = 112,
+}
+
 export function getIpfsContentUrl(cid: string) {
   if (!cid || cid.startsWith('http')) return cid
+
+  const ipfsCid = CID.parse(cid)
+  if (!ipfsCid) return cid
+
+  const isCbor = ipfsCid.code === CID_KIND.CBOR
+  if (isCbor) {
+    return `https://ipfs.subsocial.network/api/v0/dag/get?arg=${cid}`
+  }
   return `https://ipfs.subsocial.network/ipfs/${cid}`
 }
 

@@ -3279,7 +3279,7 @@
     "@stablelib/random" "^1.0.2"
     "@stablelib/wipe" "^1.0.1"
 
-"@subsocial/api@^0.8.10":
+"@subsocial/api@^0.8.12":
   version "0.8.13"
   resolved "https://registry.yarnpkg.com/@subsocial/api/-/api-0.8.13.tgz#94f69c8d870419d2becc346fd1202e36b8c066f6"
   integrity sha512-jnbHm4bblYeYAYnriQDS9ehigGektPhwtxsHieXP+rYMKl3tu5ebbCOyCu/HXNavlEGFVGQmW1tYqw2VKhIC7w==
