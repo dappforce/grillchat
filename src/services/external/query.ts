@@ -18,6 +18,7 @@ const moralisChainMapper: Record<(typeof nftChains)[number], EvmChain> = {
 
 async function getNftData(nft: NftProperties | null) {
   if (!nft) return null
+  console.log('nft fetching', nft)
 
   const moralis = await getMoralisApi()
 

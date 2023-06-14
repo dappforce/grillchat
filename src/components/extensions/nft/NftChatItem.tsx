@@ -6,20 +6,30 @@ import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getNftDataQuery, getNftPriceQuery } from '@/services/external/query'
 import { cx } from '@/utils/class-names'
 import truncate from 'lodash.truncate'
+import { useInView } from 'react-intersection-observer'
 import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
 
 type Props = ExtensionChatItemProps
 
 export default function NftChatItem(props: Props) {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: '-100px',
+  })
+
   const { message } = props
   const { content } = message
   const { extensions } = content || {}
 
   const nftProperties = extensions?.[0]?.properties
   const { data: nftData, isLoading: isLoadingNftData } =
-    getNftDataQuery.useQuery(nftProperties ?? null)
+    getNftDataQuery.useQuery(nftProperties ?? null, {
+      enabled: inView,
+    })
   const { data: nftPrice, isLoading: isLoadingNftPrice } =
-    getNftPriceQuery.useQuery(nftProperties ?? null)
+    getNftPriceQuery.useQuery(nftProperties ?? null, {
+      enabled: inView,
+    })
 
   const { IntegratedSkeleton: NftDataSkeleton } =
     useIntegratedSkeleton(isLoadingNftData)
@@ -33,7 +43,7 @@ export default function NftChatItem(props: Props) {
       className='max-w-xs'
     >
       {({ isMyMessage }) => (
-        <div className='flex flex-col [&:not(:first-child)]:mt-1'>
+        <div className='flex flex-col [&:not(:first-child)]:mt-1' ref={ref}>
           <div
             className={cx('relative flex w-full items-center justify-center')}
           >

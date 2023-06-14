@@ -161,7 +161,7 @@ export default function ChatItem({
               {...referenceProps}
               id={messageBubbleId}
             >
-              {extensions ? (
+              {extensions && extensions.length > 0 ? (
                 <ChatItemWithExtension
                   onCheckMarkClick={onCheckMarkClick}
                   scrollToMessage={scrollToMessage}
