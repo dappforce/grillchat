@@ -80,12 +80,13 @@ export default function ChatRoom({
         ) : (
           <JoinChatWrapper>
             {({ isLoading, mutateAsync }) => {
-              const isButtonLoading = isLoading || isLoadingJoinedChat
+              const isButtonLoading = isLoading || isLoadingJoinedChat || true
               return (
                 <Button
                   size='lg'
                   className={cx(
-                    isButtonLoading && 'bg-text-muted text-text-on-primary'
+                    isButtonLoading &&
+                      'bg-background-light text-text-muted opacity-100 !brightness-100'
                   )}
                   isLoading={isButtonLoading}
                   onClick={() => mutateAsync({ chatId })}
