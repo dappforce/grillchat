@@ -54,7 +54,6 @@ export default function CommonExtensionModal({
         autofocus={!!autofocus}
         chatId={chatId}
         mustHaveMessageBody={mustHaveMessageBody}
-        className={cx(isUsingBigButton && 'pb-5 md:pb-6')}
         beforeMesageSend={beforeMesageSend}
         sendButtonText={sendButtonText}
         inputProps={{

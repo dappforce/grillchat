@@ -145,7 +145,7 @@ export default function DonateModal({
   const isDarkTheme = theme === 'dark'
   const [selectedChain, setSelectedChain] = useState<ListItem>(chainItems[0])
   const [selectedToken, setSelectedToken] = useState<ListItem>(tokensItems[0])
-  const [amount, setAmount] = useState<string>('0')
+  const [amount, setAmount] = useState<string>('')
   const address = useMyAccount((state) => state.address)
 
   const { balance, decimals } = useGetBalance(selectedToken.id)
@@ -211,7 +211,6 @@ export default function DonateModal({
       beforeMesageSend={onButtonClick}
       title='💰 Donate'
       withCloseButton
-      {...props}
     >
       <div>
         <div

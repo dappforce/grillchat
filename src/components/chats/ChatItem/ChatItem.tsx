@@ -6,7 +6,6 @@ import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
 import Toast from '@/components/Toast'
-import useRandomColor from '@/hooks/useRandomColor'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
@@ -78,7 +77,6 @@ export default function ChatItem({
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
   const { body, inReplyTo, extensions } = message.content || {}
-  const senderColor = useRandomColor(ownerId)
   const [openDonateModal, setOpenDonateModal] = useState(false)
   const address = useMyAccount((state) => state.address)
 
@@ -232,13 +230,15 @@ export default function ChatItem({
         closeModal={() => setOpenMetadata(false)}
         entity={message}
       />
-      <DonateModal
-        isOpen={openDonateModal}
-        closeModal={() => setOpenDonateModal(false)}
-        recipient={ownerId}
-        messageId={messageId}
-        chatId={chatId}
-      />
+      {openDonateModal && (
+        <DonateModal
+          isOpen={openDonateModal}
+          closeModal={() => setOpenDonateModal(false)}
+          recipient={ownerId}
+          messageId={messageId}
+          chatId={chatId}
+        />
+      )}
     </div>
   )
 }
