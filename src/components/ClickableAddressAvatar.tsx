@@ -1,7 +1,5 @@
-import DonateIcon from '@/assets/icons/donate.svg'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
-import ActionCard from './ActionCard'
 import AddressAvatar, { AddressAvatarProps } from './AddressAvatar'
 import Modal from './modals/Modal'
 import ProfilePreview from './ProfilePreview'
@@ -31,8 +29,8 @@ export default function ClickableAddressAvatar({
         isOpen={isOpenAccountModal}
         closeModal={() => setIsOpenAccountModal(false)}
       >
-        <ProfilePreview address={props.address} />
-        <ActionCard
+        <ProfilePreview address={props.address} className='mb-2' />
+        {/* <ActionCard
           className='mt-6'
           actions={[
             {
@@ -42,7 +40,7 @@ export default function ClickableAddressAvatar({
               onClick: () => undefined,
             },
           ]}
-        />
+        /> */}
       </Modal>
     </>
   )
