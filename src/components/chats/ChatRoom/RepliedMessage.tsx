@@ -66,7 +66,7 @@ export default function RepliedMessage({
           className='flex flex-1 flex-col items-start gap-0.5 text-sm'
         >
           <Name
-            ownerId={messageSenderAddr || ''}
+            address={messageSenderAddr || ''}
             additionalText='Reply to'
             className='font-medium'
           />

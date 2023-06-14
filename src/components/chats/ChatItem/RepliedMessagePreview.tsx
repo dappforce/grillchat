@@ -24,7 +24,7 @@ export default function RepliedMessagePreview({
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { data: message } = getPostQuery.useQuery(repliedMessageId)
-  const replySender = message?.struct.ownerId
+  const replySender = message?.struct.ownerId ?? ''
   const replySenderColor = useRandomColor(replySender)
 
   // TODO: extract to better flexibility for other extensions
@@ -81,7 +81,7 @@ export default function RepliedMessagePreview({
         />
       )}
       <div className='flex flex-col'>
-        <Name ownerId={message?.struct.ownerId} className='font-medium' />
+        <Name address={replySender} className='font-medium' />
         <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
           {showedText}
         </span>

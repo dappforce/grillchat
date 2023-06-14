@@ -146,7 +146,7 @@ export default function ChatPreview({
           </div>
         </div>
         {withBorderBottom && (
-          <div className='absolute bottom-0 ml-14 w-full border-b border-border-gray sm:ml-12' />
+          <div className='absolute bottom-0 ml-14 w-full border-b border-border-gray sm:ml-16' />
         )}
       </ContentContainer>
     </Component>
