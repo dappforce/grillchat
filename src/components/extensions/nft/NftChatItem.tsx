@@ -3,7 +3,7 @@ import ClickableImage from '@/components/ClickableImage'
 import ImageLoader from '@/components/ImageLoader'
 import LinkText from '@/components/LinkText'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
-import { getNftDataQuery, getNftPriceQuery } from '@/services/external/query'
+import { getNftQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import truncate from 'lodash.truncate'
 import { useInView } from 'react-intersection-observer'
@@ -22,19 +22,22 @@ export default function NftChatItem(props: Props) {
   const { extensions } = content || {}
 
   const nftProperties = extensions?.[0]?.properties
-  const { data: nftData, isLoading: isLoadingNftData } =
-    getNftDataQuery.useQuery(nftProperties ?? null, {
+  const { data: nftData, isLoading: isLoadingNftData } = getNftQuery.useQuery(
+    nftProperties ?? null,
+    {
       enabled: inView,
-    })
-  const { data: nftPrice, isLoading: isLoadingNftPrice } =
-    getNftPriceQuery.useQuery(nftProperties ?? null, {
-      enabled: inView,
-    })
+    }
+  )
+  // TODO: uncomment if want to show price
+  // const { data: nftPrice, isLoading: isLoadingNftPrice } =
+  //   getNftPriceQuery.useQuery(nftProperties ?? null, {
+  //     enabled: inView,
+  //   })
 
   const { IntegratedSkeleton: NftDataSkeleton } =
     useIntegratedSkeleton(isLoadingNftData)
-  const { IntegratedSkeleton: NftPriceSkeleton } =
-    useIntegratedSkeleton(isLoadingNftPrice)
+  // const { IntegratedSkeleton: NftPriceSkeleton } =
+  //   useIntegratedSkeleton(isLoadingNftPrice)
 
   return (
     <CommonChatItem
@@ -90,9 +93,9 @@ export default function NftChatItem(props: Props) {
               <NftDataSkeleton content={nftData} className={cx('w-16')}>
                 {(data) => <span>{data?.collectionName}</span>}
               </NftDataSkeleton>
-              <NftPriceSkeleton content={nftPrice} className={cx('w-16')}>
+              {/* <NftPriceSkeleton content={nftPrice} className={cx('w-16')}>
                 {(data) => <span>{data}</span>}
-              </NftPriceSkeleton>
+              </NftPriceSkeleton> */}
             </div>
             <Button
               className='my-2 mb-3'

@@ -1,8 +1,7 @@
 import ImageLoader from '@/components/ImageLoader'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
-import { getPostQuery } from '@/services/api/query'
-import { getNftDataQuery } from '@/services/external/query'
+import { getNftQuery, getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { truncateText } from '@/utils/strings'
 import { ComponentProps, useState } from 'react'
@@ -36,7 +35,7 @@ export default function RepliedMessagePreview({
   const messageContent =
     message?.content?.body || (hasNftExtension ? 'NFT' : '')
 
-  const { data: nftData } = getNftDataQuery.useQuery(
+  const { data: nftData } = getNftQuery.useQuery(
     firstExtension?.properties ?? null
   )
 

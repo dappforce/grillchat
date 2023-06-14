@@ -30,3 +30,11 @@ export function getIpfsPinUrl() {
     'https://pin.crustcloud.io/psa'
   )
 }
+
+export function getMoralisApiKey() {
+  return checkEnv(process.env.MORALIS_API_KEY, 'MORALIS_API_KEY')
+}
+
+export function getOpenSeaApiKey() {
+  return checkEnv(process.env.OPENSEA_API_KEY, 'OPENSEA_API_KEY')
+}

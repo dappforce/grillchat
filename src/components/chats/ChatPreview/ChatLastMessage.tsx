@@ -1,6 +1,6 @@
 import ImageLoader from '@/components/ImageLoader'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
-import { getNftDataQuery } from '@/services/external/query'
+import { getNftQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
@@ -35,7 +35,7 @@ export default function ChatLastMessage({
   const lastMessageContent =
     lastMessage?.content?.body || (hasNftExtension ? 'NFT' : defaultDesc)
 
-  const { data: nftData } = getNftDataQuery.useQuery(
+  const { data: nftData } = getNftQuery.useQuery(
     firstExtension?.properties ?? null
   )
 
