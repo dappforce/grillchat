@@ -1,4 +1,6 @@
+import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
+import { useEffect } from 'react'
 import ChatForm, { ChatFormProps } from '../chats/ChatForm'
 import Modal, { ModalProps } from '../modals/Modal'
 
@@ -25,6 +27,14 @@ export default function CommonExtensionModal({
   onSubmit,
   ...props
 }: CommonExtensionModalProps) {
+  const setShowEmptyPrimaryChatInput = useMessageData(
+    (state) => state.setShowEmptyPrimaryChatInput
+  )
+
+  useEffect(() => {
+    setShowEmptyPrimaryChatInput(props.isOpen)
+  }, [props.isOpen, setShowEmptyPrimaryChatInput])
+
   const commonClassName = cx('px-5 md:px-6')
 
   const isUsingBigButton = !!sendButtonText
