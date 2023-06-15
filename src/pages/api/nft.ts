@@ -108,7 +108,11 @@ async function getNftData(
       price: 0,
     }
 
-    nftDataCache.add(cacheKey, nftData)
+    const isMetadataRecognizedAsValid = metadata?.name || image
+    if (isMetadataRecognizedAsValid) {
+      nftDataCache.add(cacheKey, nftData)
+    }
+
     return nftData
   } catch (e) {
     console.error('Fail to get nft data for nft:', cacheKey, e)
