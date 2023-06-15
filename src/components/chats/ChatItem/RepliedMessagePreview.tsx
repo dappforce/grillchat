@@ -1,4 +1,4 @@
-import ImageLoader from '@/components/ImageLoader'
+import MediaLoader from '@/components/MediaLoader'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getNftQuery, getPostQuery } from '@/services/api/query'
@@ -72,7 +72,7 @@ export default function RepliedMessagePreview({
       }}
     >
       {hasNftExtension && (
-        <ImageLoader
+        <MediaLoader
           containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
           className={cx('aspect-square w-10')}
           placeholderClassName={cx('w-10 aspect-square')}

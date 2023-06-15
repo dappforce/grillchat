@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
-import ClickableImage from '@/components/ClickableImage'
-import ImageLoader from '@/components/ImageLoader'
+import ClickableMedia from '@/components/ClickableMedia'
 import LinkText from '@/components/LinkText'
+import MediaLoader from '@/components/MediaLoader'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getNftQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
@@ -57,11 +57,11 @@ export default function NftChatItem(props: Props) {
           <div
             className={cx('relative flex w-full items-center justify-center')}
           >
-            <ClickableImage
+            <ClickableMedia
               src={nftData?.image ?? ''}
               alt=''
               trigger={(onClick) => (
-                <ImageLoader
+                <MediaLoader
                   containerClassName='rounded-[4px] overflow-hidden w-full cursor-pointer'
                   placeholderClassName={cx('w-[320px] aspect-square')}
                   className='w-[320px] object-contain'

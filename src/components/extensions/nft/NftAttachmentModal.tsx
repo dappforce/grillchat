@@ -1,8 +1,8 @@
 import Button from '@/components/Button'
 import { ChatFormProps } from '@/components/chats/ChatForm'
-import ImageLoader from '@/components/ImageLoader'
 import Input, { InputProps } from '@/components/inputs/Input'
 import LinkText, { linkTextStyles } from '@/components/LinkText'
+import MediaLoader from '@/components/MediaLoader'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useAutofocus from '@/hooks/useAutofocus'
 import useDebounce from '@/hooks/useDebounce'
@@ -139,7 +139,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
                 >
                   <HiTrash />
                 </Button>
-                <ImageLoader
+                <MediaLoader
                   withSpinner
                   image={data?.image ?? ''}
                   loadingClassName='rounded-2xl'

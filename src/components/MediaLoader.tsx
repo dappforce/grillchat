@@ -4,7 +4,7 @@ import Image, { ImageProps } from 'next/image'
 import { useLayoutEffect, useState } from 'react'
 import Spinner from './Spinner'
 
-export type ImageLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
+export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   alt?: string
   image?: ImageProps['src']
   containerClassName?: string
@@ -23,14 +23,14 @@ function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
   return uri
 }
 
-export default function ImageLoader({
+export default function MediaLoader({
   image,
   containerClassName,
   loadingClassName,
   placeholderClassName,
   withSpinner,
   ...props
-}: ImageLoaderProps) {
+}: MediaLoaderProps) {
   let [isLoading, setIsLoading] = useState(false)
   let usedImage = image
   if (typeof image === 'string') {
@@ -77,11 +77,19 @@ export default function ImageLoader({
         />
       )
     } else if (typeof usedImage === 'string' && usedImage.startsWith('data:')) {
+      // width and height props will make iframe not square in clickable media
+      const { width, height, ...iframeProps } = commonProps
       return (
-        <iframe
-          {...commonProps}
-          className={cx(commonClassName, 'aspect-square')}
-        />
+        <>
+          <iframe
+            {...iframeProps}
+            className={cx(commonClassName, 'aspect-square')}
+          />
+          <div
+            {...iframeProps}
+            className='absolute inset-0 z-10 h-full w-full opacity-0'
+          />
+        </>
       )
     } else {
       return (
