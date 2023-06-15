@@ -13,7 +13,7 @@ export type ModalFunctionalityProps = {
 
 const panelStyles = cva(
   cx(
-    'relative w-full overflow-hidden rounded-[20px] bg-background-light',
+    'relative w-full rounded-[20px] bg-background-light',
     'text-left align-middle shadow-xl',
     'transform transition-all',
     'flex flex-col'
