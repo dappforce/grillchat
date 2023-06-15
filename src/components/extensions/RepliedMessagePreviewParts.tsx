@@ -5,12 +5,14 @@ import NftRepliedMessagePreviewPart from './nft/NftRepliedMessagePreviewPart'
 export type RepliedMessagePreviewPartProps = {
   extensions: PostContent['extensions']
   message?: PostData | null
+  className?: string
 }
 
 type RepliedMessageConfig = {
   place: 'inside' | 'body'
   emptyBodyText?: string
   textColor?: string
+  previewClassName?: string
 }
 
 type RepliedMessagePreviewPatrsProps = {
@@ -24,7 +26,7 @@ export const repliedMessagePreviewPatrs: Record<
 > = {
   'subsocial-evm-nft': {
     element: NftRepliedMessagePreviewPart,
-    config: { place: 'inside', emptyBodyText: 'NFT' },
+    config: { place: 'inside', emptyBodyText: 'NFT', previewClassName: 'w-4' },
   },
   'subsocial-donations': {
     element: DonateRepliedMessagePreviewPart,

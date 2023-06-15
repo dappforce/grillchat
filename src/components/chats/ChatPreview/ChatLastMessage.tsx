@@ -1,10 +1,8 @@
-import ImageLoader from '@/components/ImageLoader'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
-import { getNftQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
-import { NftProperties } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
+import { repliedMessagePreviewPatrs } from '../../extensions/RepliedMessagePreviewParts'
 import useLastMessage from './hooks/useLastMessage'
 
 export type ChatLastMessageProps = ComponentProps<'div'> & {
@@ -27,61 +25,41 @@ export default function ChatLastMessage({
   const defaultDescOrMessageCount =
     defaultDesc || `${messageIds?.length} messages`
 
-  // TODO: extract to better flexibility for other extensions
   const extensions = lastMessage?.content?.extensions
+
   const firstExtension = extensions?.[0]
-  const hasNftExtension =
-    firstExtension && firstExtension.id === 'subsocial-evm-nft'
+
+  const extensionId = firstExtension?.id as string | undefined
+
+  const { element, config } =
+    repliedMessagePreviewPatrs[extensionId || ''] || {}
+  const { emptyBodyText, previewClassName } = config || {}
+
+  const ExtensionElement = element
 
   const lastMessageContent =
-    lastMessage?.content?.body || (hasNftExtension ? 'NFT' : defaultDesc)
-
-  const { data: nftData } = getNftQuery.useQuery(
-    (firstExtension?.properties as NftProperties) ?? null
-  )
+    lastMessage?.content?.body ||
+    (extensionId ? emptyBodyText || '' : defaultDesc)
 
   const showedText = isMessageBlocked
     ? defaultDescOrMessageCount
     : lastMessageContent
 
-  if (nftData) {
-    return (
-      <div
-        {...props}
-        className={cx(
-          'flex items-center gap-1.5 overflow-hidden overflow-ellipsis',
-          props.className
-        )}
-      >
-        {hasNftExtension && (
-          <ImageLoader
-            containerClassName={cx('rounded-sm overflow-hidden flex-shrink-0')}
-            className={cx('aspect-square w-4')}
-            placeholderClassName={cx('w-10 aspect-square')}
-            image={nftData?.image}
-          />
-        )}
-        <p
-          className={cx(
-            'overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted',
-            props.className
-          )}
-        >
-          {showedText}
-        </p>
-      </div>
-    )
-  }
-
   return (
-    <p
+    <div
       {...props}
       className={cx(
-        'overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted',
+        'flex items-center gap-1.5 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted',
         props.className
       )}
     >
+      {ExtensionElement && (
+        <ExtensionElement
+          extensions={extensions}
+          className={previewClassName}
+        />
+      )}
       {showedText}
-    </p>
+    </div>
   )
 }

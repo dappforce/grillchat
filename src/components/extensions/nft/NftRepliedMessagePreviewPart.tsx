@@ -6,6 +6,7 @@ import { RepliedMessagePreviewPartProps } from '../RepliedMessagePreviewParts'
 
 const NftRepliedMessagePreviewPart = ({
   extensions,
+  className,
 }: RepliedMessagePreviewPartProps) => {
   const firstExtension = extensions?.[0] as NftExtension
   const hasNftExtension =
@@ -16,7 +17,7 @@ const NftRepliedMessagePreviewPart = ({
   )
 
   return (
-    <span>
+    <span className={className}>
       {hasNftExtension && (
         <ImageLoader
           containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}

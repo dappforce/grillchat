@@ -99,6 +99,7 @@ export const useGetBalance = (token: string) => {
         functionName: 'decimals',
       },
     ],
+    watch: true,
   })
 
   const { balance, decimals } = useMemo(() => {
