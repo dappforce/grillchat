@@ -51,9 +51,13 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
     'blockchain'
   )
 
-  postsFromBlockchain.forEach((post) => {
+  const filteredPosts = [...posts, ...postsFromBlockchain].filter(
+    (post) => !!post
+  )
+
+  filteredPosts.forEach((post) => {
     post.struct.ownerId = toSubsocialAddress(post.struct.ownerId)!
   })
 
-  return [...posts, ...postsFromBlockchain].filter((post) => !!post)
+  return filteredPosts
 }
