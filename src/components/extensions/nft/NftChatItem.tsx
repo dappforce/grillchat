@@ -30,11 +30,6 @@ export default function NftChatItem(props: Props) {
       enabled: inView,
     }
   )
-  // TODO: uncomment if want to show price
-  // const { data: nftPrice, isLoading: isLoadingNftPrice } =
-  //   getNftPriceQuery.useQuery(nftProperties ?? null, {
-  //     enabled: inView,
-  //   })
 
   const { IntegratedSkeleton: NftDataSkeleton } =
     useIntegratedSkeleton(isLoadingNftData)
