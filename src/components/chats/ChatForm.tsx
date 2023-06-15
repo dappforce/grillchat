@@ -109,7 +109,9 @@ export default function ChatForm({
 
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
-  const isDisabled = mustHaveMessageBody && !processMessage(messageBody)
+  const isDisabled =
+    (mustHaveMessageBody && !processMessage(messageBody)) ||
+    sendButtonProps?.disabled
 
   const resetForm = () => {
     setMessageBody('')
@@ -182,11 +184,7 @@ export default function ChatForm({
               tabIndex={-1}
               onClick={submitForm}
               size='circle'
-              variant={
-                sendButtonProps?.disabled || isDisabled
-                  ? 'mutedOutline'
-                  : 'primary'
-              }
+              variant={isDisabled ? 'mutedOutline' : 'primary'}
               {...sendButtonProps}
               className={cx(classNames, sendButtonProps?.className)}
             >
