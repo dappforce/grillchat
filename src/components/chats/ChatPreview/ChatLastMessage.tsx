@@ -1,8 +1,9 @@
 import ImageLoader from '@/components/ImageLoader'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
-import { getNftDataQuery } from '@/services/external/query'
+import { getNftQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
+import { NftProperties } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import useLastMessage from './hooks/useLastMessage'
 
@@ -35,8 +36,8 @@ export default function ChatLastMessage({
   const lastMessageContent =
     lastMessage?.content?.body || (hasNftExtension ? 'NFT' : defaultDesc)
 
-  const { data: nftData } = getNftDataQuery.useQuery(
-    firstExtension?.properties ?? null
+  const { data: nftData } = getNftQuery.useQuery(
+    (firstExtension?.properties as NftProperties) ?? null
   )
 
   const showedText = isMessageBlocked

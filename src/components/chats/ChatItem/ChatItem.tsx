@@ -1,6 +1,5 @@
 import DonateCoinIcon from '@/assets/icons/donate-coin.svg'
-import AddressAvatar from '@/components/AddressAvatar'
-import DonateMessagePreview from '@/components/extensions/donate/DonateMessagePreview'
+import ClickableAddressAvatar from '@/components/ClickableAddressAvatar'
 import DonateModal from '@/components/extensions/donate/DonateModal'
 import FloatingMenus, {
   FloatingMenusProps,
@@ -32,10 +31,6 @@ import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
 } from './variants/EmojiChatItem'
-
-const extencionsVariants: Record<string, (props: any) => JSX.Element> = {
-  'subsocial-donations': DonateMessagePreview,
-}
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   message: PostData
@@ -180,7 +175,7 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <AddressAvatar address={ownerId} className='flex-shrink-0' />
+        <ClickableAddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
       <FloatingMenus menus={menus} alignment='end' useClickPointAsAnchor>
         {(config) => {
@@ -196,7 +191,7 @@ export default function ChatItem({
               {...referenceProps}
               id={messageBubbleId}
             >
-              {extensions ? (
+              {extensions && extensions.length > 0 ? (
                 <ChatItemWithExtension
                   onCheckMarkClick={onCheckMarkClick}
                   scrollToMessage={scrollToMessage}

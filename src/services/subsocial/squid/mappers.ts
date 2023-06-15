@@ -1,5 +1,17 @@
-import { PostData, SpaceData } from '@subsocial/api/types'
-import { PostFragmentFragment, SpaceFragmentFragment } from './generated'
+import {
+  CommentStruct,
+  DonateExtension,
+  NftExtension,
+  PostContent,
+  PostContentExtension,
+  PostData,
+  SpaceData,
+} from '@subsocial/api/types'
+import {
+  ContentExtensionSchemaId,
+  PostFragmentFragment,
+  SpaceFragmentFragment,
+} from './generated'
 
 const SQUID_SEPARATOR = ','
 const getTokensFromUnifiedString = (data: string | null) =>
@@ -34,27 +46,67 @@ export const mapSpaceFragment = (space: SpaceFragmentFragment): SpaceData => {
   }
 }
 
+const mapPostExtensions = (
+  extensions: PostFragmentFragment['extensions']
+): PostContentExtension[] | null => {
+  const mappedExtensions = extensions?.map((ext) => {
+    switch (ext.extensionSchemaId) {
+      case ContentExtensionSchemaId.SubsocialEvmNft:
+        const nftExtension: NftExtension = {
+          id: 'subsocial-evm-nft',
+          properties: {
+            chain: ext.chain ?? '',
+            collectionId: ext.collectionId ?? '',
+            nftId: ext.nftId ?? '',
+            url: ext.url ?? '',
+          },
+        }
+        return nftExtension
+      case ContentExtensionSchemaId.SubsocialDonations:
+        const donationExtension: DonateExtension = {
+          id: 'subsocial-donations',
+          properties: {
+            chain: ext?.chain ?? '',
+            from: ext?.fromEvm?.id ?? '',
+            to: ext?.toEvm?.id ?? '',
+            token: ext?.token ?? '',
+            decimals: ext?.decimals ?? 0,
+            amount: ext?.amount ?? '',
+            txHash: ext?.txHash ?? '',
+          },
+        }
+        return donationExtension
+    }
+  })
+  const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
+  if (exts.length === 0) return null
+  return exts
+}
+
 export const mapPostFragment = (post: PostFragmentFragment): PostData => {
+  const struct: CommentStruct = {
+    createdAtBlock: parseInt(post.createdAtBlock),
+    createdAtTime: new Date(post.createdAtTime).getTime(),
+    createdByAccount: post.createdByAccount.id,
+    downvotesCount: post.downvotesCount,
+    hidden: post.hidden,
+    id: post.id,
+    isComment: post.isComment,
+    isRegularPost: post.kind === 'RegularPost',
+    isSharedPost: post.kind === 'SharedPost',
+    ownerId: post.ownedByAccount.id,
+    upvotesCount: post.upvotesCount,
+    contentId: post.content ?? '',
+    repliesCount: post.repliesCount,
+    sharesCount: post.sharesCount,
+    spaceId: post.space?.id ?? '',
+    isUpdated: !!post.updatedAtTime,
+    rootPostId: post.rootPost?.id ?? '',
+  }
+
   return {
     id: post.id,
-    struct: {
-      createdAtBlock: parseInt(post.createdAtBlock),
-      createdAtTime: new Date(post.createdAtTime).getTime(),
-      createdByAccount: post.createdByAccount.id,
-      downvotesCount: post.downvotesCount,
-      hidden: post.hidden,
-      id: post.id,
-      isComment: post.isComment,
-      isRegularPost: post.kind === 'RegularPost',
-      isSharedPost: post.kind === 'SharedPost',
-      ownerId: post.ownedByAccount.id,
-      upvotesCount: post.upvotesCount,
-      contentId: post.content ?? '',
-      repliesCount: post.repliesCount,
-      sharesCount: post.sharesCount,
-      spaceId: post.space?.id ?? '',
-      isUpdated: !!post.updatedAtTime,
-    },
+    struct,
     content: {
       summary: post.summary ?? '',
       image: post.image ?? '',
@@ -63,7 +115,9 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
       body: post.body || '',
       canonical: post.canonical ?? '',
       isShowMore: post.isShowMore ?? false,
+      inReplyTo: post.experimental?.inReplyTo ?? null,
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
-    },
+      extensions: mapPostExtensions(post.extensions),
+    } as PostContent,
   }
 }

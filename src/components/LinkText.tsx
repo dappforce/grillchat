@@ -3,18 +3,21 @@ import { cva, VariantProps } from 'class-variance-authority'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps, forwardRef } from 'react'
 
-export const linkTextStyles = cva('font-medium cursor-pointer', {
-  variants: {
-    variant: {
-      primary: 'text-text-primary',
-      secondary: 'text-text-secondary',
-      default: '',
+export const linkTextStyles = cva(
+  'font-medium cursor-pointer hover:underline focus-visible:underline',
+  {
+    variants: {
+      variant: {
+        primary: 'text-text-primary',
+        secondary: 'text-text-secondary',
+        default: '',
+      },
     },
-  },
-  defaultVariants: {
-    variant: 'default',
-  },
-})
+    defaultVariants: {
+      variant: 'default',
+    },
+  }
+)
 
 export type LinkTextProps = Omit<ComponentProps<'a'>, 'href'> &
   VariantProps<typeof linkTextStyles> & {

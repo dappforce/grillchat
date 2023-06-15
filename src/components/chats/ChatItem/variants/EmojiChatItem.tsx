@@ -49,7 +49,7 @@ export default function EmojiChatItem({
     >
       {!isMyMessage && (
         <div className='flex items-center pl-1'>
-          <Name ownerId={ownerId} />
+          <Name address={ownerId} />
           <span className='text-xs text-text-muted'>{relativeTime}</span>
         </div>
       )}

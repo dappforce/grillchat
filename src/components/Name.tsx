@@ -4,20 +4,20 @@ import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
 
 type NameProps = {
-  ownerId: string
+  address: string
   additionalText?: string
   className?: string
   color?: string
 }
 
-const Name = ({ ownerId, className, additionalText, color }: NameProps) => {
-  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(ownerId)
+const Name = ({ address, className, additionalText, color }: NameProps) => {
+  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
 
   const { evmAddress, ensName } = accountData || {}
-  const name = ensName ? ensName : generateRandomName(ownerId)
+  const name = ensName || generateRandomName(address)
 
-  const senderColor = useRandomColor(ownerId)
-  const evmAddressColor = useRandomColor(evmAddress)
+  const usedAddress = evmAddress || address
+  const textColor = useRandomColor(usedAddress)
 
   if (!accountData && isLoading) {
     return (
@@ -30,8 +30,6 @@ const Name = ({ ownerId, className, additionalText, color }: NameProps) => {
       </div>
     )
   }
-
-  const textColor = evmAddress ? evmAddressColor : senderColor
 
   return (
     <span

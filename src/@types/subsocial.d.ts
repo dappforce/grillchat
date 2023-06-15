@@ -23,20 +23,23 @@ declare module '@subsocial/api/types' {
     txHash: string
   }
 
-  export type ExtensionId = 'subsocial-evm-nft' | 'subsocial-donations'
-
-  export type ExtensionProperties = NftProperties | DonateProperies
-
-  export type Extension<T extends ExtensionProperties> = {
-    id: ExtensionId
-    properties: T
+  export type NftExtension = {
+    id: 'subsocial-evm-nft'
+    properties: NftProperties
   }
+
+  export type DonateExtension = {
+    id: 'subsocial-donations'
+    properties: DonateProperies
+  }
+  export type PostContentExtension = NftExtension | DonateExtension
+
   export interface PostContent extends SubsocialPostContent {
     inReplyTo?: {
       kind: 'Post'
       id: string
     }
-    extensions?: Extension[]
+    extensions?: PostContentExtension[]
   }
   export declare type EntityPostData<
     S extends HasId,

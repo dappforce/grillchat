@@ -51,12 +51,9 @@ export const POST_FRAGMENT = gql`
     sharesCount
     upvotesCount
     updatedAtTime
+    experimental
     canonical
     tagsOriginal
-    tweetId
-    tweetDetails {
-      username
-    }
     ownedByAccount {
       id
     }
@@ -68,6 +65,24 @@ export const POST_FRAGMENT = gql`
     }
     sharedPost {
       id
+    }
+    extensions {
+      amount
+      chain
+      collectionId
+      decimals
+      extensionSchemaId
+      id
+      nftId
+      token
+      txHash
+      url
+      fromEvm {
+        id
+      }
+      toEvm {
+        id
+      }
     }
   }
 `

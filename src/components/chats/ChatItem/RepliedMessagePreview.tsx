@@ -4,7 +4,6 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { truncateText } from '@/utils/strings'
-import { ExtensionId } from '@subsocial/api/types'
 import { ComponentProps, useState } from 'react'
 
 export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
@@ -28,7 +27,7 @@ export default function RepliedMessagePreview({
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { data: message } = getPostQuery.useQuery(repliedMessageId)
-  const replySender = message?.struct.ownerId
+  const replySender = message?.struct.ownerId ?? ''
   const replySenderColor = useRandomColor(replySender)
 
   const extensions = message?.content?.extensions
@@ -39,7 +38,7 @@ export default function RepliedMessagePreview({
     return null
   }
 
-  const extensionId = extensions?.[0]?.id as ExtensionId | undefined
+  const extensionId = extensions?.[0]?.id
 
   const extensionRepliedPart = extensionId
     ? repliedMessagePreviewPatrs[extensionId]
@@ -89,7 +88,7 @@ export default function RepliedMessagePreview({
       {place === 'inside' && extensionPart && extensionPart}
       <div className='flex flex-col'>
         <Name
-          ownerId={message?.struct.ownerId}
+          address={message?.struct.ownerId}
           className='font-medium'
           color={textColor}
         />

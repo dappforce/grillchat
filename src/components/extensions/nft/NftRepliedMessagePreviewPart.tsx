@@ -1,16 +1,17 @@
 import ImageLoader from '@/components/ImageLoader'
-import { getNftDataQuery } from '@/services/external/query'
+import { getNftQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
+import { NftExtension } from '@subsocial/api/types'
 import { RepliedMessagePreviewPartProps } from '../RepliedMessagePreviewParts'
 
 const NftRepliedMessagePreviewPart = ({
   extensions,
 }: RepliedMessagePreviewPartProps) => {
-  const firstExtension = extensions?.[0]
+  const firstExtension = extensions?.[0] as NftExtension
   const hasNftExtension =
     firstExtension && firstExtension.id === 'subsocial-evm-nft'
 
-  const { data: nftData } = getNftDataQuery.useQuery(
+  const { data: nftData } = getNftQuery.useQuery(
     firstExtension?.properties ?? null
   )
 

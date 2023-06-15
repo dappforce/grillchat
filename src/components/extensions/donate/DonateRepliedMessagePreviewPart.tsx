@@ -1,10 +1,11 @@
 import { cx } from '@/utils/class-names'
+import { DonateExtension } from '@subsocial/api/types'
 import { RepliedMessagePreviewPartProps } from '../RepliedMessagePreviewParts'
 
 const DonateRepliedMessagePreviewPart = ({
   extensions,
 }: RepliedMessagePreviewPartProps) => {
-  const firstExtension = extensions?.[0]
+  const firstExtension = extensions?.[0] as DonateExtension
 
   const { id, properties } = firstExtension || {}
 

@@ -1,12 +1,11 @@
 import { ExtensionChatItemProps } from '@/components/extensions/CommonChatItem'
 import DonateMessagePreview from '@/components/extensions/donate/DonateMessagePreview'
 import NftChatItem from '@/components/extensions/nft/NftChatItem'
-import { ExtensionId } from '@subsocial/api/types'
 
 export type ChatItemWithExtensionProps = ExtensionChatItemProps
 
 const ChatItemByExtensionId: Record<
-  ExtensionId,
+  string,
   (props: ChatItemWithExtensionProps) => JSX.Element
 > = {
   'subsocial-donations': DonateMessagePreview,
@@ -16,7 +15,7 @@ const ChatItemByExtensionId: Record<
 export default function ChatItemWithExtension(
   props: ChatItemWithExtensionProps
 ) {
-  const extensionId = props.message.content?.extensions?.[0].id as ExtensionId
+  const extensionId = props.message.content?.extensions?.[0].id as string
 
   const ChatItem = ChatItemByExtensionId[extensionId]
 

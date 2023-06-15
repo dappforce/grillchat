@@ -7,6 +7,7 @@ import jsonabc from 'jsonabc'
 import { useEffect, useRef } from 'react'
 import { getAccountDataQuery, getAccountsData } from '../evmAddresses'
 import { extractOptimisticIdData, isOptimisticId } from '../utils'
+import { getOptimisticContent } from './optimistic'
 import { getCommentIdsQueryKey } from './query'
 import { OptimisticMessageIdData } from './types'
 
@@ -166,8 +167,11 @@ function filterOptimisticIds(
         return JSON.stringify(jsonabc.sortObj(data ?? {}))
       }
 
+      if (!post.content) return false
+
+      const importantContents = getOptimisticContent(post.content)
       return (
-        sortAndStringify(post.content ?? {}) ===
+        sortAndStringify(importantContents) ===
           sortAndStringify(idData.messageData) &&
         post.struct.ownerId === idData.address
       )

@@ -45,17 +45,3 @@ export function getGaId() {
 export function getSquidUrl() {
   return checkEnv(process.env.NEXT_PUBLIC_SQUID_URL, 'NEXT_PUBLIC_SQUID_URL')
 }
-
-export function getMoralisApiKey() {
-  return checkEnv(
-    process.env.NEXT_PUBLIC_MORALIS_API_KEY,
-    'NEXT_PUBLIC_MORALIS_API_KEY'
-  )
-}
-
-export function getOpenSeaApiKey() {
-  return checkEnv(
-    process.env.NEXT_PUBLIC_OPENSEA_API_KEY,
-    'NEXT_PUBLIC_OPENSEA_API_KEY'
-  )
-}

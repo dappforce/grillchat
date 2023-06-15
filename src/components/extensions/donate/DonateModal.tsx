@@ -223,7 +223,6 @@ export default function DonateModal({
             address={recipient}
             avatarClassName='h-12 w-12'
             withGrillAddress={false}
-            evmAddress={evmRecipientAddress}
           />
         </div>
         <div className='flex flex-col gap-6'>

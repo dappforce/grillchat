@@ -1,4 +1,4 @@
-import { getMoralisApiKey } from '@/utils/env/client'
+import { getMoralisApiKey } from '@/utils/env/server'
 import type Moralis from 'moralis'
 
 let moralis: Promise<typeof Moralis | null> | null = null
@@ -10,14 +10,13 @@ export function getMoralisApi() {
 }
 
 async function initMoralisApi() {
+  const { default: moralis } = await import('moralis')
   try {
-    const { default: moralis } = await import('moralis')
     await moralis.start({
       apiKey: getMoralisApiKey(),
     })
-    return moralis
   } catch (e) {
     console.error('Failed to initialize moralis API', e)
-    return null
   }
+  return moralis
 }
