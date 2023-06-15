@@ -6,10 +6,17 @@ export type ToastProps = {
   t: ToastId
   title: string
   description?: string
-  icon?: (classNames: string) => JSX.Element
+  action?: React.ReactNode
+  icon?: (className: string) => JSX.Element
 }
 
-export default function Toast({ t, icon, title, description }: ToastProps) {
+export default function Toast({
+  t,
+  icon,
+  title,
+  action,
+  description,
+}: ToastProps) {
   return (
     <Transition
       appear
@@ -27,13 +34,14 @@ export default function Toast({ t, icon, title, description }: ToastProps) {
           'flex max-w-lg items-center rounded-full border border-border-gray bg-background-light px-4 py-3 text-text shadow-xl ring-1 ring-black ring-opacity-5'
         )}
       >
-        {icon && icon(cx('text-3xl mr-2.5'))}
+        {icon?.(cx('text-3xl mr-2.5'))}
         <div className={cx('flex flex-col')}>
           <p className={cx(!description && 'text-sm')}>{title}</p>
           {description && (
             <p className='text-sm text-text-muted'>{description}</p>
           )}
         </div>
+        {action}
       </div>
     </Transition>
   )
