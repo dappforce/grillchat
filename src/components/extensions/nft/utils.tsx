@@ -113,7 +113,7 @@ const marketplaceParser: {
     },
     checker: (link: string) => link.includes('looksrare.org/'),
     parser: (link: string) => {
-      const linkParts = link.split('looksrare.com/collections/')
+      const linkParts = link.split('looksrare.org/collections/')
       const [collectionId, nftId] = linkParts[1].split('/')
 
       return {
