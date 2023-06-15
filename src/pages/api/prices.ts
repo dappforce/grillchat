@@ -92,5 +92,5 @@ export async function getPricesFromCache(tokenIds: string[]) {
     }
   }
 
-  return [...prices, ...newlyFetchedData]
+  return [...prices, ...newlyFetchedData].filter((x) => !!x)
 }

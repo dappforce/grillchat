@@ -103,11 +103,12 @@ export const getStaticProps = getCommonStaticProps<
         )
       )
       prices.forEach((price) => {
-        Array.isArray
-        if (price) {
-          getPriceQuery.setQueryData(queryClient, price.id, {
-            id: price.id,
-            current_price: price.current_price?.toString() || null,
+        const { id, current_price } = price || {}
+
+        if (id && current_price) {
+          getPriceQuery.setQueryData(queryClient, id, {
+            id,
+            current_price: current_price?.toString(),
           })
         }
       })
