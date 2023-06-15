@@ -74,8 +74,6 @@ function getNftCacheKey(nftProperties: ApiNftParams) {
 async function getNftData(
   nftProperties: ApiNftParams
 ): Promise<NftData | null> {
-  const moralis = await getMoralisApi()
-
   const chain =
     moralisChainMapper[nftProperties.chain as keyof typeof moralisChainMapper]
   if (!chain) return null
@@ -85,30 +83,37 @@ async function getNftData(
     return nftDataCache.get(cacheKey) ?? null
   }
 
-  const response = await moralis?.EvmApi.nft.getNFTMetadata({
-    address: nftProperties.collectionId,
-    tokenId: nftProperties.nftId,
-    chain,
-    normalizeMetadata: true,
-  })
-  const metadata = response?.raw.normalized_metadata
+  try {
+    const moralis = await getMoralisApi()
 
-  let image = metadata?.image
-  if (!image) {
-    const rawMetadata = response?.raw.metadata
-    const parsedMetadata = JSON.parse(rawMetadata ?? '{}')
-    image = parsedMetadata?.image || parsedMetadata.image_data
+    const response = await moralis?.EvmApi.nft.getNFTMetadata({
+      address: nftProperties.collectionId,
+      tokenId: nftProperties.nftId,
+      chain,
+      normalizeMetadata: true,
+    })
+    const metadata = response?.raw.normalized_metadata
+
+    let image = metadata?.image
+    if (!image) {
+      const rawMetadata = response?.raw.metadata
+      const parsedMetadata = JSON.parse(rawMetadata ?? '{}')
+      image = parsedMetadata?.image || parsedMetadata.image_data
+    }
+
+    const nftData = {
+      name: metadata?.name ?? '',
+      image: image ?? '',
+      collectionName: response?.raw.name ?? '',
+      price: 0,
+    }
+
+    nftDataCache.add(cacheKey, nftData)
+    return nftData
+  } catch (e) {
+    console.error('Fail to get nft data for nft:', cacheKey, e)
+    return null
   }
-
-  const nftData = {
-    name: metadata?.name ?? '',
-    image: image ?? '',
-    collectionName: response?.raw.name ?? '',
-    price: 0,
-  }
-
-  nftDataCache.add(cacheKey, nftData)
-  return nftData
 }
 
 // TODO: if want to use opensea price data
