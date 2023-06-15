@@ -62,6 +62,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
 
   const { data, isLoading } = getNftQuery.useQuery(parsedLinkData, {
     onError: () => setNftLinkError('😥 Sorry, we cannot get this NFT data'),
+    retry: 0,
   })
   useEffect(() => {
     if (isLoading || !data) return

@@ -59,12 +59,19 @@ export default async function handler(
   const nftProperties = params.data
 
   const nftData = await getNftData(nftProperties)
-
-  res.json({
-    message: 'OK',
-    success: true,
-    data: nftData,
-  })
+  if (nftData) {
+    res.json({
+      message: 'OK',
+      success: true,
+      data: nftData,
+    })
+  } else {
+    res.status(404).json({
+      message: 'NFT not found',
+      success: false,
+      data: nftData,
+    })
+  }
 }
 
 function getNftCacheKey(nftProperties: ApiNftParams) {
@@ -92,6 +99,10 @@ async function getNftData(
       chain,
       normalizeMetadata: true,
     })
+    if (!response) {
+      throw new Error('NFT not found')
+    }
+
     const metadata = response?.raw.normalized_metadata
 
     let image = metadata?.image
