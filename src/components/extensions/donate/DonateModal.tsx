@@ -16,7 +16,7 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
-import { formatUnits } from 'ethers'
+import { formatUnits, parseUnits } from 'ethers'
 import { ChangeEventHandler, useState } from 'react'
 import { ModalFunctionalityProps } from '../../modals/Modal'
 import { useGetBalance, useTransfer } from './api/transfer'
@@ -163,9 +163,11 @@ export default function DonateModal({
       return { txPrevented: true }
     }
 
+    const amountValue = parseUnits(`${parseFloat(amount)}`, decimals)
+
     const hash = await sendTransferTx(
       evmRecipientAddress,
-      amount.replace(',', '.'),
+      amountValue,
       selectedToken.isNativeToken,
       decimals
     )
@@ -182,7 +184,7 @@ export default function DonateModal({
               to: evmRecipientAddress,
               token: selectedToken.label,
               decimals,
-              amount: amount,
+              amount: amountValue.toString(),
               txHash: hash,
             },
           },
@@ -211,6 +213,7 @@ export default function DonateModal({
       beforeMesageSend={onButtonClick}
       title='💰 Donate'
       withCloseButton
+      panelClassName='pb-5'
     >
       <div>
         <div

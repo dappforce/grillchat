@@ -4,7 +4,6 @@ import { isTouchDevice } from '@/utils/device'
 import { connectorsForWallets } from '@rainbow-me/rainbowkit'
 import { walletConnectWallet } from '@rainbow-me/rainbowkit/wallets'
 import { useMemo } from 'react'
-import { parseUnits } from 'viem'
 import {
   useAccount,
   useConnect,
@@ -31,7 +30,7 @@ export const useTransfer = (token: string, chainName: string) => {
 
   const sendTransferTx = async (
     recipient: string,
-    amount: string,
+    amount: bigint,
     isNativeToken?: boolean,
     decimals?: number
   ) => {
@@ -59,10 +58,10 @@ export const useTransfer = (token: string, chainName: string) => {
       const { hash } = isNativeToken
         ? await sendTransactionAsync({
             to: recipient,
-            value: parseUnits(`${parseFloat(amount)}`, decimals),
+            value: amount,
           })
         : await writeAsync({
-            args: [recipient, parseUnits(`${parseFloat(amount)}`, decimals)],
+            args: [recipient, amount],
           })
 
       return hash

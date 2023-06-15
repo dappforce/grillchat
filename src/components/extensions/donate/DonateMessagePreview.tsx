@@ -4,35 +4,41 @@ import {
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
 import { cx } from '@/utils/class-names'
+import { DonateExtension, DonateProperies } from '@subsocial/api/types'
 import BigNumber from 'bignumber.js'
+import { formatUnits } from 'ethers'
 import { HiArrowUpRight } from 'react-icons/hi2'
 import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
 
 type DonatePreviewProps = {
-  extensionProps?: any
+  extensionProps?: DonateProperies
   isMyMessage: boolean
 }
 
-const DonatePreview = ({ extensionProps, isMyMessage }: DonatePreviewProps) => {
+const DonatePreview = ({ extensionProps }: DonatePreviewProps) => {
   if (!extensionProps) return null
 
-  const { token, amount, txHash } = extensionProps
+  const { token, amount, txHash, decimals } = extensionProps
 
   const tokenId = coingeckoTokenIds[(token as string).toLowerCase()]
 
   const { data } = getPriceQuery.useQuery(tokenId)
 
+  const amountValue = formatUnits(amount, decimals).toString()
+
   const price = data?.current_price
 
   const amountInDollars =
-    price && amount ? new BigNumber(price).multipliedBy(amount).toFixed(4) : '0'
+    price && amount
+      ? new BigNumber(price).multipliedBy(amountValue).toFixed(4)
+      : '0'
 
   return (
     <div className={cx('px-5 py-5')}>
       <div className='flex flex-col items-center gap-2 text-white'>
         <div className='flex items-start gap-2'>
           <div className='text-3xl font-bold leading-[26px]'>
-            {amount} {token}
+            {amountValue} {token}
           </div>
           <LinkText
             openInNewTab
@@ -59,7 +65,7 @@ export default function DonateMessagePreview({
   const { content } = message
 
   const { extensions, body } = content || {}
-  const { properties } = extensions?.[0] || {}
+  const { properties } = (extensions?.[0] as DonateExtension) || {}
 
   return (
     <CommonChatItem

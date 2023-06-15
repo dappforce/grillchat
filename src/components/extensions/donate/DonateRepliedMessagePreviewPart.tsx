@@ -1,5 +1,6 @@
 import { cx } from '@/utils/class-names'
 import { DonateExtension } from '@subsocial/api/types'
+import { formatUnits } from 'ethers'
 import { RepliedMessagePreviewPartProps } from '../RepliedMessagePreviewParts'
 
 const DonateRepliedMessagePreviewPart = ({
@@ -9,7 +10,9 @@ const DonateRepliedMessagePreviewPart = ({
 
   const { id, properties } = firstExtension || {}
 
-  const { amount, token } = properties || {}
+  const { amount, token, decimals } = properties || {}
+  console.log(amount)
+  const amountValue = amount ? formatUnits(amount, decimals).toString() : '0'
 
   return (
     <span>
@@ -20,7 +23,7 @@ const DonateRepliedMessagePreviewPart = ({
             'rounded-2xl px-3 py-[0.15rem] text-white'
           )}
         >
-          {amount} {token}
+          {amountValue} {token}
         </div>
       ) : null}
     </span>
