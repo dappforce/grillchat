@@ -11,7 +11,7 @@ const DonateRepliedMessagePreviewPart = ({
   const { id, properties } = firstExtension || {}
 
   const { amount, token, decimals } = properties || {}
-  console.log(amount)
+
   const amountValue = amount ? formatUnits(amount, decimals).toString() : '0'
 
   return (
