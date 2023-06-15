@@ -1,7 +1,8 @@
+import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin } from '@/utils/links'
-import grill from '@subsocial/grill-widget'
 import { useEffect } from 'react'
+import grill from '../../integration/index'
 
 export default function IframePage() {
   useEffect(() => {
@@ -18,10 +19,12 @@ export default function IframePage() {
   }, [])
 
   return (
-    <div
-      id='grill'
-      className={cx('mx-auto w-full max-w-md')}
-      style={{ height: '600px', maxHeight: '100vh' }}
-    />
+    <DefaultLayout>
+      <div
+        id='grill'
+        className={cx('mx-auto w-full max-w-md')}
+        style={{ height: '600px', maxHeight: '100vh' }}
+      />
+    </DefaultLayout>
   )
 }

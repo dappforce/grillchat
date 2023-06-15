@@ -100,7 +100,7 @@ const grill = {
       return
     }
 
-    const iframe = document.createElement('iframe')
+    let iframe = document.createElement('iframe')
     iframe.style.border = 'none'
     iframe.style.width = '100%'
     iframe.style.height = '100%'
@@ -161,7 +161,7 @@ const grill = {
     iframe.allow = 'clipboard-write'
 
     if (mergedConfig.onWidgetCreated) {
-      mergedConfig.onWidgetCreated?.(iframe)
+      iframe = mergedConfig.onWidgetCreated?.(iframe)
     }
 
     this.instances[mergedConfig.widgetElementId]?.remove()
