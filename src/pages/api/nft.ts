@@ -1,5 +1,6 @@
 import { nftChains } from '@/components/extensions/nft/utils'
 import { getMoralisApi } from '@/server/external'
+import { MinimalUsageQueueWithTimeLimit } from '@/utils/data-structure'
 import { EvmChain } from '@moralisweb3/common-evm-utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -34,6 +35,12 @@ const moralisChainMapper: Record<(typeof nftChains)[number], EvmChain> = {
   fantom: EvmChain.FANTOM,
 }
 
+const MAX_NFTS_IN_CACHE = 500_000
+const nftDataCache = new MinimalUsageQueueWithTimeLimit<NftData>(
+  MAX_NFTS_IN_CACHE,
+  6 * 60 // 6 hours
+)
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiNftResponse>
@@ -51,11 +58,32 @@ export default async function handler(
 
   const nftProperties = params.data
 
+  const nftData = await getNftData(nftProperties)
+
+  res.json({
+    message: 'OK',
+    success: true,
+    data: nftData,
+  })
+}
+
+function getNftCacheKey(nftProperties: ApiNftParams) {
+  return `${nftProperties.chain}_${nftProperties.collectionId}_${nftProperties.nftId}`
+}
+
+async function getNftData(
+  nftProperties: ApiNftParams
+): Promise<NftData | null> {
   const moralis = await getMoralisApi()
 
   const chain =
     moralisChainMapper[nftProperties.chain as keyof typeof moralisChainMapper]
   if (!chain) return null
+
+  const cacheKey = getNftCacheKey(nftProperties)
+  if (nftDataCache.has(cacheKey)) {
+    return nftDataCache.get(cacheKey) ?? null
+  }
 
   const response = await moralis?.EvmApi.nft.getNFTMetadata({
     address: nftProperties.collectionId,
@@ -72,16 +100,15 @@ export default async function handler(
     image = parsedMetadata?.image || parsedMetadata.image_data
   }
 
-  res.json({
-    message: 'OK',
-    success: true,
-    data: {
-      name: metadata?.name ?? '',
-      image: image ?? '',
-      collectionName: response?.raw.name ?? '',
-      price: 0,
-    },
-  })
+  const nftData = {
+    name: metadata?.name ?? '',
+    image: image ?? '',
+    collectionName: response?.raw.name ?? '',
+    price: 0,
+  }
+
+  nftDataCache.add(cacheKey, nftData)
+  return nftData
 }
 
 // TODO: if want to use opensea price data
