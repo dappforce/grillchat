@@ -159,6 +159,10 @@ export function getSupportedMarketplaces() {
   return marketplacesInfo
 }
 
+export function getMarketplaceFromLink(link: string) {
+  return marketplaceParser.find((m) => m.checker(link))
+}
+
 export function parseNftMarketplaceLink(link: string): NftProperties {
   const marketplace = marketplaceParser.find((m) => m.checker(link))
 

@@ -6,8 +6,10 @@ import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getNftQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import truncate from 'lodash.truncate'
+import { useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
+import { getMarketplaceFromLink } from './utils'
 
 type Props = ExtensionChatItemProps
 
@@ -38,6 +40,11 @@ export default function NftChatItem(props: Props) {
     useIntegratedSkeleton(isLoadingNftData)
   // const { IntegratedSkeleton: NftPriceSkeleton } =
   //   useIntegratedSkeleton(isLoadingNftPrice)
+
+  const marketplace = useMemo(() => {
+    if (!nftProperties?.url) return
+    return getMarketplaceFromLink(nftProperties?.url)
+  }, [nftProperties?.url])
 
   return (
     <CommonChatItem
@@ -105,7 +112,7 @@ export default function NftChatItem(props: Props) {
               rel='noopener noreferrer'
               onClick={(e) => e.stopPropagation()}
             >
-              View on Marketplace
+              View on {marketplace?.name ?? 'Marketplace'}
             </Button>
           </div>
         </div>
