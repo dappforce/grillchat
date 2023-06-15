@@ -60,6 +60,7 @@ export type RequiredFieldWrapperProps = VariantProps<typeof inputStyles> & {
   fullWidth?: boolean
 
   label?: string
+  placeholder?: string
   labelClassName?: string
   helperText?: string
   helperTextClassName?: string
@@ -207,6 +208,6 @@ export function getCleanedInputProps<T extends RequiredFieldWrapperProps>(
 
   return {
     ...otherProps,
-    placeholder: ' ',
+    placeholder: props.label ? ' ' : props.placeholder,
   }
 }
