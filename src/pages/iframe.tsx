@@ -19,7 +19,8 @@ export default function IframePage() {
 
   return (
     <div
-      className={cx('grill', 'mx-auto w-full max-w-md')}
+      id='grill'
+      className={cx('mx-auto w-full max-w-md')}
       style={{ height: '600px', maxHeight: '100vh' }}
     />
   )
