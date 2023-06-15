@@ -24,7 +24,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
     return (
       <FieldWrapper {...props}>
-        {(id, commonClassNames) => {
+        {(id, commonClassNames, labelElement) => {
           const textAreaClassName = cx(
             commonClassNames,
             props?.className,
@@ -40,7 +40,10 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
                 id={id}
                 className={textAreaClassName}
               />
-              <div className={textAreaClassName}>{props.value}</div>
+              <div className={cx(styles.contentValue, textAreaClassName)}>
+                {props.value}
+              </div>
+              {labelElement}
             </div>
           )
         }}

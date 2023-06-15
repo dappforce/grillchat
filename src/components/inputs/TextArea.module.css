@@ -1,14 +1,14 @@
 .textAreaWrapper {
   display: grid;
 }
-.textAreaWrapper > div {
+.textAreaWrapper .contentValue {
   white-space: pre-wrap;
   visibility: hidden;
 }
 .textAreaWrapper > textarea {
   resize: none;
 }
-.textAreaWrapper > div,
+.textAreaWrapper .contentValue,
 .textAreaWrapper > textarea {
   overflow-x: hidden;
   overflow-wrap: break-word;

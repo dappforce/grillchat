@@ -14,13 +14,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 ) {
   return (
     <FieldWrapper {...props}>
-      {(id, commonClassNames) => (
-        <input
-          {...getCleanedInputProps(props)}
-          ref={ref}
-          id={id}
-          className={cx(commonClassNames, props?.className)}
-        />
+      {(id, commonClassNames, labelElement) => (
+        <>
+          <input
+            {...getCleanedInputProps(props)}
+            ref={ref}
+            id={id}
+            className={cx(commonClassNames, props?.className)}
+          />
+          {labelElement}
+        </>
       )}
     </FieldWrapper>
   )

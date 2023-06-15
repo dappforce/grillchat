@@ -9,6 +9,9 @@ module.exports = {
       fontFamily: {
         sans: ['var(--source-sans-pro)', ...defaultTheme.fontFamily.sans],
       },
+      spacing: {
+        5.5: '1.375rem',
+      },
       fontSize: {
         '4.5xl': '2.5rem',
       },

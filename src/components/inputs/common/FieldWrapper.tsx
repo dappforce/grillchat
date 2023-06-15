@@ -1,6 +1,6 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
-import { useId } from 'react'
+import React, { useId } from 'react'
 
 const inputStyles = cva('', {
   variants: {
@@ -39,6 +39,21 @@ const inputStyles = cva('', {
   },
 })
 
+const labelStyles = cva(
+  'absolute z-10 origin-[0] scale-75 transform bg-background px-1 text-sm text-gray-500 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:scale-75 peer-focus:text-blue-600 dark:text-gray-400 peer-focus:dark:text-blue-500',
+  {
+    variants: {
+      size: {
+        sm: 'left-3 top-2.5 -translate-y-5.5 peer-focus:-translate-y-5.5',
+        md: 'left-4 top-4 -translate-y-7 peer-focus:-translate-y-7',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+    },
+  }
+)
+
 export type RequiredFieldWrapperProps = VariantProps<typeof inputStyles> & {
   containerClassName?: string
   inputParentClassName?: string
@@ -60,7 +75,11 @@ export type RequiredFieldWrapperProps = VariantProps<typeof inputStyles> & {
 }
 
 export interface FieldWrapperProps extends RequiredFieldWrapperProps {
-  children: (id: string, commonClassNames: string) => JSX.Element
+  children: (
+    id: string,
+    commonClassNames: string,
+    labelElement: React.ReactNode
+  ) => JSX.Element
 }
 
 export default function FieldWrapper({
@@ -91,6 +110,7 @@ export default function FieldWrapper({
     'hover:brightness-110',
     'focus:brightness-110',
     'disabled:cursor-not-allowed disabled:brightness-75',
+    'peer',
     inputStyles({ pill, variant, size, containsRightElement: !!rightElement }),
     interactionRingStyles()
   )
@@ -108,6 +128,29 @@ export default function FieldWrapper({
 
   const hasErrorMessage = error && typeof error === 'string'
 
+  const labelElement = label && (
+    <div
+      className={cx(
+        'flex items-end justify-between',
+        labelStyles({ size }),
+        labelClassName
+      )}
+    >
+      <label htmlFor={usedId}>
+        {label}
+        {required && <span className='text-red-500'> *</span>}
+      </label>
+      <p
+        className={cx(
+          'text-text-secondary',
+          helperTextOnRightOfLabelClassNames
+        )}
+      >
+        {helperTextOnRightOfLabel}
+      </p>
+    </div>
+  )
+
   return (
     <div
       className={cx(
@@ -117,32 +160,11 @@ export default function FieldWrapper({
         containerClassName
       )}
     >
-      {label && (
-        <div
-          className={cx(
-            'mb-0.5 flex items-end justify-between',
-            labelClassName
-          )}
-        >
-          <label htmlFor={usedId}>
-            {label}
-            {required && <span className='text-red-500'> *</span>}
-          </label>
-          <p
-            className={cx(
-              'text-text-secondary',
-              helperTextOnRightOfLabelClassNames
-            )}
-          >
-            {helperTextOnRightOfLabel}
-          </p>
-        </div>
-      )}
       <div
         className={cx('relative flex w-full flex-col', inputParentClassName)}
       >
         {leftElement?.(leftElementClassNames)}
-        {children(usedId, inputClassNames)}
+        {children(usedId, inputClassNames, labelElement)}
         {rightElement?.(rightElementClassNames)}
       </div>
       {(helperText || hasErrorMessage) && (
@@ -183,5 +205,8 @@ export function getCleanedInputProps<T extends RequiredFieldWrapperProps>(
     ...otherProps
   } = props
 
-  return otherProps
+  return {
+    ...otherProps,
+    placeholder: ' ',
+  }
 }
