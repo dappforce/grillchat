@@ -112,10 +112,11 @@ async function getNftData(
       image = parsedMetadata?.image || parsedMetadata.image_data
     }
 
+    const collectionName = response?.raw.name
     const nftData = {
-      name: metadata?.name ?? '',
+      name: metadata?.name ?? collectionName ?? '',
       image: image ?? '',
-      collectionName: response?.raw.name ?? '',
+      collectionName: collectionName ?? '',
       price: 0,
     }
 
