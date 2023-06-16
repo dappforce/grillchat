@@ -73,7 +73,7 @@ export default function MediaLoader({
           onLoadedData={onLoad}
           className={cx(commonClassName, 'aspect-square')}
           controls
-          autoPlay
+          muted
         />
       )
     } else if (typeof usedImage === 'string' && usedImage.startsWith('data:')) {
@@ -95,9 +95,9 @@ export default function MediaLoader({
       return (
         <Image
           key={usedImage?.toString() ?? ''}
-          width={500}
-          height={500}
           {...commonProps}
+          width={commonProps.width || 500}
+          height={commonProps.height || 500}
           alt={props.alt || ''}
         />
       )

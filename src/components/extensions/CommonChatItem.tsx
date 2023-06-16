@@ -1,7 +1,6 @@
 import Button from '@/components/Button'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import LinkText from '@/components/LinkText'
-import Name from '@/components/Name'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -10,6 +9,7 @@ import { PostData } from '@subsocial/api/types'
 import Linkify from 'linkify-react'
 import { SyntheticEvent } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
+import { ProfilePreviewModalName } from '../ProfilePreviewModalWrapper'
 
 export type ExtensionChatItemProps = {
   message: PostData
@@ -108,7 +108,10 @@ export default function CommonChatItem({
       >
         {!isMyMessage && (
           <div className='flex items-center px-2.5 first:pt-1.5'>
-            <Name address={ownerId} />
+            <ProfilePreviewModalName
+              address={ownerId}
+              className={cx('mr-2 text-sm text-text-secondary')}
+            />
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}

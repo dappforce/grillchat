@@ -54,6 +54,8 @@ export default function ChatLastMessage({
       >
         {hasNftExtension && (
           <MediaLoader
+            height={24}
+            width={24}
             containerClassName={cx('rounded-sm overflow-hidden flex-shrink-0')}
             className={cx('aspect-square w-4')}
             placeholderClassName={cx('w-10 aspect-square')}

@@ -73,6 +73,8 @@ export default function RepliedMessagePreview({
     >
       {hasNftExtension && (
         <MediaLoader
+          width={60}
+          height={60}
           containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
           className={cx('aspect-square w-10')}
           placeholderClassName={cx('w-10 aspect-square')}

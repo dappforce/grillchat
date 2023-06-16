@@ -79,7 +79,7 @@ export default function FloatingWrapper({
   }
 
   const closeMenu = () => setOpenMenu(false)
-  const onReferenceClick: MouseEventHandler<Element> = (e) => {
+  const onClick: MouseEventHandler<Element> = (e) => {
     if (isTouchDevice()) toggleDisplay(e)
     else closeMenu()
   }
@@ -91,7 +91,7 @@ export default function FloatingWrapper({
         referenceProps: getReferenceProps({
           ref: refs.setReference,
           ...getReferenceProps(),
-          onClick: onReferenceClick,
+          onClick,
         }),
       })}
       <Transition

@@ -4,9 +4,9 @@ export const nftChains = [
   'ethereum',
   'polygon',
   'arbitrum',
+  'optimism',
   'avalanche',
   'bsc',
-  'optimism',
   'fantom',
 ] as const
 
