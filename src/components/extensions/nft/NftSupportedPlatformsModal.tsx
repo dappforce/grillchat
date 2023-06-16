@@ -20,7 +20,9 @@ export default function NftSupportedPlatformsModal({
     >
       <div className='mt-2 grid grid-cols-2'>
         <div className='flex flex-col gap-2'>
-          <span className='mb-1 text-xl'>🛍️ NFT Marketplaces</span>
+          <span className='mb-1 whitespace-nowrap text-xl'>
+            🛍️ Marketplaces
+          </span>
           {getSupportedMarketplaces().map(({ link, name }) => (
             <LinkText
               key={link}
@@ -36,7 +38,7 @@ export default function NftSupportedPlatformsModal({
         </div>
 
         <div className='flex flex-col gap-2'>
-          <span className='mb-1 text-xl'>⛓️ Chains</span>
+          <span className='mb-1 whitespace-nowrap text-xl'>⛓️ Chains</span>
           {nftChains.map((chain) => (
             <span
               key={chain}
