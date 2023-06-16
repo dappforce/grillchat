@@ -33,6 +33,12 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
     if (nftLink) setShowLoading(true)
   }, [nftLink])
 
+  useEffect(() => {
+    if (props.isOpen) {
+      setNftLink('')
+    }
+  }, [props.isOpen])
+
   const debouncedLink = useDebounce(nftLink, 300)
   const [parsedLinkData, setParsedLinkData] = useState<NftProperties | null>(
     null
@@ -98,7 +104,6 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
             .
           </span>
         }
-        onSubmit={() => setNftLink('')}
         buildAdditionalTxParams={() => {
           if (!parsedLinkData) return {}
           return {
