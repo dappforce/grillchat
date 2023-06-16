@@ -80,6 +80,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
           <LinkText
             href='https://docs.moralis.io/web3-data-api/evm/reference/get-nft-metadata'
             openInNewTab
+            variant='secondary'
           >
             Moralis API
           </LinkText>
