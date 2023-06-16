@@ -53,14 +53,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
             className={cx(linkTextStyles({ variant: 'primary' }))}
             onClick={() => setIsOpenSupportedPlatformModal(true)}
           >
-            See supported marketplaces
-          </span>{' '}
-          and{' '}
-          <span
-            className={cx(linkTextStyles({ variant: 'primary' }))}
-            onClick={() => setIsOpenSupportedPlatformModal(true)}
-          >
-            chains
+            See supported marketplaces and chains
           </span>
           .
         </span>
