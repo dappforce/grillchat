@@ -32,6 +32,8 @@ const chainMapper: Record<(typeof nftChains)[number], string> = {
   bsc: 'bsc-mainnet',
   optimism: 'optimism-mainnet',
   fantom: 'fantom-mainnet',
+  astar: 'astar-mainnet',
+  moonbeam: 'moonbeam-mainnet',
 }
 
 const MAX_NFTS_IN_CACHE = 500_000

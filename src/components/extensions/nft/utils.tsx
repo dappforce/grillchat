@@ -2,6 +2,8 @@ import { NftProperties } from '@subsocial/api/types'
 
 export const nftChains = [
   'ethereum',
+  'moonbeam',
+  'astar',
   'polygon',
   'arbitrum',
   'optimism',
@@ -135,6 +137,8 @@ const marketplaceParser: {
       avax: 'avalanche',
       optimism: 'optimism',
       ftm: 'fantom',
+      moonbeam: 'moonbeam',
+      astar: 'astar',
     },
     checker: (link: string) => link.includes('tofunft.com/nft'),
     parser: (link: string) => {
