@@ -1,7 +1,8 @@
-import ClickableAddressAvatar from '@/components/ClickableAddressAvatar'
+import AddressAvatar from '@/components/AddressAvatar'
 import CommonCustomContextMenu, {
   CommonCustomContextMenuProps,
 } from '@/components/floating/CommonCustomContextMenu'
+import ProfileModalWrapper from '@/components/ProfileModalWrapper'
 import Toast from '@/components/Toast'
 import useRandomColor from '@/hooks/useRandomColor'
 import { isOptimisticId } from '@/services/subsocial/utils'
@@ -147,7 +148,15 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <ClickableAddressAvatar address={ownerId} className='flex-shrink-0' />
+        <ProfileModalWrapper address={ownerId}>
+          {(onClick) => (
+            <AddressAvatar
+              onClick={onClick}
+              address={ownerId}
+              className='flex-shrink-0 cursor-pointer'
+            />
+          )}
+        </ProfileModalWrapper>
       )}
       <CommonCustomContextMenu menus={menus}>
         {(config) => {

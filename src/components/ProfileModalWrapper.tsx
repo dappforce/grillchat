@@ -1,35 +1,30 @@
-import { cx } from '@/utils/class-names'
 import { useState } from 'react'
-import AddressAvatar, { AddressAvatarProps } from './AddressAvatar'
 import Modal from './modals/Modal'
 import ProfilePreview from './ProfilePreview'
 
-export type ClickableAddressAvatarProps = Omit<AddressAvatarProps, 'ref'>
+export type ProfileModalWrapperProps = {
+  address: string
+  children: (onClick: () => void) => React.ReactNode
+}
 
-export default function ClickableAddressAvatar({
-  ...props
-}: ClickableAddressAvatarProps) {
+export default function ProfileModalWrapper({
+  address,
+  children,
+}: ProfileModalWrapperProps) {
   const [isOpenAccountModal, setIsOpenAccountModal] = useState(false)
 
   // TODO: add onclick for opening donate modal
 
   return (
     <>
-      <AddressAvatar
-        {...props}
-        className={cx('cursor-pointer', props.className)}
-        onClick={(e) => {
-          props.onClick?.(e)
-          setIsOpenAccountModal(true)
-        }}
-      />
+      {children(() => setIsOpenAccountModal(true))}
       <Modal
         title='Profile'
         withCloseButton
         isOpen={isOpenAccountModal}
         closeModal={() => setIsOpenAccountModal(false)}
       >
-        <ProfilePreview address={props.address} className='mb-2' />
+        <ProfilePreview address={address} className='mb-2' />
         {/* <ActionCard
           className='mt-6'
           actions={[

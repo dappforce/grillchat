@@ -2,14 +2,15 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
+import { ComponentProps } from 'react'
 
-type NameProps = {
+type NameProps = ComponentProps<'span'> & {
   address: string
   additionalText?: string
   className?: string
 }
 
-const Name = ({ address, className, additionalText }: NameProps) => {
+const Name = ({ address, additionalText, ...props }: NameProps) => {
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
 
   const { evmAddress, ensName } = accountData || {}
@@ -20,19 +21,22 @@ const Name = ({ address, className, additionalText }: NameProps) => {
 
   if (!accountData && isLoading) {
     return (
-      <div
+      <span
+        {...props}
         className={cx(
-          'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none'
+          'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none',
+          props.className
         )}
       >
         <span className='my-1 mr-4 h-3 w-20 rounded-full bg-background-lighter font-medium' />
-      </div>
+      </span>
     )
   }
 
   return (
     <span
-      className={className ? className : 'mr-2 text-sm text-text-secondary'}
+      {...props}
+      className={cx(props.className)}
       style={{ color: textColor }}
     >
       {additionalText} {name}
