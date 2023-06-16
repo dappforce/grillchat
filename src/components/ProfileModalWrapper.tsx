@@ -4,7 +4,9 @@ import ProfilePreview from './ProfilePreview'
 
 export type ProfileModalWrapperProps = {
   address: string
-  children: (onClick: () => void) => React.ReactNode
+  children: (
+    onClick: (e: { stopPropagation: () => void }) => void
+  ) => React.ReactNode
 }
 
 export default function ProfileModalWrapper({
@@ -15,7 +17,10 @@ export default function ProfileModalWrapper({
 
   return (
     <>
-      {children(() => setIsOpenAccountModal(true))}
+      {children((e) => {
+        e.stopPropagation()
+        setIsOpenAccountModal(true)
+      })}
       <Modal
         title='Profile'
         withCloseButton
