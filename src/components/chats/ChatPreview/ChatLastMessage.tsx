@@ -52,7 +52,7 @@ export default function ChatLastMessage({
           props.className
         )}
       >
-        {hasNftExtension && (
+        {!isMessageBlocked && hasNftExtension && (
           <MediaLoader
             height={24}
             width={24}
