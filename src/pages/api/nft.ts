@@ -1,7 +1,6 @@
 import { nftChains } from '@/components/extensions/nft/utils'
-import { getMoralisApi } from '@/server/external'
+import { covalentRequest } from '@/server/external'
 import { MinimalUsageQueueWithTimeLimit } from '@/utils/data-structure'
-import { EvmChain } from '@moralisweb3/common-evm-utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -25,14 +24,14 @@ export type ApiNftResponse = {
   data?: NftData | null
 }
 
-const moralisChainMapper: Record<(typeof nftChains)[number], EvmChain> = {
-  ethereum: EvmChain.ETHEREUM,
-  polygon: EvmChain.POLYGON,
-  arbitrum: EvmChain.ARBITRUM,
-  avalanche: EvmChain.AVALANCHE,
-  bsc: EvmChain.BSC,
-  optimism: EvmChain.OPTIMISM,
-  fantom: EvmChain.FANTOM,
+const chainMapper: Record<(typeof nftChains)[number], string> = {
+  ethereum: 'eth-mainnet',
+  polygon: 'matic-mainnet',
+  arbitrum: 'arbitrum-mainnet',
+  avalanche: 'avalanche-mainnet',
+  bsc: 'bsc-mainnet',
+  optimism: 'optimism-mainnet',
+  fantom: 'fantom-mainnet',
 }
 
 const MAX_NFTS_IN_CACHE = 500_000
@@ -81,8 +80,7 @@ function getNftCacheKey(nftProperties: ApiNftParams) {
 async function getNftData(
   nftProperties: ApiNftParams
 ): Promise<NftData | null> {
-  const chain =
-    moralisChainMapper[nftProperties.chain as keyof typeof moralisChainMapper]
+  const chain = chainMapper[nftProperties.chain as keyof typeof chainMapper]
   if (!chain) return null
 
   const cacheKey = getNftCacheKey(nftProperties)
@@ -91,30 +89,25 @@ async function getNftData(
   }
 
   try {
-    const moralis = await getMoralisApi()
-
-    const response = await moralis?.EvmApi.nft.getNFTMetadata({
-      address: nftProperties.collectionId,
-      tokenId: nftProperties.nftId,
-      chain,
-      normalizeMetadata: true,
+    const response = await covalentRequest({
+      url: `/${chain}/nft/${nftProperties.collectionId}/metadata/${nftProperties.nftId}/`,
+      params: {
+        'with-uncached': true,
+      },
     })
-    if (!response) {
+
+    const metadata = response.data?.data?.items?.[0]
+    if (!metadata) {
       throw new Error('NFT not found')
     }
 
-    const metadata = response?.raw.normalized_metadata
+    const collectionName = metadata.contract_name
+    const externalData = metadata.nft_data?.external_data
+    const nftName = externalData?.name
+    const image = externalData?.image
 
-    let image = metadata?.image
-    if (!image) {
-      const rawMetadata = response?.raw.metadata
-      const parsedMetadata = JSON.parse(rawMetadata ?? '{}')
-      image = parsedMetadata?.image || parsedMetadata.image_data
-    }
-
-    const collectionName = response?.raw.name
     const nftData = {
-      name: metadata?.name ?? collectionName ?? '',
+      name: nftName ?? collectionName ?? '',
       image: image ?? '',
       collectionName: collectionName ?? '',
       price: 0,
