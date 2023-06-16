@@ -89,7 +89,15 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
     rootPostId: post.rootPost?.id ?? '',
   }
 
-  return {
+  const replyToId = post.inReplyToPost?.id
+  const replyData =
+    replyToId &&
+    ({
+      kind: post.inReplyToKind ?? 'Post',
+      id: replyToId,
+    } as PostContent['inReplyTo'])
+
+  const data = {
     id: post.id,
     struct,
     content: {
@@ -100,12 +108,14 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
       body: post.body || '',
       canonical: post.canonical ?? '',
       isShowMore: post.isShowMore ?? false,
-      inReplyTo: {
-        kind: post.inReplyToKind ?? 'Post',
-        id: post.inReplyToPost?.id ?? '',
-      },
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
       extensions: mapPostExtensions(post.extensions),
     } as PostContent,
   }
+
+  if (replyData) {
+    data.content.inReplyTo = replyData
+  }
+
+  return data
 }
