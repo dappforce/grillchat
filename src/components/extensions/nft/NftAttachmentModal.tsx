@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
 import { ChatFormProps } from '@/components/chats/ChatForm'
-import Input, { InputProps } from '@/components/inputs/Input'
+import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import { linkTextStyles } from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
@@ -85,6 +85,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
       <CommonExtensionModal
         {...otherProps}
         isOpen={otherProps.isOpen && !isOpenSupportedPlatformModal}
+        size='md'
         mustHaveMessageBody={false}
         chatId={chatId}
         disableSendButton={!isValidNft}
@@ -135,8 +136,6 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
                 </Button>
                 <MediaLoader
                   withSpinner
-                  width={800}
-                  height={800}
                   image={data?.image ?? ''}
                   loadingClassName='rounded-2xl'
                   className='aspect-square w-full rounded-2xl bg-background object-contain'
@@ -155,11 +154,11 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   )
 }
 
-function NftLinkInput({ ...props }: InputProps) {
+function NftLinkInput({ ...props }: TextAreaProps) {
   const { ref, autofocus } = useAutofocus()
   useEffect(() => {
     autofocus()
   }, [autofocus])
 
-  return <Input {...props} ref={ref} placeholder='Paste NFT URL' />
+  return <TextArea {...props} rows={1} ref={ref} placeholder='Paste NFT URL' />
 }
