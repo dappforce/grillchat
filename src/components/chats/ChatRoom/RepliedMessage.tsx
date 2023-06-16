@@ -54,6 +54,8 @@ export default function RepliedMessage({
       <div className='flex flex-1 items-center gap-2 overflow-hidden border-l-2 pl-2'>
         {hasNftExtension && (
           <MediaLoader
+            height={60}
+            width={60}
             containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
             className={cx('aspect-square w-10')}
             placeholderClassName={cx('w-10 aspect-square')}

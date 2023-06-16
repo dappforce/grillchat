@@ -135,6 +135,8 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
                 </Button>
                 <MediaLoader
                   withSpinner
+                  width={800}
+                  height={800}
                   image={data?.image ?? ''}
                   loadingClassName='rounded-2xl'
                   className='aspect-square w-full rounded-2xl bg-background object-contain'

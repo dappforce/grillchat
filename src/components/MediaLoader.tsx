@@ -95,9 +95,9 @@ export default function MediaLoader({
       return (
         <Image
           key={usedImage?.toString() ?? ''}
-          width={500}
-          height={500}
           {...commonProps}
+          width={commonProps.width || 500}
+          height={commonProps.height || 500}
           alt={props.alt || ''}
         />
       )
