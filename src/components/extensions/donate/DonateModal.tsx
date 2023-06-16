@@ -1,13 +1,12 @@
 import Astar from '@/assets/graphics/chains/astar.png'
 import Moonbeam from '@/assets/graphics/chains/moonbeam.png'
 import Poligon from '@/assets/graphics/chains/poligon.png'
+import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import ETH from '@/assets/graphics/tokens/eth.png'
 import MATIC from '@/assets/graphics/tokens/matic.png'
 import USDC from '@/assets/graphics/tokens/usdc.png'
 import USDT from '@/assets/graphics/tokens/usdt.png'
-import Button from '@/components/Button'
 import CommonExtensionModal from '@/components/extensions/CommonExtensionModal'
-import Input from '@/components/inputs/Input'
 import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
@@ -16,10 +15,12 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
-import { formatUnits, parseUnits } from 'ethers'
-import { ChangeEventHandler, useState } from 'react'
-import { ModalFunctionalityProps } from '../../modals/Modal'
-import { useGetBalance, useTransfer } from './api/transfer'
+import { parseUnits } from 'ethers'
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import Modal, { ModalFunctionalityProps } from '../../modals/Modal'
+import AmountInput from './AmountInput'
+import { useDonate, useGetBalance } from './api/hooks'
 
 const chainItems = [
   {
@@ -65,68 +66,20 @@ const tokensItems = [
   },
 ]
 
-type AmountInputProps = {
-  setAmount: (amount: string) => void
-  amount: string
-  tokenSymbol: string
-  balance?: string
-  decimals?: number
+export type DonateModalStep = 'donate' | 'processing'
+
+type DonateProps = DonateModalProps & {
+  setCurrentStep: (currentStep: DonateModalStep) => void
+  currentStep: DonateModalStep
 }
 
-const AmountInput = ({
-  amount,
-  setAmount,
-  tokenSymbol,
-  balance,
-  decimals,
-}: AmountInputProps) => {
-  const onInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    setAmount(e.target.value)
-  }
+type DonateModalContent = {
+  [key in DonateModalStep]: (props: DonateProps) => JSX.Element
+}
 
-  const balanceValue =
-    decimals && balance ? formatUnits(balance, decimals) : '0'
-
-  return (
-    <div>
-      <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-gray-400'>
-        <div>Amount</div>
-        <div>
-          Balance:{' '}
-          <span className='font-bold text-white'>
-            {balanceValue.slice(0, 6)} {tokenSymbol}
-          </span>
-        </div>
-      </div>
-      <Input
-        step={0.1}
-        min={0}
-        value={amount}
-        onChange={onInputChange}
-        rightElement={() => (
-          <div>
-            <Button
-              variant='transparent'
-              className={cx(
-                'absolute bottom-0 right-4 top-0 my-auto p-1 text-indigo-400',
-                'hover:text-indigo-500 hover:ring-0'
-              )}
-              onClick={() => balance && setAmount(balanceValue)}
-            >
-              Max
-            </Button>
-          </div>
-        )}
-        type='number'
-        className={cx(
-          'h-[54px] bg-slate-900 pr-16 text-base leading-6 ring-1 ring-inset ring-gray-500',
-          'focus:outline-none focus:ring-1 focus:ring-gray-400',
-          'hover:outline-none hover:ring-1 hover:ring-gray-400',
-          'focus-visible:!ring-1 focus-visible:ring-gray-400'
-        )}
-      />
-    </div>
-  )
+const modalByStep: DonateModalContent = {
+  donate: DonateModal,
+  processing: WalletActionRequiredModal,
 }
 
 type DonateModalProps = ModalFunctionalityProps & {
@@ -135,12 +88,31 @@ type DonateModalProps = ModalFunctionalityProps & {
   chatId: string
 }
 
-export default function DonateModal({
+export default function DonateModals(props: DonateModalProps) {
+  const [currentStep, setCurrentStep] = useState<DonateModalStep>('donate')
+
+  useEffect(() => {
+    setCurrentStep('donate')
+  }, [])
+
+  const ModalByStep = modalByStep[currentStep]
+
+  return (
+    <ModalByStep
+      currentStep={currentStep}
+      setCurrentStep={setCurrentStep}
+      {...props}
+    />
+  )
+}
+
+function DonateModal({
   recipient,
   messageId,
   chatId,
+  setCurrentStep,
   ...props
-}: DonateModalProps) {
+}: DonateProps) {
   const theme = useGetTheme()
   const isDarkTheme = theme === 'dark'
   const [selectedChain, setSelectedChain] = useState<ListItem>(chainItems[0])
@@ -155,7 +127,7 @@ export default function DonateModal({
   const { evmAddress: evmRecipientAddress } = recipientAccountData || {}
   const { evmAddress: myEvmAddress } = myAccountData || {}
 
-  const { sendTransferTx } = useTransfer(selectedToken.id, selectedChain.id)
+  const { sendTransferTx } = useDonate(selectedToken.id, selectedChain.id)
 
   const onButtonClick = async (messageParams: SendMessageParams) => {
     if (!evmRecipientAddress || !myEvmAddress || !amount) {
@@ -167,6 +139,7 @@ export default function DonateModal({
     const hash = await sendTransferTx(
       evmRecipientAddress,
       amountValue,
+      setCurrentStep,
       selectedToken.isNativeToken,
       decimals
     )
@@ -198,10 +171,10 @@ export default function DonateModal({
   }
 
   const disableSendButton =
-    !balance ||
-    new BigNumber(balance || '0').eq(0) ||
     !amount ||
-    new BigNumber(amount || '0').eq(0)
+    !balance ||
+    new BigNumber(amount || '0').eq(0) ||
+    new BigNumber(balance || '0').eq(0)
 
   return (
     <CommonExtensionModal
@@ -210,7 +183,7 @@ export default function DonateModal({
       disableSendButton={disableSendButton}
       sendButtonText='Send'
       beforeMesageSend={onButtonClick}
-      title='💰 Donate'
+      title={'💰 Donate'}
       withCloseButton
       panelClassName='pb-5'
     >
@@ -250,5 +223,27 @@ export default function DonateModal({
         </div>
       </div>
     </CommonExtensionModal>
+  )
+}
+
+function WalletActionRequiredModal(props: DonateProps) {
+  return (
+    <Modal
+      {...props}
+      title={'🔐 Wallet Action Required'}
+      description={
+        'Please open your EVM wallet and perform the necessary actions to ensure its optimal functionality.'
+      }
+      panelClassName='pb-5'
+    >
+      <div className='flex w-full justify-center'>
+        <Image
+          className='w-64 max-w-xs rounded-full'
+          priority
+          src={ProcessingHumster}
+          alt=''
+        />
+      </div>
+    </Modal>
   )
 }

@@ -1,6 +1,6 @@
 import DonateCoinIcon from '@/assets/icons/donate-coin.svg'
 import ClickableAddressAvatar from '@/components/ClickableAddressAvatar'
-import DonateModal from '@/components/extensions/donate/DonateModal'
+import DonateModals from '@/components/extensions/donate/DonateModal'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
@@ -226,7 +226,7 @@ export default function ChatItem({
         entity={message}
       />
       {openDonateModal && (
-        <DonateModal
+        <DonateModals
           isOpen={openDonateModal}
           closeModal={() => setOpenDonateModal(false)}
           recipient={ownerId}
