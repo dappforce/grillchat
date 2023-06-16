@@ -1,7 +1,6 @@
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
-import Name from '@/components/Name'
-import ProfileModalWrapper from '@/components/ProfileModalWrapper'
+import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { cx } from '@/utils/class-names'
 import Linkify from 'linkify-react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
@@ -33,17 +32,10 @@ export default function DefaultChatItem({
       >
         {!isMyMessage && (
           <div className='flex items-center'>
-            <ProfileModalWrapper address={ownerId}>
-              {(onClick) => (
-                <Name
-                  onClick={onClick}
-                  className={cx(
-                    'mr-2 cursor-pointer text-sm text-text-secondary'
-                  )}
-                  address={ownerId}
-                />
-              )}
-            </ProfileModalWrapper>
+            <ProfilePreviewModalName
+              address={ownerId}
+              className={cx('mr-2 text-sm text-text-secondary')}
+            />
             <span className='text-xs text-text-muted'>{relativeTime}</span>
           </div>
         )}

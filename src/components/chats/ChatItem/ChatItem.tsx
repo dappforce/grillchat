@@ -2,7 +2,7 @@ import AddressAvatar from '@/components/AddressAvatar'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
-import ProfileModalWrapper from '@/components/ProfileModalWrapper'
+import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
@@ -146,7 +146,7 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <ProfileModalWrapper address={ownerId}>
+        <ProfilePreviewModalWrapper address={ownerId}>
           {(onClick) => (
             <AddressAvatar
               onClick={onClick}
@@ -154,7 +154,7 @@ export default function ChatItem({
               className='flex-shrink-0 cursor-pointer'
             />
           )}
-        </ProfileModalWrapper>
+        </ProfilePreviewModalWrapper>
       )}
       <FloatingMenus menus={menus} alignment='end' useClickPointAsAnchor>
         {(config) => {

@@ -1,6 +1,5 @@
 import Button from '@/components/Button'
-import Name from '@/components/Name'
-import ProfileModalWrapper from '@/components/ProfileModalWrapper'
+import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { cx } from '@/utils/class-names'
 import { getEmojiAmount, validateTextContainsOnlyEmoji } from '@/utils/strings'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
@@ -50,17 +49,10 @@ export default function EmojiChatItem({
     >
       {!isMyMessage && (
         <div className='flex items-center pl-1'>
-          <ProfileModalWrapper address={ownerId}>
-            {(onClick) => (
-              <Name
-                onClick={onClick}
-                className={cx(
-                  'mr-2 cursor-pointer text-sm text-text-secondary'
-                )}
-                address={ownerId}
-              />
-            )}
-          </ProfileModalWrapper>
+          <ProfilePreviewModalName
+            address={ownerId}
+            className={cx('mr-2 text-sm text-text-secondary')}
+          />
           <span className='text-xs text-text-muted'>{relativeTime}</span>
         </div>
       )}

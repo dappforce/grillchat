@@ -4,7 +4,7 @@ import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 
-type NameProps = ComponentProps<'span'> & {
+export type NameProps = ComponentProps<'span'> & {
   address: string
   additionalText?: string
   className?: string
