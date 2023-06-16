@@ -1,8 +1,8 @@
 import Button from '@/components/Button'
 import { ChatFormProps } from '@/components/chats/ChatForm'
-import ImageLoader from '@/components/ImageLoader'
 import Input, { InputProps } from '@/components/inputs/Input'
 import LinkText, { linkTextStyles } from '@/components/LinkText'
+import MediaLoader from '@/components/MediaLoader'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useAutofocus from '@/hooks/useAutofocus'
 import useDebounce from '@/hooks/useDebounce'
@@ -12,7 +12,11 @@ import { NftProperties } from '@subsocial/api/types'
 import { useEffect, useState } from 'react'
 import { HiArrowUpRight, HiTrash } from 'react-icons/hi2'
 import CommonExtensionModal from '../CommonExtensionModal'
-import { getSupportedMarketplaces, parseNftMarketplaceLink } from './utils'
+import {
+  getSupportedMarketplaces,
+  nftChains,
+  parseNftMarketplaceLink,
+} from './utils'
 
 export type NftAttachmentModalProps = ModalFunctionalityProps &
   Pick<ChatFormProps, 'chatId'>
@@ -21,8 +25,9 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   const { chatId, ...otherProps } = props
   const [nftLink, setNftLink] = useState('')
   const [nftLinkError, setNftLinkError] = useState<string | JSX.Element>('')
-  const [isOpenPopularMarketplaces, setIsOpenPopularMarketplaces] =
-    useState(false)
+  const [openModalType, setOpenModalType] = useState<
+    'marketplaces' | 'chains' | null
+  >(null)
 
   const [showLoading, setShowLoading] = useState(false)
 
@@ -44,14 +49,22 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
       const data = parseNftMarketplaceLink(debouncedLink)
       setParsedLinkData(data)
     } catch (err) {
+      console.log('Error parsing nft link', err)
       setNftLinkError(
         <span>
           😥 Sorry, we cannot parse this URL.{' '}
           <span
             className={cx(linkTextStyles({ variant: 'primary' }))}
-            onClick={() => setIsOpenPopularMarketplaces(true)}
+            onClick={() => setOpenModalType('marketplaces')}
           >
             See supported marketplaces
+          </span>{' '}
+          and{' '}
+          <span
+            className={cx(linkTextStyles({ variant: 'primary' }))}
+            onClick={() => setOpenModalType('chains')}
+          >
+            chains
           </span>
           .
         </span>
@@ -61,6 +74,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
 
   const { data, isLoading } = getNftQuery.useQuery(parsedLinkData, {
     onError: () => setNftLinkError('😥 Sorry, we cannot get this NFT data'),
+    retry: 0,
   })
   useEffect(() => {
     if (isLoading || !data) return
@@ -75,7 +89,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
     <>
       <CommonExtensionModal
         {...otherProps}
-        isOpen={otherProps.isOpen && !isOpenPopularMarketplaces}
+        isOpen={otherProps.isOpen && !openModalType}
         mustHaveMessageBody={false}
         chatId={chatId}
         disableSendButton={!isValidNft}
@@ -88,7 +102,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
                 linkTextStyles({ variant: 'primary' }),
                 'cursor-pointer'
               )}
-              onClick={() => setIsOpenPopularMarketplaces(true)}
+              onClick={() => setOpenModalType('marketplaces')}
             >
               popular marketplaces
             </span>
@@ -125,7 +139,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
                 >
                   <HiTrash />
                 </Button>
-                <ImageLoader
+                <MediaLoader
                   withSpinner
                   image={data?.image ?? ''}
                   loadingClassName='rounded-2xl'
@@ -138,8 +152,8 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
         </div>
       </CommonExtensionModal>
       <Modal
-        isOpen={isOpenPopularMarketplaces}
-        closeModal={() => setIsOpenPopularMarketplaces(false)}
+        isOpen={openModalType === 'marketplaces'}
+        closeModal={() => setOpenModalType(null)}
         title='🛍️ Supported NFT Marketplaces'
         withCloseButton
       >
@@ -155,6 +169,20 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
               <span>{name}</span>
               <HiArrowUpRight className='text-text-muted' />
             </LinkText>
+          ))}
+        </div>
+      </Modal>
+      <Modal
+        isOpen={openModalType === 'chains'}
+        closeModal={() => setOpenModalType(null)}
+        title='⛓️ Supported Chains'
+        withCloseButton
+      >
+        <div className='mt-2 flex flex-col gap-2'>
+          {nftChains.map((chain) => (
+            <span key={chain} className='capitalize'>
+              {chain}
+            </span>
           ))}
         </div>
       </Modal>

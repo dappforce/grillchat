@@ -1,4 +1,4 @@
-import ImageLoader from '@/components/ImageLoader'
+import MediaLoader from '@/components/MediaLoader'
 import { getNftQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { NftExtension } from '@subsocial/api/types'
@@ -19,7 +19,7 @@ const NftRepliedMessagePreviewPart = ({
   return (
     <span className={className}>
       {hasNftExtension && (
-        <ImageLoader
+        <MediaLoader
           containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
           className={cx('aspect-square w-10')}
           placeholderClassName={cx('w-10 aspect-square')}

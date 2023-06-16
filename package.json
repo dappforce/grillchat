@@ -29,6 +29,7 @@
     "@polkadot/util": "^12.1.2",
     "@rainbow-me/rainbowkit": "^1.0.0",
     "@subsocial/api": "^0.8.12",
+    "@subsocial/grill-widget": "^0.0.8",
     "@subwallet/wagmi-connector": "^0.0.2",
     "@talismn/wagmi-connector": "^0.3.1",
     "@tanstack/react-query": "^4.24.10",

@@ -1,9 +1,10 @@
 import { cx } from '@/utils/class-names'
+import { validateVideoUrl } from '@/utils/links'
 import Image, { ImageProps } from 'next/image'
 import { useLayoutEffect, useState } from 'react'
 import Spinner from './Spinner'
 
-export type ImageLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
+export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   alt?: string
   image?: ImageProps['src']
   containerClassName?: string
@@ -22,14 +23,14 @@ function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
   return uri
 }
 
-export default function ImageLoader({
+export default function MediaLoader({
   image,
   containerClassName,
   loadingClassName,
   placeholderClassName,
   withSpinner,
   ...props
-}: ImageLoaderProps) {
+}: MediaLoaderProps) {
   let [isLoading, setIsLoading] = useState(false)
   let usedImage = image
   if (typeof image === 'string') {
@@ -47,20 +48,48 @@ export default function ImageLoader({
       props.className
     )
 
-    if (typeof usedImage === 'string' && usedImage.startsWith('data:image')) {
+    const onLoad = (e: any) => {
+      setIsLoading(false)
+      props.onLoad?.(e)
+    }
+
+    const onError = (e: any) => {
+      setIsLoading(false)
+      props.onError?.(e)
+    }
+
+    const commonProps: any = {
+      ...props,
+      onLoad,
+      onError,
+      className: commonClassName,
+      src: usedImage,
+    }
+
+    if (typeof usedImage === 'string' && validateVideoUrl(usedImage)) {
       return (
-        <iframe
-          src={usedImage}
+        <video
+          {...commonProps}
+          onLoadedData={onLoad}
           className={cx(commonClassName, 'aspect-square')}
-          onError={(e) => {
-            setIsLoading(false)
-            props.onError?.(e as any)
-          }}
-          onLoad={(e) => {
-            setIsLoading(false)
-            props.onLoad?.(e as any)
-          }}
+          controls
+          autoPlay
         />
+      )
+    } else if (typeof usedImage === 'string' && usedImage.startsWith('data:')) {
+      // width and height props will make iframe not square in clickable media
+      const { width, height, ...iframeProps } = commonProps
+      return (
+        <>
+          <iframe
+            {...iframeProps}
+            className={cx(commonClassName, 'aspect-square')}
+          />
+          <div
+            {...iframeProps}
+            className='absolute inset-0 z-10 h-full w-full opacity-0'
+          />
+        </>
       )
     } else {
       return (
@@ -68,18 +97,8 @@ export default function ImageLoader({
           key={usedImage?.toString() ?? ''}
           width={500}
           height={500}
-          {...props}
+          {...commonProps}
           alt={props.alt || ''}
-          src={usedImage ?? ''}
-          className={commonClassName}
-          onError={(e) => {
-            setIsLoading(false)
-            props.onError?.(e)
-          }}
-          onLoad={(e) => {
-            setIsLoading(false)
-            props.onLoad?.(e)
-          }}
         />
       )
     }

@@ -1,17 +1,17 @@
 import { cx } from '@/utils/class-names'
 import Image, { ImageProps } from 'next/image'
 import { useState } from 'react'
-import ImageLoader from './ImageLoader'
+import MediaLoader from './MediaLoader'
 import Modal from './modals/Modal'
 
-export type ClickableImageProps = Omit<ImageProps, 'onClick'> & {
+export type ClickableMediaProps = Omit<ImageProps, 'onClick'> & {
   trigger?: (onClick: () => void) => JSX.Element
 }
 
-export default function ClickableImage({
+export default function ClickableMedia({
   trigger,
   ...props
-}: ClickableImageProps) {
+}: ClickableMediaProps) {
   const [isOpenModal, setIsOpenModal] = useState(false)
   return (
     <>
@@ -33,7 +33,7 @@ export default function ClickableImage({
         contentClassName='!p-0'
         size='screen-md'
       >
-        <ImageLoader
+        <MediaLoader
           {...props}
           image={props.src ?? ''}
           className='max-h-[95vh] w-full max-w-screen-md object-contain'
