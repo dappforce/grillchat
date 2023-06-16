@@ -6,11 +6,24 @@ import { PostContent as SubsocialPostContent } from '@subsocial/api/types/dto'
 declare module '@subsocial/api/types' {
   export default types
 
+  export type NftProperties = {
+    chain: string
+    collectionId: string
+    nftId: string
+    url: string
+  }
+  export type NftExtension = {
+    id: 'subsocial-evm-nft'
+    properties: NftProperties
+  }
+  export type PostContentExtension = NftExtension
+
   export interface PostContent extends SubsocialPostContent {
     inReplyTo?: {
       kind: 'Post'
       id: string
     }
+    extensions?: PostContentExtension[]
   }
   export declare type EntityPostData<
     S extends HasId,

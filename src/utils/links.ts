@@ -37,3 +37,8 @@ export function getChatPageLink(
   }
   return `/${hubId}/${chatSlug}`
 }
+
+export function validateVideoUrl(url: string) {
+  const videoFileUrlRegex = /\.(mp4|mov|avi|wmv|flv|mkv)$/i
+  return videoFileUrlRegex.test(url)
+}

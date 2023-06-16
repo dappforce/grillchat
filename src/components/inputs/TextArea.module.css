@@ -1,15 +1,14 @@
 .textAreaWrapper {
   display: grid;
 }
-.textAreaWrapper::after {
-  content: attr(data-replicated-value) ' ';
+.textAreaWrapper > div {
   white-space: pre-wrap;
   visibility: hidden;
 }
 .textAreaWrapper > textarea {
   resize: none;
 }
-.textAreaWrapper::after,
+.textAreaWrapper > div,
 .textAreaWrapper > textarea {
   overflow-x: hidden;
   overflow-wrap: break-word;

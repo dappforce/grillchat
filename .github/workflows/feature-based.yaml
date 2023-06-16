@@ -59,6 +59,8 @@ jobs:
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/xsocial/graphql
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
             GH_IPFS_PIN_URL=https://test-pin.crustcloud.io/psa
+            GH_MORALIS_API_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImMxMWI3MmZlLWQyZWItNDU1Zi05OTk1LWRmOTEyZDVhOWEwNiIsIm9yZ0lkIjoiMzQyMDI5IiwidXNlcklkIjoiMzUxNjEyIiwidHlwZUlkIjoiNmQ1OTdlZWYtODZjNi00MGIzLTlmMDMtM2Q4NGU1Y2Q1MzY0IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE2ODYxNDQwNjksImV4cCI6NDg0MTkwNDA2OX0.0bakqeVJ15vsSM3C6q4g94cMJtzwBN64NqgE2Z2_M7w
+            GH_OPENSEA_API_KEY=207875fb75e042ee8b313d83aad47f34
           tags: |
             ${{ env.image }}
           cache-from: type=local,src=/tmp/.buildx-cache

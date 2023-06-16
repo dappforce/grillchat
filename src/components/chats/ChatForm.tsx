@@ -1,20 +1,23 @@
 import Send from '@/assets/icons/send.svg'
-import { buttonStyles } from '@/components/Button'
+import Button, { ButtonProps } from '@/components/Button'
 import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
-import TextArea from '@/components/inputs/TextArea'
+import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
+import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
-import { useSendMessage } from '@/services/subsocial/commentIds'
+import {
+  SendMessageParams,
+  useSendMessage,
+} from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { isTouchDevice } from '@/utils/device'
 import {
   ComponentProps,
   SyntheticEvent,
@@ -25,10 +28,15 @@ import {
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
+  isPrimary?: boolean
   onSubmit?: () => void
-  replyTo?: string
-  clearReplyTo?: () => void
   disabled?: boolean
+  mustHaveMessageBody?: boolean
+  inputProps?: TextAreaProps
+  buildAdditionalTxParams?: () => Partial<SendMessageParams>
+  sendButtonText?: string
+  sendButtonProps?: ButtonProps
+  autofocus?: boolean
 }
 
 function processMessage(message: string) {
@@ -40,10 +48,18 @@ export default function ChatForm({
   chatId,
   onSubmit,
   disabled,
-  replyTo,
-  clearReplyTo,
+  mustHaveMessageBody = true,
+  inputProps,
+  autofocus = true,
+  buildAdditionalTxParams,
+  sendButtonText,
+  sendButtonProps,
+  isPrimary,
   ...props
 }: ChatFormProps) {
+  const replyTo = useMessageData((state) => state.replyTo)
+  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+
   const { data: chat } = getPostQuery.useQuery(chatId)
   const chatTitle = chat?.content?.title ?? ''
 
@@ -69,18 +85,29 @@ export default function ChatForm({
     (e) => e.message
   )
 
-  const [messageBody, setMessageBody] = useState('')
+  let messageBody = useMessageData((state) => state.messageBody)
+  const showEmptyPrimaryChatInput = useMessageData(
+    (state) => state.showEmptyPrimaryChatInput
+  )
+  if (isPrimary && showEmptyPrimaryChatInput) {
+    messageBody = ''
+  }
+
+  const setMessageBody = useMessageData((state) => state.setMessageBody)
+
   const { mutate: sendMessage, error } = useSendMessage()
   useToastError(error, 'Message failed to send, please try again')
 
   const { enableInputAutofocus } = useConfigContext()
+  const { autofocus: runAutofocus } = useAutofocus()
   useEffect(() => {
-    if (enableInputAutofocus === true) textAreaRef.current?.focus()
-    else if (enableInputAutofocus === undefined) {
-      if (isTouchDevice()) return
-      textAreaRef.current?.focus()
-    }
-  }, [enableInputAutofocus])
+    if (!autofocus || enableInputAutofocus === false) return
+    runAutofocus({
+      ref: textAreaRef,
+      autofocusInTouchDevices: enableInputAutofocus === true,
+    })
+  }, [runAutofocus, autofocus, enableInputAutofocus])
+
   useEffect(() => {
     if (replyTo) textAreaRef.current?.focus()
   }, [replyTo])
@@ -91,7 +118,9 @@ export default function ChatForm({
 
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
-  const isDisabled = !processMessage(messageBody)
+  const isDisabled =
+    (mustHaveMessageBody && !processMessage(messageBody)) ||
+    sendButtonProps?.disabled
 
   const resetForm = () => {
     setMessageBody('')
@@ -110,26 +139,26 @@ export default function ChatForm({
     const processedMessage = processMessage(messageBody)
     if (isDisabled) return
 
+    const sendMessageParams = {
+      message: processedMessage,
+      chatId,
+      replyTo,
+      ...buildAdditionalTxParams?.(),
+    }
     if (shouldSendMessage) {
       resetForm()
-      sendMessage({
-        message: processedMessage,
-        chatId: chatId,
-        replyTo,
-      })
+      sendMessage(sendMessageParams)
     } else {
       if (isLoggedIn) {
         sendEvent('request energy')
       } else {
-        sendEvent('send first message', { chatId: chatId, name: chatTitle })
+        sendEvent('send first message', { chatId, name: chatTitle })
       }
       if (!captchaToken) return
       resetForm()
       requestTokenAndSendMessage({
         captchaToken,
-        message: processMessage(messageBody),
-        chatId: chatId,
-        replyTo,
+        ...sendMessageParams,
       })
       setIsRequestingEnergy(true)
       sendEvent('request energy and send message')
@@ -152,18 +181,33 @@ export default function ChatForm({
             handleSubmit(token, e)
           }
 
+          const renderSendButton = (classNames: string) => (
+            <Button
+              onTouchEnd={(e) => {
+                // For mobile, to prevent keyboard from hiding
+                if (shouldSendMessage) {
+                  e.preventDefault()
+                  submitForm()
+                }
+              }}
+              tabIndex={-1}
+              onClick={submitForm}
+              size='circle'
+              variant={isDisabled ? 'mutedOutline' : 'primary'}
+              {...sendButtonProps}
+              className={cx(classNames, sendButtonProps?.className)}
+            >
+              <Send className='relative top-px h-4 w-4' />
+            </Button>
+          )
+
           return (
             <form
               onSubmit={submitForm}
               {...props}
-              className={cx('flex w-full', className)}
+              className={cx('flex w-full flex-col gap-2', className)}
             >
               <TextArea
-                onEnterToSubmitForm={submitForm}
-                disabled={!chatId || disabled}
-                ref={textAreaRef}
-                value={messageBody}
-                onChange={(e) => setMessageBody((e.target as any).value)}
                 placeholder='Message...'
                 rows={1}
                 autoComplete='off'
@@ -172,28 +216,24 @@ export default function ChatForm({
                 spellCheck='false'
                 variant='fill'
                 pill
-                rightElement={(classNames) => (
-                  <div
-                    onTouchEnd={(e) => {
-                      if (shouldSendMessage) {
-                        e.preventDefault()
-                        submitForm()
-                      }
-                    }}
-                    onClick={submitForm}
-                    className={cx(
-                      buttonStyles({
-                        size: 'circle',
-                        variant: isDisabled ? 'mutedOutline' : 'primary',
-                      }),
-                      classNames,
-                      'cursor-pointer'
-                    )}
-                  >
-                    <Send className='relative top-px h-4 w-4' />
-                  </div>
-                )}
+                {...inputProps}
+                onChange={(e) => setMessageBody((e.target as any).value)}
+                onEnterToSubmitForm={submitForm}
+                disabled={!chatId || disabled}
+                value={messageBody}
+                ref={textAreaRef}
+                rightElement={!sendButtonText ? renderSendButton : undefined}
               />
+              {sendButtonText && (
+                <Button
+                  disabled={isDisabled}
+                  size='lg'
+                  onClick={submitForm}
+                  {...sendButtonProps}
+                >
+                  {sendButtonText}
+                </Button>
+              )}
             </form>
           )
         }}

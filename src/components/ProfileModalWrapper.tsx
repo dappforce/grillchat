@@ -13,8 +13,6 @@ export default function ProfileModalWrapper({
 }: ProfileModalWrapperProps) {
   const [isOpenAccountModal, setIsOpenAccountModal] = useState(false)
 
-  // TODO: add onclick for opening donate modal
-
   return (
     <>
       {children(() => setIsOpenAccountModal(true))}
