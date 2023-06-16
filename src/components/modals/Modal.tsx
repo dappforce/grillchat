@@ -24,6 +24,7 @@ const panelStyles = cva(
         sm: cx('max-w-sm'),
         md: cx('max-w-md'),
         lg: cx('max-w-lg'),
+        'screen-md': cx('max-w-screen-md'),
         'screen-lg': cx('max-w-screen-lg'),
         'full-screen': cx('max-w-none'),
       },
@@ -125,7 +126,7 @@ export default function Modal({
                     <Dialog.Title
                       as='h3'
                       className={cx(
-                        'mb-4 text-2xl',
+                        'mb-2 text-2xl md:mb-4',
                         withCloseButton && 'pr-8',
                         titleClassName
                       )}

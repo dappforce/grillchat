@@ -5257,7 +5257,7 @@ export type GetPostsQueryVariables = Exact<{
 }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, tweetId?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, tweetDetails?: { __typename?: 'TweetDetails', username?: string | null } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null }> };
+export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', chain?: string | null, extensionSchemaId: ContentExtensionSchemaId, nftId?: string | null, collectionId?: string | null, url?: string | null }> }> };
 
 export type GetSpacesQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -5268,7 +5268,7 @@ export type GetSpacesQuery = { __typename?: 'Query', spaces: Array<{ __typename?
 
 export type SpaceFragmentFragment = { __typename?: 'Space', canEveryoneCreatePosts?: boolean | null, canFollowerCreatePosts?: boolean | null, content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, email?: string | null, name?: string | null, summary?: string | null, isShowMore?: boolean | null, linksOriginal?: string | null, hidden: boolean, id: string, updatedAtTime?: any | null, postsCount: number, image?: string | null, tagsOriginal?: string | null, about?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string } };
 
-export type PostFragmentFragment = { __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, tweetId?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, tweetDetails?: { __typename?: 'TweetDetails', username?: string | null } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null };
+export type PostFragmentFragment = { __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', chain?: string | null, extensionSchemaId: ContentExtensionSchemaId, nftId?: string | null, collectionId?: string | null, url?: string | null }> };
 
 export const SpaceFragment = gql`
     fragment SpaceFragment on Space {
@@ -5326,10 +5326,6 @@ export const PostFragment = gql`
   }
   canonical
   tagsOriginal
-  tweetId
-  tweetDetails {
-    username
-  }
   ownedByAccount {
     id
   }
@@ -5341,6 +5337,13 @@ export const PostFragment = gql`
   }
   sharedPost {
     id
+  }
+  extensions {
+    chain
+    extensionSchemaId
+    nftId
+    collectionId
+    url
   }
 }
     `;

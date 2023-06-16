@@ -1,11 +1,11 @@
 import ClickableAddressAvatar from '@/components/ClickableAddressAvatar'
-import CommonCustomContextMenu, {
-  CommonCustomContextMenuProps,
-} from '@/components/floating/CommonCustomContextMenu'
+import FloatingMenus, {
+  FloatingMenusProps,
+} from '@/components/floating/FloatingMenus'
 import Toast from '@/components/Toast'
-import useRandomColor from '@/hooks/useRandomColor'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
+import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
@@ -19,6 +19,7 @@ import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import urlJoin from 'url-join'
 import MetadataModal from '../../modals/MetadataModal'
+import ChatItemWithExtension from './ChatItemWithExtension'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
@@ -29,7 +30,6 @@ import EmojiChatItem, {
 
 export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   message: PostData
-  onSelectMessageAsReply?: (chatId: string) => void
   isMyMessage: boolean
   messageBubbleId?: string
   scrollToMessage?: (chatId: string) => Promise<void>
@@ -52,20 +52,20 @@ const checkMarkModalReducer = (
 
 export default function ChatItem({
   message,
-  onSelectMessageAsReply,
   isMyMessage,
   scrollToMessage,
   messageBubbleId,
   withCustomMenu = true,
   ...props
 }: ChatItemProps) {
+  const setReplyTo = useMessageData((state) => state.setReplyTo)
+
   const router = useRouter()
   const messageId = message.id
   const isSent = !isOptimisticId(messageId)
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
-  const { body, inReplyTo } = message.content || {}
-  const senderColor = useRandomColor(ownerId)
+  const { body, inReplyTo, extensions } = message.content || {}
 
   const sendEvent = useSendEvent()
 
@@ -76,18 +76,16 @@ export default function ChatItem({
 
   const setMessageAsReply = (messageId: string) => {
     if (isOptimisticId(messageId)) return
-    onSelectMessageAsReply?.(messageId)
+    setReplyTo(messageId)
   }
 
-  const getChatMenus = (): CommonCustomContextMenuProps['menus'] => {
-    const replyMenu: CommonCustomContextMenuProps['menus'][number] = {
-      text: 'Reply',
-      icon: BsFillReplyFill,
-      onClick: () => setMessageAsReply(messageId),
-    }
-
+  const getChatMenus = (): FloatingMenusProps['menus'] => {
     return [
-      ...(onSelectMessageAsReply ? [replyMenu] : []),
+      {
+        text: 'Reply',
+        icon: BsFillReplyFill,
+        onClick: () => setMessageAsReply(messageId),
+      },
       {
         text: 'Copy Text',
         icon: MdContentCopy,
@@ -121,7 +119,7 @@ export default function ChatItem({
   }
   const menus = withCustomMenu && isSent ? getChatMenus() : []
 
-  if (!body) return null
+  if (!body && (!extensions || extensions.length === 0)) return null
 
   const onCheckMarkClick = (e: SyntheticEvent) => {
     e.stopPropagation()
@@ -132,7 +130,7 @@ export default function ChatItem({
     dispatch(checkMarkType)
   }
 
-  const isEmojiOnly = shouldRenderEmojiChatItem(body)
+  const isEmojiOnly = shouldRenderEmojiChatItem(body ?? '')
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
   const relativeTime = getTimeRelativeToNow(createdAtTime)
@@ -149,32 +147,42 @@ export default function ChatItem({
       {!isMyMessage && (
         <ClickableAddressAvatar address={ownerId} className='flex-shrink-0' />
       )}
-      <CommonCustomContextMenu menus={menus}>
+      <FloatingMenus menus={menus} alignment='end' useClickPointAsAnchor>
         {(config) => {
-          const { onContextMenu, referenceProps } = config || {}
+          const { toggleDisplay, referenceProps } = config || {}
           return (
             <div
               className={cx('flex flex-col overflow-hidden', props.className)}
-              onContextMenu={onContextMenu}
+              onContextMenu={(e) => {
+                e.preventDefault()
+                toggleDisplay?.(e)
+              }}
               onDoubleClick={() => setMessageAsReply(messageId)}
               {...referenceProps}
               id={messageBubbleId}
             >
-              <ChatItemContentVariant
-                body={body}
-                isMyMessage={isMyMessage}
-                isSent={isSent}
-                onCheckMarkClick={onCheckMarkClick}
-                ownerId={ownerId}
-                relativeTime={relativeTime}
-                senderColor={senderColor}
-                inReplyTo={inReplyTo}
-                scrollToMessage={scrollToMessage}
-              />
+              {extensions && extensions.length > 0 ? (
+                <ChatItemWithExtension
+                  onCheckMarkClick={onCheckMarkClick}
+                  scrollToMessage={scrollToMessage}
+                  message={message}
+                />
+              ) : (
+                <ChatItemContentVariant
+                  body={body ?? ''}
+                  isMyMessage={isMyMessage}
+                  isSent={isSent}
+                  onCheckMarkClick={onCheckMarkClick}
+                  ownerId={ownerId}
+                  relativeTime={relativeTime}
+                  inReplyTo={inReplyTo}
+                  scrollToMessage={scrollToMessage}
+                />
+              )}
             </div>
           )
         }}
-      </CommonCustomContextMenu>
+      </FloatingMenus>
       <CheckMarkExplanationModal
         isOpen={checkMarkModalState.isOpen}
         variant={checkMarkModalState.variant || 'recording'}

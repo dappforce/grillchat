@@ -24,6 +24,7 @@ module.exports = {
         'background-warning': 'rgb(var(--background-warning) / <alpha-value>)',
         'background-info': 'rgb(var(--background-info) / <alpha-value>)',
         'background-accent': 'rgb(var(--background-accent) / <alpha-value>)',
+        'background-red': 'rgb(var(--background-red) / <alpha-value>)',
 
         text: 'rgb(var(--text) / <alpha-value>)',
         'text-muted': 'rgb(var(--text-muted) / <alpha-value>)',

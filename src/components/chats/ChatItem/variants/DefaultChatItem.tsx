@@ -16,7 +16,6 @@ export default function DefaultChatItem({
   body,
   ownerId,
   relativeTime,
-  senderColor,
   inReplyTo,
   scrollToMessage,
   ...props

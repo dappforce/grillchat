@@ -13,10 +13,25 @@ const inputStyles = cva('', {
       false: 'rounded-2xl',
     },
     size: {
-      sm: 'pl-4 py-2 pr-8',
-      md: 'py-3 pl-5 pr-12',
+      sm: 'px-4 py-2',
+      md: 'py-3 px-5',
+    },
+    containsRightElement: {
+      true: '',
     },
   },
+  compoundVariants: [
+    {
+      size: 'sm',
+      containsRightElement: true,
+      className: 'pr-8',
+    },
+    {
+      size: 'md',
+      containsRightElement: true,
+      className: 'pr-12',
+    },
+  ],
   defaultVariants: {
     variant: 'outlined',
     pill: false,
@@ -76,10 +91,10 @@ export default function FieldWrapper({
     'hover:brightness-110',
     'focus:brightness-110',
     'disabled:cursor-not-allowed disabled:brightness-75',
-    inputStyles({ pill, variant, size }),
+    inputStyles({ pill, variant, size, containsRightElement: !!rightElement }),
     interactionRingStyles()
   )
-  const errorClassNames = cx('ring-2 ring-red-500')
+  const errorClassNames = cx('ring-1 ring-red-500 border-transparent')
   const inputClassNames = cx(commonClassNames, error && errorClassNames)
 
   const rightElementClassNames = cx(
@@ -126,9 +141,9 @@ export default function FieldWrapper({
       <div
         className={cx('relative flex w-full flex-col', inputParentClassName)}
       >
-        {leftElement && leftElement(leftElementClassNames)}
+        {leftElement?.(leftElementClassNames)}
         {children(usedId, inputClassNames)}
-        {rightElement && rightElement(rightElementClassNames)}
+        {rightElement?.(rightElementClassNames)}
       </div>
       {(helperText || hasErrorMessage) && (
         <p

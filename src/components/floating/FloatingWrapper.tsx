@@ -1,81 +1,93 @@
 import { isTouchDevice } from '@/utils/device'
 import {
+  Alignment,
   autoPlacement,
+  offset,
   Placement,
+  safePolygon,
   useClientPoint,
   useDismiss,
   useFloating,
+  useHover,
   useInteractions,
 } from '@floating-ui/react'
 import { Transition } from '@headlessui/react'
-import { MouseEvent, MouseEventHandler, useState } from 'react'
+import { MouseEvent, MouseEventHandler, useRef, useState } from 'react'
 
 type ReferenceProps = Record<string, unknown>
-export type CustomContextMenuProps = {
+export type FloatingWrapperProps = {
   children: (config?: {
-    toggleMenu: () => void
-    onContextMenu: MouseEventHandler<Element>
+    toggleDisplay: (e?: MouseEvent<Element, globalThis.MouseEvent>) => void
     referenceProps: ReferenceProps
   }) => JSX.Element
-  menuPanel: (closeMenu: () => void) => React.ReactNode
+  panel: (closeMenu: () => void) => React.ReactNode
+  showOnHover?: boolean
+  alignment?: Alignment
   allowedPlacements?: Placement[]
+  useClickPointAsAnchor?: boolean
+  yOffset?: number
 }
 
-export default function CustomContextMenu({
+export default function FloatingWrapper({
   children,
-  menuPanel,
+  panel,
+  alignment,
+  showOnHover,
   allowedPlacements,
-}: CustomContextMenuProps) {
+  useClickPointAsAnchor,
+  yOffset = 0,
+}: FloatingWrapperProps) {
   const [openMenu, setOpenMenu] = useState(false)
   const { x, y, strategy, refs, context } = useFloating({
     open: openMenu,
     onOpenChange: setOpenMenu,
     middleware: [
+      offset({ mainAxis: yOffset }),
       autoPlacement({
         crossAxis: true,
-        alignment: 'end',
+        alignment,
         allowedPlacements,
       }),
     ],
   })
 
-  const [clientClickX, setClientClickX] = useState(0)
-  const [clientClickY, setClientClickY] = useState(0)
+  const clientClickX = useRef<number | undefined>(undefined)
+  const clientClickY = useRef<number | undefined>(undefined)
   const clientPoint = useClientPoint(context, {
-    x: clientClickX,
-    y: clientClickY,
+    x: clientClickX.current,
+    y: clientClickY.current,
+    enabled: !!useClickPointAsAnchor,
   })
 
+  const hover = useHover(context, {
+    handleClose: safePolygon(),
+    enabled: !isTouchDevice() && !!showOnHover,
+  })
   const dismiss = useDismiss(context)
   const { getReferenceProps, getFloatingProps } = useInteractions([
     clientPoint,
     dismiss,
+    hover,
   ])
 
-  const toggleMenu = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {
-    if (!openMenu && e) {
-      setClientClickX(e.clientX)
-      setClientClickY(e.clientY)
+  const toggleDisplay = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {
+    if (!openMenu && e && useClickPointAsAnchor) {
+      clientClickX.current = e.clientX
+      clientClickY.current = e.clientY
     }
     setOpenMenu((prev) => !prev)
   }
 
-  const onContextMenu: MouseEventHandler<Element> = (e) => {
-    e.preventDefault()
-    toggleMenu(e)
-  }
-
   const closeMenu = () => setOpenMenu(false)
   const onReferenceClick: MouseEventHandler<Element> = (e) => {
-    if (isTouchDevice()) toggleMenu(e)
+    if (isTouchDevice()) toggleDisplay(e)
     else closeMenu()
   }
 
   return (
     <>
       {children({
-        toggleMenu,
-        onContextMenu,
+        toggleDisplay,
         referenceProps: getReferenceProps({
           ref: refs.setReference,
           ...getReferenceProps(),
@@ -100,7 +112,7 @@ export default function CustomContextMenu({
         leaveFrom='opacity-100'
         leaveTo='opacity-0'
       >
-        {menuPanel(closeMenu)}
+        {panel(closeMenu)}
       </Transition>
     </>
   )
