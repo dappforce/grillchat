@@ -72,6 +72,7 @@ export default function Modal({
         as='div'
         initialFocus={initialFocus}
         className='relative z-40 text-text'
+        onClick={(e) => e.stopPropagation()}
         onClose={closeModal}
       >
         <Transition.Child
