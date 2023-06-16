@@ -78,11 +78,11 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
         <span>
           😥 Sorry, we cannot get this NFT data from{' '}
           <LinkText
-            href='https://docs.moralis.io/web3-data-api/evm/reference/get-nft-metadata'
+            href='https://www.covalenthq.com/docs/api/nft/get-nfts-for-address/'
             openInNewTab
             variant='secondary'
           >
-            Moralis API
+            Covalent API
           </LinkText>
         </span>
       )
