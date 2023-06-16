@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import { ChatFormProps } from '@/components/chats/ChatForm'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
-import { linkTextStyles } from '@/components/LinkText'
+import LinkText, { linkTextStyles } from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useAutofocus from '@/hooks/useAutofocus'
@@ -74,7 +74,18 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   useEffect(() => {
     if (isLoading || !data) return
     if (!data?.image) {
-      setNftLinkError('😥 Sorry, we cannot get this NFT data')
+      setNftLinkError(
+        <span>
+          😥 Sorry, we cannot get this NFT data from{' '}
+          <LinkText
+            href='https://docs.moralis.io/web3-data-api/evm/reference/get-nft-metadata'
+            openInNewTab
+            variant='secondary'
+          >
+            Moralis API
+          </LinkText>
+        </span>
+      )
     }
   }, [isLoading, data])
 
