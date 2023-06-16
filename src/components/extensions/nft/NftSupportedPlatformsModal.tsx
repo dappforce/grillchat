@@ -19,7 +19,7 @@ export default function NftSupportedPlatformsModal({
       onBackClick={() => props.closeModal()}
     >
       <div className='mt-2 grid grid-cols-2'>
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col items-start gap-2'>
           <span className='mb-1 whitespace-nowrap text-xl'>
             🛍️ Marketplaces
           </span>
