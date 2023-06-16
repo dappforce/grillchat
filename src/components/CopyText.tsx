@@ -4,7 +4,7 @@ import { copyToClipboard } from '@/utils/strings'
 import { Placement } from '@floating-ui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Space_Mono } from 'next/font/google'
-import { ComponentProps, useState } from 'react'
+import { ComponentProps, useEffect, useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
@@ -136,6 +136,13 @@ export function CopyTextInline({
     useState(false)
   const [openTooltipHoverTriggerButton, setOpenTooltipHoverTriggerButton] =
     useState(false)
+
+  useEffect(() => {
+    if (!openTooltipClickTriggerButton) return
+    setTimeout(() => {
+      setOpenTooltipClickTriggerButton(false)
+    }, 2000)
+  }, [openTooltipClickTriggerButton])
 
   const handleClick = () => {
     copyToClipboard(getTextToCopy({ text, textToCopy }))
