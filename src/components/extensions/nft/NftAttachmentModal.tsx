@@ -160,5 +160,13 @@ function NftLinkInput({ ...props }: TextAreaProps) {
     autofocus()
   }, [autofocus])
 
-  return <TextArea {...props} rows={1} ref={ref} placeholder='Paste NFT URL' />
+  return (
+    <TextArea
+      {...props}
+      size='sm'
+      rows={1}
+      ref={ref}
+      placeholder='Paste NFT URL'
+    />
+  )
 }

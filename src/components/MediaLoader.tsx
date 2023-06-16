@@ -73,7 +73,7 @@ export default function MediaLoader({
           onLoadedData={onLoad}
           className={cx(commonClassName, 'aspect-square')}
           controls
-          autoPlay
+          muted
         />
       )
     } else if (typeof usedImage === 'string' && usedImage.startsWith('data:')) {
