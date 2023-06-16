@@ -120,7 +120,7 @@ async function getNftData(
       price: 0,
     }
 
-    const isMetadataRecognizedAsValid = metadata?.name || image
+    const isMetadataRecognizedAsValid = image
     if (isMetadataRecognizedAsValid) {
       nftDataCache.add(cacheKey, nftData)
     }
