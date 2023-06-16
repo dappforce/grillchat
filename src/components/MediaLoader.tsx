@@ -111,7 +111,7 @@ export default function MediaLoader({
       {isLoading && (
         <div
           className={cx(
-            'absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-background-lighter',
+            'absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-black/20',
             loadingClassName
           )}
         >
