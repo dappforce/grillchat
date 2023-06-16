@@ -170,10 +170,6 @@ function filterOptimisticIds(
       if (!post.content) return false
 
       const importantContents = getOptimisticContent(post.content)
-      console.log(
-        sortAndStringify(importantContents),
-        sortAndStringify(idData.messageData)
-      )
       return (
         sortAndStringify(importantContents) ===
           sortAndStringify(idData.messageData) &&
