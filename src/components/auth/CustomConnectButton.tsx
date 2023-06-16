@@ -1,7 +1,9 @@
 import Button, { ButtonProps } from '@/components/Button'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount } from 'wagmi'
+import { useEffect } from 'react'
+import { useAccount, useDisconnect } from 'wagmi'
 
 type CustomConnectButtonProps = ButtonProps & {
   className?: string
@@ -23,6 +25,12 @@ export const CustomConnectButton = ({
   ...buttonProps
 }: CustomConnectButtonProps) => {
   const mySubstrateAddress = useMyAccount((state) => state.address)
+  const { disconnectAsync } = useDisconnect()
+  const { data: accountData, isLoading: isAccountDataLoading } =
+    getAccountDataQuery.useQuery(mySubstrateAddress || '')
+
+  const { evmAddress: linkedEvmAddress } = accountData || {}
+
   const { isConnected } = useAccount({
     onConnect: async ({ address }) => {
       !isConnected &&
@@ -37,6 +45,16 @@ export const CustomConnectButton = ({
     isLoading: isLoading,
     ...buttonProps,
   }
+
+  useEffect(() => {
+    const disconnect = async () => {
+      if (!linkedEvmAddress && isAccountDataLoading) {
+        await disconnectAsync()
+      }
+    }
+
+    disconnect()
+  }, [linkedEvmAddress, isAccountDataLoading])
 
   return (
     <ConnectButton.Custom>

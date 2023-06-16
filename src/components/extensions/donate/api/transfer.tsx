@@ -1,22 +1,22 @@
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
-import { connectorsForWallets } from '@rainbow-me/rainbowkit'
-import { walletConnectWallet } from '@rainbow-me/rainbowkit/wallets'
 import { useMemo } from 'react'
 import {
   useAccount,
-  useConnect,
   useContractReads,
   useContractWrite,
   useNetwork,
   useSendTransaction,
 } from 'wagmi'
 import { chainIdByChainName, polygonContractsByToken } from './config'
+import { useConnectToWallet } from './hooks'
+import { getConnector, openMobileWallet } from './utils'
 
 export const useTransfer = (token: string, chainName: string) => {
   const { isConnected } = useAccount()
-  const { connectAsync, connectors } = useConnect()
+  const { connectToWallet } = useConnectToWallet()
+
   const { chains } = useNetwork()
   const { sendTransactionAsync } = useSendTransaction()
 
@@ -26,6 +26,7 @@ export const useTransfer = (token: string, chainName: string) => {
     address,
     abi,
     functionName: 'transfer',
+    chainId: chainIdByChainName[chainName],
   } as any)
 
   const sendTransferTx = async (
@@ -34,31 +35,21 @@ export const useTransfer = (token: string, chainName: string) => {
     isNativeToken?: boolean,
     decimals?: number
   ) => {
-    if (!isConnected) {
-      const connectorsCustom = connectorsForWallets([
-        {
-          groupName: 'Recommended',
-          wallets: [walletConnectWallet({ chains })],
-        },
-      ])()
+    const connector = getConnector({ chains })
 
-      try {
-        await connectAsync({
-          connector: isTouchDevice() ? connectorsCustom[0] : connectors[0],
-          chainId: chainIdByChainName[chainName],
-        })
-      } catch (e) {
-        console.error(e)
-      }
+    if (!isConnected) {
+      await connectToWallet(chainName, connector)
     }
 
     try {
       if (!decimals) return
+      isTouchDevice() && (await openMobileWallet({ connector }))
 
       const { hash } = isNativeToken
         ? await sendTransactionAsync({
             to: recipient,
             value: amount,
+            chainId: chainIdByChainName[chainName],
           })
         : await writeAsync({
             args: [recipient, amount],
@@ -66,7 +57,7 @@ export const useTransfer = (token: string, chainName: string) => {
 
       return hash
     } catch (e) {
-      console.error(e)
+      console.error('Transfer error: ', e)
       return
     }
   }

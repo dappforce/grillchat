@@ -44,7 +44,6 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
       const data = parseNftMarketplaceLink(debouncedLink)
       setParsedLinkData(data)
     } catch (err) {
-      console.log('Error parsing nft link', err)
       setNftLinkError(
         <span>
           😥 Sorry, we cannot parse this URL.{' '}

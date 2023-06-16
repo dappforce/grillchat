@@ -147,7 +147,6 @@ export default function DonateModal({
   const [selectedToken, setSelectedToken] = useState<ListItem>(tokensItems[0])
   const [amount, setAmount] = useState<string>('')
   const address = useMyAccount((state) => state.address)
-
   const { balance, decimals } = useGetBalance(selectedToken.id)
 
   const { data: recipientAccountData } = getAccountDataQuery.useQuery(recipient)

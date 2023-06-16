@@ -115,7 +115,10 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
       body: post.body || '',
       canonical: post.canonical ?? '',
       isShowMore: post.isShowMore ?? false,
-      inReplyTo: post.experimental?.inReplyTo ?? null,
+      inReplyTo: {
+        kind: post.inReplyToKind ?? 'Post',
+        id: post.inReplyToPost?.id ?? '',
+      },
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
       extensions: mapPostExtensions(post.extensions),
     } as PostContent,

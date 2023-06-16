@@ -23,6 +23,7 @@ export type Account = {
   __typename?: 'Account';
   /** A One-To-Many relationship with the Activities which have been performed by an Account (foreign key - "account") */
   activities: Array<Activity>;
+  /** A list of extensions created by the account. */
   extensions: Array<ContentExtension>;
   /**
    * A One-To-Many relationship between an Account and the Activities it has performed in the network through NewsFeed (foreign key - "account").
@@ -663,6 +664,8 @@ export enum ActivityOrderByInput {
   PostIdDesc = 'post_id_DESC',
   PostImageAsc = 'post_image_ASC',
   PostImageDesc = 'post_image_DESC',
+  PostInReplyToKindAsc = 'post_inReplyToKind_ASC',
+  PostInReplyToKindDesc = 'post_inReplyToKind_DESC',
   PostIsCommentAsc = 'post_isComment_ASC',
   PostIsCommentDesc = 'post_isComment_DESC',
   PostIsShowMoreAsc = 'post_isShowMore_ASC',
@@ -984,6 +987,8 @@ export enum CommentFollowersOrderByInput {
   FollowingCommentIdDesc = 'followingComment_id_DESC',
   FollowingCommentImageAsc = 'followingComment_image_ASC',
   FollowingCommentImageDesc = 'followingComment_image_DESC',
+  FollowingCommentInReplyToKindAsc = 'followingComment_inReplyToKind_ASC',
+  FollowingCommentInReplyToKindDesc = 'followingComment_inReplyToKind_DESC',
   FollowingCommentIsCommentAsc = 'followingComment_isComment_ASC',
   FollowingCommentIsCommentDesc = 'followingComment_isComment_DESC',
   FollowingCommentIsShowMoreAsc = 'followingComment_isShowMore_ASC',
@@ -1048,23 +1053,44 @@ export type CommentFollowersWhereInput = {
   id_startsWith?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** Detailed information about the Tweet attached to a Post */
 export type ContentExtension = {
   __typename?: 'ContentExtension';
+  /** The amount of the Donation transaction (actual for 'subsocial-donations") */
   amount?: Maybe<Scalars['BigInt']['output']>;
+  /** The chain name of attached NFT (actual for 'subsocial-evm-nft") */
   chain?: Maybe<Scalars['String']['output']>;
+  /** The collection ID of attached NFT (actual for 'subsocial-evm-nft") */
   collectionId?: Maybe<Scalars['String']['output']>;
+  /** A One-To-One relationship with the Account entity of a ContentExtension's creator. */
   createdBy: Account;
+  /** The decimals value of transferred token in Donation transaction (actual for 'subsocial-donations") */
   decimals?: Maybe<Scalars['Int']['output']>;
+  /** The ContentExtension properties schema ID. */
   extensionSchemaId: ContentExtensionSchemaId;
+  /** The sender Evm Account of the Donation transaction (actual for 'subsocial-donations") */
   fromEvm?: Maybe<EvmAccount>;
+  /** The sender Substrate Account of the Donation transaction (actual for 'subsocial-donations") */
   fromSubstrate?: Maybe<Account>;
+  /**
+   * The ContentExtension ID.
+   * Consists of parent post ID + index in extensions list, which are attached to the Post.
+   * (e.g. "4940-0")
+   */
   id: Scalars['String']['output'];
+  /** The ID of attached NFT (actual for 'subsocial-evm-nft") */
   nftId?: Maybe<Scalars['String']['output']>;
+  /** The Post where extensions was published. */
   parentPost: Post;
+  /** The target (recipient) Evm Account of the Donation transaction (actual for 'subsocial-donations") */
   toEvm?: Maybe<EvmAccount>;
+  /** The target (recipient) Substrate Account of the Donation transaction (actual for 'subsocial-donations") */
   toSubstrate?: Maybe<Account>;
+  /** The token name of the Donation transaction (actual for 'subsocial-donations") */
   token?: Maybe<Scalars['String']['output']>;
+  /** The transaction hash of the Donation transfer (actual for 'subsocial-donations") */
   txHash?: Maybe<Scalars['String']['output']>;
+  /** The URL of attached NFT (actual for 'subsocial-evm-nft") */
   url?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1149,6 +1175,8 @@ export enum ContentExtensionOrderByInput {
   ParentPostIdDesc = 'parentPost_id_DESC',
   ParentPostImageAsc = 'parentPost_image_ASC',
   ParentPostImageDesc = 'parentPost_image_DESC',
+  ParentPostInReplyToKindAsc = 'parentPost_inReplyToKind_ASC',
+  ParentPostInReplyToKindDesc = 'parentPost_inReplyToKind_DESC',
   ParentPostIsCommentAsc = 'parentPost_isComment_ASC',
   ParentPostIsCommentDesc = 'parentPost_isComment_DESC',
   ParentPostIsShowMoreAsc = 'parentPost_isShowMore_ASC',
@@ -1209,6 +1237,7 @@ export enum ContentExtensionOrderByInput {
   UrlDesc = 'url_DESC'
 }
 
+/** The schema ID of the content extensions. */
 export enum ContentExtensionSchemaId {
   SubsocialDonations = 'subsocial_donations',
   SubsocialEvmNft = 'subsocial_evm_nft'
@@ -1518,17 +1547,17 @@ export enum EventName {
   UserNameUpdated = 'UserNameUpdated'
 }
 
-/** The Account entity */
+/** The Evm Account entity */
 export type EvmAccount = {
   __typename?: 'EvmAccount';
-  /** The account's public key */
+  /** The account's Evm address */
   id: Scalars['String']['output'];
   /** A list of linked Substrate Accounts */
   linkedSubstrateAccounts: Array<EvmSubstrateAccountLink>;
 };
 
 
-/** The Account entity */
+/** The Evm Account entity */
 export type EvmAccountLinkedSubstrateAccountsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -1582,13 +1611,16 @@ export type EvmAccountsConnection = {
 /** The junction table for Many-to-Many relationship between Substrate Account and Ethereum Account */
 export type EvmSubstrateAccountLink = {
   __typename?: 'EvmSubstrateAccountLink';
+  /** Is the link of this particular account active? (This is necessary for the soft deletion of the link.) */
   active: Scalars['Boolean']['output'];
-  /** The block height when a Space was created. */
+  /** The block height when a EvmSubstrateAccountLink was created. */
   createdAtBlock?: Maybe<Scalars['BigInt']['output']>;
-  /** The DateTime when a Space was created. */
+  /** The DateTime when a EvmSubstrateAccountLink was created. */
   createdAtTime?: Maybe<Scalars['DateTime']['output']>;
+  /** Evm account */
   evmAccount: EvmAccount;
   id: Scalars['String']['output'];
+  /** Substrate account */
   substrateAccount: Account;
 };
 
@@ -1710,6 +1742,10 @@ export type HitItemContent = {
   /** Value of field `username` (actual only for Space entity) */
   username?: Maybe<Scalars['String']['output']>;
 };
+
+export enum InReplyToKind {
+  Post = 'Post'
+}
 
 export type IpfsFetchLog = {
   __typename?: 'IpfsFetchLog';
@@ -2024,6 +2060,8 @@ export type Post = {
   id: Scalars['String']['output'];
   /** The URL for the Post's cover image (IPFS content) */
   image?: Maybe<Scalars['String']['output']>;
+  inReplyToKind?: Maybe<InReplyToKind>;
+  inReplyToPost?: Maybe<Post>;
   /** Is the current Post a Comment to a Regular Post or a Comment Post? */
   isComment: Scalars['Boolean']['output'];
   /** Is the Post body longer than the summary? */
@@ -2185,6 +2223,8 @@ export enum PostFollowersOrderByInput {
   FollowingPostIdDesc = 'followingPost_id_DESC',
   FollowingPostImageAsc = 'followingPost_image_ASC',
   FollowingPostImageDesc = 'followingPost_image_DESC',
+  FollowingPostInReplyToKindAsc = 'followingPost_inReplyToKind_ASC',
+  FollowingPostInReplyToKindDesc = 'followingPost_inReplyToKind_DESC',
   FollowingPostIsCommentAsc = 'followingPost_isComment_ASC',
   FollowingPostIsCommentDesc = 'followingPost_isComment_DESC',
   FollowingPostIsShowMoreAsc = 'followingPost_isShowMore_ASC',
@@ -2304,6 +2344,70 @@ export enum PostOrderByInput {
   IdDesc = 'id_DESC',
   ImageAsc = 'image_ASC',
   ImageDesc = 'image_DESC',
+  InReplyToKindAsc = 'inReplyToKind_ASC',
+  InReplyToKindDesc = 'inReplyToKind_DESC',
+  InReplyToPostBodyAsc = 'inReplyToPost_body_ASC',
+  InReplyToPostBodyDesc = 'inReplyToPost_body_DESC',
+  InReplyToPostCanonicalAsc = 'inReplyToPost_canonical_ASC',
+  InReplyToPostCanonicalDesc = 'inReplyToPost_canonical_DESC',
+  InReplyToPostContentAsc = 'inReplyToPost_content_ASC',
+  InReplyToPostContentDesc = 'inReplyToPost_content_DESC',
+  InReplyToPostCreatedAtBlockAsc = 'inReplyToPost_createdAtBlock_ASC',
+  InReplyToPostCreatedAtBlockDesc = 'inReplyToPost_createdAtBlock_DESC',
+  InReplyToPostCreatedAtTimeAsc = 'inReplyToPost_createdAtTime_ASC',
+  InReplyToPostCreatedAtTimeDesc = 'inReplyToPost_createdAtTime_DESC',
+  InReplyToPostCreatedOnDayAsc = 'inReplyToPost_createdOnDay_ASC',
+  InReplyToPostCreatedOnDayDesc = 'inReplyToPost_createdOnDay_DESC',
+  InReplyToPostDownvotesCountAsc = 'inReplyToPost_downvotesCount_ASC',
+  InReplyToPostDownvotesCountDesc = 'inReplyToPost_downvotesCount_DESC',
+  InReplyToPostFollowersCountAsc = 'inReplyToPost_followersCount_ASC',
+  InReplyToPostFollowersCountDesc = 'inReplyToPost_followersCount_DESC',
+  InReplyToPostFormatAsc = 'inReplyToPost_format_ASC',
+  InReplyToPostFormatDesc = 'inReplyToPost_format_DESC',
+  InReplyToPostHiddenRepliesCountAsc = 'inReplyToPost_hiddenRepliesCount_ASC',
+  InReplyToPostHiddenRepliesCountDesc = 'inReplyToPost_hiddenRepliesCount_DESC',
+  InReplyToPostHiddenAsc = 'inReplyToPost_hidden_ASC',
+  InReplyToPostHiddenDesc = 'inReplyToPost_hidden_DESC',
+  InReplyToPostIdAsc = 'inReplyToPost_id_ASC',
+  InReplyToPostIdDesc = 'inReplyToPost_id_DESC',
+  InReplyToPostImageAsc = 'inReplyToPost_image_ASC',
+  InReplyToPostImageDesc = 'inReplyToPost_image_DESC',
+  InReplyToPostInReplyToKindAsc = 'inReplyToPost_inReplyToKind_ASC',
+  InReplyToPostInReplyToKindDesc = 'inReplyToPost_inReplyToKind_DESC',
+  InReplyToPostIsCommentAsc = 'inReplyToPost_isComment_ASC',
+  InReplyToPostIsCommentDesc = 'inReplyToPost_isComment_DESC',
+  InReplyToPostIsShowMoreAsc = 'inReplyToPost_isShowMore_ASC',
+  InReplyToPostIsShowMoreDesc = 'inReplyToPost_isShowMore_DESC',
+  InReplyToPostKindAsc = 'inReplyToPost_kind_ASC',
+  InReplyToPostKindDesc = 'inReplyToPost_kind_DESC',
+  InReplyToPostLinkAsc = 'inReplyToPost_link_ASC',
+  InReplyToPostLinkDesc = 'inReplyToPost_link_DESC',
+  InReplyToPostMetaAsc = 'inReplyToPost_meta_ASC',
+  InReplyToPostMetaDesc = 'inReplyToPost_meta_DESC',
+  InReplyToPostProposalIndexAsc = 'inReplyToPost_proposalIndex_ASC',
+  InReplyToPostProposalIndexDesc = 'inReplyToPost_proposalIndex_DESC',
+  InReplyToPostPublicRepliesCountAsc = 'inReplyToPost_publicRepliesCount_ASC',
+  InReplyToPostPublicRepliesCountDesc = 'inReplyToPost_publicRepliesCount_DESC',
+  InReplyToPostReactionsCountAsc = 'inReplyToPost_reactionsCount_ASC',
+  InReplyToPostReactionsCountDesc = 'inReplyToPost_reactionsCount_DESC',
+  InReplyToPostRepliesCountAsc = 'inReplyToPost_repliesCount_ASC',
+  InReplyToPostRepliesCountDesc = 'inReplyToPost_repliesCount_DESC',
+  InReplyToPostSharesCountAsc = 'inReplyToPost_sharesCount_ASC',
+  InReplyToPostSharesCountDesc = 'inReplyToPost_sharesCount_DESC',
+  InReplyToPostSlugAsc = 'inReplyToPost_slug_ASC',
+  InReplyToPostSlugDesc = 'inReplyToPost_slug_DESC',
+  InReplyToPostSummaryAsc = 'inReplyToPost_summary_ASC',
+  InReplyToPostSummaryDesc = 'inReplyToPost_summary_DESC',
+  InReplyToPostTagsOriginalAsc = 'inReplyToPost_tagsOriginal_ASC',
+  InReplyToPostTagsOriginalDesc = 'inReplyToPost_tagsOriginal_DESC',
+  InReplyToPostTitleAsc = 'inReplyToPost_title_ASC',
+  InReplyToPostTitleDesc = 'inReplyToPost_title_DESC',
+  InReplyToPostTweetIdAsc = 'inReplyToPost_tweetId_ASC',
+  InReplyToPostTweetIdDesc = 'inReplyToPost_tweetId_DESC',
+  InReplyToPostUpdatedAtTimeAsc = 'inReplyToPost_updatedAtTime_ASC',
+  InReplyToPostUpdatedAtTimeDesc = 'inReplyToPost_updatedAtTime_DESC',
+  InReplyToPostUpvotesCountAsc = 'inReplyToPost_upvotesCount_ASC',
+  InReplyToPostUpvotesCountDesc = 'inReplyToPost_upvotesCount_DESC',
   IsCommentAsc = 'isComment_ASC',
   IsCommentDesc = 'isComment_DESC',
   IsShowMoreAsc = 'isShowMore_ASC',
@@ -2356,6 +2460,8 @@ export enum PostOrderByInput {
   ParentPostIdDesc = 'parentPost_id_DESC',
   ParentPostImageAsc = 'parentPost_image_ASC',
   ParentPostImageDesc = 'parentPost_image_DESC',
+  ParentPostInReplyToKindAsc = 'parentPost_inReplyToKind_ASC',
+  ParentPostInReplyToKindDesc = 'parentPost_inReplyToKind_DESC',
   ParentPostIsCommentAsc = 'parentPost_isComment_ASC',
   ParentPostIsCommentDesc = 'parentPost_isComment_DESC',
   ParentPostIsShowMoreAsc = 'parentPost_isShowMore_ASC',
@@ -2424,6 +2530,8 @@ export enum PostOrderByInput {
   RootPostIdDesc = 'rootPost_id_DESC',
   RootPostImageAsc = 'rootPost_image_ASC',
   RootPostImageDesc = 'rootPost_image_DESC',
+  RootPostInReplyToKindAsc = 'rootPost_inReplyToKind_ASC',
+  RootPostInReplyToKindDesc = 'rootPost_inReplyToKind_DESC',
   RootPostIsCommentAsc = 'rootPost_isComment_ASC',
   RootPostIsCommentDesc = 'rootPost_isComment_DESC',
   RootPostIsShowMoreAsc = 'rootPost_isShowMore_ASC',
@@ -2484,6 +2592,8 @@ export enum PostOrderByInput {
   SharedPostIdDesc = 'sharedPost_id_DESC',
   SharedPostImageAsc = 'sharedPost_image_ASC',
   SharedPostImageDesc = 'sharedPost_image_DESC',
+  SharedPostInReplyToKindAsc = 'sharedPost_inReplyToKind_ASC',
+  SharedPostInReplyToKindDesc = 'sharedPost_inReplyToKind_DESC',
   SharedPostIsCommentAsc = 'sharedPost_isComment_ASC',
   SharedPostIsCommentDesc = 'sharedPost_isComment_DESC',
   SharedPostIsShowMoreAsc = 'sharedPost_isShowMore_ASC',
@@ -2775,6 +2885,13 @@ export type PostWhereInput = {
   image_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
   image_not_startsWith?: InputMaybe<Scalars['String']['input']>;
   image_startsWith?: InputMaybe<Scalars['String']['input']>;
+  inReplyToKind_eq?: InputMaybe<InReplyToKind>;
+  inReplyToKind_in?: InputMaybe<Array<InReplyToKind>>;
+  inReplyToKind_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  inReplyToKind_not_eq?: InputMaybe<InReplyToKind>;
+  inReplyToKind_not_in?: InputMaybe<Array<InReplyToKind>>;
+  inReplyToPost?: InputMaybe<PostWhereInput>;
+  inReplyToPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   isComment_eq?: InputMaybe<Scalars['Boolean']['input']>;
   isComment_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   isComment_not_eq?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3564,6 +3681,8 @@ export enum ReactionOrderByInput {
   PostIdDesc = 'post_id_DESC',
   PostImageAsc = 'post_image_ASC',
   PostImageDesc = 'post_image_DESC',
+  PostInReplyToKindAsc = 'post_inReplyToKind_ASC',
+  PostInReplyToKindDesc = 'post_inReplyToKind_DESC',
   PostIsCommentAsc = 'post_isComment_ASC',
   PostIsCommentDesc = 'post_isComment_DESC',
   PostIsShowMoreAsc = 'post_isShowMore_ASC',
@@ -4769,6 +4888,235 @@ export enum Status {
   Deleted = 'Deleted'
 }
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  accountById?: Maybe<Account>;
+  accountFollowers: Array<AccountFollowers>;
+  accountFollowersById?: Maybe<AccountFollowers>;
+  accounts: Array<Account>;
+  activities: Array<Activity>;
+  activityById?: Maybe<Activity>;
+  commentFollowers: Array<CommentFollowers>;
+  commentFollowersById?: Maybe<CommentFollowers>;
+  contentExtensionById?: Maybe<ContentExtension>;
+  contentExtensions: Array<ContentExtension>;
+  evmAccountById?: Maybe<EvmAccount>;
+  evmAccounts: Array<EvmAccount>;
+  evmSubstrateAccountLinkById?: Maybe<EvmSubstrateAccountLink>;
+  evmSubstrateAccountLinks: Array<EvmSubstrateAccountLink>;
+  ipfsFetchLogById?: Maybe<IpfsFetchLog>;
+  ipfsFetchLogs: Array<IpfsFetchLog>;
+  newsFeedById?: Maybe<NewsFeed>;
+  newsFeeds: Array<NewsFeed>;
+  notificationById?: Maybe<Notification>;
+  notifications: Array<Notification>;
+  postById?: Maybe<Post>;
+  postFollowers: Array<PostFollowers>;
+  postFollowersById?: Maybe<PostFollowers>;
+  posts: Array<Post>;
+  reactionById?: Maybe<Reaction>;
+  reactions: Array<Reaction>;
+  spaceById?: Maybe<Space>;
+  spaceFollowers: Array<SpaceFollowers>;
+  spaceFollowersById?: Maybe<SpaceFollowers>;
+  spaces: Array<Space>;
+};
+
+
+export type SubscriptionAccountByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionAccountFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<AccountFollowersOrderByInput>>;
+  where?: InputMaybe<AccountFollowersWhereInput>;
+};
+
+
+export type SubscriptionAccountFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionAccountsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<AccountOrderByInput>>;
+  where?: InputMaybe<AccountWhereInput>;
+};
+
+
+export type SubscriptionActivitiesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ActivityOrderByInput>>;
+  where?: InputMaybe<ActivityWhereInput>;
+};
+
+
+export type SubscriptionActivityByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionCommentFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<CommentFollowersOrderByInput>>;
+  where?: InputMaybe<CommentFollowersWhereInput>;
+};
+
+
+export type SubscriptionCommentFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionContentExtensionByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionContentExtensionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ContentExtensionOrderByInput>>;
+  where?: InputMaybe<ContentExtensionWhereInput>;
+};
+
+
+export type SubscriptionEvmAccountByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionEvmAccountsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EvmAccountOrderByInput>>;
+  where?: InputMaybe<EvmAccountWhereInput>;
+};
+
+
+export type SubscriptionEvmSubstrateAccountLinkByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionEvmSubstrateAccountLinksArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EvmSubstrateAccountLinkOrderByInput>>;
+  where?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+};
+
+
+export type SubscriptionIpfsFetchLogByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionIpfsFetchLogsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<IpfsFetchLogOrderByInput>>;
+  where?: InputMaybe<IpfsFetchLogWhereInput>;
+};
+
+
+export type SubscriptionNewsFeedByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionNewsFeedsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<NewsFeedOrderByInput>>;
+  where?: InputMaybe<NewsFeedWhereInput>;
+};
+
+
+export type SubscriptionNotificationByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionNotificationsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<NotificationOrderByInput>>;
+  where?: InputMaybe<NotificationWhereInput>;
+};
+
+
+export type SubscriptionPostByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionPostFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostFollowersOrderByInput>>;
+  where?: InputMaybe<PostFollowersWhereInput>;
+};
+
+
+export type SubscriptionPostFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionPostsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostOrderByInput>>;
+  where?: InputMaybe<PostWhereInput>;
+};
+
+
+export type SubscriptionReactionByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionReactionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ReactionOrderByInput>>;
+  where?: InputMaybe<ReactionWhereInput>;
+};
+
+
+export type SubscriptionSpaceByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionSpaceFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceFollowersOrderByInput>>;
+  where?: InputMaybe<SpaceFollowersWhereInput>;
+};
+
+
+export type SubscriptionSpaceFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionSpacesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceOrderByInput>>;
+  where?: InputMaybe<SpaceWhereInput>;
+};
+
 export type TweetAttachmentsDetails = {
   __typename?: 'TweetAttachmentsDetails';
   mediaKeys?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -4909,7 +5257,7 @@ export type GetPostsQueryVariables = Exact<{
 }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, experimental?: any | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, url?: string | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> }> };
+export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, url?: string | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> }> };
 
 export type GetSpacesQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -4920,7 +5268,7 @@ export type GetSpacesQuery = { __typename?: 'Query', spaces: Array<{ __typename?
 
 export type SpaceFragmentFragment = { __typename?: 'Space', canEveryoneCreatePosts?: boolean | null, canFollowerCreatePosts?: boolean | null, content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, email?: string | null, name?: string | null, summary?: string | null, isShowMore?: boolean | null, linksOriginal?: string | null, hidden: boolean, id: string, updatedAtTime?: any | null, postsCount: number, image?: string | null, tagsOriginal?: string | null, about?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string } };
 
-export type PostFragmentFragment = { __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, experimental?: any | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, url?: string | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> };
+export type PostFragmentFragment = { __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, url?: string | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> };
 
 export const SpaceFragment = gql`
     fragment SpaceFragment on Space {
@@ -4972,7 +5320,10 @@ export const PostFragment = gql`
   sharesCount
   upvotesCount
   updatedAtTime
-  experimental
+  inReplyToKind
+  inReplyToPost {
+    id
+  }
   canonical
   tagsOriginal
   ownedByAccount {
