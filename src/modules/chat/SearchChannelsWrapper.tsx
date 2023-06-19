@@ -56,7 +56,7 @@ export default function SearchChannelsWrapper({
       .map(({ data }) => data)
       .filter(Boolean) as PostData[]
     usedSearchResults = matchSorter(mainPosts, cleanedSearch, {
-      keys: ['content.title', 'content.name'],
+      keys: ['content.title'],
     })
   }
 
