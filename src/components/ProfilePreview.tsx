@@ -1,6 +1,6 @@
 import EthIcon from '@/assets/icons/eth.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
-import useRandomColor from '@/hooks/useRandomColor'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import AddressAvatar from './AddressAvatar'
@@ -10,25 +10,17 @@ import Name from './Name'
 type ProfilePreviewProps = {
   address: string
   className?: string
-  evmAddress?: string
 }
 
-const ProfilePreview = ({
-  address,
-  className,
-  evmAddress,
-}: ProfilePreviewProps) => {
-  const senderColor = useRandomColor(address)
+const ProfilePreview = ({ address, className }: ProfilePreviewProps) => {
+  const { data: accountData } = getAccountDataQuery.useQuery(address)
+  const { evmAddress } = accountData || {}
 
   return (
     <div className={cx('flex items-center gap-4', className)}>
       <AddressAvatar address={address} className='h-20 w-20' />
       <div className='flex flex-col gap-3'>
-        <Name
-          ownerId={address}
-          className='text-lg leading-none'
-          senderColor={senderColor}
-        />
+        <Name address={address} className='text-lg leading-none' />
         <div className='flex flex-col gap-1'>
           <div className='flex flex-row items-center gap-2'>
             <GrillIcon />

@@ -3,9 +3,11 @@ import { getPosts } from '@/services/api/fetcher'
 import { getPostQuery } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import jsonabc from 'jsonabc'
 import { useEffect, useRef } from 'react'
 import { getAccountDataQuery, getAccountsData } from '../evmAddresses'
 import { extractOptimisticIdData, isOptimisticId } from '../utils'
+import { getOptimisticContent } from './optimistic'
 import { getCommentIdsQueryKey } from './query'
 import { OptimisticMessageIdData } from './types'
 
@@ -161,8 +163,16 @@ function filterOptimisticIds(
     if (!idData) return
 
     const foundData = mutableNewPosts.find((post) => {
+      function sortAndStringify(data: any) {
+        return JSON.stringify(jsonabc.sortObj(data ?? {}))
+      }
+
+      if (!post.content) return false
+
+      const importantContents = getOptimisticContent(post.content)
       return (
-        post.content?.body === idData.message &&
+        sortAndStringify(importantContents) ===
+          sortAndStringify(idData.messageData) &&
         post.struct.ownerId === idData.address
       )
     })

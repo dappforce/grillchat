@@ -1,5 +1,6 @@
 import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
 import { PostData } from '@subsocial/api/types'
+import { toSubsocialAddress } from '@subsocial/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -50,5 +51,13 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
     'blockchain'
   )
 
-  return [...posts, ...postsFromBlockchain].filter((post) => !!post)
+  const filteredPosts = [...posts, ...postsFromBlockchain].filter(
+    (post) => !!post
+  )
+
+  filteredPosts.forEach((post) => {
+    post.struct.ownerId = toSubsocialAddress(post.struct.ownerId)!
+  })
+
+  return filteredPosts
 }

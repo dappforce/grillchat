@@ -9,18 +9,39 @@ const messageCountStorage = new LocalStorage(
 
 type State = {
   messageCount: number
+
+  messageBody: string
+  replyTo: string | undefined
+
+  showEmptyPrimaryChatInput: boolean
 }
 
 type Actions = {
   incrementMessageCount: () => void
+  setMessageBody: (message: string) => void
+  setReplyTo: (replyTo: string) => void
+  clearReplyTo: () => void
+  setShowEmptyPrimaryChatInput: (show: boolean) => void
 }
 
 const INITIAL_STATE: State = {
   messageCount: 0,
+  messageBody: '',
+  replyTo: '',
+  showEmptyPrimaryChatInput: false,
 }
 
 export const useMessageData = create<State & Actions>()((set, get) => ({
   ...INITIAL_STATE,
+  setMessageBody: (messageBody: string) => {
+    set({ messageBody: messageBody })
+  },
+  setReplyTo: (replyTo: string) => {
+    set({ replyTo })
+  },
+  clearReplyTo: () => {
+    set({ replyTo: undefined })
+  },
   incrementMessageCount: () => {
     const { messageCount } = get()
     const { parentOrigin } = useParentData.getState()
@@ -29,6 +50,9 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
     const incrementedCount = messageCount + 1
     messageCountStorage.set(incrementedCount.toString(), parentOrigin)
     set({ messageCount: incrementedCount })
+  },
+  setShowEmptyPrimaryChatInput: (show: boolean) => {
+    set({ showEmptyPrimaryChatInput: show })
   },
   init: () => {
     const { parentOrigin } = useParentData.getState()

@@ -1,5 +1,16 @@
-import { CommentStruct, PostData, SpaceData } from '@subsocial/api/types'
-import { PostFragmentFragment, SpaceFragmentFragment } from './generated'
+import {
+  CommentStruct,
+  NftExtension,
+  PostContent,
+  PostContentExtension,
+  PostData,
+  SpaceData,
+} from '@subsocial/api/types'
+import {
+  ContentExtensionSchemaId,
+  PostFragmentFragment,
+  SpaceFragmentFragment,
+} from './generated'
 
 const SQUID_SEPARATOR = ','
 const getTokensFromUnifiedString = (data: string | null) =>
@@ -34,6 +45,29 @@ export const mapSpaceFragment = (space: SpaceFragmentFragment): SpaceData => {
   }
 }
 
+const mapPostExtensions = (
+  extensions: PostFragmentFragment['extensions']
+): PostContentExtension[] | undefined => {
+  const mappedExtensions = extensions?.map((ext) => {
+    switch (ext.extensionSchemaId) {
+      case ContentExtensionSchemaId.SubsocialEvmNft:
+        const extension: NftExtension = {
+          id: 'subsocial-evm-nft',
+          properties: {
+            chain: ext.chain ?? '',
+            collectionId: ext.collectionId ?? '',
+            nftId: ext.nftId ?? '',
+            url: ext.url ?? '',
+          },
+        }
+        return extension
+    }
+  })
+  const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
+  if (exts.length === 0) return undefined
+  return exts
+}
+
 export const mapPostFragment = (post: PostFragmentFragment): PostData => {
   const struct: CommentStruct = {
     createdAtBlock: parseInt(post.createdAtBlock),
@@ -55,7 +89,7 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
     rootPostId: post.rootPost?.id ?? '',
   }
 
-  return {
+  const data = {
     id: post.id,
     struct,
     content: {
@@ -67,6 +101,24 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
       canonical: post.canonical ?? '',
       isShowMore: post.isShowMore ?? false,
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
-    },
+    } as PostContent,
   }
+
+  const extensions = mapPostExtensions(post.extensions)
+  if (extensions) {
+    data.content.extensions = extensions
+  }
+
+  const replyToId = post.inReplyToPost?.id
+  const replyData =
+    replyToId &&
+    ({
+      kind: post.inReplyToKind ?? 'Post',
+      id: replyToId,
+    } as PostContent['inReplyTo'])
+  if (replyData) {
+    data.content.inReplyTo = replyData
+  }
+
+  return data
 }

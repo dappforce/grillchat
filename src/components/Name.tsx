@@ -1,43 +1,42 @@
+import useRandomColor from '@/hooks/useRandomColor'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
-import { generateRandomColor } from '@/utils/random-colors'
 import { generateRandomName } from '@/utils/random-name'
+import { ComponentProps } from 'react'
 
-type NameProps = {
-  ownerId: string
-  senderColor: string
+export type NameProps = ComponentProps<'span'> & {
+  address: string
   additionalText?: string
   className?: string
 }
 
-const Name = ({
-  ownerId,
-  senderColor,
-  className,
-  additionalText,
-}: NameProps) => {
-  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(ownerId)
+const Name = ({ address, additionalText, ...props }: NameProps) => {
+  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
 
   const { evmAddress, ensName } = accountData || {}
-  const name = ensName ? ensName : generateRandomName(ownerId)
+  const name = ensName || generateRandomName(address)
+
+  const usedAddress = evmAddress || address
+  const textColor = useRandomColor(usedAddress)
 
   if (!accountData && isLoading) {
     return (
-      <div
+      <span
+        {...props}
         className={cx(
-          'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none'
+          'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none',
+          props.className
         )}
       >
         <span className='my-1 mr-4 h-3 w-20 rounded-full bg-background-lighter font-medium' />
-      </div>
+      </span>
     )
   }
 
-  const textColor = evmAddress ? generateRandomColor(evmAddress) : senderColor
-
   return (
     <span
-      className={className ? className : 'mr-2 text-sm text-text-secondary'}
+      {...props}
+      className={cx(props.className)}
       style={{ color: textColor }}
     >
       {additionalText} {name}

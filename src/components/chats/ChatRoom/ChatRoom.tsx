@@ -2,10 +2,11 @@ import Button from '@/components/Button'
 import Container from '@/components/Container'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
+import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
-import { ComponentProps, useRef, useState } from 'react'
-import ChatForm from './ChatForm'
+import { ComponentProps, useEffect, useRef } from 'react'
+import ChatInputBar from './ChatInputBar'
 
 const ChatList = dynamic(() => import('../ChatList/ChatList'), {
   ssr: false,
@@ -29,7 +30,11 @@ export default function ChatRoom({
   hubId,
   ...props
 }: ChatRoomProps) {
-  const [replyTo, setReplyTo] = useState<string | undefined>(undefined)
+  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+  const replyTo = useMessageData((state) => state.replyTo)
+  useEffect(() => {
+    return () => clearReplyTo()
+  }, [clearReplyTo])
 
   const Component = asContainer ? Container<'div'> : 'div'
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -44,8 +49,6 @@ export default function ChatRoom({
     }
   }
 
-  const closeReply = () => setReplyTo(undefined)
-
   const { isJoined, isLoading: isLoadingJoinedChat } = useIsJoinedToChat(chatId)
 
   return (
@@ -57,7 +60,6 @@ export default function ChatRoom({
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}
         scrollContainerRef={scrollContainerRef}
-        onSelectMessageAsReply={setReplyTo}
         replyTo={replyTo}
       />
       <Component
@@ -65,29 +67,35 @@ export default function ChatRoom({
       >
         {replyTo && (
           <RepliedMessage
-            closeReply={closeReply}
             replyMessageId={replyTo}
             scrollContainer={scrollContainerRef}
           />
         )}
         {isJoined ? (
-          <ChatForm
-            replyTo={replyTo}
-            onSubmit={scrollToBottom}
-            chatId={chatId}
-            clearReplyTo={closeReply}
+          <ChatInputBar
+            formProps={{
+              chatId,
+              onSubmit: scrollToBottom,
+            }}
           />
         ) : (
           <JoinChatWrapper>
-            {({ isLoading, mutateAsync }) => (
-              <Button
-                size='lg'
-                isLoading={isLoading || isLoadingJoinedChat}
-                onClick={() => mutateAsync({ chatId })}
-              >
-                Join
-              </Button>
-            )}
+            {({ isLoading, mutateAsync }) => {
+              const isButtonLoading = isLoading || isLoadingJoinedChat
+              return (
+                <Button
+                  size='lg'
+                  className={cx(
+                    isButtonLoading &&
+                      'bg-background-light text-text-muted !opacity-50 !brightness-100'
+                  )}
+                  isLoading={isButtonLoading}
+                  onClick={() => mutateAsync({ chatId })}
+                >
+                  Join
+                </Button>
+              )
+            }}
           </JoinChatWrapper>
         )}
       </Component>
