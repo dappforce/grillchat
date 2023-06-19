@@ -12,7 +12,10 @@ export default function ChatInputBar({
   ...props
 }: ChatInputBarProps) {
   return (
-    <div {...props} className={cx('flex items-center gap-2', props.className)}>
+    <div
+      {...props}
+      className={cx('flex items-center gap-2 pt-4', props.className)}
+    >
       <AttachmentInput chatId={formProps.chatId} />
       <ChatForm {...formProps} />
     </div>

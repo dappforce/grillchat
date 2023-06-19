@@ -9,6 +9,7 @@ import {
   useContractWrite,
   useNetwork,
   useSendTransaction,
+  useSwitchNetwork,
 } from 'wagmi'
 import { isTouchDevice } from '../../../../utils/device'
 import { DonateModalStep } from '../DonateModal'
@@ -46,20 +47,42 @@ export const useConnectToWallet = () => {
   return { connectToWallet }
 }
 
+export const useSwitchWalletNetwork = () => {
+  const { switchNetworkAsync } = useSwitchNetwork()
+
+  const switchNetwork = async (
+    chainName: string,
+    connector: RainbowKitConnector<Connector<any, any>>
+  ) => {
+    try {
+      isTouchDevice() && (await openMobileWallet({ connector }))
+
+      await switchNetworkAsync?.(chainIdByChainName[chainName])
+    } catch (e) {
+      console.error('Switch network error: ', e)
+    }
+  }
+
+  return { switchNetwork }
+}
+
 export const useDonate = (token: string, chainName: string) => {
   const { isConnected } = useAccount()
   const { connectToWallet } = useConnectToWallet()
+  const { switchNetwork } = useSwitchWalletNetwork()
+  const { chain } = useNetwork()
 
   const { chains } = useNetwork()
   const { sendTransactionAsync } = useSendTransaction()
 
   const { abi, address } = polygonContractsByToken[token]
+  const chainId = chainIdByChainName[chainName]
 
   const { writeAsync } = useContractWrite({
     address,
     abi,
     functionName: 'transfer',
-    chainId: chainIdByChainName[chainName],
+    chainId,
   } as any)
 
   const sendTransferTx = async (
@@ -71,8 +94,13 @@ export const useDonate = (token: string, chainName: string) => {
   ) => {
     const connector = getConnector({ chains })
     setCurrentStep('wallet-action-required')
+
     if (!isConnected) {
       await connectToWallet(chainName, connector)
+    }
+
+    if (chainId !== chain?.id) {
+      await switchNetwork(chainName, connector)
     }
 
     try {
@@ -83,7 +111,7 @@ export const useDonate = (token: string, chainName: string) => {
         ? await sendTransactionAsync({
             to: recipient,
             value: amount,
-            chainId: chainIdByChainName[chainName],
+            chainId,
           })
         : await writeAsync({
             args: [recipient, amount],
@@ -100,7 +128,7 @@ export const useDonate = (token: string, chainName: string) => {
   return { sendTransferTx }
 }
 
-export const useGetBalance = (token: string) => {
+export const useGetBalance = (token: string, chainName: string) => {
   const myGrillAddress = useMyAccount((state) => state.address)
 
   const { data: accountData } = getAccountDataQuery.useQuery(
@@ -110,18 +138,23 @@ export const useGetBalance = (token: string) => {
   const { evmAddress } = accountData || {}
 
   const { address, abi } = polygonContractsByToken[token]
+  const chainId = chainIdByChainName[chainName]
+
+  const commonParams = {
+    address,
+    abi,
+    chainId,
+  }
 
   const { data, isLoading } = useContractReads({
     contracts: [
       {
-        address,
-        abi,
+        ...commonParams,
         functionName: 'balanceOf',
         args: evmAddress ? [evmAddress] : [],
       },
       {
-        address,
-        abi,
+        ...commonParams,
         functionName: 'decimals',
       },
     ],

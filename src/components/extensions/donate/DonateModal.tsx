@@ -119,7 +119,10 @@ function DonateForm({
   const [selectedToken, setSelectedToken] = useState<ListItem>(tokensItems[0])
   const [amount, setAmount] = useState<string>('')
   const address = useMyAccount((state) => state.address)
-  const { balance, decimals } = useGetBalance(selectedToken.id)
+  const { balance, decimals } = useGetBalance(
+    selectedToken.id,
+    selectedChain.id
+  )
 
   const { data: recipientAccountData } = getAccountDataQuery.useQuery(recipient)
   const { data: myAccountData } = getAccountDataQuery.useQuery(address || '')
@@ -134,7 +137,7 @@ function DonateForm({
       return { txPrevented: true }
     }
 
-    const amountValue = parseUnits(`${parseFloat(amount)}`, decimals)
+    const amountValue = parseUnits(parseFloat(amount).toString(), decimals)
 
     const hash = await sendTransferTx(
       evmRecipientAddress,
@@ -188,6 +191,9 @@ function DonateForm({
       panelClassName='pb-5'
     >
       <div>
+        <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-gray-400'>
+          Recipient
+        </div>
         <div
           className={cx(
             'mb-6 mt-2 rounded-2xl p-4',
