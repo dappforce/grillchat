@@ -6,6 +6,7 @@ import ETH from '@/assets/graphics/tokens/eth.png'
 import MATIC from '@/assets/graphics/tokens/matic.png'
 import USDC from '@/assets/graphics/tokens/usdc.png'
 import USDT from '@/assets/graphics/tokens/usdt.png'
+import Button from '@/components/Button'
 import CommonExtensionModal from '@/components/extensions/CommonExtensionModal'
 import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
@@ -14,13 +15,16 @@ import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { isTouchDevice } from '@/utils/device'
 import BigNumber from 'bignumber.js'
 import { parseUnits } from 'ethers'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { useNetwork } from 'wagmi'
 import Modal, { ModalFunctionalityProps } from '../../modals/Modal'
 import AmountInput from './AmountInput'
 import { useDonate, useGetBalance } from './api/hooks'
+import { getConnector, openMobileWallet } from './api/utils'
 
 const chainItems = [
   {
@@ -236,6 +240,13 @@ function DonateForm({
 }
 
 function WalletActionRequiredModal(props: DonateProps) {
+  const { chains } = useNetwork()
+
+  const onButtonClick = async () => {
+    const connector = getConnector({ chains })
+    await openMobileWallet({ connector })
+  }
+
   return (
     <Modal
       {...props}
@@ -245,13 +256,19 @@ function WalletActionRequiredModal(props: DonateProps) {
       }
       panelClassName='pb-5'
     >
-      <div className='flex w-full justify-center'>
+      <div className='flex w-full flex-col items-center gap-4'>
         <Image
           className='w-64 max-w-xs rounded-full'
           priority
           src={ProcessingHumster}
           alt=''
         />
+
+        {isTouchDevice() && (
+          <Button className='w-full' onClick={onButtonClick}>
+            Open wallet
+          </Button>
+        )}
       </div>
     </Modal>
   )
