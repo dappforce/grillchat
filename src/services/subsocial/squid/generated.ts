@@ -23,10 +23,7 @@ export type Account = {
   __typename?: 'Account';
   /** A One-To-Many relationship with the Activities which have been performed by an Account (foreign key - "account") */
   activities: Array<Activity>;
-<<<<<<< HEAD
-=======
   /** A list of extensions created by the account. */
->>>>>>> fe5a1af692b67c2d6a51e1fc12672f681b43e304
   extensions: Array<ContentExtension>;
   /**
    * A One-To-Many relationship between an Account and the Activities it has performed in the network through NewsFeed (foreign key - "account").
@@ -1056,25 +1053,6 @@ export type CommentFollowersWhereInput = {
   id_startsWith?: InputMaybe<Scalars['String']['input']>;
 };
 
-<<<<<<< HEAD
-export type ContentExtension = {
-  __typename?: 'ContentExtension';
-  amount?: Maybe<Scalars['BigInt']['output']>;
-  chain?: Maybe<Scalars['String']['output']>;
-  collectionId?: Maybe<Scalars['String']['output']>;
-  createdBy: Account;
-  decimals?: Maybe<Scalars['Int']['output']>;
-  extensionSchemaId: ContentExtensionSchemaId;
-  fromEvm?: Maybe<EvmAccount>;
-  fromSubstrate?: Maybe<Account>;
-  id: Scalars['String']['output'];
-  nftId?: Maybe<Scalars['String']['output']>;
-  parentPost: Post;
-  toEvm?: Maybe<EvmAccount>;
-  toSubstrate?: Maybe<Account>;
-  token?: Maybe<Scalars['String']['output']>;
-  txHash?: Maybe<Scalars['String']['output']>;
-=======
 /** Detailed information about the Tweet attached to a Post */
 export type ContentExtension = {
   __typename?: 'ContentExtension';
@@ -1113,7 +1091,6 @@ export type ContentExtension = {
   /** The transaction hash of the Donation transfer (actual for 'subsocial-donations") */
   txHash?: Maybe<Scalars['String']['output']>;
   /** The URL of attached NFT (actual for 'subsocial-evm-nft") */
->>>>>>> fe5a1af692b67c2d6a51e1fc12672f681b43e304
   url?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1198,11 +1175,8 @@ export enum ContentExtensionOrderByInput {
   ParentPostIdDesc = 'parentPost_id_DESC',
   ParentPostImageAsc = 'parentPost_image_ASC',
   ParentPostImageDesc = 'parentPost_image_DESC',
-<<<<<<< HEAD
-=======
   ParentPostInReplyToKindAsc = 'parentPost_inReplyToKind_ASC',
   ParentPostInReplyToKindDesc = 'parentPost_inReplyToKind_DESC',
->>>>>>> fe5a1af692b67c2d6a51e1fc12672f681b43e304
   ParentPostIsCommentAsc = 'parentPost_isComment_ASC',
   ParentPostIsCommentDesc = 'parentPost_isComment_DESC',
   ParentPostIsShowMoreAsc = 'parentPost_isShowMore_ASC',
@@ -1263,10 +1237,7 @@ export enum ContentExtensionOrderByInput {
   UrlDesc = 'url_DESC'
 }
 
-<<<<<<< HEAD
-=======
 /** The schema ID of the content extensions. */
->>>>>>> fe5a1af692b67c2d6a51e1fc12672f681b43e304
 export enum ContentExtensionSchemaId {
   SubsocialDonations = 'subsocial_donations',
   SubsocialEvmNft = 'subsocial_evm_nft'
@@ -1576,28 +1547,17 @@ export enum EventName {
   UserNameUpdated = 'UserNameUpdated'
 }
 
-<<<<<<< HEAD
-/** The Account entity */
-export type EvmAccount = {
-  __typename?: 'EvmAccount';
-  /** The account's public key */
-=======
 /** The Evm Account entity */
 export type EvmAccount = {
   __typename?: 'EvmAccount';
   /** The account's Evm address */
->>>>>>> fe5a1af692b67c2d6a51e1fc12672f681b43e304
   id: Scalars['String']['output'];
   /** A list of linked Substrate Accounts */
   linkedSubstrateAccounts: Array<EvmSubstrateAccountLink>;
 };
 
 
-<<<<<<< HEAD
-/** The Account entity */
-=======
 /** The Evm Account entity */
->>>>>>> fe5a1af692b67c2d6a51e1fc12672f681b43e304
 export type EvmAccountLinkedSubstrateAccountsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -1651,15 +1611,6 @@ export type EvmAccountsConnection = {
 /** The junction table for Many-to-Many relationship between Substrate Account and Ethereum Account */
 export type EvmSubstrateAccountLink = {
   __typename?: 'EvmSubstrateAccountLink';
-<<<<<<< HEAD
-  active: Scalars['Boolean']['output'];
-  /** The block height when a Space was created. */
-  createdAtBlock?: Maybe<Scalars['BigInt']['output']>;
-  /** The DateTime when a Space was created. */
-  createdAtTime?: Maybe<Scalars['DateTime']['output']>;
-  evmAccount: EvmAccount;
-  id: Scalars['String']['output'];
-=======
   /** Is the link of this particular account active? (This is necessary for the soft deletion of the link.) */
   active: Scalars['Boolean']['output'];
   /** The block height when a EvmSubstrateAccountLink was created. */
@@ -1670,7 +1621,6 @@ export type EvmSubstrateAccountLink = {
   evmAccount: EvmAccount;
   id: Scalars['String']['output'];
   /** Substrate account */
->>>>>>> fe5a1af692b67c2d6a51e1fc12672f681b43e304
   substrateAccount: Account;
 };
 
@@ -5316,7 +5266,7 @@ export type GetPostsByContentQueryVariables = Exact<{
 }>;
 
 
-export type GetPostsByContentQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, tweetId?: string | null, createdByAccount: { __typename?: 'Account', id: string }, tweetDetails?: { __typename?: 'TweetDetails', username?: string | null } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null }> };
+export type GetPostsByContentQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', chain?: string | null, extensionSchemaId: ContentExtensionSchemaId, nftId?: string | null, collectionId?: string | null, url?: string | null }> }> };
 
 export type GetSpacesQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -5416,7 +5366,7 @@ export const GetPosts = gql`
 export const GetPostsByContent = gql`
     query getPostsByContent($search: String!, $spaceIds: [String!]!, $postIds: [String!]!) {
   posts(
-    where: {hidden_eq: false, isComment_eq: false, title_containsInsensitive: $search, space: {id_in: $spaceIds}}
+    where: {hidden_eq: false, isComment_eq: false, title_containsInsensitive: $search, AND: {space: {id_in: $spaceIds}, OR: {id_in: $postIds}}}
   ) {
     ...PostFragment
   }
