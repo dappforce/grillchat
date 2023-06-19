@@ -30,19 +30,18 @@ const modalContents: {
 export default function ProfileModal({
   address,
   notification,
+  step,
   ...props
 }: ProfileModalProps) {
-  const [currentState, setCurrentState] = useState<ModalState>('account')
+  const [currentState, setCurrentState] = useState<ModalState>(
+    step || 'account'
+  )
   const { data: accountData } = getAccountDataQuery.useQuery(address)
-  // const { disconnect } = useDisconnect()
 
   const { evmAddress: linkedEvmAddress } = accountData || {}
 
   useEffect(() => {
-    // if (!linkedEvmAddress) {
-    //   disconnect()
-    // }
-    if (props.isOpen) setCurrentState('account')
+    if (props.isOpen) setCurrentState(step || 'account')
   }, [props.isOpen])
 
   const modalTitles: {

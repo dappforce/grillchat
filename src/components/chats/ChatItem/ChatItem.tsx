@@ -1,4 +1,6 @@
 import DonateCoinIcon from '@/assets/icons/donate-coin.svg'
+import LoginModal from '@/components/auth/LoginModal'
+import ProfileModal from '@/components/auth/ProfileModal'
 import ClickableAddressAvatar from '@/components/ClickableAddressAvatar'
 import DonateModals from '@/components/extensions/donate/DonateModal'
 import FloatingMenus, {
@@ -16,7 +18,13 @@ import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
-import { ComponentProps, SyntheticEvent, useReducer, useState } from 'react'
+import {
+  ComponentProps,
+  SyntheticEvent,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
@@ -67,12 +75,16 @@ export default function ChatItem({
   const setReplyTo = useMessageData((state) => state.setReplyTo)
 
   const router = useRouter()
+  const isLoggingInWithKey = useRef(false)
   const messageId = message.id
   const isSent = !isOptimisticId(messageId)
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
   const { body, inReplyTo, extensions } = message.content || {}
   const [openDonateModal, setOpenDonateModal] = useState(false)
+  const [openLoginModal, setOpenLoginModal] = useState(false)
+  const [openLinkEvmAddressModal, setOpenLinkEvmAddressModal] = useState(false)
+
   const address = useMyAccount((state) => state.address)
 
   const { data: messageOwnerAccountData } =
@@ -99,15 +111,25 @@ export default function ChatItem({
       text: 'Donate',
       icon: DonateCoinIcon,
       onClick: () => {
+        if (!address) {
+          setOpenLoginModal(true)
+          return
+        }
+
+        if (!myEvmAddress) {
+          setOpenLinkEvmAddressModal(true)
+          return
+        }
+
         setMessageAsReply(messageId)
         setOpenDonateModal(true)
       },
     }
 
     const showDonateMenuItem =
-      myEvmAddress &&
-      messageOwnerEvmAddress &&
+      // myEvmAddress &&
       myEvmAddress !== messageOwnerEvmAddress
+    // messageOwnerEvmAddress &&
 
     return [
       {
@@ -232,6 +254,23 @@ export default function ChatItem({
           recipient={ownerId}
           messageId={messageId}
           chatId={chatId}
+        />
+      )}
+      {openLinkEvmAddressModal && (
+        <ProfileModal
+          address={address || ''}
+          isOpen={openLinkEvmAddressModal}
+          closeModal={() => setOpenLinkEvmAddressModal(false)}
+          step='link-evm-address'
+        />
+      )}
+      {openLoginModal && (
+        <LoginModal
+          isOpen={openLoginModal}
+          openModal={() => setOpenLoginModal(true)}
+          closeModal={() => setOpenLoginModal(false)}
+          beforeLogin={() => (isLoggingInWithKey.current = true)}
+          afterLogin={() => (isLoggingInWithKey.current = false)}
         />
       )}
     </div>
