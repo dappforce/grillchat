@@ -117,6 +117,7 @@ function DonateForm({
   const isDarkTheme = theme === 'dark'
   const [selectedChain, setSelectedChain] = useState<ListItem>(chainItems[0])
   const [selectedToken, setSelectedToken] = useState<ListItem>(tokensItems[0])
+  const [inputError, setInputError] = useState<string | undefined>()
   const [amount, setAmount] = useState<string>('')
   const address = useMyAccount((state) => state.address)
   const { balance, decimals } = useGetBalance(
@@ -183,7 +184,7 @@ function DonateForm({
     <CommonExtensionModal
       {...props}
       chatId={chatId}
-      disableSendButton={disableSendButton}
+      disableSendButton={disableSendButton || !!inputError}
       sendButtonText='Send'
       beforeMesageSend={onButtonClick}
       title={'💰 Donate'}
@@ -222,6 +223,8 @@ function DonateForm({
           <AmountInput
             amount={amount}
             setAmount={setAmount}
+            inputError={inputError}
+            setInputError={setInputError}
             tokenSymbol={selectedToken.label}
             balance={balance}
             decimals={decimals}

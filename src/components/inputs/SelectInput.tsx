@@ -1,5 +1,6 @@
 import { cx } from '@/utils/class-names'
 import { Listbox, Transition } from '@headlessui/react'
+import { useTheme } from 'next-themes'
 import Image, { StaticImageData } from 'next/image'
 import { Fragment } from 'react'
 import { IoIosArrowDown } from 'react-icons/io'
@@ -25,6 +26,8 @@ export default function SelectInput({
   selected,
   setSelected,
 }: SelectInputProps) {
+  const { theme } = useTheme()
+
   return (
     <div>
       <Listbox value={selected} onChange={setSelected}>
@@ -39,9 +42,12 @@ export default function SelectInput({
               <Listbox.Button
                 className={cx(
                   'relative w-full cursor-default rounded-2xl',
-                  'bg-slate-900 py-2 pl-4 pr-12 text-left text-white',
+                  ' py-2 pl-4 pr-12 text-left',
                   'text-base leading-6 ring-1 ring-inset ring-gray-500',
-                  'focus:outline-none focus:ring-1 focus:ring-gray-400 '
+                  'focus:outline-none focus:ring-1 focus:ring-gray-400 ',
+                  theme === 'light'
+                    ? 'bg-slate-200 text-black'
+                    : 'bg-slate-900 text-white'
                 )}
               >
                 <span className='flex items-center'>
@@ -82,9 +88,10 @@ export default function SelectInput({
                       disabled={item.disabledItem}
                       className={() =>
                         cx(
-                          'relative flex items-center rounded-lg text-white outline-none transition-colors',
+                          'relative flex items-center rounded-lg outline-none transition-colors',
                           'gap-4 px-3 py-2 hover:bg-background-lighter focus:bg-background-lighter',
-                          { ['hover:bg-background-light']: item.disabledItem }
+                          { ['hover:bg-background-light']: item.disabledItem },
+                          theme === 'light' ? 'text-black' : 'text-white'
                         )
                       }
                       value={item}
