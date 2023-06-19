@@ -70,7 +70,7 @@ export const useDonate = (token: string, chainName: string) => {
     decimals?: number
   ) => {
     const connector = getConnector({ chains })
-    setCurrentStep('processing')
+    setCurrentStep('wallet-action-required')
     if (!isConnected) {
       await connectToWallet(chainName, connector)
     }
@@ -92,7 +92,7 @@ export const useDonate = (token: string, chainName: string) => {
       return hash
     } catch (e) {
       console.error('Transfer error: ', e)
-      setCurrentStep('donate')
+      setCurrentStep('donate-form')
       return
     }
   }

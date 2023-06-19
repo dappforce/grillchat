@@ -36,6 +36,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   buildAdditionalTxParams?: () => Partial<SendMessageParams>
   sendButtonText?: string
   sendButtonProps?: ButtonProps
+  isPrimary?: boolean
   allowEmptyMessage?: boolean
   beforeMesageSend?: (
     messageParams: SendMessageParams
@@ -58,6 +59,7 @@ export default function ChatForm({
   buildAdditionalTxParams,
   sendButtonText,
   sendButtonProps,
+  isPrimary,
   allowEmptyMessage = false,
   beforeMesageSend,
   ...props
@@ -90,7 +92,14 @@ export default function ChatForm({
     (e) => e.message
   )
 
-  const messageBody = useMessageData((state) => state.messageBody)
+  let messageBody = useMessageData((state) => state.messageBody)
+  const showEmptyPrimaryChatInput = useMessageData(
+    (state) => state.showEmptyPrimaryChatInput
+  )
+  if (isPrimary && showEmptyPrimaryChatInput) {
+    messageBody = ''
+  }
+
   const setMessageBody = useMessageData((state) => state.setMessageBody)
 
   const { mutate: sendMessage, error } = useSendMessage()

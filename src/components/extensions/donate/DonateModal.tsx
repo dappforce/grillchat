@@ -66,7 +66,7 @@ const tokensItems = [
   },
 ]
 
-export type DonateModalStep = 'donate' | 'processing'
+export type DonateModalStep = 'donate-form' | 'wallet-action-required'
 
 type DonateProps = DonateModalProps & {
   setCurrentStep: (currentStep: DonateModalStep) => void
@@ -78,8 +78,8 @@ type DonateModalContent = {
 }
 
 const modalByStep: DonateModalContent = {
-  donate: DonateModal,
-  processing: WalletActionRequiredModal,
+  'donate-form': DonateForm,
+  'wallet-action-required': WalletActionRequiredModal,
 }
 
 type DonateModalProps = ModalFunctionalityProps & {
@@ -89,10 +89,10 @@ type DonateModalProps = ModalFunctionalityProps & {
 }
 
 export default function DonateModals(props: DonateModalProps) {
-  const [currentStep, setCurrentStep] = useState<DonateModalStep>('donate')
+  const [currentStep, setCurrentStep] = useState<DonateModalStep>('donate-form')
 
   useEffect(() => {
-    setCurrentStep('donate')
+    setCurrentStep('donate-form')
   }, [])
 
   const ModalByStep = modalByStep[currentStep]
@@ -106,7 +106,7 @@ export default function DonateModals(props: DonateModalProps) {
   )
 }
 
-function DonateModal({
+function DonateForm({
   recipient,
   messageId,
   chatId,

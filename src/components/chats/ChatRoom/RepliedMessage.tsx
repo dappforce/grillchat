@@ -1,5 +1,4 @@
 import Button from '@/components/Button'
-import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { ComponentProps } from 'react'
@@ -20,8 +19,6 @@ export default function RepliedMessage({
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
 
   const { data: message } = getPostQuery.useQuery(replyMessageId)
-  const messageSenderAddr = message?.struct.ownerId
-  const senderColor = useRandomColor(messageSenderAddr)
 
   const onRepliedMessageClick = async (messageId: string) => {
     const element = document.getElementById(getMessageElementId(messageId))
