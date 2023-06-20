@@ -15,8 +15,8 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { parseUnits } from 'ethers'
-import { useEffect, useState } from 'react'
-import { useDisconnect, useNetwork } from 'wagmi'
+import { useState } from 'react'
+import { useAccount, useDisconnect, useNetwork } from 'wagmi'
 import CommonExtensionModal from '../../CommonExtensionModal'
 import { chainIdByChainName } from '../api/config'
 import {
@@ -79,6 +79,7 @@ function DonateForm({
   ...props
 }: DonateProps) {
   const theme = useGetTheme()
+  const { isConnected } = useAccount()
   const isDarkTheme = theme === 'dark'
   const [selectedChain, setSelectedChain] = useState<ListItem>(chainItems[0])
   const [selectedToken, setSelectedToken] = useState<ListItem>(tokensItems[0])
@@ -87,7 +88,10 @@ function DonateForm({
   const [amount, setAmount] = useState<string>('')
   const address = useMyAccount((state) => state.address)
   const { chain } = useNetwork()
-  const { switchOrConnect } = useConnectOrSwitchNetwork(setCurrentStep)
+  const { connectOrSwitch } = useConnectOrSwitchNetwork(
+    setCurrentStep,
+    selectedChain.id
+  )
   const { balance, decimals } = useGetBalance(
     selectedToken.id,
     selectedChain.id
@@ -102,16 +106,16 @@ function DonateForm({
   const currentChainId = chain?.id
   const destChainId = chainIdByChainName[chainItems[0].id]
 
-  const showSwichButton = currentChainId !== destChainId
+  const showSwichButton = !isConnected || currentChainId !== destChainId
 
   const { sendTransferTx } = useDonate(selectedToken.id, selectedChain.id)
 
-  useEffect(() => {
-    disconnect()
-  }, [])
+  // useEffect(() => {
+  //   disconnect()
+  // }, [])
 
   const onSwitchButtonClick = async () => {
-    await switchOrConnect(selectedChain.id, destChainId)
+    connectOrSwitch()
   }
 
   const onButtonClick = async (messageParams: SendMessageParams) => {
@@ -206,7 +210,7 @@ function DonateForm({
           />
           {showSwichButton ? (
             <Button size={'lg'} onClick={onSwitchButtonClick}>
-              Switch to {selectedChain.label}
+              {!isConnected ? 'Connect' : 'Switch'} to {selectedChain.label}
             </Button>
           ) : (
             <AmountInput

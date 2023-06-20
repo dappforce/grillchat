@@ -1,6 +1,6 @@
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   Connector,
   useAccount,
@@ -67,29 +67,54 @@ export const useSwitchWalletNetwork = () => {
 }
 
 export const useConnectOrSwitchNetwork = (
-  setCurrentStep: (currentStep: DonateModalStep) => void
+  setCurrentStep: (currentStep: DonateModalStep) => void,
+  chainName: string
 ) => {
   const { isConnected } = useAccount()
-  const { connectToWallet } = useConnectToWallet()
-  const { switchNetwork } = useSwitchWalletNetwork()
-  const { chain, chains } = useNetwork()
+  const { chains } = useNetwork()
 
-  const switchOrConnect = async (chainName: string, destChainId: number) => {
-    setCurrentStep('wallet-action-required')
-    const connector = getConnector({ chains })
+  const destChainId = chainIdByChainName[chainName]
+  const connector = getConnector({ chains })
 
+  const { switchNetwork, isLoading: isSwitchNetworkLoading } =
+    useSwitchNetwork()
+
+  const { connect, isLoading: isConnectLoading } = useConnect()
+
+  console.log('isConnectLoading', isConnectLoading, isConnected)
+
+  useEffect(() => {
+    console.log(isSwitchNetworkLoading, isConnectLoading)
+    if (isSwitchNetworkLoading || (isConnectLoading && !isConnected)) {
+      setCurrentStep('wallet-action-required')
+    } else {
+      setCurrentStep('donate-form')
+    }
+  }, [isSwitchNetworkLoading, isConnectLoading])
+
+  const connectOrSwitch = () => {
     if (!isConnected) {
-      await connectToWallet(chainName, connector)
-    }
+      isTouchDevice() &&
+        connector.connector.on(
+          'message',
+          async ({ type }: { type: string }) => {
+            return type === 'connecting'
+              ? (async () => {
+                  await openMobileWallet({ connector })
+                })()
+              : undefined
+          }
+        )
 
-    if (destChainId !== chain?.id) {
-      await switchNetwork(chainName, connector)
+      connect({ connector: connector.connector })
+    } else {
+      switchNetwork?.(destChainId)
     }
-
-    setCurrentStep('donate-form')
   }
 
-  return { switchOrConnect }
+  return {
+    connectOrSwitch,
+  }
 }
 
 export const useDonate = (token: string, chainName: string) => {
