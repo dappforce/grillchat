@@ -1,5 +1,5 @@
 import { getSquidUrl } from '@/utils/env/client'
-import request, { RequestOptions, Variables } from 'graphql-request'
+import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 
 export function squidRequest<T, V extends Variables = Variables>(
   config: RequestOptions<V, T>
@@ -7,5 +7,11 @@ export function squidRequest<T, V extends Variables = Variables>(
   const url = getSquidUrl()
   if (!url) throw new Error('Squid URL is not defined')
 
-  return request({ url, ...config })
+  const SQUID_TIMEOUT = 3 * 1000 // 3 seconds
+  const client = new GraphQLClient(url, {
+    timeout: SQUID_TIMEOUT,
+    ...config,
+  })
+
+  return client.request({ url, ...config })
 }
