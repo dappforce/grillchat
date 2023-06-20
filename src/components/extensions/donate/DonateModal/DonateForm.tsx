@@ -33,7 +33,6 @@ function DonateForm({
   const theme = useGetTheme()
   const { isConnected } = useAccount()
   const isDarkTheme = theme === 'dark'
-  // const { disconnect } = useDisconnect()
   const [inputError, setInputError] = useState<string | undefined>()
   const [amount, setAmount] = useState<string>('')
   const address = useMyAccount((state) => state.address)
@@ -56,10 +55,6 @@ function DonateForm({
   const showSwichButton = !isConnected || currentChainId !== destChainId
 
   const { sendTransferTx } = useDonate(selectedToken.id, selectedChain.id)
-
-  // useEffect(() => {
-  //   disconnect()
-  // }, [])
 
   const onButtonClick = async (messageParams: SendMessageParams) => {
     if (!evmRecipientAddress || !myEvmAddress || !amount) {

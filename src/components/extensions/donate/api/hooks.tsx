@@ -19,8 +19,8 @@ export const useConnectOrSwitchNetwork = (
   setCurrentStep: (currentStep: DonateModalStep) => void,
   chainName: string
 ) => {
-  const { isConnected } = useAccount()
   const { chains } = useNetwork()
+  const { isConnected } = useAccount()
 
   const destChainId = chainIdByChainName[chainName]
   const connector = getConnector({ chains })
