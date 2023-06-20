@@ -1,10 +1,10 @@
+import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
 import { ChatFormProps } from '@/components/chats/ChatForm'
-import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
+import TextArea from '@/components/inputs/TextArea'
 import LinkText, { linkTextStyles } from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
-import useAutofocus from '@/hooks/useAutofocus'
 import useDebounce from '@/hooks/useDebounce'
 import { getNftQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
@@ -126,11 +126,19 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
         }}
       >
         <div className='flex flex-col gap-3 md:gap-5'>
-          <NftLinkInput
-            value={nftLink}
-            onChange={(e) => setNftLink(e.target.value)}
-            error={!!nftLinkError}
-          />
+          <AutofocusWrapper>
+            {({ ref }) => (
+              <TextArea
+                value={nftLink}
+                onChange={(e) => setNftLink(e.target.value)}
+                error={!!nftLinkError}
+                size='sm'
+                rows={1}
+                ref={ref}
+                placeholder='Paste NFT URL'
+              />
+            )}
+          </AutofocusWrapper>
           {nftLinkError ? (
             <div className='rounded-2xl bg-background-red px-4 py-3 text-text-red'>
               <p>{nftLinkError}</p>
@@ -162,22 +170,5 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
         closeModal={() => setIsOpenSupportedPlatformModal(false)}
       />
     </>
-  )
-}
-
-function NftLinkInput({ ...props }: TextAreaProps) {
-  const { ref, autofocus } = useAutofocus()
-  useEffect(() => {
-    autofocus()
-  }, [autofocus])
-
-  return (
-    <TextArea
-      {...props}
-      size='sm'
-      rows={1}
-      ref={ref}
-      placeholder='Paste NFT URL'
-    />
   )
 }

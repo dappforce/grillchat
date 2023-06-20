@@ -1,10 +1,12 @@
 import NftIcon from '@/assets/icons/nft.svg'
 import Button, { ButtonProps } from '@/components/Button'
+import ImageAttachmentModal from '@/components/extensions/image/ImageAttachmentModal'
 import NftAttachmentModal from '@/components/extensions/nft/NftAttachmentModal'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import { ImAttachment } from 'react-icons/im'
+import { IoImageOutline } from 'react-icons/io5'
 import { ChatFormProps } from '../ChatForm'
 
 export type AttachmentInputProps = ButtonProps & Pick<ChatFormProps, 'chatId'>
@@ -27,7 +29,11 @@ export default function AttachmentInput({
             text: 'NFT',
             onClick: () => setOpenAttachmentModalId('nft'),
           },
-          // { icon: IoImageOutline, text: 'Image' },
+          {
+            icon: IoImageOutline,
+            text: 'Image',
+            onClick: () => setOpenAttachmentModalId('image'),
+          },
         ]}
         allowedPlacements={['top-start']}
         yOffset={20}
@@ -57,6 +63,11 @@ export default function AttachmentInput({
       <NftAttachmentModal
         chatId={chatId}
         isOpen={openAttachmentModalId === 'nft'}
+        closeModal={() => setOpenAttachmentModalId(null)}
+      />
+      <ImageAttachmentModal
+        chatId={chatId}
+        isOpen={openAttachmentModalId === 'image'}
         closeModal={() => setOpenAttachmentModalId(null)}
       />
     </>
