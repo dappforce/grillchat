@@ -7,8 +7,9 @@ export function squidRequest<T, V extends Variables = Variables>(
   const url = getSquidUrl()
   if (!url) throw new Error('Squid URL is not defined')
 
+  const SQUID_TIMEOUT = 3 * 1000 // 3 seconds
   const client = new GraphQLClient(url, {
-    timeout: 1000,
+    timeout: SQUID_TIMEOUT,
     ...config,
   })
 
