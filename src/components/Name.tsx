@@ -11,7 +11,13 @@ export type NameProps = ComponentProps<'span'> & {
   color?: string
 }
 
-const Name = ({ address, className, additionalText, color }: NameProps) => {
+const Name = ({
+  address,
+  className,
+  additionalText,
+  color,
+  ...props
+}: NameProps) => {
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
 
   const { evmAddress, ensName } = accountData || {}
@@ -26,7 +32,7 @@ const Name = ({ address, className, additionalText, color }: NameProps) => {
         {...props}
         className={cx(
           'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none',
-          props.className
+          className
         )}
       >
         <span className='my-1 mr-4 h-3 w-20 rounded-full bg-background-lighter font-medium' />
