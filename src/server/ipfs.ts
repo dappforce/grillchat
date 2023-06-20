@@ -22,5 +22,10 @@ export function getIpfsApi() {
       await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
       return cid
     },
+    saveAndPinImage: async (content: any) => {
+      const cid = await ipfs.saveFile(content)
+      await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
+      return cid
+    },
   }
 }
