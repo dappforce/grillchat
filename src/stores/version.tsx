@@ -2,8 +2,7 @@ import Button from '@/components/Button'
 import Toast from '@/components/Toast'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
-import { HiOutlineInformationCircle } from 'react-icons/hi2'
-import { IoClose, IoRefresh } from 'react-icons/io5'
+import { IoRefresh } from 'react-icons/io5'
 import { create } from './utils'
 
 type State = {
@@ -27,27 +26,14 @@ export const useVersion = create<State>()((set, get) => ({
           (t) => (
             <Toast
               t={t}
-              icon={(classNames) => (
-                <HiOutlineInformationCircle className={classNames} />
-              )}
               action={
-                <div className='ml-2 flex items-center gap-1'>
-                  <Button
-                    size='circle'
-                    className='ml-2'
-                    onClick={() => window.location.reload()}
-                  >
-                    <IoRefresh />
-                  </Button>
-                  <Button
-                    size='circle'
-                    variant='transparent'
-                    className='ml-2'
-                    onClick={() => toast.dismiss(t.id)}
-                  >
-                    <IoClose />
-                  </Button>
-                </div>
+                <Button
+                  size='circle'
+                  className='ml-2'
+                  onClick={() => window.location.reload()}
+                >
+                  <IoRefresh />
+                </Button>
               }
               title='🎉 We have new version!'
               description='Please reload the page to get the latest version.'
