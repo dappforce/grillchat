@@ -33,7 +33,7 @@ function WalletActionRequiredModal(props: DonateProps) {
         />
 
         {isTouchDevice() && (
-          <Button className='w-full' onClick={onButtonClick}>
+          <Button className='w-full' size={'lg'} onClick={onButtonClick}>
             Open wallet
           </Button>
         )}

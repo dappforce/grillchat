@@ -1,12 +1,5 @@
-import Astar from '@/assets/graphics/chains/astar.png'
-import Moonbeam from '@/assets/graphics/chains/moonbeam.png'
-import Poligon from '@/assets/graphics/chains/poligon.png'
-import ETH from '@/assets/graphics/tokens/eth.png'
-import MATIC from '@/assets/graphics/tokens/matic.png'
-import USDC from '@/assets/graphics/tokens/usdc.png'
-import USDT from '@/assets/graphics/tokens/usdt.png'
 import Button from '@/components/Button'
-import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
+import Dropdown from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
@@ -16,82 +9,36 @@ import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { parseUnits } from 'ethers'
 import { useState } from 'react'
-import { useAccount, useDisconnect, useNetwork } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
 import CommonExtensionModal from '../../CommonExtensionModal'
 import { chainIdByChainName } from '../api/config'
-import {
-  useConnectOrSwitchNetwork,
-  useDonate,
-  useGetBalance,
-} from '../api/hooks'
+import { useDonate, useGetBalance } from '../api/hooks'
 import AmountInput from './AmountInput'
+import { chainItems, tokensItems } from './DonateModal'
 import { DonateProps } from './types'
-
-const chainItems = [
-  {
-    id: 'polygon',
-    icon: Poligon,
-    label: 'Polygon',
-  },
-  {
-    id: 'astar',
-    icon: Astar,
-    label: 'Astar',
-    disabledItem: true,
-  },
-  {
-    id: 'moonbeam',
-    icon: Moonbeam,
-    label: 'Moonbeam',
-    disabledItem: true,
-  },
-]
-
-const tokensItems = [
-  {
-    id: 'usdt',
-    icon: USDT,
-    label: 'USDT',
-  },
-  {
-    id: 'usdc',
-    icon: USDC,
-    label: 'USDC',
-  },
-  {
-    id: 'matic',
-    icon: MATIC,
-    label: 'MATIC',
-    isNativeToken: true,
-  },
-  {
-    id: 'eth',
-    icon: ETH,
-    label: 'ETH',
-  },
-]
 
 function DonateForm({
   recipient,
   messageId,
   chatId,
   setCurrentStep,
+  chainState,
+  tokenState,
+  onSwitchButtonClick,
   ...props
 }: DonateProps) {
+  const [selectedChain, setSelectedChain] = chainState
+  const [selectedToken, setSelectedToken] = tokenState
+
   const theme = useGetTheme()
   const { isConnected } = useAccount()
   const isDarkTheme = theme === 'dark'
-  const [selectedChain, setSelectedChain] = useState<ListItem>(chainItems[0])
-  const [selectedToken, setSelectedToken] = useState<ListItem>(tokensItems[0])
-  const { disconnect } = useDisconnect()
+  // const { disconnect } = useDisconnect()
   const [inputError, setInputError] = useState<string | undefined>()
   const [amount, setAmount] = useState<string>('')
   const address = useMyAccount((state) => state.address)
   const { chain } = useNetwork()
-  const { connectOrSwitch } = useConnectOrSwitchNetwork(
-    setCurrentStep,
-    selectedChain.id
-  )
+
   const { balance, decimals } = useGetBalance(
     selectedToken.id,
     selectedChain.id
@@ -104,7 +51,7 @@ function DonateForm({
   const { evmAddress: myEvmAddress } = myAccountData || {}
 
   const currentChainId = chain?.id
-  const destChainId = chainIdByChainName[chainItems[0].id]
+  const destChainId = chainIdByChainName[selectedChain.id]
 
   const showSwichButton = !isConnected || currentChainId !== destChainId
 
@@ -113,10 +60,6 @@ function DonateForm({
   // useEffect(() => {
   //   disconnect()
   // }, [])
-
-  const onSwitchButtonClick = async () => {
-    connectOrSwitch()
-  }
 
   const onButtonClick = async (messageParams: SendMessageParams) => {
     if (!evmRecipientAddress || !myEvmAddress || !amount) {
