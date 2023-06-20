@@ -1,28 +1,13 @@
-import { removeDoubleSpaces } from '@/utils/strings'
-import { matchSorter } from 'match-sorter'
 import { useEffect, useState } from 'react'
 
 export default function useSearch() {
   const [search, setSearch] = useState('')
   const [focusedElementIndex, setFocusedElementIndex] = useState(-1)
 
-  const getSearchResults = <T>(data: T[], searchKeys: string[]) => {
-    let searchResults = data
-    const processedSearch = removeDoubleSpaces(search)
-
-    if (processedSearch) {
-      searchResults = matchSorter(data, processedSearch, {
-        keys: searchKeys,
-      })
-    }
-
-    return {
-      searchResults,
-      focusedElementIndex:
-        focusedElementIndex === -1
-          ? focusedElementIndex
-          : focusedElementIndex % searchResults.length,
-    }
+  const getFocusedElementIndex = (searchResults: unknown[]) => {
+    return focusedElementIndex === -1
+      ? focusedElementIndex
+      : focusedElementIndex % searchResults.length
   }
 
   const removeFocusedElement = () => {
@@ -42,7 +27,7 @@ export default function useSearch() {
   return {
     search,
     setSearch,
-    getSearchResults,
+    getFocusedElementIndex,
     focusController: {
       removeFocusedElement,
       onDownClick,

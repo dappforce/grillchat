@@ -8,7 +8,7 @@ export type ChatPreviewSkeletonProps = ComponentProps<'div'> & {
   withBorderBottom?: boolean
 }
 
-export default function ChatPreviewSkeleton({
+function ChatPreviewSkeleton({
   asContainer,
   isImageCircle = true,
   withBorderBottom = true,
@@ -52,3 +52,19 @@ export default function ChatPreviewSkeleton({
     </Component>
   )
 }
+
+function ChatPreviewSkeletonList({
+  amount = 3,
+  ...props
+}: ComponentProps<'div'> & { amount?: number }) {
+  return (
+    <div {...props} className={cx('flex flex-col', props.className)}>
+      {Array.from({ length: amount }).map((_, idx) => (
+        <ChatPreviewSkeleton asContainer key={idx} />
+      ))}
+    </div>
+  )
+}
+
+ChatPreviewSkeleton.SkeletonList = ChatPreviewSkeletonList
+export default ChatPreviewSkeleton

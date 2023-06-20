@@ -41,20 +41,30 @@ export default async function handler(
 export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   const validIds = postIds.filter((id) => !!id && parseInt(id) >= 0)
 
-  const posts = await getPostsFromSubsocial(validIds)
+  let posts: PostData[] = []
+  try {
+    posts = await getPostsFromSubsocial(validIds)
+  } catch (e) {
+    console.error('Error fetching posts from squid', e)
+  }
+
   const foundPostIds = new Set()
   posts.forEach((post) => foundPostIds.add(post.id))
 
   const notFoundPostIds = validIds.filter((id) => !foundPostIds.has(id))
-  const postsFromBlockchain = await getPostsFromSubsocial(
-    notFoundPostIds,
-    'blockchain'
-  )
 
-  const filteredPosts = [...posts, ...postsFromBlockchain].filter(
-    (post) => !!post
-  )
+  const mergedPosts = posts
+  try {
+    const postsFromBlockchain = await getPostsFromSubsocial(
+      notFoundPostIds,
+      'blockchain'
+    )
+    mergedPosts.push(...postsFromBlockchain)
+  } catch (e) {
+    console.error('Error fetching posts from blockchain', e)
+  }
 
+  const filteredPosts = mergedPosts.filter((post) => !!post)
   filteredPosts.forEach((post) => {
     post.struct.ownerId = toSubsocialAddress(post.struct.ownerId)!
   })
