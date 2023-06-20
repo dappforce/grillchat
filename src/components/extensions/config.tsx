@@ -1,24 +1,9 @@
-import { PostContent, PostData } from '@subsocial/api/types'
+import { ChatItemWithExtensionProps } from '../chats/ChatItem/ChatItemWithExtension'
+import DonateMessagePreview from './donate/DonateMessagePreview'
 import DonateRepliedMessagePreviewPart from './donate/DonateRepliedMessagePreviewPart'
+import NftChatItem from './nft/NftChatItem'
 import NftRepliedMessagePreviewPart from './nft/NftRepliedMessagePreviewPart'
-
-export type RepliedMessagePreviewPartProps = {
-  extensions: PostContent['extensions']
-  message?: PostData | null
-  className?: string
-}
-
-type RepliedMessageConfig = {
-  place: 'inside' | 'body'
-  emptyBodyText?: string
-  textColor?: string
-  previewClassName?: string
-}
-
-type RepliedMessagePreviewPatrsProps = {
-  element: (props: RepliedMessagePreviewPartProps) => JSX.Element | null
-  config: RepliedMessageConfig
-}
+import { RepliedMessagePreviewPatrsProps } from './types'
 
 export const repliedMessagePreviewPatrs: Record<
   string,
@@ -32,4 +17,12 @@ export const repliedMessagePreviewPatrs: Record<
     element: DonateRepliedMessagePreviewPart,
     config: { place: 'body', textColor: '#FCEEE2' },
   },
+}
+
+export const chatItemByExtensionId: Record<
+  string,
+  (props: ChatItemWithExtensionProps) => JSX.Element
+> = {
+  'subsocial-donations': DonateMessagePreview,
+  'subsocial-evm-nft': NftChatItem,
 }

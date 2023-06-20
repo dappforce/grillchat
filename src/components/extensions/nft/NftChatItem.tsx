@@ -34,8 +34,6 @@ export default function NftChatItem(props: Props) {
 
   const { IntegratedSkeleton: NftDataSkeleton } =
     useIntegratedSkeleton(isLoadingNftData)
-  // const { IntegratedSkeleton: NftPriceSkeleton } =
-  //   useIntegratedSkeleton(isLoadingNftPrice)
 
   const marketplace = useMemo(() => {
     if (!nftProperties?.url) return
@@ -96,9 +94,6 @@ export default function NftChatItem(props: Props) {
               <NftDataSkeleton content={nftData} className={cx('w-16')}>
                 {(data) => <span>{data?.collectionName}</span>}
               </NftDataSkeleton>
-              {/* <NftPriceSkeleton content={nftPrice} className={cx('w-16')}>
-                {(data) => <span>{data}</span>}
-              </NftPriceSkeleton> */}
             </div>
             <Button
               className='my-2 mb-3'

@@ -11,8 +11,6 @@ import { SyntheticEvent } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import { ProfilePreviewModalName } from '../ProfilePreviewModalWrapper'
 
-const TEXT_COLOR = '#FCEEE2'
-
 export type ExtensionChatItemProps = {
   message: PostData
   onCheckMarkClick: (e: SyntheticEvent) => void

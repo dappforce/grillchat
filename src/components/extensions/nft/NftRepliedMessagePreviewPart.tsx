@@ -2,7 +2,7 @@ import MediaLoader from '@/components/MediaLoader'
 import { getNftQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { NftExtension } from '@subsocial/api/types'
-import { RepliedMessagePreviewPartProps } from '../RepliedMessagePreviewParts'
+import { RepliedMessagePreviewPartProps } from '../types'
 
 const NftRepliedMessagePreviewPart = ({
   extensions,

@@ -1,4 +1,4 @@
-import { repliedMessagePreviewPatrs } from '@/components/extensions/RepliedMessagePreviewParts'
+import { repliedMessagePreviewPatrs } from '@/components/extensions/config'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'

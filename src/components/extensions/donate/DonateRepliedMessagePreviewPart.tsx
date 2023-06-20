@@ -1,7 +1,7 @@
 import { cx } from '@/utils/class-names'
 import { DonateExtension } from '@subsocial/api/types'
 import { formatUnits } from 'ethers'
-import { RepliedMessagePreviewPartProps } from '../RepliedMessagePreviewParts'
+import { RepliedMessagePreviewPartProps } from '../types'
 
 const DonateRepliedMessagePreviewPart = ({
   extensions,

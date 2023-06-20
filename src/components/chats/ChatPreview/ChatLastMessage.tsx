@@ -1,8 +1,8 @@
+import { repliedMessagePreviewPatrs } from '@/components/extensions/config'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
-import { repliedMessagePreviewPatrs } from '../../extensions/RepliedMessagePreviewParts'
 import useLastMessage from './hooks/useLastMessage'
 
 export type ChatLastMessageProps = ComponentProps<'div'> & {
