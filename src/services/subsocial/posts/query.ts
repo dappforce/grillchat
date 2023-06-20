@@ -1,9 +1,19 @@
+import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { followedIdsStorage } from '@/stores/my-account'
-import { poolQuery } from '@/subsocial-query'
+import { createQuery, poolQuery } from '@/subsocial-query'
 import {
   createSubsocialQuery,
   SubsocialQueryData,
 } from '@/subsocial-query/subsocial/query'
+import { getHubIds } from '@/utils/env/client'
+import { gql } from 'graphql-request'
+import { POST_FRAGMENT } from '../squid/fragments'
+import {
+  GetPostsByContentQuery,
+  GetPostsByContentQueryVariables,
+} from '../squid/generated'
+import { mapPostFragment } from '../squid/mappers'
+import { squidRequest } from '../squid/utils'
 
 const getPostIdsBySpaceId = poolQuery<
   SubsocialQueryData<string>,
@@ -71,4 +81,51 @@ export const getFollowedPostIdsByAddressQuery = createSubsocialQuery({
       return {}
     }
   },
+})
+
+export const GET_POSTS_BY_CONTENT = gql`
+  ${POST_FRAGMENT}
+  query getPostsByContent(
+    $search: String!
+    $spaceIds: [String!]!
+    $postIds: [String!]!
+  ) {
+    posts(
+      where: {
+        hidden_eq: false
+        isComment_eq: false
+        title_containsInsensitive: $search
+        AND: { space: { id_in: $spaceIds }, OR: { id_in: $postIds } }
+      }
+    ) {
+      ...PostFragment
+    }
+  }
+`
+async function getPostsByContent(search: string) {
+  if (!search) return []
+
+  const linkedPostIds = new Set<string>()
+  const hubIds = getHubIds()
+  hubIds.forEach((hubId) => {
+    const linkedChatIds = getLinkedChatIdsForHubId(hubId)
+    linkedChatIds.forEach((chatId) => linkedPostIds.add(chatId))
+  })
+
+  const res = await squidRequest<
+    GetPostsByContentQuery,
+    GetPostsByContentQueryVariables
+  >({
+    document: GET_POSTS_BY_CONTENT,
+    variables: {
+      search,
+      spaceIds: getHubIds(),
+      postIds: Array.from(linkedPostIds.values()),
+    },
+  })
+  return res.posts.map((post) => mapPostFragment(post))
+}
+export const getPostsBySpaceContentQuery = createQuery({
+  key: 'getPostsBySpaceContent',
+  fetcher: getPostsByContent,
 })

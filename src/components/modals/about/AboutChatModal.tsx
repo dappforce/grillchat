@@ -89,7 +89,10 @@ export default function AboutChatModal({
         icon: RxEnter,
         disabled: isJoiningChat,
         className: cx('text-text-secondary'),
-        onClick: () => joinChat({ chatId }),
+        onClick: async () => {
+          await joinChat({ chatId })
+          props.closeModal()
+        },
       })
     }
 
@@ -124,6 +127,7 @@ export default function AboutChatModal({
               children: 'Yes, leave chat',
               onClick: async () => {
                 await mutateAsync({ chatId })
+                props.closeModal()
               },
               isLoading,
             }}

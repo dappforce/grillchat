@@ -1,8 +1,6 @@
-import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import Tabs, { TabsProps } from '@/components/Tabs'
-import useIsInIframe from '@/hooks/useIsInIframe'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { accountAddressStorage, useMyAccount } from '@/stores/my-account'
@@ -10,81 +8,46 @@ import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
-
-// const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), {
-//   ssr: false,
-// })
 
 export type HubsPageProps = {
   isIntegrateChatButtonOnTop: boolean
   hubsChatCount: { [id: string]: number }
 }
 
-export type CommonHubContentProps = {
-  getSearchResults: ReturnType<typeof useSearch>['getSearchResults']
-}
-
 const hotChatsHubId = getMainHubId()
 const addressFromStorage = accountAddressStorage.get()
 
 export default function HubsPage(props: HubsPageProps) {
-  // const isInIframe = useIsInIframe()
   const router = useRouter()
-  const { search, setSearch, getSearchResults, focusController } = useSearch()
-
-  const renderHubsContent = (
-    children: JSX.Element,
-    showSpecialButtons?: boolean
-  ) => {
-    return (
-      <HubsContentWrapper
-        search={search}
-        isIntegrateChatButtonOnTop={props.isIntegrateChatButtonOnTop}
-        showSpecialButtons={showSpecialButtons}
-      >
-        {children}
-      </HubsContentWrapper>
-    )
-  }
+  const { search, setSearch, getFocusedElementIndex, focusController } =
+    useSearch()
 
   const tabs: TabsProps['tabs'] = [
     {
       id: 'my-chats',
       text: 'My Chats',
-      content: (setSelectedTab) =>
-        renderHubsContent(
-          <MyChatsContent
-            changeTab={setSelectedTab}
-            search={search}
-            getSearchResults={getSearchResults}
-          />
-        ),
+      content: (setSelectedTab) => (
+        <MyChatsContent changeTab={setSelectedTab} />
+      ),
     },
     {
       id: 'hot-chats',
       text: 'Hot Chats',
-      content: () =>
-        renderHubsContent(
-          <HotChatsContent
-            getSearchResults={getSearchResults}
-            hubId={hotChatsHubId}
-          />
-        ),
+      content: () => <HotChatsContent hubId={hotChatsHubId} />,
     },
     {
       id: 'hubs',
       text: 'Hubs',
-      content: () =>
-        renderHubsContent(
-          <HubsContent
-            getSearchResults={getSearchResults}
-            hubsChatCount={props.hubsChatCount}
-          />,
-          true
-        ),
+      content: () => (
+        <HubsContent
+          isIntegrateChatButtonOnTop={props.isIntegrateChatButtonOnTop}
+          hubsChatCount={props.hubsChatCount}
+        />
+      ),
     },
   ]
 
@@ -150,42 +113,22 @@ export default function HubsPage(props: HubsPageProps) {
         },
       }}
     >
-      <Tabs
-        className='border-b border-border-gray bg-background-light px-1 md:bg-background-light/50'
-        panelClassName='mt-0 px-0'
-        asContainer
-        tabs={tabs}
-        withHashIntegration={false}
-        manualTabControl={{
-          selectedTab: usedSelectedTab,
-          setSelectedTab: usedSetSelectedTab,
-        }}
-      />
-      {/* {!isInIframe && <WelcomeModal />} */}
-    </DefaultLayout>
-  )
-}
-
-function HubsContentWrapper({
-  isIntegrateChatButtonOnTop,
-  children,
-  search,
-  showSpecialButtons,
-}: {
-  isIntegrateChatButtonOnTop: boolean
-  children: JSX.Element
-  search: string
-  showSpecialButtons?: boolean
-}) {
-  const isInIframe = useIsInIframe()
-  return (
-    <div className='flex flex-col'>
-      {showSpecialButtons && !isInIframe && !search && (
-        <ChatSpecialButtons
-          isIntegrateChatButtonOnTop={isIntegrateChatButtonOnTop}
+      <SearchChannelsWrapper
+        search={search}
+        getFocusedElementIndex={getFocusedElementIndex}
+      >
+        <Tabs
+          className='border-b border-border-gray bg-background-light px-1 md:bg-background-light/50'
+          panelClassName='mt-0 px-0'
+          asContainer
+          tabs={tabs}
+          withHashIntegration={false}
+          manualTabControl={{
+            selectedTab: usedSelectedTab,
+            setSelectedTab: usedSetSelectedTab,
+          }}
         />
-      )}
-      {children}
-    </div>
+      </SearchChannelsWrapper>
+    </DefaultLayout>
   )
 }
