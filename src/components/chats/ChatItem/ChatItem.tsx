@@ -2,7 +2,7 @@ import DonateCoinIcon from '@/assets/icons/donate-coin.svg'
 import LoginModal from '@/components/auth/LoginModal'
 import ProfileModal from '@/components/auth/ProfileModal'
 import ClickableAddressAvatar from '@/components/ClickableAddressAvatar'
-import DonateModals from '@/components/extensions/donate/DonateModal'
+import DonateModals from '@/components/extensions/donate/DonateModal/DonateModal'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'

@@ -7,12 +7,13 @@ import {
   useConnect,
   useContractReads,
   useContractWrite,
+  useDisconnect,
   useNetwork,
   useSendTransaction,
   useSwitchNetwork,
 } from 'wagmi'
 import { isTouchDevice } from '../../../../utils/device'
-import { DonateModalStep } from '../DonateModal'
+import { DonateModalStep } from '../DonateModal/types'
 import { chainIdByChainName, polygonContractsByToken } from './config'
 import { getConnector, openMobileWallet, RainbowKitConnector } from './utils'
 
@@ -55,7 +56,7 @@ export const useSwitchWalletNetwork = () => {
     connector: RainbowKitConnector<Connector<any, any>>
   ) => {
     try {
-      isTouchDevice() && (await openMobileWallet({ connector }))
+      // isTouchDevice() && (await openMobileWallet({ connector }))
 
       await switchNetworkAsync?.(chainIdByChainName[chainName])
     } catch (e) {
@@ -70,9 +71,9 @@ export const useDonate = (token: string, chainName: string) => {
   const { isConnected } = useAccount()
   const { connectToWallet } = useConnectToWallet()
   const { switchNetwork } = useSwitchWalletNetwork()
-  const { chain } = useNetwork()
+  const { chain, chains } = useNetwork()
+  const { disconnectAsync } = useDisconnect()
 
-  const { chains } = useNetwork()
   const { sendTransactionAsync } = useSendTransaction()
 
   const { abi, address } = polygonContractsByToken[token]
@@ -95,18 +96,33 @@ export const useDonate = (token: string, chainName: string) => {
     const connector = getConnector({ chains })
     setCurrentStep('wallet-action-required')
 
-    if (!isConnected) {
-      await connectToWallet(chainName, connector)
+    if (isConnected && chainId !== chain?.id) {
+      await disconnectAsync()
     }
 
+    if (!isConnected) {
+      console.log('Connecting to the wallet....', connector.connector.name)
+      await connectToWallet(chainName, connector)
+      console.log('Wallet connected!', connector.connector.name)
+    }
+
+    console.log(
+      `Dest Chain id ${chainId} not eq current chain id ${chain?.id} = ${
+        chainId !== chain?.id
+      }`
+    )
     if (chainId !== chain?.id) {
+      console.log(`Switch network from ${chain?.id} to ${chainId}`)
       await switchNetwork(chainName, connector)
+      console.log(
+        `Network switched successfully from ${chain?.id} to ${chainId}`
+      )
     }
 
     try {
       if (!decimals) return
-      isTouchDevice() && (await openMobileWallet({ connector }))
-
+      // isTouchDevice() && (await openMobileWallet({ connector }))
+      console.log('Signing tx...')
       const { hash } = isNativeToken
         ? await sendTransactionAsync({
             to: recipient,
@@ -116,7 +132,7 @@ export const useDonate = (token: string, chainName: string) => {
         : await writeAsync({
             args: [recipient, amount],
           })
-
+      console.log('Tx signed!')
       return hash
     } catch (e) {
       console.error('Transfer error: ', e)

@@ -1,13 +1,10 @@
 import Astar from '@/assets/graphics/chains/astar.png'
 import Moonbeam from '@/assets/graphics/chains/moonbeam.png'
 import Poligon from '@/assets/graphics/chains/poligon.png'
-import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import ETH from '@/assets/graphics/tokens/eth.png'
 import MATIC from '@/assets/graphics/tokens/matic.png'
 import USDC from '@/assets/graphics/tokens/usdc.png'
 import USDT from '@/assets/graphics/tokens/usdt.png'
-import Button from '@/components/Button'
-import CommonExtensionModal from '@/components/extensions/CommonExtensionModal'
 import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
@@ -15,16 +12,13 @@ import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { isTouchDevice } from '@/utils/device'
 import BigNumber from 'bignumber.js'
 import { parseUnits } from 'ethers'
-import Image from 'next/image'
-import { useEffect, useState } from 'react'
-import { useNetwork } from 'wagmi'
-import Modal, { ModalFunctionalityProps } from '../../modals/Modal'
+import { useState } from 'react'
+import CommonExtensionModal from '../../CommonExtensionModal'
+import { useDonate, useGetBalance } from '../api/hooks'
 import AmountInput from './AmountInput'
-import { useDonate, useGetBalance } from './api/hooks'
-import { getConnector, openMobileWallet } from './api/utils'
+import { DonateProps } from './types'
 
 const chainItems = [
   {
@@ -69,46 +63,6 @@ const tokensItems = [
     label: 'ETH',
   },
 ]
-
-export type DonateModalStep = 'donate-form' | 'wallet-action-required'
-
-type DonateProps = DonateModalProps & {
-  setCurrentStep: (currentStep: DonateModalStep) => void
-  currentStep: DonateModalStep
-}
-
-type DonateModalContent = {
-  [key in DonateModalStep]: (props: DonateProps) => JSX.Element
-}
-
-const modalByStep: DonateModalContent = {
-  'donate-form': DonateForm,
-  'wallet-action-required': WalletActionRequiredModal,
-}
-
-type DonateModalProps = ModalFunctionalityProps & {
-  recipient: string
-  messageId: string
-  chatId: string
-}
-
-export default function DonateModals(props: DonateModalProps) {
-  const [currentStep, setCurrentStep] = useState<DonateModalStep>('donate-form')
-
-  useEffect(() => {
-    setCurrentStep('donate-form')
-  }, [])
-
-  const ModalByStep = modalByStep[currentStep]
-
-  return (
-    <ModalByStep
-      currentStep={currentStep}
-      setCurrentStep={setCurrentStep}
-      {...props}
-    />
-  )
-}
 
 function DonateForm({
   recipient,
@@ -191,6 +145,7 @@ function DonateForm({
       disableSendButton={disableSendButton || !!inputError}
       sendButtonText='Send'
       beforeMesageSend={onButtonClick}
+      autofocus={false}
       title={'💰 Donate'}
       withCloseButton
       panelClassName='pb-5'
@@ -239,37 +194,4 @@ function DonateForm({
   )
 }
 
-function WalletActionRequiredModal(props: DonateProps) {
-  const { chains } = useNetwork()
-
-  const onButtonClick = async () => {
-    const connector = getConnector({ chains })
-    await openMobileWallet({ connector })
-  }
-
-  return (
-    <Modal
-      {...props}
-      title={'🔐 Wallet Action Required'}
-      description={
-        'Please open your EVM wallet and perform the necessary actions to ensure its optimal functionality.'
-      }
-      panelClassName='pb-5'
-    >
-      <div className='flex w-full flex-col items-center gap-4'>
-        <Image
-          className='w-64 max-w-xs rounded-full'
-          priority
-          src={ProcessingHumster}
-          alt=''
-        />
-
-        {isTouchDevice() && (
-          <Button className='w-full' onClick={onButtonClick}>
-            Open wallet
-          </Button>
-        )}
-      </div>
-    </Modal>
-  )
-}
+export default DonateForm
