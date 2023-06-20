@@ -12,7 +12,13 @@ const DonateRepliedMessagePreviewPart = ({
 
   const { amount, token, decimals } = properties || {}
 
-  const amountValue = amount ? formatUnits(amount, decimals).toString() : '0'
+  let amountValue = '0'
+
+  try {
+    amountValue = amount ? formatUnits(amount, decimals).toString() : '0'
+  } catch (e) {
+    console.error(e)
+  }
 
   return (
     <span>

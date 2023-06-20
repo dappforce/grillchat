@@ -24,7 +24,12 @@ const DonatePreview = ({ extensionProps }: DonatePreviewProps) => {
 
   const { data } = getPriceQuery.useQuery(tokenId)
 
-  const amountValue = formatUnits(amount, decimals).toString()
+  let amountValue = ''
+  try {
+    amountValue = formatUnits(amount, decimals).toString()
+  } catch {
+    amountValue = ''
+  }
 
   const price = data?.current_price
 
