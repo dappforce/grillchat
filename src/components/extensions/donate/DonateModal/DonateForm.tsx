@@ -144,26 +144,29 @@ function DonateForm({
             fieldLabel='Chain'
             items={chainItems}
           />
-          <Dropdown
-            selected={selectedToken}
-            setSelected={setSelectedToken}
-            fieldLabel='Token'
-            items={tokensItems}
-          />
+
           {showSwichButton ? (
             <Button size={'lg'} onClick={onSwitchButtonClick}>
               {!isConnected ? 'Connect' : 'Switch'} to {selectedChain.label}
             </Button>
           ) : (
-            <AmountInput
-              amount={amount}
-              setAmount={setAmount}
-              inputError={inputError}
-              setInputError={setInputError}
-              tokenSymbol={selectedToken.label}
-              balance={balance}
-              decimals={decimals}
-            />
+            <>
+              <Dropdown
+                selected={selectedToken}
+                setSelected={setSelectedToken}
+                fieldLabel='Token'
+                items={tokensItems}
+              />
+              <AmountInput
+                amount={amount}
+                setAmount={setAmount}
+                inputError={inputError}
+                setInputError={setInputError}
+                tokenSymbol={selectedToken.label}
+                balance={balance}
+                decimals={decimals}
+              />
+            </>
           )}
         </div>
       </div>
