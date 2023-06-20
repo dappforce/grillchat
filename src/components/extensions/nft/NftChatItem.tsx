@@ -9,6 +9,7 @@ import truncate from 'lodash.truncate'
 import { useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
+import { getMessageExtensionProperties } from '../utils'
 import { getMarketplaceFromLink } from './utils'
 
 type Props = ExtensionChatItemProps
@@ -23,9 +24,13 @@ export default function NftChatItem(props: Props) {
   const { content } = message
   const { extensions } = content || {}
 
-  const nftProperties = extensions?.[0]?.properties
+  const firstExtension = extensions?.[0]
+  const nftProperties = getMessageExtensionProperties(
+    firstExtension,
+    'subsocial-evm-nft'
+  )
   const { data: nftData, isLoading: isLoadingNftData } = getNftQuery.useQuery(
-    nftProperties ?? null,
+    nftProperties,
     {
       enabled: inView,
     }

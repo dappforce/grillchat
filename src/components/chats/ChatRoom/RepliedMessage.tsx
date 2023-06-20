@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import { getMessageExtensionProperties } from '@/components/extensions/utils'
 import MediaLoader from '@/components/MediaLoader'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
@@ -40,7 +41,7 @@ export default function RepliedMessage({
     message?.content?.body || (hasNftExtension ? 'NFT' : '')
 
   const { data: nftData } = getNftQuery.useQuery(
-    firstExtension?.properties ?? null
+    getMessageExtensionProperties(firstExtension, 'subsocial-evm-nft')
   )
 
   return (

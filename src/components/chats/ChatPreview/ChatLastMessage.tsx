@@ -1,3 +1,4 @@
+import { getMessageExtensionProperties } from '@/components/extensions/utils'
 import MediaLoader from '@/components/MediaLoader'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { getNftQuery } from '@/services/api/query'
@@ -36,7 +37,7 @@ export default function ChatLastMessage({
     lastMessage?.content?.body || (hasNftExtension ? 'NFT' : defaultDesc)
 
   const { data: nftData } = getNftQuery.useQuery(
-    firstExtension?.properties ?? null
+    getMessageExtensionProperties(firstExtension, 'subsocial-evm-nft')
   )
 
   const showedText = isMessageBlocked
