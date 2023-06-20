@@ -133,7 +133,7 @@ function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
             {...getRootProps()}
             className={cx(
               'flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-background-primary p-8 text-center',
-              isError && 'border-background-red'
+              isError && 'border-text-red'
             )}
           >
             <input {...getInputProps()} />
