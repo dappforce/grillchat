@@ -1,11 +1,12 @@
 import DonateCoinIcon from '@/assets/icons/donate-coin.svg'
+import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
 import ProfileModal from '@/components/auth/ProfileModal'
-import ClickableAddressAvatar from '@/components/ClickableAddressAvatar'
 import DonateModal from '@/components/extensions/donate/DonateModal/DonateModal'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
+import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
@@ -197,7 +198,15 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <ClickableAddressAvatar address={ownerId} className='flex-shrink-0' />
+        <ProfilePreviewModalWrapper address={ownerId}>
+          {(onClick) => (
+            <AddressAvatar
+              onClick={onClick}
+              address={ownerId}
+              className='flex-shrink-0 cursor-pointer'
+            />
+          )}
+        </ProfilePreviewModalWrapper>
       )}
       <FloatingMenus menus={menus} alignment='end' useClickPointAsAnchor>
         {(config) => {

@@ -20,6 +20,9 @@ function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
   if (uri.startsWith('ipfs://')) {
     return uri.replace('ipfs://', gatewayUrl)
   }
+  if (uri.startsWith('https://ipfs.io/ipfs/')) {
+    return uri.replace('https://ipfs.io/ipfs/', gatewayUrl)
+  }
   return uri
 }
 
@@ -73,7 +76,7 @@ export default function MediaLoader({
           onLoadedData={onLoad}
           className={cx(commonClassName, 'aspect-square')}
           controls
-          autoPlay
+          muted
         />
       )
     } else if (typeof usedImage === 'string' && usedImage.startsWith('data:')) {
@@ -95,9 +98,9 @@ export default function MediaLoader({
       return (
         <Image
           key={usedImage?.toString() ?? ''}
-          width={500}
-          height={500}
           {...commonProps}
+          width={commonProps.width || 500}
+          height={commonProps.height || 500}
           alt={props.alt || ''}
         />
       )

@@ -17,7 +17,7 @@ export default function SkeletonFallback({
   ) : (
     <div
       className={cx(
-        'my-[0.25em] h-[1em] w-48 rounded-full bg-black/20',
+        'my-[0.25em] h-[1em] w-48 rounded-full bg-background-lighter',
         className
       )}
       {...props}

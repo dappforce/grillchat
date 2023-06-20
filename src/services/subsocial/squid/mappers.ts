@@ -48,7 +48,7 @@ export const mapSpaceFragment = (space: SpaceFragmentFragment): SpaceData => {
 
 const mapPostExtensions = (
   extensions: PostFragmentFragment['extensions']
-): PostContentExtension[] | null => {
+): PostContentExtension[] | undefined => {
   const mappedExtensions = extensions?.map((ext) => {
     switch (ext.extensionSchemaId) {
       case ContentExtensionSchemaId.SubsocialEvmNft:
@@ -79,7 +79,7 @@ const mapPostExtensions = (
     }
   })
   const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
-  if (exts.length === 0) return null
+  if (exts.length === 0) return undefined
   return exts
 }
 
@@ -104,7 +104,7 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
     rootPostId: post.rootPost?.id ?? '',
   }
 
-  return {
+  const data = {
     id: post.id,
     struct,
     content: {
@@ -115,12 +115,25 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
       body: post.body || '',
       canonical: post.canonical ?? '',
       isShowMore: post.isShowMore ?? false,
-      inReplyTo: {
-        kind: post.inReplyToKind ?? 'Post',
-        id: post.inReplyToPost?.id ?? '',
-      },
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
-      extensions: mapPostExtensions(post.extensions),
     } as PostContent,
   }
+
+  const extensions = mapPostExtensions(post.extensions)
+  if (extensions) {
+    data.content.extensions = extensions
+  }
+
+  const replyToId = post.inReplyToPost?.id
+  const replyData =
+    replyToId &&
+    ({
+      kind: post.inReplyToKind ?? 'Post',
+      id: replyToId,
+    } as PostContent['inReplyTo'])
+  if (replyData) {
+    data.content.inReplyTo = replyData
+  }
+
+  return data
 }

@@ -1,4 +1,5 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
+import { isTouchDevice } from '@/utils/device'
 import { copyToClipboard } from '@/utils/strings'
 import { Placement } from '@floating-ui/react'
 import { cva, VariantProps } from 'class-variance-authority'
@@ -142,6 +143,12 @@ export function CopyTextInline({
       setOpenTooltipClickTriggerButton(false)
     }, 2000)
   }, [openTooltipClickTriggerButton])
+  useEffect(() => {
+    if (!openTooltipClickTrigger) return
+    setTimeout(() => {
+      setOpenTooltipClickTrigger(false)
+    }, 2000)
+  }, [openTooltipClickTrigger])
 
   const handleClick = () => {
     copyToClipboard(getTextToCopy({ text, textToCopy }))
@@ -185,7 +192,10 @@ export function CopyTextInline({
       <PopOver
         {...commonHoverPopOverProps}
         manualTrigger={{
-          isOpen: openTooltipClickTrigger ? false : openTooltipHoverTrigger,
+          isOpen:
+            openTooltipClickTrigger || isTouchDevice()
+              ? false
+              : openTooltipHoverTrigger,
           setIsOpen: setOpenTooltipHoverTrigger,
         }}
         trigger={trigger}
@@ -195,9 +205,10 @@ export function CopyTextInline({
       <PopOver
         {...commonHoverPopOverProps}
         manualTrigger={{
-          isOpen: openTooltipClickTriggerButton
-            ? false
-            : openTooltipHoverTriggerButton,
+          isOpen:
+            openTooltipClickTriggerButton || isTouchDevice()
+              ? false
+              : openTooltipHoverTriggerButton,
           setIsOpen: setOpenTooltipHoverTriggerButton,
         }}
         trigger={copyButton}

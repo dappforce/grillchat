@@ -31,6 +31,6 @@ export function getIpfsPinUrl() {
   )
 }
 
-export function getMoralisApiKey() {
-  return checkEnv(process.env.MORALIS_API_KEY, 'MORALIS_API_KEY')
+export function getCovalentApiKey() {
+  return checkEnv(process.env.COVALENT_API_KEY, 'COVALENT_API_KEY')
 }

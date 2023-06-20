@@ -1,22 +1,19 @@
 import Button from '@/components/Button'
 import { ChatFormProps } from '@/components/chats/ChatForm'
-import Input, { InputProps } from '@/components/inputs/Input'
+import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import LinkText, { linkTextStyles } from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
-import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useAutofocus from '@/hooks/useAutofocus'
 import useDebounce from '@/hooks/useDebounce'
 import { getNftQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { NftProperties } from '@subsocial/api/types'
 import { useEffect, useState } from 'react'
-import { HiArrowUpRight, HiTrash } from 'react-icons/hi2'
+import { HiTrash } from 'react-icons/hi2'
 import CommonExtensionModal from '../CommonExtensionModal'
-import {
-  getSupportedMarketplaces,
-  nftChains,
-  parseNftMarketplaceLink,
-} from './utils'
+import NftSupportedPlatformsModal from './NftSupportedPlatformsModal'
+import { parseNftMarketplaceLink } from './utils'
 
 export type NftAttachmentModalProps = ModalFunctionalityProps &
   Pick<ChatFormProps, 'chatId'>
@@ -25,9 +22,8 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   const { chatId, ...otherProps } = props
   const [nftLink, setNftLink] = useState('')
   const [nftLinkError, setNftLinkError] = useState<string | JSX.Element>('')
-  const [openModalType, setOpenModalType] = useState<
-    'marketplaces' | 'chains' | null
-  >(null)
+  const [isOpenSupportedPlatformModal, setIsOpenSupportedPlatformModal] =
+    useState<boolean>(false)
 
   const [showLoading, setShowLoading] = useState(false)
 
@@ -36,6 +32,12 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
     setParsedLinkData(null)
     if (nftLink) setShowLoading(true)
   }, [nftLink])
+
+  useEffect(() => {
+    if (props.isOpen) {
+      setNftLink('')
+    }
+  }, [props.isOpen])
 
   const debouncedLink = useDebounce(nftLink, 300)
   const [parsedLinkData, setParsedLinkData] = useState<NftProperties | null>(
@@ -55,16 +57,9 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
           😥 Sorry, we cannot parse this URL.{' '}
           <span
             className={cx(linkTextStyles({ variant: 'primary' }))}
-            onClick={() => setOpenModalType('marketplaces')}
+            onClick={() => setIsOpenSupportedPlatformModal(true)}
           >
-            See supported marketplaces
-          </span>{' '}
-          and{' '}
-          <span
-            className={cx(linkTextStyles({ variant: 'primary' }))}
-            onClick={() => setOpenModalType('chains')}
-          >
-            chains
+            See supported marketplaces and chains
           </span>
           .
         </span>
@@ -79,7 +74,18 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   useEffect(() => {
     if (isLoading || !data) return
     if (!data?.image) {
-      setNftLinkError('😥 Sorry, we cannot get this NFT data')
+      setNftLinkError(
+        <span>
+          😥 Sorry, we cannot get this NFT data from{' '}
+          <LinkText
+            href='https://www.covalenthq.com/docs/api/nft/get-nfts-for-address/'
+            openInNewTab
+            variant='secondary'
+          >
+            Covalent API
+          </LinkText>
+        </span>
+      )
     }
   }, [isLoading, data])
 
@@ -89,7 +95,8 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
     <>
       <CommonExtensionModal
         {...otherProps}
-        isOpen={otherProps.isOpen && !openModalType}
+        isOpen={otherProps.isOpen && !isOpenSupportedPlatformModal}
+        size='md'
         mustHaveMessageBody={false}
         chatId={chatId}
         disableSendButton={!isValidNft}
@@ -102,14 +109,13 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
                 linkTextStyles({ variant: 'primary' }),
                 'cursor-pointer'
               )}
-              onClick={() => setOpenModalType('marketplaces')}
+              onClick={() => setIsOpenSupportedPlatformModal(true)}
             >
               popular marketplaces
             </span>
             .
           </span>
         }
-        onSubmit={() => setNftLink('')}
         buildAdditionalTxParams={() => {
           if (!parsedLinkData) return {}
           return {
@@ -151,50 +157,27 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
           )}
         </div>
       </CommonExtensionModal>
-      <Modal
-        isOpen={openModalType === 'marketplaces'}
-        closeModal={() => setOpenModalType(null)}
-        title='🛍️ Supported NFT Marketplaces'
-        withCloseButton
-      >
-        <div className='mt-2 flex flex-col gap-2'>
-          {getSupportedMarketplaces().map(({ link, name }) => (
-            <LinkText
-              key={link}
-              href={link}
-              openInNewTab
-              className='flex items-center gap-1'
-              variant='primary'
-            >
-              <span>{name}</span>
-              <HiArrowUpRight className='text-text-muted' />
-            </LinkText>
-          ))}
-        </div>
-      </Modal>
-      <Modal
-        isOpen={openModalType === 'chains'}
-        closeModal={() => setOpenModalType(null)}
-        title='⛓️ Supported Chains'
-        withCloseButton
-      >
-        <div className='mt-2 flex flex-col gap-2'>
-          {nftChains.map((chain) => (
-            <span key={chain} className='capitalize'>
-              {chain}
-            </span>
-          ))}
-        </div>
-      </Modal>
+      <NftSupportedPlatformsModal
+        isOpen={isOpenSupportedPlatformModal}
+        closeModal={() => setIsOpenSupportedPlatformModal(false)}
+      />
     </>
   )
 }
 
-function NftLinkInput({ ...props }: InputProps) {
+function NftLinkInput({ ...props }: TextAreaProps) {
   const { ref, autofocus } = useAutofocus()
   useEffect(() => {
     autofocus()
   }, [autofocus])
 
-  return <Input {...props} ref={ref} placeholder='Paste NFT URL' />
+  return (
+    <TextArea
+      {...props}
+      size='sm'
+      rows={1}
+      ref={ref}
+      placeholder='Paste NFT URL'
+    />
+  )
 }
