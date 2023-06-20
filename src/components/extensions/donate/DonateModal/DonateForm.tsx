@@ -91,6 +91,7 @@ function DonateForm({
       }
 
       props.closeModal()
+      setCurrentStep('donate-form')
       return { newMessageParams, txPrevented: false }
     }
 
