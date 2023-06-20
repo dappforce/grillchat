@@ -19,7 +19,7 @@ const DonateRepliedMessagePreviewPart = ({
       {id === 'subsocial-donations' ? (
         <div
           className={cx(
-            'bg-gradient-to-br from-[#C43333] to-[#F9A11E]',
+            'mt-1 bg-gradient-to-br from-[#C43333] to-[#F9A11E]',
             'rounded-2xl px-3 py-[0.15rem] text-white'
           )}
         >

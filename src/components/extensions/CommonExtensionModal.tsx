@@ -44,9 +44,16 @@ export default function CommonExtensionModal({
   const setShowEmptyPrimaryChatInput = useMessageData(
     (state) => state.setShowEmptyPrimaryChatInput
   )
+  const setReplyTo = useMessageData((state) => state.setReplyTo)
+  const setMessageBody = useMessageData((state) => state.setMessageBody)
 
   useEffect(() => {
     setShowEmptyPrimaryChatInput(props.isOpen)
+
+    if (props.isOpen === false) {
+      setReplyTo('')
+      setMessageBody('')
+    }
   }, [props.isOpen, setShowEmptyPrimaryChatInput])
 
   const commonClassName = cx('px-5 md:px-6')

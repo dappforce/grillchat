@@ -2,7 +2,7 @@ import DonateCoinIcon from '@/assets/icons/donate-coin.svg'
 import LoginModal from '@/components/auth/LoginModal'
 import ProfileModal from '@/components/auth/ProfileModal'
 import ClickableAddressAvatar from '@/components/ClickableAddressAvatar'
-import DonateModals from '@/components/extensions/donate/DonateModal/DonateModal'
+import DonateModal from '@/components/extensions/donate/DonateModal/DonateModal'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
@@ -247,32 +247,26 @@ export default function ChatItem({
         closeModal={() => setOpenMetadata(false)}
         entity={message}
       />
-      {openDonateModal && (
-        <DonateModals
-          isOpen={openDonateModal}
-          closeModal={() => setOpenDonateModal(false)}
-          recipient={ownerId}
-          messageId={messageId}
-          chatId={chatId}
-        />
-      )}
-      {openLinkEvmAddressModal && (
-        <ProfileModal
-          address={address || ''}
-          isOpen={openLinkEvmAddressModal}
-          closeModal={() => setOpenLinkEvmAddressModal(false)}
-          step='link-evm-address'
-        />
-      )}
-      {openLoginModal && (
-        <LoginModal
-          isOpen={openLoginModal}
-          openModal={() => setOpenLoginModal(true)}
-          closeModal={() => setOpenLoginModal(false)}
-          beforeLogin={() => (isLoggingInWithKey.current = true)}
-          afterLogin={() => (isLoggingInWithKey.current = false)}
-        />
-      )}
+      <DonateModal
+        isOpen={openDonateModal}
+        closeModal={() => setOpenDonateModal(false)}
+        recipient={ownerId}
+        messageId={messageId}
+        chatId={chatId}
+      />
+      <ProfileModal
+        address={address || ''}
+        isOpen={openLinkEvmAddressModal}
+        closeModal={() => setOpenLinkEvmAddressModal(false)}
+        step='link-evm-address'
+      />
+      <LoginModal
+        isOpen={openLoginModal}
+        openModal={() => setOpenLoginModal(true)}
+        closeModal={() => setOpenLoginModal(false)}
+        beforeLogin={() => (isLoggingInWithKey.current = true)}
+        afterLogin={() => (isLoggingInWithKey.current = false)}
+      />
     </div>
   )
 }

@@ -14,8 +14,8 @@ import CommonExtensionModal from '../../CommonExtensionModal'
 import { chainIdByChainName } from '../api/config'
 import { useDonate, useGetBalance } from '../api/hooks'
 import AmountInput from './AmountInput'
-import { chainItems, tokensItems } from './DonateModal'
 import { DonateProps } from './types'
+import { chainItems, tokensItems } from './utils'
 
 function DonateForm({
   recipient,
