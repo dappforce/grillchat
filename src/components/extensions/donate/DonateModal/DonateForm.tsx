@@ -100,8 +100,12 @@ function DonateForm({
   const disableSendButton =
     !amount ||
     !balance ||
-    new BigNumber(amount || '0').eq(0) ||
+    new BigNumber(amount || '0').lte(0) ||
     new BigNumber(balance || '0').eq(0)
+
+  const amountPreview = amount
+    ? ` ${new BigNumber(amount).toString()} ${selectedToken.label}`
+    : ''
 
   return (
     <CommonExtensionModal
@@ -110,7 +114,7 @@ function DonateForm({
       showChatForm={!showSwichButton}
       withDivider={!showSwichButton}
       disableSendButton={disableSendButton || !!inputError}
-      sendButtonText='Send'
+      sendButtonText={`Send${amountPreview}`}
       beforeMesageSend={onButtonClick}
       autofocus={false}
       title={'💰 Donate'}
