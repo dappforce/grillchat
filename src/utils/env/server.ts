@@ -30,3 +30,7 @@ export function getIpfsPinUrl() {
     'https://pin.crustcloud.io/psa'
   )
 }
+
+export function getCovalentApiKey() {
+  return checkEnv(process.env.COVALENT_API_KEY, 'COVALENT_API_KEY')
+}

@@ -1,6 +1,7 @@
+import MediaLoader from '@/components/MediaLoader'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
-import { getPostQuery } from '@/services/api/query'
+import { getNftQuery, getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { truncateText } from '@/utils/strings'
 import { ComponentProps, useState } from 'react'
@@ -21,15 +22,28 @@ export default function RepliedMessagePreview({
   ...props
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const { data } = getPostQuery.useQuery(repliedMessageId)
-  const replySender = data?.struct.ownerId ?? ''
+  const { data: message } = getPostQuery.useQuery(repliedMessageId)
+  const replySender = message?.struct.ownerId ?? ''
   const replySenderColor = useRandomColor(replySender)
 
-  if (!data) {
+  // TODO: extract to better flexibility for other extensions
+  const extensions = message?.content?.extensions
+  const firstExtension = extensions?.[0]
+  const hasNftExtension =
+    firstExtension && firstExtension.id === 'subsocial-evm-nft'
+
+  const messageContent =
+    message?.content?.body || (hasNftExtension ? 'NFT' : '')
+
+  const { data: nftData } = getNftQuery.useQuery(
+    firstExtension?.properties ?? null
+  )
+
+  if (!message) {
     return null
   }
 
-  let showedText = data.content?.body ?? ''
+  let showedText = messageContent ?? ''
   if (originalMessage.length < minimumReplyChar) {
     showedText = truncateText(showedText, minimumReplyChar)
   }
@@ -45,7 +59,7 @@ export default function RepliedMessagePreview({
     <div
       {...props}
       className={cx(
-        'flex flex-col overflow-hidden border-l-2 pl-2 text-sm',
+        'flex gap-2 overflow-hidden border-l-2 pl-2 text-sm',
         scrollToMessage && 'cursor-pointer',
         isLoading && 'animate-pulse',
         props.className
@@ -57,10 +71,22 @@ export default function RepliedMessagePreview({
         props.onClick?.(e)
       }}
     >
-      <Name address={replySender} className='font-medium' />
-      <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
-        {showedText}
-      </span>
+      {hasNftExtension && (
+        <MediaLoader
+          width={60}
+          height={60}
+          containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
+          className={cx('aspect-square w-10')}
+          placeholderClassName={cx('w-10 aspect-square')}
+          image={nftData?.image}
+        />
+      )}
+      <div className='flex flex-col'>
+        <Name address={replySender} className='font-medium' />
+        <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
+          {showedText}
+        </span>
+      </div>
     </div>
   )
 }

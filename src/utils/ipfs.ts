@@ -28,9 +28,9 @@ export function IpfsWrapper(cid?: string) {
 
 export function ReplyWrapper(replyToMessageId: string | undefined | null) {
   return replyToMessageId
-    ? {
+    ? ({
         id: replyToMessageId,
         kind: 'Post',
-      }
+      } as const)
     : undefined
 }

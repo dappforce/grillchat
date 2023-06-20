@@ -13,7 +13,7 @@ export type ModalFunctionalityProps = {
 
 const panelStyles = cva(
   cx(
-    'relative w-full overflow-hidden rounded-[20px] bg-background-light',
+    'relative w-full rounded-[20px] bg-background-light',
     'text-left align-middle shadow-xl',
     'transform transition-all',
     'flex flex-col'
@@ -24,6 +24,7 @@ const panelStyles = cva(
         sm: cx('max-w-sm'),
         md: cx('max-w-md'),
         lg: cx('max-w-lg'),
+        'screen-md': cx('max-w-screen-md'),
         'screen-lg': cx('max-w-screen-lg'),
         'full-screen': cx('max-w-none'),
       },
@@ -71,6 +72,7 @@ export default function Modal({
         as='div'
         initialFocus={initialFocus}
         className='relative z-40 text-text'
+        onClick={(e) => e.stopPropagation()}
         onClose={closeModal}
       >
         <Transition.Child
@@ -125,7 +127,7 @@ export default function Modal({
                     <Dialog.Title
                       as='h3'
                       className={cx(
-                        'mb-4 text-2xl',
+                        'mb-2 text-2xl md:mb-4',
                         withCloseButton && 'pr-8',
                         titleClassName
                       )}
