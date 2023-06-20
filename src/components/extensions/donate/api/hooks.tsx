@@ -94,7 +94,7 @@ export const useConnectOrSwitchNetwork = (
           }
         )
 
-      connect({ connector: connector.connector })
+      connect({ connector: connector.connector, chainId: destChainId })
     } else {
       switchNetwork?.(destChainId)
     }
