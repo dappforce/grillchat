@@ -16,41 +16,62 @@ const initialState: State = {
 export const useVersion = create<State>()((set, get) => ({
   ...initialState,
   init: async () => {
-    const fetchVersion = async () => {
-      const response = await axios.get('/api/version')
-      const newVersion = response.data
+    const versionHandling = async () => {
       const currentVersion = get().version
+      const res = await validateSameVersion(currentVersion)
+      if (!res) return
 
-      if (currentVersion !== undefined && currentVersion !== newVersion) {
-        toast.custom(
-          (t) => (
-            <Toast
-              t={t}
-              action={
-                <Button
-                  size='circle'
-                  className='ml-2'
-                  onClick={() => window.location.reload()}
-                >
-                  <IoRefresh />
-                </Button>
-              }
-              title='🎉 We have new version!'
-              description='Please reload the page to get the latest version.'
-            />
-          ),
-          {
-            duration: Infinity,
-          }
-        )
-      }
-      set({ version: newVersion })
+      const { version, isSameVersion } = res
+      set({ version })
+
+      if (!isSameVersion) notifyDifferentVersion()
     }
-    fetchVersion()
+
+    versionHandling()
 
     const INTERVAL = 10 * 60 * 1000 // 10 minutes
     setInterval(() => {
-      fetchVersion()
+      versionHandling()
     }, INTERVAL)
   },
 }))
+
+async function validateSameVersion(currentVersion: string | undefined) {
+  try {
+    const response = await axios.get('/api/version')
+    const newVersion = response.data
+
+    const isSameVersion =
+      currentVersion === undefined || currentVersion === newVersion
+    return {
+      version: newVersion,
+      isSameVersion,
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+function notifyDifferentVersion() {
+  toast.custom(
+    (t) => (
+      <Toast
+        t={t}
+        action={
+          <Button
+            size='circle'
+            className='ml-4'
+            onClick={() => window.location.reload()}
+          >
+            <IoRefresh />
+          </Button>
+        }
+        title='🎉 We have new version!'
+        description='Please reload the page to get the latest version.'
+      />
+    ),
+    {
+      duration: Infinity,
+    }
+  )
+}
