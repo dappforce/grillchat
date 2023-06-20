@@ -81,7 +81,7 @@ export default function NavbarWithSearch({
     <div className='relative'>
       <div
         className={cx(
-          'absolute top-1/2 left-0 z-10 w-full -translate-y-1/2 transition-opacity',
+          'absolute left-0 top-1/2 z-10 w-full -translate-y-1/2 transition-opacity',
           !isOpenSearch && 'pointer-events-none opacity-0'
         )}
       >

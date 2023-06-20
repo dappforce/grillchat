@@ -5259,6 +5259,15 @@ export type GetPostsQueryVariables = Exact<{
 
 export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', chain?: string | null, extensionSchemaId: ContentExtensionSchemaId, nftId?: string | null, collectionId?: string | null, url?: string | null }> }> };
 
+export type GetPostsByContentQueryVariables = Exact<{
+  search: Scalars['String']['input'];
+  spaceIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type GetPostsByContentQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', chain?: string | null, extensionSchemaId: ContentExtensionSchemaId, nftId?: string | null, collectionId?: string | null, url?: string | null }> }> };
+
 export type GetSpacesQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
@@ -5350,6 +5359,15 @@ export const PostFragment = gql`
 export const GetPosts = gql`
     query getPosts($ids: [String!]) {
   posts(where: {id_in: $ids, hidden_eq: false}) {
+    ...PostFragment
+  }
+}
+    ${PostFragment}`;
+export const GetPostsByContent = gql`
+    query getPostsByContent($search: String!, $spaceIds: [String!]!, $postIds: [String!]!) {
+  posts(
+    where: {hidden_eq: false, isComment_eq: false, title_containsInsensitive: $search, AND: {space: {id_in: $spaceIds}, OR: {id_in: $postIds}}}
+  ) {
     ...PostFragment
   }
 }

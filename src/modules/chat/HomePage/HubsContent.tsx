@@ -1,4 +1,5 @@
 import ChatPreview from '@/components/chats/ChatPreview'
+import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import { getAliasFromHubId } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
@@ -8,34 +9,39 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import { SpaceData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { CommonHubContentProps, HubsPageProps } from './HomePage'
+import { HubsPageProps } from './HomePage'
 
 export default function HubsContent({
   hubsChatCount = {},
-  getSearchResults,
-}: CommonHubContentProps & Pick<HubsPageProps, 'hubsChatCount'>) {
+  isIntegrateChatButtonOnTop,
+}: Pick<HubsPageProps, 'hubsChatCount' | 'isIntegrateChatButtonOnTop'>) {
+  const isInIframe = useIsInIframe()
   const hubIds = getHubIds()
 
   const hubQueries = getSpaceQuery.useQueries(hubIds)
   const hubs = hubQueries.map(({ data: hub }) => hub)
-  const { searchResults, focusedElementIndex } = getSearchResults(hubs, [
-    'content.name',
-  ])
 
   return (
-    <div className='flex flex-col overflow-auto'>
-      {searchResults.map((hub, idx) => {
-        if (!hub) return null
-        const hubId = hub.id
-        return (
-          <ChatPreviewContainer
-            isFocused={idx === focusedElementIndex}
-            hub={hub}
-            chatCount={hubsChatCount[hubId]}
-            key={hubId}
-          />
-        )
-      })}
+    <div className='flex flex-col'>
+      {!isInIframe && (
+        <ChatSpecialButtons
+          isIntegrateChatButtonOnTop={!!isIntegrateChatButtonOnTop}
+        />
+      )}
+
+      <div className='flex flex-col overflow-auto'>
+        {hubs.map((hub) => {
+          if (!hub) return null
+          const hubId = hub.id
+          return (
+            <ChatPreviewContainer
+              hub={hub}
+              chatCount={hubsChatCount[hubId]}
+              key={hubId}
+            />
+          )
+        })}
+      </div>
     </div>
   )
 }
