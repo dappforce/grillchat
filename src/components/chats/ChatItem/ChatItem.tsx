@@ -128,9 +128,7 @@ export default function ChatItem({
     }
 
     const showDonateMenuItem =
-      // myEvmAddress &&
-      myEvmAddress !== messageOwnerEvmAddress
-    // messageOwnerEvmAddress &&
+      myEvmAddress !== messageOwnerEvmAddress && messageOwnerEvmAddress
 
     return [
       {
