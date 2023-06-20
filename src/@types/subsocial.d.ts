@@ -6,6 +6,14 @@ import { PostContent as SubsocialPostContent } from '@subsocial/api/types/dto'
 declare module '@subsocial/api/types' {
   export default types
 
+  export type ImageProperties = {
+    image: string
+  }
+  export type ImageExtension = {
+    id: 'subsocial-image'
+    properties: ImageProperties
+  }
+
   export type NftProperties = {
     chain: string
     collectionId: string
@@ -16,7 +24,7 @@ declare module '@subsocial/api/types' {
     id: 'subsocial-evm-nft'
     properties: NftProperties
   }
-  export type PostContentExtension = NftExtension
+  export type PostContentExtension = NftExtension | ImageExtension
 
   export interface PostContent extends SubsocialPostContent {
     inReplyTo?: {

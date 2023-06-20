@@ -1,7 +1,7 @@
 import { getIpfsApi } from '@/server/ipfs'
+import formidable from 'formidable'
 import { NextApiRequest, NextApiResponse } from 'next'
 import sharp from 'sharp'
-import { z } from 'zod'
 
 const MAX_FILE_SIZE = 500000
 const ACCEPTED_IMAGE_TYPES = [
@@ -11,51 +11,43 @@ const ACCEPTED_IMAGE_TYPES = [
   'image/webp',
 ]
 
-const bodySchema = z.object({
-  image: z
-    .any()
-    .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
-    .refine(
-      (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
-      'Only .jpg, .jpeg, .png and .webp formats are supported.'
-    ),
-})
-
-export type SaveFileResponse = {
+export type SaveImageResponse = {
   success: boolean
   errors?: any
   cid?: string
 }
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<SaveFileResponse>
+  res: NextApiResponse<SaveImageResponse>
 ) {
   if (req.method !== 'POST') return res.status(404).end()
 
-  const parseRes = bodySchema.safeParse(req.body)
-  if (!parseRes.success) {
-    return res.status(400).send({
-      success: false,
-      errors: parseRes.error,
-    })
-  }
+  const form = formidable({ maxFileSize: MAX_FILE_SIZE })
+  const [_, files] = await form.parse(req)
 
-  const body = parseRes.data
+  const image = files.image[0]
 
   const { saveAndPinImage } = getIpfsApi()
 
   let cid: string
-  const image = body.image
   try {
-    const processedImage = sharp(image)
+    const processedImage = await sharp(image.filepath)
       .resize({
         fit: 'inside',
         width: 500,
         height: 500,
         withoutEnlargement: true,
       })
+      .toFormat('jpeg')
       .toBuffer()
+
     cid = await saveAndPinImage(processedImage)
   } catch (e: any) {
     console.log('Error saving image', e)

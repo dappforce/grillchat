@@ -59,7 +59,7 @@ export default function ChatLastMessage({
             containerClassName={cx('rounded-sm overflow-hidden flex-shrink-0')}
             className={cx('aspect-square w-4')}
             placeholderClassName={cx('w-4 aspect-square')}
-            image={nftData?.image}
+            src={nftData?.image}
           />
         )}
         <p

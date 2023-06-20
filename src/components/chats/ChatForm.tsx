@@ -33,7 +33,9 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   disabled?: boolean
   mustHaveMessageBody?: boolean
   inputProps?: TextAreaProps
-  buildAdditionalTxParams?: () => Partial<SendMessageParams>
+  buildAdditionalTxParams?: () =>
+    | Partial<SendMessageParams>
+    | Promise<Partial<SendMessageParams>>
   sendButtonText?: string
   sendButtonProps?: ButtonProps
   autofocus?: boolean
@@ -126,7 +128,10 @@ export default function ChatForm({
     setMessageBody('')
     clearReplyTo?.()
   }
-  const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
+  const handleSubmit = async (
+    captchaToken: string | null,
+    e?: SyntheticEvent
+  ) => {
     e?.preventDefault()
     if (
       shouldSendMessage &&
@@ -139,11 +144,13 @@ export default function ChatForm({
     const processedMessage = processMessage(messageBody)
     if (isDisabled) return
 
+    const additionalTxParams = await buildAdditionalTxParams?.()
+
     const sendMessageParams = {
       message: processedMessage,
       chatId,
       replyTo,
-      ...buildAdditionalTxParams?.(),
+      ...additionalTxParams,
     }
     if (shouldSendMessage) {
       resetForm()

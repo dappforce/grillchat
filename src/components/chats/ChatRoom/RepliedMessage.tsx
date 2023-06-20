@@ -59,7 +59,7 @@ export default function RepliedMessage({
             containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
             className={cx('aspect-square w-10')}
             placeholderClassName={cx('w-10 aspect-square')}
-            image={nftData?.image}
+            src={nftData?.image}
           />
         )}
         <div

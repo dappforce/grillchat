@@ -60,7 +60,7 @@ export default function NftChatItem(props: Props) {
                   containerClassName='rounded-[4px] overflow-hidden w-full cursor-pointer'
                   placeholderClassName={cx('w-[320px] aspect-square')}
                   className='w-[320px] object-contain'
-                  image={nftData?.image ?? ''}
+                  src={nftData?.image ?? ''}
                   onClick={(e) => {
                     e.stopPropagation()
                     onClick()

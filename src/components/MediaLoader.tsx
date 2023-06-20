@@ -6,7 +6,8 @@ import Spinner from './Spinner'
 
 export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   alt?: string
-  image?: ImageProps['src']
+  src?: ImageProps['src']
+  imageOnly?: boolean
   containerClassName?: string
   loadingClassName?: string
   placeholderClassName?: string
@@ -27,7 +28,8 @@ function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
 }
 
 export default function MediaLoader({
-  image,
+  src,
+  imageOnly,
   containerClassName,
   loadingClassName,
   placeholderClassName,
@@ -35,14 +37,14 @@ export default function MediaLoader({
   ...props
 }: MediaLoaderProps) {
   let [isLoading, setIsLoading] = useState(false)
-  let usedImage = image
-  if (typeof image === 'string') {
-    usedImage = resolveIpfsUri(image, 'https://ipfs.subsocial.network/ipfs/')
+  let usedImage = src
+  if (typeof src === 'string') {
+    usedImage = resolveIpfsUri(src, 'https://ipfs.subsocial.network/ipfs/')
   }
 
   useLayoutEffect(() => {
     setIsLoading(true)
-  }, [image])
+  }, [src])
 
   const renderImageElement = () => {
     const commonClassName = cx(
@@ -69,7 +71,11 @@ export default function MediaLoader({
       src: usedImage,
     }
 
-    if (typeof usedImage === 'string' && validateVideoUrl(usedImage)) {
+    if (
+      !imageOnly &&
+      typeof usedImage === 'string' &&
+      validateVideoUrl(usedImage)
+    ) {
       return (
         <video
           {...commonProps}
@@ -79,7 +85,11 @@ export default function MediaLoader({
           muted
         />
       )
-    } else if (typeof usedImage === 'string' && usedImage.startsWith('data:')) {
+    } else if (
+      !imageOnly &&
+      typeof usedImage === 'string' &&
+      usedImage.startsWith('data:')
+    ) {
       // width and height props will make iframe not square in clickable media
       const { width, height, ...iframeProps } = commonProps
       return (
@@ -125,7 +135,7 @@ export default function MediaLoader({
           )}
         </div>
       )}
-      {image ? (
+      {src ? (
         imageElement
       ) : (
         <div className={cx('aspect-square w-full', placeholderClassName)} />

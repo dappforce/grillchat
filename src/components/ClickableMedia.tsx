@@ -35,7 +35,7 @@ export default function ClickableMedia({
       >
         <MediaLoader
           {...props}
-          image={props.src ?? ''}
+          src={props.src ?? ''}
           className='w-full max-w-screen-md'
           alt={props.alt ?? ''}
           width={1024}
