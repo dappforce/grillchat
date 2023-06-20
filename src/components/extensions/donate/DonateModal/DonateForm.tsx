@@ -5,6 +5,7 @@ import ETH from '@/assets/graphics/tokens/eth.png'
 import MATIC from '@/assets/graphics/tokens/matic.png'
 import USDC from '@/assets/graphics/tokens/usdc.png'
 import USDT from '@/assets/graphics/tokens/usdt.png'
+import Button from '@/components/Button'
 import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
@@ -14,9 +15,15 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { parseUnits } from 'ethers'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useDisconnect, useNetwork } from 'wagmi'
 import CommonExtensionModal from '../../CommonExtensionModal'
-import { useDonate, useGetBalance } from '../api/hooks'
+import { chainIdByChainName } from '../api/config'
+import {
+  useConnectOrSwitchNetwork,
+  useDonate,
+  useGetBalance,
+} from '../api/hooks'
 import AmountInput from './AmountInput'
 import { DonateProps } from './types'
 
@@ -75,9 +82,12 @@ function DonateForm({
   const isDarkTheme = theme === 'dark'
   const [selectedChain, setSelectedChain] = useState<ListItem>(chainItems[0])
   const [selectedToken, setSelectedToken] = useState<ListItem>(tokensItems[0])
+  const { disconnect } = useDisconnect()
   const [inputError, setInputError] = useState<string | undefined>()
   const [amount, setAmount] = useState<string>('')
   const address = useMyAccount((state) => state.address)
+  const { chain } = useNetwork()
+  const { switchOrConnect } = useConnectOrSwitchNetwork(setCurrentStep)
   const { balance, decimals } = useGetBalance(
     selectedToken.id,
     selectedChain.id
@@ -89,7 +99,20 @@ function DonateForm({
   const { evmAddress: evmRecipientAddress } = recipientAccountData || {}
   const { evmAddress: myEvmAddress } = myAccountData || {}
 
+  const currentChainId = chain?.id
+  const destChainId = chainIdByChainName[chainItems[0].id]
+
+  const showSwichButton = currentChainId !== destChainId
+
   const { sendTransferTx } = useDonate(selectedToken.id, selectedChain.id)
+
+  useEffect(() => {
+    disconnect()
+  }, [])
+
+  const onSwitchButtonClick = async () => {
+    await switchOrConnect(selectedChain.id, destChainId)
+  }
 
   const onButtonClick = async (messageParams: SendMessageParams) => {
     if (!evmRecipientAddress || !myEvmAddress || !amount) {
@@ -142,6 +165,8 @@ function DonateForm({
     <CommonExtensionModal
       {...props}
       chatId={chatId}
+      showChatForm={!showSwichButton}
+      withDivider={!showSwichButton}
       disableSendButton={disableSendButton || !!inputError}
       sendButtonText='Send'
       beforeMesageSend={onButtonClick}
@@ -179,15 +204,21 @@ function DonateForm({
             fieldLabel='Token'
             items={tokensItems}
           />
-          <AmountInput
-            amount={amount}
-            setAmount={setAmount}
-            inputError={inputError}
-            setInputError={setInputError}
-            tokenSymbol={selectedToken.label}
-            balance={balance}
-            decimals={decimals}
-          />
+          {showSwichButton ? (
+            <Button size={'lg'} onClick={onSwitchButtonClick}>
+              Switch to {selectedChain.label}
+            </Button>
+          ) : (
+            <AmountInput
+              amount={amount}
+              setAmount={setAmount}
+              inputError={inputError}
+              setInputError={setInputError}
+              tokenSymbol={selectedToken.label}
+              balance={balance}
+              decimals={decimals}
+            />
+          )}
         </div>
       </div>
     </CommonExtensionModal>
