@@ -8,6 +8,7 @@ const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
 export type SaveImageResponse = {
   success: boolean
   errors?: any
+  message: string
   cid?: string
 }
 
@@ -23,10 +24,19 @@ export default async function handler(
 ) {
   if (req.method !== 'POST') return res.status(404).end()
 
-  const form = formidable({ maxFileSize: MAX_FILE_SIZE })
-  const [_, files] = await form.parse(req)
+  let image: any = null
+  try {
+    const form = formidable({ maxFileSize: MAX_FILE_SIZE })
+    const [_, files] = await form.parse(req)
 
-  const image = files.image[0]
+    image = files.image[0]
+  } catch (e: any) {
+    return res.status(500).send({
+      message: 'Image is too large, max size is 2MB',
+      success: false,
+      errors: e.message,
+    })
+  }
 
   const { saveAndPinImage } = getIpfsApi()
 
@@ -46,10 +56,11 @@ export default async function handler(
   } catch (e: any) {
     console.log('Error saving image', e)
     return res.status(500).send({
+      message: 'Error saving image',
       success: false,
       errors: e.message,
     })
   }
 
-  res.status(200).send({ success: true, cid: cid })
+  res.status(200).send({ success: true, cid: cid, message: 'OK' })
 }

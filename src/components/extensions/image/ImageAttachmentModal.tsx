@@ -91,69 +91,6 @@ export default function ImageAttachmentModal(props: ImageAttachmentModalProps) {
   )
 }
 
-type ImageUploadProps = {
-  setUploadedImageLink: (link: string | null) => void
-}
-function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
-  const [imageUrl, setImageUrl] = useState('')
-  const {
-    mutateAsync: saveImage,
-    isError,
-    isLoading,
-  } = useSaveImage({
-    onSuccess: (res) => {
-      const { cid } = res
-      setImageUrl(`ipfs://${cid}`)
-    },
-  })
-
-  useEffect(() => {
-    setUploadedImageLink(null)
-  }, [setUploadedImageLink, imageUrl])
-
-  if (imageUrl) {
-    return (
-      <ImageLoader
-        clearImage={() => setImageUrl('')}
-        src={imageUrl}
-        onLoad={() => setUploadedImageLink(imageUrl)}
-      />
-    )
-  }
-
-  const onImageChosen = async (files: File[]) => {
-    const image = files[0] ?? null
-    const resizedImage = await resizeImage(image)
-    saveImage(resizedImage)
-  }
-
-  return (
-    <>
-      <Dropzone multiple={false} onDrop={onImageChosen}>
-        {({ getRootProps, getInputProps }) => (
-          <div
-            {...getRootProps()}
-            className={cx(
-              'flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-background-primary p-8 text-center',
-              isError && 'border-text-red'
-            )}
-          >
-            <input {...getInputProps()} />
-            <div className='mb-3 text-4xl'>
-              {isLoading ? <Spinner className='h-9 w-9' /> : <ImageAdd />}
-            </div>
-            <p className='text-xl'>Drag image here</p>
-            <p className='text-text-muted'>Or click to select</p>
-          </div>
-        )}
-      </Dropzone>
-      {isError && (
-        <ErrorPanel>😥 Sorry, we cannot upload your image.</ErrorPanel>
-      )}
-    </>
-  )
-}
-
 type ImageLinkStatus = {
   loadedLink: string
   isShowingImage: boolean
@@ -227,6 +164,69 @@ function ImageLinkInput({ setImageLinkStatus }: ImageLinkInputProps) {
             })
           }
         />
+      )}
+    </>
+  )
+}
+
+type ImageUploadProps = {
+  setUploadedImageLink: (link: string | null) => void
+}
+function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
+  const [imageUrl, setImageUrl] = useState('')
+  const {
+    mutateAsync: saveImage,
+    isError,
+    isLoading,
+  } = useSaveImage({
+    onSuccess: (res) => {
+      const { cid } = res
+      setImageUrl(`ipfs://${cid}`)
+    },
+  })
+
+  useEffect(() => {
+    setUploadedImageLink(null)
+  }, [setUploadedImageLink, imageUrl])
+
+  if (imageUrl) {
+    return (
+      <ImageLoader
+        clearImage={() => setImageUrl('')}
+        src={imageUrl}
+        onLoad={() => setUploadedImageLink(imageUrl)}
+      />
+    )
+  }
+
+  const onImageChosen = async (files: File[]) => {
+    const image = files[0] ?? null
+    const resizedImage = await resizeImage(image)
+    saveImage(resizedImage)
+  }
+
+  return (
+    <>
+      <Dropzone multiple={false} onDrop={onImageChosen}>
+        {({ getRootProps, getInputProps }) => (
+          <div
+            {...getRootProps()}
+            className={cx(
+              'flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-background-primary p-8 text-center',
+              isError && 'border-text-red'
+            )}
+          >
+            <input {...getInputProps()} />
+            <div className='mb-3 text-4xl'>
+              {isLoading ? <Spinner className='h-9 w-9' /> : <ImageAdd />}
+            </div>
+            <p className='text-xl'>Drag image here</p>
+            <p className='text-text-muted'>Or click to select</p>
+          </div>
+        )}
+      </Dropzone>
+      {isError && (
+        <ErrorPanel>😥 Sorry, we cannot upload your image.</ErrorPanel>
       )}
     </>
   )
