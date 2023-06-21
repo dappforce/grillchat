@@ -5,10 +5,7 @@ import LinkText, { linkTextStyles } from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
 import useDebounce from '@/hooks/useDebounce'
 import { getNftQuery } from '@/services/api/query'
-import {
-  useCloseExtensionModal,
-  useIsExtensionModalOpen,
-} from '@/stores/extension'
+import { useExtensionModalState } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { NftProperties } from '@subsocial/api/types'
 import { useEffect, useState } from 'react'
@@ -19,13 +16,19 @@ import NftSupportedPlatformsModal from './NftSupportedPlatformsModal'
 import { parseNftMarketplaceLink } from './utils'
 
 export default function NftAttachmentModal({ chatId }: ExtensionModalsProps) {
-  const isOpenNftModal = useIsExtensionModalOpen('subsocial-evm-nft')
-  const closeExtensionModal = useCloseExtensionModal('subsocial-evm-nft')
+  const { closeModal, initialData, isOpen } =
+    useExtensionModalState('subsocial-evm-nft')
 
   const [nftLink, setNftLink] = useState('')
   const [nftLinkError, setNftLinkError] = useState<string | JSX.Element>('')
   const [isOpenSupportedPlatformModal, setIsOpenSupportedPlatformModal] =
     useState<boolean>(false)
+
+  useEffect(() => {
+    if (initialData) {
+      setNftLink(initialData.link)
+    }
+  }, [initialData])
 
   const [showLoading, setShowLoading] = useState(false)
 
@@ -36,10 +39,10 @@ export default function NftAttachmentModal({ chatId }: ExtensionModalsProps) {
   }, [nftLink])
 
   useEffect(() => {
-    if (isOpenNftModal) {
+    if (isOpen) {
       setNftLink('')
     }
-  }, [isOpenNftModal])
+  }, [isOpen])
 
   const debouncedLink = useDebounce(nftLink, 300)
   const [parsedLinkData, setParsedLinkData] = useState<NftProperties | null>(
@@ -96,8 +99,8 @@ export default function NftAttachmentModal({ chatId }: ExtensionModalsProps) {
   return (
     <>
       <CommonExtensionModal
-        closeModal={closeExtensionModal}
-        isOpen={isOpenNftModal && !isOpenSupportedPlatformModal}
+        closeModal={closeModal}
+        isOpen={isOpen && !isOpenSupportedPlatformModal}
         size='md'
         mustHaveMessageBody={false}
         chatId={chatId}

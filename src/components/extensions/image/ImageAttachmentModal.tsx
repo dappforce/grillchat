@@ -7,10 +7,7 @@ import MediaLoader, { MediaLoaderProps } from '@/components/MediaLoader'
 import Spinner from '@/components/Spinner'
 import useDebounce from '@/hooks/useDebounce'
 import { useSaveImage } from '@/services/api/mutations'
-import {
-  useCloseExtensionModal,
-  useIsExtensionModalOpen,
-} from '@/stores/extension'
+import { useExtensionModalState } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { resizeImage } from '@/utils/image'
 import { ImageExtension } from '@subsocial/api/types'
@@ -28,8 +25,8 @@ type ImageStatus = {
   isShowingImage: boolean
 }
 export default function ImageAttachmentModal({ chatId }: ExtensionModalsProps) {
-  const isOpen = useIsExtensionModalOpen('subsocial-image')
-  const closeModal = useCloseExtensionModal('subsocial-image')
+  const { closeModal, initialData, isOpen } =
+    useExtensionModalState('subsocial-image')
 
   const [imageLinkStatus, setImageLinkStatus] = useState<ImageStatus>({
     isShowingImage: false,
@@ -92,7 +89,10 @@ export default function ImageAttachmentModal({ chatId }: ExtensionModalsProps) {
           )}
 
           {!imageLinkStatus.isShowingImage && (
-            <ImageUpload setUploadedImageLink={setImageUploadStatus} />
+            <ImageUpload
+              initialImage={initialData}
+              setUploadedImageLink={setImageUploadStatus}
+            />
           )}
         </div>
       </CommonExtensionModal>
@@ -175,9 +175,10 @@ function ImageLinkInput({ setImageLinkStatus }: ImageLinkInputProps) {
 }
 
 type ImageUploadProps = {
+  initialImage: File | null
   setUploadedImageLink: React.Dispatch<React.SetStateAction<ImageStatus>>
 }
-function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
+function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
   const [imageUrl, setImageUrl] = useState('')
   const {
     mutateAsync: saveImage,
@@ -191,8 +192,12 @@ function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
   })
 
   useEffect(() => {
+    if (!initialImage) return
+    saveImage(initialImage)
+  }, [initialImage, saveImage])
+
+  useEffect(() => {
     const isShowingImage = (!!imageUrl || isLoading) && !isError
-    console.log(isShowingImage, imageUrl, isLoading, isError)
     setUploadedImageLink({ isShowingImage, loadedLink: null })
   }, [setUploadedImageLink, imageUrl, isLoading, isError])
 

@@ -4,16 +4,27 @@ import { ClipboardEvent } from 'react'
 import { parseNftMarketplaceLink } from './nft/utils'
 
 export const extensionModalStates = {
-  'subsocial-image': null as null | string,
+  'subsocial-image': null as null | File,
   'subsocial-evm-nft': null as null | string,
 } satisfies { [key in PostContentExtension['id']]: unknown }
 
 const pasteInterception = {
   'subsocial-evm-nft': (clipboardData, _) => {
     const text = clipboardData.getData('text/plain')
-    const marketplace = parseNftMarketplaceLink(text)
+    try {
+      const marketplace = parseNftMarketplaceLink(text)
+      return marketplace.url
+    } catch {}
 
-    return marketplace.url
+    return null
+  },
+  'subsocial-image': (clipboardData, _) => {
+    const files = clipboardData.files
+    const file = files[0]
+    if (file?.type.startsWith('image/')) {
+      return file
+    }
+    return null
   },
 } satisfies {
   [key in PostContentExtension['id']]?: (
