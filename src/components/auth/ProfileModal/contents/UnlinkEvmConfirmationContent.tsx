@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import { useUnlinkEvmAddress } from '@/services/subsocial/evmAddresses/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useEffect } from 'react'
 import { ContentProps } from '../types'
 
 function UnlinkEvmConfirmationContent({
@@ -12,12 +13,18 @@ function UnlinkEvmConfirmationContent({
     mutate: unlinkEvmAddress,
     onCallbackLoading,
     isLoading,
-  } = useUnlinkEvmAddress(() => setCurrentState('link-evm-address'))
+  } = useUnlinkEvmAddress()
 
   const onButtonClick = () => {
     setCurrentState('link-evm-address')
     sendEvent(`click keep-evm-address-linked`)
   }
+
+  useEffect(() => {
+    if (!evmAddress && !onCallbackLoading) {
+      setCurrentState('link-evm-address')
+    }
+  }, [evmAddress, onCallbackLoading])
 
   const onDisconnectClick = () => {
     if (!evmAddress) return
