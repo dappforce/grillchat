@@ -24,12 +24,6 @@ export default function NftAttachmentModal({ chatId }: ExtensionModalsProps) {
   const [isOpenSupportedPlatformModal, setIsOpenSupportedPlatformModal] =
     useState<boolean>(false)
 
-  useEffect(() => {
-    if (initialData) {
-      setNftLink(initialData.link)
-    }
-  }, [initialData])
-
   const [showLoading, setShowLoading] = useState(false)
 
   useEffect(() => {
@@ -40,9 +34,9 @@ export default function NftAttachmentModal({ chatId }: ExtensionModalsProps) {
 
   useEffect(() => {
     if (isOpen) {
-      setNftLink('')
+      setNftLink(initialData || '')
     }
-  }, [isOpen])
+  }, [isOpen, initialData])
 
   const debouncedLink = useDebounce(nftLink, 300)
   const [parsedLinkData, setParsedLinkData] = useState<NftProperties | null>(

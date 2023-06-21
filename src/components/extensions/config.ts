@@ -9,10 +9,11 @@ export const extensionModalStates = {
 } satisfies { [key in PostContentExtension['id']]: unknown }
 
 const pasteInterception = {
-  'subsocial-evm-nft': (clipboardData, _) => {
+  'subsocial-evm-nft': (clipboardData, e) => {
     const text = clipboardData.getData('text/plain')
     try {
       const marketplace = parseNftMarketplaceLink(text)
+      e.preventDefault()
       return marketplace.url
     } catch {}
 
