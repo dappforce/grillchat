@@ -207,7 +207,13 @@ function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
 
   return (
     <>
-      <Dropzone multiple={false} onDrop={onImageChosen}>
+      <Dropzone
+        multiple={false}
+        accept={{
+          'image/*': ['.png', '.gif', '.jpeg', '.jpg', '.svg'],
+        }}
+        onDrop={onImageChosen}
+      >
         {({ getRootProps, getInputProps }) => (
           <div
             {...getRootProps()}
