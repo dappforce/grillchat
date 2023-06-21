@@ -3,8 +3,8 @@ import Button, { ButtonProps } from '@/components/Button'
 import ImageAttachmentModal from '@/components/extensions/image/ImageAttachmentModal'
 import NftAttachmentModal from '@/components/extensions/nft/NftAttachmentModal'
 import FloatingMenus from '@/components/floating/FloatingMenus'
+import { useIsExtensionModalOpen, useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
-import { useState } from 'react'
 import { ImAttachment } from 'react-icons/im'
 import { IoImageOutline } from 'react-icons/io5'
 import { ChatFormProps } from '../ChatForm'
@@ -15,9 +15,13 @@ export default function AttachmentInput({
   chatId,
   ...props
 }: AttachmentInputProps) {
-  const [openAttachmentModalId, setOpenAttachmentModalId] = useState<
-    null | 'nft' | 'image'
-  >(null)
+  const isOpenNftModal = useIsExtensionModalOpen('subsocial-evm-nft')
+  const isOpenImageModal = useIsExtensionModalOpen('subsocial-image')
+
+  const openExtensionModal = useMessageData((state) => state.openExtensionModal)
+  const closeExtensionModal = useMessageData(
+    (state) => state.openExtensionModal
+  )
 
   return (
     <>
@@ -27,12 +31,12 @@ export default function AttachmentInput({
           {
             icon: NftIcon,
             text: 'NFT',
-            onClick: () => setOpenAttachmentModalId('nft'),
+            onClick: () => openExtensionModal('subsocial-evm-nft'),
           },
           {
             icon: IoImageOutline,
             text: 'Image',
-            onClick: () => setOpenAttachmentModalId('image'),
+            onClick: () => openExtensionModal('subsocial-image'),
           },
         ]}
         allowedPlacements={['top-start']}
@@ -62,13 +66,13 @@ export default function AttachmentInput({
       </FloatingMenus>
       <NftAttachmentModal
         chatId={chatId}
-        isOpen={openAttachmentModalId === 'nft'}
-        closeModal={() => setOpenAttachmentModalId(null)}
+        isOpen={isOpenNftModal}
+        closeModal={() => closeExtensionModal('subsocial-evm-nft')}
       />
       <ImageAttachmentModal
         chatId={chatId}
-        isOpen={openAttachmentModalId === 'image'}
-        closeModal={() => setOpenAttachmentModalId(null)}
+        isOpen={isOpenImageModal}
+        closeModal={() => closeExtensionModal('subsocial-image')}
       />
     </>
   )

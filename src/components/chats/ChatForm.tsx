@@ -25,6 +25,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { interceptPastedData } from '../extensions/config'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
@@ -215,6 +216,10 @@ export default function ChatForm({
               className={cx('flex w-full flex-col gap-2', className)}
             >
               <TextArea
+                onPaste={(e) => {
+                  const clipboardData = e.clipboardData
+                  interceptPastedData(clipboardData, e)
+                }}
                 placeholder='Message...'
                 rows={1}
                 autoComplete='off'

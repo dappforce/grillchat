@@ -1,4 +1,6 @@
+import { extensionModalStates } from '@/components/extensions/config'
 import { LocalStorage } from '@/utils/storage'
+import { PostContentExtension } from '@subsocial/api/types'
 import { useParentData } from './parent'
 import { create } from './utils'
 
@@ -13,6 +15,13 @@ type State = {
   messageBody: string
   replyTo: string | undefined
 
+  _extensionModalStates: {
+    [key in PostContentExtension['id']]?: {
+      isOpen: boolean
+      initialData: unknown | null
+    }
+  }
+
   showEmptyPrimaryChatInput: boolean
 }
 
@@ -22,6 +31,11 @@ type Actions = {
   setReplyTo: (replyTo: string) => void
   clearReplyTo: () => void
   setShowEmptyPrimaryChatInput: (show: boolean) => void
+  closeExtensionModal: (id: PostContentExtension['id']) => void
+  openExtensionModal: <Id extends PostContentExtension['id']>(
+    id: Id,
+    initialData?: (typeof extensionModalStates)[Id]
+  ) => void
 }
 
 const INITIAL_STATE: State = {
@@ -29,6 +43,7 @@ const INITIAL_STATE: State = {
   messageBody: '',
   replyTo: '',
   showEmptyPrimaryChatInput: false,
+  _extensionModalStates: {},
 }
 
 export const useMessageData = create<State & Actions>()((set, get) => ({
@@ -54,6 +69,28 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
   setShowEmptyPrimaryChatInput: (show: boolean) => {
     set({ showEmptyPrimaryChatInput: show })
   },
+  closeExtensionModal: (id) => {
+    set({
+      _extensionModalStates: {
+        ...get()._extensionModalStates,
+        [id]: {
+          isOpen: false,
+          initialData: null,
+        },
+      },
+    })
+  },
+  openExtensionModal: (id, initialData) => {
+    set({
+      _extensionModalStates: {
+        ...get()._extensionModalStates,
+        [id]: {
+          isOpen: true,
+          initialData: initialData ?? null,
+        },
+      },
+    })
+  },
   init: () => {
     const { parentOrigin } = useParentData.getState()
 
@@ -63,3 +100,22 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
     set({ messageCount })
   },
 }))
+
+export function useIsExtensionModalOpen<Id extends PostContentExtension['id']>(
+  id: Id
+) {
+  return useMessageData(
+    (state) => state._extensionModalStates[id]?.isOpen ?? false
+  )
+}
+
+export function useIsExtensionModalInitialData<
+  Id extends PostContentExtension['id']
+>(id: Id) {
+  return useMessageData(
+    (state) =>
+      state._extensionModalStates[id]?.initialData as
+        | (typeof extensionModalStates)[Id]
+        | null
+  )
+}
