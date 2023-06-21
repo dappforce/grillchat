@@ -65,7 +65,7 @@ export function useLinkEvmAddress({
         onStart: () => setOnCallbackLoading(true),
         onSuccess: async ({ address }) => {
           await mutateAccountsDataCache(address)
-          getAccountDataQuery.invalidate(client, address)
+          await getAccountDataQuery.invalidate(client, address)
 
           setOnCallbackLoading(false)
           setModalStep?.()
