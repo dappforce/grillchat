@@ -10,6 +10,7 @@ import Spinner from '@/components/Spinner'
 import useDebounce from '@/hooks/useDebounce'
 import { useSaveImage } from '@/services/api/mutations'
 import { cx } from '@/utils/class-names'
+import { resizeImage } from '@/utils/image'
 import { ImageExtension } from '@subsocial/api/types'
 import React, { useEffect, useState } from 'react'
 import Dropzone from 'react-dropzone'
@@ -122,7 +123,8 @@ function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
 
   const onImageChosen = async (files: File[]) => {
     const image = files[0] ?? null
-    saveImage(image)
+    const resizedImage = await resizeImage(image)
+    saveImage(resizedImage)
   }
 
   return (
