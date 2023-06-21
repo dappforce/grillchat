@@ -45,8 +45,8 @@ export default async function handler(
     const processedImage = await sharp(image.filepath)
       .resize({
         fit: 'inside',
-        width: 500,
-        height: 500,
+        width: 1024,
+        height: 1024,
         withoutEnlargement: true,
       })
       .toFormat('jpeg')
