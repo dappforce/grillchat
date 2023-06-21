@@ -1,7 +1,7 @@
 import { getConfiguredChains } from '@/providers/utils'
 import { InstructionStepName } from '@rainbow-me/rainbowkit/dist/wallets/Wallet'
 import { metaMaskWallet } from '@rainbow-me/rainbowkit/wallets'
-import { Chain, Connector } from 'wagmi'
+import { Connector } from 'wagmi'
 
 const storageKey = 'WALLETCONNECT_DEEPLINK_CHOICE'
 
@@ -52,20 +52,17 @@ export type RainbowKitConnector<C extends Connector = Connector> = {
   }
 }
 
-type OpenWalletProps = {
-  chains: Chain[]
-  connector: RainbowKitConnector<Connector<any, any>>
-}
-
 export const getConnector = () => {
   const { chains } = getConfiguredChains()
 
   return metaMaskWallet({ chains }).createConnector()
 }
 
-export const openMobileWallet = async ({
-  connector,
-}: Pick<OpenWalletProps, 'connector'>) => {
+type OpenWalletProps = {
+  connector: RainbowKitConnector<Connector<any, any>>
+}
+
+export const openMobileWallet = async ({ connector }: OpenWalletProps) => {
   const getUri = connector.mobile?.getUri
   if (getUri) {
     const mobileUri = await getUri()
