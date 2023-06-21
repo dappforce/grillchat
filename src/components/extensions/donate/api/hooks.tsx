@@ -8,7 +8,6 @@ import {
   useConnect,
   useContractReads,
   useContractWrite,
-  useNetwork,
   useSendTransaction,
   useSwitchNetwork,
 } from 'wagmi'
@@ -35,11 +34,10 @@ export const useConnectOrSwitchNetwork = (
   setCurrentStep: (currentStep: DonateModalStep) => void,
   chainName: string
 ) => {
-  const { chains } = useNetwork()
-  const { isConnected } = useAccount()
+  const { isConnected, connector: currentConnector } = useAccount()
 
   const destChainId = chainIdByChainName[chainName]
-  const connector = getConnector({ chains })
+  const connector = getConnector()
 
   const {
     switchNetwork,
@@ -50,7 +48,6 @@ export const useConnectOrSwitchNetwork = (
 
   const {
     connect,
-    data,
     isLoading: isConnectLoading,
     isError: isConnectWalletError,
     error: connectWalletError,
@@ -81,6 +78,7 @@ export const useConnectOrSwitchNetwork = (
   }, [isSwitchNetworkLoading, isConnectLoading])
 
   const connectOrSwitch = () => {
+    console.log(isConnected)
     if (!isConnected) {
       isTouchDevice() &&
         connector.connector.on(
@@ -93,8 +91,7 @@ export const useConnectOrSwitchNetwork = (
               : undefined
           }
         )
-
-      connect({ connector: connector.connector, chainId: destChainId })
+      connect({ connector: currentConnector || connector.connector })
     } else {
       switchNetwork?.(destChainId)
     }

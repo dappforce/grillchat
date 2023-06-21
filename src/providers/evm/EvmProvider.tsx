@@ -11,15 +11,11 @@ import {
   ledgerWallet,
   metaMaskWallet,
 } from '@rainbow-me/rainbowkit/wallets'
-import { configureChains, createConfig, WagmiConfig } from 'wagmi'
-import { mainnet, polygon } from 'wagmi/chains'
-import { publicProvider } from 'wagmi/providers/public'
+import { createConfig, WagmiConfig } from 'wagmi'
+import { getConfiguredChains } from '../utils'
 import { talismanWallet } from './wallets/talisman'
 
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [polygon, mainnet],
-  [publicProvider()]
-)
+const { chains, publicClient, webSocketPublicClient } = getConfiguredChains()
 
 const connectors = connectorsForWallets([
   {

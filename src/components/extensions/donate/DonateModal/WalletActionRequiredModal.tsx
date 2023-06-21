@@ -3,15 +3,12 @@ import Button from '@/components/Button'
 import Modal from '@/components/modals/Modal'
 import { isTouchDevice } from '@/utils/device'
 import Image from 'next/image'
-import { useNetwork } from 'wagmi'
 import { getConnector, openMobileWallet } from '../api/utils'
 import { DonateProps } from './types'
 
 function WalletActionRequiredModal(props: DonateProps) {
-  const { chains } = useNetwork()
-
   const onButtonClick = async () => {
-    const connector = getConnector({ chains })
+    const connector = getConnector()
     await openMobileWallet({ connector })
   }
 
