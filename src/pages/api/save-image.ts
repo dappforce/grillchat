@@ -43,6 +43,7 @@ export default async function handler(
   let cid: string
   try {
     const processedImage = await sharp(image.filepath)
+      .flatten({ background: '#ffffff' })
       .resize({
         fit: 'inside',
         width: 1024,
