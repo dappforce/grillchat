@@ -209,9 +209,7 @@ function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
     <>
       <Dropzone
         multiple={false}
-        accept={{
-          'image/*': ['.png', '.gif', '.jpeg', '.jpg', '.svg'],
-        }}
+        accept={{ 'image/*': ['.png', '.gif', '.jpeg', '.jpg', '.svg'] }}
         onDrop={onImageChosen}
       >
         {({ getRootProps, getInputProps }) => (
@@ -223,8 +221,8 @@ function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
             )}
           >
             <input {...getInputProps()} />
-            <div className='mb-3 text-4xl'>
-              {isLoading ? <Spinner className='h-9 w-9' /> : <ImageAdd />}
+            <div className='mb-3 text-3xl'>
+              {isLoading ? <Spinner className='h-8 w-8' /> : <ImageAdd />}
             </div>
             <p className='text-xl'>Drag image here</p>
             <p className='text-text-muted'>Or click to select</p>
