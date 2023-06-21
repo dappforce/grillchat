@@ -23,27 +23,34 @@ export type ImageAttachmentModalProps = ModalFunctionalityProps &
 
 const urlSchema = z.string().url('Please enter a valid URL.')
 
+type ImageStatus = {
+  loadedLink: string | null
+  isShowingImage: boolean
+}
 export default function ImageAttachmentModal(props: ImageAttachmentModalProps) {
   const { chatId, ...otherProps } = props
 
-  const [imageLinkStatus, setImageLinkStatus] = useState<ImageLinkStatus>({
+  const [imageLinkStatus, setImageLinkStatus] = useState<ImageStatus>({
     isShowingImage: false,
-    loadedLink: '',
+    loadedLink: null,
   })
-  const [uploadedImageLink, setUploadedImageLink] = useState<null | string>(
-    null
-  )
+  const [imageUploadStatus, setImageUploadStatus] = useState<ImageStatus>({
+    isShowingImage: false,
+    loadedLink: null,
+  })
 
   const isAnyShowingImage =
-    imageLinkStatus.isShowingImage || !!uploadedImageLink
+    imageLinkStatus.isShowingImage || imageUploadStatus.isShowingImage
 
   const generateAdditionalTxParams = async () => {
-    let imageUrl = ''
-    if (uploadedImageLink) {
-      imageUrl = uploadedImageLink
+    let imageUrl: string | null = ''
+    if (imageUploadStatus) {
+      imageUrl = imageUploadStatus.loadedLink
     } else {
       imageUrl = imageLinkStatus.loadedLink
     }
+
+    if (!imageUrl) return {}
 
     return {
       extensions: [
@@ -69,7 +76,7 @@ export default function ImageAttachmentModal(props: ImageAttachmentModalProps) {
         buildAdditionalTxParams={generateAdditionalTxParams}
       >
         <div className='mt-2 flex flex-col gap-4'>
-          {!uploadedImageLink && (
+          {!imageUploadStatus.isShowingImage && (
             <ImageLinkInput setImageLinkStatus={setImageLinkStatus} />
           )}
 
@@ -83,7 +90,7 @@ export default function ImageAttachmentModal(props: ImageAttachmentModalProps) {
           )}
 
           {!imageLinkStatus.isShowingImage && (
-            <ImageUpload setUploadedImageLink={setUploadedImageLink} />
+            <ImageUpload setUploadedImageLink={setImageUploadStatus} />
           )}
         </div>
       </CommonExtensionModal>
@@ -91,12 +98,8 @@ export default function ImageAttachmentModal(props: ImageAttachmentModalProps) {
   )
 }
 
-type ImageLinkStatus = {
-  loadedLink: string
-  isShowingImage: boolean
-}
 type ImageLinkInputProps = {
-  setImageLinkStatus: React.Dispatch<React.SetStateAction<ImageLinkStatus>>
+  setImageLinkStatus: React.Dispatch<React.SetStateAction<ImageStatus>>
 }
 function ImageLinkInput({ setImageLinkStatus }: ImageLinkInputProps) {
   const [imageLink, setImageLink] = useState('')
@@ -170,7 +173,7 @@ function ImageLinkInput({ setImageLinkStatus }: ImageLinkInputProps) {
 }
 
 type ImageUploadProps = {
-  setUploadedImageLink: (link: string | null) => void
+  setUploadedImageLink: React.Dispatch<React.SetStateAction<ImageStatus>>
 }
 function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
   const [imageUrl, setImageUrl] = useState('')
@@ -186,15 +189,19 @@ function ImageUpload({ setUploadedImageLink }: ImageUploadProps) {
   })
 
   useEffect(() => {
-    setUploadedImageLink(null)
-  }, [setUploadedImageLink, imageUrl])
+    const isShowingImage = (!!imageUrl || isLoading) && !isError
+    console.log(isShowingImage, imageUrl, isLoading, isError)
+    setUploadedImageLink({ isShowingImage, loadedLink: null })
+  }, [setUploadedImageLink, imageUrl, isLoading, isError])
 
   if (imageUrl) {
     return (
       <ImageLoader
         clearImage={() => setImageUrl('')}
         src={imageUrl}
-        onLoad={() => setUploadedImageLink(imageUrl)}
+        onLoad={() =>
+          setUploadedImageLink((prev) => ({ ...prev, loadedLink: imageUrl }))
+        }
       />
     )
   }
