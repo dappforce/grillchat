@@ -120,7 +120,9 @@ export function useUnlinkEvmAddress(
         onStart: () => setOnCallbackLoading(true),
         onSuccess: async ({ address }) => {
           await mutateAccountsDataCache(address)
-          await getAccountDataQuery.fetchQuery(client, address)
+
+          // await getAccountDataQuery.fetchQuery(client, address)
+          await getAccountDataQuery.invalidate(client, address)
 
           setOnCallbackLoading(false)
           disconnect()
