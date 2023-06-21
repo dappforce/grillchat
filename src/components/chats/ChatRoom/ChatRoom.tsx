@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import Container from '@/components/Container'
+import ExtensionModals from '@/components/extensions'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { useMessageData } from '@/stores/message'
@@ -99,6 +100,8 @@ export default function ChatRoom({
           </JoinChatWrapper>
         )}
       </Component>
+
+      <ExtensionModals chatId={chatId} />
     </div>
   )
 }

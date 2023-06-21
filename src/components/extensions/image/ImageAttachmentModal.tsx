@@ -1,14 +1,16 @@
 import ImageAdd from '@/assets/icons/image-add.svg'
 import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
-import { ChatFormProps } from '@/components/chats/ChatForm'
 import ErrorPanel from '@/components/ErrorPanel'
 import TextArea from '@/components/inputs/TextArea'
 import MediaLoader, { MediaLoaderProps } from '@/components/MediaLoader'
-import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import Spinner from '@/components/Spinner'
 import useDebounce from '@/hooks/useDebounce'
 import { useSaveImage } from '@/services/api/mutations'
+import {
+  useCloseExtensionModal,
+  useIsExtensionModalOpen,
+} from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { resizeImage } from '@/utils/image'
 import { ImageExtension } from '@subsocial/api/types'
@@ -16,10 +18,8 @@ import React, { useEffect, useState } from 'react'
 import Dropzone from 'react-dropzone'
 import { HiTrash } from 'react-icons/hi2'
 import { z } from 'zod'
+import { ExtensionModalsProps } from '..'
 import CommonExtensionModal from '../CommonExtensionModal'
-
-export type ImageAttachmentModalProps = ModalFunctionalityProps &
-  Pick<ChatFormProps, 'chatId'>
 
 const urlSchema = z.string().url('Please enter a valid URL.')
 
@@ -27,8 +27,9 @@ type ImageStatus = {
   loadedLink: string | null
   isShowingImage: boolean
 }
-export default function ImageAttachmentModal(props: ImageAttachmentModalProps) {
-  const { chatId, ...otherProps } = props
+export default function ImageAttachmentModal({ chatId }: ExtensionModalsProps) {
+  const isOpen = useIsExtensionModalOpen('subsocial-image')
+  const closeModal = useCloseExtensionModal('subsocial-image')
 
   const [imageLinkStatus, setImageLinkStatus] = useState<ImageStatus>({
     isShowingImage: false,
@@ -67,7 +68,8 @@ export default function ImageAttachmentModal(props: ImageAttachmentModalProps) {
   return (
     <>
       <CommonExtensionModal
-        {...otherProps}
+        isOpen={isOpen}
+        closeModal={closeModal}
         size='md'
         mustHaveMessageBody={false}
         chatId={chatId}

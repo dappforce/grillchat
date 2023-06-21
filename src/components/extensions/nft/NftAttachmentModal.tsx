@@ -1,25 +1,27 @@
 import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
-import { ChatFormProps } from '@/components/chats/ChatForm'
 import TextArea from '@/components/inputs/TextArea'
 import LinkText, { linkTextStyles } from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
-import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useDebounce from '@/hooks/useDebounce'
 import { getNftQuery } from '@/services/api/query'
+import {
+  useCloseExtensionModal,
+  useIsExtensionModalOpen,
+} from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { NftProperties } from '@subsocial/api/types'
 import { useEffect, useState } from 'react'
 import { HiTrash } from 'react-icons/hi2'
+import { ExtensionModalsProps } from '..'
 import CommonExtensionModal from '../CommonExtensionModal'
 import NftSupportedPlatformsModal from './NftSupportedPlatformsModal'
 import { parseNftMarketplaceLink } from './utils'
 
-export type NftAttachmentModalProps = ModalFunctionalityProps &
-  Pick<ChatFormProps, 'chatId'>
+export default function NftAttachmentModal({ chatId }: ExtensionModalsProps) {
+  const isOpenNftModal = useIsExtensionModalOpen('subsocial-evm-nft')
+  const closeExtensionModal = useCloseExtensionModal('subsocial-evm-nft')
 
-export default function NftAttachmentModal(props: NftAttachmentModalProps) {
-  const { chatId, ...otherProps } = props
   const [nftLink, setNftLink] = useState('')
   const [nftLinkError, setNftLinkError] = useState<string | JSX.Element>('')
   const [isOpenSupportedPlatformModal, setIsOpenSupportedPlatformModal] =
@@ -34,10 +36,10 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   }, [nftLink])
 
   useEffect(() => {
-    if (props.isOpen) {
+    if (isOpenNftModal) {
       setNftLink('')
     }
-  }, [props.isOpen])
+  }, [isOpenNftModal])
 
   const debouncedLink = useDebounce(nftLink, 300)
   const [parsedLinkData, setParsedLinkData] = useState<NftProperties | null>(
@@ -94,8 +96,8 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   return (
     <>
       <CommonExtensionModal
-        {...otherProps}
-        isOpen={otherProps.isOpen && !isOpenSupportedPlatformModal}
+        closeModal={closeExtensionModal}
+        isOpen={isOpenNftModal && !isOpenSupportedPlatformModal}
         size='md'
         mustHaveMessageBody={false}
         chatId={chatId}

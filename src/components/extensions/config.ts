@@ -1,4 +1,4 @@
-import { useMessageData } from '@/stores/message'
+import { useExtensionData } from '@/stores/extension'
 import { PostContentExtension } from '@subsocial/api/types'
 import { ClipboardEvent } from 'react'
 import { parseNftMarketplaceLink } from './nft/utils'
@@ -13,7 +13,7 @@ const pasteInterception = {
     const text = clipboardData.getData('text/plain')
     const marketplace = parseNftMarketplaceLink(text)
 
-    return null
+    return marketplace.url
   },
 } satisfies {
   [key in PostContentExtension['id']]?: (
@@ -31,7 +31,7 @@ export function interceptPastedData(
     const [key, checker] = pasteChecker[i]
     const result = checker(clipboardData, e)
     if (result) {
-      useMessageData
+      useExtensionData
         .getState()
         .openExtensionModal(key as PostContentExtension['id'], result)
       break
