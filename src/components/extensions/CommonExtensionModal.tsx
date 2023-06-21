@@ -57,7 +57,7 @@ export default function CommonExtensionModal({
         className={cx(isUsingBigButton && 'pb-5 md:pb-6')}
         inputProps={{
           className: cx(
-            'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20 !ring-0',
+            'rounded-none bg-transparent pl-5 md:pl-6 py-4 pr-20 !ring-0',
             !isUsingBigButton && 'rounded-b-2xl'
           ),
         }}
