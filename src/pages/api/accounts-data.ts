@@ -66,7 +66,6 @@ export default async function handler(
   const addresses = params.data.addresses
 
   if (req.method === 'POST') {
-    console.log('INVALIDATE CACHE', addresses)
     invalidateCache(addresses)
     return res.status(200).send({ success: true, message: 'OK' })
   } else {
@@ -129,13 +128,11 @@ async function fetchAccountsData(addresses: string[]) {
     const subsocialApi = await getSubsocialApi()
 
     const api = await subsocialApi.blockchain.api
-    console.log('FETCHING FROM BLOCKCHAIN...', addresses)
     const evmAddressses = await api.query.evmAccounts.evmAddressByAccount.multi(
       addresses
     )
 
     const evmAddressesHuman = evmAddressses.map((x) => x.toHuman() as string)
-    console.log('DATA', evmAddressesHuman)
 
     const domains = await getEnsNames(evmAddressesHuman)
 
@@ -176,7 +173,6 @@ export async function getAccountsDataFromCache(addresses: string[]) {
   addresses.forEach((address) => {
     const cachedData = accountsDataCache.get(address)
     if (cachedData) {
-      console.log('FROM CACHE', address, cachedData.evmAddress)
       evmAddressByGrillAddress.push(cachedData)
     } else {
       needToFetchIds.push(address)
