@@ -8,7 +8,7 @@ export default function InfoPanel({ ...props }: InfoPanelProps) {
     <div
       {...props}
       className={cx(
-        'rounded-2xl bg-background-red px-4 py-3 text-text-red',
+        'rounded-2xl bg-background-red px-4 py-3 text-sm text-text-red',
         props.className
       )}
     />
