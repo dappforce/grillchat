@@ -3,13 +3,14 @@ import NftAttachmentModal from './nft/NftAttachmentModal'
 
 export type ExtensionModalsProps = {
   chatId: string
+  onSubmit: () => void
 }
 
-export default function ExtensionModals({ chatId }: ExtensionModalsProps) {
+export default function ExtensionModals({ ...props }: ExtensionModalsProps) {
   return (
     <>
-      <NftAttachmentModal chatId={chatId} />
-      <ImageAttachmentModal chatId={chatId} />
+      <NftAttachmentModal {...props} />
+      <ImageAttachmentModal {...props} />
     </>
   )
 }

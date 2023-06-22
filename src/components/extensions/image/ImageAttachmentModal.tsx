@@ -24,7 +24,10 @@ type ImageStatus = {
   loadedLink: string | null
   isShowingImage: boolean
 }
-export default function ImageAttachmentModal({ chatId }: ExtensionModalsProps) {
+export default function ImageAttachmentModal({
+  chatId,
+  onSubmit,
+}: ExtensionModalsProps) {
   const { closeModal, initialData, isOpen } =
     useExtensionModalState('subsocial-image')
 
@@ -65,6 +68,7 @@ export default function ImageAttachmentModal({ chatId }: ExtensionModalsProps) {
   return (
     <>
       <CommonExtensionModal
+        onSubmit={onSubmit}
         isOpen={isOpen}
         closeModal={closeModal}
         size='md'

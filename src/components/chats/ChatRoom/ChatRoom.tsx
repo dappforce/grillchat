@@ -101,7 +101,7 @@ export default function ChatRoom({
         )}
       </Component>
 
-      <ExtensionModals chatId={chatId} />
+      <ExtensionModals chatId={chatId} onSubmit={scrollToBottom} />
     </div>
   )
 }
