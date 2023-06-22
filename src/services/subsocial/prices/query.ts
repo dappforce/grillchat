@@ -20,7 +20,7 @@ export async function getPrices(tokenIds: string[]) {
     '/api/prices?' + requestedIds.map((n) => `tokensIds=${n}`).join('&')
   )
 
-  return (res.data.data as Price[]) || null
+  return res.data.data as Price[]
 }
 
 const getPrice = poolQuery<string, Price>({
