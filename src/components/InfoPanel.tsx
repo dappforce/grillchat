@@ -1,9 +1,9 @@
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 
-export type ErrorPanelProps = ComponentProps<'div'>
+export type InfoPanelProps = ComponentProps<'div'>
 
-export default function ErrorPanel({ ...props }: ErrorPanelProps) {
+export default function InfoPanel({ ...props }: InfoPanelProps) {
   return (
     <div
       {...props}

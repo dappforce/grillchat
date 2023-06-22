@@ -1,7 +1,7 @@
 import ImageAdd from '@/assets/icons/image-add.svg'
 import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
-import ErrorPanel from '@/components/ErrorPanel'
+import InfoPanel from '@/components/InfoPanel'
 import TextArea from '@/components/inputs/TextArea'
 import MediaLoader, { MediaLoaderProps } from '@/components/MediaLoader'
 import Spinner from '@/components/Spinner'
@@ -155,7 +155,7 @@ function ImageLinkInput({ setImageLinkStatus }: ImageLinkInputProps) {
         )}
       </AutofocusWrapper>
       {isImageLinkError && (
-        <ErrorPanel>😥 Sorry, we cannot parse this URL.</ErrorPanel>
+        <InfoPanel>😥 Sorry, we cannot parse this URL.</InfoPanel>
       )}
       {shouldShowImage && (
         <ImageLoader
@@ -243,9 +243,7 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
           </div>
         )}
       </Dropzone>
-      {isError && (
-        <ErrorPanel>😥 Sorry, we cannot upload your image.</ErrorPanel>
-      )}
+      {isError && <InfoPanel>😥 Sorry, we cannot upload your image.</InfoPanel>}
     </>
   )
 }
