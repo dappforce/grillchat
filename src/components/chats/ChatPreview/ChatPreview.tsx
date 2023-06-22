@@ -53,22 +53,25 @@ export default function ChatPreview({
   const ContentContainer = asLink ? Link : 'div'
 
   const renderAdditionalData = () => {
-    if (isPinned) {
+    if (isPinned || chatId) {
       return (
-        <Image
-          src={PinIcon}
-          alt='pin'
-          width={16}
-          height={16}
-          className='ml-2 h-4 w-4 flex-shrink-0'
-        />
-      )
-    } else if (chatId) {
-      return (
-        <ChatLastMessageTime
-          chatId={chatId}
-          className='text-sm text-text-muted'
-        />
+        <div className='flex items-center gap-1'>
+          {chatId && (
+            <ChatLastMessageTime
+              chatId={chatId}
+              className='text-sm text-text-muted'
+            />
+          )}
+          {isPinned && (
+            <Image
+              src={PinIcon}
+              alt='pin'
+              width={16}
+              height={16}
+              className='ml-2 h-4 w-4 flex-shrink-0'
+            />
+          )}
+        </div>
       )
     } else if (additionalDesc) {
       return <span className='text-sm text-text-muted'>{additionalDesc}</span>
