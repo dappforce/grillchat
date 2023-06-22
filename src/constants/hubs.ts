@@ -8,6 +8,7 @@ const ALIAS_TO_HUB_ID_MAP: Record<string, string> = {
   zeitgeist: '1015',
   kodadot: '1020',
   decoded: '1021',
+  d: '1021',
 }
 
 const HUB_ID_TO_ALIAS_MAP = Object.entries(ALIAS_TO_HUB_ID_MAP).reduce(
