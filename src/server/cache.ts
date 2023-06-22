@@ -2,9 +2,9 @@ import { getRedisConfig } from '@/utils/env/server'
 import Redis, { RedisOptions } from 'ioredis'
 
 export function createRedisInstance() {
-  const config = getRedisConfig()
-
   try {
+    const config = getRedisConfig()
+
     const options: RedisOptions = {
       host: config.host,
       password: config.password,
