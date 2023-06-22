@@ -124,18 +124,18 @@ async function fetchAccountsData(addresses: string[]) {
       addresses
     )
 
-    const evmAddresssesHuman = evmAddressses.map((x) => x.toHuman() as string)
+    const evmAddressesHuman = evmAddressses.map((x) => x.toHuman() as string)
 
-    const domains = await getEnsNames(evmAddresssesHuman)
+    const domains = await getEnsNames(evmAddressesHuman)
 
     const needToFetchIdsPromise = addresses.map(async (address, i) => {
-      const evmAddress = evmAddresssesHuman[i]
+      const evmAddress = evmAddressesHuman[i]
 
       const ensName = domains?.[evmAddress] || null
 
       const accountData = {
         grillAddress: address,
-        evmAddress: evmAddresssesHuman[i],
+        evmAddress: evmAddressesHuman[i],
         ensName,
         withEnsAvatar: await checkEnsAvatar(ensName),
       }
