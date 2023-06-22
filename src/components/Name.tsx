@@ -41,10 +41,7 @@ const Name = ({
   }
 
   return (
-    <span
-      className={className ? className : 'mr-2 text-sm text-text-secondary'}
-      style={{ color: color || textColor }}
-    >
+    <span className={className} style={{ color: color || textColor }}>
       {additionalText} {name}
     </span>
   )

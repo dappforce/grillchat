@@ -25,7 +25,7 @@ export const CustomConnectButton = ({
   ...buttonProps
 }: CustomConnectButtonProps) => {
   const mySubstrateAddress = useMyAccount((state) => state.address)
-  const { disconnectAsync } = useDisconnect()
+  const { disconnect } = useDisconnect()
   const { data: accountData, isLoading: isAccountDataLoading } =
     getAccountDataQuery.useQuery(mySubstrateAddress || '')
 
@@ -47,13 +47,9 @@ export const CustomConnectButton = ({
   }
 
   useEffect(() => {
-    const disconnect = async () => {
-      if (!linkedEvmAddress && isAccountDataLoading) {
-        await disconnectAsync()
-      }
+    if (!linkedEvmAddress && isAccountDataLoading) {
+      disconnect()
     }
-
-    disconnect()
   }, [linkedEvmAddress, isAccountDataLoading])
 
   return (

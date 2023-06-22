@@ -1,4 +1,4 @@
-import { cx } from '@/utils/class-names'
+import { cx, getCommonClassNames } from '@/utils/class-names'
 import { DonateExtension } from '@subsocial/api/types'
 import { formatUnits } from 'ethers'
 import { RepliedMessagePreviewPartProps } from '../types'
@@ -25,8 +25,8 @@ const DonateRepliedMessagePreviewPart = ({
       {id === 'subsocial-donations' ? (
         <div
           className={cx(
-            'mt-1 bg-gradient-to-br from-[#C43333] to-[#F9A11E]',
-            'rounded-2xl px-3 py-[0.15rem] text-white'
+            getCommonClassNames('donateMessagePreviewBg'),
+            'mt-1 rounded-2xl px-3 py-[0.15rem] text-white'
           )}
         >
           {amountValue} {token}

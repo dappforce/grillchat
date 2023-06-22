@@ -13,7 +13,7 @@ export type RepliedMessageConfig = {
   previewClassName?: string
 }
 
-export type RepliedMessagePreviewPatrsProps = {
+export type RepliedMessagePreviewPartsProps = {
   element: (props: RepliedMessagePreviewPartProps) => JSX.Element | null
   config: RepliedMessageConfig
 }

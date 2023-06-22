@@ -9,14 +9,16 @@ import { prefetchBlockedEntities } from '@/server/moderation'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { coingeckoTokenIds } from '@/services/subsocial/prices/query'
+import {
+  coingeckoTokenIds,
+  getPriceQuery,
+} from '@/services/subsocial/prices/query'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
 import { validateNumber } from '@/utils/strings'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
-import { getPriceQuery } from '../../../services/subsocial/prices/query'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   // For chats page, skip pre-rendering, because it will cause super slow build time

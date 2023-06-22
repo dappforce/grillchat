@@ -18,7 +18,7 @@ type SelectInputProps = {
   items: ListItem[]
   selected: ListItem
   setSelected: (item: ListItem) => void
-  imgSize?: number
+  imgClassName?: string
 }
 
 export default function SelectInput({
@@ -26,7 +26,7 @@ export default function SelectInput({
   fieldLabel,
   selected,
   setSelected,
-  imgSize,
+  imgClassName,
 }: SelectInputProps) {
   const { theme } = useTheme()
 
@@ -55,9 +55,7 @@ export default function SelectInput({
                 <span className='flex items-center'>
                   <Image
                     src={selected.icon}
-                    className={cx('rounded-full', {
-                      [`w-[${imgSize}px]`]: imgSize,
-                    })}
+                    className={cx('rounded-full', imgClassName)}
                     alt=''
                     role='presentation'
                   />
@@ -105,9 +103,7 @@ export default function SelectInput({
                           <div className='flex items-center'>
                             <Image
                               src={item.icon}
-                              className={cx('rounded-full', {
-                                [`w-[${imgSize}px]`]: imgSize,
-                              })}
+                              className={cx('rounded-full', imgClassName)}
                               alt=''
                               role='presentation'
                             />

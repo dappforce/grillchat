@@ -1,4 +1,4 @@
-import { repliedMessagePreviewPatrs } from '@/components/extensions/config'
+import { repliedMessagePreviewParts } from '@/components/extensions/config'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
@@ -32,7 +32,7 @@ export default function ChatLastMessage({
   const extensionId = firstExtension?.id as string | undefined
 
   const { element, config } =
-    repliedMessagePreviewPatrs[extensionId || ''] || {}
+    repliedMessagePreviewParts[extensionId || ''] || {}
   const { emptyBodyText, previewClassName } = config || {}
 
   const ExtensionElement = element

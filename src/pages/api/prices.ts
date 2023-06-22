@@ -16,7 +16,7 @@ const querySchema = z.object({
   tokensIds: z.array(z.string()),
 })
 
-export type ApiAccountsDataParams = z.infer<typeof querySchema>
+export type ApiPricesParams = z.infer<typeof querySchema>
 
 export type ApiPricesResponse = {
   success: boolean

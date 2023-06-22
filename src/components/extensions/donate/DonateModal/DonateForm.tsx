@@ -144,7 +144,7 @@ function DonateForm({
             setSelected={setSelectedChain}
             fieldLabel='Chain'
             items={chainItems}
-            imgSize={38}
+            imgClassName='w-[38px]'
           />
 
           {showSwichButton ? (
@@ -158,7 +158,7 @@ function DonateForm({
                 setSelected={setSelectedToken}
                 fieldLabel='Token'
                 items={tokensItems}
-                imgSize={38}
+                imgClassName='w-[38px]'
               />
               <AmountInput
                 amount={amount}

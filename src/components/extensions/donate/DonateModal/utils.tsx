@@ -1,6 +1,6 @@
 import Astar from '@/assets/graphics/chains/astar.png'
 import Moonbeam from '@/assets/graphics/chains/moonbeam.png'
-import Poligon from '@/assets/graphics/chains/polygon.png'
+import Polygon from '@/assets/graphics/chains/polygon.png'
 import ETH from '@/assets/graphics/tokens/eth.png'
 import USDC from '@/assets/graphics/tokens/usdc.png'
 import USDT from '@/assets/graphics/tokens/usdt.png'
@@ -8,7 +8,7 @@ import USDT from '@/assets/graphics/tokens/usdt.png'
 export const chainItems = [
   {
     id: 'polygon',
-    icon: Poligon,
+    icon: Polygon,
     label: 'Polygon',
   },
   {
@@ -38,7 +38,7 @@ export const tokensItems = [
   },
   {
     id: 'matic',
-    icon: Poligon,
+    icon: Polygon,
     label: 'MATIC',
     isNativeToken: true,
   },

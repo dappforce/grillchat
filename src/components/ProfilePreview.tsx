@@ -27,7 +27,7 @@ const ProfilePreview = ({
     <div className={cx('flex items-center gap-4', className)}>
       <AddressAvatar
         address={address}
-        className={cx(avatarClassName ? avatarClassName : 'h-20 w-20')}
+        className={cx('h-20 w-20', avatarClassName)}
       />
       <div className='flex flex-col gap-3'>
         <Name address={address} className='text-lg leading-none' />

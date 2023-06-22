@@ -3,7 +3,7 @@ import {
   coingeckoTokenIds,
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
-import { cx } from '@/utils/class-names'
+import { cx, getCommonClassNames } from '@/utils/class-names'
 import { DonateExtension, DonateProperies } from '@subsocial/api/types'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
@@ -60,13 +60,13 @@ const DonatePreview = ({ extensionProps }: DonatePreviewProps) => {
   )
 }
 
-export type DefaultChatItemProps = ExtensionChatItemProps
+export type DonateMessagePreviewProps = ExtensionChatItemProps
 
 export default function DonateMessagePreview({
   message,
   onCheckMarkClick,
   scrollToMessage,
-}: DefaultChatItemProps) {
+}: DonateMessagePreviewProps) {
   const { content } = message
 
   const { extensions, body } = content || {}
@@ -81,7 +81,7 @@ export default function DonateMessagePreview({
       textColor='#FCEEE2'
       className={cx(
         'relative flex flex-col overflow-hidden',
-        'bg-gradient-to-br from-[#C43333] to-[#F9A11E]',
+        getCommonClassNames('donateMessagePreviewBg'),
         'text-white'
       )}
     >

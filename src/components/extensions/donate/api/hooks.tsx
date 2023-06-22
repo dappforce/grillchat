@@ -1,8 +1,7 @@
-import Toast from '@/components/Toast'
+import useToastError from '@/hooks/useToastError'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { useEffect, useMemo } from 'react'
-import { toast } from 'react-hot-toast'
 import {
   useAccount,
   useConnect,
@@ -16,20 +15,6 @@ import { DonateModalStep } from '../DonateModal/types'
 import { chainIdByChainName, polygonContractsByToken } from './config'
 import { getConnector, openMobileWallet } from './utils'
 
-export const useShowError = (
-  isError: boolean,
-  error: Error | null,
-  message?: string
-) => {
-  useEffect(() => {
-    if (isError) {
-      toast.custom((t) => (
-        <Toast t={t} title='Error' description={message || error?.message} />
-      ))
-    }
-  }, [isError])
-}
-
 export const useConnectOrSwitchNetwork = (
   setCurrentStep: (currentStep: DonateModalStep) => void,
   chainName: string
@@ -42,14 +27,12 @@ export const useConnectOrSwitchNetwork = (
   const {
     switchNetwork,
     isLoading: isSwitchNetworkLoading,
-    isError: isSwitchNetworkError,
     error: switchNetworkError,
   } = useSwitchNetwork()
 
   const {
     connect,
     isLoading: isConnectLoading,
-    isError: isConnectWalletError,
     error: connectWalletError,
   } = useConnect({
     onSuccess: async ({ chain }) => {
@@ -62,11 +45,16 @@ export const useConnectOrSwitchNetwork = (
     },
   })
 
-  useShowError(isConnectWalletError, connectWalletError)
-  useShowError(
-    isSwitchNetworkError,
+  useToastError<Error | null>(
+    connectWalletError,
+    'Connecting wallet error',
+    (e) => e?.message || ''
+  )
+
+  useToastError<Error | null>(
     switchNetworkError,
-    `Make sure ${chainName} has been added to the wallet`
+    'Create account failed',
+    () => `Make sure ${chainName} has been added to the wallet`
   )
 
   useEffect(() => {

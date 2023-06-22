@@ -30,6 +30,7 @@ import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine } from 'react-icons/ri'
+import { useInView } from 'react-intersection-observer'
 import urlJoin from 'url-join'
 import MetadataModal from '../../modals/MetadataModal'
 import ChatItemWithExtension from './ChatItemWithExtension'
@@ -64,6 +65,8 @@ const checkMarkModalReducer = (
   return { isOpen: true, variant: action }
 }
 
+type ModalState = 'login' | 'donate' | 'evm-linking' | null
+
 export default function ChatItem({
   message,
   isMyMessage,
@@ -82,15 +85,16 @@ export default function ChatItem({
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
   const { body, inReplyTo, extensions } = message.content || {}
-  const [openDonateModal, setOpenDonateModal] = useState(false)
-  const [openLoginModal, setOpenLoginModal] = useState(false)
-  const [openLinkEvmAddressModal, setOpenLinkEvmAddressModal] = useState(false)
+  const [modalState, setModalState] = useState<ModalState>(null)
+  const { inView, ref } = useInView()
 
   const address = useMyAccount((state) => state.address)
 
   const { data: messageOwnerAccountData } =
     getAccountDataQuery.useQuery(ownerId)
-  const { data: myAccountData } = getAccountDataQuery.useQuery(address || '')
+  const { data: myAccountData } = getAccountDataQuery.useQuery(address || '', {
+    enabled: inView,
+  })
 
   const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
   const { evmAddress: myEvmAddress } = myAccountData || {}
@@ -113,17 +117,17 @@ export default function ChatItem({
       icon: RiCopperCoinLine,
       onClick: () => {
         if (!address) {
-          setOpenLoginModal(true)
+          setModalState('login')
           return
         }
 
         if (!myEvmAddress) {
-          setOpenLinkEvmAddressModal(true)
+          setModalState('evm-linking')
           return
         }
 
         setMessageAsReply(messageId)
-        setOpenDonateModal(true)
+        setModalState('donate')
       },
     }
 
@@ -194,6 +198,7 @@ export default function ChatItem({
         isMyMessage && 'flex-row-reverse',
         props.className
       )}
+      ref={ref}
     >
       {!isMyMessage && (
         <ProfilePreviewModalWrapper address={ownerId}>
@@ -255,22 +260,22 @@ export default function ChatItem({
         entity={message}
       />
       <DonateModal
-        isOpen={openDonateModal}
-        closeModal={() => setOpenDonateModal(false)}
+        isOpen={modalState === 'donate'}
+        closeModal={() => setModalState(null)}
         recipient={ownerId}
         messageId={messageId}
         chatId={chatId}
       />
       <ProfileModal
         address={address || ''}
-        isOpen={openLinkEvmAddressModal}
-        closeModal={() => setOpenLinkEvmAddressModal(false)}
+        isOpen={modalState === 'evm-linking'}
+        closeModal={() => setModalState(null)}
         step='link-evm-address'
       />
       <LoginModal
-        isOpen={openLoginModal}
-        openModal={() => setOpenLoginModal(true)}
-        closeModal={() => setOpenLoginModal(false)}
+        isOpen={modalState === 'login'}
+        openModal={() => setModalState('login')}
+        closeModal={() => setModalState(null)}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}
       />

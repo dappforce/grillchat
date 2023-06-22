@@ -42,6 +42,7 @@ const COMMON_CLASS_NAMES = {
   chatImageBackground: cx(
     'overflow-hidden rounded-full bg-background-light bg-gradient-to-b from-[#E0E7FF] to-[#A5B4FC] object-cover'
   ),
+  donateMessagePreviewBg: cx('bg-gradient-to-br from-[#C43333] to-[#F9A11E]'),
 }
 export function getCommonClassNames(type: keyof typeof COMMON_CLASS_NAMES) {
   return COMMON_CLASS_NAMES[type]

@@ -1,4 +1,4 @@
-import { repliedMessagePreviewPatrs } from '@/components/extensions/config'
+import { repliedMessagePreviewParts } from '@/components/extensions/config'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
@@ -41,7 +41,7 @@ export default function RepliedMessagePreview({
   const extensionId = extensions?.[0]?.id
 
   const extensionRepliedPart = extensionId
-    ? repliedMessagePreviewPatrs[extensionId]
+    ? repliedMessagePreviewParts[extensionId]
     : undefined
 
   const { element: ExtensionElement, config } = extensionRepliedPart || {}
@@ -85,7 +85,7 @@ export default function RepliedMessagePreview({
         props.onClick?.(e)
       }}
     >
-      {place === 'inside' && extensionPart && extensionPart}
+      {place === 'inside' && extensionPart}
       <div className='flex flex-col'>
         <Name
           address={message?.struct.ownerId}

@@ -37,7 +37,6 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   sendButtonText?: string
   sendButtonProps?: ButtonProps
   isPrimary?: boolean
-  allowEmptyMessage?: boolean
   beforeMesageSend?: (
     messageParams: SendMessageParams
   ) => Promise<BeforeMessageResult>
@@ -60,7 +59,6 @@ export default function ChatForm({
   sendButtonText,
   sendButtonProps,
   isPrimary,
-  allowEmptyMessage = false,
   beforeMesageSend,
   ...props
 }: ChatFormProps) {
@@ -125,7 +123,10 @@ export default function ChatForm({
 
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
-  const isDisabled = mustHaveMessageBody && !processMessage(messageBody)
+
+  const isDisabled =
+    (mustHaveMessageBody && !processMessage(messageBody)) ||
+    sendButtonProps?.disabled
 
   const resetForm = () => {
     setMessageBody('')
@@ -211,11 +212,7 @@ export default function ChatForm({
               tabIndex={-1}
               onClick={submitForm}
               size='circle'
-              variant={
-                sendButtonProps?.disabled || isDisabled
-                  ? 'mutedOutline'
-                  : 'primary'
-              }
+              variant={isDisabled ? 'mutedOutline' : 'primary'}
               {...sendButtonProps}
               className={cx(classNames, sendButtonProps?.className)}
             >

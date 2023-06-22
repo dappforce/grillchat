@@ -22,7 +22,7 @@ export default function RepliedMessage({
 
   const onRepliedMessageClick = async (messageId: string) => {
     const element = document.getElementById(getMessageElementId(messageId))
-    scrollToMessageElement(element, scrollContainer?.current ?? null)
+    await scrollToMessageElement(element, scrollContainer?.current ?? null)
   }
 
   return (

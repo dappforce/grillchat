@@ -65,6 +65,7 @@ const AmountInput = ({
         min={0}
         value={amount}
         onChange={onInputChange}
+        error={inputError}
         rightElement={() => (
           <div>
             <Button
@@ -90,7 +91,7 @@ const AmountInput = ({
             : 'bg-slate-900 text-white'
         )}
       />
-      {inputError && <div className='text-sm text-red-400'>{inputError}</div>}
+      {/* {inputError && <div className='text-sm text-red-400'>{inputError}</div>} */}
     </div>
   )
 }
