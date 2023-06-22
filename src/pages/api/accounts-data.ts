@@ -128,11 +128,13 @@ async function fetchAccountsData(addresses: string[]) {
     const subsocialApi = await getSubsocialApi()
 
     const api = await subsocialApi.blockchain.api
+    console.log('FETCHING...', addresses)
     const evmAddressses = await api.query.evmAccounts.evmAddressByAccount.multi(
       addresses
     )
 
     const evmAddressesHuman = evmAddressses.map((x) => x.toHuman() as string)
+    console.log('DATA', evmAddressesHuman)
 
     const domains = await getEnsNames(evmAddressesHuman)
 
