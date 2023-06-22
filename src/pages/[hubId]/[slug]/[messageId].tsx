@@ -24,9 +24,12 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
     let description = ''
 
     try {
-      const [chat, message] = await getPostsServer([chatId, messageId])
-      title = `Message from ${chat.content?.title}`
-      description = message.content?.body ?? ''
+      const results = await getPostsServer([chatId, messageId])
+      const chat = results.find((post) => post.id === chatId)
+      const message = results.find((post) => post.id === messageId)
+
+      title = `Message from ${chat?.content?.title}`
+      description = message?.content?.body ?? ''
     } catch (err) {
       console.error('Error fetching for message page: ', err)
     }
