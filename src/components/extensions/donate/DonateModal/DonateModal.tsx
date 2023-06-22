@@ -9,6 +9,7 @@ import WalletActionRequiredModal from './WalletActionRequiredModal'
 export const modalByStep: DonateModalContent = {
   'donate-form': DonateForm,
   'wallet-action-required': WalletActionRequiredModal,
+  'add-network': WalletActionRequiredModal,
 }
 
 export default function DonateModal(props: DonateModalProps) {
@@ -23,6 +24,12 @@ export default function DonateModal(props: DonateModalProps) {
   useEffect(() => {
     setCurrentStep('donate-form')
   }, [])
+
+  useEffect(() => {
+    if (!props.isOpen) {
+      setCurrentStep('donate-form')
+    }
+  }, [props.isOpen])
 
   const onSwitchButtonClick = async () => {
     connectOrSwitch()

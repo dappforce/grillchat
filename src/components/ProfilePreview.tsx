@@ -1,6 +1,7 @@
 import EthIcon from '@/assets/icons/eth.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import AddressAvatar from './AddressAvatar'
@@ -22,6 +23,9 @@ const ProfilePreview = ({
 }: ProfilePreviewProps) => {
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { evmAddress } = accountData || {}
+  const myAddress = useMyAccount((state) => state.address)
+
+  const isMyAddressPart = myAddress === address ? ' my' : ''
 
   return (
     <div className={cx('flex items-center gap-4', className)}>
@@ -37,7 +41,7 @@ const ProfilePreview = ({
               <GrillIcon />
               <CopyTextInline
                 text={truncateAddress(address)}
-                tooltip='Copy my Grill public address'
+                tooltip={`Copy${isMyAddressPart} Grill public address`}
                 textToCopy={address}
                 textClassName='font-mono leading-none text-[15px] leading-[14px]'
               />
@@ -48,7 +52,7 @@ const ProfilePreview = ({
               <EthIcon />
               <CopyTextInline
                 text={truncateAddress(evmAddress)}
-                tooltip='Copy my EVM address'
+                tooltip={`Copy${isMyAddressPart} EVM address`}
                 textToCopy={evmAddress}
                 textClassName='font-mono leading-none text-[15px] leading-[14px]'
               />

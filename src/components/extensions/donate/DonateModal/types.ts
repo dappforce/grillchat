@@ -2,7 +2,10 @@ import { ListItem } from '@/components/inputs/SelectInput'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { Dispatch, SetStateAction } from 'react'
 
-export type DonateModalStep = 'donate-form' | 'wallet-action-required'
+export type DonateModalStep =
+  | 'donate-form'
+  | 'wallet-action-required'
+  | 'add-network'
 
 export type DonateProps = DonateModalProps & {
   setCurrentStep: (currentStep: DonateModalStep) => void

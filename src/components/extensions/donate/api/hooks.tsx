@@ -53,20 +53,24 @@ export const useConnectOrSwitchNetwork = (
 
   useToastError<Error | null>(
     switchNetworkError,
-    'Create account failed',
-    () => `Make sure ${chainName} has been added to the wallet`
+    'Switch network failed',
+    () => {
+      setCurrentStep('add-network')
+      return `Make sure ${chainName} has been added to the wallet`
+    }
   )
 
   useEffect(() => {
-    if (isSwitchNetworkLoading || (isConnectLoading && !isConnected)) {
-      setCurrentStep('wallet-action-required')
-    } else {
-      setCurrentStep('donate-form')
+    if (!switchNetworkError) {
+      if (isSwitchNetworkLoading || (isConnectLoading && !isConnected)) {
+        setCurrentStep('wallet-action-required')
+      } else {
+        setCurrentStep('donate-form')
+      }
     }
-  }, [isSwitchNetworkLoading, isConnectLoading])
+  }, [isSwitchNetworkLoading, isConnectLoading, switchNetworkError])
 
   const connectOrSwitch = () => {
-    console.log(isConnected)
     if (!isConnected) {
       isTouchDevice() &&
         connector.connector.on(
