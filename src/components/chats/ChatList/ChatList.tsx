@@ -1,3 +1,4 @@
+import PinIcon from '@/assets/icons/pin.png'
 import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfiniteScrollData'
 import Container from '@/components/Container'
 import MessageModal from '@/components/modals/MessageModal'
@@ -13,6 +14,7 @@ import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { validateNumber } from '@/utils/strings'
 import { replaceUrl } from '@/utils/window'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import {
   ComponentProps,
@@ -169,7 +171,11 @@ function ChatListContent({
         props.className
       )}
     >
-      <PinnedMessage chatId={chatId} asContainer={asContainer} />
+      <PinnedMessage
+        scrollToMessage={scrollToMessage}
+        chatId={chatId}
+        asContainer={asContainer}
+      />
       <ScrollableContainer
         id={scrollableContainerId}
         ref={scrollContainerRef}
@@ -250,8 +256,13 @@ function ChatListContent({
 type PinnedMessageProps = {
   chatId: string
   asContainer?: boolean
+  scrollToMessage: ReturnType<typeof useScrollToMessage>
 }
-function PinnedMessage({ chatId, asContainer }: PinnedMessageProps) {
+function PinnedMessage({
+  chatId,
+  asContainer,
+  scrollToMessage,
+}: PinnedMessageProps) {
   const pinnedMessage = getPinnedMessageInChatId(chatId)
   const { data: message } = getPostQuery.useQuery(pinnedMessage)
   if (!message) return null
@@ -259,11 +270,25 @@ function PinnedMessage({ chatId, asContainer }: PinnedMessageProps) {
   const Component = asContainer ? Container<'div'> : 'div'
   return (
     <div className='sticky top-0 z-10 border-b border-border-gray bg-background-light text-sm'>
-      <Component className='flex flex-col overflow-hidden px-4 py-2'>
-        <span className='font-medium text-text-primary'>Pinned Message</span>
-        <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
-          {message.content?.body}
-        </span>
+      <Component
+        className='flex cursor-pointer items-center overflow-hidden py-2'
+        onClick={() => scrollToMessage(message.id, true)}
+      >
+        <div className='mr-1'>
+          <Image
+            src={PinIcon}
+            alt='pin'
+            width={16}
+            height={16}
+            className='mx-3 h-4 w-4 flex-shrink-0'
+          />
+        </div>
+        <div className='flex flex-col overflow-hidden'>
+          <span className='font-medium text-text-primary'>Pinned Message</span>
+          <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
+            {message.content?.body}
+          </span>
+        </div>
       </Component>
     </div>
   )
