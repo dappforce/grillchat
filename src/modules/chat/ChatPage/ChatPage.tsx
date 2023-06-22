@@ -21,7 +21,6 @@ import Image, { ImageProps } from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
-import ChatPageNavbarExtension from './ChatPageNavbarExtension'
 
 const AboutChatModal = dynamic(
   () => import('@/components/modals/about/AboutChatModal'),
@@ -84,7 +83,6 @@ export default function ChatPage({
         ),
       }}
     >
-      <ChatPageNavbarExtension />
       <ChatRoom
         hubId={hubId}
         chatId={chatId}
