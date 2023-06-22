@@ -29,7 +29,7 @@ export const homePageAdditionalTabs: {
   {
     id: 'decoded',
     text: 'Decoded',
-    hubId: '1021',
+    hubId: '1023',
   },
 ]
 
