@@ -1,4 +1,4 @@
-import { getAliasFromHubId } from '@/constants/hubs'
+import { getAliasFromHubId, getPinnedChatsInHubId } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useSendEvent } from '@/stores/analytics'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -82,6 +82,8 @@ function ChatPreviewContainer({
     })
   }
 
+  const isPinned = getPinnedChatsInHubId(usedHubId ?? '').includes(chat.id)
+
   return (
     <ChatPreview
       onClick={onChatClick}
@@ -95,6 +97,7 @@ function ChatPreviewContainer({
       description={content?.body}
       chatId={chat.id}
       hubId={usedHubId}
+      isPinned={isPinned}
       withUnreadCount
       withFocusedStyle={isFocused}
     />
