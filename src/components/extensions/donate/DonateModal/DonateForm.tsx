@@ -144,6 +144,7 @@ function DonateForm({
             setSelected={setSelectedChain}
             fieldLabel='Chain'
             items={chainItems}
+            imgSize={38}
           />
 
           {showSwichButton ? (
@@ -157,6 +158,7 @@ function DonateForm({
                 setSelected={setSelectedToken}
                 fieldLabel='Token'
                 items={tokensItems}
+                imgSize={38}
               />
               <AmountInput
                 amount={amount}

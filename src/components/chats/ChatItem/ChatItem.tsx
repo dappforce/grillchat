@@ -1,4 +1,3 @@
-import DonateCoinIcon from '@/assets/icons/donate-coin.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
 import ProfileModal from '@/components/auth/ProfileModal'
@@ -30,6 +29,7 @@ import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
+import { RiCopperCoinLine } from 'react-icons/ri'
 import urlJoin from 'url-join'
 import MetadataModal from '../../modals/MetadataModal'
 import ChatItemWithExtension from './ChatItemWithExtension'
@@ -110,7 +110,7 @@ export default function ChatItem({
   const getChatMenus = (): FloatingMenusProps['menus'] => {
     const donateMenuItem: FloatingMenusProps['menus'][number] = {
       text: 'Donate',
-      icon: DonateCoinIcon,
+      icon: RiCopperCoinLine,
       onClick: () => {
         if (!address) {
           setOpenLoginModal(true)
