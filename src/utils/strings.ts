@@ -32,3 +32,9 @@ export function validateEmail(str: string) {
   const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/
   return emailRegex.test(str)
 }
+
+export function getUrlFromText(str: string) {
+  const urlRegex =
+    /((http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-]))/
+  return urlRegex.exec(str)?.[0]
+}

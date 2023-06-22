@@ -1,3 +1,4 @@
+import { getUrlFromText } from '@/utils/strings'
 import { NftProperties } from '@subsocial/api/types'
 
 export const nftChains = [
@@ -168,13 +169,18 @@ export function getMarketplaceFromLink(link: string) {
 }
 
 export function parseNftMarketplaceLink(link: string): NftProperties {
-  const marketplace = marketplaceParser.find((m) => m.checker(link))
+  const url = getUrlFromText(link)
+  if (!url) {
+    throw new Error('Invalid URL')
+  }
+
+  const marketplace = marketplaceParser.find((m) => m.checker(url))
 
   if (!marketplace) {
     throw new Error('NFT marketplace not found')
   }
 
-  const removedQueryParams = link.split('?')[0]
+  const removedQueryParams = url.split('?')[0]
   const parsed = marketplace.parser(removedQueryParams)
   let mappedChain = marketplace.chainMapper[parsed.chain]
 
