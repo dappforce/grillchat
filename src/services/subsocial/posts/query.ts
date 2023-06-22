@@ -95,6 +95,7 @@ export const GET_POSTS_BY_CONTENT = gql`
         hidden_eq: false
         isComment_eq: false
         title_containsInsensitive: $search
+        body_containsInsensitive: $search
         AND: { space: { id_in: $spaceIds }, OR: { id_in: $postIds } }
       }
     ) {
