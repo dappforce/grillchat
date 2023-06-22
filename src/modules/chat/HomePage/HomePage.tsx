@@ -21,6 +21,18 @@ export type HubsPageProps = {
 const hotChatsHubId = getMainHubId()
 const addressFromStorage = accountAddressStorage.get()
 
+export const homePageAdditionalTabs: {
+  id: string
+  text: string
+  hubId: string
+}[] = [
+  {
+    id: 'decoded',
+    text: 'Decoded',
+    hubId: '1021',
+  },
+]
+
 export default function HubsPage(props: HubsPageProps) {
   const router = useRouter()
   const { search, setSearch, getFocusedElementIndex, focusController } =
@@ -34,6 +46,11 @@ export default function HubsPage(props: HubsPageProps) {
         <MyChatsContent changeTab={setSelectedTab} />
       ),
     },
+    ...homePageAdditionalTabs.map(({ id, text, hubId }) => ({
+      id,
+      text,
+      content: () => <HotChatsContent hubId={hubId} />,
+    })),
     {
       id: 'hot-chats',
       text: 'Hot Chats',
