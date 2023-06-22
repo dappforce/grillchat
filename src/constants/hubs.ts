@@ -28,6 +28,7 @@ const LINKED_CHAT_IDS_FOR_HUB_ID: Record<string, string[]> = {
   '1005': ['754', '2808', '2052'],
   '1002': ['3477', '3454', '4923'],
   '1010': ['754', '2065', '2027', '5145', '2035', '2064'],
+  '1021': ['3454'],
 }
 export function getLinkedChatIdsForHubId(hubId: string) {
   return LINKED_CHAT_IDS_FOR_HUB_ID[hubId] ?? []
