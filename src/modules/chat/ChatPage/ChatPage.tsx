@@ -68,7 +68,7 @@ export default function ChatPage({
           forceUseDefaultBackLink: false,
         },
         customContent: ({ backButton, authComponent, colorModeToggler }) => (
-          <div className='flex items-center justify-between gap-4'>
+          <div className='flex items-center justify-between gap-4 overflow-hidden'>
             <NavbarChatInfo
               backButton={backButton}
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
@@ -140,7 +140,7 @@ function NavbarChatInfo({
   const chatTitle = chatMetadata?.title
 
   return (
-    <div className='flex flex-1 items-center'>
+    <div className='flex flex-1 items-center overflow-hidden'>
       {enableBackButton && backButton}
       <Button
         variant='transparent'
@@ -155,7 +155,7 @@ function NavbarChatInfo({
         <Image
           className={cx(
             getCommonClassNames('chatImageBackground'),
-            'h-9 w-9 justify-self-end'
+            'h-9 w-9 flex-shrink-0 justify-self-end'
           )}
           width={36}
           height={36}
