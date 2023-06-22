@@ -8,6 +8,7 @@ import useIsAtBottom from './hooks/useIsAtBottom'
 export type NewMessageNoticeProps = ButtonProps & {
   scrollContainerRef: RefObject<HTMLDivElement | null>
   messageIds: string[]
+  asContainer?: boolean
 }
 
 const IS_AT_BOTTOM_OFFSET = 50
@@ -15,6 +16,7 @@ const IS_AT_BOTTOM_OFFSET = 50
 export function NewMessageNotice({
   scrollContainerRef,
   messageIds,
+  asContainer,
   ...props
 }: NewMessageNoticeProps) {
   const isAtBottom = useIsAtBottom(scrollContainerRef, IS_AT_BOTTOM_OFFSET)
@@ -44,7 +46,7 @@ export function NewMessageNotice({
       className={cx('relative bg-background-light p-2.5', props.className)}
     >
       {anyNewData ? (
-        <span className='absolute -top-1 left-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full bg-background-primary py-0.5 px-2 text-sm text-text-on-primary'>
+        <span className='absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-background-primary px-2 py-0.5 text-sm text-text-on-primary'>
           {anyNewData}
         </span>
       ) : null}

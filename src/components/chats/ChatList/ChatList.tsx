@@ -2,7 +2,7 @@ import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfinite
 import Container from '@/components/Container'
 import MessageModal from '@/components/modals/MessageModal'
 import ScrollableContainer from '@/components/ScrollableContainer'
-import { CHAT_PER_PAGE } from '@/constants/chat'
+import { CHAT_PER_PAGE, getPinnedMessageInChatId } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -162,22 +162,23 @@ function ChatListContent({
       SCROLL_THRESHOLD_PERCENTAGE || DEFAULT_SCROLL_THRESHOLD
 
   return (
-    <Component
+    <div
       {...props}
       className={cx(
         'relative flex flex-1 flex-col overflow-hidden',
         props.className
       )}
     >
+      <PinnedMessage chatId={chatId} asContainer={asContainer} />
       <ScrollableContainer
         id={scrollableContainerId}
         ref={scrollContainerRef}
         className={cx(
-          'flex flex-col-reverse overflow-x-hidden pr-2 md:pr-4',
+          'flex flex-col-reverse overflow-x-hidden pl-2',
           scrollableContainerClassName
         )}
       >
-        <div ref={innerRef}>
+        <Component ref={innerRef}>
           <InfiniteScroll
             dataLength={loadedMessageQueries.length}
             next={loadMore}
@@ -222,7 +223,7 @@ function ChatListContent({
               )
             })}
           </InfiniteScroll>
-        </div>
+        </Component>
       </ScrollableContainer>
       <MessageModal
         isOpen={!!messageModalMsgId}
@@ -230,11 +231,40 @@ function ChatListContent({
         messageId={messageModalMsgId}
         scrollToMessage={scrollToMessage}
       />
-      <NewMessageNotice
-        className={cx('absolute bottom-0 right-6', newMessageNoticeClassName)}
-        messageIds={messageIds}
-        scrollContainerRef={scrollContainerRef}
-      />
-    </Component>
+      <Component>
+        <div className='relative'>
+          <NewMessageNotice
+            className={cx(
+              'absolute bottom-0 right-3',
+              newMessageNoticeClassName
+            )}
+            messageIds={messageIds}
+            scrollContainerRef={scrollContainerRef}
+          />
+        </div>
+      </Component>
+    </div>
+  )
+}
+
+type PinnedMessageProps = {
+  chatId: string
+  asContainer?: boolean
+}
+function PinnedMessage({ chatId, asContainer }: PinnedMessageProps) {
+  const pinnedMessage = getPinnedMessageInChatId(chatId)
+  const { data: message } = getPostQuery.useQuery(pinnedMessage)
+  if (!message) return null
+
+  const Component = asContainer ? Container<'div'> : 'div'
+  return (
+    <div className='sticky top-0 z-10 border-b border-border-gray bg-background-light text-sm'>
+      <Component className='flex flex-col overflow-hidden px-4 py-2'>
+        <span className='font-medium text-text-primary'>Pinned Message</span>
+        <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
+          {message.content?.body}
+        </span>
+      </Component>
+    </div>
   )
 }
