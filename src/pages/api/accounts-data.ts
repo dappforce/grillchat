@@ -65,14 +65,22 @@ export default async function handler(
 
   const addresses = params.data.addresses
 
-  const accountsData =
-    req.method === 'POST'
-      ? await fetchAccountsData(addresses)
-      : await getAccountsDataFromCache(addresses)
+  if (req.method === 'POST') {
+    invalidateCache(addresses)
+    return res.status(200).send({ success: true, message: 'OK' })
+  } else {
+    const accountsData = await getAccountsDataFromCache(addresses)
 
-  return res
-    .status(200)
-    .send({ success: true, message: 'OK', data: accountsData })
+    return res
+      .status(200)
+      .send({ success: true, message: 'OK', data: accountsData })
+  }
+}
+
+function invalidateCache(addresses: string[]) {
+  addresses.forEach((address) => {
+    accountsDataCache.queue.delete(address)
+  })
 }
 
 async function checkEnsAvatar(ensName: string | null) {
