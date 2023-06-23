@@ -9,6 +9,9 @@ import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount } from '@/stores/my-account'
+import { LocalStorage } from '@/utils/storage'
+import { useEffect, useState } from 'react'
 import { useDisconnect } from 'wagmi'
 import { ContentProps } from '../types'
 
@@ -18,6 +21,9 @@ function AccountContent({
   notification,
   evmAddress,
 }: ContentProps) {
+  const { closeNotificationMenuNotif, notificationMenuNotif } =
+    useNotificationMenuNotif()
+
   const sendEvent = useSendEvent()
   const { disconnect } = useDisconnect()
 
@@ -46,10 +52,10 @@ function AccountContent({
   const menus: MenuListProps['menus'] = [
     {
       text: (
-        <span>
-          <span>Show grill secret key</span>
-          {notification?.showNotif && (
-            <span className='relative ml-2 h-2 w-2'>
+        <span className='flex items-center'>
+          <span>Notifications</span>
+          {notificationMenuNotif && (
+            <span className='relative ml-2 block h-2 w-2'>
               <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
               <span className='relative block h-full w-full rounded-full bg-background-warning' />
             </span>
@@ -58,8 +64,7 @@ function AccountContent({
       ),
       icon: BellIcon,
       onClick: () => {
-        notification?.setNotifDone()
-        onLinkEvmAddressClick()
+        closeNotificationMenuNotif()
       },
     },
     {
@@ -72,10 +77,10 @@ function AccountContent({
     },
     {
       text: (
-        <span>
+        <span className='flex items-center'>
           <span>Show grill secret key</span>
           {notification?.showNotif && (
-            <span className='relative ml-2 h-2 w-2'>
+            <span className='relative ml-2 block h-2 w-2'>
               <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
               <span className='relative block h-full w-full rounded-full bg-background-warning' />
             </span>
@@ -111,6 +116,31 @@ function AccountContent({
       <MenuList menus={menus} />
     </div>
   )
+}
+
+const NOTIFICATION_STORAGE_KEY = 'notification-menu-notif'
+const storage = new LocalStorage(
+  (address: string) => `${NOTIFICATION_STORAGE_KEY}:${address}`
+)
+function useNotificationMenuNotif() {
+  const myAddress = useMyAccount((state) => state.address)
+  const [notificationMenuNotif, setNotificationMenuNotif] = useState(false)
+
+  useEffect(() => {
+    if (!myAddress) return
+    if (!storage.get(myAddress)) {
+      setNotificationMenuNotif(true)
+    }
+  }, [myAddress])
+
+  return {
+    notificationMenuNotif,
+    closeNotificationMenuNotif: () => {
+      setNotificationMenuNotif(false)
+      if (!myAddress) return
+      storage.set('1', myAddress)
+    },
+  }
 }
 
 export default AccountContent
