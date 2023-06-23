@@ -8,5 +8,5 @@ export type HotChatsContentProps = {
 export default function HotChatsContent({ hubId }: HotChatsContentProps) {
   const { chats } = useSortedChats(hubId)
 
-  return <ChatPreviewList chats={chats} />
+  return <ChatPreviewList chats={chats} hubId={hubId} />
 }

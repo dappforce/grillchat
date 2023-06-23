@@ -34,3 +34,10 @@ const LINKED_CHAT_IDS_FOR_HUB_ID: Record<string, string[]> = {
 export function getLinkedChatIdsForHubId(hubId: string) {
   return LINKED_CHAT_IDS_FOR_HUB_ID[hubId] ?? []
 }
+
+const PINNED_CHATS_IN_HUB_ID: Record<string, string[]> = {
+  '1023': ['3454'],
+}
+export function getPinnedChatsInHubId(hubId: string) {
+  return PINNED_CHATS_IN_HUB_ID[hubId] ?? []
+}
