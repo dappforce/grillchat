@@ -1,13 +1,15 @@
 import { PostContentExtension } from '@subsocial/api/types'
-import { ChatItemWithExtensionProps } from '../chats/ChatItem/ChatItemWithExtension'
 import DonateMessagePreview from './donate/DonateMessagePreview'
 import DonateRepliedMessagePreviewPart from './donate/DonateRepliedMessagePreviewPart'
 import NftChatItem from './nft/NftChatItem'
 import NftRepliedMessagePreviewPart from './nft/NftRepliedMessagePreviewPart'
-import { RepliedMessagePreviewPartsProps } from './types'
+import {
+  ChatItemWithExtensionProps,
+  RepliedMessagePreviewPartsProps,
+} from './types'
 
 export const repliedMessagePreviewParts: Record<
-  string,
+  PostContentExtension['id'],
   RepliedMessagePreviewPartsProps
 > = {
   'subsocial-evm-nft': {

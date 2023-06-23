@@ -9,7 +9,8 @@ import { NftProperties } from '@subsocial/api/types'
 import truncate from 'lodash.truncate'
 import { useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
-import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
+import CommonChatItem from '../CommonChatItem'
+import { ExtensionChatItemProps } from '../types'
 import { getMarketplaceFromLink } from './utils'
 
 type Props = ExtensionChatItemProps

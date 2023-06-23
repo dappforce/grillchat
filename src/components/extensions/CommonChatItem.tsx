@@ -5,17 +5,10 @@ import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
-import { PostData } from '@subsocial/api/types'
 import Linkify from 'linkify-react'
-import { SyntheticEvent } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import { ProfilePreviewModalName } from '../ProfilePreviewModalWrapper'
-
-export type ExtensionChatItemProps = {
-  message: PostData
-  onCheckMarkClick: (e: SyntheticEvent) => void
-  scrollToMessage?: (messageId: string) => Promise<void>
-}
+import { ExtensionChatItemProps } from './types'
 
 type DerivativesData = {
   isMyMessage: boolean

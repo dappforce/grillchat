@@ -1,4 +1,5 @@
 import useGetTheme from '@/hooks/useGetTheme'
+import { isTouchDevice } from '@/utils/device'
 import {
   connectorsForWallets,
   darkTheme,
@@ -17,16 +18,22 @@ import { talismanWallet } from './wallets/talisman'
 
 const { chains, publicClient, webSocketPublicClient } = getConfiguredChains()
 
+const commonWallets = [metaMaskWallet({ chains })]
+
+const desktopWallets = [
+  ...commonWallets,
+  talismanWallet({ chains }),
+  argentWallet({ chains }),
+  coinbaseWallet({ chains, appName: '' }),
+  ledgerWallet({ chains }),
+]
+
+const mobileWallets = [...commonWallets]
+
 const connectors = connectorsForWallets([
   {
     groupName: 'Recommended',
-    wallets: [
-      metaMaskWallet({ chains }),
-      talismanWallet({ chains }),
-      argentWallet({ chains }),
-      coinbaseWallet({ chains, appName: '' }),
-      ledgerWallet({ chains }),
-    ],
+    wallets: isTouchDevice() ? mobileWallets : desktopWallets,
   },
 ])
 

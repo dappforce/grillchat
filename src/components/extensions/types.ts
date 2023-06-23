@@ -1,4 +1,13 @@
 import { PostContent, PostData } from '@subsocial/api/types'
+import { SyntheticEvent } from 'react'
+
+export type ExtensionChatItemProps = {
+  message: PostData
+  onCheckMarkClick: (e: SyntheticEvent) => void
+  scrollToMessage?: (messageId: string) => Promise<void>
+}
+
+export type ChatItemWithExtensionProps = ExtensionChatItemProps
 
 export type RepliedMessagePreviewPartProps = {
   extensions: PostContent['extensions']

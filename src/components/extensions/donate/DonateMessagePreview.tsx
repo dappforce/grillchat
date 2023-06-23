@@ -8,7 +8,8 @@ import { DonateExtension, DonateProperies } from '@subsocial/api/types'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { HiArrowUpRight } from 'react-icons/hi2'
-import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
+import CommonChatItem from '../CommonChatItem'
+import { ExtensionChatItemProps } from '../types'
 
 type DonatePreviewProps = {
   extensionProps?: DonateProperies
@@ -60,7 +61,7 @@ const DonatePreview = ({ extensionProps }: DonatePreviewProps) => {
   )
 }
 
-export type DonateMessagePreviewProps = ExtensionChatItemProps
+type DonateMessagePreviewProps = ExtensionChatItemProps
 
 export default function DonateMessagePreview({
   message,
