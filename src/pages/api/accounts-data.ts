@@ -123,6 +123,7 @@ async function getEnsNames(evmAddresses: string[]) {
 }
 
 async function fetchAccountsData(addresses: string[]) {
+  console.log('Fetching', addresses)
   let newlyFetchedData: AccountData[] = []
 
   try {
@@ -179,6 +180,7 @@ export async function getAccountsDataFromCache(addresses: string[]) {
 
   const promises = addresses.map(async (address) => {
     const cachedData = await redis?.get(getRedisKey(address))
+    console.log('Checking cache', address, cachedData)
     if (cachedData) {
       const parsedData = JSON.parse(cachedData)
       evmAddressByGrillAddress.push(parsedData)
