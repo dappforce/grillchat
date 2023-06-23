@@ -1,3 +1,4 @@
+import BellIcon from '@/assets/icons/bell.svg'
 import BulbIcon from '@/assets/icons/bulb.svg'
 import EthIcon from '@/assets/icons/eth.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
@@ -43,6 +44,24 @@ function AccountContent({
   }
 
   const menus: MenuListProps['menus'] = [
+    {
+      text: (
+        <span>
+          <span>Show grill secret key</span>
+          {notification?.showNotif && (
+            <span className='relative ml-2 h-2 w-2'>
+              <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
+              <span className='relative block h-full w-full rounded-full bg-background-warning' />
+            </span>
+          )}
+        </span>
+      ),
+      icon: BellIcon,
+      onClick: () => {
+        notification?.setNotifDone()
+        onLinkEvmAddressClick()
+      },
+    },
     {
       text: evmAddress ? 'My EVM Address' : 'Link EVM address',
       icon: EthIcon,
