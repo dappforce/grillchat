@@ -28,7 +28,7 @@ const menuListItemStyles = cva<MenuListVariants>(
   {
     variants: {
       size: {
-        md: 'px-6 py-3 gap-6',
+        md: 'px-4 py-3 gap-6',
         sm: 'px-3 py-2 gap-4',
       },
     },
@@ -64,7 +64,7 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
           className={menuListItemStyles({ size })}
           onClick={onClick}
         >
-          <Icon className='text-xl text-text-muted' />
+          <Icon className='flex-shrink-0 text-xl text-text-muted' />
           {isValidElement(text) ? text : <span>{text}</span>}
         </Button>
       ))}

@@ -5,6 +5,7 @@ import ExitIcon from '@/assets/icons/exit.svg'
 import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
+import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
@@ -52,19 +53,15 @@ function AccountContent({
   const menus: MenuListProps['menus'] = [
     {
       text: (
-        <span className='flex items-center'>
+        <span className='flex items-center gap-2'>
           <span>Notifications</span>
-          {notificationMenuNotif && (
-            <span className='relative ml-2 block h-2 w-2'>
-              <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
-              <span className='relative block h-full w-full rounded-full bg-background-warning' />
-            </span>
-          )}
+          {notificationMenuNotif && <DotBlinkingNotification />}
         </span>
       ),
       icon: BellIcon,
       onClick: () => {
         closeNotificationMenuNotif()
+        setCurrentState('notifications')
       },
     },
     {
@@ -77,14 +74,9 @@ function AccountContent({
     },
     {
       text: (
-        <span className='flex items-center'>
+        <span className='flex items-center gap-2'>
           <span>Show grill secret key</span>
-          {notification?.showNotif && (
-            <span className='relative ml-2 block h-2 w-2'>
-              <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
-              <span className='relative block h-full w-full rounded-full bg-background-warning' />
-            </span>
-          )}
+          {notification?.showNotif && <DotBlinkingNotification />}
         </span>
       ),
       icon: KeyIcon,
