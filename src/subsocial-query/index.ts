@@ -28,7 +28,7 @@ export function poolQuery<SingleParam, SingleReturn>(
     getQueryId,
     multiCall,
     singleCall,
-    waitTime = 200,
+    waitTime = 250,
     resultMapper,
   } = config
   let queryPool: SingleParam[] = []

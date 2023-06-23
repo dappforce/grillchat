@@ -43,6 +43,17 @@ const GET_ENS_NAMES = gql(`
 const redis = createRedisInstance()
 const MAX_AGE = 5 * 60 // 5 minutes
 
+async function redisCallWrapper<T = void>(
+  callback: () => Promise<T> | undefined
+) {
+  try {
+    return await callback()
+  } catch (err) {
+    console.error(err)
+    return null
+  }
+}
+
 const getRedisKey = (address: string) => {
   return `accounts-data:${address}`
 }
@@ -80,9 +91,7 @@ export default async function handler(
 
 function invalidateCache(addresses: string[]) {
   addresses.forEach((address) => {
-    try {
-      redis?.del(getRedisKey(address))
-    } catch {}
+    redisCallWrapper(() => redis?.del(getRedisKey(address)))
   })
 }
 
@@ -153,14 +162,14 @@ async function fetchAccountsData(addresses: string[]) {
       }
 
       newlyFetchedData.push(accountData)
-      try {
+      redisCallWrapper(() =>
         redis?.set(
           getRedisKey(address),
           JSON.stringify(accountData),
           'EX',
           MAX_AGE
         )
-      } catch {}
+      )
     })
 
     await Promise.all(needToFetchIdsPromise)
@@ -183,18 +192,16 @@ export async function getAccountsDataFromCache(addresses: string[]) {
   let newlyFetchedData: AccountData[] = []
 
   const promises = addresses.map(async (address) => {
-    try {
-      console.log('CACHECHECK, FETCHING...', address)
-      const cachedData = await redis?.get(getRedisKey(address))
-      console.log('CACHECHECK, DONE...', address)
-      if (cachedData) {
-        const parsedData = JSON.parse(cachedData)
-        evmAddressByGrillAddress.push(parsedData)
-      } else {
-        needToFetchIds.push(address)
-      }
-    } catch {
-      console.log('CACHECHECK, ERROR...', address)
+    console.log('CACHECHECK, FETCHING...', address)
+    const cachedData = await redisCallWrapper(() =>
+      redis?.get(getRedisKey(address))
+    )
+
+    console.log('CACHECHECK, DONE...', address)
+    if (cachedData) {
+      const parsedData = JSON.parse(cachedData)
+      evmAddressByGrillAddress.push(parsedData)
+    } else {
       needToFetchIds.push(address)
     }
   })

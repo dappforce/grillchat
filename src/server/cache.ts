@@ -14,6 +14,7 @@ export function createRedisInstance() {
       showFriendlyErrorStack: true,
       enableAutoPipelining: true,
       maxRetriesPerRequest: 0,
+      commandTimeout: 250,
       retryStrategy: (times: number) => {
         return Math.min(times * 200, 1000)
       },
@@ -22,7 +23,7 @@ export function createRedisInstance() {
     const redis = new Redis(options)
 
     redis.on('error', (error: unknown) => {
-      console.warn('[Redis] Warning, error connecting to redis', error)
+      // console.warn('[Redis] Warning, error connecting to redis', error)
     })
 
     return redis
