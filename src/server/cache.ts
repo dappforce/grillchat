@@ -22,7 +22,7 @@ export function createRedisInstance() {
     const redis = new Redis(options)
 
     redis.on('error', (error: unknown) => {
-      console.warn('[Redis] Error connecting', error)
+      console.warn('[Redis] Warning, error connecting to redis', error)
     })
 
     return redis
