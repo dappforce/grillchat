@@ -1,5 +1,5 @@
 import { resolveEnsAvatarSrc } from '@/components/AddressAvatar'
-import { createRedisInstance } from '@/server/cache'
+import { createRedisInstance, redisCallWrapper } from '@/server/cache'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import axios from 'axios'
 import { request } from 'graphql-request'
@@ -42,17 +42,6 @@ const GET_ENS_NAMES = gql(`
 
 const redis = createRedisInstance()
 const MAX_AGE = 5 * 60 // 5 minutes
-
-async function redisCallWrapper<T = void>(
-  callback: () => Promise<T> | undefined
-) {
-  try {
-    return await callback()
-  } catch (err) {
-    console.error(err)
-    return null
-  }
-}
 
 const getRedisKey = (address: string) => {
   return `accounts-data:${address}`
@@ -134,7 +123,6 @@ async function getEnsNames(evmAddresses: string[]) {
 }
 
 async function fetchAccountsData(addresses: string[]) {
-  console.log('Fetching', addresses)
   let newlyFetchedData: AccountData[] = []
 
   try {
@@ -192,12 +180,10 @@ export async function getAccountsDataFromCache(addresses: string[]) {
   let newlyFetchedData: AccountData[] = []
 
   const promises = addresses.map(async (address) => {
-    console.log('CACHECHECK, FETCHING...', address)
     const cachedData = await redisCallWrapper(() =>
       redis?.get(getRedisKey(address))
     )
 
-    console.log('CACHECHECK, DONE...', address)
     if (cachedData) {
       const parsedData = JSON.parse(cachedData)
       evmAddressByGrillAddress.push(parsedData)

@@ -23,12 +23,26 @@ export function createRedisInstance() {
     const redis = new Redis(options)
 
     redis.on('error', (error: unknown) => {
-      // console.warn('[Redis] Warning, error connecting to redis', error)
+      console.warn(
+        '[Redis] Warning, error connecting to redis',
+        JSON.stringify(error)
+      )
     })
 
     return redis
   } catch (e) {
     console.error(`[Redis] Could not create a Redis instance`)
+    return null
+  }
+}
+
+export async function redisCallWrapper<T = void>(
+  callback: () => Promise<T> | undefined
+) {
+  try {
+    return await callback()
+  } catch (err) {
+    console.warn('Warning: Redis operation failed', JSON.stringify(err))
     return null
   }
 }
