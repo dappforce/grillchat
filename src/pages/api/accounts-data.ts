@@ -179,9 +179,11 @@ export async function getAccountsDataFromCache(addresses: string[]) {
   let newlyFetchedData: AccountData[] = []
 
   const promises = addresses.map(async (address) => {
+    console.log('FETCHING...', address)
     const cachedData = await redisCallWrapper((redis) =>
       redis?.get(getRedisKey(address))
     )
+    console.log('DONE', address, cachedData)
 
     if (cachedData) {
       const parsedData = JSON.parse(cachedData)
