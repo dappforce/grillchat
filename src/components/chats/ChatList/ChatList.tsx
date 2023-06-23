@@ -241,7 +241,7 @@ function ChatListContent({
         <div className='relative'>
           <NewMessageNotice
             className={cx(
-              'absolute bottom-0 right-3',
+              'absolute bottom-2 right-3',
               newMessageNoticeClassName
             )}
             messageIds={messageIds}
