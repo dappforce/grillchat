@@ -80,7 +80,9 @@ export default async function handler(
 
 function invalidateCache(addresses: string[]) {
   addresses.forEach((address) => {
-    redis?.del(getRedisKey(address))
+    try {
+      redis?.del(getRedisKey(address))
+    } catch {}
   })
 }
 
@@ -151,12 +153,14 @@ async function fetchAccountsData(addresses: string[]) {
       }
 
       newlyFetchedData.push(accountData)
-      redis?.set(
-        getRedisKey(address),
-        JSON.stringify(accountData),
-        'EX',
-        MAX_AGE
-      )
+      try {
+        redis?.set(
+          getRedisKey(address),
+          JSON.stringify(accountData),
+          'EX',
+          MAX_AGE
+        )
+      } catch {}
     })
 
     await Promise.all(needToFetchIdsPromise)
@@ -179,12 +183,16 @@ export async function getAccountsDataFromCache(addresses: string[]) {
   let newlyFetchedData: AccountData[] = []
 
   const promises = addresses.map(async (address) => {
-    const cachedData = await redis?.get(getRedisKey(address))
-    console.log('Checking cache', address, cachedData)
-    if (cachedData) {
-      const parsedData = JSON.parse(cachedData)
-      evmAddressByGrillAddress.push(parsedData)
-    } else {
+    try {
+      const cachedData = await redis?.get(getRedisKey(address))
+      console.log('Checking cache', address, cachedData)
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData)
+        evmAddressByGrillAddress.push(parsedData)
+      } else {
+        needToFetchIds.push(address)
+      }
+    } catch {
       needToFetchIds.push(address)
     }
   })
