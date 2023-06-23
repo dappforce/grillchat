@@ -3,9 +3,9 @@ import MailIcon from '@/assets/icons/mail.svg'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList from '@/components/MenuList'
 import { FaDiscord, FaTelegram } from 'react-icons/fa'
-import { ContentProps } from '../types'
+import { ContentProps } from '../../types'
 
-export default function NotificationContent({}: ContentProps) {
+export default function NotificationContent({ setCurrentState }: ContentProps) {
   return (
     <MenuList
       className='mb-2 pt-0'
@@ -18,7 +18,7 @@ export default function NotificationContent({}: ContentProps) {
             </span>
           ),
           icon: FaTelegram,
-          onClick: () => undefined,
+          onClick: () => setCurrentState('telegram-notifications'),
         },
         {
           text: <SoonMenu text='Push Notifications' />,
