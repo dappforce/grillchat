@@ -184,8 +184,9 @@ export async function getAccountsDataFromCache(addresses: string[]) {
 
   const promises = addresses.map(async (address) => {
     try {
+      console.log('CACHECHECK, FETCHING...', address)
       const cachedData = await redis?.get(getRedisKey(address))
-      console.log('Checking cache', address, cachedData)
+      console.log('CACHECHECK, DONE...', address)
       if (cachedData) {
         const parsedData = JSON.parse(cachedData)
         evmAddressByGrillAddress.push(parsedData)
@@ -193,6 +194,7 @@ export async function getAccountsDataFromCache(addresses: string[]) {
         needToFetchIds.push(address)
       }
     } catch {
+      console.log('CACHECHECK, ERROR...', address)
       needToFetchIds.push(address)
     }
   })
