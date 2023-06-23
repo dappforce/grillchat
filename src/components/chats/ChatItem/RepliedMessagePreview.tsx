@@ -89,7 +89,7 @@ export default function RepliedMessagePreview({
       <div className='flex flex-col'>
         <Name
           address={message?.struct.ownerId}
-          className='font-medium'
+          className='mb-1 font-medium'
           color={textColor}
         />
         {place === 'body' && extensionPart ? (

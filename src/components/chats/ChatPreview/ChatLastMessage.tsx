@@ -2,6 +2,7 @@ import { repliedMessagePreviewParts } from '@/components/extensions/config'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
+import { PostContentExtension } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import useLastMessage from './hooks/useLastMessage'
 
@@ -29,7 +30,7 @@ export default function ChatLastMessage({
 
   const firstExtension = extensions?.[0]
 
-  const extensionId = firstExtension?.id as string | undefined
+  const extensionId = firstExtension?.id as PostContentExtension['id']
 
   const { element, config } =
     repliedMessagePreviewParts[extensionId || ''] || {}

@@ -48,7 +48,7 @@ function WalletActionRequiredModal({ currentStep, ...props }: DonateProps) {
     modalHeader[currentStep as WalletActionRequiredModalStep]
 
   return (
-    <Modal {...props} title={title} description={desc} panelClassName='pb-5'>
+    <Modal {...props} title={title} description={desc}>
       <div className='flex w-full flex-col items-center gap-4'>
         <Image
           className='w-64 max-w-xs rounded-full'
