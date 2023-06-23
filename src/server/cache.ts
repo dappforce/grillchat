@@ -33,11 +33,12 @@ export function createRedisInstance() {
   }
 }
 
+const redis = createRedisInstance()
 export async function redisCallWrapper<T = void>(
-  callback: () => Promise<T> | undefined
+  callback: (redis: Redis | null) => Promise<T> | undefined
 ) {
   try {
-    return await callback()
+    return await callback(redis)
   } catch (err: any) {
     console.warn('[Redis] Warning: operation failed', err?.message)
     return null

@@ -1,5 +1,5 @@
 import { resolveEnsAvatarSrc } from '@/components/AddressAvatar'
-import { createRedisInstance, redisCallWrapper } from '@/server/cache'
+import { redisCallWrapper } from '@/server/cache'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import axios from 'axios'
 import { request } from 'graphql-request'
@@ -40,7 +40,6 @@ const GET_ENS_NAMES = gql(`
   }
 `)
 
-const redis = createRedisInstance()
 const MAX_AGE = 5 * 60 // 5 minutes
 
 const getRedisKey = (address: string) => {
@@ -80,7 +79,7 @@ export default async function handler(
 
 function invalidateCache(addresses: string[]) {
   addresses.forEach((address) => {
-    redisCallWrapper(() => redis?.del(getRedisKey(address)))
+    redisCallWrapper((redis) => redis?.del(getRedisKey(address)))
   })
 }
 
@@ -150,7 +149,7 @@ async function fetchAccountsData(addresses: string[]) {
       }
 
       newlyFetchedData.push(accountData)
-      redisCallWrapper(() =>
+      redisCallWrapper((redis) =>
         redis?.set(
           getRedisKey(address),
           JSON.stringify(accountData),
@@ -180,7 +179,7 @@ export async function getAccountsDataFromCache(addresses: string[]) {
   let newlyFetchedData: AccountData[] = []
 
   const promises = addresses.map(async (address) => {
-    const cachedData = await redisCallWrapper(() =>
+    const cachedData = await redisCallWrapper((redis) =>
       redis?.get(getRedisKey(address))
     )
 
