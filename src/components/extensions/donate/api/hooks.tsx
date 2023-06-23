@@ -1,6 +1,4 @@
 import useToastError from '@/hooks/useToastError'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyAccount } from '@/stores/my-account'
 import { useEffect, useMemo } from 'react'
 import {
   useAccount,
@@ -139,13 +137,7 @@ export const useDonate = (token: string, chainName: string) => {
 }
 
 export const useGetBalance = (token: string, chainName: string) => {
-  const myGrillAddress = useMyAccount((state) => state.address)
-
-  const { data: accountData } = getAccountDataQuery.useQuery(
-    myGrillAddress || ''
-  )
-
-  const { evmAddress } = accountData || {}
+  const { address: currentEvmAddress } = useAccount()
 
   const { address, abi } = polygonContractsByToken[token]
   const chainId = chainIdByChainName[chainName]
@@ -161,7 +153,7 @@ export const useGetBalance = (token: string, chainName: string) => {
       {
         ...commonParams,
         functionName: 'balanceOf',
-        args: evmAddress ? [evmAddress] : [],
+        args: currentEvmAddress ? [currentEvmAddress] : [],
       },
       {
         ...commonParams,
@@ -177,7 +169,7 @@ export const useGetBalance = (token: string, chainName: string) => {
     const [balance, decimals] = data.map((item) => item.result)
 
     return { balance: balance, decimals }
-  }, [!!data, isLoading, token, evmAddress, myGrillAddress])
+  }, [!!data, isLoading, token, currentEvmAddress])
 
   return {
     balance: balance?.toString(),
