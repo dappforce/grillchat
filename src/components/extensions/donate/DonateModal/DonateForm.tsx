@@ -107,6 +107,15 @@ function DonateForm({
     ? ` ${new BigNumber(amount).toFormat()} ${selectedToken.label}`
     : ''
 
+  // TODO: this is hotfix, fix is in image extension PR
+  const scrollToBottom = () => {
+    const scrollContainer = document.getElementById('chat-list')
+    scrollContainer?.scrollTo({
+      top: scrollContainer?.scrollHeight,
+      behavior: 'auto',
+    })
+  }
+
   return (
     <CommonExtensionModal
       {...props}
@@ -120,6 +129,7 @@ function DonateForm({
       title={'💰 Donate'}
       withCloseButton
       panelClassName='pb-5'
+      onSubmit={scrollToBottom}
     >
       <div>
         <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-gray-400'>
