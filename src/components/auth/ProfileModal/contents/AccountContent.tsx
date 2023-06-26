@@ -9,10 +9,8 @@ import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
+import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
-import { LocalStorage } from '@/utils/storage'
-import { useEffect, useState } from 'react'
 import { useDisconnect } from 'wagmi'
 import { ContentProps } from '../types'
 
@@ -22,8 +20,8 @@ function AccountContent({
   notification,
   evmAddress,
 }: ContentProps) {
-  const { closeNotificationMenuNotif, notificationMenuNotif } =
-    useNotificationMenuNotif()
+  const { showNotification, closeNotification } =
+    useFirstVisitNotification('notification-menu')
 
   const sendEvent = useSendEvent()
   const { disconnect } = useDisconnect()
@@ -55,12 +53,12 @@ function AccountContent({
       text: (
         <span className='flex items-center gap-2'>
           <span>Notifications</span>
-          {notificationMenuNotif && <DotBlinkingNotification />}
+          {showNotification && <DotBlinkingNotification />}
         </span>
       ),
       icon: BellIcon,
       onClick: () => {
-        closeNotificationMenuNotif()
+        closeNotification()
         setCurrentState('notifications')
       },
     },
@@ -109,30 +107,3 @@ function AccountContent({
     </div>
   )
 }
-
-const NOTIFICATION_STORAGE_KEY = 'notification-menu-notif'
-const storage = new LocalStorage(
-  (address: string) => `${NOTIFICATION_STORAGE_KEY}:${address}`
-)
-function useNotificationMenuNotif() {
-  const myAddress = useMyAccount((state) => state.address)
-  const [notificationMenuNotif, setNotificationMenuNotif] = useState(false)
-
-  useEffect(() => {
-    if (!myAddress) return
-    if (!storage.get(myAddress)) {
-      setNotificationMenuNotif(true)
-    }
-  }, [myAddress])
-
-  return {
-    notificationMenuNotif,
-    closeNotificationMenuNotif: () => {
-      setNotificationMenuNotif(false)
-      if (!myAddress) return
-      storage.set('1', myAddress)
-    },
-  }
-}
-
-export default AccountContent
