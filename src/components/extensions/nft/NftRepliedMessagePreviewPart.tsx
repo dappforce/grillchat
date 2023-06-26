@@ -17,7 +17,7 @@ const NftRepliedMessagePreviewPart = ({
   )
 
   return (
-    <span className={className}>
+    <span className={cx('block w-10', className)}>
       {hasNftExtension && (
         <MediaLoader
           containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
