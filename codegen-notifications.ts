@@ -7,9 +7,9 @@ if (!notificationsUrl)
 const config: CodegenConfig = {
   overwrite: true,
   schema: notificationsUrl,
-  documents: 'src/services/notifications/*.ts',
+  documents: 'src/server/notifications/*.ts',
   generates: {
-    'src/services/notifications/generated.ts': {
+    'src/server/notifications/generated.ts': {
       plugins: [
         'typescript',
         'typescript-operations',

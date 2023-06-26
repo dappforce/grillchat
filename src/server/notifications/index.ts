@@ -1,4 +1,3 @@
-import mutationWrapper from '@/subsocial-query/base'
 import { gql } from 'graphql-request'
 import {
   GetLinkingMessageForTelegramAccountQuery,
@@ -24,6 +23,3 @@ export async function getLinkingMessageForTelegramAccount(address: string) {
   })
   return data.linkingMessageForTelegramAccount.messageTpl
 }
-export const useGetLinkingMessageForTelegramAccount = mutationWrapper(
-  getLinkingMessageForTelegramAccount
-)
