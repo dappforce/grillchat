@@ -1,30 +1,33 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { createLinkingMessageForTelegram } from '@/server/notifications'
+import { createTemporaryLinkingUrlForTelegram } from '@/server/notifications'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
 
 const bodySchema = z.object({
-  address: z.string(),
+  signedMessageWithDetails: z.string(),
 })
-export type ApiNotificationsLinkMessageBody = z.infer<typeof bodySchema>
+export type ApiNotificationsLinkUrlBody = z.infer<typeof bodySchema>
 
 type ResponseData = {
-  data: string
+  url: string
 }
-export type ApiNotificationsLinkMessageResponse = ApiResponse<ResponseData>
+export type ApiNotificationsLinkUrlResponse = ApiResponse<ResponseData>
 
 export default handlerWrapper({
   inputSchema: bodySchema,
   dataGetter: (req: NextApiRequest) => req.body,
 })<ResponseData>({
   allowedMethods: ['POST'],
-  errorLabel: 'link-message',
+  errorLabel: 'link-url',
   handler: async (data, _, res) => {
-    const message = await createLinkingMessageForTelegram(data.address)
+    const url = await createTemporaryLinkingUrlForTelegram(
+      data.signedMessageWithDetails
+    )
+
     return res.status(200).send({
       success: true,
       message: 'OK',
-      data: message,
+      url,
     })
   },
 })

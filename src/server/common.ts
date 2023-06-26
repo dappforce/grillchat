@@ -12,15 +12,21 @@ export function handlerWrapper<Input extends z.ZodTypeAny>(config: {
   dataGetter: (req: NextApiRequest) => unknown
 }) {
   return <Output>(handlerConfig: {
+    errorLabel?: string
     handler: (
       data: z.infer<Input>,
       req: NextApiRequest,
       res: NextApiResponse<ApiResponse<Output>>
-    ) => void
+    ) => PromiseLike<void>
     allowedMethods?: ('GET' | 'POST' | 'PUT' | 'DELETE')[]
   }) => {
-    return (req: NextApiRequest, res: NextApiResponse<ApiResponse<Output>>) => {
-      if (!handlerConfig.allowedMethods?.includes(req.method ?? ('' as any)))
+    return async (
+      req: NextApiRequest,
+      res: NextApiResponse<ApiResponse<Output>>
+    ) => {
+      const { handler, allowedMethods, errorLabel } = handlerConfig
+
+      if (!allowedMethods?.includes(req.method ?? ('' as any)))
         return res.status(404).end()
 
       const { dataGetter, inputSchema } = config
@@ -34,7 +40,16 @@ export function handlerWrapper<Input extends z.ZodTypeAny>(config: {
         } as ApiResponse<Output>)
       }
 
-      return handlerConfig.handler(params.data, req, res)
+      try {
+        return await handler(params.data, req, res)
+      } catch (err) {
+        console.error(`Error in ${errorLabel || 'handler'}:`, err)
+        return res.status(500).send({
+          success: false,
+          message: 'Internal server error',
+          errors: err,
+        } as ApiResponse<Output>)
+      }
     }
   }
 }

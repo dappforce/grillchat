@@ -6,7 +6,7 @@ import { NextApiRequest } from 'next'
 import { z } from 'zod'
 
 const querySchema = z.object({
-  postIds: z.array(z.string()),
+  postIds: z.array(z.string()).or(z.string()),
 })
 export type ApiPostsParams = z.infer<typeof querySchema>
 
@@ -22,7 +22,8 @@ export default handlerWrapper({
 })<ResponseData>({
   allowedMethods: ['GET'],
   handler: async (data, _, res) => {
-    const posts = await getPostsServer(data.postIds)
+    const postIds = Array.isArray(data.postIds) ? data.postIds : [data.postIds]
+    const posts = await getPostsServer(postIds)
     return res.status(200).send({ success: true, message: 'OK', data: posts })
   },
 })

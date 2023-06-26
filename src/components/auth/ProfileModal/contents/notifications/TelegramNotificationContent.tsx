@@ -1,11 +1,16 @@
 import Button from '@/components/Button'
 import useSignMessage from '@/hooks/useSignMessage'
-import { useGetLinkingMessage } from '@/services/api/notifications/mutation'
+import {
+  useCreateLinkingUrl,
+  useGetLinkingMessage,
+} from '@/services/api/notifications/mutation'
 import { sortObj } from 'jsonabc'
 import { ContentProps } from '../../types'
 
 export default function TelegramNotificationContent({ address }: ContentProps) {
   const signMessage = useSignMessage()
+  const { mutate: createLinkUrl, data: url } = useCreateLinkingUrl()
+  console.log(url)
 
   const { mutate: getLinkingMessage } = useGetLinkingMessage({
     onSuccess: async (data) => {
@@ -17,7 +22,7 @@ export default function TelegramNotificationContent({ address }: ContentProps) {
       const signedMessage = encodeURIComponent(
         JSON.stringify(sortObj(data.messageData))
       )
-      console.log(signedMessage)
+      createLinkUrl({ signedMessageWithDetails: signedMessage })
     },
   })
 
