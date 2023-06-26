@@ -25,9 +25,17 @@ export default function TelegramNotificationContent(props: ContentProps) {
 
   return (
     <div className='flex flex-col gap-6'>
-      <Card className='flex justify-between'>
-        <span className='font-medium'>@{firstLinkedAccount.userName}</span>
-        <LinkText withArrow href={''} openInNewTab variant='primary'>
+      <Card className='flex justify-between gap-4 overflow-hidden'>
+        <span className='overflow-hidden text-ellipsis font-medium'>
+          @{firstLinkedAccount.userName}
+        </span>
+        <LinkText
+          className='flex-shrink-0'
+          withArrow
+          href='https://t.me/GrillNotificationsStagingBot'
+          openInNewTab
+          variant='primary'
+        >
           Open bot
         </LinkText>
       </Card>
