@@ -51,10 +51,10 @@ export const useConnectOrSwitchNetwork = (
 
   useToastError<Error | null>(
     switchNetworkError,
-    'Switch network failed',
+    'Network change failed',
     () => {
       setCurrentStep('add-network')
-      return `Make sure ${chainName} has been added to the wallet`
+      return `Make sure you have added ${chainName} to Metamask`
     }
   )
 

@@ -27,14 +27,14 @@ const modalHeader: ModalHeader = {
           href='https://autofarm.gitbook.io/autofarm-network/how-tos/use-autofarm-in-different-chains/polygon-chain-matic/metamask-add-polygon-matic-network'
           variant='primary'
         >
-          How to add Polygon to Metamask?
+          How do I add Polygon?
         </LinkText>
       </>
     ),
   },
   'wallet-action-required': {
     title: '🔐 Wallet Action Required',
-    desc: 'Please open your EVM wallet and perform the necessary actions to ensure its optimal functionality.',
+    desc: 'Please open your wallet to continue',
   },
 }
 
