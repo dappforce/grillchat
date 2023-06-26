@@ -4,6 +4,7 @@ import {
 } from '@/pages/api/notifications/link-message'
 import mutationWrapper from '@/subsocial-query/base'
 import axios from 'axios'
+import { sortObj } from 'jsonabc'
 
 async function getLinkingMessage(data: ApiNotificationsLinkMessageBody) {
   if (!data) return null
@@ -11,6 +12,13 @@ async function getLinkingMessage(data: ApiNotificationsLinkMessageBody) {
   const res = await axios.post('/api/notifications/link-message', data)
   const encodedMessage = (res.data as ApiNotificationsLinkMessageResponse).data
   const decodedMessage = decodeURIComponent(encodedMessage)
-  return decodedMessage
+
+  const parsedMessage = JSON.parse(decodedMessage)
+  const sortedPayload = sortObj(parsedMessage.payload)
+
+  return {
+    messageData: parsedMessage,
+    payloadToSign: JSON.stringify(sortedPayload),
+  }
 }
 export const useGetLinkingMessage = mutationWrapper(getLinkingMessage)
