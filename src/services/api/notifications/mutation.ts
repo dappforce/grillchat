@@ -1,11 +1,11 @@
 import {
+  ApiNotificationsLinkUrlBody,
+  ApiNotificationsLinkUrlResponse,
+} from '@/pages/api/notifications/link'
+import {
   ApiNotificationsLinkMessageBody,
   ApiNotificationsLinkMessageResponse,
 } from '@/pages/api/notifications/link-message'
-import {
-  ApiNotificationsLinkUrlBody,
-  ApiNotificationsLinkUrlResponse,
-} from '@/pages/api/notifications/link-url'
 import mutationWrapper from '@/subsocial-query/base'
 import axios from 'axios'
 import { sortObj } from 'jsonabc'
@@ -27,11 +27,11 @@ async function getLinkingMessage(data: ApiNotificationsLinkMessageBody) {
 }
 export const useGetLinkingMessage = mutationWrapper(getLinkingMessage)
 
-async function createLinkingUrl(data: ApiNotificationsLinkUrlBody) {
+async function linkingAccount(data: ApiNotificationsLinkUrlBody) {
   if (!data) return null
 
-  const res = await axios.post('/api/notifications/link-url', data)
+  const res = await axios.post('/api/notifications/link', data)
   const resData = res.data as ApiNotificationsLinkUrlResponse
   return resData.url
 }
-export const useCreateLinkingUrl = mutationWrapper(createLinkingUrl)
+export const useLinkingAccount = mutationWrapper(linkingAccount)

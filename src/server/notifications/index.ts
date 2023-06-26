@@ -6,6 +6,10 @@ import {
   GetLinkingMessageForTelegramQueryVariables,
   GetTelegramAccountsLinkedQuery,
   GetTelegramAccountsLinkedQueryVariables,
+  GetUnlinkingMessageForTelegramQuery,
+  GetUnlinkingMessageForTelegramQueryVariables,
+  UnlinkTelegramAccountMutation,
+  UnlinkTelegramAccountMutationVariables,
 } from './generated'
 import { notificationsRequest } from './utils'
 
@@ -29,6 +33,7 @@ export async function getTelegramAccountsLinked(address: string) {
   return data.telegramAccountsLinkedToSubstrateAccount.telegramAccounts
 }
 
+// Linking
 const CREATE_LINKING_MESSAGE_FOR_TELEGRAM = gql`
   query GetLinkingMessageForTelegram($address: String!) {
     linkingMessageForTelegramAccount(substrateAccount: $address) {
@@ -70,4 +75,47 @@ export async function createTemporaryLinkingUrlForTelegram(
   })
   const linkingId = data.createTemporaryLinkingIdForTelegram.id
   return `https://t.me/GrillNotificationsStagingBot/?start=${linkingId}`
+}
+
+// Unlinking
+const CREATE_UNLINKING_MESSAGE_FOR_TELEGRAM = gql`
+  query GetUnlinkingMessageForTelegram($address: String!) {
+    unlinkingMessageForTelegramAccount(substrateAccount: $address) {
+      messageTpl
+    }
+  }
+`
+export async function createUnlinkingMessageForTelegram(address: string) {
+  const data = await notificationsRequest<
+    GetUnlinkingMessageForTelegramQuery,
+    GetUnlinkingMessageForTelegramQueryVariables
+  >({
+    document: CREATE_UNLINKING_MESSAGE_FOR_TELEGRAM,
+    variables: { address },
+  })
+  return data.unlinkingMessageForTelegramAccount.messageTpl
+}
+
+const UNLINK_TELEGRAM_ACCOUNT = gql`
+  mutation UnlinkTelegramAccount($signedMessageWithDetails: String!) {
+    unlinkTelegramAccount(signedMessageWithDetails: $signedMessageWithDetails) {
+      message
+      success
+    }
+  }
+`
+export async function unlinkTelegramAccount(signedMessageWithDetails: string) {
+  const data = await notificationsRequest<
+    UnlinkTelegramAccountMutation,
+    UnlinkTelegramAccountMutationVariables
+  >({
+    document: UNLINK_TELEGRAM_ACCOUNT,
+    variables: { signedMessageWithDetails },
+  })
+  const isUnlinkingSuccess = data.unlinkTelegramAccount.success
+  if (!isUnlinkingSuccess) {
+    throw new Error(
+      `Unlinking Telegram Account Failed: ${data.unlinkTelegramAccount.message}`
+    )
+  }
 }

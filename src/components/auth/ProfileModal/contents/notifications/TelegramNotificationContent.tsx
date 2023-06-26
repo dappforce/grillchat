@@ -4,8 +4,8 @@ import LinkText from '@/components/LinkText'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import useSignMessage from '@/hooks/useSignMessage'
 import {
-  useCreateLinkingUrl,
   useGetLinkingMessage,
+  useLinkingAccount,
 } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { useQueryClient } from '@tanstack/react-query'
@@ -23,7 +23,7 @@ export default function TelegramNotificationContent(props: ContentProps) {
   const firstLinkedAccount = linkedAccounts?.[0]
 
   if (!isLoading && !firstLinkedAccount) {
-    return <ConnectTelegramBot {...props} />
+    return <ConnectTelegramButton {...props} />
   }
 
   return (
@@ -56,16 +56,48 @@ export default function TelegramNotificationContent(props: ContentProps) {
           )}
         </IntegratedSkeleton>
       </Card>
-      {firstLinkedAccount && (
-        <Button variant='redOutline' size='lg'>
-          Disconnect
-        </Button>
-      )}
+      {firstLinkedAccount && <DisconnectButton {...props} />}
     </div>
   )
 }
 
-function ConnectTelegramBot({ address }: ContentProps) {
+function DisconnectButton({ address }: ContentProps) {
+  const queryClient = useQueryClient()
+
+  const { mutate: disconnect, isLoading: isCreatingLinkingUrl } =
+    useLinkingAccount({
+      onSuccess: () => {
+        getLinkedTelegramAccountsQuery.invalidate(queryClient)
+      },
+    })
+
+  const processMessage = useProcessMessage()
+  const { mutate: getLinkingMessage, isLoading: isGettingLinkingMessage } =
+    useGetLinkingMessage({
+      onSuccess: async (data) => {
+        const processedData = await processMessage(data)
+        disconnect({
+          action: 'unlink',
+          signedMessageWithDetails: processedData,
+        })
+      },
+    })
+
+  const isLoading = isCreatingLinkingUrl || isGettingLinkingMessage
+
+  const handleClick = async () => {
+    if (!address) return
+    getLinkingMessage({ address, action: 'unlink' })
+  }
+
+  return (
+    <Button size='lg' onClick={handleClick} isLoading={isLoading}>
+      Disconnect
+    </Button>
+  )
+}
+
+function ConnectTelegramButton({ address }: ContentProps) {
   const queryClient = useQueryClient()
   const { isFetching: isFetchingAccount } =
     getLinkedTelegramAccountsQuery.useQuery({
@@ -73,9 +105,8 @@ function ConnectTelegramBot({ address }: ContentProps) {
     })
   const [openedTelegramBotLink, setOpenedTelegramBotLink] = useState(false)
 
-  const signMessage = useSignMessage()
   const { mutate: createLinkUrl, isLoading: isCreatingLinkingUrl } =
-    useCreateLinkingUrl({
+    useLinkingAccount({
       onSuccess: (url) => {
         if (!url) throw new Error('Error generating url')
         window.open(url, '_blank')
@@ -83,18 +114,15 @@ function ConnectTelegramBot({ address }: ContentProps) {
       },
     })
 
+  const processMessage = useProcessMessage()
   const { mutate: getLinkingMessage, isLoading: isGettingLinkingMessage } =
     useGetLinkingMessage({
       onSuccess: async (data) => {
-        if (!data) throw new Error('No data')
-
-        const signedPayload = await signMessage(data.payloadToSign)
-        data.messageData['signature'] = signedPayload
-
-        const signedMessage = encodeURIComponent(
-          JSON.stringify(sortObj(data.messageData))
-        )
-        createLinkUrl({ signedMessageWithDetails: signedMessage })
+        const processedData = await processMessage(data)
+        createLinkUrl({
+          signedMessageWithDetails: processedData,
+          action: 'link',
+        })
       },
     })
 
@@ -102,7 +130,7 @@ function ConnectTelegramBot({ address }: ContentProps) {
 
   const handleClickLinking = async () => {
     if (!address) return
-    getLinkingMessage({ address })
+    getLinkingMessage({ address, action: 'link' })
   }
 
   const handleClickReload = () => {
@@ -118,4 +146,21 @@ function ConnectTelegramBot({ address }: ContentProps) {
       Connect Telegram
     </Button>
   )
+}
+
+function useProcessMessage() {
+  const signMessage = useSignMessage()
+
+  return async (data: { messageData: any; payloadToSign: string } | null) => {
+    if (!data) throw new Error('No data')
+
+    const signedPayload = await signMessage(data.payloadToSign)
+    data.messageData['signature'] = signedPayload
+
+    const signedMessage = encodeURIComponent(
+      JSON.stringify(sortObj(data.messageData))
+    )
+
+    return signedMessage
+  }
 }

@@ -146,6 +146,20 @@ export type CreateTemporaryLinkingIdForTelegramMutationVariables = Exact<{
 
 export type CreateTemporaryLinkingIdForTelegramMutation = { __typename?: 'Mutation', createTemporaryLinkingIdForTelegram: { __typename?: 'CreateTemporaryLinkingIdForTelegramResponseDto', id: string } };
 
+export type GetUnlinkingMessageForTelegramQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+}>;
+
+
+export type GetUnlinkingMessageForTelegramQuery = { __typename?: 'Query', unlinkingMessageForTelegramAccount: { __typename?: 'AccountsLinkingMessageTemplateGql', messageTpl: string } };
+
+export type UnlinkTelegramAccountMutationVariables = Exact<{
+  signedMessageWithDetails: Scalars['String']['input'];
+}>;
+
+
+export type UnlinkTelegramAccountMutation = { __typename?: 'Mutation', unlinkTelegramAccount: { __typename?: 'UnlinkTelegramAccountResponseDto', message?: string | null, success: boolean } };
+
 
 export const GetTelegramAccountsLinked = gql`
     query GetTelegramAccountsLinked($address: String!) {
@@ -169,6 +183,21 @@ export const CreateTemporaryLinkingIdForTelegram = gql`
     signedMessageWithDetails: $signedMessageWithDetails
   ) {
     id
+  }
+}
+    `;
+export const GetUnlinkingMessageForTelegram = gql`
+    query GetUnlinkingMessageForTelegram($address: String!) {
+  unlinkingMessageForTelegramAccount(substrateAccount: $address) {
+    messageTpl
+  }
+}
+    `;
+export const UnlinkTelegramAccount = gql`
+    mutation UnlinkTelegramAccount($signedMessageWithDetails: String!) {
+  unlinkTelegramAccount(signedMessageWithDetails: $signedMessageWithDetails) {
+    message
+    success
   }
 }
     `;
