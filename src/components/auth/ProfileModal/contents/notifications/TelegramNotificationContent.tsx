@@ -10,7 +10,6 @@ import { ContentProps } from '../../types'
 export default function TelegramNotificationContent({ address }: ContentProps) {
   const signMessage = useSignMessage()
   const { mutate: createLinkUrl, data: url } = useCreateLinkingUrl()
-  console.log(url)
 
   const { mutate: getLinkingMessage } = useGetLinkingMessage({
     onSuccess: async (data) => {

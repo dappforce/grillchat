@@ -1,4 +1,5 @@
 import { useMyAccount } from '@/stores/my-account'
+import { u8aToHex } from '@polkadot/util'
 
 export default function useSignMessage() {
   const myAddress = useMyAccount((state) => state.address)
@@ -13,6 +14,6 @@ export default function useSignMessage() {
       throw new Error('No signer connected')
     }
 
-    return signer.sign(message)
+    return u8aToHex(signer.sign(message))
   }
 }
