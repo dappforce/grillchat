@@ -14,7 +14,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useDisconnect } from 'wagmi'
 import { ContentProps } from '../types'
 
-function AccountContent({
+export default function AccountContent({
   address,
   setCurrentState,
   notification,
