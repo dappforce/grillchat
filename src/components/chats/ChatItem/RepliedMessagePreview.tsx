@@ -73,7 +73,7 @@ export default function RepliedMessagePreview({
     <div
       {...props}
       className={cx(
-        'flex gap-2 overflow-hidden border-l-2 pl-2 text-sm',
+        'flex items-center gap-2 overflow-hidden border-l-2 pl-2 text-sm',
         scrollToMessage && 'cursor-pointer',
         isLoading && 'animate-pulse',
         props.className
