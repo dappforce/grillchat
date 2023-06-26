@@ -60,7 +60,7 @@ function DonateForm({
       return { txPrevented: true }
     }
 
-    const amountValue = parseUnits(parseFloat(amount).toString(), decimals)
+    const amountValue = parseUnits(amount, decimals)
 
     const hash = await sendTransferTx(
       evmRecipientAddress,
@@ -104,7 +104,7 @@ function DonateForm({
     new BigNumber(balance || '0').eq(0)
 
   const amountPreview = amount
-    ? ` ${new BigNumber(amount).toString()} ${selectedToken.label}`
+    ? ` ${new BigNumber(amount).toFormat()} ${selectedToken.label}`
     : ''
 
   return (
