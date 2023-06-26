@@ -40,7 +40,7 @@ const GET_ENS_NAMES = gql(`
   }
 `)
 
-const MAX_AGE = 5 * 60 // 5 minutes
+const MAX_AGE = 60 * 60 // 1 hour
 
 const getRedisKey = (address: string) => {
   return `accounts-data:${address}`
