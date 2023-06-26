@@ -125,6 +125,13 @@ export type UnlinkTelegramAccountResponseDto = {
   success: Scalars['Boolean']['output'];
 };
 
+export type GetTelegramAccountsLinkedQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+}>;
+
+
+export type GetTelegramAccountsLinkedQuery = { __typename?: 'Query', telegramAccountsLinkedToSubstrateAccount: { __typename?: 'LinkedTgAccountsToSubstrateAccountResponseType', telegramAccounts?: Array<{ __typename?: 'TelegramAccountDetails', userName: string }> | null } };
+
 export type GetLinkingMessageForTelegramQueryVariables = Exact<{
   address: Scalars['String']['input'];
 }>;
@@ -140,6 +147,15 @@ export type CreateTemporaryLinkingIdForTelegramMutationVariables = Exact<{
 export type CreateTemporaryLinkingIdForTelegramMutation = { __typename?: 'Mutation', createTemporaryLinkingIdForTelegram: { __typename?: 'CreateTemporaryLinkingIdForTelegramResponseDto', id: string } };
 
 
+export const GetTelegramAccountsLinked = gql`
+    query GetTelegramAccountsLinked($address: String!) {
+  telegramAccountsLinkedToSubstrateAccount(substrateAccount: $address) {
+    telegramAccounts {
+      userName
+    }
+  }
+}
+    `;
 export const GetLinkingMessageForTelegram = gql`
     query GetLinkingMessageForTelegram($address: String!) {
   linkingMessageForTelegramAccount(substrateAccount: $address) {

@@ -4,10 +4,31 @@ import {
   CreateTemporaryLinkingIdForTelegramMutationVariables,
   GetLinkingMessageForTelegramQuery,
   GetLinkingMessageForTelegramQueryVariables,
+  GetTelegramAccountsLinkedQuery,
+  GetTelegramAccountsLinkedQueryVariables,
 } from './generated'
 import { notificationsRequest } from './utils'
 
-// This operation is put in mutation because its used like mutation, not query
+const GET_TELEGRAM_ACCOUNTS_LINKED = gql`
+  query GetTelegramAccountsLinked($address: String!) {
+    telegramAccountsLinkedToSubstrateAccount(substrateAccount: $address) {
+      telegramAccounts {
+        userName
+      }
+    }
+  }
+`
+export async function getTelegramAccountsLinked(address: string) {
+  const data = await notificationsRequest<
+    GetTelegramAccountsLinkedQuery,
+    GetTelegramAccountsLinkedQueryVariables
+  >({
+    document: GET_TELEGRAM_ACCOUNTS_LINKED,
+    variables: { address },
+  })
+  return data.telegramAccountsLinkedToSubstrateAccount.telegramAccounts
+}
+
 const CREATE_LINKING_MESSAGE_FOR_TELEGRAM = gql`
   query GetLinkingMessageForTelegram($address: String!) {
     linkingMessageForTelegramAccount(substrateAccount: $address) {
@@ -48,5 +69,5 @@ export async function createTemporaryLinkingUrlForTelegram(
     variables: { signedMessageWithDetails },
   })
   const linkingId = data.createTemporaryLinkingIdForTelegram.id
-  return `t.me/GrillNotificationsStagingBot/?start=${linkingId}`
+  return `https://t.me/GrillNotificationsStagingBot/?start=${linkingId}`
 }

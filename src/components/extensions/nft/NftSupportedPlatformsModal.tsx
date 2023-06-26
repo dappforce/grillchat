@@ -1,7 +1,6 @@
 import LinkText from '@/components/LinkText'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { cx } from '@/utils/class-names'
-import { HiArrowUpRight } from 'react-icons/hi2'
 import { getSupportedMarketplaces, nftChains } from './utils'
 
 export type NftSupportedPlatformsModalProps = ModalFunctionalityProps
@@ -28,11 +27,11 @@ export default function NftSupportedPlatformsModal({
               key={link}
               href={link}
               openInNewTab
-              className='flex items-center gap-1'
               variant='primary'
+              withArrow
+              arrowClassName='text-text-muted'
             >
               <span>{name}</span>
-              <HiArrowUpRight className='text-text-muted' />
             </LinkText>
           ))}
         </div>
