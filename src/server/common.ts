@@ -11,13 +11,13 @@ export function handlerWrapper<Input extends z.ZodTypeAny>(config: {
   inputSchema: Input
   dataGetter: (req: NextApiRequest) => unknown
 }) {
-  return <Output>(handler: {
+  return <Output>(
     handler: (
       data: z.infer<Input>,
       req: NextApiRequest,
       res: NextApiResponse<ApiResponse<Output>>
     ) => void
-  }) => {
+  ) => {
     return (req: NextApiRequest, res: NextApiResponse<ApiResponse<Output>>) => {
       const { dataGetter, inputSchema } = config
       const params = inputSchema.safeParse(dataGetter(req))
@@ -30,7 +30,7 @@ export function handlerWrapper<Input extends z.ZodTypeAny>(config: {
         } as ApiResponse<Output>)
       }
 
-      return handler.handler(params.data, req, res)
+      return handler(params.data, req, res)
     }
   }
 }

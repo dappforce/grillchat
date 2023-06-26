@@ -16,13 +16,11 @@ export type ApiNotificationsLinkMessageResponse = ApiResponse<ResponseData>
 export default handlerWrapper({
   inputSchema: bodySchema,
   dataGetter: (req: NextApiRequest) => req.body,
-})<ResponseData>({
-  handler: async (data, _, res) => {
-    const message = await getLinkingMessageForTelegramAccount(data.address)
-    return res.status(200).send({
-      success: true,
-      message: 'OK',
-      data: message,
-    })
-  },
+})<ResponseData>(async (data, _, res) => {
+  const message = await getLinkingMessageForTelegramAccount(data.address)
+  return res.status(200).send({
+    success: true,
+    message: 'OK',
+    data: message,
+  })
 })
