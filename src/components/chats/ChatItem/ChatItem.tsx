@@ -30,7 +30,6 @@ import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine } from 'react-icons/ri'
-import { useInView } from 'react-intersection-observer'
 import urlJoin from 'url-join'
 import MetadataModal from '../../modals/MetadataModal'
 import ChatItemWithExtension from './ChatItemWithExtension'
@@ -86,18 +85,13 @@ export default function ChatItem({
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
   const { body, inReplyTo, extensions } = message.content || {}
   const [modalState, setModalState] = useState<ModalState>(null)
-  const { inView, ref } = useInView()
 
   const address = useMyAccount((state) => state.address)
 
   const { data: messageOwnerAccountData } =
     getAccountDataQuery.useQuery(ownerId)
-  const { data: myAccountData } = getAccountDataQuery.useQuery(address || '', {
-    enabled: inView,
-  })
 
   const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
-  const { evmAddress: myEvmAddress } = myAccountData || {}
 
   const sendEvent = useSendEvent()
 
@@ -192,7 +186,6 @@ export default function ChatItem({
         isMyMessage && 'flex-row-reverse',
         props.className
       )}
-      ref={ref}
     >
       {!isMyMessage && (
         <ProfilePreviewModalWrapper address={ownerId}>
