@@ -15,14 +15,18 @@ import { ContentProps } from '../../types'
 
 export default function TelegramNotificationContent(props: ContentProps) {
   const { address } = props
-  const { data: linkedAccounts, isLoading } =
-    getLinkedTelegramAccountsQuery.useQuery({
-      address,
-    })
-  const { IntegratedSkeleton } = useIntegratedSkeleton(isLoading)
-  const firstLinkedAccount = linkedAccounts?.[0]
+  const {
+    data: linkedAccounts,
+    isLoading,
+    isFetching,
+  } = getLinkedTelegramAccountsQuery.useQuery({
+    address,
+  })
+  const isLoadingAccount = isLoading || isFetching
+  const { IntegratedSkeleton } = useIntegratedSkeleton(isLoadingAccount)
+  const firstLinkedAccount = !isLoadingAccount ? linkedAccounts?.[0] : null
 
-  if (!isLoading && !firstLinkedAccount) {
+  if (!isLoadingAccount && !firstLinkedAccount) {
     return <ConnectTelegramButton {...props} />
   }
 
@@ -67,7 +71,7 @@ function DisconnectButton({ address }: ContentProps) {
   const { mutate: disconnect, isLoading: isCreatingLinkingUrl } =
     useLinkingAccount({
       onSuccess: () => {
-        getLinkedTelegramAccountsQuery.invalidate(queryClient)
+        getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
       },
     })
 
@@ -134,11 +138,16 @@ function ConnectTelegramButton({ address }: ContentProps) {
   }
 
   const handleClickReload = () => {
-    getLinkedTelegramAccountsQuery.invalidate(queryClient)
+    getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
   }
 
   return openedTelegramBotLink ? (
-    <Button size='lg' onClick={handleClickReload} isLoading={isFetchingAccount}>
+    <Button
+      size='lg'
+      variant='primaryOutline'
+      onClick={handleClickReload}
+      isLoading={isFetchingAccount}
+    >
       I have connected the bot
     </Button>
   ) : (
