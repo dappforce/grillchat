@@ -22,6 +22,8 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   hubId: string
 }
 
+const HUB_ID_WITHOUT_JOIN_BUTTON = ['1023']
+
 export default function ChatRoom({
   className,
   asContainer,
@@ -53,6 +55,7 @@ export default function ChatRoom({
   }
 
   const { isJoined, isLoading: isLoadingJoinedChat } = useIsJoinedToChat(chatId)
+  const isHubWithoutJoinButton = HUB_ID_WITHOUT_JOIN_BUTTON.includes(hubId)
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
@@ -74,7 +77,7 @@ export default function ChatRoom({
             scrollContainer={scrollContainerRef}
           />
         )}
-        {isJoined ? (
+        {isJoined || isHubWithoutJoinButton ? (
           <ChatInputBar
             formProps={{
               chatId,
