@@ -68,7 +68,7 @@ export const useConnectOrSwitchNetwork = (
     }
   }, [isSwitchNetworkLoading, isConnectLoading, switchNetworkError])
 
-  const connectOrSwitch = () => {
+  const connectOrSwitch = async () => {
     if (!isConnected) {
       isTouchDevice() &&
         connector.connector.on(
@@ -83,6 +83,7 @@ export const useConnectOrSwitchNetwork = (
         )
       connect({ connector: currentConnector || connector.connector })
     } else {
+      isTouchDevice() && (await openMobileWallet({ connector }))
       switchNetwork?.(destChainId)
     }
   }
@@ -113,6 +114,9 @@ export const useDonate = (token: string, chainName: string) => {
     decimals?: number
   ) => {
     setCurrentStep('wallet-action-required')
+
+    const connector = getConnector()
+    isTouchDevice() && (await openMobileWallet({ connector }))
 
     try {
       if (!decimals) return

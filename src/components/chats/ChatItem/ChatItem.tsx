@@ -121,18 +121,12 @@ export default function ChatItem({
           return
         }
 
-        if (!myEvmAddress) {
-          setModalState('evm-linking')
-          return
-        }
-
         setMessageAsReply(messageId)
         setModalState('donate')
       },
     }
 
-    const showDonateMenuItem =
-      myEvmAddress !== messageOwnerEvmAddress && messageOwnerEvmAddress
+    const showDonateMenuItem = messageOwnerEvmAddress
 
     return [
       {

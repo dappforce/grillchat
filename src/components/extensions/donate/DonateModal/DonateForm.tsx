@@ -37,6 +37,7 @@ function DonateForm({
   const [amount, setAmount] = useState<string>('')
   const address = useMyAccount((state) => state.address)
   const { chain } = useNetwork()
+  const { address: myEvmAddress } = useAccount()
 
   const { balance, decimals } = useGetBalance(
     selectedToken.id,
@@ -44,10 +45,8 @@ function DonateForm({
   )
 
   const { data: recipientAccountData } = getAccountDataQuery.useQuery(recipient)
-  const { data: myAccountData } = getAccountDataQuery.useQuery(address || '')
 
   const { evmAddress: evmRecipientAddress } = recipientAccountData || {}
-  const { evmAddress: myEvmAddress } = myAccountData || {}
 
   const currentChainId = chain?.id
   const destChainId = chainIdByChainName[selectedChain.id]

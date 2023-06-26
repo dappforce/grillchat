@@ -64,6 +64,7 @@ const AmountInput = ({
         step={0.1}
         min={0}
         value={amount}
+        autoFocus
         onChange={onInputChange}
         error={inputError}
         rightElement={() => (
@@ -91,7 +92,6 @@ const AmountInput = ({
             : 'bg-slate-900 text-white'
         )}
       />
-      {/* {inputError && <div className='text-sm text-red-400'>{inputError}</div>} */}
     </div>
   )
 }
