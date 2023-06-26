@@ -21,8 +21,10 @@ const NftRepliedMessagePreviewPart = ({
       {hasNftExtension && (
         <MediaLoader
           containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
-          className={cx('aspect-square w-10')}
-          placeholderClassName={cx('w-10 aspect-square')}
+          className={cx('aspect-square w-full')}
+          placeholderClassName={cx('w-full aspect-square')}
+          width={50}
+          height={50}
           image={nftData?.image}
         />
       )}
