@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
+import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import useSignMessage from '@/hooks/useSignMessage'
 import {
   useCreateLinkingUrl,
@@ -14,34 +15,52 @@ import { ContentProps } from '../../types'
 
 export default function TelegramNotificationContent(props: ContentProps) {
   const { address } = props
-  const { data: linkedAccounts } = getLinkedTelegramAccountsQuery.useQuery({
-    address,
-  })
+  const { data: linkedAccounts, isLoading } =
+    getLinkedTelegramAccountsQuery.useQuery({
+      address,
+    })
+  const { IntegratedSkeleton } = useIntegratedSkeleton(isLoading)
   const firstLinkedAccount = linkedAccounts?.[0]
 
-  if (!firstLinkedAccount) {
+  if (!isLoading && !firstLinkedAccount) {
     return <ConnectTelegramBot {...props} />
   }
 
   return (
     <div className='flex flex-col gap-6'>
       <Card className='flex justify-between gap-4 overflow-hidden'>
-        <span className='overflow-hidden text-ellipsis font-medium'>
-          @{firstLinkedAccount.userName}
-        </span>
-        <LinkText
-          className='flex-shrink-0'
-          withArrow
-          href='https://t.me/GrillNotificationsStagingBot'
-          openInNewTab
-          variant='primary'
+        <IntegratedSkeleton
+          content={firstLinkedAccount?.userName}
+          className='bg-black/20'
         >
-          Open bot
-        </LinkText>
+          {(userName) => (
+            <span className='overflow-hidden text-ellipsis font-medium'>
+              @{userName}
+            </span>
+          )}
+        </IntegratedSkeleton>
+        <IntegratedSkeleton
+          content={firstLinkedAccount?.userName}
+          className='w-24 bg-black/20'
+        >
+          {() => (
+            <LinkText
+              className='flex-shrink-0'
+              withArrow
+              href='https://t.me/GrillNotificationsStagingBot'
+              openInNewTab
+              variant='primary'
+            >
+              Open bot
+            </LinkText>
+          )}
+        </IntegratedSkeleton>
       </Card>
-      <Button variant='redOutline' size='lg'>
-        Disconnect
-      </Button>
+      {firstLinkedAccount && (
+        <Button variant='redOutline' size='lg'>
+          Disconnect
+        </Button>
+      )}
     </div>
   )
 }
