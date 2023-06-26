@@ -1,4 +1,4 @@
-import { getNotificationsUrl } from '@/utils/env/client'
+import { getNotificationsUrl } from '@/utils/env/server'
 import request, { RequestOptions, Variables } from 'graphql-request'
 
 export function notificationsRequest<T, V extends Variables = Variables>(

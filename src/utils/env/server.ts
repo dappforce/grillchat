@@ -34,3 +34,7 @@ export function getIpfsPinUrl() {
 export function getCovalentApiKey() {
   return checkEnv(process.env.COVALENT_API_KEY, 'COVALENT_API_KEY')
 }
+
+export function getNotificationsUrl() {
+  return checkEnv(process.env.NOTIFICATIONS_URL, 'NOTIFICATIONS_URL')
+}

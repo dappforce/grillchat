@@ -1,6 +1,6 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
 
-const notificationsUrl = process.env.NEXT_PUBLIC_NOTIFICATIONS_URL
+const notificationsUrl = process.env.NOTIFICATIONS_URL
 if (!notificationsUrl)
   throw new Error('Codegen error: Notifications URL not set')
 
