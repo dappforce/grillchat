@@ -1,5 +1,8 @@
 import { CreateUserIdResponse } from '@/pages/api/create-user-id'
-import { ApiDiscussionResponse, ApiPostsParams } from '@/pages/api/discussion'
+import {
+  ApiDiscussionInput,
+  ApiDiscussionResponse,
+} from '@/pages/api/discussion'
 import {
   ApiRequestTokenBody,
   ApiRequestTokenResponse,
@@ -37,7 +40,7 @@ export async function createUserId(address: string) {
   return data.userId
 }
 
-export async function createDiscussion(content: ApiPostsParams) {
+export async function createDiscussion(content: ApiDiscussionInput) {
   const res = await axios.post('/api/discussion', content)
   const data = res.data as ApiDiscussionResponse
   if (!data.success) throw new Error(data.errors)

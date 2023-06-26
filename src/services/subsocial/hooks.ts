@@ -1,5 +1,5 @@
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
-import { useRequestToken } from '@/services/api/mutations'
+import { useRequestToken } from '@/services/api/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 
