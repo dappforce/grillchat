@@ -54,7 +54,6 @@ export const useAnalytics = create<State & Actions>()((set, get) => ({
     amp?.logEvent(name, mergedProperties)
     event(name, {
       userId,
-      category: mergedProperties ? JSON.stringify(mergedProperties) : undefined,
     })
   },
   init: async () => {

@@ -19,12 +19,10 @@ const Name = ({
   ...props
 }: NameProps) => {
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
+  const textColor = useRandomColor(address)
 
-  const { evmAddress, ensName } = accountData || {}
+  const { ensName } = accountData || {}
   const name = ensName || generateRandomName(address)
-
-  const usedAddress = evmAddress || address
-  const textColor = useRandomColor(usedAddress)
 
   if (!accountData && isLoading) {
     return (

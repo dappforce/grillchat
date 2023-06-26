@@ -66,7 +66,7 @@ export default function ChatRoom({
         replyTo={replyTo}
       />
       <Component
-        className={cx('mt-auto flex flex-col py-3', replyTo && 'pt-0')}
+        className={cx('mt-auto flex flex-col py-2', replyTo && 'pt-0')}
       >
         {replyTo && !showEmptyPrimaryChatInput && (
           <RepliedMessage

@@ -1,12 +1,17 @@
 import Button from '@/components/Button'
+import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
 import ChatRoom from '@/components/chats/ChatRoom'
+import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import LinkText from '@/components/LinkText'
+import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { useMyAccount } from '@/stores/my-account'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
@@ -21,7 +26,6 @@ import Image, { ImageProps } from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
-import ChatPageNavbarExtension from './ChatPageNavbarExtension'
 
 const AboutChatModal = dynamic(
   () => import('@/components/modals/about/AboutChatModal'),
@@ -68,7 +72,7 @@ export default function ChatPage({
           forceUseDefaultBackLink: false,
         },
         customContent: ({ backButton, authComponent, colorModeToggler }) => (
-          <div className='flex items-center justify-between gap-4'>
+          <div className='flex items-center justify-between gap-4 overflow-hidden'>
             <NavbarChatInfo
               backButton={backButton}
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
@@ -84,14 +88,44 @@ export default function ChatPage({
         ),
       }}
     >
-      <ChatPageNavbarExtension />
       <ChatRoom
         hubId={hubId}
         chatId={chatId}
         asContainer
         className='flex-1 overflow-hidden'
       />
+      <BottomPanel />
     </DefaultLayout>
+  )
+}
+
+function BottomPanel() {
+  const shouldSendMessageWithoutCaptcha = useMyAccount((state) => {
+    const isEnergyLoading = state.address && state.energy === null
+    if (!state.isInitialized || isEnergyLoading) return true
+
+    const isLoggedIn = !!state.address
+    const hasEnoughEnergy = (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
+    return isLoggedIn && hasEnoughEnergy
+  })
+
+  return (
+    <Container as='div' className='pb-2 text-center text-sm text-text-muted'>
+      {shouldSendMessageWithoutCaptcha ? (
+        <p>
+          Powered by{' '}
+          <LinkText
+            variant='primary'
+            href='https://subsocial.network/'
+            openInNewTab
+          >
+            Subsocial
+          </LinkText>
+        </p>
+      ) : (
+        <CaptchaTermsAndService />
+      )}
+    </Container>
   )
 }
 
@@ -140,7 +174,7 @@ function NavbarChatInfo({
   const chatTitle = chatMetadata?.title
 
   return (
-    <div className='flex flex-1 items-center'>
+    <div className='flex flex-1 items-center overflow-hidden'>
       {enableBackButton && backButton}
       <Button
         variant='transparent'
@@ -155,7 +189,7 @@ function NavbarChatInfo({
         <Image
           className={cx(
             getCommonClassNames('chatImageBackground'),
-            'h-9 w-9 justify-self-end'
+            'h-9 w-9 flex-shrink-0 justify-self-end'
           )}
           width={36}
           height={36}

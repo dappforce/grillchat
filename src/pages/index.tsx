@@ -1,5 +1,8 @@
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
-import HomePage, { HubsPageProps } from '@/modules/chat/HomePage'
+import HomePage, {
+  homePageAdditionalTabs,
+  HubsPageProps,
+} from '@/modules/chat/HomePage'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
@@ -21,8 +24,13 @@ export const getStaticProps = getCommonStaticProps<
     try {
       const hubsData = await getSpaceQuery.fetchQueries(queryClient, hubIds)
 
+      const additionalHubIds = homePageAdditionalTabs.map(({ hubId }) => hubId)
+
       await Promise.all([
         prefetchChatPreviewsData(queryClient, getMainHubId()),
+        ...additionalHubIds.map((hubId) =>
+          prefetchChatPreviewsData(queryClient, hubId)
+        ),
         ...hubsData.map(async (hub) => {
           if (!hub) return
 
