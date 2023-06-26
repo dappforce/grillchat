@@ -91,6 +91,15 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
 
   const isValidNft = !!data?.image && !showLoading
 
+  // TODO: this is hotfix, fix is in image extension PR
+  const scrollToBottom = () => {
+    const scrollContainer = document.getElementById('chat-list')
+    scrollContainer?.scrollTo({
+      top: scrollContainer?.scrollHeight,
+      behavior: 'auto',
+    })
+  }
+
   return (
     <>
       <CommonExtensionModal
@@ -124,6 +133,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
             ],
           }
         }}
+        onSubmit={scrollToBottom}
       >
         <div className='flex flex-col gap-3 md:gap-5'>
           <NftLinkInput
