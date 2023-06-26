@@ -1,21 +1,21 @@
 import Button from '@/components/Button'
 import useSignMessage from '@/hooks/useSignMessage'
-import { useGetLinkingMessageForTelegramAccount } from '@/services/notifications/mutation'
+import { useGetLinkingMessage } from '@/services/api/notifications/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { ContentProps } from '../../types'
 
 export default function TelegramNotificationContent({ address }: ContentProps) {
   const buildLinkMessage = useBuildLinkMessage()
 
-  const { mutate: getLinkingMessage } = useGetLinkingMessageForTelegramAccount({
+  const { mutate: getLinkingMessage } = useGetLinkingMessage({
     onSuccess: async (message) => {
-      const payload = await buildLinkMessage(decodeURIComponent(message))
+      const payload = await buildLinkMessage(decodeURIComponent(message ?? ''))
       console.log(payload)
     },
   })
 
   const handleClick = async () => {
-    getLinkingMessage(address)
+    getLinkingMessage({ address })
   }
 
   return (
