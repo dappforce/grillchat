@@ -3,11 +3,16 @@ import { getHubIdFromAlias } from '@/constants/hubs'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { getAccountsDataFromCache } from '@/pages/api/accounts-data'
 import { getPostsServer } from '@/pages/api/posts'
+import { getPricesFromCache } from '@/pages/api/prices'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import {
+  coingeckoTokenIds,
+  getPriceQuery,
+} from '@/services/subsocial/prices/query'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -47,9 +52,11 @@ async function getChatsData(chatId: string) {
   const ownersSet = new Set(owners)
   const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)
 
+  const prices = await getPricesFromCache(Object.values(coingeckoTokenIds))
+
   const accountsAddresses = await getAccountsDataFromCache(chatPageOwnerIds)
 
-  return { messages, chatData, messageIds, accountsAddresses }
+  return { messages, chatData, messageIds, accountsAddresses, prices }
 }
 
 export const getStaticProps = getCommonStaticProps<
@@ -71,7 +78,7 @@ export const getStaticProps = getCommonStaticProps<
     let title: string | null = null
     let desc: string | null = null
     try {
-      const [{ messageIds, messages, chatData, accountsAddresses }] =
+      const [{ messageIds, messages, chatData, accountsAddresses, prices }] =
         await Promise.all([
           getChatsData(chatId),
           prefetchBlockedEntities(queryClient, hubId, [chatId]),
@@ -90,13 +97,23 @@ export const getStaticProps = getCommonStaticProps<
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
 
-      accountsAddresses.map((accountAddresses) =>
+      accountsAddresses.forEach((accountAddresses) =>
         getAccountDataQuery.setQueryData(
           queryClient,
           accountAddresses.evmAddress,
           accountAddresses
         )
       )
+      prices.forEach((price) => {
+        const { id, current_price } = price || {}
+
+        if (id && current_price) {
+          getPriceQuery.setQueryData(queryClient, id, {
+            id,
+            current_price: current_price?.toString(),
+          })
+        }
+      })
     } catch (err) {
       console.error('Error fetching for chat page: ', err)
     }

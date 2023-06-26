@@ -5,17 +5,10 @@ import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
-import { PostData } from '@subsocial/api/types'
 import Linkify from 'linkify-react'
-import { SyntheticEvent } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import { ProfilePreviewModalName } from '../ProfilePreviewModalWrapper'
-
-export type ExtensionChatItemProps = {
-  message: PostData
-  onCheckMarkClick: (e: SyntheticEvent) => void
-  scrollToMessage?: (messageId: string) => Promise<void>
-}
+import { ExtensionChatItemProps } from './types'
 
 type DerivativesData = {
   isMyMessage: boolean
@@ -36,6 +29,7 @@ type CommonChatItemProps = ExtensionChatItemProps & {
   myMessageConfig?: MyMessageConfig
   othersMessage?: OthersMessageConfig
   className?: string
+  textColor?: string
 }
 
 const defaultMyMessageConfig: MyMessageConfig = {
@@ -52,6 +46,7 @@ export default function CommonChatItem({
   children,
   scrollToMessage,
   onCheckMarkClick,
+  textColor,
   className,
 }: CommonChatItemProps) {
   const myAddress = useMyAccount((state) => state.address)
@@ -110,9 +105,12 @@ export default function CommonChatItem({
           <div className='flex items-center px-2.5 first:pt-1.5'>
             <ProfilePreviewModalName
               address={ownerId}
+              color={textColor && '#ffffff'}
               className={cx('mr-2 text-sm text-text-secondary')}
             />
-            <span className='text-xs text-text-muted'>{relativeTime}</span>
+            <span className={'text-xs'} style={{ color: textColor }}>
+              {relativeTime}
+            </span>
           </div>
         )}
 
@@ -124,6 +122,7 @@ export default function CommonChatItem({
             className='mx-2.5 mt-1 first:mt-2.5'
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
+            textColor={textColor}
           />
         )}
 

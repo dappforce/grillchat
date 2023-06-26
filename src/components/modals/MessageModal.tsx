@@ -54,6 +54,7 @@ export default function MessageModal({
             withCustomMenu={false}
             isMyMessage={false}
             message={message}
+            chatId={chatId}
           />
         )}
       </div>

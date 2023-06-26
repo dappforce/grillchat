@@ -35,6 +35,9 @@ export default function ChatRoom({
   useEffect(() => {
     return () => clearReplyTo()
   }, [clearReplyTo])
+  const showEmptyPrimaryChatInput = useMessageData(
+    (state) => state.showEmptyPrimaryChatInput
+  )
 
   const Component = asContainer ? Container<'div'> : 'div'
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -65,7 +68,7 @@ export default function ChatRoom({
       <Component
         className={cx('mt-auto flex flex-col py-2', replyTo && 'pt-0')}
       >
-        {replyTo && (
+        {replyTo && !showEmptyPrimaryChatInput && (
           <RepliedMessage
             replyMessageId={replyTo}
             scrollContainer={scrollContainerRef}
@@ -76,6 +79,7 @@ export default function ChatRoom({
             formProps={{
               chatId,
               onSubmit: scrollToBottom,
+              isPrimary: true,
             }}
           />
         ) : (

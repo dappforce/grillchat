@@ -1,7 +1,7 @@
-import MediaLoader from '@/components/MediaLoader'
+import { repliedMessagePreviewParts } from '@/components/extensions/config'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
-import { getNftQuery, getPostQuery } from '@/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { truncateText } from '@/utils/strings'
 import { ComponentProps, useState } from 'react'
@@ -11,6 +11,8 @@ export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   originalMessage: string
   minimumReplyChar?: number
   scrollToMessage?: (messageId: string) => Promise<void>
+  replyToExtension?: boolean
+  textColor?: string
 }
 
 const MINIMUM_REPLY_CHAR = 35
@@ -19,6 +21,8 @@ export default function RepliedMessagePreview({
   originalMessage,
   scrollToMessage,
   minimumReplyChar = MINIMUM_REPLY_CHAR,
+  replyToExtension = false,
+  textColor,
   ...props
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
@@ -26,22 +30,26 @@ export default function RepliedMessagePreview({
   const replySender = message?.struct.ownerId ?? ''
   const replySenderColor = useRandomColor(replySender)
 
-  // TODO: extract to better flexibility for other extensions
   const extensions = message?.content?.extensions
-  const firstExtension = extensions?.[0]
-  const hasNftExtension =
-    firstExtension && firstExtension.id === 'subsocial-evm-nft'
 
-  const messageContent =
-    message?.content?.body || (hasNftExtension ? 'NFT' : '')
-
-  const { data: nftData } = getNftQuery.useQuery(
-    firstExtension?.properties ?? null
-  )
+  const messageContent = message?.content?.body
 
   if (!message) {
     return null
   }
+
+  const extensionId = extensions?.[0]?.id
+
+  const extensionRepliedPart = extensionId
+    ? repliedMessagePreviewParts[extensionId]
+    : undefined
+
+  const { element: ExtensionElement, config } = extensionRepliedPart || {}
+  const { place, emptyBodyText } = config || {}
+
+  const extensionPart = ExtensionElement && (
+    <ExtensionElement message={message} extensions={extensions} />
+  )
 
   let showedText = messageContent ?? ''
   if (originalMessage.length < minimumReplyChar) {
@@ -55,6 +63,12 @@ export default function RepliedMessagePreview({
     setIsLoading(false)
   }
 
+  const bodyText = (
+    <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
+      {showedText || emptyBodyText}
+    </span>
+  )
+
   return (
     <div
       {...props}
@@ -64,28 +78,28 @@ export default function RepliedMessagePreview({
         isLoading && 'animate-pulse',
         props.className
       )}
-      style={{ borderColor: replySenderColor, ...props.style }}
+      style={{ borderColor: textColor || replySenderColor, ...props.style }}
       onClick={(e) => {
         e.stopPropagation()
         onRepliedMessageClick()
         props.onClick?.(e)
       }}
     >
-      {hasNftExtension && (
-        <MediaLoader
-          width={60}
-          height={60}
-          containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
-          className={cx('aspect-square w-10')}
-          placeholderClassName={cx('w-10 aspect-square')}
-          image={nftData?.image}
-        />
-      )}
+      {place === 'inside' && extensionPart}
       <div className='flex flex-col'>
-        <Name address={replySender} className='font-medium' />
-        <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
-          {showedText}
-        </span>
+        <Name
+          address={message?.struct.ownerId}
+          className='mb-1 font-medium'
+          color={textColor}
+        />
+        {place === 'body' && extensionPart ? (
+          <div className={cx('flex items-center gap-2')}>
+            {extensionPart}
+            {bodyText}
+          </div>
+        ) : (
+          bodyText
+        )}
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 import {
   CommentStruct,
+  DonateExtension,
   NftExtension,
   PostContent,
   PostContentExtension,
@@ -51,7 +52,7 @@ const mapPostExtensions = (
   const mappedExtensions = extensions?.map((ext) => {
     switch (ext.extensionSchemaId) {
       case ContentExtensionSchemaId.SubsocialEvmNft:
-        const extension: NftExtension = {
+        const nftExtension: NftExtension = {
           id: 'subsocial-evm-nft',
           properties: {
             chain: ext.chain ?? '',
@@ -60,7 +61,21 @@ const mapPostExtensions = (
             url: ext.url ?? '',
           },
         }
-        return extension
+        return nftExtension
+      case ContentExtensionSchemaId.SubsocialDonations:
+        const donationExtension: DonateExtension = {
+          id: 'subsocial-donations',
+          properties: {
+            chain: ext?.chain ?? '',
+            from: ext?.fromEvm?.id ?? '',
+            to: ext?.toEvm?.id ?? '',
+            token: ext?.token ?? '',
+            decimals: ext?.decimals ?? 0,
+            amount: ext?.amount ?? '',
+            txHash: ext?.txHash ?? '',
+          },
+        }
+        return donationExtension
     }
   })
   const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
