@@ -1,42 +1,31 @@
+import { ApiResponse, handlerWrapper } from '@/server/common'
 import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
 import { PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest } from 'next'
 import { z } from 'zod'
 
 const querySchema = z.object({
   postIds: z.array(z.string()),
 })
 export type ApiPostsParams = z.infer<typeof querySchema>
-export type ApiPostsResponse = {
-  success: boolean
-  message: string
-  errors?: any
+
+type ResponseData = {
   data?: PostData[]
   hash?: string
 }
+export type ApiPostsResponse = ApiResponse<ResponseData>
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiPostsResponse>
-) {
-  if (req.method !== 'GET') return res.status(404).end()
-
-  const query = req.query.postIds
-  const params = querySchema.safeParse({
-    postIds: Array.isArray(query) ? query : [query],
-  })
-  if (!params.success) {
-    return res.status(400).send({
-      success: false,
-      message: 'Invalid request body',
-      errors: params.error.errors,
-    })
-  }
-
-  const posts = await getPostsServer(params.data.postIds)
-  return res.status(200).send({ success: true, message: 'OK', data: posts })
-}
+export default handlerWrapper({
+  inputSchema: querySchema,
+  dataGetter: (req: NextApiRequest) => req.query,
+})<ResponseData>({
+  allowedMethods: ['GET'],
+  handler: async (data, _, res) => {
+    const posts = await getPostsServer(data.postIds)
+    return res.status(200).send({ success: true, message: 'OK', data: posts })
+  },
+})
 
 export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   const validIds = postIds.filter((id) => !!id && parseInt(id) >= 0)

@@ -11,14 +11,18 @@ export function handlerWrapper<Input extends z.ZodTypeAny>(config: {
   inputSchema: Input
   dataGetter: (req: NextApiRequest) => unknown
 }) {
-  return <Output>(
+  return <Output>(handlerConfig: {
     handler: (
       data: z.infer<Input>,
       req: NextApiRequest,
       res: NextApiResponse<ApiResponse<Output>>
     ) => void
-  ) => {
+    allowedMethods?: ('GET' | 'POST' | 'PUT' | 'DELETE')[]
+  }) => {
     return (req: NextApiRequest, res: NextApiResponse<ApiResponse<Output>>) => {
+      if (!handlerConfig.allowedMethods?.includes(req.method ?? ('' as any)))
+        return res.status(404).end()
+
       const { dataGetter, inputSchema } = config
       const params = inputSchema.safeParse(dataGetter(req))
 
@@ -30,7 +34,7 @@ export function handlerWrapper<Input extends z.ZodTypeAny>(config: {
         } as ApiResponse<Output>)
       }
 
-      return handler(params.data, req, res)
+      return handlerConfig.handler(params.data, req, res)
     }
   }
 }
