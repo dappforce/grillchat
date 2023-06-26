@@ -9,7 +9,7 @@ export default function TelegramNotificationContent({ address }: ContentProps) {
 
   const { mutate: getLinkingMessage } = useGetLinkingMessage({
     onSuccess: async (message) => {
-      const payload = await buildLinkMessage(decodeURIComponent(message ?? ''))
+      const payload = await buildLinkMessage(message ?? '')
       console.log(payload)
     },
   })
@@ -30,14 +30,13 @@ function useBuildLinkMessage() {
   const signMessage = useSignMessage()
 
   return async (message: string) => {
-    const decodedMessage = decodeURIComponent(message)
-    const signedMessage = await signMessage(decodedMessage)
+    const signedMessage = await signMessage(message)
 
     const messageData = {
       action: 'LINK_TELEGRAM_ACCOUNT',
       address,
       signature: signedMessage,
-      payload: decodedMessage,
+      payload: message,
     }
 
     return JSON.stringify(messageData)
