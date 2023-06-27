@@ -4,6 +4,7 @@ import { ClipboardEvent } from 'react'
 import DonateMessagePreview from './donate/DonateMessagePreview'
 import DonateRepliedMessagePreviewPart from './donate/DonateRepliedMessagePreviewPart'
 import ImageChatItem from './image/ImageChatItem'
+import ImageRepliedMessagePreviewPart from './image/ImageRepliedMessagePreviewPart'
 import NftChatItem from './nft/NftChatItem'
 import NftRepliedMessagePreviewPart from './nft/NftRepliedMessagePreviewPart'
 import { parseNftMarketplaceLink } from './nft/utils'
@@ -60,7 +61,7 @@ const extensionsConfig: {
   'subsocial-image': {
     chatItemComponent: ImageChatItem,
     replyMessageUI: {
-      element: NftRepliedMessagePreviewPart,
+      element: ImageRepliedMessagePreviewPart,
       config: {
         place: 'inside',
         emptyBodyText: 'Image',
