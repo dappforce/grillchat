@@ -9,22 +9,39 @@ declare module '@subsocial/api/types' {
   export type ImageProperties = {
     image: string
   }
-  export type ImageExtension = {
-    id: 'subsocial-image'
-    properties: ImageProperties
-  }
-
   export type NftProperties = {
     chain: string
     collectionId: string
     nftId: string
     url: string
   }
+  export type DonateProperies = {
+    chain: string
+    from: string
+    to: string
+    token: string
+    decimals: number
+    amount: string
+    txHash: string
+  }
+
   export type NftExtension = {
     id: 'subsocial-evm-nft'
     properties: NftProperties
   }
-  export type PostContentExtension = NftExtension | ImageExtension
+  export type DonateExtension = {
+    id: 'subsocial-donations'
+    properties: DonateProperies
+  }
+  export type ImageExtension = {
+    id: 'subsocial-image'
+    properties: ImageProperties
+  }
+
+  export type PostContentExtension =
+    | NftExtension
+    | DonateExtension
+    | ImageExtension
 
   export interface PostContent extends SubsocialPostContent {
     inReplyTo?: {

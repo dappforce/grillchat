@@ -1,8 +1,9 @@
+import PinIcon from '@/assets/icons/pin.png'
 import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfiniteScrollData'
 import Container from '@/components/Container'
 import MessageModal from '@/components/modals/MessageModal'
 import ScrollableContainer from '@/components/ScrollableContainer'
-import { CHAT_PER_PAGE } from '@/constants/chat'
+import { CHAT_PER_PAGE, getPinnedMessageInChatId } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -13,12 +14,12 @@ import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { validateNumber } from '@/utils/strings'
 import { replaceUrl } from '@/utils/window'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import {
   ComponentProps,
   Fragment,
   useEffect,
-  useId,
   useMemo,
   useRef,
   useState,
@@ -37,10 +38,10 @@ import { NewMessageNotice } from './NewMessageNotice'
 
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
+  scrollContainerRef?: React.RefObject<HTMLDivElement>
   scrollableContainerClassName?: string
   hubId: string
   chatId: string
-  scrollContainerRef?: React.RefObject<HTMLDivElement>
   replyTo?: string
   newMessageNoticeClassName?: string
 }
@@ -69,7 +70,10 @@ function ChatListContent({
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
   const prevMessageModalMsgId = usePrevious(messageModalMsgId)
 
-  const scrollableContainerId = useId()
+  // TODO: this is hotfix, fix is in image extension PR, revert back to useId(), this is hotfix for making easier to scrollToBottom from extension modals
+  // const scrollableContainerId = useId()
+  const scrollableContainerId = 'chat-list'
+
   const innerScrollContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
 
@@ -162,22 +166,27 @@ function ChatListContent({
       SCROLL_THRESHOLD_PERCENTAGE || DEFAULT_SCROLL_THRESHOLD
 
   return (
-    <Component
+    <div
       {...props}
       className={cx(
         'relative flex flex-1 flex-col overflow-hidden',
         props.className
       )}
     >
+      <PinnedMessage
+        scrollToMessage={scrollToMessage}
+        chatId={chatId}
+        asContainer={asContainer}
+      />
       <ScrollableContainer
         id={scrollableContainerId}
         ref={scrollContainerRef}
         className={cx(
-          'flex flex-col-reverse overflow-x-hidden pr-2 md:pr-4',
+          'flex flex-col-reverse overflow-x-hidden pl-2',
           scrollableContainerClassName
         )}
       >
-        <div ref={innerRef}>
+        <Component ref={innerRef}>
           <InfiniteScroll
             dataLength={loadedMessageQueries.length}
             next={loadMore}
@@ -190,7 +199,12 @@ function ChatListContent({
             inverse
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
-            endMessage={<ChatTopNotice className='pb-2 pt-4' />}
+            endMessage={
+              <ChatTopNotice
+                hasNoMessage={messageQueries.length === 0}
+                className='pb-2 pt-4'
+              />
+            }
             scrollThreshold={`${scrollThreshold}px`}
           >
             {messageQueries.map(({ data: message }, index) => {
@@ -222,7 +236,7 @@ function ChatListContent({
               )
             })}
           </InfiniteScroll>
-        </div>
+        </Component>
       </ScrollableContainer>
       <MessageModal
         isOpen={!!messageModalMsgId}
@@ -230,11 +244,59 @@ function ChatListContent({
         messageId={messageModalMsgId}
         scrollToMessage={scrollToMessage}
       />
-      <NewMessageNotice
-        className={cx('absolute bottom-0 right-6', newMessageNoticeClassName)}
-        messageIds={messageIds}
-        scrollContainerRef={scrollContainerRef}
-      />
-    </Component>
+      <Component>
+        <div className='relative'>
+          <NewMessageNotice
+            className={cx(
+              'absolute bottom-2 right-3',
+              newMessageNoticeClassName
+            )}
+            messageIds={messageIds}
+            scrollContainerRef={scrollContainerRef}
+          />
+        </div>
+      </Component>
+    </div>
+  )
+}
+
+type PinnedMessageProps = {
+  chatId: string
+  asContainer?: boolean
+  scrollToMessage: ReturnType<typeof useScrollToMessage>
+}
+function PinnedMessage({
+  chatId,
+  asContainer,
+  scrollToMessage,
+}: PinnedMessageProps) {
+  const pinnedMessage = getPinnedMessageInChatId(chatId)
+  const { data: message } = getPostQuery.useQuery(pinnedMessage)
+  if (!message) return null
+
+  const Component = asContainer ? Container<'div'> : 'div'
+  return (
+    <div className='sticky top-0 z-10 border-b border-border-gray bg-background-light text-sm'>
+      <Component
+        className='flex cursor-pointer items-center overflow-hidden py-2'
+        onClick={() => scrollToMessage(message.id, true)}
+      >
+        <div className='mr-1'>
+          <Image
+            src={PinIcon}
+            alt='pin'
+            width={16}
+            height={16}
+            className='mx-3 h-4 w-4 flex-shrink-0'
+          />
+        </div>
+        <div className='flex flex-col overflow-hidden'>
+          <span className='font-medium text-text-primary'>Pinned Message</span>
+          <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
+            {message.content?.body}
+          </span>
+        </div>
+      </Component>
+    </div>
   )
 }

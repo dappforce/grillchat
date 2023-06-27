@@ -5,6 +5,7 @@ import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useMemo } from 'react'
 import useSortChatIdsByConfig from './useSortChatIdsByConfig'
 import useSortChatIdsByLatestMessage from './useSortChatIdsByLatestMessage'
+import { useSortChatIdsByPinned } from './useSortChatIdsByPinned'
 
 export default function useSortedChats(hubId: string) {
   const { channels } = useConfigContext()
@@ -19,9 +20,10 @@ export default function useSortedChats(hubId: string) {
   }, [allChatIds, channels])
 
   const sortedIds = useSortChatIdsByLatestMessage(filteredChatIds)
-  const order = useSortChatIdsByConfig(sortedIds)
+  const sortedByOrder = useSortChatIdsByConfig(sortedIds)
+  const sortedByPinned = useSortChatIdsByPinned(hubId, sortedByOrder)
 
-  const chatQueries = getPostQuery.useQueries(order)
+  const chatQueries = getPostQuery.useQueries(sortedByPinned)
   const chats = useMemo(
     () => chatQueries.map(({ data }) => data),
     [chatQueries]

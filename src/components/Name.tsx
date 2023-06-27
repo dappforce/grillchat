@@ -8,16 +8,21 @@ export type NameProps = ComponentProps<'span'> & {
   address: string
   additionalText?: string
   className?: string
+  color?: string
 }
 
-const Name = ({ address, additionalText, ...props }: NameProps) => {
+const Name = ({
+  address,
+  className,
+  additionalText,
+  color,
+  ...props
+}: NameProps) => {
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
+  const textColor = useRandomColor(address)
 
-  const { evmAddress, ensName } = accountData || {}
+  const { ensName } = accountData || {}
   const name = ensName || generateRandomName(address)
-
-  const usedAddress = evmAddress || address
-  const textColor = useRandomColor(usedAddress)
 
   if (!accountData && isLoading) {
     return (
@@ -25,7 +30,7 @@ const Name = ({ address, additionalText, ...props }: NameProps) => {
         {...props}
         className={cx(
           'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none',
-          props.className
+          className
         )}
       >
         <span className='my-1 mr-4 h-3 w-20 rounded-full bg-background-lighter font-medium' />
@@ -34,11 +39,7 @@ const Name = ({ address, additionalText, ...props }: NameProps) => {
   }
 
   return (
-    <span
-      {...props}
-      className={cx(props.className)}
-      style={{ color: textColor }}
-    >
+    <span className={className} style={{ color: color || textColor }}>
       {additionalText} {name}
     </span>
   )

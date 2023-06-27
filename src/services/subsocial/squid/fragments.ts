@@ -70,11 +70,22 @@ export const POST_FRAGMENT = gql`
       id
     }
     extensions {
+      amount
       chain
-      extensionSchemaId
-      nftId
       collectionId
+      decimals
+      extensionSchemaId
+      id
+      nftId
+      token
+      txHash
       url
+      fromEvm {
+        id
+      }
+      toEvm {
+        id
+      }
     }
   }
 `
