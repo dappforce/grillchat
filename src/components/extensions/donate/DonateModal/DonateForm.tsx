@@ -166,7 +166,7 @@ function DonateForm({
                 selected={selectedToken}
                 setSelected={setSelectedToken}
                 fieldLabel='Token'
-                items={tokensItems}
+                items={tokensItems[selectedChain.id]}
                 imgClassName='w-[38px]'
               />
               <AmountInput

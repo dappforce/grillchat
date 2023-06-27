@@ -2,6 +2,7 @@ import useToastError from '@/hooks/useToastError'
 import { useEffect, useMemo } from 'react'
 import {
   useAccount,
+  useBalance,
   useConnect,
   useContractReads,
   useContractWrite,
@@ -10,7 +11,8 @@ import {
 } from 'wagmi'
 import { isTouchDevice } from '../../../../utils/device'
 import { DonateModalStep } from '../DonateModal/types'
-import { chainIdByChainName, polygonContractsByToken } from './config'
+import { tokensItems } from '../DonateModal/utils'
+import { chainIdByChainName, contractsByChainName } from './config'
 import { getConnector, openMobileWallet } from './utils'
 
 export const useConnectOrSwitchNetwork = (
@@ -96,7 +98,10 @@ export const useConnectOrSwitchNetwork = (
 export const useDonate = (token: string, chainName: string) => {
   const { sendTransactionAsync } = useSendTransaction()
 
-  const { abi, address } = polygonContractsByToken[token]
+  const contracts = contractsByChainName[chainName]
+
+  const { abi, address } = contracts[token] || {}
+
   const chainId = chainIdByChainName[chainName]
 
   const { writeAsync } = useContractWrite({
@@ -120,15 +125,24 @@ export const useDonate = (token: string, chainName: string) => {
 
     try {
       if (!decimals) return
-      const { hash } = isNativeToken
-        ? await sendTransactionAsync({
-            to: recipient,
-            value: amount,
-            chainId,
-          })
-        : await writeAsync({
-            args: [recipient, amount],
-          })
+      let hash = ''
+
+      if (isNativeToken) {
+        const { hash: nativeTxHash } = await sendTransactionAsync({
+          to: recipient,
+          value: amount,
+          chainId,
+        })
+
+        hash = nativeTxHash
+      } else {
+        const { hash: contractTxHash } = await writeAsync({
+          args: [recipient, amount],
+        })
+
+        hash = contractTxHash
+      }
+
       return hash
     } catch (e) {
       console.error('Transfer error: ', e)
@@ -140,10 +154,18 @@ export const useDonate = (token: string, chainName: string) => {
   return { sendTransferTx }
 }
 
+const tryParseInt = (decimals?: any) =>
+  decimals ? parseInt(decimals.toString()) : undefined
+
 export const useGetBalance = (token: string, chainName: string) => {
   const { address: currentEvmAddress } = useAccount()
 
-  const { address, abi } = polygonContractsByToken[token]
+  const contracts = contractsByChainName[chainName]
+
+  const { isNativeToken } =
+    tokensItems[chainName].find((x) => x.id === token) || {}
+
+  const { address, abi } = contracts[token] || {}
   const chainId = chainIdByChainName[chainName]
 
   const commonParams = {
@@ -152,31 +174,51 @@ export const useGetBalance = (token: string, chainName: string) => {
     chainId,
   }
 
-  const { data, isLoading } = useContractReads({
-    contracts: [
-      {
-        ...commonParams,
-        functionName: 'balanceOf',
-        args: currentEvmAddress ? [currentEvmAddress] : [],
-      },
-      {
-        ...commonParams,
-        functionName: 'decimals',
-      },
-    ],
+  const { data: contractData, isLoading: isContractDataLoading } =
+    useContractReads({
+      contracts: [
+        {
+          ...commonParams,
+          functionName: 'balanceOf',
+          args: currentEvmAddress ? [currentEvmAddress] : [],
+        },
+        {
+          ...commonParams,
+          functionName: 'decimals',
+        },
+      ],
+      watch: true,
+    })
+
+  const { data: nativeData, isLoading: isNativeDataLoading } = useBalance({
+    address: currentEvmAddress,
     watch: true,
   })
 
-  const { balance, decimals } = useMemo(() => {
-    if (!data) return {}
+  const { balance: contractBalance, decimals: contractDecimals } =
+    useMemo(() => {
+      if (!contractData) return {}
 
-    const [balance, decimals] = data.map((item) => item.result)
+      const [balance, decimals] = contractData.map((item) => item.result)
 
-    return { balance: balance, decimals }
-  }, [!!data, isLoading, token, currentEvmAddress])
+      return { balance: balance, decimals }
+    }, [!!contractData, isContractDataLoading, token, currentEvmAddress])
+
+  const { balance: nativeBalance, decimals: nativeTokenDecimals } =
+    useMemo(() => {
+      if (!nativeData) return {}
+
+      const { value, decimals } = nativeData
+
+      return { balance: value, decimals }
+    }, [!!nativeData, isNativeDataLoading, token, currentEvmAddress])
 
   return {
-    balance: balance?.toString(),
-    decimals: decimals ? parseInt(decimals.toString()) : undefined,
+    balance: isNativeToken
+      ? nativeBalance?.toString()
+      : contractBalance?.toString(),
+    decimals: isNativeToken
+      ? tryParseInt(nativeTokenDecimals?.toString())
+      : tryParseInt(contractDecimals?.toString()),
   }
 }
