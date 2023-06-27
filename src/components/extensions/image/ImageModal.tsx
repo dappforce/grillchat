@@ -10,7 +10,6 @@ import { useSaveImage } from '@/services/api/mutations'
 import { useExtensionModalState } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { resizeImage } from '@/utils/image'
-import { ImageExtension } from '@subsocial/api/types'
 import React, { useEffect, useState } from 'react'
 import Dropzone from 'react-dropzone'
 import { HiTrash } from 'react-icons/hi2'
@@ -53,11 +52,11 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
     return {
       extensions: [
         {
-          id: 'subsocial-image',
+          id: 'subsocial-image' as const,
           properties: {
             image: imageUrl,
           },
-        } as ImageExtension,
+        },
       ],
     }
   }

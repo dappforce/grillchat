@@ -5,12 +5,12 @@ import MediaLoader from '@/components/MediaLoader'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getNftQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
-import { NftProperties } from '@subsocial/api/types'
 import truncate from 'lodash.truncate'
 import { useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 import CommonChatItem from '../CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
+import { getMessageExtensionProperties } from '../utils'
 import { getMarketplaceFromLink } from './utils'
 
 type Props = ExtensionChatItemProps
@@ -25,7 +25,10 @@ export default function NftChatItem(props: Props) {
   const { content } = message
   const { extensions } = content || {}
 
-  const nftProperties = extensions?.[0]?.properties as NftProperties
+  const nftProperties = getMessageExtensionProperties(
+    extensions?.[0],
+    'subsocial-evm-nft'
+  )
   const { data: nftData, isLoading: isLoadingNftData } = getNftQuery.useQuery(
     nftProperties,
     {

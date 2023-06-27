@@ -4,12 +4,13 @@ import {
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
 import { cx, getCommonClassNames } from '@/utils/class-names'
-import { DonateExtension, DonateProperies } from '@subsocial/api/types'
+import { DonateProperies } from '@subsocial/api/types'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { HiArrowUpRight } from 'react-icons/hi2'
 import CommonChatItem from '../CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
+import { getMessageExtensionProperties } from '../utils'
 
 type DonatePreviewProps = {
   extensionProps?: DonateProperies
@@ -71,7 +72,12 @@ export default function DonateMessagePreview({
   const { content } = message
 
   const { extensions, body } = content || {}
-  const { properties } = (extensions?.[0] as DonateExtension) || {}
+  const properties = getMessageExtensionProperties(
+    extensions?.[0],
+    'subsocial-donations'
+  )
+
+  if (!properties) return null
 
   return (
     <CommonChatItem

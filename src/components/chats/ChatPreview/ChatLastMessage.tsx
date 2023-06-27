@@ -29,7 +29,6 @@ export default function ChatLastMessage({
   const extensions = lastMessage?.content?.extensions
 
   const firstExtension = extensions?.[0]
-
   const extensionId = firstExtension?.id as PostContentExtension['id']
 
   const { element, config } =
