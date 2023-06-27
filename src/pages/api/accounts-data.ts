@@ -1,7 +1,5 @@
-import { resolveEnsAvatarSrc } from '@/components/AddressAvatar'
 import { redisCallWrapper } from '@/server/cache'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import axios from 'axios'
 import { request } from 'graphql-request'
 import gql from 'graphql-tag'
 
@@ -12,7 +10,6 @@ export type AccountData = {
   grillAddress: string
   evmAddress: string
   ensName: string | null
-  withEnsAvatar: boolean
 }
 
 const querySchema = z.object({
@@ -83,17 +80,6 @@ function invalidateCache(addresses: string[]) {
   })
 }
 
-async function checkEnsAvatar(ensName: string | null) {
-  if (!ensName) return false
-
-  try {
-    const result = await axios.get(resolveEnsAvatarSrc(ensName))
-    return !result.data?.message
-  } catch {
-    return false
-  }
-}
-
 type Domain = {
   name: string
   resolvedAddress: { id: string }
@@ -145,7 +131,6 @@ async function fetchAccountsData(addresses: string[]) {
         grillAddress: address,
         evmAddress: evmAddressesHuman[i],
         ensName,
-        withEnsAvatar: await checkEnsAvatar(ensName),
       }
 
       newlyFetchedData.push(accountData)
