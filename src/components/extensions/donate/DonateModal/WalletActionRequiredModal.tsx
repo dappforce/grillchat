@@ -33,7 +33,7 @@ const getModalHeader = (
       title: `🔐 Add ${selectedChain.label} to wallet`,
       desc: (
         <>
-          You need to add {} Network to your wallet.{' '}
+          You need to add {selectedChain.label} Network to your wallet.{' '}
           <LinkText
             openInNewTab
             href={addNetworkLink[selectedChain.id]}
