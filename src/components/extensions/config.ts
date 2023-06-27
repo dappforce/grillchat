@@ -2,6 +2,7 @@ import { useExtensionData } from '@/stores/extension'
 import { getUrlFromText } from '@/utils/strings'
 import { PostContentExtension } from '@subsocial/api/types'
 import { ClipboardEvent } from 'react'
+import { FloatingMenusProps } from '../floating/FloatingMenus'
 import DonateMessagePreview from './donate/DonateMessagePreview'
 import DonateRepliedMessagePreviewPart from './donate/DonateRepliedMessagePreviewPart'
 import ImageChatItem from './image/ImageChatItem'
@@ -28,6 +29,7 @@ type Config<Id extends PostContentExtension['id']> = {
     clipboardData: DataTransfer,
     e: ClipboardEvent<HTMLTextAreaElement>
   ) => (typeof extensionInitialDataTypes)[Id]
+  additionalMenuItems?: FloatingMenusProps['menus']
 }
 const extensionsConfig: {
   [key in PostContentExtension['id']]: Config<key>
@@ -93,6 +95,7 @@ const extensionsConfig: {
 
       return null
     },
+    additionalMenuItems: [],
   },
 }
 export function getExtensionConfig<Id extends PostContentExtension['id']>(

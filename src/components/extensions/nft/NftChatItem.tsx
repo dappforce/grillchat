@@ -77,7 +77,11 @@ export default function NftChatItem(props: Props) {
           </div>
           <div className='mt-1.5 flex flex-col gap-1 px-2.5'>
             <div className='flex items-center justify-between gap-2'>
-              <LinkText href={nftProperties?.url ?? ''} openInNewTab>
+              <LinkText
+                href={nftProperties?.url ?? ''}
+                openInNewTab
+                onClick={(e) => e.stopPropagation()}
+              >
                 <NftDataSkeleton content={nftData}>
                   {(data) => data?.name ?? data?.collectionName}
                 </NftDataSkeleton>
