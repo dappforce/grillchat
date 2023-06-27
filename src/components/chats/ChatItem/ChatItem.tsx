@@ -113,13 +113,20 @@ export default function ChatItem({
       text: 'Donate',
       icon: RiCopperCoinLine,
       onClick: () => {
+        if (!messageOwnerEvmAddress) {
+          return
+        }
+
         if (!address) {
           setModalState('login')
           return
         }
 
         setMessageAsReply(messageId)
-        openExtensionModal('subsocial-donations')
+        openExtensionModal('subsocial-donations', {
+          messageId,
+          recipient: messageOwnerEvmAddress,
+        })
       },
     }
 

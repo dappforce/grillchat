@@ -24,12 +24,12 @@ export default function AttachmentInput({
         {
           icon: NftIcon,
           text: 'NFT',
-          onClick: () => openExtensionModal('subsocial-evm-nft'),
+          onClick: () => openExtensionModal('subsocial-evm-nft', null),
         },
         {
           icon: IoImageOutline,
           text: 'Image',
-          onClick: () => openExtensionModal('subsocial-image'),
+          onClick: () => openExtensionModal('subsocial-image', null),
         },
       ]}
       allowedPlacements={['top-start']}

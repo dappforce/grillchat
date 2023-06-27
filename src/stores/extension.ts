@@ -15,7 +15,7 @@ type Actions = {
   closeExtensionModal: (id: PostContentExtension['id']) => void
   openExtensionModal: <Id extends PostContentExtension['id']>(
     id: Id,
-    initialData?: (typeof extensionModalStates)[Id]
+    initialData: (typeof extensionModalStates)[Id]
   ) => void
 }
 
@@ -42,7 +42,7 @@ export const useExtensionData = create<State & Actions>()((set, get) => ({
         ...get()._extensionModalStates,
         [id]: {
           isOpen: true,
-          initialData: initialData ?? null,
+          initialData,
         },
       },
     })
