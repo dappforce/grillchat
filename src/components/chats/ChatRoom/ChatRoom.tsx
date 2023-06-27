@@ -22,7 +22,7 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   hubId: string
 }
 
-const HUB_ID_WITHOUT_JOIN_BUTTON = ['1023']
+const HUB_ID_WITHOUT_JOIN_BUTTON = ['1023', '1002', '1005', '1010', '1011']
 
 export default function ChatRoom({
   className,
