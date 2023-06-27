@@ -10,6 +10,7 @@ import { formatUnits } from 'ethers'
 import { HiArrowUpRight } from 'react-icons/hi2'
 import CommonChatItem from '../CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
+import { explorerByChainName } from './api/config'
 
 type DonatePreviewProps = {
   extensionProps?: DonateProperies
@@ -19,7 +20,7 @@ type DonatePreviewProps = {
 const DonatePreview = ({ extensionProps }: DonatePreviewProps) => {
   if (!extensionProps) return null
 
-  const { token, amount, txHash, decimals } = extensionProps
+  const { token, amount, txHash, decimals, chain } = extensionProps
 
   const tokenId = coingeckoTokenIds[(token as string).toLowerCase()]
 
@@ -48,7 +49,7 @@ const DonatePreview = ({ extensionProps }: DonatePreviewProps) => {
           </div>
           <LinkText
             openInNewTab
-            href={`https://polygonscan.com/tx/${txHash}`}
+            href={`${explorerByChainName[chain]}${txHash}`}
             variant='primary'
             className='text-white'
           >

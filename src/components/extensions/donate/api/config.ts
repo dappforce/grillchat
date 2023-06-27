@@ -55,3 +55,8 @@ export const chainIdByChainName: Record<string, number> = {
   moonbeam: 1284,
   'ethereum-mainnet': 1,
 }
+
+export const explorerByChainName: Record<string, string> = {
+  polygon: 'https://polygonscan.com/tx/',
+  moonbeam: 'https://moonscan.io/tx/',
+}
