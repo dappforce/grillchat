@@ -35,6 +35,8 @@ export function getCovalentApiKey() {
   return checkEnv(process.env.COVALENT_API_KEY, 'COVALENT_API_KEY')
 }
 
-export function getNotificationsUrl() {
-  return checkEnv(process.env.NOTIFICATIONS_URL, 'NOTIFICATIONS_URL')
+export function getNotificationsConfig() {
+  const url = checkEnv(process.env.NOTIFICATIONS_URL, 'NOTIFICATIONS_URL')
+  const token = checkEnv(process.env.NOTIFICATIONS_TOKEN, 'NOTIFICATIONS_TOKEN')
+  return { url, token }
 }
