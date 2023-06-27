@@ -22,7 +22,7 @@ export default function ImageChatItem(props: ExtensionChatItemProps) {
       myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
       className='max-w-xs'
     >
-      {({ isMyMessage, isSent, relativeTime }) => (
+      {() => (
         <div className='flex flex-col [&:not(:first-child)]:mt-1'>
           <ClickableMedia
             src={imageProperties.image}
