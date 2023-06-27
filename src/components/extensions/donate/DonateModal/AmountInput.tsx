@@ -1,9 +1,9 @@
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
+import useGetTheme from '@/hooks/useGetTheme'
 import { cx } from '@/utils/class-names'
 import BN from 'bignumber.js'
 import { formatUnits, parseUnits } from 'ethers'
-import { useTheme } from 'next-themes'
 import { ChangeEventHandler } from 'react'
 
 type AmountInputProps = {
@@ -25,7 +25,7 @@ const AmountInput = ({
   balance,
   decimals,
 }: AmountInputProps) => {
-  const { theme } = useTheme()
+  const theme = useGetTheme()
   const balanceValue =
     decimals && balance ? formatUnits(balance, decimals) : '0'
 
