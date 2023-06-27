@@ -51,6 +51,7 @@
     "ethers": "^6.3.0",
     "graphql": "^16.6.0",
     "graphql-request": "^6.0.0",
+    "ioredis": "^5.3.2",
     "jsonabc": "^2.3.1",
     "linkify-react": "^4.1.0",
     "linkifyjs": "^4.1.0",

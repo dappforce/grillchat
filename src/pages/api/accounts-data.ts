@@ -1,6 +1,6 @@
 import { resolveEnsAvatarSrc } from '@/components/AddressAvatar'
+import { redisCallWrapper } from '@/server/cache'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { MinimalUsageQueueWithTimeLimit } from '@/utils/data-structure'
 import axios from 'axios'
 import { request } from 'graphql-request'
 import gql from 'graphql-tag'
@@ -29,12 +29,6 @@ export type ApiAccountDataResponse = {
   hash?: string
 }
 
-const MAX_CACHE_ITEMS = 500_000
-const accountsDataCache = new MinimalUsageQueueWithTimeLimit<AccountData>(
-  MAX_CACHE_ITEMS,
-  5
-)
-
 const GET_ENS_NAMES = gql(`
   query GetEnsNames($evmAddresses: [String!]) {
     domains(where: { resolvedAddress_: { id_in: $evmAddresses } }) {
@@ -45,6 +39,12 @@ const GET_ENS_NAMES = gql(`
     }
   }
 `)
+
+const MAX_AGE = 60 * 60 // 1 hour
+
+const getRedisKey = (address: string) => {
+  return `accounts-data:${address}`
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -79,7 +79,7 @@ export default async function handler(
 
 function invalidateCache(addresses: string[]) {
   addresses.forEach((address) => {
-    accountsDataCache.queue.delete(address)
+    redisCallWrapper((redis) => redis?.del(getRedisKey(address)))
   })
 }
 
@@ -149,7 +149,14 @@ async function fetchAccountsData(addresses: string[]) {
       }
 
       newlyFetchedData.push(accountData)
-      accountsDataCache.add(address, accountData)
+      redisCallWrapper((redis) =>
+        redis?.set(
+          getRedisKey(address),
+          JSON.stringify(accountData),
+          'EX',
+          MAX_AGE
+        )
+      )
     })
 
     await Promise.all(needToFetchIdsPromise)
@@ -170,14 +177,20 @@ export async function getAccountsDataFromCache(addresses: string[]) {
   const needToFetchIds: string[] = []
 
   let newlyFetchedData: AccountData[] = []
-  addresses.forEach((address) => {
-    const cachedData = accountsDataCache.get(address)
+
+  const promises = addresses.map(async (address) => {
+    const cachedData = await redisCallWrapper((redis) =>
+      redis?.get(getRedisKey(address))
+    )
+
     if (cachedData) {
-      evmAddressByGrillAddress.push(cachedData)
+      const parsedData = JSON.parse(cachedData)
+      evmAddressByGrillAddress.push(parsedData)
     } else {
       needToFetchIds.push(address)
     }
   })
+  await Promise.all(promises)
 
   if (needToFetchIds.length > 0) {
     newlyFetchedData = await fetchAccountsData(needToFetchIds)

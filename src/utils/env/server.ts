@@ -34,3 +34,19 @@ export function getIpfsPinUrl() {
 export function getCovalentApiKey() {
   return checkEnv(process.env.COVALENT_API_KEY, 'COVALENT_API_KEY')
 }
+
+export function getRedisConfig() {
+  const host = checkEnv(process.env.REDIS_HOST, 'REDIS_HOST')
+  const port = checkEnv(process.env.REDIS_PORT, 'REDIS_PORT')
+  const password = checkEnv(process.env.REDIS_PASSWORD, 'REDIS_PASSWORD')
+
+  const parsedPort = parseInt(port)
+
+  if (!host || !port || isNaN(parsedPort) || !password) {
+    throw new Error(
+      'Redis configuration is not complete, need host, port, password'
+    )
+  }
+
+  return { host, port: parsedPort, password }
+}
