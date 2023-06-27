@@ -16,13 +16,13 @@ export type AddressAvatarProps = ComponentProps<'div'> & {
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   function AddressAvatar({ address, ...props }: AddressAvatarProps, ref) {
     const backgroundColor = useRandomColor(address, 'dark')
-    const [ensAvatarLoading, setEnsAvatarLoading] = useState(true)
-    const [isLoadingError, setIsLoadingError] = useState(false)
+
+    const [ensAvatarLoaded, setEnsAvatarLoaded] = useState(false)
 
     const { data: accountData, isLoading } =
       getAccountDataQuery.useQuery(address)
 
-    const { ensName, withEnsAvatar } = accountData || {}
+    const { ensName } = accountData || {}
 
     const avatar = useMemo(() => {
       return createAvatar(bottts, {
@@ -31,7 +31,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       }).toDataUriSync()
     }, [address])
 
-    if (!accountData && isLoading && ensAvatarLoading) {
+    if (isLoading) {
       return (
         <div
           className={cx(
@@ -50,11 +50,6 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       )
     }
 
-    const avatarSrc =
-      withEnsAvatar && ensName && !isLoadingError
-        ? resolveEnsAvatarSrc(ensName)
-        : avatar
-
     return (
       <div
         {...props}
@@ -65,19 +60,33 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
         style={{ backgroundColor }}
       >
-        <div
-          className={cx('relative h-full w-full', {
-            ['p-[7.5%]']: !withEnsAvatar,
-          })}
-        >
+        {ensName && (
+          <div
+            className={cx(
+              'absolute inset-0 h-full w-full transition-opacity',
+              ensAvatarLoaded ? 'z-10 opacity-100' : '-z-10 opacity-0'
+            )}
+          >
+            <div className='relative h-full w-full'>
+              <Image
+                sizes='5rem'
+                className='relative'
+                fill
+                src={resolveEnsAvatarSrc(ensName)}
+                onLoad={() => setEnsAvatarLoaded(true)}
+                alt='avatar'
+              />
+            </div>
+          </div>
+        )}
+
+        <div className={cx('relative h-full w-full p-[7.5%]')}>
           <div className='relative h-full w-full'>
             <Image
               sizes='5rem'
               className='relative'
               fill
-              src={avatarSrc}
-              onLoad={() => setEnsAvatarLoading(false)}
-              onError={() => setIsLoadingError(true)}
+              src={avatar}
               alt='avatar'
             />
           </div>
