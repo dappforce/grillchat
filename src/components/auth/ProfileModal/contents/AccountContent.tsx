@@ -54,7 +54,7 @@ function AccountContent({
     {
       text: (
         <span>
-          <span>Show grill secret key</span>
+          <span>Show Grill secret key</span>
           {notification?.showNotif && (
             <span className='relative ml-2 h-2 w-2'>
               <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
