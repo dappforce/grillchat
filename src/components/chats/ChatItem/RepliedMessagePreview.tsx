@@ -1,4 +1,4 @@
-import { repliedMessagePreviewParts } from '@/components/extensions/config'
+import { extensionsConfig } from '@/components/extensions/config'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
@@ -41,7 +41,7 @@ export default function RepliedMessagePreview({
   const extensionId = extensions?.[0]?.id
 
   const extensionRepliedPart = extensionId
-    ? repliedMessagePreviewParts[extensionId]
+    ? extensionsConfig[extensionId].replyMessageUI
     : undefined
 
   const { element: ExtensionElement, config } = extensionRepliedPart || {}

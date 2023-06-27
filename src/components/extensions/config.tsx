@@ -11,77 +11,84 @@ import {
   RepliedMessagePreviewPartsProps,
 } from './types'
 
-export const repliedMessagePreviewParts: Record<
-  PostContentExtension['id'],
-  RepliedMessagePreviewPartsProps
-> = {
-  'subsocial-image': {
-    element: NftRepliedMessagePreviewPart,
-    config: {
-      place: 'inside',
-      emptyBodyText: 'Image',
-      previewClassName: 'w-4',
+export const extensionInitialDataTypes = {
+  'subsocial-donations': { recipient: '', messageId: '' },
+  'subsocial-evm-nft': null as null | string,
+  'subsocial-image': null as null | File,
+} satisfies Record<PostContentExtension['id'], unknown>
+
+type Config<Id extends PostContentExtension['id']> = {
+  chatItemComponent: (props: ChatItemWithExtensionProps) => JSX.Element
+  replyMessageUI: RepliedMessagePreviewPartsProps
+  pasteInterception?: (
+    clipboardData: DataTransfer,
+    e: ClipboardEvent<HTMLTextAreaElement>
+  ) => (typeof extensionInitialDataTypes)[Id]
+}
+export const extensionsConfig: {
+  [key in PostContentExtension['id']]: Config<key>
+} = {
+  'subsocial-donations': {
+    chatItemComponent: DonateMessagePreview,
+    replyMessageUI: {
+      element: DonateRepliedMessagePreviewPart,
+      config: { place: 'body', textColor: '#FCEEE2' },
     },
   },
   'subsocial-evm-nft': {
-    element: NftRepliedMessagePreviewPart,
-    config: { place: 'inside', emptyBodyText: 'NFT', previewClassName: 'w-4' },
-  },
-  'subsocial-donations': {
-    element: DonateRepliedMessagePreviewPart,
-    config: { place: 'body', textColor: '#FCEEE2' },
-  },
-}
+    chatItemComponent: NftChatItem,
+    replyMessageUI: {
+      element: NftRepliedMessagePreviewPart,
+      config: {
+        place: 'inside',
+        emptyBodyText: 'NFT',
+        previewClassName: 'w-4',
+      },
+    },
+    pasteInterception: (clipboardData, e) => {
+      const text = clipboardData.getData('text/plain')
+      try {
+        const marketplace = parseNftMarketplaceLink(text)
+        e.preventDefault()
+        return marketplace.url
+      } catch {}
 
-export const chatItemByExtensionId: Record<
-  PostContentExtension['id'],
-  (props: ChatItemWithExtensionProps) => JSX.Element
-> = {
-  'subsocial-image': NftChatItem,
-  'subsocial-donations': DonateMessagePreview,
-  'subsocial-evm-nft': NftChatItem,
-}
-
-export const extensionModalStates = {
-  'subsocial-image': null as null | File,
-  'subsocial-evm-nft': null as null | string,
-  'subsocial-donations': { recipient: '', messageId: '' },
-} satisfies { [key in PostContentExtension['id']]: unknown }
-
-const pasteInterception = {
-  'subsocial-evm-nft': (clipboardData, e) => {
-    const text = clipboardData.getData('text/plain')
-    try {
-      const marketplace = parseNftMarketplaceLink(text)
-      e.preventDefault()
-      return marketplace.url
-    } catch {}
-
-    return null
+      return null
+    },
   },
-  'subsocial-image': (clipboardData, _) => {
-    const files = clipboardData.files
-    const file = files[0]
-    if (file?.type.startsWith('image/')) {
-      return file
-    }
-    return null
+  'subsocial-image': {
+    chatItemComponent: NftChatItem,
+    replyMessageUI: {
+      element: NftRepliedMessagePreviewPart,
+      config: {
+        place: 'inside',
+        emptyBodyText: 'Image',
+        previewClassName: 'w-4',
+      },
+    },
+    pasteInterception: (clipboardData, _) => {
+      const files = clipboardData.files
+      const file = files[0]
+      if (file?.type.startsWith('image/')) {
+        return file
+      }
+      return null
+    },
   },
-} satisfies {
-  [key in PostContentExtension['id']]?: (
-    clipboardData: DataTransfer,
-    e: ClipboardEvent<HTMLTextAreaElement>
-  ) => (typeof extensionModalStates)[key]
 }
 
 export function interceptPastedData(
   clipboardData: DataTransfer,
   e: ClipboardEvent<HTMLTextAreaElement>
 ) {
-  const pasteChecker = Object.entries(pasteInterception)
+  const pasteChecker = Object.entries(extensionsConfig)
+
   for (let i = 0; i < pasteChecker.length; i++) {
-    const [key, checker] = pasteChecker[i]
-    const result = checker(clipboardData, e)
+    const [key, config] = pasteChecker[i]
+
+    const { pasteInterception } = config
+    const result = pasteInterception?.(clipboardData, e)
+
     if (result) {
       useExtensionData
         .getState()

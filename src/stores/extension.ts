@@ -1,4 +1,4 @@
-import { extensionModalStates } from '@/components/extensions/config'
+import { extensionInitialDataTypes } from '@/components/extensions/config'
 import { PostContentExtension } from '@subsocial/api/types'
 import { create } from './utils'
 
@@ -15,7 +15,7 @@ type Actions = {
   closeExtensionModal: (id: PostContentExtension['id']) => void
   openExtensionModal: <Id extends PostContentExtension['id']>(
     id: Id,
-    initialData: (typeof extensionModalStates)[Id]
+    initialData: (typeof extensionInitialDataTypes)[Id]
   ) => void
 }
 
@@ -64,8 +64,8 @@ export function useIsExtensionModalInitialData<
     useExtensionData(
       (state) =>
         state._extensionModalStates[id]?.initialData as
-          | (typeof extensionModalStates)[Id]
-    ) || extensionModalStates[id]
+          | (typeof extensionInitialDataTypes)[Id]
+    ) || extensionInitialDataTypes[id]
   )
 }
 
