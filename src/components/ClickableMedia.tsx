@@ -35,7 +35,7 @@ export default function ClickableMedia({
       >
         <MediaLoader
           {...props}
-          onDoubleClick={(e) => stopPropagation()}
+          onDoubleClick={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
           onContextMenu={(e) => e.stopPropagation()}
           src={props.src ?? ''}
