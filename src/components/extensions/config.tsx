@@ -18,7 +18,7 @@ export const extensionInitialDataTypes = {
 } satisfies Record<PostContentExtension['id'], unknown>
 
 type Config<Id extends PostContentExtension['id']> = {
-  chatItemComponent: (props: ExtensionChatItemProps) => JSX.Element
+  chatItemComponent: (props: ExtensionChatItemProps) => JSX.Element | null
   replyMessageUI: RepliedMessagePreviewPartsProps
   pasteInterception?: (
     clipboardData: DataTransfer,
