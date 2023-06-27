@@ -30,8 +30,6 @@ export default function SelectInput({
 }: SelectInputProps) {
   const theme = useGetTheme()
 
-  console.log(theme)
-
   return (
     <div>
       <Listbox value={selected} onChange={setSelected}>
