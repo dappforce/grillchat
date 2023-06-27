@@ -1,7 +1,10 @@
 import Astar from '@/assets/graphics/chains/astar.png'
 import Moonbeam from '@/assets/graphics/chains/moonbeam.png'
 import Polygon from '@/assets/graphics/chains/polygon.png'
+import ASTR from '@/assets/graphics/tokens/astr.webp'
+import DOT from '@/assets/graphics/tokens/dot.webp'
 import ETH from '@/assets/graphics/tokens/eth.png'
+import GLMR from '@/assets/graphics/tokens/glmr.webp'
 import USDC from '@/assets/graphics/tokens/usdc.png'
 import USDT from '@/assets/graphics/tokens/usdt.png'
 import { StaticImageData } from 'next/image'
@@ -61,13 +64,13 @@ export const tokensItems: TokenItemsByChainName = {
   moonbeam: [
     {
       id: 'glmr',
-      icon: Polygon,
+      icon: GLMR,
       label: 'GLMR',
       isNativeToken: true,
     },
     {
       id: 'dot',
-      icon: Polygon,
+      icon: DOT,
       label: 'DOT',
     },
     {
@@ -82,7 +85,7 @@ export const tokensItems: TokenItemsByChainName = {
     },
     {
       id: 'astr',
-      icon: ETH,
+      icon: ASTR,
       label: 'ASTR',
     },
   ],
