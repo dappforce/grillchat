@@ -130,7 +130,7 @@ function ChatListContent({
     if (!isMessageIdsFetched) return
 
     if (!messageId || !validateNumber(messageId)) {
-      scrollToMessage(lastReadId ?? '', false)
+      if (lastReadId) scrollToMessage(lastReadId ?? '', false)
       return
     }
 
