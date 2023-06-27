@@ -133,11 +133,7 @@ export default function ChatForm({
     clearReplyTo?.()
   }
 
-  const handleSubmit = async (
-    captchaToken: string | null,
-    e?: SyntheticEvent
-  ) => {
-    e?.preventDefault()
+  const handleSubmit = async (captchaToken: string | null) => {
     if (
       shouldSendMessage &&
       'virtualKeyboard' in navigator &&
@@ -192,12 +188,13 @@ export default function ChatForm({
       <CaptchaInvisible>
         {(runCaptcha) => {
           const submitForm = async (e?: SyntheticEvent) => {
+            e?.preventDefault()
             if (shouldSendMessage) {
-              handleSubmit(null, e)
+              handleSubmit(null)
               return
             }
             const token = await runCaptcha()
-            handleSubmit(token, e)
+            handleSubmit(token)
           }
 
           const renderSendButton = (classNames: string) => (
@@ -205,8 +202,7 @@ export default function ChatForm({
               onTouchEnd={(e) => {
                 // For mobile, to prevent keyboard from hiding
                 if (shouldSendMessage) {
-                  e.preventDefault()
-                  submitForm()
+                  submitForm(e)
                 }
               }}
               tabIndex={-1}
