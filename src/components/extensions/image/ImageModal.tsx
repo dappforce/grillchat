@@ -16,6 +16,7 @@ import { HiTrash } from 'react-icons/hi2'
 import { z } from 'zod'
 import { ExtensionModalsProps } from '..'
 import CommonExtensionModal from '../CommonExtensionModal'
+import { SUPPORTED_IMAGE_EXTENSIONS } from './utils'
 
 const urlSchema = z.string().url('Please enter a valid URL.')
 
@@ -76,7 +77,10 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
       >
         <div className='mt-2 flex flex-col gap-4'>
           {!imageUploadStatus.isShowingImage && (
-            <ImageLinkInput setImageLinkStatus={setImageLinkStatus} />
+            <ImageLinkInput
+              initialUrl={typeof initialData === 'string' ? initialData : null}
+              setImageLinkStatus={setImageLinkStatus}
+            />
           )}
 
           {!isAnyShowingImage && (
@@ -90,7 +94,9 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
 
           {!imageLinkStatus.isShowingImage && (
             <ImageUpload
-              initialImage={initialData}
+              initialImage={
+                typeof initialData !== 'string' ? initialData : null
+              }
               setUploadedImageLink={setImageUploadStatus}
             />
           )}
@@ -102,14 +108,23 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
 
 type ImageLinkInputProps = {
   setImageLinkStatus: React.Dispatch<React.SetStateAction<ImageStatus>>
+  initialUrl: string | null
 }
-function ImageLinkInput({ setImageLinkStatus }: ImageLinkInputProps) {
+function ImageLinkInput({
+  initialUrl,
+  setImageLinkStatus,
+}: ImageLinkInputProps) {
   const [imageLink, setImageLink] = useState('')
   const [isImageLinkError, setIsImageLinkError] = useState(false)
 
   const debouncedImageLink = useDebounce(imageLink, 300)
   const isValidDebouncedImageLink =
     urlSchema.safeParse(debouncedImageLink).success
+
+  useEffect(() => {
+    if (initialUrl === null) return
+    setImageLink(initialUrl)
+  }, [initialUrl])
 
   useEffect(() => {
     setIsImageLinkError(false)
@@ -223,7 +238,7 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
     <>
       <Dropzone
         multiple={false}
-        accept={{ 'image/*': ['.png', '.gif', '.jpeg', '.jpg', '.svg'] }}
+        accept={{ 'image/*': SUPPORTED_IMAGE_EXTENSIONS }}
         onDrop={onImageChosen}
       >
         {({ getRootProps, getInputProps }) => (

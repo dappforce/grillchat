@@ -1,10 +1,12 @@
 import { useExtensionData } from '@/stores/extension'
+import { getUrlFromText } from '@/utils/strings'
 import { PostContentExtension } from '@subsocial/api/types'
 import { ClipboardEvent } from 'react'
 import DonateMessagePreview from './donate/DonateMessagePreview'
 import DonateRepliedMessagePreviewPart from './donate/DonateRepliedMessagePreviewPart'
 import ImageChatItem from './image/ImageChatItem'
 import ImageRepliedMessagePreviewPart from './image/ImageRepliedMessagePreviewPart'
+import { SUPPORTED_IMAGE_EXTENSIONS } from './image/utils'
 import NftChatItem from './nft/NftChatItem'
 import NftRepliedMessagePreviewPart from './nft/NftRepliedMessagePreviewPart'
 import { parseNftMarketplaceLink } from './nft/utils'
@@ -16,7 +18,7 @@ import {
 export const extensionInitialDataTypes = {
   'subsocial-donations': { recipient: '', messageId: '' },
   'subsocial-evm-nft': null as null | string,
-  'subsocial-image': null as null | File,
+  'subsocial-image': null as null | File | string,
 } satisfies Record<PostContentExtension['id'], unknown>
 
 type Config<Id extends PostContentExtension['id']> = {
@@ -68,12 +70,27 @@ const extensionsConfig: {
         previewClassName: 'w-4',
       },
     },
-    pasteInterception: (clipboardData, _) => {
+    pasteInterception: (clipboardData, e) => {
       const files = clipboardData.files
       const file = files[0]
       if (file?.type.startsWith('image/')) {
         return file
       }
+
+      const text = clipboardData.getData('text/plain')
+      const url = getUrlFromText(text)
+      const urlWithoutQuery = url?.split('?')[0]
+      const extension = urlWithoutQuery?.split('.').pop()
+      if (
+        url &&
+        SUPPORTED_IMAGE_EXTENSIONS.includes(
+          `.${extension?.toLowerCase() ?? ''}`
+        )
+      ) {
+        e.preventDefault()
+        return url
+      }
+
       return null
     },
   },
