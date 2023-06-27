@@ -1,6 +1,5 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
-import ProfileModal from '@/components/auth/ProfileModal'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
@@ -64,7 +63,7 @@ const checkMarkModalReducer = (
   return { isOpen: true, variant: action }
 }
 
-type ModalState = 'login' | 'evm-linking' | null
+type ModalState = 'login' | null
 
 export default function ChatItem({
   message,
@@ -266,12 +265,6 @@ export default function ChatItem({
         isOpen={openMetadata}
         closeModal={() => setOpenMetadata(false)}
         entity={message}
-      />
-      <ProfileModal
-        address={address || ''}
-        isOpen={modalState === 'evm-linking'}
-        closeModal={() => setModalState(null)}
-        step='link-evm-address'
       />
       <LoginModal
         isOpen={modalState === 'login'}
