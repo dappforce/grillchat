@@ -6,8 +6,8 @@ export default function ChatItemWithExtension(props: ExtensionChatItemProps) {
   const extensionId = props.message.content?.extensions?.[0]
     .id as PostContentExtension['id']
 
-  const ChatItem = getExtensionConfig(extensionId)?.chatItemComponent
-  if (!ChatItem) return null
+  const ChatItemComponent = getExtensionConfig(extensionId)?.chatItemComponent
+  if (!ChatItemComponent) return null
 
-  return <ChatItem {...props} />
+  return <ChatItemComponent {...props} />
 }
