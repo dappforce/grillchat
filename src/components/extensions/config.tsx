@@ -77,6 +77,7 @@ const extensionsConfig: {
   },
 }
 export function getExtensionConfig<Id extends PostContentExtension['id']>(
+  // type to make it can accept any string, but still have the autocomplete
   extensionId: Id | (string & {})
 ): Config<Id> | null {
   return extensionsConfig[extensionId as Id]
