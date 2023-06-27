@@ -1,6 +1,7 @@
 import {
   CommentStruct,
   DonateExtension,
+  ImageExtension,
   NftExtension,
   PostContent,
   PostContentExtension,
@@ -77,6 +78,15 @@ const mapPostExtensions = (
           },
         }
         return donationExtension
+
+      case ContentExtensionSchemaId.SubsocialImage:
+        const imageExtension: ImageExtension = {
+          id: 'subsocial-image',
+          properties: {
+            image: ext.image ?? '',
+          },
+        }
+        return imageExtension
     }
   })
   const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]

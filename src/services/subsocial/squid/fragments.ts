@@ -70,6 +70,7 @@ export const POST_FRAGMENT = gql`
       id
     }
     extensions {
+      image
       amount
       chain
       collectionId
