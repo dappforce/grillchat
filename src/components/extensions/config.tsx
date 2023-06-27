@@ -3,6 +3,7 @@ import { PostContentExtension } from '@subsocial/api/types'
 import { ClipboardEvent } from 'react'
 import DonateMessagePreview from './donate/DonateMessagePreview'
 import DonateRepliedMessagePreviewPart from './donate/DonateRepliedMessagePreviewPart'
+import ImageChatItem from './image/ImageChatItem'
 import NftChatItem from './nft/NftChatItem'
 import NftRepliedMessagePreviewPart from './nft/NftRepliedMessagePreviewPart'
 import { parseNftMarketplaceLink } from './nft/utils'
@@ -57,7 +58,7 @@ const extensionsConfig: {
     },
   },
   'subsocial-image': {
-    chatItemComponent: NftChatItem,
+    chatItemComponent: ImageChatItem,
     replyMessageUI: {
       element: NftRepliedMessagePreviewPart,
       config: {

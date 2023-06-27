@@ -181,7 +181,7 @@ type ImageUploadProps = {
 function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
   const [imageUrl, setImageUrl] = useState('')
   const {
-    mutateAsync: saveImage,
+    mutate: saveImage,
     isError,
     isLoading,
   } = useSaveImage({
