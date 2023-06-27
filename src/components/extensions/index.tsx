@@ -1,6 +1,6 @@
 import DonateModal from './donate/DonateModal/DonateModal'
-import ImageAttachmentModal from './image/ImageAttachmentModal'
-import NftAttachmentModal from './nft/NftAttachmentModal'
+import ImageModal from './image/ImageModal'
+import NftModal from './nft/NftModal'
 
 export type ExtensionModalsProps = {
   chatId: string
@@ -10,8 +10,8 @@ export type ExtensionModalsProps = {
 export default function ExtensionModals({ ...props }: ExtensionModalsProps) {
   return (
     <>
-      <NftAttachmentModal {...props} />
-      <ImageAttachmentModal {...props} />
+      <NftModal {...props} />
+      <ImageModal {...props} />
       <DonateModal {...props} />
     </>
   )
