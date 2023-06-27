@@ -1,5 +1,6 @@
 import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
+import InfoPanel from '@/components/InfoPanel'
 import TextArea from '@/components/inputs/TextArea'
 import LinkText, { linkTextStyles } from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
@@ -140,9 +141,9 @@ export default function NftModal({ chatId, onSubmit }: ExtensionModalsProps) {
             )}
           </AutofocusWrapper>
           {nftLinkError ? (
-            <div className='rounded-2xl bg-background-red px-4 py-3 text-text-red'>
+            <InfoPanel>
               <p>{nftLinkError}</p>
-            </div>
+            </InfoPanel>
           ) : (
             nftLink && (
               <div className='relative aspect-square w-full'>
