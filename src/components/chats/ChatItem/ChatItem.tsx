@@ -1,23 +1,35 @@
 import AddressAvatar from '@/components/AddressAvatar'
+import LoginModal from '@/components/auth/LoginModal'
+import ProfileModal from '@/components/auth/ProfileModal'
+import DonateModal from '@/components/extensions/donate/DonateModal/DonateModal'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
-import { ComponentProps, SyntheticEvent, useReducer, useState } from 'react'
+import {
+  ComponentProps,
+  SyntheticEvent,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
+import { RiCopperCoinLine } from 'react-icons/ri'
 import urlJoin from 'url-join'
 import MetadataModal from '../../modals/MetadataModal'
 import ChatItemWithExtension from './ChatItemWithExtension'
@@ -35,6 +47,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   messageBubbleId?: string
   scrollToMessage?: (chatId: string) => Promise<void>
   withCustomMenu?: boolean
+  chatId: string
 }
 
 type CheckMarkModalReducerState = {
@@ -51,22 +64,34 @@ const checkMarkModalReducer = (
   return { isOpen: true, variant: action }
 }
 
+type ModalState = 'login' | 'donate' | 'evm-linking' | null
+
 export default function ChatItem({
   message,
   isMyMessage,
   scrollToMessage,
   messageBubbleId,
   withCustomMenu = true,
+  chatId,
   ...props
 }: ChatItemProps) {
   const setReplyTo = useMessageData((state) => state.setReplyTo)
 
   const router = useRouter()
+  const isLoggingInWithKey = useRef(false)
   const messageId = message.id
   const isSent = !isOptimisticId(messageId)
   const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
   const { body, inReplyTo, extensions } = message.content || {}
+  const [modalState, setModalState] = useState<ModalState>(null)
+
+  const address = useMyAccount((state) => state.address)
+
+  const { data: messageOwnerAccountData } =
+    getAccountDataQuery.useQuery(ownerId)
+
+  const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
 
   const sendEvent = useSendEvent()
 
@@ -81,12 +106,29 @@ export default function ChatItem({
   }
 
   const getChatMenus = (): FloatingMenusProps['menus'] => {
+    const donateMenuItem: FloatingMenusProps['menus'][number] = {
+      text: 'Donate',
+      icon: RiCopperCoinLine,
+      onClick: () => {
+        if (!address) {
+          setModalState('login')
+          return
+        }
+
+        setMessageAsReply(messageId)
+        setModalState('donate')
+      },
+    }
+
+    const showDonateMenuItem = messageOwnerEvmAddress
+
     return [
       {
         text: 'Reply',
         icon: BsFillReplyFill,
         onClick: () => setMessageAsReply(messageId),
       },
+      ...(showDonateMenuItem ? [donateMenuItem] : []),
       {
         text: 'Copy Text',
         icon: MdContentCopy,
@@ -156,7 +198,18 @@ export default function ChatItem({
           )}
         </ProfilePreviewModalWrapper>
       )}
-      <FloatingMenus menus={menus} alignment='end' useClickPointAsAnchor>
+      <FloatingMenus
+        menus={menus}
+        allowedPlacements={[
+          'right',
+          'top',
+          'bottom',
+          'right-end',
+          'top-end',
+          'bottom-end',
+        ]}
+        useClickPointAsAnchor
+      >
         {(config) => {
           const { toggleDisplay, referenceProps } = config || {}
           return (
@@ -203,6 +256,26 @@ export default function ChatItem({
         isOpen={openMetadata}
         closeModal={() => setOpenMetadata(false)}
         entity={message}
+      />
+      <DonateModal
+        isOpen={modalState === 'donate'}
+        closeModal={() => setModalState(null)}
+        recipient={ownerId}
+        messageId={messageId}
+        chatId={chatId}
+      />
+      <ProfileModal
+        address={address || ''}
+        isOpen={modalState === 'evm-linking'}
+        closeModal={() => setModalState(null)}
+        step='link-evm-address'
+      />
+      <LoginModal
+        isOpen={modalState === 'login'}
+        openModal={() => setModalState('login')}
+        closeModal={() => setModalState(null)}
+        beforeLogin={() => (isLoggingInWithKey.current = true)}
+        afterLogin={() => (isLoggingInWithKey.current = false)}
       />
     </div>
   )

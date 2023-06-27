@@ -1,5 +1,4 @@
 import { createQuery } from '@/subsocial-query'
-import { convertHexAddressToSubstrateAddress } from '@/utils/account'
 import { gql } from 'graphql-request'
 import {
   GetBlockedAddressesQuery,
@@ -83,10 +82,7 @@ export async function getBlockedAddresses({ hubId }: { hubId: string }) {
     variables: { ctxSpaceId: hubId },
   })
   const blockedHexAddresses = data.blockedResourceIds
-  const addresses = blockedHexAddresses.map((hexAddress: string) =>
-    convertHexAddressToSubstrateAddress(hexAddress)
-  )
-  return Promise.all(addresses)
+  return blockedHexAddresses
 }
 export const getBlockedAddressesQuery = createQuery({
   key: 'getBlockedAddressesQuery',

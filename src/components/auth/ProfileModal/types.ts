@@ -8,6 +8,7 @@ type NotificationControl = {
 export type ProfileModalProps = ModalFunctionalityProps & {
   address: string
   notification?: NotificationControl
+  step?: ModalState
 }
 
 export type ModalState =

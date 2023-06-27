@@ -25,10 +25,10 @@ import {
   useRef,
   useState,
 } from 'react'
+import { BeforeMessageResult } from '../extensions/CommonExtensionModal'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
-  isPrimary?: boolean
   onSubmit?: () => void
   disabled?: boolean
   mustHaveMessageBody?: boolean
@@ -36,6 +36,10 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   buildAdditionalTxParams?: () => Partial<SendMessageParams>
   sendButtonText?: string
   sendButtonProps?: ButtonProps
+  isPrimary?: boolean
+  beforeMesageSend?: (
+    messageParams: SendMessageParams
+  ) => Promise<BeforeMessageResult>
   autofocus?: boolean
 }
 
@@ -55,6 +59,7 @@ export default function ChatForm({
   sendButtonText,
   sendButtonProps,
   isPrimary,
+  beforeMesageSend,
   ...props
 }: ChatFormProps) {
   const replyTo = useMessageData((state) => state.replyTo)
@@ -118,6 +123,7 @@ export default function ChatForm({
 
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
+
   const isDisabled =
     (mustHaveMessageBody && !processMessage(messageBody)) ||
     sendButtonProps?.disabled
@@ -126,8 +132,8 @@ export default function ChatForm({
     setMessageBody('')
     clearReplyTo?.()
   }
-  const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
-    e?.preventDefault()
+
+  const handleSubmit = async (captchaToken: string | null) => {
     if (
       shouldSendMessage &&
       'virtualKeyboard' in navigator &&
@@ -137,6 +143,7 @@ export default function ChatForm({
     }
 
     const processedMessage = processMessage(messageBody)
+
     if (isDisabled) return
 
     const sendMessageParams = {
@@ -145,9 +152,17 @@ export default function ChatForm({
       replyTo,
       ...buildAdditionalTxParams?.(),
     }
+
+    const { newMessageParams, txPrevented } =
+      (await beforeMesageSend?.(sendMessageParams)) || {}
+
+    if (txPrevented) return
+
+    const messageParams = newMessageParams || sendMessageParams
+
     if (shouldSendMessage) {
       resetForm()
-      sendMessage(sendMessageParams)
+      sendMessage(messageParams)
     } else {
       if (isLoggedIn) {
         sendEvent('request energy')
@@ -158,7 +173,7 @@ export default function ChatForm({
       resetForm()
       requestTokenAndSendMessage({
         captchaToken,
-        ...sendMessageParams,
+        ...messageParams,
       })
       setIsRequestingEnergy(true)
       sendEvent('request energy and send message')
@@ -173,12 +188,13 @@ export default function ChatForm({
       <CaptchaInvisible>
         {(runCaptcha) => {
           const submitForm = async (e?: SyntheticEvent) => {
+            e?.preventDefault()
             if (shouldSendMessage) {
-              handleSubmit(null, e)
+              handleSubmit(null)
               return
             }
             const token = await runCaptcha()
-            handleSubmit(token, e)
+            handleSubmit(token)
           }
 
           const renderSendButton = (classNames: string) => (
@@ -186,8 +202,7 @@ export default function ChatForm({
               onTouchEnd={(e) => {
                 // For mobile, to prevent keyboard from hiding
                 if (shouldSendMessage) {
-                  e.preventDefault()
-                  submitForm()
+                  submitForm(e)
                 }
               }}
               tabIndex={-1}

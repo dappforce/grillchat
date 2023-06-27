@@ -20,7 +20,6 @@ import {
   ComponentProps,
   Fragment,
   useEffect,
-  useId,
   useMemo,
   useRef,
   useState,
@@ -39,10 +38,10 @@ import { NewMessageNotice } from './NewMessageNotice'
 
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
+  scrollContainerRef?: React.RefObject<HTMLDivElement>
   scrollableContainerClassName?: string
   hubId: string
   chatId: string
-  scrollContainerRef?: React.RefObject<HTMLDivElement>
   replyTo?: string
   newMessageNoticeClassName?: string
 }
@@ -71,7 +70,10 @@ function ChatListContent({
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
   const prevMessageModalMsgId = usePrevious(messageModalMsgId)
 
-  const scrollableContainerId = useId()
+  // TODO: this is hotfix, fix is in image extension PR, revert back to useId(), this is hotfix for making easier to scrollToBottom from extension modals
+  // const scrollableContainerId = useId()
+  const scrollableContainerId = 'chat-list'
+
   const innerScrollContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
 
@@ -197,7 +199,12 @@ function ChatListContent({
             inverse
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
-            endMessage={<ChatTopNotice className='pb-2 pt-4' />}
+            endMessage={
+              <ChatTopNotice
+                hasNoMessage={messageQueries.length === 0}
+                className='pb-2 pt-4'
+              />
+            }
             scrollThreshold={`${scrollThreshold}px`}
           >
             {messageQueries.map(({ data: message }, index) => {

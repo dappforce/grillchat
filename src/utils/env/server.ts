@@ -40,3 +40,19 @@ export function getNotificationsConfig() {
   const token = checkEnv(process.env.NOTIFICATIONS_TOKEN, 'NOTIFICATIONS_TOKEN')
   return { url, token }
 }
+
+export function getRedisConfig() {
+  const host = checkEnv(process.env.REDIS_HOST, 'REDIS_HOST')
+  const port = checkEnv(process.env.REDIS_PORT, 'REDIS_PORT')
+  const password = checkEnv(process.env.REDIS_PASSWORD, 'REDIS_PASSWORD')
+
+  const parsedPort = parseInt(port)
+
+  if (!host || !port || isNaN(parsedPort) || !password) {
+    throw new Error(
+      'Redis configuration is not complete, need host, port, password'
+    )
+  }
+
+  return { host, port: parsedPort, password }
+}

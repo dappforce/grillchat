@@ -5,10 +5,12 @@ import MediaLoader from '@/components/MediaLoader'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getNftQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
+import { NftProperties } from '@subsocial/api/types'
 import truncate from 'lodash.truncate'
 import { useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
-import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
+import CommonChatItem from '../CommonChatItem'
+import { ExtensionChatItemProps } from '../types'
 import { getMarketplaceFromLink } from './utils'
 
 type Props = ExtensionChatItemProps
@@ -23,7 +25,7 @@ export default function NftChatItem(props: Props) {
   const { content } = message
   const { extensions } = content || {}
 
-  const nftProperties = extensions?.[0]?.properties
+  const nftProperties = extensions?.[0]?.properties as NftProperties
   const { data: nftData, isLoading: isLoadingNftData } = getNftQuery.useQuery(
     nftProperties ?? null,
     {
@@ -33,8 +35,6 @@ export default function NftChatItem(props: Props) {
 
   const { IntegratedSkeleton: NftDataSkeleton } =
     useIntegratedSkeleton(isLoadingNftData)
-  // const { IntegratedSkeleton: NftPriceSkeleton } =
-  //   useIntegratedSkeleton(isLoadingNftPrice)
 
   const marketplace = useMemo(() => {
     if (!nftProperties?.url) return
@@ -95,9 +95,6 @@ export default function NftChatItem(props: Props) {
               <NftDataSkeleton content={nftData} className={cx('w-16')}>
                 {(data) => <span>{data?.collectionName}</span>}
               </NftDataSkeleton>
-              {/* <NftPriceSkeleton content={nftPrice} className={cx('w-16')}>
-                {(data) => <span>{data}</span>}
-              </NftPriceSkeleton> */}
             </div>
             <Button
               className='my-2 mb-3'

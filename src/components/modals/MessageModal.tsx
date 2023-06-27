@@ -1,7 +1,7 @@
 import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { CommentData } from '@subsocial/api/types'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Button from '../Button'
 import ChatItem from '../chats/ChatItem'
 import Modal, { ModalFunctionalityProps } from './Modal'
@@ -19,6 +19,8 @@ export default function MessageModal({
   const { data: message } = getPostQuery.useQuery(messageId)
   const chatId = (message as unknown as CommentData)?.struct.rootPostId
   const { data: chat } = getPostQuery.useQuery(chatId)
+
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
 
   const [isScrolling, setIsScrolling] = useState(false)
 
@@ -39,6 +41,7 @@ export default function MessageModal({
   return (
     <Modal
       {...props}
+      initialFocus={buttonRef}
       title={
         <span className='flex items-center'>Message from {chatTitle}</span>
       }
@@ -54,11 +57,13 @@ export default function MessageModal({
             withCustomMenu={false}
             isMyMessage={false}
             message={message}
+            chatId={chatId}
           />
         )}
       </div>
       {scrollToMessage && (
         <Button
+          ref={buttonRef}
           isLoading={isScrolling}
           onClick={handleScrollToMessage}
           className={cx('mt-6')}
