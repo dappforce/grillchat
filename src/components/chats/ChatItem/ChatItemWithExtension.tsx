@@ -1,16 +1,13 @@
-import { extensionsConfig } from '@/components/extensions/config'
-import { ChatItemWithExtensionProps } from '@/components/extensions/types'
+import { getExtensionConfig } from '@/components/extensions/config'
+import { ExtensionChatItemProps } from '@/components/extensions/types'
 import { PostContentExtension } from '@subsocial/api/types'
-import DefaultChatItem from './variants/DefaultChatItem'
 
-export default function ChatItemWithExtension(
-  props: ChatItemWithExtensionProps
-) {
+export default function ChatItemWithExtension(props: ExtensionChatItemProps) {
   const extensionId = props.message.content?.extensions?.[0]
     .id as PostContentExtension['id']
 
-  const ChatItem =
-    extensionsConfig[extensionId].chatItemComponent || DefaultChatItem
+  const ChatItem = getExtensionConfig(extensionId)?.chatItemComponent
+  if (!ChatItem) return null
 
   return <ChatItem {...props} />
 }

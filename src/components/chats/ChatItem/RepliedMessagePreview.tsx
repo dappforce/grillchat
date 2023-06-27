@@ -1,4 +1,4 @@
-import { extensionsConfig } from '@/components/extensions/config'
+import { getExtensionConfig } from '@/components/extensions/config'
 import Name from '@/components/Name'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
@@ -40,9 +40,9 @@ export default function RepliedMessagePreview({
 
   const extensionId = extensions?.[0]?.id
 
-  const extensionRepliedPart = extensionId
-    ? extensionsConfig[extensionId].replyMessageUI
-    : undefined
+  const extensionRepliedPart = getExtensionConfig(
+    extensionId ?? ''
+  )?.replyMessageUI
 
   const { element: ExtensionElement, config } = extensionRepliedPart || {}
   const { place, emptyBodyText } = config || {}

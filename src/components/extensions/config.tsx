@@ -7,7 +7,7 @@ import NftChatItem from './nft/NftChatItem'
 import NftRepliedMessagePreviewPart from './nft/NftRepliedMessagePreviewPart'
 import { parseNftMarketplaceLink } from './nft/utils'
 import {
-  ChatItemWithExtensionProps,
+  ExtensionChatItemProps,
   RepliedMessagePreviewPartsProps,
 } from './types'
 
@@ -18,14 +18,14 @@ export const extensionInitialDataTypes = {
 } satisfies Record<PostContentExtension['id'], unknown>
 
 type Config<Id extends PostContentExtension['id']> = {
-  chatItemComponent: (props: ChatItemWithExtensionProps) => JSX.Element
+  chatItemComponent: (props: ExtensionChatItemProps) => JSX.Element
   replyMessageUI: RepliedMessagePreviewPartsProps
   pasteInterception?: (
     clipboardData: DataTransfer,
     e: ClipboardEvent<HTMLTextAreaElement>
   ) => (typeof extensionInitialDataTypes)[Id]
 }
-export const extensionsConfig: {
+const extensionsConfig: {
   [key in PostContentExtension['id']]: Config<key>
 } = {
   'subsocial-donations': {
@@ -75,6 +75,11 @@ export const extensionsConfig: {
       return null
     },
   },
+}
+export function getExtensionConfig<Id extends PostContentExtension['id']>(
+  extensionId: Id | (string & {})
+): Config<Id> | null {
+  return extensionsConfig[extensionId as Id]
 }
 
 export function interceptPastedData(
