@@ -1,6 +1,6 @@
+import useGetTheme from '@/hooks/useGetTheme'
 import { cx } from '@/utils/class-names'
 import { Listbox, Transition } from '@headlessui/react'
-import { useTheme } from 'next-themes'
 import Image, { StaticImageData } from 'next/image'
 import { Fragment } from 'react'
 import { IoIosArrowDown } from 'react-icons/io'
@@ -28,7 +28,9 @@ export default function SelectInput({
   setSelected,
   imgClassName,
 }: SelectInputProps) {
-  const { theme } = useTheme()
+  const theme = useGetTheme()
+
+  console.log(theme)
 
   return (
     <div>
