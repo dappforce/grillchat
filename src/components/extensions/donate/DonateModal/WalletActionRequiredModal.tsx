@@ -2,6 +2,7 @@ import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import Modal from '@/components/modals/Modal'
+import { useExtensionModalState } from '@/stores/extension'
 import { isTouchDevice } from '@/utils/device'
 import Image from 'next/image'
 import { getConnector, openMobileWallet } from '../api/utils'
@@ -38,7 +39,9 @@ const modalHeader: ModalHeader = {
   },
 }
 
-function WalletActionRequiredModal({ currentStep, ...props }: DonateProps) {
+function WalletActionRequiredModal({ currentStep }: DonateProps) {
+  const { isOpen, closeModal } = useExtensionModalState('subsocial-donations')
+
   const onButtonClick = async () => {
     const connector = getConnector()
     await openMobileWallet({ connector })
@@ -48,7 +51,12 @@ function WalletActionRequiredModal({ currentStep, ...props }: DonateProps) {
     modalHeader[currentStep as WalletActionRequiredModalStep]
 
   return (
-    <Modal {...props} title={title} description={desc}>
+    <Modal
+      isOpen={isOpen}
+      closeModal={closeModal}
+      title={title}
+      description={desc}
+    >
       <div className='flex w-full flex-col items-center gap-4'>
         <Image
           className='w-64 max-w-xs rounded-full'

@@ -25,7 +25,7 @@ const NftRepliedMessagePreviewPart = ({
           placeholderClassName={cx('w-full aspect-square')}
           width={50}
           height={50}
-          image={nftData?.image}
+          src={nftData?.image}
         />
       )}
     </span>

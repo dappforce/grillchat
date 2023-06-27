@@ -6,7 +6,7 @@ type State = {
   _extensionModalStates: {
     [key in PostContentExtension['id']]?: {
       isOpen: boolean
-      initialData: unknown | null
+      initialData: unknown
     }
   }
 }
@@ -60,11 +60,12 @@ export function useIsExtensionModalOpen<Id extends PostContentExtension['id']>(
 export function useIsExtensionModalInitialData<
   Id extends PostContentExtension['id']
 >(id: Id) {
-  return useExtensionData(
-    (state) =>
-      state._extensionModalStates[id]?.initialData as
-        | (typeof extensionModalStates)[Id]
-        | null
+  return (
+    useExtensionData(
+      (state) =>
+        state._extensionModalStates[id]?.initialData as
+          | (typeof extensionModalStates)[Id]
+    ) || extensionModalStates[id]
   )
 }
 

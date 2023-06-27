@@ -1,3 +1,4 @@
+import DonateModal from './donate/DonateModal/DonateModal'
 import ImageAttachmentModal from './image/ImageAttachmentModal'
 import NftAttachmentModal from './nft/NftAttachmentModal'
 
@@ -11,6 +12,7 @@ export default function ExtensionModals({ ...props }: ExtensionModalsProps) {
     <>
       <NftAttachmentModal {...props} />
       <ImageAttachmentModal {...props} />
+      <DonateModal {...props} />
     </>
   )
 }
