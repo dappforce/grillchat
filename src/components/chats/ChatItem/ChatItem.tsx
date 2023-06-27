@@ -198,7 +198,18 @@ export default function ChatItem({
           )}
         </ProfilePreviewModalWrapper>
       )}
-      <FloatingMenus menus={menus} alignment='end' useClickPointAsAnchor>
+      <FloatingMenus
+        menus={menus}
+        allowedPlacements={[
+          'right',
+          'top',
+          'bottom',
+          'right-end',
+          'top-end',
+          'bottom-end',
+        ]}
+        useClickPointAsAnchor
+      >
         {(config) => {
           const { toggleDisplay, referenceProps } = config || {}
           return (
