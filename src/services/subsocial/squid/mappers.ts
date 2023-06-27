@@ -62,6 +62,7 @@ const mapPostExtensions = (
           },
         }
         return nftExtension
+
       case ContentExtensionSchemaId.SubsocialDonations:
         const donationExtension: DonateExtension = {
           id: 'subsocial-donations',
