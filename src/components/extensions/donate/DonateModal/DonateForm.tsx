@@ -130,7 +130,7 @@ function DonateForm({
       onSubmit={onSubmit}
     >
       <div>
-        <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-gray-400'>
+        <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-text-muted'>
           Recipient
         </div>
         <div className={cx('mb-6 mt-2 rounded-2xl bg-background-lighter p-4')}>

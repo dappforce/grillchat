@@ -36,7 +36,7 @@ export default function SelectInput({
         {({ open }) => (
           <>
             {fieldLabel && (
-              <Listbox.Label className='block text-sm font-normal leading-4 text-gray-400'>
+              <Listbox.Label className='block text-sm font-normal leading-4 text-text-muted'>
                 {fieldLabel}
               </Listbox.Label>
             )}
@@ -63,7 +63,7 @@ export default function SelectInput({
                 </span>
                 <span className='pointer-events-none absolute inset-y-0 right-0 ml-2 flex items-center pr-4'>
                   <IoIosArrowDown
-                    className='h-5 w-5 text-gray-400'
+                    className='h-5 w-5 text-text-muted'
                     aria-hidden='true'
                   />
                 </span>
