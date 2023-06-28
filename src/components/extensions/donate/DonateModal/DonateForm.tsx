@@ -1,5 +1,8 @@
 import Button from '@/components/Button'
 import Dropdown from '@/components/inputs/SelectInput'
+import MetamaskDeepLink, {
+  isInsideMetamaskBrowser,
+} from '@/components/MetamaskDeepLink'
 import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
@@ -157,7 +160,9 @@ function DonateForm({
             imgClassName='w-[38px]'
           />
 
-          {showSwichButton ? (
+          {!isInsideMetamaskBrowser() ? (
+            <MetamaskDeepLink size='lg'>Connect Wallet</MetamaskDeepLink>
+          ) : showSwichButton ? (
             <Button size={'lg'} onClick={onSwitchButtonClick}>
               {!isConnected ? 'Connect' : 'Switch'} to {selectedChain.label}
             </Button>

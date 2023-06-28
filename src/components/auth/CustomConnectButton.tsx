@@ -7,6 +7,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
+import MetamaskDeepLink, { isInsideMetamaskBrowser } from '../MetamaskDeepLink'
 
 type CustomConnectButtonProps = ButtonProps & {
   className?: string
@@ -63,6 +64,12 @@ export const CustomConnectButton = ({
   }, [linkedEvmAddress, isAccountDataLoading])
 
   const usedLabel = (hasInteractedOnce && secondLabel) || label
+
+  if (!isInsideMetamaskBrowser()) {
+    return (
+      <MetamaskDeepLink {...commonButtonProps}>{usedLabel}</MetamaskDeepLink>
+    )
+  }
 
   const customButton = (
     <ConnectButton.Custom>
