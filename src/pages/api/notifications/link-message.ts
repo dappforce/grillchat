@@ -26,10 +26,12 @@ export default handlerWrapper({
   allowedMethods: ['POST'],
   errorLabel: 'link-message',
   handler: async (data, _, res) => {
-    let message = ''
-    if (data.action === 'link')
-      message = await createLinkingMessageForTelegram(data.address)
-    else message = await createUnlinkingMessageForTelegram(data.address)
+    const createMessageForTelegram =
+      data.action === 'link'
+        ? createLinkingMessageForTelegram
+        : createUnlinkingMessageForTelegram
+
+    const message = await createMessageForTelegram(data.address)
 
     return res.status(200).send({
       success: true,

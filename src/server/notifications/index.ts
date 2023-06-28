@@ -1,3 +1,4 @@
+import { getTelegramNotificationsBotLink } from '@/constants/links'
 import { gql } from 'graphql-request'
 import {
   CreateTemporaryLinkingIdForTelegramMutation,
@@ -74,7 +75,7 @@ export async function createTemporaryLinkingUrlForTelegram(
     variables: { signedMessageWithDetails },
   })
   const linkingId = data.createTemporaryLinkingIdForTelegram.id
-  return `https://t.me/GrillNotificationsStagingBot/?start=${linkingId}`
+  return getTelegramNotificationsBotLink(linkingId)
 }
 
 // Unlinking

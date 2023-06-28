@@ -9,3 +9,9 @@ export function getSuggestNewChatRoomLink(prefill: {
     prefill.hubId ?? ''
   }&entry.1674564644=${prefill.chatName}`
 }
+
+const TELEGRAM_NOTIFICATIONS_BOT_LINK = 'https://t.me/grill_notifications_bot/'
+
+export function getTelegramNotificationsBotLink(command: string) {
+  return `${TELEGRAM_NOTIFICATIONS_BOT_LINK}?start=${command}`
+}
