@@ -1,7 +1,8 @@
 import { nftChains } from '@/components/extensions/nft/utils'
+import { ApiResponse, handlerWrapper } from '@/server/common'
 import { covalentRequest } from '@/server/external'
 import { MinimalUsageQueueWithTimeLimit } from '@/utils/data-structure'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest } from 'next'
 import { z } from 'zod'
 
 const querySchema = z.object({
@@ -17,12 +18,10 @@ type NftData = {
   collectionName: string
   price: number
 }
-export type ApiNftResponse = {
-  success: boolean
-  message: string
-  errors?: any
+type NftResponseData = {
   data?: NftData | null
 }
+export type ApiNftResponse = ApiResponse<NftResponseData>
 
 const chainMapper: Record<(typeof nftChains)[number], string> = {
   ethereum: 'eth-mainnet',
@@ -42,38 +41,30 @@ const nftDataCache = new MinimalUsageQueueWithTimeLimit<NftData>(
   6 * 60 // 6 hours
 )
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiNftResponse>
-) {
-  if (req.method !== 'GET') return res.status(404).end()
+export default handlerWrapper({
+  inputSchema: querySchema,
+  dataGetter: (req: NextApiRequest) => req.query,
+})<NftResponseData>({
+  allowedMethods: ['GET'],
+  handler: async (data, _, res) => {
+    const nftProperties = data
 
-  const params = querySchema.safeParse(req.query)
-  if (!params.success) {
-    return res.status(400).send({
-      success: false,
-      message: 'Invalid request body',
-      errors: params.error.errors,
-    })
-  }
-
-  const nftProperties = params.data
-
-  const nftData = await getNftData(nftProperties)
-  if (nftData) {
-    res.json({
-      message: 'OK',
-      success: true,
-      data: nftData,
-    })
-  } else {
-    res.status(404).json({
-      message: 'NFT not found',
-      success: false,
-      data: nftData,
-    })
-  }
-}
+    const nftData = await getNftData(nftProperties)
+    if (nftData) {
+      res.json({
+        message: 'OK',
+        success: true,
+        data: nftData,
+      })
+    } else {
+      res.status(404).json({
+        message: 'NFT not found',
+        success: false,
+        data: nftData,
+      })
+    }
+  },
+})
 
 function getNftCacheKey(nftProperties: ApiNftParams) {
   return `${nftProperties.chain}_${nftProperties.collectionId}_${nftProperties.nftId}`

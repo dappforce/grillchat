@@ -35,6 +35,12 @@ export function getCovalentApiKey() {
   return checkEnv(process.env.COVALENT_API_KEY, 'COVALENT_API_KEY')
 }
 
+export function getNotificationsConfig() {
+  const url = checkEnv(process.env.NOTIFICATIONS_URL, 'NOTIFICATIONS_URL')
+  const token = checkEnv(process.env.NOTIFICATIONS_TOKEN, 'NOTIFICATIONS_TOKEN')
+  return { url, token }
+}
+
 export function getRedisConfig() {
   const host = checkEnv(process.env.REDIS_HOST, 'REDIS_HOST')
   const port = checkEnv(process.env.REDIS_PORT, 'REDIS_PORT')

@@ -1,23 +1,16 @@
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
-import { ComponentProps } from 'react'
-import { HiArrowUpRight } from 'react-icons/hi2'
+import Card, { CardProps } from './Card'
 import { CopyTextInline } from './CopyText'
 import LinkText from './LinkText'
 
-export type EvmAddressProps = ComponentProps<'div'> & {
+export type EvmAddressProps = CardProps & {
   evmAddress: string
 }
 
 export default function EvmAddress({ evmAddress, ...props }: EvmAddressProps) {
   return (
-    <div
-      {...props}
-      className={cx(
-        'flex justify-between rounded-2xl bg-background-lighter p-4',
-        props.className
-      )}
-    >
+    <Card {...props} className={cx('flex justify-between', props.className)}>
       <CopyTextInline
         text={truncateAddress(evmAddress)}
         tooltip='Copy my EVM address'
@@ -28,12 +21,10 @@ export default function EvmAddress({ evmAddress, ...props }: EvmAddressProps) {
       <LinkText
         openInNewTab
         href={`https://etherscan.io/address/${evmAddress}`}
-        variant='primary'
+        withArrow
       >
-        <span className='flex items-center'>
-          Etherscan <HiArrowUpRight className='ml-2' />
-        </span>
+        Etherscan
       </LinkText>
-    </div>
+    </Card>
   )
 }

@@ -26,7 +26,7 @@ spec:
             - name: REDIS_HOST
               value: redis-master.default
             - name: REDIS_PORT
-              value: "6379"
+              value: '6379'
           envFrom:
             - secretRef:
                 name: grillchat-secret
