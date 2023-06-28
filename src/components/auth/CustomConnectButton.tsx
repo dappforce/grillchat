@@ -12,6 +12,7 @@ type CustomConnectButtonProps = ButtonProps & {
   className?: string
   label?: React.ReactNode
   secondLabel?: React.ReactNode
+  withWalletActionImage?: boolean
   signAndLinkOnConnect?: boolean
   signAndLinkEvmAddress: (
     emvAddress?: string,
@@ -24,6 +25,7 @@ export const CustomConnectButton = ({
   className,
   signAndLinkEvmAddress,
   label = 'Connect EVM Wallet',
+  withWalletActionImage = true,
   secondLabel,
   isLoading,
   signAndLinkOnConnect = true,
@@ -122,7 +124,7 @@ export const CustomConnectButton = ({
     </ConnectButton.Custom>
   )
 
-  if (hasInteractedOnce) {
+  if (hasInteractedOnce && withWalletActionImage) {
     return (
       <div className='flex w-full flex-col items-center gap-4'>
         <Image
