@@ -56,7 +56,7 @@ export default function ChatLastMessage({
       {ExtensionElement && (
         <ExtensionElement
           extensions={extensions}
-          className={previewClassName}
+          className={cx('flex-shrink-0', previewClassName)}
         />
       )}
       {showedText}
