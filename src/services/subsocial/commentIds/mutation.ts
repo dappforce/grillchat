@@ -1,5 +1,5 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import { useSaveFile } from '@/services/api/mutations'
+import { useSaveFile } from '@/services/api/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'

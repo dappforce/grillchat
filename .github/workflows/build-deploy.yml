@@ -48,6 +48,8 @@ jobs:
           build-args: |
             GH_NEXT_PUBLIC_SPACE_IDS=1002,1005,1010,1011,1023
             GH_NEXT_PUBLIC_MODERATION_URL=https://moderation.subsocial.network/graphql
+            GH_NOTIFICATIONS_URL=https://grill-notifications.subsocial.network/graphql
+            GH_NOTIFICATIONS_TOKEN=${{ secrets.NOTIFICATIONS_AUTH_TOKEN }}
             GH_NEXT_PUBLIC_AMP_ID=81d0fc2014ce14eed5a475efe9a44035
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/xsocial/graphql
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M

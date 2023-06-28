@@ -1,4 +1,4 @@
-import { useRequestToken } from '@/services/api/mutations'
+import { useRequestToken } from '@/services/api/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { useMutation } from '@tanstack/react-query'
 

@@ -1,33 +1,34 @@
+import { ApiResponse, handlerWrapper } from '@/server/common'
 import { getIpfsApi } from '@/server/ipfs'
-import { IpfsPostContent } from '@subsocial/api/types'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { z } from 'zod'
 
-export type SaveFileRequest = IpfsPostContent
+const bodySchema = z.any()
+export type SaveFileRequest = z.infer<typeof bodySchema>
 
-export type SaveFileResponse = {
-  success: boolean
-  errors?: any
+type ResponseData = {
   cid?: string
 }
+export type SaveFileResponse = ApiResponse<ResponseData>
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<SaveFileResponse>
-) {
-  if (req.method !== 'POST') return res.status(404).end()
+export default handlerWrapper({
+  inputSchema: bodySchema,
+  dataGetter: (req) => req.body,
+})<ResponseData>({
+  allowedMethods: ['POST'],
+  handler: async (data, _, res) => {
+    const { saveAndPinJson } = getIpfsApi()
 
-  const body = req.body as IpfsPostContent
-  const { saveAndPinJson } = getIpfsApi()
+    let cid: string
+    try {
+      cid = await saveAndPinJson(data)
+    } catch (e: any) {
+      return res.status(500).send({
+        message: 'Failed to save file',
+        success: false,
+        errors: e.message,
+      })
+    }
 
-  let cid: string
-  try {
-    cid = await saveAndPinJson(body)
-  } catch (e: any) {
-    return res.status(500).send({
-      success: false,
-      errors: e.message,
-    })
-  }
-
-  res.status(200).send({ success: true, cid: cid })
-}
+    res.status(200).send({ message: 'OK', success: true, cid: cid })
+  },
+})

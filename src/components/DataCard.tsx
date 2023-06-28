@@ -1,6 +1,5 @@
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
-import { HiArrowUpRight } from 'react-icons/hi2'
 import { CopyTextInline } from './CopyText'
 import LinkText from './LinkText'
 
@@ -82,11 +81,10 @@ function Content({ content, openInNewTab, redirectTo, withCopyButton }: Data) {
         href={redirectTo}
         openInNewTab={openInNewTab}
         className={textClassName}
+        withArrow={openInNewTab}
+        arrowClassName='text-text-secondary/70'
       >
         {content}
-        {openInNewTab && (
-          <HiArrowUpRight className='relative -top-px ml-1 inline text-sm text-text-secondary/70' />
-        )}
       </LinkText>
     )
   } else if (withCopyButton) {

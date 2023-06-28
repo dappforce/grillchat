@@ -21,6 +21,8 @@ export type ModalState =
   | 'evm-linking-error'
   | 'unlink-evm-confirmation'
   | 'evm-address-linked'
+  | 'notifications'
+  | 'telegram-notifications'
 
 export type ContentProps = {
   address: string

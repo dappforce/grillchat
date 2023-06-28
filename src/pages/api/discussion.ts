@@ -1,5 +1,9 @@
 import { getTxSubDispatchErrorMessage } from '@/server/blockchain'
-import { getCommonErrorMessage } from '@/server/common'
+import {
+  ApiResponse,
+  getCommonErrorMessage,
+  handlerWrapper,
+} from '@/server/common'
 import { getIpfsApi } from '@/server/ipfs'
 import { WalletManager } from '@/server/wallet-client'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
@@ -8,7 +12,7 @@ import { ApiPromise, SubmittableResult } from '@polkadot/api'
 import { stringToHex } from '@polkadot/util'
 import { asAccountId } from '@subsocial/api'
 import { IpfsPostContent } from '@subsocial/api/types'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest } from 'next'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -20,24 +24,12 @@ const bodySchema = z.object({
     image: z.string(),
   }),
 })
+export type ApiDiscussionInput = z.infer<typeof bodySchema>
 
-export type DiscussionInput = {
-  resourceId: string
-  spaceId: string
-  content: IpfsPostContent
+type DiscussionDataResponse = {
+  data?: { postId: string }
 }
-
-export type DiscussionDataResponse = {
-  postId: string
-}
-export type ApiPostsParams = z.infer<typeof bodySchema>
-export type ApiDiscussionResponse = {
-  success: boolean
-  errors?: any
-  message?: string
-  data?: DiscussionDataResponse
-  hash?: string
-}
+export type ApiDiscussionResponse = ApiResponse<DiscussionDataResponse>
 
 export type SaveDiscussionContentResponse = {
   success: boolean
@@ -46,38 +38,27 @@ export type SaveDiscussionContentResponse = {
   cid?: string
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiDiscussionResponse>
-) {
-  if (req.method !== 'POST') return res.status(404).end()
+export default handlerWrapper({
+  inputSchema: bodySchema,
+  dataGetter: (req: NextApiRequest) => req.body,
+})<DiscussionDataResponse>({
+  allowedMethods: ['POST'],
+  handler: async (data, req, res) => {
+    const { resourceId, spaceId, content } = data
 
-  const body = bodySchema.safeParse(req.body)
-
-  if (!body.success) {
-    return res.status(400).send({
-      success: false,
-      message: 'Invalid request body',
-      errors: body.error.errors,
+    const response: ApiDiscussionResponse = await getOrCreateDiscussion({
+      content: {
+        title: content.title,
+        body: content.body,
+        image: content.image,
+      },
+      spaceId,
+      resourceId,
     })
-  }
 
-  const { resourceId, spaceId, content } = body.data
-
-  const response: ApiDiscussionResponse = await getOrCreateDiscussion({
-    content: {
-      title: content.title,
-      body: content.body,
-      image: content.image ?? '',
-      tags: [],
-      canonical: '',
-    },
-    spaceId,
-    resourceId,
-  })
-
-  return res.status(response.success ? 200 : 500).send(response)
-}
+    return res.status(response.success ? 200 : 500).send(response)
+  },
+})
 
 export async function saveDiscussionContent(
   contentBody: IpfsPostContent
@@ -146,6 +127,7 @@ async function createDiscussionAndGetPostId({
 
                   if (stringToHex(resourceId) === resourceIdHex) {
                     resolve({
+                      message: 'OK',
                       success: true,
                       data: {
                         postId: postId.toString(),
@@ -201,7 +183,7 @@ export async function getOrCreateDiscussion({
   resourceId,
   spaceId,
   content,
-}: DiscussionInput): Promise<ApiDiscussionResponse> {
+}: ApiDiscussionInput): Promise<ApiDiscussionResponse> {
   let existingDiscussionId: string | null = null
   try {
     existingDiscussionId = await getDiscussion(resourceId)
@@ -209,12 +191,13 @@ export async function getOrCreateDiscussion({
 
     if (existingDiscussionId)
       return {
+        message: 'OK',
         success: true,
         data: {
           postId: existingDiscussionId,
         },
       }
-    const contentCid = await saveDiscussionContent(content)
+    const contentCid = await saveDiscussionContent(content as IpfsPostContent)
 
     if (!contentCid.success && !contentCid.cid) {
       throw new Error()

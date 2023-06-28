@@ -55,6 +55,8 @@ jobs:
             GH_NEXT_PUBLIC_CAPTCHA_SITE_KEY=6LeWW0QlAAAAAL1u_pgngcjyH211q3dipMItu_5f
             GH_NEXT_PUBLIC_SPACE_IDS=1002,1005,1010,1011,1023
             GH_NEXT_PUBLIC_MODERATION_URL=https://moderation.subsocial.network/graphql
+            GH_NOTIFICATIONS_URL=https://staging-grill-notifications.subsocial.network/graphql
+            GH_NOTIFICATIONS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.ff24KWuoI8DJD1npesUMB6cVYTlOkwQYQBUOBcOpJxc
             GH_NEXT_PUBLIC_AMP_ID=81d0fc2014ce14eed5a475efe9a44035
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/xsocial/graphql
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
