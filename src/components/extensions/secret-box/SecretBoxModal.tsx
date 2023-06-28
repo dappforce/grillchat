@@ -3,16 +3,20 @@ import TextArea from '@/components/inputs/TextArea'
 import ProfilePreview from '@/components/ProfilePreview'
 import useGetNonce from '@/hooks/useGetNonce'
 import { useExtensionModalState } from '@/stores/extension'
+import { useMyAccount } from '@/stores/my-account'
+import { decodeSecretKey } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import { ExtensionModalsProps } from '..'
 import CommonExtensionModal from '../CommonExtensionModal'
+import { encodeSecretBox } from './utils'
 
 export default function SecretBoxModal(props: ExtensionModalsProps) {
   const { closeModal, isOpen, initialData } = useExtensionModalState(
     'subsocial-secret-box'
   )
   const getNonce = useGetNonce()
+  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
 
   const [secretMessage, setSecretMessage] = useState('')
 
@@ -24,15 +28,22 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
 
   const buildAdditionalTxParams = async () => {
     const nonce = await getNonce()
-    if (nonce === null) return {}
+    if (nonce === null || !encodedSecretKey) return {}
 
-    // TODO: encrypt message here, change the message sent
+    const secretKey = decodeSecretKey(encodedSecretKey)
+    const encryptedMessage = await encodeSecretBox(
+      secretMessage,
+      secretKey,
+      recipient,
+      nonce
+    )
+
     return {
       extensions: [
         {
           id: 'subsocial-secret-box' as const,
           properties: {
-            message: secretMessage,
+            message: encryptedMessage,
             recipient,
             nonce,
           },
