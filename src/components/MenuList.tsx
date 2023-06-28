@@ -40,6 +40,7 @@ const menuListItemStyles = cva<MenuListVariants>(
 
 type Menu = {
   text: string | JSX.Element
+  iconClassName?: string
   icon: React.ComponentType<{ className?: string }>
   onClick?: () => void
   href?: string
@@ -52,7 +53,7 @@ export type MenuListProps = ComponentProps<'div'> &
 export default function MenuList({ menus, size, ...props }: MenuListProps) {
   return (
     <div {...props} className={cx(menuListStyles({ size }), props.className)}>
-      {menus.map(({ icon: Icon, onClick, text, href }, idx) => (
+      {menus.map(({ icon: Icon, onClick, text, href, iconClassName }, idx) => (
         <Button
           key={idx}
           href={href}
@@ -64,7 +65,12 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
           className={menuListItemStyles({ size })}
           onClick={onClick}
         >
-          <Icon className='flex-shrink-0 text-xl text-text-muted' />
+          <Icon
+            className={cx(
+              'flex-shrink-0 text-xl text-text-muted',
+              iconClassName
+            )}
+          />
           {isValidElement(text) ? text : <span>{text}</span>}
         </Button>
       ))}

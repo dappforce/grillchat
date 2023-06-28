@@ -26,6 +26,7 @@ const desktopWallets = [
   argentWallet({ chains }),
   coinbaseWallet({ chains, appName: '' }),
   ledgerWallet({ chains }),
+  // subWalletWallet({ chains }),
 ]
 
 const mobileWallets = [...commonWallets]

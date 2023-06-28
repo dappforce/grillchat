@@ -18,7 +18,9 @@ export default function DonateModal(props: DonateModalProps) {
 
   const [currentStep, setCurrentStep] = useState<DonateModalStep>('donate-form')
   const chainState = useState<ListItem>(chainItems[0])
-  const tokenState = useState<ListItem>(tokensItems[0])
+  const chain = chainState[0]
+
+  const tokenState = useState<ListItem>(tokensItems[chain.id][0])
   const { connectOrSwitch } = useConnectOrSwitchNetwork(
     setCurrentStep,
     chainState[0].id

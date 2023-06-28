@@ -9,7 +9,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { parseUnits } from 'ethers'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import CommonExtensionModal from '../../CommonExtensionModal'
 import { chainIdByChainName } from '../api/config'
@@ -46,6 +46,10 @@ function DonateForm({
     selectedToken.id,
     selectedChain.id
   )
+
+  useEffect(() => {
+    setSelectedToken(tokensItems[selectedChain.id][0])
+  }, [selectedChain.id])
 
   const { data: recipientAccountData } = getAccountDataQuery.useQuery(
     initialData.recipient
@@ -163,7 +167,7 @@ function DonateForm({
                 selected={selectedToken}
                 setSelected={setSelectedToken}
                 fieldLabel='Token'
-                items={tokensItems}
+                items={tokensItems[selectedChain.id]}
                 imgClassName='w-[38px]'
               />
               <AmountInput
