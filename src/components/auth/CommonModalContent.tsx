@@ -55,8 +55,6 @@ export const CommonEVMLoginErrorContent = ({
             Open wallet
           </Button>
         )}
-
-        <div className='hidden'>{connectionButton}</div>
       </div>
     )
   }

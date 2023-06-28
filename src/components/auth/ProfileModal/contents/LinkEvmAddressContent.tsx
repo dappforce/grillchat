@@ -62,8 +62,6 @@ function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
             Open wallet
           </Button>
         )}
-
-        <div className='hidden'>{connectionButton}</div>
       </div>
     )
   }
