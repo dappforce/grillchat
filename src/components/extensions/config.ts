@@ -10,6 +10,7 @@ import { SUPPORTED_IMAGE_EXTENSIONS } from './image/utils'
 import NftChatItem from './nft/NftChatItem'
 import NftRepliedMessagePreviewPart from './nft/NftRepliedMessagePreviewPart'
 import { parseNftMarketplaceLink } from './nft/utils'
+import SecretBoxChatItem from './secret-box/SecretBoxChatItem'
 import {
   ExtensionChatItemProps,
   RepliedMessagePreviewPartsProps,
@@ -96,7 +97,7 @@ const extensionsConfig: {
     },
   },
   'subsocial-secret-box': {
-    chatItemComponent: ImageChatItem,
+    chatItemComponent: SecretBoxChatItem,
     replyMessageUI: {
       element: ImageRepliedMessagePreviewPart,
       config: {

@@ -4,7 +4,6 @@ import ProfilePreview from '@/components/ProfilePreview'
 import useGetNonce from '@/hooks/useGetNonce'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMyAccount } from '@/stores/my-account'
-import { decodeSecretKey } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import { ExtensionModalsProps } from '..'
@@ -30,10 +29,9 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
     const nonce = await getNonce()
     if (nonce === null || !encodedSecretKey) return {}
 
-    const secretKey = decodeSecretKey(encodedSecretKey)
     const encryptedMessage = await encodeSecretBox(
       secretMessage,
-      secretKey,
+      encodedSecretKey,
       recipient,
       nonce
     )
