@@ -24,11 +24,13 @@ function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
 
   const connectionButton = (
     <CustomConnectButton
+      key='connect-btn'
       className={cx('w-full', { ['mt-4']: isNotEqAddresses })}
       signAndLinkEvmAddress={signAndLinkEvmAddress}
       signAndLinkOnConnect={!isNotEqAddresses}
       isLoading={isLoading}
       label={isNotEqAddresses ? 'Link another account' : undefined}
+      secondLabel='Sign Message'
       variant={isNotEqAddresses ? 'primaryOutline' : 'primary'}
     />
   )

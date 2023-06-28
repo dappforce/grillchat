@@ -28,6 +28,7 @@ export const CommonEVMLoginErrorContent = ({
       signAndLinkEvmAddress={signAndLinkEvmAddress}
       className='w-full'
       label='Try again'
+      secondLabel='Sign Message'
     />
   )
 }
