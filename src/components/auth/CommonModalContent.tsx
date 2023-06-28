@@ -2,11 +2,10 @@ import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import { isTouchDevice } from '@/utils/device'
-import { openMobileWallet } from '@/utils/evm'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import Image from 'next/image'
 import Button from '../Button'
-import { getConnector } from '../extensions/donate/api/utils'
+import { getConnector, openMobileWallet } from '../extensions/donate/api/utils'
 import { CustomConnectButton } from './CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
