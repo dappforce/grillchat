@@ -49,10 +49,6 @@ export const CustomConnectButton = ({
     size: 'lg',
     className: className,
     isLoading: isLoading,
-    onClick: (e) => {
-      setHasInteractedOnce(true)
-      buttonProps.onClick?.(e as any)
-    },
     ...buttonProps,
   }
 
@@ -81,7 +77,13 @@ export const CustomConnectButton = ({
 
         if (!connected) {
           return (
-            <Button onClick={openConnectModal} {...commonButtonProps}>
+            <Button
+              onClick={() => {
+                setHasInteractedOnce(true)
+                openConnectModal()
+              }}
+              {...commonButtonProps}
+            >
               {label}
             </Button>
           )
@@ -89,7 +91,13 @@ export const CustomConnectButton = ({
 
         if (chain.unsupported) {
           return (
-            <Button onClick={openChainModal} {...commonButtonProps}>
+            <Button
+              onClick={() => {
+                setHasInteractedOnce(true)
+                openChainModal()
+              }}
+              {...commonButtonProps}
+            >
               Wrong network
             </Button>
           )
@@ -98,6 +106,7 @@ export const CustomConnectButton = ({
         return (
           <Button
             onClick={async () => {
+              setHasInteractedOnce(true)
               signAndLinkEvmAddress(account.address, mySubstrateAddress)
             }}
             {...commonButtonProps}
