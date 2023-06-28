@@ -11,6 +11,7 @@ import { useAccount, useDisconnect } from 'wagmi'
 type CustomConnectButtonProps = ButtonProps & {
   className?: string
   label?: React.ReactNode
+  secondLabel?: React.ReactNode
   signAndLinkOnConnect?: boolean
   signAndLinkEvmAddress: (
     emvAddress?: string,
@@ -23,6 +24,7 @@ export const CustomConnectButton = ({
   className,
   signAndLinkEvmAddress,
   label = 'Connect EVM Wallet',
+  secondLabel,
   isLoading,
   signAndLinkOnConnect = true,
   ...buttonProps
@@ -58,6 +60,8 @@ export const CustomConnectButton = ({
     }
   }, [linkedEvmAddress, isAccountDataLoading])
 
+  const usedLabel = secondLabel || label
+
   const customButton = (
     <ConnectButton.Custom>
       {({
@@ -84,7 +88,7 @@ export const CustomConnectButton = ({
               }}
               {...commonButtonProps}
             >
-              {label}
+              {usedLabel}
             </Button>
           )
         }
@@ -111,7 +115,7 @@ export const CustomConnectButton = ({
             }}
             {...commonButtonProps}
           >
-            {label}
+            {usedLabel}
           </Button>
         )
       }}

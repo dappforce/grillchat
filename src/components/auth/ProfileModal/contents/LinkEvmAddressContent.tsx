@@ -30,6 +30,7 @@ function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
       signAndLinkOnConnect={!isNotEqAddresses}
       isLoading={isLoading}
       label={isNotEqAddresses ? 'Link another account' : undefined}
+      secondLabel='Sign Message'
       variant={isNotEqAddresses ? 'primaryOutline' : 'primary'}
     />
   )

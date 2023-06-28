@@ -191,6 +191,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
         className='w-full'
         signAndLinkEvmAddress={signAndLinkEvmAddress}
         isLoading={isLoading}
+        secondLabel='Sign Message'
         label={
           <div className='flex items-center justify-center gap-2'>
             <WalletIcon />
