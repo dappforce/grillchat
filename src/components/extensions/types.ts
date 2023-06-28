@@ -7,8 +7,6 @@ export type ExtensionChatItemProps = {
   scrollToMessage?: (messageId: string) => Promise<void>
 }
 
-export type ChatItemWithExtensionProps = ExtensionChatItemProps
-
 export type RepliedMessagePreviewPartProps = {
   extensions: PostContent['extensions']
   message?: PostData | null

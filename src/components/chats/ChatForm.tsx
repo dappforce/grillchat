@@ -26,6 +26,7 @@ import {
   useState,
 } from 'react'
 import { BeforeMessageResult } from '../extensions/CommonExtensionModal'
+import { interceptPastedData } from '../extensions/config'
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
@@ -33,7 +34,9 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   disabled?: boolean
   mustHaveMessageBody?: boolean
   inputProps?: TextAreaProps
-  buildAdditionalTxParams?: () => Partial<SendMessageParams>
+  buildAdditionalTxParams?: () =>
+    | Partial<SendMessageParams>
+    | Promise<Partial<SendMessageParams>>
   sendButtonText?: string
   sendButtonProps?: ButtonProps
   isPrimary?: boolean
@@ -146,11 +149,13 @@ export default function ChatForm({
 
     if (isDisabled) return
 
+    const additionalTxParams = await buildAdditionalTxParams?.()
+
     const sendMessageParams = {
       message: processedMessage,
       chatId,
       replyTo,
-      ...buildAdditionalTxParams?.(),
+      ...additionalTxParams,
     }
 
     const { newMessageParams, txPrevented } =
@@ -223,6 +228,10 @@ export default function ChatForm({
               className={cx('flex w-full flex-col gap-2', className)}
             >
               <TextArea
+                onPaste={(e) => {
+                  const clipboardData = e.clipboardData
+                  interceptPastedData(clipboardData, e)
+                }}
                 placeholder='Message...'
                 rows={1}
                 autoComplete='off'

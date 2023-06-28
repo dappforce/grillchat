@@ -35,7 +35,10 @@ export default function ClickableMedia({
       >
         <MediaLoader
           {...props}
-          image={props.src ?? ''}
+          onDoubleClick={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+          onContextMenu={(e) => e.stopPropagation()}
+          src={props.src ?? ''}
           className='w-full max-w-screen-md'
           alt={props.alt ?? ''}
           width={1024}

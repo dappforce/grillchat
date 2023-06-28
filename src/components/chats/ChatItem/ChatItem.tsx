@@ -1,7 +1,5 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
-import ProfileModal from '@/components/auth/ProfileModal'
-import DonateModal from '@/components/extensions/donate/DonateModal/DonateModal'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
@@ -10,6 +8,7 @@ import Toast from '@/components/Toast'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
+import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -64,7 +63,7 @@ const checkMarkModalReducer = (
   return { isOpen: true, variant: action }
 }
 
-type ModalState = 'login' | 'donate' | 'evm-linking' | null
+type ModalState = 'login' | null
 
 export default function ChatItem({
   message,
@@ -75,6 +74,9 @@ export default function ChatItem({
   chatId,
   ...props
 }: ChatItemProps) {
+  const openExtensionModal = useExtensionData(
+    (state) => state.openExtensionModal
+  )
   const setReplyTo = useMessageData((state) => state.setReplyTo)
 
   const router = useRouter()
@@ -110,13 +112,20 @@ export default function ChatItem({
       text: 'Donate',
       icon: RiCopperCoinLine,
       onClick: () => {
+        if (!messageOwnerEvmAddress) {
+          return
+        }
+
         if (!address) {
           setModalState('login')
           return
         }
 
         setMessageAsReply(messageId)
-        setModalState('donate')
+        openExtensionModal('subsocial-donations', {
+          messageId,
+          recipient: messageOwnerEvmAddress,
+        })
       },
     }
 
@@ -256,19 +265,6 @@ export default function ChatItem({
         isOpen={openMetadata}
         closeModal={() => setOpenMetadata(false)}
         entity={message}
-      />
-      <DonateModal
-        isOpen={modalState === 'donate'}
-        closeModal={() => setModalState(null)}
-        recipient={ownerId}
-        messageId={messageId}
-        chatId={chatId}
-      />
-      <ProfileModal
-        address={address || ''}
-        isOpen={modalState === 'evm-linking'}
-        closeModal={() => setModalState(null)}
-        step='link-evm-address'
       />
       <LoginModal
         isOpen={modalState === 'login'}

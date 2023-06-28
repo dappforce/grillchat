@@ -1,25 +1,25 @@
+import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
-import { ChatFormProps } from '@/components/chats/ChatForm'
-import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
+import InfoPanel from '@/components/InfoPanel'
+import TextArea from '@/components/inputs/TextArea'
 import LinkText, { linkTextStyles } from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
-import { ModalFunctionalityProps } from '@/components/modals/Modal'
-import useAutofocus from '@/hooks/useAutofocus'
 import useDebounce from '@/hooks/useDebounce'
 import { getNftQuery } from '@/services/api/query'
+import { useExtensionModalState } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { NftProperties } from '@subsocial/api/types'
 import { useEffect, useState } from 'react'
 import { HiTrash } from 'react-icons/hi2'
+import { ExtensionModalsProps } from '..'
 import CommonExtensionModal from '../CommonExtensionModal'
 import NftSupportedPlatformsModal from './NftSupportedPlatformsModal'
 import { parseNftMarketplaceLink } from './utils'
 
-export type NftAttachmentModalProps = ModalFunctionalityProps &
-  Pick<ChatFormProps, 'chatId'>
+export default function NftModal({ chatId, onSubmit }: ExtensionModalsProps) {
+  const { closeModal, initialData, isOpen } =
+    useExtensionModalState('subsocial-evm-nft')
 
-export default function NftAttachmentModal(props: NftAttachmentModalProps) {
-  const { chatId, ...otherProps } = props
   const [nftLink, setNftLink] = useState('')
   const [nftLinkError, setNftLinkError] = useState<string | JSX.Element>('')
   const [isOpenSupportedPlatformModal, setIsOpenSupportedPlatformModal] =
@@ -34,10 +34,10 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
   }, [nftLink])
 
   useEffect(() => {
-    if (props.isOpen) {
-      setNftLink('')
+    if (isOpen) {
+      setNftLink(initialData || '')
     }
-  }, [props.isOpen])
+  }, [isOpen, initialData])
 
   const debouncedLink = useDebounce(nftLink, 300)
   const [parsedLinkData, setParsedLinkData] = useState<NftProperties | null>(
@@ -91,20 +91,12 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
 
   const isValidNft = !!data?.image && !showLoading
 
-  // TODO: this is hotfix, fix is in image extension PR
-  const scrollToBottom = () => {
-    const scrollContainer = document.getElementById('chat-list')
-    scrollContainer?.scrollTo({
-      top: scrollContainer?.scrollHeight,
-      behavior: 'auto',
-    })
-  }
-
   return (
     <>
       <CommonExtensionModal
-        {...otherProps}
-        isOpen={otherProps.isOpen && !isOpenSupportedPlatformModal}
+        onSubmit={onSubmit}
+        closeModal={closeModal}
+        isOpen={isOpen && !isOpenSupportedPlatformModal}
         size='md'
         mustHaveMessageBody={false}
         chatId={chatId}
@@ -133,18 +125,25 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
             ],
           }
         }}
-        onSubmit={scrollToBottom}
       >
         <div className='flex flex-col gap-3 md:gap-5'>
-          <NftLinkInput
-            value={nftLink}
-            onChange={(e) => setNftLink(e.target.value)}
-            error={!!nftLinkError}
-          />
+          <AutofocusWrapper>
+            {({ ref }) => (
+              <TextArea
+                value={nftLink}
+                onChange={(e) => setNftLink(e.target.value)}
+                error={!!nftLinkError}
+                size='sm'
+                rows={1}
+                ref={ref}
+                placeholder='Paste NFT URL'
+              />
+            )}
+          </AutofocusWrapper>
           {nftLinkError ? (
-            <div className='rounded-2xl bg-background-red px-4 py-3 text-text-red'>
+            <InfoPanel>
               <p>{nftLinkError}</p>
-            </div>
+            </InfoPanel>
           ) : (
             nftLink && (
               <div className='relative aspect-square w-full'>
@@ -157,7 +156,7 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
                 </Button>
                 <MediaLoader
                   withSpinner
-                  image={data?.image ?? ''}
+                  src={data?.image ?? ''}
                   loadingClassName='rounded-2xl'
                   className='aspect-square w-full rounded-2xl bg-background object-contain'
                   onLoad={() => setShowLoading(false)}
@@ -172,22 +171,5 @@ export default function NftAttachmentModal(props: NftAttachmentModalProps) {
         closeModal={() => setIsOpenSupportedPlatformModal(false)}
       />
     </>
-  )
-}
-
-function NftLinkInput({ ...props }: TextAreaProps) {
-  const { ref, autofocus } = useAutofocus()
-  useEffect(() => {
-    autofocus()
-  }, [autofocus])
-
-  return (
-    <TextArea
-      {...props}
-      size='sm'
-      rows={1}
-      ref={ref}
-      placeholder='Paste NFT URL'
-    />
   )
 }

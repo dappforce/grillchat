@@ -4,6 +4,7 @@ import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { useExtensionModalState } from '@/stores/extension'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
@@ -18,15 +19,17 @@ import { DonateProps } from './types'
 import { chainItems, tokensItems } from './utils'
 
 function DonateForm({
-  recipient,
-  messageId,
   chatId,
   setCurrentStep,
   chainState,
   tokenState,
   onSwitchButtonClick,
-  ...props
+  onSubmit,
 }: DonateProps) {
+  const { closeModal, isOpen, initialData } = useExtensionModalState(
+    'subsocial-donations'
+  )
+
   const [selectedChain, setSelectedChain] = chainState
   const [selectedToken, setSelectedToken] = tokenState
 
@@ -48,7 +51,9 @@ function DonateForm({
     setSelectedToken(tokensItems[selectedChain.id][0])
   }, [selectedChain.id])
 
-  const { data: recipientAccountData } = getAccountDataQuery.useQuery(recipient)
+  const { data: recipientAccountData } = getAccountDataQuery.useQuery(
+    initialData.recipient
+  )
 
   const { evmAddress: evmRecipientAddress } = recipientAccountData || {}
 
@@ -93,7 +98,7 @@ function DonateForm({
         ],
       }
 
-      props.closeModal()
+      closeModal()
       setCurrentStep('donate-form')
       return { newMessageParams, txPrevented: false }
     }
@@ -111,18 +116,10 @@ function DonateForm({
     ? ` ${new BigNumber(amount).toFormat()} ${selectedToken.label}`
     : ''
 
-  // TODO: this is hotfix, fix is in image extension PR
-  const scrollToBottom = () => {
-    const scrollContainer = document.getElementById('chat-list')
-    scrollContainer?.scrollTo({
-      top: scrollContainer?.scrollHeight,
-      behavior: 'auto',
-    })
-  }
-
   return (
     <CommonExtensionModal
-      {...props}
+      isOpen={isOpen}
+      closeModal={closeModal}
       chatId={chatId}
       showChatForm={!showSwichButton}
       withDivider={!showSwichButton}
@@ -133,7 +130,7 @@ function DonateForm({
       title={'💰 Donate'}
       withCloseButton
       panelClassName='pb-5'
-      onSubmit={scrollToBottom}
+      onSubmit={onSubmit}
     >
       <div>
         <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-gray-400'>
@@ -146,7 +143,7 @@ function DonateForm({
           )}
         >
           <ProfilePreview
-            address={recipient}
+            address={initialData.recipient}
             avatarClassName='h-12 w-12'
             withGrillAddress={false}
           />

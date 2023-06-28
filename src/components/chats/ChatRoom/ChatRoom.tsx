@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import Container from '@/components/Container'
+import ExtensionModals from '@/components/extensions'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { useMessageData } from '@/stores/message'
@@ -22,7 +23,14 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   hubId: string
 }
 
-const HUB_ID_WITHOUT_JOIN_BUTTON = ['1023', '1002', '1005', '1010', '1011']
+const HUB_ID_WITHOUT_JOIN_BUTTON = [
+  '1023',
+  '1002',
+  '1005',
+  '1010',
+  '1011',
+  '1007',
+]
 
 export default function ChatRoom({
   className,
@@ -106,6 +114,8 @@ export default function ChatRoom({
           </JoinChatWrapper>
         )}
       </Component>
+
+      <ExtensionModals chatId={chatId} onSubmit={scrollToBottom} />
     </div>
   )
 }

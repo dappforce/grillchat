@@ -3,6 +3,7 @@ import Button from '@/components/Button'
 import { ListItem } from '@/components/inputs/SelectInput'
 import LinkText from '@/components/LinkText'
 import Modal from '@/components/modals/Modal'
+import { useExtensionModalState } from '@/stores/extension'
 import { isTouchDevice } from '@/utils/device'
 import Image from 'next/image'
 import { getConnector, openMobileWallet } from '../api/utils'
@@ -53,11 +54,8 @@ const getModalHeader = (
   return modalHeader[currentStep]
 }
 
-function WalletActionRequiredModal({
-  currentStep,
-  chainState,
-  ...props
-}: DonateProps) {
+function WalletActionRequiredModal({ currentStep, chainState }: DonateProps) {
+  const { isOpen, closeModal } = useExtensionModalState('subsocial-donations')
   const [selectedChain] = chainState
 
   const onButtonClick = async () => {
@@ -71,7 +69,12 @@ function WalletActionRequiredModal({
   )
 
   return (
-    <Modal {...props} title={title} description={desc}>
+    <Modal
+      isOpen={isOpen}
+      closeModal={closeModal}
+      title={title}
+      description={desc}
+    >
       <div className='flex w-full flex-col items-center gap-4'>
         <Image
           className='w-64 max-w-xs rounded-full'

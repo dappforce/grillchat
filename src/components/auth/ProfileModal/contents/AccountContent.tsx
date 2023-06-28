@@ -72,7 +72,7 @@ export default function AccountContent({
     },
     {
       text: (
-        <span>
+        <span className='flex items-center gap-2'>
           <span>Show Grill secret key</span>
           {notification?.showNotif && <DotBlinkingNotification />}
         </span>

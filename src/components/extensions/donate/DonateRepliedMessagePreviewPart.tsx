@@ -1,14 +1,16 @@
 import { cx, getCommonClassNames } from '@/utils/class-names'
-import { DonateExtension } from '@subsocial/api/types'
 import { formatUnits } from 'ethers'
 import { RepliedMessagePreviewPartProps } from '../types'
+import { getMessageExtensionProperties } from '../utils'
 
 const DonateRepliedMessagePreviewPart = ({
   extensions,
 }: RepliedMessagePreviewPartProps) => {
-  const firstExtension = extensions?.[0] as DonateExtension
-
-  const { id, properties } = firstExtension || {}
+  const firstExtension = extensions?.[0]
+  const properties = getMessageExtensionProperties(
+    firstExtension,
+    'subsocial-donations'
+  )
 
   const { amount, token, decimals } = properties || {}
 
@@ -22,16 +24,14 @@ const DonateRepliedMessagePreviewPart = ({
 
   return (
     <span>
-      {id === 'subsocial-donations' ? (
-        <div
-          className={cx(
-            getCommonClassNames('donateMessagePreviewBg'),
-            'rounded-2xl px-3 py-[0.15rem] text-white'
-          )}
-        >
-          {amountValue} {token}
-        </div>
-      ) : null}
+      <div
+        className={cx(
+          getCommonClassNames('donateMessagePreviewBg'),
+          'rounded-2xl px-3 py-[0.15rem] text-white'
+        )}
+      >
+        {amountValue} {token}
+      </div>
     </span>
   )
 }

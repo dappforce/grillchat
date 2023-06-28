@@ -20,6 +20,7 @@ import {
   ComponentProps,
   Fragment,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -70,9 +71,7 @@ function ChatListContent({
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
   const prevMessageModalMsgId = usePrevious(messageModalMsgId)
 
-  // TODO: this is hotfix, fix is in image extension PR, revert back to useId(), this is hotfix for making easier to scrollToBottom from extension modals
-  // const scrollableContainerId = useId()
-  const scrollableContainerId = 'chat-list'
+  const scrollableContainerId = useId()
 
   const innerScrollContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef

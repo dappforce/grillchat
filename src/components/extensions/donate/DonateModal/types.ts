@@ -1,6 +1,6 @@
 import { ListItem } from '@/components/inputs/SelectInput'
-import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { Dispatch, SetStateAction } from 'react'
+import { ExtensionModalsProps } from '../..'
 
 export type DonateModalStep =
   | 'donate-form'
@@ -13,14 +13,11 @@ export type DonateProps = DonateModalProps & {
   chainState: [ListItem, Dispatch<SetStateAction<ListItem>>]
   tokenState: [ListItem, Dispatch<SetStateAction<ListItem>>]
   onSwitchButtonClick: () => void
+  onSubmit: () => void
 }
 
 export type DonateModalContent = {
   [key in DonateModalStep]: (props: DonateProps) => JSX.Element
 }
 
-export type DonateModalProps = ModalFunctionalityProps & {
-  recipient: string
-  messageId: string
-  chatId: string
-}
+export type DonateModalProps = ExtensionModalsProps

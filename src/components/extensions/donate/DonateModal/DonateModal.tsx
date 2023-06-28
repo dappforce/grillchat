@@ -1,4 +1,5 @@
 import { ListItem } from '@/components/inputs/SelectInput'
+import { useExtensionModalState } from '@/stores/extension'
 import { useEffect, useState } from 'react'
 import { useConnectOrSwitchNetwork } from '../api/hooks'
 import DonateForm from './DonateForm'
@@ -13,6 +14,8 @@ export const modalByStep: DonateModalContent = {
 }
 
 export default function DonateModal(props: DonateModalProps) {
+  const { isOpen } = useExtensionModalState('subsocial-donations')
+
   const [currentStep, setCurrentStep] = useState<DonateModalStep>('donate-form')
   const chainState = useState<ListItem>(chainItems[0])
   const chain = chainState[0]
@@ -28,10 +31,10 @@ export default function DonateModal(props: DonateModalProps) {
   }, [])
 
   useEffect(() => {
-    if (!props.isOpen) {
+    if (!isOpen) {
       setCurrentStep('donate-form')
     }
-  }, [props.isOpen])
+  }, [isOpen])
 
   const onSwitchButtonClick = async () => {
     connectOrSwitch()
