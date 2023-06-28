@@ -64,6 +64,25 @@ export const CustomConnectButton = ({
 
   const usedLabel = (hasInteractedOnce && secondLabel) || label
 
+  if (
+    typeof window !== 'undefined' &&
+    isTouchDevice() &&
+    !(window as any).injectedWeb3
+  ) {
+    return (
+      <Button
+        size='lg'
+        className={className}
+        href={`https://metamask.app.link/dapp/${window.location.href.replace(
+          /^https:\/\/w?w?w?\.?/,
+          ''
+        )}`}
+      >
+        {usedLabel}
+      </Button>
+    )
+  }
+
   const customButton = (
     <ConnectButton.Custom>
       {({
