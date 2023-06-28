@@ -60,7 +60,7 @@ export const CustomConnectButton = ({
     }
   }, [linkedEvmAddress, isAccountDataLoading])
 
-  const usedLabel = secondLabel || label
+  const usedLabel = (hasInteractedOnce && secondLabel) || label
 
   const customButton = (
     <ConnectButton.Custom>
