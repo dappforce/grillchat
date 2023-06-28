@@ -65,7 +65,7 @@ export const CustomConnectButton = ({
 
   const usedLabel = (hasInteractedOnce && secondLabel) || label
 
-  if (isInsideMetamaskBrowser()) {
+  if (!isInsideMetamaskBrowser()) {
     return (
       <MetamaskDeepLink {...commonButtonProps}>{usedLabel}</MetamaskDeepLink>
     )
