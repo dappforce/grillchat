@@ -20,12 +20,30 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
     if (initialRecipient) setRecipient(initialRecipient)
   }, [initialRecipient])
 
+  const buildAdditionalTxParams = async () => {
+    return {
+      extensions: [
+        {
+          id: 'subsocial-secret-box' as const,
+          properties: {
+            message: secretMessage,
+            recipient,
+            nonce: 2,
+          },
+        },
+      ],
+    }
+  }
+
   return (
     <CommonExtensionModal
+      {...props}
       title='📦 Secret Box'
+      mustHaveMessageBody={false}
+      disableSendButton={!secretMessage}
       isOpen={isOpen}
       closeModal={closeModal}
-      {...props}
+      buildAdditionalTxParams={buildAdditionalTxParams}
     >
       <div className='flex flex-col gap-4'>
         <div>

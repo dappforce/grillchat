@@ -26,6 +26,8 @@ declare module '@subsocial/api/types' {
   }
   export type SecretBoxProperties = {
     message: string
+    nonce: number
+    recipient: string
   }
 
   export type NftExtension = {
