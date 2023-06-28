@@ -1,8 +1,10 @@
+import GiftBoxIcon from '@/assets/icons/gift-box.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
+import MetadataModal from '@/components/modals/MetadataModal'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -30,7 +32,6 @@ import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine } from 'react-icons/ri'
 import urlJoin from 'url-join'
-import MetadataModal from '../../modals/MetadataModal'
 import ChatItemWithExtension from './ChatItemWithExtension'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
@@ -138,6 +139,12 @@ export default function ChatItem({
         onClick: () => setMessageAsReply(messageId),
       },
       ...(showDonateMenuItem ? [donateMenuItem] : []),
+      {
+        text: 'Secret Box',
+        icon: GiftBoxIcon,
+        onClick: () =>
+          openExtensionModal('subsocial-secret-box', { recipient: ownerId }),
+      },
       {
         text: 'Copy Text',
         icon: MdContentCopy,

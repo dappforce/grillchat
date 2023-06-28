@@ -24,6 +24,9 @@ declare module '@subsocial/api/types' {
     amount: string
     txHash: string
   }
+  export type SecretBoxProperties = {
+    message: string
+  }
 
   export type NftExtension = {
     id: 'subsocial-evm-nft'
@@ -37,11 +40,16 @@ declare module '@subsocial/api/types' {
     id: 'subsocial-image'
     properties: ImageProperties
   }
+  export type SecretBoxExtension = {
+    id: 'subsocial-secret-box'
+    properties: SecretBoxProperties
+  }
 
   export type PostContentExtension =
     | NftExtension
     | DonateExtension
     | ImageExtension
+    | SecretBoxExtension
 
   export interface PostContent extends SubsocialPostContent {
     inReplyTo?: {

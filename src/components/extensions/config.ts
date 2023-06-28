@@ -19,6 +19,7 @@ export const extensionInitialDataTypes = {
   'subsocial-donations': { recipient: '', messageId: '' },
   'subsocial-evm-nft': null as null | string,
   'subsocial-image': null as null | File | string,
+  'subsocial-secret-box': { recipient: '' },
 } satisfies Record<PostContentExtension['id'], unknown>
 
 type Config<Id extends PostContentExtension['id']> = {
@@ -92,6 +93,17 @@ const extensionsConfig: {
       }
 
       return null
+    },
+  },
+  'subsocial-secret-box': {
+    chatItemComponent: ImageChatItem,
+    replyMessageUI: {
+      element: ImageRepliedMessagePreviewPart,
+      config: {
+        place: 'inside',
+        emptyBodyText: 'Image',
+        previewClassName: 'w-4',
+      },
     },
   },
 }
