@@ -95,7 +95,12 @@ function DisconnectButton({ address }: ContentProps) {
   }
 
   return (
-    <Button size='lg' onClick={handleClick} isLoading={isLoading}>
+    <Button
+      size='lg'
+      variant='redOutline'
+      onClick={handleClick}
+      isLoading={isLoading}
+    >
       Disconnect
     </Button>
   )
