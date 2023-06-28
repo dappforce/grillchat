@@ -1,11 +1,8 @@
 import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
-import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
-import { isTouchDevice } from '@/utils/device'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import Image from 'next/image'
 import Button from '../Button'
-import { getConnector, openMobileWallet } from '../extensions/donate/api/utils'
 import { CustomConnectButton } from './CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
@@ -24,7 +21,7 @@ export const CommonEVMLoginErrorContent = ({
     onError,
   })
 
-  const connectionButton = (
+  return (
     <CustomConnectButton
       isLoading={isLoading}
       signAndLinkOnConnect={signAndLinkOnConnect}
@@ -33,33 +30,6 @@ export const CommonEVMLoginErrorContent = ({
       label='Try again'
     />
   )
-
-  // TODO: this is hotfix, refactor it along with the other component that uses same UI
-  if (isLoading) {
-    const onButtonClick = async () => {
-      const connector = getConnector()
-      await openMobileWallet({ connector })
-    }
-
-    return (
-      <div className='flex w-full flex-col items-center gap-4'>
-        <Image
-          className='w-64 max-w-xs rounded-full'
-          priority
-          src={ProcessingHumster}
-          alt=''
-        />
-
-        {isTouchDevice() && (
-          <Button className='w-full' size={'lg'} onClick={onButtonClick}>
-            Open wallet
-          </Button>
-        )}
-      </div>
-    )
-  }
-
-  return connectionButton
 }
 
 export const CommonEvmAddressLinked = () => {
