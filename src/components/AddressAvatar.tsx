@@ -70,7 +70,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
             <div className='relative h-full w-full'>
               <Image
                 sizes='5rem'
-                className='relative'
+                className='relative rounded-full'
                 fill
                 src={resolveEnsAvatarSrc(ensName)}
                 onLoad={() => setEnsAvatarLoaded(true)}
@@ -84,7 +84,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           <div className='relative h-full w-full'>
             <Image
               sizes='5rem'
-              className='relative'
+              className='relative rounded-full'
               fill
               src={avatar}
               alt='avatar'

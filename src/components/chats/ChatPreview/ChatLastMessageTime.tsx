@@ -1,3 +1,4 @@
+import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { ComponentProps } from 'react'
 import useLastMessage from './hooks/useLastMessage'
@@ -14,5 +15,9 @@ export default function ChatLastMessageTime({
   const time = lastMessage?.struct.createdAtTime
   if (!time) return null
 
-  return <span {...props}>{getTimeRelativeToNow(time)}</span>
+  return (
+    <span {...props} className={cx('whitespace-nowrap', props.className)}>
+      {getTimeRelativeToNow(time)}
+    </span>
+  )
 }

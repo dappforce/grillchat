@@ -181,7 +181,7 @@ function ChatListContent({
         id={scrollableContainerId}
         ref={scrollContainerRef}
         className={cx(
-          'flex flex-col-reverse overflow-x-hidden pl-2',
+          'flex flex-col-reverse overflow-x-hidden px-2',
           scrollableContainerClassName
         )}
       >
@@ -277,7 +277,7 @@ function PinnedMessage({
   return (
     <div className='sticky top-0 z-10 border-b border-border-gray bg-background-light text-sm'>
       <Component
-        className='flex cursor-pointer items-center overflow-hidden py-2'
+        className='flex cursor-pointer items-center gap-4 overflow-hidden py-2'
         onClick={() => scrollToMessage(message.id, true)}
       >
         <div className='mr-1'>

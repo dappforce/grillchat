@@ -55,7 +55,7 @@ export default function ChatPreview({
   const renderAdditionalData = () => {
     if (isPinned || chatId) {
       return (
-        <div className='flex items-center gap-1'>
+        <div className='flex flex-shrink-0 items-center gap-1'>
           {chatId && (
             <ChatLastMessageTime
               chatId={chatId}
@@ -121,8 +121,12 @@ export default function ChatPreview({
         </div>
         <div className='flex flex-1 items-center overflow-hidden'>
           <div className='flex flex-1 flex-col overflow-hidden'>
-            <div className='flex items-center justify-between'>
-              {title && <span className='font-medium'>{title}</span>}
+            <div className='flex items-center justify-between gap-2 overflow-hidden'>
+              {title && (
+                <span className='overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
+                  {title}
+                </span>
+              )}
               {renderAdditionalData()}
             </div>
             <div className='mt-1 flex items-baseline justify-between overflow-hidden'>

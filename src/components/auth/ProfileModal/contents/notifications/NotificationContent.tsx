@@ -34,19 +34,19 @@ export default function NotificationContent({ setCurrentState }: ContentProps) {
           text: <SoonMenu text='Push Notifications' />,
           iconClassName: cx('text-[#A3ACBE]'),
           icon: BellIcon,
-          onClick: () => undefined,
+          disabled: true,
         },
         {
           text: <SoonMenu text='Email Notifications' />,
           iconClassName: cx('text-[#A3ACBE]'),
           icon: MailIcon,
-          onClick: () => undefined,
+          disabled: true,
         },
         {
           text: <SoonMenu text='Discord notifications' />,
           iconClassName: cx('text-[#A3ACBE]'),
           icon: FaDiscord,
-          onClick: () => undefined,
+          disabled: true,
         },
       ]}
     />
@@ -55,7 +55,7 @@ export default function NotificationContent({ setCurrentState }: ContentProps) {
 
 function SoonMenu({ text }: { text: string }) {
   return (
-    <div className='flex w-full items-center justify-between text-text-muted'>
+    <div className='flex w-full items-center justify-between'>
       <span>{text}</span>
       <span className='text-xs'>Soon</span>
     </div>
