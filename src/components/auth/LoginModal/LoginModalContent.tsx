@@ -188,6 +188,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
         ERC-20 tokens, NFTs, and other smart contracts.
       </p>
       <CustomConnectButton
+        withWalletActionImage={false}
         className='w-full'
         signAndLinkEvmAddress={signAndLinkEvmAddress}
         isLoading={isLoading}
