@@ -29,6 +29,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
     const nonce = await getNonce()
     if (nonce === null || !encodedSecretKey) return {}
 
+    // TODO: SECRET BOX: the encoding part is broken, because of the length difference
     const encryptedMessage = await encodeSecretBox(
       secretMessage,
       encodedSecretKey,

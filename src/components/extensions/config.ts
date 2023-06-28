@@ -99,6 +99,7 @@ const extensionsConfig: {
   'subsocial-secret-box': {
     chatItemComponent: SecretBoxChatItem,
     replyMessageUI: {
+      // TODO: SECRET BOX: Update this to use secret box preview
       element: ImageRepliedMessagePreviewPart,
       config: {
         place: 'inside',
