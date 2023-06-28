@@ -11,7 +11,6 @@ import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import Toast from '@/components/Toast'
-import useGetTheme from '@/hooks/useGetTheme'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
@@ -156,7 +155,6 @@ export const EnterSecretKeyContent = ({
 }
 
 export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
-  const theme = useGetTheme()
   const address = useMyAccount((state) => state.address)
 
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
@@ -164,17 +162,10 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
     onError: () => setCurrentStep('evm-linking-error'),
   })
 
-  const isDarkTheme = theme === 'dark'
-
   return (
     <div className='flex flex-col'>
       {address && (
-        <div
-          className={cx(
-            'mb-6 mt-2 rounded-2xl p-4',
-            isDarkTheme ? 'bg-slate-700' : 'bg-slate-200'
-          )}
-        >
+        <div className={cx('mb-6 mt-2 rounded-2xl bg-background-lighter p-4')}>
           <ProfilePreview address={address} />
         </div>
       )}
