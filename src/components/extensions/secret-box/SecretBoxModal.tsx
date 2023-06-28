@@ -1,6 +1,7 @@
 import InfoPanel from '@/components/InfoPanel'
 import TextArea from '@/components/inputs/TextArea'
 import ProfilePreview from '@/components/ProfilePreview'
+import useGetNonce from '@/hooks/useGetNonce'
 import { useExtensionModalState } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
@@ -11,6 +12,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
   const { closeModal, isOpen, initialData } = useExtensionModalState(
     'subsocial-secret-box'
   )
+  const getNonce = useGetNonce()
 
   const [secretMessage, setSecretMessage] = useState('')
 
@@ -21,6 +23,10 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
   }, [initialRecipient])
 
   const buildAdditionalTxParams = async () => {
+    const nonce = await getNonce()
+    if (nonce === null) return {}
+
+    // TODO: encrypt message here, change the message sent
     return {
       extensions: [
         {
@@ -28,7 +34,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
           properties: {
             message: secretMessage,
             recipient,
-            nonce: 2,
+            nonce,
           },
         },
       ],
