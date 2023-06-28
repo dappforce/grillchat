@@ -47,7 +47,7 @@ export const CustomConnectButton = ({
   }
 
   useEffect(() => {
-    if (!linkedEvmAddress && isAccountDataLoading) {
+    if (!linkedEvmAddress && !isAccountDataLoading) {
       disconnect()
     }
   }, [linkedEvmAddress, isAccountDataLoading])
