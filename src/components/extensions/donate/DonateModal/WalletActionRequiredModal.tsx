@@ -1,5 +1,6 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button from '@/components/Button'
+import { ListItem } from '@/components/inputs/SelectInput'
 import LinkText from '@/components/LinkText'
 import Modal from '@/components/modals/Modal'
 import { isTouchDevice } from '@/utils/device'
@@ -16,36 +17,58 @@ type ModalHeader = {
   }
 }
 
-const modalHeader: ModalHeader = {
-  'add-network': {
-    title: '🔐 Add Polygon to Metamask',
-    desc: (
-      <>
-        You need to add Polygon Network to your Metamask account.{' '}
-        <LinkText
-          openInNewTab
-          href='https://autofarm.gitbook.io/autofarm-network/how-tos/use-autofarm-in-different-chains/polygon-chain-matic/metamask-add-polygon-matic-network'
-          variant='primary'
-        >
-          How do I add Polygon?
-        </LinkText>
-      </>
-    ),
-  },
-  'wallet-action-required': {
-    title: '🔐 Wallet Action Required',
-    desc: 'Please open your wallet to continue',
-  },
+const addNetworkLink: Record<string, string> = {
+  polygon:
+    'https://autofarm.gitbook.io/autofarm-network/how-tos/use-autofarm-in-different-chains/polygon-chain-matic/metamask-add-polygon-matic-network',
+  moonbeam:
+    'https://moonbeam.network/tutorial/how-to-connect-metamask-to-moonbeam/',
 }
 
-function WalletActionRequiredModal({ currentStep, ...props }: DonateProps) {
+const getModalHeader = (
+  selectedChain: ListItem,
+  currentStep: WalletActionRequiredModalStep
+) => {
+  const modalHeader: ModalHeader = {
+    'add-network': {
+      title: `🔐 Add ${selectedChain.label} to wallet`,
+      desc: (
+        <>
+          You need to add {selectedChain.label} Network to your wallet.{' '}
+          <LinkText
+            openInNewTab
+            href={addNetworkLink[selectedChain.id]}
+            variant='primary'
+          >
+            How do I add {selectedChain.label}?
+          </LinkText>
+        </>
+      ),
+    },
+    'wallet-action-required': {
+      title: '🔐 Wallet Action Required',
+      desc: 'Please open your wallet to continue',
+    },
+  }
+
+  return modalHeader[currentStep]
+}
+
+function WalletActionRequiredModal({
+  currentStep,
+  chainState,
+  ...props
+}: DonateProps) {
+  const [selectedChain] = chainState
+
   const onButtonClick = async () => {
     const connector = getConnector()
     await openMobileWallet({ connector })
   }
 
-  const { title, desc } =
-    modalHeader[currentStep as WalletActionRequiredModalStep]
+  const { title, desc } = getModalHeader(
+    selectedChain,
+    currentStep as WalletActionRequiredModalStep
+  )
 
   return (
     <Modal {...props} title={title} description={desc}>
