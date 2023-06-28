@@ -37,12 +37,14 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
     loadedLink: null,
   })
 
+  console.log(imageLinkStatus)
+
   const isAnyShowingImage =
     imageLinkStatus.isShowingImage || imageUploadStatus.isShowingImage
 
   const generateAdditionalTxParams = async () => {
     let imageUrl: string | null = ''
-    if (imageUploadStatus) {
+    if (imageUploadStatus.loadedLink) {
       imageUrl = imageUploadStatus.loadedLink
     } else {
       imageUrl = imageLinkStatus.loadedLink
@@ -63,46 +65,42 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
   }
 
   return (
-    <>
-      <CommonExtensionModal
-        onSubmit={onSubmit}
-        isOpen={isOpen}
-        closeModal={closeModal}
-        size='md'
-        mustHaveMessageBody={false}
-        chatId={chatId}
-        disableSendButton={!isAnyShowingImage}
-        title='🖼 Image'
-        buildAdditionalTxParams={generateAdditionalTxParams}
-      >
-        <div className='mt-2 flex flex-col gap-4'>
-          {!imageUploadStatus.isShowingImage && (
-            <ImageLinkInput
-              initialUrl={typeof initialData === 'string' ? initialData : null}
-              setImageLinkStatus={setImageLinkStatus}
-            />
-          )}
+    <CommonExtensionModal
+      onSubmit={onSubmit}
+      isOpen={isOpen}
+      closeModal={closeModal}
+      size='md'
+      mustHaveMessageBody={false}
+      chatId={chatId}
+      disableSendButton={!isAnyShowingImage}
+      title='🖼 Image'
+      buildAdditionalTxParams={generateAdditionalTxParams}
+    >
+      <div className='mt-2 flex flex-col gap-4'>
+        {!imageUploadStatus.isShowingImage && (
+          <ImageLinkInput
+            initialUrl={typeof initialData === 'string' ? initialData : null}
+            setImageLinkStatus={setImageLinkStatus}
+          />
+        )}
 
-          {!isAnyShowingImage && (
-            <div className='relative my-2 flex items-center justify-center'>
-              <div className='absolute top-1/2 h-px w-full bg-border-gray' />
-              <span className='relative bg-background-light px-3 text-xs text-text-muted'>
-                OR
-              </span>
-            </div>
-          )}
+        {!isAnyShowingImage && (
+          <div className='relative my-2 flex items-center justify-center'>
+            <div className='absolute top-1/2 h-px w-full bg-border-gray' />
+            <span className='relative bg-background-light px-3 text-xs text-text-muted'>
+              OR
+            </span>
+          </div>
+        )}
 
-          {!imageLinkStatus.isShowingImage && (
-            <ImageUpload
-              initialImage={
-                typeof initialData !== 'string' ? initialData : null
-              }
-              setUploadedImageLink={setImageUploadStatus}
-            />
-          )}
-        </div>
-      </CommonExtensionModal>
-    </>
+        {!imageLinkStatus.isShowingImage && (
+          <ImageUpload
+            initialImage={typeof initialData !== 'string' ? initialData : null}
+            setUploadedImageLink={setImageUploadStatus}
+          />
+        )}
+      </div>
+    </CommonExtensionModal>
   )
 }
 
