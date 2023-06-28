@@ -132,7 +132,7 @@ export const CustomConnectButton = ({
           alt=''
         />
 
-        {isTouchDevice() && customButton}
+        {customButton}
       </div>
     )
   }
