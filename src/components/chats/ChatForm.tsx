@@ -1,6 +1,5 @@
 import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
-import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
@@ -18,6 +17,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import dynamic from 'next/dynamic'
 import {
   ComponentProps,
   SyntheticEvent,
@@ -27,6 +27,13 @@ import {
 } from 'react'
 import { BeforeMessageResult } from '../extensions/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
+
+const CaptchaInvisible = dynamic(
+  () => import('@/components/captcha/CaptchaInvisible'),
+  {
+    ssr: false,
+  }
+)
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
