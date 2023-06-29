@@ -118,8 +118,6 @@ async function getNftData(
 
       const { ipfs } = getIpfsApi()
 
-      console.log('cidMetadata', cidMetadata)
-
       const metadata = await ipfs.getContent<any>(cidMetadata)
       if (!metadata) {
         throw new Error('NFT metadata not found')
@@ -128,8 +126,6 @@ async function getNftData(
       const imageCid = getCidFromMetadataLink(
         metadata?.image || metadata?.mediaUri
       )
-
-      console.log('imageCid', imageCid)
 
       nftData = {
         name: nftChainData.name ?? '',

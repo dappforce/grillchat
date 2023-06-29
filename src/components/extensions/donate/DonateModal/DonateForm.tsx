@@ -47,7 +47,8 @@ function DonateForm({
 
   const { balance, decimals } = useGetBalance(
     selectedToken.id,
-    selectedChain.id
+    selectedChain.id,
+    isOpen
   )
 
   useEffect(() => {
