@@ -38,7 +38,7 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
   })
 
   const isAnyShowingImage =
-    imageLinkStatus.isShowingImage || imageUploadStatus.isShowingImage
+    imageLinkStatus.loadedLink || imageUploadStatus.loadedLink
 
   const generateAdditionalTxParams = async () => {
     let imageUrl: string | null = ''
