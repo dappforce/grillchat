@@ -140,6 +140,7 @@ export default function HubsPage(props: HubsPageProps) {
           asContainer
           tabs={tabs}
           withHashIntegration={false}
+          hideBeforeHashLoaded
           manualTabControl={{
             selectedTab: usedSelectedTab,
             setSelectedTab: usedSetSelectedTab,

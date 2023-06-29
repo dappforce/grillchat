@@ -37,8 +37,6 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
     loadedLink: null,
   })
 
-  console.log(imageLinkStatus)
-
   const isAnyShowingImage =
     imageLinkStatus.isShowingImage || imageUploadStatus.isShowingImage
 
@@ -162,7 +160,7 @@ function ImageLinkInput({
             size='sm'
             rows={1}
             ref={ref}
-            placeholder='Paste NFT URL'
+            placeholder='Paste Image URL'
             error={!!isImageLinkError}
           />
         )}
