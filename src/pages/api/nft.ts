@@ -4,6 +4,7 @@ import { covalentRequest } from '@/server/external'
 import { getIpfsApi } from '@/server/ipfs'
 import { MinimalUsageQueueWithTimeLimit } from '@/utils/data-structure'
 import { getCidFromMetadataLink, getIpfsContentUrl } from '@/utils/ipfs'
+import { Prefix as KodadotClient } from '@kodadot1/static'
 import { getClient } from '@kodadot1/uniquery'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
@@ -102,7 +103,7 @@ async function getNftData(
     let isMetadataRecognizedAsValid = false
 
     if (kodadotChainMapper[nftProperties.chain]) {
-      const client = getClient(chain as any) // TODO: fix types
+      const client = getClient(chain as KodadotClient)
 
       const query = client.itemById(decodeURI(nftProperties.nftId))
       const result = await client.fetch(query)
