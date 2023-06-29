@@ -37,8 +37,6 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
     loadedLink: null,
   })
 
-  console.log(imageLinkStatus)
-
   const isAnyShowingImage =
     imageLinkStatus.isShowingImage || imageUploadStatus.isShowingImage
 
