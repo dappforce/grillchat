@@ -37,8 +37,10 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
     loadedLink: null,
   })
 
-  const isAnyShowingImage =
+  const isImageLoaded =
     imageLinkStatus.loadedLink || imageUploadStatus.loadedLink
+  const isAnyShowingImage =
+    imageLinkStatus.isShowingImage || imageUploadStatus.isShowingImage
 
   const generateAdditionalTxParams = async () => {
     let imageUrl: string | null = ''
@@ -70,7 +72,7 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
       size='md'
       mustHaveMessageBody={false}
       chatId={chatId}
-      disableSendButton={!isAnyShowingImage}
+      disableSendButton={!isImageLoaded}
       title='🖼 Image'
       buildAdditionalTxParams={generateAdditionalTxParams}
     >
@@ -160,7 +162,7 @@ function ImageLinkInput({
             size='sm'
             rows={1}
             ref={ref}
-            placeholder='Paste Image URL'
+            placeholder='Paste NFT URL'
             error={!!isImageLinkError}
           />
         )}
