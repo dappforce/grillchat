@@ -19,6 +19,7 @@
     "codegen:notifications": "graphql-codegen --require dotenv/config --config codegen-notifications.ts"
   },
   "dependencies": {
+    "@kodadot1/uniquery": "^0.3.1-rc.0",
     "@amplitude/analytics-browser": "^1.9.1",
     "@dicebear/bottts": "^5.3.4",
     "@dicebear/core": "^5.3.4",

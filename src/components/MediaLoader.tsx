@@ -1,3 +1,4 @@
+import { SUBSOCIAL_IPFS_GATEWAY } from '@/constants/links'
 import { cx } from '@/utils/class-names'
 import { validateVideoUrl } from '@/utils/links'
 import Image, { ImageProps } from 'next/image'
@@ -39,7 +40,7 @@ export default function MediaLoader({
   let [isLoading, setIsLoading] = useState(false)
   let usedImage = src
   if (typeof src === 'string') {
-    usedImage = resolveIpfsUri(src, 'https://ipfs.subsocial.network/ipfs/')
+    usedImage = resolveIpfsUri(src, `${SUBSOCIAL_IPFS_GATEWAY}/ipfs/`)
   }
 
   useLayoutEffect(() => {

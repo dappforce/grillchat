@@ -1,7 +1,7 @@
 import { getUrlFromText } from '@/utils/strings'
 import { NftProperties } from '@subsocial/api/types'
 
-export const nftChains = [
+const evmChains = [
   'ethereum',
   'moonbeam',
   'astar',
@@ -11,7 +11,11 @@ export const nftChains = [
   'avalanche',
   'bsc',
   'fantom',
-] as const
+]
+
+const substrateChains = ['statemine', 'basilisk', 'rmrk', 'kusama']
+
+export const nftChains = [...evmChains, ...substrateChains] as const
 
 const marketplaceParser: {
   name: string
@@ -154,6 +158,55 @@ const marketplaceParser: {
       }
     },
   },
+  {
+    name: 'Singular.app',
+    link: 'https://singular.app',
+    chainMapper: {
+      statemine: 'statemine',
+      moonbeam: 'moonbeam',
+      kusama: 'kusama',
+    },
+    checker: (link: string) => link.includes('singular.app'),
+    parser: (link: string) => {
+      const linkParts = link.split('singular.app/collectibles/')
+      let [chain, collectionId, nftId] = linkParts[1].split('/')
+
+      if (chain === 'statemine') {
+        collectionId = `u-${collectionId}`
+        nftId = `${collectionId}-${nftId}`
+      }
+
+      return {
+        chain,
+        nftId,
+        collectionId,
+        url: link,
+      }
+    },
+  },
+  {
+    name: 'Kodadot.xyz',
+    link: 'https://kodadot.xyz',
+    chainMapper: {
+      stmn: 'statemine',
+      rmrk: 'rmrk',
+      bsx: 'basilisk',
+      ksm: 'kusama',
+    },
+    checker: (link: string) => link.includes('kodadot.xyz'),
+    parser: (link: string) => {
+      const linkParts = link.split('kodadot.xyz/')
+      const [chain, _, nftId] = linkParts[1].split('/')
+      const collectionId = nftId.split('-').slice(0, -1).join('-')
+
+      return {
+        chain,
+        nftId,
+        collectionId: collectionId,
+        url: link,
+      }
+    },
+  },
 ]
 
 const marketplacesInfo = marketplaceParser.map((m) => ({
@@ -182,6 +235,7 @@ export function parseNftMarketplaceLink(link: string): NftProperties {
 
   const removedQueryParams = url.split('?')[0]
   const parsed = marketplace.parser(removedQueryParams)
+
   let mappedChain = marketplace.chainMapper[parsed.chain]
 
   if (!mappedChain) {
