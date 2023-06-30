@@ -3,6 +3,7 @@ import { SyntheticEvent } from 'react'
 
 export type ExtensionChatItemProps = {
   message: PostData
+  isMyMessage: boolean
   onCheckMarkClick: (e: SyntheticEvent) => void
   scrollToMessage?: (messageId: string) => Promise<void>
 }

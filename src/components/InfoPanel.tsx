@@ -6,7 +6,7 @@ const infoPanelStyles = cva('rounded-2xl px-4 py-3 text-sm', {
   variants: {
     variant: {
       error: 'bg-background-red text-text-red',
-      info: 'bg-[#3B82F61A] text-[#60A5FA]',
+      info: 'bg-[#3B82F61A]/10 text-[#60A5FA]',
     },
   },
   defaultVariants: {

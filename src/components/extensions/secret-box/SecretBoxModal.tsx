@@ -19,7 +19,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
   const [secretMessage, setSecretMessage] = useState('')
 
   const [recipient, setRecipient] = useState('')
-  const initialRecipient = initialData.recipient
+  const { recipient: initialRecipient, messageId } = initialData
   useEffect(() => {
     if (initialRecipient) setRecipient(initialRecipient)
   }, [initialRecipient])

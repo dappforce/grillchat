@@ -1,6 +1,8 @@
 import InfoPanel from '@/components/InfoPanel'
 import Name from '@/components/Name'
+import useGetTheme from '@/hooks/useGetTheme'
 import { useMyAccount } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import CommonChatItem from '../CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
@@ -10,8 +12,9 @@ import { decodeSecretBox } from './utils'
 export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
   const [decryptedMessage, setDecryptedMessage] = useState<string>()
   const myAddress = useMyAccount((state) => state.address)
+  const theme = useGetTheme()
 
-  const { message } = props
+  const { message, isMyMessage } = props
   const { content } = message
   const { extensions } = content || {}
 
@@ -27,7 +30,6 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
   } = decodedPromoProperties || {}
 
   useEffect(() => {
-    console.log(encryptedMessage, nonce, myAddress, recipient)
     if (!encryptedMessage || !nonce || myAddress !== recipient) return
 
     const decryptMessage = async () => {
@@ -37,18 +39,56 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
     }
 
     decryptMessage()
-  }, [!!decodedPromoProperties])
+  }, [!!decodedPromoProperties, myAddress])
+
+  const darkThemeStyles = isMyMessage
+    ? 'bg-[#6660DF] text-white'
+    : 'bg-[#3B82F6]/10 text-[#60A5FA]'
+
+  const lightThemeStyles = isMyMessage
+    ? 'bg-[#E0E7FF] text-black'
+    : 'bg-[#EEF2FF] text-black'
+
+  const darkThemeTextColor = isMyMessage ? '#FFF' : '#60A5FA'
+  const lightThemeTextColor = '#000'
 
   return (
-    <CommonChatItem {...props}>
+    <CommonChatItem
+      myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
+      {...props}
+    >
       {() => (
-        <InfoPanel variant='info'>
+        <InfoPanel
+          variant='info'
+          className={cx(
+            'mx-[10px] mb-[10px] mt-1',
+            { ['mb-[10px] mt-1']: !isMyMessage },
+            theme === 'dark' ? darkThemeStyles : lightThemeStyles
+          )}
+        >
           {decryptedMessage ? (
-            decryptedMessage
+            <div className='flex flex-col gap-2'>
+              <span className='text-[#60A5FA]'>📦 Your secret message:</span>
+              <span
+                className={cx(
+                  'text-base',
+                  theme === 'dark' ? 'text-white' : 'text-black'
+                )}
+              >
+                {decryptedMessage}
+              </span>
+            </div>
           ) : (
             <>
-              📦 Only <Name address={recipient || ''} /> is able to read this
-              secret message.
+              📦 Only{' '}
+              <Name
+                address={recipient || ''}
+                className='font-semibold'
+                color={
+                  theme === 'dark' ? darkThemeTextColor : lightThemeTextColor
+                }
+              />{' '}
+              is able to read this secret message.
             </>
           )}
         </InfoPanel>

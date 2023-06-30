@@ -11,6 +11,7 @@ import NftChatItem from './nft/NftChatItem'
 import NftRepliedMessagePreviewPart from './nft/NftRepliedMessagePreviewPart'
 import { parseNftMarketplaceLink } from './nft/utils'
 import SecretBoxChatItem from './secret-box/SecretBoxChatItem'
+import SecretBoxMessagePreviewPart from './secret-box/SecretBoxMessagePreviewPart'
 import {
   ExtensionChatItemProps,
   RepliedMessagePreviewPartsProps,
@@ -20,7 +21,7 @@ export const extensionInitialDataTypes = {
   'subsocial-donations': { recipient: '', messageId: '' },
   'subsocial-evm-nft': null as null | string,
   'subsocial-image': null as null | File | string,
-  'subsocial-decoded-promo': { recipient: '' },
+  'subsocial-decoded-promo': { recipient: '', messageId: '' },
 } satisfies Record<PostContentExtension['id'], unknown>
 
 type Config<Id extends PostContentExtension['id']> = {
@@ -100,10 +101,9 @@ const extensionsConfig: {
     chatItemComponent: SecretBoxChatItem,
     replyMessageUI: {
       // TODO: SECRET BOX: Update this to use secret box preview
-      element: ImageRepliedMessagePreviewPart,
+      element: SecretBoxMessagePreviewPart,
       config: {
-        place: 'inside',
-        emptyBodyText: 'Image',
+        place: 'body',
         previewClassName: 'w-4',
       },
     },

@@ -142,8 +142,13 @@ export default function ChatItem({
       {
         text: 'Secret Box',
         icon: GiftBoxIcon,
-        onClick: () =>
-          openExtensionModal('subsocial-decoded-promo', { recipient: ownerId }),
+        onClick: () => {
+          setMessageAsReply(messageId)
+          openExtensionModal('subsocial-decoded-promo', {
+            recipient: ownerId,
+            messageId,
+          })
+        },
       },
       {
         text: 'Copy Text',
@@ -244,6 +249,7 @@ export default function ChatItem({
                   onCheckMarkClick={onCheckMarkClick}
                   scrollToMessage={scrollToMessage}
                   message={message}
+                  isMyMessage={isMyMessage}
                 />
               ) : (
                 <ChatItemContentVariant
