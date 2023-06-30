@@ -1,3 +1,4 @@
+import { walletConnectProjectId } from '@/constants/evm'
 import useGetTheme from '@/hooks/useGetTheme'
 import { isTouchDevice } from '@/utils/device'
 import {
@@ -17,15 +18,19 @@ import { getConfiguredChains } from '../utils'
 import { talismanWallet } from './wallets/talisman'
 
 const { chains, publicClient, webSocketPublicClient } = getConfiguredChains()
-
-const commonWallets = [metaMaskWallet({ chains })]
+const walletOptions = {
+  chains,
+  projectId: walletConnectProjectId,
+  appName: 'Grill.chat',
+}
+const commonWallets = [metaMaskWallet(walletOptions)]
 
 const desktopWallets = [
   ...commonWallets,
-  talismanWallet({ chains }),
-  argentWallet({ chains }),
-  coinbaseWallet({ chains, appName: '' }),
-  ledgerWallet({ chains }),
+  talismanWallet(walletOptions),
+  argentWallet(walletOptions),
+  coinbaseWallet(walletOptions),
+  ledgerWallet(walletOptions),
   // subWalletWallet({ chains }),
 ]
 
