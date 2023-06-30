@@ -1,47 +1,38 @@
-import { decodeSecretKey } from '@/utils/account'
-import { stringToU8a, u8aToHex } from '@polkadot/util'
+import { ApiDecodeMessageResponse } from '@/pages/api/promo-message/decrypt'
+import { ApiEncodeMessageResponse } from '@/pages/api/promo-message/encrypt'
+import axios from 'axios'
 
-async function convertAddressToPublicKey(address: string) {
-  const { decodeAddress } = await import('@polkadot/keyring')
-  return decodeAddress(address)
+type EncryptedMessageData = {
+  encyptedMessage?: string
+  nonce: number
 }
 
 export async function encodeSecretBox(
   message: string,
-  senderEncodedSecretKey: string,
-  recipient: string,
-  nonce: number
-): Promise<string> {
-  const { naclSeal } = await import('@subsocial/utils')
-  const secretKey = decodeSecretKey(senderEncodedSecretKey)
+  address: string
+): Promise<EncryptedMessageData | undefined> {
+  const res = await axios.post('/api/promo-message/encrypt', {
+    message,
+    address,
+  })
 
-  const publicKey = await convertAddressToPublicKey(recipient)
+  const data = res.data as ApiEncodeMessageResponse
+  if (!data.success) throw new Error(data.errors)
 
-  const seal = naclSeal(
-    stringToU8a(message),
-    stringToU8a(secretKey),
-    publicKey,
-    stringToU8a(nonce.toString())
-  )
-  return u8aToHex(seal.sealed)
+  return data.data as EncryptedMessageData
 }
 
 export async function decodeSecretBox(
-  encrypted: string,
-  sender: string,
-  recipientEncodedSecretKey: string,
+  encryptedMessage: string,
   nonce: number
-): Promise<string> {
-  const { naclOpen } = await import('@subsocial/utils')
-  const recipientSecretKey = decodeSecretKey(recipientEncodedSecretKey)
+): Promise<string | undefined> {
+  const res = await axios.post('/api/promo-message/decrypt', {
+    encryptedMessage,
+    nonce,
+  })
 
-  const publicKey = await convertAddressToPublicKey(sender)
+  const data = res.data as ApiDecodeMessageResponse
+  if (!data.success) throw new Error(data.errors)
 
-  const open = naclOpen(
-    stringToU8a(encrypted),
-    stringToU8a(nonce.toString()),
-    publicKey,
-    stringToU8a(recipientSecretKey)
-  )
-  return u8aToHex(open)
+  return data.data
 }

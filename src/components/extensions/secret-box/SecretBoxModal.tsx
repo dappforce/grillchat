@@ -1,7 +1,7 @@
 import InfoPanel from '@/components/InfoPanel'
 import TextArea from '@/components/inputs/TextArea'
 import ProfilePreview from '@/components/ProfilePreview'
-import useGetNonce from '@/hooks/useGetNonce'
+import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -12,10 +12,9 @@ import { encodeSecretBox } from './utils'
 
 export default function SecretBoxModal(props: ExtensionModalsProps) {
   const { closeModal, isOpen, initialData } = useExtensionModalState(
-    'subsocial-secret-box'
+    'subsocial-decoded-promo'
   )
-  const getNonce = useGetNonce()
-  const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
+  const address = useMyAccount((state) => state.address)
 
   const [secretMessage, setSecretMessage] = useState('')
 
@@ -25,30 +24,30 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
     if (initialRecipient) setRecipient(initialRecipient)
   }, [initialRecipient])
 
-  const buildAdditionalTxParams = async () => {
-    const nonce = await getNonce()
-    if (nonce === null || !encodedSecretKey) return {}
+  const beforeMesageSend = async (messageParams: SendMessageParams) => {
+    if (!address) return { txPrevented: true }
 
-    // TODO: SECRET BOX: the encoding part is broken, because of the length difference
-    const encryptedMessage = await encodeSecretBox(
-      secretMessage,
-      encodedSecretKey,
-      recipient,
-      nonce
-    )
+    const encryptedMessageData = await encodeSecretBox(secretMessage, address)
 
-    return {
+    const { encyptedMessage, nonce } = encryptedMessageData || {}
+
+    if (!encyptedMessage || !nonce) return { txPrevented: true }
+
+    const newMessageParams: SendMessageParams = {
+      ...messageParams,
       extensions: [
         {
-          id: 'subsocial-secret-box' as const,
+          id: 'subsocial-decoded-promo' as const,
           properties: {
-            message: encryptedMessage,
+            message: encyptedMessage,
             recipient,
             nonce,
           },
         },
       ],
     }
+
+    return { newMessageParams, txPrevented: false }
   }
 
   return (
@@ -59,7 +58,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
       disableSendButton={!secretMessage}
       isOpen={isOpen}
       closeModal={closeModal}
-      buildAdditionalTxParams={buildAdditionalTxParams}
+      beforeMesageSend={beforeMesageSend}
     >
       <div className='flex flex-col gap-4'>
         <div>

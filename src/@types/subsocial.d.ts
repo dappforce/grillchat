@@ -42,8 +42,8 @@ declare module '@subsocial/api/types' {
     id: 'subsocial-image'
     properties: ImageProperties
   }
-  export type SecretBoxExtension = {
-    id: 'subsocial-secret-box'
+  export type DecodedPromoExtension = {
+    id: 'subsocial-decoded-promo'
     properties: SecretBoxProperties
   }
 
@@ -51,7 +51,7 @@ declare module '@subsocial/api/types' {
     | NftExtension
     | DonateExtension
     | ImageExtension
-    | SecretBoxExtension
+    | DecodedPromoExtension
 
   export interface PostContent extends SubsocialPostContent {
     inReplyTo?: {

@@ -80,6 +80,11 @@ export const POST_FRAGMENT = gql`
       nftId
       token
       txHash
+      message
+      recipient {
+        id
+      }
+      nonce
       url
       fromEvm {
         id

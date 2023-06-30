@@ -143,7 +143,7 @@ export default function ChatItem({
         text: 'Secret Box',
         icon: GiftBoxIcon,
         onClick: () =>
-          openExtensionModal('subsocial-secret-box', { recipient: ownerId }),
+          openExtensionModal('subsocial-decoded-promo', { recipient: ownerId }),
       },
       {
         text: 'Copy Text',

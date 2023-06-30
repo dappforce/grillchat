@@ -20,7 +20,7 @@ export const extensionInitialDataTypes = {
   'subsocial-donations': { recipient: '', messageId: '' },
   'subsocial-evm-nft': null as null | string,
   'subsocial-image': null as null | File | string,
-  'subsocial-secret-box': { recipient: '' },
+  'subsocial-decoded-promo': { recipient: '' },
 } satisfies Record<PostContentExtension['id'], unknown>
 
 type Config<Id extends PostContentExtension['id']> = {
@@ -96,7 +96,7 @@ const extensionsConfig: {
       return null
     },
   },
-  'subsocial-secret-box': {
+  'subsocial-decoded-promo': {
     chatItemComponent: SecretBoxChatItem,
     replyMessageUI: {
       // TODO: SECRET BOX: Update this to use secret box preview
