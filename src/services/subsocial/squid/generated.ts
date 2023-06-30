@@ -5048,6 +5048,13 @@ export type WhereIdInput = {
   id: Scalars['String']['input'];
 };
 
+export type GetEvmAddressesQueryVariables = Exact<{
+  addresses?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
+
+
+export type GetEvmAddressesQuery = { __typename?: 'Query', evmSubstrateAccountLinks: Array<{ __typename?: 'EvmSubstrateAccountLink', evmAccount: { __typename?: 'EvmAccount', id: string }, substrateAccount: { __typename?: 'Account', id: string } }> };
+
 export type GetPostsQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
@@ -5159,6 +5166,20 @@ export const PostFragment = gql`
       id
     }
     toEvm {
+      id
+    }
+  }
+}
+    `;
+export const GetEvmAddresses = gql`
+    query getEvmAddresses($addresses: [String!]) {
+  evmSubstrateAccountLinks(
+    where: {substrateAccount: {id_in: $addresses}, active_eq: true}
+  ) {
+    evmAccount {
+      id
+    }
+    substrateAccount {
       id
     }
   }

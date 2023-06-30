@@ -124,7 +124,7 @@ export default function ChatItem({
         setMessageAsReply(messageId)
         openExtensionModal('subsocial-donations', {
           messageId,
-          recipient: messageOwnerEvmAddress,
+          recipient: ownerId,
         })
       },
     }
