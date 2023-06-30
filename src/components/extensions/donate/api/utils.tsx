@@ -1,3 +1,4 @@
+import { walletConnectProjectId } from '@/constants/evm'
 import { talismanWallet } from '@/providers/evm/wallets/talisman'
 import { getConfiguredChains } from '@/providers/utils'
 import { LocalStorage } from '@/utils/storage'
@@ -52,12 +53,17 @@ export type RainbowKitConnector<C extends Connector = Connector> = {
 }
 
 const getWallet = (chains: Chain[]) => {
+  const walletOptions = {
+    chains,
+    projectId: walletConnectProjectId,
+    appName: 'Grill.chat',
+  }
   const supportedWallets: Record<string, Wallet> = {
-    metamask: metaMaskWallet({ chains }),
-    talisman: talismanWallet({ chains }),
-    argent: argentWallet({ chains }),
-    coinbase: coinbaseWallet({ chains, appName: '' }),
-    ledger: ledgerWallet({ chains }),
+    metamask: metaMaskWallet(walletOptions),
+    talisman: talismanWallet(walletOptions),
+    argent: argentWallet(walletOptions),
+    coinbase: coinbaseWallet(walletOptions),
+    ledger: ledgerWallet(walletOptions),
     // subwallet: subWalletWallet({ chains }),
   }
 
@@ -65,9 +71,9 @@ const getWallet = (chains: Chain[]) => {
 
   const wallet = currentWalletId
     ? supportedWallets[currentWalletId]
-    : metaMaskWallet({ chains })
+    : metaMaskWallet(walletOptions)
 
-  return wallet ? wallet : metaMaskWallet({ chains })
+  return wallet ? wallet : metaMaskWallet(walletOptions)
 }
 
 export const getConnector = () => {
