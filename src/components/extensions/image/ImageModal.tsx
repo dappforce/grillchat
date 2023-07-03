@@ -154,7 +154,7 @@ function ImageLinkInput({
 
   return (
     <>
-      <AutofocusWrapper>
+      <AutofocusWrapper autofocusInTouchDevices>
         {({ ref }) => (
           <TextArea
             value={imageLink}

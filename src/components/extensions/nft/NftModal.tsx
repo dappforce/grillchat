@@ -127,7 +127,7 @@ export default function NftModal({ chatId, onSubmit }: ExtensionModalsProps) {
         }}
       >
         <div className='flex flex-col gap-3 md:gap-5'>
-          <AutofocusWrapper>
+          <AutofocusWrapper autofocusInTouchDevices>
             {({ ref }) => (
               <TextArea
                 value={nftLink}
