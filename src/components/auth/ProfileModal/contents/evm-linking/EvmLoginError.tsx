@@ -1,5 +1,5 @@
-import { CommonEVMLoginErrorContent } from '@/components/auth/CommonModalContent'
-import { ContentProps } from '../types'
+import { CommonEVMLoginErrorContent } from '../../../CommonModalContent'
+import { ContentProps } from '../../types'
 
 function EvmLoginError({ setCurrentState, evmAddress }: ContentProps) {
   return (

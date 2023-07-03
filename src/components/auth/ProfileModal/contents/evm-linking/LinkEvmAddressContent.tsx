@@ -3,8 +3,8 @@ import EvmAddress from '@/components/EvmAddress'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import { cx } from '@/utils/class-names'
 import { useAccount } from 'wagmi'
-import { CustomConnectButton } from '../../CustomConnectButton'
-import { ContentProps } from '../types'
+import { CustomConnectButton } from '../../../CustomConnectButton'
+import { ContentProps } from '../../types'
 
 function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
   const { address: addressFromExt } = useAccount()

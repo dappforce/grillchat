@@ -1,5 +1,8 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button, { ButtonProps } from '@/components/Button'
+import MetamaskDeepLink, {
+  isInsideMetamaskBrowser,
+} from '@/components/MetamaskDeepLink'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
@@ -7,7 +10,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
-import MetamaskDeepLink, { isInsideMetamaskBrowser } from '../MetamaskDeepLink'
 
 type CustomConnectButtonProps = ButtonProps & {
   className?: string
@@ -61,6 +63,7 @@ export const CustomConnectButton = ({
     if (!linkedEvmAddress && !isAccountDataLoading) {
       disconnect()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linkedEvmAddress, isAccountDataLoading])
 
   const usedLabel = (hasInteractedOnce && secondLabel) || label

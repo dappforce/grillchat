@@ -1,8 +1,8 @@
 import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
+import Button from '@/components/Button'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import Image from 'next/image'
-import Button from '../Button'
 import { CustomConnectButton } from './CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
