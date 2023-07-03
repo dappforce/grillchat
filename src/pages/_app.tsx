@@ -15,7 +15,7 @@ import type { AppProps } from 'next/app'
 import { Source_Sans_Pro } from 'next/font/google'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 
 export type AppCommonProps = {
@@ -69,8 +69,9 @@ export default function App(props: AppProps<AppCommonProps>) {
 
 function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   const { head, dehydratedState, ...props } = pageProps
-  const [parsedDehydratedState] = useState(() =>
-    parseDehydratedState(dehydratedState)
+  const parsedDehydratedState = useMemo(
+    () => parseDehydratedState(dehydratedState),
+    [dehydratedState]
   )
 
   const isInitialized = useRef(false)
