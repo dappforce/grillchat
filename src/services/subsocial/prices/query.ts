@@ -37,6 +37,6 @@ const getPrice = poolQuery<string, Price>({
   },
 })
 export const getPriceQuery = createQuery({
-  key: 'getPrices',
+  key: 'prices',
   fetcher: getPrice,
 })

@@ -50,7 +50,7 @@ const getBlockedMessageIdsInChatId = poolQuery<
   },
 })
 export const getBlockedMessageIdsInChatIdQuery = createQuery({
-  key: 'getBlockedMessageIdsInChatId',
+  key: 'blockedInChatId',
   fetcher: getBlockedMessageIdsInChatId,
 })
 
@@ -74,7 +74,7 @@ export async function getBlockedCids({ hubId }: { hubId: string }) {
   return data.blockedResourceIds
 }
 export const getBlockedCidsQuery = createQuery({
-  key: 'getBlockedCidsQuery',
+  key: 'blockedCids',
   fetcher: getBlockedCids,
 })
 
@@ -99,6 +99,6 @@ export async function getBlockedAddresses({ hubId }: { hubId: string }) {
   return blockedHexAddresses
 }
 export const getBlockedAddressesQuery = createQuery({
-  key: 'getBlockedAddressesQuery',
+  key: 'blockedAddresses',
   fetcher: getBlockedAddresses,
 })

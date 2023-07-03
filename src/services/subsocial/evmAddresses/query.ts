@@ -24,6 +24,6 @@ const getAccountData = poolQuery<string, AccountData>({
   },
 })
 export const getAccountDataQuery = createQuery({
-  key: 'getAccountData',
+  key: 'account',
   fetcher: getAccountData,
 })
