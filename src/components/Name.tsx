@@ -39,7 +39,11 @@ const Name = ({
   }
 
   return (
-    <span className={className} style={{ color: color || textColor }}>
+    <span
+      {...props}
+      className={cx(className)}
+      style={{ color: color || textColor }}
+    >
       {additionalText} {name}
     </span>
   )

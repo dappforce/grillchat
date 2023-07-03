@@ -76,6 +76,7 @@ export const useConnectOrSwitchNetwork = (
         setCurrentStep('donate-form')
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSwitchNetworkLoading, isConnectLoading, switchNetworkError])
 
   const connectOrSwitch = async () => {
@@ -178,7 +179,7 @@ const useGetNativeTokenBalance = ({
 
   const chainId = chainIdByChainName[chainName]
 
-  const { data, isLoading } = useBalance({
+  const { data } = useBalance({
     address: currentEvmAddress,
     chainId,
     watch,
