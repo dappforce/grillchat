@@ -11,7 +11,8 @@ yarn add @subsocial/grill-widget
 or using CDN
 
 ```html
-<script src="https://unpkg.com/@subsocial/grill-widget" defer></script>
+<script src="https://unpkg.com/@subsocial/grill-widget@latest" defer></script>
+<!-- You can change which specific version you want to use by changing the `@latest` to a specific version number. For example: `@0.0.8`. -->
 <!-- this script will expose the `GRILL` variable to the window.  -->
 ```
 
