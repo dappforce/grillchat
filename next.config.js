@@ -7,6 +7,7 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     scrollRestoration: true,
+    largePageDataBytes: 200 * 1024, // 200kb
   },
 
   webpack(config) {
