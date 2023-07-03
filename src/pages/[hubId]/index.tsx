@@ -2,9 +2,9 @@ import { getHubIdFromAlias } from '@/constants/hubs'
 import HubPage, { HubPageProps } from '@/modules/chat/HubPage'
 import { prefetchChatPreviewsData } from '@/server/chats'
 import { getMainHubId } from '@/utils/env/client'
-import { getCommonStaticProps } from '@/utils/page'
+import { dehydrateQueries, getCommonStaticProps } from '@/utils/page'
 import { validateNumber } from '@/utils/strings'
-import { dehydrate, QueryClient } from '@tanstack/react-query'
+import { QueryClient } from '@tanstack/react-query'
 import { AppCommonProps } from '../_app'
 
 export const getStaticPaths = async () => {
@@ -48,7 +48,7 @@ export const getStaticProps = getCommonStaticProps<
 
     return {
       props: {
-        dehydratedState: dehydrate(queryClient),
+        dehydratedState: dehydrateQueries(queryClient),
         hubId,
       },
       revalidate: 2,
