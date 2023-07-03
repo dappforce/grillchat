@@ -1,5 +1,6 @@
 import { SUBSOCIAL_IPFS_GATEWAY } from '@/constants/links'
 import { CID } from 'ipfs-http-client'
+import urlJoin from 'url-join'
 
 enum CID_KIND {
   CBOR = 113,
@@ -14,9 +15,9 @@ export function getIpfsContentUrl(cid: string) {
 
   const isCbor = ipfsCid.code === CID_KIND.CBOR
   if (isCbor) {
-    return `${SUBSOCIAL_IPFS_GATEWAY}/api/v0/dag/get?arg=${cid}`
+    return urlJoin(SUBSOCIAL_IPFS_GATEWAY, `/api/v0/dag/get?arg=${cid}`)
   }
-  return `${SUBSOCIAL_IPFS_GATEWAY}/ipfs/${cid}`
+  return urlJoin(SUBSOCIAL_IPFS_GATEWAY, `/ipfs/${cid}`)
 }
 
 export function getCidFromMetadataLink(link: string) {
