@@ -1,5 +1,10 @@
 import { AppCommonProps } from '@/pages/_app'
-import { dehydrate, DehydratedState, QueryClient } from '@tanstack/react-query'
+import {
+  dehydrate,
+  DehydratedState,
+  hashQueryKey,
+  QueryClient,
+} from '@tanstack/react-query'
 import {
   GetServerSideProps,
   GetServerSidePropsContext,
@@ -69,7 +74,7 @@ export function getCommonServerSideProps<ReturnValue>(
 
 type DehydratedQueries = (Pick<
   DehydratedState['queries'][number],
-  'queryHash' | 'queryKey'
+  'queryKey'
 > & { data: unknown })[]
 export function dehydrateQueries(client: QueryClient): DehydratedQueries {
   const dehydratedState = dehydrate(client)
@@ -79,7 +84,6 @@ export function dehydrateQueries(client: QueryClient): DehydratedQueries {
     if (query.state.status !== 'success') return
     processedQueries.push({
       queryKey: query.queryKey,
-      queryHash: query.queryHash,
       data: query.state.data ?? null,
     })
   })
@@ -87,13 +91,17 @@ export function dehydrateQueries(client: QueryClient): DehydratedQueries {
   return processedQueries
 }
 export function parseDehydratedState(
-  dehydratedQueries: DehydratedQueries
-): DehydratedState {
+  dehydratedQueries?: DehydratedQueries
+): DehydratedState | undefined {
+  if (!dehydratedQueries) {
+    return undefined
+  }
+
   return {
     mutations: [],
-    queries: dehydratedQueries.map(({ data, queryHash, queryKey }) => ({
+    queries: dehydratedQueries.map(({ data, queryKey }) => ({
       queryKey,
-      queryHash,
+      queryHash: hashQueryKey(queryKey),
       state: {
         data,
         dataUpdateCount: 0,
