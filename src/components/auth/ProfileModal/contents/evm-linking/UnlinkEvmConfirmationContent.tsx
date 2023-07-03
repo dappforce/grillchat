@@ -1,9 +1,9 @@
+import { ContentProps } from '@/components/auth/ProfileModal/types'
 import Button from '@/components/Button'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useUnlinkEvmAddress } from '@/services/subsocial/evmAddresses/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useEffect } from 'react'
-import { ContentProps } from '../../types'
 
 function UnlinkEvmConfirmationContent({
   setCurrentState,
