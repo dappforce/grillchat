@@ -1,6 +1,12 @@
-import { ApiDecodeMessageResponse } from '@/pages/api/promo-message/decrypt'
-import { ApiEncodeMessageResponse } from '@/pages/api/promo-message/encrypt'
+import { ApiResponse } from '@/server/common'
 import axios from 'axios'
+
+export const canUsePromoExtensionAccounts = [
+  '3tFT2KDqmyfBU7hoGTNSJ8j2aBXQvvSQS5ncBdgtMM6SBQBS',
+  '3rJPTPXHEq6sXeXK4CCgSnWhmakfpG4DknH62P616Zyr9XLz',
+  '3q5o5HibyHXYrwVMinjcL4j95SDVNmLE46pu9Z5C8RTiWzwh',
+  '3roHFQsw88PrRVRcVmHUXPjHsgTqc6rSPQXfmRK3wFhJFtp8',
+]
 
 type EncryptedMessageData = {
   encyptedMessage?: string
@@ -16,7 +22,7 @@ export async function encodeSecretBox(
     address,
   })
 
-  const data = res.data as ApiEncodeMessageResponse
+  const data = res.data as ApiResponse<any>
   if (!data.success) throw new Error(data.errors)
 
   return data.data as EncryptedMessageData
@@ -31,7 +37,7 @@ export async function decodeSecretBox(
     nonce,
   })
 
-  const data = res.data as ApiDecodeMessageResponse
+  const data = res.data as ApiResponse<any>
   if (!data.success) throw new Error(data.errors)
 
   return data.data

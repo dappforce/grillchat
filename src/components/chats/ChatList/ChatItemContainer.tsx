@@ -17,9 +17,13 @@ export default function ChatItemContainer({
   ...props
 }: ChatItemContainerProps) {
   const { message } = props
+  const { content } = message
+
+  const { body, extensions } = content || {}
+
   const isMessageBlocked = useIsMessageBlocked(hubId, message, chatId)
   const address = useMyAccount((state) => state.address)
-  if (isMessageBlocked) return null
+  if (isMessageBlocked || (!body && !extensions)) return null
 
   const ownerId = message.struct.ownerId
   const senderAddress = ownerId ?? ''

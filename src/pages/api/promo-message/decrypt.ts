@@ -1,3 +1,4 @@
+import { ApiResponse } from '@/server/common'
 import { getSubsocialPromoSecret } from '@/utils/env/server'
 import { hexToU8a, u8aToString } from '@polkadot/util'
 import { naclDecrypt } from '@polkadot/util-crypto'
@@ -11,17 +12,9 @@ const querySchema = z.object({
   nonce: z.number(),
 })
 
-export type ApiDecodeMessageResponse = {
-  success: boolean
-  message: string
-  errors?: any
-  data?: any
-  hash?: string
-}
-
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiDecodeMessageResponse>
+  res: NextApiResponse<ApiResponse<any>>
 ) {
   if (req.method !== 'POST') return res.status(404).end()
 
@@ -43,8 +36,6 @@ export default async function handler(
 
   const decodedMessage = await decryptMessage(encodedMessageParam, nonceParam)
 
-  console.log(decodedMessage)
-
   return res
     .status(200)
     .send({ success: true, message: 'OK', data: decodedMessage })
@@ -54,15 +45,11 @@ async function decryptMessage(encodedMessage: string, nonce: number) {
   const newNonce = new Uint8Array(24)
   newNonce[0] = nonce
 
-  console.log(encodedMessage, nonce)
-
   const decryptedMessage = naclDecrypt(
     hexToU8a(encodedMessage),
     newNonce,
     hexToU8a(secret)
   )
-
-  console.log(decryptedMessage)
 
   return decryptedMessage ? u8aToString(decryptedMessage) : undefined
 }

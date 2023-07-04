@@ -1,3 +1,4 @@
+import { ApiResponse } from '@/server/common'
 import { getSubsocialPromoSecret } from '@/utils/env/server'
 import { hexToU8a, stringToU8a, u8aToHex } from '@polkadot/util'
 import { naclEncrypt } from '@polkadot/util-crypto'
@@ -11,17 +12,9 @@ const querySchema = z.object({
   address: z.string(),
 })
 
-export type ApiEncodeMessageResponse = {
-  success: boolean
-  message: string
-  errors?: any
-  data?: any
-  hash?: string
-}
-
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiEncodeMessageResponse>
+  res: NextApiResponse<ApiResponse<any>>
 ) {
   if (req.method !== 'POST') return res.status(404).end()
 

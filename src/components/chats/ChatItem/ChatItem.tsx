@@ -1,6 +1,7 @@
 import GiftBoxIcon from '@/assets/icons/gift-box.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
+import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
@@ -139,17 +140,21 @@ export default function ChatItem({
         onClick: () => setMessageAsReply(messageId),
       },
       ...(showDonateMenuItem ? [donateMenuItem] : []),
-      {
-        text: 'Secret Box',
-        icon: GiftBoxIcon,
-        onClick: () => {
-          setMessageAsReply(messageId)
-          openExtensionModal('subsocial-decoded-promo', {
-            recipient: ownerId,
-            messageId,
-          })
-        },
-      },
+      ...(address && canUsePromoExtensionAccounts.includes(address)
+        ? [
+            {
+              text: 'Secret Box',
+              icon: GiftBoxIcon,
+              onClick: () => {
+                setMessageAsReply(messageId)
+                openExtensionModal('subsocial-decoded-promo', {
+                  recipient: ownerId,
+                  messageId,
+                })
+              },
+            },
+          ]
+        : []),
       {
         text: 'Copy Text',
         icon: MdContentCopy,

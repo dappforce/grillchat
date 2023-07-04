@@ -100,7 +100,6 @@ const extensionsConfig: {
   'subsocial-decoded-promo': {
     chatItemComponent: SecretBoxChatItem,
     replyMessageUI: {
-      // TODO: SECRET BOX: Update this to use secret box preview
       element: SecretBoxMessagePreviewPart,
       config: {
         place: 'body',
