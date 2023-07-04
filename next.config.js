@@ -24,8 +24,6 @@ const nextConfig = {
       { source: '/hubs', destination: '/' },
       { source: '/my-chats', destination: '/' },
       { source: '/hot-chats', destination: '/' },
-
-      { source: '/decoded', destination: '/' },
     ]
   },
   async redirects() {
