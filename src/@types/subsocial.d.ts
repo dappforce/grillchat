@@ -1,7 +1,10 @@
 import '@subsocial/api/types'
 import * as types from '@subsocial/api/types'
 import { PostStruct } from '@subsocial/api/types'
-import { PostContent as SubsocialPostContent } from '@subsocial/api/types/dto'
+import {
+  CommentStruct,
+  PostContent as SubsocialPostContent,
+} from '@subsocial/api/types/dto'
 
 declare module '@subsocial/api/types' {
   export default types
@@ -58,5 +61,8 @@ declare module '@subsocial/api/types' {
     struct: S
     content: C | null
   }
-  export declare type PostData = EntityPostData<PostStruct, PostContent>
+  export declare type PostData = EntityPostData<
+    PostStruct & Pick<CommentStruct, 'rootPostId'>,
+    PostContent
+  >
 }

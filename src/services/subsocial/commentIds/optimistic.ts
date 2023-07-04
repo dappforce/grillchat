@@ -32,6 +32,7 @@ export function addOptimisticData({
     struct: {
       createdAtTime: Date.now(),
       ownerId: address,
+      rootPostId: params.chatId,
     },
     content: getOptimisticContent({
       body: params.message ?? '',
