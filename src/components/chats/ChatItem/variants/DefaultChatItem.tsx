@@ -4,6 +4,7 @@ import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper
 import { cx } from '@/utils/class-names'
 import Linkify from 'linkify-react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
+import ChatRelativeTime from '../ChatRelativeTime'
 import RepliedMessagePreview from '../RepliedMessagePreview'
 import { ChatItemContentProps } from './types'
 
@@ -15,7 +16,7 @@ export default function DefaultChatItem({
   onCheckMarkClick,
   body,
   ownerId,
-  relativeTime,
+  createdAtTime,
   inReplyTo,
   scrollToMessage,
   ...props
@@ -36,7 +37,10 @@ export default function DefaultChatItem({
               address={ownerId}
               className={cx('mr-2 text-sm text-text-secondary')}
             />
-            <span className='text-xs text-text-muted'>{relativeTime}</span>
+            <ChatRelativeTime
+              createdAtTime={createdAtTime}
+              className='text-xs text-text-muted'
+            />
           </div>
         )}
         {inReplyTo && (
@@ -70,9 +74,10 @@ export default function DefaultChatItem({
           <div
             className={cx('flex items-center gap-1', isMyMessage && 'self-end')}
           >
-            <span className='text-xs text-text-muted dark:text-text-muted-on-primary'>
-              {relativeTime}
-            </span>
+            <ChatRelativeTime
+              createdAtTime={createdAtTime}
+              className='text-xs text-text-muted dark:text-text-muted-on-primary'
+            />
             <Button
               variant='transparent'
               size='noPadding'
