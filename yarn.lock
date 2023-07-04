@@ -3349,7 +3349,7 @@
     "@stablelib/random" "^1.0.2"
     "@stablelib/wipe" "^1.0.1"
 
-"@subsocial/api@0.8.13":
+"@subsocial/api@^0.8.12":
   version "0.8.13"
   resolved "https://registry.yarnpkg.com/@subsocial/api/-/api-0.8.13.tgz#94f69c8d870419d2becc346fd1202e36b8c066f6"
   integrity sha512-jnbHm4bblYeYAYnriQDS9ehigGektPhwtxsHieXP+rYMKl3tu5ebbCOyCu/HXNavlEGFVGQmW1tYqw2VKhIC7w==
@@ -3369,7 +3369,7 @@
   resolved "https://registry.yarnpkg.com/@subsocial/config/-/config-1.0.0.tgz#498eb62184973d1d31ab8996756a1c235c5e6bad"
   integrity sha512-jHMVmIAjkhSzswZEid2xhWtQb7yyux/8Am/i5xBQfDw6azwSPdr1nfXCKaIYs5R/NRcqi543V9roDQQQogTaKQ==
 
-"@subsocial/definitions@0.8.13", "@subsocial/definitions@latest":
+"@subsocial/definitions@latest":
   version "0.8.13"
   resolved "https://registry.yarnpkg.com/@subsocial/definitions/-/definitions-0.8.13.tgz#5470fc503d574f8c85655202ba5fe1dbfbb0b43d"
   integrity sha512-P6uCfkdsvlg3kqk+31UfvGFshZGBGtZqfemLVzpZIR6YNwXutKuII6oAwgWTDg36owjP6pHLCKxI5nDk89uKew==

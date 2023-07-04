@@ -10,24 +10,22 @@ const NftModal = dynamic(() => import('./nft/NftModal'), {
   ssr: false,
 })
 
+const SecretBoxModal = dynamic(() => import('./secret-box/SecretBoxModal'), {
+  ssr: false,
+})
+
 export type ExtensionModalsProps = {
   chatId: string
   onSubmit: () => void
 }
 
-const modalRegistry: ((props: ExtensionModalsProps) => JSX.Element)[] = [
-  NftModal,
-  ImageModal,
-  DonateModal,
-  SecretBoxModal,
-]
-
 export default function ExtensionModals({ ...props }: ExtensionModalsProps) {
   return (
     <>
-      {modalRegistry.map((Modal, idx) => (
-        <Modal {...props} key={idx} />
-      ))}
+      <NftModal {...props} />
+      <ImageModal {...props} />
+      <DonateModal {...props} />
+      <SecretBoxModal {...props} />
     </>
   )
 }
