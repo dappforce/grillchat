@@ -1,5 +1,5 @@
 import Button from '@/components/Button'
-import Dropdown from '@/components/inputs/SelectInput'
+import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
 import MetamaskDeepLink, {
   isInsideMetamaskBrowser,
 } from '@/components/MetamaskDeepLink'
@@ -7,11 +7,16 @@ import ProfilePreview from '@/components/ProfilePreview'
 import useGetTheme from '@/hooks/useGetTheme'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import {
+  coingeckoTokenIds,
+  getPriceQuery,
+} from '@/services/subsocial/prices/query'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
-import { parseUnits } from 'ethers'
+import { formatUnits, parseUnits } from 'ethers'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import CommonExtensionModal from '../../CommonExtensionModal'
@@ -179,6 +184,13 @@ function DonateForm({
                   fieldLabel='Token'
                   items={tokensItems[selectedChain.id]}
                   imgClassName='w-[38px]'
+                  renderItem={(item, open) => (
+                    <TokenItemPreview
+                      item={item}
+                      chainName={selectedChain.id}
+                      open={open}
+                    />
+                  )}
                 />
                 <AmountInput
                   amount={amount}
@@ -195,6 +207,54 @@ function DonateForm({
         </div>
       </div>
     </CommonExtensionModal>
+  )
+}
+
+type RokenItemPreviewProps = {
+  item: ListItem
+  chainName: string
+  open: boolean
+}
+
+const TokenItemPreview = ({ item, chainName, open }: RokenItemPreviewProps) => {
+  const { balance, decimals } = useGetBalance(item.id, chainName, open)
+
+  const tokenId = coingeckoTokenIds[(item.id as string).toLowerCase()]
+
+  const { data } = getPriceQuery.useQuery(tokenId)
+
+  const price = data?.current_price
+
+  const balanceValue =
+    decimals && balance ? formatUnits(balance, decimals) : '0'
+
+  const amountInDollars =
+    price && balance
+      ? new BigNumber(price).multipliedBy(balanceValue).toFixed(4)
+      : '0'
+
+  return (
+    <div className='flex w-full items-center justify-between'>
+      <div className='flex items-center'>
+        <Image
+          src={item.icon}
+          className={cx('w-[38px] rounded-full')}
+          alt=''
+          role='presentation'
+        />
+        <span
+          className={cx('ml-3 mr-3 block truncate text-base', {
+            ['text-gray-500']: item.disabledItem,
+          })}
+        >
+          {item.label}
+        </span>
+      </div>
+      <div className='flex flex-col text-right'>
+        <span className='font-bold'>{balanceValue.slice(0, 6)}</span>
+        <span className='text-text-muted'>${amountInDollars}</span>
+      </div>
+    </div>
   )
 }
 

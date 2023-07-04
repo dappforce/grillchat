@@ -105,12 +105,10 @@ export default function CommonChatItem({
           <div className='flex items-center px-2.5 first:pt-1.5'>
             <ProfilePreviewModalName
               address={ownerId}
-              color={textColor && '#ffffff'}
+              color={textColor}
               className={cx('mr-2 text-sm text-text-secondary')}
             />
-            <span className={'text-xs'} style={{ color: textColor }}>
-              {relativeTime}
-            </span>
+            <span className={'text-xs text-text-muted'}>{relativeTime}</span>
           </div>
         )}
 
