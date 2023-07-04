@@ -28,5 +28,5 @@ export type ContentProps = {
   address: string
   setCurrentState: React.Dispatch<React.SetStateAction<ModalState>>
   notification?: NotificationControl
-  evmAddress?: string
+  evmAddress?: string | null
 }

@@ -54,7 +54,10 @@ async function getChatsData(chatId: string) {
 
   const prices = await getPricesFromCache(Object.values(coingeckoTokenIds))
 
-  const accountsAddresses = await getAccountsDataFromCache(chatPageOwnerIds)
+  const accountsAddresses = await getAccountsDataFromCache(
+    chatPageOwnerIds,
+    'GET'
+  )
 
   return { messages, chatData, messageIds, accountsAddresses, prices }
 }
@@ -97,13 +100,15 @@ export const getStaticProps = getCommonStaticProps<
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
 
-      accountsAddresses.forEach((accountAddresses) =>
-        getAccountDataQuery.setQueryData(
-          queryClient,
-          accountAddresses.evmAddress,
-          accountAddresses
-        )
-      )
+      accountsAddresses.forEach((accountAddresses) => {
+        if (accountAddresses.evmAddress) {
+          getAccountDataQuery.setQueryData(
+            queryClient,
+            accountAddresses.grillAddress,
+            accountAddresses
+          )
+        }
+      })
       prices.forEach((price) => {
         const { id, current_price } = price || {}
 

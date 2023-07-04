@@ -1,5 +1,5 @@
 import { redisCallWrapper } from '@/server/cache'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
+import { getEvmAddressesFromSubsocial } from '@/services/subsocial/evmAddresses/fetcher'
 import { request } from 'graphql-request'
 import gql from 'graphql-tag'
 
@@ -8,7 +8,7 @@ import { z } from 'zod'
 
 export type AccountData = {
   grillAddress: string
-  evmAddress: string
+  evmAddress: string | null
   ensName: string | null
 }
 
@@ -66,7 +66,10 @@ export default async function handler(
     invalidateCache(addresses)
     return res.status(200).send({ success: true, message: 'OK' })
   } else {
-    const accountsData = await getAccountsDataFromCache(addresses)
+    const accountsData = await getAccountsDataFromCache(
+      addresses,
+      req.method as 'POST' | 'GET'
+    )
 
     return res
       .status(200)
@@ -89,7 +92,7 @@ type EnsDomainRequestResult = {
   domains: Domain[]
 }
 
-async function getEnsNames(evmAddresses: string[]) {
+async function getEnsNames(evmAddresses: (string | null)[]) {
   const filteredAddresses = evmAddresses.filter((x) => !!x)
 
   const result = (await request({
@@ -107,25 +110,34 @@ async function getEnsNames(evmAddresses: string[]) {
   return domainsEntity
 }
 
-async function fetchAccountsData(addresses: string[]) {
+async function fetchAccountsData(addresses: string[], method: 'POST' | 'GET') {
   let newlyFetchedData: AccountData[] = []
 
   try {
-    const subsocialApi = await getSubsocialApi()
+    let evmAddressesHuman: (string | null)[] = []
+    try {
+      evmAddressesHuman = await getEvmAddressesFromSubsocial(
+        addresses,
+        method === 'POST' ? 'squid' : 'blockchain'
+      )
+    } catch (e) {
+      console.error(
+        'Error fetching evm addresses, trying to fetch from blockchain',
+        e
+      )
 
-    const api = await subsocialApi.blockchain.api
-    const evmAddressses = await api.query.evmAccounts.evmAddressByAccount.multi(
-      addresses
-    )
-
-    const evmAddressesHuman = evmAddressses.map((x) => x.toHuman() as string)
+      evmAddressesHuman = await getEvmAddressesFromSubsocial(
+        addresses,
+        'blockchain'
+      )
+    }
 
     const domains = await getEnsNames(evmAddressesHuman)
 
     const needToFetchIdsPromise = addresses.map(async (address, i) => {
       const evmAddress = evmAddressesHuman[i]
 
-      const ensName = domains?.[evmAddress] || null
+      const ensName = evmAddress ? domains?.[evmAddress] || null : null
 
       const accountData = {
         grillAddress: address,
@@ -157,7 +169,10 @@ async function fetchAccountsData(addresses: string[]) {
   }
 }
 
-export async function getAccountsDataFromCache(addresses: string[]) {
+export async function getAccountsDataFromCache(
+  addresses: string[],
+  method: 'POST' | 'GET'
+) {
   const evmAddressByGrillAddress: AccountData[] = []
   const needToFetchIds: string[] = []
 
@@ -178,7 +193,7 @@ export async function getAccountsDataFromCache(addresses: string[]) {
   await Promise.all(promises)
 
   if (needToFetchIds.length > 0) {
-    newlyFetchedData = await fetchAccountsData(needToFetchIds)
+    newlyFetchedData = await fetchAccountsData(needToFetchIds, method)
   }
 
   return [...evmAddressByGrillAddress, ...newlyFetchedData]
