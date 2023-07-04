@@ -26,11 +26,12 @@ export const homePageAdditionalTabs: {
   text: string
   hubId: string
 }[] = [
-  {
-    id: 'decoded',
-    text: 'Decoded',
-    hubId: '1023',
-  },
+  // Example additional tabs
+  // {
+  //   id: 'decoded',
+  //   text: 'Decoded',
+  //   hubId: '1023',
+  // },
 ]
 
 export default function HubsPage(props: HubsPageProps) {
