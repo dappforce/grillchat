@@ -1,7 +1,7 @@
 import Toast from '@/components/Toast'
 import useToastError from '@/hooks/useToastError'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 import {
@@ -76,6 +76,7 @@ export const useConnectOrSwitchNetwork = (
         setCurrentStep('donate-form')
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSwitchNetworkLoading, isConnectLoading, switchNetworkError])
 
   const connectOrSwitch = async () => {
@@ -166,29 +167,34 @@ export const useDonate = (token: string, chainName: string) => {
 type GetBalanceProps = {
   chainName: string
   token: string
+  watch?: boolean
 }
 
-const useGetNativeTokenBalance = ({ chainName, token }: GetBalanceProps) => {
+const useGetNativeTokenBalance = ({
+  chainName,
+  token,
+  watch,
+}: GetBalanceProps) => {
   const { address: currentEvmAddress } = useAccount()
 
   const chainId = chainIdByChainName[chainName]
 
-  const { data, isLoading } = useBalance({
+  const { data } = useBalance({
     address: currentEvmAddress,
-    watch: true,
     chainId,
+    watch,
   })
 
-  return useMemo(() => {
-    if (!data) return {}
+  const { value, decimals } = data || {}
 
-    const { value, decimals } = data
-
-    return { balance: value, decimals }
-  }, [!!data, isLoading, token, currentEvmAddress, chainName])
+  return { balance: value, decimals }
 }
 
-const useGetContractTokenBalance = ({ chainName, token }: GetBalanceProps) => {
+const useGetContractTokenBalance = ({
+  chainName,
+  token,
+  watch,
+}: GetBalanceProps) => {
   const { address: currentEvmAddress } = useAccount()
 
   const chainId = chainIdByChainName[chainName]
@@ -202,7 +208,7 @@ const useGetContractTokenBalance = ({ chainName, token }: GetBalanceProps) => {
     chainId,
   }
 
-  const { data, isLoading } = useContractReads({
+  const { data } = useContractReads({
     contracts: [
       {
         ...commonParams,
@@ -214,23 +220,23 @@ const useGetContractTokenBalance = ({ chainName, token }: GetBalanceProps) => {
         functionName: 'decimals',
       },
     ],
-    watch: true,
+    watch,
   })
 
-  return useMemo(() => {
-    if (!data) return {}
+  const [balance, decimals] = data?.map((item) => item.result) || []
 
-    const [balance, decimals] = data.map((item) => item.result)
-
-    return { balance: balance, decimals }
-  }, [!!data, isLoading, token, currentEvmAddress, chainName])
+  return { balance: balance, decimals }
 }
 
-export const useGetBalance = (token: string, chainName: string) => {
+export const useGetBalance = (
+  token: string,
+  chainName: string,
+  watch = false
+) => {
   const { balance: contractBalance, decimals: contractDecimals } =
-    useGetContractTokenBalance({ token, chainName })
+    useGetContractTokenBalance({ token, chainName, watch })
   const { balance: nativeBalance, decimals: nativeTokenDecimals } =
-    useGetNativeTokenBalance({ token, chainName })
+    useGetNativeTokenBalance({ token, chainName, watch })
 
   const { isNativeToken } =
     tokensItems[chainName].find((x) => x.id === token) || {}

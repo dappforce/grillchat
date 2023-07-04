@@ -37,6 +37,8 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
     loadedLink: null,
   })
 
+  const isImageLoaded =
+    imageLinkStatus.loadedLink || imageUploadStatus.loadedLink
   const isAnyShowingImage =
     imageLinkStatus.isShowingImage || imageUploadStatus.isShowingImage
 
@@ -70,7 +72,7 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
       size='md'
       mustHaveMessageBody={false}
       chatId={chatId}
-      disableSendButton={!isAnyShowingImage}
+      disableSendButton={!isImageLoaded}
       title='🖼 Image'
       buildAdditionalTxParams={generateAdditionalTxParams}
     >
@@ -152,7 +154,7 @@ function ImageLinkInput({
 
   return (
     <>
-      <AutofocusWrapper>
+      <AutofocusWrapper autofocusInTouchDevices>
         {({ ref }) => (
           <TextArea
             value={imageLink}

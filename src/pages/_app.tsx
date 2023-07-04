@@ -1,25 +1,22 @@
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
+import EvmProvider from '@/providers/evm/EvmProvider'
 import { QueryProvider } from '@/services/provider'
 import { useSendEvent } from '@/stores/analytics'
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
+import { parseDehydratedState } from '@/utils/page'
 import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
-import dynamic from 'next/dynamic'
 import { Source_Sans_Pro } from 'next/font/google'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
-
-const EvmProvider = dynamic(import('@/providers/evm/EvmProvider'), {
-  ssr: false,
-})
 
 export type AppCommonProps = {
   alwaysShowScrollbarOffset?: boolean
@@ -72,6 +69,11 @@ export default function App(props: AppProps<AppCommonProps>) {
 
 function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   const { head, dehydratedState, ...props } = pageProps
+  const parsedDehydratedState = useMemo(
+    () => parseDehydratedState(dehydratedState),
+    [dehydratedState]
+  )
+
   const isInitialized = useRef(false)
   const { theme } = useConfigContext()
 
@@ -90,7 +92,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
 
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
-      <QueryProvider dehydratedState={dehydratedState}>
+      <QueryProvider dehydratedState={parsedDehydratedState}>
         <ToasterConfig />
         <NextNProgress
           color='#4d46dc'

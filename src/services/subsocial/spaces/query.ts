@@ -48,7 +48,7 @@ const getSpaceFromSquid = poolQuery<string, SpaceData>({
   },
 })
 
-export const getSpaceQuery = createDynamicSubsocialQuery('getSpace', {
+export const getSpaceQuery = createDynamicSubsocialQuery('space', {
   blockchain: getSpaceFromBlockchain,
   squid: getSpaceFromSquid,
 })

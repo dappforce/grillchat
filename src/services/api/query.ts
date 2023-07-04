@@ -15,7 +15,7 @@ const getPost = poolQuery<string, PostData>({
   },
 })
 export const getPostQuery = createQuery({
-  key: 'getPost',
+  key: 'post',
   fetcher: getPost,
 })
 
@@ -31,6 +31,6 @@ async function getNft(nft: ApiNftParams | null) {
   return responseData.data
 }
 export const getNftQuery = createQuery({
-  key: 'getNft',
+  key: 'nft',
   fetcher: getNft,
 })

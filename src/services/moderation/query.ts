@@ -1,42 +1,56 @@
-import { createQuery } from '@/subsocial-query'
+import { createQuery, poolQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
 import {
   GetBlockedAddressesQuery,
   GetBlockedAddressesQueryVariables,
   GetBlockedCidsQuery,
   GetBlockedCidsQueryVariables,
-  GetBlockedMessageIdsInChatIdQuery,
-  GetBlockedMessageIdsInChatIdQueryVariables,
 } from './generated'
 import { moderationRequest } from './utils'
 
-const GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID = gql`
-  query GetBlockedMessageIdsInChatId($ctxSpaceId: String!, $chatId: String!) {
-    blockedResourceIds(
-      ctxSpaceId: $ctxSpaceId
-      blocked: true
-      rootPostId: $chatId
-    )
-  }
-`
-export async function getBlockedMessageIdsInChatId({
-  chatId,
-  hubId,
-}: {
-  hubId: string
-  chatId: string
-}) {
-  const data = await moderationRequest<
-    GetBlockedMessageIdsInChatIdQuery,
-    GetBlockedMessageIdsInChatIdQueryVariables
-  >({
-    document: GET_BLOCKED_MESSAGE_IDS_IN_CHAT_ID,
-    variables: { chatId, ctxSpaceId: hubId },
-  })
-  return data.blockedResourceIds
+const generateBlockedMessageIdsInChatIdsQueryDocument = (
+  variables: { chatId: string; hubId: string }[]
+) => {
+  return `
+    query GetBlockedMessageIdsInChatIds {
+      ${variables.map(
+        ({ hubId, chatId }) =>
+          `SEPARATOR${hubId}SEPARATOR${chatId}: blockedResourceIds(
+            ctxSpaceId: "${hubId}"
+            blocked: true
+            rootPostId: "${chatId}"
+          )`
+      )}
+    }
+  `
 }
+const getBlockedMessageIdsInChatId = poolQuery<
+  {
+    hubId: string
+    chatId: string
+  },
+  { chatId: string; hubId: string; blockedMessageIds: string[] }
+>({
+  multiCall: async (params) => {
+    const data = await moderationRequest<Record<string, string[]>>({
+      document: generateBlockedMessageIdsInChatIdsQueryDocument(params),
+    })
+    return Object.entries(data).map(([key, res]) => {
+      const [_, chatId, hubId] = key.split('SEPARATOR')
+      return {
+        chatId,
+        hubId,
+        blockedMessageIds: res,
+      }
+    })
+  },
+  resultMapper: {
+    paramToKey: ({ chatId, hubId }) => `${hubId}-${chatId}`,
+    resultToKey: ({ chatId, hubId }) => `${hubId}-${chatId}`,
+  },
+})
 export const getBlockedMessageIdsInChatIdQuery = createQuery({
-  key: 'getBlockedMessageIdsInChatId',
+  key: 'blockedInChatId',
   fetcher: getBlockedMessageIdsInChatId,
 })
 
@@ -60,7 +74,7 @@ export async function getBlockedCids({ hubId }: { hubId: string }) {
   return data.blockedResourceIds
 }
 export const getBlockedCidsQuery = createQuery({
-  key: 'getBlockedCidsQuery',
+  key: 'blockedCids',
   fetcher: getBlockedCids,
 })
 
@@ -85,6 +99,6 @@ export async function getBlockedAddresses({ hubId }: { hubId: string }) {
   return blockedHexAddresses
 }
 export const getBlockedAddressesQuery = createQuery({
-  key: 'getBlockedAddressesQuery',
+  key: 'blockedAddresses',
   fetcher: getBlockedAddresses,
 })

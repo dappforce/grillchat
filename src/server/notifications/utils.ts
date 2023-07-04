@@ -7,7 +7,7 @@ export function notificationsRequest<T, V extends Variables = Variables>(
   const { url, token } = getNotificationsConfig()
   if (!url || !token) throw new Error('Notifications config not found')
 
-  const TIMEOUT = 3 * 1000 // 1 seconds
+  const TIMEOUT = 3 * 1000 // 3 seconds
   const client = new GraphQLClient(url, {
     timeout: TIMEOUT,
     headers: {

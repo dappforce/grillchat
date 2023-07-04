@@ -39,7 +39,7 @@ const getPostIdsBySpaceId = poolQuery<
   },
 })
 export const getPostIdsBySpaceIdQuery = createSubsocialQuery({
-  key: 'getPostIdsBySpaceId',
+  key: 'postIdsBySpaceId',
   fetcher: getPostIdsBySpaceId,
 })
 
@@ -59,7 +59,7 @@ async function getFollowedPostIdsByAddress({
   return followedPostIds
 }
 export const getFollowedPostIdsByAddressQuery = createSubsocialQuery({
-  key: 'getFollowedPostIdsByAddress',
+  key: 'followedPostIdsByAddress',
   fetcher: getFollowedPostIdsByAddress,
   defaultConfigGenerator: (address) => {
     if (!address) return {}
@@ -130,6 +130,6 @@ async function getPostsByContent(search: string) {
   return res.posts.map((post) => mapPostFragment(post))
 }
 export const getPostsBySpaceContentQuery = createQuery({
-  key: 'getPostsBySpaceContent',
+  key: 'postsBySpaceContent',
   fetcher: getPostsByContent,
 })

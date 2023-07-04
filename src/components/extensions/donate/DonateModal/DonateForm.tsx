@@ -1,5 +1,8 @@
 import Button from '@/components/Button'
 import Dropdown from '@/components/inputs/SelectInput'
+import MetamaskDeepLink, {
+  isInsideMetamaskBrowser,
+} from '@/components/MetamaskDeepLink'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -41,12 +44,13 @@ function DonateForm({
 
   const { balance, decimals } = useGetBalance(
     selectedToken.id,
-    selectedChain.id
+    selectedChain.id,
+    isOpen
   )
 
   useEffect(() => {
     setSelectedToken(tokensItems[selectedChain.id][0])
-  }, [selectedChain.id])
+  }, [selectedChain.id, setSelectedToken])
 
   const { data: recipientAccountData } = getAccountDataQuery.useQuery(
     initialData.recipient
@@ -57,7 +61,7 @@ function DonateForm({
   const currentChainId = chain?.id
   const destChainId = chainIdByChainName[selectedChain.id]
 
-  const showSwichButton = !isConnected || currentChainId !== destChainId
+  const showSwitchButton = !isConnected || currentChainId !== destChainId
 
   const { sendTransferTx } = useDonate(selectedToken.id, selectedChain.id)
 
@@ -118,8 +122,8 @@ function DonateForm({
       isOpen={isOpen}
       closeModal={closeModal}
       chatId={chatId}
-      showChatForm={!showSwichButton}
-      withDivider={!showSwichButton}
+      showChatForm={!showSwitchButton}
+      withDivider={!showSwitchButton}
       disableSendButton={disableSendButton || !!inputError}
       sendButtonText={`Send${amountPreview}`}
       beforeMesageSend={onButtonClick}
@@ -149,30 +153,37 @@ function DonateForm({
             imgClassName='w-[38px]'
           />
 
-          {showSwichButton ? (
-            <Button size={'lg'} onClick={onSwitchButtonClick}>
-              {!isConnected ? 'Connect' : 'Switch'} to {selectedChain.label}
-            </Button>
-          ) : (
-            <>
-              <Dropdown
-                selected={selectedToken}
-                setSelected={setSelectedToken}
-                fieldLabel='Token'
-                items={tokensItems[selectedChain.id]}
-                imgClassName='w-[38px]'
-              />
-              <AmountInput
-                amount={amount}
-                setAmount={setAmount}
-                inputError={inputError}
-                setInputError={setInputError}
-                tokenSymbol={selectedToken.label}
-                balance={balance}
-                decimals={decimals}
-              />
-            </>
-          )}
+          {(() => {
+            if (!isInsideMetamaskBrowser())
+              return (
+                <MetamaskDeepLink size='lg'>Connect Wallet</MetamaskDeepLink>
+              )
+
+            return showSwitchButton ? (
+              <Button size={'lg'} onClick={onSwitchButtonClick}>
+                {!isConnected ? 'Connect' : 'Switch'} to {selectedChain.label}
+              </Button>
+            ) : (
+              <>
+                <Dropdown
+                  selected={selectedToken}
+                  setSelected={setSelectedToken}
+                  fieldLabel='Token'
+                  items={tokensItems[selectedChain.id]}
+                  imgClassName='w-[38px]'
+                />
+                <AmountInput
+                  amount={amount}
+                  setAmount={setAmount}
+                  inputError={inputError}
+                  setInputError={setInputError}
+                  tokenSymbol={selectedToken.label}
+                  balance={balance}
+                  decimals={decimals}
+                />
+              </>
+            )
+          })()}
         </div>
       </div>
     </CommonExtensionModal>

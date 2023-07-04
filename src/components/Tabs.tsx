@@ -65,7 +65,10 @@ export default function Tabs({
       : -1
 
   return (
-    <Tab.Group selectedIndex={usedSelectedTab} onChange={setSelectedTab}>
+    <Tab.Group
+      selectedIndex={usedSelectedTab === -1 ? tabs.length : usedSelectedTab}
+      onChange={setSelectedTab}
+    >
       <Tab.List
         as={component}
         className={cx('flex items-end', props.className)}

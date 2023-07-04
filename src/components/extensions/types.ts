@@ -1,5 +1,5 @@
 import { PostContent, PostData } from '@subsocial/api/types'
-import { SyntheticEvent } from 'react'
+import { ComponentType, SyntheticEvent } from 'react'
 
 export type ExtensionChatItemProps = {
   message: PostData
@@ -22,6 +22,6 @@ export type RepliedMessageConfig = {
 }
 
 export type RepliedMessagePreviewPartsProps = {
-  element: (props: RepliedMessagePreviewPartProps) => JSX.Element | null
+  element: ComponentType<RepliedMessagePreviewPartProps>
   config: RepliedMessageConfig
 }

@@ -14,10 +14,10 @@ import {
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { getCommonStaticProps } from '@/utils/page'
+import { dehydrateQueries, getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
 import { validateNumber } from '@/utils/strings'
-import { dehydrate, QueryClient } from '@tanstack/react-query'
+import { QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -120,7 +120,7 @@ export const getStaticProps = getCommonStaticProps<
 
     return {
       props: {
-        dehydratedState: dehydrate(queryClient),
+        dehydratedState: dehydrateQueries(queryClient),
         chatId,
         hubId,
         head: {

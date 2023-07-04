@@ -5,14 +5,14 @@ import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
-import EvmLoginError from './contents/EvmLoginError'
-import LinkEvmAddressContent from './contents/LinkEvmAddressContent'
+import EvmLoginError from './contents/evm-linking/EvmLoginError'
+import LinkEvmAddressContent from './contents/evm-linking/LinkEvmAddressContent'
+import UnlinkEvmConfirmationContent from './contents/evm-linking/UnlinkEvmConfirmationContent'
 import LogoutContent from './contents/LogoutContent'
 import NotificationContent from './contents/notifications/NotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
-import UnlinkEvmConfirmationContent from './contents/UnlinkEvmConfirmationContent'
 import { ContentProps, ModalState, ProfileModalProps } from './types'
 
 const modalContents: {
@@ -46,6 +46,7 @@ export default function ProfileModal({
 
   useEffect(() => {
     if (props.isOpen) setCurrentState(step || 'account')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
 
   const modalTitles: {

@@ -26,11 +26,12 @@ export const homePageAdditionalTabs: {
   text: string
   hubId: string
 }[] = [
-  {
-    id: 'decoded',
-    text: 'Decoded',
-    hubId: '1023',
-  },
+  // Example additional tabs
+  // {
+  //   id: 'decoded',
+  //   text: 'Decoded',
+  //   hubId: '1023',
+  // },
 ]
 
 export default function HubsPage(props: HubsPageProps) {
@@ -84,7 +85,7 @@ export default function HubsPage(props: HubsPageProps) {
         setSelectedTab(0)
         replaceUrl('/my-chats')
       } else {
-        setSelectedTab(2)
+        setSelectedTab(1)
         replaceUrl('/hot-chats')
       }
     } else {
@@ -140,6 +141,7 @@ export default function HubsPage(props: HubsPageProps) {
           asContainer
           tabs={tabs}
           withHashIntegration={false}
+          hideBeforeHashLoaded
           manualTabControl={{
             selectedTab: usedSelectedTab,
             setSelectedTab: usedSetSelectedTab,

@@ -1,7 +1,9 @@
+import { SUBSOCIAL_IPFS_GATEWAY } from '@/constants/links'
 import { cx } from '@/utils/class-names'
 import { validateVideoUrl } from '@/utils/links'
 import Image, { ImageProps } from 'next/image'
 import { useLayoutEffect, useState } from 'react'
+import urlJoin from 'url-join'
 import Spinner from './Spinner'
 
 export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
@@ -39,7 +41,7 @@ export default function MediaLoader({
   let [isLoading, setIsLoading] = useState(false)
   let usedImage = src
   if (typeof src === 'string') {
-    usedImage = resolveIpfsUri(src, 'https://ipfs.subsocial.network/ipfs/')
+    usedImage = resolveIpfsUri(src, urlJoin(SUBSOCIAL_IPFS_GATEWAY, '/ipfs/'))
   }
 
   useLayoutEffect(() => {

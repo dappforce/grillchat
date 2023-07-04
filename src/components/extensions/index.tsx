@@ -1,7 +1,14 @@
-import DonateModal from './donate/DonateModal/DonateModal'
-import ImageModal from './image/ImageModal'
-import NftModal from './nft/NftModal'
-import SecretBoxModal from './secret-box/SecretBoxModal'
+import dynamic from 'next/dynamic'
+
+const DonateModal = dynamic(() => import('./donate/DonateModal/DonateModal'), {
+  ssr: false,
+})
+const ImageModal = dynamic(() => import('./image/ImageModal'), {
+  ssr: false,
+})
+const NftModal = dynamic(() => import('./nft/NftModal'), {
+  ssr: false,
+})
 
 export type ExtensionModalsProps = {
   chatId: string
