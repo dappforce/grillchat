@@ -5,7 +5,7 @@ export const canUsePromoExtensionAccounts = [
   '3tFT2KDqmyfBU7hoGTNSJ8j2aBXQvvSQS5ncBdgtMM6SBQBS',
   '3rJPTPXHEq6sXeXK4CCgSnWhmakfpG4DknH62P616Zyr9XLz',
   '3q5o5HibyHXYrwVMinjcL4j95SDVNmLE46pu9Z5C8RTiWzwh',
-  '3roHFQsw88PrRVRcVmHUXPjHsgTqc6rSPQXfmRK3wFhJFtp8',
+  '3tATRYq6yiws8B8WhLxEuNPFtpLFh8xxe2K2Lnt8NTrjXk8N',
 ]
 
 type EncryptedMessageData = {
