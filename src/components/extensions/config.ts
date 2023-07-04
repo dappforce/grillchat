@@ -1,19 +1,31 @@
 import { useExtensionData } from '@/stores/extension'
 import { getUrlFromText } from '@/utils/strings'
 import { PostContentExtension } from '@subsocial/api/types'
-import { ClipboardEvent } from 'react'
-import DonateMessagePreview from './donate/DonateMessagePreview'
-import DonateRepliedMessagePreviewPart from './donate/DonateRepliedMessagePreviewPart'
-import ImageChatItem from './image/ImageChatItem'
-import ImageRepliedMessagePreviewPart from './image/ImageRepliedMessagePreviewPart'
+import dynamic from 'next/dynamic'
+import { ClipboardEvent, ComponentType } from 'react'
 import { SUPPORTED_IMAGE_EXTENSIONS } from './image/utils'
-import NftChatItem from './nft/NftChatItem'
-import NftRepliedMessagePreviewPart from './nft/NftRepliedMessagePreviewPart'
 import { parseNftMarketplaceLink } from './nft/utils'
 import {
   ExtensionChatItemProps,
   RepliedMessagePreviewPartsProps,
 } from './types'
+
+const DonateMessagePreview = dynamic(
+  () => import('./donate/DonateMessagePreview')
+)
+const DonateRepliedMessagePreviewPart = dynamic(
+  () => import('./donate/DonateRepliedMessagePreviewPart')
+)
+
+const ImageChatItem = dynamic(() => import('./image/ImageChatItem'))
+const ImageRepliedMessagePreviewPart = dynamic(
+  () => import('./image/ImageRepliedMessagePreviewPart')
+)
+
+const NftChatItem = dynamic(() => import('./nft/NftChatItem'))
+const NftRepliedMessagePreviewPart = dynamic(
+  () => import('./nft/NftRepliedMessagePreviewPart')
+)
 
 export const extensionInitialDataTypes = {
   'subsocial-donations': { recipient: '', messageId: '' },
@@ -22,7 +34,7 @@ export const extensionInitialDataTypes = {
 } satisfies Record<PostContentExtension['id'], unknown>
 
 type Config<Id extends PostContentExtension['id']> = {
-  chatItemComponent: (props: ExtensionChatItemProps) => JSX.Element | null
+  chatItemComponent: ComponentType<ExtensionChatItemProps>
   replyMessageUI: RepliedMessagePreviewPartsProps
   pasteInterception?: (
     clipboardData: DataTransfer,

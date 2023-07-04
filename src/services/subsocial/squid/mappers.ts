@@ -16,7 +16,7 @@ import {
 
 const SQUID_SEPARATOR = ','
 const getTokensFromUnifiedString = (data: string | null) =>
-  data?.split(SQUID_SEPARATOR) ?? []
+  data?.split(SQUID_SEPARATOR).filter(Boolean) ?? []
 
 export const mapSpaceFragment = (space: SpaceFragmentFragment): SpaceData => {
   return {

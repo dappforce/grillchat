@@ -7,12 +7,12 @@ export default function useFilterBlockedMessageIds(
   chatId: string,
   messageIds: string[]
 ) {
-  const { data: blockedIds } = getBlockedMessageIdsInChatIdQuery.useQuery({
+  const { data } = getBlockedMessageIdsInChatIdQuery.useQuery({
     hubId,
     chatId,
   })
 
   return useMemo(() => {
-    return filterBlockedMessageIds(messageIds, blockedIds)
-  }, [blockedIds, messageIds])
+    return filterBlockedMessageIds(messageIds, data?.blockedMessageIds)
+  }, [data?.blockedMessageIds, messageIds])
 }
