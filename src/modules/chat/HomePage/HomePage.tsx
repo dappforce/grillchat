@@ -85,7 +85,7 @@ export default function HubsPage(props: HubsPageProps) {
         setSelectedTab(0)
         replaceUrl('/my-chats')
       } else {
-        setSelectedTab(2)
+        setSelectedTab(1)
         replaceUrl('/hot-chats')
       }
     } else {
