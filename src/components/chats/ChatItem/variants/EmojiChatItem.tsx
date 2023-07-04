@@ -3,6 +3,7 @@ import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper
 import { cx } from '@/utils/class-names'
 import { getEmojiAmount, validateTextContainsOnlyEmoji } from '@/utils/strings'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
+import ChatRelativeTime from '../ChatRelativeTime'
 import RepliedMessagePreview from '../RepliedMessagePreview'
 import { ChatItemContentProps } from './types'
 
@@ -26,7 +27,7 @@ export default function EmojiChatItem({
   isSent,
   onCheckMarkClick,
   body,
-  relativeTime,
+  createdAtTime,
   ownerId,
   inReplyTo,
   scrollToMessage,
@@ -53,7 +54,10 @@ export default function EmojiChatItem({
             address={ownerId}
             className={cx('mr-2 text-sm text-text-secondary')}
           />
-          <span className='text-xs text-text-muted'>{relativeTime}</span>
+          <ChatRelativeTime
+            createdAtTime={createdAtTime}
+            className='text-xs text-text-muted'
+          />
         </div>
       )}
       <div
@@ -89,7 +93,10 @@ export default function EmojiChatItem({
       </div>
       {isMyMessage && (
         <div className='mt-auto flex items-center gap-1 rounded-2xl px-2.5 pb-1.5'>
-          <span className='text-xs text-text-muted'>{relativeTime}</span>
+          <ChatRelativeTime
+            className='text-xs text-text-muted'
+            createdAtTime={createdAtTime}
+          />
           <Button
             variant='transparent'
             size='noPadding'

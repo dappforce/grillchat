@@ -12,7 +12,6 @@ import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getTimeRelativeToNow } from '@/utils/date'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
@@ -185,8 +184,6 @@ export default function ChatItem({
   const isEmojiOnly = shouldRenderEmojiChatItem(body ?? '')
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
-  const relativeTime = getTimeRelativeToNow(createdAtTime)
-
   return (
     <div
       {...props}
@@ -245,7 +242,7 @@ export default function ChatItem({
                   isSent={isSent}
                   onCheckMarkClick={onCheckMarkClick}
                   ownerId={ownerId}
-                  relativeTime={relativeTime}
+                  createdAtTime={createdAtTime}
                   inReplyTo={inReplyTo}
                   scrollToMessage={scrollToMessage}
                 />
