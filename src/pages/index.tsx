@@ -8,8 +8,8 @@ import { prefetchChatPreviewsData } from '@/server/chats'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getHubIds, getMainHubId } from '@/utils/env/client'
-import { dehydrateQueries, getCommonStaticProps } from '@/utils/page'
-import { QueryClient } from '@tanstack/react-query'
+import { getCommonStaticProps } from '@/utils/page'
+import { dehydrate, QueryClient } from '@tanstack/react-query'
 
 export const getStaticProps = getCommonStaticProps<
   HubsPageProps & AppCommonProps
@@ -46,7 +46,7 @@ export const getStaticProps = getCommonStaticProps<
 
     return {
       props: {
-        dehydratedState: dehydrateQueries(queryClient),
+        dehydratedState: dehydrate(queryClient),
         hubsChatCount,
         isIntegrateChatButtonOnTop: Math.random() > 0.5,
       },

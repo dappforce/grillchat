@@ -18,7 +18,7 @@ type LinkEvmAddressProps = {
   setModalStep?: () => void
   config?: MutationConfig<LinkEvmAddressMutationProps>
   onError?: () => void
-  linkedEvmAddress?: string
+  linkedEvmAddress?: string | null
 }
 
 export function useLinkEvmAddress({
