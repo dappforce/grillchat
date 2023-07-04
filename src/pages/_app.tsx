@@ -8,14 +8,13 @@ import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
-import { parseDehydratedState } from '@/utils/page'
 import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import { Source_Sans_Pro } from 'next/font/google'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 
 export type AppCommonProps = {
@@ -69,10 +68,6 @@ export default function App(props: AppProps<AppCommonProps>) {
 
 function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   const { head, dehydratedState, ...props } = pageProps
-  const parsedDehydratedState = useMemo(
-    () => parseDehydratedState(dehydratedState),
-    [dehydratedState]
-  )
 
   const isInitialized = useRef(false)
   const { theme } = useConfigContext()
@@ -92,7 +87,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
 
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
-      <QueryProvider dehydratedState={parsedDehydratedState}>
+      <QueryProvider dehydratedState={dehydratedState}>
         <ToasterConfig />
         <NextNProgress
           color='#4d46dc'
