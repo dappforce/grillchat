@@ -143,7 +143,7 @@ export const EnterSecretKeyContent = ({
         rows={3}
         size='sm'
         autoFocus
-        className='bg-background'
+        variant='fill-bg'
         onChange={(e) => setPrivateKey((e.target as HTMLTextAreaElement).value)}
         placeholder='Enter your Grill secret key'
       />

@@ -8,14 +8,16 @@ import {
   JoinChatWrapper,
   LeaveChatWrapper,
 } from '@/services/subsocial/posts/mutation'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { HiCircleStack, HiQrCode } from 'react-icons/hi2'
+import { HiCircleStack, HiPencilSquare, HiQrCode } from 'react-icons/hi2'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import ConfirmationModal from '../ConfirmationModal'
+import EditChatModal from '../EditChatModal'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'
 import QrCodeModal from '../QrCodeModal'
@@ -31,11 +33,12 @@ export default function AboutChatModal({
   messageCount = 0,
   ...props
 }: AboutChatModalProps) {
+  const address = useMyAccount((state) => state.address)
   const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId)
 
   const [openedModalType, setOpenedModalType] = useState<
-    'metadata' | 'qr' | 'confirmation-leave' | null
+    'metadata' | 'qr' | 'confirmation-leave' | 'edit' | null
   >(null)
 
   const isInIframe = useIsInIframe()
@@ -45,6 +48,7 @@ export default function AboutChatModal({
   if (!content) return null
 
   const chatUrl = urlJoin(getCurrentUrlOrigin(), getChatPageLink(router))
+  const chatOwner = chat.struct.ownerId
 
   const contentList: AboutModalProps['contentList'] = [
     { title: 'Description', content: content.body },
@@ -58,11 +62,11 @@ export default function AboutChatModal({
     {
       title: 'Chat Owner',
       content: (
-        <ProfilePreviewModalWrapper address={chat.struct.ownerId}>
+        <ProfilePreviewModalWrapper address={chatOwner}>
           {(onClick) => (
             <ProfilePreview
               onClick={onClick}
-              address={chat.struct.ownerId}
+              address={chatOwner}
               className='mt-1 cursor-pointer gap-2'
               avatarClassName={cx('h-6 w-6')}
               withGrillAddress={false}
@@ -92,6 +96,15 @@ export default function AboutChatModal({
         onClick: () => setOpenedModalType('metadata'),
       },
     ]
+
+    if (chatOwner === address || true) {
+      actionMenu.unshift({
+        text: 'Edit',
+        icon: HiPencilSquare,
+        iconClassName: cx('text-text-muted'),
+        onClick: () => setOpenedModalType('edit'),
+      })
+    }
 
     if (isLoading || isInIframe) return actionMenu
 
@@ -169,6 +182,11 @@ export default function AboutChatModal({
         onBackClick={() => setOpenedModalType(null)}
         url={chatUrl}
         urlTitle={content.title}
+      />
+      <EditChatModal
+        chat={chat}
+        isOpen={openedModalType === 'edit'}
+        closeModal={() => setOpenedModalType(null)}
       />
     </>
   )

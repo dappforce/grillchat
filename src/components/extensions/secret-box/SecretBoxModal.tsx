@@ -88,7 +88,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
             rows={3}
             size='sm'
             placeholder='Secret message for the recipient'
-            className='bg-background'
+            variant='fill-bg'
           />
         </div>
 
