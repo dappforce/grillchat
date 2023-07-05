@@ -37,7 +37,7 @@ export function getTimeRelativeToNow(
 export function formatDate(date: number | string | Date) {
   const dateObj = new Date(date)
   return new Intl.DateTimeFormat('en-US', {
-    dateStyle: 'full',
+    dateStyle: 'long',
     timeStyle: 'short',
   }).format(dateObj)
 }
