@@ -10,5 +10,5 @@ export function isInstallAvailable() {
 export function installApp() {
   const pwaInstall = document.getElementById('pwa-install') as any
   if (!pwaInstall) return
-  pwaInstall.install?.()
+  pwaInstall.showDialog?.()
 }
