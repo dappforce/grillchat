@@ -115,7 +115,9 @@ You can customize the look and feel of the Grill UI via channel settings.
 #### Hub config
 
 ```ts
-const config = {
+import { GrillConfig } from '@subsocial/grill-widget'
+
+const config: GrillConfig = {
   hub: { id: '1002' },
   theme: 'light',
 }
@@ -124,7 +126,9 @@ const config = {
 #### Full Channel Config with `'type': 'channel'`
 
 ```ts
-const config = {
+import { GrillConfig } from '@subsocial/grill-widget'
+
+const config: GrillConfig = {
   widgetElementId: 'grill',
   hub: { id: '1002' },
   channel: {
@@ -149,7 +153,9 @@ const config = {
 ##### Full Resource Config with `'type': 'resource'`
 
 ```ts
-const config = {
+import { GrillConfig } from '@subsocial/grill-widget'
+
+const config: GrillConfig = {
   widgetElementId: 'grill',
   hub: { id: 'YOUR-HUB_ID' },
   channel: {
