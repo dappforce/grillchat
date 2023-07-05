@@ -25,6 +25,7 @@
     "@ethersproject/hash": "^5.7.0",
     "@floating-ui/react": "^0.22.2",
     "@headlessui/react": "^1.7.11",
+    "@khmyznikov/pwa-install": "^0.2.5",
     "@kodadot1/uniquery": "^0.3.1-rc.0",
     "@polkadot/keyring": "^12.1.2",
     "@polkadot/util": "^12.1.2",
