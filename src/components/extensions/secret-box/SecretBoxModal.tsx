@@ -84,7 +84,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
             onChange={(e) => setSecretMessage(e.target.value)}
             rows={3}
             size='sm'
-            placeholder='Secret message for recipient'
+            placeholder='Secret message for the recipient'
             className='bg-background'
           />
         </div>
