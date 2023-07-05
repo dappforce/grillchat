@@ -42,15 +42,6 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
     decryptMessage()
   }, [!!decodedPromoProperties, myAddress])
 
-  // TODO: Create css file with styles for extensions
-  const darkThemeStyles = isMyMessage
-    ? 'bg-[#6660DF] text-white'
-    : 'bg-[#3B82F6]/10 text-[#60A5FA]'
-
-  const lightThemeStyles = isMyMessage
-    ? 'bg-[#E0E7FF] text-black'
-    : 'bg-[#EEF2FF] text-black'
-
   const darkThemeTextColor = isMyMessage ? '#FFF' : '#60A5FA'
 
   return (
@@ -64,18 +55,15 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
           className={cx(
             'mx-[10px] mb-[10px] mt-1',
             { ['mb-[10px] mt-1']: !isMyMessage },
-            theme === 'dark' ? darkThemeStyles : lightThemeStyles
+            isMyMessage
+              ? 'bg-[#E0E7FF] text-black dark:bg-[#6660DF] dark:text-white'
+              : 'bg-[#EEF2FF] text-black dark:bg-[#3B82F6]/10 dark:text-[#60A5FA]'
           )}
         >
           {decryptedMessage ? (
             <div className='flex flex-col gap-2'>
               <span className='text-[#60A5FA]'>📦 Your secret message:</span>
-              <span
-                className={cx(
-                  'text-base',
-                  theme === 'dark' ? 'text-white' : 'text-black'
-                )}
-              >
+              <span className={cx('text-base text-black dark:text-white')}>
                 {decryptedMessage}
               </span>
             </div>
