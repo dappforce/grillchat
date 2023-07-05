@@ -65,6 +65,9 @@ export const POST_FRAGMENT = gql`
     }
     rootPost {
       id
+      space {
+        id
+      }
     }
     sharedPost {
       id

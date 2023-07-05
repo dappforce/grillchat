@@ -122,7 +122,7 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
     contentId: post.content ?? '',
     repliesCount: post.repliesCount,
     sharesCount: post.sharesCount,
-    spaceId: post.space?.id ?? '',
+    spaceId: post.space?.id ?? post.rootPost?.space?.id ?? '',
     isUpdated: !!post.updatedAtTime,
     rootPostId: post.rootPost?.id ?? '',
   }
