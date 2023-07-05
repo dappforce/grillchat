@@ -20,9 +20,12 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
   const { mutateAsync: encodeSecretBox } = useEncodeSecretBox()
 
   const [recipient, setRecipient] = useState('')
-  const { recipient: initialRecipient, messageId } = initialData
+  const { recipient: initialRecipient } = initialData
   useEffect(() => {
-    if (initialRecipient) setRecipient(initialRecipient)
+    if (initialRecipient) {
+      setRecipient(initialRecipient)
+      setSecretMessage('')
+    }
   }, [initialRecipient])
 
   const beforeMesageSend = async (messageParams: SendMessageParams) => {

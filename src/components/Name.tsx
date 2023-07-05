@@ -9,6 +9,7 @@ export type NameProps = ComponentProps<'span'> & {
   address: string
   additionalText?: string
   className?: string
+  showEthIcon?: boolean
   color?: string
 }
 
@@ -16,6 +17,7 @@ const Name = ({
   address,
   className,
   additionalText,
+  showEthIcon = true,
   color,
   ...props
 }: NameProps) => {
@@ -46,7 +48,7 @@ const Name = ({
       style={{ color: color || textColor }}
     >
       {additionalText} {name}
-      {evmAddress && <EthIcon className='ml-2' />}
+      {evmAddress && showEthIcon && <EthIcon className='ml-2' />}
     </span>
   )
 }
