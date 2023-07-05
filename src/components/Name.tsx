@@ -1,3 +1,4 @@
+import EthIcon from '@/assets/icons/eth-medium.svg'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
@@ -21,7 +22,7 @@ const Name = ({
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
   const textColor = useRandomColor(address)
 
-  const { ensName } = accountData || {}
+  const { ensName, evmAddress } = accountData || {}
   const name = ensName || generateRandomName(address)
 
   if (!accountData && isLoading) {
@@ -41,10 +42,11 @@ const Name = ({
   return (
     <span
       {...props}
-      className={cx(className)}
+      className={cx(className, 'flex items-center')}
       style={{ color: color || textColor }}
     >
       {additionalText} {name}
+      {evmAddress && <EthIcon className='ml-2' />}
     </span>
   )
 }

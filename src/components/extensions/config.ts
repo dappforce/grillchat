@@ -51,7 +51,7 @@ const extensionsConfig: {
     chatItemComponent: DonateMessagePreview,
     replyMessageUI: {
       element: DonateRepliedMessagePreviewPart,
-      config: { place: 'body', textColor: '#FCEEE2' },
+      config: { place: 'body' },
     },
   },
   'subsocial-evm-nft': {
