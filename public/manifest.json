@@ -6,7 +6,13 @@
   "background_color": "#111729",
   "start_url": "/",
   "display": "standalone",
-  "display_override": ["fullscreen", "minimal-ui"],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui",
+    "fullscreen",
+    "browser"
+  ],
   "orientation": "portrait",
   "screenshots": [
     { "src": "/screenshots/mobile-1.png" },
