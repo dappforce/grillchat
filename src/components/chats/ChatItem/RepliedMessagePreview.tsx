@@ -86,7 +86,7 @@ export default function RepliedMessagePreview({
       }}
     >
       {place === 'inside' && extensionPart}
-      <div className='flex flex-col'>
+      <div className='flex flex-col overflow-hidden'>
         <Name
           address={message?.struct.ownerId}
           className='mb-1 font-medium'

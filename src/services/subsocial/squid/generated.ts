@@ -582,8 +582,12 @@ export enum ActivityOrderByInput {
   ExtensionIdDesc = 'extension_id_DESC',
   ExtensionImageAsc = 'extension_image_ASC',
   ExtensionImageDesc = 'extension_image_DESC',
+  ExtensionMessageAsc = 'extension_message_ASC',
+  ExtensionMessageDesc = 'extension_message_DESC',
   ExtensionNftIdAsc = 'extension_nftId_ASC',
   ExtensionNftIdDesc = 'extension_nftId_DESC',
+  ExtensionNonceAsc = 'extension_nonce_ASC',
+  ExtensionNonceDesc = 'extension_nonce_DESC',
   ExtensionTokenAsc = 'extension_token_ASC',
   ExtensionTokenDesc = 'extension_token_DESC',
   ExtensionTxHashAsc = 'extension_txHash_ASC',
@@ -1082,10 +1086,16 @@ export type ContentExtension = {
   id: Scalars['String']['output'];
   /** The URL or CID of attached image (actual for 'subsocial-image") */
   image?: Maybe<Scalars['String']['output']>;
+  /** The message of secret Secret box (actual for 'subsocial-secret-box") */
+  message?: Maybe<Scalars['String']['output']>;
   /** The ID of attached NFT (actual for 'subsocial-evm-nft") */
   nftId?: Maybe<Scalars['String']['output']>;
+  /** The nonce of encrypted Secret box (actual for 'subsocial-secret-box") */
+  nonce?: Maybe<Scalars['String']['output']>;
   /** The Post where extensions was published. */
   parentPost: Post;
+  /** The recipient Account of Secret box message (actual for 'subsocial-secret-box") */
+  recipient?: Maybe<Account>;
   /** The target (recipient) Evm Account of the Donation transaction (actual for 'subsocial-donations") */
   toEvm?: Maybe<EvmAccount>;
   /** The target (recipient) Substrate Account of the Donation transaction (actual for 'subsocial-donations") */
@@ -1153,8 +1163,12 @@ export enum ContentExtensionOrderByInput {
   IdDesc = 'id_DESC',
   ImageAsc = 'image_ASC',
   ImageDesc = 'image_DESC',
+  MessageAsc = 'message_ASC',
+  MessageDesc = 'message_DESC',
   NftIdAsc = 'nftId_ASC',
   NftIdDesc = 'nftId_DESC',
+  NonceAsc = 'nonce_ASC',
+  NonceDesc = 'nonce_DESC',
   ParentPostBodyAsc = 'parentPost_body_ASC',
   ParentPostBodyDesc = 'parentPost_body_DESC',
   ParentPostCanonicalAsc = 'parentPost_canonical_ASC',
@@ -1217,6 +1231,22 @@ export enum ContentExtensionOrderByInput {
   ParentPostUpdatedAtTimeDesc = 'parentPost_updatedAtTime_DESC',
   ParentPostUpvotesCountAsc = 'parentPost_upvotesCount_ASC',
   ParentPostUpvotesCountDesc = 'parentPost_upvotesCount_DESC',
+  RecipientFollowersCountAsc = 'recipient_followersCount_ASC',
+  RecipientFollowersCountDesc = 'recipient_followersCount_DESC',
+  RecipientFollowingAccountsCountAsc = 'recipient_followingAccountsCount_ASC',
+  RecipientFollowingAccountsCountDesc = 'recipient_followingAccountsCount_DESC',
+  RecipientFollowingPostsCountAsc = 'recipient_followingPostsCount_ASC',
+  RecipientFollowingPostsCountDesc = 'recipient_followingPostsCount_DESC',
+  RecipientFollowingSpacesCountAsc = 'recipient_followingSpacesCount_ASC',
+  RecipientFollowingSpacesCountDesc = 'recipient_followingSpacesCount_DESC',
+  RecipientIdAsc = 'recipient_id_ASC',
+  RecipientIdDesc = 'recipient_id_DESC',
+  RecipientOwnedPostsCountAsc = 'recipient_ownedPostsCount_ASC',
+  RecipientOwnedPostsCountDesc = 'recipient_ownedPostsCount_DESC',
+  RecipientUpdatedAtBlockAsc = 'recipient_updatedAtBlock_ASC',
+  RecipientUpdatedAtBlockDesc = 'recipient_updatedAtBlock_DESC',
+  RecipientUpdatedAtTimeAsc = 'recipient_updatedAtTime_ASC',
+  RecipientUpdatedAtTimeDesc = 'recipient_updatedAtTime_DESC',
   ToEvmIdAsc = 'toEvm_id_ASC',
   ToEvmIdDesc = 'toEvm_id_DESC',
   ToSubstrateFollowersCountAsc = 'toSubstrate_followersCount_ASC',
@@ -1245,9 +1275,11 @@ export enum ContentExtensionOrderByInput {
 
 /** The schema ID of the content extensions. */
 export enum ContentExtensionSchemaId {
+  SubsocialDecodedPromo = 'subsocial_decoded_promo',
   SubsocialDonations = 'subsocial_donations',
   SubsocialEvmNft = 'subsocial_evm_nft',
-  SubsocialImage = 'subsocial_image'
+  SubsocialImage = 'subsocial_image',
+  SubsocialSecretBox = 'subsocial_secret_box'
 }
 
 export type ContentExtensionWhereInput = {
@@ -1350,6 +1382,23 @@ export type ContentExtensionWhereInput = {
   image_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
   image_not_startsWith?: InputMaybe<Scalars['String']['input']>;
   image_startsWith?: InputMaybe<Scalars['String']['input']>;
+  message_contains?: InputMaybe<Scalars['String']['input']>;
+  message_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  message_endsWith?: InputMaybe<Scalars['String']['input']>;
+  message_eq?: InputMaybe<Scalars['String']['input']>;
+  message_gt?: InputMaybe<Scalars['String']['input']>;
+  message_gte?: InputMaybe<Scalars['String']['input']>;
+  message_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  message_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  message_lt?: InputMaybe<Scalars['String']['input']>;
+  message_lte?: InputMaybe<Scalars['String']['input']>;
+  message_not_contains?: InputMaybe<Scalars['String']['input']>;
+  message_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  message_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  message_not_eq?: InputMaybe<Scalars['String']['input']>;
+  message_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  message_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  message_startsWith?: InputMaybe<Scalars['String']['input']>;
   nftId_contains?: InputMaybe<Scalars['String']['input']>;
   nftId_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
   nftId_endsWith?: InputMaybe<Scalars['String']['input']>;
@@ -1367,8 +1416,27 @@ export type ContentExtensionWhereInput = {
   nftId_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
   nftId_not_startsWith?: InputMaybe<Scalars['String']['input']>;
   nftId_startsWith?: InputMaybe<Scalars['String']['input']>;
+  nonce_contains?: InputMaybe<Scalars['String']['input']>;
+  nonce_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  nonce_endsWith?: InputMaybe<Scalars['String']['input']>;
+  nonce_eq?: InputMaybe<Scalars['String']['input']>;
+  nonce_gt?: InputMaybe<Scalars['String']['input']>;
+  nonce_gte?: InputMaybe<Scalars['String']['input']>;
+  nonce_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  nonce_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  nonce_lt?: InputMaybe<Scalars['String']['input']>;
+  nonce_lte?: InputMaybe<Scalars['String']['input']>;
+  nonce_not_contains?: InputMaybe<Scalars['String']['input']>;
+  nonce_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  nonce_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  nonce_not_eq?: InputMaybe<Scalars['String']['input']>;
+  nonce_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  nonce_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  nonce_startsWith?: InputMaybe<Scalars['String']['input']>;
   parentPost?: InputMaybe<PostWhereInput>;
   parentPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  recipient?: InputMaybe<AccountWhereInput>;
+  recipient_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   toEvm?: InputMaybe<EvmAccountWhereInput>;
   toEvm_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   toSubstrate?: InputMaybe<AccountWhereInput>;
@@ -1551,6 +1619,7 @@ export enum EventName {
   ExtensionDonationCreated = 'ExtensionDonationCreated',
   ExtensionEvmNftShared = 'ExtensionEvmNftShared',
   ExtensionImageCreated = 'ExtensionImageCreated',
+  ExtensionSecretBoxCreated = 'ExtensionSecretBoxCreated',
   PostCreated = 'PostCreated',
   PostDeleted = 'PostDeleted',
   PostFollowed = 'PostFollowed',
@@ -5048,12 +5117,19 @@ export type WhereIdInput = {
   id: Scalars['String']['input'];
 };
 
+export type GetEvmAddressesQueryVariables = Exact<{
+  addresses?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
+
+
+export type GetEvmAddressesQuery = { __typename?: 'Query', evmSubstrateAccountLinks: Array<{ __typename?: 'EvmSubstrateAccountLink', evmAccount: { __typename?: 'EvmAccount', id: string }, substrateAccount: { __typename?: 'Account', id: string } }> };
+
 export type GetPostsQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, url?: string | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> }> };
+export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> }> };
 
 export type GetPostsByContentQueryVariables = Exact<{
   search: Scalars['String']['input'];
@@ -5062,7 +5138,7 @@ export type GetPostsByContentQueryVariables = Exact<{
 }>;
 
 
-export type GetPostsByContentQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, url?: string | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> }> };
+export type GetPostsByContentQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> }> };
 
 export type GetSpacesQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -5073,7 +5149,7 @@ export type GetSpacesQuery = { __typename?: 'Query', spaces: Array<{ __typename?
 
 export type SpaceFragmentFragment = { __typename?: 'Space', canEveryoneCreatePosts?: boolean | null, canFollowerCreatePosts?: boolean | null, content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, email?: string | null, name?: string | null, summary?: string | null, isShowMore?: boolean | null, linksOriginal?: string | null, hidden: boolean, id: string, updatedAtTime?: any | null, postsCount: number, image?: string | null, tagsOriginal?: string | null, about?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string } };
 
-export type PostFragmentFragment = { __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, url?: string | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> };
+export type PostFragmentFragment = { __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> };
 
 export const SpaceFragment = gql`
     fragment SpaceFragment on Space {
@@ -5154,11 +5230,30 @@ export const PostFragment = gql`
     nftId
     token
     txHash
+    message
+    recipient {
+      id
+    }
+    nonce
     url
     fromEvm {
       id
     }
     toEvm {
+      id
+    }
+  }
+}
+    `;
+export const GetEvmAddresses = gql`
+    query getEvmAddresses($addresses: [String!]) {
+  evmSubstrateAccountLinks(
+    where: {substrateAccount: {id_in: $addresses}, active_eq: true}
+  ) {
+    evmAccount {
+      id
+    }
+    substrateAccount {
       id
     }
   }

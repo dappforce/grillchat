@@ -46,7 +46,7 @@ const AmountInput = ({
 
   return (
     <div>
-      <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-gray-400'>
+      <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-text-muted'>
         <div>Amount</div>
         <div>
           Balance:{' '}

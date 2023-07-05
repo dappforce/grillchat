@@ -33,7 +33,7 @@ export default function AttachmentInput({
         },
       ]}
       allowedPlacements={['top-start']}
-      yOffset={20}
+      mainAxisOffset={20}
     >
       {(config) => {
         const { toggleDisplay, referenceProps } = config || {}

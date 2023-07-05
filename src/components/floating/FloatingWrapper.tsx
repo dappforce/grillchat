@@ -2,6 +2,7 @@ import { isTouchDevice } from '@/utils/device'
 import {
   Alignment,
   autoPlacement,
+  FloatingPortal,
   offset,
   Placement,
   safePolygon,
@@ -16,7 +17,7 @@ import { MouseEvent, MouseEventHandler, useRef, useState } from 'react'
 
 type ReferenceProps = Record<string, unknown>
 export type FloatingWrapperProps = {
-  children: (config?: {
+  children: (config: {
     toggleDisplay: (e?: MouseEvent<Element, globalThis.MouseEvent>) => void
     referenceProps: ReferenceProps
   }) => JSX.Element
@@ -25,7 +26,7 @@ export type FloatingWrapperProps = {
   alignment?: Alignment
   allowedPlacements?: Placement[]
   useClickPointAsAnchor?: boolean
-  yOffset?: number
+  mainAxisOffset?: number
 }
 
 export default function FloatingWrapper({
@@ -35,14 +36,14 @@ export default function FloatingWrapper({
   showOnHover,
   allowedPlacements,
   useClickPointAsAnchor,
-  yOffset = 0,
+  mainAxisOffset = 0,
 }: FloatingWrapperProps) {
   const [openMenu, setOpenMenu] = useState(false)
   const { x, y, strategy, refs, context } = useFloating({
     open: openMenu,
     onOpenChange: setOpenMenu,
     middleware: [
-      offset({ mainAxis: yOffset }),
+      offset({ mainAxis: mainAxisOffset }),
       autoPlacement({
         crossAxis: true,
         alignment,
@@ -94,26 +95,28 @@ export default function FloatingWrapper({
           onClick,
         }),
       })}
-      <Transition
-        ref={refs.setFloating}
-        style={{
-          position: strategy,
-          top: y ?? 0,
-          left: x ?? 0,
-        }}
-        {...getFloatingProps()}
-        appear
-        show={openMenu}
-        className='z-30 transition-opacity'
-        enter='ease-out duration-150'
-        enterFrom='opacity-0'
-        enterTo='opacity-100'
-        leave='ease-in duration-200'
-        leaveFrom='opacity-100'
-        leaveTo='opacity-0'
-      >
-        {panel(closeMenu)}
-      </Transition>
+      <FloatingPortal>
+        <Transition
+          ref={refs.setFloating}
+          style={{
+            position: strategy,
+            top: y ?? 0,
+            left: x ?? 0,
+          }}
+          {...getFloatingProps()}
+          appear
+          show={openMenu}
+          className='z-30 transition-opacity'
+          enter='ease-out duration-150'
+          enterFrom='opacity-0'
+          enterTo='opacity-100'
+          leave='ease-in duration-200'
+          leaveFrom='opacity-100'
+          leaveTo='opacity-0'
+        >
+          {panel(closeMenu)}
+        </Transition>
+      </FloatingPortal>
     </>
   )
 }

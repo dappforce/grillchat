@@ -14,10 +14,10 @@ import {
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { dehydrateQueries, getCommonStaticProps } from '@/utils/page'
+import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
 import { validateNumber } from '@/utils/strings'
-import { QueryClient } from '@tanstack/react-query'
+import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { GetStaticPaths } from 'next'
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -54,7 +54,10 @@ async function getChatsData(chatId: string) {
 
   const prices = await getPricesFromCache(Object.values(coingeckoTokenIds))
 
-  const accountsAddresses = await getAccountsDataFromCache(chatPageOwnerIds)
+  const accountsAddresses = await getAccountsDataFromCache(
+    chatPageOwnerIds,
+    'GET'
+  )
 
   return { messages, chatData, messageIds, accountsAddresses, prices }
 }
@@ -97,13 +100,15 @@ export const getStaticProps = getCommonStaticProps<
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
 
-      accountsAddresses.forEach((accountAddresses) =>
-        getAccountDataQuery.setQueryData(
-          queryClient,
-          accountAddresses.evmAddress,
-          accountAddresses
-        )
-      )
+      accountsAddresses.forEach((accountAddresses) => {
+        if (accountAddresses.evmAddress) {
+          getAccountDataQuery.setQueryData(
+            queryClient,
+            accountAddresses.grillAddress,
+            accountAddresses
+          )
+        }
+      })
       prices.forEach((price) => {
         const { id, current_price } = price || {}
 
@@ -120,7 +125,7 @@ export const getStaticProps = getCommonStaticProps<
 
     return {
       props: {
-        dehydratedState: dehydrateQueries(queryClient),
+        dehydratedState: dehydrate(queryClient),
         chatId,
         hubId,
         head: {

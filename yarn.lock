@@ -3370,9 +3370,9 @@
   integrity sha512-jHMVmIAjkhSzswZEid2xhWtQb7yyux/8Am/i5xBQfDw6azwSPdr1nfXCKaIYs5R/NRcqi543V9roDQQQogTaKQ==
 
 "@subsocial/definitions@latest":
-  version "0.8.12"
-  resolved "https://registry.yarnpkg.com/@subsocial/definitions/-/definitions-0.8.12.tgz#c82be57fd2e699e054fc374240cb4cd422cf6360"
-  integrity sha512-nRs+HaBmyV6mNCVWcIR6SdBTOilOxj/8my/BySzNEUOlfgsm3VeMeGTZbMNlSb25er+UZdkDXncHOLz6CQcqiA==
+  version "0.8.13"
+  resolved "https://registry.yarnpkg.com/@subsocial/definitions/-/definitions-0.8.13.tgz#5470fc503d574f8c85655202ba5fe1dbfbb0b43d"
+  integrity sha512-P6uCfkdsvlg3kqk+31UfvGFshZGBGtZqfemLVzpZIR6YNwXutKuII6oAwgWTDg36owjP6pHLCKxI5nDk89uKew==
   dependencies:
     "@polkadot/api" latest
     lodash.camelcase "^4.3.0"
@@ -3382,10 +3382,10 @@
   resolved "https://registry.yarnpkg.com/@subsocial/grill-widget/-/grill-widget-0.0.8.tgz#a8a584daffdac4edbb319ec59579a0bdd0004441"
   integrity sha512-dRPBcn+LU4LLVzHmVCm3MuIVc6dRZ2vC80PAys05NBVTdak+Jz1RQbc1yozPg6ReHgzZhQhU5z+ErYsYRvF09Q==
 
-"@subsocial/utils@latest":
-  version "0.8.12"
-  resolved "https://registry.yarnpkg.com/@subsocial/utils/-/utils-0.8.12.tgz#f86d54918f0795b4e710c62a580d77c37b1e6c32"
-  integrity sha512-gg07876wc49JNt+VGQAXf4LuuhKrUnn8hOO/mPehvrTxCymYhAzSM4EdtC+rnGC5HMiONgvZwkKidEqwSbTJhQ==
+"@subsocial/utils@0.8.13", "@subsocial/utils@latest":
+  version "0.8.13"
+  resolved "https://registry.yarnpkg.com/@subsocial/utils/-/utils-0.8.13.tgz#a1b79a30e4cbd2d1a7c30255fda9c5bff1cc3b0e"
+  integrity sha512-VivzKojUa2RQgY+tjaKaIlK7fjkY+JYCSoRLWlTP/A5aYpIZDIqRCMTFLAEvWy79zw92grm08MZGe+W4NbV97A==
   dependencies:
     "@polkadot/util-crypto" latest
     "@sindresorhus/slugify" "^1.1.0"
@@ -3403,6 +3403,7 @@
     remark-gfm "^1.0.0"
     remark-html "^13.0.1"
     strip-markdown "^4.0.0"
+    tweetnacl "^1.0.3"
 
 "@substrate/connect-extension-protocol@^1.0.1":
   version "1.0.1"
@@ -10721,6 +10722,11 @@ tunnel-agent@^0.6.0:
   integrity sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==
   dependencies:
     safe-buffer "^5.0.1"
+
+tweetnacl@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
+  integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"

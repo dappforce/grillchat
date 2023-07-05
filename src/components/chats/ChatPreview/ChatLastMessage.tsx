@@ -49,7 +49,7 @@ export default function ChatLastMessage({
     <div
       {...props}
       className={cx(
-        'flex items-center gap-1.5 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted',
+        'flex items-center gap-1.5 overflow-hidden text-sm text-text-muted',
         props.className
       )}
     >
@@ -59,7 +59,9 @@ export default function ChatLastMessage({
           className={cx('flex-shrink-0', previewClassName)}
         />
       )}
-      {showedText}
+      <span className='overflow-hidden overflow-ellipsis whitespace-nowrap'>
+        {showedText}
+      </span>
     </div>
   )
 }

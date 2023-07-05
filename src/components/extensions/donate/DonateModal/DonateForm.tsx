@@ -4,7 +4,6 @@ import MetamaskDeepLink, {
   isInsideMetamaskBrowser,
 } from '@/components/MetamaskDeepLink'
 import ProfilePreview from '@/components/ProfilePreview'
-import useGetTheme from '@/hooks/useGetTheme'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import {
@@ -41,9 +40,7 @@ function DonateForm({
   const [selectedChain, setSelectedChain] = chainState
   const [selectedToken, setSelectedToken] = tokenState
 
-  const theme = useGetTheme()
   const { isConnected } = useAccount()
-  const isDarkTheme = theme === 'dark'
   const [inputError, setInputError] = useState<string | undefined>()
   const [amount, setAmount] = useState<string>('')
   const address = useMyAccount((state) => state.address)
@@ -142,15 +139,10 @@ function DonateForm({
       onSubmit={onSubmit}
     >
       <div>
-        <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-gray-400'>
+        <div className='mb-2 flex justify-between text-sm font-normal leading-4 text-text-muted'>
           Recipient
         </div>
-        <div
-          className={cx(
-            'mb-6 mt-2 rounded-2xl p-4',
-            isDarkTheme ? 'bg-slate-700' : 'bg-slate-200'
-          )}
-        >
+        <div className={cx('mb-6 mt-2 rounded-2xl bg-background-lighter p-4')}>
           <ProfilePreview
             address={initialData.recipient}
             avatarClassName='h-12 w-12'
