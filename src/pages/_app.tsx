@@ -8,6 +8,7 @@ import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
+import '@khmyznikov/pwa-install'
 import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
@@ -16,6 +17,14 @@ import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      ['pwa-install']: any
+    }
+  }
+}
 
 export type AppCommonProps = {
   alwaysShowScrollbarOffset?: boolean
@@ -62,6 +71,8 @@ export default function App(props: AppProps<AppCommonProps>) {
         ${scrollbarStyling}
       `}</style>
       <AppContent {...props} />
+
+      <pwa-install id='pwa-install' manifest-url='/manifest.json'></pwa-install>
     </ConfigProvider>
   )
 }
