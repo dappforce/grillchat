@@ -1,5 +1,5 @@
 import FloatingWrapper from '@/components/floating/FloatingWrapper'
-import { getTimeRelativeToNow } from '@/utils/date'
+import { formatDate, getTimeRelativeToNow } from '@/utils/date'
 import { ComponentProps } from 'react'
 
 export type ChatRelativeTimeProps = ComponentProps<'span'> & {
@@ -17,7 +17,7 @@ export default function ChatRelativeTime({
       mainAxisOffset={4}
       panel={() => (
         <div className='rounded-md border border-background-lighter bg-background-light px-1.5 py-1 text-xs'>
-          {new Date(createdAtTime).toLocaleString()}
+          {formatDate(createdAtTime)}
         </div>
       )}
       showOnHover
