@@ -88,8 +88,8 @@ export default function FieldWrapper({
 
   const commonClassNames = cx(
     'transition duration-150',
-    'hover:brightness-110',
-    'focus:brightness-110',
+    'dark:hover:brightness-110 hover:brightness-105',
+    'dark:focus-visible:brightness-110 focus-visible:brightness-105',
     'disabled:cursor-not-allowed disabled:brightness-75',
     inputStyles({ pill, variant, size, containsRightElement: !!rightElement }),
     interactionRingStyles()
