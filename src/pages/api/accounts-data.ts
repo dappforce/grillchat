@@ -1,7 +1,5 @@
-import { resolveEnsAvatarSrc } from '@/components/AddressAvatar'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { MinimalUsageQueueWithTimeLimit } from '@/utils/data-structure'
-import axios from 'axios'
+import { redisCallWrapper } from '@/server/cache'
+import { getEvmAddressesFromSubsocial } from '@/services/subsocial/evmAddresses/fetcher'
 import { request } from 'graphql-request'
 import gql from 'graphql-tag'
 
@@ -10,9 +8,8 @@ import { z } from 'zod'
 
 export type AccountData = {
   grillAddress: string
-  evmAddress: string
+  evmAddress: string | null
   ensName: string | null
-  withEnsAvatar: boolean
 }
 
 const querySchema = z.object({
@@ -29,12 +26,6 @@ export type ApiAccountDataResponse = {
   hash?: string
 }
 
-const MAX_CACHE_ITEMS = 500_000
-const accountsDataCache = new MinimalUsageQueueWithTimeLimit<AccountData>(
-  MAX_CACHE_ITEMS,
-  5
-)
-
 const GET_ENS_NAMES = gql(`
   query GetEnsNames($evmAddresses: [String!]) {
     domains(where: { resolvedAddress_: { id_in: $evmAddresses } }) {
@@ -45,6 +36,12 @@ const GET_ENS_NAMES = gql(`
     }
   }
 `)
+
+const MAX_AGE = 60 * 60 // 1 hour
+
+const getRedisKey = (address: string) => {
+  return `accounts-data:${address}`
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -69,7 +66,10 @@ export default async function handler(
     invalidateCache(addresses)
     return res.status(200).send({ success: true, message: 'OK' })
   } else {
-    const accountsData = await getAccountsDataFromCache(addresses)
+    const accountsData = await getAccountsDataFromCache(
+      addresses,
+      req.method as 'POST' | 'GET'
+    )
 
     return res
       .status(200)
@@ -79,19 +79,8 @@ export default async function handler(
 
 function invalidateCache(addresses: string[]) {
   addresses.forEach((address) => {
-    accountsDataCache.queue.delete(address)
+    redisCallWrapper((redis) => redis?.del(getRedisKey(address)))
   })
-}
-
-async function checkEnsAvatar(ensName: string | null) {
-  if (!ensName) return false
-
-  try {
-    const result = await axios.get(resolveEnsAvatarSrc(ensName))
-    return !result.data?.message
-  } catch {
-    return false
-  }
 }
 
 type Domain = {
@@ -103,7 +92,7 @@ type EnsDomainRequestResult = {
   domains: Domain[]
 }
 
-async function getEnsNames(evmAddresses: string[]) {
+async function getEnsNames(evmAddresses: (string | null)[]) {
   const filteredAddresses = evmAddresses.filter((x) => !!x)
 
   const result = (await request({
@@ -121,35 +110,50 @@ async function getEnsNames(evmAddresses: string[]) {
   return domainsEntity
 }
 
-async function fetchAccountsData(addresses: string[]) {
+async function fetchAccountsData(addresses: string[], method: 'POST' | 'GET') {
   let newlyFetchedData: AccountData[] = []
 
   try {
-    const subsocialApi = await getSubsocialApi()
+    let evmAddressesHuman: (string | null)[] = []
+    try {
+      evmAddressesHuman = await getEvmAddressesFromSubsocial(
+        addresses,
+        method === 'POST' ? 'squid' : 'blockchain'
+      )
+    } catch (e) {
+      console.error(
+        'Error fetching evm addresses, trying to fetch from blockchain',
+        e
+      )
 
-    const api = await subsocialApi.blockchain.api
-    const evmAddressses = await api.query.evmAccounts.evmAddressByAccount.multi(
-      addresses
-    )
-
-    const evmAddressesHuman = evmAddressses.map((x) => x.toHuman() as string)
+      evmAddressesHuman = await getEvmAddressesFromSubsocial(
+        addresses,
+        'blockchain'
+      )
+    }
 
     const domains = await getEnsNames(evmAddressesHuman)
 
     const needToFetchIdsPromise = addresses.map(async (address, i) => {
       const evmAddress = evmAddressesHuman[i]
 
-      const ensName = domains?.[evmAddress] || null
+      const ensName = evmAddress ? domains?.[evmAddress] || null : null
 
       const accountData = {
         grillAddress: address,
         evmAddress: evmAddressesHuman[i],
         ensName,
-        withEnsAvatar: await checkEnsAvatar(ensName),
       }
 
       newlyFetchedData.push(accountData)
-      accountsDataCache.add(address, accountData)
+      redisCallWrapper((redis) =>
+        redis?.set(
+          getRedisKey(address),
+          JSON.stringify(accountData),
+          'EX',
+          MAX_AGE
+        )
+      )
     })
 
     await Promise.all(needToFetchIdsPromise)
@@ -165,22 +169,31 @@ async function fetchAccountsData(addresses: string[]) {
   }
 }
 
-export async function getAccountsDataFromCache(addresses: string[]) {
+export async function getAccountsDataFromCache(
+  addresses: string[],
+  method: 'POST' | 'GET'
+) {
   const evmAddressByGrillAddress: AccountData[] = []
   const needToFetchIds: string[] = []
 
   let newlyFetchedData: AccountData[] = []
-  addresses.forEach((address) => {
-    const cachedData = accountsDataCache.get(address)
+
+  const promises = addresses.map(async (address) => {
+    const cachedData = await redisCallWrapper((redis) =>
+      redis?.get(getRedisKey(address))
+    )
+
     if (cachedData) {
-      evmAddressByGrillAddress.push(cachedData)
+      const parsedData = JSON.parse(cachedData)
+      evmAddressByGrillAddress.push(parsedData)
     } else {
       needToFetchIds.push(address)
     }
   })
+  await Promise.all(promises)
 
   if (needToFetchIds.length > 0) {
-    newlyFetchedData = await fetchAccountsData(needToFetchIds)
+    newlyFetchedData = await fetchAccountsData(needToFetchIds, method)
   }
 
   return [...evmAddressByGrillAddress, ...newlyFetchedData]

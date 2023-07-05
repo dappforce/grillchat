@@ -8,7 +8,7 @@ import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { ComponentProps } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import ChatPreview from './ChatPreview/ChatPreview'
+import ChatPreview from './ChatPreview'
 
 export type ChatPreviewListProps = ComponentProps<'div'> & {
   chats: (PostData | undefined | null)[]

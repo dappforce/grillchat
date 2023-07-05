@@ -1,6 +1,5 @@
 import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
-import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
@@ -18,6 +17,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import dynamic from 'next/dynamic'
 import {
   ComponentProps,
   SyntheticEvent,
@@ -25,17 +25,31 @@ import {
   useRef,
   useState,
 } from 'react'
+import { BeforeMessageResult } from '../extensions/CommonExtensionModal'
+import { interceptPastedData } from '../extensions/config'
+
+const CaptchaInvisible = dynamic(
+  () => import('@/components/captcha/CaptchaInvisible'),
+  {
+    ssr: false,
+  }
+)
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
-  isPrimary?: boolean
   onSubmit?: () => void
   disabled?: boolean
   mustHaveMessageBody?: boolean
   inputProps?: TextAreaProps
-  buildAdditionalTxParams?: () => Partial<SendMessageParams>
+  buildAdditionalTxParams?: () =>
+    | Partial<SendMessageParams>
+    | Promise<Partial<SendMessageParams>>
   sendButtonText?: string
   sendButtonProps?: ButtonProps
+  isPrimary?: boolean
+  beforeMesageSend?: (
+    messageParams: SendMessageParams
+  ) => Promise<BeforeMessageResult>
   autofocus?: boolean
 }
 
@@ -55,6 +69,7 @@ export default function ChatForm({
   sendButtonText,
   sendButtonProps,
   isPrimary,
+  beforeMesageSend,
   ...props
 }: ChatFormProps) {
   const replyTo = useMessageData((state) => state.replyTo)
@@ -118,6 +133,7 @@ export default function ChatForm({
 
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
+
   const isDisabled =
     (mustHaveMessageBody && !processMessage(messageBody)) ||
     sendButtonProps?.disabled
@@ -126,8 +142,8 @@ export default function ChatForm({
     setMessageBody('')
     clearReplyTo?.()
   }
-  const handleSubmit = (captchaToken: string | null, e?: SyntheticEvent) => {
-    e?.preventDefault()
+
+  const handleSubmit = async (captchaToken: string | null) => {
     if (
       shouldSendMessage &&
       'virtualKeyboard' in navigator &&
@@ -137,17 +153,28 @@ export default function ChatForm({
     }
 
     const processedMessage = processMessage(messageBody)
+
     if (isDisabled) return
+
+    const additionalTxParams = await buildAdditionalTxParams?.()
 
     const sendMessageParams = {
       message: processedMessage,
       chatId,
       replyTo,
-      ...buildAdditionalTxParams?.(),
+      ...additionalTxParams,
     }
+
+    const { newMessageParams, txPrevented } =
+      (await beforeMesageSend?.(sendMessageParams)) || {}
+
+    if (txPrevented) return
+
+    const messageParams = newMessageParams || sendMessageParams
+
     if (shouldSendMessage) {
       resetForm()
-      sendMessage(sendMessageParams)
+      sendMessage(messageParams)
     } else {
       if (isLoggedIn) {
         sendEvent('request energy')
@@ -158,7 +185,7 @@ export default function ChatForm({
       resetForm()
       requestTokenAndSendMessage({
         captchaToken,
-        ...sendMessageParams,
+        ...messageParams,
       })
       setIsRequestingEnergy(true)
       sendEvent('request energy and send message')
@@ -173,12 +200,13 @@ export default function ChatForm({
       <CaptchaInvisible>
         {(runCaptcha) => {
           const submitForm = async (e?: SyntheticEvent) => {
+            e?.preventDefault()
             if (shouldSendMessage) {
-              handleSubmit(null, e)
+              handleSubmit(null)
               return
             }
             const token = await runCaptcha()
-            handleSubmit(token, e)
+            handleSubmit(token)
           }
 
           const renderSendButton = (classNames: string) => (
@@ -186,8 +214,7 @@ export default function ChatForm({
               onTouchEnd={(e) => {
                 // For mobile, to prevent keyboard from hiding
                 if (shouldSendMessage) {
-                  e.preventDefault()
-                  submitForm()
+                  submitForm(e)
                 }
               }}
               tabIndex={-1}
@@ -208,6 +235,10 @@ export default function ChatForm({
               className={cx('flex w-full flex-col gap-2', className)}
             >
               <TextArea
+                onPaste={(e) => {
+                  const clipboardData = e.clipboardData
+                  interceptPastedData(clipboardData, e)
+                }}
                 placeholder='Message...'
                 rows={1}
                 autoComplete='off'

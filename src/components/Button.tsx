@@ -14,6 +14,7 @@ export const buttonStyles = cva('relative rounded-full transition', {
       whiteOutline: 'bg-transparent border border-white text-text',
       mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
       transparent: 'bg-transparent',
+      redOutline: 'bg-transparent border border-text-red',
     },
     disabled: {
       true: 'opacity-30 dark:brightness-50 dark:opacity-100 pointer-events-none cursor-default',
@@ -73,7 +74,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   if (isLoading) {
     children = (
       <>
-        <span className='opacity-0'>{children}</span>
+        <span className='invisible -z-10 opacity-0'>{children}</span>
         <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center'>
           <span className='mr-2'>Loading</span> <Spinner className='h-4 w-4' />
         </div>

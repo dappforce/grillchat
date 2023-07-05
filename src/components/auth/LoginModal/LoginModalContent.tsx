@@ -188,9 +188,11 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
         ERC-20 tokens, NFTs, and other smart contracts.
       </p>
       <CustomConnectButton
+        withWalletActionImage={false}
         className='w-full'
         signAndLinkEvmAddress={signAndLinkEvmAddress}
         isLoading={isLoading}
+        secondLabel='Sign Message'
         label={
           <div className='flex items-center justify-center gap-2'>
             <WalletIcon />

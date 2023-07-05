@@ -3,15 +3,16 @@ import Modal from '@/components/modals/Modal'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
-import { useDisconnect } from 'wagmi'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
-import EvmLoginError from './contents/EvmLoginError'
-import LinkEvmAddressContent from './contents/LinkEvmAddressContent'
+import EvmLoginError from './contents/evm-linking/EvmLoginError'
+import LinkEvmAddressContent from './contents/evm-linking/LinkEvmAddressContent'
+import UnlinkEvmConfirmationContent from './contents/evm-linking/UnlinkEvmConfirmationContent'
 import LogoutContent from './contents/LogoutContent'
+import NotificationContent from './contents/notifications/NotificationContent'
+import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
-import UnlinkEvmConfirmationContent from './contents/UnlinkEvmConfirmationContent'
 import { ContentProps, ModalState, ProfileModalProps } from './types'
 
 const modalContents: {
@@ -26,34 +27,42 @@ const modalContents: {
   'evm-linking-error': EvmLoginError,
   'unlink-evm-confirmation': UnlinkEvmConfirmationContent,
   'evm-address-linked': CommonEvmAddressLinked,
+  notifications: NotificationContent,
+  'telegram-notifications': TelegramNotificationContent,
 }
 
 export default function ProfileModal({
   address,
   notification,
+  step,
   ...props
 }: ProfileModalProps) {
-  const [currentState, setCurrentState] = useState<ModalState>('account')
+  const [currentState, setCurrentState] = useState<ModalState>(
+    step || 'account'
+  )
   const { data: accountData } = getAccountDataQuery.useQuery(address)
-  const { disconnect } = useDisconnect()
 
   const { evmAddress: linkedEvmAddress } = accountData || {}
 
   useEffect(() => {
-    if (!linkedEvmAddress) {
-      disconnect()
-    }
-    if (props.isOpen) setCurrentState('account')
+    if (props.isOpen) setCurrentState(step || 'account')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
 
   const modalTitles: {
     [key in ModalState]: {
       title: React.ReactNode
       desc?: React.ReactNode
-      withBackButton?: boolean
+      withBackButton?: boolean | ModalState
+      withoutDefaultPadding?: boolean
+      withFooter?: boolean
     }
   } = {
-    account: { title: <span className='font-medium'>My Account</span> },
+    account: {
+      title: <span className='font-medium'>My Account</span>,
+      withoutDefaultPadding: true,
+      withFooter: true,
+    },
     logout: {
       title: '🤔 Did you back up your Grill secret key?',
       withBackButton: true,
@@ -92,22 +101,36 @@ export default function ProfileModal({
       desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
       withBackButton: false,
     },
+    notifications: {
+      title: '🔔 Notifications',
+      desc: 'Receive Grill.chat notifications in various locations',
+      withBackButton: true,
+      withoutDefaultPadding: true,
+    },
+    'telegram-notifications': {
+      title: '🔔 Telegram bot',
+      desc: 'Connect your account to our Telegram bot to receive notifications from Grill.',
+      withBackButton: 'notifications',
+    },
   }
 
-  const onBackClick = () => setCurrentState('account')
-  const { title, desc, withBackButton } = modalTitles[currentState] || {}
+  const { title, desc, withBackButton, withoutDefaultPadding, withFooter } =
+    modalTitles[currentState] || {}
+  const onBackClick = () =>
+    setCurrentState(
+      typeof withBackButton === 'string' ? withBackButton : 'account'
+    )
   const Content = modalContents[currentState]
-
-  const isAccountState = currentState === 'account'
 
   return (
     <Modal
       {...props}
       title={title}
       description={desc}
-      contentClassName={cx(isAccountState && '!px-0 !pb-0')}
-      titleClassName={cx(isAccountState && 'px-6')}
-      withFooter={isAccountState}
+      contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
+      titleClassName={cx(withoutDefaultPadding && 'px-6')}
+      descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
+      withFooter={withFooter}
       withCloseButton
       onBackClick={withBackButton ? onBackClick : undefined}
     >

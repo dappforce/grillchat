@@ -1,8 +1,16 @@
-import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
+import InfoPanel from '@/components/InfoPanel'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { isTouchDevice } from '@/utils/device'
+import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 import { loginModalContents, LoginModalStep } from './LoginModalContent'
+
+const CaptchaInvisible = dynamic(
+  () => import('@/components/captcha/CaptchaInvisible'),
+  {
+    ssr: false,
+  }
+)
 
 export type LoginModalProps = ModalFunctionalityProps & {
   afterLogin?: () => void
@@ -33,10 +41,10 @@ const modalHeader: ModalTitle = {
           To access GrillChat, you need a Grill secret key. If you do not have
           one, just write your first chat message, and you will be given one.
         </span>
-        <span className='text-text-red'>
+        <InfoPanel className='mt-4'>
           DO NOT enter the private key of an account that holds any funds,
           assets, NFTs, etc.
-        </span>
+        </InfoPanel>
       </span>
     ),
     withBackButton: true,

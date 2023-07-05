@@ -1,22 +1,28 @@
+import BellIcon from '@/assets/icons/bell.svg'
 import BulbIcon from '@/assets/icons/bulb.svg'
 import EthIcon from '@/assets/icons/eth.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
+import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
+import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import { useSendEvent } from '@/stores/analytics'
 import { useDisconnect } from 'wagmi'
 import { ContentProps } from '../types'
 
-function AccountContent({
+export default function AccountContent({
   address,
   setCurrentState,
   notification,
   evmAddress,
 }: ContentProps) {
+  const { showNotification, closeNotification } =
+    useFirstVisitNotification('notification-menu')
+
   const sendEvent = useSendEvent()
   const { disconnect } = useDisconnect()
 
@@ -44,6 +50,19 @@ function AccountContent({
 
   const menus: MenuListProps['menus'] = [
     {
+      text: (
+        <span className='flex items-center gap-2'>
+          <span>Notifications</span>
+          {showNotification && <DotBlinkingNotification />}
+        </span>
+      ),
+      icon: BellIcon,
+      onClick: () => {
+        closeNotification()
+        setCurrentState('notifications')
+      },
+    },
+    {
       text: evmAddress ? 'My EVM Address' : 'Link EVM address',
       icon: EthIcon,
       onClick: () => {
@@ -53,14 +72,9 @@ function AccountContent({
     },
     {
       text: (
-        <span>
-          <span>Show grill secret key</span>
-          {notification?.showNotif && (
-            <span className='relative ml-2 h-2 w-2'>
-              <span className='absolute inset-0 inline-flex h-full w-full animate-ping rounded-full bg-background-warning opacity-75'></span>
-              <span className='relative block h-full w-full rounded-full bg-background-warning' />
-            </span>
-          )}
+        <span className='flex items-center gap-2'>
+          <span>Show Grill secret key</span>
+          {notification?.showNotif && <DotBlinkingNotification />}
         </span>
       ),
       icon: KeyIcon,
@@ -93,5 +107,3 @@ function AccountContent({
     </div>
   )
 }
-
-export default AccountContent

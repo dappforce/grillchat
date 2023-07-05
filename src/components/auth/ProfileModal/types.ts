@@ -8,6 +8,7 @@ type NotificationControl = {
 export type ProfileModalProps = ModalFunctionalityProps & {
   address: string
   notification?: NotificationControl
+  step?: ModalState
 }
 
 export type ModalState =
@@ -20,10 +21,12 @@ export type ModalState =
   | 'evm-linking-error'
   | 'unlink-evm-confirmation'
   | 'evm-address-linked'
+  | 'notifications'
+  | 'telegram-notifications'
 
 export type ContentProps = {
   address: string
   setCurrentState: React.Dispatch<React.SetStateAction<ModalState>>
   notification?: NotificationControl
-  evmAddress?: string
+  evmAddress?: string | null
 }

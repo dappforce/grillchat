@@ -1,5 +1,7 @@
 import {
   CommentStruct,
+  DonateExtension,
+  ImageExtension,
   NftExtension,
   PostContent,
   PostContentExtension,
@@ -14,7 +16,7 @@ import {
 
 const SQUID_SEPARATOR = ','
 const getTokensFromUnifiedString = (data: string | null) =>
-  data?.split(SQUID_SEPARATOR) ?? []
+  data?.split(SQUID_SEPARATOR).filter(Boolean) ?? []
 
 export const mapSpaceFragment = (space: SpaceFragmentFragment): SpaceData => {
   return {
@@ -51,7 +53,7 @@ const mapPostExtensions = (
   const mappedExtensions = extensions?.map((ext) => {
     switch (ext.extensionSchemaId) {
       case ContentExtensionSchemaId.SubsocialEvmNft:
-        const extension: NftExtension = {
+        const nftExtension: NftExtension = {
           id: 'subsocial-evm-nft',
           properties: {
             chain: ext.chain ?? '',
@@ -60,7 +62,31 @@ const mapPostExtensions = (
             url: ext.url ?? '',
           },
         }
-        return extension
+        return nftExtension
+
+      case ContentExtensionSchemaId.SubsocialDonations:
+        const donationExtension: DonateExtension = {
+          id: 'subsocial-donations',
+          properties: {
+            chain: ext?.chain ?? '',
+            from: ext?.fromEvm?.id ?? '',
+            to: ext?.toEvm?.id ?? '',
+            token: ext?.token ?? '',
+            decimals: ext?.decimals ?? 0,
+            amount: ext?.amount ?? '',
+            txHash: ext?.txHash ?? '',
+          },
+        }
+        return donationExtension
+
+      case ContentExtensionSchemaId.SubsocialImage:
+        const imageExtension: ImageExtension = {
+          id: 'subsocial-image',
+          properties: {
+            image: ext.image ?? '',
+          },
+        }
+        return imageExtension
     }
   })
   const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]

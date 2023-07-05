@@ -1,5 +1,5 @@
 import { getHubIdFromAlias } from '@/constants/hubs'
-import { useCreateDiscussion } from '@/services/api/mutations'
+import { useCreateDiscussion } from '@/services/api/mutation'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'

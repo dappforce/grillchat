@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import Container from '@/components/Container'
+import ExtensionModals from '@/components/extensions'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { useMessageData } from '@/stores/message'
@@ -22,6 +23,15 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   hubId: string
 }
 
+const HUB_ID_WITHOUT_JOIN_BUTTON = [
+  '1023',
+  '1002',
+  '1005',
+  '1010',
+  '1011',
+  '1007',
+]
+
 export default function ChatRoom({
   className,
   asContainer,
@@ -35,6 +45,9 @@ export default function ChatRoom({
   useEffect(() => {
     return () => clearReplyTo()
   }, [clearReplyTo])
+  const showEmptyPrimaryChatInput = useMessageData(
+    (state) => state.showEmptyPrimaryChatInput
+  )
 
   const Component = asContainer ? Container<'div'> : 'div'
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -50,6 +63,7 @@ export default function ChatRoom({
   }
 
   const { isJoined, isLoading: isLoadingJoinedChat } = useIsJoinedToChat(chatId)
+  const isHubWithoutJoinButton = HUB_ID_WITHOUT_JOIN_BUTTON.includes(hubId)
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
@@ -65,17 +79,18 @@ export default function ChatRoom({
       <Component
         className={cx('mt-auto flex flex-col py-2', replyTo && 'pt-0')}
       >
-        {replyTo && (
+        {replyTo && !showEmptyPrimaryChatInput && (
           <RepliedMessage
             replyMessageId={replyTo}
             scrollContainer={scrollContainerRef}
           />
         )}
-        {isJoined ? (
+        {isJoined || isHubWithoutJoinButton ? (
           <ChatInputBar
             formProps={{
               chatId,
               onSubmit: scrollToBottom,
+              isPrimary: true,
             }}
           />
         ) : (
@@ -99,6 +114,8 @@ export default function ChatRoom({
           </JoinChatWrapper>
         )}
       </Component>
+
+      <ExtensionModals chatId={chatId} onSubmit={scrollToBottom} />
     </div>
   )
 }

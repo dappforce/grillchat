@@ -53,7 +53,7 @@ const useSignEvmLinkMessage = () => {
 type SignMessageAndLinkAddressProps = {
   setModalStep?: () => void
   onError?: () => void
-  linkedEvmAddress?: string
+  linkedEvmAddress?: string | null
 }
 
 export default function useSignMessageAndLinkEvmAddress({
@@ -85,6 +85,7 @@ export default function useSignMessageAndLinkEvmAddress({
       }
       onError?.()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignMessageError, linkEvmAddress])
 
   const signAndLinkEvmAddress = async (

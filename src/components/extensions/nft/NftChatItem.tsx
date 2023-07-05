@@ -8,7 +8,9 @@ import { cx } from '@/utils/class-names'
 import truncate from 'lodash.truncate'
 import { useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
-import CommonChatItem, { ExtensionChatItemProps } from '../CommonChatItem'
+import CommonChatItem from '../CommonChatItem'
+import { ExtensionChatItemProps } from '../types'
+import { getMessageExtensionProperties } from '../utils'
 import { getMarketplaceFromLink } from './utils'
 
 type Props = ExtensionChatItemProps
@@ -23,9 +25,12 @@ export default function NftChatItem(props: Props) {
   const { content } = message
   const { extensions } = content || {}
 
-  const nftProperties = extensions?.[0]?.properties
+  const nftProperties = getMessageExtensionProperties(
+    extensions?.[0],
+    'subsocial-evm-nft'
+  )
   const { data: nftData, isLoading: isLoadingNftData } = getNftQuery.useQuery(
-    nftProperties ?? null,
+    nftProperties,
     {
       enabled: inView,
     }
@@ -33,8 +38,6 @@ export default function NftChatItem(props: Props) {
 
   const { IntegratedSkeleton: NftDataSkeleton } =
     useIntegratedSkeleton(isLoadingNftData)
-  // const { IntegratedSkeleton: NftPriceSkeleton } =
-  //   useIntegratedSkeleton(isLoadingNftPrice)
 
   const marketplace = useMemo(() => {
     if (!nftProperties?.url) return
@@ -60,7 +63,7 @@ export default function NftChatItem(props: Props) {
                   containerClassName='rounded-[4px] overflow-hidden w-full cursor-pointer'
                   placeholderClassName={cx('w-[320px] aspect-square')}
                   className='w-[320px] object-contain'
-                  image={nftData?.image ?? ''}
+                  src={nftData?.image ?? ''}
                   onClick={(e) => {
                     e.stopPropagation()
                     onClick()
@@ -74,7 +77,11 @@ export default function NftChatItem(props: Props) {
           </div>
           <div className='mt-1.5 flex flex-col gap-1 px-2.5'>
             <div className='flex items-center justify-between gap-2'>
-              <LinkText href={nftProperties?.url ?? ''} openInNewTab>
+              <LinkText
+                href={nftProperties?.url ?? ''}
+                openInNewTab
+                onClick={(e) => e.stopPropagation()}
+              >
                 <NftDataSkeleton content={nftData}>
                   {(data) => data?.name ?? data?.collectionName}
                 </NftDataSkeleton>
@@ -95,9 +102,6 @@ export default function NftChatItem(props: Props) {
               <NftDataSkeleton content={nftData} className={cx('w-16')}>
                 {(data) => <span>{data?.collectionName}</span>}
               </NftDataSkeleton>
-              {/* <NftPriceSkeleton content={nftPrice} className={cx('w-16')}>
-                {(data) => <span>{data}</span>}
-              </NftPriceSkeleton> */}
             </div>
             <Button
               className='my-2 mb-3'

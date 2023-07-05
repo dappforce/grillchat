@@ -1,4 +1,4 @@
-import { createUserId } from '@/services/api/mutations'
+import { createUserId } from '@/services/api/mutation'
 import { type BrowserClient } from '@amplitude/analytics-types'
 import { useParentData } from './parent'
 import { create } from './utils'

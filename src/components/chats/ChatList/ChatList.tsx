@@ -39,10 +39,10 @@ import { NewMessageNotice } from './NewMessageNotice'
 
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
+  scrollContainerRef?: React.RefObject<HTMLDivElement>
   scrollableContainerClassName?: string
   hubId: string
   chatId: string
-  scrollContainerRef?: React.RefObject<HTMLDivElement>
   replyTo?: string
   newMessageNoticeClassName?: string
 }
@@ -72,6 +72,7 @@ function ChatListContent({
   const prevMessageModalMsgId = usePrevious(messageModalMsgId)
 
   const scrollableContainerId = useId()
+
   const innerScrollContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
 
@@ -129,7 +130,7 @@ function ChatListContent({
     if (!isMessageIdsFetched) return
 
     if (!messageId || !validateNumber(messageId)) {
-      scrollToMessage(lastReadId ?? '', false)
+      if (lastReadId) scrollToMessage(lastReadId ?? '', false)
       return
     }
 
@@ -180,7 +181,7 @@ function ChatListContent({
         id={scrollableContainerId}
         ref={scrollContainerRef}
         className={cx(
-          'flex flex-col-reverse overflow-x-hidden pl-2',
+          'flex flex-col-reverse overflow-x-hidden px-2',
           scrollableContainerClassName
         )}
       >
@@ -197,7 +198,12 @@ function ChatListContent({
             inverse
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
-            endMessage={<ChatTopNotice className='pb-2 pt-4' />}
+            endMessage={
+              <ChatTopNotice
+                hasNoMessage={messageQueries.length === 0}
+                className='pb-2 pt-4'
+              />
+            }
             scrollThreshold={`${scrollThreshold}px`}
           >
             {messageQueries.map(({ data: message }, index) => {
@@ -271,7 +277,7 @@ function PinnedMessage({
   return (
     <div className='sticky top-0 z-10 border-b border-border-gray bg-background-light text-sm'>
       <Component
-        className='flex cursor-pointer items-center overflow-hidden py-2'
+        className='flex cursor-pointer items-center gap-4 overflow-hidden py-2'
         onClick={() => scrollToMessage(message.id, true)}
       >
         <div className='mr-1'>

@@ -1,10 +1,13 @@
-import { ExtensionChatItemProps } from '@/components/extensions/CommonChatItem'
-import NftChatItem from '@/components/extensions/nft/NftChatItem'
+import { getExtensionConfig } from '@/components/extensions/config'
+import { ExtensionChatItemProps } from '@/components/extensions/types'
+import { PostContentExtension } from '@subsocial/api/types'
 
-export type ChatItemWithExtensionProps = ExtensionChatItemProps
+export default function ChatItemWithExtension(props: ExtensionChatItemProps) {
+  const extensionId = props.message.content?.extensions?.[0]
+    .id as PostContentExtension['id']
 
-export default function ChatItemWithExtension(
-  props: ChatItemWithExtensionProps
-) {
-  return <NftChatItem {...props} />
+  const ChatItemComponent = getExtensionConfig(extensionId)?.chatItemComponent
+  if (!ChatItemComponent) return null
+
+  return <ChatItemComponent {...props} />
 }

@@ -1,44 +1,36 @@
+import { ApiResponse, handlerWrapper } from '@/server/common'
 import { getUserIdSalt } from '@/utils/env/server'
 import { createHash } from 'crypto'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest } from 'next'
 import { z } from 'zod'
 
 const bodySchema = z.object({
   address: z.string(),
 })
 
-export type CreateUserIdResponse = {
-  success: boolean
-  errors?: any
-  message?: string
+type ResponseData = {
   userId?: string
 }
+export type CreateUserIdResponse = ApiResponse<ResponseData>
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<CreateUserIdResponse>
-) {
-  if (req.method !== 'POST') return res.status(404).end()
+export default handlerWrapper({
+  inputSchema: bodySchema,
+  dataGetter: (req: NextApiRequest) => req.body,
+})<ResponseData>({
+  allowedMethods: ['POST'],
+  handler: async (data, _, res) => {
+    let userId: string
+    try {
+      const userIdInput = `${data.address}-${getUserIdSalt() ?? ''}`
+      userId = createHash('sha256').update(userIdInput).digest('hex')
+    } catch (e: any) {
+      return res.status(500).send({
+        message: '',
+        success: false,
+        errors: e.message,
+      })
+    }
 
-  const body = bodySchema.safeParse(req.body)
-  if (!body.success) {
-    return res.status(400).send({
-      success: false,
-      message: 'Invalid request body',
-      errors: body.error.errors,
-    })
-  }
-
-  let userId: string
-  try {
-    const userIdInput = `${body.data.address}-${getUserIdSalt() ?? ''}`
-    userId = createHash('sha256').update(userIdInput).digest('hex')
-  } catch (e: any) {
-    return res.status(500).send({
-      success: false,
-      errors: e.message,
-    })
-  }
-
-  res.status(200).send({ success: true, userId })
-}
+    res.status(200).send({ success: true, message: 'OK', userId })
+  },
+})

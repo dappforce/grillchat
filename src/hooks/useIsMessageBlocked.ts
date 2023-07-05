@@ -12,7 +12,7 @@ export default function useIsMessageBlocked(
   message: PostData | null | undefined,
   chatId: string
 ) {
-  const { data: blockedIds } = getBlockedMessageIdsInChatIdQuery.useQuery({
+  const { data: blockedMessages } = getBlockedMessageIdsInChatIdQuery.useQuery({
     chatId,
     hubId,
   })
@@ -21,7 +21,10 @@ export default function useIsMessageBlocked(
     hubId,
   })
 
-  const blockedIdsSet = useMemo(() => new Set(blockedIds), [blockedIds])
+  const blockedIdsSet = useMemo(
+    () => new Set(blockedMessages?.blockedMessageIds),
+    [blockedMessages]
+  )
   const blockedCidsSet = useMemo(() => new Set(blockedCids), [blockedCids])
   const blockedAddressesSet = useMemo(
     () => new Set(blockedAddresses),

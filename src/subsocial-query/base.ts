@@ -45,8 +45,12 @@ export function createQueryKeys<Data>(key: string) {
 }
 
 export function createQueryInvalidation<Data>(key: string) {
-  return (client: QueryClient, data: Data | null = null, exact = false) => {
-    client.invalidateQueries({
+  return async (
+    client: QueryClient,
+    data: Data | null = null,
+    exact = false
+  ) => {
+    return client.invalidateQueries({
       queryKey: [key, data],
       exact,
     })

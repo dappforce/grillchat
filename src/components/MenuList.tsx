@@ -28,7 +28,7 @@ const menuListItemStyles = cva<MenuListVariants>(
   {
     variants: {
       size: {
-        md: 'px-6 py-3 gap-6',
+        md: 'px-4 py-3 gap-6',
         sm: 'px-3 py-2 gap-4',
       },
     },
@@ -40,9 +40,11 @@ const menuListItemStyles = cva<MenuListVariants>(
 
 type Menu = {
   text: string | JSX.Element
+  iconClassName?: string
   icon: React.ComponentType<{ className?: string }>
   onClick?: () => void
   href?: string
+  disabled?: boolean
 }
 export type MenuListProps = ComponentProps<'div'> &
   VariantProps<typeof menuListStyles> & {
@@ -52,22 +54,30 @@ export type MenuListProps = ComponentProps<'div'> &
 export default function MenuList({ menus, size, ...props }: MenuListProps) {
   return (
     <div {...props} className={cx(menuListStyles({ size }), props.className)}>
-      {menus.map(({ icon: Icon, onClick, text, href }, idx) => (
-        <Button
-          key={idx}
-          href={href}
-          target='_blank'
-          rel='noopener noreferrer'
-          variant='transparent'
-          size='noPadding'
-          interactive='none'
-          className={menuListItemStyles({ size })}
-          onClick={onClick}
-        >
-          <Icon className='text-xl text-text-muted' />
-          {isValidElement(text) ? text : <span>{text}</span>}
-        </Button>
-      ))}
+      {menus.map(
+        ({ icon: Icon, onClick, text, href, iconClassName, disabled }, idx) => (
+          <Button
+            key={idx}
+            href={href}
+            target='_blank'
+            rel='noopener noreferrer'
+            variant='transparent'
+            size='noPadding'
+            disabled={disabled}
+            interactive='none'
+            className={menuListItemStyles({ size })}
+            onClick={onClick}
+          >
+            <Icon
+              className={cx(
+                'flex-shrink-0 text-xl text-text-muted',
+                iconClassName
+              )}
+            />
+            {isValidElement(text) ? text : <span>{text}</span>}
+          </Button>
+        )
+      )}
     </div>
   )
 }

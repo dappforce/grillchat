@@ -1,4 +1,3 @@
-import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import useToastError from '@/hooks/useToastError'
 import { createQuery } from '@/subsocial-query'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
@@ -8,7 +7,15 @@ import {
 } from '@/subsocial-query/subsocial/query'
 import { getSquidUrl } from '@/utils/env/client'
 import { UseMutationResult } from '@tanstack/react-query'
+import dynamic from 'next/dynamic'
 import useCommonTxSteps from './hooks'
+
+const CaptchaInvisible = dynamic(
+  () => import('@/components/captcha/CaptchaInvisible'),
+  {
+    ssr: false,
+  }
+)
 
 type DynamicSubsocialQueryFetcher<Data, ReturnValue> = {
   blockchain: (data: SubsocialQueryData<Data>) => Promise<ReturnValue>

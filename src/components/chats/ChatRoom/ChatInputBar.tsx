@@ -1,7 +1,9 @@
 import { cx } from '@/utils/class-names'
+import dynamic from 'next/dynamic'
 import { ComponentProps } from 'react'
 import ChatForm, { ChatFormProps } from '../ChatForm'
-import AttachmentInput from './AttachmentInput'
+
+const AttachmentInput = dynamic(import('./AttachmentInput'), { ssr: false })
 
 type ChatInputBarProps = ComponentProps<'div'> & {
   formProps: ChatFormProps
@@ -14,7 +16,7 @@ export default function ChatInputBar({
   return (
     <div {...props} className={cx('flex items-center gap-2', props.className)}>
       <AttachmentInput chatId={formProps.chatId} />
-      <ChatForm {...formProps} isPrimary />
+      <ChatForm {...formProps} />
     </div>
   )
 }

@@ -7,6 +7,7 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     scrollRestoration: true,
+    largePageDataBytes: 200 * 1024, // 200kb
   },
 
   webpack(config) {
@@ -23,8 +24,6 @@ const nextConfig = {
       { source: '/hubs', destination: '/' },
       { source: '/my-chats', destination: '/' },
       { source: '/hot-chats', destination: '/' },
-
-      { source: '/decoded', destination: '/' },
     ]
   },
   async redirects() {

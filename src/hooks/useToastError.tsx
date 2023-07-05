@@ -14,7 +14,7 @@ export default function useToastError<ErrorType>(
       let message: string | undefined = (error as any)?.message
 
       const response = (error as any)?.response?.data
-      if (response && getMessageRef.current) {
+      if (getMessageRef.current) {
         const responseMessage = getMessageRef.current(response)
         if (responseMessage) message = responseMessage
       }
