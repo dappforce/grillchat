@@ -73,6 +73,7 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
               <Name
                 address={recipient || ''}
                 className='min-w-fit font-semibold'
+                showEthIcon={false}
                 color={theme === 'dark' ? darkThemeTextColor : '#000'}
               />
               <span className='min-w-fit'>
