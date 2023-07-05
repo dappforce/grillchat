@@ -21,7 +21,19 @@ export default function ChatLastMessage({
   const { data: messageIds } = useCommentIdsByPostId(chatId)
 
   const { data: lastMessage } = useLastMessage(chatId)
-  const isMessageBlocked = useIsMessageBlocked(hubId, lastMessage, chatId)
+
+  const isMessageBlockedInCurrentHub = useIsMessageBlocked(
+    hubId,
+    lastMessage,
+    chatId
+  )
+  const isMessageBlockedInOriginalHub = useIsMessageBlocked(
+    lastMessage?.struct.spaceId ?? '',
+    lastMessage,
+    chatId
+  )
+  const isMessageBlocked =
+    isMessageBlockedInCurrentHub || isMessageBlockedInOriginalHub
 
   const defaultDescOrMessageCount =
     defaultDesc || `${messageIds?.length} messages`
