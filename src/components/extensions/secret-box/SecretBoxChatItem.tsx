@@ -42,6 +42,7 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
     decryptMessage()
   }, [!!decodedPromoProperties, myAddress])
 
+  // TODO: Create css file with styles for extensions
   const darkThemeStyles = isMyMessage
     ? 'bg-[#6660DF] text-white'
     : 'bg-[#3B82F6]/10 text-[#60A5FA]'
@@ -51,7 +52,6 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
     : 'bg-[#EEF2FF] text-black'
 
   const darkThemeTextColor = isMyMessage ? '#FFF' : '#60A5FA'
-  const lightThemeTextColor = '#000'
 
   return (
     <CommonChatItem
@@ -80,17 +80,17 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
               </span>
             </div>
           ) : (
-            <>
-              📦 Only{' '}
+            <div className='flex gap-1'>
+              <span className='min-w-fit'>📦 Only</span>
               <Name
                 address={recipient || ''}
-                className='font-semibold'
-                color={
-                  theme === 'dark' ? darkThemeTextColor : lightThemeTextColor
-                }
-              />{' '}
-              is able to read this secret message.
-            </>
+                className='min-w-fit font-semibold'
+                color={theme === 'dark' ? darkThemeTextColor : '#000'}
+              />
+              <span className='min-w-fit'>
+                is able to read this secret message.
+              </span>
+            </div>
           )}
         </InfoPanel>
       )}

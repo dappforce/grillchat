@@ -1,4 +1,3 @@
-import GiftBoxIcon from '@/assets/icons/gift-box.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
 import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
@@ -28,6 +27,7 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
+import { BiGift } from 'react-icons/bi'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
@@ -144,7 +144,7 @@ export default function ChatItem({
         ? [
             {
               text: 'Secret Box',
-              icon: GiftBoxIcon,
+              icon: BiGift,
               onClick: () => {
                 setMessageAsReply(messageId)
                 openExtensionModal('subsocial-decoded-promo', {

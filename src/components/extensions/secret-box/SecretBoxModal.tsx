@@ -61,6 +61,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
       mustHaveMessageBody={false}
       disableSendButton={!secretMessage}
       isOpen={isOpen}
+      autofocus={false}
       closeModal={closeModal}
       beforeMesageSend={beforeMesageSend}
     >
