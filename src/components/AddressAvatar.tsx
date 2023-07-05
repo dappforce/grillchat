@@ -43,7 +43,8 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
             className={cx(
               'bg-background-light',
               'rounded-full',
-              'h-9 w-9 self-center sm:h-9 sm:w-9'
+              'h-9 w-9 self-center',
+              props.className
             )}
           ></div>
         </div>

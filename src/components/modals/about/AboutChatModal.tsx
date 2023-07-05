@@ -1,3 +1,5 @@
+import ProfilePreview from '@/components/ProfilePreview'
+import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
@@ -49,9 +51,26 @@ export default function AboutChatModal({
     {
       title: 'Chat link',
       content: chatUrl,
-      withCopyButton: true,
+      textToCopy: chatUrl,
       redirectTo: chatUrl,
       openInNewTab: true,
+    },
+    {
+      title: 'Chat Owner',
+      content: (
+        <ProfilePreviewModalWrapper address={chat.struct.ownerId}>
+          {(onClick) => (
+            <ProfilePreview
+              onClick={onClick}
+              address={chat.struct.ownerId}
+              className='mt-1 cursor-pointer gap-2'
+              avatarClassName={cx('h-6 w-6')}
+              withGrillAddress={false}
+              nameClassName='text-base'
+            />
+          )}
+        </ProfilePreviewModalWrapper>
+      ),
     },
   ]
 

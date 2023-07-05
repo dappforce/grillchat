@@ -21,21 +21,21 @@ export default function MetadataModal({
     {
       title: `${postIdTextPrefix} ID:`,
       content: entity.id,
-      withCopyButton: true,
+      textToCopy: entity.id,
     },
     {
       title: 'Content ID:',
       content: entity.struct.contentId ?? '',
       redirectTo: getIpfsContentUrl(entity.struct.contentId ?? ''),
       openInNewTab: true,
-      withCopyButton: true,
+      textToCopy: entity.struct.contentId ?? '',
     },
     {
       title: 'Owner:',
       content: entity.struct.ownerId ?? '',
       redirectTo: getSubIdUrl(entity.struct.ownerId ?? ''),
       openInNewTab: true,
-      withCopyButton: true,
+      textToCopy: entity.struct.ownerId ?? '',
     },
   ]
 

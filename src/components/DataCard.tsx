@@ -1,12 +1,12 @@
 import { cx } from '@/utils/class-names'
-import { ComponentProps } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 import { CopyTextInline } from './CopyText'
 import LinkText from './LinkText'
 
 type Data = {
   title: string
-  content: string | undefined
-  withCopyButton?: boolean
+  content: ReactNode | undefined
+  textToCopy?: string
   redirectTo?: string
   openInNewTab?: boolean
 }
@@ -24,7 +24,7 @@ export default function DataCard({ data, ...props }: DataCardProps) {
       )}
     >
       {data.map((currentData) => {
-        const { content, title, withCopyButton } = currentData
+        const { content, title, textToCopy: withCopyButton } = currentData
         if (!content) return null
 
         const containerClassName = cx(
@@ -55,7 +55,7 @@ export default function DataCard({ data, ...props }: DataCardProps) {
                     className='w-full'
                     textContainerClassName='w-full'
                     text={''}
-                    textToCopy={content}
+                    textToCopy={withCopyButton}
                   />
                 </div>
               </div>
@@ -69,7 +69,7 @@ export default function DataCard({ data, ...props }: DataCardProps) {
   )
 }
 
-function Content({ content, openInNewTab, redirectTo, withCopyButton }: Data) {
+function Content({ content, openInNewTab, redirectTo, textToCopy }: Data) {
   const textClassName = cx('whitespace-pre-wrap break-words')
 
   if (!content) return null
@@ -87,10 +87,11 @@ function Content({ content, openInNewTab, redirectTo, withCopyButton }: Data) {
         {content}
       </LinkText>
     )
-  } else if (withCopyButton) {
+  } else if (textToCopy) {
     return (
       <CopyTextInline
         text={content}
+        textToCopy={textToCopy}
         withButton={false}
         className={cx('text-text-secondary', textClassName)}
       />
