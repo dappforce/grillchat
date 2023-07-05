@@ -6,7 +6,8 @@ const inputStyles = cva('', {
   variants: {
     variant: {
       fill: 'bg-background-light',
-      outlined: 'border border-background-lightest bg-transparent',
+      'fill-bg': 'bg-background ring-1 ring-border-gray',
+      outlined: 'ring-1 ring-background-lightest bg-transparent',
     },
     pill: {
       true: 'rounded-3xl',
