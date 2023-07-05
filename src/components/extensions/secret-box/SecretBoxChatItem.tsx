@@ -7,12 +7,13 @@ import { useEffect, useState } from 'react'
 import CommonChatItem from '../CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
 import { getMessageExtensionProperties } from '../utils'
-import { decodeSecretBox } from './utils'
+import { useDecodeSecretBox } from './utils'
 
 export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
   const [decryptedMessage, setDecryptedMessage] = useState<string>()
   const myAddress = useMyAccount((state) => state.address)
   const theme = useGetTheme()
+  const { mutateAsync: decodeSecretBox } = useDecodeSecretBox()
 
   const { message, isMyMessage } = props
   const { content } = message
@@ -33,7 +34,7 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
     if (!encryptedMessage || !nonce || myAddress !== recipient) return
 
     const decryptMessage = async () => {
-      const newMessage = await decodeSecretBox(encryptedMessage, nonce)
+      const newMessage = await decodeSecretBox({ encryptedMessage, nonce })
 
       setDecryptedMessage(newMessage)
     }

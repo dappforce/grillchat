@@ -1,4 +1,6 @@
-import { ApiResponse } from '@/server/common'
+import { DecryptRespose } from '@/pages/api/promo-message/decrypt'
+import { EncryptRespose } from '@/pages/api/promo-message/encrypt'
+import mutationWrapper from '@/subsocial-query/base'
 import axios from 'axios'
 
 export const canUsePromoExtensionAccounts = [
@@ -8,37 +10,41 @@ export const canUsePromoExtensionAccounts = [
   '3tATRYq6yiws8B8WhLxEuNPFtpLFh8xxe2K2Lnt8NTrjXk8N',
 ]
 
-type EncryptedMessageData = {
-  encyptedMessage?: string
-  nonce: number
+type EncodeSecretBoxParams = {
+  message: string
+  address: string
 }
 
-export async function encodeSecretBox(
-  message: string,
-  address: string
-): Promise<EncryptedMessageData | undefined> {
+async function encodeSecretBox({ message, address }: EncodeSecretBoxParams) {
   const res = await axios.post('/api/promo-message/encrypt', {
     message,
     address,
   })
 
-  const data = res.data as ApiResponse<any>
+  const data = res.data as EncryptRespose
   if (!data.success) throw new Error(data.errors)
 
-  return data.data as EncryptedMessageData
+  return data.data
+}
+export const useEncodeSecretBox = mutationWrapper(encodeSecretBox)
+
+type DecodeSecretBoxParams = {
+  encryptedMessage: string
+  nonce: number
 }
 
-export async function decodeSecretBox(
-  encryptedMessage: string,
-  nonce: number
-): Promise<string | undefined> {
+async function decodeSecretBox({
+  encryptedMessage,
+  nonce,
+}: DecodeSecretBoxParams) {
   const res = await axios.post('/api/promo-message/decrypt', {
     encryptedMessage,
     nonce,
   })
 
-  const data = res.data as ApiResponse<any>
+  const data = res.data as DecryptRespose
   if (!data.success) throw new Error(data.errors)
 
   return data.data
 }
+export const useDecodeSecretBox = mutationWrapper(decodeSecretBox)

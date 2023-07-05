@@ -1,8 +1,8 @@
-import { ApiResponse } from '@/server/common'
+import { ApiResponse, convertNonce, handlerWrapper } from '@/server/common'
 import { getSubsocialPromoSecret } from '@/utils/env/server'
 import { hexToU8a, stringToU8a, u8aToHex } from '@polkadot/util'
 import { naclEncrypt } from '@polkadot/util-crypto'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest } from 'next'
 import { z } from 'zod'
 
 const secret = getSubsocialPromoSecret()
@@ -12,39 +12,45 @@ const querySchema = z.object({
   address: z.string(),
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiResponse<any>>
-) {
-  if (req.method !== 'POST') return res.status(404).end()
-
-  const { message, address } = req.body || {}
-  const params = querySchema.safeParse({
-    message: message ? message.toString() : '',
-    address: address ? address.toString() : '',
-  })
-  if (!params.success) {
-    return res.status(400).send({
-      success: false,
-      message: 'Invalid request body',
-      errors: params.error.errors,
-    })
+type ResponseData = {
+  data?: {
+    encyptedMessage?: `0x${string}`
+    nonce: number
   }
-
-  const { message: messsageParam, address: addressParam } = params.data
-
-  const nonce = await getNonce(addressParam)
-
-  const newNonce = new Uint8Array(24)
-
-  newNonce[0] = nonce
-
-  const encyptedMessage = await encryptMessage(messsageParam, newNonce)
-
-  return res
-    .status(200)
-    .send({ success: true, message: 'OK', data: { encyptedMessage, nonce } })
 }
+
+export type EncryptRespose = ApiResponse<ResponseData>
+
+export default handlerWrapper({
+  inputSchema: querySchema,
+  dataGetter: (req: NextApiRequest) => req.body,
+})<ResponseData>({
+  allowedMethods: ['POST'],
+  handler: async (data, _, res) => {
+    let encyptedMessage
+    let nonce = 0
+
+    try {
+      const { message: messsageParam, address: addressParam } = data
+
+      nonce = await getNonce(addressParam)
+
+      const convertedNonce = convertNonce(nonce)
+
+      encyptedMessage = await encryptMessage(messsageParam, convertedNonce)
+    } catch (e: any) {
+      return res.status(500).send({
+        message: '',
+        success: false,
+        errors: e.message,
+      })
+    }
+
+    res
+      .status(200)
+      .send({ success: true, message: 'OK', data: { encyptedMessage, nonce } })
+  },
+})
 
 async function getNonce(address: string) {
   const { getSubsocialApi } = await import(

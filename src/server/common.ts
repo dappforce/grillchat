@@ -60,3 +60,11 @@ export function getCommonErrorMessage(
 ) {
   return e ? { message: fallbackMsg, ...e }.message : fallbackMsg
 }
+
+export function convertNonce(nonce: number) {
+  const newNonce = new Uint8Array(24)
+
+  newNonce[0] = nonce
+
+  return newNonce
+}

@@ -8,7 +8,7 @@ import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import { ExtensionModalsProps } from '..'
 import CommonExtensionModal from '../CommonExtensionModal'
-import { encodeSecretBox } from './utils'
+import { useEncodeSecretBox } from './utils'
 
 export default function SecretBoxModal(props: ExtensionModalsProps) {
   const { closeModal, isOpen, initialData } = useExtensionModalState(
@@ -17,6 +17,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
   const address = useMyAccount((state) => state.address)
 
   const [secretMessage, setSecretMessage] = useState('')
+  const { mutateAsync: encodeSecretBox } = useEncodeSecretBox()
 
   const [recipient, setRecipient] = useState('')
   const { recipient: initialRecipient, messageId } = initialData
@@ -27,7 +28,10 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
   const beforeMesageSend = async (messageParams: SendMessageParams) => {
     if (!address) return { txPrevented: true }
 
-    const encryptedMessageData = await encodeSecretBox(secretMessage, address)
+    const encryptedMessageData = await encodeSecretBox({
+      message: secretMessage,
+      address,
+    })
 
     const { encyptedMessage, nonce } = encryptedMessageData || {}
 
