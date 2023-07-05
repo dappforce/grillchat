@@ -41,13 +41,16 @@ export default function HeadConfig({
       <meta name='twitter:description' content={usedDesc} />
       <meta
         name='twitter:image'
-        content='https://grill.chat/android/android-launchericon-192-192.png'
+        content='https://grill.chat/icons/icon-192x192.png'
       />
 
       <meta property='og:title' content={usedTitle} />
       <meta property='og:description' content={usedDesc} />
       <meta property='og:site_name' content='Grill.chat' />
-      <meta property='og:image' content='https://grill.chat/ios/180.png' />
+      <meta
+        property='og:image'
+        content='https://grill.chat/icons/icon-192x192.png'
+      />
 
       {disableZoom ? (
         <meta

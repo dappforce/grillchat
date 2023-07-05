@@ -7,7 +7,11 @@ export default function Document() {
         <link rel='icon' href='/favicon.ico' />
         <link rel='shortcut icon' href='/favicon.ico' />
 
-        <link rel='apple-touch-icon' sizes='180x180' href='/ios/180.png' />
+        <link
+          rel='apple-touch-icon'
+          sizes='192x192'
+          href='/icons/maskable-icon-192x192.png'
+        />
         <link
           rel='icon'
           type='image/png'
