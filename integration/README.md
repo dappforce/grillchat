@@ -679,7 +679,7 @@ const config = {
     metadata: {
       title: 'Proposal #1 on Kusama',
       body: '...',
-      image: '',
+      image: '...',
     },
   },
   theme: 'light',
