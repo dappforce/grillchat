@@ -146,3 +146,7 @@ export function useUpsertChat(config?: MutationConfig<UpsertChatParams>) {
     config
   )
 }
+export const UpsertChatWrapper = createMutationWrapper(
+  useUpsertChat,
+  'Failed to upsert chat'
+)

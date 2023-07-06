@@ -1,4 +1,4 @@
-import { useUpsertChat } from '@/services/subsocial/posts/mutation'
+import { UpsertChatWrapper } from '@/services/subsocial/posts/mutation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PostData } from '@subsocial/api/types'
 import { useEffect } from 'react'
@@ -31,8 +31,6 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
   const { chat, hubId, ...otherProps } = props as UpsertChatModalProps &
     Partial<InsertAdditionalProps & UpdateAdditionalProps>
 
-  const { mutate: upsertChat } = useUpsertChat()
-
   const {
     register,
     control,
@@ -55,10 +53,6 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
     if (props.isOpen) reset()
   }, [props.isOpen, reset])
 
-  const onSubmit: SubmitHandler<FormSchema> = (data) => {
-    upsertChat({ spaceId: hubId, postId: chat?.id, ...data })
-  }
-
   const texts = {
     update: {
       title: '✏️ Edit chat',
@@ -73,38 +67,55 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
 
   return (
     <Modal {...otherProps} title={usedTexts.title} withCloseButton>
-      <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
-        <div className='flex flex-col items-center gap-4'>
-          <Controller
-            {...register('image')}
-            control={control}
-            render={({ field, fieldState }) => {
-              return (
-                <ImageInput
-                  image={field.value}
-                  setImageUrl={(value) => setValue('image', value)}
-                  containerProps={{ className: 'my-2' }}
-                  error={fieldState.error?.message}
-                />
-              )
-            }}
-          />
-          <Input
-            {...register('title')}
-            error={errors.title?.message}
-            variant='fill-bg'
-          />
-          <TextArea
-            {...register('body')}
-            error={errors.body?.message}
-            variant='fill-bg'
-          />
-        </div>
+      <UpsertChatWrapper>
+        {({ isLoading, mutateAsync }) => {
+          const onSubmit: SubmitHandler<FormSchema> = (data) => {
+            mutateAsync({ spaceId: hubId, postId: chat?.id, ...data })
+          }
 
-        <FormButton schema={formSchema} watch={watch}>
-          {usedTexts.button}
-        </FormButton>
-      </form>
+          return (
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className='flex flex-col gap-4'
+            >
+              <div className='flex flex-col items-center gap-4'>
+                <Controller
+                  {...register('image')}
+                  control={control}
+                  render={({ field, fieldState }) => {
+                    return (
+                      <ImageInput
+                        image={field.value}
+                        setImageUrl={(value) => setValue('image', value)}
+                        containerProps={{ className: 'my-2' }}
+                        error={fieldState.error?.message}
+                      />
+                    )
+                  }}
+                />
+                <Input
+                  {...register('title')}
+                  error={errors.title?.message}
+                  variant='fill-bg'
+                />
+                <TextArea
+                  {...register('body')}
+                  error={errors.body?.message}
+                  variant='fill-bg'
+                />
+              </div>
+
+              <FormButton
+                schema={formSchema}
+                watch={watch}
+                isLoading={isLoading}
+              >
+                {usedTexts.button}
+              </FormButton>
+            </form>
+          )
+        }}
+      </UpsertChatWrapper>
     </Modal>
   )
 }
