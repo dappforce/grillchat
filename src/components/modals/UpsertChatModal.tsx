@@ -1,7 +1,8 @@
+import { useUpsertChat } from '@/services/subsocial/posts/mutation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PostData } from '@subsocial/api/types'
 import { useEffect } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import FormButton from '../FormButton'
 import ImageInput from '../inputs/ImageInput'
@@ -9,10 +10,15 @@ import Input from '../inputs/Input'
 import TextArea from '../inputs/TextArea'
 import Modal, { ModalFunctionalityProps, ModalProps } from './Modal'
 
+type InsertAdditionalProps = {
+  hubId: string
+}
+type UpdateAdditionalProps = {
+  chat: PostData
+}
 export type UpsertChatModalProps = ModalFunctionalityProps &
-  Pick<ModalProps, 'onBackClick'> & {
-    chat: PostData
-  }
+  Pick<ModalProps, 'onBackClick'> &
+  (InsertAdditionalProps | UpdateAdditionalProps)
 
 const formSchema = z.object({
   image: z.string().nonempty('Please upload an image.'),
@@ -21,10 +27,12 @@ const formSchema = z.object({
 })
 type FormSchema = z.infer<typeof formSchema>
 
-export default function UpsertChatModal({
-  chat,
-  ...props
-}: UpsertChatModalProps) {
+export default function UpsertChatModal(props: UpsertChatModalProps) {
+  const { chat, hubId, ...otherProps } = props as UpsertChatModalProps &
+    Partial<InsertAdditionalProps & UpdateAdditionalProps>
+
+  const { mutate: upsertChat } = useUpsertChat()
+
   const {
     register,
     control,
@@ -37,9 +45,9 @@ export default function UpsertChatModal({
     mode: 'onBlur',
     resolver: zodResolver(formSchema),
     defaultValues: {
-      image: chat.content?.image,
-      body: chat.content?.body,
-      title: chat.content?.title,
+      image: chat?.content?.image,
+      body: chat?.content?.body,
+      title: chat?.content?.title,
     },
   })
 
@@ -47,7 +55,9 @@ export default function UpsertChatModal({
     if (props.isOpen) reset()
   }, [props.isOpen, reset])
 
-  const onSubmit = () => {}
+  const onSubmit: SubmitHandler<FormSchema> = (data) => {
+    upsertChat({ spaceId: hubId, postId: chat?.id, ...data })
+  }
 
   const texts = {
     update: {
@@ -62,7 +72,7 @@ export default function UpsertChatModal({
   const usedTexts = chat ? texts.update : texts.insert
 
   return (
-    <Modal {...props} title={usedTexts.title} withCloseButton>
+    <Modal {...otherProps} title={usedTexts.title} withCloseButton>
       <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
         <div className='flex flex-col items-center gap-4'>
           <Controller

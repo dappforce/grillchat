@@ -1,6 +1,8 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
+import { saveFile } from '@/services/api/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
+import { IpfsWrapper } from '@/utils/ipfs'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
@@ -97,3 +99,50 @@ export const LeaveChatWrapper = createMutationWrapper(
   useLeaveChat,
   'Failed to leave chat'
 )
+
+type Content = {
+  image: string
+  title: string
+  description?: string
+}
+export type UpsertChatParams = ({ postId: string } | { spaceId: string }) &
+  Content
+export function useUpsertChat(config?: MutationConfig<UpsertChatParams>) {
+  const getWallet = useWalletGetter()
+
+  const waitHasEnergy = useWaitHasEnergy()
+
+  return useSubsocialMutation<UpsertChatParams, null>(
+    getWallet,
+    async ({ image, title, description, ...params }, { substrateApi }) => {
+      console.log('waiting energy...')
+      await waitHasEnergy()
+
+      const { success, cid } = await saveFile({
+        title,
+        description,
+        image,
+      })
+      if (!success) throw new Error('Failed to save file')
+
+      if ('postId' in params) {
+        return {
+          tx: substrateApi.tx.posts.updatePost(params.postId, {
+            content: cid,
+          }),
+          summary: 'Updating chat',
+        }
+      } else {
+        return {
+          tx: substrateApi.tx.posts.createPost(
+            params.spaceId,
+            { RegularPost: null },
+            IpfsWrapper(cid)
+          ),
+          summary: 'Creating chat',
+        }
+      }
+    },
+    config
+  )
+}
