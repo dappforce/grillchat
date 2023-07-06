@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PostData } from '@subsocial/api/types'
-import { ReactNode, useEffect } from 'react'
-import { Controller, useForm, UseFormWatch } from 'react-hook-form'
+import { useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import Button from '../Button'
+import FormButton from '../FormButton'
 import ImageInput from '../inputs/ImageInput'
 import Input from '../inputs/Input'
 import TextArea from '../inputs/TextArea'
@@ -91,26 +91,10 @@ export default function UpsertChatModal({
           />
         </div>
 
-        <SubmitButton watch={watch}>{usedTexts.button}</SubmitButton>
+        <FormButton schema={formSchema} watch={watch}>
+          {usedTexts.button}
+        </FormButton>
       </form>
     </Modal>
-  )
-}
-
-function SubmitButton({
-  children,
-  watch,
-}: {
-  watch: UseFormWatch<FormSchema>
-  children: ReactNode
-}) {
-  const { image, title, body } = watch()
-  const anyError =
-    formSchema.safeParse({ image, title, body }).success === false
-
-  return (
-    <Button size='lg' type='submit' disabled={anyError}>
-      {children}
-    </Button>
   )
 }
