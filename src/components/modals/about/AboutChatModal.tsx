@@ -17,7 +17,7 @@ import { HiCircleStack, HiPencilSquare, HiQrCode } from 'react-icons/hi2'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import ConfirmationModal from '../ConfirmationModal'
-import EditChatModal from '../EditChatModal'
+import UpsertChatModal from '../EditChatModal'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'
 import QrCodeModal from '../QrCodeModal'
@@ -183,7 +183,7 @@ export default function AboutChatModal({
         url={chatUrl}
         urlTitle={content.title}
       />
-      <EditChatModal
+      <UpsertChatModal
         chat={chat}
         isOpen={openedModalType === 'edit'}
         closeModal={() => setOpenedModalType(null)}

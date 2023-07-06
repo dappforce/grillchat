@@ -15,7 +15,7 @@ const inputStyles = cva('', {
     },
     size: {
       sm: 'px-4 py-2',
-      md: 'py-3 px-5',
+      md: 'py-3 px-4',
     },
     containsRightElement: {
       true: '',

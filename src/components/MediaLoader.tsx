@@ -26,6 +26,10 @@ function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
   if (uri.startsWith('https://ipfs.io/ipfs/')) {
     return uri.replace('https://ipfs.io/ipfs/', gatewayUrl)
   }
+  if (!/^https?:\/\//.test(uri)) {
+    return urlJoin(gatewayUrl, uri)
+  }
+
   return uri
 }
 

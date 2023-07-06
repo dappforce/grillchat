@@ -19,13 +19,14 @@
     "codegen:notifications": "graphql-codegen --require dotenv/config --config codegen-notifications.ts"
   },
   "dependencies": {
-    "@kodadot1/uniquery": "^0.3.1-rc.0",
     "@amplitude/analytics-browser": "^1.9.1",
     "@dicebear/bottts": "^5.3.4",
     "@dicebear/core": "^5.3.4",
     "@ethersproject/hash": "^5.7.0",
     "@floating-ui/react": "^0.22.2",
     "@headlessui/react": "^1.7.11",
+    "@hookform/resolvers": "^3.1.1",
+    "@kodadot1/uniquery": "^0.3.1-rc.0",
     "@polkadot/keyring": "^12.1.2",
     "@polkadot/util": "^12.1.2",
     "@rainbow-me/rainbowkit": "^1.0.4",
@@ -72,6 +73,7 @@
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
     "react-google-recaptcha": "^2.1.0",
+    "react-hook-form": "^7.45.1",
     "react-hot-toast": "^2.4.0",
     "react-hotkeys-hook": "^4.4.0",
     "react-icons": "^4.7.1",
