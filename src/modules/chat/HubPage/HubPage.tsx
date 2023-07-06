@@ -3,7 +3,7 @@ import Button from '@/components/Button'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import UpsertChatModal from '@/components/modals/UpsertChatModal'
+import NewCommunityModal from '@/components/modals/community/NewCommunityModal'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
 import { cx } from '@/utils/class-names'
@@ -20,7 +20,7 @@ export default function HubPage({ hubId }: HubPageProps) {
   const { search, getFocusedElementIndex, setSearch, focusController } =
     useSearch()
 
-  const [isOpenInsertChat, setIsOpenInsertChat] = useState(false)
+  const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
   const isCommunityHub = hubId === COMMUNITY_CHAT_HUB_ID
 
   return (
@@ -73,16 +73,16 @@ export default function HubPage({ hubId }: HubPageProps) {
                 <Button
                   size='sm'
                   className='flex items-center gap-2'
-                  onClick={() => setIsOpenInsertChat(true)}
+                  onClick={() => setIsOpenNewCommunity(true)}
                 >
                   <CommunityAddIcon />
                   <span>New</span>
                 </Button>
               </Container>
-              <UpsertChatModal
+              <NewCommunityModal
                 hubId={hubId}
-                closeModal={() => setIsOpenInsertChat(false)}
-                isOpen={isOpenInsertChat}
+                closeModal={() => setIsOpenNewCommunity(false)}
+                isOpen={isOpenNewCommunity}
               />
             </>
           )}

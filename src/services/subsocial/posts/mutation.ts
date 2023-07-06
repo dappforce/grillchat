@@ -2,6 +2,7 @@ import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { saveFile } from '@/services/api/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
+import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
@@ -17,7 +18,7 @@ export function useJoinChat(config?: MutationConfig<JoinChatParams>) {
 
   const waitHasEnergy = useWaitHasEnergy()
 
-  return useSubsocialMutation<JoinChatParams, null>(
+  return useSubsocialMutation<JoinChatParams>(
     getWallet,
     async ({ chatId }, { substrateApi }) => {
       console.log('waiting energy...')
@@ -31,7 +32,6 @@ export function useJoinChat(config?: MutationConfig<JoinChatParams>) {
     config,
     {
       txCallbacks: {
-        getContext: () => null,
         onSend: ({ address, data }) => {
           getFollowedPostIdsByAddressQuery.setQueryData(
             client,
@@ -63,7 +63,7 @@ export function useLeaveChat(config?: MutationConfig<LeaveChatParams>) {
 
   const waitHasEnergy = useWaitHasEnergy()
 
-  return useSubsocialMutation<JoinChatParams, null>(
+  return useSubsocialMutation<JoinChatParams>(
     getWallet,
     async ({ chatId }, { substrateApi }) => {
       console.log('waiting energy...')
@@ -77,7 +77,6 @@ export function useLeaveChat(config?: MutationConfig<LeaveChatParams>) {
     config,
     {
       txCallbacks: {
-        getContext: () => null,
         onSend: ({ address, data }) => {
           getFollowedPostIdsByAddressQuery.setQueryData(
             client,
@@ -107,12 +106,14 @@ type Content = {
 }
 export type UpsertChatParams = ({ postId: string } | { spaceId: string }) &
   Content
-export function useUpsertChat(config?: MutationConfig<UpsertChatParams>) {
+export function useUpsertChat(
+  config?: SubsocialMutationConfig<UpsertChatParams>
+) {
   const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
 
-  return useSubsocialMutation<UpsertChatParams, null>(
+  return useSubsocialMutation<UpsertChatParams>(
     getWallet,
     async ({ image, title, body, ...params }, { substrateApi }) => {
       console.log('waiting energy...')
@@ -124,7 +125,6 @@ export function useUpsertChat(config?: MutationConfig<UpsertChatParams>) {
         image,
       })
       if (!success) throw new Error('Failed to save file')
-      console.log(params)
 
       if ('postId' in params && params.postId) {
         return {

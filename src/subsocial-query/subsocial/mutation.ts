@@ -3,11 +3,10 @@ import type { ApiPromise } from '@polkadot/api'
 import type { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 import { makeCombinedCallback } from '../base'
-import { MutationConfig } from '../types'
 import { getConnectionConfig, getGlobalTxCallbacks } from './config'
 import {
-  DefaultSubsocialMutationConfig,
   OptimisticData,
+  SubsocialMutationConfig,
   Transaction,
   WalletAccount,
 } from './types'
@@ -19,14 +18,14 @@ type Apis = {
   substrateApi: ApiPromise
 }
 
-export function useSubsocialMutation<Data, Context>(
+export function useSubsocialMutation<Data, Context = undefined>(
   getWallet: () => Promise<WalletAccount>,
   transactionGenerator: (
     data: Data,
     apis: Apis
   ) => Promise<{ tx: Transaction; summary: string }>,
-  config?: MutationConfig<Data>,
-  defaultConfig?: DefaultSubsocialMutationConfig<Data, Context>
+  config?: SubsocialMutationConfig<Data, Context>,
+  defaultConfig?: SubsocialMutationConfig<Data, Context>
 ): UseMutationResult<string, Error, Data, unknown> {
   const workerFunc = async (data: Data) => {
     const wallet = await getWallet()
@@ -38,6 +37,7 @@ export function useSubsocialMutation<Data, Context>(
         address: wallet.address,
         data,
       },
+      config?.txCallbacks,
       defaultConfig?.txCallbacks
     )
     txCallbacks?.onStart()
@@ -189,15 +189,36 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
 
 function generateTxCallbacks<Data, Context>(
   data: OptimisticData<Data>,
-  callbacks: DefaultSubsocialMutationConfig<Data, Context>['txCallbacks']
+  callbacks: SubsocialMutationConfig<Data, Context>['txCallbacks'],
+  defaultCallbacks: SubsocialMutationConfig<Data, Context>['txCallbacks']
 ) {
   if (!callbacks) return
-  const { onError, onSuccess, onSend, onStart, getContext } = callbacks
-  const context = getContext(data)
+  const { getContext } = callbacks
+  const context = getContext?.(data)
   return {
-    onError: () => onError?.(data, context),
-    onSuccess: (txResult: any) => onSuccess?.(data, context, txResult),
-    onSend: () => onSend?.(data, context),
-    onStart: () => onStart?.(data, context),
+    onError: () =>
+      makeCombinedCallback(
+        defaultCallbacks,
+        callbacks,
+        'onError'
+      )(data, context),
+    onSuccess: (txResult: any) =>
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onSuccess')(
+        data,
+        context,
+        txResult
+      ),
+    onSend: () =>
+      makeCombinedCallback(
+        defaultCallbacks,
+        callbacks,
+        'onSend'
+      )(data, context),
+    onStart: () =>
+      makeCombinedCallback(
+        defaultCallbacks,
+        callbacks,
+        'onStart'
+      )(data, context),
   }
 }

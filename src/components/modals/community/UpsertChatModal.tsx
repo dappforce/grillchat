@@ -4,11 +4,11 @@ import { PostData } from '@subsocial/api/types'
 import { useEffect } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import FormButton from '../FormButton'
-import ImageInput from '../inputs/ImageInput'
-import Input from '../inputs/Input'
-import TextArea from '../inputs/TextArea'
-import Modal, { ModalFunctionalityProps, ModalProps } from './Modal'
+import FormButton from '../../FormButton'
+import ImageInput from '../../inputs/ImageInput'
+import Input from '../../inputs/Input'
+import TextArea from '../../inputs/TextArea'
+import Modal, { ModalFunctionalityProps, ModalProps } from '../Modal'
 
 type InsertAdditionalProps = {
   hubId: string
@@ -18,7 +18,9 @@ type UpdateAdditionalProps = {
 }
 export type UpsertChatModalProps = ModalFunctionalityProps &
   Pick<ModalProps, 'onBackClick'> &
-  (InsertAdditionalProps | UpdateAdditionalProps)
+  (InsertAdditionalProps | UpdateAdditionalProps) & {
+    onSuccess?: () => void
+  }
 
 const formSchema = z.object({
   image: z.string().nonempty('Please upload an image.'),
@@ -28,8 +30,9 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export default function UpsertChatModal(props: UpsertChatModalProps) {
-  const { chat, hubId, ...otherProps } = props as UpsertChatModalProps &
-    Partial<InsertAdditionalProps & UpdateAdditionalProps>
+  const { chat, hubId, onSuccess, ...otherProps } =
+    props as UpsertChatModalProps &
+      Partial<InsertAdditionalProps & UpdateAdditionalProps>
 
   const {
     register,
@@ -69,8 +72,10 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
     <Modal {...otherProps} title={usedTexts.title} withCloseButton>
       <UpsertChatWrapper>
         {({ isLoading, mutateAsync }) => {
-          const onSubmit: SubmitHandler<FormSchema> = (data) => {
-            mutateAsync({ spaceId: hubId, postId: chat?.id, ...data })
+          const onSubmit: SubmitHandler<FormSchema> = async (data) => {
+            await mutateAsync({ spaceId: hubId, postId: chat?.id, ...data })
+            onSuccess?.()
+            props.closeModal()
           }
 
           return (

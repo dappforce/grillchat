@@ -16,11 +16,11 @@ import { useState } from 'react'
 import { HiCircleStack, HiPencilSquare, HiQrCode } from 'react-icons/hi2'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
+import UpsertChatModal from '../community/UpsertChatModal'
 import ConfirmationModal from '../ConfirmationModal'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'
 import QrCodeModal from '../QrCodeModal'
-import UpsertChatModal from '../UpsertChatModal'
 import AboutModal, { AboutModalProps } from './AboutModal'
 
 export type AboutChatModalProps = ModalFunctionalityProps & {
