@@ -32,24 +32,19 @@ export default function ImageInput({
   containerProps,
   withIpfsPrefix,
   error,
+  disabled,
   ...props
 }: ImageInputProps) {
-  const {
-    mutate: saveImage,
-    isError,
-    isLoading,
-  } = useSaveImage({
-    onSuccess: (res) => {
-      const { cid = '' } = res
-      setImageUrl(withIpfsPrefix ? `ipfs://${cid}` : cid)
-    },
-  })
+  const { mutate: saveImage, isError, isLoading, data, reset } = useSaveImage()
 
   const onImageChosen = async (files: File[]) => {
     const image = files[0] ?? null
     const resizedImage = await resizeImage(image)
     saveImage(resizedImage)
   }
+
+  const shownImage =
+    image || (withIpfsPrefix ? `ipfs://${data?.cid}` : data?.cid)
 
   return (
     <div
@@ -63,6 +58,7 @@ export default function ImageInput({
         multiple={false}
         accept={{ 'image/*': SUPPORTED_IMAGE_EXTENSIONS }}
         onDrop={onImageChosen}
+        disabled={disabled}
       >
         {({ getRootProps, getInputProps }) => (
           <div
@@ -84,18 +80,25 @@ export default function ImageInput({
           {error || '😥 Sorry, we cannot upload your image.'}
         </InfoPanel>
       )}
-      {image && (
+      {shownImage && (
         <div className='absolute inset-0 h-20 w-20 md:h-24 md:w-24'>
           <MediaLoader
             containerClassName='h-full w-full rounded-full overflow-hidden'
             className='h-full w-full object-cover'
-            src={image}
+            src={shownImage}
+            onLoad={() => {
+              if (shownImage) setImageUrl(shownImage)
+            }}
             imageOnly
           />
           <Button
+            disabled={disabled}
             className='absolute right-0 top-0 bg-background-lighter text-text-red'
             size='circle'
-            onClick={() => setImageUrl('')}
+            onClick={() => {
+              setImageUrl('')
+              reset()
+            }}
           >
             <HiTrash />
           </Button>
