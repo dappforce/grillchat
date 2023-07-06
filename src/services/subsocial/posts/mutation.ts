@@ -1,18 +1,21 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { saveFile } from '@/services/api/mutation'
-import { MutationConfig } from '@/subsocial-query'
+import { getPostQuery } from '@/services/api/query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
-import { getFollowedPostIdsByAddressQuery } from './query'
+import {
+  getFollowedPostIdsByAddressQuery,
+  getPostIdsBySpaceIdQuery,
+} from './query'
 
 export type JoinChatParams = {
   chatId: string
 }
-export function useJoinChat(config?: MutationConfig<JoinChatParams>) {
+export function useJoinChat(config?: SubsocialMutationConfig<JoinChatParams>) {
   const client = useQueryClient()
   const getWallet = useWalletGetter()
 
@@ -57,7 +60,9 @@ export const JoinChatWrapper = createMutationWrapper(
 export type LeaveChatParams = {
   chatId: string
 }
-export function useLeaveChat(config?: MutationConfig<LeaveChatParams>) {
+export function useLeaveChat(
+  config?: SubsocialMutationConfig<LeaveChatParams>
+) {
   const client = useQueryClient()
   const getWallet = useWalletGetter()
 
@@ -109,6 +114,7 @@ export type UpsertChatParams = ({ postId: string } | { spaceId: string }) &
 export function useUpsertChat(
   config?: SubsocialMutationConfig<UpsertChatParams>
 ) {
+  const client = useQueryClient()
   const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
@@ -146,7 +152,18 @@ export function useUpsertChat(
 
       throw new Error('Invalid params')
     },
-    config
+    config,
+    {
+      txCallbacks: {
+        onSuccess: ({ data }) => {
+          if ('spaceId' in data && data.spaceId) {
+            getPostIdsBySpaceIdQuery.invalidate(client, data.spaceId)
+          } else if ('postId' in data && data.postId) {
+            getPostQuery.invalidate(client, data.postId)
+          }
+        },
+      },
+    }
   )
 }
 export const UpsertChatWrapper = createMutationWrapper(

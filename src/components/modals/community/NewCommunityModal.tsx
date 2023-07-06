@@ -48,13 +48,17 @@ export default function NewCommunityModal({
         title='💭 New Community'
         withCloseButton
       >
-        <ExtendedMenuList menus={menus} />
+        <ExtendedMenuList className='mt-2' menus={menus} />
       </Modal>
       <UpsertChatModal
         isOpen={openedModalState === 'chat'}
         closeModal={() => setOpenedModalState(null)}
         hubId={hubId}
         onBackClick={() => setOpenedModalState(null)}
+        onCloseSuccessModal={() => {
+          setOpenedModalState(null)
+          props.closeModal()
+        }}
       />
     </>
   )

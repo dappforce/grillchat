@@ -132,6 +132,7 @@ function sendTransaction<Data, Context>(
             data,
           })
         } else if (result.status.isBroadcast) {
+          txCallbacks?.onBroadcast()
           globalTxCallbacks.onBroadcast({
             summary,
             data,
@@ -201,6 +202,12 @@ function generateTxCallbacks<Data, Context>(
         defaultCallbacks,
         callbacks,
         'onError'
+      )(data, context),
+    onBroadcast: () =>
+      makeCombinedCallback(
+        defaultCallbacks,
+        callbacks,
+        'onBroadcast'
       )(data, context),
     onSuccess: (txResult: any) =>
       makeCombinedCallback(defaultCallbacks, callbacks, 'onSuccess')(

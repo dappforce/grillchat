@@ -15,6 +15,7 @@ export interface SubsocialMutationConfig<Data, Context = undefined>
     getContext?: (data: OptimisticData<Data>) => Context
     onStart?: (data: OptimisticData<Data>, context: Context) => void
     onSend?: (data: OptimisticData<Data>, context: Context) => void
+    onBroadcast?: (data: OptimisticData<Data>, context: Context) => void
     onError?: (data: OptimisticData<Data>, context: Context) => void
     onSuccess?: (
       data: OptimisticData<Data>,

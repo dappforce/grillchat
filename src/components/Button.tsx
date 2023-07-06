@@ -51,6 +51,7 @@ type ButtonPropsWithRef = VariantProps<typeof buttonStyles> &
   ComponentProps<'a'> & {
     withDisabledStyles?: boolean
     isLoading?: boolean
+    loadingText?: string
     nextLinkProps?: Omit<LinkProps, 'href'>
   }
 export type ButtonProps = Omit<ButtonPropsWithRef, 'ref'>
@@ -66,6 +67,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     isLoading,
     children,
     nextLinkProps,
+    loadingText = 'Loading',
     ...props
   },
   ref
@@ -76,7 +78,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       <>
         <span className='invisible -z-10 opacity-0'>{children}</span>
         <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center'>
-          <span className='mr-2'>Loading</span> <Spinner className='h-4 w-4' />
+          <span className='mr-2'>{loadingText}</span>{' '}
+          <Spinner className='h-4 w-4' />
         </div>
       </>
     )
