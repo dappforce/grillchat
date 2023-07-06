@@ -1,6 +1,13 @@
+import CommunityAddIcon from '@/assets/icons/community-add.svg'
+import Button from '@/components/Button'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
+import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import UpsertChatModal from '@/components/modals/UpsertChatModal'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
+import { cx } from '@/utils/class-names'
+import { useState } from 'react'
 import useSortedChats from '../hooks/useSortedChats'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import HubPageNavbar from './HubPageNavbar'
@@ -12,6 +19,9 @@ export default function HubPage({ hubId }: HubPageProps) {
   const { chats, allChatIds } = useSortedChats(hubId)
   const { search, getFocusedElementIndex, setSearch, focusController } =
     useSearch()
+
+  const [isOpenInsertChat, setIsOpenInsertChat] = useState(false)
+  const isCommunityHub = hubId === COMMUNITY_CHAT_HUB_ID
 
   return (
     <DefaultLayout
@@ -48,7 +58,37 @@ export default function HubPage({ hubId }: HubPageProps) {
         getFocusedElementIndex={getFocusedElementIndex}
         search={search}
       >
-        <ChatPreviewList chats={chats} />
+        <>
+          {isCommunityHub && (
+            <>
+              <Container
+                className={cx(
+                  'flex items-center justify-between border-b border-border-gray py-2'
+                )}
+              >
+                <div className='flex items-center gap-2'>
+                  <span className='text-text-muted'>Sort by:</span>
+                  <span className='text-text-primary'>Activity v</span>
+                </div>
+                <Button
+                  size='sm'
+                  className='flex items-center gap-2'
+                  onClick={() => setIsOpenInsertChat(true)}
+                >
+                  <CommunityAddIcon />
+                  <span>New</span>
+                </Button>
+              </Container>
+              <UpsertChatModal
+                hubId={hubId}
+                closeModal={() => setIsOpenInsertChat(false)}
+                isOpen={isOpenInsertChat}
+              />
+            </>
+          )}
+
+          <ChatPreviewList chats={chats} />
+        </>
       </SearchChannelsWrapper>
     </DefaultLayout>
   )

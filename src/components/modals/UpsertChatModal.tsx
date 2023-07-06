@@ -85,6 +85,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                   render={({ field, fieldState }) => {
                     return (
                       <ImageInput
+                        disabled={isLoading}
                         image={field.value}
                         setImageUrl={(value) => setValue('image', value)}
                         containerProps={{ className: 'my-2' }}
@@ -95,12 +96,17 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                 />
                 <Input
                   {...register('title')}
+                  disabled={isLoading}
+                  placeholder='Chat Name'
                   error={errors.title?.message}
                   variant='fill-bg'
                 />
                 <TextArea
                   {...register('body')}
+                  disabled={isLoading}
+                  placeholder='Description (optional)'
                   error={errors.body?.message}
+                  rows={1}
                   variant='fill-bg'
                 />
               </div>
@@ -109,6 +115,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                 schema={formSchema}
                 watch={watch}
                 isLoading={isLoading}
+                size='lg'
               >
                 {usedTexts.button}
               </FormButton>

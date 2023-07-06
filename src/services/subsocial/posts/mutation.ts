@@ -103,7 +103,7 @@ export const LeaveChatWrapper = createMutationWrapper(
 type Content = {
   image: string
   title: string
-  description?: string
+  body?: string
 }
 export type UpsertChatParams = ({ postId: string } | { spaceId: string }) &
   Content
@@ -114,25 +114,26 @@ export function useUpsertChat(config?: MutationConfig<UpsertChatParams>) {
 
   return useSubsocialMutation<UpsertChatParams, null>(
     getWallet,
-    async ({ image, title, description, ...params }, { substrateApi }) => {
+    async ({ image, title, body, ...params }, { substrateApi }) => {
       console.log('waiting energy...')
       await waitHasEnergy()
 
       const { success, cid } = await saveFile({
         title,
-        description,
+        body,
         image,
       })
       if (!success) throw new Error('Failed to save file')
+      console.log(params)
 
-      if ('postId' in params) {
+      if ('postId' in params && params.postId) {
         return {
           tx: substrateApi.tx.posts.updatePost(params.postId, {
             content: cid,
           }),
           summary: 'Updating chat',
         }
-      } else {
+      } else if ('spaceId' in params && params.spaceId) {
         return {
           tx: substrateApi.tx.posts.createPost(
             params.spaceId,
@@ -142,6 +143,8 @@ export function useUpsertChat(config?: MutationConfig<UpsertChatParams>) {
           summary: 'Creating chat',
         }
       }
+
+      throw new Error('Invalid params')
     },
     config
   )
