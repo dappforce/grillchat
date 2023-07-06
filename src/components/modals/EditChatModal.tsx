@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PostData } from '@subsocial/api/types'
-import { useEffect } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { ReactNode, useEffect } from 'react'
+import { Controller, useForm, UseFormWatch } from 'react-hook-form'
 import { z } from 'zod'
 import Button from '../Button'
 import ImageInput from '../inputs/ImageInput'
@@ -17,7 +17,7 @@ export type UpsertChatModalProps = ModalFunctionalityProps &
 const formSchema = z.object({
   image: z.string().nonempty('Please upload an image.'),
   title: z.string().nonempty('Please enter a title.'),
-  body: z.string().nonempty('Please enter a body.'),
+  body: z.string(),
 })
 type FormSchema = z.infer<typeof formSchema>
 
@@ -32,6 +32,7 @@ export default function UpsertChatModal({
     formState: { errors },
     setValue,
     reset,
+    watch,
   } = useForm<FormSchema>({
     mode: 'onBlur',
     resolver: zodResolver(formSchema),
@@ -90,8 +91,26 @@ export default function UpsertChatModal({
           />
         </div>
 
-        <Button size='lg'>{usedTexts.button}</Button>
+        <SubmitButton watch={watch}>{usedTexts.button}</SubmitButton>
       </form>
     </Modal>
+  )
+}
+
+function SubmitButton({
+  children,
+  watch,
+}: {
+  watch: UseFormWatch<FormSchema>
+  children: ReactNode
+}) {
+  const { image, title, body } = watch()
+  const anyError =
+    formSchema.safeParse({ image, title, body }).success === false
+
+  return (
+    <Button size='lg' type='submit' disabled={anyError}>
+      {children}
+    </Button>
   )
 }
