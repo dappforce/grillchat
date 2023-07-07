@@ -34,6 +34,12 @@ export const homePageAdditionalTabs: {
   // },
 ]
 
+const pathnameTabIdMapper: Record<string, number> = {
+  '/my-chats': 0,
+  '/hot-chats': 1,
+  '/hubs': 2,
+}
+
 export default function HubsPage(props: HubsPageProps) {
   const router = useRouter()
   const { search, setSearch, getFocusedElementIndex, focusController } =
@@ -74,8 +80,13 @@ export default function HubsPage(props: HubsPageProps) {
     myAddress ?? addressFromStorage ?? ''
   )
 
-  const [isTabUrlLoaded, setIsTabUrlLoaded] = useState(false)
-  const [selectedTab, setSelectedTab] = useState(1)
+  const currentTabId = pathnameTabIdMapper[router.asPath.split('?')[0]]
+  console.log(router.asPath)
+  const [isTabUrlLoaded, setIsTabUrlLoaded] = useState(
+    typeof currentTabId === 'number'
+  )
+  const [selectedTab, setSelectedTab] = useState(currentTabId)
+
   useEffect(() => {
     if (!router.isReady) return
 
@@ -93,6 +104,7 @@ export default function HubsPage(props: HubsPageProps) {
       if (index > -1) setSelectedTab(index)
     }
 
+    console.log('setting')
     setIsTabUrlLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router])
