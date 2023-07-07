@@ -65,10 +65,8 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
             size='noPadding'
             disabled={disabled}
             interactive='none'
-            className={cx(
-              menuListItemStyles({ size }),
-              'disabled:!opacity-50 disabled:!brightness-100'
-            )}
+            className={cx(menuListItemStyles({ size }))}
+            disabledStyle='subtle'
             onClick={onClick}
           >
             <Icon

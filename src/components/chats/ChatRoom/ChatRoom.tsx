@@ -101,9 +101,9 @@ export default function ChatRoom({
                 <Button
                   size='lg'
                   className={cx(
-                    isButtonLoading &&
-                      'bg-background-light text-text-muted !opacity-50 !brightness-100'
+                    isButtonLoading && 'bg-background-light text-text-muted'
                   )}
+                  disabledStyle='subtle'
                   isLoading={isButtonLoading}
                   onClick={() => mutateAsync({ chatId })}
                 >

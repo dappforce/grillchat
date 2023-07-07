@@ -64,7 +64,8 @@ function ExtendedMenuItem({
         firstVisitNotificationStorageName && closeNotification()
         onClick?.()
       }}
-      className='flex cursor-pointer items-center gap-2 rounded-none !brightness-100 disabled:!opacity-70'
+      className='flex cursor-pointer items-center gap-2 rounded-none'
+      disabledStyle='subtle'
     >
       <div
         className={cx(

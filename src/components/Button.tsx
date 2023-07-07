@@ -16,8 +16,12 @@ export const buttonStyles = cva('relative rounded-full transition', {
       transparent: 'bg-transparent',
       redOutline: 'bg-transparent border border-text-red',
     },
+    disabledStyle: {
+      default: '',
+      subtle: '',
+    },
     disabled: {
-      true: 'opacity-30 dark:brightness-50 dark:opacity-100 pointer-events-none cursor-default',
+      true: '',
     },
     size: {
       noPadding: 'p-0',
@@ -43,7 +47,22 @@ export const buttonStyles = cva('relative rounded-full transition', {
     variant: 'primary',
     size: 'md',
     interactive: 'all',
+    disabledStyle: 'default',
   },
+  compoundVariants: [
+    {
+      disabled: true,
+      disabledStyle: 'default',
+      class: cx(
+        'opacity-30 dark:brightness-50 dark:opacity-100 pointer-events-none cursor-default'
+      ),
+    },
+    {
+      disabled: true,
+      disabledStyle: 'subtle',
+      class: cx('opacity-50 pointer-events-none cursor-default'),
+    },
+  ],
 })
 
 type ButtonPropsWithRef = VariantProps<typeof buttonStyles> &
@@ -68,6 +87,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     children,
     nextLinkProps,
     loadingText = 'Loading',
+    disabledStyle,
     ...props
   },
   ref
@@ -91,6 +111,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       size,
       disabled: disabled && withDisabledStyles,
       interactive,
+      disabledStyle,
     }),
     'inline-block text-center',
     props.className
