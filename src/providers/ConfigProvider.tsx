@@ -1,5 +1,6 @@
 import { Theme } from '@/@types/theme'
 import { getUrlQuery } from '@/utils/links'
+import { useRouter } from 'next/router'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 type State = {
@@ -18,6 +19,7 @@ export function ConfigProvider({ children }: { children: any }) {
     theme: undefined,
     order: [],
   })
+  const { push } = useRouter()
 
   const configRef = useRef<State | null>(null)
   useEffect(() => {
@@ -25,6 +27,16 @@ export function ConfigProvider({ children }: { children: any }) {
     setState(config)
     configRef.current = config
   }, [])
+
+  useEffect(() => {
+    window.addEventListener('message', (event) => {
+      const eventData = event.data
+      if (eventData && eventData.type === 'grill:setConfig') {
+        const payload = eventData.payload as string
+        if (payload && !payload.startsWith('http')) push(payload)
+      }
+    })
+  }, [push])
 
   useEffect(() => {
     // check if current state is updated to the read config
