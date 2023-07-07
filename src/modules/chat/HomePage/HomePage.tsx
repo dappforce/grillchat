@@ -108,7 +108,6 @@ export default function HubsPage(props: HubsPageProps) {
       if (index > -1) setSelectedTab(index)
     }
 
-    console.log('setting')
     setIsTabUrlLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router])
