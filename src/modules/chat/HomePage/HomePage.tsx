@@ -3,6 +3,7 @@ import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch
 import Tabs, { TabsProps } from '@/components/Tabs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
+import { useLocation } from '@/stores/location'
 import { accountAddressStorage, useMyAccount } from '@/stores/my-account'
 import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
@@ -42,6 +43,7 @@ const pathnameTabIdMapper: Record<string, number> = {
 
 export default function HubsPage(props: HubsPageProps) {
   const router = useRouter()
+  const isFirstAccessed = useLocation((state) => state.isFirstAccessed)
   const { search, setSearch, getFocusedElementIndex, focusController } =
     useSearch()
 
@@ -80,12 +82,14 @@ export default function HubsPage(props: HubsPageProps) {
     myAddress ?? addressFromStorage ?? ''
   )
 
-  const currentTabId = pathnameTabIdMapper[router.asPath.split('?')[0]]
-  console.log(router.asPath)
+  // If user is accessing page for the first time, we can't use the `asPath` because it will cause hydration error because of rewrites
+  const currentTabId = isFirstAccessed
+    ? undefined
+    : pathnameTabIdMapper[router.asPath.split('?')[0]]
   const [isTabUrlLoaded, setIsTabUrlLoaded] = useState(
     typeof currentTabId === 'number'
   )
-  const [selectedTab, setSelectedTab] = useState(currentTabId)
+  const [selectedTab, setSelectedTab] = useState(currentTabId ?? 1)
 
   useEffect(() => {
     if (!router.isReady) return
