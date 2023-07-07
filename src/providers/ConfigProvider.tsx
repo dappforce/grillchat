@@ -1,5 +1,5 @@
 import { Theme } from '@/@types/theme'
-import { getUrlQuery } from '@/utils/links'
+import { getCurrentUrlOrigin, getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
@@ -33,7 +33,16 @@ export function ConfigProvider({ children }: { children: any }) {
       const eventData = event.data
       if (eventData && eventData.type === 'grill:setConfig') {
         const payload = eventData.payload as string
-        if (payload && !payload.startsWith('http')) push(payload)
+        const currentPathnameAndQuery = window.location.href.replace(
+          getCurrentUrlOrigin(),
+          ''
+        )
+        if (
+          payload &&
+          !payload.startsWith('http') &&
+          payload !== currentPathnameAndQuery
+        )
+          push(payload)
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
