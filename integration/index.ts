@@ -217,8 +217,8 @@ if (typeof window !== 'undefined') {
 export default grill
 
 export class GrillError extends Error {
-  constructor(message = '', method = '', ...args: any[]) {
-    super(message, ...args)
+  constructor(message = '', method = '') {
+    super(message)
     this.message = 'Grill Error: ' + (method ? `${method}: ` : '') + message
   }
 }
