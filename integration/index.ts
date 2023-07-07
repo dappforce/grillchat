@@ -130,7 +130,14 @@ function createUrl(
 }
 
 const grill = {
-  instances: {} as Record<string, HTMLIFrameElement | null>,
+  instances: {} as Record<
+    string,
+    {
+      iframe: HTMLIFrameElement | null
+      isReady: boolean
+      waitingCallbacks: (() => void)[]
+    }
+  >,
 
   init(config: GrillConfig) {
     const createInitError = (message: string) => new GrillError(message, 'init')
@@ -178,14 +185,23 @@ const grill = {
       iframe = mergedConfig.onWidgetCreated?.(iframe)
     }
 
-    this.instances[mergedConfig.widgetElementId]?.remove()
-    this.instances[mergedConfig.widgetElementId] = iframe
+    this.instances[mergedConfig.widgetElementId]?.iframe?.remove()
+    this.instances[mergedConfig.widgetElementId] = {
+      iframe,
+      isReady: false,
+      waitingCallbacks: [],
+    }
 
     iframe.style.opacity = '0'
     iframe.style.transition = 'opacity 0.15s ease-in-out'
     window.onmessage = (event) => {
       if (event.data === 'grill:ready') {
         iframe.style.opacity = '1'
+
+        this.instances[mergedConfig.widgetElementId].isReady = true
+        this.instances[mergedConfig.widgetElementId].waitingCallbacks.forEach(
+          (callback) => callback()
+        )
       }
     }
 
@@ -202,13 +218,20 @@ const grill = {
     const url = new URL(fullUrl)
     const pathnameWithQuery = url.pathname + url.search
 
-    currentInstance.contentWindow?.postMessage(
-      {
-        type: 'grill:setConfig',
-        payload: pathnameWithQuery,
-      },
-      '*'
-    )
+    function sendSetConfigMessage() {
+      currentInstance.iframe?.contentWindow?.postMessage(
+        {
+          type: 'grill:setConfig',
+          payload: pathnameWithQuery,
+        },
+        '*'
+      )
+    }
+    if (!currentInstance.isReady) {
+      currentInstance.waitingCallbacks.push(sendSetConfigMessage)
+      return
+    }
+    sendSetConfigMessage()
   },
 }
 
