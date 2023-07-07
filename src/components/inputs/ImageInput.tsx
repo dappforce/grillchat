@@ -64,7 +64,8 @@ export default function ImageInput({
           <div
             {...getRootProps()}
             className={cx(
-              'flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-full border-2 border-dashed border-background-primary p-4 text-center md:h-24 md:w-24',
+              'flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-full border border-dashed border-text-muted p-4 text-center transition-colors md:h-24 md:w-24',
+              'hover:border-text-primary hover:text-text-primary focus-visible:border-text-primary focus-visible:text-text-primary',
               isError && 'border-text-red'
             )}
           >
