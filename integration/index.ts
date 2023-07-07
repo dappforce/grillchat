@@ -202,10 +202,13 @@ const grill = {
     const url = new URL(fullUrl)
     const pathnameWithQuery = url.pathname + url.search
 
-    currentInstance.contentWindow?.postMessage({
-      type: 'grill:setConfig',
-      payload: pathnameWithQuery,
-    })
+    currentInstance.contentWindow?.postMessage(
+      {
+        type: 'grill:setConfig',
+        payload: pathnameWithQuery,
+      },
+      '*'
+    )
   },
 }
 
