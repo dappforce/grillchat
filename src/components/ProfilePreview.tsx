@@ -34,7 +34,11 @@ const ProfilePreview = ({
         className={cx('h-20 w-20', avatarClassName)}
       />
       <div className='flex flex-col gap-3'>
-        <Name address={address} className='text-lg leading-none' />
+        <Name
+          address={address}
+          showEthIcon={false}
+          className='text-lg leading-none'
+        />
         <div className='flex flex-col gap-1'>
           {withGrillAddress && (
             <div className='flex flex-row items-center gap-2'>

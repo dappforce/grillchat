@@ -1,5 +1,5 @@
 import InfoPanel from '@/components/InfoPanel'
-import Name from '@/components/Name'
+import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -68,18 +68,16 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
               </span>
             </div>
           ) : (
-            <div className='flex gap-1'>
-              <span className='min-w-fit'>📦 Only</span>
-              <Name
+            <span>
+              📦 Only{' '}
+              <ProfilePreviewModalName
                 address={recipient || ''}
-                className='min-w-fit font-semibold'
+                className='!inline font-semibold'
                 showEthIcon={false}
                 color={theme === 'dark' ? darkThemeTextColor : '#000'}
-              />
-              <span className='min-w-fit'>
-                is able to read this secret message.
-              </span>
-            </div>
+              />{' '}
+              is able to read this secret message.
+            </span>
           )}
         </InfoPanel>
       )}

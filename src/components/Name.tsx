@@ -47,8 +47,8 @@ const Name = ({
       className={cx(className, 'flex items-center')}
       style={{ color: color || textColor }}
     >
+      {evmAddress && showEthIcon && <EthIcon className='mr-2' />}
       {additionalText} {name}
-      {evmAddress && showEthIcon && <EthIcon className='ml-2' />}
     </span>
   )
 }
