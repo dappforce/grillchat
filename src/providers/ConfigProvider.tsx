@@ -36,7 +36,8 @@ export function ConfigProvider({ children }: { children: any }) {
         if (payload && !payload.startsWith('http')) push(payload)
       }
     })
-  }, [push])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     // check if current state is updated to the read config
