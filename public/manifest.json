@@ -12,6 +12,7 @@
       "url": "https://pwa-grillchat.subsocial.network/manifest.json"
     }
   ],
+  "scope": "/",
   "display_override": [
     "window-controls-overlay",
     "standalone",
