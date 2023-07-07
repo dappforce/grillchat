@@ -85,7 +85,7 @@ export default function ImageModal({ chatId, onSubmit }: ExtensionModalsProps) {
         )}
 
         {!isAnyShowingImage && (
-          <div className='relative my-2 flex items-center justify-center'>
+          <div className='relative flex items-center justify-center'>
             <div className='absolute top-1/2 h-px w-full bg-border-gray' />
             <span className='relative bg-background-light px-3 text-xs text-text-muted'>
               OR

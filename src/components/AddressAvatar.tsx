@@ -56,7 +56,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         {...props}
         ref={ref}
         className={cx(
-          'relative h-9 w-9 overflow-hidden rounded-full bg-background-lightest',
+          'relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full bg-background-lightest',
           props.className
         )}
         style={{ backgroundColor }}

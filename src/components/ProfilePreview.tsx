@@ -39,37 +39,36 @@ const ProfilePreview = ({
         address={address}
         className={cx('h-20 w-20', avatarClassName)}
       />
-      <div className='flex flex-col gap-3'>
+      <div className='flex flex-col'>
         <Name
           address={address}
-          className={cx('text-lg leading-none', nameClassName)}
+          showEthIcon={false}
+          className='text-lg leading-none'
         />
-        {showingAnyAddress && (
-          <div className='flex flex-col gap-1'>
-            {withGrillAddress && (
-              <div className='flex flex-row items-center gap-2'>
-                <GrillIcon />
-                <CopyTextInline
-                  text={truncateAddress(address)}
-                  tooltip={`Copy${isMyAddressPart} Grill public address`}
-                  textToCopy={address}
-                  textClassName='font-mono leading-none text-[15px] leading-[14px]'
-                />
-              </div>
-            )}
-            {evmAddress && (
-              <div className='flex flex-row items-center gap-2'>
-                <EthIcon />
-                <CopyTextInline
-                  text={truncateAddress(evmAddress)}
-                  tooltip={`Copy${isMyAddressPart} EVM address`}
-                  textToCopy={evmAddress}
-                  textClassName='font-mono leading-none text-[15px] leading-[14px]'
-                />
-              </div>
-            )}
-          </div>
-        )}
+        <div className='mt-3 flex flex-col gap-1'>
+          {withGrillAddress && (
+            <div className='flex flex-row items-center gap-2'>
+              <GrillIcon />
+              <CopyTextInline
+                text={truncateAddress(address)}
+                tooltip={`Copy${isMyAddressPart} Grill public address`}
+                textToCopy={address}
+                textClassName='font-mono leading-none text-[15px] leading-[14px]'
+              />
+            </div>
+          )}
+          {evmAddress && (
+            <div className='flex flex-row items-center gap-2'>
+              <EthIcon />
+              <CopyTextInline
+                text={truncateAddress(evmAddress)}
+                tooltip={`Copy${isMyAddressPart} EVM address`}
+                textToCopy={evmAddress}
+                textClassName='font-mono leading-none text-[15px] leading-[14px]'
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
