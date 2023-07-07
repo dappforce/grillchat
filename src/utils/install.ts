@@ -4,18 +4,11 @@ export function isInstallAvailable() {
   const pwaInstall = document.getElementById('pwa-install') as any
   if (!pwaInstall) return false
 
-  return !pwaInstall.isRelatedAppsInstalled && !pwaInstall.isUnderStandaloneMode
+  return !!pwaInstall.isInstallAvailable
 }
 
 export function installApp() {
   const pwaInstall = document.getElementById('pwa-install') as any
   if (!pwaInstall) return
-  pwaInstall.showDialog?.(true)
-}
-
-export function listenInstalledApp(callback: () => void) {
-  const pwaInstall = document.getElementById('pwa-install') as any
-  pwaInstall.addEventListener('pwa-install-success-event', callback)
-
-  return pwaInstall.removeEventListener('pwa-install-success-event', callback)
+  pwaInstall.showDialog?.()
 }

@@ -6,12 +6,6 @@
   "background_color": "#111729",
   "start_url": "/",
   "display": "standalone",
-  "related_applications": [
-    {
-      "platform": "webapp",
-      "url": "https://pwa-grillchat.subsocial.network/manifest.json"
-    }
-  ],
   "scope": "/",
   "display_override": [
     "window-controls-overlay",
