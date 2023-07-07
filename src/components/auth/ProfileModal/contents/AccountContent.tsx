@@ -11,7 +11,12 @@ import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import { useSendEvent } from '@/stores/analytics'
-import { installApp, isInstallAvailable } from '@/utils/install'
+import {
+  installApp,
+  isInstallAvailable,
+  listenInstalledApp,
+} from '@/utils/install'
+import { useEffect, useState } from 'react'
 import { HiOutlineDownload } from 'react-icons/hi'
 import { useDisconnect } from 'wagmi'
 import { ContentProps } from '../types'
@@ -22,6 +27,11 @@ export default function AccountContent({
   notification,
   evmAddress,
 }: ContentProps) {
+  const [isInstalled, setIsInstalled] = useState(false)
+  useEffect(() => {
+    return listenInstalledApp(() => setIsInstalled(true))
+  }, [])
+
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
 
@@ -91,7 +101,7 @@ export default function AccountContent({
       icon: BulbIcon,
       href: SUGGEST_FEATURE_LINK,
     },
-    ...(isInstallAvailable()
+    ...(isInstallAvailable() && !isInstalled
       ? [
           {
             text: 'Install app',
