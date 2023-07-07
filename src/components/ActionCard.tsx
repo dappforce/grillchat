@@ -4,10 +4,11 @@ import Button, { ButtonProps } from './Button'
 
 type Action = {
   text: string
+  description?: string
   icon: (props: { className?: string }) => JSX.Element
   iconClassName?: string
   className?: string
-  onClick: ButtonProps['onClick']
+  onClick?: ButtonProps['onClick']
   disabled?: boolean
 }
 
@@ -27,7 +28,15 @@ export default function ActionCard({ actions, ...props }: ActionCardProps) {
       )}
     >
       {actions.map(
-        ({ icon: Icon, iconClassName, text, className, onClick, disabled }) => (
+        ({
+          icon: Icon,
+          iconClassName,
+          text,
+          description,
+          className,
+          onClick,
+          disabled,
+        }) => (
           <Button
             disabled={disabled}
             variant='transparent'
@@ -40,9 +49,19 @@ export default function ActionCard({ actions, ...props }: ActionCardProps) {
               className
             )}
             onClick={onClick}
+            disabledStyle='subtle'
           >
-            <Icon className={cx('text-xl', iconClassName)} />
-            <span>{text}</span>
+            <Icon
+              className={cx(
+                'text-xl',
+                description && 'text-2xl',
+                iconClassName
+              )}
+            />
+            <div className='flex flex-col items-start'>
+              <span>{text}</span>
+              <span className='text-sm text-text-muted'>{description}</span>
+            </div>
           </Button>
         )
       )}

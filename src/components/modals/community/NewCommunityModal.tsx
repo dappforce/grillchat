@@ -1,9 +1,7 @@
 import ChatIcon from '@/assets/icons/bubble-chat.svg'
 import HubIcon from '@/assets/icons/hub.svg'
 import MegaphoneIcon from '@/assets/icons/megaphone.svg'
-import ExtendedMenuList, {
-  ExtendedMenuListProps,
-} from '@/components/ExtendedMenuList'
+import ActionCard, { ActionCardProps } from '@/components/ActionCard'
 import { useState } from 'react'
 import Modal, { ModalFunctionalityProps } from '../Modal'
 import UpsertChatModal from './UpsertChatModal'
@@ -18,25 +16,26 @@ export default function NewCommunityModal({
 }: NewCommunityModalProps) {
   const [openedModalState, setOpenedModalState] = useState<null | 'chat'>(null)
 
-  const menus: ExtendedMenuListProps['menus'] = [
+  const menus: ActionCardProps['actions'] = [
     {
-      title: 'Chat',
+      text: 'Chat',
       description: 'Anyone can participate in a public conversation',
       icon: ChatIcon,
-      firstVisitNotificationStorageName: 'new-community-chat',
+      // firstVisitNotificationStorageName: 'new-community-chat',
       onClick: () => setOpenedModalState('chat'),
     },
     {
-      title: 'Channel',
+      text: 'Channel',
       description: 'Only you can post updates and others can comment on them',
       icon: MegaphoneIcon,
-      isComingSoon: true,
+      // isComingSoon: true,
     },
     {
-      title: 'Hub',
+      text: 'Hub',
       description: 'A collection of related chats or channels',
       icon: HubIcon,
-      isComingSoon: true,
+      disabled: true,
+      // isComingSoon: true,
     },
   ]
 
@@ -48,7 +47,7 @@ export default function NewCommunityModal({
         title='💭 New Community'
         withCloseButton
       >
-        <ExtendedMenuList className='mt-2' menus={menus} />
+        <ActionCard className='mt-2' actions={menus} />
       </Modal>
       <UpsertChatModal
         isOpen={openedModalState === 'chat'}
