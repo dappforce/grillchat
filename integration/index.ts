@@ -197,11 +197,11 @@ const grill = {
     window.onmessage = (event) => {
       if (event.data === 'grill:ready') {
         iframe.style.opacity = '1'
+        const currentInstance = this.instances[mergedConfig.widgetElementId]
+        if (!currentInstance) return
 
-        this.instances[mergedConfig.widgetElementId].isReady = true
-        this.instances[mergedConfig.widgetElementId].waitingCallbacks.forEach(
-          (callback) => callback()
-        )
+        currentInstance.isReady = true
+        currentInstance.waitingCallbacks.forEach((callback) => callback())
       }
     }
 
@@ -219,6 +219,7 @@ const grill = {
     const pathnameWithQuery = url.pathname + url.search
 
     function sendSetConfigMessage() {
+      if (!currentInstance) return
       currentInstance.iframe?.contentWindow?.postMessage(
         {
           type: 'grill:setConfig',
