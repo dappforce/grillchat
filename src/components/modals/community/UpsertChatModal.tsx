@@ -1,3 +1,4 @@
+import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
 import DataCard from '@/components/DataCard'
 import FormButton from '@/components/FormButton'
@@ -115,8 +116,6 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
               if (isUpdating) props.closeModal()
             }
 
-            console.log(status)
-
             return (
               <form
                 onSubmit={handleSubmit(onSubmit)}
@@ -138,13 +137,21 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                       )
                     }}
                   />
-                  <Input
-                    {...register('title')}
-                    disabled={isLoading}
-                    placeholder='Chat Name'
-                    error={errors.title?.message}
-                    variant='fill-bg'
-                  />
+                  <AutofocusWrapper>
+                    {({ ref }) => (
+                      <Input
+                        {...register('title')}
+                        ref={(e) => {
+                          register('title').ref(e)
+                          ref.current = e
+                        }}
+                        disabled={isLoading}
+                        placeholder='Chat Name'
+                        error={errors.title?.message}
+                        variant='fill-bg'
+                      />
+                    )}
+                  </AutofocusWrapper>
                   <TextArea
                     {...register('body')}
                     disabled={isLoading}

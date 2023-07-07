@@ -2,7 +2,7 @@ import useAutofocus from '@/hooks/useAutofocus'
 import React, { useEffect } from 'react'
 
 export type AutofocusWrapperProps = {
-  children: (props: { ref: React.RefObject<any> }) => JSX.Element
+  children: (props: { ref: React.MutableRefObject<any> }) => JSX.Element
   autofocusInTouchDevices?: boolean
 }
 
