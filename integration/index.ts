@@ -77,8 +77,9 @@ export type GrillConfig = {
   onWidgetCreated?: (iframe: HTMLIFrameElement) => HTMLIFrameElement
 }
 
+const DEFAULT_WIDGET_ELEMENT_ID = 'grill'
 const DEFAULT_CONFIG = {
-  widgetElementId: 'grill',
+  widgetElementId: DEFAULT_WIDGET_ELEMENT_ID,
   hub: { id: 'x' },
 } satisfies GrillConfig
 
@@ -87,17 +88,59 @@ const DEFAULT_CHANNEL_SETTINGS: Channel['settings'] = {
   enableLoginButton: false,
 }
 
+function createUrl(
+  config: Pick<GrillConfig, 'hub' | 'channel'>,
+  query?: QueryParamsBuilder
+) {
+  let url = `https://grill.chat/${config.hub.id}`
+  const channelConfig = config.channel
+  let resourceId: string | null = null
+  let resourceMetadata: ResourceMetadata | null = null
+
+  query = query || new QueryParamsBuilder()
+  if (channelConfig) {
+    switch (channelConfig.type) {
+      case 'channel':
+        url += `/${channelConfig.id}`
+        break
+      case 'resource':
+        resourceId = channelConfig.resource.toResourceId()
+        url += `/resource/${encodeURIComponent(resourceId)}`
+        resourceMetadata = channelConfig.metadata
+        break
+      default:
+        throw new Error('Unsupportable channel type')
+    }
+  }
+
+  if (resourceMetadata) {
+    try {
+      query.set(
+        'metadata',
+        encodeURIComponent(JSON.stringify(resourceMetadata))
+      )
+    } catch (e) {
+      throw new Error('Resource metadata has invalid value.')
+    }
+  }
+
+  const fullUrl = `${url}?${query.get()}`
+
+  return { url, query, fullUrl }
+}
+
 const grill = {
   instances: {} as Record<string, HTMLIFrameElement | null>,
 
   init(config: GrillConfig) {
+    const createInitError = (message: string) => new GrillError(message, 'init')
+
     const mergedConfig = { ...DEFAULT_CONFIG, ...config }
     const widgetElement = document.getElementById(mergedConfig.widgetElementId)
     if (!widgetElement) {
-      console.error(
-        `Grill error: Element with id ${mergedConfig.widgetElementId} not found`
+      throw createInitError(
+        `Element with id ${mergedConfig.widgetElementId} not found`
       )
-      return
     }
 
     let iframe = document.createElement('iframe')
@@ -105,27 +148,8 @@ const grill = {
     iframe.style.width = '100%'
     iframe.style.height = '100%'
 
-    let baseUrl = `https://grill.chat/${mergedConfig.hub.id}`
     const channelConfig = mergedConfig.channel
-    let resourceId: string | null = null
-    let resourceMetadata: ResourceMetadata | null = null
-
-    if (channelConfig) {
-      switch (channelConfig.type) {
-        case 'channel':
-          baseUrl += `/${channelConfig.id}`
-          break
-        case 'resource':
-          resourceId = channelConfig.resource.toResourceId()
-          baseUrl += `/resource/${encodeURIComponent(resourceId)}`
-          resourceMetadata = channelConfig.metadata
-          break
-        default:
-          throw new Error('Unsupportable channel type')
-      }
-    }
-
-    const query = new QueryParamsBuilder()
+    const { url: baseUrl, query } = createUrl(mergedConfig)
 
     query.set('parent', window.location.origin)
     if (mergedConfig.order) query.set('order', mergedConfig.order.join(','))
@@ -139,16 +163,6 @@ const grill = {
 
       query.set('enableBackButton', channelSettings.enableBackButton + '')
       query.set('enableLoginButton', channelSettings.enableLoginButton + '')
-
-      if (resourceMetadata)
-        try {
-          query.set(
-            'metadata',
-            encodeURIComponent(JSON.stringify(resourceMetadata))
-          )
-        } catch (e) {
-          throw new Error('Resource metadata has invalid value.')
-        }
 
       if (channelSettings.enableInputAutofocus !== undefined)
         query.set(
@@ -177,6 +191,22 @@ const grill = {
 
     widgetElement.appendChild(iframe)
   },
+
+  setConfig(config: Pick<GrillConfig, 'widgetElementId' | 'hub' | 'channel'>) {
+    const currentInstance =
+      this.instances[config.widgetElementId || DEFAULT_WIDGET_ELEMENT_ID]
+    if (!currentInstance)
+      throw new GrillError('Instance not found', 'setConfig')
+
+    const { fullUrl } = createUrl(config)
+    const url = new URL(fullUrl)
+    const pathnameWithQuery = url.pathname + url.search
+
+    currentInstance.contentWindow?.postMessage({
+      type: 'grill:setConfig',
+      payload: pathnameWithQuery,
+    })
+  },
 }
 
 export type Grill = typeof grill
@@ -185,3 +215,10 @@ if (typeof window !== 'undefined') {
 }
 
 export default grill
+
+export class GrillError extends Error {
+  constructor(message = '', method = '', ...args: any[]) {
+    super(message, ...args)
+    this.message = 'Grill Error: ' + (method ? `${method}: ` : '') + message
+  }
+}
