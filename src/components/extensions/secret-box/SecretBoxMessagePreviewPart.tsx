@@ -12,7 +12,7 @@ const SecretBoxMessagePreviewPart = ({}: RepliedMessagePreviewPartProps) => {
           theme === 'dark'
             ? 'bg-[#6660DF] text-white'
             : 'bg-[#E0E7FF] text-black',
-          'rounded-2xl px-3 py-[0.15rem]'
+          'w-max rounded-2xl px-3 py-[0.15rem]'
         )}
       >
         📦 Secret message

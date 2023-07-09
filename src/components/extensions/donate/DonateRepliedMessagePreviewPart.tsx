@@ -27,7 +27,7 @@ const DonateRepliedMessagePreviewPart = ({
       <div
         className={cx(
           getCommonClassNames('donateMessagePreviewBg'),
-          'rounded-2xl px-3 py-[0.15rem] text-white'
+          'w-max rounded-2xl px-3 py-[0.15rem] text-white'
         )}
       >
         {amountValue} {token}
