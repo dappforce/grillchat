@@ -3,6 +3,7 @@ import Modal, {
   ModalProps,
 } from '@/components/modals/Modal'
 import { getIpfsContentUrl, getSubIdUrl } from '@/utils/ipfs'
+import { getPolkadotJsUrl } from '@/utils/links'
 import { PostData, SpaceData } from '@subsocial/api/types'
 import DataCard, { DataCardProps } from '../DataCard'
 
@@ -22,6 +23,10 @@ export default function MetadataModal({
       title: `${postIdTextPrefix} ID:`,
       content: entity.id,
       textToCopy: entity.id,
+      redirectTo: entity.struct.createdAtBlock
+        ? getPolkadotJsUrl(`/explorer/query/${entity.struct.createdAtBlock}`)
+        : undefined,
+      openInNewTab: true,
     },
     {
       title: 'Content ID:',
