@@ -129,7 +129,7 @@ export default function ChatPreview({
               )}
               {renderAdditionalData()}
             </div>
-            <div className='mt-1 flex items-baseline justify-between overflow-hidden'>
+            <div className='mt-0.5 flex items-baseline justify-between overflow-hidden'>
               {chatId && hubId ? (
                 <ChatLastMessage
                   hubId={hubId}

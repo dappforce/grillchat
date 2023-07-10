@@ -30,8 +30,8 @@ export const useExtensionData = create<State & Actions>()((set, get) => ({
       _extensionModalStates: {
         ...get()._extensionModalStates,
         [id]: {
+          ...get()._extensionModalStates[id],
           isOpen: false,
-          initialData: null,
         },
       },
     })
@@ -42,7 +42,7 @@ export const useExtensionData = create<State & Actions>()((set, get) => ({
         ...get()._extensionModalStates,
         [id]: {
           isOpen: true,
-          initialData,
+          initialData: initialData ?? null,
         },
       },
     })
