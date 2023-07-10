@@ -21,21 +21,20 @@ export default function NewCommunityModal({
       text: 'Chat',
       description: 'Anyone can participate in a public conversation',
       icon: ChatIcon,
-      // firstVisitNotificationStorageName: 'new-community-chat',
+      firstVisitNotificationStorageName: 'new-community-chat',
       onClick: () => setOpenedModalState('chat'),
     },
     {
       text: 'Channel',
       description: 'Only you can post updates and others can comment on them',
       icon: MegaphoneIcon,
-      // isComingSoon: true,
+      isComingSoon: true,
     },
     {
       text: 'Hub',
       description: 'A collection of related chats or channels',
       icon: HubIcon,
-      disabled: true,
-      // isComingSoon: true,
+      isComingSoon: true,
     },
   ]
 

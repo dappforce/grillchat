@@ -72,6 +72,7 @@ export default function HubPage({ hubId }: HubPageProps) {
                 </div>
                 <Button
                   size='sm'
+                  variant='primaryOutline'
                   className='flex items-center gap-2'
                   onClick={() => setIsOpenNewCommunity(true)}
                 >
