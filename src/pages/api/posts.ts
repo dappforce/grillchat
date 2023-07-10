@@ -56,9 +56,9 @@ const POST_handler = handlerWrapper({
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
-    GET_handler(req, res)
+    return GET_handler(req, res)
   } else if (req.method === 'POST') {
-    POST_handler(req, res)
+    return POST_handler(req, res)
   }
 }
 

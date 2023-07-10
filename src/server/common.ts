@@ -31,7 +31,6 @@ export function handlerWrapper<Input extends z.ZodTypeAny>(config: {
 
       const { dataGetter, inputSchema } = config
       const params = inputSchema.safeParse(dataGetter(req))
-      console.log('test', params)
 
       if (!params.success) {
         return res.status(400).send({
