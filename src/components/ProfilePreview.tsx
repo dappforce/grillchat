@@ -45,30 +45,32 @@ const ProfilePreview = ({
           showEthIcon={false}
           className='text-lg leading-none'
         />
-        <div className='mt-3 flex flex-col gap-1'>
-          {withGrillAddress && (
-            <div className='flex flex-row items-center gap-2'>
-              <GrillIcon />
-              <CopyTextInline
-                text={truncateAddress(address)}
-                tooltip={`Copy${isMyAddressPart} Grill public address`}
-                textToCopy={address}
-                textClassName='font-mono leading-none text-[15px] leading-[14px]'
-              />
-            </div>
-          )}
-          {evmAddress && (
-            <div className='flex flex-row items-center gap-2'>
-              <EthIcon />
-              <CopyTextInline
-                text={truncateAddress(evmAddress)}
-                tooltip={`Copy${isMyAddressPart} EVM address`}
-                textToCopy={evmAddress}
-                textClassName='font-mono leading-none text-[15px] leading-[14px]'
-              />
-            </div>
-          )}
-        </div>
+        {showingAnyAddress && (
+          <div className='mt-3 flex flex-col gap-1'>
+            {withGrillAddress && (
+              <div className='flex flex-row items-center gap-2'>
+                <GrillIcon />
+                <CopyTextInline
+                  text={truncateAddress(address)}
+                  tooltip={`Copy${isMyAddressPart} Grill public address`}
+                  textToCopy={address}
+                  textClassName='font-mono leading-none text-[15px] leading-[14px]'
+                />
+              </div>
+            )}
+            {evmAddress && (
+              <div className='flex flex-row items-center gap-2'>
+                <EthIcon />
+                <CopyTextInline
+                  text={truncateAddress(evmAddress)}
+                  tooltip={`Copy${isMyAddressPart} EVM address`}
+                  textToCopy={evmAddress}
+                  textClassName='font-mono leading-none text-[15px] leading-[14px]'
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
