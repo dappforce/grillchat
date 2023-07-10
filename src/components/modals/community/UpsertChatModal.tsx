@@ -71,12 +71,13 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
   })
 
   useEffect(() => {
-    if (props.isOpen)
+    if (props.isOpen) {
       reset({
         image: chat?.content?.image,
         body: chat?.content?.body,
         title: chat?.content?.title,
       })
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen, reset])
@@ -130,8 +131,8 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
               >
                 <div className='flex flex-col items-center gap-4'>
                   <Controller
-                    {...register('image')}
                     control={control}
+                    name='image'
                     render={({ field, fieldState }) => {
                       return (
                         <ImageInput

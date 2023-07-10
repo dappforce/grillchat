@@ -147,7 +147,7 @@ export const EnterSecretKeyContent = ({
         onChange={(e) => setPrivateKey((e.target as HTMLTextAreaElement).value)}
         placeholder='Enter your Grill secret key'
       />
-      <Button disabled={!privateKey} size='lg'>
+      <Button disabled={!privateKey} type='submit' size='lg'>
         Login
       </Button>
     </form>

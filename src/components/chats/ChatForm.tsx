@@ -257,6 +257,7 @@ export default function ChatForm({
               />
               {sendButtonText && (
                 <Button
+                  type='submit'
                   disabled={isDisabled}
                   size='lg'
                   onClick={submitForm}

@@ -88,6 +88,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     nextLinkProps,
     loadingText = 'Loading',
     disabledStyle,
+    type = 'button',
     ...props
   },
   ref
@@ -128,7 +129,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   }
 
   return (
-    <button ref={ref} {...props} disabled={disabled} className={className}>
+    <button
+      ref={ref}
+      {...props}
+      type={type}
+      disabled={disabled}
+      className={className}
+    >
       {children}
     </button>
   )
