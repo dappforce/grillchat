@@ -53,6 +53,10 @@
   @apply scrollbar-thin scrollbar-track-background scrollbar-thumb-background-lightest scrollbar-track-rounded-full scrollbar-thumb-rounded-full dark:scrollbar-thumb-background-lighter;
 }
 
+#pwa-install {
+  z-index: 9999;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

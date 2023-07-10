@@ -1,4 +1,13 @@
+import '@khmyznikov/pwa-install'
 import { Head, Html, Main, NextScript } from 'next/document'
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      ['pwa-install']: any
+    }
+  }
+}
 
 export default function Document() {
   return (
@@ -127,6 +136,10 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
+        <pwa-install
+          id='pwa-install'
+          manifest-url='/manifest.json'
+        ></pwa-install>
       </body>
     </Html>
   )
