@@ -65,6 +65,6 @@ export async function saveImage(content: File) {
 export const useSaveImage = mutationWrapper(saveImage)
 
 export async function invalidatePostServerCache(postId: string) {
-  const res = await axios.post('/api/posts?' + `postId=${postId}`)
+  const res = await axios.post('/api/posts', { postId })
   return res.data as ApiPostsInvalidationResponse
 }
