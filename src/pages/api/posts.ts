@@ -28,42 +28,37 @@ const getRedisKey = (id: string) => {
   return `posts-invalidated:${id}`
 }
 
+const GET_handler = handlerWrapper({
+  inputSchema: querySchema,
+  dataGetter: (req: NextApiRequest) => req.query,
+})<ResponseData>({
+  allowedMethods: ['GET'],
+  handler: async (data, _, res) => {
+    const postIds = Array.isArray(data.postIds) ? data.postIds : [data.postIds]
+    const posts = await getPostsServer(postIds)
+    return res.status(200).send({ success: true, message: 'OK', data: posts })
+  },
+})
+
+const POST_handler = handlerWrapper({
+  inputSchema: bodySchema,
+  dataGetter: (req: NextApiRequest) => req.body,
+})<{}>({
+  allowedMethods: ['POST'],
+  handler: async (data, _, res) => {
+    redisCallWrapper(async (redis) => {
+      return redis?.set(getRedisKey(data.postId), data.postId, 'EX', MAX_AGE)
+    })
+
+    return res.status(200).send({ success: true, message: 'OK' })
+  },
+})
+
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
-    handlerWrapper({
-      inputSchema: querySchema,
-      dataGetter: (req: NextApiRequest) => req.query,
-    })<ResponseData>({
-      allowedMethods: ['GET'],
-      handler: async (data, _, res) => {
-        const postIds = Array.isArray(data.postIds)
-          ? data.postIds
-          : [data.postIds]
-        const posts = await getPostsServer(postIds)
-        return res
-          .status(200)
-          .send({ success: true, message: 'OK', data: posts })
-      },
-    })
+    GET_handler(req, res)
   } else if (req.method === 'POST') {
-    handlerWrapper({
-      inputSchema: bodySchema,
-      dataGetter: (req: NextApiRequest) => req.body,
-    })<{}>({
-      allowedMethods: ['POST'],
-      handler: async (data, _, res) => {
-        redisCallWrapper(async (redis) => {
-          return redis?.set(
-            getRedisKey(data.postId),
-            data.postId,
-            'EX',
-            MAX_AGE
-          )
-        })
-
-        return res.status(200).send({ success: true, message: 'OK' })
-      },
-    })
+    POST_handler(req, res)
   }
 }
 
