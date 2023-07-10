@@ -19,6 +19,7 @@ type SelectInputProps = {
   selected: ListItem
   setSelected: (item: ListItem) => void
   imgClassName?: string
+  renderItem?: (item: ListItem, open: boolean) => JSX.Element
 }
 
 export default function SelectInput({
@@ -27,6 +28,7 @@ export default function SelectInput({
   selected,
   setSelected,
   imgClassName,
+  renderItem,
 }: SelectInputProps) {
   const theme = useGetTheme()
 
@@ -36,7 +38,7 @@ export default function SelectInput({
         {({ open }) => (
           <>
             {fieldLabel && (
-              <Listbox.Label className='block text-sm font-normal leading-4 text-gray-400'>
+              <Listbox.Label className='block text-sm font-normal leading-4 text-text-muted'>
                 {fieldLabel}
               </Listbox.Label>
             )}
@@ -63,7 +65,7 @@ export default function SelectInput({
                 </span>
                 <span className='pointer-events-none absolute inset-y-0 right-0 ml-2 flex items-center pr-4'>
                   <IoIosArrowDown
-                    className='h-5 w-5 text-gray-400'
+                    className='h-5 w-5 text-text-muted'
                     aria-hidden='true'
                   />
                 </span>
@@ -84,44 +86,18 @@ export default function SelectInput({
                     'ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'
                   )}
                 >
-                  {items.map((item, i) => (
-                    <Listbox.Option
-                      key={i}
-                      disabled={item.disabledItem}
-                      className={() =>
-                        cx(
-                          'relative flex items-center rounded-lg outline-none transition-colors',
-                          'gap-4 px-3 py-2 hover:bg-background-lighter focus:bg-background-lighter',
-                          { ['hover:bg-background-light']: item.disabledItem },
-                          theme === 'light' ? 'text-black' : 'text-white'
-                        )
-                      }
-                      value={item}
-                    >
-                      {() => (
-                        <div className='flex w-full items-center justify-between gap-1'>
-                          <div className='flex items-center'>
-                            <Image
-                              src={item.icon}
-                              className={cx('rounded-full', imgClassName)}
-                              alt=''
-                              role='presentation'
-                            />
-                            <span
-                              className={cx('ml-3 block truncate text-base', {
-                                ['text-gray-500']: item.disabledItem,
-                              })}
-                            >
-                              {item.label}
-                            </span>
-                          </div>
-                          {item.disabledItem && (
-                            <div className='text-gray-500'>Soon</div>
-                          )}
-                        </div>
-                      )}
-                    </Listbox.Option>
-                  ))}
+                  {items.map((item, i) => {
+                    const renderedItem = renderItem?.(item, open)
+
+                    return (
+                      <SelectListItem
+                        key={i}
+                        item={item}
+                        imgClassName={imgClassName}
+                        renderedItem={renderedItem}
+                      />
+                    )
+                  })}
                 </Listbox.Options>
               </Transition>
             </div>
@@ -129,5 +105,61 @@ export default function SelectInput({
         )}
       </Listbox>
     </div>
+  )
+}
+
+type SelectListItemProps = {
+  item: ListItem
+  imgClassName?: string
+  renderedItem?: JSX.Element
+}
+
+const SelectListItem = ({
+  item,
+  imgClassName,
+  renderedItem,
+}: SelectListItemProps) => {
+  const theme = useGetTheme()
+
+  return (
+    <Listbox.Option
+      disabled={item.disabledItem}
+      className={() =>
+        cx(
+          'relative flex items-center rounded-lg outline-none transition-colors',
+          'gap-4 px-3 py-2 hover:bg-background-lighter focus:bg-background-lighter',
+          { ['hover:bg-background-light']: item.disabledItem },
+          theme === 'light' ? 'text-black' : 'text-white'
+        )
+      }
+      value={item}
+    >
+      {() => (
+        <div className='flex w-full items-center justify-between gap-1'>
+          {renderedItem ? (
+            renderedItem
+          ) : (
+            <>
+              <div className='flex items-center'>
+                <Image
+                  src={item.icon}
+                  className={cx('rounded-full', imgClassName)}
+                  alt=''
+                  role='presentation'
+                />
+                <span
+                  className={cx('ml-3 block truncate text-base', {
+                    ['text-gray-500']: item.disabledItem,
+                  })}
+                >
+                  {item.label}
+                </span>
+              </div>
+              {item.disabledItem && <div className='text-gray-500'>Soon</div>}
+            </>
+          )}
+        </div>
+      )}
+    </Listbox.Option>
   )
 }

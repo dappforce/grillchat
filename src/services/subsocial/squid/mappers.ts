@@ -1,5 +1,6 @@
 import {
   CommentStruct,
+  DecodedPromoExtension,
   DonateExtension,
   ImageExtension,
   NftExtension,
@@ -87,6 +88,17 @@ const mapPostExtensions = (
           },
         }
         return imageExtension
+
+      case ContentExtensionSchemaId.SubsocialDecodedPromo:
+        const decodedPromoExtension: DecodedPromoExtension = {
+          id: 'subsocial-decoded-promo',
+          properties: {
+            message: ext?.message ?? '',
+            recipient: ext?.recipient?.id ?? '',
+            nonce: ext?.nonce ? parseInt(ext.nonce) : 0,
+          },
+        }
+        return decodedPromoExtension
     }
   })
   const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
@@ -110,7 +122,7 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
     contentId: post.content ?? '',
     repliesCount: post.repliesCount,
     sharesCount: post.sharesCount,
-    spaceId: post.space?.id ?? '',
+    spaceId: post.space?.id ?? post.rootPost?.space?.id ?? '',
     isUpdated: !!post.updatedAtTime,
     rootPostId: post.rootPost?.id ?? '',
   }

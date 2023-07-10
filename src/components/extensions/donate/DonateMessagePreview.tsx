@@ -16,9 +16,15 @@ import { explorerByChainName } from './api/config'
 type DonatePreviewProps = {
   extensionProps?: DonateProperies
   isMyMessage: boolean
+  body?: string
+  inReplyTo?: string
 }
 
-const DonatePreview = ({ extensionProps }: DonatePreviewProps) => {
+const DonatePreview = ({
+  extensionProps,
+  body,
+  inReplyTo,
+}: DonatePreviewProps) => {
   if (!extensionProps) return null
 
   const { token, amount, txHash, decimals, chain } = extensionProps
@@ -41,8 +47,16 @@ const DonatePreview = ({ extensionProps }: DonatePreviewProps) => {
       ? new BigNumber(price).multipliedBy(amountValue).toFixed(4)
       : '0'
 
+  const cardMargin = body ? 'mt-1' : 'mt-2'
+
   return (
-    <div className={cx('px-5 py-5')}>
+    <div
+      className={cx(
+        'rounded-[4px] px-5 py-5',
+        { [cardMargin]: inReplyTo },
+        getCommonClassNames('donateMessagePreviewBg')
+      )}
+    >
       <div className='flex flex-col items-center gap-2 text-white'>
         <div className='flex items-start gap-2'>
           <div className='text-3xl font-bold leading-[26px]'>
@@ -72,7 +86,7 @@ export default function DonateMessagePreview({
 }: DonateMessagePreviewProps) {
   const { content } = message
 
-  const { extensions, body } = content || {}
+  const { extensions, body, inReplyTo } = content || {}
   const properties = getMessageExtensionProperties(
     extensions?.[0],
     'subsocial-donations'
@@ -86,23 +100,15 @@ export default function DonateMessagePreview({
       onCheckMarkClick={onCheckMarkClick}
       scrollToMessage={scrollToMessage}
       myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
-      textColor='#FCEEE2'
-      className={cx(
-        'relative flex flex-col overflow-hidden',
-        getCommonClassNames('donateMessagePreviewBg'),
-        'text-white'
-      )}
+      className={cx('relative flex flex-col overflow-hidden')}
     >
       {({ isMyMessage }) => (
         <div>
-          {body && (
-            <div className='px-[10px]'>
-              <div className='mt-[5px] w-full ring-[0.4px] ring-[#f39424]'></div>
-            </div>
-          )}
           <DonatePreview
             extensionProps={properties}
             isMyMessage={isMyMessage}
+            body={body}
+            inReplyTo={inReplyTo?.id}
           />
         </div>
       )}

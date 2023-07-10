@@ -7,11 +7,13 @@ let startHistoryLength: number
 type State = {
   currentUrl: string
   prevUrl: string | undefined
+  isFirstAccessed: boolean
 }
 
 const initialState: State = {
   currentUrl: '',
   prevUrl: undefined,
+  isFirstAccessed: true,
 }
 
 export const useLocation = create<State>()((set, get) => ({
@@ -41,6 +43,7 @@ export const useLocation = create<State>()((set, get) => ({
       set({
         currentUrl: window.location.href,
         prevUrl: lastHistory,
+        isFirstAccessed: false,
       })
     })
   },

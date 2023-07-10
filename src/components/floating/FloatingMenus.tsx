@@ -6,7 +6,11 @@ type FloatingMenuItemProps = {
   closeMenu: () => void
 }
 export type FloatingMenusProps = Omit<FloatingWrapperProps, 'panel'> &
-  Omit<FloatingMenuItemProps, 'closeMenu'>
+  Omit<FloatingMenuItemProps, 'closeMenu'> & {
+    children: (
+      config?: Parameters<FloatingWrapperProps['children']>[0]
+    ) => JSX.Element
+  }
 
 export default function FloatingMenus({
   children,

@@ -36,7 +36,7 @@ const getBlockedMessageIdsInChatId = poolQuery<
       document: generateBlockedMessageIdsInChatIdsQueryDocument(params),
     })
     return Object.entries(data).map(([key, res]) => {
-      const [_, chatId, hubId] = key.split('SEPARATOR')
+      const [_, hubId, chatId] = key.split('SEPARATOR')
       return {
         chatId,
         hubId,

@@ -15,9 +15,12 @@ export default function useIsJoinedToChat(chatId: string, address?: string) {
   const myAddress = useMyAccount((state) => state.address)
   const usedAddress = address || myAddress
 
+  const isEnabledQuery = isInitialized && !!usedAddress
   const { data, isLoading } = getFollowedPostIdsByAddressQuery.useQuery(
     usedAddress ?? '',
-    { enabled: isInitialized }
+    {
+      enabled: isEnabledQuery,
+    }
   )
 
   const followedPostIdsSet = useMemo(() => {
@@ -30,5 +33,8 @@ export default function useIsJoinedToChat(chatId: string, address?: string) {
     return isJoinedValue
   }
 
-  return { isJoined: followedPostIdsSet.has(chatId), isLoading }
+  return {
+    isJoined: followedPostIdsSet.has(chatId),
+    isLoading: isEnabledQuery && isLoading,
+  }
 }

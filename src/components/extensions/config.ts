@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic'
 import { ClipboardEvent, ComponentType } from 'react'
 import { SUPPORTED_IMAGE_EXTENSIONS } from './image/utils'
 import { parseNftMarketplaceLink } from './nft/utils'
+import SecretBoxChatItem from './secret-box/SecretBoxChatItem'
+import SecretBoxMessagePreviewPart from './secret-box/SecretBoxMessagePreviewPart'
 import {
   ExtensionChatItemProps,
   RepliedMessagePreviewPartsProps,
@@ -28,9 +30,13 @@ const NftRepliedMessagePreviewPart = dynamic(
 )
 
 export const extensionInitialDataTypes = {
-  'subsocial-donations': { recipient: '', messageId: '' },
+  'subsocial-donations': { recipient: '' } as {
+    recipient: string
+    messageId?: string
+  },
   'subsocial-evm-nft': null as null | string,
   'subsocial-image': null as null | File | string,
+  'subsocial-decoded-promo': { recipient: '', messageId: '' },
 } satisfies Record<PostContentExtension['id'], unknown>
 
 type Config<Id extends PostContentExtension['id']> = {
@@ -48,7 +54,7 @@ const extensionsConfig: {
     chatItemComponent: DonateMessagePreview,
     replyMessageUI: {
       element: DonateRepliedMessagePreviewPart,
-      config: { place: 'body', textColor: '#FCEEE2' },
+      config: { place: 'body' },
     },
   },
   'subsocial-evm-nft': {
@@ -104,6 +110,16 @@ const extensionsConfig: {
       }
 
       return null
+    },
+  },
+  'subsocial-decoded-promo': {
+    chatItemComponent: SecretBoxChatItem,
+    replyMessageUI: {
+      element: SecretBoxMessagePreviewPart,
+      config: {
+        place: 'body',
+        previewClassName: 'w-4',
+      },
     },
   },
 }

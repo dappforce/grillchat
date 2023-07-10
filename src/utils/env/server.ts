@@ -56,3 +56,10 @@ export function getRedisConfig() {
 
   return { host, port: parsedPort, password }
 }
+
+export function getSubsocialPromoSecret() {
+  return checkEnv(
+    process.env.SUBSOCIAL_PROMO_SECRET_HEX,
+    'SUBSOCIAL_PROMO_SECRET_HEX'
+  )
+}

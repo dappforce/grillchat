@@ -43,7 +43,8 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
             className={cx(
               'bg-background-light',
               'rounded-full',
-              'h-9 w-9 self-center sm:h-9 sm:w-9'
+              'h-9 w-9 self-center',
+              props.className
             )}
           ></div>
         </div>
@@ -55,7 +56,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         {...props}
         ref={ref}
         className={cx(
-          'relative h-9 w-9 overflow-hidden rounded-full bg-background-lightest',
+          'relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full bg-background-lightest',
           props.className
         )}
         style={{ backgroundColor }}

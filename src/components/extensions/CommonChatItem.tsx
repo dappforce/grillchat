@@ -7,6 +7,7 @@ import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
+import ChatRelativeTime from '../chats/ChatItem/ChatRelativeTime'
 import { ProfilePreviewModalName } from '../ProfilePreviewModalWrapper'
 import { ExtensionChatItemProps } from './types'
 
@@ -70,9 +71,10 @@ export default function CommonChatItem({
         isMyMessage && 'self-end'
       )}
     >
-      <span className='text-xs text-text-muted dark:text-text-muted-on-primary'>
-        {relativeTime}
-      </span>
+      <ChatRelativeTime
+        createdAtTime={createdAtTime}
+        className='text-xs text-text-muted dark:text-text-muted-on-primary'
+      />
       <Button
         variant='transparent'
         size='noPadding'
@@ -105,12 +107,14 @@ export default function CommonChatItem({
           <div className='flex items-center px-2.5 first:pt-1.5'>
             <ProfilePreviewModalName
               address={ownerId}
-              color={textColor && '#ffffff'}
+              color={textColor}
               className={cx('mr-2 text-sm text-text-secondary')}
             />
-            <span className={'text-xs'} style={{ color: textColor }}>
-              {relativeTime}
-            </span>
+            <ChatRelativeTime
+              createdAtTime={createdAtTime}
+              className={'text-xs'}
+              style={{ color: textColor }}
+            />
           </div>
         )}
 

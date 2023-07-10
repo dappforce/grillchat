@@ -33,3 +33,11 @@ export function getTimeRelativeToNow(
 
   return dayjs(date).format('lll')
 }
+
+export function formatDate(date: number | string | Date) {
+  const dateObj = new Date(date)
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+  }).format(dateObj)
+}

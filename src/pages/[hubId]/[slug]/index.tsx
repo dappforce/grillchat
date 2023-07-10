@@ -87,6 +87,11 @@ export const getStaticProps = getCommonStaticProps<
           prefetchBlockedEntities(queryClient, hubId, [chatId]),
         ] as const)
 
+      const originalHubId = chatData.struct.spaceId
+      if (originalHubId && originalHubId !== hubId) {
+        await prefetchBlockedEntities(queryClient, originalHubId, [chatId])
+      }
+
       title = chatData?.content?.title || null
       desc = chatData?.content?.body || null
 

@@ -10,6 +10,10 @@ const NftModal = dynamic(() => import('./nft/NftModal'), {
   ssr: false,
 })
 
+const SecretBoxModal = dynamic(() => import('./secret-box/SecretBoxModal'), {
+  ssr: false,
+})
+
 export type ExtensionModalsProps = {
   chatId: string
   onSubmit: () => void
@@ -21,6 +25,7 @@ export default function ExtensionModals({ ...props }: ExtensionModalsProps) {
       <NftModal {...props} />
       <ImageModal {...props} />
       <DonateModal {...props} />
+      <SecretBoxModal {...props} />
     </>
   )
 }

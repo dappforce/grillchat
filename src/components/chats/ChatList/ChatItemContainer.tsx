@@ -30,9 +30,11 @@ export default function ChatItemContainer({
   const isMessageBlocked =
     isMessageBlockedInCurrentHub || isMessageBlockedInOriginalHub
 
+  const { content } = message
+  const { body, extensions } = content || {}
   const address = useMyAccount((state) => state.address)
 
-  if (isMessageBlocked) return null
+  if (isMessageBlocked || (!body && !extensions)) return null
 
   const ownerId = message.struct.ownerId
   const senderAddress = ownerId ?? ''
