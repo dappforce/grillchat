@@ -110,17 +110,17 @@ type Content = {
   title: string
   body?: string
 }
-export type UpsertChatParams = ({ postId: string } | { spaceId: string }) &
+export type UpsertPostParams = ({ postId: string } | { spaceId: string }) &
   Content
-export function useUpsertChat(
-  config?: SubsocialMutationConfig<UpsertChatParams>
+export function useUpsertPost(
+  config?: SubsocialMutationConfig<UpsertPostParams>
 ) {
   const client = useQueryClient()
   const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
 
-  return useSubsocialMutation<UpsertChatParams>(
+  return useSubsocialMutation<UpsertPostParams>(
     getWallet,
     async ({ image, title, body, ...params }, { substrateApi }) => {
       console.log('waiting energy...')
@@ -138,7 +138,7 @@ export function useUpsertChat(
           tx: substrateApi.tx.posts.updatePost(params.postId, {
             content: IpfsWrapper(cid),
           }),
-          summary: 'Updating chat',
+          summary: 'Updating post',
         }
       } else if ('spaceId' in params && params.spaceId) {
         return {
@@ -147,7 +147,7 @@ export function useUpsertChat(
             { RegularPost: null },
             IpfsWrapper(cid)
           ),
-          summary: 'Creating chat',
+          summary: 'Creating post',
         }
       }
 
@@ -184,7 +184,57 @@ export function useUpsertChat(
     }
   )
 }
-export const UpsertChatWrapper = createMutationWrapper(
-  useUpsertChat,
+export const UpsertPostWrapper = createMutationWrapper(
+  useUpsertPost,
+  'Failed to upsert post'
+)
+
+export type HideUnhidePostParams = { postId: string; action: 'hide' | 'unhide' }
+export function useHideUnhidePost(
+  config?: SubsocialMutationConfig<HideUnhidePostParams>
+) {
+  const client = useQueryClient()
+  const getWallet = useWalletGetter()
+
+  const waitHasEnergy = useWaitHasEnergy()
+
+  return useSubsocialMutation<HideUnhidePostParams>(
+    getWallet,
+    async ({ action, postId }, { substrateApi }) => {
+      console.log('waiting energy...')
+      await waitHasEnergy()
+
+      return {
+        tx: substrateApi.tx.posts.updatePost(postId, {
+          hidden: action === 'hide' ? true : false,
+        }),
+        summary: 'Hide/Unhide chat',
+      }
+    },
+    config,
+    {
+      txCallbacks: {
+        onSend: ({ data }) => {
+          getPostQuery.setQueryData(client, data.postId, (post) => {
+            if (!post) return post
+            return {
+              ...post,
+              struct: {
+                ...post.struct,
+                hidden: data.action === 'hide' ? true : false,
+              },
+            }
+          })
+        },
+        onSuccess: async ({ data }) => {
+          await invalidatePostServerCache(data.postId)
+          getPostQuery.invalidate(client, data.postId)
+        },
+      },
+    }
+  )
+}
+export const HideUnhideChatWrapper = createMutationWrapper(
+  useHideUnhidePost,
   'Failed to upsert chat'
 )

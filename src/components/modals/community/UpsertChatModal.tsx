@@ -13,7 +13,7 @@ import Modal, {
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getAliasFromHubId } from '@/constants/hubs'
 import { getPostQuery } from '@/services/api/query'
-import { UpsertChatWrapper } from '@/services/subsocial/posts/mutation'
+import { UpsertPostWrapper } from '@/services/subsocial/posts/mutation'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
@@ -103,7 +103,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
         title={usedTexts.title}
         withCloseButton
       >
-        <UpsertChatWrapper
+        <UpsertPostWrapper
           config={{
             txCallbacks: {
               onSuccess: (_data, _, txResult) => {
@@ -182,7 +182,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
               </form>
             )
           }}
-        </UpsertChatWrapper>
+        </UpsertPostWrapper>
       </Modal>
 
       <InsertSuccessModal

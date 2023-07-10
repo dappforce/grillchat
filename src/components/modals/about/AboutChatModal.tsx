@@ -4,6 +4,7 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
 import {
+  HideUnhideChatWrapper,
   JoinChatParams,
   JoinChatWrapper,
   LeaveChatWrapper,
@@ -13,7 +14,13 @@ import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { HiCircleStack, HiPencilSquare, HiQrCode } from 'react-icons/hi2'
+import {
+  HiCircleStack,
+  HiOutlineEye,
+  HiOutlineEyeSlash,
+  HiPencilSquare,
+  HiQrCode,
+} from 'react-icons/hi2'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import UpsertChatModal from '../community/UpsertChatModal'
@@ -38,7 +45,7 @@ export default function AboutChatModal({
   const { data: chat } = getPostQuery.useQuery(chatId)
 
   const [openedModalType, setOpenedModalType] = useState<
-    'metadata' | 'qr' | 'confirmation-leave' | 'edit' | null
+    'metadata' | 'qr' | 'confirmation-leave' | 'edit' | 'hide' | 'unhide' | null
   >(null)
 
   const isInIframe = useIsInIframe()
@@ -104,6 +111,22 @@ export default function AboutChatModal({
         iconClassName: cx('text-text-muted'),
         onClick: () => setOpenedModalType('edit'),
       })
+
+      if (chat.struct.hidden) {
+        actionMenu.push({
+          text: 'Unhide Chat',
+          icon: HiOutlineEye,
+          iconClassName: cx('text-text-muted'),
+          onClick: () => setOpenedModalType('unhide'),
+        })
+      } else {
+        actionMenu.push({
+          text: 'Hide Chat',
+          icon: HiOutlineEyeSlash,
+          iconClassName: cx('text-text-muted'),
+          onClick: () => setOpenedModalType('hide'),
+        })
+      }
     }
 
     if (isLoading || isInIframe) return actionMenu
@@ -131,6 +154,8 @@ export default function AboutChatModal({
     return actionMenu
   }
 
+  const closeModal = () => setOpenedModalType(null)
+
   return (
     <>
       <JoinChatWrapper>
@@ -148,11 +173,12 @@ export default function AboutChatModal({
           )
         }}
       </JoinChatWrapper>
+
       <LeaveChatWrapper>
         {({ isLoading, mutateAsync }) => (
           <ConfirmationModal
             isOpen={openedModalType === 'confirmation-leave'}
-            closeModal={() => setOpenedModalType(null)}
+            closeModal={closeModal}
             title='🤔 Are you sure you want to leave this chat?'
             primaryButtonProps={{ children: 'No, stay here' }}
             secondaryButtonProps={{
@@ -167,27 +193,61 @@ export default function AboutChatModal({
         )}
       </LeaveChatWrapper>
       <MetadataModal
-        onBackClick={() => setOpenedModalType(null)}
-        closeModal={() => setOpenedModalType(null)}
+        onBackClick={closeModal}
+        closeModal={closeModal}
         isOpen={openedModalType === 'metadata'}
         entity={chat}
         postIdTextPrefix='Chat'
       />
       <QrCodeModal
         isOpen={openedModalType === 'qr'}
-        closeModal={() => setOpenedModalType(null)}
+        closeModal={closeModal}
         title='Chat QR Code'
         description='You can use this QR code to quickly share the chat with anyone.'
         withCloseButton
-        onBackClick={() => setOpenedModalType(null)}
+        onBackClick={closeModal}
         url={chatUrl}
         urlTitle={content.title}
       />
       <UpsertChatModal
         chat={chat}
         isOpen={openedModalType === 'edit'}
-        closeModal={() => setOpenedModalType(null)}
+        closeModal={closeModal}
       />
+      <HideUnhideChatWrapper>
+        {({ isLoading, mutateAsync }) => {
+          return (
+            <>
+              <ConfirmationModal
+                isOpen={openedModalType === 'hide'}
+                title='🤔 Are you sure you want to hide this chat?'
+                closeModal={closeModal}
+                primaryButtonProps={{ children: 'No, keep this chat visible' }}
+                secondaryButtonProps={{
+                  children: 'Yes, hide this chat',
+                  isLoading,
+                  onClick: async () => {
+                    await mutateAsync({ postId: chatId, action: 'hide' })
+                  },
+                }}
+              />
+              <ConfirmationModal
+                isOpen={openedModalType === 'unhide'}
+                title='🤔 Are you sure you want to make this chat visible to everyone?'
+                closeModal={closeModal}
+                primaryButtonProps={{ children: 'No, keep this chat hidden' }}
+                secondaryButtonProps={{
+                  children: 'Yes, make this chat visible to everyone',
+                  isLoading,
+                  onClick: async () => {
+                    await mutateAsync({ postId: chatId, action: 'unhide' })
+                  },
+                }}
+              />
+            </>
+          )
+        }}
+      </HideUnhideChatWrapper>
     </>
   )
 }
