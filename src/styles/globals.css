@@ -54,6 +54,7 @@
 }
 
 #pwa-install {
+  position: relative;
   z-index: 9999;
 }
 
