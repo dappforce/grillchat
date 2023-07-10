@@ -59,6 +59,11 @@
   @apply scrollbar-thin scrollbar-track-background scrollbar-thumb-background-lightest scrollbar-track-rounded-full scrollbar-thumb-rounded-full dark:scrollbar-thumb-background-lighter;
 }
 
+#pwa-install {
+  position: relative;
+  z-index: 9999;
+}
+
 html,
 body {
   @apply font-sans;

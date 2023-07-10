@@ -19,13 +19,14 @@
     "codegen:notifications": "graphql-codegen --require dotenv/config --config codegen-notifications.ts"
   },
   "dependencies": {
-    "@kodadot1/uniquery": "^0.3.1-rc.0",
     "@amplitude/analytics-browser": "^1.9.1",
     "@dicebear/bottts": "^5.3.4",
     "@dicebear/core": "^5.3.4",
     "@ethersproject/hash": "^5.7.0",
     "@floating-ui/react": "^0.22.2",
     "@headlessui/react": "^1.7.11",
+    "@khmyznikov/pwa-install": "^0.2.5",
+    "@kodadot1/uniquery": "^0.3.1-rc.0",
     "@polkadot/keyring": "^12.1.2",
     "@polkadot/util": "^12.1.2",
     "@rainbow-me/rainbowkit": "^1.0.4",
@@ -63,6 +64,7 @@
     "lodash.truncate": "^4.4.2",
     "match-sorter": "^6.3.1",
     "next": "^13.2.1",
+    "next-pwa": "^5.6.0",
     "next-themes": "^0.2.1",
     "nextjs-cors": "^2.1.2",
     "nextjs-google-analytics": "^2.3.3",
