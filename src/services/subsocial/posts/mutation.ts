@@ -1,6 +1,5 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import useWaitNewBlock from '@/hooks/useWaitNewBlock'
-import { saveFile } from '@/services/api/mutation'
+import { invalidatePostServerCache, saveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
@@ -120,7 +119,6 @@ export function useUpsertChat(
   const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
-  const waitNewBlock = useWaitNewBlock()
 
   return useSubsocialMutation<UpsertChatParams>(
     getWallet,
@@ -178,6 +176,7 @@ export function useUpsertChat(
           if ('spaceId' in data && data.spaceId) {
             getPostIdsBySpaceIdQuery.invalidate(client, data.spaceId)
           } else if ('postId' in data && data.postId) {
+            await invalidatePostServerCache(data.postId)
             getPostQuery.invalidate(client, data.postId)
           }
         },

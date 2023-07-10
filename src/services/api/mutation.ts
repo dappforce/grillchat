@@ -3,6 +3,7 @@ import {
   ApiDiscussionInput,
   ApiDiscussionResponse,
 } from '@/pages/api/discussion'
+import { ApiPostsInvalidationResponse } from '@/pages/api/posts'
 import {
   ApiRequestTokenBody,
   ApiRequestTokenResponse,
@@ -62,3 +63,8 @@ export async function saveImage(content: File) {
   return data
 }
 export const useSaveImage = mutationWrapper(saveImage)
+
+export async function invalidatePostServerCache(postId: string) {
+  const res = await axios.post('/api/posts?' + `postId=${postId}`)
+  return res.data as ApiPostsInvalidationResponse
+}
