@@ -109,7 +109,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
           }}
           loadingUntilTxSuccess
         >
-          {({ isLoading, mutateAsync, loadingText, status }) => {
+          {({ isLoading, mutateAsync, loadingText }) => {
             const onSubmit: SubmitHandler<FormSchema> = async (data) => {
               await mutateAsync({ spaceId: hubId, postId: chat?.id, ...data })
               onSuccess?.()

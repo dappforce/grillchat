@@ -1,9 +1,11 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
+import useWaitNewBlock from '@/hooks/useWaitNewBlock'
 import { saveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { IpfsWrapper } from '@/utils/ipfs'
+import { PostContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
@@ -118,6 +120,7 @@ export function useUpsertChat(
   const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
+  const waitNewBlock = useWaitNewBlock()
 
   return useSubsocialMutation<UpsertChatParams>(
     getWallet,
@@ -130,12 +133,12 @@ export function useUpsertChat(
         body,
         image,
       })
-      if (!success) throw new Error('Failed to save file')
+      if (!success || !cid) throw new Error('Failed to save file')
 
       if ('postId' in params && params.postId) {
         return {
           tx: substrateApi.tx.posts.updatePost(params.postId, {
-            content: cid,
+            content: IpfsWrapper(cid),
           }),
           summary: 'Updating chat',
         }
@@ -155,7 +158,23 @@ export function useUpsertChat(
     config,
     {
       txCallbacks: {
-        onSuccess: ({ data }) => {
+        onSend: ({ data }) => {
+          if ('postId' in data && data.postId) {
+            getPostQuery.setQueryData(client, data.postId, (post) => {
+              if (!post) return post
+              return {
+                ...post,
+                content: {
+                  ...post.content,
+                  title: data.title,
+                  image: data.image,
+                  body: data.body ?? '',
+                } as PostContent,
+              }
+            })
+          }
+        },
+        onSuccess: async ({ data }) => {
           if ('spaceId' in data && data.spaceId) {
             getPostIdsBySpaceIdQuery.invalidate(client, data.spaceId)
           } else if ('postId' in data && data.postId) {
