@@ -71,7 +71,14 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
   })
 
   useEffect(() => {
-    if (props.isOpen) reset()
+    if (props.isOpen)
+      reset({
+        image: chat?.content?.image,
+        body: chat?.content?.body,
+        title: chat?.content?.title,
+      })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen, reset])
 
   const texts = {
