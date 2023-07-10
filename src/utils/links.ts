@@ -1,4 +1,6 @@
+import { SUBSTRATE_URL } from '@/constants/subsocial'
 import { ParsedUrlQuery } from 'querystring'
+import urlJoin from 'url-join'
 
 export function getUrlQuery(queryName: string) {
   const query = window.location.search
@@ -41,4 +43,11 @@ export function getChatPageLink(
 export function validateVideoUrl(url: string) {
   const videoFileUrlRegex = /\.(mp4|mov|avi|wmv|flv|mkv)$/i
   return videoFileUrlRegex.test(url)
+}
+
+export function getPolkadotJsUrl(pathname?: string) {
+  return urlJoin(
+    `https://polkadot.js.org/apps/?rpc=${SUBSTRATE_URL}/#/`,
+    pathname ?? ''
+  )
 }
