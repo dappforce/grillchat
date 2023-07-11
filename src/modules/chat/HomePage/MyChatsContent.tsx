@@ -121,34 +121,48 @@ function Toolbar({ filter, setFilter }: ToolbarProps) {
   )
 }
 
-function NoChats({ changeTab }: Pick<MyChatsContentProps, 'changeTab'>) {
+type NoChatsProps = Pick<MyChatsContentProps, 'changeTab'>
+function NoChats({ changeTab }: NoChatsProps) {
+  const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
+
   return (
-    <Container
-      as='div'
-      className='mb-8 mt-12 flex !max-w-lg flex-col items-center justify-center gap-4 text-center md:mt-20'
-    >
-      <Image
-        src={NoResultImage}
-        className='h-48 w-48'
-        alt=''
-        role='presentation'
-      />
-      <span className='text-3xl font-semibold'>😳 No results</span>
-      <p className='text-text-muted'>
-        It looks like you haven&apos;t joined any chats yet. Don&apos;t worry,
-        we&apos;ve got you covered!
-      </p>
-      <Button className='mt-4 w-full' size='lg' onClick={() => changeTab(1)}>
-        View Hot Chats
-      </Button>
-      <Button
-        className='w-full'
-        variant='primaryOutline'
-        size='lg'
-        onClick={() => changeTab(2)}
+    <>
+      <Container
+        as='div'
+        className='mb-8 mt-12 flex !max-w-lg flex-col items-center justify-center gap-4 text-center md:mt-20'
       >
-        Explore Hubs
-      </Button>
-    </Container>
+        <Image
+          src={NoResultImage}
+          className='h-48 w-48'
+          alt=''
+          role='presentation'
+        />
+        <span className='text-3xl font-semibold'>🤗 Welcome to your chats</span>
+        <p className='text-text-muted'>
+          Here will be all the chats you joined or created
+        </p>
+        <Button
+          className='mt-4 w-full'
+          size='lg'
+          onClick={() => setIsOpenNewCommunity(true)}
+        >
+          Create Chat
+        </Button>
+        <Button
+          className='w-full'
+          variant='primaryOutline'
+          size='lg'
+          onClick={() => changeTab(1)}
+        >
+          Explore Chats
+        </Button>
+      </Container>
+
+      <NewCommunityModal
+        isOpen={isOpenNewCommunity}
+        closeModal={() => setIsOpenNewCommunity(false)}
+        hubId={COMMUNITY_CHAT_HUB_ID}
+      />
+    </>
   )
 }
