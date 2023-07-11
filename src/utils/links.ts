@@ -1,3 +1,4 @@
+import { getAliasFromHubId } from '@/constants/hubs'
 import { SUBSTRATE_URL } from '@/constants/subsocial'
 import { ParsedUrlQuery } from 'querystring'
 import urlJoin from 'url-join'
@@ -33,11 +34,13 @@ export function getChatPageLink(
   defaultHubId?: string
 ) {
   const hubId = getHubIdFromUrl(currentPath) ?? defaultHubId
+  const hubAliasOrId = getAliasFromHubId(hubId) || hubId
+
   const currentSlug = currentPath.query.slug
   if (!chatSlug && typeof currentSlug === 'string') {
     chatSlug = currentSlug
   }
-  return `/${hubId}/${chatSlug}`
+  return `/${hubAliasOrId}/${chatSlug}`
 }
 
 export function validateVideoUrl(url: string) {

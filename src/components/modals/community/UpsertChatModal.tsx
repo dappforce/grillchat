@@ -11,7 +11,6 @@ import Modal, {
   ModalProps,
 } from '@/components/modals/Modal'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
-import { getAliasFromHubId } from '@/constants/hubs'
 import { getPostQuery } from '@/services/api/query'
 import { UpsertPostWrapper } from '@/services/subsocial/posts/mutation'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
@@ -27,7 +26,7 @@ import { z } from 'zod'
 
 type InsertAdditionalProps = {
   hubId: string
-  onCloseSuccessModal?: () => void
+  onCloseSuccessModal?: (createdPostId: string) => void
 }
 type UpdateAdditionalProps = {
   chat: PostData
@@ -186,7 +185,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
         isOpen={!!createdPostId}
         closeModal={() => {
           setCreatedPostId('')
-          onCloseSuccessModal?.()
+          onCloseSuccessModal?.(createdPostId)
         }}
         chatId={createdPostId}
         hubId={hubId ?? ''}
@@ -209,11 +208,7 @@ function InsertSuccessModal({
 
   const chatLink = urlJoin(
     getCurrentUrlOrigin(),
-    getChatPageLink(
-      { query: {} },
-      createSlug(chatId, data?.content),
-      getAliasFromHubId(hubId) || hubId
-    )
+    getChatPageLink({ query: {} }, createSlug(chatId, data?.content), hubId)
   )
 
   return (

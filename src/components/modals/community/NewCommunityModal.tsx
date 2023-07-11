@@ -2,6 +2,9 @@ import ChatIcon from '@/assets/icons/bubble-chat.svg'
 import HubIcon from '@/assets/icons/hub.svg'
 import MegaphoneIcon from '@/assets/icons/megaphone.svg'
 import ActionCard, { ActionCardProps } from '@/components/ActionCard'
+import { getChatPageLink } from '@/utils/links'
+import { createSlug } from '@/utils/slug'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import Modal, { ModalFunctionalityProps } from '../Modal'
 import UpsertChatModal from './UpsertChatModal'
@@ -14,6 +17,7 @@ export default function NewCommunityModal({
   hubId,
   ...props
 }: NewCommunityModalProps) {
+  const router = useRouter()
   const [openedModalState, setOpenedModalState] = useState<null | 'chat'>(null)
 
   const menus: ActionCardProps['actions'] = [
@@ -53,9 +57,16 @@ export default function NewCommunityModal({
         closeModal={() => setOpenedModalState(null)}
         hubId={hubId}
         onBackClick={() => setOpenedModalState(null)}
-        onCloseSuccessModal={() => {
+        onCloseSuccessModal={(createdChatId) => {
           setOpenedModalState(null)
           props.closeModal()
+          router.push(
+            getChatPageLink(
+              { query: {} },
+              createSlug(createdChatId, null),
+              hubId
+            )
+          )
         }}
       />
     </>
