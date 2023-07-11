@@ -9,7 +9,11 @@ import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
 import { cx } from '@/utils/class-names'
 import React, { useState } from 'react'
-import { HiChevronDown } from 'react-icons/hi2'
+import {
+  HiChevronDown,
+  HiOutlineChatBubbleOvalLeftEllipsis,
+  HiOutlineUsers,
+} from 'react-icons/hi2'
 import useSortedChats, { SortChatOption } from '../hooks/useSortedChats'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import HubPageNavbar from './HubPageNavbar'
@@ -103,12 +107,12 @@ function CommunityHubToolbar({
             menus={[
               {
                 text: 'Activity',
-                icon: HiChevronDown,
+                icon: HiOutlineChatBubbleOvalLeftEllipsis,
                 onClick: () => setSortBy('activity'),
               },
               {
                 text: 'Size',
-                icon: HiChevronDown,
+                icon: HiOutlineUsers,
                 onClick: () => setSortBy('size'),
               },
             ]}
