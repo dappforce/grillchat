@@ -29,7 +29,7 @@ export function ConfigProvider({ children }: { children: any }) {
   }, [])
 
   useEffect(() => {
-    window.addEventListener('message', (event) => {
+    const handler = (event: MessageEvent) => {
       const eventData = event.data
       if (eventData && eventData.type === 'grill:setConfig') {
         const payload = eventData.payload as string
@@ -44,7 +44,12 @@ export function ConfigProvider({ children }: { children: any }) {
         )
           push(payload)
       }
-    })
+    }
+    window.addEventListener('message', handler)
+
+    return () => {
+      window.removeEventListener('message', handler)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
