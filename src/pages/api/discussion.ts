@@ -20,8 +20,8 @@ const bodySchema = z.object({
   spaceId: z.string(),
   content: z.object({
     title: z.string(),
-    body: z.string(),
-    image: z.string(),
+    body: z.string().optional(),
+    image: z.string().optional(),
   }),
 })
 export type ApiDiscussionInput = z.infer<typeof bodySchema>
