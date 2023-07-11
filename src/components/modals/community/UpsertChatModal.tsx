@@ -39,8 +39,8 @@ export type UpsertChatModalProps = ModalFunctionalityProps &
   }
 
 const formSchema = z.object({
-  image: z.string().nonempty('Please upload an image.'),
-  title: z.string().nonempty('Please enter a title.'),
+  image: z.string(),
+  title: z.string().nonempty('Name cannot be empty'),
   body: z.string(),
 })
 type FormSchema = z.infer<typeof formSchema>
