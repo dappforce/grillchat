@@ -19,11 +19,10 @@ export const getServerSideProps = getCommonServerSideProps(
       }
     }
 
+    const queryParams = context.req.url?.split('?')?.[1] ?? ''
     return {
       redirect: {
-        destination: `/${hubId}/${linkedResource}?${
-          context.req.url?.split('?')[1]
-        })}`,
+        destination: `/${hubId}/${linkedResource}?${queryParams})}`,
         permanent: false,
       },
     }
