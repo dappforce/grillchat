@@ -52,6 +52,11 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
 
   const [createdPostId, setCreatedPostId] = useState('')
 
+  const defaultValues = {
+    image: chat?.content?.image ?? '',
+    body: chat?.content?.body ?? '',
+    title: chat?.content?.title ?? '',
+  }
   const {
     register,
     control,
@@ -63,20 +68,12 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
   } = useForm<FormSchema>({
     mode: 'onBlur',
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      image: chat?.content?.image,
-      body: chat?.content?.body,
-      title: chat?.content?.title,
-    },
+    defaultValues,
   })
 
   useEffect(() => {
     if (props.isOpen) {
-      reset({
-        image: chat?.content?.image,
-        body: chat?.content?.body,
-        title: chat?.content?.title,
-      })
+      reset(defaultValues)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

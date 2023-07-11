@@ -14,6 +14,7 @@ export default function FormButton<Schema extends Zod.ZodTypeAny>({
 }: FormButtonProps<Schema>) {
   const data = watch()
   const isValid = schema.safeParse(data).success
+  console.log(data, isValid)
 
   return (
     <Button type='submit' {...props} disabled={!isValid || props.disabled} />
