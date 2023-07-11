@@ -29,17 +29,23 @@ export default function AboutModal({
     <Modal {...props} withCloseButton>
       <div className='mt-4 flex flex-col items-center gap-4'>
         <div className='flex flex-col items-center text-center'>
-          <Image
-            src={getIpfsContentUrl(image ?? '')}
+          <div
             className={cx(
               getCommonClassNames('chatImageBackground'),
               isImageCircle ? 'rounded-full' : 'rounded-2xl',
               'h-20 w-20'
             )}
-            height={80}
-            width={80}
-            alt=''
-          />
+          >
+            {image && (
+              <Image
+                className='h-full w-full object-cover'
+                src={getIpfsContentUrl(image ?? '')}
+                height={80}
+                width={80}
+                alt=''
+              />
+            )}
+          </div>
           <h1 className='mt-4 text-2xl font-medium'>{title}</h1>
           <span className='text-text-muted'>{subtitle}</span>
         </div>

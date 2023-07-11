@@ -60,7 +60,7 @@ function notifyDifferentVersion() {
         action={
           <Button
             size='circle'
-            className='ml-4'
+            className='ml-2'
             onClick={() => window.location.reload()}
           >
             <IoRefresh />

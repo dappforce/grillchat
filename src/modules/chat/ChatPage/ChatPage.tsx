@@ -186,16 +186,22 @@ function NavbarChatInfo({
         )}
         onClick={() => setIsOpenAboutChatModal(true)}
       >
-        <Image
+        <div
           className={cx(
             getCommonClassNames('chatImageBackground'),
             'h-9 w-9 flex-shrink-0 justify-self-end'
           )}
-          width={36}
-          height={36}
-          src={image}
-          alt={chatTitle ?? 'chat topic'}
-        />
+        >
+          {image && (
+            <Image
+              className='h-full w-full object-cover'
+              width={36}
+              height={36}
+              src={image}
+              alt={chatTitle ?? 'chat topic'}
+            />
+          )}
+        </div>
         <div className='flex flex-col overflow-hidden'>
           <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
             {chatTitle ?? 'Topic'}

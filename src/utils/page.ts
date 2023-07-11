@@ -9,11 +9,10 @@ import {
 } from 'next'
 import { ParsedUrlQuery } from 'querystring'
 
-type StaticPropsReturn<ReturnValue> =
-  | { props: ReturnValue }
-  | { redirect: Redirect }
+type PropsReturn<ReturnValue> = { props: ReturnValue } | { redirect: Redirect }
+
 type StaticPropsReturnWithCommonProps<ReturnValue> =
-  StaticPropsReturn<ReturnValue> & { revalidate?: number }
+  PropsReturn<ReturnValue> & { revalidate?: number }
 export function getCommonStaticProps<ReturnValue>(
   getParams: (callbackReturn: ReturnValue) => AppCommonProps,
   callback?: (
@@ -46,7 +45,7 @@ export function getCommonServerSideProps<ReturnValue>(
   params: AppCommonProps,
   callback?: (
     context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
-  ) => Promise<{ props: ReturnValue; redirect?: Redirect } | undefined>
+  ) => Promise<PropsReturn<ReturnValue> | undefined>
 ): GetServerSideProps<AppCommonProps & ReturnValue> {
   return async (context) => {
     const data = callback ? await callback(context) : undefined
@@ -56,8 +55,11 @@ export function getCommonServerSideProps<ReturnValue>(
       }
     }
 
+    if ('redirect' in data) {
+      return data
+    }
+
     return {
-      redirect: data.redirect,
       props: {
         ...params,
         ...data.props,

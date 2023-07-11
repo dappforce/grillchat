@@ -37,6 +37,7 @@ export function getLinkedChatIdsForHubId(hubId: string) {
 
 const PINNED_CHATS_IN_HUB_ID: Record<string, string[]> = {
   '1023': ['6039', '3454'],
+  '1002': ['6914'],
 }
 export function getPinnedChatsInHubId(hubId: string) {
   return PINNED_CHATS_IN_HUB_ID[hubId] ?? []
