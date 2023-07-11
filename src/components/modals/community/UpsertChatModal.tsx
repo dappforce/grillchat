@@ -11,7 +11,10 @@ import Modal, {
 } from '@/components/modals/Modal'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getPostQuery } from '@/services/api/query'
-import { UpsertPostWrapper } from '@/services/subsocial/posts/mutation'
+import {
+  JoinChatWrapper,
+  UpsertPostWrapper,
+} from '@/services/subsocial/posts/mutation'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
@@ -100,86 +103,98 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
         title={usedTexts.title}
         withCloseButton
       >
-        <UpsertPostWrapper
-          config={{
-            txCallbacks: {
-              onSuccess: (_data, _, txResult) => {
-                if (isUpdating) return
+        <JoinChatWrapper>
+          {({ mutateAsync }) => (
+            <UpsertPostWrapper
+              config={{
+                txCallbacks: {
+                  onSuccess: (_data, _, txResult) => {
+                    if (isUpdating) return
 
-                const [newId] = getNewIdsFromEvent(txResult)
-                setCreatedPostId(newId.toString())
-                props.closeModal()
-              },
-            },
-          }}
-          loadingUntilTxSuccess
-        >
-          {({ isLoading, mutateAsync, loadingText }) => {
-            const onSubmit: SubmitHandler<FormSchema> = async (data) => {
-              await mutateAsync({ spaceId: hubId, postId: chat?.id, ...data })
-              onSuccess?.()
-              if (isUpdating) props.closeModal()
-            }
+                    const [newId] = getNewIdsFromEvent(txResult)
+                    const newIdString = newId.toString()
 
-            return (
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className='flex flex-col gap-4'
-              >
-                <div className='flex flex-col items-center gap-4'>
-                  <Controller
-                    control={control}
-                    name='image'
-                    render={({ field, fieldState }) => {
-                      return (
-                        <ImageInput
-                          disabled={isLoading}
-                          image={field.value}
-                          setImageUrl={(value) => setValue('image', value)}
-                          containerProps={{ className: 'my-2' }}
-                          error={fieldState.error?.message}
-                        />
-                      )
-                    }}
-                  />
-                  <AutofocusWrapper>
-                    {({ ref }) => (
-                      <Input
-                        {...register('title')}
-                        ref={(e) => {
-                          register('title').ref(e)
-                          ref.current = e
+                    setCreatedPostId(newIdString)
+                    mutateAsync({ chatId: newIdString })
+
+                    props.closeModal()
+                  },
+                },
+              }}
+              loadingUntilTxSuccess
+            >
+              {({ isLoading, mutateAsync, loadingText }) => {
+                const onSubmit: SubmitHandler<FormSchema> = async (data) => {
+                  await mutateAsync({
+                    spaceId: hubId,
+                    postId: chat?.id,
+                    ...data,
+                  })
+                  onSuccess?.()
+                  if (isUpdating) props.closeModal()
+                }
+
+                return (
+                  <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className='flex flex-col gap-4'
+                  >
+                    <div className='flex flex-col items-center gap-4'>
+                      <Controller
+                        control={control}
+                        name='image'
+                        render={({ field, fieldState }) => {
+                          return (
+                            <ImageInput
+                              disabled={isLoading}
+                              image={field.value}
+                              setImageUrl={(value) => setValue('image', value)}
+                              containerProps={{ className: 'my-2' }}
+                              error={fieldState.error?.message}
+                            />
+                          )
                         }}
+                      />
+                      <AutofocusWrapper>
+                        {({ ref }) => (
+                          <Input
+                            {...register('title')}
+                            ref={(e) => {
+                              register('title').ref(e)
+                              ref.current = e
+                            }}
+                            disabled={isLoading}
+                            placeholder='Chat Name'
+                            error={errors.title?.message}
+                            variant='fill-bg'
+                          />
+                        )}
+                      </AutofocusWrapper>
+                      <TextArea
+                        {...register('body')}
                         disabled={isLoading}
-                        placeholder='Chat Name'
-                        error={errors.title?.message}
+                        placeholder='Description (optional)'
+                        error={errors.body?.message}
+                        rows={1}
                         variant='fill-bg'
                       />
-                    )}
-                  </AutofocusWrapper>
-                  <TextArea
-                    {...register('body')}
-                    disabled={isLoading}
-                    placeholder='Description (optional)'
-                    error={errors.body?.message}
-                    rows={1}
-                    variant='fill-bg'
-                  />
-                </div>
+                    </div>
 
-                <FormButton
-                  schema={formSchema}
-                  watch={watch}
-                  isLoading={isLoading}
-                  size='lg'
-                  loadingText={loadingText}
-                >
-                  {usedTexts.button}
-                </FormButton>
-              </form>
-            )
-          }}
-        </UpsertPostWrapper>
+                    <FormButton
+                      schema={formSchema}
+                      watch={watch}
+                      isLoading={isLoading}
+                      size='lg'
+                      loadingText={loadingText}
+                    >
+                      {usedTexts.button}
+                    </FormButton>
+                  </form>
+                )
+              }}
+            </UpsertPostWrapper>
+          )}
+        </JoinChatWrapper>
       </Modal>
 
       <InsertSuccessModal
