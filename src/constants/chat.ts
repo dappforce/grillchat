@@ -14,6 +14,8 @@ const WHITELISTED_ADDRESSES_IN_CHAT_ID: Record<string, string[]> = {
     '3rJPTPXHEq6sXeXK4CCgSnWhmakfpG4DknH62P616Zyr9XLz',
     '3q5o5HibyHXYrwVMinjcL4j95SDVNmLE46pu9Z5C8RTiWzwh',
     '3tATRYq6yiws8B8WhLxEuNPFtpLFh8xxe2K2Lnt8NTrjXk8N',
+    '0x8f7131da7c374566aD3084049d4E1806Ed183a27',
+    '0x26674D44c3a4c145482Dd360069a8e5Fee2Ec74C',
   ],
 }
 export function getWhitelistedAddressesInChatId(chatId: string) {
