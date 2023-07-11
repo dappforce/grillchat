@@ -25,6 +25,22 @@ export async function prefetchChatPreviewsData(
     getSpaceQuery.fetchQuery(queryClient, hubId),
   ] as const)
 
+  const needToPrefetchBlockedEntities: Record<string, string[]> = {}
+  chats.forEach((chat) => {
+    const originalHubId = chat.struct.spaceId
+    if (originalHubId !== hubId) return
+
+    if (!needToPrefetchBlockedEntities[originalHubId])
+      needToPrefetchBlockedEntities[originalHubId] = []
+
+    needToPrefetchBlockedEntities[originalHubId].push(chat.id)
+  })
+  await Promise.all(
+    Object.entries(needToPrefetchBlockedEntities).map(([hubId, chatIds]) => {
+      return prefetchBlockedEntities(queryClient, hubId, chatIds)
+    })
+  )
+
   messageIdsByChatIds.forEach((messageIds, idx) => {
     queryClient.setQueryData(
       getCommentIdsQueryKey(allChatIds[idx]),

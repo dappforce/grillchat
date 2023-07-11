@@ -11,11 +11,16 @@ import { getGaId } from '@/utils/env/client'
 import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
+import dynamic from 'next/dynamic'
 import { Source_Sans_Pro } from 'next/font/google'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
+
+const PWAInstall = dynamic(() => import('@/components/PWAInstall'), {
+  ssr: false,
+})
 
 export type AppCommonProps = {
   alwaysShowScrollbarOffset?: boolean
@@ -62,6 +67,7 @@ export default function App(props: AppProps<AppCommonProps>) {
         ${scrollbarStyling}
       `}</style>
       <AppContent {...props} />
+      <PWAInstall />
     </ConfigProvider>
   )
 }

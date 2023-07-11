@@ -38,3 +38,6 @@ next-env.d.ts
 
 # idea
 .idea
+
+/public/sw.js
+/public/workbox-*.js
