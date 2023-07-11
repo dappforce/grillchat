@@ -7,3 +7,11 @@ const PINNED_MESSAGE_IN_CHAT_ID: Record<string, string> = {
 export function getPinnedMessageInChatId(chatId: string) {
   return PINNED_MESSAGE_IN_CHAT_ID[chatId] ?? ''
 }
+
+const WHITELISTED_ADDRESSES_IN_CHAT_ID: Record<string, string[]> = {}
+export function getWhitelistedAddressesInChatId(chatId: string) {
+  const addresses = WHITELISTED_ADDRESSES_IN_CHAT_ID[chatId] as
+    | string[]
+    | undefined
+  return addresses
+}
