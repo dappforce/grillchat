@@ -1,4 +1,6 @@
 import { getHubIdFromAlias } from '@/constants/hubs'
+import useToastError from '@/hooks/useToastError'
+import { ApiDiscussionResponse } from '@/pages/api/discussion'
 import { useCreateDiscussion } from '@/services/api/mutation'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
@@ -6,7 +8,13 @@ import { useEffect, useState } from 'react'
 import ChatPage, { ChatPageProps } from './ChatPage'
 
 export default function StubChatPage() {
-  const { mutateAsync: createDiscussion } = useCreateDiscussion()
+  const { mutateAsync: createDiscussion, error } = useCreateDiscussion()
+  useToastError<ApiDiscussionResponse>(
+    error,
+    'Failed to create discussion',
+    (response) => response.message
+  )
+
   const [metadata, setMetadata] = useState<ChatPageProps['stubMetadata']>({
     body: '',
     image: '',

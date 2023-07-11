@@ -35,7 +35,7 @@ export default function Toast({
         )}
       >
         {icon?.(cx('text-3xl mr-2.5'))}
-        <div className={cx('flex flex-col')}>
+        <div className={cx('flex flex-col', !icon && 'mx-2')}>
           <p className={cx(!description && 'text-sm')}>{title}</p>
           {description && (
             <p className='text-sm text-text-muted'>{description}</p>
