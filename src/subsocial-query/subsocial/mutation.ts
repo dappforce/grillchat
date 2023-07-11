@@ -193,8 +193,8 @@ function generateTxCallbacks<Data, Context>(
   callbacks: SubsocialMutationConfig<Data, Context>['txCallbacks'],
   defaultCallbacks: SubsocialMutationConfig<Data, Context>['txCallbacks']
 ) {
-  if (!callbacks) return
-  const { getContext } = callbacks
+  if (!callbacks && !defaultCallbacks) return
+  const { getContext } = defaultCallbacks || {}
   const context = getContext?.(data)
   return {
     onError: () =>
