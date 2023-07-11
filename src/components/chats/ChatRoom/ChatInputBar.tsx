@@ -24,7 +24,7 @@ export default function ChatInputBar({
 
   const isWhitelisted =
     whitelistedAddresses?.includes(myAddress ?? '') ||
-    whitelistedAddresses?.includes(myEvmAddress ?? '')
+    whitelistedAddresses?.includes(myEvmAddress?.toLowerCase() ?? '')
 
   if (whitelistedAddresses && (!myAddress || !isWhitelisted)) {
     return null
