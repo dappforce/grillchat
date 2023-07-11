@@ -194,7 +194,7 @@ function NavbarChatInfo({
         >
           {image && (
             <Image
-              className='h-full w-full object-contain'
+              className='h-full w-full object-cover'
               width={36}
               height={36}
               src={image}

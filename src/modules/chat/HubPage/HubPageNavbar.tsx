@@ -57,13 +57,15 @@ export default function HubPageNavbar({
               'h-9 w-9 flex-shrink-0 justify-self-end'
             )}
           >
-            <Image
-              className='h-full w-full object-contain'
-              width={36}
-              height={36}
-              src={getIpfsContentUrl(content?.image ?? '')}
-              alt={content?.name ?? ''}
-            />
+            {content?.image && (
+              <Image
+                className='h-full w-full object-cover'
+                width={36}
+                height={36}
+                src={getIpfsContentUrl(content?.image ?? '')}
+                alt={content?.name ?? ''}
+              />
+            )}
           </div>
           <div className='flex flex-col overflow-hidden'>
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>

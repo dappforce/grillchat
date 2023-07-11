@@ -38,7 +38,7 @@ export default function AboutModal({
           >
             {image && (
               <Image
-                className='h-full w-full object-contain'
+                className='h-full w-full object-cover'
                 src={getIpfsContentUrl(image ?? '')}
                 height={80}
                 width={80}
