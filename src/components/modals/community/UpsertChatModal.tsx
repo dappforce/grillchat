@@ -5,7 +5,6 @@ import FormButton from '@/components/FormButton'
 import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import TextArea from '@/components/inputs/TextArea'
-import MediaLoader from '@/components/MediaLoader'
 import Modal, {
   ModalFunctionalityProps,
   ModalProps,
@@ -13,15 +12,16 @@ import Modal, {
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getPostQuery } from '@/services/api/query'
 import { UpsertPostWrapper } from '@/services/subsocial/posts/mutation'
+import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PostData } from '@subsocial/api/types'
 import { getNewIdsFromEvent } from '@subsocial/api/utils'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { HiArrowUpRight } from 'react-icons/hi2'
 import urlJoin from 'url-join'
 import { z } from 'zod'
 
@@ -215,14 +215,22 @@ function InsertSuccessModal({
   return (
     <Modal {...props} title='🎉 Chat Created' withCloseButton>
       <div className='flex flex-col items-center gap-6'>
-        <MediaLoader
-          containerClassName='h-20 w-20 md:h-24 md:w-24 rounded-full overflow-hidden'
-          className='h-full w-full object-cover'
-          src={data?.content?.image ?? ''}
-          width={100}
-          height={100}
-          alt=''
-        />
+        <div
+          className={cx(
+            'h-20 w-20 md:h-24 md:w-24',
+            getCommonClassNames('chatImageBackground')
+          )}
+        >
+          {data?.content?.image && (
+            <Image
+              className='h-full w-full object-cover'
+              src={data.content.image}
+              width={100}
+              height={100}
+              alt=''
+            />
+          )}
+        </div>
         <IntegratedSkeleton content={data?.content?.title} className='text-xl'>
           {(title) => <p className='text-center text-xl'>{title}</p>}
         </IntegratedSkeleton>
@@ -249,21 +257,6 @@ function InsertSuccessModal({
             }
           >
             Tweet about it!
-          </Button>
-
-          <Button
-            className='flex items-center justify-center gap-1 self-stretch'
-            size='lg'
-            variant='primaryOutline'
-            href={getChatPageLink(
-              { query: {} },
-              createSlug(chatId, null),
-              hubId
-            )}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            Go to chat <HiArrowUpRight />
           </Button>
         </div>
       </div>
