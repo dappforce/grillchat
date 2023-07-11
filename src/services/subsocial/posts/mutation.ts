@@ -10,6 +10,7 @@ import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import {
   getFollowedPostIdsByAddressQuery,
+  getOwnedPostIdsQuery,
   getPostIdsBySpaceIdQuery,
 } from './query'
 
@@ -172,11 +173,15 @@ export function useUpsertPost(
             })
           }
         },
-        onSuccess: async ({ data }) => {
+        onSuccess: async ({ data, address }) => {
           if ('spaceId' in data && data.spaceId) {
             getPostIdsBySpaceIdQuery.invalidate(client, data.spaceId)
           } else if ('postId' in data && data.postId) {
             await invalidatePostServerCache(data.postId)
+            getOwnedPostIdsQuery.setQueryData(client, address, (ids) => {
+              if (!ids) return ids
+              return [...ids, data.postId]
+            })
             getPostQuery.invalidate(client, data.postId)
           }
         },
@@ -236,5 +241,5 @@ export function useHideUnhidePost(
 }
 export const HideUnhideChatWrapper = createMutationWrapper(
   useHideUnhidePost,
-  'Failed to upsert chat'
+  'Failed to hide/unhide chat'
 )

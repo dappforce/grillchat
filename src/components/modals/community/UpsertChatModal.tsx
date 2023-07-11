@@ -16,6 +16,7 @@ import {
   UpsertPostWrapper,
 } from '@/services/subsocial/posts/mutation'
 import { cx, getCommonClassNames } from '@/utils/class-names'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
@@ -239,7 +240,7 @@ function InsertSuccessModal({
           {data?.content?.image && (
             <Image
               className='h-full w-full object-cover'
-              src={data.content.image}
+              src={getIpfsContentUrl(data.content.image)}
               width={100}
               height={100}
               alt=''

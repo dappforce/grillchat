@@ -7,11 +7,14 @@ import Container from '@/components/Container'
 import NewCommunityModal from '@/components/modals/community/NewCommunityModal'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import { getPostQuery } from '@/services/api/query'
-import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
+import {
+  getFollowedPostIdsByAddressQuery,
+  getOwnedPostIdsQuery,
+} from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import useSortChatIdsByLatestMessage from '../hooks/useSortChatIdsByLatestMessage'
 
 export type MyChatsContentProps = {
@@ -28,10 +31,21 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   const [filter, setFilter] = useState<Filter>('all')
 
   const {
-    data: chatIds,
+    data: followedChatIds,
     isLoading,
     isPlaceholderData,
   } = getFollowedPostIdsByAddressQuery.useQuery(address ?? '')
+  const { data: ownedChatIds } = getOwnedPostIdsQuery.useQuery(address ?? '')
+
+  const chatIds = useMemo<string[]>(() => {
+    const owned = ownedChatIds ?? []
+    const followed = followedChatIds ?? []
+
+    if (filter === 'all') return Array.from(new Set([...owned, ...followed]))
+    if (filter === 'created') return owned
+
+    return followed
+  }, [ownedChatIds, followedChatIds, filter])
 
   const sortedIds = useSortChatIdsByLatestMessage(chatIds)
 
