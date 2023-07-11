@@ -1,16 +1,11 @@
 import StubChatPage from '@/modules/chat/ChatPage/StubChatPage'
 import { getDiscussion } from '@/pages/api/discussion'
-import { getCommonStaticProps } from '@/utils/page'
-import { GetStaticPaths } from 'next'
+import { getCommonServerSideProps } from '@/utils/page'
 
-export const getStaticPaths: GetStaticPaths = () => ({
-  paths: [],
-  fallback: 'blocking',
-})
-
-export const getStaticProps = getCommonStaticProps(
-  () => ({}),
+export const getServerSideProps = getCommonServerSideProps(
+  {},
   async (context) => {
+    context.res.setHeader('Cache-Control', 's-maxage=2, stale-while-revalidate')
     const { hubId, resourceId } = context.params || {}
 
     if (!hubId || !resourceId) {
@@ -21,16 +16,16 @@ export const getStaticProps = getCommonStaticProps(
     if (!linkedResource) {
       return {
         props: {},
-        revalidate: 2,
       }
     }
 
     return {
       redirect: {
-        destination: `/${hubId}/${linkedResource}`,
+        destination: `/${hubId}/${linkedResource}?${
+          context.req.url?.split('?')[1]
+        })}`,
         permanent: false,
       },
-      revalidate: 2,
     }
   }
 )
