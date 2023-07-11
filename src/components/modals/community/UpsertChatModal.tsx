@@ -21,6 +21,7 @@ import { PostData } from '@subsocial/api/types'
 import { getNewIdsFromEvent } from '@subsocial/api/utils'
 import { useEffect, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { HiArrowUpRight } from 'react-icons/hi2'
 import urlJoin from 'url-join'
 import { z } from 'zod'
 
@@ -236,17 +237,35 @@ function InsertSuccessModal({
             },
           ]}
         />
-        <Button
-          className='self-stretch'
-          size='lg'
-          onClick={() =>
-            openNewWindow(
-              twitterShareUrl(chatLink, 'I just created new chat! Join here!')
-            )
-          }
-        >
-          Tweet about it!
-        </Button>
+
+        <div className='flex w-full flex-col gap-4'>
+          <Button
+            className='self-stretch'
+            size='lg'
+            onClick={() =>
+              openNewWindow(
+                twitterShareUrl(chatLink, 'I just created new chat! Join here!')
+              )
+            }
+          >
+            Tweet about it!
+          </Button>
+
+          <Button
+            className='flex items-center justify-center gap-1 self-stretch'
+            size='lg'
+            variant='primaryOutline'
+            href={getChatPageLink(
+              { query: {} },
+              createSlug(chatId, null),
+              hubId
+            )}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            Go to chat <HiArrowUpRight />
+          </Button>
+        </div>
       </div>
     </Modal>
   )
