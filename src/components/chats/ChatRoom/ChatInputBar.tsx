@@ -1,4 +1,5 @@
 import { getWhitelistedAddressesInChatId } from '@/constants/chat'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
@@ -16,12 +17,16 @@ export default function ChatInputBar({
   ...props
 }: ChatInputBarProps) {
   const myAddress = useMyAccount((state) => state.address)
+  const { data: accountData } = getAccountDataQuery.useQuery(myAddress ?? '')
+  const myEvmAddress = accountData?.evmAddress
+
   const whitelistedAddresses = getWhitelistedAddressesInChatId(formProps.chatId)
 
-  if (
-    whitelistedAddresses &&
-    (!myAddress || !whitelistedAddresses?.includes(myAddress))
-  ) {
+  const isWhitelisted =
+    whitelistedAddresses?.includes(myAddress ?? '') ||
+    whitelistedAddresses?.includes(myEvmAddress ?? '')
+
+  if (whitelistedAddresses && (!myAddress || !isWhitelisted)) {
     return null
   }
 
