@@ -6,8 +6,13 @@ import { useMemo } from 'react'
 import useSortChatIdsByConfig from './useSortChatIdsByConfig'
 import useSortChatIdsByLatestMessage from './useSortChatIdsByLatestMessage'
 import { useSortChatIdsByPinned } from './useSortChatIdsByPinned'
+import useSortChatIdsBySize from './useSortChatIdsBySize'
 
-export default function useSortedChats(hubId: string) {
+export type SortChatOption = 'activity' | 'size' | 'members'
+export default function useSortedChats(
+  hubId: string,
+  sortBy: SortChatOption = 'activity'
+) {
   const { channels } = useConfigContext()
 
   const { data } = getPostIdsBySpaceIdQuery.useQuery(hubId)
@@ -19,7 +24,23 @@ export default function useSortedChats(hubId: string) {
     return allChatIds.filter((id) => !channels || channels?.has(id))
   }, [allChatIds, channels])
 
-  const sortedIds = useSortChatIdsByLatestMessage(filteredChatIds)
+  const sortedIdsByActivity = useSortChatIdsByLatestMessage(filteredChatIds)
+  const sortedIdsBySize = useSortChatIdsBySize(filteredChatIds)
+  // const sortedIdsByMembers = useSortChatIdsByMembers(filteredChatIds)
+
+  let sortedIds: string[] = []
+  switch (sortBy) {
+    case 'activity':
+      sortedIds = sortedIdsByActivity
+      break
+    case 'size':
+      sortedIds = sortedIdsBySize
+      break
+    // case 'members':
+    //   sortedIds = sortedIdsByMembers
+    //   break
+  }
+
   const sortedByOrder = useSortChatIdsByConfig(sortedIds)
   const sortedByPinned = useSortChatIdsByPinned(hubId, sortedByOrder)
 
