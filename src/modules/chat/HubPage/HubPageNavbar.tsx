@@ -50,17 +50,21 @@ export default function HubPageNavbar({
           className='flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left'
           onClick={() => setIsOpenAboutModal(true)}
         >
-          <Image
+          <div
             className={cx(
               getCommonClassNames('chatImageBackground'),
               'rounded-xl',
               'h-9 w-9 flex-shrink-0 justify-self-end'
             )}
-            width={36}
-            height={36}
-            src={getIpfsContentUrl(content?.image ?? '')}
-            alt={content?.name ?? ''}
-          />
+          >
+            <Image
+              className='h-full w-full object-contain'
+              width={36}
+              height={36}
+              src={getIpfsContentUrl(content?.image ?? '')}
+              alt={content?.name ?? ''}
+            />
+          </div>
           <div className='flex flex-col overflow-hidden'>
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
               {content?.name ?? ''}
