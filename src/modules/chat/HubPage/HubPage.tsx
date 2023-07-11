@@ -76,7 +76,7 @@ export default function HubPage({ hubId }: HubPageProps) {
                   className='flex items-center gap-2'
                   onClick={() => setIsOpenNewCommunity(true)}
                 >
-                  <CommunityAddIcon />
+                  <CommunityAddIcon className='text-text-muted' />
                   <span>New</span>
                 </Button>
               </Container>

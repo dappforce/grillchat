@@ -1,21 +1,11 @@
 <svg width="1em" height="1em" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Mask group">
-<mask id="mask0_10293_135581" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16">
-<g id="Group">
-<path id="bg" d="M16 0H0V16H16V0Z" fill="currentColor"/>
-</g>
-</mask>
-<g mask="url(#mask0_10293_135581)">
+<g>
 <g id="Group_2">
 <g id="g1895">
 <g id="g1897">
 <g id="Clip path group">
-<mask id="mask1_10293_135581" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16">
-<g id="clipPath1903">
-<path id="path1901" d="M0 2.22524e-06H16V16H0V2.22524e-06Z" fill="currentColor"/>
-</g>
-</mask>
-<g mask="url(#mask1_10293_135581)">
+<g>
 <g id="g1899">
 <g id="g1905">
 <path id="path1907 (Stroke)" fill-rule="evenodd" clip-rule="evenodd" d="M2.6875 7.46289C2.6875 9.22329 4.1146 10.6504 5.875 10.6504C7.6354 10.6504 9.0625 9.22329 9.0625 7.46289C9.0625 5.70249 7.6354 4.27539 5.875 4.27539C4.1146 4.27539 2.6875 5.70249 2.6875 7.46289ZM5.875 9.40039C4.80496 9.40039 3.9375 8.53293 3.9375 7.46289C3.9375 6.39285 4.80496 5.52539 5.875 5.52539C6.94504 5.52539 7.8125 6.39285 7.8125 7.46289C7.8125 8.53293 6.94504 9.40039 5.875 9.40039Z" fill="currentColor"/>
