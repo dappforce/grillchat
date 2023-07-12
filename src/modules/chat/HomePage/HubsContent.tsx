@@ -5,7 +5,6 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
 import { getHubIds } from '@/utils/env/client'
-import { getIpfsContentUrl } from '@/utils/ipfs'
 import { SpaceData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -94,7 +93,7 @@ function ChatPreviewContainer({
         href: linkTo,
       }}
       additionalDesc={chatCount ? `${chatCount} chats` : undefined}
-      image={getIpfsContentUrl(content?.image ?? '')}
+      image={content?.image}
       title={content?.name}
       description={content?.about}
       withFocusedStyle={isFocused}

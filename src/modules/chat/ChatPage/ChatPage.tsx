@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
+import ChatImage from '@/components/chats/ChatImage'
 import ChatRoom from '@/components/chats/ChatRoom'
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
@@ -13,7 +14,7 @@ import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
-import { cx, getCommonClassNames } from '@/utils/class-names'
+import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
   getChatPageLink,
@@ -23,7 +24,7 @@ import {
 } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
 import dynamic from 'next/dynamic'
-import Image, { ImageProps } from 'next/image'
+import { ImageProps } from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
@@ -206,22 +207,7 @@ function NavbarChatInfo({
         )}
         onClick={() => setIsOpenAboutChatModal(true)}
       >
-        <div
-          className={cx(
-            getCommonClassNames('chatImageBackground'),
-            'h-9 w-9 flex-shrink-0 justify-self-end'
-          )}
-        >
-          {image && (
-            <Image
-              className='h-full w-full object-cover'
-              width={36}
-              height={36}
-              src={image}
-              alt={chatTitle ?? 'chat topic'}
-            />
-          )}
-        </div>
+        <ChatImage className='h-9 w-9' image={image} chatTitle={chatTitle} />
         <div className='flex flex-col overflow-hidden'>
           <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
             {chatTitle ?? 'Topic'}

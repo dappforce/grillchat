@@ -1,7 +1,6 @@
 import { getPinnedChatsInHubId } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useSendEvent } from '@/stores/analytics'
-import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getChatPageLink } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import { PostData } from '@subsocial/api/types'
@@ -91,7 +90,7 @@ function ChatPreviewContainer({
         replace: isInIframe,
         href: linkTo,
       }}
-      image={content?.image && getIpfsContentUrl(content.image)}
+      image={content?.image}
       title={content?.title}
       description={content?.body}
       chatId={chat.id}

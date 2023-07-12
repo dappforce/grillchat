@@ -1,13 +1,11 @@
 import Button from '@/components/Button'
+import ChatImage from '@/components/chats/ChatImage'
 import DataCard from '@/components/DataCard'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getPostQuery } from '@/services/api/query'
-import { cx, getCommonClassNames } from '@/utils/class-names'
-import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
-import Image from 'next/image'
 import urlJoin from 'url-join'
 import Modal, { ModalFunctionalityProps } from '../Modal'
 
@@ -31,22 +29,11 @@ export default function ChatCreateSuccessModal({
   return (
     <Modal {...props} title='🎉 Chat Created' withCloseButton>
       <div className='flex flex-col items-center gap-6'>
-        <div
-          className={cx(
-            'h-20 w-20 md:h-24 md:w-24',
-            getCommonClassNames('chatImageBackground')
-          )}
-        >
-          {data?.content?.image && (
-            <Image
-              className='h-full w-full object-cover'
-              src={getIpfsContentUrl(data.content.image)}
-              width={100}
-              height={100}
-              alt=''
-            />
-          )}
-        </div>
+        <ChatImage
+          className='h-20 w-20 md:h-24 md:w-24'
+          image={data?.content?.image}
+          chatTitle={data?.content?.title}
+        />
         <IntegratedSkeleton content={data?.content?.title} className='text-xl'>
           {(title) => <p className='text-center text-xl'>{title}</p>}
         </IntegratedSkeleton>

@@ -1,10 +1,11 @@
 import PinIcon from '@/assets/icons/pin.png'
 import Container from '@/components/Container'
-import { cx, getCommonClassNames } from '@/utils/class-names'
+import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
-import React, { ComponentProps } from 'react'
+import { ComponentProps } from 'react'
+import ChatImage from '../ChatImage'
 import ChatLastMessage from './ChatLastMessage'
 
 // dynamic import to prevent hydration mismatch
@@ -19,6 +20,7 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   title: string | undefined
   description: string | undefined
   image: ImageProps['src'] | JSX.Element | undefined
+  isImageInCidFormat?: boolean
   isImageCircle?: boolean
   additionalDesc?: string
   asLink?: LinkProps
@@ -37,6 +39,7 @@ export default function ChatPreview({
   description,
   image,
   isImageCircle = true,
+  isImageInCidFormat = true,
   additionalDesc,
   asContainer,
   asLink,
@@ -98,27 +101,13 @@ export default function ChatPreview({
           'relative flex items-stretch gap-2.5 overflow-hidden py-2 outline-none'
         )}
       >
-        <div
-          style={{ backgroundClip: 'padding-box' }}
-          className={cx(
-            getCommonClassNames('chatImageBackground'),
-            isImageCircle ? 'rounded-full' : 'rounded-2xl',
-            'h-12 w-12 self-center sm:h-14 sm:w-14'
-          )}
-        >
-          {React.isValidElement(image)
-            ? image
-            : image && (
-                <Image
-                  className='h-full w-full object-cover'
-                  src={image as string}
-                  sizes='150px'
-                  width={56}
-                  height={56}
-                  alt={title ?? 'chat preview'}
-                />
-              )}
-        </div>
+        <ChatImage
+          chatTitle={title ?? ''}
+          image={image}
+          isImageCircle={isImageCircle}
+          isImageInCidFormat={isImageInCidFormat}
+          className='self-center sm:h-14 sm:w-14'
+        />
         <div className='flex flex-1 items-center overflow-hidden'>
           <div className='flex flex-1 flex-col overflow-hidden'>
             <div className='flex items-center justify-between gap-2 overflow-hidden'>
