@@ -4,6 +4,7 @@ import ChatRoom from '@/components/chats/ChatRoom'
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LinkText from '@/components/LinkText'
+import ChatCreateSuccessModal from '@/components/modals/community/ChatCreateSuccessModal'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
@@ -47,6 +48,16 @@ export default function ChatPage({
   stubMetadata,
 }: ChatPageProps) {
   const router = useRouter()
+  const [isOpenCreateSuccessModal, setIsOpenCreateSuccessModal] =
+    useState(false)
+
+  useEffect(() => {
+    const isNewChat = getUrlQuery('new')
+    if (isNewChat) {
+      setIsOpenCreateSuccessModal(true)
+      replaceUrl(getCurrentUrlWithoutQuery())
+    }
+  }, [])
 
   const { data: chat } = getPostQuery.useQuery(chatId)
   const { data: messageIds } = useCommentIdsByPostId(chatId, {
@@ -64,38 +75,47 @@ export default function ChatPage({
   const content = chat?.content ?? stubMetadata
 
   return (
-    <DefaultLayout
-      withFixedHeight
-      navbarProps={{
-        backButtonProps: {
-          defaultBackLink: getHubPageLink(router),
-          forceUseDefaultBackLink: false,
-        },
-        customContent: ({ backButton, authComponent, colorModeToggler }) => (
-          <div className='flex w-full items-center justify-between gap-4 overflow-hidden'>
-            <NavbarChatInfo
-              backButton={backButton}
-              image={content?.image ? getIpfsContentUrl(content.image) : ''}
-              messageCount={messageIds?.length ?? 0}
-              chatMetadata={content}
-              chatId={chatId}
-            />
-            <div className='flex items-center gap-4'>
-              {colorModeToggler}
-              {authComponent}
+    <>
+      <DefaultLayout
+        withFixedHeight
+        navbarProps={{
+          backButtonProps: {
+            defaultBackLink: getHubPageLink(router),
+            forceUseDefaultBackLink: false,
+          },
+          customContent: ({ backButton, authComponent, colorModeToggler }) => (
+            <div className='flex w-full items-center justify-between gap-4 overflow-hidden'>
+              <NavbarChatInfo
+                backButton={backButton}
+                image={content?.image ? getIpfsContentUrl(content.image) : ''}
+                messageCount={messageIds?.length ?? 0}
+                chatMetadata={content}
+                chatId={chatId}
+              />
+              <div className='flex items-center gap-4'>
+                {colorModeToggler}
+                {authComponent}
+              </div>
             </div>
-          </div>
-        ),
-      }}
-    >
-      <ChatRoom
-        hubId={hubId}
+          ),
+        }}
+      >
+        <ChatRoom
+          hubId={hubId}
+          chatId={chatId}
+          asContainer
+          className='flex-1 overflow-hidden'
+        />
+        <BottomPanel />
+      </DefaultLayout>
+
+      <ChatCreateSuccessModal
         chatId={chatId}
-        asContainer
-        className='flex-1 overflow-hidden'
+        hubId={hubId}
+        isOpen={isOpenCreateSuccessModal}
+        closeModal={() => setIsOpenCreateSuccessModal(false)}
       />
-      <BottomPanel />
-    </DefaultLayout>
+    </>
   )
 }
 

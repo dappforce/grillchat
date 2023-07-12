@@ -18,6 +18,7 @@ import { getNewIdsFromEvent } from '@subsocial/api/utils'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import urlJoin from 'url-join'
 import { z } from 'zod'
 
 type InsertAdditionalProps = {
@@ -91,193 +92,115 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
   const usedTexts = isUpdating ? texts.update : texts.insert
 
   return (
-    <>
-      <Modal
-        {...otherProps}
-        isOpen={otherProps.isOpen && !createdPostId}
-        title={usedTexts.title}
-        withCloseButton
-      >
-        <JoinChatWrapper>
-          {({ mutateAsync }) => (
-            <UpsertPostWrapper
-              config={{
-                txCallbacks: {
-                  onSuccess: async (_data, _, txResult) => {
-                    if (isUpdating) return
+    <Modal
+      {...otherProps}
+      isOpen={otherProps.isOpen && !createdPostId}
+      title={usedTexts.title}
+      withCloseButton
+    >
+      <JoinChatWrapper>
+        {({ mutateAsync }) => (
+          <UpsertPostWrapper
+            config={{
+              txCallbacks: {
+                onSuccess: async (_data, _, txResult) => {
+                  if (isUpdating) return
 
-                    const [newId] = getNewIdsFromEvent(txResult)
-                    const newIdString = newId.toString()
+                  const [newId] = getNewIdsFromEvent(txResult)
+                  const newIdString = newId.toString()
 
-                    setCreatedPostId(newIdString)
-                    mutateAsync({ chatId: newIdString })
+                  setCreatedPostId(newIdString)
+                  mutateAsync({ chatId: newIdString })
 
-                    setIsRedirecting(true)
-                    await router.push(
-                      getChatPageLink({ query: {} }, newIdString, hubId)
+                  setIsRedirecting(true)
+                  await router.push(
+                    urlJoin(
+                      getChatPageLink({ query: {} }, newIdString, hubId),
+                      '?new=true'
                     )
-                    setIsRedirecting(false)
+                  )
+                  setIsRedirecting(false)
 
-                    onAfterRedirect?.()
-                  },
+                  onAfterRedirect?.()
                 },
-              }}
-              loadingUntilTxSuccess
-            >
-              {({ isLoading: isMutating, mutateAsync, loadingText }) => {
-                const onSubmit: SubmitHandler<FormSchema> = async (data) => {
-                  await mutateAsync({
-                    spaceId: hubId,
-                    postId: chat?.id,
-                    ...data,
-                  })
-                  onSuccess?.()
-                  if (isUpdating) props.closeModal()
-                }
+              },
+            }}
+            loadingUntilTxSuccess
+          >
+            {({ isLoading: isMutating, mutateAsync, loadingText }) => {
+              const onSubmit: SubmitHandler<FormSchema> = async (data) => {
+                await mutateAsync({
+                  spaceId: hubId,
+                  postId: chat?.id,
+                  ...data,
+                })
+                onSuccess?.()
+                if (isUpdating) props.closeModal()
+              }
 
-                const isLoading = isMutating || isRedirecting
+              const isLoading = isMutating || isRedirecting
 
-                return (
-                  <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className='flex flex-col gap-4'
-                  >
-                    <div className='flex flex-col items-center gap-4'>
-                      <Controller
-                        control={control}
-                        name='image'
-                        render={({ field, fieldState }) => {
-                          return (
-                            <ImageInput
-                              disabled={isLoading}
-                              image={field.value}
-                              setImageUrl={(value) => setValue('image', value)}
-                              containerProps={{ className: 'my-2' }}
-                              error={fieldState.error?.message}
-                            />
-                          )
-                        }}
-                      />
-                      <AutofocusWrapper>
-                        {({ ref }) => (
-                          <Input
-                            {...register('title')}
-                            ref={(e) => {
-                              register('title').ref(e)
-                              ref.current = e
-                            }}
+              return (
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className='flex flex-col gap-4'
+                >
+                  <div className='flex flex-col items-center gap-4'>
+                    <Controller
+                      control={control}
+                      name='image'
+                      render={({ field, fieldState }) => {
+                        return (
+                          <ImageInput
                             disabled={isLoading}
-                            placeholder='Chat Name'
-                            error={errors.title?.message}
-                            variant='fill-bg'
+                            image={field.value}
+                            setImageUrl={(value) => setValue('image', value)}
+                            containerProps={{ className: 'my-2' }}
+                            error={fieldState.error?.message}
                           />
-                        )}
-                      </AutofocusWrapper>
-                      <TextArea
-                        {...register('body')}
-                        disabled={isLoading}
-                        placeholder='Description (optional)'
-                        error={errors.body?.message}
-                        rows={1}
-                        variant='fill-bg'
-                      />
-                    </div>
+                        )
+                      }}
+                    />
+                    <AutofocusWrapper>
+                      {({ ref }) => (
+                        <Input
+                          {...register('title')}
+                          ref={(e) => {
+                            register('title').ref(e)
+                            ref.current = e
+                          }}
+                          disabled={isLoading}
+                          placeholder='Chat Name'
+                          error={errors.title?.message}
+                          variant='fill-bg'
+                        />
+                      )}
+                    </AutofocusWrapper>
+                    <TextArea
+                      {...register('body')}
+                      disabled={isLoading}
+                      placeholder='Description (optional)'
+                      error={errors.body?.message}
+                      rows={1}
+                      variant='fill-bg'
+                    />
+                  </div>
 
-                    <FormButton
-                      schema={formSchema}
-                      watch={watch}
-                      isLoading={isLoading}
-                      size='lg'
-                      loadingText={isRedirecting ? 'Redirecting' : loadingText}
-                    >
-                      {usedTexts.button}
-                    </FormButton>
-                  </form>
-                )
-              }}
-            </UpsertPostWrapper>
-          )}
-        </JoinChatWrapper>
-      </Modal>
-
-      {/* <InsertSuccessModal
-        isOpen={!!createdPostId}
-        closeModal={() => {
-          setCreatedPostId('')
-          onCloseSuccessModal?.(createdPostId)
-        }}
-        chatId={createdPostId}
-        hubId={hubId ?? ''}
-      /> */}
-    </>
+                  <FormButton
+                    schema={formSchema}
+                    watch={watch}
+                    isLoading={isLoading}
+                    size='lg'
+                    loadingText={isRedirecting ? 'Redirecting' : loadingText}
+                  >
+                    {usedTexts.button}
+                  </FormButton>
+                </form>
+              )
+            }}
+          </UpsertPostWrapper>
+        )}
+      </JoinChatWrapper>
+    </Modal>
   )
 }
-
-// type InsertSuccessModalProps = ModalFunctionalityProps & {
-//   chatId: string
-//   hubId: string
-// }
-// function InsertSuccessModal({
-//   chatId,
-//   hubId,
-//   ...props
-// }: InsertSuccessModalProps) {
-//   const { data, isLoading } = getPostQuery.useQuery(chatId)
-//   const { IntegratedSkeleton } = useIntegratedSkeleton(isLoading)
-
-//   const chatLink = urlJoin(
-//     getCurrentUrlOrigin(),
-//     getChatPageLink({ query: {} }, createSlug(chatId, data?.content), hubId)
-//   )
-
-//   return (
-//     <Modal {...props} title='🎉 Chat Created' withCloseButton>
-//       <div className='flex flex-col items-center gap-6'>
-//         <div
-//           className={cx(
-//             'h-20 w-20 md:h-24 md:w-24',
-//             getCommonClassNames('chatImageBackground')
-//           )}
-//         >
-//           {data?.content?.image && (
-//             <Image
-//               className='h-full w-full object-cover'
-//               src={getIpfsContentUrl(data.content.image)}
-//               width={100}
-//               height={100}
-//               alt=''
-//             />
-//           )}
-//         </div>
-//         <IntegratedSkeleton content={data?.content?.title} className='text-xl'>
-//           {(title) => <p className='text-center text-xl'>{title}</p>}
-//         </IntegratedSkeleton>
-//         <DataCard
-//           data={[
-//             {
-//               title: 'Chat link',
-//               content: chatLink,
-//               openInNewTab: true,
-//               redirectTo: chatLink,
-//               textToCopy: chatLink,
-//             },
-//           ]}
-//         />
-
-//         <div className='flex w-full flex-col gap-4'>
-//           <Button
-//             className='self-stretch'
-//             size='lg'
-//             onClick={() =>
-//               openNewWindow(
-//                 twitterShareUrl(chatLink, 'I just created new chat! Join here!')
-//               )
-//             }
-//           >
-//             Tweet about it!
-//           </Button>
-//         </div>
-//       </div>
-//     </Modal>
-//   )
-// }
