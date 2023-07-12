@@ -88,13 +88,18 @@ function ChatListContent({
   const { currentData: currentPageMessageIds, loadMore } =
     useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
 
-  const filteredIds = useFilterBlockedMessageIds(
+  const filteredMessageIds = useFilterBlockedMessageIds(
+    hubId,
+    chatId,
+    messageIds
+  )
+  const filteredCurrentPageIds = useFilterBlockedMessageIds(
     hubId,
     chatId,
     currentPageMessageIds
   )
 
-  const messageQueries = getPostQuery.useQueries(filteredIds)
+  const messageQueries = getPostQuery.useQueries(filteredCurrentPageIds)
   const loadedMessageQueries = useMemo(() => {
     return messageQueries.filter((message) => message.isLoading === false)
   }, [messageQueries])
@@ -158,7 +163,8 @@ function ChatListContent({
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  const isAllMessagesLoaded = loadedMessageQueries.length === messageIds.length
+  const isAllMessagesLoaded =
+    loadedMessageQueries.length === filteredMessageIds.length
 
   const scrollThreshold =
     (scrollContainerRef.current?.scrollHeight ?? 0) *
