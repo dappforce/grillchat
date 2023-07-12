@@ -1,8 +1,8 @@
 import Button from '@/components/Button'
 import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
-import MetamaskDeepLink, {
-  isInsideMetamaskBrowser,
-} from '@/components/MetamaskDeepLink'
+// import MetamaskDeepLink, {
+//   isInsideMetamaskBrowser,
+// } from '@/components/MetamaskDeepLink'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -159,10 +159,10 @@ function DonateForm({
           />
 
           {(() => {
-            if (!isInsideMetamaskBrowser())
-              return (
-                <MetamaskDeepLink size='lg'>Connect Wallet</MetamaskDeepLink>
-              )
+            // if (!isInsideMetamaskBrowser())
+            //   return (
+            //     <MetamaskDeepLink size='lg'>Connect Wallet</MetamaskDeepLink>
+            //   )
 
             return showSwitchButton ? (
               <Button size={'lg'} onClick={onSwitchButtonClick}>

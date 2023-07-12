@@ -1,8 +1,8 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button, { ButtonProps } from '@/components/Button'
-import MetamaskDeepLink, {
-  isInsideMetamaskBrowser,
-} from '@/components/MetamaskDeepLink'
+// import MetamaskDeepLink, {
+//   isInsideMetamaskBrowser,
+// } from '@/components/MetamaskDeepLink'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
@@ -68,11 +68,11 @@ export const CustomConnectButton = ({
 
   const usedLabel = (hasInteractedOnce && secondLabel) || label
 
-  if (!isInsideMetamaskBrowser()) {
-    return (
-      <MetamaskDeepLink {...commonButtonProps}>{usedLabel}</MetamaskDeepLink>
-    )
-  }
+  // if (!isInsideMetamaskBrowser()) {
+  //   return (
+  //     <MetamaskDeepLink {...commonButtonProps}>{usedLabel}</MetamaskDeepLink>
+  //   )
+  // }
 
   const customButton = (
     <ConnectButton.Custom>
