@@ -17,7 +17,13 @@ export default function ChatImage({
   isImageCircle = true,
   ...props
 }: ChatImageProps) {
-  // TODO: create initial for avatar with chatTitle
+  let initial = chatTitle?.charAt(0)
+  if (chatTitle?.includes(' ')) {
+    const [, secondWord] = chatTitle.split(' ')
+    if (secondWord && secondWord.length > 0) {
+      initial += secondWord.charAt(0)
+    }
+  }
 
   return (
     <div
@@ -30,22 +36,47 @@ export default function ChatImage({
         props.className
       )}
     >
-      {React.isValidElement(image)
-        ? image
-        : image && (
-            <Image
-              className='h-full w-full object-cover'
-              src={
-                isImageInCidFormat
-                  ? getIpfsContentUrl(image as string)
-                  : (image as string)
-              }
-              sizes='150px'
-              width={120}
-              height={120}
-              alt=''
-            />
-          )}
+      {(() => {
+        if (!image)
+          return (
+            <div className='flex h-full w-full items-center justify-center uppercase text-slate-700'>
+              <svg
+                width='100%'
+                height='100%'
+                viewBox='0 0 75 75'
+                preserveAspectRatio='xMinYMid meet'
+              >
+                <text
+                  x='50%'
+                  y='50%'
+                  dominant-baseline='central'
+                  text-anchor='middle'
+                  font-size='32'
+                  fill='#334155'
+                >
+                  {initial}
+                </text>
+              </svg>
+            </div>
+          )
+
+        return React.isValidElement(image) ? (
+          image
+        ) : (
+          <Image
+            className='h-full w-full object-cover'
+            src={
+              isImageInCidFormat
+                ? getIpfsContentUrl(image as string)
+                : (image as string)
+            }
+            sizes='150px'
+            width={120}
+            height={120}
+            alt=''
+          />
+        )
+      })()}
     </div>
   )
 }
