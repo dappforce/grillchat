@@ -105,7 +105,7 @@ export default function AboutChatModal({
     ]
 
     if (chatOwner === address || true) {
-      actionMenu.unshift({
+      actionMenu.push({
         text: 'Edit',
         icon: HiPencilSquare,
         iconClassName: cx('text-text-muted'),
