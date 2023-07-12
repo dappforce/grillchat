@@ -1,6 +1,7 @@
 import AboutChatRedirectPage from '@/modules/chat/AboutChatRedirectPage'
 import { getPostsServer } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
 
@@ -20,11 +21,13 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
 
     let title = ''
     let description = ''
+    let image = ''
 
     try {
       const [chat] = await getPostsServer([chatId])
       title = chat.content?.title ?? ''
       description = chat.content?.body ?? ''
+      image = chat.content?.image ? getIpfsContentUrl(chat.content?.image) : ''
     } catch (err) {
       console.error('Error fetching for chat about page: ', err)
     }
@@ -34,6 +37,7 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
         head: {
           title,
           description,
+          image,
         },
       },
       revalidate: 2,
