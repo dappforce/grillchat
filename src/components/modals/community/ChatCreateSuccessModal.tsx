@@ -55,7 +55,10 @@ export default function ChatCreateSuccessModal({
             size='lg'
             onClick={() =>
               openNewWindow(
-                twitterShareUrl(chatLink, 'I just created new chat! Join here!')
+                twitterShareUrl(
+                  chatLink,
+                  'I just created a new discussion room on Grill.chat, come check it out!'
+                )
               )
             }
           >
