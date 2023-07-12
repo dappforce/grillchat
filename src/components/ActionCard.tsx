@@ -18,9 +18,14 @@ type Action = {
 
 export type ActionCardProps = ComponentProps<'div'> & {
   actions: Action[]
+  size?: 'md' | 'sm'
 }
 
-export default function ActionCard({ actions, ...props }: ActionCardProps) {
+export default function ActionCard({
+  actions,
+  size = 'md',
+  ...props
+}: ActionCardProps) {
   if (actions.length === 0) return null
 
   return (
@@ -32,13 +37,17 @@ export default function ActionCard({ actions, ...props }: ActionCardProps) {
       )}
     >
       {actions.map((action) => (
-        <ActionItem key={action.text} action={action} />
+        <ActionItem size={size} key={action.text} action={action} />
       ))}
     </div>
   )
 }
 
-function ActionItem({ action }: { action: Action }) {
+type ActionItemProps = {
+  action: Action
+  size?: ActionCardProps['size']
+}
+function ActionItem({ action, size }: ActionItemProps) {
   const {
     icon: Icon,
     text,
@@ -67,6 +76,7 @@ function ActionItem({ action }: { action: Action }) {
       className={cx(
         'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 text-left last:border-none',
         'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
+        size === 'md' ? 'p-4' : 'px-4 py-3',
         className
       )}
       onClick={(e) => {

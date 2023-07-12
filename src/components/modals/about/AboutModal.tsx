@@ -32,7 +32,7 @@ export default function AboutModal({
           <span className='text-text-muted'>{subtitle}</span>
         </div>
         <DataCard data={contentList} />
-        <ActionCard actions={actionMenu ?? []} />
+        <ActionCard actions={actionMenu ?? []} size='sm' />
         {bottomElement}
       </div>
     </Modal>
