@@ -26,10 +26,12 @@ export default function AboutModal({
   return (
     <Modal {...props} withCloseButton>
       <div className='mt-4 flex flex-col items-center gap-4'>
-        <div className='flex flex-col items-center text-center'>
+        <div className='flex items-center gap-4'>
           <ChatImage chatTitle={title} className='h-20 w-20' image={image} />
-          <h1 className='mt-4 text-2xl font-medium'>{title}</h1>
-          <span className='text-text-muted'>{subtitle}</span>
+          <div className='flex flex-col'>
+            <h1 className='text-2xl font-medium'>{title}</h1>
+            <span className='text-text-muted'>{subtitle}</span>
+          </div>
         </div>
         <DataCard data={contentList} />
         <ActionCard actions={actionMenu ?? []} size='sm' />
