@@ -4,6 +4,7 @@ export type HeadConfigProps = {
   title?: string | null
   isTitleBrandFocused?: boolean
   description?: string | null
+  image?: string | null
   disableZoom?: boolean
 }
 
@@ -17,6 +18,7 @@ export default function HeadConfig({
   description,
   title,
   disableZoom,
+  image,
   isTitleBrandFocused,
 }: HeadConfigProps) {
   const defaultTitle = 'Chat Anonymously On-Chain Without Wallets'
@@ -31,6 +33,8 @@ export default function HeadConfig({
     'Talk with others from around the world and create your own communities about any topic, utilizing our censorship-resistant blockchain and app with anonymous logins.'
   const usedDesc = description || defaultDesc
 
+  const usedImage = image || 'https://grill.chat/icons/icon-192x192.png'
+
   return (
     <Head>
       <title>{usedTitle}</title>
@@ -39,18 +43,12 @@ export default function HeadConfig({
       <meta name='twitter:card' content='summary' />
       <meta name='twitter:title' content={usedTitle} />
       <meta name='twitter:description' content={usedDesc} />
-      <meta
-        name='twitter:image'
-        content='https://grill.chat/icons/icon-192x192.png'
-      />
+      <meta name='twitter:image' content={usedImage} />
 
       <meta property='og:title' content={usedTitle} />
       <meta property='og:description' content={usedDesc} />
       <meta property='og:site_name' content='Grill.chat' />
-      <meta
-        property='og:image'
-        content='https://grill.chat/icons/icon-192x192.png'
-      />
+      <meta property='og:image' content={usedImage} />
 
       {disableZoom ? (
         <meta

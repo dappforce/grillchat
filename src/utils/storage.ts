@@ -28,3 +28,26 @@ export class LocalStorage<Params extends unknown[]> implements Storage<Params> {
     } catch {}
   }
 }
+
+export class SafeLocalStorage {
+  static getItem(key: string) {
+    try {
+      if (typeof window === 'undefined') return null
+      return localStorage.getItem(key)
+    } catch {
+      return null
+    }
+  }
+  static setItem(key: string, value: string) {
+    try {
+      if (typeof window === 'undefined') return
+      localStorage.setItem(key, value)
+    } catch {}
+  }
+  static removeItem(key: string) {
+    try {
+      if (typeof window === 'undefined') return
+      localStorage.removeItem(key)
+    } catch {}
+  }
+}
