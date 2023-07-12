@@ -106,12 +106,12 @@ function CommunityHubToolbar({
           <FloatingMenus
             menus={[
               {
-                text: 'Activity',
+                text: 'Recent Activity',
                 icon: HiOutlineChatBubbleOvalLeftEllipsis,
                 onClick: () => setSortBy('activity'),
               },
               {
-                text: 'Size',
+                text: 'Community Size',
                 icon: HiOutlineUsers,
                 onClick: () => setSortBy('size'),
               },

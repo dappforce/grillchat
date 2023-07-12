@@ -18,7 +18,7 @@ export default function NewCommunityModal({
 
   const menus: ActionCardProps['actions'] = [
     {
-      text: 'Chat',
+      text: 'Group Chat',
       description: 'Anyone can participate in a public conversation',
       icon: ChatIcon,
       firstVisitNotificationStorageName: 'new-community-chat',
