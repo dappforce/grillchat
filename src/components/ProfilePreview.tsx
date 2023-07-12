@@ -43,7 +43,7 @@ const ProfilePreview = ({
         <Name
           address={address}
           showEthIcon={false}
-          className='text-lg leading-none'
+          className={cx('text-lg leading-none', nameClassName)}
         />
         {showingAnyAddress && (
           <div className='mt-3 flex flex-col gap-1'>
