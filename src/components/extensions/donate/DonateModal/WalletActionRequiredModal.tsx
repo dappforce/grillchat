@@ -6,7 +6,6 @@ import Modal from '@/components/modals/Modal'
 import { useExtensionModalState } from '@/stores/extension'
 import { isTouchDevice } from '@/utils/device'
 import Image from 'next/image'
-import { getConnector, openMobileWallet } from '../api/utils'
 import { DonateProps } from './types'
 
 type WalletActionRequiredModalStep = 'wallet-action-required' | 'add-network'
@@ -59,8 +58,8 @@ function WalletActionRequiredModal({ currentStep, chainState }: DonateProps) {
   const [selectedChain] = chainState
 
   const onButtonClick = async () => {
-    const connector = getConnector()
-    await openMobileWallet({ connector })
+    // const connector = getConnector()
+    // await openMobileWallet({ connector })
   }
 
   const { title, desc } = getModalHeader(

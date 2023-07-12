@@ -1,6 +1,5 @@
 import Toast from '@/components/Toast'
 import useToastError from '@/hooks/useToastError'
-import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
@@ -13,26 +12,19 @@ import {
   useSendTransaction,
   useSwitchNetwork,
 } from 'wagmi'
-import { isTouchDevice } from '../../../../utils/device'
 import { DonateModalStep } from '../DonateModal/types'
 import { tokensItems } from '../DonateModal/utils'
 import { chainIdByChainName, contractsByChainName } from './config'
-import {
-  getConnector,
-  getWalletFromStorage,
-  openMobileWallet,
-  tryParseDecimals,
-} from './utils'
+import { getWalletFromStorage, tryParseDecimals } from './utils'
 
 export const useConnectOrSwitchNetwork = (
   setCurrentStep: (currentStep: DonateModalStep) => void,
   chainName: string
 ) => {
-  const { openConnectModal } = useConnectModal()
   const { isConnected } = useAccount()
 
   const destChainId = chainIdByChainName[chainName]
-  const connector = getConnector()
+  // const connector = getConnector()
 
   const {
     switchNetwork,
@@ -46,7 +38,7 @@ export const useConnectOrSwitchNetwork = (
         const currentChainId = chain.id
 
         if (currentChainId !== destChainId) {
-          isTouchDevice() && (await openMobileWallet({ connector }))
+          // isTouchDevice() && (await openMobileWallet({ connector }))
           switchNetwork?.(destChainId)
         }
       },
@@ -81,9 +73,9 @@ export const useConnectOrSwitchNetwork = (
 
   const connectOrSwitch = async () => {
     if (!isConnected) {
-      openConnectModal?.()
+      // openConnectModal?.()
     } else {
-      isTouchDevice() && (await openMobileWallet({ connector }))
+      // isTouchDevice() && (await openMobileWallet({ connector }))
       switchNetwork?.(destChainId)
     }
   }
@@ -119,8 +111,8 @@ export const useDonate = (token: string, chainName: string) => {
   ) => {
     setCurrentStep('wallet-action-required')
 
-    const connector = getConnector()
-    isTouchDevice() && (await openMobileWallet({ connector }))
+    // const connector = getConnector()
+    // isTouchDevice() && (await openMobileWallet({ connector }))
     if (getWalletFromStorage() === 'subwallet') switchNetwork?.(chainId)
 
     try {

@@ -1,5 +1,5 @@
-import { Chain, Wallet } from '@rainbow-me/rainbowkit'
 import { SubWalletConnector } from '@subwallet/wagmi-connector'
+import { Chain } from 'wagmi'
 
 export interface MyWalletOptions {
   chains: Chain[]
@@ -9,7 +9,7 @@ export interface MyWalletOptions {
 export const subWalletWallet = ({
   chains,
   shimDisconnect,
-}: MyWalletOptions): Wallet => ({
+}: MyWalletOptions) => ({
   id: 'subwallet',
   name: 'SubWallet',
   iconUrl: '/subwallet.svg',

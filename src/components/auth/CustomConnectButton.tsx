@@ -1,15 +1,12 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button, { ButtonProps } from '@/components/Button'
-// import MetamaskDeepLink, {
-//   isInsideMetamaskBrowser,
-// } from '@/components/MetamaskDeepLink'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useWeb3Modal } from '@web3modal/react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect, useNetwork } from 'wagmi'
 
 type CustomConnectButtonProps = ButtonProps & {
   className?: string
@@ -35,15 +32,17 @@ export const CustomConnectButton = ({
   ...buttonProps
 }: CustomConnectButtonProps) => {
   const [hasInteractedOnce, setHasInteractedOnce] = useState(false)
+  const { open } = useWeb3Modal()
 
   const mySubstrateAddress = useMyAccount((state) => state.address)
+  const { chain } = useNetwork()
   const { disconnect } = useDisconnect()
   const { data: accountData, isLoading: isAccountDataLoading } =
     getAccountDataQuery.useQuery(mySubstrateAddress || '')
 
   const { evmAddress: linkedEvmAddress } = accountData || {}
 
-  const { isConnected } = useAccount({
+  const { isConnected, address: evmAddress } = useAccount({
     onConnect: async ({ address }) => {
       !isConnected &&
         !isTouchDevice() &&
@@ -68,71 +67,45 @@ export const CustomConnectButton = ({
 
   const usedLabel = (hasInteractedOnce && secondLabel) || label
 
-  // if (!isInsideMetamaskBrowser()) {
-  //   return (
-  //     <MetamaskDeepLink {...commonButtonProps}>{usedLabel}</MetamaskDeepLink>
-  //   )
-  // }
-
-  const customButton = (
-    <ConnectButton.Custom>
-      {({
-        account,
-        chain,
-        openChainModal,
-        openConnectModal,
-        authenticationStatus,
-        mounted,
-      }) => {
-        const ready = mounted && authenticationStatus !== 'loading'
-        const connected =
-          ready &&
-          account &&
-          chain &&
-          (!authenticationStatus || authenticationStatus === 'authenticated')
-
-        if (!connected) {
-          return (
-            <Button
-              onClick={() => {
-                setHasInteractedOnce(true)
-                openConnectModal()
-              }}
-              {...commonButtonProps}
-            >
-              {usedLabel}
-            </Button>
-          )
-        }
-
-        if (chain.unsupported) {
-          return (
-            <Button
-              onClick={() => {
-                setHasInteractedOnce(true)
-                openChainModal()
-              }}
-              {...commonButtonProps}
-            >
-              Wrong network
-            </Button>
-          )
-        }
-
-        return (
-          <Button
-            onClick={async () => {
-              setHasInteractedOnce(true)
-              signAndLinkEvmAddress(account.address, mySubstrateAddress)
-            }}
-            {...commonButtonProps}
-          >
-            {usedLabel}
-          </Button>
-        )
+  let customButton = (
+    <Button
+      onClick={async () => {
+        setHasInteractedOnce(true)
+        signAndLinkEvmAddress(evmAddress, mySubstrateAddress)
       }}
-    </ConnectButton.Custom>
+      {...commonButtonProps}
+    >
+      {usedLabel}
+    </Button>
   )
+
+  if (!isConnected) {
+    customButton = (
+      <Button
+        onClick={() => {
+          setHasInteractedOnce(true)
+          open({ route: 'ConnectWallet' })
+        }}
+        {...commonButtonProps}
+      >
+        {usedLabel}
+      </Button>
+    )
+  }
+
+  if (chain?.unsupported) {
+    customButton = (
+      <Button
+        onClick={() => {
+          setHasInteractedOnce(true)
+          open({ route: 'SelectNetwork' })
+        }}
+        {...commonButtonProps}
+      >
+        Wrong network
+      </Button>
+    )
+  }
 
   if (hasInteractedOnce && withWalletActionImage) {
     return (

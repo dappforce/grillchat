@@ -1,11 +1,7 @@
-import { Wallet } from '@rainbow-me/rainbowkit'
 import { TalismanConnector } from '@talismn/wagmi-connector'
 import { WalletOptions } from '../types'
 
-export const talismanWallet = ({
-  chains,
-  shimDisconnect,
-}: WalletOptions): Wallet => ({
+export const talismanWallet = ({ chains, shimDisconnect }: WalletOptions) => ({
   id: 'talisman',
   name: 'Talisman',
   iconUrl: '/talisman.png',

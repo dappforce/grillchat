@@ -1,17 +1,6 @@
 import { walletConnectProjectId } from '@/constants/evm'
-import { talismanWallet } from '@/providers/evm/wallets/talisman'
 import { getConfiguredChains } from '@/providers/utils'
 import { LocalStorage } from '@/utils/storage'
-import {
-  InstructionStepName,
-  Wallet,
-} from '@rainbow-me/rainbowkit/dist/wallets/Wallet'
-import {
-  argentWallet,
-  coinbaseWallet,
-  ledgerWallet,
-  metaMaskWallet,
-} from '@rainbow-me/rainbowkit/wallets'
 import { Chain, Connector } from 'wagmi'
 
 const WAGMI_WALLET = 'wagmi.wallet'
@@ -34,7 +23,7 @@ export type RainbowKitConnector<C extends Connector = Connector> = {
     instructions?: {
       learnMoreUrl: string
       steps: {
-        step: InstructionStepName
+        step: any
         title: string
         description: string
       }[]
@@ -44,7 +33,7 @@ export type RainbowKitConnector<C extends Connector = Connector> = {
     instructions?: {
       learnMoreUrl: string
       steps: {
-        step: InstructionStepName
+        step: any
         title: string
         description: string
       }[]
@@ -58,22 +47,13 @@ const getWallet = (chains: Chain[]) => {
     projectId: walletConnectProjectId,
     appName: 'Grill.chat',
   }
-  const supportedWallets: Record<string, Wallet> = {
-    metamask: metaMaskWallet(walletOptions),
-    talisman: talismanWallet(walletOptions),
-    argent: argentWallet(walletOptions),
-    coinbase: coinbaseWallet(walletOptions),
-    ledger: ledgerWallet(walletOptions),
-    // subwallet: subWalletWallet({ chains }),
-  }
+  const supportedWallets: Record<string, any> = {}
 
   const currentWalletId = getWalletFromStorage()
 
-  const wallet = currentWalletId
-    ? supportedWallets[currentWalletId]
-    : metaMaskWallet(walletOptions)
+  const wallet = currentWalletId ? supportedWallets[currentWalletId] : undefined
 
-  return wallet ? wallet : metaMaskWallet(walletOptions)
+  return wallet ? wallet : undefined
 }
 
 export const getConnector = () => {

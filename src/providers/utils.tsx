@@ -1,6 +1,10 @@
+import { walletConnectProjectId } from '@/constants/evm'
+import { w3mProvider } from '@web3modal/ethereum'
 import { configureChains } from 'wagmi'
 import { mainnet, moonbeam, polygon } from 'wagmi/chains'
-import { publicProvider } from 'wagmi/providers/public'
 
 export const getConfiguredChains = () =>
-  configureChains([polygon, moonbeam, mainnet], [publicProvider()])
+  configureChains(
+    [polygon, moonbeam, mainnet],
+    [w3mProvider({ projectId: walletConnectProjectId })]
+  )
