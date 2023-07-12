@@ -26,7 +26,8 @@ export default function ChatImage({
       className={cx(
         getCommonClassNames('chatImageBackground'),
         isImageCircle ? 'rounded-full' : 'rounded-2xl',
-        'h-12 w-12 flex-shrink-0'
+        'h-12 w-12 flex-shrink-0',
+        props.className
       )}
     >
       {React.isValidElement(image)
