@@ -127,7 +127,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
             }}
             loadingUntilTxSuccess
           >
-            {({ isLoading: isMutating, mutateAsync, loadingText }) => {
+            {({ isLoading: isMutating, mutateAsync }) => {
               const onSubmit: SubmitHandler<FormSchema> = async (data) => {
                 await mutateAsync({
                   spaceId: hubId,
@@ -191,7 +191,6 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                     watch={watch}
                     isLoading={isLoading}
                     size='lg'
-                    loadingText={isRedirecting ? 'Redirecting' : loadingText}
                   >
                     {usedTexts.button}
                   </FormButton>
