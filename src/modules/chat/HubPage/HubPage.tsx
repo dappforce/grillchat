@@ -119,17 +119,22 @@ function CommunityHubToolbar({
             allowedPlacements={['bottom-start']}
             mainAxisOffset={4}
             panelSize='xs'
-            showOnHover
           >
             {(config) => {
-              const { referenceProps } = config || {}
+              const { referenceProps, toggleDisplay, isOpen } = config || {}
               return (
                 <div
                   {...referenceProps}
-                  className='flex items-center gap-1 text-text-primary'
+                  onClick={toggleDisplay}
+                  className='flex cursor-pointer items-center gap-1 text-text-primary'
                 >
                   <span className='capitalize'>{sortBy}</span>
-                  <HiChevronDown />
+                  <HiChevronDown
+                    className={cx(
+                      'transition-transform',
+                      isOpen && 'rotate-180'
+                    )}
+                  />
                 </div>
               )
             }}

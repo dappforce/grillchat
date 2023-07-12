@@ -20,6 +20,7 @@ export type FloatingWrapperProps = {
   children: (config: {
     toggleDisplay: (e?: MouseEvent<Element, globalThis.MouseEvent>) => void
     referenceProps: ReferenceProps
+    isOpen: boolean
   }) => JSX.Element
   panel: (closeMenu: () => void) => React.ReactNode
   showOnHover?: boolean
@@ -89,6 +90,7 @@ export default function FloatingWrapper({
     <>
       {children({
         toggleDisplay,
+        isOpen: openMenu,
         referenceProps: getReferenceProps({
           ref: refs.setReference,
           ...getReferenceProps(),

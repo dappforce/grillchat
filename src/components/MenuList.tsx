@@ -15,7 +15,7 @@ const menuListStyles = cva<MenuListVariants>('flex w-full flex-col', {
     size: {
       md: 'p-3',
       sm: 'p-1.5',
-      xs: 'p-1 text-sm',
+      xs: 'p-1',
     },
   },
   defaultVariants: {
