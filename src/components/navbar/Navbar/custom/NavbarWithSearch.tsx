@@ -78,7 +78,7 @@ export default function NavbarWithSearch({
   )
 
   return (
-    <div className='relative'>
+    <div className='relative flex w-full'>
       <div
         className={cx(
           'absolute left-0 top-1/2 z-10 w-full -translate-y-1/2 transition-opacity',
@@ -116,7 +116,7 @@ export default function NavbarWithSearch({
       </div>
       <div
         className={cx(
-          'relative z-0 flex items-center justify-between transition-opacity',
+          'relative z-0 flex w-full max-w-full flex-grow-0 items-center justify-between transition-opacity',
           isOpenSearch && 'opacity-0'
         )}
       >

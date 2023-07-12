@@ -14,6 +14,7 @@ import {
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
 import { validateNumber } from '@/utils/strings'
@@ -80,6 +81,7 @@ export const getStaticProps = getCommonStaticProps<
 
     let title: string | null = null
     let desc: string | null = null
+    let image: string | null = null
     try {
       const [{ messageIds, messages, chatData, accountsAddresses, prices }] =
         await Promise.all([
@@ -94,6 +96,9 @@ export const getStaticProps = getCommonStaticProps<
 
       title = chatData?.content?.title || null
       desc = chatData?.content?.body || null
+
+      const chatImage = chatData.content?.image
+      image = chatImage ? getIpfsContentUrl(chatImage) : null
 
       getPostQuery.setQueryData(queryClient, chatId, chatData)
       queryClient.setQueryData(
@@ -136,6 +141,7 @@ export const getStaticProps = getCommonStaticProps<
         head: {
           title,
           description: desc,
+          image,
         },
       },
       revalidate: 2,

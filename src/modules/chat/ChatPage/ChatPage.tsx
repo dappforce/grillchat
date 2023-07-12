@@ -72,7 +72,7 @@ export default function ChatPage({
           forceUseDefaultBackLink: false,
         },
         customContent: ({ backButton, authComponent, colorModeToggler }) => (
-          <div className='flex items-center justify-between gap-4 overflow-hidden'>
+          <div className='flex w-full items-center justify-between gap-4 overflow-hidden'>
             <NavbarChatInfo
               backButton={backButton}
               image={content?.image ? getIpfsContentUrl(content.image) : ''}
