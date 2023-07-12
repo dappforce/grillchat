@@ -65,7 +65,7 @@ function ActionItem({ action }: { action: Action }) {
       size='noPadding'
       key={text}
       className={cx(
-        'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 last:border-none',
+        'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 text-left last:border-none',
         'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
         className
       )}
@@ -76,7 +76,11 @@ function ActionItem({ action }: { action: Action }) {
       disabledStyle='subtle'
     >
       <Icon
-        className={cx('text-xl', description && 'text-2xl', iconClassName)}
+        className={cx(
+          'flex-shrink-0 text-xl',
+          description && 'text-2xl',
+          iconClassName
+        )}
       />
       <div className='flex flex-col items-start'>
         <span className='flex items-center gap-2'>
