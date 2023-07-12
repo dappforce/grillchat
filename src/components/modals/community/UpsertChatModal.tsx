@@ -1,6 +1,4 @@
 import AutofocusWrapper from '@/components/AutofocusWrapper'
-import Button from '@/components/Button'
-import DataCard from '@/components/DataCard'
 import FormButton from '@/components/FormButton'
 import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
@@ -9,29 +7,21 @@ import Modal, {
   ModalFunctionalityProps,
   ModalProps,
 } from '@/components/modals/Modal'
-import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
-import { getPostQuery } from '@/services/api/query'
 import {
   JoinChatWrapper,
   UpsertPostWrapper,
 } from '@/services/subsocial/posts/mutation'
-import { cx, getCommonClassNames } from '@/utils/class-names'
-import { getIpfsContentUrl } from '@/utils/ipfs'
-import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
-import { createSlug } from '@/utils/slug'
-import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
+import { getChatPageLink } from '@/utils/links'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PostData } from '@subsocial/api/types'
 import { getNewIdsFromEvent } from '@subsocial/api/utils'
-import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import urlJoin from 'url-join'
 import { z } from 'zod'
 
 type InsertAdditionalProps = {
   hubId: string
-  onCloseSuccessModal?: (createdPostId: string) => void
 }
 type UpdateAdditionalProps = {
   chat: PostData
@@ -40,6 +30,7 @@ export type UpsertChatModalProps = ModalFunctionalityProps &
   Pick<ModalProps, 'onBackClick'> &
   (InsertAdditionalProps | UpdateAdditionalProps) & {
     onSuccess?: () => void
+    onAfterRedirect?: () => void
   }
 
 const formSchema = z.object({
@@ -50,7 +41,10 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export default function UpsertChatModal(props: UpsertChatModalProps) {
-  const { chat, hubId, onCloseSuccessModal, onSuccess, ...otherProps } =
+  const [isRedirecting, setIsRedirecting] = useState(false)
+
+  const router = useRouter()
+  const { chat, hubId, onSuccess, onAfterRedirect, ...otherProps } =
     props as UpsertChatModalProps &
       Partial<InsertAdditionalProps & UpdateAdditionalProps>
 
@@ -109,7 +103,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
             <UpsertPostWrapper
               config={{
                 txCallbacks: {
-                  onSuccess: (_data, _, txResult) => {
+                  onSuccess: async (_data, _, txResult) => {
                     if (isUpdating) return
 
                     const [newId] = getNewIdsFromEvent(txResult)
@@ -118,13 +112,19 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                     setCreatedPostId(newIdString)
                     mutateAsync({ chatId: newIdString })
 
-                    props.closeModal()
+                    setIsRedirecting(true)
+                    await router.push(
+                      getChatPageLink({ query: {} }, newIdString, hubId)
+                    )
+                    setIsRedirecting(false)
+
+                    onAfterRedirect?.()
                   },
                 },
               }}
               loadingUntilTxSuccess
             >
-              {({ isLoading, mutateAsync, loadingText }) => {
+              {({ isLoading: isMutating, mutateAsync, loadingText }) => {
                 const onSubmit: SubmitHandler<FormSchema> = async (data) => {
                   await mutateAsync({
                     spaceId: hubId,
@@ -134,6 +134,8 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                   onSuccess?.()
                   if (isUpdating) props.closeModal()
                 }
+
+                const isLoading = isMutating || isRedirecting
 
                 return (
                   <form
@@ -186,7 +188,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                       watch={watch}
                       isLoading={isLoading}
                       size='lg'
-                      loadingText={loadingText}
+                      loadingText={isRedirecting ? 'Redirecting' : loadingText}
                     >
                       {usedTexts.button}
                     </FormButton>
@@ -198,7 +200,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
         </JoinChatWrapper>
       </Modal>
 
-      <InsertSuccessModal
+      {/* <InsertSuccessModal
         isOpen={!!createdPostId}
         closeModal={() => {
           setCreatedPostId('')
@@ -206,76 +208,76 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
         }}
         chatId={createdPostId}
         hubId={hubId ?? ''}
-      />
+      /> */}
     </>
   )
 }
 
-type InsertSuccessModalProps = ModalFunctionalityProps & {
-  chatId: string
-  hubId: string
-}
-function InsertSuccessModal({
-  chatId,
-  hubId,
-  ...props
-}: InsertSuccessModalProps) {
-  const { data, isLoading } = getPostQuery.useQuery(chatId)
-  const { IntegratedSkeleton } = useIntegratedSkeleton(isLoading)
+// type InsertSuccessModalProps = ModalFunctionalityProps & {
+//   chatId: string
+//   hubId: string
+// }
+// function InsertSuccessModal({
+//   chatId,
+//   hubId,
+//   ...props
+// }: InsertSuccessModalProps) {
+//   const { data, isLoading } = getPostQuery.useQuery(chatId)
+//   const { IntegratedSkeleton } = useIntegratedSkeleton(isLoading)
 
-  const chatLink = urlJoin(
-    getCurrentUrlOrigin(),
-    getChatPageLink({ query: {} }, createSlug(chatId, data?.content), hubId)
-  )
+//   const chatLink = urlJoin(
+//     getCurrentUrlOrigin(),
+//     getChatPageLink({ query: {} }, createSlug(chatId, data?.content), hubId)
+//   )
 
-  return (
-    <Modal {...props} title='🎉 Chat Created' withCloseButton>
-      <div className='flex flex-col items-center gap-6'>
-        <div
-          className={cx(
-            'h-20 w-20 md:h-24 md:w-24',
-            getCommonClassNames('chatImageBackground')
-          )}
-        >
-          {data?.content?.image && (
-            <Image
-              className='h-full w-full object-cover'
-              src={getIpfsContentUrl(data.content.image)}
-              width={100}
-              height={100}
-              alt=''
-            />
-          )}
-        </div>
-        <IntegratedSkeleton content={data?.content?.title} className='text-xl'>
-          {(title) => <p className='text-center text-xl'>{title}</p>}
-        </IntegratedSkeleton>
-        <DataCard
-          data={[
-            {
-              title: 'Chat link',
-              content: chatLink,
-              openInNewTab: true,
-              redirectTo: chatLink,
-              textToCopy: chatLink,
-            },
-          ]}
-        />
+//   return (
+//     <Modal {...props} title='🎉 Chat Created' withCloseButton>
+//       <div className='flex flex-col items-center gap-6'>
+//         <div
+//           className={cx(
+//             'h-20 w-20 md:h-24 md:w-24',
+//             getCommonClassNames('chatImageBackground')
+//           )}
+//         >
+//           {data?.content?.image && (
+//             <Image
+//               className='h-full w-full object-cover'
+//               src={getIpfsContentUrl(data.content.image)}
+//               width={100}
+//               height={100}
+//               alt=''
+//             />
+//           )}
+//         </div>
+//         <IntegratedSkeleton content={data?.content?.title} className='text-xl'>
+//           {(title) => <p className='text-center text-xl'>{title}</p>}
+//         </IntegratedSkeleton>
+//         <DataCard
+//           data={[
+//             {
+//               title: 'Chat link',
+//               content: chatLink,
+//               openInNewTab: true,
+//               redirectTo: chatLink,
+//               textToCopy: chatLink,
+//             },
+//           ]}
+//         />
 
-        <div className='flex w-full flex-col gap-4'>
-          <Button
-            className='self-stretch'
-            size='lg'
-            onClick={() =>
-              openNewWindow(
-                twitterShareUrl(chatLink, 'I just created new chat! Join here!')
-              )
-            }
-          >
-            Tweet about it!
-          </Button>
-        </div>
-      </div>
-    </Modal>
-  )
-}
+//         <div className='flex w-full flex-col gap-4'>
+//           <Button
+//             className='self-stretch'
+//             size='lg'
+//             onClick={() =>
+//               openNewWindow(
+//                 twitterShareUrl(chatLink, 'I just created new chat! Join here!')
+//               )
+//             }
+//           >
+//             Tweet about it!
+//           </Button>
+//         </div>
+//       </div>
+//     </Modal>
+//   )
+// }

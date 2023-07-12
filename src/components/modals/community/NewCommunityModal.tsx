@@ -53,7 +53,7 @@ export default function NewCommunityModal({
         closeModal={() => setOpenedModalState(null)}
         hubId={hubId}
         onBackClick={() => setOpenedModalState(null)}
-        onCloseSuccessModal={() => {
+        onAfterRedirect={() => {
           setOpenedModalState(null)
           props.closeModal()
         }}
