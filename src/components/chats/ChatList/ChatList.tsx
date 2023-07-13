@@ -156,6 +156,11 @@ function ChatListContent({
     })
   }, [loadedMessageQueries.length, isAtBottomRef, scrollContainerRef, replyTo])
 
+  const myAddress = useMyAccount((state) => state.address)
+  const { data: chat } = getPostQuery.useQuery(chatId)
+  const isMyEmptyChat =
+    chat?.struct.ownerId === myAddress && messageIds.length === 0
+
   const Component = asContainer ? Container<'div'> : 'div'
 
   const isAllMessagesLoaded = loadedMessageQueries.length === messageIds.length
@@ -177,6 +182,9 @@ function ChatListContent({
         chatId={chatId}
         asContainer={asContainer}
       />
+      {isMyEmptyChat && (
+        <MyMessageNotice className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' />
+      )}
       <ScrollableContainer
         id={scrollableContainerId}
         ref={scrollContainerRef}
@@ -255,6 +263,28 @@ function ChatListContent({
           />
         </div>
       </Component>
+    </div>
+  )
+}
+
+function MyMessageNotice({ ...props }: ComponentProps<'div'>) {
+  return (
+    <div
+      {...props}
+      className={cx(
+        'flex flex-col rounded-2xl bg-background-light px-6 py-4',
+        props.className
+      )}
+    >
+      <span className='mb-1 text-center'>You created a group</span>
+      <div>
+        <span>Groups are:</span>
+        <ul className='list-inside list-disc'>
+          <li>On-chain</li>
+          <li>Censorship resistant</li>
+          <li>Powered by Subsocial</li>
+        </ul>
+      </div>
     </div>
   )
 }
