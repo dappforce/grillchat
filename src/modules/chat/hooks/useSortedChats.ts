@@ -2,6 +2,7 @@ import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { useMyAccount } from '@/stores/my-account'
 import { useMemo } from 'react'
 import useSortChatIdsByConfig from './useSortChatIdsByConfig'
 import useSortChatIdsByLatestMessage from './useSortChatIdsByLatestMessage'
@@ -44,7 +45,10 @@ export default function useSortedChats(
   const sortedByOrder = useSortChatIdsByConfig(sortedIds)
   const sortedByPinned = useSortChatIdsByPinned(hubId, sortedByOrder)
 
-  const chatQueries = getPostQuery.useQueries(sortedByPinned)
+  const myAddress = useMyAccount((state) => state.address)
+  const chatQueries = getPostQuery.useQueries(sortedByPinned, {
+    showHiddenPost: { type: 'owner', owner: myAddress ?? '' },
+  })
   const chats = useMemo(
     () => chatQueries.map(({ data }) => data),
     [chatQueries]

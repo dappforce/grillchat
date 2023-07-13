@@ -14,10 +14,58 @@ const getPost = poolQuery<string, PostData>({
     resultToKey: (result) => result?.id ?? '',
   },
 })
-export const getPostQuery = createQuery({
+const rawGetPostQuery = createQuery({
   key: 'post',
   fetcher: getPost,
 })
+
+type ShowHiddenPostConfig =
+  | { type: 'all' }
+  | { type: 'none' }
+  | { type: 'owner'; owner: string }
+type AdditionalConfig = { showHiddenPost?: ShowHiddenPostConfig }
+type Config = Parameters<(typeof rawGetPostQuery)['useQuery']>[1] &
+  AdditionalConfig
+function augmentQueryData(
+  queryData: ReturnType<(typeof rawGetPostQuery)['useQuery']>,
+  config?: AdditionalConfig
+) {
+  const { showHiddenPost = { type: 'none' } } = config || {}
+
+  const hideHiddenPost = () => {
+    if (queryData.data?.struct.hidden) queryData.data = null
+  }
+
+  switch (showHiddenPost.type) {
+    case 'all':
+      hideHiddenPost()
+      break
+    case 'owner':
+      if (queryData.data?.struct.ownerId === showHiddenPost.owner)
+        hideHiddenPost()
+      break
+  }
+  return queryData
+}
+
+export const getPostQuery = {
+  ...rawGetPostQuery,
+  useQuery: (postId: string, config?: Config) => {
+    const queryData = rawGetPostQuery.useQuery(postId, config)
+    augmentQueryData(queryData, config)
+    return queryData
+  },
+  useQueries: (postIds: string[], config?: Config) => {
+    const queriesData = rawGetPostQuery.useQueries(postIds, config)
+    if (!config?.showHiddenPost) {
+      queriesData.forEach((queryData) => {
+        augmentQueryData(queryData, config)
+      })
+    }
+
+    return queriesData
+  },
+}
 
 async function getNft(nft: ApiNftParams | null) {
   if (!nft) return null

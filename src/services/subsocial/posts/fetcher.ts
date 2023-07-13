@@ -11,14 +11,14 @@ async function getPostsFromBlockchain({
   data: postIds,
 }: SubsocialQueryData<string[]>) {
   if (postIds.length === 0) return []
-  const res = await api.findPosts({ ids: postIds, visibility: 'onlyPublic' })
+  const res = await api.findPosts({ ids: postIds })
   return res
 }
 
 const GET_POSTS = gql`
   ${POST_FRAGMENT}
   query getPosts($ids: [String!]) {
-    posts(where: { id_in: $ids, hidden_eq: false }) {
+    posts(where: { id_in: $ids }) {
       ...PostFragment
     }
   }

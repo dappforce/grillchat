@@ -49,7 +49,9 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
 
   const sortedIds = useSortChatIdsByLatestMessage(chatIds)
 
-  const chatQueries = getPostQuery.useQueries(sortedIds)
+  const chatQueries = getPostQuery.useQueries(sortedIds, {
+    showHiddenPost: { type: 'owner', owner: address ?? '' },
+  })
   const chats = chatQueries.map((query) => query.data)
 
   return (
