@@ -90,6 +90,7 @@ function ChatPreviewContainer({
         replace: isInIframe,
         href: linkTo,
       }}
+      isHidden={chat.struct.hidden}
       image={content?.image}
       title={content?.title}
       description={content?.body}

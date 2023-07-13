@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
+import { HiOutlineEyeSlash } from 'react-icons/hi2'
 import ChatImage from '../ChatImage'
 import ChatLastMessage from './ChatLastMessage'
 
@@ -25,6 +26,7 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   additionalDesc?: string
   asLink?: LinkProps
   isInteractive?: boolean
+  isHidden?: boolean
   chatId?: string
   hubId?: string
   isPinned?: boolean
@@ -45,6 +47,7 @@ export default function ChatPreview({
   asLink,
   isPinned,
   chatId,
+  isHidden,
   hubId,
   isInteractive,
   withUnreadCount,
@@ -123,7 +126,7 @@ export default function ChatPreview({
                 <ChatLastMessage
                   hubId={hubId}
                   className='py-0.5'
-                  defaultDesc={description ?? ''}
+                  defaultDesc={description || (isHidden ? 'Hidden Chat' : '')}
                   chatId={chatId}
                 />
               ) : (
@@ -135,9 +138,21 @@ export default function ChatPreview({
                   {description}
                 </p>
               )}
-              {withUnreadCount && chatId && (
-                <ChatUnreadCount className='ml-2' chatId={chatId} />
-              )}
+              {(() => {
+                if (isHidden) {
+                  return (
+                    <div className='flex items-center gap-2 rounded-full bg-orange-500/10 px-2 py-1 text-orange-500'>
+                      <HiOutlineEyeSlash />
+                      <span className='text-xs'>Hidden</span>
+                    </div>
+                  )
+                }
+                if (withUnreadCount && chatId) {
+                  return <ChatUnreadCount className='ml-2' chatId={chatId} />
+                }
+
+                return null
+              })()}
             </div>
           </div>
         </div>
