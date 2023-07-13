@@ -70,6 +70,7 @@ export default function ChatPage({
     const query = getUrlQuery('donateTo')
     if (!query) return
 
+    replaceUrl(getCurrentUrlWithoutQuery('donateTo'))
     try {
       const donateTo = JSON.parse(query)
       if (donateTo.messageId && donateTo.recipient)
