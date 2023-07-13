@@ -49,9 +49,9 @@ export default function ChatImage({
                 <text
                   x='50%'
                   y='50%'
-                  dominant-baseline='central'
-                  text-anchor='middle'
-                  font-size='32'
+                  dominantBaseline='central'
+                  textAnchor='middle'
+                  fontSize='32'
                   fill='#334155'
                 >
                   {initial}
