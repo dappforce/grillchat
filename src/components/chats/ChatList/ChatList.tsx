@@ -279,7 +279,7 @@ function MyMessageNotice({ ...props }: ComponentProps<'div'>) {
       <span className='mb-1 text-center'>You created a group</span>
       <div>
         <span>Groups are:</span>
-        <ul className='list-inside list-disc'>
+        <ul className='list-inside list-disc whitespace-nowrap'>
           <li>On-chain</li>
           <li>Censorship resistant</li>
           <li>Powered by Subsocial</li>
