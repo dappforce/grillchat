@@ -61,7 +61,7 @@ function FloatingMenuPanel({
       size={panelSize}
       className={cx(
         'overflow-hidden rounded-lg bg-background-light shadow-[0_5px_50px_-12px_rgb(0,0,0,.25)] dark:shadow-[0_5px_50px_-12px_rgb(0,0,0)]',
-        panelSize === 'xs' ? 'w-32' : 'w-52',
+        panelSize === 'xs' ? 'w-44' : 'w-52',
         panelClassName
       )}
       menus={augmentedMenus}

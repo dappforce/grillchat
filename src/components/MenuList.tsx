@@ -68,7 +68,7 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
             size='noPadding'
             disabled={disabled}
             interactive='none'
-            className={cx(menuListItemStyles({ size }))}
+            className={cx(menuListItemStyles({ size }), 'text-left')}
             disabledStyle='subtle'
             onClick={onClick}
           >
