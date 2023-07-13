@@ -1,5 +1,6 @@
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useMyAccount } from '@/stores/my-account'
+import { isTouchDevice } from '@/utils/device'
 import { getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import urlJoin from 'url-join'
@@ -12,7 +13,7 @@ export type MetamaskDeeplinkProps = ButtonProps & {
 export function isInsideMetamaskBrowser() {
   return (
     typeof window === 'undefined' ||
-    // !isTouchDevice() ||
+    !isTouchDevice() ||
     (window as any).ethereum
   )
 }
