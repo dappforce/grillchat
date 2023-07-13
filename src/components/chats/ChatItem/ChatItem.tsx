@@ -122,7 +122,6 @@ export default function ChatItem({
           return
         }
 
-        setMessageAsReply(messageId)
         openExtensionModal('subsocial-donations', {
           messageId,
           recipient: ownerId,
@@ -145,7 +144,6 @@ export default function ChatItem({
               text: 'Secret Box',
               icon: BiGift,
               onClick: () => {
-                setMessageAsReply(messageId)
                 openExtensionModal('subsocial-decoded-promo', {
                   recipient: ownerId,
                   messageId,
