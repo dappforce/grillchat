@@ -14,7 +14,6 @@ import {
 import { getChatPageLink } from '@/utils/links'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PostData } from '@subsocial/api/types'
-import { getNewIdsFromEvent } from '@subsocial/api/utils'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
@@ -106,6 +105,9 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                 onSuccess: async (_data, _, txResult) => {
                   if (isUpdating) return
 
+                  const { getNewIdsFromEvent } = await import(
+                    '@subsocial/api/utils'
+                  )
                   const [newId] = getNewIdsFromEvent(txResult)
                   const newIdString = newId.toString()
 
