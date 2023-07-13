@@ -173,6 +173,11 @@ export function useUpsertPost(
             })
           }
         },
+        onError: async ({ data }) => {
+          if ('postId' in data && data.postId) {
+            getPostQuery.invalidate(client, data.postId)
+          }
+        },
         onSuccess: async ({ data, address }) => {
           if ('spaceId' in data && data.spaceId) {
             getPostIdsBySpaceIdQuery.invalidate(client, data.spaceId)
@@ -230,6 +235,9 @@ export function useHideUnhidePost(
               },
             }
           })
+        },
+        onError: async ({ data }) => {
+          getPostQuery.invalidate(client, data.postId)
         },
         onSuccess: async ({ data }) => {
           await invalidatePostServerCache(data.postId)
