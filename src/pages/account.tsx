@@ -1,6 +1,7 @@
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey } from '@/utils/account'
+import { getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useEffect, useRef } from 'react'
 
@@ -16,15 +17,15 @@ export default function AccountPage() {
   useEffect(() => {
     if (!isInitialized) return
 
-    const { search } = window.location
-    const searchParams = new URLSearchParams(search)
-    const encodedSecretKey = searchParams.get(ACCOUNT_SECRET_KEY_URL_PARAMS)
+    const encodedSecretKey = getUrlQuery(ACCOUNT_SECRET_KEY_URL_PARAMS)
+
+    const returnUrl = getUrlQuery('returnUrl') || '/'
     if (!encodedSecretKey) {
-      routeReplace.current('/')
+      routeReplace.current(returnUrl)
       return
     }
     login(decodeSecretKey(encodedSecretKey)).then((data) => {
-      routeReplace.current('/')
+      routeReplace.current(returnUrl)
     })
   }, [login, isInitialized])
 

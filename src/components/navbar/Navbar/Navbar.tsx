@@ -131,7 +131,7 @@ export default function Navbar({
               backButton,
             })
           ) : (
-            <div className='flex items-center justify-between'>
+            <div className='flex w-full items-center justify-between'>
               {logoLink}
               <div className='flex items-center gap-4'>
                 {colorModeToggler}
