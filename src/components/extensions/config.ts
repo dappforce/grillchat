@@ -5,12 +5,17 @@ import dynamic from 'next/dynamic'
 import { ClipboardEvent, ComponentType } from 'react'
 import { SUPPORTED_IMAGE_EXTENSIONS } from './image/utils'
 import { parseNftMarketplaceLink } from './nft/utils'
-import SecretBoxChatItem from './secret-box/SecretBoxChatItem'
-import SecretBoxMessagePreviewPart from './secret-box/SecretBoxMessagePreviewPart'
 import {
   ExtensionChatItemProps,
   RepliedMessagePreviewPartsProps,
 } from './types'
+
+const SecretBoxChatItem = dynamic(
+  () => import('./secret-box/SecretBoxChatItem')
+)
+const SecretBoxMessagePreviewPart = dynamic(
+  () => import('./secret-box/SecretBoxMessagePreviewPart')
+)
 
 const DonateMessagePreview = dynamic(
   () => import('./donate/DonateMessagePreview')
