@@ -10,6 +10,7 @@ import ProfilePreview from './ProfilePreview'
 
 export type ProfilePreviewModalWrapperProps = {
   address: string
+  messageId?: string
   children: (
     onClick: (e: { stopPropagation: () => void }) => void
   ) => React.ReactNode
@@ -17,6 +18,7 @@ export type ProfilePreviewModalWrapperProps = {
 
 export default function ProfilePreviewModalWrapper({
   address,
+  messageId,
   children,
 }: ProfilePreviewModalWrapperProps) {
   const openExtensionModal = useExtensionData(
@@ -39,7 +41,7 @@ export default function ProfilePreviewModalWrapper({
         closeModal={() => setIsOpenAccountModal(false)}
       >
         <ProfilePreview address={address} className='mb-2' />
-        {evmAddress && (
+        {evmAddress && messageId && (
           <ActionCard
             className='mt-2'
             actions={[
@@ -50,6 +52,7 @@ export default function ProfilePreviewModalWrapper({
                 onClick: () =>
                   openExtensionModal('subsocial-donations', {
                     recipient: address,
+                    messageId,
                   }),
               },
             ]}
@@ -60,9 +63,12 @@ export default function ProfilePreviewModalWrapper({
   )
 }
 
-export function ProfilePreviewModalName({ ...props }: NameProps) {
+export function ProfilePreviewModalName({
+  messageId,
+  ...props
+}: NameProps & { messageId?: string }) {
   return (
-    <ProfilePreviewModalWrapper address={props.address}>
+    <ProfilePreviewModalWrapper address={props.address} messageId={messageId}>
       {(onClick) => (
         <Name
           {...props}

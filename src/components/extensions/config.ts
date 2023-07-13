@@ -30,10 +30,7 @@ const NftRepliedMessagePreviewPart = dynamic(
 )
 
 export const extensionInitialDataTypes = {
-  'subsocial-donations': { recipient: '' } as {
-    recipient: string
-    messageId?: string
-  },
+  'subsocial-donations': { recipient: '', messageId: '' },
   'subsocial-evm-nft': null as null | string,
   'subsocial-image': null as null | File | string,
   'subsocial-decoded-promo': { recipient: '', messageId: '' },

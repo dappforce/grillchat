@@ -23,6 +23,7 @@ export function shouldRenderEmojiChatItem(body: string) {
 }
 
 export default function EmojiChatItem({
+  messageId,
   isMyMessage,
   isSent,
   onCheckMarkClick,
@@ -51,6 +52,7 @@ export default function EmojiChatItem({
       {!isMyMessage && (
         <div className='flex items-center pl-1'>
           <ProfilePreviewModalName
+            messageId={messageId}
             address={ownerId}
             className={cx('mr-2 text-sm text-text-secondary')}
           />

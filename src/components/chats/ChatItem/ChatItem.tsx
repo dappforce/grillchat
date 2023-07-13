@@ -211,7 +211,7 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <ProfilePreviewModalWrapper address={ownerId}>
+        <ProfilePreviewModalWrapper address={ownerId} messageId={message.id}>
           {(onClick) => (
             <AddressAvatar
               onClick={onClick}
@@ -255,6 +255,7 @@ export default function ChatItem({
                 />
               ) : (
                 <ChatItemContentVariant
+                  messageId={message.id}
                   body={body ?? ''}
                   isMyMessage={isMyMessage}
                   isSent={isSent}
