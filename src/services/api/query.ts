@@ -41,7 +41,7 @@ function augmentQueryData(
       hideHiddenPost()
       break
     case 'owner':
-      if (queryData.data?.struct.ownerId === showHiddenPost.owner)
+      if (queryData.data?.struct.ownerId !== showHiddenPost.owner)
         hideHiddenPost()
       break
   }
@@ -57,7 +57,7 @@ export const getPostQuery = {
   },
   useQueries: (postIds: string[], config?: Config) => {
     const queriesData = rawGetPostQuery.useQueries(postIds, config)
-    if (!config?.showHiddenPost) {
+    if (config?.showHiddenPost?.type !== 'none') {
       queriesData.forEach((queryData) => {
         augmentQueryData(queryData, config)
       })
