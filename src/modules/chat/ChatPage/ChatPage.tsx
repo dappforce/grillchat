@@ -11,6 +11,7 @@ import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { useExtensionData } from '@/stores/extension'
 import { useMyAccount } from '@/stores/my-account'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -53,6 +54,10 @@ export default function ChatPage({
     subscribe: true,
   })
 
+  const openExtensionModal = useExtensionData(
+    (state) => state.openExtensionModal
+  )
+
   const { setLastReadMessageId } = useLastReadMessageId(chatId)
 
   useEffect(() => {
@@ -60,6 +65,17 @@ export default function ChatPage({
     if (!lastId) return
     setLastReadMessageId(lastId)
   }, [setLastReadMessageId, messageIds])
+
+  useEffect(() => {
+    const query = getUrlQuery('donateTo')
+    if (!query) return
+
+    try {
+      const donateTo = JSON.parse(query)
+      if (donateTo.messageId && donateTo.recipient)
+        openExtensionModal('subsocial-donations', donateTo)
+    } catch {}
+  }, [openExtensionModal])
 
   const content = chat?.content ?? stubMetadata
 
