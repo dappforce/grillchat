@@ -181,6 +181,8 @@ function NavbarChatInfo({
   chatMetadata?: ChatMetadata
   chatId?: string
 }) {
+  const { data: chat } = getPostQuery.useQuery(chatId ?? '')
+
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const prevIsOpenAboutChatModal = usePrevious(isOpenAboutChatModal)
   const router = useRouter()
@@ -231,7 +233,9 @@ function NavbarChatInfo({
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
               {chatTitle ?? 'Topic'}
             </span>
-            <ChatHiddenChip popOverProps={{ placement: 'bottom' }} />
+            {chat?.struct.hidden && (
+              <ChatHiddenChip popOverProps={{ placement: 'bottom' }} />
+            )}
           </div>
           <span className='text-xs text-text-muted'>
             {messageCount} messages
