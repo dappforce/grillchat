@@ -143,6 +143,7 @@ export default function PopOver({
               leave='transition duration-75 ease-out'
               leaveFrom='transform opacity-100'
               leaveTo='transform opacity-0'
+              className='relative z-50'
               show={isOpen}
             >
               <div

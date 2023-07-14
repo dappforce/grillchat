@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
+import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import ChatImage from '@/components/chats/ChatImage'
 import ChatRoom from '@/components/chats/ChatRoom'
 import Container from '@/components/Container'
@@ -209,9 +210,12 @@ function NavbarChatInfo({
       >
         <ChatImage className='h-9 w-9' image={image} chatTitle={chatTitle} />
         <div className='flex flex-col overflow-hidden'>
-          <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
-            {chatTitle ?? 'Topic'}
-          </span>
+          <div className='flex items-center gap-2 overflow-hidden'>
+            <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
+              {chatTitle ?? 'Topic'}
+            </span>
+            <ChatHiddenChip popOverProps={{ placement: 'bottom' }} />
+          </div>
           <span className='text-xs text-text-muted'>
             {messageCount} messages
           </span>

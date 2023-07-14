@@ -1,17 +1,23 @@
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import { HiOutlineEyeSlash } from 'react-icons/hi2'
-import PopOver from '../floating/PopOver'
+import PopOver, { PopOverProps } from '../floating/PopOver'
 
-export type ChatHiddenChipProps = ComponentProps<'div'>
+export type ChatHiddenChipProps = ComponentProps<'div'> & {
+  popOverProps?: Omit<PopOverProps, 'trigger' | 'children'>
+}
 
-export default function ChatHiddenChip({ ...props }: ChatHiddenChipProps) {
+export default function ChatHiddenChip({
+  popOverProps,
+  ...props
+}: ChatHiddenChipProps) {
   return (
     <PopOver
       triggerOnHover
       panelSize='sm'
-      placement='top'
+      placement='top-end'
       yOffset={8}
+      {...popOverProps}
       trigger={
         <div
           {...props}
@@ -25,7 +31,8 @@ export default function ChatHiddenChip({ ...props }: ChatHiddenChipProps) {
         </div>
       }
     >
-      <p>Connect an EVM wallet to unlock more features</p>
+      <p>Only you can see this group chat.</p>
+      <p>Other people will not see it on Grill.</p>
     </PopOver>
   )
 }
