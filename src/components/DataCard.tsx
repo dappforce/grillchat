@@ -32,10 +32,7 @@ export default function DataCard({ data, ...props }: DataCardProps) {
         )
 
         const element = (
-          <div
-            key={title}
-            className={cx('flex flex-1 flex-col gap-0.5 overflow-hidden')}
-          >
+          <div key={title} className={cx('flex flex-1 flex-col gap-0.5')}>
             <span className='text-sm text-text-muted'>{title}</span>
             <Content {...currentData} />
           </div>

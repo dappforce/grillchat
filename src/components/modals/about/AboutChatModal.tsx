@@ -74,7 +74,7 @@ export default function AboutChatModal({
             <ProfilePreview
               onClick={onClick}
               address={chatOwner}
-              className='mt-1 cursor-pointer gap-2'
+              className='relative -left-0.5 mt-1 cursor-pointer gap-2'
               avatarClassName={cx('h-6 w-6')}
               withGrillAddress={false}
               withEvmAddress={false}
