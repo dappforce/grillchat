@@ -228,9 +228,9 @@ export default function AboutChatModal({
             <>
               <ConfirmationModal
                 isOpen={openedModalType === 'hide'}
-                title='🤔 Are you sure you want to hide this chat?'
+                title='🤔 Make this chat hidden?'
                 closeModal={closeModal}
-                primaryButtonProps={{ children: 'No, keep this chat visible' }}
+                primaryButtonProps={{ children: 'No, keep it public' }}
                 secondaryButtonProps={{
                   children: 'Yes, hide this chat',
                   isLoading,
@@ -241,11 +241,11 @@ export default function AboutChatModal({
               />
               <ConfirmationModal
                 isOpen={openedModalType === 'unhide'}
-                title='🤔 Are you sure you want to make this chat visible to everyone?'
+                title='🤔 Make this chat public?'
                 closeModal={closeModal}
-                primaryButtonProps={{ children: 'No, keep this chat hidden' }}
+                primaryButtonProps={{ children: 'No, keep it hidden' }}
                 secondaryButtonProps={{
-                  children: 'Yes, make this chat visible to everyone',
+                  children: 'Yes, make it public',
                   isLoading,
                   onClick: async () => {
                     await mutateAsync({ postId: chatId, action: 'unhide' })
