@@ -95,7 +95,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
       {...otherProps}
       isOpen={otherProps.isOpen && !createdPostId}
       title={usedTexts.title}
-      withCloseButton
+      withCloseButton={!otherProps.closeModal}
     >
       <JoinChatWrapper>
         {({ mutateAsync }) => (
