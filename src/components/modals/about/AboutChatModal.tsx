@@ -117,14 +117,14 @@ export default function AboutChatModal({
       })
 
       if (chat.struct.hidden) {
-        additionalMenus.unshift({
+        additionalMenus.push({
           text: 'Unhide Chat',
           icon: HiOutlineEye,
           iconClassName: cx('text-text-muted'),
           onClick: () => setOpenedModalType('unhide'),
         })
       } else {
-        additionalMenus.unshift({
+        additionalMenus.push({
           text: 'Hide Chat',
           icon: HiOutlineEyeSlash,
           iconClassName: cx('text-text-muted'),
@@ -132,7 +132,7 @@ export default function AboutChatModal({
         })
       }
 
-      actionMenu.push(...additionalMenus)
+      actionMenu.unshift(...additionalMenus)
     }
 
     if (isLoading || isInIframe) return actionMenu
