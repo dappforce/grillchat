@@ -85,6 +85,8 @@ export default function ChatPreview({
     }
   }
 
+  const defaultDesc = description || (isHidden ? 'Hidden Chat' : title ?? '')
+
   return (
     <Component
       {...props}
@@ -126,7 +128,7 @@ export default function ChatPreview({
                 <ChatLastMessage
                   hubId={hubId}
                   className='py-0.5'
-                  defaultDesc={description || (isHidden ? 'Hidden Chat' : '')}
+                  defaultDesc={defaultDesc}
                   chatId={chatId}
                 />
               ) : (
@@ -135,7 +137,7 @@ export default function ChatPreview({
                     'overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted'
                   )}
                 >
-                  {description}
+                  {defaultDesc}
                 </p>
               )}
               {(() => {
