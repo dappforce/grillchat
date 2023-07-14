@@ -18,7 +18,7 @@ export default function HubsContent({
   const hubIds = getHubIds()
 
   const sortedHubIds = useMemo(() => {
-    return Array.from(new Set(...PINNED_HUB_IDS, ...hubIds))
+    return Array.from(new Set([...PINNED_HUB_IDS, ...hubIds]))
   }, [hubIds])
 
   const hubQueries = getSpaceQuery.useQueries(sortedHubIds)
