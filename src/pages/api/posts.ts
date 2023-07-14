@@ -23,7 +23,7 @@ type ResponseData = {
 export type ApiPostsResponse = ApiResponse<ResponseData>
 export type ApiPostsInvalidationResponse = ApiResponse<{}>
 
-const MAX_AGE = 1 // 1 minute
+const MAX_AGE = 1 * 60 // 1 minute
 const getRedisKey = (id: string) => {
   return `posts-invalidated:${id}`
 }
