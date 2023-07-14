@@ -78,8 +78,8 @@ function Toolbar({ filter, setFilter }: ToolbarProps) {
 
   return (
     <>
-      <Container as='div'>
-        <div className='flex justify-between gap-4 border-b border-border-gray py-2'>
+      <Container as='div' className='border-b border-border-gray'>
+        <div className='flex justify-between gap-4 py-2'>
           <div className='flex gap-0.5'>
             {filters.map((text) => {
               const isActive = text === filter
