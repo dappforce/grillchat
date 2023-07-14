@@ -183,7 +183,7 @@ function ChatListContent({
         asContainer={asContainer}
       />
       {isMyEmptyChat && (
-        <MyMessageNotice className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' />
+        <MyMessageNotice className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2' />
       )}
       <ScrollableContainer
         id={scrollableContainerId}
@@ -272,7 +272,7 @@ function MyMessageNotice({ ...props }: ComponentProps<'div'>) {
     <div
       {...props}
       className={cx(
-        'flex flex-col rounded-2xl bg-background-light px-6 py-4',
+        'flex flex-col rounded-2xl bg-background-light px-6 py-4 text-sm text-text-muted',
         props.className
       )}
     >
