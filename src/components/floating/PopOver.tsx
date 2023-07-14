@@ -1,3 +1,4 @@
+import useMounted from '@/hooks/useMounted'
 import { cx } from '@/utils/class-names'
 import {
   arrow,
@@ -15,7 +16,8 @@ import {
 } from '@floating-ui/react'
 import { Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
-import { useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { HiXMark } from 'react-icons/hi2'
 import Button from '../Button'
 
@@ -79,6 +81,8 @@ export default function PopOver({
   const isOpen = manualTrigger?.isOpen ?? _isOpen
   const setIsOpen = manualTrigger?.setIsOpen ?? _setIsOpen
 
+  const mounted = useMounted()
+
   const arrowRef = useRef(null)
   const { x, y, strategy, refs, middlewareData, context } = useFloating({
     open: isOpen,
@@ -125,63 +129,71 @@ export default function PopOver({
       >
         {trigger}
       </TriggerElement>
-      <FloatingFocusManager
-        initialFocus={initialFocus}
-        context={context}
-        modal={false}
-      >
-        <Transition
-          enter='transition duration-100 ease-out'
-          enterFrom='transform opacity-0'
-          enterTo='transform opacity-100'
-          leave='transition duration-75 ease-out'
-          leaveFrom='transform opacity-100'
-          leaveTo='transform opacity-0'
-          show={isOpen}
-        >
-          <div
-            style={{
-              position: strategy,
-              top: y ?? 0,
-              left: x ?? 0,
-              width: 'max-content',
-            }}
-            ref={refs.setFloating}
-            className={cx(panelStyles({ panelSize }), color, popOverClassName)}
-            {...getFloatingProps()}
+      {mounted &&
+        createPortal(
+          <FloatingFocusManager
+            initialFocus={initialFocus}
+            context={context}
+            modal={false}
           >
-            <div className='relative z-10'>{children}</div>
-            {withCloseButton && (
-              <Button
-                onClick={() => setIsOpen(false)}
-                className='my-1 ml-4 mr-0 p-0 text-2xl text-current'
-                variant='transparent'
-              >
-                <HiXMark />
-              </Button>
-            )}
-            {withArrow && (
+            <Transition
+              enter='transition duration-100 ease-out'
+              enterFrom='transform opacity-0'
+              enterTo='transform opacity-100'
+              leave='transition duration-75 ease-out'
+              leaveFrom='transform opacity-100'
+              leaveTo='transform opacity-0'
+              show={isOpen}
+            >
               <div
-                className={cx(
-                  'translate h-5 !w-5 rotate-45',
-                  isArrowPlacementOnBottom
-                    ? '-translate-y-0.5'
-                    : 'translate-y-0.5',
-                  color
-                )}
                 style={{
-                  position: 'absolute',
-                  top: isArrowPlacementOnBottom ? arrowY ?? 0 : 'auto',
-                  bottom: isArrowPlacementOnBottom ? 'auto' : arrowY ?? 0,
-                  left: arrowX ?? 0,
+                  position: strategy,
+                  top: y ?? 0,
+                  left: x ?? 0,
                   width: 'max-content',
                 }}
-                ref={arrowRef}
-              />
-            )}
-          </div>
-        </Transition>
-      </FloatingFocusManager>
+                ref={refs.setFloating}
+                className={cx(
+                  panelStyles({ panelSize }),
+                  color,
+                  popOverClassName
+                )}
+                {...getFloatingProps()}
+              >
+                <div className='relative z-10'>{children}</div>
+                {withCloseButton && (
+                  <Button
+                    onClick={() => setIsOpen(false)}
+                    className='my-1 ml-4 mr-0 p-0 text-2xl text-current'
+                    variant='transparent'
+                  >
+                    <HiXMark />
+                  </Button>
+                )}
+                {withArrow && (
+                  <div
+                    className={cx(
+                      'translate h-5 !w-5 rotate-45',
+                      isArrowPlacementOnBottom
+                        ? '-translate-y-0.5'
+                        : 'translate-y-0.5',
+                      color
+                    )}
+                    style={{
+                      position: 'absolute',
+                      top: isArrowPlacementOnBottom ? arrowY ?? 0 : 'auto',
+                      bottom: isArrowPlacementOnBottom ? 'auto' : arrowY ?? 0,
+                      left: arrowX ?? 0,
+                      width: 'max-content',
+                    }}
+                    ref={arrowRef}
+                  />
+                )}
+              </div>
+            </Transition>
+          </FloatingFocusManager>,
+          document.body
+        )}
     </>
   )
 }
