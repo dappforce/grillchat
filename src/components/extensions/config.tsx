@@ -20,10 +20,7 @@ const SecretBoxMessagePreviewPart = dynamic(
 )
 
 const DonateMessagePreview = dynamic(
-  async () => {
-    await new Promise((resolve) => setTimeout(resolve, 20000))
-    return import('./donate/DonateMessagePreview')
-  },
+  async () => import('./donate/DonateMessagePreview'),
   { loading: ChatItemSkeleton }
 )
 const DonateRepliedMessagePreviewPart = dynamic(
