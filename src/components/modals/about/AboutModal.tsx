@@ -25,7 +25,7 @@ export default function AboutModal({
 }: AboutModalProps) {
   return (
     <Modal {...props} withCloseButton>
-      <div className='mt-4 flex flex-col items-center gap-4'>
+      <div className='mt-4 flex flex-col gap-4'>
         <div className='flex items-center gap-4'>
           <ChatImage chatTitle={title} className='h-20 w-20' image={image} />
           <div className='flex flex-col'>
