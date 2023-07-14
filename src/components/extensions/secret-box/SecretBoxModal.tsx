@@ -32,7 +32,6 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
   const setReplyTo = useMessageData((state) => state.setReplyTo)
   useEffect(() => {
     if (isOpen) setReplyTo(messageId)
-    else setReplyTo('')
   }, [setReplyTo, messageId, isOpen])
 
   const beforeMesageSend = async (messageParams: SendMessageParams) => {
