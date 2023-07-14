@@ -12,7 +12,7 @@ import { NftProperties } from '@subsocial/api/types'
 import { useEffect, useState } from 'react'
 import { HiTrash } from 'react-icons/hi2'
 import { ExtensionModalsProps } from '..'
-import CommonExtensionModal from '../CommonExtensionModal'
+import CommonExtensionModal from '../common/CommonExtensionModal'
 import NftSupportedPlatformsModal from './NftSupportedPlatformsModal'
 import { parseNftMarketplaceLink } from './utils'
 

@@ -4,7 +4,11 @@ import { PostContentExtension } from '@subsocial/api/types'
 import dynamic from 'next/dynamic'
 import { ClipboardEvent, ComponentType } from 'react'
 import { SUPPORTED_IMAGE_EXTENSIONS } from '../inputs/ImageInput'
-import { Skeleton } from '../SkeletonFallback'
+import {
+  ChatItemSkeleton,
+  PreviewPartBodySkeleton,
+  PreviewPartImageSkeleton,
+} from './common/skeletons/ChatItemSkeleton'
 import { parseNftMarketplaceLink } from './nft/utils'
 import {
   ExtensionChatItemProps,
@@ -16,29 +20,33 @@ const SecretBoxChatItem = dynamic(
   { loading: ChatItemSkeleton }
 )
 const SecretBoxMessagePreviewPart = dynamic(
-  () => import('./secret-box/SecretBoxMessagePreviewPart')
+  () => import('./secret-box/SecretBoxMessagePreviewPart'),
+  { loading: PreviewPartBodySkeleton }
 )
 
 const DonateMessagePreview = dynamic(
-  async () => import('./donate/DonateMessagePreview'),
+  () => import('./donate/DonateMessagePreview'),
   { loading: ChatItemSkeleton }
 )
 const DonateRepliedMessagePreviewPart = dynamic(
-  () => import('./donate/DonateRepliedMessagePreviewPart')
+  () => import('./donate/DonateRepliedMessagePreviewPart'),
+  { loading: PreviewPartBodySkeleton }
 )
 
 const ImageChatItem = dynamic(() => import('./image/ImageChatItem'), {
   loading: ChatItemSkeleton,
 })
 const ImageRepliedMessagePreviewPart = dynamic(
-  () => import('./image/ImageRepliedMessagePreviewPart')
+  () => import('./image/ImageRepliedMessagePreviewPart'),
+  { loading: PreviewPartImageSkeleton }
 )
 
 const NftChatItem = dynamic(() => import('./nft/NftChatItem'), {
   loading: ChatItemSkeleton,
 })
 const NftRepliedMessagePreviewPart = dynamic(
-  () => import('./nft/NftRepliedMessagePreviewPart')
+  () => import('./nft/NftRepliedMessagePreviewPart'),
+  { loading: PreviewPartImageSkeleton }
 )
 
 export const extensionInitialDataTypes = {
@@ -159,8 +167,4 @@ export function interceptPastedData(
       break
     }
   }
-}
-
-function ChatItemSkeleton() {
-  return <Skeleton className='h-52 w-64 max-w-[250px] rounded-2xl' />
 }

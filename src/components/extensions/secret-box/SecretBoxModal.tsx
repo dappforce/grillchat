@@ -8,7 +8,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import { ExtensionModalsProps } from '..'
-import CommonExtensionModal from '../CommonExtensionModal'
+import CommonExtensionModal from '../common/CommonExtensionModal'
 import { useEncodeSecretBox } from './utils'
 
 export default function SecretBoxModal(props: ExtensionModalsProps) {

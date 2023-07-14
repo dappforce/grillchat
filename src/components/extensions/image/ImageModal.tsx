@@ -16,7 +16,7 @@ import Dropzone from 'react-dropzone'
 import { HiTrash } from 'react-icons/hi2'
 import { z } from 'zod'
 import { ExtensionModalsProps } from '..'
-import CommonExtensionModal from '../CommonExtensionModal'
+import CommonExtensionModal from '../common/CommonExtensionModal'
 
 const urlSchema = z.string().url('Please enter a valid URL.')
 

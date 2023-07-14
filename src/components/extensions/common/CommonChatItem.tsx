@@ -7,9 +7,9 @@ import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
-import ChatRelativeTime from '../chats/ChatItem/ChatRelativeTime'
-import { ProfilePreviewModalName } from '../ProfilePreviewModalWrapper'
-import { ExtensionChatItemProps } from './types'
+import ChatRelativeTime from '../../chats/ChatItem/ChatRelativeTime'
+import { ProfilePreviewModalName } from '../../ProfilePreviewModalWrapper'
+import { ExtensionChatItemProps } from '../types'
 
 type DerivativesData = {
   isMyMessage: boolean
