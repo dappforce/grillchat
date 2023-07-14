@@ -20,7 +20,7 @@ export type MyChatsContentProps = {
   changeTab: (selectedTab: number) => void
 }
 
-const filters = ['all', 'created', 'joined'] as const
+const filters = ['all', 'created', 'joined', 'hidden'] as const
 type Filter = (typeof filters)[number]
 
 export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
@@ -41,7 +41,7 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
     const followed = followedChatIds ?? []
 
     if (filter === 'all') return Array.from(new Set([...owned, ...followed]))
-    if (filter === 'created') return owned
+    if (filter === 'created' || filter === 'hidden') return owned
 
     return followed
   }, [ownedChatIds, followedChatIds, filter])
@@ -53,6 +53,13 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   })
   const chats = chatQueries.map((query) => query.data)
 
+  const filteredChats = useMemo(() => {
+    if (filter === 'hidden') {
+      return chats.filter((chat) => chat?.struct.hidden)
+    }
+    return chats.filter((chat) => !chat?.struct.hidden)
+  }, [chats, filter])
+
   return (
     <div className='flex flex-col'>
       <Toolbar filter={filter} setFilter={setFilter} />
@@ -62,7 +69,7 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
         } else if (!address || chats.length === 0) {
           return <NoChats changeTab={changeTab} />
         }
-        return <ChatPreviewList chats={chats} />
+        return <ChatPreviewList chats={filteredChats} />
       })()}
     </div>
   )
