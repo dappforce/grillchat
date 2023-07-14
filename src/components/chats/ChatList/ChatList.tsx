@@ -1,6 +1,7 @@
 import PinIcon from '@/assets/icons/pin.png'
 import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfiniteScrollData'
 import Container from '@/components/Container'
+import LinkText from '@/components/LinkText'
 import MessageModal from '@/components/modals/MessageModal'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE, getPinnedMessageInChatId } from '@/constants/chat'
@@ -288,14 +289,32 @@ function CenterChatNotice({
     >
       {isMyChat ? (
         <>
-          <span className='mb-1 text-center'>You created a group</span>
           <div>
-            <span>Groups are:</span>
-            <ul className='list-inside list-disc whitespace-nowrap'>
-              <li>On-chain</li>
-              <li>Censorship resistant</li>
-              <li>Powered by Subsocial</li>
-            </ul>
+            <span>You have created a public group chat, which is:</span>
+            <div className='pl-4'>
+              <ul className='mb-1 list-disc whitespace-nowrap pl-2'>
+                <li>Persistent & on-chain</li>
+                <li>Censorship resistant</li>
+                <li>
+                  Powered by{' '}
+                  <LinkText
+                    href='https://subsocial.network'
+                    openInNewTab
+                    variant='primary'
+                  >
+                    Subsocial
+                  </LinkText>
+                </li>
+              </ul>
+            </div>
+
+            <span>You can:</span>
+            <div className='pl-4'>
+              <ul className='list-disc whitespace-nowrap pl-2'>
+                <li>Moderate content and users</li>
+                <li>Hide the chat from others on Grill</li>
+              </ul>
+            </div>
           </div>
         </>
       ) : (

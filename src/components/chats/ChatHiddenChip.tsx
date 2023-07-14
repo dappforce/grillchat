@@ -31,8 +31,8 @@ export default function ChatHiddenChip({
         </div>
       }
     >
-      <p>Only you can see this group chat.</p>
-      <p>Other people will not see it on Grill.</p>
+      <p>This chat is not visible to others on Grill,</p>
+      <p>though it is still viewable on-chain.</p>
     </PopOver>
   )
 }
