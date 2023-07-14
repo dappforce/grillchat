@@ -67,7 +67,7 @@ export default function AboutChatModal({
       openInNewTab: true,
     },
     {
-      title: 'Chat Owner',
+      title: 'Chat owner',
       content: (
         <ProfilePreviewModalWrapper address={chatOwner}>
           {(onClick) => (
