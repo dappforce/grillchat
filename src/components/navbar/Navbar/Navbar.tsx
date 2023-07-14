@@ -98,9 +98,11 @@ export default function Navbar({
   )
 
   const logoLink = (
-    <Link href={getHubPageLink(router)} aria-label='Back'>
-      <Logo className='text-2xl' />
-    </Link>
+    <div className='flex items-center'>
+      <Link href={getHubPageLink(router)} aria-label='Back'>
+        <Logo className='text-2xl' />
+      </Link>
+    </div>
   )
 
   const backButton = (
