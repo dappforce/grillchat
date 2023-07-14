@@ -192,6 +192,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                     schema={formSchema}
                     watch={watch}
                     isLoading={isLoading}
+                    loadingText={isUpdating ? 'Saving...' : 'Creating...'}
                     size='lg'
                   >
                     {usedTexts.button}
