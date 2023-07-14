@@ -12,7 +12,7 @@ import React, { useState } from 'react'
 import {
   HiChevronDown,
   HiOutlineChatBubbleOvalLeftEllipsis,
-  HiOutlineUsers,
+  HiOutlineClock,
 } from 'react-icons/hi2'
 import useSortedChats, { SortChatOption } from '../hooks/useSortedChats'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
@@ -107,14 +107,20 @@ function CommunityHubToolbar({
             menus={[
               {
                 text: 'Recent Activity',
-                icon: HiOutlineChatBubbleOvalLeftEllipsis,
+                icon: HiOutlineClock,
                 onClick: () => setSortBy('activity'),
               },
               {
-                text: 'Community Size',
-                icon: HiOutlineUsers,
+                text: 'Messages Count',
+                icon: HiOutlineChatBubbleOvalLeftEllipsis,
                 onClick: () => setSortBy('size'),
               },
+              // TODO: not implemented yet
+              // {
+              //   text: 'Community Size',
+              //   icon: HiOutlineUsers,
+              //   onClick: () => setSortBy('size'),
+              // },
             ]}
             allowedPlacements={['bottom-start']}
             mainAxisOffset={4}
