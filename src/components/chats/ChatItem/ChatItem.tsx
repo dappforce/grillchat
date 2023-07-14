@@ -1,13 +1,10 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
+import { useOpenDonateExtension } from '@/components/extensions/donate/hooks'
 import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
-import {
-  isInsideMetamaskBrowser,
-  useMetamaskDeepLink,
-} from '@/components/MetamaskDeepLink'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
@@ -83,6 +80,10 @@ export default function ChatItem({
     (state) => state.openExtensionModal
   )
   const setReplyTo = useMessageData((state) => state.setReplyTo)
+  const openDonateExtension = useOpenDonateExtension(
+    message.id,
+    message.struct.ownerId
+  )
 
   const router = useRouter()
   const isLoggingInWithKey = useRef(false)
@@ -112,17 +113,6 @@ export default function ChatItem({
     setReplyTo(messageId)
   }
 
-  const deepLink = useMetamaskDeepLink({
-    customDeeplinkReturnUrl: (currentUrl) =>
-      urlJoin(
-        currentUrl,
-        `?donateTo=${JSON.stringify({
-          messageId,
-          recipient: ownerId,
-        })}`
-      ),
-  })
-
   const getChatMenus = (): FloatingMenusProps['menus'] => {
     const donateMenuItem: FloatingMenusProps['menus'][number] = {
       text: 'Donate',
@@ -137,14 +127,7 @@ export default function ChatItem({
           return
         }
 
-        if (!isInsideMetamaskBrowser()) {
-          router.push(deepLink)
-        } else {
-          openExtensionModal('subsocial-donations', {
-            messageId,
-            recipient: ownerId,
-          })
-        }
+        openDonateExtension()
       },
     }
 
