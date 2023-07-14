@@ -139,6 +139,11 @@ export default function ChatItem({
 
         if (!isInsideMetamaskBrowser()) {
           router.push(deepLink)
+        } else {
+          openExtensionModal('subsocial-donations', {
+            messageId,
+            recipient: ownerId,
+          })
         }
       },
     }
