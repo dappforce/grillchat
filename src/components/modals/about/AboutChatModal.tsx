@@ -220,6 +220,7 @@ export default function AboutChatModal({
         chat={chat}
         isOpen={openedModalType === 'edit'}
         closeModal={closeModal}
+        onBackClick={() => setOpenedModalType(null)}
       />
       <HideUnhideChatWrapper>
         {({ isLoading, mutateAsync }) => {
