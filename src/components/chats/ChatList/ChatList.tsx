@@ -158,8 +158,7 @@ function ChatListContent({
 
   const myAddress = useMyAccount((state) => state.address)
   const { data: chat } = getPostQuery.useQuery(chatId)
-  const isMyEmptyChat =
-    chat?.struct.ownerId === myAddress && messageIds.length === 0
+  const isMyChat = chat?.struct.ownerId === myAddress
 
   const Component = asContainer ? Container<'div'> : 'div'
 
@@ -182,8 +181,11 @@ function ChatListContent({
         chatId={chatId}
         asContainer={asContainer}
       />
-      {isMyEmptyChat && (
-        <MyMessageNotice className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2' />
+      {messageIds.length === 0 && (
+        <CenterChatNotice
+          isMyChat={isMyChat}
+          className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
+        />
       )}
       <ScrollableContainer
         id={scrollableContainerId}
@@ -207,10 +209,9 @@ function ChatListContent({
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
             endMessage={
-              <ChatTopNotice
-                hasNoMessage={messageQueries.length === 0}
-                className='pb-2 pt-4'
-              />
+              messageQueries.length === 0 ? null : (
+                <ChatTopNotice className='pb-2 pt-4' />
+              )
             }
             scrollThreshold={`${scrollThreshold}px`}
           >
@@ -267,24 +268,33 @@ function ChatListContent({
   )
 }
 
-function MyMessageNotice({ ...props }: ComponentProps<'div'>) {
+function CenterChatNotice({
+  isMyChat,
+  ...props
+}: ComponentProps<'div'> & { isMyChat: boolean }) {
   return (
     <div
       {...props}
       className={cx(
-        'flex flex-col rounded-2xl bg-background-light px-6 py-4 text-sm text-text-muted',
+        'flex flex-col rounded-2xl bg-background-light/50 px-6 py-4 text-sm text-text-muted',
         props.className
       )}
     >
-      <span className='mb-1 text-center'>You created a group</span>
-      <div>
-        <span>Groups are:</span>
-        <ul className='list-inside list-disc whitespace-nowrap'>
-          <li>On-chain</li>
-          <li>Censorship resistant</li>
-          <li>Powered by Subsocial</li>
-        </ul>
-      </div>
+      {isMyChat ? (
+        <>
+          <span className='mb-1 text-center'>You created a group</span>
+          <div>
+            <span>Groups are:</span>
+            <ul className='list-inside list-disc whitespace-nowrap'>
+              <li>On-chain</li>
+              <li>Censorship resistant</li>
+              <li>Powered by Subsocial</li>
+            </ul>
+          </div>
+        </>
+      ) : (
+        <span>No messages here yet</span>
+      )}
     </div>
   )
 }
