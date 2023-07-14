@@ -9,5 +9,5 @@ export function PreviewPartBodySkeleton() {
 }
 
 export function PreviewPartImageSkeleton() {
-  return <Skeleton className='aspect-square w-4 rounded-2xl' />
+  return <Skeleton className='aspect-square w-4 rounded-md' />
 }
