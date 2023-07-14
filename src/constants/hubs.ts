@@ -44,3 +44,4 @@ export function getPinnedChatsInHubId(hubId: string) {
 }
 
 export const COMMUNITY_CHAT_HUB_ID = '1025'
+export const PINNED_HUB_IDS = [COMMUNITY_CHAT_HUB_ID]
