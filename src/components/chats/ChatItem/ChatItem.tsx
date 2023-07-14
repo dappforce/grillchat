@@ -4,6 +4,10 @@ import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
+import {
+  isInsideMetamaskBrowser,
+  useMetamaskDeepLink,
+} from '@/components/MetamaskDeepLink'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
@@ -108,6 +112,17 @@ export default function ChatItem({
     setReplyTo(messageId)
   }
 
+  const deepLink = useMetamaskDeepLink({
+    customDeeplinkReturnUrl: (currentUrl) =>
+      urlJoin(
+        currentUrl,
+        `?donateTo=${JSON.stringify({
+          messageId,
+          recipient: ownerId,
+        })}`
+      ),
+  })
+
   const getChatMenus = (): FloatingMenusProps['menus'] => {
     const donateMenuItem: FloatingMenusProps['menus'][number] = {
       text: 'Donate',
@@ -122,10 +137,9 @@ export default function ChatItem({
           return
         }
 
-        openExtensionModal('subsocial-donations', {
-          messageId,
-          recipient: ownerId,
-        })
+        if (!isInsideMetamaskBrowser()) {
+          router.push(deepLink)
+        }
       },
     }
 

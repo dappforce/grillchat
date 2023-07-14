@@ -6,9 +6,10 @@ import { useRouter } from 'next/router'
 import urlJoin from 'url-join'
 import Button, { ButtonProps } from './Button'
 
-export type MetamaskDeeplinkProps = ButtonProps & {
+type DeepLinkProps = {
   customDeeplinkReturnUrl?: (currentUrl: string) => string
 }
+export type MetamaskDeepLinkProps = ButtonProps & DeepLinkProps
 
 export function isInsideMetamaskBrowser() {
   return (
@@ -18,10 +19,9 @@ export function isInsideMetamaskBrowser() {
   )
 }
 
-export default function MetamaskDeepLink({
+export function useMetamaskDeepLink({
   customDeeplinkReturnUrl,
-  ...props
-}: MetamaskDeeplinkProps) {
+}: DeepLinkProps) {
   const router = useRouter()
   const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
 
@@ -32,13 +32,17 @@ export default function MetamaskDeepLink({
     )}`
   )
 
-  return (
-    <Button
-      {...props}
-      href={`https://metamask.app.link/dapp/${shareSessionUrl.replace(
-        /^https:\/\/w?w?w?\.?/,
-        ''
-      )}`}
-    />
-  )
+  return `https://metamask.app.link/dapp/${shareSessionUrl.replace(
+    /^https:\/\/w?w?w?\.?/,
+    ''
+  )}`
+}
+
+export default function MetamaskDeepLink({
+  customDeeplinkReturnUrl,
+  ...props
+}: MetamaskDeepLinkProps) {
+  const deepLink = useMetamaskDeepLink({ customDeeplinkReturnUrl })
+
+  return <Button {...props} href={deepLink} />
 }
