@@ -180,7 +180,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
                     </AutofocusWrapper>
                     <TextArea
                       {...register('body')}
-                      disabled={isLoading || true}
+                      disabled={isLoading}
                       placeholder='Description (optional)'
                       error={errors.body?.message}
                       rows={1}
