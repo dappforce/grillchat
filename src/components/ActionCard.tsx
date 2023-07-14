@@ -88,7 +88,7 @@ function ActionItem({ action, size }: ActionItemProps) {
       <Icon
         className={cx(
           'flex-shrink-0 text-xl',
-          description && 'text-2xl',
+          description && 'mx-1 text-2xl',
           iconClassName
         )}
       />
