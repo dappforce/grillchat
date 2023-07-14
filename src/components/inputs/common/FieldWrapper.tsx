@@ -91,7 +91,7 @@ export default function FieldWrapper({
     'transition duration-150',
     'dark:hover:brightness-110 hover:brightness-105',
     'dark:focus-visible:brightness-110 focus-visible:brightness-105',
-    'disabled:cursor-not-allowed disabled:brightness-95 dark:disabled:brightness-75',
+    'disabled:cursor-not-allowed disabled:brightness-90 dark:disabled:brightness-75',
     inputStyles({ pill, variant, size, containsRightElement: !!rightElement }),
     interactionRingStyles()
   )
