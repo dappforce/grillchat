@@ -14,6 +14,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
+import { HiOutlineEyeSlash } from 'react-icons/hi2'
 import useSortChatIdsByLatestMessage from '../hooks/useSortChatIdsByLatestMessage'
 
 export type MyChatsContentProps = {
@@ -63,6 +64,15 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   return (
     <div className='flex flex-col'>
       <Toolbar filter={filter} setFilter={setFilter} />
+      {filter === 'hidden' && (
+        <div className='my-4 flex items-center gap-2 rounded-2xl bg-orange-500/10 px-4 py-2 text-orange-500'>
+          <HiOutlineEyeSlash />
+          <span>
+            Only you can see these group chats. Other people will not see them
+            on Grill
+          </span>
+        </div>
+      )}
       {(() => {
         if (!isInitialized || isLoading || isPlaceholderData) {
           return <ChatPreviewSkeleton.SkeletonList />

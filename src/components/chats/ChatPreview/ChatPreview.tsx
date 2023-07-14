@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
-import ChatHiddenChip from '../ChatHiddenChip'
 import ChatImage, { ChatImageProps } from '../ChatImage'
 import ChatLastMessage from './ChatLastMessage'
 
@@ -140,9 +139,6 @@ export default function ChatPreview({
                 </p>
               )}
               {(() => {
-                if (isHidden) {
-                  return <ChatHiddenChip />
-                }
                 if (withUnreadCount && chatId) {
                   return <ChatUnreadCount className='ml-2' chatId={chatId} />
                 }
