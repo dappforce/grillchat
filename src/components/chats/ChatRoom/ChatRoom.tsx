@@ -97,6 +97,7 @@ export default function ChatRoom({
                 rows={1}
                 disabled
                 value='Chat is hidden'
+                className='bg-background-light/50 text-center text-text-muted !brightness-100'
                 variant='fill'
                 pill
               />
