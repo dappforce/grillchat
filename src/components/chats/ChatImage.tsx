@@ -7,14 +7,14 @@ export type ChatImageProps = ComponentProps<'div'> & {
   chatTitle?: string
   image?: ImageProps['src'] | JSX.Element
   isImageInCidFormat?: boolean
-  isImageCircle?: boolean
+  rounding?: 'circle' | 'xl' | '2xl'
 }
 
 export default function ChatImage({
   chatTitle,
   image,
   isImageInCidFormat = true,
-  isImageCircle = true,
+  rounding = 'circle',
   ...props
 }: ChatImageProps) {
   let initial = chatTitle?.charAt(0)
@@ -25,13 +25,19 @@ export default function ChatImage({
     }
   }
 
+  const roundingMap = {
+    circle: 'rounded-full',
+    xl: 'rounded-xl',
+    '2xl': 'rounded-2xl',
+  }
+
   return (
     <div
       {...props}
       style={{ backgroundClip: 'padding-box' }}
       className={cx(
         getCommonClassNames('chatImageBackground'),
-        isImageCircle ? 'rounded-full' : 'rounded-2xl',
+        roundingMap[rounding],
         'h-12 w-12 flex-shrink-0',
         props.className
       )}

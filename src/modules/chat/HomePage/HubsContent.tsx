@@ -85,7 +85,7 @@ function ChatPreviewContainer({
 
   return (
     <ChatPreview
-      isImageCircle={false}
+      rounding='2xl'
       onClick={onChatClick}
       asContainer
       asLink={{

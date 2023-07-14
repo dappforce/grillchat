@@ -6,7 +6,7 @@ import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
 import ChatHiddenChip from '../ChatHiddenChip'
-import ChatImage from '../ChatImage'
+import ChatImage, { ChatImageProps } from '../ChatImage'
 import ChatLastMessage from './ChatLastMessage'
 
 // dynamic import to prevent hydration mismatch
@@ -22,7 +22,7 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   description: string | undefined
   image: ImageProps['src'] | JSX.Element | undefined
   isImageInCidFormat?: boolean
-  isImageCircle?: boolean
+  rounding?: ChatImageProps['rounding']
   additionalDesc?: string
   asLink?: LinkProps
   isInteractive?: boolean
@@ -40,7 +40,7 @@ export default function ChatPreview({
   title,
   description,
   image,
-  isImageCircle = true,
+  rounding,
   isImageInCidFormat = true,
   additionalDesc,
   asContainer,
@@ -107,7 +107,7 @@ export default function ChatPreview({
         <ChatImage
           chatTitle={title ?? ''}
           image={image}
-          isImageCircle={isImageCircle}
+          rounding={rounding}
           isImageInCidFormat={isImageInCidFormat}
           className='self-center sm:h-14 sm:w-14'
         />

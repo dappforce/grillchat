@@ -27,7 +27,12 @@ export default function AboutModal({
     <Modal {...props} withCloseButton>
       <div className='mt-4 flex flex-col gap-4'>
         <div className='flex items-center gap-4'>
-          <ChatImage chatTitle={title} className='h-20 w-20' image={image} />
+          <ChatImage
+            chatTitle={title}
+            className='h-20 w-20'
+            image={image}
+            rounding={isImageCircle ? 'circle' : '2xl'}
+          />
           <div className='flex flex-col'>
             <h1 className='text-2xl font-medium'>{title}</h1>
             <span className='text-text-muted'>{subtitle}</span>

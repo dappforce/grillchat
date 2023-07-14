@@ -50,7 +50,7 @@ export default function HubPageNavbar({
         >
           <ChatImage
             className='h-9 w-9 justify-self-end'
-            isImageCircle={false}
+            rounding='xl'
             image={content?.image}
             chatTitle={content?.name}
           />
