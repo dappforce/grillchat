@@ -43,7 +43,6 @@ function DonateForm({
   const setReplyTo = useMessageData((state) => state.setReplyTo)
   useEffect(() => {
     if (isOpen) setReplyTo(messageId)
-    else setReplyTo('')
   }, [setReplyTo, messageId, isOpen])
 
   const [selectedChain, setSelectedChain] = chainState
