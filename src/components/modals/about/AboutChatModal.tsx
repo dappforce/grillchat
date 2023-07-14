@@ -1,3 +1,4 @@
+import { ActionCardProps } from '@/components/ActionCard'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import useIsInIframe from '@/hooks/useIsInIframe'
@@ -106,7 +107,9 @@ export default function AboutChatModal({
     ]
 
     if (chatOwner === address) {
-      actionMenu.push({
+      const additionalMenus: ActionCardProps['actions'] = []
+
+      additionalMenus.push({
         text: 'Edit',
         icon: HiPencilSquare,
         iconClassName: cx('text-text-muted'),
@@ -114,20 +117,22 @@ export default function AboutChatModal({
       })
 
       if (chat.struct.hidden) {
-        actionMenu.push({
+        additionalMenus.unshift({
           text: 'Unhide Chat',
           icon: HiOutlineEye,
           iconClassName: cx('text-text-muted'),
           onClick: () => setOpenedModalType('unhide'),
         })
       } else {
-        actionMenu.push({
+        additionalMenus.unshift({
           text: 'Hide Chat',
           icon: HiOutlineEyeSlash,
           iconClassName: cx('text-text-muted'),
           onClick: () => setOpenedModalType('hide'),
         })
       }
+
+      actionMenu.push(...additionalMenus)
     }
 
     if (isLoading || isInIframe) return actionMenu
