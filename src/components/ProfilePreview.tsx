@@ -14,6 +14,7 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   className?: string
   avatarClassName?: string
   withGrillAddress?: boolean
+  withEvmAddress?: boolean
   nameClassName?: string
 }
 
@@ -23,6 +24,7 @@ const ProfilePreview = ({
   avatarClassName,
   nameClassName,
   withGrillAddress = true,
+  withEvmAddress = true,
   ...props
 }: ProfilePreviewProps) => {
   const { data: accountData } = getAccountDataQuery.useQuery(address)
@@ -31,7 +33,8 @@ const ProfilePreview = ({
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
-  const showingAnyAddress = withGrillAddress || evmAddress
+  const isShowingEvmAddress = withEvmAddress && evmAddress
+  const showingAnyAddress = withGrillAddress || isShowingEvmAddress
 
   return (
     <div {...props} className={cx('flex items-center gap-4', className)}>
@@ -58,7 +61,7 @@ const ProfilePreview = ({
                 />
               </div>
             )}
-            {evmAddress && (
+            {isShowingEvmAddress && (
               <div className='flex flex-row items-center gap-2'>
                 <EthIcon />
                 <CopyTextInline

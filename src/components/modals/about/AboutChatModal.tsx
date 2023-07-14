@@ -77,6 +77,7 @@ export default function AboutChatModal({
               className='mt-1 cursor-pointer gap-2'
               avatarClassName={cx('h-6 w-6')}
               withGrillAddress={false}
+              withEvmAddress={false}
               nameClassName='text-base'
             />
           )}
