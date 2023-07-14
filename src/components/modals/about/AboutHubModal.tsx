@@ -60,6 +60,7 @@ export default function AboutHubModal({
     <>
       <AboutModal
         {...props}
+        id={hub.id}
         isOpen={props.isOpen && openedModalType === null}
         title={content.name}
         isImageCircle={false}

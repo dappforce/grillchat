@@ -1,3 +1,4 @@
+import useRandomColor from '@/hooks/useRandomColor'
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import Image, { ImageProps } from 'next/image'
@@ -5,12 +6,14 @@ import React, { ComponentProps } from 'react'
 
 export type ChatImageProps = ComponentProps<'div'> & {
   chatTitle?: string
+  chatId?: string
   image?: ImageProps['src'] | JSX.Element
   isImageInCidFormat?: boolean
   rounding?: 'circle' | 'xl' | '2xl'
 }
 
 export default function ChatImage({
+  chatId,
   chatTitle,
   image,
   isImageInCidFormat = true,
@@ -24,6 +27,8 @@ export default function ChatImage({
       initial += secondWord.charAt(0)
     }
   }
+
+  const bgColor = useRandomColor(chatId || chatTitle, 'light')
 
   const roundingMap = {
     circle: 'rounded-full',
@@ -51,6 +56,7 @@ export default function ChatImage({
                 height='100%'
                 viewBox='0 0 75 75'
                 preserveAspectRatio='xMinYMid meet'
+                style={{ background: bgColor }}
               >
                 <text
                   x='50%'
@@ -58,7 +64,7 @@ export default function ChatImage({
                   dominantBaseline='central'
                   textAnchor='middle'
                   fontSize='32'
-                  fill='#334155'
+                  fill='white'
                 >
                   {initial}
                 </text>

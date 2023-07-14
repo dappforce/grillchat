@@ -4,6 +4,7 @@ import DataCard, { DataCardProps } from '@/components/DataCard'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 
 export type AboutModalProps = ModalFunctionalityProps & {
+  id: string
   title: string | undefined
   image: string | undefined
   isImageCircle?: boolean
@@ -14,6 +15,7 @@ export type AboutModalProps = ModalFunctionalityProps & {
 }
 
 export default function AboutModal({
+  id,
   title,
   subtitle,
   isImageCircle = true,
@@ -28,6 +30,7 @@ export default function AboutModal({
       <div className='mt-4 flex flex-col gap-4'>
         <div className='flex items-center gap-4'>
           <ChatImage
+            chatId={id}
             chatTitle={title}
             className='h-20 w-20'
             image={image}

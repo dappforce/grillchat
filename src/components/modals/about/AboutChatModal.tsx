@@ -169,6 +169,7 @@ export default function AboutChatModal({
           return (
             <AboutModal
               {...props}
+              id={chat.id}
               isOpen={props.isOpen && openedModalType === null}
               title={content?.title}
               subtitle={`${messageCount} messages`}

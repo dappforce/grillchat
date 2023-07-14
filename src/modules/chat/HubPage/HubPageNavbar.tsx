@@ -49,6 +49,7 @@ export default function HubPageNavbar({
           onClick={() => setIsOpenAboutModal(true)}
         >
           <ChatImage
+            chatId={hubId}
             className='h-9 w-9 justify-self-end'
             rounding='xl'
             image={content?.image}

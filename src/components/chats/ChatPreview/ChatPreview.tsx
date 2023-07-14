@@ -105,6 +105,7 @@ export default function ChatPreview({
         )}
       >
         <ChatImage
+          chatId={chatId}
           chatTitle={title ?? ''}
           image={image}
           rounding={rounding}

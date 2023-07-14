@@ -227,7 +227,12 @@ function NavbarChatInfo({
         )}
         onClick={() => setIsOpenAboutChatModal(true)}
       >
-        <ChatImage className='h-9 w-9' image={image} chatTitle={chatTitle} />
+        <ChatImage
+          chatId={chatId}
+          className='h-9 w-9'
+          image={image}
+          chatTitle={chatTitle}
+        />
         <div className='flex flex-col overflow-hidden'>
           <div className='flex items-center gap-2 overflow-hidden'>
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
