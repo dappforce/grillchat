@@ -12,6 +12,7 @@ type Tab = {
 export type TabsProps = ComponentProps<'div'> & {
   asContainer?: boolean
   tabs: Tab[]
+  tabsRightElement?: JSX.Element
   panelClassName?: string
   defaultTab?: number
   withHashIntegration?: boolean
@@ -26,6 +27,7 @@ export default function Tabs({
   asContainer,
   tabs,
   panelClassName,
+  tabsRightElement,
   defaultTab = 0,
   hideBeforeHashLoaded,
   withHashIntegration = true,
@@ -98,6 +100,7 @@ export default function Tabs({
           </Tab>
         ))}
         {usedSelectedTab === -1 && <Tab key='empty' />}
+        {tabsRightElement}
       </Tab.List>
       <Tab.Panels as={component} className={cx('mt-2', panelClassName)}>
         {tabs.map(({ id, content }) => (

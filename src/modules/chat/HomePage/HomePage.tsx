@@ -1,6 +1,10 @@
+import CommunityAddIcon from '@/assets/icons/community-add.svg'
+import Button from '@/components/Button'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import NewCommunityModal from '@/components/modals/community/NewCommunityModal'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import Tabs, { TabsProps } from '@/components/Tabs'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useLocation } from '@/stores/location'
@@ -120,6 +124,8 @@ export default function HubsPage(props: HubsPageProps) {
       router.push(`/${selectedTabId}`, undefined, { shallow: true })
   }
 
+  const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
+
   return (
     <DefaultLayout
       navbarProps={{
@@ -156,6 +162,19 @@ export default function HubsPage(props: HubsPageProps) {
           asContainer
           tabs={tabs}
           withHashIntegration={false}
+          tabsRightElement={
+            <div className='ml-4 mr-2 flex flex-1 items-center justify-end self-stretch'>
+              <Button
+                size='sm'
+                variant='primaryOutline'
+                className='flex items-center gap-2'
+                onClick={() => setIsOpenNewCommunity(true)}
+              >
+                <CommunityAddIcon className='text-text-muted' />
+                <span>New</span>
+              </Button>
+            </div>
+          }
           hideBeforeHashLoaded
           manualTabControl={{
             selectedTab: usedSelectedTab,
@@ -163,6 +182,12 @@ export default function HubsPage(props: HubsPageProps) {
           }}
         />
       </SearchChannelsWrapper>
+
+      <NewCommunityModal
+        isOpen={isOpenNewCommunity}
+        closeModal={() => setIsOpenNewCommunity(false)}
+        hubId={COMMUNITY_CHAT_HUB_ID}
+      />
     </DefaultLayout>
   )
 }

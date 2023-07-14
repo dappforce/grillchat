@@ -1,5 +1,4 @@
 import NoResultImage from '@/assets/graphics/no-result.png'
-import CommunityAddIcon from '@/assets/icons/community-add.svg'
 import Button from '@/components/Button'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
@@ -77,49 +76,32 @@ function Toolbar({ filter, setFilter }: ToolbarProps) {
   const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
 
   return (
-    <>
-      <Container as='div' className='border-b border-border-gray'>
-        <div className='flex justify-between gap-4 py-2'>
-          <div className='flex gap-0.5'>
-            {filters.map((text) => {
-              const isActive = text === filter
+    <Container as='div' className='border-b border-border-gray'>
+      <div className='flex justify-between gap-4 py-2'>
+        <div className='flex gap-0.5'>
+          {filters.map((text) => {
+            const isActive = text === filter
 
-              return (
-                <Button
-                  key={text}
-                  size='sm'
-                  variant='transparent'
-                  onClick={() => setFilter(text)}
-                  className={cx(
-                    'capitalize',
-                    isActive
-                      ? 'bg-background-light text-text-primary'
-                      : 'text-text-muted'
-                  )}
-                >
-                  {text}
-                </Button>
-              )
-            })}
-          </div>
-          <Button
-            size='sm'
-            variant='primaryOutline'
-            className='flex items-center gap-2'
-            onClick={() => setIsOpenNewCommunity(true)}
-          >
-            <CommunityAddIcon className='text-text-muted' />
-            <span>New</span>
-          </Button>
+            return (
+              <Button
+                key={text}
+                size='sm'
+                variant='transparent'
+                onClick={() => setFilter(text)}
+                className={cx(
+                  'capitalize',
+                  isActive
+                    ? 'bg-background-light text-text-primary'
+                    : 'text-text-muted'
+                )}
+              >
+                {text}
+              </Button>
+            )
+          })}
         </div>
-      </Container>
-
-      <NewCommunityModal
-        isOpen={isOpenNewCommunity}
-        closeModal={() => setIsOpenNewCommunity(false)}
-        hubId={COMMUNITY_CHAT_HUB_ID}
-      />
-    </>
+      </div>
+    </Container>
   )
 }
 
