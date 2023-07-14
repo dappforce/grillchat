@@ -64,7 +64,7 @@ export default function UpsertChatModal(props: UpsertChatModalProps) {
     reset,
     watch,
   } = useForm<FormSchema>({
-    mode: 'onBlur',
+    mode: 'onChange',
     resolver: zodResolver(formSchema),
     defaultValues,
   })
