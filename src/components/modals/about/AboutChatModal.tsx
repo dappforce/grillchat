@@ -105,7 +105,7 @@ export default function AboutChatModal({
       },
     ]
 
-    if (chatOwner === address || true) {
+    if (chatOwner === address) {
       actionMenu.push({
         text: 'Edit',
         icon: HiPencilSquare,
