@@ -19,7 +19,6 @@ import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
 
 export type HubsPageProps = {
-  isIntegrateChatButtonOnTop: boolean
   hubsChatCount: { [id: string]: number }
 }
 
@@ -72,12 +71,7 @@ export default function HubsPage(props: HubsPageProps) {
     {
       id: 'hubs',
       text: 'Hubs',
-      content: () => (
-        <HubsContent
-          isIntegrateChatButtonOnTop={props.isIntegrateChatButtonOnTop}
-          hubsChatCount={props.hubsChatCount}
-        />
-      ),
+      content: () => <HubsContent hubsChatCount={props.hubsChatCount} />,
     },
   ]
 

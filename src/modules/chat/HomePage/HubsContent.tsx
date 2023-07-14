@@ -12,8 +12,7 @@ import { HubsPageProps } from './HomePage'
 
 export default function HubsContent({
   hubsChatCount = {},
-  isIntegrateChatButtonOnTop,
-}: Pick<HubsPageProps, 'hubsChatCount' | 'isIntegrateChatButtonOnTop'>) {
+}: Pick<HubsPageProps, 'hubsChatCount'>) {
   const isInIframe = useIsInIframe()
   const hubIds = getHubIds()
 
@@ -22,11 +21,7 @@ export default function HubsContent({
 
   return (
     <div className='flex flex-col'>
-      {!isInIframe && (
-        <ChatSpecialButtons
-          isIntegrateChatButtonOnTop={!!isIntegrateChatButtonOnTop}
-        />
-      )}
+      {!isInIframe && <ChatSpecialButtons />}
 
       <div className='flex flex-col overflow-auto'>
         {hubs.map((hub) => {
