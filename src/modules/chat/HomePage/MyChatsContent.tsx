@@ -73,8 +73,6 @@ type ToolbarProps = {
   setFilter: (filter: Filter) => void
 }
 function Toolbar({ filter, setFilter }: ToolbarProps) {
-  const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
-
   return (
     <Container as='div' className='border-b border-border-gray'>
       <div className='flex justify-between gap-4 py-2'>
