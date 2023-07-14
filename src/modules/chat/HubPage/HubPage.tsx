@@ -106,18 +106,18 @@ function CommunityHubToolbar({
           <FloatingMenus
             menus={[
               {
-                text: 'Recent Activity',
+                text: 'Recent activity',
                 icon: HiOutlineClock,
                 onClick: () => setSortBy('activity'),
               },
               {
-                text: 'Messages Count',
+                text: 'Messages count',
                 icon: HiOutlineChatBubbleOvalLeftEllipsis,
                 onClick: () => setSortBy('size'),
               },
               // TODO: not implemented yet
               // {
-              //   text: 'Community Size',
+              //   text: 'Members count',
               //   icon: HiOutlineUsers,
               //   onClick: () => setSortBy('size'),
               // },
