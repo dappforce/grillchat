@@ -1,3 +1,4 @@
+import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
@@ -102,11 +103,13 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         />
         <HeadConfig {...head} />
         <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
-        <EvmProvider>
-          <div className={cx('font-sans')}>
-            <Component {...props} />
-          </div>
-        </EvmProvider>
+        <div className={cx('font-sans')}>
+          <ErrorBoundary>
+            <EvmProvider>
+              <Component {...props} />
+            </EvmProvider>
+          </ErrorBoundary>
+        </div>
       </QueryProvider>
     </ThemeProvider>
   )

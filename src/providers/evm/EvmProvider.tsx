@@ -1,6 +1,7 @@
 import { walletConnectProjectId } from '@/constants/evm'
 import useGetTheme from '@/hooks/useGetTheme'
 import { isTouchDevice } from '@/utils/device'
+import { SafeLocalStorage } from '@/utils/storage'
 import {
   connectorsForWallets,
   darkTheme,
@@ -13,7 +14,7 @@ import {
   ledgerWallet,
   metaMaskWallet,
 } from '@rainbow-me/rainbowkit/wallets'
-import { createConfig, WagmiConfig } from 'wagmi'
+import { createConfig, createStorage, WagmiConfig } from 'wagmi'
 import { getConfiguredChains } from '../utils'
 import { talismanWallet } from './wallets/talisman'
 
@@ -48,6 +49,7 @@ const wagmiConfig = createConfig({
   connectors,
   publicClient,
   webSocketPublicClient,
+  storage: createStorage({ storage: SafeLocalStorage }),
 })
 
 const accentColor = '#4D46DC'
