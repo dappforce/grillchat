@@ -9,6 +9,7 @@ import { isTouchDevice } from '@/utils/device'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import urlJoin from 'url-join'
 import { useAccount, useDisconnect } from 'wagmi'
 
 type CustomConnectButtonProps = ButtonProps & {
@@ -70,7 +71,14 @@ export const CustomConnectButton = ({
 
   if (!isInsideMetamaskBrowser()) {
     return (
-      <MetamaskDeepLink {...commonButtonProps}>{usedLabel}</MetamaskDeepLink>
+      <MetamaskDeepLink
+        customDeeplinkReturnUrl={(currentUrl) =>
+          urlJoin(currentUrl, `?evmLinking=true`)
+        }
+        {...commonButtonProps}
+      >
+        {usedLabel}
+      </MetamaskDeepLink>
     )
   }
 

@@ -11,6 +11,7 @@ import { ChatItemContentProps } from './types'
 export type DefaultChatItemProps = ChatItemContentProps
 
 export default function DefaultChatItem({
+  messageId,
   isMyMessage,
   isSent,
   onCheckMarkClick,
@@ -34,6 +35,7 @@ export default function DefaultChatItem({
         {!isMyMessage && (
           <div className='flex items-center'>
             <ProfilePreviewModalName
+              messageId={messageId}
               address={ownerId}
               className={cx('mr-2 text-sm text-text-secondary')}
             />

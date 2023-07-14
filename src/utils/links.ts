@@ -14,7 +14,17 @@ export function getCurrentUrlOrigin() {
   return window.location.origin
 }
 
-export function getCurrentUrlWithoutQuery() {
+export function getCurrentUrlWithoutQuery(queryNameToRemove?: string) {
+  if (queryNameToRemove) {
+    const query = window.location.search
+    const searchParams = new URLSearchParams(query)
+    searchParams.delete(queryNameToRemove)
+    return (
+      window.location.origin +
+      window.location.pathname +
+      searchParams.toString()
+    )
+  }
   return window.location.origin + window.location.pathname
 }
 

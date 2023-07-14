@@ -4,36 +4,45 @@ import { PostContentExtension } from '@subsocial/api/types'
 import dynamic from 'next/dynamic'
 import { ClipboardEvent, ComponentType } from 'react'
 import { SUPPORTED_IMAGE_EXTENSIONS } from '../inputs/ImageInput'
+import { Skeleton } from '../SkeletonFallback'
 import { parseNftMarketplaceLink } from './nft/utils'
-import SecretBoxChatItem from './secret-box/SecretBoxChatItem'
-import SecretBoxMessagePreviewPart from './secret-box/SecretBoxMessagePreviewPart'
 import {
   ExtensionChatItemProps,
   RepliedMessagePreviewPartsProps,
 } from './types'
 
+const SecretBoxChatItem = dynamic(
+  () => import('./secret-box/SecretBoxChatItem'),
+  { loading: ChatItemSkeleton }
+)
+const SecretBoxMessagePreviewPart = dynamic(
+  () => import('./secret-box/SecretBoxMessagePreviewPart')
+)
+
 const DonateMessagePreview = dynamic(
-  () => import('./donate/DonateMessagePreview')
+  async () => import('./donate/DonateMessagePreview'),
+  { loading: ChatItemSkeleton }
 )
 const DonateRepliedMessagePreviewPart = dynamic(
   () => import('./donate/DonateRepliedMessagePreviewPart')
 )
 
-const ImageChatItem = dynamic(() => import('./image/ImageChatItem'))
+const ImageChatItem = dynamic(() => import('./image/ImageChatItem'), {
+  loading: ChatItemSkeleton,
+})
 const ImageRepliedMessagePreviewPart = dynamic(
   () => import('./image/ImageRepliedMessagePreviewPart')
 )
 
-const NftChatItem = dynamic(() => import('./nft/NftChatItem'))
+const NftChatItem = dynamic(() => import('./nft/NftChatItem'), {
+  loading: ChatItemSkeleton,
+})
 const NftRepliedMessagePreviewPart = dynamic(
   () => import('./nft/NftRepliedMessagePreviewPart')
 )
 
 export const extensionInitialDataTypes = {
-  'subsocial-donations': { recipient: '' } as {
-    recipient: string
-    messageId?: string
-  },
+  'subsocial-donations': { recipient: '', messageId: '' },
   'subsocial-evm-nft': null as null | string,
   'subsocial-image': null as null | File | string,
   'subsocial-decoded-promo': { recipient: '', messageId: '' },
@@ -150,4 +159,8 @@ export function interceptPastedData(
       break
     }
   }
+}
+
+function ChatItemSkeleton() {
+  return <Skeleton className='h-52 w-64 max-w-[250px] rounded-2xl' />
 }
