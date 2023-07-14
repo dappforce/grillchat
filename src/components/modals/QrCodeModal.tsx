@@ -12,7 +12,7 @@ export default function QrCodeModal({
   ...props
 }: QrCodeModalProps) {
   return (
-    <Modal {...props}>
+    <Modal {...props} withCloseButton={!props.onBackClick}>
       <div className='mb-4 mt-6 flex flex-col'>
         <QrCode url={url} />
         {urlTitle && <p className='mt-3 text-center text-2xl'>{urlTitle}</p>}

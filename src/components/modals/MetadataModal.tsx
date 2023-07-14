@@ -45,7 +45,7 @@ export default function MetadataModal({
   ]
 
   return (
-    <Modal {...props} title='Metadata' withCloseButton>
+    <Modal {...props} title='Metadata' withCloseButton={!props.onBackClick}>
       <DataCard data={metadataList} />
     </Modal>
   )
