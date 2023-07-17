@@ -57,7 +57,7 @@ export function useIsExtensionModalOpen<Id extends PostContentExtension['id']>(
   )
 }
 
-export function useIsExtensionModalInitialData<
+export function useExtensionModalInitialData<
   Id extends PostContentExtension['id']
 >(id: Id) {
   return (
@@ -85,7 +85,7 @@ export function useExtensionModalState<Id extends PostContentExtension['id']>(
   const isOpen = useIsExtensionModalOpen(id)
   const closeModal = useCloseExtensionModal(id)
 
-  const initialData = useIsExtensionModalInitialData(id)
+  const initialData = useExtensionModalInitialData(id)
 
   return {
     isOpen,

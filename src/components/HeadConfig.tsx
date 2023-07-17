@@ -33,7 +33,8 @@ export default function HeadConfig({
     'Talk with others from around the world and create your own communities about any topic, utilizing our censorship-resistant blockchain and app with anonymous logins.'
   const usedDesc = description || defaultDesc
 
-  const usedImage = image || 'https://grill.chat/icons/icon-192x192.png'
+  const usedImage =
+    image || 'https://grill.chat/icons/maskable-icon-192x192.png'
 
   return (
     <Head>

@@ -1,15 +1,16 @@
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useExtensionData } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import { RiCopperCoinLine } from 'react-icons/ri'
 import ActionCard from './ActionCard'
+import { useOpenDonateExtension } from './extensions/donate/hooks'
 import Modal from './modals/Modal'
 import Name, { NameProps } from './Name'
 import ProfilePreview from './ProfilePreview'
 
 export type ProfilePreviewModalWrapperProps = {
   address: string
+  messageId?: string
   children: (
     onClick: (e: { stopPropagation: () => void }) => void
   ) => React.ReactNode
@@ -17,11 +18,10 @@ export type ProfilePreviewModalWrapperProps = {
 
 export default function ProfilePreviewModalWrapper({
   address,
+  messageId,
   children,
 }: ProfilePreviewModalWrapperProps) {
-  const openExtensionModal = useExtensionData(
-    (state) => state.openExtensionModal
-  )
+  const openDonateExtension = useOpenDonateExtension(messageId ?? '', address)
   const [isOpenAccountModal, setIsOpenAccountModal] = useState(false)
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { evmAddress } = accountData || {}
@@ -39,7 +39,7 @@ export default function ProfilePreviewModalWrapper({
         closeModal={() => setIsOpenAccountModal(false)}
       >
         <ProfilePreview address={address} className='mb-2' />
-        {evmAddress && (
+        {evmAddress && messageId && (
           <ActionCard
             className='mt-2'
             actions={[
@@ -47,10 +47,7 @@ export default function ProfilePreviewModalWrapper({
                 icon: RiCopperCoinLine,
                 text: 'Donate',
                 iconClassName: cx('text-text-muted'),
-                onClick: () =>
-                  openExtensionModal('subsocial-donations', {
-                    recipient: address,
-                  }),
+                onClick: () => openDonateExtension(),
               },
             ]}
           />
@@ -60,9 +57,12 @@ export default function ProfilePreviewModalWrapper({
   )
 }
 
-export function ProfilePreviewModalName({ ...props }: NameProps) {
+export function ProfilePreviewModalName({
+  messageId,
+  ...props
+}: NameProps & { messageId?: string }) {
   return (
-    <ProfilePreviewModalWrapper address={props.address}>
+    <ProfilePreviewModalWrapper address={props.address} messageId={messageId}>
       {(onClick) => (
         <Name
           {...props}

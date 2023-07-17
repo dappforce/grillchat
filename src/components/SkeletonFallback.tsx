@@ -25,6 +25,19 @@ export default function SkeletonFallback({
   )
 }
 
+export type SkeletonProps = ComponentProps<'div'>
+export function Skeleton({ className, ...props }: SkeletonProps) {
+  return (
+    <div
+      className={cx(
+        'my-[0.25em] h-[1em] w-48 rounded-full bg-background-lighter',
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
 export interface IntegratedSkeletonProps<T>
   extends Omit<SkeletonFallbackProps, 'children'> {
   content: T | null | undefined

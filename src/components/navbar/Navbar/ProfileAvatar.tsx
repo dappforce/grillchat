@@ -1,6 +1,8 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import PopOver from '@/components/floating/PopOver'
 import { cx } from '@/utils/class-names'
+import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
+import { replaceUrl } from '@/utils/window'
 import { ComponentProps, useEffect, useState } from 'react'
 import ProfileModal from '../../auth/ProfileModal'
 
@@ -18,6 +20,8 @@ export default function ProfileAvatar({
   ...props
 }: ProfileAvatarProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [directlyOpenEvmLinking, setDirectlyOpenEvmLinking] = useState(false)
+
   const [showNotif, setShowNotif] = useState(false)
   useEffect(() => {
     if (popOverControl?.isOpen) {
@@ -25,11 +29,21 @@ export default function ProfileAvatar({
     }
   }, [popOverControl?.isOpen])
 
+  useEffect(() => {
+    const evmLinking = getUrlQuery('evmLinking')
+    if (!evmLinking) return
+
+    replaceUrl(getCurrentUrlWithoutQuery('evmLinking'))
+    setDirectlyOpenEvmLinking(true)
+    setIsOpen(true)
+  }, [])
+
   return (
     <>
       <ProfileModal
         address={address}
         isOpen={isOpen}
+        step={directlyOpenEvmLinking ? 'link-evm-address' : undefined}
         closeModal={() => setIsOpen(false)}
         notification={{
           showNotif: showNotif,

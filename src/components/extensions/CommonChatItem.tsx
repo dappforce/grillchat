@@ -106,6 +106,7 @@ export default function CommonChatItem({
         {!isMyMessage && (
           <div className='flex items-center px-2.5 first:pt-1.5'>
             <ProfilePreviewModalName
+              messageId={message.id}
               address={ownerId}
               color={textColor}
               className={cx('mr-2 text-sm text-text-secondary')}

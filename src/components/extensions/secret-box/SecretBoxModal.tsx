@@ -3,6 +3,7 @@ import TextArea from '@/components/inputs/TextArea'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useExtensionModalState } from '@/stores/extension'
+import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
@@ -20,13 +21,18 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
   const { mutateAsync: encodeSecretBox } = useEncodeSecretBox()
 
   const [recipient, setRecipient] = useState('')
-  const { recipient: initialRecipient } = initialData
+  const { recipient: initialRecipient, messageId } = initialData
   useEffect(() => {
     if (initialRecipient) {
       setRecipient(initialRecipient)
       setSecretMessage('')
     }
   }, [initialRecipient])
+
+  const setReplyTo = useMessageData((state) => state.setReplyTo)
+  useEffect(() => {
+    if (isOpen) setReplyTo(messageId)
+  }, [setReplyTo, messageId, isOpen])
 
   const beforeMesageSend = async (messageParams: SendMessageParams) => {
     if (!address) return { txPrevented: true }

@@ -11,12 +11,14 @@ import {
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
 import { useExtensionModalState } from '@/stores/extension'
+import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { formatUnits, parseUnits } from 'ethers'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import urlJoin from 'url-join'
 import { useAccount, useNetwork } from 'wagmi'
 import CommonExtensionModal from '../../CommonExtensionModal'
 import { chainIdByChainName } from '../api/config'
@@ -36,6 +38,12 @@ function DonateForm({
   const { closeModal, isOpen, initialData } = useExtensionModalState(
     'subsocial-donations'
   )
+
+  const { messageId } = initialData
+  const setReplyTo = useMessageData((state) => state.setReplyTo)
+  useEffect(() => {
+    if (isOpen) setReplyTo(messageId)
+  }, [setReplyTo, messageId, isOpen])
 
   const [selectedChain, setSelectedChain] = chainState
   const [selectedToken, setSelectedToken] = tokenState
@@ -161,7 +169,17 @@ function DonateForm({
           {(() => {
             if (!isInsideMetamaskBrowser())
               return (
-                <MetamaskDeepLink size='lg'>Connect Wallet</MetamaskDeepLink>
+                <MetamaskDeepLink
+                  customDeeplinkReturnUrl={(currentUrl) =>
+                    urlJoin(
+                      currentUrl,
+                      `?donateTo=${JSON.stringify(initialData)}`
+                    )
+                  }
+                  size='lg'
+                >
+                  Connect Wallet
+                </MetamaskDeepLink>
               )
 
             return showSwitchButton ? (

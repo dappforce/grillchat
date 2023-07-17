@@ -1,5 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
+import { useOpenDonateExtension } from '@/components/extensions/donate/hooks'
 import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
   FloatingMenusProps,
@@ -79,6 +80,10 @@ export default function ChatItem({
     (state) => state.openExtensionModal
   )
   const setReplyTo = useMessageData((state) => state.setReplyTo)
+  const openDonateExtension = useOpenDonateExtension(
+    message.id,
+    message.struct.ownerId
+  )
 
   const router = useRouter()
   const isLoggingInWithKey = useRef(false)
@@ -122,11 +127,7 @@ export default function ChatItem({
           return
         }
 
-        setMessageAsReply(messageId)
-        openExtensionModal('subsocial-donations', {
-          messageId,
-          recipient: ownerId,
-        })
+        openDonateExtension()
       },
     }
 
@@ -145,7 +146,6 @@ export default function ChatItem({
               text: 'Secret Box',
               icon: BiGift,
               onClick: () => {
-                setMessageAsReply(messageId)
                 openExtensionModal('subsocial-decoded-promo', {
                   recipient: ownerId,
                   messageId,
@@ -211,7 +211,7 @@ export default function ChatItem({
       )}
     >
       {!isMyMessage && (
-        <ProfilePreviewModalWrapper address={ownerId}>
+        <ProfilePreviewModalWrapper address={ownerId} messageId={message.id}>
           {(onClick) => (
             <AddressAvatar
               onClick={onClick}
@@ -255,6 +255,7 @@ export default function ChatItem({
                 />
               ) : (
                 <ChatItemContentVariant
+                  messageId={message.id}
                   body={body ?? ''}
                   isMyMessage={isMyMessage}
                   isSent={isSent}
