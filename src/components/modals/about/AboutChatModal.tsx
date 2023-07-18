@@ -163,6 +163,11 @@ export default function AboutChatModal({
 
   const closeModal = () => setOpenedModalType(null)
 
+  let subtitle = `${messageCount} messages`
+  if (chat.struct.followersCount) {
+    subtitle += `, ${chat.struct.followersCount} followers`
+  }
+
   return (
     <>
       <JoinChatWrapper>
@@ -173,7 +178,7 @@ export default function AboutChatModal({
               id={chat.id}
               isOpen={props.isOpen && openedModalType === null}
               title={content?.title}
-              subtitle={`${messageCount} messages`}
+              subtitle={subtitle}
               actionMenu={getActionMenu(mutateAsync, isLoading)}
               contentList={contentList}
               image={content?.image}

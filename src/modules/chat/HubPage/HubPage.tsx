@@ -14,6 +14,7 @@ import {
   HiChevronDown,
   HiOutlineChatBubbleOvalLeftEllipsis,
   HiOutlineClock,
+  HiOutlineUsers,
 } from 'react-icons/hi2'
 import useSortedChats, {
   SortChatOption,
@@ -132,12 +133,11 @@ function CommunityHubToolbar({
                 icon: HiOutlineChatBubbleOvalLeftEllipsis,
                 onClick: () => changeSortBy('messages'),
               },
-              // TODO: not implemented yet
-              // {
-              //   text: 'Members count',
-              //   icon: HiOutlineUsers,
-              //   onClick: () => setSortBy('size'),
-              // },
+              {
+                text: 'Members count',
+                icon: HiOutlineUsers,
+                onClick: () => changeSortBy('members'),
+              },
             ]}
             allowedPlacements={['bottom-start']}
             mainAxisOffset={4}

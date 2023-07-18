@@ -1,5 +1,4 @@
 import {
-  CommentStruct,
   DecodedPromoExtension,
   DonateExtension,
   ImageExtension,
@@ -107,7 +106,7 @@ const mapPostExtensions = (
 }
 
 export const mapPostFragment = (post: PostFragmentFragment): PostData => {
-  const struct: CommentStruct = {
+  const struct: PostData['struct'] = {
     createdAtBlock: parseInt(post.createdAtBlock),
     createdAtTime: new Date(post.createdAtTime).getTime(),
     createdByAccount: post.createdByAccount.id,
@@ -125,6 +124,7 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
     spaceId: post.space?.id ?? post.rootPost?.space?.id ?? '',
     isUpdated: !!post.updatedAtTime,
     rootPostId: post.rootPost?.id ?? '',
+    followersCount: post.followersCount,
   }
 
   const data = {

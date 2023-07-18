@@ -5,6 +5,7 @@ import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useMemo } from 'react'
 import useSortChatIdsByConfig from './useSortChatIdsByConfig'
 import useSortChatIdsByLatestMessage from './useSortChatIdsByLatestMessage'
+import useSortChatIdsByMembers from './useSortChatIdsByMembers'
 import { useSortChatIdsByPinned } from './useSortChatIdsByPinned'
 import useSortChatIdsBySize from './useSortChatIdsBySize'
 
@@ -27,7 +28,7 @@ export default function useSortedChats(
 
   const sortedIdsByActivity = useSortChatIdsByLatestMessage(filteredChatIds)
   const sortedIdsBySize = useSortChatIdsBySize(filteredChatIds)
-  // const sortedIdsByMembers = useSortChatIdsByMembers(filteredChatIds)
+  const sortedIdsByMembers = useSortChatIdsByMembers(filteredChatIds)
 
   let sortedIds: string[] = []
   switch (sortBy) {
@@ -37,9 +38,9 @@ export default function useSortedChats(
     case 'messages':
       sortedIds = sortedIdsBySize
       break
-    // case 'members':
-    //   sortedIds = sortedIdsByMembers
-    //   break
+    case 'members':
+      sortedIds = sortedIdsByMembers
+      break
   }
 
   const sortedByOrder = useSortChatIdsByConfig(sortedIds)
