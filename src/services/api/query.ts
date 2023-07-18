@@ -2,6 +2,7 @@ import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import axios from 'axios'
+import { useMemo } from 'react'
 import { getPosts } from './fetcher'
 
 const getPost = poolQuery<string, PostData>({
@@ -26,23 +27,37 @@ type ShowHiddenPostConfig =
 type AdditionalConfig = { showHiddenPost?: ShowHiddenPostConfig }
 type Config = Parameters<(typeof rawGetPostQuery)['useQuery']>[1] &
   AdditionalConfig
-function augmentQueryData(
+
+const hiddenDataQueryRecord: Map<Object, any> = new Map()
+function modifyQueryData(
   queryData: ReturnType<(typeof rawGetPostQuery)['useQuery']>,
   config?: AdditionalConfig
 ) {
   const { showHiddenPost = { type: 'none' } } = config || {}
 
   const hideHiddenPost = () => {
-    if (queryData.data?.struct.hidden) queryData.data = null
+    if (queryData.data?.struct.hidden) {
+      if (hiddenDataQueryRecord.has(queryData)) {
+        return hiddenDataQueryRecord.get(queryData)
+      }
+
+      const hiddenDataQuery = {
+        ...queryData,
+        data: null,
+      }
+      hiddenDataQueryRecord.set(queryData, hiddenDataQuery)
+      return hiddenDataQuery
+    }
+
+    return queryData
   }
 
   switch (showHiddenPost.type) {
-    case 'all':
-      hideHiddenPost()
-      break
+    case 'none':
+      return hideHiddenPost()
     case 'owner':
       if (queryData.data?.struct.ownerId !== showHiddenPost.owner)
-        hideHiddenPost()
+        return hideHiddenPost()
       break
   }
   return queryData
@@ -52,14 +67,14 @@ export const getPostQuery = {
   ...rawGetPostQuery,
   useQuery: (postId: string, config?: Config) => {
     const queryData = rawGetPostQuery.useQuery(postId, config)
-    augmentQueryData(queryData, config)
-    return queryData
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return useMemo(() => modifyQueryData(queryData, config), [queryData])
   },
   useQueries: (postIds: string[], config?: Config) => {
     const queriesData = rawGetPostQuery.useQueries(postIds, config)
     if (config?.showHiddenPost?.type !== 'none') {
-      queriesData.forEach((queryData) => {
-        augmentQueryData(queryData, config)
+      return queriesData.map((queryData) => {
+        return modifyQueryData(queryData, config)
       })
     }
 
