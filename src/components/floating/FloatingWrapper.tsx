@@ -115,6 +115,7 @@ export default function FloatingWrapper({
             position: strategy,
             top: y ?? 0,
             left: x ?? 0,
+            backfaceVisibility: 'hidden',
           }}
           {...getFloatingProps()}
           appear
