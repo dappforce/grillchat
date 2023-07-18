@@ -73,7 +73,7 @@ declare module '@subsocial/api/types' {
   }
   export declare type PostData = EntityPostData<
     PostStruct &
-      Pick<CommentStruct, 'rootPostId'> & { followersCount: number | null },
+      Pick<CommentStruct, 'rootPostId'> & { followersCount?: number },
     PostContent
   >
 }
