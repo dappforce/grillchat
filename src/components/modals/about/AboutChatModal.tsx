@@ -1,6 +1,7 @@
 import { ActionCardProps } from '@/components/ActionCard'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
+import TruncatedText from '@/components/TruncatedText'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
@@ -59,7 +60,7 @@ export default function AboutChatModal({
   const chatOwner = chat.struct.ownerId
 
   const contentList: AboutModalProps['contentList'] = [
-    { title: 'Description', content: content.body },
+    { title: 'Description', content: <TruncatedText text={content.body} /> },
     {
       title: 'Chat link',
       content: chatUrl,

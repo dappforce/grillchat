@@ -1,3 +1,4 @@
+import TruncatedText from '@/components/TruncatedText'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin, getHubPageLink } from '@/utils/links'
@@ -31,7 +32,7 @@ export default function AboutHubModal({
 
   const hubUrl = urlJoin(getCurrentUrlOrigin(), getHubPageLink(router))
   const contentList: AboutModalProps['contentList'] = [
-    { title: 'Description', content: content.about },
+    { title: 'Description', content: <TruncatedText text={content.about} /> },
     {
       title: 'Hub link',
       content: hubUrl,
