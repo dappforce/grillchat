@@ -11,7 +11,12 @@ declare global {
 
 export default function PWAInstall() {
   return createPortal(
-    <pwa-install id='pwa-install' manifest-url='/manifest.json'></pwa-install>,
+    <pwa-install
+      id='pwa-install'
+      manifest-url='/manifest.json'
+      manual-chrome='true'
+      manual-apple='true'
+    ></pwa-install>,
     document.body
   )
 }
