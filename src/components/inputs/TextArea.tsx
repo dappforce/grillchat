@@ -33,6 +33,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       const replicated = replicatedRef.current
 
       if (!textArea || !replicated) return
+      replicated.textContent = textArea.value + ' '
       textArea.addEventListener('input', (e) => {
         replicated.textContent = (e.target as HTMLTextAreaElement)?.value + ' '
       })
