@@ -7,6 +7,7 @@ import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LinkText from '@/components/LinkText'
 import ChatCreateSuccessModal from '@/components/modals/community/ChatCreateSuccessModal'
+import Spinner from '@/components/Spinner'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
@@ -27,7 +28,7 @@ import {
 import { replaceUrl } from '@/utils/window'
 import dynamic from 'next/dynamic'
 import { ImageProps } from 'next/image'
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
 
@@ -62,7 +63,6 @@ export default function ChatPage({
     }
   }, [])
 
-  const { data: chat } = getPostQuery.useQuery(chatId)
   const { data: messageIds } = useCommentIdsByPostId(chatId, {
     subscribe: true,
   })
@@ -90,6 +90,34 @@ export default function ChatPage({
         openExtensionModal('subsocial-donations', donateTo)
     } catch {}
   }, [openExtensionModal])
+
+  const myAddress = useMyAccount((state) => state.address)
+  const isInitialized = useMyAccount((state) => state.isInitialized)
+  const { data: chat } = getPostQuery.useQuery(chatId, {
+    showHiddenPost: { type: 'all' },
+  })
+
+  useEffect(() => {
+    if (!isInitialized || !chat?.struct.hidden) return
+
+    if (myAddress !== chat.struct.ownerId) {
+      Router.push('/')
+    }
+  }, [isInitialized, myAddress, chat])
+
+  if (chat?.struct.hidden) {
+    const isNotAuthorized = myAddress !== chat.struct.ownerId
+    if (!isInitialized || isNotAuthorized) {
+      return (
+        <DefaultLayout>
+          <div className='flex flex-1 flex-col items-center justify-center'>
+            <Spinner className='h-10 w-10' />
+            <span className='mt-2 text-text-muted'>Loading...</span>
+          </div>
+        </DefaultLayout>
+      )
+    }
+  }
 
   const content = chat?.content ?? stubMetadata
 

@@ -94,11 +94,13 @@ export const getStaticProps = getCommonStaticProps<
         await prefetchBlockedEntities(queryClient, originalHubId, [chatId])
       }
 
-      title = chatData?.content?.title || null
-      desc = chatData?.content?.body || null
+      if (!chatData.struct.hidden) {
+        title = chatData?.content?.title || null
+        desc = chatData?.content?.body || null
 
-      const chatImage = chatData.content?.image
-      image = chatImage ? getIpfsContentUrl(chatImage) : null
+        const chatImage = chatData.content?.image
+        image = chatImage ? getIpfsContentUrl(chatImage) : null
+      }
 
       getPostQuery.setQueryData(queryClient, chatId, chatData)
       queryClient.setQueryData(

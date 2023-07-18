@@ -25,9 +25,13 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
 
     try {
       const [chat] = await getPostsServer([chatId])
-      title = chat.content?.title ?? ''
-      description = chat.content?.body ?? ''
-      image = chat.content?.image ? getIpfsContentUrl(chat.content?.image) : ''
+      if (!chat.struct.hidden) {
+        title = chat.content?.title ?? ''
+        description = chat.content?.body ?? ''
+        image = chat.content?.image
+          ? getIpfsContentUrl(chat.content?.image)
+          : ''
+      }
     } catch (err) {
       console.error('Error fetching for chat about page: ', err)
     }
