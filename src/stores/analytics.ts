@@ -14,6 +14,8 @@ type Actions = {
   _updateUserId: (address: string | undefined) => void
 }
 
+const queuedEvents: { name: string; properties?: Record<string, string> }[] = []
+
 const initialState: State = {
   amp: null,
   userId: undefined,
@@ -51,7 +53,9 @@ export const useAnalytics = create<State & Actions>()((set, get) => ({
       ...properties,
     }
 
-    amp?.logEvent(name, mergedProperties)
+    if (!amp) queuedEvents.push({ name, properties: mergedProperties })
+    else amp?.logEvent(name, mergedProperties)
+
     event(name, {
       userId,
     })
@@ -61,6 +65,9 @@ export const useAnalytics = create<State & Actions>()((set, get) => ({
     const amp = await createAmplitudeInstance()
 
     set({ amp })
+    queuedEvents.forEach(({ name, properties }) => {
+      amp?.logEvent(name, properties)
+    })
   },
 }))
 
