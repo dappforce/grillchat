@@ -28,17 +28,16 @@ type AdditionalConfig = { showHiddenPost?: ShowHiddenPostConfig }
 type Config = Parameters<(typeof rawGetPostQuery)['useQuery']>[1] &
   AdditionalConfig
 
-const hiddenDataQueryRecord: Map<Object, any> = new Map()
-function modifyQueryData(
-  queryData: ReturnType<(typeof rawGetPostQuery)['useQuery']>,
-  config?: AdditionalConfig
-) {
+type QueryData = ReturnType<(typeof rawGetPostQuery)['useQuery']>
+const hiddenDataQueryRecord: Map<Object, QueryData> = new Map()
+function modifyQueryData(queryData: QueryData, config?: AdditionalConfig) {
   const { showHiddenPost = { type: 'none' } } = config || {}
 
   const hideHiddenPost = () => {
     if (queryData.data?.struct.hidden) {
-      if (hiddenDataQueryRecord.has(queryData)) {
-        return hiddenDataQueryRecord.get(queryData)
+      const recordedData = hiddenDataQueryRecord.get(queryData)
+      if (recordedData) {
+        return recordedData
       }
 
       const hiddenDataQuery = {
