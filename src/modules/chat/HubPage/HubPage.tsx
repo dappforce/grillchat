@@ -8,23 +8,40 @@ import NewCommunityModal from '@/components/modals/community/NewCommunityModal'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
 import { cx } from '@/utils/class-names'
-import React, { useState } from 'react'
+import { LocalStorage } from '@/utils/storage'
+import { useEffect, useState } from 'react'
 import {
   HiChevronDown,
   HiOutlineChatBubbleOvalLeftEllipsis,
   HiOutlineClock,
 } from 'react-icons/hi2'
-import useSortedChats, { SortChatOption } from '../hooks/useSortedChats'
+import useSortedChats, {
+  SortChatOption,
+  sortChatOptions,
+} from '../hooks/useSortedChats'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import HubPageNavbar from './HubPageNavbar'
 
+const sortByStorage = new LocalStorage(() => 'hub-sort-by')
 export type HubPageProps = {
   hubId: string
 }
 export default function HubPage({ hubId }: HubPageProps) {
-  const [sortBy, setSortBy] = useState<SortChatOption>('activity')
+  const [sortBy, setSortBy] = useState<SortChatOption | null>(null)
+  useEffect(() => {
+    const savedSortBy = sortByStorage.get() as SortChatOption
+    if (savedSortBy && sortChatOptions.includes(savedSortBy)) {
+      setSortBy(savedSortBy)
+    } else {
+      setSortBy('activity')
+    }
+  }, [])
+  const changeSortBy = (sortBy: SortChatOption) => {
+    setSortBy(sortBy)
+    sortByStorage.set(sortBy)
+  }
 
-  const { chats, allChatIds } = useSortedChats(hubId, sortBy)
+  const { chats, allChatIds } = useSortedChats(hubId, sortBy ?? 'activity')
   const { search, getFocusedElementIndex, setSearch, focusController } =
     useSearch()
 
@@ -65,16 +82,18 @@ export default function HubPage({ hubId }: HubPageProps) {
         getFocusedElementIndex={getFocusedElementIndex}
         search={search}
       >
-        <>
-          {isCommunityHub && (
-            <CommunityHubToolbar
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-              hubId={hubId}
-            />
-          )}
-          <ChatPreviewList chats={chats} />
-        </>
+        {sortBy ? (
+          <>
+            {isCommunityHub && (
+              <CommunityHubToolbar
+                sortBy={sortBy}
+                changeSortBy={changeSortBy}
+                hubId={hubId}
+              />
+            )}
+            <ChatPreviewList chats={chats} />
+          </>
+        ) : null}
       </SearchChannelsWrapper>
     </DefaultLayout>
   )
@@ -83,12 +102,12 @@ export default function HubPage({ hubId }: HubPageProps) {
 type CommunityHubToolbarProps = {
   hubId: string
   sortBy: SortChatOption
-  setSortBy: React.Dispatch<React.SetStateAction<SortChatOption>>
+  changeSortBy: (sortBy: SortChatOption) => void
 }
 function CommunityHubToolbar({
   hubId,
   sortBy,
-  setSortBy,
+  changeSortBy,
 }: CommunityHubToolbarProps) {
   const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
 
@@ -106,12 +125,12 @@ function CommunityHubToolbar({
               {
                 text: 'Recent activity',
                 icon: HiOutlineClock,
-                onClick: () => setSortBy('activity'),
+                onClick: () => changeSortBy('activity'),
               },
               {
                 text: 'Messages count',
                 icon: HiOutlineChatBubbleOvalLeftEllipsis,
-                onClick: () => setSortBy('messages'),
+                onClick: () => changeSortBy('messages'),
               },
               // TODO: not implemented yet
               // {

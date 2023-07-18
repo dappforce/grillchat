@@ -12,8 +12,9 @@ import {
 } from '@/services/subsocial/posts'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { HiOutlineEyeSlash } from 'react-icons/hi2'
 import useSortChatIdsByLatestMessage from '../hooks/useSortChatIdsByLatestMessage'
 
@@ -21,6 +22,7 @@ export type MyChatsContentProps = {
   changeTab: (selectedTab: number) => void
 }
 
+const filterStorage = new LocalStorage(() => 'my-chats-filter')
 const filters = ['all', 'created', 'joined', 'hidden'] as const
 type Filter = (typeof filters)[number]
 
@@ -28,7 +30,19 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const address = useMyAccount((state) => state.address)
 
-  const [filter, setFilter] = useState<Filter>('all')
+  const [filter, setFilter] = useState<Filter | null>(null)
+  const changeFilter = (filter: Filter) => {
+    setFilter(filter)
+    filterStorage.set(filter)
+  }
+  useEffect(() => {
+    const savedFilter = filterStorage.get() as (typeof filters)[number]
+    if (savedFilter && filters.includes(savedFilter)) {
+      setFilter(savedFilter)
+    } else {
+      setFilter('all')
+    }
+  }, [])
 
   const {
     data: followedChatIds,
@@ -43,8 +57,9 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
 
     if (filter === 'all') return Array.from(new Set([...owned, ...followed]))
     if (filter === 'created' || filter === 'hidden') return owned
+    if (filter === 'joined') return followed
 
-    return followed
+    return []
   }, [ownedChatIds, followedChatIds, filter])
 
   const sortedIds = useSortChatIdsByLatestMessage(chatIds)
@@ -63,7 +78,7 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
 
   return (
     <div className='flex flex-col'>
-      <Toolbar filter={filter} setFilter={setFilter} />
+      <Toolbar filter={filter} changeFilter={changeFilter} />
       {filter === 'hidden' && (
         <div className='my-2 flex items-center gap-2 rounded-2xl bg-orange-500/10 px-4 py-2 text-orange-500'>
           <HiOutlineEyeSlash />
@@ -86,10 +101,10 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
 }
 
 type ToolbarProps = {
-  filter: Filter
-  setFilter: (filter: Filter) => void
+  filter: Filter | null
+  changeFilter: (filter: Filter) => void
 }
-function Toolbar({ filter, setFilter }: ToolbarProps) {
+function Toolbar({ filter, changeFilter }: ToolbarProps) {
   return (
     <Container as='div' className='border-b border-border-gray'>
       <div className='flex justify-between gap-4 py-2'>
@@ -102,7 +117,7 @@ function Toolbar({ filter, setFilter }: ToolbarProps) {
                 key={text}
                 size='sm'
                 variant='transparent'
-                onClick={() => setFilter(text)}
+                onClick={() => changeFilter(text)}
                 className={cx(
                   'capitalize',
                   isActive
