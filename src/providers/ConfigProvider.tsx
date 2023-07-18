@@ -1,5 +1,6 @@
 import { Theme } from '@/@types/theme'
-import { getUrlQuery } from '@/utils/links'
+import { getCurrentUrlOrigin, getUrlQuery } from '@/utils/links'
+import { useRouter } from 'next/router'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 type State = {
@@ -18,12 +19,38 @@ export function ConfigProvider({ children }: { children: any }) {
     theme: undefined,
     order: [],
   })
+  const { push } = useRouter()
 
   const configRef = useRef<State | null>(null)
   useEffect(() => {
     const config = getConfig()
     setState(config)
     configRef.current = config
+  }, [])
+
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      const eventData = event.data
+      if (eventData && eventData.type === 'grill:setConfig') {
+        const payload = eventData.payload as string
+        const currentPathnameAndQuery = window.location.href.replace(
+          getCurrentUrlOrigin(),
+          ''
+        )
+        if (
+          payload &&
+          !payload.startsWith('http') &&
+          payload !== currentPathnameAndQuery
+        )
+          push(payload)
+      }
+    }
+    window.addEventListener('message', handler)
+
+    return () => {
+      window.removeEventListener('message', handler)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
