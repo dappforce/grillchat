@@ -8,7 +8,7 @@ import useSortChatIdsByLatestMessage from './useSortChatIdsByLatestMessage'
 import { useSortChatIdsByPinned } from './useSortChatIdsByPinned'
 import useSortChatIdsBySize from './useSortChatIdsBySize'
 
-export type SortChatOption = 'activity' | 'size' | 'members'
+export type SortChatOption = 'activity' | 'messages' | 'members'
 export default function useSortedChats(
   hubId: string,
   sortBy: SortChatOption = 'activity'
@@ -33,7 +33,7 @@ export default function useSortedChats(
     case 'activity':
       sortedIds = sortedIdsByActivity
       break
-    case 'size':
+    case 'messages':
       sortedIds = sortedIdsBySize
       break
     // case 'members':

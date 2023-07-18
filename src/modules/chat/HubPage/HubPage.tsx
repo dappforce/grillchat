@@ -22,9 +22,7 @@ export type HubPageProps = {
   hubId: string
 }
 export default function HubPage({ hubId }: HubPageProps) {
-  const [sortBy, setSortBy] = useState<'activity' | 'size' | 'members'>(
-    'activity'
-  )
+  const [sortBy, setSortBy] = useState<SortChatOption>('activity')
 
   const { chats, allChatIds } = useSortedChats(hubId, sortBy)
   const { search, getFocusedElementIndex, setSearch, focusController } =
@@ -113,7 +111,7 @@ function CommunityHubToolbar({
               {
                 text: 'Messages count',
                 icon: HiOutlineChatBubbleOvalLeftEllipsis,
-                onClick: () => setSortBy('size'),
+                onClick: () => setSortBy('messages'),
               },
               // TODO: not implemented yet
               // {
