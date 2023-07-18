@@ -231,7 +231,7 @@ function ChatListContent({
                 isLastReadMessage && !isBottomMessage
 
               const chatElement = message && (
-                <ChatItemMenus messageId={message.id}>
+                <ChatItemMenus messageId={message.id} key={message.id}>
                   {(config) => {
                     const { referenceProps, toggleDisplay } = config || {}
                     return (
@@ -247,7 +247,6 @@ function ChatListContent({
                           hubId={hubId}
                           chatId={chatId}
                           message={message}
-                          key={message.id}
                           messageBubbleId={getMessageElementId(message.id)}
                           scrollToMessage={scrollToMessage}
                         />
