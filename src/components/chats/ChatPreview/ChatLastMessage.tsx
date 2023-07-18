@@ -65,7 +65,7 @@ export default function ChatLastMessage({
         props.className
       )}
     >
-      {ExtensionElement && (
+      {!isMessageBlocked && ExtensionElement && (
         <ExtensionElement
           extensions={extensions}
           className={cx('flex-shrink-0', previewClassName)}
