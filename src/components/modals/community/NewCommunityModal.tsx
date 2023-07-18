@@ -2,6 +2,7 @@ import ChatIcon from '@/assets/icons/bubble-chat.svg'
 import HubIcon from '@/assets/icons/hub.svg'
 import MegaphoneIcon from '@/assets/icons/megaphone.svg'
 import ActionCard, { ActionCardProps } from '@/components/ActionCard'
+import { useSendEvent } from '@/stores/analytics'
 import { useState } from 'react'
 import Modal, { ModalFunctionalityProps } from '../Modal'
 import UpsertChatModal from './UpsertChatModal'
@@ -15,6 +16,7 @@ export default function NewCommunityModal({
   ...props
 }: NewCommunityModalProps) {
   const [openedModalState, setOpenedModalState] = useState<null | 'chat'>(null)
+  const sendEvent = useSendEvent()
 
   const menus: ActionCardProps['actions'] = [
     {
@@ -22,7 +24,10 @@ export default function NewCommunityModal({
       description: 'Anyone can participate in a public conversation',
       icon: ChatIcon,
       firstVisitNotificationStorageName: 'new-community-chat',
-      onClick: () => setOpenedModalState('chat'),
+      onClick: () => {
+        setOpenedModalState('chat')
+        sendEvent('click new_group_chat_button')
+      },
     },
     {
       text: 'Channel',

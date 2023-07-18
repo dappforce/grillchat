@@ -7,6 +7,7 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NewCommunityModal from '@/components/modals/community/NewCommunityModal'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
 import { useEffect, useState } from 'react'
@@ -110,6 +111,7 @@ function CommunityHubToolbar({
   changeSortBy,
 }: CommunityHubToolbarProps) {
   const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
+  const sendEvent = useSendEvent()
 
   return (
     <>
@@ -167,7 +169,10 @@ function CommunityHubToolbar({
           size='sm'
           variant='primaryOutline'
           className='flex items-center gap-2'
-          onClick={() => setIsOpenNewCommunity(true)}
+          onClick={() => {
+            setIsOpenNewCommunity(true)
+            sendEvent('click new_community_button in hub_page')
+          }}
         >
           <CommunityAddIcon className='text-text-muted' />
           <span>New</span>

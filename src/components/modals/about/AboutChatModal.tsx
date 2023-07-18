@@ -11,6 +11,7 @@ import {
   JoinChatWrapper,
   LeaveChatWrapper,
 } from '@/services/subsocial/posts/mutation'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
@@ -45,6 +46,7 @@ export default function AboutChatModal({
   const address = useMyAccount((state) => state.address)
   const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId)
+  const sendEvent = useSendEvent()
 
   const [openedModalType, setOpenedModalType] = useState<
     'metadata' | 'qr' | 'confirmation-leave' | 'edit' | 'hide' | 'unhide' | null
@@ -114,7 +116,10 @@ export default function AboutChatModal({
         text: 'Edit',
         icon: HiPencilSquare,
         iconClassName: cx('text-text-muted'),
-        onClick: () => setOpenedModalType('edit'),
+        onClick: () => {
+          setOpenedModalType('edit')
+          sendEvent('click edit_chat_menu')
+        },
       })
 
       if (chat.struct.hidden) {
@@ -122,14 +127,20 @@ export default function AboutChatModal({
           text: 'Unhide Chat',
           icon: HiOutlineEye,
           iconClassName: cx('text-text-muted'),
-          onClick: () => setOpenedModalType('unhide'),
+          onClick: () => {
+            setOpenedModalType('unhide')
+            sendEvent('click unhide_chat_menu')
+          },
         })
       } else {
         additionalMenus.push({
           text: 'Hide Chat',
           icon: HiOutlineEyeSlash,
           iconClassName: cx('text-text-muted'),
-          onClick: () => setOpenedModalType('hide'),
+          onClick: () => {
+            setOpenedModalType('hide')
+            sendEvent('click hide_chat_menu')
+          },
         })
       }
 

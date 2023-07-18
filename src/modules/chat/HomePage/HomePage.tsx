@@ -7,6 +7,7 @@ import Tabs, { TabsProps } from '@/components/Tabs'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
+import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
 import { accountAddressStorage, useMyAccount } from '@/stores/my-account'
 import { getMainHubId } from '@/utils/env/client'
@@ -46,6 +47,7 @@ const pathnameTabIdMapper: Record<string, number> = {
 
 export default function HubsPage(props: HubsPageProps) {
   const router = useRouter()
+  const sendEvent = useSendEvent()
   const isFirstAccessed = useLocation((state) => state.isFirstAccessed)
   const { search, setSearch, getFocusedElementIndex, focusController } =
     useSearch()
@@ -162,7 +164,10 @@ export default function HubsPage(props: HubsPageProps) {
                 size='sm'
                 variant='primaryOutline'
                 className='flex items-center gap-2'
-                onClick={() => setIsOpenNewCommunity(true)}
+                onClick={() => {
+                  setIsOpenNewCommunity(true)
+                  sendEvent('click new_community_button in home_page')
+                }}
               >
                 <CommunityAddIcon className='text-text-muted' />
                 <span>New</span>
