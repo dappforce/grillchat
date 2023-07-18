@@ -113,6 +113,7 @@ export default function MediaLoader({
     } else {
       return (
         <Image
+          style={{ backfaceVisibility: 'hidden' }}
           key={usedImage?.toString() ?? ''}
           {...commonProps}
           width={commonProps.width || 500}
