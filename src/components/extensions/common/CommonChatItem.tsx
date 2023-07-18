@@ -1,14 +1,14 @@
 import Button from '@/components/Button'
+import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import LinkText from '@/components/LinkText'
+import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
-import ChatRelativeTime from '../../chats/ChatItem/ChatRelativeTime'
-import { ProfilePreviewModalName } from '../../ProfilePreviewModalWrapper'
 import { ExtensionChatItemProps } from '../types'
 
 type DerivativesData = {
