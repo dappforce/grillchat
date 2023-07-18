@@ -9,6 +9,7 @@ import Toast from '@/components/Toast'
 import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
+import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
@@ -37,6 +38,9 @@ export default function ChatItemMenus({
   children,
   enableCustomMenu = true,
 }: ChatItemMenusProps) {
+  const openedChatId = useChatMenu((state) => state.openedChatId)
+  const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
+
   const router = useRouter()
   const isLoggingInWithKey = useRef(false)
 
@@ -153,6 +157,12 @@ export default function ChatItemMenus({
           'bottom-end',
         ]}
         useClickPointAsAnchor
+        manualMenuController={{
+          open: openedChatId === messageId,
+          onOpenChange: (isOpen) => {
+            setIsOpenChatMenu(isOpen ? messageId : null)
+          },
+        }}
       >
         {children}
       </FloatingMenus>
