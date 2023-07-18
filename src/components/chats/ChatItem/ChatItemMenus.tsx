@@ -38,7 +38,7 @@ export default function ChatItemMenus({
   children,
   enableCustomMenu = true,
 }: ChatItemMenusProps) {
-  const openedChatId = useChatMenu((state) => state.openedChatId)
+  const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
 
   const router = useRouter()
@@ -158,7 +158,7 @@ export default function ChatItemMenus({
         ]}
         useClickPointAsAnchor
         manualMenuController={{
-          open: openedChatId === messageId,
+          open: isOpen,
           onOpenChange: (isOpen) => {
             setIsOpenChatMenu(isOpen ? messageId : null)
           },
