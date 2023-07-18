@@ -89,7 +89,6 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   const isInIframe = useIsInIframe()
   useEffect(() => {
     if (!isInIframe) return
-    console.log('KEPANGGIL!!')
     sendEvent('loaded in iframe')
   }, [isInIframe, sendEvent])
 
