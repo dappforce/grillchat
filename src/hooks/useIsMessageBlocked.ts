@@ -2,7 +2,7 @@ import {
   getBlockedAddressesQuery,
   getBlockedCidsQuery,
   getBlockedMessageIdsInChatIdQuery,
-} from '@/services/moderation/query'
+} from '@/server/moderation/query'
 import { isMessageBlocked } from '@/utils/chat'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'

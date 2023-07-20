@@ -1,4 +1,3 @@
-import { createQuery, poolQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
 import {
   GetBlockedAddressesQuery,
@@ -24,35 +23,24 @@ const generateBlockedMessageIdsInChatIdsQueryDocument = (
     }
   `
 }
-const getBlockedMessageIdsInChatId = poolQuery<
-  {
-    hubId: string
+export async function getBlockedMessageIdsInChatIds(
+  params: {
     chatId: string
-  },
-  { chatId: string; hubId: string; blockedMessageIds: string[] }
->({
-  multiCall: async (params) => {
-    const data = await moderationRequest<Record<string, string[]>>({
-      document: generateBlockedMessageIdsInChatIdsQueryDocument(params),
-    })
-    return Object.entries(data).map(([key, res]) => {
-      const [_, hubId, chatId] = key.split('SEPARATOR')
-      return {
-        chatId,
-        hubId,
-        blockedMessageIds: res,
-      }
-    })
-  },
-  resultMapper: {
-    paramToKey: ({ chatId, hubId }) => `${hubId}-${chatId}`,
-    resultToKey: ({ chatId, hubId }) => `${hubId}-${chatId}`,
-  },
-})
-export const getBlockedMessageIdsInChatIdQuery = createQuery({
-  key: 'blockedInChatId',
-  fetcher: getBlockedMessageIdsInChatId,
-})
+    hubId: string
+  }[]
+) {
+  const data = await moderationRequest<Record<string, string[]>>({
+    document: generateBlockedMessageIdsInChatIdsQueryDocument(params),
+  })
+  return Object.entries(data).map(([key, res]) => {
+    const [_, hubId, chatId] = key.split('SEPARATOR')
+    return {
+      chatId,
+      hubId,
+      blockedMessageIds: res,
+    }
+  })
+}
 
 export const GET_BLOCKED_CIDS = gql`
   query GetBlockedCids($ctxSpaceId: String!) {
@@ -73,10 +61,6 @@ export async function getBlockedCids({ hubId }: { hubId: string }) {
   })
   return data.blockedResourceIds
 }
-export const getBlockedCidsQuery = createQuery({
-  key: 'blockedCids',
-  fetcher: getBlockedCids,
-})
 
 const GET_BLOCKED_ADDRESSES = gql`
   query GetBlockedAddresses($ctxSpaceId: String!) {
@@ -98,7 +82,3 @@ export async function getBlockedAddresses({ hubId }: { hubId: string }) {
   const blockedHexAddresses = data.blockedResourceIds
   return blockedHexAddresses
 }
-export const getBlockedAddressesQuery = createQuery({
-  key: 'blockedAddresses',
-  fetcher: getBlockedAddresses,
-})

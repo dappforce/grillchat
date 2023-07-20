@@ -2,7 +2,7 @@ import {
   getBlockedAddressesQuery,
   getBlockedCidsQuery,
   getBlockedMessageIdsInChatIdQuery,
-} from '@/services/moderation/query'
+} from '@/server/moderation/query'
 import { QueryClient } from '@tanstack/react-query'
 
 export async function prefetchBlockedEntities(
