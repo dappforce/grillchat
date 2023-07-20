@@ -223,10 +223,10 @@ export default function AboutChatModal({
         urlTitle={content.title}
       />
       <UpsertChatModal
-        chat={chat}
         isOpen={openedModalType === 'edit'}
         closeModal={closeModal}
         onBackClick={() => setOpenedModalType(null)}
+        formProps={{ chat }}
       />
       <HideUnhideChatWrapper>
         {({ isLoading, mutateAsync }) => {

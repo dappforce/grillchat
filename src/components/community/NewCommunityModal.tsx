@@ -51,11 +51,10 @@ export default function NewCommunityModal({
       <UpsertChatModal
         isOpen={openedModalState === 'chat'}
         closeModal={() => setOpenedModalState(null)}
-        hubId={hubId}
         onBackClick={() => setOpenedModalState(null)}
-        onAfterRedirect={() => {
-          setOpenedModalState(null)
-          props.closeModal()
+        formProps={{
+          hubId,
+          onTxSuccess: props.closeModal,
         }}
       />
     </>
