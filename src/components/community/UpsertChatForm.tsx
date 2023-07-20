@@ -7,6 +7,7 @@ import {
   JoinChatWrapper,
   UpsertPostWrapper,
 } from '@/services/subsocial/posts/mutation'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink } from '@/utils/links'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -38,6 +39,7 @@ type FormSchema = z.infer<typeof formSchema>
 
 export default function UpsertChatForm(props: UpsertChatFormProps) {
   const [isRedirecting, setIsRedirecting] = useState(false)
+  const sendEvent = useSendEvent()
 
   const router = useRouter()
   const { chat, hubId, onSuccess, onTxSuccess, ...otherProps } =
@@ -99,6 +101,9 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
         >
           {({ isLoading: isMutating, mutateAsync }) => {
             const onSubmit: SubmitHandler<FormSchema> = async (data) => {
+              if (isUpdating) sendEvent('click edit_chat_button')
+              else sendEvent('click create_chat_button')
+
               await mutateAsync({
                 spaceId: hubId,
                 postId: chat?.id,

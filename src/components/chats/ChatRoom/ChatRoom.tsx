@@ -67,7 +67,9 @@ export default function ChatRoom({
   const { isJoined, isLoading: isLoadingJoinedChat } = useIsJoinedToChat(chatId)
   const isHubWithoutJoinButton = HUB_ID_WITHOUT_JOIN_BUTTON.includes(hubId)
 
-  const { data: chat } = getPostQuery.useQuery(chatId)
+  const { data: chat } = getPostQuery.useQuery(chatId, {
+    showHiddenPost: { type: 'all' },
+  })
   const isHidden = chat?.struct.hidden
 
   return (
