@@ -1,4 +1,4 @@
-import { getModerationUrl } from '@/utils/env/client'
+import { getModerationUrl } from '@/utils/env/server'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 
 export function moderationRequest<T, V extends Variables = Variables>(

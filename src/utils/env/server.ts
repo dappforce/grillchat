@@ -63,3 +63,7 @@ export function getSubsocialPromoSecret() {
     'SUBSOCIAL_PROMO_SECRET_HEX'
   )
 }
+
+export function getModerationUrl() {
+  return checkEnv(process.env.MODERATION_URL, 'MODERATION_URL', true)
+}
