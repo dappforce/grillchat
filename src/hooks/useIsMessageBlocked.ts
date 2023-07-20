@@ -1,8 +1,7 @@
 import {
-  getBlockedAddressesQuery,
-  getBlockedCidsQuery,
-  getBlockedMessageIdsInChatIdQuery,
-} from '@/server/moderation/query'
+  getBlockedInPostIdQuery,
+  getBlockedInSpaceIdQuery,
+} from '@/services/api/moderation/query'
 import { isMessageBlocked } from '@/utils/chat'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'
@@ -12,23 +11,31 @@ export default function useIsMessageBlocked(
   message: PostData | null | undefined,
   chatId: string
 ) {
-  const { data: blockedMessages } = getBlockedMessageIdsInChatIdQuery.useQuery({
-    chatId,
-    hubId,
-  })
-  const { data: blockedCids } = getBlockedCidsQuery.useQuery({ hubId })
-  const { data: blockedAddresses } = getBlockedAddressesQuery.useQuery({
-    hubId,
-  })
+  const { data: hubModerationData } = getBlockedInSpaceIdQuery.useQuery(hubId)
+  const { data: chatModerationData } = getBlockedInPostIdQuery.useQuery(chatId)
+  const blockedInHub = hubModerationData?.blockedResources
+  const blockedInChat = chatModerationData?.blockedResources
 
   const blockedIdsSet = useMemo(
-    () => new Set(blockedMessages?.blockedMessageIds),
-    [blockedMessages]
+    () =>
+      new Set([
+        ...(blockedInHub?.postId ?? []),
+        ...(blockedInChat?.postId ?? []),
+      ]),
+    [blockedInHub, blockedInChat]
   )
-  const blockedCidsSet = useMemo(() => new Set(blockedCids), [blockedCids])
+  const blockedCidsSet = useMemo(
+    () =>
+      new Set([...(blockedInHub?.cid ?? []), ...(blockedInChat?.cid ?? [])]),
+    [blockedInHub, blockedInChat]
+  )
   const blockedAddressesSet = useMemo(
-    () => new Set(blockedAddresses),
-    [blockedAddresses]
+    () =>
+      new Set([
+        ...(blockedInHub?.address ?? []),
+        ...(blockedInChat?.address ?? []),
+      ]),
+    [blockedInHub, blockedInChat]
   )
 
   return isMessageBlocked(message, {

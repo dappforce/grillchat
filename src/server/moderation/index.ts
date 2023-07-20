@@ -19,9 +19,9 @@ export async function getBlockedInSpaceIds(spaceIds: string[]) {
   })
 
   return Object.entries(data).map(([key, res]) => {
-    const [_, hubId] = key.split('SEPARATOR')
+    const [_, spaceId] = key.split('SEPARATOR')
     return {
-      hubId,
+      spaceId,
       blockedResources: mapBlockedResources(res),
     }
   })
