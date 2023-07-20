@@ -179,9 +179,14 @@ export default function AboutChatModal({
 
   const closeModal = () => setOpenedModalType(null)
 
-  let subtitle = `${messageCount} messages`
+  let subtitle = <span>{messageCount} messages</span>
   if (chat.struct.followersCount) {
-    subtitle += `, ${chat.struct.followersCount} followers`
+    subtitle = (
+      <span>
+        <span>{chat.struct.followersCount} members</span>{' '}
+        <span className='mx-1'>·</span> {subtitle}
+      </span>
+    )
   }
 
   return (

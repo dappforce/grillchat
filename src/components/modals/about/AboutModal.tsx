@@ -2,13 +2,14 @@ import ActionCard, { ActionCardProps } from '@/components/ActionCard'
 import ChatImage from '@/components/chats/ChatImage'
 import DataCard, { DataCardProps } from '@/components/DataCard'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { ReactNode } from 'react'
 
 export type AboutModalProps = ModalFunctionalityProps & {
   id: string
   title: string | undefined
   image: string | undefined
   isImageCircle?: boolean
-  subtitle: string
+  subtitle: ReactNode
   contentList: DataCardProps['data']
   actionMenu?: ActionCardProps['actions']
   bottomElement?: JSX.Element | null
