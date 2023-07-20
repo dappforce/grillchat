@@ -8,6 +8,7 @@ import {
   UpsertPostWrapper,
 } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink } from '@/utils/links'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -76,18 +77,13 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
               onSuccess: async (_data, _, txResult) => {
                 if (isUpdating) return
 
-                const { getNewIdsFromEvent } = await import(
-                  '@subsocial/api/utils'
-                )
-                const [newId] = getNewIdsFromEvent(txResult)
-                const newIdString = newId.toString()
-
-                mutateAsync({ chatId: newIdString })
+                const newId = await getNewIdFromTxResult(txResult)
+                mutateAsync({ chatId: newId })
 
                 setIsRedirecting(true)
                 await router.push(
                   urlJoin(
-                    getChatPageLink({ query: {} }, newIdString, hubId),
+                    getChatPageLink({ query: {} }, newId, hubId),
                     '?new=true'
                   )
                 )
