@@ -271,7 +271,9 @@ function NavbarChatInfo({
             )}
           </div>
           <span className='text-xs text-text-muted'>
-            {messageCount} messages
+            {chat?.struct.followersCount
+              ? `${chat?.struct.followersCount} members`
+              : `${messageCount} messages`}
           </span>
         </div>
       </Button>
