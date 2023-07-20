@@ -32,7 +32,10 @@ export default function AboutHubModal({
 
   const hubUrl = urlJoin(getCurrentUrlOrigin(), getHubPageLink(router))
   const contentList: AboutModalProps['contentList'] = [
-    { title: 'Description', content: <TruncatedText text={content.about} /> },
+    {
+      title: 'Description',
+      content: content.about && <TruncatedText text={content.about} />,
+    },
     {
       title: 'Hub link',
       content: hubUrl,

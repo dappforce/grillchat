@@ -45,7 +45,9 @@ export default function AboutChatModal({
 }: AboutChatModalProps) {
   const address = useMyAccount((state) => state.address)
   const router = useRouter()
-  const { data: chat } = getPostQuery.useQuery(chatId)
+  const { data: chat } = getPostQuery.useQuery(chatId, {
+    showHiddenPost: { type: 'all' },
+  })
   const sendEvent = useSendEvent()
 
   const [openedModalType, setOpenedModalType] = useState<
@@ -62,7 +64,10 @@ export default function AboutChatModal({
   const chatOwner = chat.struct.ownerId
 
   const contentList: AboutModalProps['contentList'] = [
-    { title: 'Description', content: <TruncatedText text={content.body} /> },
+    {
+      title: 'Description',
+      content: content.body && <TruncatedText text={content.body} />,
+    },
     {
       title: 'Chat link',
       content: chatUrl,

@@ -209,7 +209,9 @@ function NavbarChatInfo({
   chatMetadata?: ChatMetadata
   chatId?: string
 }) {
-  const { data: chat } = getPostQuery.useQuery(chatId ?? '')
+  const { data: chat } = getPostQuery.useQuery(chatId ?? '', {
+    showHiddenPost: { type: 'all' },
+  })
 
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const prevIsOpenAboutChatModal = usePrevious(isOpenAboutChatModal)
