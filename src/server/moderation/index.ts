@@ -1,85 +1,56 @@
-import { gql } from 'graphql-request'
-import {
-  GetBlockedAddressesQuery,
-  GetBlockedAddressesQueryVariables,
-  GetBlockedCidsQuery,
-  GetBlockedCidsQueryVariables,
-} from './generated'
-import { moderationRequest } from './utils'
+import { mapBlockedResources, moderationRequest } from './utils'
 
-const generateBlockedMessageIdsInChatIdsQueryDocument = (
-  variables: { chatId: string; hubId: string }[]
-) => {
+const generateBlockedInSpaceIds = (spaceIds: string[]) => {
   return `
-    query GetBlockedMessageIdsInChatIds {
-      ${variables.map(
-        ({ hubId, chatId }) =>
-          `SEPARATOR${hubId}SEPARATOR${chatId}: blockedResourceIds(
+    query GetBlockedInSpaceIds {
+      ${spaceIds.map(
+        (hubId) =>
+          `SEPARATOR${hubId}: blockedResourceIds(
             ctxSpaceId: "${hubId}"
             blocked: true
-            rootPostId: "${chatId}"
           )`
       )}
     }
   `
 }
-export async function getBlockedMessageIdsInChatIds(
-  params: {
-    chatId: string
-    hubId: string
-  }[]
-) {
+export async function getBlockedInSpaceIds(spaceIds: string[]) {
   const data = await moderationRequest<Record<string, string[]>>({
-    document: generateBlockedMessageIdsInChatIdsQueryDocument(params),
+    document: generateBlockedInSpaceIds(spaceIds),
   })
+
   return Object.entries(data).map(([key, res]) => {
-    const [_, hubId, chatId] = key.split('SEPARATOR')
+    const [_, hubId] = key.split('SEPARATOR')
     return {
-      chatId,
       hubId,
-      blockedMessageIds: res,
+      blockedResources: mapBlockedResources(res),
     }
   })
 }
 
-export const GET_BLOCKED_CIDS = gql`
-  query GetBlockedCids($ctxSpaceId: String, $ctxPostId: String) {
-    blockedResourceIds(
-      ctxSpaceId: $ctxSpaceId
-      ctxPostId: $ctxPostId
-      blocked: true
-      resourceType: CID
-    )
-  }
-`
-export async function getBlockedCids({ hubId }: { hubId: string }) {
-  const data = await moderationRequest<
-    GetBlockedCidsQuery,
-    GetBlockedCidsQueryVariables
-  >({
-    document: GET_BLOCKED_CIDS,
-    variables: { ctxSpaceId: hubId },
-  })
-  return data.blockedResourceIds
+const generateBlockedInPostIds = (postIds: string[]) => {
+  return `
+    query GetBlockedInPostIds {
+      ${postIds.map(
+        (postId) =>
+          `SEPARATOR${postId}: blockedResourceIds(
+            ctxPostId: "${postId}"
+            blocked: true
+          )`
+      )}
+    }
+  `
 }
 
-const GET_BLOCKED_ADDRESSES = gql`
-  query GetBlockedAddresses($ctxSpaceId: String!) {
-    blockedResourceIds(
-      ctxSpaceId: $ctxSpaceId
-      blocked: true
-      resourceType: Address
-    )
-  }
-`
-export async function getBlockedAddresses({ hubId }: { hubId: string }) {
-  const data = await moderationRequest<
-    GetBlockedAddressesQuery,
-    GetBlockedAddressesQueryVariables
-  >({
-    document: GET_BLOCKED_ADDRESSES,
-    variables: { ctxSpaceId: hubId },
+export async function getBlockedInPostIds(postIds: string[]) {
+  const data = await moderationRequest<Record<string, string[]>>({
+    document: generateBlockedInPostIds(postIds),
   })
-  const blockedHexAddresses = data.blockedResourceIds
-  return blockedHexAddresses
+
+  return Object.entries(data).map(([key, res]) => {
+    const [_, postId] = key.split('SEPARATOR')
+    return {
+      postId,
+      blockedResources: mapBlockedResources(res),
+    }
+  })
 }
