@@ -22,7 +22,7 @@ export default function ChatHiddenChip({
         <div
           {...props}
           className={cx(
-            'flex items-center gap-2 rounded-full bg-orange-500/10 px-2 py-1 text-orange-500',
+            'flex items-center gap-2 rounded-full bg-orange-500/10 px-2 py-1 text-base text-orange-500',
             props.className
           )}
         >

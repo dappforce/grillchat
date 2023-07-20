@@ -1,4 +1,5 @@
 import { ActionCardProps } from '@/components/ActionCard'
+import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import UpsertChatModal from '@/components/community/UpsertChatModal'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
@@ -198,7 +199,21 @@ export default function AboutChatModal({
               {...props}
               id={chat.id}
               isOpen={props.isOpen && openedModalType === null}
-              title={content?.title}
+              entityTitle={content?.title}
+              modalTitle={
+                <span>
+                  <span>{content?.title}</span>
+                  {chat.struct.hidden && (
+                    <ChatHiddenChip
+                      popOverProps={{
+                        triggerClassName: 'inline ml-2',
+                        placement: 'top-end',
+                      }}
+                      className='inline-flex'
+                    />
+                  )}
+                </span>
+              }
               subtitle={subtitle}
               actionMenu={getActionMenu(mutateAsync, isLoading)}
               contentList={contentList}

@@ -6,7 +6,8 @@ import { ReactNode } from 'react'
 
 export type AboutModalProps = ModalFunctionalityProps & {
   id: string
-  title: string | undefined
+  entityTitle: string | undefined
+  modalTitle?: ReactNode
   image: string | undefined
   isImageCircle?: boolean
   subtitle: ReactNode
@@ -17,7 +18,8 @@ export type AboutModalProps = ModalFunctionalityProps & {
 
 export default function AboutModal({
   id,
-  title,
+  entityTitle,
+  modalTitle,
   subtitle,
   isImageCircle = true,
   image,
@@ -32,13 +34,15 @@ export default function AboutModal({
         <div className='flex items-center gap-4'>
           <ChatImage
             chatId={id}
-            chatTitle={title}
+            chatTitle={entityTitle}
             className='h-20 w-20'
             image={image}
             rounding={isImageCircle ? 'circle' : '2xl'}
           />
           <div className='flex flex-col'>
-            <h1 className='text-2xl font-medium'>{title}</h1>
+            <h1 className='pr-8 text-2xl font-medium'>
+              {modalTitle || entityTitle}
+            </h1>
             <span className='text-text-muted'>{subtitle}</span>
           </div>
         </div>
