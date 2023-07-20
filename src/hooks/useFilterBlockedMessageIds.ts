@@ -1,4 +1,4 @@
-import { getBlockedMessageIdsInChatIdQuery } from '@/services/moderation/query'
+import { getBlockedMessageIdsInChatIdQuery } from '@/server/moderation/query'
 import { filterBlockedMessageIds } from '@/utils/chat'
 import { useMemo } from 'react'
 
