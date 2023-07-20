@@ -3,10 +3,10 @@ import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import ChatImage from '@/components/chats/ChatImage'
 import ChatRoom from '@/components/chats/ChatRoom'
+import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LinkText from '@/components/LinkText'
-import ChatCreateSuccessModal from '@/components/modals/community/ChatCreateSuccessModal'
 import Spinner from '@/components/Spinner'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
@@ -273,7 +273,9 @@ function NavbarChatInfo({
             )}
           </div>
           <span className='text-xs text-text-muted'>
-            {messageCount} messages
+            {chat?.struct.followersCount
+              ? `${chat?.struct.followersCount} members`
+              : `${messageCount} messages`}
           </span>
         </div>
       </Button>
