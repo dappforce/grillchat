@@ -1,4 +1,5 @@
 import { ActionCardProps } from '@/components/ActionCard'
+import UpsertChatModal from '@/components/community/UpsertChatModal'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
@@ -25,7 +26,6 @@ import {
 } from 'react-icons/hi2'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
-import UpsertChatModal from '../community/UpsertChatModal'
 import ConfirmationModal from '../ConfirmationModal'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'

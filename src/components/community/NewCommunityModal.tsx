@@ -2,8 +2,8 @@ import ChatIcon from '@/assets/icons/bubble-chat.svg'
 import HubIcon from '@/assets/icons/hub.svg'
 import MegaphoneIcon from '@/assets/icons/megaphone.svg'
 import ActionCard, { ActionCardProps } from '@/components/ActionCard'
+import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { useState } from 'react'
-import Modal, { ModalFunctionalityProps } from '../Modal'
 import UpsertChatModal from './UpsertChatModal'
 
 export type NewCommunityModalProps = ModalFunctionalityProps & {

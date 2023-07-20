@@ -1,7 +1,7 @@
 import CommunityAddIcon from '@/assets/icons/community-add.svg'
 import Button from '@/components/Button'
+import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import NewCommunityModal from '@/components/modals/community/NewCommunityModal'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import Tabs, { TabsProps } from '@/components/Tabs'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'

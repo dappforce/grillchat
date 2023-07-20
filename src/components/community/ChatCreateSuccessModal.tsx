@@ -1,13 +1,13 @@
 import Button from '@/components/Button'
 import ChatImage from '@/components/chats/ChatImage'
 import DataCard from '@/components/DataCard'
+import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { getPostQuery } from '@/services/api/query'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import urlJoin from 'url-join'
-import Modal, { ModalFunctionalityProps } from '../Modal'
 
 export type ChatCreateSuccessModalProps = ModalFunctionalityProps & {
   chatId: string
