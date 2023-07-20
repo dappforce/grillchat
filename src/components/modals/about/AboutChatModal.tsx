@@ -1,4 +1,5 @@
 import { ActionCardProps } from '@/components/ActionCard'
+import UpsertChatModal from '@/components/community/UpsertChatModal'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
@@ -26,7 +27,6 @@ import {
 } from 'react-icons/hi2'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
-import UpsertChatModal from '../community/UpsertChatModal'
 import ConfirmationModal from '../ConfirmationModal'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'
@@ -45,7 +45,9 @@ export default function AboutChatModal({
 }: AboutChatModalProps) {
   const address = useMyAccount((state) => state.address)
   const router = useRouter()
-  const { data: chat } = getPostQuery.useQuery(chatId)
+  const { data: chat } = getPostQuery.useQuery(chatId, {
+    showHiddenPost: { type: 'all' },
+  })
   const sendEvent = useSendEvent()
 
   const [openedModalType, setOpenedModalType] = useState<
@@ -62,7 +64,10 @@ export default function AboutChatModal({
   const chatOwner = chat.struct.ownerId
 
   const contentList: AboutModalProps['contentList'] = [
-    { title: 'Description', content: <TruncatedText text={content.body} /> },
+    {
+      title: 'Description',
+      content: content.body && <TruncatedText text={content.body} />,
+    },
     {
       title: 'Chat link',
       content: chatUrl,
@@ -174,6 +179,11 @@ export default function AboutChatModal({
 
   const closeModal = () => setOpenedModalType(null)
 
+  let subtitle = `${messageCount} messages`
+  if (chat.struct.followersCount) {
+    subtitle += `, ${chat.struct.followersCount} followers`
+  }
+
   return (
     <>
       <JoinChatWrapper>
@@ -184,7 +194,7 @@ export default function AboutChatModal({
               id={chat.id}
               isOpen={props.isOpen && openedModalType === null}
               title={content?.title}
-              subtitle={`${messageCount} messages`}
+              subtitle={subtitle}
               actionMenu={getActionMenu(mutateAsync, isLoading)}
               contentList={contentList}
               image={content?.image}
@@ -229,10 +239,10 @@ export default function AboutChatModal({
         urlTitle={content.title}
       />
       <UpsertChatModal
-        chat={chat}
         isOpen={openedModalType === 'edit'}
         closeModal={closeModal}
         onBackClick={() => setOpenedModalType(null)}
+        formProps={{ chat }}
       />
       <HideUnhideChatWrapper>
         {({ isLoading, mutateAsync }) => {

@@ -1,10 +1,10 @@
 import CommunityAddIcon from '@/assets/icons/community-add.svg'
 import Button from '@/components/Button'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
+import NewCommunityModal from '@/components/community/NewCommunityModal'
 import Container from '@/components/Container'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import NewCommunityModal from '@/components/modals/community/NewCommunityModal'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
 import { useSendEvent } from '@/stores/analytics'
@@ -15,6 +15,7 @@ import {
   HiChevronDown,
   HiOutlineChatBubbleOvalLeftEllipsis,
   HiOutlineClock,
+  HiOutlineUsers,
 } from 'react-icons/hi2'
 import useSortedChats, {
   SortChatOption,
@@ -134,12 +135,11 @@ function CommunityHubToolbar({
                 icon: HiOutlineChatBubbleOvalLeftEllipsis,
                 onClick: () => changeSortBy('messages'),
               },
-              // TODO: not implemented yet
-              // {
-              //   text: 'Members count',
-              //   icon: HiOutlineUsers,
-              //   onClick: () => setSortBy('size'),
-              // },
+              {
+                text: 'Members count',
+                icon: HiOutlineUsers,
+                onClick: () => changeSortBy('members'),
+              },
             ]}
             allowedPlacements={['bottom-start']}
             mainAxisOffset={4}

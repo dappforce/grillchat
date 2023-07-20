@@ -2,9 +2,9 @@ import ChatIcon from '@/assets/icons/bubble-chat.svg'
 import HubIcon from '@/assets/icons/hub.svg'
 import MegaphoneIcon from '@/assets/icons/megaphone.svg'
 import ActionCard, { ActionCardProps } from '@/components/ActionCard'
+import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { useSendEvent } from '@/stores/analytics'
 import { useState } from 'react'
-import Modal, { ModalFunctionalityProps } from '../Modal'
 import UpsertChatModal from './UpsertChatModal'
 
 export type NewCommunityModalProps = ModalFunctionalityProps & {
@@ -56,11 +56,10 @@ export default function NewCommunityModal({
       <UpsertChatModal
         isOpen={openedModalState === 'chat'}
         closeModal={() => setOpenedModalState(null)}
-        hubId={hubId}
         onBackClick={() => setOpenedModalState(null)}
-        onAfterRedirect={() => {
-          setOpenedModalState(null)
-          props.closeModal()
+        formProps={{
+          hubId,
+          onTxSuccess: props.closeModal,
         }}
       />
     </>

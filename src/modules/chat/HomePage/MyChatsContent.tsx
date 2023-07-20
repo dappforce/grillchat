@@ -2,8 +2,8 @@ import NoResultImage from '@/assets/graphics/no-result.png'
 import Button from '@/components/Button'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
+import NewCommunityModal from '@/components/community/NewCommunityModal'
 import Container from '@/components/Container'
-import NewCommunityModal from '@/components/modals/community/NewCommunityModal'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import { getPostQuery } from '@/services/api/query'
 import {
@@ -80,13 +80,15 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
     <div className='flex flex-col'>
       <Toolbar filter={filter} changeFilter={changeFilter} />
       {filter === 'hidden' && (
-        <div className='my-2 flex items-center gap-2 rounded-2xl bg-orange-500/10 px-4 py-2 text-orange-500'>
-          <HiOutlineEyeSlash />
-          <span>
-            Only you can see these group chats. Other people will not see them
-            on Grill
-          </span>
-        </div>
+        <Container>
+          <div className='my-2 flex items-center gap-2 rounded-2xl bg-orange-500/10 px-4 py-2 text-orange-500'>
+            <HiOutlineEyeSlash />
+            <span>
+              Only you can see these group chats. Other people will not see them
+              on Grill
+            </span>
+          </div>
+        </Container>
       )}
       {(() => {
         if (!isInitialized || isLoading || isPlaceholderData) {
