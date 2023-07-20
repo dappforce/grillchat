@@ -43,9 +43,10 @@ export async function getBlockedMessageIdsInChatIds(
 }
 
 export const GET_BLOCKED_CIDS = gql`
-  query GetBlockedCids($ctxSpaceId: String!) {
+  query GetBlockedCids($ctxSpaceId: String, $ctxPostId: String) {
     blockedResourceIds(
       ctxSpaceId: $ctxSpaceId
+      ctxPostId: $ctxPostId
       blocked: true
       resourceType: CID
     )
