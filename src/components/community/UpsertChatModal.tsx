@@ -14,7 +14,7 @@ export default function UpsertChatModal({
   ...props
 }: UpsertChatModalProps) {
   const isUpdating = 'chat' in formProps && formProps.chat
-  const title = isUpdating ? '✏️ Edit chat' : '💬 New Chat'
+  const title = isUpdating ? '✏️ Edit chat' : '💬 New Group Chat'
 
   const augmentedFormProps: UpsertChatFormProps = {
     ...formProps,
