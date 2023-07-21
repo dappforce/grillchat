@@ -68,6 +68,8 @@ function ChatListContent({
   ...props
 }: ChatListProps) {
   const router = useRouter()
+
+  const [initialNewMessageCount, setInitialNewMessageCount] = useState(0)
   const lastReadId = useFocusedLastMessageId(chatId)
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
   const prevMessageModalMsgId = usePrevious(messageModalMsgId)
@@ -126,6 +128,7 @@ function ChatListContent({
 
   // TODO: refactor this by putting the url query getter logic to ChatPage
   const hasScrolledToMessageRef = useRef(false)
+  const filteredMessageIdsRef = useWrapInRef(filteredMessageIds)
   useEffect(() => {
     if (hasScrolledToMessageRef.current) return
     hasScrolledToMessageRef.current = true
@@ -136,13 +139,25 @@ function ChatListContent({
     if (!isMessageIdsFetched) return
 
     if (!messageId || !validateNumber(messageId)) {
-      if (lastReadId) scrollToMessage(lastReadId ?? '', false)
+      console.log(lastReadId)
+      if (lastReadId) {
+        scrollToMessage(lastReadId ?? '', false).then(() => {
+          const lastReadIdIndex = filteredMessageIdsRef.current.findIndex(
+            (id) => id === lastReadId
+          )
+          const newMessageCount =
+            lastReadIdIndex === -1
+              ? 0
+              : filteredMessageIdsRef.current.length - lastReadIdIndex - 1
+          setInitialNewMessageCount(newMessageCount)
+        })
+      }
       return
     }
 
     setMessageModalMsgId(messageId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawMessageIds, hasScrolledToMessageRef])
+  }, [rawMessageIds, filteredMessageIdsRef, hasScrolledToMessageRef])
 
   useEffect(() => {
     if (messageModalMsgId) {
@@ -262,10 +277,12 @@ function ChatListContent({
       <Component>
         <div className='relative'>
           <NewMessageNotice
+            key={initialNewMessageCount}
             className={cx(
               'absolute bottom-2 right-3',
               newMessageNoticeClassName
             )}
+            initialNewMessageCount={initialNewMessageCount}
             messageIds={messageIds}
             scrollContainerRef={scrollContainerRef}
           />
