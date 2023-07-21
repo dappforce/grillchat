@@ -6,6 +6,7 @@ import MessageModal from '@/components/modals/MessageModal'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE, getPinnedMessageInChatId } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
+import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
@@ -139,9 +140,11 @@ function ChatListContent({
     if (!isMessageIdsFetched) return
 
     if (!messageId || !validateNumber(messageId)) {
-      console.log(lastReadId)
       if (lastReadId) {
-        scrollToMessage(lastReadId ?? '', false).then(() => {
+        scrollToMessage(lastReadId ?? '', {
+          shouldHighlight: false,
+          smooth: false,
+        }).then(() => {
           const lastReadIdIndex = filteredMessageIdsRef.current.findIndex(
             (id) => id === lastReadId
           )
@@ -158,6 +161,13 @@ function ChatListContent({
     setMessageModalMsgId(messageId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawMessageIds, filteredMessageIdsRef, hasScrolledToMessageRef])
+
+  const { setLastReadMessageId } = useLastReadMessageId(chatId)
+  useEffect(() => {
+    const lastId = rawMessageIds?.[rawMessageIds.length - 1]
+    if (!lastId) return
+    setLastReadMessageId(lastId)
+  }, [setLastReadMessageId, rawMessageIds])
 
   useEffect(() => {
     if (messageModalMsgId) {
@@ -360,7 +370,7 @@ function PinnedMessage({
     <div className='sticky top-0 z-10 border-b border-border-gray bg-background-light text-sm'>
       <Component
         className='flex cursor-pointer items-center gap-4 overflow-hidden py-2'
-        onClick={() => scrollToMessage(message.id, true)}
+        onClick={() => scrollToMessage(message.id)}
       >
         <div className='mr-1'>
           <Image
