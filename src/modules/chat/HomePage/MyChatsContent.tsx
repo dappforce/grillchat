@@ -77,14 +77,18 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
     return chats.filter((chat) => !chat?.struct.hidden)
   }, [chats, filter])
 
+  const hasAnyMyChat = !!(followedChatIds?.length || ownedChatIds?.length)
+
   return (
     <div className='flex flex-col'>
-      <Toolbar
-        filter={filter}
-        changeFilter={changeFilter}
-        hasAnyHiddenChats={hasAnyHiddenChats}
-      />
-      {filter === 'hidden' && (
+      {hasAnyMyChat && (
+        <Toolbar
+          filter={filter}
+          changeFilter={changeFilter}
+          hasAnyHiddenChats={hasAnyHiddenChats}
+        />
+      )}
+      {hasAnyMyChat && filter === 'hidden' && (
         <Container>
           <div className='my-2 flex items-center gap-2 rounded-2xl bg-orange-500/10 px-4 py-2 text-orange-500'>
             <HiOutlineEyeSlash className='flex-shrink-0' />
