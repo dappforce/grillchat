@@ -3,6 +3,7 @@ import { invalidatePostServerCache, saveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
+import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { PostContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
@@ -113,6 +114,16 @@ type Content = {
 }
 export type UpsertPostParams = ({ postId: string } | { spaceId: string }) &
   Content
+function checkAction(data: UpsertPostParams) {
+  if ('spaceId' in data && data.spaceId) {
+    return { payload: data, action: 'create' } as const
+  }
+  if ('postId' in data && data.postId) {
+    return { payload: data, action: 'update' } as const
+  }
+
+  return { payload: data, action: 'invalid' } as const
+}
 export function useUpsertPost(
   config?: SubsocialMutationConfig<UpsertPostParams>
 ) {
@@ -123,7 +134,8 @@ export function useUpsertPost(
 
   return useSubsocialMutation<UpsertPostParams>(
     getWallet,
-    async ({ image, title, body, ...params }, { substrateApi }) => {
+    async (params, { substrateApi }) => {
+      const { image, title, body } = params
       console.log('waiting energy...')
       await waitHasEnergy()
 
@@ -134,17 +146,18 @@ export function useUpsertPost(
       })
       if (!success || !cid) throw new Error('Failed to save file')
 
-      if ('postId' in params && params.postId) {
+      const { payload, action } = checkAction(params)
+      if (action === 'update') {
         return {
-          tx: substrateApi.tx.posts.updatePost(params.postId, {
+          tx: substrateApi.tx.posts.updatePost(payload.postId, {
             content: IpfsWrapper(cid),
           }),
           summary: 'Updating post',
         }
-      } else if ('spaceId' in params && params.spaceId) {
+      } else if (action === 'create') {
         return {
           tx: substrateApi.tx.posts.createPost(
-            params.spaceId,
+            payload.spaceId,
             { RegularPost: null },
             IpfsWrapper(cid)
           ),
@@ -158,8 +171,9 @@ export function useUpsertPost(
     {
       txCallbacks: {
         onSend: ({ data }) => {
-          if ('postId' in data && data.postId) {
-            getPostQuery.setQueryData(client, data.postId, (post) => {
+          const { payload, action } = checkAction(data)
+          if (action === 'update') {
+            getPostQuery.setQueryData(client, payload.postId, (post) => {
               if (!post) return post
               return {
                 ...post,
@@ -174,19 +188,22 @@ export function useUpsertPost(
           }
         },
         onError: async ({ data }) => {
-          if ('postId' in data && data.postId) {
-            getPostQuery.invalidate(client, data.postId)
+          const { payload, action } = checkAction(data)
+          if (action === 'update') {
+            getPostQuery.invalidate(client, payload.postId)
           }
         },
-        onSuccess: async ({ data, address }) => {
-          if ('spaceId' in data && data.spaceId) {
-            getPostIdsBySpaceIdQuery.invalidate(client, data.spaceId)
-          } else if ('postId' in data && data.postId) {
-            await invalidatePostServerCache(data.postId)
+        onSuccess: async ({ data, address }, _, txResult) => {
+          const { payload, action } = checkAction(data)
+          if (action === 'create') {
+            getPostIdsBySpaceIdQuery.invalidate(client, payload.spaceId)
+            const newId = await getNewIdFromTxResult(txResult)
             getOwnedPostIdsQuery.setQueryData(client, address, (ids) => {
               if (!ids) return ids
-              return [...ids, data.postId]
+              return [...ids, newId]
             })
+          } else if ('postId' in data && data.postId) {
+            await invalidatePostServerCache(data.postId)
             getPostQuery.invalidate(client, data.postId)
           }
         },

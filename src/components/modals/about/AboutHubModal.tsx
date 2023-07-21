@@ -66,7 +66,7 @@ export default function AboutHubModal({
         {...props}
         id={hub.id}
         isOpen={props.isOpen && openedModalType === null}
-        title={content.name}
+        entityTitle={content.name}
         isImageCircle={false}
         subtitle={`${chatCount} chats in hub`}
         image={content.image}

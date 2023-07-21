@@ -2,7 +2,7 @@ import ImageAdd from '@/assets/icons/image-add.svg'
 import { useSaveImage } from '@/services/api/mutation'
 import { cx } from '@/utils/class-names'
 import { resizeImage } from '@/utils/image'
-import { ComponentProps } from 'react'
+import React, { ComponentProps, useEffect } from 'react'
 import Dropzone from 'react-dropzone'
 import { HiTrash } from 'react-icons/hi2'
 import Button from '../Button'
@@ -24,6 +24,7 @@ export type ImageInputProps = ComponentProps<'input'> & {
   error?: string | true
   containerProps?: ComponentProps<'div'>
   withIpfsPrefix?: boolean
+  setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function ImageInput({
@@ -33,9 +34,13 @@ export default function ImageInput({
   withIpfsPrefix,
   error,
   disabled,
+  setIsLoading,
   ...props
 }: ImageInputProps) {
   const { mutate: saveImage, isError, isLoading, data, reset } = useSaveImage()
+  useEffect(() => {
+    if (setIsLoading) setIsLoading(isLoading)
+  }, [setIsLoading, isLoading])
 
   const onImageChosen = async (files: File[]) => {
     const image = files[0] ?? null

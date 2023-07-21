@@ -22,8 +22,15 @@ export default function ChatRelativeTime({
       )}
       showOnHover
     >
-      {({ referenceProps }) => (
-        <span {...referenceProps} className='text-xs text-text-muted'>
+      {({ referenceProps, onClick }) => (
+        <span
+          {...referenceProps}
+          onClick={(e) => {
+            e.stopPropagation()
+            onClick?.(e)
+          }}
+          className='text-xs text-text-muted'
+        >
           {relativeTime}
         </span>
       )}

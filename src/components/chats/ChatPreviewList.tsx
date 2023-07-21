@@ -7,17 +7,18 @@ import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { ComponentProps } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import ChatPreview from './ChatPreview'
+import ChatPreview, { ChatPreviewProps } from './ChatPreview'
 
-export type ChatPreviewListProps = ComponentProps<'div'> & {
-  chats: (PostData | undefined | null)[]
-  focusedElementIndex?: number
-  hubId?: string
-}
+export type ChatPreviewListProps = ComponentProps<'div'> &
+  Pick<ChatPreviewProps, 'chatInfo' | 'hubId'> & {
+    chats: (PostData | undefined | null)[]
+    focusedElementIndex?: number
+  }
 
 export default function ChatPreviewList({
   chats,
   focusedElementIndex,
+  chatInfo,
   hubId,
 }: ChatPreviewListProps) {
   return (
@@ -26,6 +27,7 @@ export default function ChatPreviewList({
         if (!chat) return null
         return (
           <ChatPreviewContainer
+            chatInfo={chatInfo}
             isFocused={idx === focusedElementIndex}
             chat={chat}
             key={chat.id}
@@ -37,15 +39,17 @@ export default function ChatPreviewList({
   )
 }
 
+type ChatPreviewContainerProps = Pick<ChatPreviewListProps, 'chatInfo'> & {
+  chat: PostData
+  isFocused?: boolean
+  hubId?: string
+}
 function ChatPreviewContainer({
   chat,
   isFocused,
   hubId,
-}: {
-  chat: PostData
-  isFocused?: boolean
-  hubId?: string
-}) {
+  chatInfo,
+}: ChatPreviewContainerProps) {
   const sendEvent = useSendEvent()
   const isInIframe = useIsInIframe()
   const router = useRouter()
@@ -99,6 +103,7 @@ function ChatPreviewContainer({
       isPinned={isPinned}
       withUnreadCount
       withFocusedStyle={isFocused}
+      chatInfo={chatInfo}
     />
   )
 }

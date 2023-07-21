@@ -8,6 +8,7 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
 import { useEffect, useState } from 'react'
@@ -93,7 +94,7 @@ export default function HubPage({ hubId }: HubPageProps) {
                 hubId={hubId}
               />
             )}
-            <ChatPreviewList chats={chats} />
+            <ChatPreviewList chatInfo={sortBy} chats={chats} />
           </>
         ) : null}
       </SearchChannelsWrapper>
@@ -111,6 +112,7 @@ function CommunityHubToolbar({
   sortBy,
   changeSortBy,
 }: CommunityHubToolbarProps) {
+  const isLoggedIn = useMyAccount((state) => !!state.address)
   const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
   const sendEvent = useSendEvent()
 
@@ -167,8 +169,11 @@ function CommunityHubToolbar({
         </div>
         <Button
           size='sm'
-          variant='primaryOutline'
-          className='flex items-center gap-2'
+          variant='primary'
+          className={cx(
+            'flex items-center gap-2',
+            !isLoggedIn && 'pointer-events-none select-none opacity-0'
+          )}
           onClick={() => {
             setIsOpenNewCommunity(true)
             sendEvent('click new_community_button in hub_page')

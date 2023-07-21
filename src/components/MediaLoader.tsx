@@ -1,9 +1,8 @@
-import { SUBSOCIAL_IPFS_GATEWAY } from '@/constants/links'
 import { cx } from '@/utils/class-names'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import { validateVideoUrl } from '@/utils/links'
 import Image, { ImageProps } from 'next/image'
 import { useLayoutEffect, useState } from 'react'
-import urlJoin from 'url-join'
 import Spinner from './Spinner'
 
 export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
@@ -14,23 +13,6 @@ export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   loadingClassName?: string
   placeholderClassName?: string
   withSpinner?: boolean
-}
-
-function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
-  if (!uri) {
-    return undefined
-  }
-  if (uri.startsWith('ipfs://')) {
-    return uri.replace('ipfs://', gatewayUrl)
-  }
-  if (uri.startsWith('https://ipfs.io/ipfs/')) {
-    return uri.replace('https://ipfs.io/ipfs/', gatewayUrl)
-  }
-  if (!/^https?:\/\//.test(uri)) {
-    return urlJoin(gatewayUrl, uri)
-  }
-
-  return uri
 }
 
 export default function MediaLoader({
@@ -45,7 +27,7 @@ export default function MediaLoader({
   let [isLoading, setIsLoading] = useState(false)
   let usedImage = src
   if (typeof src === 'string') {
-    usedImage = resolveIpfsUri(src, urlJoin(SUBSOCIAL_IPFS_GATEWAY, '/ipfs/'))
+    usedImage = getIpfsContentUrl(src)
   }
 
   useLayoutEffect(() => {

@@ -51,19 +51,24 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   } = getFollowedPostIdsByAddressQuery.useQuery(address ?? '')
   const { data: ownedChatIds } = getOwnedPostIdsQuery.useQuery(address ?? '')
 
-  const chatIds = useMemo<string[]>(() => {
+  const { allChatIds, filteredChatIds } = useMemo(() => {
     const owned = ownedChatIds ?? []
     const followed = followedChatIds ?? []
+    const allChatIds = Array.from(new Set([...owned, ...followed]))
+    let filteredChatIds: string[] = []
 
-    if (filter === 'all') return Array.from(new Set([...owned, ...followed]))
-    if (filter === 'created' || filter === 'hidden') return owned
-    if (filter === 'joined') return followed
+    if (filter === 'all') filteredChatIds = allChatIds
+    if (filter === 'created' || filter === 'hidden') filteredChatIds = owned
+    if (filter === 'joined') filteredChatIds = followed
 
-    return []
+    return { filteredChatIds, allChatIds }
   }, [ownedChatIds, followedChatIds, filter])
 
-  const sortedIds = useSortChatIdsByLatestMessage(chatIds)
+  const sortedIds = useSortChatIdsByLatestMessage(filteredChatIds)
 
+  const allChatQueries = getPostQuery.useQueries(allChatIds, {
+    showHiddenPost: { type: 'owner', owner: address ?? '' },
+  })
   const chatQueries = getPostQuery.useQueries(sortedIds, {
     showHiddenPost: { type: 'owner', owner: address ?? '' },
   })
@@ -76,13 +81,24 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
     return chats.filter((chat) => !chat?.struct.hidden)
   }, [chats, filter])
 
+  const hasAnyHiddenChats = allChatQueries.some(
+    ({ data: chat }) => chat?.struct.hidden
+  )
+  const hasAnyMyChat = !!allChatIds.length
+
   return (
     <div className='flex flex-col'>
-      <Toolbar filter={filter} changeFilter={changeFilter} />
-      {filter === 'hidden' && (
+      {hasAnyMyChat && (
+        <Toolbar
+          filter={filter}
+          changeFilter={changeFilter}
+          hasAnyHiddenChats={hasAnyHiddenChats}
+        />
+      )}
+      {hasAnyMyChat && filter === 'hidden' && (
         <Container>
           <div className='my-2 flex items-center gap-2 rounded-2xl bg-orange-500/10 px-4 py-2 text-orange-500'>
-            <HiOutlineEyeSlash />
+            <HiOutlineEyeSlash className='flex-shrink-0' />
             <span>
               Only you can see these group chats. Other people will not see them
               on Grill
@@ -93,7 +109,7 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
       {(() => {
         if (!isInitialized || isLoading || isPlaceholderData) {
           return <ChatPreviewSkeleton.SkeletonList />
-        } else if (!address || chats.length === 0) {
+        } else if (!address || filteredChats.length === 0) {
           return <NoChats changeTab={changeTab} />
         }
         return <ChatPreviewList chats={filteredChats} />
@@ -105,15 +121,17 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
 type ToolbarProps = {
   filter: Filter | null
   changeFilter: (filter: Filter) => void
+  hasAnyHiddenChats?: boolean
 }
-function Toolbar({ filter, changeFilter }: ToolbarProps) {
+function Toolbar({ filter, changeFilter, hasAnyHiddenChats }: ToolbarProps) {
   return (
     <Container as='div' className='border-b border-border-gray'>
       <div className='flex justify-between gap-4 py-2'>
         <div className='flex gap-0.5'>
           {filters.map((text) => {
-            const isActive = text === filter
+            if (!hasAnyHiddenChats && text === 'hidden') return null
 
+            const isActive = text === filter
             return (
               <Button
                 key={text}
@@ -157,28 +175,52 @@ function NoChats({ changeTab }: NoChatsProps) {
         <p className='text-text-muted'>
           Here will be all the chats you joined or created
         </p>
-        <Button
-          className='mt-4 w-full'
-          size='lg'
-          onClick={() => setIsOpenNewCommunity(true)}
-        >
-          Create Chat
-        </Button>
-        <Button
-          className='w-full'
-          variant='primaryOutline'
-          size='lg'
-          onClick={() => changeTab(1)}
-        >
-          Explore Chats
-        </Button>
+        {COMMUNITY_CHAT_HUB_ID ? (
+          <>
+            <Button
+              className='mt-4 w-full'
+              size='lg'
+              onClick={() => setIsOpenNewCommunity(true)}
+            >
+              Create Chat
+            </Button>
+            <Button
+              className='w-full'
+              variant='primaryOutline'
+              size='lg'
+              onClick={() => changeTab(2)}
+            >
+              Explore Chats
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              className='mt-4 w-full'
+              size='lg'
+              onClick={() => changeTab(1)}
+            >
+              View Hot Chats
+            </Button>
+            <Button
+              className='w-full'
+              variant='primaryOutline'
+              size='lg'
+              onClick={() => changeTab(2)}
+            >
+              Explore Hubs
+            </Button>
+          </>
+        )}
       </Container>
 
-      <NewCommunityModal
-        isOpen={isOpenNewCommunity}
-        closeModal={() => setIsOpenNewCommunity(false)}
-        hubId={COMMUNITY_CHAT_HUB_ID}
-      />
+      {COMMUNITY_CHAT_HUB_ID && (
+        <NewCommunityModal
+          isOpen={isOpenNewCommunity}
+          closeModal={() => setIsOpenNewCommunity(false)}
+          hubId={COMMUNITY_CHAT_HUB_ID}
+        />
+      )}
     </>
   )
 }

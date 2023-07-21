@@ -8,6 +8,7 @@ import {
   UpsertPostWrapper,
 } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink } from '@/utils/links'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -38,6 +39,7 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export default function UpsertChatForm(props: UpsertChatFormProps) {
+  const [isImageLoading, setIsImageLoading] = useState(false)
   const [isRedirecting, setIsRedirecting] = useState(false)
   const sendEvent = useSendEvent()
 
@@ -76,18 +78,13 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
               onSuccess: async (_data, _, txResult) => {
                 if (isUpdating) return
 
-                const { getNewIdsFromEvent } = await import(
-                  '@subsocial/api/utils'
-                )
-                const [newId] = getNewIdsFromEvent(txResult)
-                const newIdString = newId.toString()
-
-                mutateAsync({ chatId: newIdString })
+                const newId = await getNewIdFromTxResult(txResult)
+                mutateAsync({ chatId: newId })
 
                 setIsRedirecting(true)
                 await router.push(
                   urlJoin(
-                    getChatPageLink({ query: {} }, newIdString, hubId),
+                    getChatPageLink({ query: {} }, newId, hubId),
                     '?new=true'
                   )
                 )
@@ -131,6 +128,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                           image={field.value}
                           setImageUrl={(value) => setValue('image', value)}
                           containerProps={{ className: 'my-2' }}
+                          setIsLoading={setIsImageLoading}
                           error={fieldState.error?.message}
                         />
                       )
@@ -165,6 +163,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                   schema={formSchema}
                   watch={watch}
                   isLoading={isLoading}
+                  disabled={isImageLoading}
                   loadingText={isUpdating ? 'Saving...' : 'Creating...'}
                   size='lg'
                 >

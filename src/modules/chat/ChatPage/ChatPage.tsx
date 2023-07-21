@@ -7,6 +7,7 @@ import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModa
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LinkText from '@/components/LinkText'
+import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
@@ -243,6 +244,7 @@ function NavbarChatInfo({
   }, [router])
 
   const chatTitle = chatMetadata?.title
+  const membersCount = chat?.struct.followersCount
 
   return (
     <div className='flex flex-1 items-center overflow-hidden'>
@@ -273,9 +275,17 @@ function NavbarChatInfo({
             )}
           </div>
           <span className='text-xs text-text-muted'>
-            {chat?.struct.followersCount
-              ? `${chat?.struct.followersCount} members`
-              : `${messageCount} messages`}
+            {membersCount
+              ? `${membersCount} ${getPluralText({
+                  count: membersCount,
+                  plural: 'members',
+                  singular: 'member',
+                })}`
+              : `${messageCount} ${getPluralText({
+                  count: messageCount,
+                  plural: 'messages',
+                  singular: 'message',
+                })}`}
           </span>
         </div>
       </Button>

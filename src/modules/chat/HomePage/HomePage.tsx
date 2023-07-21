@@ -46,6 +46,7 @@ const pathnameTabIdMapper: Record<string, number> = {
 }
 
 export default function HubsPage(props: HubsPageProps) {
+  const isLoggedIn = useMyAccount((state) => !!state.address)
   const router = useRouter()
   const sendEvent = useSendEvent()
   const isFirstAccessed = useLocation((state) => state.isFirstAccessed)
@@ -159,20 +160,23 @@ export default function HubsPage(props: HubsPageProps) {
           tabs={tabs}
           withHashIntegration={false}
           tabsRightElement={
-            <div className='ml-4 mr-2 flex flex-1 items-center justify-end self-stretch'>
-              <Button
-                size='sm'
-                variant='primaryOutline'
-                className='flex items-center gap-2'
-                onClick={() => {
-                  setIsOpenNewCommunity(true)
-                  sendEvent('click new_community_button in home_page')
-                }}
-              >
-                <CommunityAddIcon className='text-text-muted' />
-                <span>New</span>
-              </Button>
-            </div>
+            isLoggedIn &&
+            COMMUNITY_CHAT_HUB_ID && (
+              <div className='ml-4 mr-2 flex flex-1 items-center justify-end self-stretch'>
+                <Button
+                  size='sm'
+                  variant='primary'
+                  className='flex items-center gap-2'
+                  onClick={() => {
+                    setIsOpenNewCommunity(true)
+                    sendEvent('click new_community_button in home_page')
+                  }}
+                >
+                  <CommunityAddIcon className='text-text-muted' />
+                  <span>New</span>
+                </Button>
+              </div>
+            )
           }
           hideBeforeHashLoaded
           manualTabControl={{
@@ -182,11 +186,13 @@ export default function HubsPage(props: HubsPageProps) {
         />
       </SearchChannelsWrapper>
 
-      <NewCommunityModal
-        isOpen={isOpenNewCommunity}
-        closeModal={() => setIsOpenNewCommunity(false)}
-        hubId={COMMUNITY_CHAT_HUB_ID}
-      />
+      {COMMUNITY_CHAT_HUB_ID && (
+        <NewCommunityModal
+          isOpen={isOpenNewCommunity}
+          closeModal={() => setIsOpenNewCommunity(false)}
+          hubId={COMMUNITY_CHAT_HUB_ID}
+        />
+      )}
     </DefaultLayout>
   )
 }

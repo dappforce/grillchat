@@ -1,5 +1,7 @@
 import { ActionCardProps } from '@/components/ActionCard'
+import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import UpsertChatModal from '@/components/community/UpsertChatModal'
+import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
@@ -179,9 +181,23 @@ export default function AboutChatModal({
 
   const closeModal = () => setOpenedModalType(null)
 
-  let subtitle = `${messageCount} messages`
-  if (chat.struct.followersCount) {
-    subtitle += `, ${chat.struct.followersCount} followers`
+  let subtitle = (
+    <span>
+      {messageCount}{' '}
+      <PluralText count={messageCount} plural='messages' singular='message' />
+    </span>
+  )
+  const membersCount = chat.struct.followersCount ?? 0
+  if (membersCount) {
+    subtitle = (
+      <span>
+        <span>
+          {membersCount}{' '}
+          <PluralText count={membersCount} plural='members' singular='member' />
+        </span>{' '}
+        <span className='mx-1'>·</span> {subtitle}
+      </span>
+    )
   }
 
   return (
@@ -193,7 +209,21 @@ export default function AboutChatModal({
               {...props}
               id={chat.id}
               isOpen={props.isOpen && openedModalType === null}
-              title={content?.title}
+              entityTitle={content?.title}
+              modalTitle={
+                <span>
+                  <span>{content?.title}</span>
+                  {chat.struct.hidden && (
+                    <ChatHiddenChip
+                      popOverProps={{
+                        triggerClassName: 'inline ml-2',
+                        placement: 'top-end',
+                      }}
+                      className='inline-flex'
+                    />
+                  )}
+                </span>
+              }
               subtitle={subtitle}
               actionMenu={getActionMenu(mutateAsync, isLoading)}
               contentList={contentList}
