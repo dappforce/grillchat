@@ -19,7 +19,7 @@ export function getIpfsContentUrl(
   if (uri.startsWith('https://ipfs.io/ipfs/'))
     return uri.replace('https://ipfs.io/ipfs/', gatewayUrlWithIpfs)
 
-  if (!uri || uri.startsWith('http')) return uri
+  if (uri.startsWith('http')) return uri
 
   const ipfsCid = CID.parse(uri)
   if (!ipfsCid) return uri
