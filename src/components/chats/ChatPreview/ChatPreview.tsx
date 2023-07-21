@@ -1,5 +1,6 @@
 import PinIcon from '@/assets/icons/pin.png'
 import Container from '@/components/Container'
+import { SortChatOption } from '@/modules/chat/hooks/useSortedChats'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
@@ -27,6 +28,7 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   isInteractive?: boolean
   isHidden?: boolean
   chatId?: string
+  chatInfo?: SortChatOption
   hubId?: string
   isPinned?: boolean
   withUnreadCount?: boolean
@@ -43,6 +45,7 @@ export default function ChatPreview({
   isImageInCidFormat = true,
   additionalDesc,
   asContainer,
+  chatInfo,
   asLink,
   isPinned,
   chatId,
@@ -63,6 +66,7 @@ export default function ChatPreview({
         <div className='flex flex-shrink-0 items-center gap-1'>
           {chatId && (
             <ChatLastMessageTime
+              chatInfo={chatInfo}
               chatId={chatId}
               className='text-sm text-text-muted'
             />
