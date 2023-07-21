@@ -1,3 +1,4 @@
+import { HeadConfigProps } from '@/components/HeadConfig'
 import MessageRedirectPage from '@/modules/chat/MessageRedirectPage'
 import { getNftDataServer } from '@/pages/api/nft'
 import { getPostsServer } from '@/pages/api/posts'
@@ -44,6 +45,7 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
     let title = ''
     let description = ''
     let image = ''
+    let cardFormat: HeadConfigProps['cardFormat'] = undefined
 
     try {
       const results = await getPostsServer([chatId, messageId])
@@ -58,7 +60,10 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
         title = `Message from ${chat?.content?.title}`
         description = message?.content?.body ?? ''
         const imageMaybeCid = extensionData.image ?? chat?.content?.image
-        image = imageMaybeCid ? getIpfsContentUrl(imageMaybeCid) : ''
+        if (imageMaybeCid) {
+          image = imageMaybeCid ? getIpfsContentUrl(imageMaybeCid) : ''
+          cardFormat = 'summary_large_image'
+        }
       }
     } catch (err) {
       console.error('Error fetching for message page: ', err)
@@ -70,6 +75,7 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
           title,
           description,
           image,
+          cardFormat,
         },
       },
       revalidate: 2,
