@@ -9,9 +9,9 @@ export default function ChatSpecialButtons() {
 
   const integrateChatButton = (
     <ChatPreview
-      key='integrate-chat'
+      key='integrate'
       isPinned
-      asLink={{ href: '/integrate-chat' }}
+      asLink={{ href: '/integrate' }}
       asContainer
       onClick={() => sendEvent('click integrate_chat_button')}
       image={
