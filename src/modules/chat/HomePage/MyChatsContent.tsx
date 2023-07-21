@@ -51,25 +51,29 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   } = getFollowedPostIdsByAddressQuery.useQuery(address ?? '')
   const { data: ownedChatIds } = getOwnedPostIdsQuery.useQuery(address ?? '')
 
-  const chatIds = useMemo<string[]>(() => {
+  const { allChatIds, filteredChatIds } = useMemo(() => {
     const owned = ownedChatIds ?? []
     const followed = followedChatIds ?? []
+    const allChatIds = Array.from(new Set([...owned, ...followed]))
+    let filteredChatIds: string[] = []
 
-    if (filter === 'all') return Array.from(new Set([...owned, ...followed]))
-    if (filter === 'created' || filter === 'hidden') return owned
-    if (filter === 'joined') return followed
+    if (filter === 'all') filteredChatIds = allChatIds
+    if (filter === 'created' || filter === 'hidden') filteredChatIds = owned
+    if (filter === 'joined') filteredChatIds = followed
 
-    return []
+    return { filteredChatIds, allChatIds }
   }, [ownedChatIds, followedChatIds, filter])
 
-  const sortedIds = useSortChatIdsByLatestMessage(chatIds)
+  const sortedIds = useSortChatIdsByLatestMessage(filteredChatIds)
 
+  const allChatQueries = getPostQuery.useQueries(allChatIds, {
+    showHiddenPost: { type: 'owner', owner: address ?? '' },
+  })
   const chatQueries = getPostQuery.useQueries(sortedIds, {
     showHiddenPost: { type: 'owner', owner: address ?? '' },
   })
   const chats = chatQueries.map((query) => query.data)
 
-  const hasAnyHiddenChats = chats.some((chat) => chat?.struct.hidden)
   const filteredChats = useMemo(() => {
     if (filter === 'hidden') {
       return chats.filter((chat) => chat?.struct.hidden)
@@ -77,7 +81,10 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
     return chats.filter((chat) => !chat?.struct.hidden)
   }, [chats, filter])
 
-  const hasAnyMyChat = !!(followedChatIds?.length || ownedChatIds?.length)
+  const hasAnyHiddenChats = allChatQueries.some(
+    ({ data: chat }) => chat?.struct.hidden
+  )
+  const hasAnyMyChat = !!allChatIds.length
 
   return (
     <div className='flex flex-col'>

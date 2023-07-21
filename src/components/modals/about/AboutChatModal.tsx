@@ -1,6 +1,7 @@
 import { ActionCardProps } from '@/components/ActionCard'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import UpsertChatModal from '@/components/community/UpsertChatModal'
+import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
@@ -180,11 +181,20 @@ export default function AboutChatModal({
 
   const closeModal = () => setOpenedModalType(null)
 
-  let subtitle = <span>{messageCount} messages</span>
-  if (chat.struct.followersCount) {
+  let subtitle = (
+    <span>
+      {messageCount}{' '}
+      <PluralText count={messageCount} plural='messages' singular='message' />
+    </span>
+  )
+  const membersCount = chat.struct.followersCount ?? 0
+  if (membersCount) {
     subtitle = (
       <span>
-        <span>{chat.struct.followersCount} members</span>{' '}
+        <span>
+          {membersCount}{' '}
+          <PluralText count={membersCount} plural='members' singular='member' />
+        </span>{' '}
         <span className='mx-1'>·</span> {subtitle}
       </span>
     )
