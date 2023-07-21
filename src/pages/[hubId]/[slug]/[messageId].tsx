@@ -26,9 +26,7 @@ async function getMessageDataFromExtension(
     case 'subsocial-image':
       return { image: firstExtension.properties.image }
     case 'subsocial-evm-nft':
-      console.log('fetching')
       const nftData = await getNftDataServer(firstExtension.properties)
-      console.log('nft data', nftData)
       return { image: nftData?.image }
   }
 
