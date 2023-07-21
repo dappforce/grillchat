@@ -168,28 +168,52 @@ function NoChats({ changeTab }: NoChatsProps) {
         <p className='text-text-muted'>
           Here will be all the chats you joined or created
         </p>
-        <Button
-          className='mt-4 w-full'
-          size='lg'
-          onClick={() => setIsOpenNewCommunity(true)}
-        >
-          Create Chat
-        </Button>
-        <Button
-          className='w-full'
-          variant='primaryOutline'
-          size='lg'
-          onClick={() => changeTab(1)}
-        >
-          Explore Chats
-        </Button>
+        {COMMUNITY_CHAT_HUB_ID ? (
+          <>
+            <Button
+              className='mt-4 w-full'
+              size='lg'
+              onClick={() => setIsOpenNewCommunity(true)}
+            >
+              Create Chat
+            </Button>
+            <Button
+              className='w-full'
+              variant='primaryOutline'
+              size='lg'
+              onClick={() => changeTab(2)}
+            >
+              Explore Chats
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              className='mt-4 w-full'
+              size='lg'
+              onClick={() => changeTab(1)}
+            >
+              Explore Hot Chats
+            </Button>
+            <Button
+              className='w-full'
+              variant='primaryOutline'
+              size='lg'
+              onClick={() => changeTab(2)}
+            >
+              Explore Hubs
+            </Button>
+          </>
+        )}
       </Container>
 
-      <NewCommunityModal
-        isOpen={isOpenNewCommunity}
-        closeModal={() => setIsOpenNewCommunity(false)}
-        hubId={COMMUNITY_CHAT_HUB_ID}
-      />
+      {COMMUNITY_CHAT_HUB_ID && (
+        <NewCommunityModal
+          isOpen={isOpenNewCommunity}
+          closeModal={() => setIsOpenNewCommunity(false)}
+          hubId={COMMUNITY_CHAT_HUB_ID}
+        />
+      )}
     </>
   )
 }

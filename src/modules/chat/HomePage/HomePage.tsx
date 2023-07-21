@@ -160,7 +160,8 @@ export default function HubsPage(props: HubsPageProps) {
           tabs={tabs}
           withHashIntegration={false}
           tabsRightElement={
-            isLoggedIn && (
+            isLoggedIn &&
+            COMMUNITY_CHAT_HUB_ID && (
               <div className='ml-4 mr-2 flex flex-1 items-center justify-end self-stretch'>
                 <Button
                   size='sm'
@@ -185,11 +186,13 @@ export default function HubsPage(props: HubsPageProps) {
         />
       </SearchChannelsWrapper>
 
-      <NewCommunityModal
-        isOpen={isOpenNewCommunity}
-        closeModal={() => setIsOpenNewCommunity(false)}
-        hubId={COMMUNITY_CHAT_HUB_ID}
-      />
+      {COMMUNITY_CHAT_HUB_ID && (
+        <NewCommunityModal
+          isOpen={isOpenNewCommunity}
+          closeModal={() => setIsOpenNewCommunity(false)}
+          hubId={COMMUNITY_CHAT_HUB_ID}
+        />
+      )}
     </DefaultLayout>
   )
 }
