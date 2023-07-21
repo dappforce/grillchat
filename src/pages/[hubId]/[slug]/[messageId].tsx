@@ -1,7 +1,7 @@
 import MessageRedirectPage from '@/modules/chat/MessageRedirectPage'
+import { getNftDataServer } from '@/pages/api/nft'
 import { getPostsServer } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
-import { getNftDataServer } from '@/services/api/query'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -26,7 +26,9 @@ async function getMessageDataFromExtension(
     case 'subsocial-image':
       return { image: firstExtension.properties.image }
     case 'subsocial-evm-nft':
+      console.log('fetching')
       const nftData = await getNftDataServer(firstExtension.properties)
+      console.log('nft data', nftData)
       return { image: nftData?.image }
   }
 

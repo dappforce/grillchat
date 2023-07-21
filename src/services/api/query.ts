@@ -81,7 +81,7 @@ export const getPostQuery = {
   },
 }
 
-export async function getNftDataServer(nft: ApiNftParams | null) {
+async function getNft(nft: ApiNftParams | null) {
   if (!nft) return null
   const urlQuery = new URLSearchParams()
   urlQuery.set('chain', nft.chain)
@@ -94,5 +94,5 @@ export async function getNftDataServer(nft: ApiNftParams | null) {
 }
 export const getNftQuery = createQuery({
   key: 'nft',
-  fetcher: getNftDataServer,
+  fetcher: getNft,
 })
