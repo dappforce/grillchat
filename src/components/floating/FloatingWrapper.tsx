@@ -19,6 +19,7 @@ type ReferenceProps = Record<string, unknown>
 export type FloatingWrapperProps = {
   children: (config: {
     toggleDisplay: (e?: MouseEvent<Element, globalThis.MouseEvent>) => void
+    onClick: MouseEventHandler<Element>
     referenceProps: ReferenceProps
     isOpen: boolean
   }) => JSX.Element
@@ -91,9 +92,9 @@ export default function FloatingWrapper({
       {children({
         toggleDisplay,
         isOpen: openMenu,
+        onClick,
         referenceProps: getReferenceProps({
           ref: refs.setReference,
-          ...getReferenceProps(),
           onClick,
         }),
       })}

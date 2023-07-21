@@ -69,6 +69,7 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   })
   const chats = chatQueries.map((query) => query.data)
 
+  const hasAnyHiddenChats = chats.some((chat) => chat?.struct.hidden)
   const filteredChats = useMemo(() => {
     if (filter === 'hidden') {
       return chats.filter((chat) => chat?.struct.hidden)
@@ -76,10 +77,18 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
     return chats.filter((chat) => !chat?.struct.hidden)
   }, [chats, filter])
 
+  const hasAnyMyChat = !!(followedChatIds?.length || ownedChatIds?.length)
+
   return (
     <div className='flex flex-col'>
-      <Toolbar filter={filter} changeFilter={changeFilter} />
-      {filter === 'hidden' && (
+      {hasAnyMyChat && (
+        <Toolbar
+          filter={filter}
+          changeFilter={changeFilter}
+          hasAnyHiddenChats={hasAnyHiddenChats}
+        />
+      )}
+      {hasAnyMyChat && filter === 'hidden' && (
         <Container>
           <div className='my-2 flex items-center gap-2 rounded-2xl bg-orange-500/10 px-4 py-2 text-orange-500'>
             <HiOutlineEyeSlash className='flex-shrink-0' />
@@ -93,7 +102,7 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
       {(() => {
         if (!isInitialized || isLoading || isPlaceholderData) {
           return <ChatPreviewSkeleton.SkeletonList />
-        } else if (!address || chats.length === 0) {
+        } else if (!address || filteredChats.length === 0) {
           return <NoChats changeTab={changeTab} />
         }
         return <ChatPreviewList chats={filteredChats} />
@@ -105,15 +114,17 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
 type ToolbarProps = {
   filter: Filter | null
   changeFilter: (filter: Filter) => void
+  hasAnyHiddenChats?: boolean
 }
-function Toolbar({ filter, changeFilter }: ToolbarProps) {
+function Toolbar({ filter, changeFilter, hasAnyHiddenChats }: ToolbarProps) {
   return (
     <Container as='div' className='border-b border-border-gray'>
       <div className='flex justify-between gap-4 py-2'>
         <div className='flex gap-0.5'>
           {filters.map((text) => {
-            const isActive = text === filter
+            if (!hasAnyHiddenChats && text === 'hidden') return null
 
+            const isActive = text === filter
             return (
               <Button
                 key={text}
@@ -157,28 +168,52 @@ function NoChats({ changeTab }: NoChatsProps) {
         <p className='text-text-muted'>
           Here will be all the chats you joined or created
         </p>
-        <Button
-          className='mt-4 w-full'
-          size='lg'
-          onClick={() => setIsOpenNewCommunity(true)}
-        >
-          Create Chat
-        </Button>
-        <Button
-          className='w-full'
-          variant='primaryOutline'
-          size='lg'
-          onClick={() => changeTab(1)}
-        >
-          Explore Chats
-        </Button>
+        {COMMUNITY_CHAT_HUB_ID ? (
+          <>
+            <Button
+              className='mt-4 w-full'
+              size='lg'
+              onClick={() => setIsOpenNewCommunity(true)}
+            >
+              Create Chat
+            </Button>
+            <Button
+              className='w-full'
+              variant='primaryOutline'
+              size='lg'
+              onClick={() => changeTab(2)}
+            >
+              Explore Chats
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              className='mt-4 w-full'
+              size='lg'
+              onClick={() => changeTab(1)}
+            >
+              Explore Hot Chats
+            </Button>
+            <Button
+              className='w-full'
+              variant='primaryOutline'
+              size='lg'
+              onClick={() => changeTab(2)}
+            >
+              Explore Hubs
+            </Button>
+          </>
+        )}
       </Container>
 
-      <NewCommunityModal
-        isOpen={isOpenNewCommunity}
-        closeModal={() => setIsOpenNewCommunity(false)}
-        hubId={COMMUNITY_CHAT_HUB_ID}
-      />
+      {COMMUNITY_CHAT_HUB_ID && (
+        <NewCommunityModal
+          isOpen={isOpenNewCommunity}
+          closeModal={() => setIsOpenNewCommunity(false)}
+          hubId={COMMUNITY_CHAT_HUB_ID}
+        />
+      )}
     </>
   )
 }
