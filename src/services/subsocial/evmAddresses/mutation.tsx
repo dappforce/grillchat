@@ -34,7 +34,7 @@ export function useLinkEvmAddress({
 
   const waitHasBalance = useWaitHasEnergy()
 
-  const mutation = useSubsocialMutation<LinkEvmAddressMutationProps, string>(
+  const mutation = useSubsocialMutation<LinkEvmAddressMutationProps>(
     async () => ({ address, signer }),
     async (params, { substrateApi }) => {
       await waitHasBalance()
@@ -61,7 +61,6 @@ export function useLinkEvmAddress({
     config,
     {
       txCallbacks: {
-        getContext: () => '',
         onStart: () => setOnCallbackLoading(true),
         onSuccess: async ({ address }) => {
           await mutateAccountsDataCache(address)
@@ -101,7 +100,7 @@ export function useUnlinkEvmAddress(
 
   const waitHasBalance = useWaitHasEnergy()
 
-  const mutation = useSubsocialMutation<UnlinkEvmAddress, string>(
+  const mutation = useSubsocialMutation<UnlinkEvmAddress>(
     async () => ({ address, signer }),
     async (params, { substrateApi }) => {
       await waitHasBalance()
@@ -116,7 +115,6 @@ export function useUnlinkEvmAddress(
     config,
     {
       txCallbacks: {
-        getContext: () => '',
         onStart: () => setOnCallbackLoading(true),
         onSuccess: async ({ address }) => {
           await mutateAccountsDataCache(address)

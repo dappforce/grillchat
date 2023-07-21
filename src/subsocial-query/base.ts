@@ -1,6 +1,7 @@
 import {
   MutationFunction,
   QueryClient,
+  Updater,
   useMutation,
   UseMutationOptions,
   useQueries,
@@ -140,7 +141,14 @@ export function createQuery<Data, ReturnValue>({
         }),
       })
     },
-    setQueryData: (client: QueryClient, data: Data, value: ReturnValue) => {
+    setQueryData: (
+      client: QueryClient,
+      data: Data,
+      value: Updater<
+        ReturnValue | null | undefined,
+        ReturnValue | null | undefined
+      >
+    ) => {
       client.setQueryData(getQueryKey(data), value ?? null)
     },
     fetchQuery,

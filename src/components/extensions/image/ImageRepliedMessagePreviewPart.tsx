@@ -17,7 +17,7 @@ export default function ImageRepliedMessagePreviewPart({
     <span className={cx('block w-10', className)}>
       <MediaLoader
         containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
-        className={cx('aspect-square w-full')}
+        className={cx('aspect-square w-full object-cover')}
         placeholderClassName={cx('w-full aspect-square')}
         width={50}
         height={50}

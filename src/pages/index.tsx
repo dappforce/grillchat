@@ -48,7 +48,6 @@ export const getStaticProps = getCommonStaticProps<
       props: {
         dehydratedState: dehydrate(queryClient),
         hubsChatCount,
-        isIntegrateChatButtonOnTop: Math.random() > 0.5,
       },
       revalidate: 2,
     }

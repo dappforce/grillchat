@@ -2,6 +2,7 @@ import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import axios from 'axios'
+import { useMemo } from 'react'
 import { getPosts } from './fetcher'
 
 const getPost = poolQuery<string, PostData>({
@@ -14,10 +15,71 @@ const getPost = poolQuery<string, PostData>({
     resultToKey: (result) => result?.id ?? '',
   },
 })
-export const getPostQuery = createQuery({
+const rawGetPostQuery = createQuery({
   key: 'post',
   fetcher: getPost,
 })
+
+type ShowHiddenPostConfig =
+  | { type: 'all' }
+  | { type: 'none' }
+  | { type: 'owner'; owner: string }
+type AdditionalConfig = { showHiddenPost?: ShowHiddenPostConfig }
+type Config = Parameters<(typeof rawGetPostQuery)['useQuery']>[1] &
+  AdditionalConfig
+
+type QueryData = ReturnType<(typeof rawGetPostQuery)['useQuery']>
+const hiddenDataQueryRecord: Map<Object, QueryData> = new Map()
+function modifyQueryData(queryData: QueryData, config?: AdditionalConfig) {
+  const { showHiddenPost = { type: 'none' } } = config || {}
+
+  const hideHiddenPost = () => {
+    if (queryData.data?.struct.hidden) {
+      const recordedData = hiddenDataQueryRecord.get(queryData)
+      if (recordedData) {
+        return recordedData
+      }
+
+      const hiddenDataQuery = {
+        ...queryData,
+        data: null,
+      }
+      hiddenDataQueryRecord.set(queryData, hiddenDataQuery)
+      return hiddenDataQuery
+    }
+
+    return queryData
+  }
+
+  switch (showHiddenPost.type) {
+    case 'none':
+      return hideHiddenPost()
+    case 'owner':
+      if (queryData.data?.struct.ownerId !== showHiddenPost.owner)
+        return hideHiddenPost()
+      break
+  }
+  return queryData
+}
+
+export const getPostQuery = {
+  ...rawGetPostQuery,
+  useQuery: (postId: string, config?: Config) => {
+    const queryData = rawGetPostQuery.useQuery(postId, config)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return useMemo(() => modifyQueryData(queryData, config), [queryData])
+  },
+  useQueries: (postIds: string[], config?: Config) => {
+    const queriesData = rawGetPostQuery.useQueries(postIds, config)
+    if (config?.showHiddenPost?.type !== 'none') {
+      return queriesData.map((queryData) => {
+        return modifyQueryData(queryData, config)
+      })
+    }
+
+    return queriesData
+  },
+}
 
 async function getNft(nft: ApiNftParams | null) {
   if (!nft) return null

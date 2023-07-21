@@ -4,14 +4,14 @@ import { copyToClipboard } from '@/utils/strings'
 import { Placement } from '@floating-ui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Space_Mono } from 'next/font/google'
-import { ComponentProps, useEffect, useState } from 'react'
+import { ComponentProps, ReactNode, useEffect, useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import Button from './Button'
 import PopOver, { PopOverProps } from './floating/PopOver'
 
 type CommonCopyTextProps = ComponentProps<'div'> & {
-  text: string | JSX.Element | null
+  text: ReactNode | null
   textToCopy?: string
   onCopyClick?: () => void
   isCodeText?: boolean

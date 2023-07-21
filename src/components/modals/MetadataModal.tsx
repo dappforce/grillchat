@@ -22,7 +22,7 @@ export default function MetadataModal({
     {
       title: `${postIdTextPrefix} ID:`,
       content: entity.id,
-      withCopyButton: true,
+      textToCopy: entity.id,
       redirectTo: entity.struct.createdAtBlock
         ? getPolkadotJsUrl(`/explorer/query/${entity.struct.createdAtBlock}`)
         : undefined,
@@ -33,19 +33,19 @@ export default function MetadataModal({
       content: entity.struct.contentId ?? '',
       redirectTo: getIpfsContentUrl(entity.struct.contentId ?? ''),
       openInNewTab: true,
-      withCopyButton: true,
+      textToCopy: entity.struct.contentId ?? '',
     },
     {
       title: 'Owner:',
       content: entity.struct.ownerId ?? '',
       redirectTo: getSubIdUrl(entity.struct.ownerId ?? ''),
       openInNewTab: true,
-      withCopyButton: true,
+      textToCopy: entity.struct.ownerId ?? '',
     },
   ]
 
   return (
-    <Modal {...props} title='Metadata' withCloseButton>
+    <Modal {...props} title='Metadata' withCloseButton={!props.onBackClick}>
       <DataCard data={metadataList} />
     </Modal>
   )

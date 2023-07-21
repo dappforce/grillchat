@@ -1,7 +1,7 @@
+import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
-import useBreakpointThreshold from '../../hooks/useBreakpointThreshold'
 import BackButton from '../BackButton'
 import Navbar, { NavbarProps } from '../navbar/Navbar'
 import NavbarExtension from '../navbar/NavbarExtension'
@@ -55,7 +55,7 @@ function LayoutNavbarExtension({
       )}
     >
       <div className='relative flex h-8 items-center justify-center py-1'>
-        <div className='absolute top-1/2 left-0 -translate-y-1/2'>
+        <div className='absolute left-0 top-1/2 -translate-y-1/2'>
           {mdUp || isTransparent ? (
             <BackButton noStyle defaultBackLink={defaultBackTo ?? '/'}>
               <span className='flex items-center font-medium text-text-secondary'>

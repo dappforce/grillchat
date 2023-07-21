@@ -7,6 +7,7 @@ type MenuListVariants = {
   size: {
     md: string
     sm: string
+    xs: string
   }
 }
 const menuListStyles = cva<MenuListVariants>('flex w-full flex-col', {
@@ -14,6 +15,7 @@ const menuListStyles = cva<MenuListVariants>('flex w-full flex-col', {
     size: {
       md: 'p-3',
       sm: 'p-1.5',
+      xs: 'p-1',
     },
   },
   defaultVariants: {
@@ -30,6 +32,7 @@ const menuListItemStyles = cva<MenuListVariants>(
       size: {
         md: 'px-4 py-3 gap-6',
         sm: 'px-3 py-2 gap-4',
+        xs: 'px-2 py-1.5 gap-2',
       },
     },
     defaultVariants: {
@@ -65,15 +68,13 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
             size='noPadding'
             disabled={disabled}
             interactive='none'
-            className={cx(
-              menuListItemStyles({ size }),
-              'disabled:!opacity-50 disabled:!brightness-100'
-            )}
+            className={cx(menuListItemStyles({ size }), 'text-left')}
+            disabledStyle='subtle'
             onClick={onClick}
           >
             <Icon
               className={cx(
-                'flex-shrink-0 text-xl text-text-muted',
+                'flex-shrink-0 text-[1.25em] text-text-muted',
                 iconClassName
               )}
             />

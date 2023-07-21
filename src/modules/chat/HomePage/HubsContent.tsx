@@ -1,33 +1,32 @@
 import ChatPreview from '@/components/chats/ChatPreview'
 import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
-import { getAliasFromHubId } from '@/constants/hubs'
+import { getAliasFromHubId, PINNED_HUB_IDS } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
 import { getHubIds } from '@/utils/env/client'
-import { getIpfsContentUrl } from '@/utils/ipfs'
 import { SpaceData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
+import { useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { HubsPageProps } from './HomePage'
 
 export default function HubsContent({
   hubsChatCount = {},
-  isIntegrateChatButtonOnTop,
-}: Pick<HubsPageProps, 'hubsChatCount' | 'isIntegrateChatButtonOnTop'>) {
+}: Pick<HubsPageProps, 'hubsChatCount'>) {
   const isInIframe = useIsInIframe()
   const hubIds = getHubIds()
 
-  const hubQueries = getSpaceQuery.useQueries(hubIds)
+  const sortedHubIds = useMemo(() => {
+    return Array.from(new Set([...PINNED_HUB_IDS, ...hubIds]))
+  }, [hubIds])
+
+  const hubQueries = getSpaceQuery.useQueries(sortedHubIds)
   const hubs = hubQueries.map(({ data: hub }) => hub)
 
   return (
     <div className='flex flex-col'>
-      {!isInIframe && (
-        <ChatSpecialButtons
-          isIntegrateChatButtonOnTop={!!isIntegrateChatButtonOnTop}
-        />
-      )}
+      {!isInIframe && <ChatSpecialButtons />}
 
       <div className='flex flex-col overflow-auto'>
         {hubs.map((hub) => {
@@ -86,7 +85,7 @@ function ChatPreviewContainer({
 
   return (
     <ChatPreview
-      isImageCircle={false}
+      rounding='2xl'
       onClick={onChatClick}
       asContainer
       asLink={{
@@ -94,7 +93,8 @@ function ChatPreviewContainer({
         href: linkTo,
       }}
       additionalDesc={chatCount ? `${chatCount} chats` : undefined}
-      image={getIpfsContentUrl(content?.image ?? '')}
+      isPinned={PINNED_HUB_IDS.includes(hub.id)}
+      image={content?.image}
       title={content?.name}
       description={content?.about}
       withFocusedStyle={isFocused}

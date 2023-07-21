@@ -1,7 +1,9 @@
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import ExtensionModals from '@/components/extensions'
+import TextArea from '@/components/inputs/TextArea'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
+import { getPostQuery } from '@/services/api/query'
 import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
@@ -65,6 +67,11 @@ export default function ChatRoom({
   const { isJoined, isLoading: isLoadingJoinedChat } = useIsJoinedToChat(chatId)
   const isHubWithoutJoinButton = HUB_ID_WITHOUT_JOIN_BUTTON.includes(hubId)
 
+  const { data: chat } = getPostQuery.useQuery(chatId, {
+    showHiddenPost: { type: 'all' },
+  })
+  const isHidden = chat?.struct.hidden
+
   return (
     <div {...props} className={cx('flex flex-col', className)}>
       <ChatList
@@ -85,34 +92,51 @@ export default function ChatRoom({
             scrollContainer={scrollContainerRef}
           />
         )}
-        {isJoined || isHubWithoutJoinButton ? (
-          <ChatInputBar
-            formProps={{
-              chatId,
-              onSubmit: scrollToBottom,
-              isPrimary: true,
-            }}
-          />
-        ) : (
-          <JoinChatWrapper>
-            {({ isLoading, mutateAsync }) => {
-              const isButtonLoading = isLoading || isLoadingJoinedChat
-              return (
-                <Button
-                  size='lg'
-                  className={cx(
-                    isButtonLoading &&
-                      'bg-background-light text-text-muted !opacity-50 !brightness-100'
-                  )}
-                  isLoading={isButtonLoading}
-                  onClick={() => mutateAsync({ chatId })}
-                >
-                  Join
-                </Button>
-              )
-            }}
-          </JoinChatWrapper>
-        )}
+        {(() => {
+          if (isHidden)
+            return (
+              <TextArea
+                rows={1}
+                disabled
+                value='You cannot send messages in a hidden chat'
+                className='bg-background-light/50 text-center text-text-muted !brightness-100'
+                variant='fill'
+                pill
+              />
+            )
+
+          if (isJoined || isHubWithoutJoinButton)
+            return (
+              <ChatInputBar
+                formProps={{
+                  chatId,
+                  onSubmit: scrollToBottom,
+                  isPrimary: true,
+                }}
+              />
+            )
+
+          return (
+            <JoinChatWrapper>
+              {({ isLoading, mutateAsync }) => {
+                const isButtonLoading = isLoading || isLoadingJoinedChat
+                return (
+                  <Button
+                    size='lg'
+                    className={cx(
+                      isButtonLoading && 'bg-background-light text-text-muted'
+                    )}
+                    disabledStyle='subtle'
+                    isLoading={isButtonLoading}
+                    onClick={() => mutateAsync({ chatId })}
+                  >
+                    Join
+                  </Button>
+                )
+              }}
+            </JoinChatWrapper>
+          )
+        })()}
       </Component>
 
       <ExtensionModals chatId={chatId} onSubmit={scrollToBottom} />

@@ -98,9 +98,11 @@ export default function Navbar({
   )
 
   const logoLink = (
-    <Link href={getHubPageLink(router)} aria-label='Back'>
-      <Logo className='text-2xl' />
-    </Link>
+    <div className='flex items-center'>
+      <Link href={getHubPageLink(router)} aria-label='Back'>
+        <Logo className='text-2xl' />
+      </Link>
+    </div>
   )
 
   const backButton = (
@@ -120,9 +122,7 @@ export default function Navbar({
           props.className
         )}
       >
-        <Container
-          className={cx('flex h-14 w-full items-center', props.className)}
-        >
+        <Container className={cx('flex h-14 w-full', props.className)}>
           {customContent ? (
             customContent({
               logoLink,

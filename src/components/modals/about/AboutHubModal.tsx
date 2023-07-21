@@ -1,3 +1,4 @@
+import TruncatedText from '@/components/TruncatedText'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin, getHubPageLink } from '@/utils/links'
@@ -31,12 +32,15 @@ export default function AboutHubModal({
 
   const hubUrl = urlJoin(getCurrentUrlOrigin(), getHubPageLink(router))
   const contentList: AboutModalProps['contentList'] = [
-    { title: 'Description', content: content.about },
+    {
+      title: 'Description',
+      content: content.about && <TruncatedText text={content.about} />,
+    },
     {
       title: 'Hub link',
       content: hubUrl,
       redirectTo: hubUrl,
-      withCopyButton: true,
+      textToCopy: hubUrl,
       openInNewTab: true,
     },
   ]
@@ -60,8 +64,9 @@ export default function AboutHubModal({
     <>
       <AboutModal
         {...props}
+        id={hub.id}
         isOpen={props.isOpen && openedModalType === null}
-        title={content.name}
+        entityTitle={content.name}
         isImageCircle={false}
         subtitle={`${chatCount} chats in hub`}
         image={content.image}

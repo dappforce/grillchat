@@ -42,3 +42,6 @@ const PINNED_CHATS_IN_HUB_ID: Record<string, string[]> = {
 export function getPinnedChatsInHubId(hubId: string) {
   return PINNED_CHATS_IN_HUB_ID[hubId] ?? []
 }
+
+export const COMMUNITY_CHAT_HUB_ID = '1025'
+export const PINNED_HUB_IDS = [COMMUNITY_CHAT_HUB_ID]

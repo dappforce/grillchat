@@ -52,6 +52,7 @@ export const POST_FRAGMENT = gql`
     upvotesCount
     updatedAtTime
     inReplyToKind
+    followersCount
     inReplyToPost {
       id
     }

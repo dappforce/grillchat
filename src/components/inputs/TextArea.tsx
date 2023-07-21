@@ -33,10 +33,24 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       const replicated = replicatedRef.current
 
       if (!textArea || !replicated) return
-      textArea.addEventListener('input', (e) => {
+      replicated.textContent = textArea.value + ' '
+
+      function syncReplicatedContent(e: any) {
+        if (!replicated) return
         replicated.textContent = (e.target as HTMLTextAreaElement)?.value + ' '
-      })
+      }
+      textArea.addEventListener('input', syncReplicatedContent)
+
+      return () => {
+        textArea.removeEventListener('input', syncReplicatedContent)
+      }
     }, [])
+
+    useEffect(() => {
+      const replicated = replicatedRef.current
+      if (!replicated) return
+      replicated.textContent = (props.value ?? '') + ' '
+    }, [props.value])
 
     const onKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
       if (!isTouchDevice() && e.key === 'Enter' && !e.shiftKey) {

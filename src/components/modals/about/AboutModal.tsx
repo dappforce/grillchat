@@ -1,22 +1,25 @@
 import ActionCard, { ActionCardProps } from '@/components/ActionCard'
+import ChatImage from '@/components/chats/ChatImage'
 import DataCard, { DataCardProps } from '@/components/DataCard'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { cx, getCommonClassNames } from '@/utils/class-names'
-import { getIpfsContentUrl } from '@/utils/ipfs'
-import Image from 'next/image'
+import { ReactNode } from 'react'
 
 export type AboutModalProps = ModalFunctionalityProps & {
-  title: string | undefined
+  id: string
+  entityTitle: string | undefined
+  modalTitle?: ReactNode
   image: string | undefined
   isImageCircle?: boolean
-  subtitle: string
+  subtitle: ReactNode
   contentList: DataCardProps['data']
   actionMenu?: ActionCardProps['actions']
   bottomElement?: JSX.Element | null
 }
 
 export default function AboutModal({
-  title,
+  id,
+  entityTitle,
+  modalTitle,
   subtitle,
   isImageCircle = true,
   image,
@@ -27,30 +30,24 @@ export default function AboutModal({
 }: AboutModalProps) {
   return (
     <Modal {...props} withCloseButton>
-      <div className='mt-4 flex flex-col items-center gap-4'>
-        <div className='flex flex-col items-center text-center'>
-          <div
-            className={cx(
-              getCommonClassNames('chatImageBackground'),
-              isImageCircle ? 'rounded-full' : 'rounded-2xl',
-              'h-20 w-20'
-            )}
-          >
-            {image && (
-              <Image
-                className='h-full w-full object-cover'
-                src={getIpfsContentUrl(image ?? '')}
-                height={80}
-                width={80}
-                alt=''
-              />
-            )}
+      <div className='mt-4 flex flex-col gap-4'>
+        <div className='flex items-center gap-4'>
+          <ChatImage
+            chatId={id}
+            chatTitle={entityTitle}
+            className='h-20 w-20'
+            image={image}
+            rounding={isImageCircle ? 'circle' : '2xl'}
+          />
+          <div className='flex flex-col'>
+            <h1 className='pr-8 text-2xl font-medium'>
+              {modalTitle || entityTitle}
+            </h1>
+            <span className='text-text-muted'>{subtitle}</span>
           </div>
-          <h1 className='mt-4 text-2xl font-medium'>{title}</h1>
-          <span className='text-text-muted'>{subtitle}</span>
         </div>
         <DataCard data={contentList} />
-        <ActionCard actions={actionMenu ?? []} />
+        <ActionCard actions={actionMenu ?? []} size='sm' />
         {bottomElement}
       </div>
     </Modal>

@@ -15,7 +15,7 @@ const evmChains = [
 
 const substrateChains = ['statemine', 'basilisk', 'rmrk', 'kusama']
 
-export const nftChains = [...evmChains, ...substrateChains] as const
+export const nftChains = [...evmChains, ...substrateChains]
 
 const marketplaceParser: {
   name: string

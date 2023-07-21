@@ -1,6 +1,7 @@
 import PinIcon from '@/assets/icons/pin.png'
 import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfiniteScrollData'
 import Container from '@/components/Container'
+import LinkText from '@/components/LinkText'
 import MessageModal from '@/components/modals/MessageModal'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE, getPinnedMessageInChatId } from '@/constants/chat'
@@ -161,6 +162,10 @@ function ChatListContent({
     })
   }, [loadedMessageQueries.length, isAtBottomRef, scrollContainerRef, replyTo])
 
+  const myAddress = useMyAccount((state) => state.address)
+  const { data: chat } = getPostQuery.useQuery(chatId)
+  const isMyChat = chat?.struct.ownerId === myAddress
+
   const Component = asContainer ? Container<'div'> : 'div'
 
   const isAllMessagesLoaded =
@@ -183,11 +188,17 @@ function ChatListContent({
         chatId={chatId}
         asContainer={asContainer}
       />
+      {messageIds.length === 0 && (
+        <CenterChatNotice
+          isMyChat={isMyChat}
+          className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
+        />
+      )}
       <ScrollableContainer
         id={scrollableContainerId}
         ref={scrollContainerRef}
         className={cx(
-          'flex flex-col-reverse overflow-x-hidden px-2',
+          'flex flex-col-reverse overflow-x-hidden overflow-y-scroll pl-2',
           scrollableContainerClassName
         )}
       >
@@ -205,10 +216,9 @@ function ChatListContent({
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
             endMessage={
-              <ChatTopNotice
-                hasNoMessage={messageQueries.length === 0}
-                className='pb-2 pt-4'
-              />
+              messageQueries.length === 0 ? null : (
+                <ChatTopNotice className='pb-2 pt-4' />
+              )
             }
             scrollThreshold={`${scrollThreshold}px`}
           >
@@ -261,6 +271,55 @@ function ChatListContent({
           />
         </div>
       </Component>
+    </div>
+  )
+}
+
+function CenterChatNotice({
+  isMyChat,
+  ...props
+}: ComponentProps<'div'> & { isMyChat: boolean }) {
+  return (
+    <div
+      {...props}
+      className={cx(
+        'flex flex-col rounded-2xl bg-background-light/50 px-6 py-4 text-sm text-text-muted',
+        props.className
+      )}
+    >
+      {isMyChat ? (
+        <>
+          <div>
+            <span>You have created a public group chat, which is:</span>
+            <div className='pl-4'>
+              <ul className='mb-1 list-disc whitespace-nowrap pl-2'>
+                <li>Persistent & on-chain</li>
+                <li>Censorship resistant</li>
+                <li>
+                  Powered by{' '}
+                  <LinkText
+                    href='https://subsocial.network'
+                    openInNewTab
+                    variant='primary'
+                  >
+                    Subsocial
+                  </LinkText>
+                </li>
+              </ul>
+            </div>
+
+            <span>You can:</span>
+            <div className='pl-4'>
+              <ul className='list-disc whitespace-nowrap pl-2'>
+                <li>Moderate content and users</li>
+                <li>Hide the chat from others on Grill</li>
+              </ul>
+            </div>
+          </div>
+        </>
+      ) : (
+        <span>No messages here yet</span>
+      )}
     </div>
   )
 }

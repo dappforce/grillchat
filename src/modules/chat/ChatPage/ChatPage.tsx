@@ -1,9 +1,13 @@
 import Button from '@/components/Button'
 import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
+import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
+import ChatImage from '@/components/chats/ChatImage'
 import ChatRoom from '@/components/chats/ChatRoom'
+import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LinkText from '@/components/LinkText'
+import Spinner from '@/components/Spinner'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
@@ -13,7 +17,7 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useExtensionData } from '@/stores/extension'
 import { useMyAccount } from '@/stores/my-account'
-import { cx, getCommonClassNames } from '@/utils/class-names'
+import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
   getChatPageLink,
@@ -23,8 +27,8 @@ import {
 } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
 import dynamic from 'next/dynamic'
-import Image, { ImageProps } from 'next/image'
-import { useRouter } from 'next/router'
+import { ImageProps } from 'next/image'
+import Router, { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
 
@@ -48,8 +52,17 @@ export default function ChatPage({
   stubMetadata,
 }: ChatPageProps) {
   const router = useRouter()
+  const [isOpenCreateSuccessModal, setIsOpenCreateSuccessModal] =
+    useState(false)
 
-  const { data: chat } = getPostQuery.useQuery(chatId)
+  useEffect(() => {
+    const isNewChat = getUrlQuery('new')
+    if (isNewChat) {
+      setIsOpenCreateSuccessModal(true)
+      replaceUrl(getCurrentUrlWithoutQuery())
+    }
+  }, [])
+
   const { data: messageIds } = useCommentIdsByPostId(chatId, {
     subscribe: true,
   })
@@ -78,41 +91,78 @@ export default function ChatPage({
     } catch {}
   }, [openExtensionModal])
 
+  const myAddress = useMyAccount((state) => state.address)
+  const isInitialized = useMyAccount((state) => state.isInitialized)
+  const { data: chat } = getPostQuery.useQuery(chatId, {
+    showHiddenPost: { type: 'all' },
+  })
+
+  useEffect(() => {
+    if (!isInitialized || !chat?.struct.hidden) return
+
+    if (myAddress !== chat.struct.ownerId) {
+      Router.push('/')
+    }
+  }, [isInitialized, myAddress, chat])
+
+  if (chat?.struct.hidden) {
+    const isNotAuthorized = myAddress !== chat.struct.ownerId
+    if (!isInitialized || isNotAuthorized) {
+      return (
+        <DefaultLayout>
+          <div className='flex flex-1 flex-col items-center justify-center'>
+            <Spinner className='h-10 w-10' />
+            <span className='mt-2 text-text-muted'>Loading...</span>
+          </div>
+        </DefaultLayout>
+      )
+    }
+  }
+
   const content = chat?.content ?? stubMetadata
 
   return (
-    <DefaultLayout
-      withFixedHeight
-      navbarProps={{
-        backButtonProps: {
-          defaultBackLink: getHubPageLink(router),
-          forceUseDefaultBackLink: false,
-        },
-        customContent: ({ backButton, authComponent, colorModeToggler }) => (
-          <div className='flex w-full items-center justify-between gap-4 overflow-hidden'>
-            <NavbarChatInfo
-              backButton={backButton}
-              image={content?.image ? getIpfsContentUrl(content.image) : ''}
-              messageCount={messageIds?.length ?? 0}
-              chatMetadata={content}
-              chatId={chatId}
-            />
-            <div className='flex items-center gap-4'>
-              {colorModeToggler}
-              {authComponent}
+    <>
+      <DefaultLayout
+        withFixedHeight
+        navbarProps={{
+          backButtonProps: {
+            defaultBackLink: getHubPageLink(router),
+            forceUseDefaultBackLink: false,
+          },
+          customContent: ({ backButton, authComponent, colorModeToggler }) => (
+            <div className='flex w-full items-center justify-between gap-4 overflow-hidden'>
+              <NavbarChatInfo
+                backButton={backButton}
+                image={content?.image ? getIpfsContentUrl(content.image) : ''}
+                messageCount={messageIds?.length ?? 0}
+                chatMetadata={content}
+                chatId={chatId}
+              />
+              <div className='flex items-center gap-4'>
+                {colorModeToggler}
+                {authComponent}
+              </div>
             </div>
-          </div>
-        ),
-      }}
-    >
-      <ChatRoom
-        hubId={hubId}
+          ),
+        }}
+      >
+        <ChatRoom
+          hubId={hubId}
+          chatId={chatId}
+          asContainer
+          className='flex-1 overflow-hidden'
+        />
+        <BottomPanel />
+      </DefaultLayout>
+
+      <ChatCreateSuccessModal
         chatId={chatId}
-        asContainer
-        className='flex-1 overflow-hidden'
+        hubId={hubId}
+        isOpen={isOpenCreateSuccessModal}
+        closeModal={() => setIsOpenCreateSuccessModal(false)}
       />
-      <BottomPanel />
-    </DefaultLayout>
+    </>
   )
 }
 
@@ -159,6 +209,10 @@ function NavbarChatInfo({
   chatMetadata?: ChatMetadata
   chatId?: string
 }) {
+  const { data: chat } = getPostQuery.useQuery(chatId ?? '', {
+    showHiddenPost: { type: 'all' },
+  })
+
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const prevIsOpenAboutChatModal = usePrevious(isOpenAboutChatModal)
   const router = useRouter()
@@ -203,28 +257,25 @@ function NavbarChatInfo({
         )}
         onClick={() => setIsOpenAboutChatModal(true)}
       >
-        <div
-          className={cx(
-            getCommonClassNames('chatImageBackground'),
-            'h-9 w-9 flex-shrink-0 justify-self-end'
-          )}
-        >
-          {image && (
-            <Image
-              className='h-full w-full object-cover'
-              width={36}
-              height={36}
-              src={image}
-              alt={chatTitle ?? 'chat topic'}
-            />
-          )}
-        </div>
+        <ChatImage
+          chatId={chatId}
+          className='h-9 w-9'
+          image={image}
+          chatTitle={chatTitle}
+        />
         <div className='flex flex-col overflow-hidden'>
-          <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
-            {chatTitle ?? 'Topic'}
-          </span>
+          <div className='flex items-center gap-2 overflow-hidden'>
+            <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
+              {chatTitle ?? 'Topic'}
+            </span>
+            {chat?.struct.hidden && (
+              <ChatHiddenChip popOverProps={{ placement: 'bottom' }} />
+            )}
+          </div>
           <span className='text-xs text-text-muted'>
-            {messageCount} messages
+            {chat?.struct.followersCount
+              ? `${chat?.struct.followersCount} members`
+              : `${messageCount} messages`}
           </span>
         </div>
       </Button>

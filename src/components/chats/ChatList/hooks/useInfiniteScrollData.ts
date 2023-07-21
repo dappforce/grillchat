@@ -1,6 +1,6 @@
+import usePrevious from '@/hooks/usePrevious'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import usePrevious from '../../../../hooks/usePrevious'
 
 export default function useInfiniteScrollData<Data>(
   data: Data[],

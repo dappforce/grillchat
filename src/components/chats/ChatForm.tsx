@@ -25,7 +25,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { BeforeMessageResult } from '../extensions/CommonExtensionModal'
+import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
 
 const CaptchaInvisible = dynamic(
@@ -257,6 +257,7 @@ export default function ChatForm({
               />
               {sendButtonText && (
                 <Button
+                  type='submit'
                   disabled={isDisabled}
                   size='lg'
                   onClick={submitForm}

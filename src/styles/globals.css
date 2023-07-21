@@ -50,13 +50,18 @@
   }
 }
 
-.grecaptcha-badge {
-  visibility: hidden;
-  display: none;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
   @apply scrollbar-thin scrollbar-track-background scrollbar-thumb-background-lightest scrollbar-track-rounded-full scrollbar-thumb-rounded-full dark:scrollbar-thumb-background-lighter;
+}
+
+html,
+body {
+  @apply font-sans;
+  @apply text-base;
 }
 
 #pwa-install {
@@ -64,14 +69,10 @@
   z-index: 9999;
 }
 
-html,
-body {
-  @apply font-sans;
+.grecaptcha-badge {
+  visibility: hidden;
+  display: none;
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 .highlighted {
   @apply relative after:pointer-events-none after:absolute after:left-0 after:top-0 after:h-full after:w-full after:rounded-2xl after:bg-background-primary/20;

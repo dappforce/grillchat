@@ -30,9 +30,13 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
       const chat = results.find((post) => post.id === chatId)
       const message = results.find((post) => post.id === messageId)
 
-      title = `Message from ${chat?.content?.title}`
-      description = message?.content?.body ?? ''
-      image = chat?.content?.image ? getIpfsContentUrl(chat.content.image) : ''
+      if (!chat?.struct.hidden) {
+        title = `Message from ${chat?.content?.title}`
+        description = message?.content?.body ?? ''
+        image = chat?.content?.image
+          ? getIpfsContentUrl(chat.content.image)
+          : ''
+      }
     } catch (err) {
       console.error('Error fetching for message page: ', err)
     }

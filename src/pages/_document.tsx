@@ -124,7 +124,7 @@ export default function Document() {
           href='/splashscreens/8.3__iPad_Mini_portrait.png'
         />
       </Head>
-      <body>
+      <body className='overflow-x-hidden'>
         <Main />
         <NextScript />
       </body>

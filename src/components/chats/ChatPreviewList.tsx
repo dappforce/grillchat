@@ -1,7 +1,6 @@
-import { getAliasFromHubId, getPinnedChatsInHubId } from '@/constants/hubs'
+import { getPinnedChatsInHubId } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useSendEvent } from '@/stores/analytics'
-import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getChatPageLink } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import { PostData } from '@subsocial/api/types'
@@ -54,11 +53,10 @@ function ChatPreviewContainer({
   const content = chat?.content
 
   const usedHubId = hubId || chat.struct.spaceId
-  const aliasOrHub = getAliasFromHubId(hubId ?? '') || usedHubId
   const linkTo = getChatPageLink(
     router,
     createSlug(chat.id, { title: content?.title }),
-    aliasOrHub
+    usedHubId
   )
 
   useHotkeys(
@@ -92,7 +90,8 @@ function ChatPreviewContainer({
         replace: isInIframe,
         href: linkTo,
       }}
-      image={content?.image && getIpfsContentUrl(content.image)}
+      isHidden={chat.struct.hidden}
+      image={content?.image}
       title={content?.title}
       description={content?.body}
       chatId={chat.id}

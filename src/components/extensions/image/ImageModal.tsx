@@ -2,6 +2,7 @@ import ImageAdd from '@/assets/icons/image-add.svg'
 import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
+import { SUPPORTED_IMAGE_EXTENSIONS } from '@/components/inputs/ImageInput'
 import TextArea from '@/components/inputs/TextArea'
 import MediaLoader, { MediaLoaderProps } from '@/components/MediaLoader'
 import Spinner from '@/components/Spinner'
@@ -15,8 +16,7 @@ import Dropzone from 'react-dropzone'
 import { HiTrash } from 'react-icons/hi2'
 import { z } from 'zod'
 import { ExtensionModalsProps } from '..'
-import CommonExtensionModal from '../CommonExtensionModal'
-import { SUPPORTED_IMAGE_EXTENSIONS } from './utils'
+import CommonExtensionModal from '../common/CommonExtensionModal'
 
 const urlSchema = z.string().url('Please enter a valid URL.')
 
