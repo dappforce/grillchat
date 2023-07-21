@@ -39,6 +39,7 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export default function UpsertChatForm(props: UpsertChatFormProps) {
+  const [isImageLoading, setIsImageLoading] = useState(false)
   const [isRedirecting, setIsRedirecting] = useState(false)
   const sendEvent = useSendEvent()
 
@@ -127,6 +128,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                           image={field.value}
                           setImageUrl={(value) => setValue('image', value)}
                           containerProps={{ className: 'my-2' }}
+                          setIsLoading={setIsImageLoading}
                           error={fieldState.error?.message}
                         />
                       )
@@ -161,6 +163,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                   schema={formSchema}
                   watch={watch}
                   isLoading={isLoading}
+                  disabled={isImageLoading}
                   loadingText={isUpdating ? 'Saving...' : 'Creating...'}
                   size='lg'
                 >
