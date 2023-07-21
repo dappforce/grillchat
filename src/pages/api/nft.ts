@@ -86,10 +86,10 @@ function getNftCacheKey(nftProperties: ApiNftParams) {
   return `${nftProperties.chain}_${nftProperties.collectionId}_${nftProperties.nftId}`
 }
 
-async function getNftData(
+export async function getNftData(
   nftProperties: ApiNftParams
 ): Promise<NftData | null> {
-  const chain = chainMapper[nftProperties.chain as keyof typeof chainMapper]
+  const chain = chainMapper[nftProperties.chain]
 
   if (!chain) return null
 
