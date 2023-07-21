@@ -193,7 +193,7 @@ function NoChats({ changeTab }: NoChatsProps) {
               size='lg'
               onClick={() => changeTab(1)}
             >
-              Explore Hot Chats
+              View Hot Chats
             </Button>
             <Button
               className='w-full'
