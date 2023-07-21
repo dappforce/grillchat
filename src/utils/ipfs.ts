@@ -7,17 +7,28 @@ enum CID_KIND {
   UNIXFS = 112,
 }
 
-export function getIpfsContentUrl(cid: string) {
-  if (!cid || cid.startsWith('http')) return cid
+export function getIpfsContentUrl(
+  uri: string,
+  gatewayUrl = SUBSOCIAL_IPFS_GATEWAY
+) {
+  if (!uri) return uri
 
-  const ipfsCid = CID.parse(cid)
-  if (!ipfsCid) return cid
+  const gatewayUrlWithIpfs = urlJoin(gatewayUrl, '/ipfs/')
+  if (uri.startsWith('ipfs://'))
+    return uri.replace('ipfs://', gatewayUrlWithIpfs)
+  if (uri.startsWith('https://ipfs.io/ipfs/'))
+    return uri.replace('https://ipfs.io/ipfs/', gatewayUrlWithIpfs)
+
+  if (!uri || uri.startsWith('http')) return uri
+
+  const ipfsCid = CID.parse(uri)
+  if (!ipfsCid) return uri
 
   const isCbor = ipfsCid.code === CID_KIND.CBOR
   if (isCbor) {
-    return urlJoin(SUBSOCIAL_IPFS_GATEWAY, `/api/v0/dag/get?arg=${cid}`)
+    return urlJoin(SUBSOCIAL_IPFS_GATEWAY, `/api/v0/dag/get?arg=${uri}`)
   }
-  return urlJoin(SUBSOCIAL_IPFS_GATEWAY, `/ipfs/${cid}`)
+  return urlJoin(SUBSOCIAL_IPFS_GATEWAY, `/ipfs/${uri}`)
 }
 
 export function getCidFromMetadataLink(link: string) {
