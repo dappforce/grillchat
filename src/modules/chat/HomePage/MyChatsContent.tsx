@@ -69,6 +69,7 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   })
   const chats = chatQueries.map((query) => query.data)
 
+  const hasAnyHiddenChats = chats.some((chat) => chat?.struct.hidden)
   const filteredChats = useMemo(() => {
     if (filter === 'hidden') {
       return chats.filter((chat) => chat?.struct.hidden)
@@ -78,7 +79,11 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
 
   return (
     <div className='flex flex-col'>
-      <Toolbar filter={filter} changeFilter={changeFilter} />
+      <Toolbar
+        filter={filter}
+        changeFilter={changeFilter}
+        hasAnyHiddenChats={hasAnyHiddenChats}
+      />
       {filter === 'hidden' && (
         <Container>
           <div className='my-2 flex items-center gap-2 rounded-2xl bg-orange-500/10 px-4 py-2 text-orange-500'>
@@ -105,15 +110,17 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
 type ToolbarProps = {
   filter: Filter | null
   changeFilter: (filter: Filter) => void
+  hasAnyHiddenChats?: boolean
 }
-function Toolbar({ filter, changeFilter }: ToolbarProps) {
+function Toolbar({ filter, changeFilter, hasAnyHiddenChats }: ToolbarProps) {
   return (
     <Container as='div' className='border-b border-border-gray'>
       <div className='flex justify-between gap-4 py-2'>
         <div className='flex gap-0.5'>
           {filters.map((text) => {
-            const isActive = text === filter
+            if (!hasAnyHiddenChats && text === 'hidden') return null
 
+            const isActive = text === filter
             return (
               <Button
                 key={text}
