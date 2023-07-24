@@ -1,7 +1,9 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { commitAction, initModerationOrgMessage } from '@/server/moderation'
+import { toSubsocialAddress } from '@subsocial/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
+import { getPostsServer } from '../posts'
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -19,6 +21,7 @@ const querySchema = z.object({
   action: z.literal('init'),
   address: z.string(),
   postId: z.string(),
+  spaceId: z.string(),
 })
 export type ApiModerationActionsMessageParams = z.infer<typeof querySchema>
 type ResponseDataMessage = {
@@ -35,6 +38,15 @@ const GET_handler = handlerWrapper({
   errorLabel: 'moderation-action-message',
   handler: async (data, _req, res) => {
     if (data.action === 'init') {
+      const [post] = await getPostsServer([data.postId])
+      const isNotOwner =
+        toSubsocialAddress(post.struct.ownerId) !==
+        toSubsocialAddress(data.address)
+      if (isNotOwner) {
+        res.json({ success: false, message: 'Not the owner of the post' })
+        return
+      }
+
       const messageTpl = await initModerationOrgMessage({
         address: data.address,
         postId: data.postId,
