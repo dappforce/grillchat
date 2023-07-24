@@ -64,6 +64,8 @@ export function getSubsocialPromoSecret() {
   )
 }
 
-export function getModerationUrl() {
-  return checkEnv(process.env.MODERATION_URL, 'MODERATION_URL', true)
+export function getModerationConfig() {
+  const url = checkEnv(process.env.MODERATION_URL, 'MODERATION_URL')
+  const token = checkEnv(process.env.MODERATION_TOKEN, 'MODERATION_TOKEN')
+  return { url, token }
 }
