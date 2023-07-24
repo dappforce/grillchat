@@ -23,7 +23,7 @@ export const useChatMenu = create<State & Actions>()((set, get) => ({
       enableOpen = false
       setTimeout(() => {
         enableOpen = true
-      }, 150)
+      }, 500)
     }
     set({ openedChatId })
   },
