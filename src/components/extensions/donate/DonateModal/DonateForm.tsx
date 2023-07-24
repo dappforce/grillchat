@@ -245,15 +245,17 @@ const TokenItemPreview = ({ item, chainName, open }: RokenItemPreviewProps) => {
 
   return (
     <div className='flex w-full items-center justify-between'>
-      <div className='flex items-center'>
-        <Image
-          src={item.icon}
-          className={cx('w-[38px] rounded-full')}
-          alt=''
-          role='presentation'
-        />
+      <div className='flex items-center gap-3'>
+        {item.icon && (
+          <Image
+            src={item.icon}
+            className={cx('w-[38px] rounded-full')}
+            alt=''
+            role='presentation'
+          />
+        )}
         <span
-          className={cx('ml-3 mr-3 block truncate text-base', {
+          className={cx('mr-3 block truncate text-base', {
             ['text-gray-500']: item.disabledItem,
           })}
         >
