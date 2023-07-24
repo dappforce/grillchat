@@ -110,6 +110,7 @@ export default function ChatPage({
     }
   }, [isInitialized, myAddress, chat])
 
+  const isOwner = chat?.struct.ownerId === myAddress
   const { data: moderator } = getModeratorQuery.useQuery(myAddress ?? '', {
     enabled: !!myAddress,
   })
@@ -122,7 +123,7 @@ export default function ChatPage({
     },
   })
   useEffect(() => {
-    if (!COMMUNITY_CHAT_HUB_ID) return
+    if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
     if (moderator?.address && !moderator.postIds?.includes(chatId)) {
       commitModerationAction({
         action: 'init',
@@ -131,7 +132,7 @@ export default function ChatPage({
         spaceId: COMMUNITY_CHAT_HUB_ID,
       })
     }
-  }, [moderator, chatId, commitModerationAction])
+  }, [moderator, chatId, commitModerationAction, isOwner])
 
   if (chat?.struct.hidden) {
     const isNotAuthorized = myAddress !== chat.struct.ownerId
