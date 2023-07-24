@@ -107,7 +107,12 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
         </Container>
       )}
       {(() => {
-        if (!isInitialized || isLoading || isPlaceholderData) {
+        if (
+          !isInitialized ||
+          isLoading ||
+          isPlaceholderData ||
+          filter === null
+        ) {
           return <ChatPreviewSkeleton.SkeletonList />
         } else if (!address || filteredChats.length === 0) {
           return <NoChats changeTab={changeTab} />
