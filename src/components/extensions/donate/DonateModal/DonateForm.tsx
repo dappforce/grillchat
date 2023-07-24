@@ -1,5 +1,5 @@
 import Button from '@/components/Button'
-import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
+import SelectInput from '@/components/inputs/SelectInput'
 import MetamaskDeepLink, {
   isInsideMetamaskBrowser,
 } from '@/components/MetamaskDeepLink'
@@ -24,7 +24,7 @@ import CommonExtensionModal from '../../common/CommonExtensionModal'
 import { chainIdByChainName } from '../api/config'
 import { useDonate, useGetBalance } from '../api/hooks'
 import AmountInput from './AmountInput'
-import { DonateProps } from './types'
+import { DonateProps, TokenListItem } from './types'
 import { chainItems, tokensItems } from './utils'
 
 function DonateForm({
@@ -221,7 +221,7 @@ function DonateForm({
 }
 
 type RokenItemPreviewProps = {
-  item: ListItem
+  item: TokenListItem
   chainName: string
   open: boolean
 }

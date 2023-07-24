@@ -37,12 +37,20 @@ export default function ModerationForm({
 
   return (
     <form>
-      <div className={cx('mb-6 mt-2 rounded-2xl bg-background-lighter p-4')}>
-        <ProfilePreview
-          address={ownerId}
-          avatarClassName='h-12 w-12'
-          withGrillAddress={false}
-        />
+      <div className='flex flex-col gap-2'>
+        <span className='text-sm text-text-muted'>User</span>
+        <div
+          className={cx(
+            'rounded-xl border border-border-gray bg-background px-4 py-2'
+          )}
+        >
+          <ProfilePreview
+            address={ownerId}
+            avatarClassName={cx('h-8 w-8')}
+            nameClassName={cx('text-base')}
+            withGrillAddress={false}
+          />
+        </div>
       </div>
     </form>
   )

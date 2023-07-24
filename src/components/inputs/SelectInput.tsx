@@ -5,31 +5,30 @@ import Image, { StaticImageData } from 'next/image'
 import { Fragment } from 'react'
 import { IoIosArrowDown } from 'react-icons/io'
 
-export type ListItem = {
+export type ListItem<AdditionalData> = {
   id: string
   icon: StaticImageData
   label: string
-  isNativeToken?: boolean
   disabledItem?: boolean
-}
+} & AdditionalData
 
-type SelectInputProps = {
+type SelectInputProps<AdditionalData> = {
   fieldLabel?: string
-  items: ListItem[]
-  selected: ListItem
-  setSelected: (item: ListItem) => void
+  items: ListItem<AdditionalData>[]
+  selected: ListItem<AdditionalData>
+  setSelected: (item: ListItem<AdditionalData>) => void
   imgClassName?: string
-  renderItem?: (item: ListItem, open: boolean) => JSX.Element
+  renderItem?: (item: ListItem<AdditionalData>, open: boolean) => JSX.Element
 }
 
-export default function SelectInput({
+export default function SelectInput<AdditionalData = {}>({
   items,
   fieldLabel,
   selected,
   setSelected,
   imgClassName,
   renderItem,
-}: SelectInputProps) {
+}: SelectInputProps<AdditionalData>) {
   const theme = useGetTheme()
 
   return (
@@ -108,17 +107,17 @@ export default function SelectInput({
   )
 }
 
-type SelectListItemProps = {
-  item: ListItem
+type SelectListItemProps<AdditionalData> = {
+  item: ListItem<AdditionalData>
   imgClassName?: string
   renderedItem?: JSX.Element
 }
 
-const SelectListItem = ({
+function SelectListItem<AdditionalData>({
   item,
   imgClassName,
   renderedItem,
-}: SelectListItemProps) => {
+}: SelectListItemProps<AdditionalData>) {
   const theme = useGetTheme()
 
   return (
