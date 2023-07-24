@@ -3,11 +3,13 @@ import FormButton from '@/components/FormButton'
 import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import TextArea from '@/components/inputs/TextArea'
+import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import {
   JoinChatWrapper,
   UpsertPostWrapper,
 } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount } from '@/stores/my-account'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink } from '@/utils/links'
@@ -40,13 +42,16 @@ type FormSchema = z.infer<typeof formSchema>
 
 export default function UpsertChatForm(props: UpsertChatFormProps) {
   const [isImageLoading, setIsImageLoading] = useState(false)
-  const [isRedirecting, setIsRedirecting] = useState(false)
+  const [isProcessingData, setIsProcessingData] = useState(false)
   const sendEvent = useSendEvent()
 
   const router = useRouter()
   const { chat, hubId, onSuccess, onTxSuccess, ...otherProps } =
     props as UpsertChatFormProps &
       Partial<InsertAdditionalProps & UpdateAdditionalProps>
+
+  const myAddress = useMyAccount((state) => state.address)
+  const { mutateAsync: commitModerationAction } = useCommitModerationAction()
 
   const defaultValues = {
     image: chat?.content?.image ?? '',
@@ -76,19 +81,24 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
           config={{
             txCallbacks: {
               onSuccess: async (_data, _, txResult) => {
-                if (isUpdating) return
+                if (isUpdating || !myAddress) return
 
                 const newId = await getNewIdFromTxResult(txResult)
                 mutateAsync({ chatId: newId })
 
-                setIsRedirecting(true)
+                setIsProcessingData(true)
+                await commitModerationAction({
+                  action: 'init',
+                  address: myAddress,
+                  postId: newId,
+                })
                 await router.push(
                   urlJoin(
                     getChatPageLink({ query: {} }, newId, hubId),
                     '?new=true'
                   )
                 )
-                setIsRedirecting(false)
+                setIsProcessingData(false)
 
                 onTxSuccess?.()
               },
@@ -98,6 +108,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
         >
           {({ isLoading: isMutating, mutateAsync }) => {
             const onSubmit: SubmitHandler<FormSchema> = async (data) => {
+              console.log('asdfasdfasdf')
               if (isUpdating) sendEvent('click edit_chat_button')
               else sendEvent('click create_chat_button')
 
@@ -109,7 +120,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
               onSuccess?.()
             }
 
-            const isLoading = isMutating || isRedirecting
+            const isLoading = isMutating || isProcessingData
 
             return (
               <form

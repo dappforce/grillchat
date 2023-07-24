@@ -9,9 +9,12 @@ const getBlockedInSpaceId = poolQuery<
   ApiModerationBlockedInSpaceIdsResponse['data'][number]
 >({
   multiCall: async (params) => {
+    const filteredParams = params.filter(Boolean)
+    if (!filteredParams.length) return []
+
     const response = await axios.get(
       '/api/moderation/blocked/space-ids?' +
-        params.map((n) => `spaceIds=${n}`).join('&')
+        filteredParams.map((n) => `spaceIds=${n}`).join('&')
     )
     const resData = response.data as ApiModerationBlockedInSpaceIdsResponse
     return resData.data
@@ -31,9 +34,13 @@ const getBlockedInPostId = poolQuery<
   ApiModerationBlockedInPostIdsResponse['data'][number]
 >({
   multiCall: async (params) => {
-    const response = await axios.get('/api/moderation/blocked/post-ids', {
-      params,
-    })
+    const filteredParams = params.filter(Boolean)
+    if (!filteredParams.length) return []
+
+    const response = await axios.get(
+      '/api/moderation/blocked/post-ids?' +
+        filteredParams.map((n) => `spaceIds=${n}`).join('&')
+    )
     const resData = response.data as ApiModerationBlockedInPostIdsResponse
     return resData.data
   },
