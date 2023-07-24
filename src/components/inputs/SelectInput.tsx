@@ -18,6 +18,7 @@ type SelectInputProps<AdditionalData> = {
   setSelected: (item: ListItem<AdditionalData>) => void
   imgClassName?: string
   renderItem?: (item: ListItem<AdditionalData>, open: boolean) => JSX.Element
+  placeholder?: string
 }
 
 export default function SelectInput<AdditionalData = {}>({
@@ -27,6 +28,7 @@ export default function SelectInput<AdditionalData = {}>({
   setSelected,
   imgClassName,
   renderItem,
+  placeholder,
 }: SelectInputProps<AdditionalData>) {
   return (
     <div>
@@ -59,7 +61,7 @@ export default function SelectInput<AdditionalData = {}>({
                     />
                   )}
                   <span className='block truncate'>
-                    {selected?.label ?? ''}
+                    {selected?.label ?? placeholder ?? ''}
                   </span>
                 </span>
                 <span className='pointer-events-none absolute inset-y-0 right-0 ml-2 flex items-center pr-4'>

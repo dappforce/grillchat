@@ -104,6 +104,7 @@ export default function ModerationForm({
               fieldLabel='Reason'
               items={reasonsMapped}
               selected={field.value}
+              placeholder='Loading...'
               setSelected={(item) => field.onChange(item)}
             />
           )
