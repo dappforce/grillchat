@@ -1,3 +1,4 @@
+import ModerateIcon from '@/assets/icons/moderate.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
 import { useOpenDonateExtension } from '@/components/extensions/donate/hooks'
@@ -6,6 +7,7 @@ import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
 import MetadataModal from '@/components/modals/MetadataModal'
+import ModerationModal from '@/components/moderation/ModerationModal'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -65,7 +67,7 @@ const checkMarkModalReducer = (
   return { isOpen: true, variant: action }
 }
 
-type ModalState = 'login' | null
+type ModalState = 'login' | 'moderate' | null
 
 export default function ChatItem({
   message,
@@ -140,6 +142,11 @@ export default function ChatItem({
         onClick: () => setMessageAsReply(messageId),
       },
       ...(showDonateMenuItem ? [donateMenuItem] : []),
+      {
+        icon: ModerateIcon,
+        text: 'Moderate',
+        onClick: () => setModalState('moderate'),
+      },
       ...(address && canUsePromoExtensionAccounts.includes(address)
         ? [
             {
@@ -288,6 +295,11 @@ export default function ChatItem({
         closeModal={() => setModalState(null)}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}
+      />
+      <ModerationModal
+        isOpen={modalState === 'moderate'}
+        closeModal={() => setModalState(null)}
+        messageId={messageId}
       />
     </div>
   )

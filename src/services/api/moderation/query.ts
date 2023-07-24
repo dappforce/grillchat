@@ -8,9 +8,10 @@ const getBlockedInSpaceId = poolQuery<
   ApiModerationBlockedInSpaceIdsResponse['data'][number]
 >({
   multiCall: async (params) => {
-    const response = await axios.get('/api/moderation/blocked/space-ids', {
-      params,
-    })
+    const response = await axios.get(
+      '/api/moderation/blocked/space-ids?' +
+        params.map((n) => `spaceIds=${n}`).join('&')
+    )
     const resData = response.data as ApiModerationBlockedInSpaceIdsResponse
     return resData.data
   },

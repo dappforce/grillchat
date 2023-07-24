@@ -10,8 +10,8 @@ export default function useFilterBlockedMessageIds(
   chatId: string,
   messageIds: string[]
 ) {
+  const { data: blockedInHub } = getBlockedInSpaceIdQuery.useQuery(hubId)
   const { data: blockedInChat } = getBlockedInPostIdQuery.useQuery(chatId)
-  const { data: blockedInHub } = getBlockedInSpaceIdQuery.useQuery(chatId)
 
   return useMemo(() => {
     const blockedInChatMessageIds = blockedInChat?.blockedResources.postId ?? []
