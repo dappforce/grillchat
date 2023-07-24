@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
-export type ApiResponse<T> = T & {
+export type ApiResponse<T = {}> = T & {
   success: boolean
   message: string
   errors?: any

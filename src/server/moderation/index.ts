@@ -1,7 +1,11 @@
 import { gql } from 'graphql-request'
 import {
+  CommitModerationActionMutation,
+  CommitModerationActionMutationVariables,
   GetModerationReasonsQuery,
   GetModerationReasonsQueryVariables,
+  InitModerationOrgMessageQuery,
+  InitModerationOrgMessageQueryVariables,
 } from './generated'
 import { mapBlockedResources, moderationRequest } from './utils'
 
@@ -76,4 +80,47 @@ export async function getModerationReasons() {
     document: GET_MODERATION_REASONS,
   })
   return data.reasonsAll
+}
+
+export const INIT_MODERATION_ORG_MESSAGE = gql`
+  query InitModerationOrgMessage($address: String!, $postId: String!) {
+    initModeratorWithOrganisationMessage(
+      input: { substrateAddress: $address, ctxPostIds: [$postId] }
+    ) {
+      messageTpl
+    }
+  }
+`
+export async function initModerationOrgMessage(
+  variables: InitModerationOrgMessageQueryVariables
+) {
+  const data = await moderationRequest<
+    InitModerationOrgMessageQuery,
+    InitModerationOrgMessageQueryVariables
+  >({
+    document: INIT_MODERATION_ORG_MESSAGE,
+    variables,
+  })
+  return data.initModeratorWithOrganisationMessage?.messageTpl
+}
+
+export const COMMIT_MODERATION_ACTION = gql`
+  mutation CommitModerationAction($signedMessage: String!) {
+    commitSignedMessageWithAction(signedMessage: $signedMessage) {
+      success
+      message
+    }
+  }
+`
+export async function commitAction(
+  variables: CommitModerationActionMutationVariables
+) {
+  const res = await moderationRequest<
+    CommitModerationActionMutation,
+    CommitModerationActionMutationVariables
+  >({
+    document: COMMIT_MODERATION_ACTION,
+    variables,
+  })
+  return res.commitSignedMessageWithAction
 }

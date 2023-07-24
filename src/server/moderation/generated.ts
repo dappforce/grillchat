@@ -269,12 +269,44 @@ export type GetModerationReasonsQueryVariables = Exact<{ [key: string]: never; }
 
 export type GetModerationReasonsQuery = { __typename?: 'Query', reasonsAll: Array<{ __typename?: 'BlockReasonGql', id: number, reasonText: string }> };
 
+export type InitModerationOrgMessageQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+  postId: Scalars['String']['input'];
+}>;
+
+
+export type InitModerationOrgMessageQuery = { __typename?: 'Query', initModeratorWithOrganisationMessage?: { __typename?: 'SignedMessageWithActionTemplateResponseDto', messageTpl: string } | null };
+
+export type CommitModerationActionMutationVariables = Exact<{
+  signedMessage: Scalars['String']['input'];
+}>;
+
+
+export type CommitModerationActionMutation = { __typename?: 'Mutation', commitSignedMessageWithAction?: { __typename?: 'CommitModerationSignedMessageResponse', success: boolean, message?: string | null } | null };
+
 
 export const GetModerationReasons = gql`
     query GetModerationReasons {
   reasonsAll {
     id
     reasonText
+  }
+}
+    `;
+export const InitModerationOrgMessage = gql`
+    query InitModerationOrgMessage($address: String!, $postId: String!) {
+  initModeratorWithOrganisationMessage(
+    input: {substrateAddress: $address, ctxPostIds: [$postId]}
+  ) {
+    messageTpl
+  }
+}
+    `;
+export const CommitModerationAction = gql`
+    mutation CommitModerationAction($signedMessage: String!) {
+  commitSignedMessageWithAction(signedMessage: $signedMessage) {
+    success
+    message
   }
 }
     `;

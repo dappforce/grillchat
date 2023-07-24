@@ -2,14 +2,9 @@ import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
-import useSignMessage from '@/hooks/useSignMessage'
-import {
-  useGetLinkingMessage,
-  useLinkingAccount,
-} from '@/services/api/notifications/mutation'
+import { useLinkingAccount } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { useQueryClient } from '@tanstack/react-query'
-import { sortObj } from 'jsonabc'
 import { useState } from 'react'
 import { ContentProps } from '../../types'
 
@@ -68,26 +63,11 @@ export default function TelegramNotificationContent(props: ContentProps) {
 function DisconnectButton({ address }: ContentProps) {
   const queryClient = useQueryClient()
 
-  const { mutate: disconnect, isLoading: isCreatingLinkingUrl } =
-    useLinkingAccount({
-      onSuccess: () => {
-        getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
-      },
-    })
-
-  const processMessage = useProcessMessage()
-  const { mutate: getLinkingMessage, isLoading: isGettingLinkingMessage } =
-    useGetLinkingMessage({
-      onSuccess: async (data) => {
-        const processedData = await processMessage(data)
-        disconnect({
-          action: 'unlink',
-          signedMessageWithDetails: processedData,
-        })
-      },
-    })
-
-  const isLoading = isCreatingLinkingUrl || isGettingLinkingMessage
+  const { mutate: getLinkingMessage, isLoading } = useLinkingAccount({
+    onSuccess: () => {
+      getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
+    },
+  })
 
   const handleClick = async () => {
     if (!address) return
@@ -114,28 +94,13 @@ function ConnectTelegramButton({ address }: ContentProps) {
     })
   const [openedTelegramBotLink, setOpenedTelegramBotLink] = useState(false)
 
-  const { mutate: createLinkUrl, isLoading: isCreatingLinkingUrl } =
-    useLinkingAccount({
-      onSuccess: (url) => {
-        if (!url) throw new Error('Error generating url')
-        window.open(url, '_blank')
-        setOpenedTelegramBotLink(true)
-      },
-    })
-
-  const processMessage = useProcessMessage()
-  const { mutate: getLinkingMessage, isLoading: isGettingLinkingMessage } =
-    useGetLinkingMessage({
-      onSuccess: async (data) => {
-        const processedData = await processMessage(data)
-        createLinkUrl({
-          signedMessageWithDetails: processedData,
-          action: 'link',
-        })
-      },
-    })
-
-  const isLoading = isCreatingLinkingUrl || isGettingLinkingMessage
+  const { mutate: getLinkingMessage, isLoading } = useLinkingAccount({
+    onSuccess: async (url) => {
+      if (!url) throw new Error('Error generating url')
+      window.open(url, '_blank')
+      setOpenedTelegramBotLink(true)
+    },
+  })
 
   const handleClickLinking = async () => {
     if (!address) return
@@ -160,21 +125,4 @@ function ConnectTelegramButton({ address }: ContentProps) {
       Connect Telegram
     </Button>
   )
-}
-
-function useProcessMessage() {
-  const signMessage = useSignMessage()
-
-  return async (data: { messageData: any; payloadToSign: string } | null) => {
-    if (!data) throw new Error('No data')
-
-    const signedPayload = await signMessage(data.payloadToSign)
-    data.messageData['signature'] = signedPayload
-
-    const signedMessage = encodeURIComponent(
-      JSON.stringify(sortObj(data.messageData))
-    )
-
-    return signedMessage
-  }
 }
