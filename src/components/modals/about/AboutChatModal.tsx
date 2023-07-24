@@ -1,3 +1,4 @@
+import ModerateIcon from '@/assets/icons/moderate.svg'
 import { ActionCardProps } from '@/components/ActionCard'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import UpsertChatModal from '@/components/community/UpsertChatModal'
@@ -5,6 +6,7 @@ import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
+import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
@@ -45,6 +47,7 @@ export default function AboutChatModal({
   messageCount = 0,
   ...props
 }: AboutChatModalProps) {
+  const { isAuthorized } = useAuthorizedForModeration(chatId)
   const address = useMyAccount((state) => state.address)
   const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId, {
@@ -116,9 +119,18 @@ export default function AboutChatModal({
       },
     ]
 
+    const additionalMenus: ActionCardProps['actions'] = []
+    if (isAuthorized) {
+      additionalMenus.push({
+        text: 'Moderation',
+        icon: ModerateIcon,
+        iconClassName: cx('text-text-muted'),
+        onClick: () => {
+          // TODO: add handler
+        },
+      })
+    }
     if (chatOwner === address) {
-      const additionalMenus: ActionCardProps['actions'] = []
-
       additionalMenus.push({
         text: 'Edit',
         icon: HiPencilSquare,

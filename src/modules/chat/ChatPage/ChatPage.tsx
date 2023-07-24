@@ -115,7 +115,7 @@ export default function ChatPage({
     enabled: !!myAddress,
   })
   const queryClient = useQueryClient()
-  const isAuthorizedForModeration = useAuthorizedForModeration(chatId)
+  const { isAuthorized, isOwner } = useAuthorizedForModeration(chatId)
   const { mutateAsync: commitModerationAction } = useCommitModerationAction({
     onSuccess: (_, variables) => {
       if (variables.action === 'init') {
@@ -124,8 +124,8 @@ export default function ChatPage({
     },
   })
   useEffect(() => {
-    if (!COMMUNITY_CHAT_HUB_ID) return
-    if (isAuthorizedForModeration && moderator) {
+    if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
+    if (!isAuthorized && moderator) {
       commitModerationAction({
         action: 'init',
         address: moderator.address,
@@ -133,7 +133,7 @@ export default function ChatPage({
         spaceId: COMMUNITY_CHAT_HUB_ID,
       })
     }
-  }, [isAuthorizedForModeration, commitModerationAction, moderator, chatId])
+  }, [isAuthorized, commitModerationAction, moderator, chatId, isOwner])
 
   if (chat?.struct.hidden) {
     const isNotAuthorized = myAddress !== chat.struct.ownerId

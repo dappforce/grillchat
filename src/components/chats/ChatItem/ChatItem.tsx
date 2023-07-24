@@ -98,7 +98,7 @@ export default function ChatItem({
   const [modalState, setModalState] = useState<ModalState>(null)
 
   const address = useMyAccount((state) => state.address)
-  const isAuthorizedForModeration = useAuthorizedForModeration(chatId)
+  const { isAuthorized } = useAuthorizedForModeration(chatId)
 
   const { data: messageOwnerAccountData } =
     getAccountDataQuery.useQuery(ownerId)
@@ -144,7 +144,7 @@ export default function ChatItem({
         onClick: () => setMessageAsReply(messageId),
       },
       ...(showDonateMenuItem ? [donateMenuItem] : []),
-      ...(isAuthorizedForModeration
+      ...(isAuthorized
         ? [
             {
               icon: ModerateIcon,
