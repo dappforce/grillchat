@@ -9,11 +9,14 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LinkText from '@/components/LinkText'
 import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
+import { useCommitModerationAction } from '@/services/api/moderation/mutation'
+import { getModeratorQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useExtensionData } from '@/stores/extension'
@@ -27,6 +30,7 @@ import {
   getUrlQuery,
 } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
+import { useQueryClient } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
 import { ImageProps } from 'next/image'
 import Router, { useRouter } from 'next/router'
@@ -105,6 +109,29 @@ export default function ChatPage({
       Router.push('/')
     }
   }, [isInitialized, myAddress, chat])
+
+  const { data: moderator } = getModeratorQuery.useQuery(myAddress ?? '', {
+    enabled: !!myAddress,
+  })
+  const queryClient = useQueryClient()
+  const { mutateAsync: commitModerationAction } = useCommitModerationAction({
+    onSuccess: (_, variables) => {
+      if (variables.action === 'init') {
+        getModeratorQuery.invalidate(queryClient, variables.address)
+      }
+    },
+  })
+  useEffect(() => {
+    if (!COMMUNITY_CHAT_HUB_ID) return
+    if (moderator?.address && !moderator.postIds?.includes(chatId)) {
+      commitModerationAction({
+        action: 'init',
+        address: moderator.address,
+        postId: chatId,
+        spaceId: COMMUNITY_CHAT_HUB_ID,
+      })
+    }
+  }, [moderator, chatId, commitModerationAction])
 
   if (chat?.struct.hidden) {
     const isNotAuthorized = myAddress !== chat.struct.ownerId

@@ -1,8 +1,12 @@
 import { ApiModerationBlockedInPostIdsResponse } from '@/pages/api/moderation/blocked/post-ids'
 import { ApiModerationBlockedInSpaceIdsResponse } from '@/pages/api/moderation/blocked/space-ids'
+import {
+  ApiModerationModeratorParams,
+  ApiModerationModeratorResponse,
+} from '@/pages/api/moderation/moderator'
 import { ApiModerationReasonsResponse } from '@/pages/api/moderation/reasons'
 import { createQuery, poolQuery } from '@/subsocial-query'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 const getBlockedInSpaceId = poolQuery<
   string,
@@ -59,5 +63,19 @@ export const getModerationReasonsQuery = createQuery({
   fetcher: async () => {
     const response = await axios.get('/api/moderation/reasons')
     return response.data.data as ApiModerationReasonsResponse['data']
+  },
+})
+
+export const getModeratorQuery = createQuery({
+  key: 'getModerator',
+  fetcher: async (address: string) => {
+    const response = await axios.get<
+      any,
+      AxiosResponse<ApiModerationModeratorResponse>,
+      ApiModerationModeratorParams
+    >('/api/moderation/moderator', {
+      params: { address },
+    })
+    return { address, postIds: response.data.ctxPostIds ?? null }
   },
 })

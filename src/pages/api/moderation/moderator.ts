@@ -9,7 +9,7 @@ export type ApiModerationModeratorParams = z.infer<typeof querySchema>
 type ResponseData = {
   ctxPostIds: string[] | null
 }
-export type ApiModerationActionsMessageResponse = ApiResponse<ResponseData>
+export type ApiModerationModeratorResponse = ApiResponse<ResponseData>
 
 export default handlerWrapper({
   inputSchema: querySchema,

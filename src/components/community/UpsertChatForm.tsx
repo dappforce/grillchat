@@ -3,7 +3,6 @@ import FormButton from '@/components/FormButton'
 import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import TextArea from '@/components/inputs/TextArea'
-import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import {
   JoinChatWrapper,
   UpsertPostWrapper,
@@ -51,7 +50,6 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
       Partial<InsertAdditionalProps & UpdateAdditionalProps>
 
   const myAddress = useMyAccount((state) => state.address)
-  const { mutateAsync: commitModerationAction } = useCommitModerationAction()
 
   const defaultValues = {
     image: chat?.content?.image ?? '',
@@ -86,12 +84,6 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                 setIsProcessingData(true)
                 const newId = await getNewIdFromTxResult(txResult)
                 mutateAsync({ chatId: newId })
-
-                await commitModerationAction({
-                  action: 'init',
-                  address: myAddress,
-                  postId: newId,
-                })
 
                 await router.push(
                   urlJoin(
