@@ -10,8 +10,14 @@ export default function ModerationModal({
   ...props
 }: ModerationModalProps) {
   return (
-    <Modal {...props}>
-      <ModerationForm messageId={messageId} />
+    <Modal
+      {...props}
+      title='🛡 Moderate'
+      description='Moderated content will not be deleted from the blockchain but be hidden from the other users in Grill.chat.'
+    >
+      <div className='mt-2'>
+        <ModerationForm messageId={messageId} />
+      </div>
     </Modal>
   )
 }

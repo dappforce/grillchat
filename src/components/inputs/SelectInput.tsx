@@ -1,10 +1,10 @@
-import { cx } from '@/utils/class-names'
+import { cx, interactionRingStyles } from '@/utils/class-names'
 import { Listbox, Transition } from '@headlessui/react'
 import Image, { ImageProps } from 'next/image'
 import { Fragment } from 'react'
 import { IoIosArrowDown } from 'react-icons/io'
 
-export type ListItem<AdditionalData> = {
+export type ListItem<AdditionalData = {}> = {
   id: string
   icon?: ImageProps['src']
   label: string
@@ -14,7 +14,7 @@ export type ListItem<AdditionalData> = {
 type SelectInputProps<AdditionalData> = {
   fieldLabel?: string
   items: ListItem<AdditionalData>[]
-  selected: ListItem<AdditionalData>
+  selected: ListItem<AdditionalData> | null
   setSelected: (item: ListItem<AdditionalData>) => void
   imgClassName?: string
   renderItem?: (item: ListItem<AdditionalData>, open: boolean) => JSX.Element
@@ -42,14 +42,15 @@ export default function SelectInput<AdditionalData = {}>({
               <Listbox.Button
                 className={cx(
                   'relative w-full cursor-default rounded-2xl',
-                  'py-2 pl-4 pr-12 text-left',
-                  'text-base leading-6 ring-1 ring-inset ring-gray-500',
-                  'focus:outline-none focus:ring-1 focus:ring-gray-400',
-                  'bg-background text-text'
+                  selected?.icon ? 'py-2' : 'py-3',
+                  'pl-4 pr-12 text-left',
+                  'text-base leading-6 ring-1 ring-inset ring-border-gray',
+                  'bg-background text-text',
+                  interactionRingStyles()
                 )}
               >
                 <span className='flex items-center gap-3'>
-                  {selected.icon && (
+                  {selected?.icon && (
                     <Image
                       src={selected.icon}
                       className={cx('rounded-full', imgClassName)}
@@ -57,7 +58,9 @@ export default function SelectInput<AdditionalData = {}>({
                       role='presentation'
                     />
                   )}
-                  <span className='block truncate'>{selected.label}</span>
+                  <span className='block truncate'>
+                    {selected?.label ?? ''}
+                  </span>
                 </span>
                 <span className='pointer-events-none absolute inset-y-0 right-0 ml-2 flex items-center pr-4'>
                   <IoIosArrowDown

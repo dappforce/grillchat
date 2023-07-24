@@ -1,5 +1,6 @@
 import { ApiModerationBlockedInPostIdsResponse } from '@/pages/api/moderation/blocked/post-ids'
 import { ApiModerationBlockedInSpaceIdsResponse } from '@/pages/api/moderation/blocked/space-ids'
+import { ApiModerationReasonsResponse } from '@/pages/api/moderation/reasons'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import axios from 'axios'
 
@@ -44,4 +45,12 @@ const getBlockedInPostId = poolQuery<
 export const getBlockedInPostIdQuery = createQuery({
   key: 'getBlockedInPostId',
   fetcher: getBlockedInPostId,
+})
+
+export const getModerationReasonsQuery = createQuery({
+  key: 'getModerationReasons',
+  fetcher: async () => {
+    const response = await axios.get('/api/moderation/reasons')
+    return response.data.data as ApiModerationReasonsResponse['data']
+  },
 })
