@@ -109,9 +109,17 @@ export async function getModeratorData(
 }
 
 export const INIT_MODERATION_ORG_MESSAGE = gql`
-  query InitModerationOrgMessage($address: String!, $postId: String!) {
+  query InitModerationOrgMessage(
+    $address: String!
+    $postId: String!
+    $spaceId: String!
+  ) {
     initModeratorWithOrganisationMessage(
-      input: { substrateAddress: $address, ctxPostIds: [$postId] }
+      input: {
+        substrateAddress: $address
+        ctxPostIds: [$postId]
+        ctxSpaceIds: [$spaceId]
+      }
     ) {
       messageTpl
     }

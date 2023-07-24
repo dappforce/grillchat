@@ -50,6 +50,7 @@ const GET_handler = handlerWrapper({
       const messageTpl = await initModerationOrgMessage({
         address: data.address,
         postId: data.postId,
+        spaceId: data.spaceId,
       })
       res.json({ messageTpl, success: true, message: 'OK' })
       return

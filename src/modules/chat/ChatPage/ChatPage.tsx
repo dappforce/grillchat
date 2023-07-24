@@ -11,6 +11,7 @@ import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
+import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -110,11 +111,11 @@ export default function ChatPage({
     }
   }, [isInitialized, myAddress, chat])
 
-  const isOwner = chat?.struct.ownerId === myAddress
   const { data: moderator } = getModeratorQuery.useQuery(myAddress ?? '', {
     enabled: !!myAddress,
   })
   const queryClient = useQueryClient()
+  const isAuthorizedForModeration = useAuthorizedForModeration(chatId)
   const { mutateAsync: commitModerationAction } = useCommitModerationAction({
     onSuccess: (_, variables) => {
       if (variables.action === 'init') {
@@ -123,8 +124,8 @@ export default function ChatPage({
     },
   })
   useEffect(() => {
-    if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
-    if (moderator?.address && !moderator.postIds?.includes(chatId)) {
+    if (!COMMUNITY_CHAT_HUB_ID) return
+    if (isAuthorizedForModeration && moderator) {
       commitModerationAction({
         action: 'init',
         address: moderator.address,
@@ -132,7 +133,7 @@ export default function ChatPage({
         spaceId: COMMUNITY_CHAT_HUB_ID,
       })
     }
-  }, [moderator, chatId, commitModerationAction, isOwner])
+  }, [isAuthorizedForModeration, commitModerationAction, moderator, chatId])
 
   if (chat?.struct.hidden) {
     const isNotAuthorized = myAddress !== chat.struct.ownerId

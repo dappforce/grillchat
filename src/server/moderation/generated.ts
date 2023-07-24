@@ -279,6 +279,7 @@ export type GetModeratorDataQuery = { __typename?: 'Query', moderatorBySubstrate
 export type InitModerationOrgMessageQueryVariables = Exact<{
   address: Scalars['String']['input'];
   postId: Scalars['String']['input'];
+  spaceId: Scalars['String']['input'];
 }>;
 
 
@@ -318,9 +319,9 @@ export const GetModeratorData = gql`
 }
     `;
 export const InitModerationOrgMessage = gql`
-    query InitModerationOrgMessage($address: String!, $postId: String!) {
+    query InitModerationOrgMessage($address: String!, $postId: String!, $spaceId: String!) {
   initModeratorWithOrganisationMessage(
-    input: {substrateAddress: $address, ctxPostIds: [$postId]}
+    input: {substrateAddress: $address, ctxPostIds: [$postId], ctxSpaceIds: [$spaceId]}
   ) {
     messageTpl
   }

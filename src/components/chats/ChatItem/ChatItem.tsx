@@ -10,6 +10,7 @@ import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
+import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
@@ -97,6 +98,7 @@ export default function ChatItem({
   const [modalState, setModalState] = useState<ModalState>(null)
 
   const address = useMyAccount((state) => state.address)
+  const isAuthorizedForModeration = useAuthorizedForModeration(chatId)
 
   const { data: messageOwnerAccountData } =
     getAccountDataQuery.useQuery(ownerId)
@@ -142,11 +144,15 @@ export default function ChatItem({
         onClick: () => setMessageAsReply(messageId),
       },
       ...(showDonateMenuItem ? [donateMenuItem] : []),
-      {
-        icon: ModerateIcon,
-        text: 'Moderate',
-        onClick: () => setModalState('moderate'),
-      },
+      ...(isAuthorizedForModeration
+        ? [
+            {
+              icon: ModerateIcon,
+              text: 'Moderate',
+              onClick: () => setModalState('moderate'),
+            },
+          ]
+        : []),
       ...(address && canUsePromoExtensionAccounts.includes(address)
         ? [
             {
