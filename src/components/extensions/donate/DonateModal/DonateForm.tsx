@@ -1,5 +1,5 @@
 import Button from '@/components/Button'
-import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
+import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
 import MetamaskDeepLink, {
   isInsideMetamaskBrowser,
 } from '@/components/MetamaskDeepLink'
@@ -158,7 +158,7 @@ function DonateForm({
           />
         </div>
         <div className='flex flex-col gap-6'>
-          <Dropdown
+          <SelectInput
             selected={selectedChain}
             setSelected={setSelectedChain}
             fieldLabel='Chain'
@@ -188,7 +188,7 @@ function DonateForm({
               </Button>
             ) : (
               <>
-                <Dropdown
+                <SelectInput
                   selected={selectedToken}
                   setSelected={setSelectedToken}
                   fieldLabel='Token'
