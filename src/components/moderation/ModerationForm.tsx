@@ -2,7 +2,7 @@ import { getModerationReasonsQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ComponentProps, useMemo } from 'react'
+import { ComponentProps, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import Button from '../Button'
@@ -14,7 +14,6 @@ export type ModerationFormProps = ComponentProps<'form'> & {
 }
 
 const formSchema = z.object({
-  contentType: z.enum(['message', 'user', 'content']),
   blockingContent: z.object({ id: z.string(), label: z.string() }),
   reason: z.object({ id: z.string(), label: z.string() }),
 })
@@ -43,14 +42,7 @@ export default function ModerationForm({
   const { data: message } = getPostQuery.useQuery(messageId)
   const ownerId = message?.struct.ownerId ?? ''
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-  } = useForm<FormSchema>({
+  const { control, handleSubmit, setValue } = useForm<FormSchema>({
     mode: 'onChange',
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,8 +51,20 @@ export default function ModerationForm({
     },
   })
 
+  useEffect(() => {
+    if (reasonsMapped.length > 0) {
+      setValue('reason', reasonsMapped[0])
+    }
+  }, [reasonsMapped, setValue])
+
   return (
-    <form className='flex flex-col gap-6'>
+    <form
+      {...props}
+      className={cx('flex flex-col gap-6', props.className)}
+      onSubmit={handleSubmit((data) => {
+        console.log(data)
+      })}
+    >
       <div className='flex flex-col gap-2'>
         <span className='text-sm text-text-muted'>User</span>
         <div
@@ -73,6 +77,7 @@ export default function ModerationForm({
             avatarClassName={cx('h-8 w-8')}
             nameClassName={cx('text-base')}
             withGrillAddress={false}
+            withEvmAddress={false}
           />
         </div>
       </div>
