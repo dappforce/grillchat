@@ -1,3 +1,8 @@
+import { gql } from 'graphql-request'
+import {
+  GetModerationReasonsQuery,
+  GetModerationReasonsQueryVariables,
+} from './generated'
 import { mapBlockedResources, moderationRequest } from './utils'
 
 const generateBlockedInSpaceIds = (spaceIds: string[]) => {
@@ -53,4 +58,22 @@ export async function getBlockedInPostIds(postIds: string[]) {
       blockedResources: mapBlockedResources(res),
     }
   })
+}
+
+export const GET_MODERATION_REASONS = gql`
+  query GetModerationReasons {
+    reasonsAll {
+      id
+      reasonText
+    }
+  }
+`
+export async function getModerationReasons() {
+  const data = await moderationRequest<
+    GetModerationReasonsQuery,
+    GetModerationReasonsQueryVariables
+  >({
+    document: GET_MODERATION_REASONS,
+  })
+  return data.reasonsAll
 }
