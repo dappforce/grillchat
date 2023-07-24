@@ -17,6 +17,7 @@ export default handlerWrapper({
   dataGetter: (req) => req.query,
 })<ResponseData>({
   allowedMethods: ['GET'],
+  errorLabel: 'blocked-space-ids',
   handler: async (data, _, res) => {
     const spaceIds = Array.isArray(data.spaceIds)
       ? data.spaceIds

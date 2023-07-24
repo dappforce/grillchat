@@ -32,6 +32,7 @@ const GET_handler = handlerWrapper({
   dataGetter: (req) => req.query,
 })<ResponseDataMessage>({
   allowedMethods: ['GET'],
+  errorLabel: 'moderation-action-message',
   handler: async (data, _req, res) => {
     if (data.action === 'init') {
       const messageTpl = await initModerationOrgMessage({
@@ -55,6 +56,7 @@ const POST_handler = handlerWrapper({
   dataGetter: (req) => req.body,
 })({
   allowedMethods: ['POST'],
+  errorLabel: 'moderation-action',
   handler: async (data, _req, res) => {
     const response = await commitAction({ signedMessage: data.signedMessage })
     res.json({

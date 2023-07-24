@@ -17,6 +17,7 @@ export default handlerWrapper({
   dataGetter: (req) => req.query,
 })<ResponseData>({
   allowedMethods: ['GET'],
+  errorLabel: 'blocked-post-ids',
   handler: async (data, _, res) => {
     const response = await getBlockedInPostIds(
       Array.isArray(data.spaceIds) ? data.spaceIds : [data.spaceIds]
