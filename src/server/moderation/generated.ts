@@ -269,6 +269,13 @@ export type GetModerationReasonsQueryVariables = Exact<{ [key: string]: never; }
 
 export type GetModerationReasonsQuery = { __typename?: 'Query', reasonsAll: Array<{ __typename?: 'BlockReasonGql', id: number, reasonText: string }> };
 
+export type GetModeratorDataQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+}>;
+
+
+export type GetModeratorDataQuery = { __typename?: 'Query', moderatorBySubstrateAddress?: { __typename?: 'ModeratorGql', organisation?: { __typename?: 'OrganisationGql', ctxPostIds: Array<string> } | null } | null };
+
 export type InitModerationOrgMessageQueryVariables = Exact<{
   address: Scalars['String']['input'];
   postId: Scalars['String']['input'];
@@ -276,6 +283,14 @@ export type InitModerationOrgMessageQueryVariables = Exact<{
 
 
 export type InitModerationOrgMessageQuery = { __typename?: 'Query', initModeratorWithOrganisationMessage?: { __typename?: 'SignedMessageWithActionTemplateResponseDto', messageTpl: string } | null };
+
+export type AddPostIdToOrgMessageQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+  postId: Scalars['String']['input'];
+}>;
+
+
+export type AddPostIdToOrgMessageQuery = { __typename?: 'Query', addCtxPostIdToOrganisationMessage?: { __typename?: 'SignedMessageWithActionTemplateResponseDto', messageTpl: string } | null };
 
 export type CommitModerationActionMutationVariables = Exact<{
   signedMessage: Scalars['String']['input'];
@@ -293,10 +308,28 @@ export const GetModerationReasons = gql`
   }
 }
     `;
+export const GetModeratorData = gql`
+    query GetModeratorData($address: String!) {
+  moderatorBySubstrateAddress(substrateAddress: $address) {
+    organisation {
+      ctxPostIds
+    }
+  }
+}
+    `;
 export const InitModerationOrgMessage = gql`
     query InitModerationOrgMessage($address: String!, $postId: String!) {
   initModeratorWithOrganisationMessage(
     input: {substrateAddress: $address, ctxPostIds: [$postId]}
+  ) {
+    messageTpl
+  }
+}
+    `;
+export const AddPostIdToOrgMessage = gql`
+    query AddPostIdToOrgMessage($address: String!, $postId: String!) {
+  addCtxPostIdToOrganisationMessage(
+    input: {substrateAddress: $address, ctxPostId: $postId}
   ) {
     messageTpl
   }

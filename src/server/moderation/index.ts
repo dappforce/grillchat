@@ -1,9 +1,13 @@
 import { gql } from 'graphql-request'
 import {
+  AddPostIdToOrgMessageQuery,
+  AddPostIdToOrgMessageQueryVariables,
   CommitModerationActionMutation,
   CommitModerationActionMutationVariables,
   GetModerationReasonsQuery,
   GetModerationReasonsQueryVariables,
+  GetModeratorDataQuery,
+  GetModeratorDataQueryVariables,
   InitModerationOrgMessageQuery,
   InitModerationOrgMessageQueryVariables,
 } from './generated'
@@ -82,6 +86,28 @@ export async function getModerationReasons() {
   return data.reasonsAll
 }
 
+export const GET_MODERATOR_DATA = gql`
+  query GetModeratorData($address: String!) {
+    moderatorBySubstrateAddress(substrateAddress: $address) {
+      organisation {
+        ctxPostIds
+      }
+    }
+  }
+`
+export async function getModeratorData(
+  variables: GetModeratorDataQueryVariables
+) {
+  const res = await moderationRequest<
+    GetModeratorDataQuery,
+    GetModeratorDataQueryVariables
+  >({
+    document: GET_MODERATOR_DATA,
+    variables,
+  })
+  return res.moderatorBySubstrateAddress?.organisation?.ctxPostIds ?? null
+}
+
 export const INIT_MODERATION_ORG_MESSAGE = gql`
   query InitModerationOrgMessage($address: String!, $postId: String!) {
     initModeratorWithOrganisationMessage(
@@ -91,17 +117,38 @@ export const INIT_MODERATION_ORG_MESSAGE = gql`
     }
   }
 `
+export const ADD_POST_ID_TO_ORG_MESSAGE = gql`
+  query AddPostIdToOrgMessage($address: String!, $postId: String!) {
+    addCtxPostIdToOrganisationMessage(
+      input: { substrateAddress: $address, ctxPostId: $postId }
+    ) {
+      messageTpl
+    }
+  }
+`
 export async function initModerationOrgMessage(
   variables: InitModerationOrgMessageQueryVariables
 ) {
+  const moderator = await getModeratorData({ address: variables.address })
+  if (!moderator) {
+    const data = await moderationRequest<
+      InitModerationOrgMessageQuery,
+      InitModerationOrgMessageQueryVariables
+    >({
+      document: INIT_MODERATION_ORG_MESSAGE,
+      variables,
+    })
+    return data.initModeratorWithOrganisationMessage?.messageTpl
+  }
+
   const data = await moderationRequest<
-    InitModerationOrgMessageQuery,
-    InitModerationOrgMessageQueryVariables
+    AddPostIdToOrgMessageQuery,
+    AddPostIdToOrgMessageQueryVariables
   >({
     document: INIT_MODERATION_ORG_MESSAGE,
     variables,
   })
-  return data.initModeratorWithOrganisationMessage?.messageTpl
+  return data.addCtxPostIdToOrganisationMessage?.messageTpl
 }
 
 export const COMMIT_MODERATION_ACTION = gql`
