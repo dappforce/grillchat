@@ -5,7 +5,7 @@ import {
   ApiModerationActionsResponse,
 } from '@/pages/api/moderation/actions'
 import mutationWrapper from '@/subsocial-query/base'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { processMessageTpl } from '../utils'
 
 async function commitModerationAction(data: ApiModerationActionsMessageParams) {
@@ -20,12 +20,12 @@ async function commitModerationAction(data: ApiModerationActionsMessageParams) {
 
   const actionRes = await axios.post<
     any,
-    ApiModerationActionsResponse,
+    AxiosResponse<ApiModerationActionsResponse>,
     ApiModerationActionsBody
   >('/api/moderation/actions', { signedMessage })
 
-  if (!actionRes.success) {
-    throw new Error(actionRes.message)
+  if (!actionRes.data.success) {
+    throw new Error(actionRes.data.message)
   }
   return actionRes
 }

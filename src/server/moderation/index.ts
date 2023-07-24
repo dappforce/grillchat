@@ -153,7 +153,7 @@ export async function initModerationOrgMessage(
     AddPostIdToOrgMessageQuery,
     AddPostIdToOrgMessageQueryVariables
   >({
-    document: INIT_MODERATION_ORG_MESSAGE,
+    document: ADD_POST_ID_TO_ORG_MESSAGE,
     variables,
   })
   return data.addCtxPostIdToOrganisationMessage?.messageTpl

@@ -73,8 +73,8 @@ const POST_handler = handlerWrapper({
   handler: async (data, _req, res) => {
     const response = await commitAction({ signedMessage: data.signedMessage })
     res.json({
-      message: response?.message ?? 'Failed to commit moderation action',
-      success: response?.success ?? false,
+      message: response?.success ? 'OK' : response?.message ?? 'Error',
+      success: response?.success ?? true,
     })
   },
 })
