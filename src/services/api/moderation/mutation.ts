@@ -4,6 +4,7 @@ import {
   ApiModerationActionsMessageResponse,
   ApiModerationActionsResponse,
 } from '@/pages/api/moderation/actions'
+import { ResourceTypes } from '@/server/moderation/utils'
 import { queryClient } from '@/services/provider'
 import mutationWrapper from '@/subsocial-query/base'
 import axios, { AxiosResponse } from 'axios'
@@ -35,23 +36,71 @@ async function commitModerationAction(data: ApiModerationActionsMessageParams) {
   }
   return actionRes
 }
+
+const onErrorOrSuccess = (variables: ApiModerationActionsMessageParams) => {
+  if (variables.action === 'init')
+    getModeratorQuery.invalidate(queryClient, variables.address)
+  else if (variables.action === 'block' || variables.action === 'unblock') {
+    getBlockedInPostIdQuery.invalidate(queryClient, variables.ctxPostId)
+    getBlockedInPostIdDetailedQuery.invalidate(queryClient, variables.ctxPostId)
+  }
+}
+const optimisticUnblocking = <T>(
+  data: Record<ResourceTypes, T[]>,
+  resourceIdToUnblock: string,
+  getId: (data: T) => string
+) => {
+  const newData = { ...data }
+  newData.address = newData.address.filter(
+    (resource) => getId(resource) !== resourceIdToUnblock
+  )
+  newData.cid = newData.cid.filter(
+    (resource) => getId(resource) !== resourceIdToUnblock
+  )
+  newData.postId = newData.postId.filter(
+    (resource) => getId(resource) !== resourceIdToUnblock
+  )
+  return newData
+}
 export const useCommitModerationAction = mutationWrapper(
   commitModerationAction,
   {
-    onError: (_, variables) => {
-      if (variables.action === 'block')
-        getBlockedInPostIdQuery.invalidate(queryClient, variables.ctxPostId)
-    },
-    onSuccess: (_, variables) => {
-      if (variables.action === 'init')
-        getModeratorQuery.invalidate(queryClient, variables.address)
-      else if (variables.action === 'block' || variables.action === 'unblock') {
-        getBlockedInPostIdQuery.invalidate(queryClient, variables.ctxPostId)
-        getBlockedInPostIdDetailedQuery.invalidate(
+    onMutate: async (variables) => {
+      if (variables.action === 'unblock') {
+        getBlockedInPostIdQuery.setQueryData(
           queryClient,
-          variables.ctxPostId
+          variables.ctxPostId,
+          (oldData) => {
+            if (!oldData) return null
+            return {
+              ...oldData,
+              blockedResources: optimisticUnblocking(
+                oldData.blockedResources,
+                variables.resourceId,
+                (id) => id
+              ),
+            }
+          }
+        )
+        getBlockedInPostIdDetailedQuery.setQueryData(
+          queryClient,
+          variables.ctxPostId,
+          (oldData) => {
+            if (!oldData) return null
+            return optimisticUnblocking(
+              oldData,
+              variables.resourceId,
+              (data) => data.resourceId
+            )
+          }
         )
       }
+    },
+    onError: (_, variables) => {
+      onErrorOrSuccess(variables)
+    },
+    onSuccess: (_, variables) => {
+      onErrorOrSuccess(variables)
     },
   }
 )

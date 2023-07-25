@@ -20,7 +20,7 @@ export function moderationRequest<T, V extends Variables = Variables>(
   return client.request({ url, ...config })
 }
 
-type ResourceTypes = 'cid' | 'address' | 'postId'
+export type ResourceTypes = 'cid' | 'address' | 'postId'
 export function mapBlockedResources<T>(
   resources: T[],
   getId: (t: T) => string
