@@ -6,6 +6,8 @@ import {
   BlockResourceMessageQueryVariables,
   CommitModerationActionMutation,
   CommitModerationActionMutationVariables,
+  GetBlockedInPostIdDetailedQuery,
+  GetBlockedInPostIdDetailedQueryVariables,
   GetModerationReasonsQuery,
   GetModerationReasonsQueryVariables,
   GetModeratorDataQuery,
@@ -39,7 +41,7 @@ export async function getBlockedInSpaceIds(spaceIds: string[]) {
     const [_, spaceId] = key.split('SEPARATOR')
     return {
       spaceId,
-      blockedResources: mapBlockedResources(res),
+      blockedResources: mapBlockedResources(res, (id) => id),
     }
   })
 }
@@ -57,7 +59,6 @@ const generateBlockedInPostIds = (postIds: string[]) => {
     }
   `
 }
-
 export async function getBlockedInPostIds(postIds: string[]) {
   const data = await moderationRequest<Record<string, string[]>>({
     document: generateBlockedInPostIds(postIds),
@@ -67,9 +68,34 @@ export async function getBlockedInPostIds(postIds: string[]) {
     const [_, postId] = key.split('SEPARATOR')
     return {
       postId,
-      blockedResources: mapBlockedResources(res),
+      blockedResources: mapBlockedResources(res, (id) => id),
     }
   })
+}
+
+const GET_BLOCKED_IN_POST_ID_DETAILED = gql`
+  query GetBlockedInPostIdDetailed($postId: String!) {
+    blockedResourceDetailed(ctxPostId: $postId, blocked: true) {
+      resourceId
+      reason {
+        id
+        reasonText
+      }
+    }
+  }
+`
+export async function getBlockedInPostIdDetailed(postId: string) {
+  const data = await moderationRequest<
+    GetBlockedInPostIdDetailedQuery,
+    GetBlockedInPostIdDetailedQueryVariables
+  >({
+    document: GET_BLOCKED_IN_POST_ID_DETAILED,
+    variables: { postId },
+  })
+  return mapBlockedResources(
+    data.blockedResourceDetailed,
+    (res) => res.resourceId
+  )
 }
 
 export const GET_MODERATION_REASONS = gql`

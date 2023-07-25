@@ -1,3 +1,4 @@
+import { ApiModerationBlockedInPostIdsDetailedResponse } from '@/pages/api/moderation/blocked/post-id-detailed'
 import { ApiModerationBlockedInPostIdsResponse } from '@/pages/api/moderation/blocked/post-ids'
 import { ApiModerationBlockedInSpaceIdsResponse } from '@/pages/api/moderation/blocked/space-ids'
 import {
@@ -56,6 +57,17 @@ const getBlockedInPostId = poolQuery<
 export const getBlockedInPostIdQuery = createQuery({
   key: 'getBlockedInPostId',
   fetcher: getBlockedInPostId,
+})
+
+export const getBlockedInPostIdDetailedQuery = createQuery({
+  key: 'getBlockedInPostIdDetailed',
+  fetcher: async (postId: string) => {
+    const response = await axios.get<
+      any,
+      AxiosResponse<ApiModerationBlockedInPostIdsDetailedResponse>
+    >(`/api/moderation/blocked/post-id-detailed`, { params: { postId } })
+    return response.data.data
+  },
 })
 
 export const getModerationReasonsQuery = createQuery({

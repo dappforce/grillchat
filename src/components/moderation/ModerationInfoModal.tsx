@@ -1,4 +1,4 @@
-import { getBlockedInPostIdQuery } from '@/services/api/moderation/query'
+import { getBlockedInPostIdDetailedQuery } from '@/services/api/moderation/query'
 import { HiXMark } from 'react-icons/hi2'
 import AddressAvatar from '../AddressAvatar'
 import Button from '../Button'
@@ -14,25 +14,30 @@ export default function ModerationInfoModal({
   chatId,
   ...props
 }: ModerationInfoModalProps) {
-  const { data } = getBlockedInPostIdQuery.useQuery(chatId)
-  const blockedUsers = data?.blockedResources?.address ?? []
+  const { data } = getBlockedInPostIdDetailedQuery.useQuery(chatId)
+  const blockedUsers = data?.address ?? []
   const blockedUsersCount = blockedUsers.length
 
-  const cardData: DataCardProps['data'] = blockedUsers.map((address) => ({
-    title: address,
-    customContent: (
-      <div className='flex items-center gap-2'>
-        <AddressAvatar address={address} />
-        <div className='flex flex-1 flex-col gap-0.5'>
-          <Name address={address} showEthIcon={false} />
-          <span className='text-sm text-text-muted'>Spam</span>
+  const cardData: DataCardProps['data'] = blockedUsers.map((blockedData) => {
+    const address = blockedData.resourceId
+    return {
+      title: address,
+      customContent: (
+        <div className='flex items-center gap-2'>
+          <AddressAvatar address={address} />
+          <div className='flex flex-1 flex-col gap-0.5'>
+            <Name address={address} showEthIcon={false} />
+            <span className='text-sm text-text-muted'>
+              {blockedData.reason.reasonText}
+            </span>
+          </div>
+          <Button size='noPadding' variant='transparent' className='text-2xl'>
+            <HiXMark />
+          </Button>
         </div>
-        <Button size='noPadding' variant='transparent' className='text-2xl'>
-          <HiXMark />
-        </Button>
-      </div>
-    ),
-  }))
+      ),
+    }
+  })
 
   return (
     <Modal

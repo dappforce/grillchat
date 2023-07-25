@@ -21,17 +21,21 @@ export function moderationRequest<T, V extends Variables = Variables>(
 }
 
 type ResourceTypes = 'cid' | 'address' | 'postId'
-export function mapBlockedResources(resourceIds: string[]) {
-  const data: Record<ResourceTypes, string[]> = {
+export function mapBlockedResources<T>(
+  resources: T[],
+  getId: (t: T) => string
+) {
+  const data: Record<ResourceTypes, T[]> = {
     cid: [],
     address: [],
     postId: [],
   }
-  resourceIds.forEach((resourceId) => {
+  resources.forEach((resource) => {
+    const resourceId = getId(resource)
     const type = getBlockedResourceType(resourceId)
     if (!type) return
 
-    data[type].push(resourceId)
+    data[type].push(resource)
   })
   return data
 }

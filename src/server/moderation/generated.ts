@@ -264,6 +264,13 @@ export type UnblockResourceByIdInput = {
   substrateAddress: Scalars['String']['input'];
 };
 
+export type GetBlockedInPostIdDetailedQueryVariables = Exact<{
+  postId: Scalars['String']['input'];
+}>;
+
+
+export type GetBlockedInPostIdDetailedQuery = { __typename?: 'Query', blockedResourceDetailed: Array<{ __typename?: 'BlockedResourceGql', resourceId: string, reason: { __typename?: 'BlockReasonGql', id: number, reasonText: string } }> };
+
 export type GetModerationReasonsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -322,6 +329,17 @@ export type CommitModerationActionMutationVariables = Exact<{
 export type CommitModerationActionMutation = { __typename?: 'Mutation', commitSignedMessageWithAction?: { __typename?: 'CommitModerationSignedMessageResponse', success: boolean, message?: string | null } | null };
 
 
+export const GetBlockedInPostIdDetailed = gql`
+    query GetBlockedInPostIdDetailed($postId: String!) {
+  blockedResourceDetailed(ctxPostId: $postId, blocked: true) {
+    resourceId
+    reason {
+      id
+      reasonText
+    }
+  }
+}
+    `;
 export const GetModerationReasons = gql`
     query GetModerationReasons {
   reasonsAll {
