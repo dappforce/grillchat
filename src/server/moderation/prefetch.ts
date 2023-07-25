@@ -21,6 +21,8 @@ export async function prefetchBlockedEntities(
     blockedInPostIds.forEach((data) => {
       getBlockedInPostIdQuery.setQueryData(queryClient, data.postId, data)
     })
+
+    return { blockedInSpaceIds, blockedInPostIds }
   } catch (err) {
     console.log('Error prefetching blocked entities', err)
   }

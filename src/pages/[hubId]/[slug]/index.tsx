@@ -88,11 +88,27 @@ export const getStaticProps = getCommonStaticProps<
         hubIds.push(originalHubId)
       }
 
-      const [{ messageIds, messages, accountsAddresses, prices }] =
+      const [{ messageIds, messages, accountsAddresses, prices }, blockedData] =
         await Promise.all([
           getChatsData(chatId),
           prefetchBlockedEntities(queryClient, hubIds, [chatId]),
         ] as const)
+
+      if (blockedData) {
+        let isChatModerated = false
+        blockedData.blockedInSpaceIds.forEach(({ blockedResources }) => {
+          if (blockedResources.postId.includes(chatId)) {
+            isChatModerated = true
+          }
+        })
+        if (isChatModerated)
+          return {
+            redirect: {
+              destination: '/',
+              permanent: false,
+            },
+          }
+      }
 
       if (!chatData.struct.hidden) {
         title = chatData?.content?.title || null
