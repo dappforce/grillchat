@@ -1,3 +1,4 @@
+import useToastError from '@/hooks/useToastError'
 import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getModerationReasonsQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
@@ -19,12 +20,18 @@ export type ModerationFormProps = ComponentProps<'form'> & {
 }
 
 const formSchema = z.object({
-  blockingContent: z.object({ id: z.string(), label: z.string() }),
+  blockingContent: z.object({
+    id: z.literal('message').or(z.literal('owner')).or(z.literal('content')),
+    label: z.string(),
+  }),
   reason: z.object({ id: z.string(), label: z.string() }),
 })
 type FormSchema = z.infer<typeof formSchema>
 
-const blockingContentOptions: ListItem[] = [
+const blockingContentOptions: {
+  id: FormSchema['blockingContent']['id']
+  label: string
+}[] = [
   { id: 'message', label: 'Message' },
   { id: 'owner', label: 'Owner' },
   { id: 'content', label: 'Content' },
@@ -48,12 +55,12 @@ export default function ModerationForm({
   )
 
   const myAddress = useMyAccount((state) => state.address)
-  const { mutate, isLoading } = useCommitModerationAction({
-    onSuccess,
-  })
+  const { mutate, isLoading, error } = useCommitModerationAction({ onSuccess })
+  useToastError(error, 'Failed to moderate message')
 
   const { data: message } = getPostQuery.useQuery(messageId)
   const ownerId = message?.struct.ownerId ?? ''
+  const cid = message?.struct.contentId ?? ''
 
   const { control, handleSubmit, setValue, watch } = useForm<FormSchema>({
     mode: 'onChange',
@@ -77,13 +84,29 @@ export default function ModerationForm({
       {...props}
       className={cx('flex flex-col gap-6', props.className)}
       onSubmit={handleSubmit((data) => {
+        const { blockingContent, reason } = data
+        let resourceId: string
+        switch (blockingContent.id) {
+          case 'message':
+            resourceId = messageId
+            break
+          case 'owner':
+            resourceId = ownerId
+            break
+          case 'content':
+            resourceId = cid
+            break
+          default:
+            throw new Error('Invalid blocking content')
+        }
+
         mutate({
           action: 'block',
           address: myAddress,
           ctxPostId: chatId,
           ctxSpaceId: hubId,
-          reasonId: data.reason.id,
-          resourceId: messageId,
+          reasonId: reason.id,
+          resourceId,
         })
       })}
     >
