@@ -1,5 +1,10 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { commitAction, initModerationOrgMessage } from '@/server/moderation'
+import {
+  blockResourceMessage,
+  commitAction,
+  initModerationOrgMessage,
+  unblockResourceMessage,
+} from '@/server/moderation'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -17,12 +22,32 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   return res.status(405).send('Method Not Allowed')
 }
 
-const querySchema = z.object({
-  action: z.literal('init'),
-  address: z.string(),
-  postId: z.string(),
-  spaceId: z.string(),
-})
+const querySchema = z
+  .object({
+    action: z.literal('init'),
+    address: z.string(),
+    postId: z.string(),
+    spaceId: z.string(),
+  })
+  .or(
+    z.object({
+      action: z.literal('block'),
+      address: z.string(),
+      ctxPostId: z.string(),
+      ctxSpaceId: z.string(),
+      resourceId: z.string(),
+      reasonId: z.string(),
+    })
+  )
+  .or(
+    z.object({
+      action: z.literal('unblock'),
+      address: z.string(),
+      ctxPostId: z.string(),
+      ctxSpaceId: z.string(),
+      resourceId: z.string(),
+    })
+  )
 export type ApiModerationActionsMessageParams = z.infer<typeof querySchema>
 type ResponseDataMessage = {
   messageTpl?: string
@@ -53,9 +78,17 @@ const GET_handler = handlerWrapper({
         spaceId: data.spaceId,
       })
       res.json({ messageTpl, success: true, message: 'OK' })
-      return
+    } else if (data.action === 'block') {
+      const { action, ...otherParams } = data
+      const messageTpl = await blockResourceMessage(otherParams)
+      res.json({ messageTpl, success: true, message: 'OK' })
+    } else if (data.action === 'unblock') {
+      const { action, ...otherParams } = data
+      const messageTpl = await unblockResourceMessage(otherParams)
+      res.json({ messageTpl, success: true, message: 'OK' })
+    } else {
+      res.json({ message: 'Not Implemented', success: false })
     }
-    res.json({ message: 'Not Implemented', success: false })
   },
 })
 

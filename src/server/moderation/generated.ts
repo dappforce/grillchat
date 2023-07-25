@@ -293,6 +293,27 @@ export type AddPostIdToOrgMessageQueryVariables = Exact<{
 
 export type AddPostIdToOrgMessageQuery = { __typename?: 'Query', addCtxPostIdToOrganisationMessage?: { __typename?: 'SignedMessageWithActionTemplateResponseDto', messageTpl: string } | null };
 
+export type BlockResourceMessageQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+  resourceId: Scalars['String']['input'];
+  reasonId: Scalars['String']['input'];
+  ctxPostId: Scalars['String']['input'];
+  ctxSpaceId: Scalars['String']['input'];
+}>;
+
+
+export type BlockResourceMessageQuery = { __typename?: 'Query', blockResourceByIdMessage?: { __typename?: 'SignedMessageWithActionTemplateResponseDto', messageTpl: string } | null };
+
+export type UnblockResourceMessageQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+  resourceId: Scalars['String']['input'];
+  ctxPostId: Scalars['String']['input'];
+  ctxSpaceId: Scalars['String']['input'];
+}>;
+
+
+export type UnblockResourceMessageQuery = { __typename?: 'Query', unblockResourceByIdMessage?: { __typename?: 'SignedMessageWithActionTemplateResponseDto', messageTpl: string } | null };
+
 export type CommitModerationActionMutationVariables = Exact<{
   signedMessage: Scalars['String']['input'];
 }>;
@@ -331,6 +352,24 @@ export const AddPostIdToOrgMessage = gql`
     query AddPostIdToOrgMessage($address: String!, $postId: String!) {
   addCtxPostIdToOrganisationMessage(
     input: {substrateAddress: $address, ctxPostId: $postId}
+  ) {
+    messageTpl
+  }
+}
+    `;
+export const BlockResourceMessage = gql`
+    query BlockResourceMessage($address: String!, $resourceId: String!, $reasonId: String!, $ctxPostId: String!, $ctxSpaceId: String!) {
+  blockResourceByIdMessage(
+    input: {substrateAddress: $address, resourceId: $resourceId, reasonId: $reasonId, ctxPostIds: [$ctxPostId], ctxSpaceIds: [$ctxSpaceId]}
+  ) {
+    messageTpl
+  }
+}
+    `;
+export const UnblockResourceMessage = gql`
+    query UnblockResourceMessage($address: String!, $resourceId: String!, $ctxPostId: String!, $ctxSpaceId: String!) {
+  unblockResourceByIdMessage(
+    input: {substrateAddress: $address, resourceId: $resourceId, ctxPostIds: [$ctxPostId], ctxSpaceIds: [$ctxSpaceId]}
   ) {
     messageTpl
   }

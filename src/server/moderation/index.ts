@@ -2,6 +2,8 @@ import { gql } from 'graphql-request'
 import {
   AddPostIdToOrgMessageQuery,
   AddPostIdToOrgMessageQueryVariables,
+  BlockResourceMessageQuery,
+  BlockResourceMessageQueryVariables,
   CommitModerationActionMutation,
   CommitModerationActionMutationVariables,
   GetModerationReasonsQuery,
@@ -10,6 +12,8 @@ import {
   GetModeratorDataQueryVariables,
   InitModerationOrgMessageQuery,
   InitModerationOrgMessageQueryVariables,
+  UnblockResourceMessageQuery,
+  UnblockResourceMessageQueryVariables,
 } from './generated'
 import { mapBlockedResources, moderationRequest } from './utils'
 
@@ -157,6 +161,72 @@ export async function initModerationOrgMessage(
     variables,
   })
   return data.addCtxPostIdToOrganisationMessage?.messageTpl
+}
+
+export const BLOCK_RESOURCE_MESSAGE = gql`
+  query BlockResourceMessage(
+    $address: String!
+    $resourceId: String!
+    $reasonId: String!
+    $ctxPostId: String!
+    $ctxSpaceId: String!
+  ) {
+    blockResourceByIdMessage(
+      input: {
+        substrateAddress: $address
+        resourceId: $resourceId
+        reasonId: $reasonId
+        ctxPostIds: [$ctxPostId]
+        ctxSpaceIds: [$ctxSpaceId]
+      }
+    ) {
+      messageTpl
+    }
+  }
+`
+export async function blockResourceMessage(
+  variables: BlockResourceMessageQueryVariables
+) {
+  const res = await moderationRequest<
+    BlockResourceMessageQuery,
+    BlockResourceMessageQueryVariables
+  >({
+    document: BLOCK_RESOURCE_MESSAGE,
+    variables,
+  })
+  return res.blockResourceByIdMessage?.messageTpl
+}
+
+export const UNBLOCK_RESOURCE_MESSAGE = gql`
+  query UnblockResourceMessage(
+    $address: String!
+    $resourceId: String!
+    $ctxPostId: String!
+    $ctxSpaceId: String!
+  ) {
+    unblockResourceByIdMessage(
+      input: {
+        substrateAddress: $address
+        resourceId: $resourceId
+        ctxPostIds: [$ctxPostId]
+        ctxSpaceIds: [$ctxSpaceId]
+      }
+    ) {
+      messageTpl
+    }
+  }
+`
+export async function unblockResourceMessage(
+  variables: UnblockResourceMessageQueryVariables
+) {
+  const res = await moderationRequest<
+    UnblockResourceMessageQuery,
+    UnblockResourceMessageQueryVariables
+  >({
+    document: UNBLOCK_RESOURCE_MESSAGE,
+    variables,
+  })
+  return res.unblockResourceByIdMessage?.messageTpl
 }
 
 export const COMMIT_MODERATION_ACTION = gql`
