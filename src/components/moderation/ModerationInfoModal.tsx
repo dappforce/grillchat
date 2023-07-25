@@ -1,4 +1,6 @@
+import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getBlockedInPostIdDetailedQuery } from '@/services/api/moderation/query'
+import { useMyAccount } from '@/stores/my-account'
 import { HiXMark } from 'react-icons/hi2'
 import AddressAvatar from '../AddressAvatar'
 import Button from '../Button'
@@ -8,15 +10,33 @@ import Name from '../Name'
 
 export type ModerationInfoModalProps = ModalFunctionalityProps & {
   chatId: string
+  hubId: string
 }
 
 export default function ModerationInfoModal({
   chatId,
+  hubId,
   ...props
 }: ModerationInfoModalProps) {
+  const myAddress = useMyAccount((state) => state.address)
+
   const { data } = getBlockedInPostIdDetailedQuery.useQuery(chatId)
   const blockedUsers = data?.address ?? []
   const blockedUsersCount = blockedUsers.length
+
+  const { mutate } = useCommitModerationAction()
+
+  if (!myAddress) return null
+
+  const unblock = (resourceId: string) => {
+    mutate({
+      action: 'unblock',
+      resourceId,
+      address: myAddress,
+      ctxPostId: chatId,
+      ctxSpaceId: hubId,
+    })
+  }
 
   const cardData: DataCardProps['data'] = blockedUsers.map((blockedData) => {
     const address = blockedData.resourceId
@@ -31,7 +51,12 @@ export default function ModerationInfoModal({
               {blockedData.reason.reasonText}
             </span>
           </div>
-          <Button size='noPadding' variant='transparent' className='text-2xl'>
+          <Button
+            size='noPadding'
+            variant='transparent'
+            className='text-2xl'
+            onClick={() => unblock(address)}
+          >
             <HiXMark />
           </Button>
         </div>

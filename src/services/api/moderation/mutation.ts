@@ -8,7 +8,11 @@ import { queryClient } from '@/services/provider'
 import mutationWrapper from '@/subsocial-query/base'
 import axios, { AxiosResponse } from 'axios'
 import { processMessageTpl } from '../utils'
-import { getBlockedInPostIdQuery, getModeratorQuery } from './query'
+import {
+  getBlockedInPostIdDetailedQuery,
+  getBlockedInPostIdQuery,
+  getModeratorQuery,
+} from './query'
 
 async function commitModerationAction(data: ApiModerationActionsMessageParams) {
   if (!data) return null
@@ -41,8 +45,13 @@ export const useCommitModerationAction = mutationWrapper(
     onSuccess: (_, variables) => {
       if (variables.action === 'init')
         getModeratorQuery.invalidate(queryClient, variables.address)
-      else if (variables.action === 'block')
+      else if (variables.action === 'block' || variables.action === 'unblock') {
         getBlockedInPostIdQuery.invalidate(queryClient, variables.ctxPostId)
+        getBlockedInPostIdDetailedQuery.invalidate(
+          queryClient,
+          variables.ctxPostId
+        )
+      }
     },
   }
 )

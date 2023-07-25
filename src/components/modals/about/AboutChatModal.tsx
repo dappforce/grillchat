@@ -7,6 +7,7 @@ import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
@@ -289,14 +290,18 @@ export default function AboutChatModal({
       <UpsertChatModal
         isOpen={openedModalType === 'edit'}
         closeModal={closeModal}
-        onBackClick={() => setOpenedModalType(null)}
+        onBackClick={closeModal}
         formProps={{ chat }}
       />
-      <ModerationInfoModal
-        isOpen={openedModalType === 'moderation'}
-        closeModal={() => setOpenedModalType(null)}
-        chatId={chatId}
-      />
+      {COMMUNITY_CHAT_HUB_ID && (
+        <ModerationInfoModal
+          hubId={COMMUNITY_CHAT_HUB_ID}
+          isOpen={openedModalType === 'moderation'}
+          closeModal={closeModal}
+          onBackClick={closeModal}
+          chatId={chatId}
+        />
+      )}
       <HideUnhideChatWrapper>
         {({ isLoading, mutateAsync }) => {
           return (
