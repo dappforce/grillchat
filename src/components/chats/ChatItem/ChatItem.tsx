@@ -10,6 +10,7 @@ import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
@@ -302,11 +303,15 @@ export default function ChatItem({
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}
       />
-      <ModerationModal
-        isOpen={modalState === 'moderate'}
-        closeModal={() => setModalState(null)}
-        messageId={messageId}
-      />
+      {COMMUNITY_CHAT_HUB_ID && (
+        <ModerationModal
+          isOpen={modalState === 'moderate'}
+          closeModal={() => setModalState(null)}
+          messageId={messageId}
+          chatId={chatId}
+          hubId={COMMUNITY_CHAT_HUB_ID}
+        />
+      )}
     </div>
   )
 }

@@ -61,13 +61,7 @@ export default function TelegramNotificationContent(props: ContentProps) {
 }
 
 function DisconnectButton({ address }: ContentProps) {
-  const queryClient = useQueryClient()
-
-  const { mutate: getLinkingMessage, isLoading } = useLinkingAccount({
-    onSuccess: () => {
-      getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
-    },
-  })
+  const { mutate: getLinkingMessage, isLoading } = useLinkingAccount()
 
   const handleClick = async () => {
     if (!address) return

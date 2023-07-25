@@ -19,6 +19,7 @@ type SelectInputProps<AdditionalData> = {
   imgClassName?: string
   renderItem?: (item: ListItem<AdditionalData>, open: boolean) => JSX.Element
   placeholder?: string
+  disabled?: boolean
 }
 
 export default function SelectInput<AdditionalData = {}>({
@@ -28,11 +29,12 @@ export default function SelectInput<AdditionalData = {}>({
   setSelected,
   imgClassName,
   renderItem,
+  disabled,
   placeholder,
 }: SelectInputProps<AdditionalData>) {
   return (
     <div>
-      <Listbox value={selected} onChange={setSelected}>
+      <Listbox value={selected} onChange={setSelected} disabled={disabled}>
         {({ open }) => (
           <>
             {fieldLabel && (

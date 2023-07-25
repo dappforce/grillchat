@@ -1,16 +1,21 @@
+import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getModerationReasonsQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ComponentProps, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import Button from '../Button'
+import FormButton from '../FormButton'
 import SelectInput, { ListItem } from '../inputs/SelectInput'
 import ProfilePreview from '../ProfilePreview'
 
 export type ModerationFormProps = ComponentProps<'form'> & {
   messageId: string
+  chatId: string
+  hubId: string
+  onSuccess?: () => void
 }
 
 const formSchema = z.object({
@@ -27,6 +32,9 @@ const blockingContentOptions: ListItem[] = [
 
 export default function ModerationForm({
   messageId,
+  chatId,
+  hubId,
+  onSuccess,
   ...props
 }: ModerationFormProps) {
   const { data: reasons } = getModerationReasonsQuery.useQuery(null)
@@ -39,10 +47,15 @@ export default function ModerationForm({
     [reasons]
   )
 
+  const myAddress = useMyAccount((state) => state.address)
+  const { mutate, isLoading } = useCommitModerationAction({
+    onSuccess,
+  })
+
   const { data: message } = getPostQuery.useQuery(messageId)
   const ownerId = message?.struct.ownerId ?? ''
 
-  const { control, handleSubmit, setValue } = useForm<FormSchema>({
+  const { control, handleSubmit, setValue, watch } = useForm<FormSchema>({
     mode: 'onChange',
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,12 +70,21 @@ export default function ModerationForm({
     }
   }, [reasonsMapped, setValue])
 
+  if (!myAddress) return null
+
   return (
     <form
       {...props}
       className={cx('flex flex-col gap-6', props.className)}
       onSubmit={handleSubmit((data) => {
-        console.log(data)
+        mutate({
+          action: 'block',
+          address: myAddress,
+          ctxPostId: chatId,
+          ctxSpaceId: hubId,
+          reasonId: data.reason.id,
+          resourceId: messageId,
+        })
       })}
     >
       <div className='flex flex-col gap-2'>
@@ -88,6 +110,7 @@ export default function ModerationForm({
           return (
             <SelectInput
               fieldLabel='Blocking content'
+              disabled={isLoading}
               items={blockingContentOptions}
               selected={field.value}
               setSelected={(item) => field.onChange(item)}
@@ -102,6 +125,7 @@ export default function ModerationForm({
           return (
             <SelectInput
               fieldLabel='Reason'
+              disabled={isLoading}
               items={reasonsMapped}
               selected={field.value}
               placeholder='Loading...'
@@ -110,9 +134,14 @@ export default function ModerationForm({
           )
         }}
       />
-      <Button type='submit' size='lg'>
+      <FormButton
+        schema={formSchema}
+        watch={watch}
+        size='lg'
+        isLoading={isLoading}
+      >
         Moderate
-      </Button>
+      </FormButton>
     </form>
   )
 }

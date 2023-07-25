@@ -31,7 +31,6 @@ import {
   getUrlQuery,
 } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
-import { useQueryClient } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
 import { ImageProps } from 'next/image'
 import Router, { useRouter } from 'next/router'
@@ -114,15 +113,9 @@ export default function ChatPage({
   const { data: moderator } = getModeratorQuery.useQuery(myAddress ?? '', {
     enabled: !!myAddress,
   })
-  const queryClient = useQueryClient()
   const { isAuthorized, isOwner } = useAuthorizedForModeration(chatId)
-  const { mutateAsync: commitModerationAction } = useCommitModerationAction({
-    onSuccess: (_, variables) => {
-      if (variables.action === 'init') {
-        getModeratorQuery.invalidate(queryClient, variables.address)
-      }
-    },
-  })
+  const { mutateAsync: commitModerationAction } = useCommitModerationAction()
+
   useEffect(() => {
     if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
     if (!isAuthorized && moderator) {

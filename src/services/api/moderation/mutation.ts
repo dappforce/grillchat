@@ -4,9 +4,11 @@ import {
   ApiModerationActionsMessageResponse,
   ApiModerationActionsResponse,
 } from '@/pages/api/moderation/actions'
+import { queryClient } from '@/services/provider'
 import mutationWrapper from '@/subsocial-query/base'
 import axios, { AxiosResponse } from 'axios'
 import { processMessageTpl } from '../utils'
+import { getBlockedInPostIdQuery, getModeratorQuery } from './query'
 
 async function commitModerationAction(data: ApiModerationActionsMessageParams) {
   if (!data) return null
@@ -29,4 +31,18 @@ async function commitModerationAction(data: ApiModerationActionsMessageParams) {
   }
   return actionRes
 }
-export const useCommitModerationAction = mutationWrapper(commitModerationAction)
+export const useCommitModerationAction = mutationWrapper(
+  commitModerationAction,
+  {
+    onError: (_, variables) => {
+      if (variables.action === 'block')
+        getBlockedInPostIdQuery.invalidate(queryClient, variables.ctxPostId)
+    },
+    onSuccess: (_, variables) => {
+      if (variables.action === 'init')
+        getModeratorQuery.invalidate(queryClient, variables.address)
+      else if (variables.action === 'block')
+        getBlockedInPostIdQuery.invalidate(queryClient, variables.ctxPostId)
+    },
+  }
+)
