@@ -1,6 +1,8 @@
+import BlockedImage from '@/assets/graphics/blocked.png'
 import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getBlockedInPostIdDetailedQuery } from '@/services/api/moderation/query'
 import { useMyAccount } from '@/stores/my-account'
+import Image from 'next/image'
 import { useReducer } from 'react'
 import { HiXMark } from 'react-icons/hi2'
 import AddressAvatar from '../AddressAvatar'
@@ -110,7 +112,16 @@ export default function ModerationInfoModal({
           <span className='text-sm text-text-muted'>
             Blocked users ({blockedUsersCount})
           </span>
-          <DataCard data={cardData} />
+          {blockedUsersCount ? (
+            <DataCard data={cardData} />
+          ) : (
+            <div className='flex flex-col items-center gap-4 rounded-2xl bg-background-lighter px-4 py-4 text-center'>
+              <Image src={BlockedImage} alt='' />
+              <span className='text-sm text-text-muted'>
+                There&apos;re no blocked users yet.
+              </span>
+            </div>
+          )}
         </div>
       </Modal>
       <ConfirmationModal
