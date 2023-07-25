@@ -112,16 +112,21 @@ export default function ModerationInfoModal({
           <span className='text-sm text-text-muted'>
             Blocked users ({blockedUsersCount})
           </span>
-          {blockedUsersCount ? (
-            <DataCard data={cardData} />
-          ) : (
-            <div className='flex flex-col items-center gap-4 rounded-2xl bg-background-lighter px-4 py-4 text-center'>
-              <Image src={BlockedImage} alt='' />
-              <span className='text-sm text-text-muted'>
-                There&apos;re no blocked users yet.
-              </span>
-            </div>
-          )}
+          <div className='overflow-hidden rounded-2xl bg-background-lighter px-4 pr-1'>
+            {blockedUsersCount ? (
+              <DataCard
+                className='max-h-96 overflow-y-scroll rounded-none p-0 py-4 pr-1 scrollbar-track-background-lighter scrollbar-thumb-background-lightest/70'
+                data={cardData}
+              />
+            ) : (
+              <div className='flex flex-col items-center gap-4 py-4 text-center'>
+                <Image src={BlockedImage} alt='' />
+                <span className='text-sm text-text-muted'>
+                  There&apos;re no blocked users yet.
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </Modal>
       <ConfirmationModal

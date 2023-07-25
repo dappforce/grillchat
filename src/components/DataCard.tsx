@@ -1,5 +1,5 @@
 import { cx } from '@/utils/class-names'
-import { ComponentProps, Fragment, ReactNode } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 import { CopyTextInline } from './CopyText'
 import LinkText from './LinkText'
 
@@ -32,13 +32,17 @@ export default function DataCard({ data, ...props }: DataCardProps) {
           customContent,
         } = currentData
 
-        if (customContent)
-          return <Fragment key={title}>{customContent}</Fragment>
-        if (!content) return null
-
         const containerClassName = cx(
           'border-b border-background-lightest pb-3 last:border-none last:pb-0'
         )
+        if (customContent)
+          return (
+            <div key={title} className={cx('w-full', containerClassName)}>
+              {customContent}
+            </div>
+          )
+
+        if (!content) return null
 
         const element = (
           <div className={cx('flex min-w-0 flex-1 flex-col gap-0.5')}>
