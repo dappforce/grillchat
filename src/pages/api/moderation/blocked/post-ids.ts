@@ -3,7 +3,7 @@ import { getBlockedInPostIds } from '@/server/moderation'
 import { z } from 'zod'
 
 const paramsSchema = z.object({
-  spaceIds: z.array(z.string()).or(z.string()),
+  postIds: z.array(z.string()).or(z.string()),
 })
 export type ApiModerationBlockedInPostIdsParams = z.infer<typeof paramsSchema>
 
@@ -19,9 +19,8 @@ export default handlerWrapper({
   allowedMethods: ['GET'],
   errorLabel: 'blocked-post-ids',
   handler: async (data, _, res) => {
-    const response = await getBlockedInPostIds(
-      Array.isArray(data.spaceIds) ? data.spaceIds : [data.spaceIds]
-    )
+    const postIds = Array.isArray(data.postIds) ? data.postIds : [data.postIds]
+    const response = await getBlockedInPostIds(postIds)
     res.json({ data: response, success: true, message: 'OK' })
   },
 })

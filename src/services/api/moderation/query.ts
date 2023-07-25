@@ -43,7 +43,7 @@ const getBlockedInPostId = poolQuery<
 
     const response = await axios.get(
       '/api/moderation/blocked/post-ids?' +
-        filteredParams.map((n) => `spaceIds=${n}`).join('&')
+        filteredParams.map((n) => `postIds=${n}`).join('&')
     )
     const resData = response.data as ApiModerationBlockedInPostIdsResponse
     return resData.data
