@@ -2,6 +2,7 @@ import ModerateIcon from '@/assets/icons/moderate.svg'
 import { ActionCardProps } from '@/components/ActionCard'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import UpsertChatModal from '@/components/community/UpsertChatModal'
+import ModerationInfoModal from '@/components/moderation/ModerationInfoModal'
 import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
@@ -56,7 +57,14 @@ export default function AboutChatModal({
   const sendEvent = useSendEvent()
 
   const [openedModalType, setOpenedModalType] = useState<
-    'metadata' | 'qr' | 'confirmation-leave' | 'edit' | 'hide' | 'unhide' | null
+    | 'metadata'
+    | 'qr'
+    | 'confirmation-leave'
+    | 'edit'
+    | 'hide'
+    | 'unhide'
+    | 'moderation'
+    | null
   >(null)
 
   const isInIframe = useIsInIframe()
@@ -125,9 +133,7 @@ export default function AboutChatModal({
         text: 'Moderation',
         icon: ModerateIcon,
         iconClassName: cx('text-text-muted'),
-        onClick: () => {
-          // TODO: add handler
-        },
+        onClick: () => setOpenedModalType('moderation'),
       })
     }
     if (chatOwner === address) {
@@ -285,6 +291,11 @@ export default function AboutChatModal({
         closeModal={closeModal}
         onBackClick={() => setOpenedModalType(null)}
         formProps={{ chat }}
+      />
+      <ModerationInfoModal
+        isOpen={openedModalType === 'moderation'}
+        closeModal={() => setOpenedModalType(null)}
+        chatId={chatId}
       />
       <HideUnhideChatWrapper>
         {({ isLoading, mutateAsync }) => {

@@ -1,11 +1,12 @@
 import { cx } from '@/utils/class-names'
-import { ComponentProps, ReactNode } from 'react'
+import { ComponentProps, Fragment, ReactNode } from 'react'
 import { CopyTextInline } from './CopyText'
 import LinkText from './LinkText'
 
 type Data = {
   title: string
-  content: ReactNode | undefined
+  content?: ReactNode
+  customContent?: ReactNode
   textToCopy?: string
   redirectTo?: string
   openInNewTab?: boolean
@@ -24,7 +25,15 @@ export default function DataCard({ data, ...props }: DataCardProps) {
       )}
     >
       {data.map((currentData) => {
-        const { content, title, textToCopy: withCopyButton } = currentData
+        const {
+          content,
+          title,
+          textToCopy: withCopyButton,
+          customContent,
+        } = currentData
+
+        if (customContent)
+          return <Fragment key={title}>{customContent}</Fragment>
         if (!content) return null
 
         const containerClassName = cx(
@@ -32,10 +41,7 @@ export default function DataCard({ data, ...props }: DataCardProps) {
         )
 
         const element = (
-          <div
-            key={title}
-            className={cx('flex min-w-0 flex-1 flex-col gap-0.5')}
-          >
+          <div className={cx('flex min-w-0 flex-1 flex-col gap-0.5')}>
             <span className='text-sm text-text-muted'>{title}</span>
             <Content {...currentData} />
           </div>
