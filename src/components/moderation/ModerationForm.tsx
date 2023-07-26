@@ -85,6 +85,8 @@ export default function ModerationForm({
 
   if (!myAddress) return null
 
+  const isOwner = ownerId === myAddress
+
   return (
     <form
       {...props}
@@ -119,13 +121,18 @@ export default function ModerationForm({
             'rounded-xl border border-border-gray bg-background px-4 py-2'
           )}
         >
-          <ProfilePreview
-            address={ownerId}
-            avatarClassName={cx('h-8 w-8')}
-            nameClassName={cx('text-base')}
-            withGrillAddress={false}
-            withEvmAddress={false}
-          />
+          <div className='flex items-center justify-between'>
+            <ProfilePreview
+              address={ownerId}
+              avatarClassName={cx('h-8 w-8')}
+              nameClassName={cx('text-base')}
+              withGrillAddress={false}
+              withEvmAddress={false}
+            />
+            {isOwner && (
+              <span className='text-xs text-text-muted'>Chat owner</span>
+            )}
+          </div>
         </div>
       </div>
       <Controller
@@ -136,7 +143,7 @@ export default function ModerationForm({
             <SelectInput
               fieldLabel='Blocking content'
               disabled={isLoading}
-              items={blockingContentOptions(ownerId === myAddress)}
+              items={blockingContentOptions(isOwner)}
               selected={field.value}
               setSelected={(item) => field.onChange(item)}
             />
