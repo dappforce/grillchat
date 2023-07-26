@@ -28,21 +28,20 @@ const formSchema = z.object({
 })
 type FormSchema = z.infer<typeof formSchema>
 
-const blockingContentOptions = (
-  isOwner?: boolean
-): {
-  id: FormSchema['blockingContent']['id']
-  label: string
-  disabledItem?: boolean | string
-}[] => {
-  return [
-    { id: 'message', label: 'Message' },
-    {
+const blockingContentOptions = (isOwner?: boolean) => {
+  const options: {
+    id: FormSchema['blockingContent']['id']
+    label: string
+    disabledItem?: boolean | string
+  }[] = [{ id: 'message', label: 'Message' }]
+
+  if (!isOwner) {
+    options.push({
       id: 'owner',
       label: 'Owner',
-      disabledItem: isOwner ? "Cannot moderate chat's owner" : false,
-    },
-  ]
+    })
+  }
+  return options
 }
 
 export default function ModerationForm({
