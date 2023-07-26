@@ -3,7 +3,6 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import { validateVideoUrl } from '@/utils/links'
 import Image, { ImageProps } from 'next/image'
 import { useLayoutEffect, useState } from 'react'
-import Spinner from './Spinner'
 
 export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   alt?: string
@@ -109,7 +108,7 @@ export default function MediaLoader({
 
   return (
     <div className={cx('relative', containerClassName)}>
-      {isLoading && (
+      {/* {isLoading && (
         <div
           className={cx(
             'absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-background-lighter',
@@ -123,11 +122,11 @@ export default function MediaLoader({
           )}
         </div>
       )}
-      {src ? (
-        imageElement
-      ) : (
+      {src ? ( */}
+      {imageElement}
+      {/* ) : (
         <div className={cx('aspect-square w-full', placeholderClassName)} />
-      )}
+      )} */}
     </div>
   )
 }
