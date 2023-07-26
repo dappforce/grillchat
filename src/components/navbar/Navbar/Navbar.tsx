@@ -13,8 +13,11 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ComponentProps, useEffect, useRef, useState } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
-import ProfileAvatar from './ProfileAvatar'
 
+const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
+  ssr: false,
+  loading: () => <div className='w-9' />,
+})
 const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), {
   ssr: false,
 })
