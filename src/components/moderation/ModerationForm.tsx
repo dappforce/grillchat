@@ -21,7 +21,7 @@ export type ModerationFormProps = ComponentProps<'form'> & {
 
 const formSchema = z.object({
   blockingContent: z.object({
-    id: z.literal('message').or(z.literal('owner')).or(z.literal('content')),
+    id: z.literal('message').or(z.literal('owner')),
     label: z.string(),
   }),
   reason: z.object({ id: z.string(), label: z.string() }),
@@ -34,7 +34,6 @@ const blockingContentOptions: {
 }[] = [
   { id: 'message', label: 'Message' },
   { id: 'owner', label: 'Owner' },
-  { id: 'content', label: 'Content' },
 ]
 
 export default function ModerationForm({
@@ -92,9 +91,6 @@ export default function ModerationForm({
             break
           case 'owner':
             resourceId = ownerId
-            break
-          case 'content':
-            resourceId = cid
             break
           default:
             throw new Error('Invalid blocking content')
