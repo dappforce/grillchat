@@ -1,10 +1,14 @@
 import AddressAvatar from '@/components/AddressAvatar'
-import ProfileModal from '@/components/auth/ProfileModal'
 import PopOver from '@/components/floating/PopOver'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
+import dynamic from 'next/dynamic'
 import { ComponentProps, useEffect, useState } from 'react'
+
+const ProfileModal = dynamic(() => import('@/components/auth/ProfileModal'), {
+  ssr: false,
+})
 
 export type ProfileAvatarProps = ComponentProps<'div'> & {
   address: string
