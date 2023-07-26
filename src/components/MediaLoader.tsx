@@ -93,13 +93,22 @@ export default function MediaLoader({
       )
     } else {
       return (
-        <Image
-          key={usedImage?.toString() ?? ''}
-          {...commonProps}
-          width={commonProps.width || 500}
-          height={commonProps.height || 500}
-          alt={props.alt || ''}
-        />
+        <>
+          <Image
+            {...commonProps}
+            width={10}
+            height={10}
+            alt={props.alt || ''}
+            className='absolute inset-0 h-full w-full'
+          />
+          <Image
+            key={usedImage?.toString() ?? ''}
+            {...commonProps}
+            width={commonProps.width || 500}
+            height={commonProps.height || 500}
+            alt={props.alt || ''}
+          />
+        </>
       )
     }
   }
@@ -107,26 +116,6 @@ export default function MediaLoader({
   const imageElement = renderImageElement()
 
   return (
-    <div className={cx('relative', containerClassName)}>
-      {/* {isLoading && (
-        <div
-          className={cx(
-            'absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-background-lighter',
-            loadingClassName
-          )}
-        >
-          {withSpinner && (
-            <div className='absolute inset-0 flex items-center justify-center'>
-              <Spinner className='h-8 w-8 text-text-primary' />
-            </div>
-          )}
-        </div>
-      )}
-      {src ? ( */}
-      {imageElement}
-      {/* ) : (
-        <div className={cx('aspect-square w-full', placeholderClassName)} />
-      )} */}
-    </div>
+    <div className={cx('relative', containerClassName)}>{imageElement}</div>
   )
 }
