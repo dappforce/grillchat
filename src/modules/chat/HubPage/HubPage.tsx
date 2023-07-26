@@ -179,7 +179,7 @@ function CommunityHubToolbar({
             sendEvent('click new_community_button in hub_page')
           }}
         >
-          <CommunityAddIcon className='text-text-muted' />
+          <CommunityAddIcon className='text-text-muted-on-primary' />
           <span>New</span>
         </Button>
       </Container>
