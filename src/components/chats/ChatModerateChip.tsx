@@ -1,5 +1,6 @@
 import ModerateIcon from '@/assets/icons/moderate.svg'
-import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
+import { getPostQuery } from '@/services/api/query'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import PopOver, { PopOverProps } from '../floating/PopOver'
@@ -14,8 +15,10 @@ export default function ChatModerateChip({
   popOverProps,
   ...props
 }: ChatModerateChipProps) {
-  const { isAuthorized } = useAuthorizedForModeration(chatId)
-  if (!isAuthorized) {
+  const myAddress = useMyAccount((state) => state.address)
+  const { data: chat } = getPostQuery.useQuery(chatId)
+  const isOwner = chat?.struct.ownerId === myAddress
+  if (!isOwner) {
     return null
   }
 
