@@ -17,7 +17,7 @@ export default function ModerationModal({
     <Modal
       {...props}
       title='🛡 Moderate'
-      description='Moderated content will not be deleted from the blockchain but be hidden from the other users in Grill.chat.'
+      description='Moderated content will not be deleted from the blockchain, but will not be shown to users on Grill.chat.'
     >
       <div className='mt-2'>
         <ModerationForm
