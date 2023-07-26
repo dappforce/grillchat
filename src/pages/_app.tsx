@@ -13,7 +13,7 @@ import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
-import { Source_Sans_Pro } from 'next/font/google'
+import { Source_Sans_3 } from 'next/font/google'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
@@ -29,7 +29,7 @@ export type AppCommonProps = {
   dehydratedState?: any
 }
 
-const sourceSansPro = Source_Sans_Pro({
+const sourceSansPro = Source_Sans_3({
   weight: ['400', '600', '700'],
   subsets: ['latin'],
 })
