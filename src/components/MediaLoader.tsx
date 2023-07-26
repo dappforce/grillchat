@@ -2,7 +2,6 @@ import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { validateVideoUrl } from '@/utils/links'
 import Image, { ImageProps } from 'next/image'
-import { useLayoutEffect, useState } from 'react'
 
 export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   alt?: string
@@ -23,37 +22,16 @@ export default function MediaLoader({
   withSpinner,
   ...props
 }: MediaLoaderProps) {
-  let [isLoading, setIsLoading] = useState(false)
   let usedImage = src
   if (typeof src === 'string') {
     usedImage = getIpfsContentUrl(src)
   }
 
-  useLayoutEffect(() => {
-    setIsLoading(true)
-  }, [src])
-
   const renderImageElement = () => {
-    const commonClassName = cx(
-      'relative transition-opacity',
-      isLoading && 'opacity-0',
-      props.className
-    )
-
-    const onLoad = (e: any) => {
-      setIsLoading(false)
-      props.onLoad?.(e)
-    }
-
-    const onError = (e: any) => {
-      setIsLoading(false)
-      props.onError?.(e)
-    }
+    const commonClassName = cx('relative transition-opacity', props.className)
 
     const commonProps: any = {
       ...props,
-      onLoad,
-      onError,
       className: commonClassName,
       src: usedImage,
     }
@@ -66,7 +44,7 @@ export default function MediaLoader({
       return (
         <video
           {...commonProps}
-          onLoadedData={onLoad}
+          onLoadedData={props.onLoad}
           className={cx(commonClassName, 'aspect-square')}
           controls
           muted
@@ -96,6 +74,8 @@ export default function MediaLoader({
         <>
           <Image
             {...commonProps}
+            onError={undefined}
+            onLoad={undefined}
             width={10}
             height={10}
             alt={props.alt || ''}
