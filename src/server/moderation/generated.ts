@@ -305,7 +305,6 @@ export type BlockResourceMessageQueryVariables = Exact<{
   resourceId: Scalars['String']['input'];
   reasonId: Scalars['String']['input'];
   ctxPostId: Scalars['String']['input'];
-  ctxSpaceId: Scalars['String']['input'];
 }>;
 
 
@@ -315,7 +314,6 @@ export type UnblockResourceMessageQueryVariables = Exact<{
   address: Scalars['String']['input'];
   resourceId: Scalars['String']['input'];
   ctxPostId: Scalars['String']['input'];
-  ctxSpaceId: Scalars['String']['input'];
 }>;
 
 
@@ -376,18 +374,18 @@ export const AddPostIdToOrgMessage = gql`
 }
     `;
 export const BlockResourceMessage = gql`
-    query BlockResourceMessage($address: String!, $resourceId: String!, $reasonId: String!, $ctxPostId: String!, $ctxSpaceId: String!) {
+    query BlockResourceMessage($address: String!, $resourceId: String!, $reasonId: String!, $ctxPostId: String!) {
   blockResourceByIdMessage(
-    input: {substrateAddress: $address, resourceId: $resourceId, reasonId: $reasonId, ctxPostIds: [$ctxPostId], ctxSpaceIds: [$ctxSpaceId]}
+    input: {substrateAddress: $address, resourceId: $resourceId, reasonId: $reasonId, ctxPostIds: [$ctxPostId]}
   ) {
     messageTpl
   }
 }
     `;
 export const UnblockResourceMessage = gql`
-    query UnblockResourceMessage($address: String!, $resourceId: String!, $ctxPostId: String!, $ctxSpaceId: String!) {
+    query UnblockResourceMessage($address: String!, $resourceId: String!, $ctxPostId: String!) {
   unblockResourceByIdMessage(
-    input: {substrateAddress: $address, resourceId: $resourceId, ctxPostIds: [$ctxPostId], ctxSpaceIds: [$ctxSpaceId]}
+    input: {substrateAddress: $address, resourceId: $resourceId, ctxPostIds: [$ctxPostId]}
   ) {
     messageTpl
   }

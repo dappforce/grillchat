@@ -96,7 +96,6 @@ export default function ModerationInfoModal({
       resourceId: toBeUnblocked.id,
       address: myAddress,
       ctxPostId: chatId,
-      ctxSpaceId: hubId,
     })
   }
 

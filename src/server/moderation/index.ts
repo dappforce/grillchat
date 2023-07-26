@@ -195,7 +195,6 @@ export const BLOCK_RESOURCE_MESSAGE = gql`
     $resourceId: String!
     $reasonId: String!
     $ctxPostId: String!
-    $ctxSpaceId: String!
   ) {
     blockResourceByIdMessage(
       input: {
@@ -203,7 +202,6 @@ export const BLOCK_RESOURCE_MESSAGE = gql`
         resourceId: $resourceId
         reasonId: $reasonId
         ctxPostIds: [$ctxPostId]
-        ctxSpaceIds: [$ctxSpaceId]
       }
     ) {
       messageTpl
@@ -228,14 +226,12 @@ export const UNBLOCK_RESOURCE_MESSAGE = gql`
     $address: String!
     $resourceId: String!
     $ctxPostId: String!
-    $ctxSpaceId: String!
   ) {
     unblockResourceByIdMessage(
       input: {
         substrateAddress: $address
         resourceId: $resourceId
         ctxPostIds: [$ctxPostId]
-        ctxSpaceIds: [$ctxSpaceId]
       }
     ) {
       messageTpl

@@ -28,13 +28,22 @@ const formSchema = z.object({
 })
 type FormSchema = z.infer<typeof formSchema>
 
-const blockingContentOptions: {
+const blockingContentOptions = (
+  isOwner?: boolean
+): {
   id: FormSchema['blockingContent']['id']
   label: string
-}[] = [
-  { id: 'message', label: 'Message' },
-  { id: 'owner', label: 'Owner' },
-]
+  disabledItem?: boolean | string
+}[] => {
+  return [
+    { id: 'message', label: 'Message' },
+    {
+      id: 'owner',
+      label: 'Owner',
+      disabledItem: isOwner ? "Cannot moderate chat's owner" : false,
+    },
+  ]
+}
 
 export default function ModerationForm({
   messageId,
@@ -64,7 +73,7 @@ export default function ModerationForm({
     mode: 'onChange',
     resolver: zodResolver(formSchema),
     defaultValues: {
-      blockingContent: blockingContentOptions[0],
+      blockingContent: blockingContentOptions()[0],
       reason: reasonsMapped[0],
     },
   })
@@ -99,7 +108,6 @@ export default function ModerationForm({
           action: 'block',
           address: myAddress,
           ctxPostId: chatId,
-          ctxSpaceId: hubId,
           reasonId: reason.id,
           resourceId,
         })
@@ -129,7 +137,7 @@ export default function ModerationForm({
             <SelectInput
               fieldLabel='Blocking content'
               disabled={isLoading}
-              items={blockingContentOptions}
+              items={blockingContentOptions(ownerId === myAddress)}
               selected={field.value}
               setSelected={(item) => field.onChange(item)}
             />

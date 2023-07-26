@@ -34,7 +34,6 @@ const querySchema = z
       action: z.literal('block'),
       address: z.string(),
       ctxPostId: z.string(),
-      ctxSpaceId: z.string(),
       resourceId: z.string(),
       reasonId: z.string(),
     })
@@ -44,7 +43,6 @@ const querySchema = z
       action: z.literal('unblock'),
       address: z.string(),
       ctxPostId: z.string(),
-      ctxSpaceId: z.string(),
       resourceId: z.string(),
     })
   )

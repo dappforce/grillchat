@@ -8,7 +8,7 @@ export type ListItem<AdditionalData = {}> = {
   id: string
   icon?: ImageProps['src']
   label: string
-  disabledItem?: boolean
+  disabledItem?: boolean | string
 } & AdditionalData
 
 type SelectInputProps<AdditionalData> = {
@@ -124,7 +124,7 @@ function SelectListItem<AdditionalData>({
 }: SelectListItemProps<AdditionalData>) {
   return (
     <Listbox.Option
-      disabled={item.disabledItem}
+      disabled={!!item.disabledItem}
       className={() =>
         cx(
           'relative flex items-center rounded-lg outline-none transition-colors',
@@ -157,7 +157,13 @@ function SelectListItem<AdditionalData>({
                   {item.label}
                 </span>
               </div>
-              {item.disabledItem && <div className='text-gray-500'>Soon</div>}
+              {item.disabledItem && (
+                <div className='text-gray-500'>
+                  {typeof item.disabledItem === 'string'
+                    ? item.disabledItem
+                    : 'Soon'}
+                </div>
+              )}
             </>
           )}
         </div>
