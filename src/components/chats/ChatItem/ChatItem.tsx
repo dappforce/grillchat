@@ -2,9 +2,7 @@ import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
 import { useOpenDonateExtension } from '@/components/extensions/donate/hooks'
 import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
-import FloatingMenus, {
-  FloatingMenusProps,
-} from '@/components/floating/FloatingMenus'
+import { FloatingMenusProps } from '@/components/floating/FloatingMenus'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
@@ -221,7 +219,7 @@ export default function ChatItem({
           )}
         </ProfilePreviewModalWrapper>
       )}
-      <FloatingMenus
+      {/* <FloatingMenus
         menus={menus}
         allowedPlacements={[
           'right',
@@ -235,41 +233,41 @@ export default function ChatItem({
       >
         {(config) => {
           const { toggleDisplay, referenceProps } = config || {}
-          return (
-            <div
-              className={cx('flex flex-col overflow-hidden', props.className)}
-              onContextMenu={(e) => {
-                e.preventDefault()
-                toggleDisplay?.(e)
-              }}
-              onDoubleClick={() => setMessageAsReply(messageId)}
-              {...referenceProps}
-              id={messageBubbleId}
-            >
-              {extensions && extensions.length > 0 ? (
-                <ChatItemWithExtension
-                  onCheckMarkClick={onCheckMarkClick}
-                  scrollToMessage={scrollToMessage}
-                  message={message}
-                  isMyMessage={isMyMessage}
-                />
-              ) : (
-                <ChatItemContentVariant
-                  messageId={message.id}
-                  body={body ?? ''}
-                  isMyMessage={isMyMessage}
-                  isSent={isSent}
-                  onCheckMarkClick={onCheckMarkClick}
-                  ownerId={ownerId}
-                  createdAtTime={createdAtTime}
-                  inReplyTo={inReplyTo}
-                  scrollToMessage={scrollToMessage}
-                />
-              )}
-            </div>
-          )
+          return ( */}
+      <div
+        className={cx('flex flex-col overflow-hidden', props.className)}
+        // onContextMenu={(e) => {
+        //   e.preventDefault()
+        //   toggleDisplay?.(e)
+        // }}
+        onDoubleClick={() => setMessageAsReply(messageId)}
+        // {...referenceProps}
+        id={messageBubbleId}
+      >
+        {extensions && extensions.length > 0 ? (
+          <ChatItemWithExtension
+            onCheckMarkClick={onCheckMarkClick}
+            scrollToMessage={scrollToMessage}
+            message={message}
+            isMyMessage={isMyMessage}
+          />
+        ) : (
+          <ChatItemContentVariant
+            messageId={message.id}
+            body={body ?? ''}
+            isMyMessage={isMyMessage}
+            isSent={isSent}
+            onCheckMarkClick={onCheckMarkClick}
+            ownerId={ownerId}
+            createdAtTime={createdAtTime}
+            inReplyTo={inReplyTo}
+            scrollToMessage={scrollToMessage}
+          />
+        )}
+      </div>
+      {/* )
         }}
-      </FloatingMenus>
+      </FloatingMenus> */}
       <CheckMarkExplanationModal
         isOpen={checkMarkModalState.isOpen}
         variant={checkMarkModalState.variant || 'recording'}
