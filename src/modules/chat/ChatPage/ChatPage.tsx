@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import ChatImage from '@/components/chats/ChatImage'
+import ChatModerateChip from '@/components/chats/ChatModerateChip'
 import ChatRoom from '@/components/chats/ChatRoom'
 import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
 import Container from '@/components/Container'
@@ -230,7 +231,7 @@ function NavbarChatInfo({
   messageCount: number
   backButton: JSX.Element
   chatMetadata?: ChatMetadata
-  chatId?: string
+  chatId: string
 }) {
   const { data: chat } = getPostQuery.useQuery(chatId ?? '', {
     showHiddenPost: { type: 'all' },
@@ -292,6 +293,7 @@ function NavbarChatInfo({
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
               {chatTitle ?? 'Topic'}
             </span>
+            <ChatModerateChip chatId={chatId} />
             {chat?.struct.hidden && (
               <ChatHiddenChip popOverProps={{ placement: 'bottom' }} />
             )}
