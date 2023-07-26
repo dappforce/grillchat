@@ -59,7 +59,6 @@ export default function ModerationForm({
 
   const { data: message } = getPostQuery.useQuery(messageId)
   const ownerId = message?.struct.ownerId ?? ''
-  const cid = message?.struct.contentId ?? ''
 
   const { control, handleSubmit, setValue, watch } = useForm<FormSchema>({
     mode: 'onChange',
