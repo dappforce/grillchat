@@ -119,7 +119,8 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
 
     // Prevent multiple initialization
     if (isInitialized !== undefined) return
-    set({ isInitialized: false })
+    const storageAddress = accountAddressStorage.get()
+    set({ isInitialized: false, address: storageAddress || undefined })
 
     const encodedSecretKey = accountStorage.get()
     if (encodedSecretKey) {
