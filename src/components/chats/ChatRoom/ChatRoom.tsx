@@ -108,6 +108,7 @@ export default function ChatRoom({
           if (isJoined || isHubWithoutJoinButton)
             return (
               <ChatInputBar
+                hubId={hubId}
                 formProps={{
                   chatId,
                   onSubmit: scrollToBottom,
