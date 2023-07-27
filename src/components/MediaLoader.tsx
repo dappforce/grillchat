@@ -100,7 +100,12 @@ export default function MediaLoader({
       {src ? (
         imageElement
       ) : (
-        <div className={cx('aspect-square w-full', placeholderClassName)} />
+        <div
+          className={cx(
+            'aspect-square w-full animate-pulse bg-background-lighter',
+            placeholderClassName
+          )}
+        />
       )}
     </div>
   )
