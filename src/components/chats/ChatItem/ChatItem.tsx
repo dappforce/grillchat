@@ -36,6 +36,7 @@ import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine } from 'react-icons/ri'
 import urlJoin from 'url-join'
+import usePinnedMessage from '../hooks/usePinnedMessage'
 import ChatItemWithExtension from './ChatItemWithExtension'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
@@ -112,14 +113,12 @@ export default function ChatItem({
     variant: '',
   })
 
-  const { mutate: pinMessage, error: pinningError } = usePinMessage()
-  useToastError(pinningError, 'Error pinning message')
-
   const setMessageAsReply = (messageId: string) => {
     if (isOptimisticId(messageId)) return
     setReplyTo(messageId)
   }
 
+  const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
     const donateMenuItem: FloatingMenusProps['menus'][number] = {
       text: 'Donate',
@@ -137,13 +136,6 @@ export default function ChatItem({
         openDonateExtension()
       },
     }
-    const pinMenuItem: FloatingMenusProps['menus'][number] = {
-      text: 'Pin',
-      icon: BsFillPinAngleFill,
-      onClick: () => {
-        pinMessage({ action: 'pin', chatId, messageId })
-      },
-    }
 
     const showDonateMenuItem = messageOwnerEvmAddress
 
@@ -153,7 +145,7 @@ export default function ChatItem({
         icon: BsFillReplyFill,
         onClick: () => setMessageAsReply(messageId),
       },
-      ...(isChatOwner ? [pinMenuItem] : []),
+      ...(pinUnpinMenu ? [pinUnpinMenu] : []),
       ...(showDonateMenuItem ? [donateMenuItem] : []),
       ...(address && canUsePromoExtensionAccounts.includes(address)
         ? [
@@ -306,4 +298,31 @@ export default function ChatItem({
       />
     </div>
   )
+}
+
+function usePinUnpinMenuItem(chatId: string, messageId: string) {
+  const { mutate: pinMessage, error: pinningError } = usePinMessage()
+  useToastError(pinningError, 'Error pinning message')
+  const isChatOwner = useIsOwnerOfPost(chatId)
+
+  const pinnedMessageId = usePinnedMessage(chatId)
+
+  const pinMenuItem: FloatingMenusProps['menus'][number] = {
+    text: 'Pin',
+    icon: BsFillPinAngleFill,
+    onClick: () => {
+      pinMessage({ action: 'pin', chatId, messageId })
+    },
+  }
+  const unpinMenuItem: FloatingMenusProps['menus'][number] = {
+    text: 'Unpin',
+    icon: BsFillPinAngleFill,
+    onClick: () => {
+      pinMessage({ action: 'unpin', chatId, messageId })
+    },
+  }
+
+  if (pinnedMessageId === messageId) return unpinMenuItem
+  if (isChatOwner) return pinMenuItem
+  return null
 }
