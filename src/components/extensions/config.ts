@@ -167,7 +167,7 @@ export function interceptPastedData(
     if (result) {
       useExtensionData
         .getState()
-        .openExtensionModal(key as PostContentExtension['id'], result)
+        .openExtensionModal(key as MessageExtensionIds, result)
       break
     }
   }
