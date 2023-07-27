@@ -106,10 +106,3 @@ body {
     filter: brightness(1.4);
   }
 }
-
-/* to fix issue with white border appearing in lazy images in ios */
-@supports (font: -apple-system-body) and (-webkit-appearance: none) {
-  img[loading='lazy'] {
-    clip-path: inset(0.6px);
-  }
-}
