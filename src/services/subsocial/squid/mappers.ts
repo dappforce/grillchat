@@ -3,6 +3,7 @@ import {
   DonateExtension,
   ImageExtension,
   NftExtension,
+  PinsExtension,
   PostContent,
   PostContentExtension,
   PostData,
@@ -98,6 +99,16 @@ const mapPostExtensions = (
           },
         }
         return decodedPromoExtension
+
+      // TODO: wait squid to support pins extension
+      case ContentExtensionSchemaId.SubsocialPins:
+        const pinsExtension: PinsExtension = {
+          id: 'subsocial-pins',
+          properties: {
+            pinned: ext?.pinned ?? [],
+          },
+        }
+        return pinsExtension
     }
   })
   const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
