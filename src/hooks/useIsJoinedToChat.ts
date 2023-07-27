@@ -11,16 +11,13 @@ const isJoinedValue = {
 export default function useIsJoinedToChat(chatId: string, address?: string) {
   const isInIframe = useIsInIframe()
 
-  const isInitialized = useMyAccount((state) => state.isInitialized)
   const myAddress = useMyAccount((state) => state.address)
   const usedAddress = address || myAddress
 
-  const isEnabledQuery = isInitialized && !!usedAddress
+  const isEnabledQuery = !!usedAddress
   const { data, isLoading } = getFollowedPostIdsByAddressQuery.useQuery(
     usedAddress ?? '',
-    {
-      enabled: isEnabledQuery,
-    }
+    { enabled: isEnabledQuery }
   )
 
   const followedPostIdsSet = useMemo(() => {

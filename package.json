@@ -64,7 +64,7 @@
     "linkifyjs": "^4.1.0",
     "lodash.truncate": "^4.4.2",
     "match-sorter": "^6.3.1",
-    "next": "^13.2.1",
+    "next": "^13.4.12",
     "next-pwa": "^5.6.0",
     "next-themes": "^0.2.1",
     "nextjs-cors": "^2.1.2",

@@ -154,7 +154,7 @@ export const useDonate = (token: string, chainName: string) => {
             <HiOutlineExclamationTriangle className={classNames} />
           )}
           title={'Donation error'}
-          description={e.message}
+          description={e.shortMessage || e.message}
         />
       ))
       return
