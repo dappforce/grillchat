@@ -6,7 +6,7 @@ import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import CommonChatItem from '../common/CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
-import { getMessageExtensionProperties } from '../utils'
+import { getPostExtensionProperties } from '../utils'
 import { useDecodeSecretBox } from './utils'
 
 export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
@@ -19,7 +19,7 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
   const { content } = message
   const { extensions } = content || {}
 
-  const decodedPromoProperties = getMessageExtensionProperties(
+  const decodedPromoProperties = getPostExtensionProperties(
     extensions?.[0],
     'subsocial-decoded-promo'
   )

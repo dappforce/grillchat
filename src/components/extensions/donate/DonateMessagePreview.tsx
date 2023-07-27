@@ -10,7 +10,7 @@ import { formatUnits } from 'ethers'
 import { HiArrowUpRight } from 'react-icons/hi2'
 import CommonChatItem from '../common/CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
-import { getMessageExtensionProperties } from '../utils'
+import { getPostExtensionProperties } from '../utils'
 import { explorerByChainName } from './api/config'
 
 type DonatePreviewProps = {
@@ -87,7 +87,7 @@ export default function DonateMessagePreview({
   const { content } = message
 
   const { extensions, body, inReplyTo } = content || {}
-  const properties = getMessageExtensionProperties(
+  const properties = getPostExtensionProperties(
     extensions?.[0],
     'subsocial-donations'
   )

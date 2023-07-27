@@ -32,6 +32,9 @@ declare module '@subsocial/api/types' {
     nonce: number
     recipient: string
   }
+  export type PinsProperties = {
+    pins: [string] | []
+  }
 
   export type NftExtension = {
     id: 'subsocial-evm-nft'
@@ -49,12 +52,17 @@ declare module '@subsocial/api/types' {
     id: 'subsocial-decoded-promo'
     properties: SecretBoxProperties
   }
+  export type PinsExtension = {
+    id: 'subsocial-pins'
+    properties: PinsProperties
+  }
 
   export type PostContentExtension =
     | NftExtension
     | DonateExtension
     | ImageExtension
     | DecodedPromoExtension
+    | PinsExtension
 
   export interface PostContent extends SubsocialPostContent {
     inReplyTo?: {

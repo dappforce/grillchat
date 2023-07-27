@@ -3,13 +3,13 @@ import MediaLoader from '@/components/MediaLoader'
 import { cx } from '@/utils/class-names'
 import CommonChatItem from '../common/CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
-import { getMessageExtensionProperties } from '../utils'
+import { getPostExtensionProperties } from '../utils'
 
 export default function ImageChatItem(props: ExtensionChatItemProps) {
   const { message } = props
 
   const firstExtension = message.content?.extensions?.[0]
-  const imageProperties = getMessageExtensionProperties(
+  const imageProperties = getPostExtensionProperties(
     firstExtension,
     'subsocial-image'
   )

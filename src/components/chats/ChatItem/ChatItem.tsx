@@ -8,7 +8,10 @@ import FloatingMenus, {
 import MetadataModal from '@/components/modals/MetadataModal'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import Toast from '@/components/Toast'
+import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
+import useToastError from '@/hooks/useToastError'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
@@ -28,7 +31,7 @@ import {
 } from 'react'
 import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
-import { BsFillReplyFill } from 'react-icons/bs'
+import { BsFillPinAngleFill, BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine } from 'react-icons/ri'
@@ -84,6 +87,7 @@ export default function ChatItem({
     message.id,
     message.struct.ownerId
   )
+  const isChatOwner = useIsOwnerOfPost(chatId)
 
   const router = useRouter()
   const isLoggingInWithKey = useRef(false)
@@ -108,6 +112,9 @@ export default function ChatItem({
     variant: '',
   })
 
+  const { mutate: pinMessage, error: pinningError } = usePinMessage()
+  useToastError(pinningError, 'Error pinning message')
+
   const setMessageAsReply = (messageId: string) => {
     if (isOptimisticId(messageId)) return
     setReplyTo(messageId)
@@ -130,6 +137,13 @@ export default function ChatItem({
         openDonateExtension()
       },
     }
+    const pinMenuItem: FloatingMenusProps['menus'][number] = {
+      text: 'Pin',
+      icon: BsFillPinAngleFill,
+      onClick: () => {
+        pinMessage({ action: 'pin', chatId, messageId })
+      },
+    }
 
     const showDonateMenuItem = messageOwnerEvmAddress
 
@@ -139,6 +153,7 @@ export default function ChatItem({
         icon: BsFillReplyFill,
         onClick: () => setMessageAsReply(messageId),
       },
+      ...(isChatOwner ? [pinMenuItem] : []),
       ...(showDonateMenuItem ? [donateMenuItem] : []),
       ...(address && canUsePromoExtensionAccounts.includes(address)
         ? [
