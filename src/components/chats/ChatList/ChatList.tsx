@@ -55,8 +55,7 @@ export default function ChatList(props: ChatListProps) {
   return <ChatListContent {...props} />
 }
 
-const SCROLL_THRESHOLD_PERCENTAGE = 0.35
-const DEFAULT_SCROLL_THRESHOLD = 500
+const SCROLL_THRESHOLD = 1000
 
 function ChatListContent({
   asContainer,
@@ -196,10 +195,6 @@ function ChatListContent({
   const isAllMessagesLoaded =
     loadedMessageQueries.length === filteredMessageIds.length
 
-  const scrollThreshold =
-    (scrollContainerRef.current?.scrollHeight ?? 0) *
-      SCROLL_THRESHOLD_PERCENTAGE || DEFAULT_SCROLL_THRESHOLD
-
   return (
     <div
       {...props}
@@ -245,7 +240,7 @@ function ChatListContent({
                 <ChatTopNotice className='pb-2 pt-4' />
               )
             }
-            scrollThreshold={`${scrollThreshold}px`}
+            scrollThreshold={`${SCROLL_THRESHOLD}px`}
           >
             {messageQueries.map(({ data: message }, index) => {
               const isLastReadMessage = lastReadId === message?.id
