@@ -120,7 +120,7 @@ export default function ModerationInfoModal({
             ) : (
               <div className='flex flex-col items-center gap-4 py-4 text-center'>
                 <Image src={BlockedImage} alt='' />
-                <span className='text-sm text-text-muted'>
+                <span className='text-text-muted'>
                   There&apos;re no blocked users yet.
                 </span>
               </div>
