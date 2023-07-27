@@ -237,10 +237,10 @@ function NavbarChatInfo({
 
   useEffect(() => {
     const open = getUrlQuery('open')
-    if (open !== 'about') return
+    if (open !== 'about' || !router.isReady) return
 
     setIsOpenAboutChatModal(true)
-    router.push(getCurrentUrlWithoutQuery(), undefined, { shallow: true })
+    replaceUrl(getCurrentUrlWithoutQuery())
   }, [router])
 
   const chatTitle = chatMetadata?.title
