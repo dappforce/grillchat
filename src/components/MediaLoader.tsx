@@ -96,6 +96,12 @@ export default function MediaLoader({
   const imageElement = renderImageElement()
 
   return (
-    <div className={cx('relative', containerClassName)}>{imageElement}</div>
+    <div className={cx('relative', containerClassName)}>
+      {src ? (
+        imageElement
+      ) : (
+        <div className={cx('aspect-square w-full', placeholderClassName)} />
+      )}
+    </div>
   )
 }
