@@ -33,7 +33,7 @@ export default function ChatModerateChip({
           }}
         >
           <ModerateIcon
-            className={cx('text-xl text-text-muted', props.className)}
+            className={cx('text-sm text-text-muted', props.className)}
           />
         </div>
       }
