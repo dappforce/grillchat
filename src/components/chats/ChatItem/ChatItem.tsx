@@ -88,7 +88,6 @@ export default function ChatItem({
     message.id,
     message.struct.ownerId
   )
-  const isChatOwner = useIsOwnerOfPost(chatId)
 
   const router = useRouter()
   const isLoggingInWithKey = useRef(false)
