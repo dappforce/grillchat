@@ -243,7 +243,7 @@ function ChatListContent({
                         }}
                       >
                         <ChatItemContainer
-                          enableCustomMenu={false}
+                          enableChatMenu={false}
                           hubId={hubId}
                           chatId={chatId}
                           message={message}

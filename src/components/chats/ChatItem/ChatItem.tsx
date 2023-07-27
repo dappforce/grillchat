@@ -21,7 +21,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   isMyMessage: boolean
   messageBubbleId?: string
   scrollToMessage?: (chatId: string) => Promise<void>
-  enableCustomMenu?: boolean
+  enableChatMenu?: boolean
   chatId: string
 }
 
@@ -44,7 +44,7 @@ export default function ChatItem({
   isMyMessage,
   scrollToMessage,
   messageBubbleId,
-  enableCustomMenu = true,
+  enableChatMenu = true,
   chatId,
   ...props
 }: ChatItemProps) {
@@ -101,7 +101,7 @@ export default function ChatItem({
           )}
         </ProfilePreviewModalWrapper>
       )}
-      <ChatItemMenus messageId={message.id} enableCustomMenu={enableCustomMenu}>
+      <ChatItemMenus messageId={message.id} enableChatMenu={enableChatMenu}>
         {(config) => {
           const { toggleDisplay, referenceProps } = config || {}
           return (

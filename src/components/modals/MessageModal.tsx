@@ -54,7 +54,7 @@ export default function MessageModal({
       >
         {message && (
           <ChatItem
-            enableCustomMenu={false}
+            enableChatMenu={false}
             isMyMessage={false}
             message={message}
             chatId={chatId}

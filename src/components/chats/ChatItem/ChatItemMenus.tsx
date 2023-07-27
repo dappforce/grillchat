@@ -28,7 +28,7 @@ import urlJoin from 'url-join'
 export type ChatItemMenusProps = {
   messageId: string
   children: FloatingMenusProps['children']
-  enableCustomMenu?: boolean
+  enableChatMenu?: boolean
 }
 
 type ModalState = 'login' | 'metadata' | null
@@ -36,7 +36,7 @@ type ModalState = 'login' | 'metadata' | null
 export default function ChatItemMenus({
   messageId,
   children,
-  enableCustomMenu = true,
+  enableChatMenu = true,
 }: ChatItemMenusProps) {
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
@@ -142,7 +142,7 @@ export default function ChatItemMenus({
       },
     ]
   }
-  const menus = enableCustomMenu && isSent ? getChatMenus() : []
+  const menus = enableChatMenu && isSent ? getChatMenus() : []
 
   return (
     <>
