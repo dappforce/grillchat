@@ -3,14 +3,26 @@ import MailIcon from '@/assets/icons/mail.svg'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList from '@/components/MenuList'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
+import { getMessageToken } from '@/services/firebase/messaging'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { FaDiscord, FaTelegram } from 'react-icons/fa'
 import { ContentProps } from '../../types'
 
 export default function NotificationContent({ setCurrentState }: ContentProps) {
-  const { showNotification, closeNotification } = useFirstVisitNotification(
-    'telegram-notification'
-  )
+  const address = useMyAccount((state) => state.address)
+
+  const pwa = useFirstVisitNotification('pwa-notification')
+  const telegram = useFirstVisitNotification('telegram-notification')
+
+  const enablePushNotification = async () => {
+    const token = await getMessageToken()
+
+    if (token) {
+      // TODO: Send backend request to store mapping between token & address.
+      console.log('fcm token', token, 'User Address: ', address)
+    }
+  }
 
   return (
     <MenuList
@@ -20,21 +32,29 @@ export default function NotificationContent({ setCurrentState }: ContentProps) {
           text: (
             <span className='flex items-center gap-2'>
               <span>Telegram Bot</span>
-              {showNotification && <DotBlinkingNotification />}
+              {telegram.showNotification && <DotBlinkingNotification />}
             </span>
           ),
           iconClassName: cx('text-[#A3ACBE]'),
           icon: FaTelegram,
           onClick: () => {
-            closeNotification()
+            telegram.closeNotification()
             setCurrentState('telegram-notifications')
           },
         },
         {
-          text: <SoonMenu text='Push Notifications' />,
+          text: (
+            <span className='flex items-center gap-2'>
+              <span>Push Notifications</span>
+              {pwa.showNotification && <DotBlinkingNotification />}
+            </span>
+          ),
           iconClassName: cx('text-[#A3ACBE]'),
           icon: BellIcon,
-          disabled: true,
+          onClick: () => {
+            pwa.closeNotification()
+            enablePushNotification()
+          },
         },
         {
           text: <SoonMenu text='Email Notifications' />,

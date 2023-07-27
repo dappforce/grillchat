@@ -45,3 +45,59 @@ export function getGaId() {
 export function getSquidUrl() {
   return checkEnv(process.env.NEXT_PUBLIC_SQUID_URL, 'NEXT_PUBLIC_SQUID_URL')
 }
+
+export function getFirebaseApiKey() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    'NEXT_PUBLIC_FIREBASE_API_KEY'
+  )
+}
+
+export function getFirebaseNotificationAppId() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_NOTIFICATION_APP_ID,
+    'NEXT_PUBLIC_NOTIFICATION_APP_ID'
+  )
+}
+
+export function getFirebaseAuthDomain() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN'
+  )
+}
+
+export function getFirebaseProjectId() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    'NEXT_PUBLIC_FIREBASE_PROJECT_ID'
+  )
+}
+
+export function getFirebaseStorageBucket() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'
+  )
+}
+
+export function getFirebaseMessagingId() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_ID,
+    'NEXT_PUBLIC_FIREBASE_MESSAGING_ID'
+  )
+}
+
+export function getFirebaseAppId() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    'NEXT_PUBLIC_FIREBASE_APP_ID'
+  )
+}
+
+export function getFirebaseMeasurementId() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+    'NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID'
+  )
+}
