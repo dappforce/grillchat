@@ -123,10 +123,17 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
 
     const encodedSecretKey = accountStorage.get()
     if (encodedSecretKey) {
+      const storageAddress = accountAddressStorage.get()
+      set({ address: storageAddress || undefined })
+
       const secretKey = decodeSecretKey(encodedSecretKey)
       const address = await login(secretKey, true)
 
-      if (!address) accountStorage.remove()
+      if (!address) {
+        accountStorage.remove()
+        accountAddressStorage.remove()
+        set({ address: null })
+      }
     }
 
     set({ isInitialized: true })
