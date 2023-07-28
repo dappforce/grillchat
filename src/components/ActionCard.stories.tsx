@@ -70,3 +70,52 @@ export const CustomColor: Story = {
     ],
   },
 }
+
+export const DisabledOrComingSoonItem: Story = {
+  args: {
+    actions: [
+      {
+        text: 'Action 1',
+        iconClassName: 'text-text-muted',
+        icon: HiAcademicCap,
+      },
+      {
+        text: 'Disabled Action',
+        icon: HiAcademicCap,
+        disabled: true,
+      },
+      {
+        text: 'Coming Soon Action',
+        icon: HiAcademicCap,
+        isComingSoon: true,
+      },
+    ],
+  },
+}
+
+export const WithDescription: Story = {
+  args: {
+    actions: [
+      {
+        text: 'Action 1',
+        description: 'Action 1 is doing something cool',
+        iconClassName: 'text-text-muted',
+        icon: HiAcademicCap,
+      },
+      {
+        text: 'Disabled Action',
+        description: 'Action 2 is currently disabled',
+        iconClassName: 'text-text-muted',
+        icon: HiAcademicCap,
+        disabled: true,
+      },
+      {
+        text: 'Coming Soon Action',
+        description: 'Action 1 is coming soon',
+        iconClassName: 'text-text-muted',
+        icon: HiAcademicCap,
+        isComingSoon: true,
+      },
+    ],
+  },
+}
