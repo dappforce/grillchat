@@ -20,5 +20,20 @@ const config: StorybookConfig = {
     autodocs: 'tag',
   },
   staticDirs: ['../public'],
+  webpackFinal(config: any) {
+    const imageRule = config.module?.rules?.find((rule) => {
+      if (!rule?.test) return false
+      return rule?.test?.test('.svg')
+    })
+    imageRule.exclude = /\.svg$/
+
+    // Configure .svg files to be loaded with @svgr/webpack
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    })
+
+    return config
+  },
 }
 export default config
