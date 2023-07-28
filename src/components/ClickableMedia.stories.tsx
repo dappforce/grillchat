@@ -1,19 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import Card from './Card'
+import ClickableMedia from './ClickableMedia'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta = {
-  title: 'Components/Card',
-  component: Card,
+  title: 'Components/ClickableMedia',
+  component: ClickableMedia,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
   args: {
-    children: 'Card Content',
+    src: 'https://ipfs.subsocial.network/ipfs/bafybeidjulzfloyxfrzcwdvzhshko6auptimtopm6zln3jlrm5gxcal5ba',
+    alt: '',
+    width: 300,
+    height: 300,
   },
-} satisfies Meta<typeof Card>
+} satisfies Meta<typeof ClickableMedia>
 
 export default meta
 type Story = StoryObj<typeof meta>
