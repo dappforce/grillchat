@@ -119,3 +119,23 @@ export const WithDescription: Story = {
     ],
   },
 }
+
+export const WithNotification: Story = {
+  args: {
+    actions: [
+      {
+        text: 'Action 1',
+        description: 'Action 1 is doing something cool',
+        iconClassName: 'text-text-muted',
+        icon: HiAcademicCap,
+      },
+      {
+        text: 'Action Notification',
+        description: 'Action 2 has a notification',
+        iconClassName: 'text-text-muted',
+        icon: HiAcademicCap,
+        firstVisitNotificationStorageName: 'test',
+      },
+    ],
+  },
+}
