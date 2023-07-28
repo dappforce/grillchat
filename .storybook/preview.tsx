@@ -5,7 +5,9 @@ import { sourceSans3 } from '../src/fonts'
 
 /* TODO: update import to your tailwind styles file. If you're using Angular, inject this through your angular.json config instead */
 import '../src/styles/globals.css'
+import './styles.css'
 
+// To make prettier plugin organize imports not delete react import
 type A = React.Component
 
 const preview: Preview = {

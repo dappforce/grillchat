@@ -1,11 +1,11 @@
-import { sourceSans3 } from '@/fonts'
 import type { Meta, StoryObj } from '@storybook/react'
+import { HiAcademicCap } from 'react-icons/hi2'
 
 import Button from './Button'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta = {
-  title: 'Button',
+  title: 'Components/Button',
   component: Button,
   parameters: {
     layout: 'centered',
@@ -23,9 +23,6 @@ type Story = StoryObj<typeof meta>
 export const Primary: Story = {
   args: {
     variant: 'primary',
-    style: {
-      fontFamily: sourceSans3.style.fontFamily,
-    },
   },
 }
 
@@ -44,5 +41,25 @@ export const Large: Story = {
 export const Small: Story = {
   args: {
     size: 'sm',
+  },
+}
+
+export const IconButton: Story = {
+  args: {
+    size: 'circle',
+    children: <HiAcademicCap />,
+  },
+}
+
+export const DisabledButton: Story = {
+  args: {
+    disabled: true,
+  },
+}
+
+export const DisabledSubtleButton: Story = {
+  args: {
+    disabled: true,
+    disabledStyle: 'subtle',
   },
 }
