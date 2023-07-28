@@ -1,5 +1,6 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import { sourceSans3 } from '@/fonts'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
@@ -13,7 +14,6 @@ import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
-import { Source_Sans_3 } from 'next/font/google'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
@@ -28,11 +28,6 @@ export type AppCommonProps = {
   head?: HeadConfigProps
   dehydratedState?: any
 }
-
-const sourceSansPro = Source_Sans_3({
-  weight: ['400', '600', '700'],
-  subsets: ['latin'],
-})
 
 export default function App(props: AppProps<AppCommonProps>) {
   const isInIframe = useIsInIframe()
@@ -50,7 +45,7 @@ export default function App(props: AppProps<AppCommonProps>) {
     <ConfigProvider>
       <style jsx global>{`
         html {
-          --source-sans-pro: ${sourceSansPro.style.fontFamily};
+          --source-sans-pro: ${sourceSans3.style.fontFamily};
         }
 
         ${isInIframe
