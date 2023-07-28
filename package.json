@@ -117,6 +117,8 @@
     "dotenv": "^16.0.3",
     "eslint-plugin-storybook": "^0.6.13",
     "husky": "^8.0.0",
+    "msw": "^1.2.3",
+    "msw-storybook-addon": "^1.8.0",
     "postcss": "^8.4.21",
     "prettier": "^2.8.4",
     "prettier-plugin-organize-imports": "^3.2.2",
@@ -126,5 +128,8 @@
     "tailwind-scrollbar": "^3.0.0",
     "tailwindcss": "^3.2.7",
     "tsup": "^6.7.0"
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }
