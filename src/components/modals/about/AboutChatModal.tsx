@@ -5,6 +5,7 @@ import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
@@ -64,6 +65,7 @@ export default function AboutChatModal({
 
   const chatUrl = urlJoin(getCurrentUrlOrigin(), getChatPageLink(router))
   const chatOwner = chat.struct.ownerId
+  const isChatInsideCommunityHub = chat.struct.spaceId === COMMUNITY_CHAT_HUB_ID
 
   const contentList: AboutModalProps['contentList'] = [
     {
@@ -77,7 +79,9 @@ export default function AboutChatModal({
       redirectTo: chatUrl,
       openInNewTab: true,
     },
-    {
+  ]
+  if (isChatInsideCommunityHub) {
+    contentList.push({
       title: 'Chat owner',
       content: (
         <ProfilePreviewModalWrapper address={chatOwner}>
@@ -94,8 +98,8 @@ export default function AboutChatModal({
           )}
         </ProfilePreviewModalWrapper>
       ),
-    },
-  ]
+    })
+  }
 
   const getActionMenu = (
     joinChat: (variables: JoinChatParams) => Promise<string | undefined>,
