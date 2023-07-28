@@ -1,3 +1,4 @@
 html {
   background-color: rgb(var(--background));
+  color: rgb(var(--text));
 }
