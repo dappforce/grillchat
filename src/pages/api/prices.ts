@@ -2,7 +2,6 @@ import { MinimalUsageQueueWithTimeLimit } from '@/utils/data-structure'
 import axios from 'axios'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
-import { ApiAccountDataResponse } from './accounts-data'
 
 const coingeckoUrl =
   'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
@@ -31,7 +30,7 @@ const priceCache = new MinimalUsageQueueWithTimeLimit<Price>(MAX_CACHE_ITEMS, 5)
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiAccountDataResponse>
+  res: NextApiResponse<ApiPricesResponse>
 ) {
   if (req.method !== 'GET') return res.status(404).end()
 
