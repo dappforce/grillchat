@@ -172,7 +172,7 @@ export default function HubsPage(props: HubsPageProps) {
                     sendEvent('click new_community_button in home_page')
                   }}
                 >
-                  <CommunityAddIcon className='text-text-muted' />
+                  <CommunityAddIcon className='text-text-muted-on-primary' />
                   <span>New</span>
                 </Button>
               </div>

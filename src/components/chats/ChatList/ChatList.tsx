@@ -241,6 +241,7 @@ function ChatListContent({
                           e.preventDefault()
                           toggleDisplay?.(e)
                         }}
+                        className='flex w-full flex-col'
                       >
                         <ChatItemContainer
                           enableChatMenu={false}
