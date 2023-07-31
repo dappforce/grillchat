@@ -28,6 +28,7 @@ import {
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import urlJoin from 'url-join'
+import ChatItemMenus from '../ChatItem/ChatItemMenus'
 import { getMessageElementId } from '../utils'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
@@ -230,14 +231,29 @@ function ChatListContent({
                 isLastReadMessage && !isBottomMessage
 
               const chatElement = message && (
-                <ChatItemContainer
-                  hubId={hubId}
-                  chatId={chatId}
-                  message={message}
-                  key={message.id}
-                  messageBubbleId={getMessageElementId(message.id)}
-                  scrollToMessage={scrollToMessage}
-                />
+                <ChatItemMenus messageId={message.id} key={message.id}>
+                  {(config) => {
+                    const { referenceProps, toggleDisplay } = config || {}
+                    return (
+                      <div
+                        {...referenceProps}
+                        onContextMenu={(e) => {
+                          e.preventDefault()
+                          toggleDisplay?.(e)
+                        }}
+                      >
+                        <ChatItemContainer
+                          enableChatMenu={false}
+                          hubId={hubId}
+                          chatId={chatId}
+                          message={message}
+                          messageBubbleId={getMessageElementId(message.id)}
+                          scrollToMessage={scrollToMessage}
+                        />
+                      </div>
+                    )
+                  }}
+                </ChatItemMenus>
               )
               if (!showLastUnreadMessageNotice) return chatElement
 
