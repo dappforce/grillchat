@@ -1,10 +1,11 @@
+import { getPostQuery } from '@/services/api/query'
 import type { Meta, StoryObj } from '@storybook/react'
 
-import UpsertChatForm from './UpsertChatForm'
+import UpsertChatForm, { UpsertChatFormProps } from './UpsertChatForm'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta = {
-  title: 'Layouts/UpsertChatForm',
+  title: 'Community/UpsertChatForm',
   component: UpsertChatForm,
   tags: ['autodocs'],
   args: {
@@ -23,15 +24,17 @@ export const InsertForm: Story = {
   },
 }
 
-// export const UpdateForm: Story = {
-//   render: (props) => {
-//     const { data: chat } = getPostQuery.useQuery('1')
-//     return chat ? (
-//       <UpsertChatForm chat={chat} {...props} />
-//     ) : (
-//       <div>Loading...</div>
-//     )
-//   },
-//   // @ts-ignore
-//   args: {},
-// }
+function UpdateFormWrapper(props: UpsertChatFormProps) {
+  const { data: chat } = getPostQuery.useQuery('1')
+  return chat ? (
+    <UpsertChatForm chat={chat} {...props} />
+  ) : (
+    <div>Loading...</div>
+  )
+}
+
+export const UpdateForm: Story = {
+  render: (props) => <UpdateFormWrapper {...props} />,
+  // @ts-ignore
+  args: {},
+}
