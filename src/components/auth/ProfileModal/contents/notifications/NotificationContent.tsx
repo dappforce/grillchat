@@ -3,7 +3,6 @@ import MailIcon from '@/assets/icons/mail.svg'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList from '@/components/MenuList'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
-import { getMessageToken } from '@/services/firebase/messaging'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { FaDiscord, FaTelegram } from 'react-icons/fa'
@@ -14,15 +13,6 @@ export default function NotificationContent({ setCurrentState }: ContentProps) {
 
   const pwa = useFirstVisitNotification('pwa-notification')
   const telegram = useFirstVisitNotification('telegram-notification')
-
-  const enablePushNotification = async () => {
-    const token = await getMessageToken()
-
-    if (token) {
-      // TODO: Send backend request to store mapping between token & address.
-      console.log('fcm token', token, 'User Address: ', address)
-    }
-  }
 
   return (
     <MenuList
