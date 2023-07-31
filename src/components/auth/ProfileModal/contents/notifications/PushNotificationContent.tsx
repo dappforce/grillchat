@@ -130,6 +130,7 @@ function EnableNotificationButton({
   const handleClickEnable = async () => {
     if (!address) return
     const fcmToken = await getMessageToken()
+    console.log('FCM Token', fcmToken)
     if (!fcmToken) return
 
     setFcmToken(fcmToken)
