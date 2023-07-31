@@ -33,7 +33,7 @@ declare module '@subsocial/api/types' {
     recipient: string
   }
   export type PinsProperties = {
-    pins: [string] | []
+    ids: [string] | []
   }
 
   export type NftExtension = {
@@ -53,7 +53,7 @@ declare module '@subsocial/api/types' {
     properties: SecretBoxProperties
   }
   export type PinsExtension = {
-    id: 'subsocial-pins'
+    id: 'subsocial-pinned-posts'
     properties: PinsProperties
   }
 

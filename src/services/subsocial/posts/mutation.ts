@@ -346,7 +346,7 @@ async function getUpdatedPinPostContent(
   }
 
   const pinExtension = chatContent.extensions?.find(
-    (ext) => ext.id === 'subsocial-pins'
+    (ext) => ext.id === 'subsocial-pinned-posts'
   ) as PinsExtension
 
   if (action === 'pin') pinMessage(chatContent, pinExtension, messageId)
@@ -362,17 +362,17 @@ function pinMessage(
   if (!pinExtension) {
     if (!chatContent.extensions) chatContent.extensions = []
     chatContent.extensions.push({
-      id: 'subsocial-pins',
-      properties: { pins: [messageId] },
+      id: 'subsocial-pinned-posts',
+      properties: { ids: [messageId] },
     })
   } else {
-    pinExtension.properties.pins = [messageId]
+    pinExtension.properties.ids = [messageId]
   }
 }
 function unpinMessage(pinExtension: PinsExtension, messageId: string) {
   if (!pinExtension) throw new Error('Message is not pinned')
 
-  const index = (pinExtension.properties.pins as string[]).indexOf(messageId)
+  const index = (pinExtension.properties.ids as string[]).indexOf(messageId)
   if (index === -1) throw new Error('Message is not pinned')
-  pinExtension.properties.pins = []
+  pinExtension.properties.ids = []
 }

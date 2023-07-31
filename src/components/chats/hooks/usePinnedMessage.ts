@@ -5,8 +5,8 @@ export default function usePinnedMessage(chatId: string) {
   const { data: chat } = getPostQuery.useQuery(chatId)
   const pinExtension = getPostExtension(
     chat?.content?.extensions,
-    'subsocial-pins'
+    'subsocial-pinned-posts'
   )
-  const pinnedMessageId = pinExtension?.properties.pins[0]
+  const pinnedMessageId = pinExtension?.properties.ids[0]
   return pinnedMessageId
 }

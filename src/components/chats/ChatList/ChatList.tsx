@@ -338,11 +338,11 @@ function PinnedMessage({
   const { data: chat } = getPostQuery.useQuery(chatId)
   const pinExtension = getPostExtension(
     chat?.content?.extensions,
-    'subsocial-pins'
+    'subsocial-pinned-posts'
   )
 
   const pinnedMessage =
-    getPinnedMessageInChatId(chatId) || pinExtension?.properties.pins[0]
+    getPinnedMessageInChatId(chatId) || pinExtension?.properties.ids[0]
   const { data: message } = getPostQuery.useQuery(pinnedMessage ?? '', {
     enabled: !!pinnedMessage,
   })

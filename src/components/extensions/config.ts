@@ -51,7 +51,7 @@ const NftRepliedMessagePreviewPart = dynamic(
 
 export type MessageExtensionIds = Exclude<
   PostContentExtension['id'],
-  'subsocial-pins'
+  'subsocial-pinned-posts'
 >
 export const extensionInitialDataTypes = {
   'subsocial-donations': { recipient: '', messageId: '' },

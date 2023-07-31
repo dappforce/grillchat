@@ -102,7 +102,7 @@ const mapPostExtensions = (
       // TODO: wait squid to support pins extension
       // case ContentExtensionSchemaId.SubsocialPins:
       //   const pinsExtension: PinsExtension = {
-      //     id: 'subsocial-pins',
+      //     id: 'subsocial-pinned-posts',
       //     properties: {
       //       pinned: ext?.pinned ?? [],
       //     },
