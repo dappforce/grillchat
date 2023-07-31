@@ -1,0 +1,220 @@
+import LoginModal from '@/components/auth/LoginModal'
+import { useOpenDonateExtension } from '@/components/extensions/donate/hooks'
+import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
+import FloatingMenus, {
+  FloatingMenusProps,
+} from '@/components/floating/FloatingMenus'
+import MetadataModal from '@/components/modals/MetadataModal'
+import Toast from '@/components/Toast'
+import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
+import useToastError from '@/hooks/useToastError'
+import { getPostQuery } from '@/services/api/query'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { usePinMessage } from '@/services/subsocial/posts/mutation'
+import { isOptimisticId } from '@/services/subsocial/utils'
+import { useChatMenu } from '@/stores/chat-menu'
+import { useExtensionData } from '@/stores/extension'
+import { useMessageData } from '@/stores/message'
+import { useMyAccount } from '@/stores/my-account'
+import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
+import { copyToClipboard } from '@/utils/strings'
+import { useRouter } from 'next/router'
+import { useRef, useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { BiGift } from 'react-icons/bi'
+import { BsFillPinAngleFill, BsFillReplyFill } from 'react-icons/bs'
+import { HiCircleStack, HiLink } from 'react-icons/hi2'
+import { MdContentCopy } from 'react-icons/md'
+import { RiCopperCoinLine } from 'react-icons/ri'
+import urlJoin from 'url-join'
+import usePinnedMessage from '../hooks/usePinnedMessage'
+
+export type ChatItemMenusProps = {
+  chatId: string
+  messageId: string
+  children: FloatingMenusProps['children']
+  enableChatMenu?: boolean
+}
+
+type ModalState = 'login' | 'metadata' | null
+
+export default function ChatItemMenus({
+  chatId,
+  messageId,
+  children,
+  enableChatMenu = true,
+}: ChatItemMenusProps) {
+  const isOpen = useChatMenu((state) => state.openedChatId === messageId)
+  const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
+
+  const router = useRouter()
+  const isLoggingInWithKey = useRef(false)
+
+  const address = useMyAccount((state) => state.address)
+  const { data: message } = getPostQuery.useQuery(messageId)
+  const [modalState, setModalState] = useState<ModalState>(null)
+
+  const openExtensionModal = useExtensionData(
+    (state) => state.openExtensionModal
+  )
+  const openDonateExtension = useOpenDonateExtension(
+    message?.id,
+    message?.struct.ownerId ?? ''
+  )
+
+  const setReplyTo = useMessageData((state) => state.setReplyTo)
+  const setMessageAsReply = (messageId: string) => {
+    if (isOptimisticId(messageId)) return
+    setReplyTo(messageId)
+  }
+
+  const { ownerId } = message?.struct || {}
+  const { data: messageOwnerAccountData } = getAccountDataQuery.useQuery(
+    ownerId ?? ''
+  )
+  const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
+
+  const isSent = !isOptimisticId(messageId)
+
+  const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
+  const getChatMenus = (): FloatingMenusProps['menus'] => {
+    const donateMenuItem: FloatingMenusProps['menus'][number] = {
+      text: 'Donate',
+      icon: RiCopperCoinLine,
+      onClick: () => {
+        if (!messageOwnerEvmAddress) {
+          return
+        }
+
+        if (!address) {
+          setModalState('login')
+          return
+        }
+
+        openDonateExtension()
+      },
+    }
+
+    const showDonateMenuItem = messageOwnerEvmAddress
+
+    return [
+      {
+        text: 'Reply',
+        icon: BsFillReplyFill,
+        onClick: () => setMessageAsReply(messageId),
+      },
+      ...(pinUnpinMenu ? [pinUnpinMenu] : []),
+      ...(showDonateMenuItem ? [donateMenuItem] : []),
+      ...(address && canUsePromoExtensionAccounts.includes(address)
+        ? [
+            {
+              text: 'Secret Box',
+              icon: BiGift,
+              onClick: () => {
+                openExtensionModal('subsocial-decoded-promo', {
+                  recipient: ownerId ?? '',
+                  messageId,
+                })
+              },
+            },
+          ]
+        : []),
+      {
+        text: 'Copy Text',
+        icon: MdContentCopy,
+        onClick: () => {
+          copyToClipboard(message?.content?.body ?? '')
+          toast.custom((t) => (
+            <Toast t={t} title='Message copied to clipboard!' />
+          ))
+        },
+      },
+      {
+        text: 'Copy Message Link',
+        icon: HiLink,
+        onClick: () => {
+          const chatPageLink = urlJoin(
+            getCurrentUrlOrigin(),
+            getChatPageLink(router)
+          )
+          copyToClipboard(urlJoin(chatPageLink, messageId))
+          toast.custom((t) => (
+            <Toast t={t} title='Message link copied to clipboard!' />
+          ))
+        },
+      },
+      {
+        text: 'Show Metadata',
+        icon: HiCircleStack,
+        onClick: () => setModalState('metadata'),
+      },
+    ]
+  }
+  const menus = enableChatMenu && isSent ? getChatMenus() : []
+
+  return (
+    <>
+      <FloatingMenus
+        menus={menus}
+        allowedPlacements={[
+          'right',
+          'top',
+          'bottom',
+          'right-end',
+          'top-end',
+          'bottom-end',
+        ]}
+        useClickPointAsAnchor
+        manualMenuController={{
+          open: isOpen,
+          onOpenChange: (isOpen) => {
+            setIsOpenChatMenu(isOpen ? messageId : null)
+          },
+        }}
+      >
+        {children}
+      </FloatingMenus>
+      {message && (
+        <MetadataModal
+          isOpen={modalState === 'metadata'}
+          closeModal={() => setModalState(null)}
+          entity={message}
+        />
+      )}
+      <LoginModal
+        isOpen={modalState === 'login'}
+        openModal={() => setModalState('login')}
+        closeModal={() => setModalState(null)}
+        beforeLogin={() => (isLoggingInWithKey.current = true)}
+        afterLogin={() => (isLoggingInWithKey.current = false)}
+      />
+    </>
+  )
+}
+
+function usePinUnpinMenuItem(chatId: string, messageId: string) {
+  const { mutate: pinMessage, error: pinningError } = usePinMessage()
+  useToastError(pinningError, 'Error pinning message')
+  const isChatOwner = useIsOwnerOfPost(chatId)
+
+  const pinnedMessageId = usePinnedMessage(chatId)
+
+  const pinMenuItem: FloatingMenusProps['menus'][number] = {
+    text: 'Pin',
+    icon: BsFillPinAngleFill,
+    onClick: () => {
+      pinMessage({ action: 'pin', chatId, messageId })
+    },
+  }
+  const unpinMenuItem: FloatingMenusProps['menus'][number] = {
+    text: 'Unpin',
+    icon: BsFillPinAngleFill,
+    onClick: () => {
+      pinMessage({ action: 'unpin', chatId, messageId })
+    },
+  }
+
+  if (pinnedMessageId === messageId) return unpinMenuItem
+  if (isChatOwner) return pinMenuItem
+  return null
+}

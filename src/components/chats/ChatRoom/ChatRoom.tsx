@@ -33,6 +33,13 @@ const HUB_ID_WITHOUT_JOIN_BUTTON = [
   '1011',
   '1007',
 ]
+const CHAT_WITH_JOIN_BUTTON = ['6914']
+function getIsHubWithoutJoinButton(hubId: string, chatId: string) {
+  return (
+    HUB_ID_WITHOUT_JOIN_BUTTON.includes(hubId) &&
+    !CHAT_WITH_JOIN_BUTTON.includes(chatId)
+  )
+}
 
 export default function ChatRoom({
   className,
@@ -65,7 +72,7 @@ export default function ChatRoom({
   }
 
   const { isJoined, isLoading: isLoadingJoinedChat } = useIsJoinedToChat(chatId)
-  const isHubWithoutJoinButton = HUB_ID_WITHOUT_JOIN_BUTTON.includes(hubId)
+  const isHubWithoutJoinButton = getIsHubWithoutJoinButton(hubId, chatId)
 
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
