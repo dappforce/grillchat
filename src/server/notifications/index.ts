@@ -1,14 +1,20 @@
 import { getTelegramNotificationsBotLink } from '@/constants/links'
 import { gql } from 'graphql-request'
 import {
+  CommitSignedMessageMutation,
+  CommitSignedMessageMutationVariables,
   CreateTemporaryLinkingIdForTelegramMutation,
   CreateTemporaryLinkingIdForTelegramMutationVariables,
+  GetLinkingMessageForFcmQuery,
+  GetLinkingMessageForFcmQueryVariables,
   GetLinkingMessageForTelegramQuery,
   GetLinkingMessageForTelegramQueryVariables,
   GetTelegramAccountsLinkedQuery,
   GetTelegramAccountsLinkedQueryVariables,
   GetUnlinkingMessageForTelegramQuery,
   GetUnlinkingMessageForTelegramQueryVariables,
+  GetUnlinkingMessageFromFcmQuery,
+  GetUnlinkingMessageFromFcmQueryVariables,
   UnlinkTelegramAccountMutation,
   UnlinkTelegramAccountMutationVariables,
 } from './generated'
@@ -117,6 +123,80 @@ export async function unlinkTelegramAccount(signedMessageWithDetails: string) {
   if (!isUnlinkingSuccess) {
     throw new Error(
       `Unlinking Telegram Account Failed: ${data.unlinkTelegramAccount.message}`
+    )
+  }
+}
+
+// Linking FCM Token with Account.
+const GET_LINKING_MESSAGE_FOR_FCM = gql`
+  query GetLinkingMessageForFcm($address: String!, $fcmToken: String!) {
+    addFcmTokenToAddressMessage(
+      input: { substrateAddress: $address, fcmToken: $fcmToken }
+    ) {
+      messageTpl
+    }
+  }
+`
+export async function createLinkingMessageForFcm(
+  address: string,
+  fcmToken: string
+) {
+  const data = await notificationsRequest<
+    GetLinkingMessageForFcmQuery,
+    GetLinkingMessageForFcmQueryVariables
+  >({
+    document: GET_LINKING_MESSAGE_FOR_FCM,
+    variables: { address, fcmToken },
+  })
+  return data.addFcmTokenToAddressMessage.messageTpl
+}
+
+// Unlinking FCM Token with Account.
+const GET_UNLINKING_MESSAGE_FOR_FCM = gql`
+  query GetUnlinkingMessageFromFcm($address: String!, $fcmToken: String!) {
+    deleteFcmTokenFromAddressMessage(
+      input: { substrateAddress: $address, fcmToken: $fcmToken }
+    ) {
+      messageTpl
+    }
+  }
+`
+export async function createUnlinkingMessageForFcm(
+  address: string,
+  fcmToken: string
+) {
+  const data = await notificationsRequest<
+    GetUnlinkingMessageFromFcmQuery,
+    GetUnlinkingMessageFromFcmQueryVariables
+  >({
+    document: GET_UNLINKING_MESSAGE_FOR_FCM,
+    variables: { address, fcmToken },
+  })
+  return data.deleteFcmTokenFromAddressMessage.messageTpl
+}
+
+const COMMIT_SIGNED_MESSAGE = gql`
+  mutation CommitSignedMessage($signedMessageWithDetails: String!) {
+    commitSignedMessageWithAction(signedMessage: $signedMessageWithDetails) {
+      message
+      success
+    }
+  }
+`
+export async function commitSignedMessageWithAction(
+  signedMessageWithDetails: string
+) {
+  const data = await notificationsRequest<
+    CommitSignedMessageMutation,
+    CommitSignedMessageMutationVariables
+  >({
+    document: COMMIT_SIGNED_MESSAGE,
+    variables: { signedMessageWithDetails },
+  })
+  const success = data.commitSignedMessageWithAction?.success
+  if (!success) {
+    throw new Error(
+      `Unable to commit signed message: ${data.commitSignedMessageWithAction?.message}`
     )
   }
 }

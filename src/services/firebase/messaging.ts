@@ -2,7 +2,7 @@ import { getFirebaseNotificationAppId } from '@/utils/env/client'
 import { getMessaging, getToken } from 'firebase/messaging'
 import firebaseApp from './config'
 
-export const getMessageToken = async (): Promise<String | undefined> => {
+export const getMessageToken = async (): Promise<string | undefined> => {
   const messaging = getMessaging(firebaseApp)
 
   const permission = Notification.permission
@@ -12,8 +12,6 @@ export const getMessageToken = async (): Promise<String | undefined> => {
     const token = await getToken(messaging, {
       vapidKey: getFirebaseNotificationAppId(),
     })
-
-    alert(`Copy the FCM token: ${token}`)
     return token
   } else if (permission === 'denied') {
     // The user has denied permission.

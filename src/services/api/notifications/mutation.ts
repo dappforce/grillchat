@@ -1,7 +1,15 @@
 import {
+  ApiCommitSignedMessageBody,
+  ApiCommitSignedMessageResponse,
+} from '@/pages/api/notifications/commit'
+import {
   ApiNotificationsLinkUrlBody,
   ApiNotificationsLinkUrlResponse,
 } from '@/pages/api/notifications/link'
+import {
+  ApiFcmNotificationsLinkMessageBody,
+  ApiFcmNotificationsLinkMessageResponse,
+} from '@/pages/api/notifications/link-fcm'
 import {
   ApiNotificationsLinkMessageBody,
   ApiNotificationsLinkMessageResponse,
@@ -35,3 +43,32 @@ async function linkingAccount(data: ApiNotificationsLinkUrlBody) {
   return resData.url
 }
 export const useLinkingAccount = mutationWrapper(linkingAccount)
+
+async function getFcmLinkingMessage(data: ApiFcmNotificationsLinkMessageBody) {
+  if (!data) return null
+
+  const res = await axios.post('/api/notifications/link-fcm', data)
+  const encodedMessage = (res.data as ApiFcmNotificationsLinkMessageResponse)
+    .data
+  const decodedMessage = decodeURIComponent(encodedMessage)
+
+  const parsedMessage = JSON.parse(decodedMessage)
+  const sortedPayload = sortObj(parsedMessage.payload)
+
+  return {
+    messageData: parsedMessage,
+    payloadToSign: JSON.stringify(sortedPayload),
+  }
+}
+export const useGetFcmLinkingMessage = mutationWrapper(getFcmLinkingMessage)
+
+async function commitSignedMessageWithAction(data: ApiCommitSignedMessageBody) {
+  if (!data) return null
+
+  const res = await axios.post('/api/notifications/commit', data)
+  const resData = res.data as ApiCommitSignedMessageResponse
+  return resData
+}
+export const useCommitSignedMessageWithAction = mutationWrapper(
+  commitSignedMessageWithAction
+)

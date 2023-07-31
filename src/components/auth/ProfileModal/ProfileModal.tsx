@@ -10,6 +10,7 @@ import LinkEvmAddressContent from './contents/evm-linking/LinkEvmAddressContent'
 import UnlinkEvmConfirmationContent from './contents/evm-linking/UnlinkEvmConfirmationContent'
 import LogoutContent from './contents/LogoutContent'
 import NotificationContent from './contents/notifications/NotificationContent'
+import PushNotificationContent from './contents/notifications/PushNotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
@@ -29,6 +30,7 @@ const modalContents: {
   'evm-address-linked': CommonEvmAddressLinked,
   notifications: NotificationContent,
   'telegram-notifications': TelegramNotificationContent,
+  'push-notifications': PushNotificationContent,
 }
 
 export default function ProfileModal({
@@ -110,6 +112,11 @@ export default function ProfileModal({
     'telegram-notifications': {
       title: '🔔 Telegram bot',
       desc: 'Connect your account to our Telegram bot to receive notifications from Grill.',
+      withBackButton: 'notifications',
+    },
+    'push-notifications': {
+      title: '🔔 Push Notifications',
+      desc: 'Enable Push Notifications on your browser to receive direct updates from Grill.',
       withBackButton: 'notifications',
     },
   }

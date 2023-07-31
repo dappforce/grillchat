@@ -53,7 +53,7 @@ export default function NotificationContent({ setCurrentState }: ContentProps) {
           icon: BellIcon,
           onClick: () => {
             pwa.closeNotification()
-            enablePushNotification()
+            setCurrentState('push-notifications')
           },
         },
         {
