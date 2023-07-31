@@ -16,7 +16,7 @@ export default function useRandomColor(
   const { theme: configTheme } = useConfigContext()
   const currentTheme = useGetTheme()
   const { data: accountData } = getAccountDataQuery.useQuery(seed || '', {
-    enabled: isAddress,
+    enabled: !!isAddress,
   })
 
   const { evmAddress } = accountData || {}
