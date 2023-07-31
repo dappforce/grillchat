@@ -22,7 +22,7 @@ const Name = ({
   ...props
 }: NameProps) => {
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
-  const textColor = useRandomColor(address)
+  const textColor = useRandomColor(address, { isAddress: true })
 
   const { ensName, evmAddress } = accountData || {}
   const name = ensName || generateRandomName(address)
