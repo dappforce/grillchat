@@ -6,6 +6,7 @@ import MessageModal from '@/components/modals/MessageModal'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE, getPinnedMessageInChatId } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
+import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
@@ -55,8 +56,7 @@ export default function ChatList(props: ChatListProps) {
   return <ChatListContent {...props} />
 }
 
-const SCROLL_THRESHOLD_PERCENTAGE = 0.35
-const DEFAULT_SCROLL_THRESHOLD = 500
+const SCROLL_THRESHOLD = 1000
 
 function ChatListContent({
   asContainer,
@@ -69,6 +69,8 @@ function ChatListContent({
   ...props
 }: ChatListProps) {
   const router = useRouter()
+
+  const [initialNewMessageCount, setInitialNewMessageCount] = useState(0)
   const lastReadId = useFocusedLastMessageId(chatId)
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
   const prevMessageModalMsgId = usePrevious(messageModalMsgId)
@@ -127,6 +129,7 @@ function ChatListContent({
 
   // TODO: refactor this by putting the url query getter logic to ChatPage
   const hasScrolledToMessageRef = useRef(false)
+  const filteredMessageIdsRef = useWrapInRef(filteredMessageIds)
   useEffect(() => {
     if (hasScrolledToMessageRef.current) return
     hasScrolledToMessageRef.current = true
@@ -137,13 +140,34 @@ function ChatListContent({
     if (!isMessageIdsFetched) return
 
     if (!messageId || !validateNumber(messageId)) {
-      if (lastReadId) scrollToMessage(lastReadId ?? '', false)
+      if (lastReadId) {
+        scrollToMessage(lastReadId ?? '', {
+          shouldHighlight: false,
+          smooth: false,
+        }).then(() => {
+          const lastReadIdIndex = filteredMessageIdsRef.current.findIndex(
+            (id) => id === lastReadId
+          )
+          const newMessageCount =
+            lastReadIdIndex === -1
+              ? 0
+              : filteredMessageIdsRef.current.length - lastReadIdIndex - 1
+          setInitialNewMessageCount(newMessageCount)
+        })
+      }
       return
     }
 
     setMessageModalMsgId(messageId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawMessageIds, hasScrolledToMessageRef])
+  }, [rawMessageIds, filteredMessageIdsRef, hasScrolledToMessageRef])
+
+  const { setLastReadMessageId } = useLastReadMessageId(chatId)
+  useEffect(() => {
+    const lastId = rawMessageIds?.[rawMessageIds.length - 1]
+    if (!lastId) return
+    setLastReadMessageId(lastId)
+  }, [setLastReadMessageId, rawMessageIds])
 
   useEffect(() => {
     if (messageModalMsgId) {
@@ -171,10 +195,6 @@ function ChatListContent({
 
   const isAllMessagesLoaded =
     loadedMessageQueries.length === filteredMessageIds.length
-
-  const scrollThreshold =
-    (scrollContainerRef.current?.scrollHeight ?? 0) *
-      SCROLL_THRESHOLD_PERCENTAGE || DEFAULT_SCROLL_THRESHOLD
 
   return (
     <div
@@ -221,7 +241,7 @@ function ChatListContent({
                 <ChatTopNotice className='pb-2 pt-4' />
               )
             }
-            scrollThreshold={`${scrollThreshold}px`}
+            scrollThreshold={`${SCROLL_THRESHOLD}px`}
           >
             {messageQueries.map(({ data: message }, index) => {
               const isLastReadMessage = lastReadId === message?.id
@@ -279,10 +299,12 @@ function ChatListContent({
       <Component>
         <div className='relative'>
           <NewMessageNotice
+            key={initialNewMessageCount}
             className={cx(
               'absolute bottom-2 right-3',
               newMessageNoticeClassName
             )}
+            initialNewMessageCount={initialNewMessageCount}
             messageIds={messageIds}
             scrollContainerRef={scrollContainerRef}
           />
@@ -360,7 +382,7 @@ function PinnedMessage({
     <div className='sticky top-0 z-10 border-b border-border-gray bg-background-light text-sm'>
       <Component
         className='flex cursor-pointer items-center gap-4 overflow-hidden py-2'
-        onClick={() => scrollToMessage(message.id, true)}
+        onClick={() => scrollToMessage(message.id)}
       >
         <div className='mr-1'>
           <Image

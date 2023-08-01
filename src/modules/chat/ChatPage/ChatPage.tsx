@@ -10,7 +10,6 @@ import LinkText from '@/components/LinkText'
 import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
-import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
@@ -71,14 +70,6 @@ export default function ChatPage({
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal
   )
-
-  const { setLastReadMessageId } = useLastReadMessageId(chatId)
-
-  useEffect(() => {
-    const lastId = messageIds?.[messageIds.length - 1]
-    if (!lastId) return
-    setLastReadMessageId(lastId)
-  }, [setLastReadMessageId, messageIds])
 
   useEffect(() => {
     const query = getUrlQuery('donateTo')
