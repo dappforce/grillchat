@@ -1,18 +1,23 @@
 import BellIcon from '@/assets/icons/bell.svg'
-import BulbIcon from '@/assets/icons/bulb.svg'
 import EthIcon from '@/assets/icons/eth.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
+import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
+import useGetTheme from '@/hooks/useGetTheme'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { useSendEvent } from '@/stores/analytics'
+import { cx } from '@/utils/class-names'
 import { installApp, isInstallAvailable } from '@/utils/install'
+import { useTheme } from 'next-themes'
 import { HiOutlineDownload } from 'react-icons/hi'
+import { HiMoon, HiSun } from 'react-icons/hi2'
 import { useDisconnect } from 'wagmi'
 import { ContentProps } from '../types'
 
@@ -27,6 +32,8 @@ export default function AccountContent({
 
   const sendEvent = useSendEvent()
   const { disconnect } = useDisconnect()
+
+  const colorModeOptions = useColorModeOptions()
 
   const onLinkEvmAddressClick = () => {
     sendEvent('click link_evm_address')
@@ -86,9 +93,10 @@ export default function AccountContent({
       },
     },
     { text: 'Share session', icon: ShareIcon, onClick: onShareSessionClick },
+    ...colorModeOptions,
     {
       text: 'Suggest feature',
-      icon: BulbIcon,
+      icon: SuggestFeatureIcon,
       href: SUGGEST_FEATURE_LINK,
     },
     ...(isInstallAvailable()
@@ -118,4 +126,30 @@ export default function AccountContent({
       <MenuList menus={menus} />
     </div>
   )
+}
+
+function useColorModeOptions(): MenuListProps['menus'] {
+  const { setTheme } = useTheme()
+  const theme = useGetTheme()
+  const { theme: configTheme } = useConfigContext()
+
+  if (configTheme) return []
+
+  const lightModeOption: MenuListProps['menus'][number] = {
+    text: 'Light Mode',
+    onClick: () => setTheme('light'),
+    icon: HiSun,
+    iconClassName: cx('text-text-muted-on-primary'),
+  }
+  const darkModeOption: MenuListProps['menus'][number] = {
+    text: 'Dark Mode',
+    onClick: () => setTheme('dark'),
+    icon: HiMoon,
+    iconClassName: cx('text-text-muted-on-primary'),
+  }
+
+  if (theme === 'light') return [darkModeOption]
+  if (theme === 'dark') return [lightModeOption]
+
+  return []
 }

@@ -13,7 +13,7 @@ export type HubPageNavbarProps = {
   logo: JSX.Element
   auth: JSX.Element
   backButton: JSX.Element
-  colorModeToggler: JSX.Element
+  notificationBell: JSX.Element
   searchProps: NavbarWithSearchProps['searchProps']
   hubId: string
   chatsCount: number
@@ -21,7 +21,7 @@ export type HubPageNavbarProps = {
 
 export default function HubPageNavbar({
   auth,
-  colorModeToggler,
+  notificationBell,
   backButton,
   logo,
   hubId,
@@ -76,7 +76,7 @@ export default function HubPageNavbar({
             {leftSection}
             <div className='flex items-center gap-2 text-text-muted dark:text-text'>
               {searchButton}
-              {colorModeToggler}
+              {notificationBell}
               <div className='ml-1.5'>{auth}</div>
             </div>
           </div>
