@@ -33,3 +33,49 @@ export const Regular: Story = {
     isMyMessage: false,
   },
 }
+
+export const RegularMyMessage: Story = {
+  args: {
+    chatId: '1',
+    messageId: '7667',
+    isMyMessage: true,
+  },
+}
+
+export const MultilineMessage: Story = {
+  args: {
+    chatId: '1',
+    messageId: '608',
+    isMyMessage: false,
+  },
+}
+
+export const MessageWithReply: Story = {
+  args: {
+    chatId: '1',
+    messageId: '1770',
+    isMyMessage: false,
+  },
+}
+
+export const EmojiMessage: Story = {
+  args: {
+    chatId: '1',
+    messageId: '4821',
+    isMyMessage: false,
+  },
+}
+export const DoubleEmojiMessage: Story = {
+  args: {
+    chatId: '1',
+    messageId: '1584',
+    isMyMessage: false,
+  },
+}
+export const TripleEmojiMessage: Story = {
+  args: {
+    chatId: '1',
+    messageId: '1585',
+    isMyMessage: false,
+  },
+}
