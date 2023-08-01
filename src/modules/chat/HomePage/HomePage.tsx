@@ -126,7 +126,7 @@ export default function HubsPage(props: HubsPageProps) {
   return (
     <DefaultLayout
       navbarProps={{
-        customContent: ({ logoLink, authComponent, colorModeToggler }) => {
+        customContent: ({ logoLink, authComponent, notificationBell }) => {
           return (
             <NavbarWithSearch
               customContent={(searchButton) => (
@@ -134,7 +134,7 @@ export default function HubsPage(props: HubsPageProps) {
                   {logoLink}
                   <div className='flex items-center gap-2'>
                     {searchButton}
-                    {colorModeToggler}
+                    {notificationBell}
                     <div className='ml-1.5'>{authComponent}</div>
                   </div>
                 </div>
