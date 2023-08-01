@@ -1,7 +1,8 @@
-import { withThemeByClassName } from '@storybook/addon-styling'
+import { withThemeFromJSXProvider } from '@storybook/addon-styling'
 import type { Preview } from '@storybook/react'
 import { initialize, mswLoader } from 'msw-storybook-addon'
-import React from 'react'
+import { ThemeProvider, useTheme } from 'next-themes'
+import React, { useEffect } from 'react'
 import { sourceSans3 } from '../src/fonts'
 import { QueryProvider } from '../src/services/provider'
 
@@ -29,11 +30,12 @@ const preview: Preview = {
   decorators: [
     // Adds theme switching support.
     // NOTE: requires setting "darkMode" to "class" in your tailwind config
-    withThemeByClassName({
+    withThemeFromJSXProvider({
       themes: {
-        light: 'light',
-        dark: 'dark',
+        light: { name: 'light' },
+        dark: { name: 'dark' },
       },
+      Provider: ThemeProviderWrapper,
       defaultTheme: 'light',
     }),
     (Story) => (
@@ -47,6 +49,23 @@ const preview: Preview = {
       </QueryProvider>
     ),
   ],
+}
+
+function ThemeProviderWrapper({ theme, children }) {
+  return (
+    <ThemeProvider attribute='class'>
+      <ThemeSwitcher theme={theme} />
+      {children}
+    </ThemeProvider>
+  )
+}
+function ThemeSwitcher({ theme }) {
+  const { setTheme } = useTheme()
+  useEffect(() => {
+    setTheme(theme.name)
+  }, [theme.name])
+
+  return null
 }
 
 export default preview
