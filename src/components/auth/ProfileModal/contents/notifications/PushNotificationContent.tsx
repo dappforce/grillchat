@@ -18,8 +18,7 @@ type NotificationButtonProps = ContentProps & {
 }
 
 export default function PushNotificationContent(props: ContentProps) {
-  const isNotificationNotSupported = !Notification
-  const permission = Notification.permission
+  const isNotificationNotSupported = typeof Notification === 'undefined'
 
   const [isRegistered, setIsRegistered] = useState(false)
 
@@ -40,6 +39,7 @@ export default function PushNotificationContent(props: ContentProps) {
     )
   }
 
+  const permission = Notification.permission
   if (permission === 'granted' && isRegistered) {
     // Disable Notifications.
     return (
