@@ -44,6 +44,16 @@ export type AboutChatModalProps = ModalFunctionalityProps & {
   messageCount?: number
 }
 
+type InnerModalType =
+  | 'metadata'
+  | 'qr'
+  | 'confirmation-leave'
+  | 'edit'
+  | 'hide'
+  | 'unhide'
+  | 'moderation'
+  | null
+
 export default function AboutChatModal({
   chatId,
   messageCount = 0,
@@ -57,16 +67,7 @@ export default function AboutChatModal({
   })
   const sendEvent = useSendEvent()
 
-  const [openedModalType, setOpenedModalType] = useState<
-    | 'metadata'
-    | 'qr'
-    | 'confirmation-leave'
-    | 'edit'
-    | 'hide'
-    | 'unhide'
-    | 'moderation'
-    | null
-  >(null)
+  const [openedModalType, setOpenedModalType] = useState<InnerModalType>(null)
 
   const isInIframe = useIsInIframe()
   const { isJoined, isLoading } = useIsJoinedToChat(chatId)
