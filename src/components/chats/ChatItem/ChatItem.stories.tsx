@@ -123,3 +123,10 @@ export const DonationMessage: Story = {
     isMyMessage: false,
   },
 }
+
+export const DecodedPromoMessage: Story = {
+  args: {
+    messageId: '6446',
+    isMyMessage: false,
+  },
+}
