@@ -1,6 +1,7 @@
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { useRequestToken } from '@/services/api/mutation'
 import { useMyAccount } from '@/stores/my-account'
+import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 
 export function useWalletGetter() {
@@ -11,11 +12,14 @@ export function useWalletGetter() {
 }
 
 export default function useCommonTxSteps<Data, ReturnValue>(
-  useMutationHook: () => UseMutationResult<ReturnValue, Error, Data, unknown>
+  useMutationHook: (
+    config?: SubsocialMutationConfig<Data>
+  ) => UseMutationResult<ReturnValue, Error, Data, unknown>,
+  config?: SubsocialMutationConfig<Data>
 ) {
   const address = useMyAccount((state) => state.address)
 
-  const { mutateAsync } = useMutationHook()
+  const { mutateAsync } = useMutationHook(config)
   const { mutateAsync: requestToken } = useRequestToken()
   const login = useMyAccount((state) => state.login)
   const hasEnoughEnergy = useMyAccount(

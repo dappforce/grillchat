@@ -1,10 +1,12 @@
 import PinIcon from '@/assets/icons/pin.png'
 import Container from '@/components/Container'
-import { cx, getCommonClassNames } from '@/utils/class-names'
+import { SortChatOption } from '@/modules/chat/hooks/useSortedChats'
+import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
-import React, { ComponentProps } from 'react'
+import { ComponentProps } from 'react'
+import ChatImage, { ChatImageProps } from '../ChatImage'
 import ChatLastMessage from './ChatLastMessage'
 
 // dynamic import to prevent hydration mismatch
@@ -19,11 +21,14 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   title: string | undefined
   description: string | undefined
   image: ImageProps['src'] | JSX.Element | undefined
-  isImageCircle?: boolean
+  isImageInCidFormat?: boolean
+  rounding?: ChatImageProps['rounding']
   additionalDesc?: string
   asLink?: LinkProps
   isInteractive?: boolean
+  isHidden?: boolean
   chatId?: string
+  chatInfo?: SortChatOption
   hubId?: string
   isPinned?: boolean
   withUnreadCount?: boolean
@@ -36,12 +41,15 @@ export default function ChatPreview({
   title,
   description,
   image,
-  isImageCircle = true,
+  rounding,
+  isImageInCidFormat = true,
   additionalDesc,
   asContainer,
+  chatInfo,
   asLink,
   isPinned,
   chatId,
+  isHidden,
   hubId,
   isInteractive,
   withUnreadCount,
@@ -58,6 +66,7 @@ export default function ChatPreview({
         <div className='flex flex-shrink-0 items-center gap-1'>
           {chatId && (
             <ChatLastMessageTime
+              chatInfo={chatInfo}
               chatId={chatId}
               className='text-sm text-text-muted'
             />
@@ -80,6 +89,8 @@ export default function ChatPreview({
     }
   }
 
+  const defaultDesc = description || (isHidden ? 'Hidden Chat' : title ?? '')
+
   return (
     <Component
       {...props}
@@ -98,27 +109,14 @@ export default function ChatPreview({
           'relative flex items-stretch gap-2.5 overflow-hidden py-2 outline-none'
         )}
       >
-        <div
-          style={{ backgroundClip: 'padding-box' }}
-          className={cx(
-            getCommonClassNames('chatImageBackground'),
-            isImageCircle ? 'rounded-full' : 'rounded-2xl',
-            'h-12 w-12 self-center sm:h-14 sm:w-14'
-          )}
-        >
-          {React.isValidElement(image)
-            ? image
-            : image && (
-                <Image
-                  className='h-full w-full object-cover'
-                  src={image as string}
-                  sizes='150px'
-                  width={56}
-                  height={56}
-                  alt={title ?? 'chat preview'}
-                />
-              )}
-        </div>
+        <ChatImage
+          chatId={chatId}
+          chatTitle={title ?? ''}
+          image={image}
+          rounding={rounding}
+          isImageInCidFormat={isImageInCidFormat}
+          className='self-center sm:h-14 sm:w-14'
+        />
         <div className='flex flex-1 items-center overflow-hidden'>
           <div className='flex flex-1 flex-col overflow-hidden'>
             <div className='flex items-center justify-between gap-2 overflow-hidden'>
@@ -134,7 +132,7 @@ export default function ChatPreview({
                 <ChatLastMessage
                   hubId={hubId}
                   className='py-0.5'
-                  defaultDesc={description ?? ''}
+                  defaultDesc={defaultDesc}
                   chatId={chatId}
                 />
               ) : (
@@ -143,12 +141,16 @@ export default function ChatPreview({
                     'overflow-hidden overflow-ellipsis whitespace-nowrap text-sm text-text-muted'
                   )}
                 >
-                  {description}
+                  {defaultDesc}
                 </p>
               )}
-              {withUnreadCount && chatId && (
-                <ChatUnreadCount className='ml-2' chatId={chatId} />
-              )}
+              {(() => {
+                if (withUnreadCount && chatId) {
+                  return <ChatUnreadCount className='ml-2' chatId={chatId} />
+                }
+
+                return null
+              })()}
             </div>
           </div>
         </div>

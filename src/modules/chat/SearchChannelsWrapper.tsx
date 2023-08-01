@@ -14,7 +14,7 @@ import { PostData } from '@subsocial/api/types'
 import { matchSorter } from 'match-sorter'
 
 export type SearchChannelsWrapperProps = {
-  children: JSX.Element
+  children: JSX.Element | null
   search: string
   getFocusedElementIndex: ReturnType<typeof useSearch>['getFocusedElementIndex']
   localSearch?: {

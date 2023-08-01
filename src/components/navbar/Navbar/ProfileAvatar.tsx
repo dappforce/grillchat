@@ -1,10 +1,10 @@
 import AddressAvatar from '@/components/AddressAvatar'
+import ProfileModal from '@/components/auth/ProfileModal'
 import PopOver from '@/components/floating/PopOver'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
 import { ComponentProps, useEffect, useState } from 'react'
-import ProfileModal from '../../auth/ProfileModal'
 
 export type ProfileAvatarProps = ComponentProps<'div'> & {
   address: string

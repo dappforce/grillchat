@@ -9,6 +9,8 @@ import { getHubIds } from '@/utils/env/client'
 import { gql } from 'graphql-request'
 import { POST_FRAGMENT } from '../squid/fragments'
 import {
+  GetOwnedPostIdsQuery,
+  GetOwnedPostIdsQueryVariables,
   GetPostsByContentQuery,
   GetPostsByContentQueryVariables,
 } from '../squid/generated'
@@ -85,7 +87,7 @@ export const getFollowedPostIdsByAddressQuery = createSubsocialQuery({
 
 export const GET_POSTS_BY_CONTENT = gql`
   ${POST_FRAGMENT}
-  query getPostsByContent(
+  query GetPostsByContent(
     $search: String!
     $spaceIds: [String!]!
     $postIds: [String!]!
@@ -132,4 +134,28 @@ async function getPostsByContent(search: string) {
 export const getPostsBySpaceContentQuery = createQuery({
   key: 'postsBySpaceContent',
   fetcher: getPostsByContent,
+})
+
+export const GET_OWNED_POST_IDS = gql`
+  query GetOwnedPostIds($address: String!) {
+    posts(where: { ownedByAccount: { id_eq: $address }, isComment_eq: false }) {
+      id
+    }
+  }
+`
+async function getOwnedPostIds(address: string) {
+  if (!address) return []
+
+  const res = await squidRequest<
+    GetOwnedPostIdsQuery,
+    GetOwnedPostIdsQueryVariables
+  >({
+    document: GET_OWNED_POST_IDS,
+    variables: { address },
+  })
+  return res.posts.map(({ id }) => id)
+}
+export const getOwnedPostIdsQuery = createQuery({
+  key: 'ownedPostIds',
+  fetcher: getOwnedPostIds,
 })

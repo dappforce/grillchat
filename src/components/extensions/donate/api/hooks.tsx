@@ -1,5 +1,6 @@
 import Toast from '@/components/Toast'
 import useToastError from '@/hooks/useToastError'
+import { isTouchDevice } from '@/utils/device'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
@@ -13,7 +14,6 @@ import {
   useSendTransaction,
   useSwitchNetwork,
 } from 'wagmi'
-import { isTouchDevice } from '../../../../utils/device'
 import { DonateModalStep } from '../DonateModal/types'
 import { tokensItems } from '../DonateModal/utils'
 import { chainIdByChainName, contractsByChainName } from './config'
@@ -154,7 +154,7 @@ export const useDonate = (token: string, chainName: string) => {
             <HiOutlineExclamationTriangle className={classNames} />
           )}
           title={'Donation error'}
-          description={e.message}
+          description={e.shortMessage || e.message}
         />
       ))
       return

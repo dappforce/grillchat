@@ -1,7 +1,7 @@
 import { cx } from '@/utils/class-names'
 import { replaceUrl } from '@/utils/window'
 import { Tab } from '@headlessui/react'
-import { ComponentProps, Fragment, useEffect, useState } from 'react'
+import { ComponentProps, Fragment, ReactNode, useEffect, useState } from 'react'
 import Container from './Container'
 
 type Tab = {
@@ -12,6 +12,7 @@ type Tab = {
 export type TabsProps = ComponentProps<'div'> & {
   asContainer?: boolean
   tabs: Tab[]
+  tabsRightElement?: ReactNode
   panelClassName?: string
   defaultTab?: number
   withHashIntegration?: boolean
@@ -26,6 +27,7 @@ export default function Tabs({
   asContainer,
   tabs,
   panelClassName,
+  tabsRightElement,
   defaultTab = 0,
   hideBeforeHashLoaded,
   withHashIntegration = true,
@@ -84,7 +86,7 @@ export default function Tabs({
               >
                 <span
                   className={cx(
-                    'relative z-10 block py-3 font-medium text-text-muted transition-colors',
+                    'relative z-10 block py-3.5 font-medium text-text-muted transition-colors',
                     'after:absolute after:bottom-0 after:left-0 after:h-1 after:w-full after:origin-bottom after:scale-y-0 after:rounded-t-full after:bg-text-primary after:opacity-0 after:transition',
                     'group-hover:text-text-primary group-hover:after:scale-y-100 group-hover:after:opacity-100',
                     selected &&
@@ -98,6 +100,7 @@ export default function Tabs({
           </Tab>
         ))}
         {usedSelectedTab === -1 && <Tab key='empty' />}
+        {tabsRightElement}
       </Tab.List>
       <Tab.Panels as={component} className={cx('mt-2', panelClassName)}>
         {tabs.map(({ id, content }) => (

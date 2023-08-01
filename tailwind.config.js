@@ -10,6 +10,7 @@ module.exports = {
         sans: ['var(--source-sans-pro)', ...defaultTheme.fontFamily.sans],
       },
       fontSize: {
+        base: ['1rem', '1.35'],
         '4.5xl': '2.5rem',
       },
       colors: {

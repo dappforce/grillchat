@@ -19,8 +19,14 @@ type ReferenceProps = Record<string, unknown>
 export type FloatingWrapperProps = {
   children: (config: {
     toggleDisplay: (e?: MouseEvent<Element, globalThis.MouseEvent>) => void
+    onClick: MouseEventHandler<Element>
     referenceProps: ReferenceProps
+    isOpen: boolean
   }) => JSX.Element
+  manualMenuController?: {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+  }
   panel: (closeMenu: () => void) => React.ReactNode
   showOnHover?: boolean
   alignment?: Alignment
@@ -32,6 +38,7 @@ export type FloatingWrapperProps = {
 export default function FloatingWrapper({
   children,
   panel,
+  manualMenuController,
   alignment,
   showOnHover,
   allowedPlacements,
@@ -39,9 +46,12 @@ export default function FloatingWrapper({
   mainAxisOffset = 0,
 }: FloatingWrapperProps) {
   const [openMenu, setOpenMenu] = useState(false)
+  const open = manualMenuController?.open ?? openMenu
+  const onOpenChange = manualMenuController?.onOpenChange ?? setOpenMenu
+
   const { x, y, strategy, refs, context } = useFloating({
-    open: openMenu,
-    onOpenChange: setOpenMenu,
+    open,
+    onOpenChange,
     middleware: [
       offset({ mainAxis: mainAxisOffset }),
       autoPlacement({
@@ -64,7 +74,9 @@ export default function FloatingWrapper({
     handleClose: safePolygon(),
     enabled: !isTouchDevice() && !!showOnHover,
   })
-  const dismiss = useDismiss(context)
+  const dismiss = useDismiss(context, {
+    bubbles: false,
+  })
   const { getReferenceProps, getFloatingProps } = useInteractions([
     clientPoint,
     dismiss,
@@ -72,14 +84,14 @@ export default function FloatingWrapper({
   ])
 
   const toggleDisplay = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {
-    if (!openMenu && e && useClickPointAsAnchor) {
+    if (!open && e && useClickPointAsAnchor) {
       clientClickX.current = e.clientX
       clientClickY.current = e.clientY
     }
-    setOpenMenu((prev) => !prev)
+    onOpenChange(!open)
   }
 
-  const closeMenu = () => setOpenMenu(false)
+  const closeMenu = () => onOpenChange(false)
   const onClick: MouseEventHandler<Element> = (e) => {
     if (isTouchDevice()) toggleDisplay(e)
     else closeMenu()
@@ -89,9 +101,10 @@ export default function FloatingWrapper({
     <>
       {children({
         toggleDisplay,
+        isOpen: open,
+        onClick,
         referenceProps: getReferenceProps({
           ref: refs.setReference,
-          ...getReferenceProps(),
           onClick,
         }),
       })}
@@ -102,15 +115,16 @@ export default function FloatingWrapper({
             position: strategy,
             top: y ?? 0,
             left: x ?? 0,
+            backfaceVisibility: 'hidden',
           }}
           {...getFloatingProps()}
           appear
-          show={openMenu}
+          show={open}
           className='z-30 transition-opacity'
           enter='ease-out duration-150'
           enterFrom='opacity-0'
           enterTo='opacity-100'
-          leave='ease-in duration-200'
+          leave='ease-in duration-100'
           leaveFrom='opacity-100'
           leaveTo='opacity-0'
         >

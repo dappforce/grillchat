@@ -1,10 +1,7 @@
-import { SUBSOCIAL_IPFS_GATEWAY } from '@/constants/links'
 import { cx } from '@/utils/class-names'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import { validateVideoUrl } from '@/utils/links'
 import Image, { ImageProps } from 'next/image'
-import { useLayoutEffect, useState } from 'react'
-import urlJoin from 'url-join'
-import Spinner from './Spinner'
 
 export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   alt?: string
@@ -16,19 +13,6 @@ export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   withSpinner?: boolean
 }
 
-function resolveIpfsUri(uri: string | undefined, gatewayUrl: string) {
-  if (!uri) {
-    return undefined
-  }
-  if (uri.startsWith('ipfs://')) {
-    return uri.replace('ipfs://', gatewayUrl)
-  }
-  if (uri.startsWith('https://ipfs.io/ipfs/')) {
-    return uri.replace('https://ipfs.io/ipfs/', gatewayUrl)
-  }
-  return uri
-}
-
 export default function MediaLoader({
   src,
   imageOnly,
@@ -38,37 +22,16 @@ export default function MediaLoader({
   withSpinner,
   ...props
 }: MediaLoaderProps) {
-  let [isLoading, setIsLoading] = useState(false)
   let usedImage = src
   if (typeof src === 'string') {
-    usedImage = resolveIpfsUri(src, urlJoin(SUBSOCIAL_IPFS_GATEWAY, '/ipfs/'))
+    usedImage = getIpfsContentUrl(src)
   }
 
-  useLayoutEffect(() => {
-    setIsLoading(true)
-  }, [src])
-
   const renderImageElement = () => {
-    const commonClassName = cx(
-      'relative transition-opacity',
-      isLoading && 'opacity-0',
-      props.className
-    )
-
-    const onLoad = (e: any) => {
-      setIsLoading(false)
-      props.onLoad?.(e)
-    }
-
-    const onError = (e: any) => {
-      setIsLoading(false)
-      props.onError?.(e)
-    }
+    const commonClassName = cx('relative transition-opacity', props.className)
 
     const commonProps: any = {
       ...props,
-      onLoad,
-      onError,
       className: commonClassName,
       src: usedImage,
     }
@@ -81,7 +44,7 @@ export default function MediaLoader({
       return (
         <video
           {...commonProps}
-          onLoadedData={onLoad}
+          onLoadedData={props.onLoad}
           className={cx(commonClassName, 'aspect-square')}
           controls
           muted
@@ -108,13 +71,26 @@ export default function MediaLoader({
       )
     } else {
       return (
-        <Image
-          key={usedImage?.toString() ?? ''}
-          {...commonProps}
-          width={commonProps.width || 500}
-          height={commonProps.height || 500}
-          alt={props.alt || ''}
-        />
+        <>
+          <div className='absolute inset-0 h-full w-full animate-pulse bg-background-lighter' />
+          <Image
+            {...commonProps}
+            style={{ backfaceVisibility: 'hidden', ...commonProps.style }}
+            onError={undefined}
+            onLoad={undefined}
+            width={10}
+            height={10}
+            alt={props.alt || ''}
+            className='absolute inset-0 h-full w-full'
+          />
+          <Image
+            {...commonProps}
+            style={{ backfaceVisibility: 'hidden', ...commonProps.style }}
+            width={commonProps.width || 500}
+            height={commonProps.height || 500}
+            alt={props.alt || ''}
+          />
+        </>
       )
     }
   }
@@ -123,24 +99,15 @@ export default function MediaLoader({
 
   return (
     <div className={cx('relative', containerClassName)}>
-      {isLoading && (
-        <div
-          className={cx(
-            'absolute inset-0 flex h-full w-full animate-pulse items-center justify-center bg-background-lighter',
-            loadingClassName
-          )}
-        >
-          {withSpinner && (
-            <div className='absolute inset-0 flex items-center justify-center'>
-              <Spinner className='h-8 w-8 text-text-primary' />
-            </div>
-          )}
-        </div>
-      )}
       {src ? (
         imageElement
       ) : (
-        <div className={cx('aspect-square w-full', placeholderClassName)} />
+        <div
+          className={cx(
+            'aspect-square w-full animate-pulse bg-background-lighter',
+            placeholderClassName
+          )}
+        />
       )}
     </div>
   )

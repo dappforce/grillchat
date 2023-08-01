@@ -6,6 +6,7 @@ export type HeadConfigProps = {
   description?: string | null
   image?: string | null
   disableZoom?: boolean
+  cardFormat?: 'summary' | 'summary_large_image'
 }
 
 const LIMIT = 45
@@ -20,6 +21,7 @@ export default function HeadConfig({
   disableZoom,
   image,
   isTitleBrandFocused,
+  cardFormat = 'summary',
 }: HeadConfigProps) {
   const defaultTitle = 'Chat Anonymously On-Chain Without Wallets'
   const summarizedTitle = summarize(title || defaultTitle)
@@ -41,7 +43,7 @@ export default function HeadConfig({
       <title>{usedTitle}</title>
       <meta name='description' content={usedDesc} />
 
-      <meta name='twitter:card' content='summary' />
+      <meta name='twitter:card' content={cardFormat} />
       <meta name='twitter:title' content={usedTitle} />
       <meta name='twitter:description' content={usedDesc} />
       <meta name='twitter:image' content={usedImage} />

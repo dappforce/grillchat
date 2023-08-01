@@ -65,7 +65,7 @@ export default handlerWrapper({
   handler: async (data, _, res) => {
     const nftProperties = data
 
-    const nftData = await getNftData(nftProperties)
+    const nftData = await getNftDataServer(nftProperties)
     if (nftData) {
       res.json({
         message: 'OK',
@@ -86,10 +86,10 @@ function getNftCacheKey(nftProperties: ApiNftParams) {
   return `${nftProperties.chain}_${nftProperties.collectionId}_${nftProperties.nftId}`
 }
 
-async function getNftData(
+export async function getNftDataServer(
   nftProperties: ApiNftParams
 ): Promise<NftData | null> {
-  const chain = chainMapper[nftProperties.chain as keyof typeof chainMapper]
+  const chain = chainMapper[nftProperties.chain]
 
   if (!chain) return null
 

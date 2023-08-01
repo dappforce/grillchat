@@ -1,21 +1,19 @@
 import Button from '@/components/Button'
+import ChatImage from '@/components/chats/ChatImage'
 import AboutHubModal from '@/components/modals/about/AboutHubModal'
 import NavbarWithSearch, {
   NavbarWithSearchProps,
 } from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
-import { cx, getCommonClassNames } from '@/utils/class-names'
 import { getHubIds } from '@/utils/env/client'
-import { getIpfsContentUrl } from '@/utils/ipfs'
-import Image from 'next/image'
 import { useState } from 'react'
 
 export type HubPageNavbarProps = {
   logo: JSX.Element
   auth: JSX.Element
   backButton: JSX.Element
-  colorModeToggler: JSX.Element
+  notificationBell: JSX.Element
   searchProps: NavbarWithSearchProps['searchProps']
   hubId: string
   chatsCount: number
@@ -23,7 +21,7 @@ export type HubPageNavbarProps = {
 
 export default function HubPageNavbar({
   auth,
-  colorModeToggler,
+  notificationBell,
   backButton,
   logo,
   hubId,
@@ -50,23 +48,13 @@ export default function HubPageNavbar({
           className='flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left'
           onClick={() => setIsOpenAboutModal(true)}
         >
-          <div
-            className={cx(
-              getCommonClassNames('chatImageBackground'),
-              'rounded-xl',
-              'h-9 w-9 flex-shrink-0 justify-self-end'
-            )}
-          >
-            {content?.image && (
-              <Image
-                className='h-full w-full object-cover'
-                width={36}
-                height={36}
-                src={getIpfsContentUrl(content?.image ?? '')}
-                alt={content?.name ?? ''}
-              />
-            )}
-          </div>
+          <ChatImage
+            chatId={hubId}
+            className='h-9 w-9 justify-self-end'
+            rounding='xl'
+            image={content?.image}
+            chatTitle={content?.name}
+          />
           <div className='flex flex-col overflow-hidden'>
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
               {content?.name ?? ''}
@@ -84,11 +72,11 @@ export default function HubPageNavbar({
     <>
       <NavbarWithSearch
         customContent={(searchButton) => (
-          <div className='flex w-full items-center justify-between gap-2 overflow-hidden'>
+          <div className='flex w-full justify-between gap-2 overflow-hidden'>
             {leftSection}
-            <div className='flex items-center gap-2 overflow-hidden text-text-muted dark:text-text'>
+            <div className='flex items-center gap-2 text-text-muted dark:text-text'>
               {searchButton}
-              {colorModeToggler}
+              {notificationBell}
               <div className='ml-1.5'>{auth}</div>
             </div>
           </div>

@@ -9,6 +9,7 @@ const ALIAS_TO_HUB_ID_MAP: Record<string, string> = {
   kodadot: '1020',
   decoded: '1023',
   d: '1023',
+  cc: '1030',
 }
 
 const HUB_ID_TO_ALIAS_MAP = Object.entries(ALIAS_TO_HUB_ID_MAP).reduce(
@@ -42,3 +43,6 @@ const PINNED_CHATS_IN_HUB_ID: Record<string, string[]> = {
 export function getPinnedChatsInHubId(hubId: string) {
   return PINNED_CHATS_IN_HUB_ID[hubId] ?? []
 }
+
+export const COMMUNITY_CHAT_HUB_ID: string | null = '1030'
+export const PINNED_HUB_IDS: string[] = [COMMUNITY_CHAT_HUB_ID]

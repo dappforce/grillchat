@@ -1,7 +1,7 @@
 import ClickableMedia from '@/components/ClickableMedia'
 import MediaLoader from '@/components/MediaLoader'
 import { cx } from '@/utils/class-names'
-import CommonChatItem from '../CommonChatItem'
+import CommonChatItem from '../common/CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
 import { getMessageExtensionProperties } from '../utils'
 

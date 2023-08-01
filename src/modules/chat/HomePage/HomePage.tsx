@@ -1,8 +1,13 @@
+import CommunityAddIcon from '@/assets/icons/community-add.svg'
+import Button from '@/components/Button'
+import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import Tabs, { TabsProps } from '@/components/Tabs'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
+import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
 import { accountAddressStorage, useMyAccount } from '@/stores/my-account'
 import { getMainHubId } from '@/utils/env/client'
@@ -15,7 +20,6 @@ import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
 
 export type HubsPageProps = {
-  isIntegrateChatButtonOnTop: boolean
   hubsChatCount: { [id: string]: number }
 }
 
@@ -42,7 +46,9 @@ const pathnameTabIdMapper: Record<string, number> = {
 }
 
 export default function HubsPage(props: HubsPageProps) {
+  const isLoggedIn = useMyAccount((state) => !!state.address)
   const router = useRouter()
+  const sendEvent = useSendEvent()
   const isFirstAccessed = useLocation((state) => state.isFirstAccessed)
   const { search, setSearch, getFocusedElementIndex, focusController } =
     useSearch()
@@ -68,12 +74,7 @@ export default function HubsPage(props: HubsPageProps) {
     {
       id: 'hubs',
       text: 'Hubs',
-      content: () => (
-        <HubsContent
-          isIntegrateChatButtonOnTop={props.isIntegrateChatButtonOnTop}
-          hubsChatCount={props.hubsChatCount}
-        />
-      ),
+      content: () => <HubsContent hubsChatCount={props.hubsChatCount} />,
     },
   ]
 
@@ -120,10 +121,12 @@ export default function HubsPage(props: HubsPageProps) {
       router.push(`/${selectedTabId}`, undefined, { shallow: true })
   }
 
+  const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
+
   return (
     <DefaultLayout
       navbarProps={{
-        customContent: ({ logoLink, authComponent, colorModeToggler }) => {
+        customContent: ({ logoLink, authComponent, notificationBell }) => {
           return (
             <NavbarWithSearch
               customContent={(searchButton) => (
@@ -131,7 +134,7 @@ export default function HubsPage(props: HubsPageProps) {
                   {logoLink}
                   <div className='flex items-center gap-2'>
                     {searchButton}
-                    {colorModeToggler}
+                    {notificationBell}
                     <div className='ml-1.5'>{authComponent}</div>
                   </div>
                 </div>
@@ -151,11 +154,30 @@ export default function HubsPage(props: HubsPageProps) {
         getFocusedElementIndex={getFocusedElementIndex}
       >
         <Tabs
-          className='border-b border-border-gray bg-background-light px-1 md:bg-background-light/50'
+          className='border-b border-border-gray bg-background-light px-0 md:bg-background-light/50'
           panelClassName='mt-0 px-0'
           asContainer
           tabs={tabs}
           withHashIntegration={false}
+          tabsRightElement={
+            isLoggedIn &&
+            COMMUNITY_CHAT_HUB_ID && (
+              <div className='ml-4 mr-2 flex flex-1 items-center justify-end self-stretch'>
+                <Button
+                  size='sm'
+                  variant='primary'
+                  className='flex items-center gap-2'
+                  onClick={() => {
+                    setIsOpenNewCommunity(true)
+                    sendEvent('click new_community_button in home_page')
+                  }}
+                >
+                  <CommunityAddIcon className='text-text-muted-on-primary' />
+                  <span>New</span>
+                </Button>
+              </div>
+            )
+          }
           hideBeforeHashLoaded
           manualTabControl={{
             selectedTab: usedSelectedTab,
@@ -163,6 +185,14 @@ export default function HubsPage(props: HubsPageProps) {
           }}
         />
       </SearchChannelsWrapper>
+
+      {COMMUNITY_CHAT_HUB_ID && (
+        <NewCommunityModal
+          isOpen={isOpenNewCommunity}
+          closeModal={() => setIsOpenNewCommunity(false)}
+          hubId={COMMUNITY_CHAT_HUB_ID}
+        />
+      )}
     </DefaultLayout>
   )
 }

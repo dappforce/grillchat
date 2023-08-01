@@ -30,7 +30,7 @@ export function Skeleton({ className, ...props }: SkeletonProps) {
   return (
     <div
       className={cx(
-        'my-[0.25em] h-[1em] w-48 rounded-full bg-background-lighter',
+        'my-[0.25em] h-[1em] w-48 rounded-full bg-background-lightest dark:bg-background-lighter',
         className
       )}
       {...props}

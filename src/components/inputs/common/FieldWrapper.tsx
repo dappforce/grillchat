@@ -6,7 +6,8 @@ const inputStyles = cva('', {
   variants: {
     variant: {
       fill: 'bg-background-light',
-      outlined: 'border border-background-lightest bg-transparent',
+      'fill-bg': 'bg-background ring-1 ring-border-gray',
+      outlined: 'ring-1 ring-background-lightest bg-transparent',
     },
     pill: {
       true: 'rounded-3xl',
@@ -14,7 +15,7 @@ const inputStyles = cva('', {
     },
     size: {
       sm: 'px-4 py-2',
-      md: 'py-3 px-5',
+      md: 'py-3 px-4',
     },
     containsRightElement: {
       true: '',
@@ -90,7 +91,7 @@ export default function FieldWrapper({
     'transition duration-150',
     'dark:hover:brightness-110 hover:brightness-105',
     'dark:focus-visible:brightness-110 focus-visible:brightness-105',
-    'disabled:cursor-not-allowed disabled:brightness-75',
+    'disabled:cursor-not-allowed disabled:brightness-90 dark:disabled:brightness-75',
     inputStyles({ pill, variant, size, containsRightElement: !!rightElement }),
     interactionRingStyles()
   )

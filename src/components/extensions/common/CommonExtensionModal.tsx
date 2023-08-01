@@ -1,9 +1,9 @@
+import ChatForm, { ChatFormProps } from '@/components/chats/ChatForm'
+import Modal, { ModalProps } from '@/components/modals/Modal'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { useEffect } from 'react'
-import ChatForm, { ChatFormProps } from '../chats/ChatForm'
-import Modal, { ModalProps } from '../modals/Modal'
 
 export type BeforeMessageResult = {
   newMessageParams?: SendMessageParams

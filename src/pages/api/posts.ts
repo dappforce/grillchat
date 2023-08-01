@@ -1,8 +1,9 @@
+import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
 import { PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
-import { NextApiRequest } from 'next'
+import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
 const querySchema = z.object({
@@ -10,13 +11,24 @@ const querySchema = z.object({
 })
 export type ApiPostsParams = z.infer<typeof querySchema>
 
+const bodySchema = z.object({
+  postId: z.string(),
+})
+export type ApiPostsInvalidationBody = z.infer<typeof bodySchema>
+
 type ResponseData = {
   data?: PostData[]
   hash?: string
 }
 export type ApiPostsResponse = ApiResponse<ResponseData>
+export type ApiPostsInvalidationResponse = ApiResponse<{}>
 
-export default handlerWrapper({
+const MAX_AGE = 1 * 60 // 1 minute
+const getRedisKey = (id: string) => {
+  return `posts-invalidated:${id}`
+}
+
+const GET_handler = handlerWrapper({
   inputSchema: querySchema,
   dataGetter: (req: NextApiRequest) => req.query,
 })<ResponseData>({
@@ -28,12 +40,45 @@ export default handlerWrapper({
   },
 })
 
+const POST_handler = handlerWrapper({
+  inputSchema: bodySchema,
+  dataGetter: (req: NextApiRequest) => req.body,
+})<{}>({
+  allowedMethods: ['POST'],
+  handler: async (data, _, res) => {
+    redisCallWrapper(async (redis) => {
+      return redis?.set(getRedisKey(data.postId), data.postId, 'EX', MAX_AGE)
+    })
+
+    return res.status(200).send({ success: true, message: 'OK' })
+  },
+})
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'GET') {
+    return GET_handler(req, res)
+  } else if (req.method === 'POST') {
+    return POST_handler(req, res)
+  }
+}
+
 export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   const validIds = postIds.filter((id) => !!id && parseInt(id) >= 0)
 
   let posts: PostData[] = []
+
+  const canFetchedUsingSquid: string[] = []
+  await Promise.all(
+    validIds.map(async (id) => {
+      return redisCallWrapper(async (redis) => {
+        const isInvalidated = await redis?.get(getRedisKey(id))
+        if (!isInvalidated) canFetchedUsingSquid.push(id)
+      })
+    })
+  )
+
   try {
-    posts = await getPostsFromSubsocial(validIds)
+    posts = await getPostsFromSubsocial(canFetchedUsingSquid)
   } catch (e) {
     console.error('Error fetching posts from squid', e)
   }

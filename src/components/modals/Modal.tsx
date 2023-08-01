@@ -104,6 +104,7 @@ export default function Modal({
               leaveTo='opacity-0 scale-95'
             >
               <Dialog.Panel
+                style={{ backfaceVisibility: 'hidden' }}
                 className={cx(panelStyles({ size }), panelClassName)}
               >
                 <div
@@ -137,7 +138,7 @@ export default function Modal({
                           <Button
                             size='circle'
                             variant='transparent'
-                            className='-ml-2 mr-2 text-lg'
+                            className='-ml-2 mr-2 text-lg text-text-muted'
                             onClick={onBackClick}
                           >
                             <HiOutlineChevronLeft />

@@ -8,7 +8,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import { ExtensionModalsProps } from '..'
-import CommonExtensionModal from '../CommonExtensionModal'
+import CommonExtensionModal from '../common/CommonExtensionModal'
 import { useEncodeSecretBox } from './utils'
 
 export default function SecretBoxModal(props: ExtensionModalsProps) {
@@ -94,7 +94,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
             rows={3}
             size='sm'
             placeholder='Secret message for the recipient'
-            className='bg-background'
+            variant='fill-bg'
           />
         </div>
 

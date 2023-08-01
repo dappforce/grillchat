@@ -30,7 +30,7 @@ export default function IntegrateChatPage() {
           <Button
             className='w-full max-w-sm'
             size='lg'
-            href='https://forms.gle/s3VvHNxfvKkdZwtk7'
+            href='https://github.com/dappforce/grillchat/tree/main/integration#readme'
             target='_blank'
             rel='noopener noreferrer'
             onClick={() => sendEvent('click integrate_button')}
