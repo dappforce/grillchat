@@ -49,13 +49,14 @@ export default function CommonChatItem({
   onCheckMarkClick,
   textColor,
   className,
+  isMyMessage: _isMyMessage,
 }: CommonChatItemProps) {
   const myAddress = useMyAccount((state) => state.address)
   const { struct, content } = message
   const { ownerId, createdAtTime } = struct
   const { inReplyTo, body } = content || {}
 
-  const isMyMessage = ownerId === myAddress
+  const isMyMessage = _isMyMessage ?? ownerId === myAddress
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = !isOptimisticId(message.id)
 
