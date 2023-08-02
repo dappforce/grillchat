@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import Toast from '@/components/Toast'
+import { getWorkbox } from '@/utils/window'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { IoRefresh } from 'react-icons/io5'
@@ -33,6 +34,17 @@ export const useVersion = create<State>()((set, get) => ({
     setInterval(() => {
       versionHandling()
     }, INTERVAL)
+
+    const wb = getWorkbox()
+    if (!wb) return
+
+    const promptNewVersionAvailable = () => {
+      wb.messageSkipWaiting()
+      wb.addEventListener('controlling', () => {
+        notifyDifferentVersion()
+      })
+    }
+    wb.addEventListener('waiting', promptNewVersionAvailable)
   },
 }))
 
