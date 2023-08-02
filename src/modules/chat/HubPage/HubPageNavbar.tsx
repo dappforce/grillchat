@@ -77,7 +77,7 @@ export default function HubPageNavbar({
             <div className='flex items-center gap-0.5 text-text-muted dark:text-text'>
               {searchButton}
               {notificationBell}
-              <div className='ml-1.5'>{auth}</div>
+              <div className='ml-2'>{auth}</div>
             </div>
           </div>
         )}

@@ -135,7 +135,7 @@ export default function HubsPage(props: HubsPageProps) {
                   <div className='flex items-center gap-0.5'>
                     {searchButton}
                     {notificationBell}
-                    <div className='ml-1.5'>{authComponent}</div>
+                    <div className='ml-2'>{authComponent}</div>
                   </div>
                 </div>
               )}
