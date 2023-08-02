@@ -131,7 +131,7 @@ export default function ChatPage({
                 chatMetadata={content}
                 chatId={chatId}
               />
-              <div className='flex items-center gap-4'>
+              <div className='flex items-center gap-3'>
                 {notificationBell}
                 {authComponent}
               </div>
