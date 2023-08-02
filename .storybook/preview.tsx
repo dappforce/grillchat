@@ -8,7 +8,6 @@ import { QueryProvider } from '../src/services/provider'
 
 initialize()
 
-/* TODO: update import to your tailwind styles file. If you're using Angular, inject this through your angular.json config instead */
 import '../src/styles/globals.css'
 import './styles.css'
 
