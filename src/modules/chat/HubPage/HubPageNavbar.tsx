@@ -74,7 +74,7 @@ export default function HubPageNavbar({
         customContent={(searchButton) => (
           <div className='flex w-full justify-between gap-2 overflow-hidden'>
             {leftSection}
-            <div className='flex items-center gap-2 text-text-muted dark:text-text'>
+            <div className='flex items-center gap-0.5 text-text-muted dark:text-text'>
               {searchButton}
               {notificationBell}
               <div className='ml-1.5'>{auth}</div>
