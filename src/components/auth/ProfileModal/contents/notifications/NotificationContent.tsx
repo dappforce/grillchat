@@ -3,14 +3,11 @@ import MailIcon from '@/assets/icons/mail.svg'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList from '@/components/MenuList'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
-import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { FaDiscord, FaTelegram } from 'react-icons/fa'
 import { ContentProps } from '../../types'
 
 export default function NotificationContent({ setCurrentState }: ContentProps) {
-  const address = useMyAccount((state) => state.address)
-
   const pwa = useFirstVisitNotification('pwa-notification')
   const telegram = useFirstVisitNotification('telegram-notification')
 
