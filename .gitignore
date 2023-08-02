@@ -43,3 +43,5 @@ next-env.d.ts
 /public/workbox-*.js
 /public/worker-*.js
 /public/worker-*.txt
+
+/public/fallback-*.js
