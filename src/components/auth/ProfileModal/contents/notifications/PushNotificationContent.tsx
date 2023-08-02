@@ -131,7 +131,8 @@ function EnableNotificationButton({
       },
     })
 
-  const isLoading = isCommitingMessage || isGettingLinkingMessage
+  const isLoading =
+    isCommitingMessage || isGettingLinkingMessage || isGettingToken
 
   const handleClickEnable = async () => {
     if (!address) return
