@@ -9,15 +9,15 @@ export const getMessageToken = async (): Promise<string | undefined> => {
 
   if (permission === 'granted') {
     // The user has already granted permission.
-    let registration = await navigator.serviceWorker.getRegistration()
-    if (!registration) {
-      registration = await navigator.serviceWorker.register('/sw.js')
-    }
+    const registration = await navigator.serviceWorker.ready
+    if (!registration) throw new Error('Registration not found')
 
+    alert('GETTING TOKEN')
     const token = await getToken(messaging, {
       vapidKey: getFirebaseNotificationAppId(),
       serviceWorkerRegistration: registration,
     })
+    alert(`TOKEN ${token}`)
     return token
   } else if (permission === 'denied') {
     // The user has denied permission.
