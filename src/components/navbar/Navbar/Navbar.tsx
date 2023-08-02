@@ -204,7 +204,7 @@ function NotificationBell() {
       <div className='relative'>
         <HiOutlineBell className='text-xl' />
         {unreadCount > 0 && (
-          <div className='absolute right-0.5 top-0 -translate-y-1/2 translate-x-1/2 rounded-full bg-text-red px-1.5 text-xs text-text'>
+          <div className='absolute right-0.5 top-0 -translate-y-1/2 translate-x-1/2 rounded-full bg-text-red px-1.5 text-xs text-text-on-primary'>
             {unreadCount}
           </div>
         )}
