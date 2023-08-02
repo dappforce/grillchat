@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grillchat-storybook
+  name: grillchat-storybook
+  namespace: sub-back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grillchat-storybook
+  template:
+    metadata:
+      labels:
+        app: grillchat-storybook
+      name: grillchat-storybook
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - grillchat-storybook
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - image: <IMAGE>
+          imagePullPolicy: IfNotPresent
+          name: grillchat-storybook
+          ports:
+            - containerPort: 6006
+          env:
+            - name: REDIS_HOST
+              value: redis-master.default
+            - name: REDIS_PORT
+              value: "6379"
+          envFrom:
+            - secretRef:
+                name: grillchat-secret
+          resources:
+            requests:
+              memory: "750Mi"
+              cpu: "100m"
+            limits:
+              memory: "1600Mi"
+              cpu: "1"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            failureThreshold: 3
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 20
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 35
+      imagePullSecrets:
+        - name: dockerhub
+      restartPolicy: Always
