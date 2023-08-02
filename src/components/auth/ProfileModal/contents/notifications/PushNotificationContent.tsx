@@ -83,7 +83,7 @@ function DisableNotificationButton({
   const isLoading =
     isCommitingMessage || isGettingLinkingMessage || isGettingToken
 
-  const handleClickEnable = async () => {
+  const handleClickDisable = async () => {
     if (!address) return
     setIsGettingToken(true)
     const fcmToken = await getMessageToken()
@@ -94,7 +94,7 @@ function DisableNotificationButton({
   }
 
   return (
-    <Button size='lg' onClick={handleClickEnable} isLoading={isLoading}>
+    <Button size='lg' onClick={handleClickDisable} isLoading={isLoading}>
       Disable Notifications
     </Button>
   )
@@ -104,6 +104,7 @@ function EnableNotificationButton({
   address,
   setIsRegisterd,
 }: NotificationButtonProps) {
+  const [isGettingToken, setIsGettingToken] = useState(false)
   const [fcmToken, setFcmToken] = useState<string | undefined>()
 
   const { mutate: commitSignedMessage, isLoading: isCommitingMessage } =
@@ -134,7 +135,9 @@ function EnableNotificationButton({
 
   const handleClickEnable = async () => {
     if (!address) return
+    setIsGettingToken(true)
     const fcmToken = await getMessageToken()
+    setIsGettingToken(false)
     console.log('FCM Token', fcmToken)
     if (!fcmToken) return
 
