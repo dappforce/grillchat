@@ -39,9 +39,11 @@ export const useVersion = create<State>()((set, get) => ({
     if (!wb) return
 
     const promptNewVersionAvailable = () => {
-      wb.messageSkipWaiting()
-      wb.addEventListener('controlling', () => {
-        notifyDifferentVersion()
+      notifyDifferentVersion(() => {
+        wb.addEventListener('controlling', () => {
+          window.location.reload()
+        })
+        wb.messageSkipWaiting()
       })
     }
     wb.addEventListener('waiting', promptNewVersionAvailable)
@@ -64,7 +66,7 @@ async function validateSameVersion(currentVersion: string | undefined) {
   }
 }
 
-function notifyDifferentVersion() {
+function notifyDifferentVersion(onClick?: () => void) {
   toast.custom(
     (t) => (
       <Toast
@@ -73,7 +75,7 @@ function notifyDifferentVersion() {
           <Button
             size='circle'
             className='ml-2'
-            onClick={() => window.location.reload()}
+            onClick={onClick ?? (() => window.location.reload())}
           >
             <IoRefresh />
           </Button>
