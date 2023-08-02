@@ -42,7 +42,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: 3000
+              port: 6006
             failureThreshold: 3
             initialDelaySeconds: 20
             periodSeconds: 10
@@ -51,7 +51,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: 3000
+              port: 6006
             failureThreshold: 3
             initialDelaySeconds: 30
             periodSeconds: 10
