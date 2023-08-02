@@ -56,6 +56,8 @@ function DisableNotificationButton({
   address,
   setIsRegisterd,
 }: NotificationButtonProps) {
+  const [isGettingToken, setIsGettingToken] = useState(false)
+
   const { mutate: commitSignedMessage, isLoading: isCommitingMessage } =
     useCommitSignedMessageWithAction({
       onSuccess: (data) => {
@@ -78,11 +80,14 @@ function DisableNotificationButton({
       },
     })
 
-  const isLoading = isCommitingMessage || isGettingLinkingMessage
+  const isLoading =
+    isCommitingMessage || isGettingLinkingMessage || isGettingToken
 
   const handleClickEnable = async () => {
     if (!address) return
+    setIsGettingToken(true)
     const fcmToken = await getMessageToken()
+    setIsGettingToken(false)
     if (!fcmToken) return
 
     getLinkingMessage({ address, fcmToken, action: 'unlink' })
