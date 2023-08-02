@@ -32,14 +32,6 @@ spec:
           name: grillchat-storybook
           ports:
             - containerPort: 6006
-          env:
-            - name: REDIS_HOST
-              value: redis-master.default
-            - name: REDIS_PORT
-              value: "6379"
-          envFrom:
-            - secretRef:
-                name: grillchat-secret
           resources:
             requests:
               memory: "750Mi"
