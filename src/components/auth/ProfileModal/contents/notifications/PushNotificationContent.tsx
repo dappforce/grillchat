@@ -34,12 +34,12 @@ export default function PushNotificationContent(props: ContentProps) {
   const permission = Notification.permission
   if (permission === 'granted' && isRegistered) {
     return (
-      <DisableNotificationButton setIsRegisterd={setIsRegistered} {...props} />
+      <DisableNotificationButton setIsRegistered={setIsRegistered} {...props} />
     )
   }
 
   return (
-    <EnableNotificationButton setIsRegisterd={setIsRegistered} {...props} />
+    <EnableNotificationButton setIsRegistered={setIsRegistered} {...props} />
   )
 }
 
@@ -110,7 +110,7 @@ function EnableNotificationButton({
         // FCM Token Enabled.
         if (fcmToken) {
           storage.set(fcmToken)
-          setIsRegisterd(true)
+          setIsRegistered(true)
         }
       },
     })
