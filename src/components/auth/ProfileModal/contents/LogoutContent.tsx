@@ -9,8 +9,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { LocalStorage } from '@/utils/storage'
 import { sortObj } from 'jsonabc'
 import { ContentProps } from '../types'
-
-const FCM_PUSH_NOTIFICATION_STORAGE_KEY = 'push-notification-fcm-token'
+import { FCM_PUSH_NOTIFICATION_STORAGE_KEY } from './notifications/PushNotificationContent'
 
 const fcmTokenStorage = new LocalStorage(
   () => FCM_PUSH_NOTIFICATION_STORAGE_KEY
@@ -24,7 +23,7 @@ function LogoutContent({ setCurrentState }: ContentProps) {
   const { mutate: commitSignedMessage, isLoading: isCommitingMessage } =
     useCommitSignedMessageWithAction({
       onSuccess: (data) => {
-        if (!data) throw new Error('Error generating url')
+        if (!data) throw new Error('Error removing token on logout')
 
         // FCM Token Disabled.
         fcmTokenStorage.remove()
