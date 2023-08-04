@@ -67,8 +67,8 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         {ensName && (
           <div
             className={cx(
-              'absolute inset-0 h-full w-full transition-opacity',
-              !isEnsAvatarError ? 'z-10 opacity-100' : '-z-10 opacity-0'
+              'absolute inset-0 z-10 h-full w-full transition-opacity',
+              !isEnsAvatarError ? 'opacity-100' : 'opacity-0'
             )}
           >
             <div className='relative h-full w-full'>
@@ -78,7 +78,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
                 fill
                 src={resolveEnsAvatarSrc(ensName)}
                 onError={() => setIsEnsAvatarError(true)}
-                alt='avatar'
+                alt='ens avatar'
               />
             </div>
           </div>
