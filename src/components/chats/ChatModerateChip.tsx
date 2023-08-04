@@ -2,7 +2,7 @@ import { getPostQuery } from '@/services/api/query'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
-import { BiShieldAlt2 } from 'react-icons/bi'
+import { LuShield } from 'react-icons/lu'
 import PopOver, { PopOverProps } from '../floating/PopOver'
 
 export type ChatModerateChipProps = ComponentProps<'div'> & {
@@ -32,8 +32,11 @@ export default function ChatModerateChip({
             props.onClick?.(e)
           }}
         >
-          <BiShieldAlt2
-            className={cx('text-sm text-text-muted', props.className)}
+          <LuShield
+            className={cx(
+              'relative -top-px text-sm text-text-muted',
+              props.className
+            )}
           />
         </div>
       }

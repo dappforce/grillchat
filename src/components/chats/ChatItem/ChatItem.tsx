@@ -30,9 +30,10 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
-import { BiGift, BiShieldAlt2 } from 'react-icons/bi'
+import { BiGift } from 'react-icons/bi'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
+import { LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine } from 'react-icons/ri'
 import urlJoin from 'url-join'
@@ -147,7 +148,7 @@ export default function ChatItem({
       ...(isAuthorized
         ? [
             {
-              icon: BiShieldAlt2,
+              icon: LuShield,
               text: 'Moderate',
               onClick: () => setModalState('moderate'),
             },

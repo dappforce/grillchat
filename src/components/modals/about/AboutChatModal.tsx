@@ -23,7 +23,6 @@ import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { BiShieldAlt2 } from 'react-icons/bi'
 import {
   HiCircleStack,
   HiOutlineEye,
@@ -31,6 +30,7 @@ import {
   HiPencilSquare,
   HiQrCode,
 } from 'react-icons/hi2'
+import { LuShield } from 'react-icons/lu'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import ConfirmationModal from '../ConfirmationModal'
@@ -133,7 +133,7 @@ export default function AboutChatModal({
     if (isAuthorized) {
       additionalMenus.push({
         text: 'Moderation',
-        icon: BiShieldAlt2,
+        icon: LuShield,
         iconClassName: cx('text-text-muted'),
         onClick: () => setOpenedModalType('moderation'),
       })
