@@ -1,6 +1,10 @@
-import { scrollToMessageElement } from '../../utils'
+import {
+  scrollToMessageElement,
+  ScrollToMessageElementConfig,
+} from '../../utils'
 import useGetMessageElement from './useGetChatElement'
 
+export type ScrollToMessage = ReturnType<typeof useScrollToMessage>
 export default function useScrollToMessage(
   scrollContainerRef: React.RefObject<HTMLElement>,
   getMessageElementArgs: Parameters<typeof useGetMessageElement>[0],
@@ -8,16 +12,12 @@ export default function useScrollToMessage(
 ) {
   const getElement = useGetMessageElement(getMessageElementArgs)
 
-  return async (chatId: string, shouldHighlight = true) => {
+  return async (chatId: string, config?: ScrollToMessageElementConfig) => {
     const element = await getElement(chatId)
     if (!element) return
 
     loadMoreController.pause()
-    await scrollToMessageElement(
-      element,
-      scrollContainerRef.current,
-      shouldHighlight
-    )
+    await scrollToMessageElement(element, scrollContainerRef.current, config)
     loadMoreController.unpause()
   }
 }

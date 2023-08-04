@@ -83,11 +83,7 @@ export async function getPricesFromCache(tokenIds: string[]) {
 
       newlyFetchedData.push(...res.data)
     } catch (e) {
-      console.error(
-        'Error fetching accounts data from Subsocial API: ',
-        tokenIds,
-        e
-      )
+      console.error('Error prices data from coingecko API: ', tokenIds, e)
     }
   }
 

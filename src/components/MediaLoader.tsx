@@ -72,8 +72,10 @@ export default function MediaLoader({
     } else {
       return (
         <>
+          <div className='absolute inset-0 h-full w-full animate-pulse bg-background-lighter' />
           <Image
             {...commonProps}
+            style={{ backfaceVisibility: 'hidden', ...commonProps.style }}
             onError={undefined}
             onLoad={undefined}
             width={10}
@@ -82,8 +84,8 @@ export default function MediaLoader({
             className='absolute inset-0 h-full w-full'
           />
           <Image
-            key={usedImage?.toString() ?? ''}
             {...commonProps}
+            style={{ backfaceVisibility: 'hidden', ...commonProps.style }}
             width={commonProps.width || 500}
             height={commonProps.height || 500}
             alt={props.alt || ''}

@@ -5,6 +5,10 @@ on:
     branches:
       - deploy/**
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   grillchat_build:
     name: build & Push Docker image to Docker Hub

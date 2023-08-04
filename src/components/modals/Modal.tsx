@@ -104,6 +104,7 @@ export default function Modal({
               leaveTo='opacity-0 scale-95'
             >
               <Dialog.Panel
+                style={{ backfaceVisibility: 'hidden' }}
                 className={cx(panelStyles({ size }), panelClassName)}
               >
                 <div

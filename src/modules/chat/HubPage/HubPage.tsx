@@ -57,13 +57,13 @@ export default function HubPage({ hubId }: HubPageProps) {
           backButton,
           logoLink,
           authComponent,
-          colorModeToggler,
+          notificationBell,
         }) => {
           return (
             <HubPageNavbar
               chatsCount={allChatIds.length}
               auth={authComponent}
-              colorModeToggler={colorModeToggler}
+              notificationBell={notificationBell}
               backButton={backButton}
               logo={logoLink}
               hubId={hubId}
@@ -179,7 +179,7 @@ function CommunityHubToolbar({
             sendEvent('click new_community_button in hub_page')
           }}
         >
-          <CommunityAddIcon className='text-text-muted' />
+          <CommunityAddIcon className='text-text-muted-on-primary' />
           <span>New</span>
         </Button>
       </Container>

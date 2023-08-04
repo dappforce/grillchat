@@ -1,3 +1,4 @@
+import { EMOJI_COUNT_REGEX } from '@/constants/regex'
 import truncate from 'lodash.truncate'
 
 export function truncateText(text: string, length: number) {
@@ -15,8 +16,11 @@ export function validateTextContainsOnlyEmoji(text: string) {
   return isOnlyEmoji
 }
 export function getEmojiAmount(text: string) {
-  const emojiAmount = text.match(EMOJI_REGEX)?.length ?? 0
-  return emojiAmount
+  // Firefox and IE doesn't support Segmenter
+  if (!Intl.Segmenter) {
+    return text.match(EMOJI_COUNT_REGEX)?.length ?? 0
+  }
+  return [...new Intl.Segmenter().segment(text)].length
 }
 
 export function removeDoubleSpaces(str: string) {

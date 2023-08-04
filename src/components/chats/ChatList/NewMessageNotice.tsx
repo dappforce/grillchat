@@ -8,6 +8,7 @@ import useIsAtBottom from './hooks/useIsAtBottom'
 export type NewMessageNoticeProps = ButtonProps & {
   scrollContainerRef: RefObject<HTMLDivElement | null>
   messageIds: string[]
+  initialNewMessageCount?: number
   asContainer?: boolean
 }
 
@@ -17,10 +18,14 @@ export function NewMessageNotice({
   scrollContainerRef,
   messageIds,
   asContainer,
+  initialNewMessageCount,
   ...props
 }: NewMessageNoticeProps) {
   const isAtBottom = useIsAtBottom(scrollContainerRef, IS_AT_BOTTOM_OFFSET)
-  const { anyNewData, clearAnyNewData } = useAnyNewData(messageIds)
+  const { anyNewData, clearAnyNewData } = useAnyNewData(
+    messageIds,
+    initialNewMessageCount
+  )
 
   useEffect(() => {
     if (isAtBottom) clearAnyNewData()
