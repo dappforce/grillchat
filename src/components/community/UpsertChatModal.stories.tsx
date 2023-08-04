@@ -27,6 +27,9 @@ const meta = {
   title: 'Community/UpsertChatModal',
   component: ModalWrapper,
   tags: ['autodocs'],
+  parameters: {
+    layout: 'centered',
+  },
   args: {},
 } satisfies Meta<typeof ModalWrapper>
 

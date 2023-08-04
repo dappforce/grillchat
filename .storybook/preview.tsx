@@ -40,7 +40,7 @@ const preview: Preview = {
     (Story) => (
       <QueryProvider dehydratedState={{}}>
         <div
-          className={`${sourceSans3.className}`}
+          className={`${sourceSans3.className} mx-auto max-w-lg`}
           style={{ fontFamily: '"Source Sans 3"' }}
         >
           <Story />
