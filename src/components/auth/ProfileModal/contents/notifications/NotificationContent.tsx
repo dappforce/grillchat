@@ -29,7 +29,7 @@ export default function NotificationContent({
           text: (
             <span className='flex items-center gap-2'>
               <span>Telegram Bot</span>
-              {!!linkedAccounts?.length && <Notice>Enabled</Notice>}
+              {!!linkedAccounts?.length && <Notice size='sm'>Enabled</Notice>}
               {showNotification && <DotBlinkingNotification />}
             </span>
           ),
