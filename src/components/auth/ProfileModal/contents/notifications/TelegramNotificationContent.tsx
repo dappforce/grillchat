@@ -151,8 +151,8 @@ function ConnectTelegramButton({ address }: ContentProps) {
             (t) => (
               <Toast
                 t={t}
-                title='Please open this link to connect your telegram'
-                description='You will be redirected to grill telegram bot.'
+                title='Use this link to connect your Telegram'
+                description='You will be taken to the Grill bot.'
                 action={
                   <Button
                     size='circle'
