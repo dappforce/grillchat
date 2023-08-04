@@ -5,6 +5,7 @@ import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { IpfsWrapper } from '@/utils/ipfs'
+import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
@@ -302,7 +303,9 @@ export function usePinMessage(
     config,
     {
       txCallbacks: {
-        onSend: async ({ data }) => {
+        onStart: async ({ data }) => {
+          preventWindowUnload()
+
           const newContent = await getUpdatedPinPostContent(client, data)
           getPostQuery.setQueryData(client, data.chatId, (chat) => {
             if (!chat) return chat
@@ -317,7 +320,9 @@ export function usePinMessage(
             }
           })
         },
+        onSend: () => allowWindowUnload(),
         onError: async ({ data }) => {
+          allowWindowUnload()
           getPostQuery.invalidate(client, data.chatId)
         },
         onSuccess: async ({ data }) => {
