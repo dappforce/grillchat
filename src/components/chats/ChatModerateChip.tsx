@@ -1,8 +1,8 @@
-import ModerateIcon from '@/assets/icons/moderate.svg'
 import { getPostQuery } from '@/services/api/query'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
+import { BiShieldAlt2 } from 'react-icons/bi'
 import PopOver, { PopOverProps } from '../floating/PopOver'
 
 export type ChatModerateChipProps = ComponentProps<'div'> & {
@@ -32,7 +32,7 @@ export default function ChatModerateChip({
             props.onClick?.(e)
           }}
         >
-          <ModerateIcon
+          <BiShieldAlt2
             className={cx('text-sm text-text-muted', props.className)}
           />
         </div>

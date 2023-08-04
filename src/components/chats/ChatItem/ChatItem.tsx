@@ -1,4 +1,3 @@
-import ModerateIcon from '@/assets/icons/moderate.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import LoginModal from '@/components/auth/LoginModal'
 import { useOpenDonateExtension } from '@/components/extensions/donate/hooks'
@@ -31,7 +30,7 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
-import { BiGift } from 'react-icons/bi'
+import { BiGift, BiShieldAlt2 } from 'react-icons/bi'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { MdContentCopy } from 'react-icons/md'
@@ -148,7 +147,7 @@ export default function ChatItem({
       ...(isAuthorized
         ? [
             {
-              icon: ModerateIcon,
+              icon: BiShieldAlt2,
               text: 'Moderate',
               onClick: () => setModalState('moderate'),
             },

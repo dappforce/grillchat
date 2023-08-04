@@ -1,4 +1,3 @@
-import ModerateIcon from '@/assets/icons/moderate.svg'
 import { ActionCardProps } from '@/components/ActionCard'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import UpsertChatModal from '@/components/community/UpsertChatModal'
@@ -24,6 +23,7 @@ import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { BiShieldAlt2 } from 'react-icons/bi'
 import {
   HiCircleStack,
   HiOutlineEye,
@@ -133,7 +133,7 @@ export default function AboutChatModal({
     if (isAuthorized) {
       additionalMenus.push({
         text: 'Moderation',
-        icon: ModerateIcon,
+        icon: BiShieldAlt2,
         iconClassName: cx('text-text-muted'),
         onClick: () => setOpenedModalType('moderation'),
       })
