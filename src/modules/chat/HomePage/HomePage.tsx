@@ -126,16 +126,16 @@ export default function HubsPage(props: HubsPageProps) {
   return (
     <DefaultLayout
       navbarProps={{
-        customContent: ({ logoLink, authComponent, colorModeToggler }) => {
+        customContent: ({ logoLink, authComponent, notificationBell }) => {
           return (
             <NavbarWithSearch
               customContent={(searchButton) => (
                 <div className='flex w-full items-center justify-between gap-4'>
                   {logoLink}
-                  <div className='flex items-center gap-2'>
+                  <div className='flex items-center gap-1'>
                     {searchButton}
-                    {colorModeToggler}
-                    <div className='ml-1.5'>{authComponent}</div>
+                    {notificationBell}
+                    <div className='ml-2'>{authComponent}</div>
                   </div>
                 </div>
               )}
@@ -172,7 +172,7 @@ export default function HubsPage(props: HubsPageProps) {
                     sendEvent('click new_community_button in home_page')
                   }}
                 >
-                  <CommunityAddIcon className='text-text-muted' />
+                  <CommunityAddIcon className='text-text-muted-on-primary' />
                   <span>New</span>
                 </Button>
               </div>

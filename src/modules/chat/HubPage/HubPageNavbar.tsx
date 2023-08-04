@@ -13,7 +13,7 @@ export type HubPageNavbarProps = {
   logo: JSX.Element
   auth: JSX.Element
   backButton: JSX.Element
-  colorModeToggler: JSX.Element
+  notificationBell: JSX.Element
   searchProps: NavbarWithSearchProps['searchProps']
   hubId: string
   chatsCount: number
@@ -21,7 +21,7 @@ export type HubPageNavbarProps = {
 
 export default function HubPageNavbar({
   auth,
-  colorModeToggler,
+  notificationBell,
   backButton,
   logo,
   hubId,
@@ -74,10 +74,10 @@ export default function HubPageNavbar({
         customContent={(searchButton) => (
           <div className='flex w-full justify-between gap-2 overflow-hidden'>
             {leftSection}
-            <div className='flex items-center gap-2 text-text-muted dark:text-text'>
+            <div className='flex items-center gap-1 text-text-muted dark:text-text'>
               {searchButton}
-              {colorModeToggler}
-              <div className='ml-1.5'>{auth}</div>
+              {notificationBell}
+              <div className='ml-2'>{auth}</div>
             </div>
           </div>
         )}

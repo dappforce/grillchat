@@ -10,7 +10,6 @@ import LinkText from '@/components/LinkText'
 import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
-import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
@@ -72,14 +71,6 @@ export default function ChatPage({
     (state) => state.openExtensionModal
   )
 
-  const { setLastReadMessageId } = useLastReadMessageId(chatId)
-
-  useEffect(() => {
-    const lastId = messageIds?.[messageIds.length - 1]
-    if (!lastId) return
-    setLastReadMessageId(lastId)
-  }, [setLastReadMessageId, messageIds])
-
   useEffect(() => {
     const query = getUrlQuery('donateTo')
     if (!query) return
@@ -131,7 +122,7 @@ export default function ChatPage({
             defaultBackLink: getHubPageLink(router),
             forceUseDefaultBackLink: false,
           },
-          customContent: ({ backButton, authComponent, colorModeToggler }) => (
+          customContent: ({ backButton, authComponent, notificationBell }) => (
             <div className='flex w-full items-center justify-between gap-4 overflow-hidden'>
               <NavbarChatInfo
                 backButton={backButton}
@@ -140,8 +131,8 @@ export default function ChatPage({
                 chatMetadata={content}
                 chatId={chatId}
               />
-              <div className='flex items-center gap-4'>
-                {colorModeToggler}
+              <div className='flex items-center gap-3'>
+                {notificationBell}
                 {authComponent}
               </div>
             </div>

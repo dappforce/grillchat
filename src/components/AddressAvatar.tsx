@@ -15,9 +15,12 @@ export type AddressAvatarProps = ComponentProps<'div'> & {
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   function AddressAvatar({ address, ...props }: AddressAvatarProps, ref) {
-    const backgroundColor = useRandomColor(address, 'dark')
+    const backgroundColor = useRandomColor(address, {
+      isAddress: true,
+      theme: 'dark',
+    })
 
-    const [ensAvatarLoaded, setEnsAvatarLoaded] = useState(false)
+    const [isEnsAvatarError, setIsEnsAvatarError] = useState(false)
 
     const { data: accountData, isLoading } =
       getAccountDataQuery.useQuery(address)
@@ -65,7 +68,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           <div
             className={cx(
               'absolute inset-0 h-full w-full transition-opacity',
-              ensAvatarLoaded ? 'z-10 opacity-100' : '-z-10 opacity-0'
+              !isEnsAvatarError ? 'z-10 opacity-100' : '-z-10 opacity-0'
             )}
           >
             <div className='relative h-full w-full'>
@@ -74,7 +77,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
                 className='relative rounded-full'
                 fill
                 src={resolveEnsAvatarSrc(ensName)}
-                onLoad={() => setEnsAvatarLoaded(true)}
+                onError={() => setIsEnsAvatarError(true)}
                 alt='avatar'
               />
             </div>

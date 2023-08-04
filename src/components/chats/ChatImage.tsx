@@ -28,7 +28,7 @@ export default function ChatImage({
     }
   }
 
-  const bgColor = useRandomColor(chatId || chatTitle, 'light')
+  const bgColor = useRandomColor(chatId || chatTitle, { theme: 'light' })
 
   const roundingMap = {
     circle: 'rounded-full',
