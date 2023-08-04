@@ -15,6 +15,8 @@ import { ContentProps } from '../../types'
 
 export default function TelegramNotificationContent(props: ContentProps) {
   const { address } = props
+  const [isAfterDisconnect, setIsAfterDisconnect] = useState(false)
+
   const {
     data: linkedAccounts,
     isLoading,
@@ -27,7 +29,17 @@ export default function TelegramNotificationContent(props: ContentProps) {
   const firstLinkedAccount = !isLoadingAccount ? linkedAccounts?.[0] : null
 
   if (!isLoadingAccount && !firstLinkedAccount) {
-    return <ConnectTelegramButton {...props} />
+    return (
+      <>
+        {isAfterDisconnect && (
+          <Card className='mb-6 bg-green-600/10 text-green-600'>
+            ✅ You have disconnected your account from Grill&apos;s telegram
+            bot.
+          </Card>
+        )}
+        <ConnectTelegramButton {...props} />
+      </>
+    )
   }
 
   return (
@@ -60,18 +72,27 @@ export default function TelegramNotificationContent(props: ContentProps) {
           )}
         </IntegratedSkeleton>
       </Card>
-      {firstLinkedAccount && <DisconnectButton {...props} />}
+      {firstLinkedAccount && (
+        <DisconnectButton
+          {...props}
+          afterDisconnect={() => setIsAfterDisconnect(true)}
+        />
+      )}
     </div>
   )
 }
 
-function DisconnectButton({ address }: ContentProps) {
+function DisconnectButton({
+  address,
+  afterDisconnect,
+}: ContentProps & { afterDisconnect?: () => void }) {
   const queryClient = useQueryClient()
 
   const { mutate: disconnect, isLoading: isCreatingLinkingUrl } =
     useLinkingAccount({
       onSuccess: () => {
         getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
+        afterDisconnect?.()
       },
     })
 
