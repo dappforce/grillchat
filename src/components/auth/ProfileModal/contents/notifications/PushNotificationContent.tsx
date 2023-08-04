@@ -10,12 +10,8 @@ import { sortObj } from 'jsonabc'
 import { useEffect, useState } from 'react'
 import { ContentProps } from '../../types'
 
-const STORAGE_KEY = 'push-notification-fcm-token'
-const storage = new LocalStorage(() => STORAGE_KEY)
-
-type NotificationButtonProps = ContentProps & {
-  setIsRegisterd: (v: boolean) => void
-}
+export const FCM_PUSH_NOTIFICATION_STORAGE_KEY = 'push-notification-fcm-token'
+const storage = new LocalStorage(() => FCM_PUSH_NOTIFICATION_STORAGE_KEY)
 
 export default function PushNotificationContent(props: ContentProps) {
   const isNotificationNotSupported = typeof Notification === 'undefined'
@@ -24,11 +20,7 @@ export default function PushNotificationContent(props: ContentProps) {
 
   useEffect(() => {
     const storedFcmToken = storage.get()
-    if (storedFcmToken) {
-      setIsRegistered(true)
-    } else {
-      setIsRegistered(false)
-    }
+    setIsRegistered(!!storedFcmToken)
   }, [isRegistered])
 
   if (isNotificationNotSupported) {
@@ -41,31 +33,34 @@ export default function PushNotificationContent(props: ContentProps) {
 
   const permission = Notification.permission
   if (permission === 'granted' && isRegistered) {
-    // Disable Notifications.
     return (
-      <DisableNotificationButton setIsRegisterd={setIsRegistered} {...props} />
+      <DisableNotificationButton setIsRegistered={setIsRegistered} {...props} />
     )
   }
 
   return (
-    <EnableNotificationButton setIsRegisterd={setIsRegistered} {...props} />
+    <EnableNotificationButton setIsRegistered={setIsRegistered} {...props} />
   )
+}
+
+type NotificationButtonProps = ContentProps & {
+  setIsRegistered: (v: boolean) => void
 }
 
 function DisableNotificationButton({
   address,
-  setIsRegisterd,
+  setIsRegistered,
 }: NotificationButtonProps) {
   const [isGettingToken, setIsGettingToken] = useState(false)
 
   const { mutate: commitSignedMessage, isLoading: isCommitingMessage } =
     useCommitSignedMessageWithAction({
       onSuccess: (data) => {
-        if (!data) throw new Error('Error generating url')
+        if (!data) throw new Error('Error in disabling notification request')
 
         // FCM Token Disabled.
         storage.remove()
-        setIsRegisterd(false)
+        setIsRegistered(false)
       },
     })
 
@@ -102,7 +97,7 @@ function DisableNotificationButton({
 
 function EnableNotificationButton({
   address,
-  setIsRegisterd,
+  setIsRegistered,
 }: NotificationButtonProps) {
   const [isGettingToken, setIsGettingToken] = useState(false)
   const [fcmToken, setFcmToken] = useState<string | undefined>()
@@ -115,7 +110,7 @@ function EnableNotificationButton({
         // FCM Token Enabled.
         if (fcmToken) {
           storage.set(fcmToken)
-          setIsRegisterd(true)
+          setIsRegistered(true)
         }
       },
     })
