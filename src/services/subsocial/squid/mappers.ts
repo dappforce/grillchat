@@ -3,6 +3,7 @@ import {
   DonateExtension,
   ImageExtension,
   NftExtension,
+  PinsExtension,
   PostContent,
   PostContentExtension,
   PostData,
@@ -99,15 +100,17 @@ const mapPostExtensions = (
         }
         return decodedPromoExtension
 
-      // TODO: wait squid to support pins extension
-      // case ContentExtensionSchemaId.SubsocialPins:
-      //   const pinsExtension: PinsExtension = {
-      //     id: 'subsocial-pinned-posts',
-      //     properties: {
-      //       pinned: ext?.pinned ?? [],
-      //     },
-      //   }
-      //   return pinsExtension
+      case ContentExtensionSchemaId.SubsocialPinnedPosts:
+        const pinsExtension: PinsExtension = {
+          id: 'subsocial-pinned-posts',
+          properties: {
+            ids:
+              (ext.pinnedResources
+                .map((pinned) => pinned.post?.id)
+                .filter(Boolean) as [string]) ?? [],
+          },
+        }
+        return pinsExtension
     }
   })
   const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
