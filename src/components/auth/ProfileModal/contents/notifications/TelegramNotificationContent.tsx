@@ -2,15 +2,19 @@ import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
+import Toast from '@/components/Toast'
 import useSignMessage from '@/hooks/useSignMessage'
 import {
   useGetLinkingMessage,
   useLinkingAccount,
 } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { getIsInIos } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
 import { sortObj } from 'jsonabc'
 import { useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { HiArrowUpRight } from 'react-icons/hi2'
 import { ContentProps } from '../../types'
 
 export default function TelegramNotificationContent(props: ContentProps) {
@@ -139,8 +143,35 @@ function ConnectTelegramButton({ address }: ContentProps) {
     useLinkingAccount({
       onSuccess: (url) => {
         if (!url) throw new Error('Error generating url')
-        window.open(url, '_blank')
-        setOpenedTelegramBotLink(true)
+        if (!getIsInIos()) {
+          window.open(url, '_blank')
+          setOpenedTelegramBotLink(true)
+        } else {
+          toast.custom(
+            (t) => (
+              <Toast
+                t={t}
+                title='Please open this link to connect your telegram'
+                description='You will be redirected to grill telegram bot.'
+                action={
+                  <Button
+                    size='circle'
+                    className='ml-2'
+                    href={url}
+                    target='_blank'
+                    onClick={() => {
+                      toast.dismiss(t.id)
+                      setOpenedTelegramBotLink(true)
+                    }}
+                  >
+                    <HiArrowUpRight />
+                  </Button>
+                }
+              />
+            ),
+            { duration: Infinity }
+          )
+        }
       },
     })
 
