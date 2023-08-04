@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
+import Notice from '@/components/Notice'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import Toast from '@/components/Toast'
 import useSignMessage from '@/hooks/useSignMessage'
@@ -35,11 +36,10 @@ export default function TelegramNotificationContent(props: ContentProps) {
   if (!isLoadingAccount && !firstLinkedAccount) {
     return (
       <>
-        {isAfterDisconnect && (
-          <Card className='mb-6 bg-green-600/10 text-green-600'>
-            ✅ You have disconnected your account from Grill&apos;s telegram
-            bot.
-          </Card>
+        {!isAfterDisconnect && (
+          <Notice className='mb-6' leftIcon='✅'>
+            You have disconnected your account from Grill&apos;s telegram bot.
+          </Notice>
         )}
         <ConnectTelegramButton {...props} />
       </>
