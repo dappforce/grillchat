@@ -4,7 +4,13 @@ import { cx } from '@/utils/class-names'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
-import { ComponentProps, forwardRef, useMemo, useState } from 'react'
+import {
+  ComponentProps,
+  forwardRef,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 
 export const resolveEnsAvatarSrc = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}`
@@ -21,6 +27,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     })
 
     const [isEnsAvatarError, setIsEnsAvatarError] = useState(false)
+    const onImageError = useCallback(() => setIsEnsAvatarError(true), [])
 
     const { data: accountData, isLoading } =
       getAccountDataQuery.useQuery(address)
@@ -77,7 +84,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
                 className='relative rounded-full'
                 fill
                 src={resolveEnsAvatarSrc(ensName)}
-                onError={() => setIsEnsAvatarError(true)}
+                onError={onImageError}
                 alt='avatar'
               />
             </div>

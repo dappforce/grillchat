@@ -1,16 +1,21 @@
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
+import Notice from '@/components/Notice'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
+import Toast from '@/components/Toast'
 import useSignMessage from '@/hooks/useSignMessage'
 import {
   useGetLinkingMessage,
   useLinkingAccount,
 } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { getIsInIos } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
 import { sortObj } from 'jsonabc'
 import { useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { HiArrowUpRight } from 'react-icons/hi2'
 import { ContentProps } from '../../types'
 
 export default function TelegramNotificationContent(props: ContentProps) {
@@ -31,11 +36,10 @@ export default function TelegramNotificationContent(props: ContentProps) {
   if (!isLoadingAccount && !firstLinkedAccount) {
     return (
       <>
-        {isAfterDisconnect && (
-          <Card className='mb-6 bg-green-600/10 text-green-600'>
-            ✅ You have disconnected your account from Grill&apos;s telegram
-            bot.
-          </Card>
+        {!isAfterDisconnect && (
+          <Notice className='mb-6' leftIcon='✅'>
+            You have disconnected your account from Grill&apos;s telegram bot.
+          </Notice>
         )}
         <ConnectTelegramButton {...props} />
       </>
@@ -139,8 +143,35 @@ function ConnectTelegramButton({ address }: ContentProps) {
     useLinkingAccount({
       onSuccess: (url) => {
         if (!url) throw new Error('Error generating url')
-        window.open(url, '_blank')
-        setOpenedTelegramBotLink(true)
+        if (!getIsInIos()) {
+          window.open(url, '_blank')
+          setOpenedTelegramBotLink(true)
+        } else {
+          toast.custom(
+            (t) => (
+              <Toast
+                t={t}
+                title='Use this link to connect your Telegram'
+                description='You will be taken to the Grill bot.'
+                action={
+                  <Button
+                    size='circle'
+                    className='ml-2'
+                    href={url}
+                    target='_blank'
+                    onClick={() => {
+                      toast.dismiss(t.id)
+                      setOpenedTelegramBotLink(true)
+                    }}
+                  >
+                    <HiArrowUpRight />
+                  </Button>
+                }
+              />
+            ),
+            { duration: Infinity }
+          )
+        }
       },
     })
 

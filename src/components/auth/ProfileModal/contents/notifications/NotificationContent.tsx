@@ -3,6 +3,7 @@ import MailIcon from '@/assets/icons/mail.svg'
 import Card from '@/components/Card'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList from '@/components/MenuList'
+import Notice from '@/components/Notice'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { cx } from '@/utils/class-names'
@@ -28,11 +29,7 @@ export default function NotificationContent({
           text: (
             <span className='flex items-center gap-2'>
               <span>Telegram Bot</span>
-              {!!linkedAccounts?.length && (
-                <Card size='sm' className='bg-green-600/10 text-green-600'>
-                  Enabled
-                </Card>
-              )}
+              {!!linkedAccounts?.length && <Notice size='sm'>Enabled</Notice>}
               {showNotification && <DotBlinkingNotification />}
             </span>
           ),
