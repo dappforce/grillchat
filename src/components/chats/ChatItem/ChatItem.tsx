@@ -39,8 +39,6 @@ const checkMarkModalReducer = (
   return { isOpen: true, variant: action }
 }
 
-type ModalState = 'login' | 'moderate' | null
-
 export default function ChatItem({
   message,
   isMyMessage,
