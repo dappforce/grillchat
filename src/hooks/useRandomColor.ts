@@ -5,17 +5,24 @@ import { generateRandomColor } from '@/utils/random-colors'
 import useGetTheme from './useGetTheme'
 
 export default function useRandomColor(
-  address: string | null | undefined,
-  theme?: Theme
+  seed: string | null | undefined,
+  config: {
+    isAddress?: boolean
+    theme?: Theme
+  } = {}
 ) {
+  const { isAddress, theme } = config
+
   const { theme: configTheme } = useConfigContext()
   const currentTheme = useGetTheme()
-  const { data: accountData } = getAccountDataQuery.useQuery(address || '')
+  const { data: accountData } = getAccountDataQuery.useQuery(seed || '', {
+    enabled: !!isAddress,
+  })
 
   const { evmAddress } = accountData || {}
 
   return generateRandomColor(
-    evmAddress || address,
+    evmAddress || seed,
     theme ?? configTheme ?? currentTheme
   )
 }

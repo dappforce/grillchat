@@ -3,7 +3,9 @@ on:
   push:
     branches:
       - main
-
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   front_build:
     name: build & Push Docker image to Docker Hub

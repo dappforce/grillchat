@@ -1,15 +1,22 @@
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
+import Notice from '@/components/Notice'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
+import Toast from '@/components/Toast'
 import { useLinkingAccount } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { getIsInIos } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { HiArrowUpRight } from 'react-icons/hi2'
 import { ContentProps } from '../../types'
 
 export default function TelegramNotificationContent(props: ContentProps) {
   const { address } = props
+  const [isAfterDisconnect, setIsAfterDisconnect] = useState(false)
+
   const {
     data: linkedAccounts,
     isLoading,
@@ -22,7 +29,16 @@ export default function TelegramNotificationContent(props: ContentProps) {
   const firstLinkedAccount = !isLoadingAccount ? linkedAccounts?.[0] : null
 
   if (!isLoadingAccount && !firstLinkedAccount) {
-    return <ConnectTelegramButton {...props} />
+    return (
+      <>
+        {!isAfterDisconnect && (
+          <Notice className='mb-6' leftIcon='✅'>
+            You have disconnected your account from Grill&apos;s telegram bot.
+          </Notice>
+        )}
+        <ConnectTelegramButton {...props} />
+      </>
+    )
   }
 
   return (
@@ -55,13 +71,25 @@ export default function TelegramNotificationContent(props: ContentProps) {
           )}
         </IntegratedSkeleton>
       </Card>
-      {firstLinkedAccount && <DisconnectButton {...props} />}
+      {firstLinkedAccount && (
+        <DisconnectButton
+          {...props}
+          afterDisconnect={() => setIsAfterDisconnect(true)}
+        />
+      )}
     </div>
   )
 }
 
-function DisconnectButton({ address }: ContentProps) {
-  const { mutate: getLinkingMessage, isLoading } = useLinkingAccount()
+function DisconnectButton({
+  address,
+  afterDisconnect,
+}: ContentProps & { afterDisconnect?: () => void }) {
+  const { mutate: getLinkingMessage, isLoading } = useLinkingAccount({
+    onSuccess: () => {
+      afterDisconnect?.()
+    },
+  })
 
   const handleClick = async () => {
     if (!address) return
@@ -91,8 +119,35 @@ function ConnectTelegramButton({ address }: ContentProps) {
   const { mutate: getLinkingMessage, isLoading } = useLinkingAccount({
     onSuccess: async (url) => {
       if (!url) throw new Error('Error generating url')
-      window.open(url, '_blank')
-      setOpenedTelegramBotLink(true)
+      if (!getIsInIos()) {
+        window.open(url, '_blank')
+        setOpenedTelegramBotLink(true)
+      } else {
+        toast.custom(
+          (t) => (
+            <Toast
+              t={t}
+              title='Use this link to connect your Telegram'
+              description='You will be taken to the Grill bot.'
+              action={
+                <Button
+                  size='circle'
+                  className='ml-2'
+                  href={url}
+                  target='_blank'
+                  onClick={() => {
+                    toast.dismiss(t.id)
+                    setOpenedTelegramBotLink(true)
+                  }}
+                >
+                  <HiArrowUpRight />
+                </Button>
+              }
+            />
+          ),
+          { duration: Infinity }
+        )
+      }
     },
   })
 

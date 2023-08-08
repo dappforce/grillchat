@@ -28,7 +28,7 @@ export default function RepliedMessagePreview({
   const [isLoading, setIsLoading] = useState(false)
   const { data: message } = getPostQuery.useQuery(repliedMessageId)
   const replySender = message?.struct.ownerId ?? ''
-  const replySenderColor = useRandomColor(replySender)
+  const replySenderColor = useRandomColor(replySender, { isAddress: true })
 
   const extensions = message?.content?.extensions
 

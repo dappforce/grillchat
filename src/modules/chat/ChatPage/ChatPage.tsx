@@ -13,7 +13,6 @@ import Spinner from '@/components/Spinner'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
-import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
@@ -76,14 +75,6 @@ export default function ChatPage({
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal
   )
-
-  const { setLastReadMessageId } = useLastReadMessageId(chatId)
-
-  useEffect(() => {
-    const lastId = messageIds?.[messageIds.length - 1]
-    if (!lastId) return
-    setLastReadMessageId(lastId)
-  }, [setLastReadMessageId, messageIds])
 
   useEffect(() => {
     const query = getUrlQuery('donateTo')
@@ -154,7 +145,7 @@ export default function ChatPage({
             defaultBackLink: getHubPageLink(router),
             forceUseDefaultBackLink: false,
           },
-          customContent: ({ backButton, authComponent, colorModeToggler }) => (
+          customContent: ({ backButton, authComponent, notificationBell }) => (
             <div className='flex w-full items-center justify-between gap-4 overflow-hidden'>
               <NavbarChatInfo
                 backButton={backButton}
@@ -163,8 +154,8 @@ export default function ChatPage({
                 chatMetadata={content}
                 chatId={chatId}
               />
-              <div className='flex items-center gap-4'>
-                {colorModeToggler}
+              <div className='flex items-center gap-3'>
+                {notificationBell}
                 {authComponent}
               </div>
             </div>
@@ -260,10 +251,10 @@ function NavbarChatInfo({
 
   useEffect(() => {
     const open = getUrlQuery('open')
-    if (open !== 'about') return
+    if (open !== 'about' || !router.isReady) return
 
     setIsOpenAboutChatModal(true)
-    router.push(getCurrentUrlWithoutQuery(), undefined, { shallow: true })
+    replaceUrl(getCurrentUrlWithoutQuery())
   }, [router])
 
   const chatTitle = chatMetadata?.title

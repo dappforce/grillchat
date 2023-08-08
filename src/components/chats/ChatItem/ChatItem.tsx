@@ -1,42 +1,12 @@
 import AddressAvatar from '@/components/AddressAvatar'
-import LoginModal from '@/components/auth/LoginModal'
-import { useOpenDonateExtension } from '@/components/extensions/donate/hooks'
-import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
-import FloatingMenus, {
-  FloatingMenusProps,
-} from '@/components/floating/FloatingMenus'
-import MetadataModal from '@/components/modals/MetadataModal'
-import ModerationModal from '@/components/moderation/ModerationModal'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
-import Toast from '@/components/Toast'
-import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
-import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
-import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
-import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
-import { copyToClipboard } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
-import { useRouter } from 'next/router'
-import {
-  ComponentProps,
-  SyntheticEvent,
-  useReducer,
-  useRef,
-  useState,
-} from 'react'
-import { toast } from 'react-hot-toast'
-import { BiGift } from 'react-icons/bi'
-import { BsFillReplyFill } from 'react-icons/bs'
-import { HiCircleStack, HiLink } from 'react-icons/hi2'
-import { LuShield } from 'react-icons/lu'
-import { MdContentCopy } from 'react-icons/md'
-import { RiCopperCoinLine } from 'react-icons/ri'
-import urlJoin from 'url-join'
+import { ComponentProps, SyntheticEvent, useReducer } from 'react'
+import ChatItemMenus from './ChatItemMenus'
 import ChatItemWithExtension from './ChatItemWithExtension'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
@@ -51,7 +21,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   isMyMessage: boolean
   messageBubbleId?: string
   scrollToMessage?: (chatId: string) => Promise<void>
-  withCustomMenu?: boolean
+  enableChatMenu?: boolean
   chatId: string
 }
 
@@ -76,35 +46,16 @@ export default function ChatItem({
   isMyMessage,
   scrollToMessage,
   messageBubbleId,
-  withCustomMenu = true,
+  enableChatMenu = true,
   chatId,
   ...props
 }: ChatItemProps) {
-  const openExtensionModal = useExtensionData(
-    (state) => state.openExtensionModal
-  )
   const setReplyTo = useMessageData((state) => state.setReplyTo)
-  const openDonateExtension = useOpenDonateExtension(
-    message.id,
-    message.struct.ownerId
-  )
 
-  const router = useRouter()
-  const isLoggingInWithKey = useRef(false)
   const messageId = message.id
   const isSent = !isOptimisticId(messageId)
-  const [openMetadata, setOpenMetadata] = useState(false)
   const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
   const { body, inReplyTo, extensions } = message.content || {}
-  const [modalState, setModalState] = useState<ModalState>(null)
-
-  const address = useMyAccount((state) => state.address)
-  const { isAuthorized } = useAuthorizedForModeration(chatId)
-
-  const { data: messageOwnerAccountData } =
-    getAccountDataQuery.useQuery(ownerId)
-
-  const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
 
   const sendEvent = useSendEvent()
 
@@ -117,89 +68,6 @@ export default function ChatItem({
     if (isOptimisticId(messageId)) return
     setReplyTo(messageId)
   }
-
-  const getChatMenus = (): FloatingMenusProps['menus'] => {
-    const donateMenuItem: FloatingMenusProps['menus'][number] = {
-      text: 'Donate',
-      icon: RiCopperCoinLine,
-      onClick: () => {
-        if (!messageOwnerEvmAddress) {
-          return
-        }
-
-        if (!address) {
-          setModalState('login')
-          return
-        }
-
-        openDonateExtension()
-      },
-    }
-
-    const showDonateMenuItem = messageOwnerEvmAddress
-
-    return [
-      {
-        text: 'Reply',
-        icon: BsFillReplyFill,
-        onClick: () => setMessageAsReply(messageId),
-      },
-      ...(showDonateMenuItem ? [donateMenuItem] : []),
-      ...(isAuthorized
-        ? [
-            {
-              icon: LuShield,
-              text: 'Moderate',
-              onClick: () => setModalState('moderate'),
-            },
-          ]
-        : []),
-      ...(address && canUsePromoExtensionAccounts.includes(address)
-        ? [
-            {
-              text: 'Secret Box',
-              icon: BiGift,
-              onClick: () => {
-                openExtensionModal('subsocial-decoded-promo', {
-                  recipient: ownerId,
-                  messageId,
-                })
-              },
-            },
-          ]
-        : []),
-      {
-        text: 'Copy Text',
-        icon: MdContentCopy,
-        onClick: () => {
-          copyToClipboard(body ?? '')
-          toast.custom((t) => (
-            <Toast t={t} title='Message copied to clipboard!' />
-          ))
-        },
-      },
-      {
-        text: 'Copy Message Link',
-        icon: HiLink,
-        onClick: () => {
-          const chatPageLink = urlJoin(
-            getCurrentUrlOrigin(),
-            getChatPageLink(router)
-          )
-          copyToClipboard(urlJoin(chatPageLink, messageId))
-          toast.custom((t) => (
-            <Toast t={t} title='Message link copied to clipboard!' />
-          ))
-        },
-      },
-      {
-        text: 'Show Metadata',
-        icon: HiCircleStack,
-        onClick: () => setOpenMetadata(true),
-      },
-    ]
-  }
-  const menus = withCustomMenu && isSent ? getChatMenus() : []
 
   if (!body && (!extensions || extensions.length === 0)) return null
 
@@ -235,17 +103,10 @@ export default function ChatItem({
           )}
         </ProfilePreviewModalWrapper>
       )}
-      <FloatingMenus
-        menus={menus}
-        allowedPlacements={[
-          'right',
-          'top',
-          'bottom',
-          'right-end',
-          'top-end',
-          'bottom-end',
-        ]}
-        useClickPointAsAnchor
+      <ChatItemMenus
+        chatId={chatId}
+        messageId={message.id}
+        enableChatMenu={enableChatMenu}
       >
         {(config) => {
           const { toggleDisplay, referenceProps } = config || {}
@@ -283,7 +144,7 @@ export default function ChatItem({
             </div>
           )
         }}
-      </FloatingMenus>
+      </ChatItemMenus>
       <CheckMarkExplanationModal
         isOpen={checkMarkModalState.isOpen}
         variant={checkMarkModalState.variant || 'recording'}
@@ -291,27 +152,6 @@ export default function ChatItem({
         blockNumber={createdAtBlock}
         cid={contentId}
       />
-      <MetadataModal
-        isOpen={openMetadata}
-        closeModal={() => setOpenMetadata(false)}
-        entity={message}
-      />
-      <LoginModal
-        isOpen={modalState === 'login'}
-        openModal={() => setModalState('login')}
-        closeModal={() => setModalState(null)}
-        beforeLogin={() => (isLoggingInWithKey.current = true)}
-        afterLogin={() => (isLoggingInWithKey.current = false)}
-      />
-      {COMMUNITY_CHAT_HUB_ID && (
-        <ModerationModal
-          isOpen={modalState === 'moderate'}
-          closeModal={() => setModalState(null)}
-          messageId={messageId}
-          chatId={chatId}
-          hubId={COMMUNITY_CHAT_HUB_ID}
-        />
-      )}
     </div>
   )
 }
