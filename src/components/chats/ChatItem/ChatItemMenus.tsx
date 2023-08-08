@@ -5,7 +5,9 @@ import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
 import MetadataModal from '@/components/modals/MetadataModal'
+import ModerationModal from '@/components/moderation/ModerationModal'
 import Toast from '@/components/Toast'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -194,6 +196,15 @@ export default function ChatItemMenus({
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}
       />
+      {COMMUNITY_CHAT_HUB_ID && (
+        <ModerationModal
+          isOpen={modalState === 'moderate'}
+          closeModal={() => setModalState(null)}
+          messageId={messageId}
+          chatId={chatId}
+          hubId={COMMUNITY_CHAT_HUB_ID}
+        />
+      )}
     </>
   )
 }
