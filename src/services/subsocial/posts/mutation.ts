@@ -233,7 +233,7 @@ export function useHideUnhidePost(
 
       return {
         tx: substrateApi.tx.posts.updatePost(postId, {
-          hidden: action === 'hide' ? true : false,
+          hidden: action === 'hide',
         }),
         summary: 'Hide/Unhide chat',
       }
@@ -248,7 +248,7 @@ export function useHideUnhidePost(
               ...post,
               struct: {
                 ...post.struct,
-                hidden: data.action === 'hide' ? true : false,
+                hidden: data.action === 'hide',
               },
             }
           })
