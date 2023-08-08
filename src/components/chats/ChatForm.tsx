@@ -26,9 +26,12 @@ import {
   useRef,
   useState,
 } from 'react'
+import { toast } from 'react-hot-toast'
+import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
 import PopOver from '../floating/PopOver'
+import Toast from '../Toast'
 
 const CaptchaInvisible = dynamic(
   () => import('@/components/captcha/CaptchaInvisible'),
@@ -159,6 +162,25 @@ export default function ChatForm({
     }
 
     const processedMessage = processMessage(messageBody)
+
+    if (!isNetworkConnected) {
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          title='Network is reconnecting'
+          description='Please try again later, or refresh the page'
+          action={
+            <Button
+              size='circle'
+              className='ml-2'
+              onClick={() => window.location.reload()}
+            >
+              <IoRefresh />
+            </Button>
+          }
+        />
+      ))
+    }
 
     if (isDisabled) return
 
