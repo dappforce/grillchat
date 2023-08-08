@@ -10,7 +10,11 @@ export default function useWaitHasEnergy(timeout = 5_000) {
   const generateNewPromise = useCallback(() => {
     return new Promise<void>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
-        reject(new Error('Energy timeout'))
+        reject(
+          new Error(
+            "Energy timeout: You don't have enough energy to perform this action."
+          )
+        )
       }, timeout)
       hasEnergyResolvers.current.push(() => {
         clearTimeout(timeoutId)
