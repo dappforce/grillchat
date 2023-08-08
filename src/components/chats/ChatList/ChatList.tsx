@@ -251,7 +251,11 @@ function ChatListContent({
                 isLastReadMessage && !isBottomMessage
 
               const chatElement = message && (
-                <ChatItemMenus messageId={message.id} key={message.id}>
+                <ChatItemMenus
+                  chatId={chatId}
+                  messageId={message.id}
+                  key={message.id}
+                >
                   {(config) => {
                     const { referenceProps, toggleDisplay } = config || {}
                     return (
