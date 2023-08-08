@@ -39,7 +39,7 @@ jobs:
       - name: Get CF A record ID
         continue-on-error: true
         shell: bash
-        run: echo "record=$(echo $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/dns_records?type=A&name=${{ env.name }}-grillchat.subsocial.network&content=188.166.202.107&proxied=true&page=1&per_page=100&order=type&direction=desc&match=all"  -H "X-Auth-Email:${{ secrets.CF_MAIL }}"      -H "Authorization:Bearer ${{ secrets.CF_TOKEN }}"      -H "Content-Type:application/json" |  jq . | jq -c '.result[]' | jq -r .id) )" >> $GITHUB_ENV
+        run: echo "record=$(echo $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/dns_records?type=A&name=${{ env.name }}-grillchat.subsocial.network&content=174.138.105.155&proxied=true&page=1&per_page=100&order=type&direction=desc&match=all"  -H "X-Auth-Email:${{ secrets.CF_MAIL }}"      -H "Authorization:Bearer ${{ secrets.CF_TOKEN }}"      -H "Content-Type:application/json" |  jq . | jq -c '.result[]' | jq -r .id) )" >> $GITHUB_ENV
         id: cf
 
       - name: delete CF A record
