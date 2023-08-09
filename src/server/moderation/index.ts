@@ -21,19 +21,6 @@ import {
 } from './generated'
 import { mapBlockedResources, moderationRequest } from './utils'
 
-const generateBlockedInPostIds = (postIds: string[]) => {
-  return `
-    query GetBlockedInPostIds {
-      ${postIds.map(
-        (postId) =>
-          `SEPARATOR${postId}: blockedResourceIds(
-            ctxPostId: "${postId}"
-            blocked: true
-          )`
-      )}
-    }
-  `
-}
 const GET_BLOCKED_RESOURCES = gql`
   query GetBlockedResources($spaceIds: [String!]!, $postIds: [String!]!) {
     blockedResourceIdsBatch(ctxSpaceIds: $spaceIds, ctxPostIds: $postIds) {
@@ -61,13 +48,13 @@ export async function getBlockedResources(
 
   const blockedInSpaceIds = data.blockedResourceIdsBatch.byCtxSpaceIds.map(
     ({ blockedResourceIds, id }) => ({
-      spaceId: id,
+      id,
       blockedResources: mapBlockedResources(blockedResourceIds, (id) => id),
     })
   )
   const blockedInPostIds = data.blockedResourceIdsBatch.byCtxPostIds.map(
     ({ blockedResourceIds, id }) => ({
-      postId: id,
+      id,
       blockedResources: mapBlockedResources(blockedResourceIds, (id) => id),
     })
   )

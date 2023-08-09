@@ -6,12 +6,12 @@ const paramsSchema = z.object({
   postIds: z.array(z.string()).or(z.string()).optional(),
   spaceIds: z.array(z.string()).or(z.string()).optional(),
 })
-export type ApiModerationBlockedInPostIdsParams = z.infer<typeof paramsSchema>
+export type ApiModerationBlockedResourcesParams = z.infer<typeof paramsSchema>
 
 type ResponseData = {
   data: Awaited<ReturnType<typeof getBlockedResources>>
 }
-export type ApiModerationBlockedInPostIdsResponse = ApiResponse<ResponseData>
+export type ApiModerationBlockedResourcesResponse = ApiResponse<ResponseData>
 
 export default handlerWrapper({
   inputSchema: paramsSchema,
