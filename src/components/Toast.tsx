@@ -1,11 +1,12 @@
 import { cx } from '@/utils/class-names'
 import { Transition } from '@headlessui/react'
+import { ReactNode } from 'react'
 import { Toast as ToastId } from 'react-hot-toast'
 
 export type ToastProps = {
   t: ToastId
-  title: string
-  description?: string
+  title: ReactNode
+  description?: ReactNode
   action?: React.ReactNode
   icon?: (className: string) => JSX.Element
 }
