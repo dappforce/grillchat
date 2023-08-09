@@ -27,7 +27,7 @@ export async function prefetchChatPreviewsData(
   const additionalHubIds: Set<string> = new Set()
   chats.forEach((chat) => {
     const originalHubId = chat.struct.spaceId
-    if (originalHubId !== hubId) return
+    if (!originalHubId || originalHubId === hubId) return
 
     additionalHubIds.add(originalHubId)
   })
