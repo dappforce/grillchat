@@ -1,13 +1,12 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button from '@/components/Button'
-import { ListItem } from '@/components/inputs/SelectInput'
 import LinkText from '@/components/LinkText'
 import Modal from '@/components/modals/Modal'
 import { useExtensionModalState } from '@/stores/extension'
 import { isTouchDevice } from '@/utils/device'
 import Image from 'next/image'
 import { getConnector, openMobileWallet } from '../api/utils'
-import { DonateProps } from './types'
+import { DonateProps, TokenListItem } from './types'
 
 type WalletActionRequiredModalStep = 'wallet-action-required' | 'add-network'
 
@@ -26,7 +25,7 @@ const addNetworkLink: Record<string, string> = {
 }
 
 const getModalHeader = (
-  selectedChain: ListItem,
+  selectedChain: TokenListItem,
   currentStep: WalletActionRequiredModalStep
 ) => {
   const modalHeader: ModalHeader = {

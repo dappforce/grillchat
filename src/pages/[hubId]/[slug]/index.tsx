@@ -5,7 +5,7 @@ import { getAccountsDataFromCache } from '@/pages/api/accounts-data'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPricesFromCache } from '@/pages/api/prices'
 import { AppCommonProps } from '@/pages/_app'
-import { prefetchBlockedEntities } from '@/server/moderation'
+import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -37,8 +37,6 @@ function getValidatedChatId(slugParam: string) {
 }
 
 async function getChatsData(chatId: string) {
-  const [chatData] = await getPostsServer([chatId])
-
   const subsocialApi = await getSubsocialApi()
   const messageIds = await subsocialApi.blockchain.getReplyIdsByPostId(chatId)
 
@@ -60,7 +58,7 @@ async function getChatsData(chatId: string) {
     'GET'
   )
 
-  return { messages, chatData, messageIds, accountsAddresses, prices }
+  return { messages, messageIds, accountsAddresses, prices }
 }
 
 export const getStaticProps = getCommonStaticProps<
@@ -83,15 +81,33 @@ export const getStaticProps = getCommonStaticProps<
     let desc: string | null = null
     let image: string | null = null
     try {
-      const [{ messageIds, messages, chatData, accountsAddresses, prices }] =
+      const [chatData] = await getPostsServer([chatId])
+      const originalHubId = chatData.struct.spaceId
+      const hubIds = [hubId]
+      if (originalHubId && originalHubId !== hubId) {
+        hubIds.push(originalHubId)
+      }
+
+      const [{ messageIds, messages, accountsAddresses, prices }, blockedData] =
         await Promise.all([
           getChatsData(chatId),
-          prefetchBlockedEntities(queryClient, hubId, [chatId]),
+          prefetchBlockedEntities(queryClient, hubIds, [chatId]),
         ] as const)
 
-      const originalHubId = chatData.struct.spaceId
-      if (originalHubId && originalHubId !== hubId) {
-        await prefetchBlockedEntities(queryClient, originalHubId, [chatId])
+      if (blockedData) {
+        let isChatModerated = false
+        blockedData.blockedInSpaceIds.forEach(({ blockedResources }) => {
+          if (blockedResources.postId.includes(chatId)) {
+            isChatModerated = true
+          }
+        })
+        if (isChatModerated)
+          return {
+            redirect: {
+              destination: '/',
+              permanent: false,
+            },
+          }
       }
 
       if (!chatData.struct.hidden) {

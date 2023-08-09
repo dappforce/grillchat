@@ -7,6 +7,7 @@ import Image, { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
 import ChatImage, { ChatImageProps } from '../ChatImage'
+import ChatModerateChip from '../ChatModerateChip'
 import ChatLastMessage from './ChatLastMessage'
 
 // dynamic import to prevent hydration mismatch
@@ -121,9 +122,12 @@ export default function ChatPreview({
           <div className='flex flex-1 flex-col overflow-hidden'>
             <div className='flex items-center justify-between gap-2 overflow-hidden'>
               {title && (
-                <span className='overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
-                  {title}
-                </span>
+                <div className='flex items-center gap-2 overflow-hidden'>
+                  <span className='overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
+                    {title}
+                  </span>
+                  {chatId && <ChatModerateChip chatId={chatId} />}
+                </div>
               )}
               {renderAdditionalData()}
             </div>

@@ -5,7 +5,8 @@ import LinkText from './LinkText'
 
 type Data = {
   title: string
-  content: ReactNode | undefined
+  content?: ReactNode
+  customContent?: ReactNode
   textToCopy?: string
   redirectTo?: string
   openInNewTab?: boolean
@@ -24,18 +25,27 @@ export default function DataCard({ data, ...props }: DataCardProps) {
       )}
     >
       {data.map((currentData) => {
-        const { content, title, textToCopy: withCopyButton } = currentData
-        if (!content) return null
+        const {
+          content,
+          title,
+          textToCopy: withCopyButton,
+          customContent,
+        } = currentData
 
         const containerClassName = cx(
           'border-b border-background-lightest pb-3 last:border-none last:pb-0'
         )
+        if (customContent)
+          return (
+            <div key={title} className={cx('w-full', containerClassName)}>
+              {customContent}
+            </div>
+          )
+
+        if (!content) return null
 
         const element = (
-          <div
-            key={title}
-            className={cx('flex min-w-0 flex-1 flex-col gap-0.5')}
-          >
+          <div className={cx('flex min-w-0 flex-1 flex-col gap-0.5')}>
             <span className='text-sm text-text-muted'>{title}</span>
             <Content {...currentData} />
           </div>

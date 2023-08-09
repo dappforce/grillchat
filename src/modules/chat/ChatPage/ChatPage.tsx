@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import ChatImage from '@/components/chats/ChatImage'
+import ChatModerateChip from '@/components/chats/ChatModerateChip'
 import ChatRoom from '@/components/chats/ChatRoom'
 import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
 import Container from '@/components/Container'
@@ -9,10 +10,14 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LinkText from '@/components/LinkText'
 import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
+import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
+import { useCommitModerationAction } from '@/services/api/moderation/mutation'
+import { getModeratorQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useExtensionData } from '@/stores/extension'
@@ -60,11 +65,11 @@ export default function ChatPage({
 
   useEffect(() => {
     const isNewChat = getUrlQuery('new')
-    if (isNewChat) {
-      setIsOpenCreateSuccessModal(true)
-      replaceUrl(getCurrentUrlWithoutQuery())
-    }
+    if (isNewChat) setIsOpenCreateSuccessModal(true)
   }, [])
+  useEffect(() => {
+    if (!isOpenCreateSuccessModal) replaceUrl(getCurrentUrlWithoutQuery())
+  }, [isOpenCreateSuccessModal])
 
   const { data: messageIds } = useCommentIdsByPostId(chatId, {
     subscribe: true,
@@ -99,6 +104,24 @@ export default function ChatPage({
       Router.push('/')
     }
   }, [isInitialized, myAddress, chat])
+
+  const { data: moderator } = getModeratorQuery.useQuery(myAddress ?? '', {
+    enabled: !!myAddress,
+  })
+  const { isAuthorized, isOwner } = useAuthorizedForModeration(chatId)
+  const { mutateAsync: commitModerationAction } = useCommitModerationAction()
+
+  useEffect(() => {
+    if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
+    if (!isAuthorized && moderator) {
+      commitModerationAction({
+        action: 'init',
+        address: moderator.address,
+        postId: chatId,
+        spaceId: COMMUNITY_CHAT_HUB_ID,
+      })
+    }
+  }, [isAuthorized, commitModerationAction, moderator, chatId, isOwner])
 
   if (chat?.struct.hidden) {
     const isNotAuthorized = myAddress !== chat.struct.ownerId
@@ -206,7 +229,7 @@ function NavbarChatInfo({
   messageCount: number
   backButton: JSX.Element
   chatMetadata?: ChatMetadata
-  chatId?: string
+  chatId: string
 }) {
   const { data: chat } = getPostQuery.useQuery(chatId ?? '', {
     showHiddenPost: { type: 'all' },
@@ -268,6 +291,7 @@ function NavbarChatInfo({
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
               {chatTitle ?? 'Topic'}
             </span>
+            <ChatModerateChip chatId={chatId} />
             {chat?.struct.hidden && (
               <ChatHiddenChip popOverProps={{ placement: 'bottom' }} />
             )}

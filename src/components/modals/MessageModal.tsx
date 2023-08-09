@@ -9,11 +9,13 @@ import Modal, { ModalFunctionalityProps } from './Modal'
 export type MessageModalProps = ModalFunctionalityProps & {
   messageId: string
   scrollToMessage?: (messageId: string) => Promise<void>
+  hubId: string
 }
 
 export default function MessageModal({
   messageId,
   scrollToMessage,
+  hubId,
   ...props
 }: MessageModalProps) {
   const { data: message } = getPostQuery.useQuery(messageId)
@@ -58,6 +60,7 @@ export default function MessageModal({
             isMyMessage={false}
             message={message}
             chatId={chatId}
+            hubId={hubId}
           />
         )}
       </div>

@@ -32,7 +32,7 @@ async function connectToSubsocialApi(config: SubsocialConnectionConfig) {
   const { ipfsNodeUrl, substrateUrl, postConnectConfig, ipfsAdminNodeUrl } =
     config
 
-  const provider = new WsProvider(substrateUrl, 15_000, {}, 5000)
+  const provider = new WsProvider(substrateUrl, 15_000, {})
   const substrateApi = await ApiPromise.create({ provider })
   const api = new SubsocialApi({
     substrateApi,

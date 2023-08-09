@@ -1,3 +1,5 @@
+import { getCommunityHubId } from '@/utils/env/client'
+
 const ALIAS_TO_HUB_ID_MAP: Record<string, string> = {
   x: '1002',
   polka: '1005',
@@ -44,5 +46,7 @@ export function getPinnedChatsInHubId(hubId: string) {
   return PINNED_CHATS_IN_HUB_ID[hubId] ?? []
 }
 
-export const COMMUNITY_CHAT_HUB_ID: string | null = '1030'
-export const PINNED_HUB_IDS: string[] = [COMMUNITY_CHAT_HUB_ID]
+export const COMMUNITY_CHAT_HUB_ID: string | null = getCommunityHubId() || null
+export const PINNED_HUB_IDS = [COMMUNITY_CHAT_HUB_ID].filter(
+  Boolean
+) as string[]
