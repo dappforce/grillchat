@@ -9,7 +9,6 @@
 <p align="center">
   Grill.chat offers a smooth and simple onboarding and user experience while still leveraging the power of blockchain technology.
 </p>
-
 ---
 
 ## How to integrate Grill.chat into your app 🤝
