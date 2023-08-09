@@ -14,7 +14,7 @@ export default function NetworkStatus({ ...props }: NetworkStatusProps) {
         'h-2 w-2 rounded-full',
         {
           'bg-orange-500': status === 'connecting',
-          'bg-background-red': status === 'error',
+          'bg-red-500': status === 'error',
           'bg-green-600': status === 'connected',
         },
         props.className
