@@ -1,14 +1,23 @@
 import { getApiPromiseInstance } from '@/subsocial-query/subsocial/connection'
-import { useEffect, useState } from 'react'
+import { ApiPromise } from '@polkadot/api'
+import { useCallback, useEffect, useState } from 'react'
 
 export default function useNetworkStatus() {
   const [status, setStatus] = useState<'connecting' | 'error' | 'connected'>(
     'connecting'
   )
+  const [api, setApi] = useState<ApiPromise | null>(null)
+  const reconnect = useCallback(() => {
+    if (api) {
+      api.disconnect()
+      api.connect()
+    }
+  }, [api])
 
   useEffect(() => {
     ;(async () => {
       const api = await getApiPromiseInstance()
+      setApi(api)
       if (!api) return
 
       api.on('error', () => setStatus('error'))
@@ -19,5 +28,5 @@ export default function useNetworkStatus() {
     })()
   }, [])
 
-  return status
+  return { status, reconnect }
 }

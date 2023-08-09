@@ -77,7 +77,7 @@ export default function ChatForm({
   beforeMesageSend,
   ...props
 }: ChatFormProps) {
-  const networkStatus = useNetworkStatus()
+  const { status: networkStatus, reconnect } = useNetworkStatus()
 
   const replyTo = useMessageData((state) => state.replyTo)
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
@@ -164,6 +164,7 @@ export default function ChatForm({
     const processedMessage = processMessage(messageBody)
 
     if (!isNetworkConnected) {
+      reconnect()
       toast.custom((t) => (
         <Toast
           t={t}

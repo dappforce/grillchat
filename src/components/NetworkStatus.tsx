@@ -5,7 +5,7 @@ import { ComponentProps } from 'react'
 export type NetworkStatusProps = ComponentProps<'div'>
 
 export default function NetworkStatus({ ...props }: NetworkStatusProps) {
-  const status = useNetworkStatus()
+  const { status } = useNetworkStatus()
 
   return (
     <div
