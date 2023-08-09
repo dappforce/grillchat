@@ -5,6 +5,7 @@ import {
   loginWithSecretKey,
   Signer,
 } from '@/utils/account'
+import { wait } from '@/utils/promise'
 import { LocalStorage } from '@/utils/storage'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
@@ -95,6 +96,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     if (!substrateApi.isConnected) {
       await substrateApi.disconnect()
       await substrateApi.connect()
+      await wait(500)
     }
 
     const unsub = substrateApi.query.energy.energyBalance(
