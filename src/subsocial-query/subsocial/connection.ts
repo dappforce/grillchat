@@ -1,28 +1,12 @@
-import type { WsProvider } from '@polkadot/api'
 import { type SubsocialApi } from '@subsocial/api'
 import { getConnectionConfig, SubsocialConnectionConfig } from './config'
 
 let subsocialApi: Promise<SubsocialApi> | null = null
-let provider: Promise<WsProvider> | null = null
-const getApiWithProvider = async (renew?: boolean) => {
-  if (subsocialApi && !renew) return { subsocialApi, provider }
-
-  const apiWithProvider = connectToSubsocialApi(getConnectionConfig())
-  subsocialApi = apiWithProvider.then(({ api }) => api)
-  provider = apiWithProvider.then(({ provider }) => provider)
-
-  return { subsocialApi, provider }
-}
-
 export const getSubsocialApi = async (renew?: boolean) => {
-  return getApiWithProvider(renew).then(({ subsocialApi }) => subsocialApi)
-}
-export const getApiPromiseInstance = async () => {
-  const { ApiPromise } = await import('@polkadot/api')
-  const provider = await getApiWithProvider().then(({ provider }) => provider)
-  if (!provider) return null
+  if (subsocialApi && !renew) return subsocialApi
 
-  return new ApiPromise({ provider })
+  subsocialApi = connectToSubsocialApi(getConnectionConfig())
+  return subsocialApi
 }
 
 async function connectToSubsocialApi(config: SubsocialConnectionConfig) {
@@ -41,5 +25,5 @@ async function connectToSubsocialApi(config: SubsocialConnectionConfig) {
   })
 
   postConnectConfig?.(api)
-  return { api, provider }
+  return api
 }
