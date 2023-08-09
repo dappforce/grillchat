@@ -1,9 +1,6 @@
-import {
-  getBlockedInPostIdQuery,
-  getBlockedInSpaceIdQuery,
-} from '@/services/api/moderation/query'
+import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
 import { QueryClient } from '@tanstack/react-query'
-import { getBlockedInPostIds, getBlockedInSpaceIds } from '.'
+import { getBlockedResources } from '.'
 
 export async function prefetchBlockedEntities(
   queryClient: QueryClient,
@@ -11,15 +8,23 @@ export async function prefetchBlockedEntities(
   postIds: string[]
 ) {
   try {
-    const [blockedInSpaceIds, blockedInPostIds] = await Promise.all([
-      getBlockedInSpaceIds(spaceIds),
-      getBlockedInPostIds(postIds),
-    ] as const)
+    const { blockedInPostIds, blockedInSpaceIds } = await getBlockedResources({
+      spaceIds,
+      postIds,
+    })
     blockedInSpaceIds.forEach((data) => {
-      getBlockedInSpaceIdQuery.setQueryData(queryClient, data.spaceId, data)
+      getBlockedResourcesQuery.setQueryData(
+        queryClient,
+        { spaceId: data.id },
+        { ...data, type: 'spaceId' }
+      )
     })
     blockedInPostIds.forEach((data) => {
-      getBlockedInPostIdQuery.setQueryData(queryClient, data.postId, data)
+      getBlockedResourcesQuery.setQueryData(
+        queryClient,
+        { postId: data.id },
+        { ...data, type: 'postId' }
+      )
     })
 
     return { blockedInSpaceIds, blockedInPostIds }

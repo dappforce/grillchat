@@ -1,6 +1,6 @@
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getBlockedInSpaceIdQuery } from '@/services/api/moderation/query'
+import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useMemo } from 'react'
@@ -17,7 +17,9 @@ export default function useSortedChats(
   sortBy: SortChatOption = 'activity'
 ) {
   const { channels } = useConfigContext()
-  const { data: moderationData } = getBlockedInSpaceIdQuery.useQuery(hubId)
+  const { data: moderationData } = getBlockedResourcesQuery.useQuery({
+    spaceId: hubId,
+  })
   const blockedChatIds = moderationData?.blockedResources.postId
 
   const { data } = getPostIdsBySpaceIdQuery.useQuery(hubId)

@@ -1,7 +1,4 @@
-import {
-  getBlockedInPostIdQuery,
-  getBlockedInSpaceIdQuery,
-} from '@/services/api/moderation/query'
+import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
 import { filterBlockedMessageIds } from '@/utils/chat'
 import { useMemo } from 'react'
 
@@ -10,8 +7,12 @@ export default function useFilterBlockedMessageIds(
   chatId: string,
   messageIds: string[]
 ) {
-  const { data: blockedInHub } = getBlockedInSpaceIdQuery.useQuery(hubId)
-  const { data: blockedInChat } = getBlockedInPostIdQuery.useQuery(chatId)
+  const { data: blockedInHub } = getBlockedResourcesQuery.useQuery({
+    spaceId: hubId,
+  })
+  const { data: blockedInChat } = getBlockedResourcesQuery.useQuery({
+    postId: chatId,
+  })
 
   return useMemo(() => {
     const blockedInChatMessageIds = blockedInChat?.blockedResources.postId ?? []

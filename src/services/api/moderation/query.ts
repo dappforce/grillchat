@@ -1,6 +1,5 @@
+import { ApiModerationBlockedResourcesResponse } from '@/pages/api/moderation/blocked'
 import { ApiModerationBlockedInPostIdsDetailedResponse } from '@/pages/api/moderation/blocked/post-id-detailed'
-import { ApiModerationBlockedInPostIdsResponse } from '@/pages/api/moderation/blocked/post-ids'
-import { ApiModerationBlockedInSpaceIdsResponse } from '@/pages/api/moderation/blocked/space-ids'
 import {
   ApiModerationModeratorParams,
   ApiModerationModeratorResponse,
@@ -9,54 +8,53 @@ import { ApiModerationReasonsResponse } from '@/pages/api/moderation/reasons'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import axios, { AxiosResponse } from 'axios'
 
-const getBlockedInSpaceId = poolQuery<
-  string,
-  ApiModerationBlockedInSpaceIdsResponse['data'][number]
+const getBlockedResources = poolQuery<
+  { postId: string } | { spaceId: string },
+  ApiModerationBlockedResourcesResponse['data']['blockedInPostIds'][number] & {
+    type: 'spaceId' | 'postId'
+  }
 >({
   multiCall: async (params) => {
-    const filteredParams = params.filter(Boolean)
-    if (!filteredParams.length) return []
+    if (!params.length) return []
+    const spaceIds: string[] = []
+    const postIds: string[] = []
+    params.forEach((param) => {
+      if ('postId' in param && param.postId) postIds.push(param.postId)
+      else if ('spaceId' in param && param.spaceId) spaceIds.push(param.spaceId)
+    })
 
     const response = await axios.get(
-      '/api/moderation/blocked/space-ids?' +
-        filteredParams.map((n) => `spaceIds=${n}`).join('&')
+      '/api/moderation/blocked?' +
+        spaceIds.map((n) => `spaceIds=${n}`).join('&') +
+        '&' +
+        postIds.map((n) => `postIds=${n}`).join('&')
     )
-    const resData = response.data as ApiModerationBlockedInSpaceIdsResponse
-    return resData.data
+    const resData = response.data as ApiModerationBlockedResourcesResponse
+    return [
+      ...resData.data.blockedInPostIds.map((data) => ({
+        ...data,
+        type: 'postId' as const,
+      })),
+      ...resData.data.blockedInSpaceIds.map((data) => ({
+        ...data,
+        type: 'spaceId' as const,
+      })),
+    ]
   },
   resultMapper: {
-    paramToKey: (spaceId) => spaceId,
-    resultToKey: (result) => result.spaceId,
+    paramToKey: (param) => {
+      if ('postId' in param) return `postId:${param.postId}`
+      else return `spaceId:${param.spaceId}`
+    },
+    resultToKey: ({ type, id }) => {
+      if (type === 'postId') return `postId:${id}`
+      else return `spaceId:${id}`
+    },
   },
 })
-export const getBlockedInSpaceIdQuery = createQuery({
-  key: 'getBlockedInSpaceId',
-  fetcher: getBlockedInSpaceId,
-})
-
-const getBlockedInPostId = poolQuery<
-  string,
-  ApiModerationBlockedInPostIdsResponse['data'][number]
->({
-  multiCall: async (params) => {
-    const filteredParams = params.filter(Boolean)
-    if (!filteredParams.length) return []
-
-    const response = await axios.get(
-      '/api/moderation/blocked/post-ids?' +
-        filteredParams.map((n) => `postIds=${n}`).join('&')
-    )
-    const resData = response.data as ApiModerationBlockedInPostIdsResponse
-    return resData.data
-  },
-  resultMapper: {
-    paramToKey: (postId) => postId,
-    resultToKey: (result) => result.postId,
-  },
-})
-export const getBlockedInPostIdQuery = createQuery({
-  key: 'getBlockedInPostId',
-  fetcher: getBlockedInPostId,
+export const getBlockedResourcesQuery = createQuery({
+  key: 'getBlockedResources',
+  fetcher: getBlockedResources,
 })
 
 export const getBlockedInPostIdDetailedQuery = createQuery({

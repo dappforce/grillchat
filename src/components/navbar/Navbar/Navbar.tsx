@@ -4,7 +4,7 @@ import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getBlockedInPostIdQuery } from '@/services/api/moderation/query'
+import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -159,8 +159,9 @@ const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
 const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
 function NotificationBell() {
   const { data: messageIds } = useCommentIdsByPostId(BELL_CHAT_ID)
-  const { data: blockedEntities } =
-    getBlockedInPostIdQuery.useQuery(BELL_CHAT_ID)
+  const { data: blockedEntities } = getBlockedResourcesQuery.useQuery({
+    postId: BELL_CHAT_ID,
+  })
   const blockedIds = blockedEntities?.blockedResources.postId
 
   const filteredMessageIds = useMemo(() => {

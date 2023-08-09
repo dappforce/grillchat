@@ -58,7 +58,9 @@ export default function ModerationInfoModal({
     }
   )
 
-  const { data } = getBlockedInPostIdDetailedQuery.useQuery(chatId)
+  const { data } = getBlockedInPostIdDetailedQuery.useQuery(chatId, {
+    enabled: props.isOpen,
+  })
   const blockedUsers = data?.address ?? []
   const blockedUsersCount = blockedUsers.length
 

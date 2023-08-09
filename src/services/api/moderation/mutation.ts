@@ -11,7 +11,7 @@ import axios, { AxiosResponse } from 'axios'
 import { processMessageTpl } from '../utils'
 import {
   getBlockedInPostIdDetailedQuery,
-  getBlockedInPostIdQuery,
+  getBlockedResourcesQuery,
   getModeratorQuery,
 } from './query'
 
@@ -41,7 +41,9 @@ const onErrorOrSuccess = (variables: ApiModerationActionsMessageParams) => {
   if (variables.action === 'init')
     getModeratorQuery.invalidate(queryClient, variables.address)
   else if (variables.action === 'block' || variables.action === 'unblock') {
-    getBlockedInPostIdQuery.invalidate(queryClient, variables.ctxPostId)
+    getBlockedResourcesQuery.invalidate(queryClient, {
+      postId: variables.ctxPostId,
+    })
     getBlockedInPostIdDetailedQuery.invalidate(queryClient, variables.ctxPostId)
   }
 }
@@ -67,9 +69,9 @@ export const useCommitModerationAction = mutationWrapper(
   {
     onMutate: async (variables) => {
       if (variables.action === 'unblock') {
-        getBlockedInPostIdQuery.setQueryData(
+        getBlockedResourcesQuery.setQueryData(
           queryClient,
-          variables.ctxPostId,
+          { postId: variables.ctxPostId },
           (oldData) => {
             if (!oldData) return null
             return {

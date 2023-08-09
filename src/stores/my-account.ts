@@ -71,7 +71,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       })
 
       accountStorage.set(encodedSecretKey)
-      accountAddressStorage.set(signer.address)
+      accountAddressStorage.set(address)
       get()._subscribeEnergy()
 
       useAnalytics.getState().setUserId(signer.address)
