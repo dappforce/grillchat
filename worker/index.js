@@ -16,6 +16,9 @@ self.addEventListener('notificationclick', (event) => {
   } catch (e) {
     console.log('Error in loading notification response:', e)
   } finally {
+    // Update / clear the value for App Badge on notification click.
+    event.waitUntil(navigator.clearAppBadge())
+
     event.waitUntil(
       // Check if a client (window/tab) is already open and in focus.
       clients
@@ -38,6 +41,12 @@ self.addEventListener('notificationclick', (event) => {
         })
     )
   }
+})
+
+self.addEventListener('push', (event) => {
+  // Fetch the value for setting app badge from GraphQL.
+  // And pass it like this: navigator.setAppBadge(value).
+  event.waitUntil(navigator.setAppBadge())
 })
 
 importScripts('https://www.gstatic.com/firebasejs/3.5.0/firebase-app.js')
