@@ -92,6 +92,11 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
 
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
+    if (!substrateApi.isConnected) {
+      await substrateApi.disconnect()
+      await substrateApi.connect()
+    }
+
     const unsub = substrateApi.query.energy.energyBalance(
       address,
       (energyAmount) => {
