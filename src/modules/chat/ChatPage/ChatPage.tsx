@@ -37,6 +37,9 @@ import Router, { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
 
+const NetworkStatus = dynamic(() => import('@/components/NetworkStatus'), {
+  ssr: false,
+})
 const AboutChatModal = dynamic(
   () => import('@/components/modals/about/AboutChatModal'),
   {
@@ -194,16 +197,20 @@ function BottomPanel() {
   return (
     <Container as='div' className='pb-2 text-center text-sm text-text-muted'>
       {shouldSendMessageWithoutCaptcha ? (
-        <p>
-          Powered by{' '}
-          <LinkText
-            variant='primary'
-            href='https://subsocial.network/'
-            openInNewTab
-          >
-            Subsocial
-          </LinkText>
-        </p>
+        <div className='flex items-center justify-center'>
+          <p>
+            Powered by{' '}
+            <LinkText
+              variant='primary'
+              href='https://subsocial.network/'
+              openInNewTab
+            >
+              Subsocial
+            </LinkText>
+          </p>
+
+          <NetworkStatus className='ml-2' />
+        </div>
       ) : (
         <CaptchaTermsAndService />
       )}
