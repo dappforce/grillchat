@@ -95,6 +95,8 @@ export default function ChatRoom({
       >
         {replyTo && !showEmptyPrimaryChatInput && (
           <RepliedMessage
+            chatId={chatId}
+            hubId={hubId}
             replyMessageId={replyTo}
             scrollContainer={scrollContainerRef}
           />

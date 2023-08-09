@@ -11,8 +11,13 @@ export default function useIsMessageBlocked(
   message: PostData | null | undefined,
   chatId: string
 ) {
-  const { data: hubModerationData } = getBlockedInSpaceIdQuery.useQuery(hubId)
-  const { data: chatModerationData } = getBlockedInPostIdQuery.useQuery(chatId)
+  const { data: hubModerationData } = getBlockedInSpaceIdQuery.useQuery(hubId, {
+    enabled: !!hubId,
+  })
+  const { data: chatModerationData } = getBlockedInPostIdQuery.useQuery(
+    chatId,
+    { enabled: !!chatId }
+  )
   const blockedInHub = hubModerationData?.blockedResources
   const blockedInChat = chatModerationData?.blockedResources
 

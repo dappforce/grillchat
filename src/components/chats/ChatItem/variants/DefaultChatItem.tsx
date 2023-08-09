@@ -11,6 +11,8 @@ import { ChatItemContentProps } from './types'
 export type DefaultChatItemProps = ChatItemContentProps
 
 export default function DefaultChatItem({
+  chatId,
+  hubId,
   messageId,
   isMyMessage,
   isSent,
@@ -51,6 +53,8 @@ export default function DefaultChatItem({
             className='mt-1'
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
+            chatId={chatId}
+            hubId={hubId}
           />
         )}
         <p className='whitespace-pre-wrap break-words text-base'>

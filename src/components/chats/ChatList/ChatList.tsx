@@ -259,23 +259,19 @@ function ChatListContent({
                   {(config) => {
                     const { referenceProps, toggleDisplay } = config || {}
                     return (
-                      <div
+                      <ChatItemContainer
                         {...referenceProps}
                         onContextMenu={(e) => {
                           e.preventDefault()
                           toggleDisplay?.(e)
                         }}
-                        className='flex w-full flex-col'
-                      >
-                        <ChatItemContainer
-                          enableChatMenu={false}
-                          hubId={hubId}
-                          chatId={chatId}
-                          message={message}
-                          messageBubbleId={getMessageElementId(message.id)}
-                          scrollToMessage={scrollToMessage}
-                        />
-                      </div>
+                        enableChatMenu={false}
+                        hubId={hubId}
+                        chatId={chatId}
+                        message={message}
+                        messageBubbleId={getMessageElementId(message.id)}
+                        scrollToMessage={scrollToMessage}
+                      />
                     )
                   }}
                 </ChatItemMenus>
@@ -295,6 +291,7 @@ function ChatListContent({
         </Component>
       </ScrollableContainer>
       <MessageModal
+        hubId={hubId}
         isOpen={!!messageModalMsgId}
         closeModal={() => setMessageModalMsgId('')}
         messageId={messageModalMsgId}
