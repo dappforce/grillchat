@@ -56,6 +56,18 @@ export type BlockedResourceGql = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type BlockedResourceIdsBatchItem = {
+  __typename?: 'BlockedResourceIdsBatchItem';
+  blockedResourceIds: Array<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+};
+
+export type BlockedResourceIdsBatchResponse = {
+  __typename?: 'BlockedResourceIdsBatchResponse';
+  byCtxPostIds: Array<BlockedResourceIdsBatchItem>;
+  byCtxSpaceIds: Array<BlockedResourceIdsBatchItem>;
+};
+
 export enum BlockedResourceType {
   Address = 'Address',
   Cid = 'CID',
@@ -79,6 +91,16 @@ export type CreateModeratorInputDto = {
   role: Scalars['String']['input'];
   substrateAddress: Scalars['String']['input'];
   userName: Scalars['String']['input'];
+};
+
+export type CreateOrganisationGqlInput = {
+  ctxPostIds: Array<Scalars['String']['input']>;
+  ctxSpaceIds: Array<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  moderatorIds: Array<Scalars['Float']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  ownerId: Scalars['Float']['input'];
 };
 
 export type InitModeratorWithOrganisationMessageInput = {
@@ -119,6 +141,7 @@ export type Mutation = {
   createBlockReason: BlockReasonGql;
   createModerator: ModeratorGql;
   createOrganisation: OrganisationGql;
+  updateOrganisation: OrganisationGql;
 };
 
 
@@ -138,7 +161,25 @@ export type MutationCreateModeratorArgs = {
 
 
 export type MutationCreateOrganisationArgs = {
-  createOrganisationInput: OrganisationGqlInput;
+  createOrganisationInput: CreateOrganisationGqlInput;
+};
+
+
+export type MutationUpdateOrganisationArgs = {
+  updateOrganisationInput: UpdateOrganisationGqlInput;
+};
+
+export type Organisation = {
+  __typename?: 'Organisation';
+  _id: Scalars['String']['output'];
+  ctxPostIds: Array<Scalars['String']['output']>;
+  ctxSpaceIds: Array<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  moderatorIds?: Maybe<Array<Scalars['Int']['output']>>;
+  name?: Maybe<Scalars['String']['output']>;
+  ownerId: Scalars['Int']['output'];
+  processedResourceIds: Array<Scalars['String']['output']>;
 };
 
 export type OrganisationGql = {
@@ -152,14 +193,9 @@ export type OrganisationGql = {
   ownerId: Scalars['Int']['output'];
 };
 
-export type OrganisationGqlInput = {
-  ctxPostIds: Array<Scalars['String']['input']>;
-  ctxSpaceIds: Array<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['String']['input'];
-  moderatorIds: Array<Scalars['Float']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  ownerId: Scalars['Float']['input'];
+export type OrganisationsAllResponseDto = {
+  __typename?: 'OrganisationsAllResponseDto';
+  organisations?: Maybe<Array<Organisation>>;
 };
 
 export type Query = {
@@ -168,12 +204,14 @@ export type Query = {
   blockResourceByIdMessage?: Maybe<SignedMessageWithActionTemplateResponseDto>;
   blockedResourceDetailed: Array<BlockedResourceGql>;
   blockedResourceIds: Array<Scalars['String']['output']>;
+  blockedResourceIdsBatch: BlockedResourceIdsBatchResponse;
   initModeratorWithOrganisationMessage?: Maybe<SignedMessageWithActionTemplateResponseDto>;
   moderator: ModeratorGql;
   moderatorById: ModeratorGql;
   moderatorBySubstrateAddress?: Maybe<ModeratorGql>;
   moderatorByUserName: ModeratorGql;
   moderatorsAll: Array<ModeratorGql>;
+  organisationsAll: OrganisationsAllResponseDto;
   reason: BlockReasonGql;
   reasonsAll: Array<BlockReasonGql>;
   unblockResourceByIdMessage?: Maybe<SignedMessageWithActionTemplateResponseDto>;
@@ -215,6 +253,12 @@ export type QueryBlockedResourceIdsArgs = {
   resourceType?: InputMaybe<BlockedResourceType>;
   rootPostId?: InputMaybe<Scalars['String']['input']>;
   spaceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryBlockedResourceIdsBatchArgs = {
+  ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -263,6 +307,24 @@ export type UnblockResourceByIdInput = {
   resourceId: Scalars['String']['input'];
   substrateAddress: Scalars['String']['input'];
 };
+
+export type UpdateOrganisationGqlInput = {
+  ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  moderatorIds?: InputMaybe<Array<Scalars['Float']['input']>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  ownerId?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type GetBlockedResourcesQueryVariables = Exact<{
+  spaceIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type GetBlockedResourcesQuery = { __typename?: 'Query', blockedResourceIdsBatch: { __typename?: 'BlockedResourceIdsBatchResponse', byCtxSpaceIds: Array<{ __typename?: 'BlockedResourceIdsBatchItem', id: string, blockedResourceIds: Array<string> }>, byCtxPostIds: Array<{ __typename?: 'BlockedResourceIdsBatchItem', id: string, blockedResourceIds: Array<string> }> } };
 
 export type GetBlockedInPostIdDetailedQueryVariables = Exact<{
   postId: Scalars['String']['input'];
@@ -327,6 +389,20 @@ export type CommitModerationActionMutationVariables = Exact<{
 export type CommitModerationActionMutation = { __typename?: 'Mutation', commitSignedMessageWithAction?: { __typename?: 'CommitModerationSignedMessageResponse', success: boolean, message?: string | null } | null };
 
 
+export const GetBlockedResources = gql`
+    query GetBlockedResources($spaceIds: [String!]!, $postIds: [String!]!) {
+  blockedResourceIdsBatch(ctxSpaceIds: $spaceIds, ctxPostIds: $postIds) {
+    byCtxSpaceIds {
+      id
+      blockedResourceIds
+    }
+    byCtxPostIds {
+      id
+      blockedResourceIds
+    }
+  }
+}
+    `;
 export const GetBlockedInPostIdDetailed = gql`
     query GetBlockedInPostIdDetailed($postId: String!) {
   blockedResourceDetailed(ctxPostId: $postId, blocked: true) {

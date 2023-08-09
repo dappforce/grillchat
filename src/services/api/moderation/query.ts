@@ -10,7 +10,7 @@ import { createQuery, poolQuery } from '@/subsocial-query'
 import axios, { AxiosResponse } from 'axios'
 
 const getBlockedInSpaceId = poolQuery<
-  string,
+  { postId: string } | { spaceId: string },
   ApiModerationBlockedInSpaceIdsResponse['data'][number]
 >({
   multiCall: async (params) => {

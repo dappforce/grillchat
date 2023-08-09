@@ -8,6 +8,8 @@ import {
   CommitModerationActionMutationVariables,
   GetBlockedInPostIdDetailedQuery,
   GetBlockedInPostIdDetailedQueryVariables,
+  GetBlockedResourcesQuery,
+  GetBlockedResourcesQueryVariables,
   GetModerationReasonsQuery,
   GetModerationReasonsQueryVariables,
   GetModeratorDataQuery,
@@ -18,33 +20,6 @@ import {
   UnblockResourceMessageQueryVariables,
 } from './generated'
 import { mapBlockedResources, moderationRequest } from './utils'
-
-const generateBlockedInSpaceIds = (spaceIds: string[]) => {
-  return `
-    query GetBlockedInSpaceIds {
-      ${spaceIds.map(
-        (hubId) =>
-          `SEPARATOR${hubId}: blockedResourceIds(
-            ctxSpaceId: "${hubId}"
-            blocked: true
-          )`
-      )}
-    }
-  `
-}
-export async function getBlockedInSpaceIds(spaceIds: string[]) {
-  const data = await moderationRequest<Record<string, string[]>>({
-    document: generateBlockedInSpaceIds(spaceIds),
-  })
-
-  return Object.entries(data).map(([key, res]) => {
-    const [_, spaceId] = key.split('SEPARATOR')
-    return {
-      spaceId,
-      blockedResources: mapBlockedResources(res, (id) => id),
-    }
-  })
-}
 
 const generateBlockedInPostIds = (postIds: string[]) => {
   return `
@@ -59,18 +34,45 @@ const generateBlockedInPostIds = (postIds: string[]) => {
     }
   `
 }
-export async function getBlockedInPostIds(postIds: string[]) {
-  const data = await moderationRequest<Record<string, string[]>>({
-    document: generateBlockedInPostIds(postIds),
+const GET_BLOCKED_RESOURCES = gql`
+  query GetBlockedResources($spaceIds: [String!]!, $postIds: [String!]!) {
+    blockedResourceIdsBatch(ctxSpaceIds: $spaceIds, ctxPostIds: $postIds) {
+      byCtxSpaceIds {
+        id
+        blockedResourceIds
+      }
+      byCtxPostIds {
+        id
+        blockedResourceIds
+      }
+    }
+  }
+`
+export async function getBlockedResources(
+  variables: GetBlockedResourcesQueryVariables
+) {
+  const data = await moderationRequest<
+    GetBlockedResourcesQuery,
+    GetBlockedResourcesQueryVariables
+  >({
+    document: GET_BLOCKED_RESOURCES,
+    variables,
   })
 
-  return Object.entries(data).map(([key, res]) => {
-    const [_, postId] = key.split('SEPARATOR')
-    return {
-      postId,
-      blockedResources: mapBlockedResources(res, (id) => id),
-    }
-  })
+  const blockedInSpaceIds = data.blockedResourceIdsBatch.byCtxSpaceIds.map(
+    ({ blockedResourceIds, id }) => ({
+      spaceId: id,
+      blockedResources: mapBlockedResources(blockedResourceIds, (id) => id),
+    })
+  )
+  const blockedInPostIds = data.blockedResourceIdsBatch.byCtxPostIds.map(
+    ({ blockedResourceIds, id }) => ({
+      postId: id,
+      blockedResources: mapBlockedResources(blockedResourceIds, (id) => id),
+    })
+  )
+
+  return { blockedInSpaceIds, blockedInPostIds }
 }
 
 const GET_BLOCKED_IN_POST_ID_DETAILED = gql`
