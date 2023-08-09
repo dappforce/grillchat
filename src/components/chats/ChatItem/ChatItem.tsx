@@ -107,6 +107,7 @@ export default function ChatItem({
         chatId={chatId}
         messageId={message.id}
         enableChatMenu={enableChatMenu}
+        hubId={hubId}
       >
         {(config) => {
           const { toggleDisplay, referenceProps } = config || {}

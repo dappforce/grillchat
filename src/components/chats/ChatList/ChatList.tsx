@@ -255,6 +255,7 @@ function ChatListContent({
                   chatId={chatId}
                   messageId={message.id}
                   key={message.id}
+                  hubId={hubId}
                 >
                   {(config) => {
                     const { referenceProps, toggleDisplay } = config || {}

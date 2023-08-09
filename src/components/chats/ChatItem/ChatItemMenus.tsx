@@ -9,6 +9,7 @@ import ModerationModal from '@/components/moderation/ModerationModal'
 import Toast from '@/components/Toast'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
+import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
 import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
@@ -32,6 +33,7 @@ import urlJoin from 'url-join'
 export type ChatItemMenusProps = {
   messageId: string
   chatId: string
+  hubId: string
   children: FloatingMenusProps['children']
   enableChatMenu?: boolean
 }
@@ -42,8 +44,12 @@ export default function ChatItemMenus({
   messageId,
   children,
   chatId,
+  hubId,
   enableChatMenu = true,
 }: ChatItemMenusProps) {
+  const myAddress = useMyAccount((state) => state.address)
+  const isBlocked = useIsAddressBlockedInChat(myAddress ?? '', chatId, hubId)
+
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
 
@@ -95,14 +101,16 @@ export default function ChatItemMenus({
       },
     }
 
-    const showDonateMenuItem = messageOwnerEvmAddress
+    const replyItem: FloatingMenusProps['menus'][number] = {
+      text: 'Reply',
+      icon: BsFillReplyFill,
+      onClick: () => setMessageAsReply(messageId),
+    }
+
+    const showDonateMenuItem = messageOwnerEvmAddress && !isBlocked
 
     return [
-      {
-        text: 'Reply',
-        icon: BsFillReplyFill,
-        onClick: () => setMessageAsReply(messageId),
-      },
+      ...(!isBlocked ? [replyItem] : []),
       ...(showDonateMenuItem ? [donateMenuItem] : []),
       ...(isAuthorized
         ? [
