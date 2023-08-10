@@ -99,6 +99,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
 
     if (!substrateApi.isConnected) {
+      // If energy subscription is run when the api is not connected, even after some more ms it connect, the subscription won't work
+      // Here we wait for some delay because the api is not connected immediately even after awaiting the connect() method.
+      // And we retry it recursively after 500ms delay until it's connected (without reconnecting the api again)
       await wait(500)
       return get()._subscribeEnergy(true)
     }
