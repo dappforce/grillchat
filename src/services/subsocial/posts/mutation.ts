@@ -355,7 +355,7 @@ async function getUpdatedPinPostContent(
   ) as PinsExtension
 
   if (action === 'pin') pinMessage(chatContent, pinExtension, messageId)
-  else unpinMessage(pinExtension, messageId)
+  else unpinMessage(pinExtension)
 
   return chatContent
 }
@@ -374,10 +374,6 @@ function pinMessage(
     pinExtension.properties.ids = [messageId]
   }
 }
-function unpinMessage(pinExtension: PinsExtension, messageId: string) {
-  if (!pinExtension) throw new Error('Message is not pinned')
-
-  const index = (pinExtension.properties.ids as string[]).indexOf(messageId)
-  if (index === -1) throw new Error('Message is not pinned')
+function unpinMessage(pinExtension: PinsExtension) {
   pinExtension.properties.ids = []
 }
