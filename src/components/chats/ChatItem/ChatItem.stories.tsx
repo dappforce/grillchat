@@ -22,6 +22,7 @@ const meta = {
   tags: ['autodocs'],
   args: {
     chatId: '1',
+    hubId: '1001',
   },
 } satisfies Meta<typeof ChatItemWrapper>
 
