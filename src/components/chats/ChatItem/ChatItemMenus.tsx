@@ -9,7 +9,7 @@ import ModerationModal from '@/components/moderation/ModerationModal'
 import Toast from '@/components/Toast'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
-import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
+import { useCanSendMessage } from '@/hooks/useCanSendMessage'
 import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { isOptimisticId } from '@/services/subsocial/utils'
@@ -47,8 +47,7 @@ export default function ChatItemMenus({
   hubId,
   enableChatMenu = true,
 }: ChatItemMenusProps) {
-  const myAddress = useMyAccount((state) => state.address)
-  const isBlocked = useIsAddressBlockedInChat(myAddress ?? '', chatId, hubId)
+  const canSendMessage = useCanSendMessage(hubId, chatId)
 
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
@@ -107,10 +106,10 @@ export default function ChatItemMenus({
       onClick: () => setMessageAsReply(messageId),
     }
 
-    const showDonateMenuItem = messageOwnerEvmAddress && !isBlocked
+    const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage
 
     return [
-      ...(!isBlocked ? [replyItem] : []),
+      ...(canSendMessage ? [replyItem] : []),
       ...(showDonateMenuItem ? [donateMenuItem] : []),
       ...(isAuthorized
         ? [
