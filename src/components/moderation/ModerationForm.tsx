@@ -7,10 +7,13 @@ import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ComponentProps, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'react-hot-toast'
 import { z } from 'zod'
 import FormButton from '../FormButton'
 import SelectInput, { ListItem } from '../inputs/SelectInput'
+import { useName } from '../Name'
 import ProfilePreview from '../ProfilePreview'
+import Toast from '../Toast'
 
 export type ModerationFormProps = ComponentProps<'form'> & {
   messageId: string
@@ -61,12 +64,28 @@ export default function ModerationForm({
     [reasons]
   )
 
-  const myAddress = useMyAccount((state) => state.address)
-  const { mutate, isLoading, error } = useCommitModerationAction({ onSuccess })
-  useToastError(error, 'Failed to moderate message')
-
   const { data: message } = getPostQuery.useQuery(messageId)
   const ownerId = message?.struct.ownerId ?? ''
+  const { name } = useName(ownerId)
+
+  const myAddress = useMyAccount((state) => state.address)
+  const { mutate, isLoading, error } = useCommitModerationAction({
+    onSuccess: (_, variables) => {
+      if (variables.action === 'block') {
+        const isBlockingOwner = variables.resourceId === ownerId
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            title={`You have blocked the ${
+              !isBlockingOwner && 'message from '
+            }user ${name}`}
+          />
+        ))
+      }
+      onSuccess?.()
+    },
+  })
+  useToastError(error, 'Failed to moderate message')
 
   const { control, handleSubmit, setValue, watch } = useForm<FormSchema>({
     mode: 'onChange',
