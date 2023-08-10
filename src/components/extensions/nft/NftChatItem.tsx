@@ -10,7 +10,7 @@ import { useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 import CommonChatItem from '../common/CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
-import { getMessageExtensionProperties } from '../utils'
+import { getPostExtensionProperties } from '../utils'
 import { getMarketplaceFromLink } from './utils'
 
 type Props = ExtensionChatItemProps
@@ -25,7 +25,7 @@ export default function NftChatItem(props: Props) {
   const { content } = message
   const { extensions } = content || {}
 
-  const nftProperties = getMessageExtensionProperties(
+  const nftProperties = getPostExtensionProperties(
     extensions?.[0],
     'subsocial-evm-nft'
   )

@@ -1,14 +1,14 @@
 import MediaLoader from '@/components/MediaLoader'
 import { cx } from '@/utils/class-names'
 import { RepliedMessagePreviewPartProps } from '../types'
-import { getMessageExtensionProperties } from '../utils'
+import { getPostExtensionProperties } from '../utils'
 
 export default function ImageRepliedMessagePreviewPart({
   extensions,
   className,
 }: RepliedMessagePreviewPartProps) {
   const firstExtension = extensions?.[0]
-  const properties = getMessageExtensionProperties(
+  const properties = getPostExtensionProperties(
     firstExtension,
     'subsocial-image'
   )

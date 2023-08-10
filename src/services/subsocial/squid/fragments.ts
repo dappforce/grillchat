@@ -96,6 +96,11 @@ export const POST_FRAGMENT = gql`
       toEvm {
         id
       }
+      pinnedResources {
+        post {
+          id
+        }
+      }
     }
   }
 `

@@ -487,6 +487,11 @@ export type AccountsConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type ActiveUsersTotalCount = {
+  __typename?: 'ActiveUsersTotalCount';
+  account_count: Scalars['Float']['output'];
+};
+
 export type ActivitiesConnection = {
   __typename?: 'ActivitiesConnection';
   edges: Array<ActivityEdge>;
@@ -529,7 +534,7 @@ export type Activity = {
   space?: Maybe<Space>;
   /** A One-to-One relationship with the previous Space if the event is `PostMoved` or `DomainMetaUpdated` */
   spacePrev?: Maybe<Space>;
-  /** The username of Space or Account which was registered or updated in this particular Activity. */
+  /** The username of a Space or Account which was registered or updated in this particular Activity. */
   username?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1062,25 +1067,25 @@ export type CommentFollowersWhereInput = {
 /** Detailed information about the Tweet attached to a Post */
 export type ContentExtension = {
   __typename?: 'ContentExtension';
-  /** The amount of the Donation transaction (actual for 'subsocial-donations") */
+  /** The amount of tokens transferred in the Donation transaction (actual for 'subsocial-donations") */
   amount?: Maybe<Scalars['BigInt']['output']>;
-  /** The chain name of attached NFT (actual for 'subsocial-evm-nft") */
+  /** The name of the blockchain that contains the attached NFT (actual for 'subsocial-evm-nft") */
   chain?: Maybe<Scalars['String']['output']>;
-  /** The collection ID of attached NFT (actual for 'subsocial-evm-nft") */
+  /** The collection ID of the attached NFT (actual for 'subsocial-evm-nft") */
   collectionId?: Maybe<Scalars['String']['output']>;
   /** A One-To-One relationship with the Account entity of a ContentExtension's creator. */
   createdBy: Account;
-  /** The decimals value of transferred token in Donation transaction (actual for 'subsocial-donations") */
+  /** The decimals value of token transferred in the Donation transaction (actual for 'subsocial-donations") */
   decimals?: Maybe<Scalars['Int']['output']>;
   /** The ContentExtension properties schema ID. */
   extensionSchemaId: ContentExtensionSchemaId;
-  /** The sender Evm Account of the Donation transaction (actual for 'subsocial-donations") */
+  /** The Evm Account of the sender of the Donation transaction (actual for 'subsocial-donations") */
   fromEvm?: Maybe<EvmAccount>;
-  /** The sender Substrate Account of the Donation transaction (actual for 'subsocial-donations") */
+  /** The Substrate Account of the sender of the Donation transaction (actual for 'subsocial-donations") */
   fromSubstrate?: Maybe<Account>;
   /**
    * The ContentExtension ID.
-   * Consists of parent post ID + index in extensions list, which are attached to the Post.
+   * Consists of the parent post ID plus the index in the extensions list, which are attached to the Post.
    * (e.g. "4940-0")
    */
   id: Scalars['String']['output'];
@@ -1088,24 +1093,35 @@ export type ContentExtension = {
   image?: Maybe<Scalars['String']['output']>;
   /** The message of secret Secret box (actual for 'subsocial-secret-box") */
   message?: Maybe<Scalars['String']['output']>;
-  /** The ID of attached NFT (actual for 'subsocial-evm-nft") */
+  /** The ID of the attached NFT (actual for 'subsocial-evm-nft") */
   nftId?: Maybe<Scalars['String']['output']>;
   /** The nonce of encrypted Secret box (actual for 'subsocial-secret-box") */
   nonce?: Maybe<Scalars['String']['output']>;
-  /** The Post where extensions was published. */
+  /** The Post where the extension was published. */
   parentPost: Post;
+  /** The pinned posts list (actual for 'subsocial-pinned-posts") */
+  pinnedResources: Array<ExtensionPinnedResource>;
   /** The recipient Account of Secret box message (actual for 'subsocial-secret-box") */
   recipient?: Maybe<Account>;
-  /** The target (recipient) Evm Account of the Donation transaction (actual for 'subsocial-donations") */
+  /** The Evm Account of the target (recipient) of the Donation transaction (actual for 'subsocial-donations") */
   toEvm?: Maybe<EvmAccount>;
-  /** The target (recipient) Substrate Account of the Donation transaction (actual for 'subsocial-donations") */
+  /** The Substrate Account of the target (recipient) of the Donation transaction (actual for 'subsocial-donations") */
   toSubstrate?: Maybe<Account>;
-  /** The token name of the Donation transaction (actual for 'subsocial-donations") */
+  /** The name of the token transferred in the Donation transaction (actual for 'subsocial-donations") */
   token?: Maybe<Scalars['String']['output']>;
   /** The transaction hash of the Donation transfer (actual for 'subsocial-donations") */
   txHash?: Maybe<Scalars['String']['output']>;
-  /** The URL of attached NFT (actual for 'subsocial-evm-nft") */
+  /** The URL of the attached NFT (actual for 'subsocial-evm-nft") */
   url?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Detailed information about the Tweet attached to a Post */
+export type ContentExtensionPinnedResourcesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ExtensionPinnedResourceOrderByInput>>;
+  where?: InputMaybe<ExtensionPinnedResourceWhereInput>;
 };
 
 export type ContentExtensionEdge = {
@@ -1279,6 +1295,7 @@ export enum ContentExtensionSchemaId {
   SubsocialDonations = 'subsocial_donations',
   SubsocialEvmNft = 'subsocial_evm_nft',
   SubsocialImage = 'subsocial_image',
+  SubsocialPinnedPosts = 'subsocial_pinned_posts',
   SubsocialSecretBox = 'subsocial_secret_box'
 }
 
@@ -1435,6 +1452,9 @@ export type ContentExtensionWhereInput = {
   nonce_startsWith?: InputMaybe<Scalars['String']['input']>;
   parentPost?: InputMaybe<PostWhereInput>;
   parentPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  pinnedResources_every?: InputMaybe<ExtensionPinnedResourceWhereInput>;
+  pinnedResources_none?: InputMaybe<ExtensionPinnedResourceWhereInput>;
+  pinnedResources_some?: InputMaybe<ExtensionPinnedResourceWhereInput>;
   recipient?: InputMaybe<AccountWhereInput>;
   recipient_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   toEvm?: InputMaybe<EvmAccountWhereInput>;
@@ -1594,6 +1614,8 @@ export type ElasticSearchQueryResultEntity = {
  * * UserNameUpdated - *synthetic*
  * * ExtensionDonationCreated - *synthetic*
  * * ExtensionEvmNftShared - *synthetic*
+ * * ExtensionImageCreated - *synthetic*
+ * * ExtensionSecretBoxCreated - *synthetic*
  * * EvmAddressLinkedToAccount
  * * EvmAddressUnlinkedFromAccount
  */
@@ -1602,6 +1624,7 @@ export enum EventName {
   AccountUnfollowed = 'AccountUnfollowed',
   CommentCreated = 'CommentCreated',
   CommentDeleted = 'CommentDeleted',
+  CommentFollowed = 'CommentFollowed',
   CommentReactionCreated = 'CommentReactionCreated',
   CommentReactionDeleted = 'CommentReactionDeleted',
   CommentReactionUpdated = 'CommentReactionUpdated',
@@ -1613,6 +1636,7 @@ export enum EventName {
   CommentReplyShared = 'CommentReplyShared',
   CommentReplyUpdated = 'CommentReplyUpdated',
   CommentShared = 'CommentShared',
+  CommentUnfollowed = 'CommentUnfollowed',
   CommentUpdated = 'CommentUpdated',
   EvmAddressLinkedToAccount = 'EvmAddressLinkedToAccount',
   EvmAddressUnlinkedFromAccount = 'EvmAddressUnlinkedFromAccount',
@@ -1702,7 +1726,7 @@ export type EvmAccountsConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
-/** The junction table for Many-to-Many relationship between Substrate Account and Ethereum Account */
+/** The junction table for Many-to-Many relationship between Substrate Accounts and Ethereum Accounts */
 export type EvmSubstrateAccountLink = {
   __typename?: 'EvmSubstrateAccountLink';
   /** Is the link of this particular account active? (This is necessary for the soft deletion of the link.) */
@@ -1803,6 +1827,213 @@ export type EvmSubstrateAccountLinkWhereInput = {
 export type EvmSubstrateAccountLinksConnection = {
   __typename?: 'EvmSubstrateAccountLinksConnection';
   edges: Array<EvmSubstrateAccountLinkEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type ExtensionPinnedResource = {
+  __typename?: 'ExtensionPinnedResource';
+  contentExtension: ContentExtension;
+  /**
+   * The ExtensionPinnedResource ID.
+   * Consists of the Content Extension ID plus the pinned resource type (Post or Space) plus pinned resource ID.
+   * (e.g. "4940-0")
+   */
+  id: Scalars['String']['output'];
+  post?: Maybe<Post>;
+  resourceType: PinnedResourceType;
+  space?: Maybe<Space>;
+};
+
+export type ExtensionPinnedResourceEdge = {
+  __typename?: 'ExtensionPinnedResourceEdge';
+  cursor: Scalars['String']['output'];
+  node: ExtensionPinnedResource;
+};
+
+export enum ExtensionPinnedResourceOrderByInput {
+  ContentExtensionAmountAsc = 'contentExtension_amount_ASC',
+  ContentExtensionAmountDesc = 'contentExtension_amount_DESC',
+  ContentExtensionChainAsc = 'contentExtension_chain_ASC',
+  ContentExtensionChainDesc = 'contentExtension_chain_DESC',
+  ContentExtensionCollectionIdAsc = 'contentExtension_collectionId_ASC',
+  ContentExtensionCollectionIdDesc = 'contentExtension_collectionId_DESC',
+  ContentExtensionDecimalsAsc = 'contentExtension_decimals_ASC',
+  ContentExtensionDecimalsDesc = 'contentExtension_decimals_DESC',
+  ContentExtensionExtensionSchemaIdAsc = 'contentExtension_extensionSchemaId_ASC',
+  ContentExtensionExtensionSchemaIdDesc = 'contentExtension_extensionSchemaId_DESC',
+  ContentExtensionIdAsc = 'contentExtension_id_ASC',
+  ContentExtensionIdDesc = 'contentExtension_id_DESC',
+  ContentExtensionImageAsc = 'contentExtension_image_ASC',
+  ContentExtensionImageDesc = 'contentExtension_image_DESC',
+  ContentExtensionMessageAsc = 'contentExtension_message_ASC',
+  ContentExtensionMessageDesc = 'contentExtension_message_DESC',
+  ContentExtensionNftIdAsc = 'contentExtension_nftId_ASC',
+  ContentExtensionNftIdDesc = 'contentExtension_nftId_DESC',
+  ContentExtensionNonceAsc = 'contentExtension_nonce_ASC',
+  ContentExtensionNonceDesc = 'contentExtension_nonce_DESC',
+  ContentExtensionTokenAsc = 'contentExtension_token_ASC',
+  ContentExtensionTokenDesc = 'contentExtension_token_DESC',
+  ContentExtensionTxHashAsc = 'contentExtension_txHash_ASC',
+  ContentExtensionTxHashDesc = 'contentExtension_txHash_DESC',
+  ContentExtensionUrlAsc = 'contentExtension_url_ASC',
+  ContentExtensionUrlDesc = 'contentExtension_url_DESC',
+  IdAsc = 'id_ASC',
+  IdDesc = 'id_DESC',
+  PostBodyAsc = 'post_body_ASC',
+  PostBodyDesc = 'post_body_DESC',
+  PostCanonicalAsc = 'post_canonical_ASC',
+  PostCanonicalDesc = 'post_canonical_DESC',
+  PostContentAsc = 'post_content_ASC',
+  PostContentDesc = 'post_content_DESC',
+  PostCreatedAtBlockAsc = 'post_createdAtBlock_ASC',
+  PostCreatedAtBlockDesc = 'post_createdAtBlock_DESC',
+  PostCreatedAtTimeAsc = 'post_createdAtTime_ASC',
+  PostCreatedAtTimeDesc = 'post_createdAtTime_DESC',
+  PostCreatedOnDayAsc = 'post_createdOnDay_ASC',
+  PostCreatedOnDayDesc = 'post_createdOnDay_DESC',
+  PostDownvotesCountAsc = 'post_downvotesCount_ASC',
+  PostDownvotesCountDesc = 'post_downvotesCount_DESC',
+  PostFollowersCountAsc = 'post_followersCount_ASC',
+  PostFollowersCountDesc = 'post_followersCount_DESC',
+  PostFormatAsc = 'post_format_ASC',
+  PostFormatDesc = 'post_format_DESC',
+  PostHiddenRepliesCountAsc = 'post_hiddenRepliesCount_ASC',
+  PostHiddenRepliesCountDesc = 'post_hiddenRepliesCount_DESC',
+  PostHiddenAsc = 'post_hidden_ASC',
+  PostHiddenDesc = 'post_hidden_DESC',
+  PostIdAsc = 'post_id_ASC',
+  PostIdDesc = 'post_id_DESC',
+  PostImageAsc = 'post_image_ASC',
+  PostImageDesc = 'post_image_DESC',
+  PostInReplyToKindAsc = 'post_inReplyToKind_ASC',
+  PostInReplyToKindDesc = 'post_inReplyToKind_DESC',
+  PostIsCommentAsc = 'post_isComment_ASC',
+  PostIsCommentDesc = 'post_isComment_DESC',
+  PostIsShowMoreAsc = 'post_isShowMore_ASC',
+  PostIsShowMoreDesc = 'post_isShowMore_DESC',
+  PostKindAsc = 'post_kind_ASC',
+  PostKindDesc = 'post_kind_DESC',
+  PostLinkAsc = 'post_link_ASC',
+  PostLinkDesc = 'post_link_DESC',
+  PostMetaAsc = 'post_meta_ASC',
+  PostMetaDesc = 'post_meta_DESC',
+  PostProposalIndexAsc = 'post_proposalIndex_ASC',
+  PostProposalIndexDesc = 'post_proposalIndex_DESC',
+  PostPublicRepliesCountAsc = 'post_publicRepliesCount_ASC',
+  PostPublicRepliesCountDesc = 'post_publicRepliesCount_DESC',
+  PostReactionsCountAsc = 'post_reactionsCount_ASC',
+  PostReactionsCountDesc = 'post_reactionsCount_DESC',
+  PostRepliesCountAsc = 'post_repliesCount_ASC',
+  PostRepliesCountDesc = 'post_repliesCount_DESC',
+  PostSharesCountAsc = 'post_sharesCount_ASC',
+  PostSharesCountDesc = 'post_sharesCount_DESC',
+  PostSlugAsc = 'post_slug_ASC',
+  PostSlugDesc = 'post_slug_DESC',
+  PostSummaryAsc = 'post_summary_ASC',
+  PostSummaryDesc = 'post_summary_DESC',
+  PostTagsOriginalAsc = 'post_tagsOriginal_ASC',
+  PostTagsOriginalDesc = 'post_tagsOriginal_DESC',
+  PostTitleAsc = 'post_title_ASC',
+  PostTitleDesc = 'post_title_DESC',
+  PostTweetIdAsc = 'post_tweetId_ASC',
+  PostTweetIdDesc = 'post_tweetId_DESC',
+  PostUpdatedAtTimeAsc = 'post_updatedAtTime_ASC',
+  PostUpdatedAtTimeDesc = 'post_updatedAtTime_DESC',
+  PostUpvotesCountAsc = 'post_upvotesCount_ASC',
+  PostUpvotesCountDesc = 'post_upvotesCount_DESC',
+  ResourceTypeAsc = 'resourceType_ASC',
+  ResourceTypeDesc = 'resourceType_DESC',
+  SpaceAboutAsc = 'space_about_ASC',
+  SpaceAboutDesc = 'space_about_DESC',
+  SpaceCanEveryoneCreatePostsAsc = 'space_canEveryoneCreatePosts_ASC',
+  SpaceCanEveryoneCreatePostsDesc = 'space_canEveryoneCreatePosts_DESC',
+  SpaceCanFollowerCreatePostsAsc = 'space_canFollowerCreatePosts_ASC',
+  SpaceCanFollowerCreatePostsDesc = 'space_canFollowerCreatePosts_DESC',
+  SpaceContentAsc = 'space_content_ASC',
+  SpaceContentDesc = 'space_content_DESC',
+  SpaceCreatedAtBlockAsc = 'space_createdAtBlock_ASC',
+  SpaceCreatedAtBlockDesc = 'space_createdAtBlock_DESC',
+  SpaceCreatedAtTimeAsc = 'space_createdAtTime_ASC',
+  SpaceCreatedAtTimeDesc = 'space_createdAtTime_DESC',
+  SpaceCreatedOnDayAsc = 'space_createdOnDay_ASC',
+  SpaceCreatedOnDayDesc = 'space_createdOnDay_DESC',
+  SpaceEmailAsc = 'space_email_ASC',
+  SpaceEmailDesc = 'space_email_DESC',
+  SpaceFollowersCountAsc = 'space_followersCount_ASC',
+  SpaceFollowersCountDesc = 'space_followersCount_DESC',
+  SpaceFormatAsc = 'space_format_ASC',
+  SpaceFormatDesc = 'space_format_DESC',
+  SpaceHandleAsc = 'space_handle_ASC',
+  SpaceHandleDesc = 'space_handle_DESC',
+  SpaceHiddenPostsCountAsc = 'space_hiddenPostsCount_ASC',
+  SpaceHiddenPostsCountDesc = 'space_hiddenPostsCount_DESC',
+  SpaceHiddenAsc = 'space_hidden_ASC',
+  SpaceHiddenDesc = 'space_hidden_DESC',
+  SpaceIdAsc = 'space_id_ASC',
+  SpaceIdDesc = 'space_id_DESC',
+  SpaceImageAsc = 'space_image_ASC',
+  SpaceImageDesc = 'space_image_DESC',
+  SpaceInterestsOriginalAsc = 'space_interestsOriginal_ASC',
+  SpaceInterestsOriginalDesc = 'space_interestsOriginal_DESC',
+  SpaceIsShowMoreAsc = 'space_isShowMore_ASC',
+  SpaceIsShowMoreDesc = 'space_isShowMore_DESC',
+  SpaceLinksOriginalAsc = 'space_linksOriginal_ASC',
+  SpaceLinksOriginalDesc = 'space_linksOriginal_DESC',
+  SpaceNameAsc = 'space_name_ASC',
+  SpaceNameDesc = 'space_name_DESC',
+  SpacePostsCountAsc = 'space_postsCount_ASC',
+  SpacePostsCountDesc = 'space_postsCount_DESC',
+  SpacePublicPostsCountAsc = 'space_publicPostsCount_ASC',
+  SpacePublicPostsCountDesc = 'space_publicPostsCount_DESC',
+  SpaceSummaryAsc = 'space_summary_ASC',
+  SpaceSummaryDesc = 'space_summary_DESC',
+  SpaceTagsOriginalAsc = 'space_tagsOriginal_ASC',
+  SpaceTagsOriginalDesc = 'space_tagsOriginal_DESC',
+  SpaceUpdatedAtBlockAsc = 'space_updatedAtBlock_ASC',
+  SpaceUpdatedAtBlockDesc = 'space_updatedAtBlock_DESC',
+  SpaceUpdatedAtTimeAsc = 'space_updatedAtTime_ASC',
+  SpaceUpdatedAtTimeDesc = 'space_updatedAtTime_DESC',
+  SpaceUsernameAsc = 'space_username_ASC',
+  SpaceUsernameDesc = 'space_username_DESC'
+}
+
+export type ExtensionPinnedResourceWhereInput = {
+  AND?: InputMaybe<Array<ExtensionPinnedResourceWhereInput>>;
+  OR?: InputMaybe<Array<ExtensionPinnedResourceWhereInput>>;
+  contentExtension?: InputMaybe<ContentExtensionWhereInput>;
+  contentExtension_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
+  post?: InputMaybe<PostWhereInput>;
+  post_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  resourceType_eq?: InputMaybe<PinnedResourceType>;
+  resourceType_in?: InputMaybe<Array<PinnedResourceType>>;
+  resourceType_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  resourceType_not_eq?: InputMaybe<PinnedResourceType>;
+  resourceType_not_in?: InputMaybe<Array<PinnedResourceType>>;
+  space?: InputMaybe<SpaceWhereInput>;
+  space_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type ExtensionPinnedResourcesConnection = {
+  __typename?: 'ExtensionPinnedResourcesConnection';
+  edges: Array<ExtensionPinnedResourceEdge>;
   pageInfo: PageInfo;
   totalCount: Scalars['Int']['output'];
 };
@@ -2114,6 +2345,11 @@ export type PageInfo = {
   startCursor: Scalars['String']['output'];
 };
 
+export enum PinnedResourceType {
+  Post = 'Post',
+  Space = 'Space'
+}
+
 /** The Post entity */
 export type Post = {
   __typename?: 'Post';
@@ -2170,6 +2406,7 @@ export type Post = {
   ownedByAccount: Account;
   /** A One-to-One relationship with a Post. This field only has a value if the current Post is a Reply to a Comment and contains a relationship with a Comment Post or another Reply (in case there is discussion within context of some Comment). */
   parentPost?: Maybe<Post>;
+  pinnedByExtensions: Array<ExtensionPinnedResource>;
   /**
    * A One-To-Many relationship between a Regular Post and the Accounts that follow the post through PostFollowers (foreign key - "followingPost")
    * (currently, a post is only followed by its creator)
@@ -2227,6 +2464,15 @@ export type PostExtensionsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<ContentExtensionOrderByInput>>;
   where?: InputMaybe<ContentExtensionWhereInput>;
+};
+
+
+/** The Post entity */
+export type PostPinnedByExtensionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ExtensionPinnedResourceOrderByInput>>;
+  where?: InputMaybe<ExtensionPinnedResourceWhereInput>;
 };
 
 
@@ -3035,6 +3281,9 @@ export type PostWhereInput = {
   ownedByAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   parentPost?: InputMaybe<PostWhereInput>;
   parentPost_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  pinnedByExtensions_every?: InputMaybe<ExtensionPinnedResourceWhereInput>;
+  pinnedByExtensions_none?: InputMaybe<ExtensionPinnedResourceWhereInput>;
+  pinnedByExtensions_some?: InputMaybe<ExtensionPinnedResourceWhereInput>;
   postFollowers_every?: InputMaybe<PostFollowersWhereInput>;
   postFollowers_none?: InputMaybe<PostFollowersWhereInput>;
   postFollowers_some?: InputMaybe<PostFollowersWhereInput>;
@@ -3218,6 +3467,8 @@ export type Query = {
   accountFollowersConnection: AccountFollowersConnection;
   accounts: Array<Account>;
   accountsConnection: AccountsConnection;
+  activeUsersTotalCount: ActiveUsersTotalCount;
+  activeUsersTotalCountWithFilters: UserRetentionCountModel;
   activities: Array<Activity>;
   activitiesConnection: ActivitiesConnection;
   activityById?: Maybe<Activity>;
@@ -3243,6 +3494,11 @@ export type Query = {
   evmSubstrateAccountLinkByUniqueInput?: Maybe<EvmSubstrateAccountLink>;
   evmSubstrateAccountLinks: Array<EvmSubstrateAccountLink>;
   evmSubstrateAccountLinksConnection: EvmSubstrateAccountLinksConnection;
+  extensionPinnedResourceById?: Maybe<ExtensionPinnedResource>;
+  /** @deprecated Use extensionPinnedResourceById */
+  extensionPinnedResourceByUniqueInput?: Maybe<ExtensionPinnedResource>;
+  extensionPinnedResources: Array<ExtensionPinnedResource>;
+  extensionPinnedResourcesConnection: ExtensionPinnedResourcesConnection;
   ipfsFetchLogById?: Maybe<IpfsFetchLog>;
   /** @deprecated Use ipfsFetchLogById */
   ipfsFetchLogByUniqueInput?: Maybe<IpfsFetchLog>;
@@ -3285,6 +3541,7 @@ export type Query = {
   spaces: Array<Space>;
   spacesConnection: SpacesConnection;
   squidStatus?: Maybe<SquidStatus>;
+  userRetentionCount: UserRetentionCountFullModel;
 };
 
 
@@ -3337,6 +3594,20 @@ export type QueryAccountsConnectionArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: Array<AccountOrderByInput>;
   where?: InputMaybe<AccountWhereInput>;
+};
+
+
+export type QueryActiveUsersTotalCountArgs = {
+  from: Scalars['String']['input'];
+  to: Scalars['String']['input'];
+};
+
+
+export type QueryActiveUsersTotalCountWithFiltersArgs = {
+  exclude_body?: InputMaybe<Array<Scalars['String']['input']>>;
+  from: Scalars['String']['input'];
+  to: Scalars['String']['input'];
+  total_min_posts_number: Scalars['Float']['input'];
 };
 
 
@@ -3467,6 +3738,32 @@ export type QueryEvmSubstrateAccountLinksConnectionArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: Array<EvmSubstrateAccountLinkOrderByInput>;
   where?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+};
+
+
+export type QueryExtensionPinnedResourceByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryExtensionPinnedResourceByUniqueInputArgs = {
+  where: WhereIdInput;
+};
+
+
+export type QueryExtensionPinnedResourcesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ExtensionPinnedResourceOrderByInput>>;
+  where?: InputMaybe<ExtensionPinnedResourceWhereInput>;
+};
+
+
+export type QueryExtensionPinnedResourcesConnectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<ExtensionPinnedResourceOrderByInput>;
+  where?: InputMaybe<ExtensionPinnedResourceWhereInput>;
 };
 
 
@@ -3685,6 +3982,20 @@ export type QuerySpacesConnectionArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: Array<SpaceOrderByInput>;
   where?: InputMaybe<SpaceWhereInput>;
+};
+
+
+export type QueryUserRetentionCountArgs = {
+  exclude_body?: InputMaybe<Array<Scalars['String']['input']>>;
+  first_range_from: Scalars['String']['input'];
+  first_range_min_posts_number: Scalars['Int']['input'];
+  first_range_to: Scalars['String']['input'];
+  full_query_range_from: Scalars['String']['input'];
+  full_query_range_to: Scalars['String']['input'];
+  last_range_from: Scalars['String']['input'];
+  last_range_min_posts_number: Scalars['Int']['input'];
+  last_range_to: Scalars['String']['input'];
+  total_min_posts_number: Scalars['Int']['input'];
 };
 
 /** The Post Reaction entity */
@@ -3971,6 +4282,7 @@ export type Space = {
   nonePermissions?: Maybe<SpacePermissions>;
   /** A One-To-One relationship with the Account entity that owns a Space. */
   ownedByAccount: Account;
+  pinnedByExtensions: Array<ExtensionPinnedResource>;
   /** A One-To-Many relationship with the Posts created within the current Space (foreign key - "space") */
   posts: Array<Post>;
   /** The total number of all Posts (public and hidden) in the current Space (post.length) */
@@ -4000,6 +4312,15 @@ export type SpaceFollowersArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<SpaceFollowersOrderByInput>>;
   where?: InputMaybe<SpaceFollowersWhereInput>;
+};
+
+
+/** The Space entity */
+export type SpacePinnedByExtensionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ExtensionPinnedResourceOrderByInput>>;
+  where?: InputMaybe<ExtensionPinnedResourceWhereInput>;
 };
 
 
@@ -4868,6 +5189,9 @@ export type SpaceWhereInput = {
   nonePermissions_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   ownedByAccount?: InputMaybe<AccountWhereInput>;
   ownedByAccount_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  pinnedByExtensions_every?: InputMaybe<ExtensionPinnedResourceWhereInput>;
+  pinnedByExtensions_none?: InputMaybe<ExtensionPinnedResourceWhereInput>;
+  pinnedByExtensions_some?: InputMaybe<ExtensionPinnedResourceWhereInput>;
   postsCount_eq?: InputMaybe<Scalars['Int']['input']>;
   postsCount_gt?: InputMaybe<Scalars['Int']['input']>;
   postsCount_gte?: InputMaybe<Scalars['Int']['input']>;
@@ -5113,6 +5437,16 @@ export type TweetDetailsWhereInput = {
   username_startsWith?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UserRetentionCountFullModel = {
+  __typename?: 'UserRetentionCountFullModel';
+  retention_count: Scalars['Float']['output'];
+};
+
+export type UserRetentionCountModel = {
+  __typename?: 'UserRetentionCountModel';
+  retention_count: Scalars['Float']['output'];
+};
+
 export type WhereIdInput = {
   id: Scalars['String']['input'];
 };
@@ -5129,7 +5463,7 @@ export type GetPostsQueryVariables = Exact<{
 }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, followersCount: number, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> }> };
+export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, followersCount: number, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> }> }> };
 
 export type GetPostsByContentQueryVariables = Exact<{
   search: Scalars['String']['input'];
@@ -5138,7 +5472,7 @@ export type GetPostsByContentQueryVariables = Exact<{
 }>;
 
 
-export type GetPostsByContentQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, followersCount: number, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> }> };
+export type GetPostsByContentQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, followersCount: number, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> }> }> };
 
 export type GetOwnedPostIdsQueryVariables = Exact<{
   address: Scalars['String']['input'];
@@ -5156,7 +5490,7 @@ export type GetSpacesQuery = { __typename?: 'Query', spaces: Array<{ __typename?
 
 export type SpaceFragmentFragment = { __typename?: 'Space', canEveryoneCreatePosts?: boolean | null, canFollowerCreatePosts?: boolean | null, content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, email?: string | null, name?: string | null, summary?: string | null, isShowMore?: boolean | null, linksOriginal?: string | null, hidden: boolean, id: string, updatedAtTime?: any | null, postsCount: number, image?: string | null, tagsOriginal?: string | null, about?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string } };
 
-export type PostFragmentFragment = { __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, followersCount: number, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null }> };
+export type PostFragmentFragment = { __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, followersCount: number, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> }> };
 
 export const SpaceFragment = gql`
     fragment SpaceFragment on Space {
@@ -5252,6 +5586,11 @@ export const PostFragment = gql`
     }
     toEvm {
       id
+    }
+    pinnedResources {
+      post {
+        id
+      }
     }
   }
 }

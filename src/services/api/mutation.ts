@@ -64,6 +64,7 @@ export async function saveImage(content: File) {
 }
 export const useSaveImage = mutationWrapper(saveImage)
 
+// NOTE: this invalidation won't work if server doesn't have redis
 export async function invalidatePostServerCache(postId: string) {
   const res = await axios.post('/api/posts', { postId })
   return res.data as ApiPostsInvalidationResponse
