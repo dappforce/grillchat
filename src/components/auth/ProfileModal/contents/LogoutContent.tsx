@@ -2,13 +2,8 @@ import Button from '@/components/Button'
 import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import { LocalStorage } from '@/utils/storage'
 import { ContentProps } from '../types'
-import { FCM_PUSH_NOTIFICATION_STORAGE_KEY } from './notifications/PushNotificationContent'
-
-const fcmTokenStorage = new LocalStorage(
-  () => FCM_PUSH_NOTIFICATION_STORAGE_KEY
-)
+import { fcmPushNotificationStorage } from './notifications/PushNotificationContent'
 
 function LogoutContent({ setCurrentState }: ContentProps) {
   const { address } = useMyAccount()
@@ -16,7 +11,7 @@ function LogoutContent({ setCurrentState }: ContentProps) {
   const sendEvent = useSendEvent()
 
   const { mutate: linkFcm, isLoading } = useLinkFcm({
-    onSuccess: () => fcmTokenStorage.remove(),
+    onSuccess: () => fcmPushNotificationStorage.remove(),
   })
 
   const onShowPrivateKeyClick = () => {
@@ -27,7 +22,7 @@ function LogoutContent({ setCurrentState }: ContentProps) {
     sendEvent('click yes_log_out_button')
     logout()
 
-    const fcmToken = fcmTokenStorage.get()
+    const fcmToken = fcmPushNotificationStorage.get()
 
     if (fcmToken && address) {
       linkFcm({ address, fcmToken, action: 'unlink' })

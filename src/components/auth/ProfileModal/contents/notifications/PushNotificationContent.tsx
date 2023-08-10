@@ -5,8 +5,10 @@ import { LocalStorage } from '@/utils/storage'
 import { useEffect, useState } from 'react'
 import { ContentProps } from '../../types'
 
-export const FCM_PUSH_NOTIFICATION_STORAGE_KEY = 'push-notification-fcm-token'
-const storage = new LocalStorage(() => FCM_PUSH_NOTIFICATION_STORAGE_KEY)
+const FCM_PUSH_NOTIFICATION_STORAGE_KEY = 'push-notification-fcm-token'
+export const fcmPushNotificationStorage = new LocalStorage(
+  () => FCM_PUSH_NOTIFICATION_STORAGE_KEY
+)
 
 export default function PushNotificationContent(props: ContentProps) {
   const isNotificationNotSupported = typeof Notification === 'undefined'
@@ -14,7 +16,7 @@ export default function PushNotificationContent(props: ContentProps) {
   const [isRegistered, setIsRegistered] = useState(false)
 
   useEffect(() => {
-    const storedFcmToken = storage.get()
+    const storedFcmToken = fcmPushNotificationStorage.get()
     setIsRegistered(!!storedFcmToken)
   }, [isRegistered])
 
@@ -53,7 +55,7 @@ function DisableNotificationButton({
       if (!data) throw new Error('Error in disabling notification request')
 
       // FCM Token Disabled.
-      storage.remove()
+      fcmPushNotificationStorage.remove()
       setIsRegistered(false)
     },
   })
@@ -88,7 +90,7 @@ function EnableNotificationButton({
     onSuccess: (data) => {
       // FCM Token Enabled.
       if (fcmToken) {
-        storage.set(fcmToken)
+        fcmPushNotificationStorage.set(fcmToken)
         setIsRegistered(true)
       }
     },
