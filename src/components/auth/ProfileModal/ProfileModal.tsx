@@ -1,5 +1,6 @@
 import { CommonEvmAddressLinked } from '@/components/auth/CommonModalContent'
 import Modal from '@/components/modals/Modal'
+import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
@@ -39,6 +40,9 @@ export default function ProfileModal({
   step,
   ...props
 }: ProfileModalProps) {
+  // Prefetch telegram linked account data
+  getLinkedTelegramAccountsQuery.useQuery({ address })
+
   const [currentState, setCurrentState] = useState<ModalState>(
     step || 'account'
   )

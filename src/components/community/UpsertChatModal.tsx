@@ -1,13 +1,9 @@
-import Modal, {
-  ModalFunctionalityProps,
-  ModalProps,
-} from '@/components/modals/Modal'
+import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import UpsertChatForm, { UpsertChatFormProps } from './UpsertChatForm'
 
-export type UpsertChatModalProps = ModalFunctionalityProps &
-  Pick<ModalProps, 'onBackClick'> & {
-    formProps: UpsertChatFormProps
-  }
+export type UpsertChatModalProps = ModalFunctionalityProps & {
+  formProps: UpsertChatFormProps
+}
 
 export default function UpsertChatModal({
   formProps,

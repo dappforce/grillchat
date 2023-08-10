@@ -49,14 +49,18 @@ const NftRepliedMessagePreviewPart = dynamic(
   { loading: PreviewPartImageSkeleton }
 )
 
+export type MessageExtensionIds = Exclude<
+  PostContentExtension['id'],
+  'subsocial-pinned-posts'
+>
 export const extensionInitialDataTypes = {
   'subsocial-donations': { recipient: '', messageId: '' },
   'subsocial-evm-nft': null as null | string,
   'subsocial-image': null as null | File | string,
   'subsocial-decoded-promo': { recipient: '', messageId: '' },
-} satisfies Record<PostContentExtension['id'], unknown>
+} satisfies Record<MessageExtensionIds, unknown>
 
-type Config<Id extends PostContentExtension['id']> = {
+type Config<Id extends MessageExtensionIds> = {
   chatItemComponent: ComponentType<ExtensionChatItemProps>
   replyMessageUI: RepliedMessagePreviewPartsProps
   pasteInterception?: (
@@ -65,7 +69,7 @@ type Config<Id extends PostContentExtension['id']> = {
   ) => (typeof extensionInitialDataTypes)[Id]
 }
 const extensionsConfig: {
-  [key in PostContentExtension['id']]: Config<key>
+  [key in MessageExtensionIds]: Config<key>
 } = {
   'subsocial-donations': {
     chatItemComponent: DonateMessagePreview,
@@ -141,7 +145,7 @@ const extensionsConfig: {
   },
 }
 
-export function getExtensionConfig<Id extends PostContentExtension['id']>(
+export function getExtensionConfig<Id extends MessageExtensionIds>(
   // type to make it can accept any string, but still have the autocomplete
   extensionId: Id | (string & {})
 ): Config<Id> | null {
@@ -163,7 +167,7 @@ export function interceptPastedData(
     if (result) {
       useExtensionData
         .getState()
-        .openExtensionModal(key as PostContentExtension['id'], result)
+        .openExtensionModal(key as MessageExtensionIds, result)
       break
     }
   }

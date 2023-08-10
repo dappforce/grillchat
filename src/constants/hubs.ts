@@ -1,3 +1,5 @@
+import { getCommunityHubId } from '@/utils/env/client'
+
 const ALIAS_TO_HUB_ID_MAP: Record<string, string> = {
   x: '1002',
   polka: '1005',
@@ -44,5 +46,23 @@ export function getPinnedChatsInHubId(hubId: string) {
   return PINNED_CHATS_IN_HUB_ID[hubId] ?? []
 }
 
-export const COMMUNITY_CHAT_HUB_ID: string | null = '1030'
-export const PINNED_HUB_IDS: string[] = [COMMUNITY_CHAT_HUB_ID]
+export const COMMUNITY_CHAT_HUB_ID: string | null = getCommunityHubId() || null
+export const PINNED_HUB_IDS = [COMMUNITY_CHAT_HUB_ID].filter(
+  Boolean
+) as string[]
+
+const HUB_ID_WITHOUT_JOIN_BUTTON = [
+  '1023',
+  '1002',
+  '1005',
+  '1010',
+  '1011',
+  '1007',
+]
+const CHAT_WITH_JOIN_BUTTON = ['6914']
+export function getIsHubWithoutJoinButton(hubId: string, chatId: string) {
+  return (
+    HUB_ID_WITHOUT_JOIN_BUTTON.includes(hubId) &&
+    !CHAT_WITH_JOIN_BUTTON.includes(chatId)
+  )
+}

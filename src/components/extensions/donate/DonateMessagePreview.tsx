@@ -10,7 +10,7 @@ import { formatUnits } from 'ethers'
 import { HiArrowUpRight } from 'react-icons/hi2'
 import CommonChatItem from '../common/CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
-import { getMessageExtensionProperties } from '../utils'
+import { getPostExtensionProperties } from '../utils'
 import { explorerByChainName } from './api/config'
 
 type DonatePreviewProps = {
@@ -83,11 +83,13 @@ export default function DonateMessagePreview({
   message,
   onCheckMarkClick,
   scrollToMessage,
+  chatId,
+  hubId,
 }: DonateMessagePreviewProps) {
   const { content } = message
 
   const { extensions, body, inReplyTo } = content || {}
-  const properties = getMessageExtensionProperties(
+  const properties = getPostExtensionProperties(
     extensions?.[0],
     'subsocial-donations'
   )
@@ -101,6 +103,8 @@ export default function DonateMessagePreview({
       scrollToMessage={scrollToMessage}
       myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
       className={cx('relative flex flex-col overflow-hidden')}
+      chatId={chatId}
+      hubId={hubId}
     >
       {({ isMyMessage }) => (
         <div>

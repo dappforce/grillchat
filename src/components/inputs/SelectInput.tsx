@@ -1,40 +1,40 @@
-import useGetTheme from '@/hooks/useGetTheme'
-import { cx } from '@/utils/class-names'
+import { cx, interactionRingStyles } from '@/utils/class-names'
 import { Listbox, Transition } from '@headlessui/react'
-import Image, { StaticImageData } from 'next/image'
+import Image, { ImageProps } from 'next/image'
 import { Fragment } from 'react'
 import { IoIosArrowDown } from 'react-icons/io'
 
-export type ListItem = {
+export type ListItem<AdditionalData = {}> = {
   id: string
-  icon: StaticImageData
+  icon?: ImageProps['src']
   label: string
-  isNativeToken?: boolean
-  disabledItem?: boolean
-}
+  disabledItem?: boolean | string
+} & AdditionalData
 
-type SelectInputProps = {
+type SelectInputProps<AdditionalData> = {
   fieldLabel?: string
-  items: ListItem[]
-  selected: ListItem
-  setSelected: (item: ListItem) => void
+  items: ListItem<AdditionalData>[]
+  selected: ListItem<AdditionalData> | null
+  setSelected: (item: ListItem<AdditionalData>) => void
   imgClassName?: string
-  renderItem?: (item: ListItem, open: boolean) => JSX.Element
+  renderItem?: (item: ListItem<AdditionalData>, open: boolean) => JSX.Element
+  placeholder?: string
+  disabled?: boolean
 }
 
-export default function SelectInput({
+export default function SelectInput<AdditionalData = {}>({
   items,
   fieldLabel,
   selected,
   setSelected,
   imgClassName,
   renderItem,
-}: SelectInputProps) {
-  const theme = useGetTheme()
-
+  disabled,
+  placeholder,
+}: SelectInputProps<AdditionalData>) {
   return (
     <div>
-      <Listbox value={selected} onChange={setSelected}>
+      <Listbox value={selected} onChange={setSelected} disabled={disabled}>
         {({ open }) => (
           <>
             {fieldLabel && (
@@ -46,22 +46,25 @@ export default function SelectInput({
               <Listbox.Button
                 className={cx(
                   'relative w-full cursor-default rounded-2xl',
-                  ' py-2 pl-4 pr-12 text-left',
-                  'text-base leading-6 ring-1 ring-inset ring-gray-500',
-                  'focus:outline-none focus:ring-1 focus:ring-gray-400 ',
-                  theme === 'light'
-                    ? 'bg-slate-200 text-black'
-                    : 'bg-slate-900 text-white'
+                  selected?.icon ? 'py-2' : 'py-3',
+                  'pl-4 pr-12 text-left',
+                  'text-base leading-6 ring-1 ring-inset ring-border-gray',
+                  'bg-background text-text',
+                  interactionRingStyles()
                 )}
               >
-                <span className='flex items-center'>
-                  <Image
-                    src={selected.icon}
-                    className={cx('rounded-full', imgClassName)}
-                    alt=''
-                    role='presentation'
-                  />
-                  <span className='ml-3 block truncate'>{selected.label}</span>
+                <span className='flex items-center gap-3'>
+                  {selected?.icon && (
+                    <Image
+                      src={selected.icon}
+                      className={cx('rounded-full', imgClassName)}
+                      alt=''
+                      role='presentation'
+                    />
+                  )}
+                  <span className='block truncate'>
+                    {selected?.label ?? placeholder ?? ''}
+                  </span>
                 </span>
                 <span className='pointer-events-none absolute inset-y-0 right-0 ml-2 flex items-center pr-4'>
                   <IoIosArrowDown
@@ -108,28 +111,25 @@ export default function SelectInput({
   )
 }
 
-type SelectListItemProps = {
-  item: ListItem
+type SelectListItemProps<AdditionalData> = {
+  item: ListItem<AdditionalData>
   imgClassName?: string
   renderedItem?: JSX.Element
 }
 
-const SelectListItem = ({
+function SelectListItem<AdditionalData>({
   item,
   imgClassName,
   renderedItem,
-}: SelectListItemProps) => {
-  const theme = useGetTheme()
-
+}: SelectListItemProps<AdditionalData>) {
   return (
     <Listbox.Option
-      disabled={item.disabledItem}
+      disabled={!!item.disabledItem}
       className={() =>
         cx(
           'relative flex items-center rounded-lg outline-none transition-colors',
-          'gap-4 px-3 py-2 hover:bg-background-lighter focus:bg-background-lighter',
-          { ['hover:bg-background-light']: item.disabledItem },
-          theme === 'light' ? 'text-black' : 'text-white'
+          'gap-4 px-3 py-2 text-text hover:bg-background-lighter focus:bg-background-lighter',
+          { ['hover:bg-background-light']: item.disabledItem }
         )
       }
       value={item}
@@ -140,22 +140,30 @@ const SelectListItem = ({
             renderedItem
           ) : (
             <>
-              <div className='flex items-center'>
-                <Image
-                  src={item.icon}
-                  className={cx('rounded-full', imgClassName)}
-                  alt=''
-                  role='presentation'
-                />
+              <div className='flex items-center gap-3'>
+                {item.icon && (
+                  <Image
+                    src={item.icon}
+                    className={cx('rounded-full', imgClassName)}
+                    alt=''
+                    role='presentation'
+                  />
+                )}
                 <span
-                  className={cx('ml-3 block truncate text-base', {
+                  className={cx('block truncate text-base', {
                     ['text-gray-500']: item.disabledItem,
                   })}
                 >
                   {item.label}
                 </span>
               </div>
-              {item.disabledItem && <div className='text-gray-500'>Soon</div>}
+              {item.disabledItem && (
+                <div className='text-gray-500'>
+                  {typeof item.disabledItem === 'string'
+                    ? item.disabledItem
+                    : 'Soon'}
+                </div>
+              )}
             </>
           )}
         </div>

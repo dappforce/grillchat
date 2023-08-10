@@ -17,9 +17,11 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
   const runCaptcha = async () => {
     let token: string | null = null
     try {
+      console.log('waiting captcha...')
       token = (await captchaRef.current?.executeAsync()) ?? null
+      console.log('done captcha')
     } catch (e) {
-      console.error(e)
+      console.error('Captcha Error: ', e)
     }
     if (!token) {
       toast.custom((t) => (
@@ -27,6 +29,7 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
       ))
       return null
     }
+
     captchaRef.current?.reset()
     return token
   }

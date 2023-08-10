@@ -4,11 +4,10 @@ import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getBlockedMessageIdsInChatIdQuery } from '@/services/moderation/query'
+import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getMainHubId } from '@/utils/env/client'
 import { getHubPageLink } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
@@ -136,7 +135,7 @@ export default function Navbar({
           ) : (
             <div className='flex w-full items-center justify-between'>
               {logoLink}
-              <div className='flex items-center gap-4'>
+              <div className='flex items-center gap-2'>
                 {notificationBell}
                 {authComponent}
               </div>
@@ -156,17 +155,19 @@ export default function Navbar({
 }
 
 const BELL_CHAT_ID = '6914'
+const BELL_SPACE_ID = '1002'
 const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
 const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
 function NotificationBell() {
   const { data: messageIds } = useCommentIdsByPostId(BELL_CHAT_ID)
-  const { data: blockedIds } = getBlockedMessageIdsInChatIdQuery.useQuery({
-    chatId: BELL_CHAT_ID,
-    hubId: getMainHubId(),
+  const { data: blockedEntities } = getBlockedResourcesQuery.useQuery({
+    spaceId: BELL_SPACE_ID,
   })
+  const blockedIds = blockedEntities?.blockedResources.postId
+
   const filteredMessageIds = useMemo(() => {
     if (!messageIds || !blockedIds) return null
-    return messageIds.filter((id) => !blockedIds.blockedMessageIds.includes(id))
+    return messageIds.filter((id) => !blockedIds.includes(id))
   }, [messageIds, blockedIds])
 
   const [unreadCount, setUnreadCount] = useState(0)
@@ -204,7 +205,7 @@ function NotificationBell() {
       <div className='relative'>
         <HiOutlineBell className='text-xl' />
         {unreadCount > 0 && (
-          <div className='absolute right-0.5 top-0 -translate-y-1/2 translate-x-1/2 rounded-full bg-text-red px-1.5 text-xs'>
+          <div className='absolute right-0.5 top-0 -translate-y-1/2 translate-x-1/2 rounded-full bg-text-red px-1.5 text-xs text-text-on-primary'>
             {unreadCount}
           </div>
         )}

@@ -1,10 +1,12 @@
-import { extensionInitialDataTypes } from '@/components/extensions/config'
-import { PostContentExtension } from '@subsocial/api/types'
+import {
+  extensionInitialDataTypes,
+  MessageExtensionIds,
+} from '@/components/extensions/config'
 import { create } from './utils'
 
 type State = {
   _extensionModalStates: {
-    [key in PostContentExtension['id']]?: {
+    [key in MessageExtensionIds]?: {
       isOpen: boolean
       initialData: unknown
     }
@@ -12,8 +14,8 @@ type State = {
 }
 
 type Actions = {
-  closeExtensionModal: (id: PostContentExtension['id']) => void
-  openExtensionModal: <Id extends PostContentExtension['id']>(
+  closeExtensionModal: (id: MessageExtensionIds) => void
+  openExtensionModal: <Id extends MessageExtensionIds>(
     id: Id,
     initialData: (typeof extensionInitialDataTypes)[Id]
   ) => void
@@ -49,7 +51,7 @@ export const useExtensionData = create<State & Actions>()((set, get) => ({
   },
 }))
 
-export function useIsExtensionModalOpen<Id extends PostContentExtension['id']>(
+export function useIsExtensionModalOpen<Id extends MessageExtensionIds>(
   id: Id
 ) {
   return useExtensionData(
@@ -57,9 +59,9 @@ export function useIsExtensionModalOpen<Id extends PostContentExtension['id']>(
   )
 }
 
-export function useExtensionModalInitialData<
-  Id extends PostContentExtension['id']
->(id: Id) {
+export function useExtensionModalInitialData<Id extends MessageExtensionIds>(
+  id: Id
+) {
   return (
     useExtensionData(
       (state) =>
@@ -69,9 +71,7 @@ export function useExtensionModalInitialData<
   )
 }
 
-export function useCloseExtensionModal<Id extends PostContentExtension['id']>(
-  id: Id
-) {
+export function useCloseExtensionModal<Id extends MessageExtensionIds>(id: Id) {
   const closeExtensionModal = useExtensionData(
     (state) => state.closeExtensionModal
   )
@@ -79,9 +79,7 @@ export function useCloseExtensionModal<Id extends PostContentExtension['id']>(
   return () => closeExtensionModal(id)
 }
 
-export function useExtensionModalState<Id extends PostContentExtension['id']>(
-  id: Id
-) {
+export function useExtensionModalState<Id extends MessageExtensionIds>(id: Id) {
   const isOpen = useIsExtensionModalOpen(id)
   const closeModal = useCloseExtensionModal(id)
 

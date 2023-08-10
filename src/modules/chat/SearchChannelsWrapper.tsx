@@ -41,9 +41,12 @@ export default function SearchChannelsWrapper({
     })
 
   const { data: mainPostIds } = getPostIdsBySpaceIdQuery.useQuery(
-    getMainHubId()
+    getMainHubId(),
+    { enabled: !isSquidAvailable }
   )
-  const mainPostsQueries = getPostQuery.useQueries(mainPostIds?.postIds ?? [])
+  const mainPostsQueries = getPostQuery.useQueries(mainPostIds?.postIds ?? [], {
+    enabled: !isSquidAvailable,
+  })
 
   let usedSearchResults = searchResults
   if (localSearch) {

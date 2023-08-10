@@ -5,9 +5,16 @@ import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
 import MetadataModal from '@/components/modals/MetadataModal'
+import ModerationModal from '@/components/moderation/ModerationModal'
 import Toast from '@/components/Toast'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
+import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
+import { useCanSendMessage } from '@/hooks/useCanSendMessage'
+import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
+import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
@@ -19,25 +26,33 @@ import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
-import { BsFillReplyFill } from 'react-icons/bs'
+import { BsFillPinAngleFill, BsFillReplyFill } from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
+import { LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine } from 'react-icons/ri'
 import urlJoin from 'url-join'
+import usePinnedMessage from '../hooks/usePinnedMessage'
 
 export type ChatItemMenusProps = {
   messageId: string
+  chatId: string
+  hubId: string
   children: FloatingMenusProps['children']
   enableChatMenu?: boolean
 }
 
-type ModalState = 'login' | 'metadata' | null
+type ModalState = 'login' | 'metadata' | 'moderate' | null
 
 export default function ChatItemMenus({
   messageId,
   children,
+  chatId,
+  hubId,
   enableChatMenu = true,
 }: ChatItemMenusProps) {
+  const canSendMessage = useCanSendMessage(hubId, chatId)
+
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
 
@@ -62,6 +77,7 @@ export default function ChatItemMenus({
     setReplyTo(messageId)
   }
 
+  const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { ownerId } = message?.struct || {}
   const { data: messageOwnerAccountData } = getAccountDataQuery.useQuery(
     ownerId ?? ''
@@ -70,6 +86,7 @@ export default function ChatItemMenus({
 
   const isSent = !isOptimisticId(messageId)
 
+  const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
     const donateMenuItem: FloatingMenusProps['menus'][number] = {
       text: 'Donate',
@@ -88,15 +105,27 @@ export default function ChatItemMenus({
       },
     }
 
-    const showDonateMenuItem = messageOwnerEvmAddress
+    const replyItem: FloatingMenusProps['menus'][number] = {
+      text: 'Reply',
+      icon: BsFillReplyFill,
+      onClick: () => setMessageAsReply(messageId),
+    }
+
+    const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage
 
     return [
-      {
-        text: 'Reply',
-        icon: BsFillReplyFill,
-        onClick: () => setMessageAsReply(messageId),
-      },
+      ...(canSendMessage ? [replyItem] : []),
+      ...(pinUnpinMenu ? [pinUnpinMenu] : []),
       ...(showDonateMenuItem ? [donateMenuItem] : []),
+      ...(isAuthorized
+        ? [
+            {
+              icon: LuShield,
+              text: 'Moderate',
+              onClick: () => setModalState('moderate'),
+            },
+          ]
+        : []),
       ...(address && canUsePromoExtensionAccounts.includes(address)
         ? [
             {
@@ -180,6 +209,42 @@ export default function ChatItemMenus({
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}
       />
+      {COMMUNITY_CHAT_HUB_ID && (
+        <ModerationModal
+          isOpen={modalState === 'moderate'}
+          closeModal={() => setModalState(null)}
+          messageId={messageId}
+          chatId={chatId}
+          hubId={COMMUNITY_CHAT_HUB_ID}
+        />
+      )}
     </>
   )
+}
+
+function usePinUnpinMenuItem(chatId: string, messageId: string) {
+  const { mutate: pinMessage, error: pinningError } = usePinMessage()
+  useToastError(pinningError, 'Error pinning message')
+  const isChatOwner = useIsOwnerOfPost(chatId)
+
+  const pinnedMessageId = usePinnedMessage(chatId)
+
+  const pinMenuItem: FloatingMenusProps['menus'][number] = {
+    text: 'Pin',
+    icon: BsFillPinAngleFill,
+    onClick: () => {
+      pinMessage({ action: 'pin', chatId, messageId })
+    },
+  }
+  const unpinMenuItem: FloatingMenusProps['menus'][number] = {
+    text: 'Unpin',
+    icon: BsFillPinAngleFill,
+    onClick: () => {
+      pinMessage({ action: 'unpin', chatId, messageId })
+    },
+  }
+
+  if (pinnedMessageId === messageId) return unpinMenuItem
+  if (isChatOwner) return pinMenuItem
+  return null
 }

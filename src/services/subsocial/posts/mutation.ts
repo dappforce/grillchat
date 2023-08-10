@@ -5,8 +5,9 @@ import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { IpfsWrapper } from '@/utils/ipfs'
-import { PostContent } from '@subsocial/api/types'
-import { useQueryClient } from '@tanstack/react-query'
+import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
+import { PinsExtension, PostContent } from '@subsocial/api/types'
+import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import {
@@ -233,7 +234,7 @@ export function useHideUnhidePost(
 
       return {
         tx: substrateApi.tx.posts.updatePost(postId, {
-          hidden: action === 'hide' ? true : false,
+          hidden: action === 'hide',
         }),
         summary: 'Hide/Unhide chat',
       }
@@ -248,7 +249,7 @@ export function useHideUnhidePost(
               ...post,
               struct: {
                 ...post.struct,
-                hidden: data.action === 'hide' ? true : false,
+                hidden: data.action === 'hide',
               },
             }
           })
@@ -268,3 +269,111 @@ export const HideUnhideChatWrapper = createMutationWrapper(
   useHideUnhidePost,
   'Failed to hide/unhide chat'
 )
+
+export type PinMessageParams = {
+  chatId: string
+  messageId: string
+  action: 'pin' | 'unpin'
+}
+export function usePinMessage(
+  config?: SubsocialMutationConfig<PinMessageParams>
+) {
+  const client = useQueryClient()
+  const getWallet = useWalletGetter()
+
+  const waitHasEnergy = useWaitHasEnergy()
+
+  return useSubsocialMutation<PinMessageParams>(
+    getWallet,
+    async (params, { substrateApi }) => {
+      console.log('waiting energy...')
+      await waitHasEnergy()
+
+      const newContent = await getUpdatedPinPostContent(client, params)
+      const { success, cid } = await saveFile(newContent)
+      if (!success || !cid) throw new Error('Failed to save file')
+
+      return {
+        tx: substrateApi.tx.posts.updatePost(params.chatId, {
+          content: IpfsWrapper(cid),
+        }),
+        summary: 'Pinning message',
+      }
+    },
+    config,
+    {
+      txCallbacks: {
+        onStart: async ({ data }) => {
+          preventWindowUnload()
+
+          const newContent = await getUpdatedPinPostContent(client, data)
+          getPostQuery.setQueryData(client, data.chatId, (chat) => {
+            if (!chat) return chat
+            return {
+              ...chat,
+              content: chat.content
+                ? {
+                    ...chat.content,
+                    ...newContent,
+                  }
+                : null,
+            }
+          })
+        },
+        onSend: () => allowWindowUnload(),
+        onError: async ({ data }) => {
+          allowWindowUnload()
+          getPostQuery.invalidate(client, data.chatId)
+        },
+        onSuccess: async ({ data }) => {
+          await invalidatePostServerCache(data.chatId)
+          getPostQuery.invalidate(client, data.chatId)
+        },
+      },
+    }
+  )
+}
+
+async function getUpdatedPinPostContent(
+  client: QueryClient,
+  { action, chatId, messageId }: PinMessageParams
+) {
+  const chat = await getPostQuery.fetchQuery(client, chatId)
+  if (!chat?.content) throw new Error('Pin Chat not found')
+
+  const content = chat.content
+  const chatContent = {
+    body: content.body,
+    title: content.title,
+    image: content.image,
+    extensions: content.extensions,
+    inReplyTo: content.inReplyTo,
+  }
+
+  const pinExtension = chatContent.extensions?.find(
+    (ext) => ext.id === 'subsocial-pinned-posts'
+  ) as PinsExtension
+
+  if (action === 'pin') pinMessage(chatContent, pinExtension, messageId)
+  else unpinMessage(pinExtension)
+
+  return chatContent
+}
+function pinMessage(
+  chatContent: Pick<PostContent, 'extensions'>,
+  pinExtension: PinsExtension,
+  messageId: string
+) {
+  if (!pinExtension) {
+    if (!chatContent.extensions) chatContent.extensions = []
+    chatContent.extensions.push({
+      id: 'subsocial-pinned-posts',
+      properties: { ids: [messageId] },
+    })
+  } else {
+    pinExtension.properties.ids = [messageId]
+  }
+}
+function unpinMessage(pinExtension: PinsExtension) {
+  pinExtension.properties.ids = []
+}

@@ -1,6 +1,7 @@
 import PinIcon from '@/assets/icons/pin.png'
 import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfiniteScrollData'
 import Container from '@/components/Container'
+import { getPostExtension } from '@/components/extensions/utils'
 import LinkText from '@/components/LinkText'
 import MessageModal from '@/components/modals/MessageModal'
 import ScrollableContainer from '@/components/ScrollableContainer'
@@ -251,27 +252,28 @@ function ChatListContent({
                 isLastReadMessage && !isBottomMessage
 
               const chatElement = message && (
-                <ChatItemMenus messageId={message.id} key={message.id}>
+                <ChatItemMenus
+                  chatId={chatId}
+                  messageId={message.id}
+                  key={message.id}
+                  hubId={hubId}
+                >
                   {(config) => {
                     const { referenceProps, toggleDisplay } = config || {}
                     return (
-                      <div
+                      <ChatItemContainer
                         {...referenceProps}
                         onContextMenu={(e) => {
                           e.preventDefault()
                           toggleDisplay?.(e)
                         }}
-                        className='flex w-full flex-col'
-                      >
-                        <ChatItemContainer
-                          enableChatMenu={false}
-                          hubId={hubId}
-                          chatId={chatId}
-                          message={message}
-                          messageBubbleId={getMessageElementId(message.id)}
-                          scrollToMessage={scrollToMessage}
-                        />
-                      </div>
+                        enableChatMenu={false}
+                        hubId={hubId}
+                        chatId={chatId}
+                        message={message}
+                        messageBubbleId={getMessageElementId(message.id)}
+                        scrollToMessage={scrollToMessage}
+                      />
                     )
                   }}
                 </ChatItemMenus>
@@ -291,6 +293,7 @@ function ChatListContent({
         </Component>
       </ScrollableContainer>
       <MessageModal
+        hubId={hubId}
         isOpen={!!messageModalMsgId}
         closeModal={() => setMessageModalMsgId('')}
         messageId={messageModalMsgId}
@@ -373,8 +376,17 @@ function PinnedMessage({
   asContainer,
   scrollToMessage,
 }: PinnedMessageProps) {
-  const pinnedMessage = getPinnedMessageInChatId(chatId)
-  const { data: message } = getPostQuery.useQuery(pinnedMessage)
+  const { data: chat } = getPostQuery.useQuery(chatId)
+  const pinExtension = getPostExtension(
+    chat?.content?.extensions,
+    'subsocial-pinned-posts'
+  )
+
+  const pinnedMessage =
+    getPinnedMessageInChatId(chatId) || pinExtension?.properties.ids[0]
+  const { data: message } = getPostQuery.useQuery(pinnedMessage ?? '', {
+    enabled: !!pinnedMessage,
+  })
   if (!message) return null
 
   const Component = asContainer ? Container<'div'> : 'div'
@@ -384,13 +396,13 @@ function PinnedMessage({
         className='flex cursor-pointer items-center gap-4 overflow-hidden py-2'
         onClick={() => scrollToMessage(message.id)}
       >
-        <div className='mr-1'>
+        <div className='mr-0.5 flex-shrink-0'>
           <Image
             src={PinIcon}
             alt='pin'
             width={16}
             height={16}
-            className='mx-3 h-4 w-4 flex-shrink-0'
+            className='ml-3 h-4 w-4'
           />
         </div>
         <div className='flex flex-col overflow-hidden'>

@@ -7,11 +7,12 @@ export type DonateModalStep =
   | 'wallet-action-required'
   | 'add-network'
 
+export type TokenListItem = ListItem<{ isNativeToken?: boolean }>
 export type DonateProps = DonateModalProps & {
   setCurrentStep: (currentStep: DonateModalStep) => void
   currentStep: DonateModalStep
-  chainState: [ListItem, Dispatch<SetStateAction<ListItem>>]
-  tokenState: [ListItem, Dispatch<SetStateAction<ListItem>>]
+  chainState: [TokenListItem, Dispatch<SetStateAction<TokenListItem>>]
+  tokenState: [TokenListItem, Dispatch<SetStateAction<TokenListItem>>]
   onSwitchButtonClick: () => void
   onSubmit: () => void
 }
