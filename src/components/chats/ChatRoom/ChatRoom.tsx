@@ -95,6 +95,8 @@ export default function ChatRoom({
       >
         {replyTo && !showEmptyPrimaryChatInput && (
           <RepliedMessage
+            chatId={chatId}
+            hubId={hubId}
             replyMessageId={replyTo}
             scrollContainer={scrollContainerRef}
           />
@@ -115,6 +117,7 @@ export default function ChatRoom({
           if (isJoined || isHubWithoutJoinButton)
             return (
               <ChatInputBar
+                hubId={hubId}
                 formProps={{
                   chatId,
                   onSubmit: scrollToBottom,

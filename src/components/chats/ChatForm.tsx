@@ -4,6 +4,7 @@ import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useAutofocus from '@/hooks/useAutofocus'
+import useNetworkStatus from '@/hooks/useNetworkStatus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
@@ -25,8 +26,12 @@ import {
   useRef,
   useState,
 } from 'react'
+import { toast } from 'react-hot-toast'
+import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
+import PopOver from '../floating/PopOver'
+import Toast from '../Toast'
 
 const CaptchaInvisible = dynamic(
   () => import('@/components/captcha/CaptchaInvisible'),
@@ -72,6 +77,8 @@ export default function ChatForm({
   beforeMesageSend,
   ...props
 }: ChatFormProps) {
+  const networkStatus = useNetworkStatus()
+
   const replyTo = useMessageData((state) => state.replyTo)
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
 
@@ -134,7 +141,9 @@ export default function ChatForm({
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
 
+  const isNetworkConnected = networkStatus === 'connected'
   const isDisabled =
+    !isNetworkConnected ||
     (mustHaveMessageBody && !processMessage(messageBody)) ||
     sendButtonProps?.disabled
 
@@ -153,6 +162,25 @@ export default function ChatForm({
     }
 
     const processedMessage = processMessage(messageBody)
+
+    if (!isNetworkConnected) {
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          title='Network is reconnecting'
+          description='Please try again later, or refresh the page'
+          action={
+            <Button
+              size='circle'
+              className='ml-2'
+              onClick={() => window.location.reload()}
+            >
+              <IoRefresh />
+            </Button>
+          }
+        />
+      ))
+    }
 
     if (isDisabled) return
 
@@ -188,7 +216,6 @@ export default function ChatForm({
         ...messageParams,
       })
       setIsRequestingEnergy(true)
-      sendEvent('request energy and send message')
     }
 
     onSubmit?.()
@@ -209,24 +236,43 @@ export default function ChatForm({
             handleSubmit(token)
           }
 
-          const renderSendButton = (classNames: string) => (
-            <Button
-              onTouchEnd={(e) => {
-                // For mobile, to prevent keyboard from hiding
-                if (shouldSendMessage) {
-                  submitForm(e)
-                }
-              }}
-              tabIndex={-1}
-              onClick={submitForm}
-              size='circle'
-              variant={isDisabled ? 'mutedOutline' : 'primary'}
-              {...sendButtonProps}
-              className={cx(classNames, sendButtonProps?.className)}
-            >
-              <Send className='relative top-px h-4 w-4' />
-            </Button>
-          )
+          const renderSendButton = (classNames: string) => {
+            const sendButton = (
+              <Button
+                onTouchEnd={(e) => {
+                  // For mobile, to prevent keyboard from hiding
+                  if (shouldSendMessage) {
+                    submitForm(e)
+                  }
+                }}
+                tabIndex={-1}
+                onClick={submitForm}
+                size='circle'
+                variant={isDisabled ? 'mutedOutline' : 'primary'}
+                {...sendButtonProps}
+                className={cx(
+                  isNetworkConnected && classNames,
+                  sendButtonProps?.className
+                )}
+              >
+                <Send className='relative top-px h-4 w-4' />
+              </Button>
+            )
+
+            if (isNetworkConnected) return sendButton
+            return (
+              <PopOver
+                triggerOnHover
+                yOffset={8}
+                triggerClassName={classNames}
+                trigger={sendButton}
+                placement='top-end'
+                panelSize='sm'
+              >
+                <p>Network connecting...</p>
+              </PopOver>
+            )
+          }
 
           return (
             <form

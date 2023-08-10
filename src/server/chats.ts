@@ -7,7 +7,7 @@ import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
-import { prefetchBlockedEntities } from './moderation'
+import { prefetchBlockedEntities } from './moderation/prefetch'
 
 export async function prefetchChatPreviewsData(
   queryClient: QueryClient,
@@ -21,24 +21,20 @@ export async function prefetchChatPreviewsData(
 
   const [{ lastMessages, chats, messageIdsByChatIds }] = await Promise.all([
     getChatPreviewsData(allChatIds),
-    prefetchBlockedEntities(queryClient, hubId, allChatIds),
     getSpaceQuery.fetchQuery(queryClient, hubId),
   ] as const)
 
-  const needToPrefetchBlockedEntities: Record<string, string[]> = {}
+  const additionalHubIds: Set<string> = new Set()
   chats.forEach((chat) => {
     const originalHubId = chat.struct.spaceId
-    if (originalHubId !== hubId) return
+    if (!originalHubId || originalHubId === hubId) return
 
-    if (!needToPrefetchBlockedEntities[originalHubId])
-      needToPrefetchBlockedEntities[originalHubId] = []
-
-    needToPrefetchBlockedEntities[originalHubId].push(chat.id)
+    additionalHubIds.add(originalHubId)
   })
-  await Promise.all(
-    Object.entries(needToPrefetchBlockedEntities).map(([hubId, chatIds]) => {
-      return prefetchBlockedEntities(queryClient, hubId, chatIds)
-    })
+  await prefetchBlockedEntities(
+    queryClient,
+    [hubId, ...Array.from(additionalHubIds)],
+    allChatIds
   )
 
   messageIdsByChatIds.forEach((messageIds, idx) => {

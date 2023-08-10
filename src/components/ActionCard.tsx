@@ -2,6 +2,7 @@ import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import Button, { ButtonProps } from './Button'
+import Card from './Card'
 import DotBlinkingNotification from './DotBlinkingNotification'
 
 type Action = {
@@ -102,9 +103,9 @@ function ActionItem({ action, size }: ActionItemProps) {
         <span className='flex items-center gap-2'>
           {text}{' '}
           {isComingSoon && (
-            <span className='rounded-full bg-background-lightest px-2 py-0.5 text-xs'>
+            <Card size='sm' className='bg-background-lightest'>
               Soon
-            </span>
+            </Card>
           )}
           {showBlinking && <DotBlinkingNotification />}
         </span>

@@ -1,13 +1,22 @@
 import BellIcon from '@/assets/icons/bell.svg'
 import MailIcon from '@/assets/icons/mail.svg'
+import Card from '@/components/Card'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList from '@/components/MenuList'
+import Notice from '@/components/Notice'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
+import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { cx } from '@/utils/class-names'
 import { FaDiscord, FaTelegram } from 'react-icons/fa'
 import { ContentProps } from '../../types'
 
-export default function NotificationContent({ setCurrentState }: ContentProps) {
+export default function NotificationContent({
+  address,
+  setCurrentState,
+}: ContentProps) {
+  const { data: linkedAccounts } = getLinkedTelegramAccountsQuery.useQuery({
+    address,
+  })
   const { showNotification, closeNotification } = useFirstVisitNotification(
     'telegram-notification'
   )
@@ -20,6 +29,7 @@ export default function NotificationContent({ setCurrentState }: ContentProps) {
           text: (
             <span className='flex items-center gap-2'>
               <span>Telegram Bot</span>
+              {!!linkedAccounts?.length && <Notice size='sm'>Enabled</Notice>}
               {showNotification && <DotBlinkingNotification />}
             </span>
           ),
@@ -55,9 +65,9 @@ export default function NotificationContent({ setCurrentState }: ContentProps) {
 
 function SoonMenu({ text }: { text: string }) {
   return (
-    <div className='flex w-full items-center justify-between'>
+    <div className='flex w-full items-center gap-2'>
       <span>{text}</span>
-      <span className='text-xs'>Soon</span>
+      <Card size='sm'>Soon</Card>
     </div>
   )
 }

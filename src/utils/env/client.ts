@@ -26,14 +26,6 @@ export function getHubIds() {
   return hubIds.split(',')
 }
 
-export function getModerationUrl() {
-  return checkEnv(
-    process.env.NEXT_PUBLIC_MODERATION_URL,
-    'NEXT_PUBLIC_MODERATION_URL',
-    true
-  )
-}
-
 export function getAmpId() {
   return checkEnv(process.env.NEXT_PUBLIC_AMP_ID, 'NEXT_PUBLIC_AMP_ID')
 }
@@ -44,4 +36,11 @@ export function getGaId() {
 
 export function getSquidUrl() {
   return checkEnv(process.env.NEXT_PUBLIC_SQUID_URL, 'NEXT_PUBLIC_SQUID_URL')
+}
+
+export function getCommunityHubId() {
+  return checkEnv(
+    process.env.NEXT_PUBLIC_COMMUNITY_HUB_ID,
+    'NEXT_PUBLIC_COMMUNITY_HUB_ID'
+  )
 }

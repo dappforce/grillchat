@@ -1,7 +1,7 @@
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { ComponentProps } from 'react'
+import { ComponentProps, forwardRef } from 'react'
 import ChatItem, { ChatItemProps } from '../ChatItem'
 
 export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
@@ -10,12 +10,10 @@ export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
   hubId: string
 }
 
-export default function ChatItemContainer({
-  containerProps,
-  chatId,
-  hubId,
-  ...props
-}: ChatItemContainerProps) {
+function ChatItemContainer(
+  { containerProps, chatId, hubId, ...props }: ChatItemContainerProps,
+  ref: any
+) {
   const { message } = props
   const isMessageBlockedInCurrentHub = useIsMessageBlocked(
     hubId,
@@ -44,13 +42,21 @@ export default function ChatItemContainer({
   return (
     <div
       {...containerProps}
+      ref={ref}
       className={cx(
         'w-11/12 md:w-8/12',
         isMyMessage && 'self-end',
         containerProps?.className
       )}
     >
-      <ChatItem {...props} chatId={chatId} isMyMessage={isMyMessage} />
+      <ChatItem
+        {...props}
+        chatId={chatId}
+        isMyMessage={isMyMessage}
+        hubId={hubId}
+      />
     </div>
   )
 }
+
+export default forwardRef(ChatItemContainer)

@@ -6,5 +6,5 @@ export function checkEnv(
   if (data === undefined && throwError) {
     throw new Error(`env ${envName} is not set`)
   }
-  return data as string
+  return data ?? ''
 }

@@ -4,11 +4,10 @@ import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getBlockedMessageIdsInChatIdQuery } from '@/services/moderation/query'
+import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getMainHubId } from '@/utils/env/client'
 import { getHubPageLink } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
@@ -160,13 +159,14 @@ const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
 const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
 function NotificationBell() {
   const { data: messageIds } = useCommentIdsByPostId(BELL_CHAT_ID)
-  const { data: blockedIds } = getBlockedMessageIdsInChatIdQuery.useQuery({
-    chatId: BELL_CHAT_ID,
-    hubId: getMainHubId(),
+  const { data: blockedEntities } = getBlockedResourcesQuery.useQuery({
+    postId: BELL_CHAT_ID,
   })
+  const blockedIds = blockedEntities?.blockedResources.postId
+
   const filteredMessageIds = useMemo(() => {
     if (!messageIds || !blockedIds) return null
-    return messageIds.filter((id) => !blockedIds.blockedMessageIds.includes(id))
+    return messageIds.filter((id) => !blockedIds.includes(id))
   }, [messageIds, blockedIds])
 
   const [unreadCount, setUnreadCount] = useState(0)

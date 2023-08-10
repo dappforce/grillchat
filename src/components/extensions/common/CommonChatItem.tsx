@@ -50,6 +50,8 @@ export default function CommonChatItem({
   textColor,
   className,
   isMyMessage: _isMyMessage,
+  chatId,
+  hubId,
 }: CommonChatItemProps) {
   const myAddress = useMyAccount((state) => state.address)
   const { struct, content } = message
@@ -129,6 +131,8 @@ export default function CommonChatItem({
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
             textColor={textColor}
+            chatId={chatId}
+            hubId={hubId}
           />
         )}
 
