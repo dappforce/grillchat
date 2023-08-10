@@ -17,11 +17,10 @@ import {
 import { queryClient } from '@/services/provider'
 import mutationWrapper from '@/subsocial-query/base'
 import axios, { AxiosResponse } from 'axios'
-import { sortObj } from 'jsonabc'
 import { processMessageTpl } from '../utils'
 import { getLinkedTelegramAccountsQuery } from './query'
 
-async function linkingAccount(data: ApiNotificationsLinkMessageBody) {
+async function linkTelegramAccount(data: ApiNotificationsLinkMessageBody) {
   if (!data) return null
 
   const res = await axios.post('/api/notifications/link-message', data)
@@ -39,7 +38,7 @@ async function linkingAccount(data: ApiNotificationsLinkMessageBody) {
   const resData = linkRes.data
   return resData.url
 }
-export const useLinkingAccount = mutationWrapper(linkingAccount, {
+export const useLinkTelegramAccount = mutationWrapper(linkTelegramAccount, {
   onSuccess: (_, variables) => {
     if (variables.action === 'unlink') {
       getLinkedTelegramAccountsQuery.invalidate(queryClient, {
@@ -49,31 +48,20 @@ export const useLinkingAccount = mutationWrapper(linkingAccount, {
   },
 })
 
-async function getFcmLinkingMessage(data: ApiFcmNotificationsLinkMessageBody) {
+async function linkFcm(data: ApiFcmNotificationsLinkMessageBody) {
   if (!data) return null
 
   const res = await axios.post('/api/notifications/link-fcm', data)
   const encodedMessage = (res.data as ApiFcmNotificationsLinkMessageResponse)
     .data
-  const decodedMessage = decodeURIComponent(encodedMessage)
+  const signedMessage = await processMessageTpl(encodedMessage)
 
-  const parsedMessage = JSON.parse(decodedMessage)
-  const sortedPayload = sortObj(parsedMessage.payload)
-
-  return {
-    messageData: parsedMessage,
-    payloadToSign: JSON.stringify(sortedPayload),
-  }
+  const linkRes = await axios.post<
+    any,
+    AxiosResponse<ApiCommitSignedMessageResponse>,
+    ApiCommitSignedMessageBody
+  >('/api/notifications/commit', { signedMessageWithDetails: signedMessage })
+  const resData = linkRes.data
+  return resData.message
 }
-export const useGetFcmLinkingMessage = mutationWrapper(getFcmLinkingMessage)
-
-async function commitSignedMessageWithAction(data: ApiCommitSignedMessageBody) {
-  if (!data) return null
-
-  const res = await axios.post('/api/notifications/commit', data)
-  const resData = res.data as ApiCommitSignedMessageResponse
-  return resData
-}
-export const useCommitSignedMessageWithAction = mutationWrapper(
-  commitSignedMessageWithAction
-)
+export const useLinkFcm = mutationWrapper(linkFcm)

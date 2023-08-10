@@ -1,12 +1,7 @@
 import Button from '@/components/Button'
-import useSignMessage from '@/hooks/useSignMessage'
-import {
-  useCommitSignedMessageWithAction,
-  useGetFcmLinkingMessage,
-} from '@/services/api/notifications/mutation'
+import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { getMessageToken } from '@/services/firebase/messaging'
 import { LocalStorage } from '@/utils/storage'
-import { sortObj } from 'jsonabc'
 import { useEffect, useState } from 'react'
 import { ContentProps } from '../../types'
 
@@ -53,30 +48,17 @@ function DisableNotificationButton({
 }: NotificationButtonProps) {
   const [isGettingToken, setIsGettingToken] = useState(false)
 
-  const { mutate: commitSignedMessage, isLoading: isCommitingMessage } =
-    useCommitSignedMessageWithAction({
-      onSuccess: (data) => {
-        if (!data) throw new Error('Error in disabling notification request')
+  const { mutate: unlinkFcm, isLoading: isUnlinking } = useLinkFcm({
+    onSuccess: (data) => {
+      if (!data) throw new Error('Error in disabling notification request')
 
-        // FCM Token Disabled.
-        storage.remove()
-        setIsRegistered(false)
-      },
-    })
+      // FCM Token Disabled.
+      storage.remove()
+      setIsRegistered(false)
+    },
+  })
 
-  const processMessage = useProcessMessage()
-  const { mutate: getLinkingMessage, isLoading: isGettingLinkingMessage } =
-    useGetFcmLinkingMessage({
-      onSuccess: async (data) => {
-        const processedData = await processMessage(data)
-        commitSignedMessage({
-          signedMessageWithDetails: processedData,
-        })
-      },
-    })
-
-  const isLoading =
-    isCommitingMessage || isGettingLinkingMessage || isGettingToken
+  const isLoading = isUnlinking || isGettingToken
 
   const handleClickDisable = async () => {
     if (!address) return
@@ -85,7 +67,7 @@ function DisableNotificationButton({
     setIsGettingToken(false)
     if (!fcmToken) return
 
-    getLinkingMessage({ address, fcmToken, action: 'unlink' })
+    unlinkFcm({ address, fcmToken, action: 'unlink' })
   }
 
   return (
@@ -102,32 +84,17 @@ function EnableNotificationButton({
   const [isGettingToken, setIsGettingToken] = useState(false)
   const [fcmToken, setFcmToken] = useState<string | undefined>()
 
-  const { mutate: commitSignedMessage, isLoading: isCommitingMessage } =
-    useCommitSignedMessageWithAction({
-      onSuccess: (data) => {
-        if (!data) throw new Error('Error subscribing for notifications')
+  const { mutate: linkFcm, isLoading: isLinking } = useLinkFcm({
+    onSuccess: (data) => {
+      // FCM Token Enabled.
+      if (fcmToken) {
+        storage.set(fcmToken)
+        setIsRegistered(true)
+      }
+    },
+  })
 
-        // FCM Token Enabled.
-        if (fcmToken) {
-          storage.set(fcmToken)
-          setIsRegistered(true)
-        }
-      },
-    })
-
-  const processMessage = useProcessMessage()
-  const { mutate: getLinkingMessage, isLoading: isGettingLinkingMessage } =
-    useGetFcmLinkingMessage({
-      onSuccess: async (data) => {
-        const processedData = await processMessage(data)
-        commitSignedMessage({
-          signedMessageWithDetails: processedData,
-        })
-      },
-    })
-
-  const isLoading =
-    isCommitingMessage || isGettingLinkingMessage || isGettingToken
+  const isLoading = isLinking || isGettingToken
 
   const handleClickEnable = async () => {
     if (!address) return
@@ -138,7 +105,7 @@ function EnableNotificationButton({
     if (!fcmToken) return
 
     setFcmToken(fcmToken)
-    getLinkingMessage({ address, fcmToken, action: 'link' })
+    linkFcm({ address, fcmToken, action: 'link' })
   }
 
   return (
@@ -146,21 +113,4 @@ function EnableNotificationButton({
       Enable Notifications
     </Button>
   )
-}
-
-function useProcessMessage() {
-  const signMessage = useSignMessage()
-
-  return async (data: { messageData: any; payloadToSign: string } | null) => {
-    if (!data) throw new Error('No data')
-
-    const signedPayload = await signMessage(data.payloadToSign)
-    data.messageData['signature'] = signedPayload
-
-    const signedMessage = encodeURIComponent(
-      JSON.stringify(sortObj(data.messageData))
-    )
-
-    return signedMessage
-  }
 }
