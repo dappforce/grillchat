@@ -314,7 +314,7 @@ export function usePinMessage(
               content: chat.content
                 ? {
                     ...chat.content,
-                    extensions: newContent.extensions,
+                    ...newContent,
                   }
                 : null,
             }
