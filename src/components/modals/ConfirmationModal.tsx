@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import Button, { ButtonProps } from '../Button'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
@@ -7,6 +7,7 @@ type ClickHandler = () => Promise<void> | void
 export type ConfirmationModalProps = ModalFunctionalityProps & {
   title: string
   description?: string
+  content?: () => ReactNode
   autoCloseAfterAction?: boolean
   primaryButtonProps: ButtonProps & { onClick?: ClickHandler }
   secondaryButtonProps: ButtonProps & { onClick?: ClickHandler }
@@ -15,6 +16,7 @@ export type ConfirmationModalProps = ModalFunctionalityProps & {
 export default function ConfirmationModal({
   title,
   description,
+  content,
   primaryButtonProps,
   secondaryButtonProps,
   autoCloseAfterAction = true,
@@ -41,6 +43,7 @@ export default function ConfirmationModal({
   return (
     <Modal {...props} title={title} description={description} withCloseButton>
       <div className='mt-2 flex flex-col gap-4'>
+        {content?.()}
         <Button
           isLoading={isLoadingPrimary}
           disabled={isLoadingSecondary}

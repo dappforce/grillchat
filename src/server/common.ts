@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
-export type ApiResponse<T> = T & {
+export type ApiResponse<T = {}> = T & {
   success: boolean
   message: string
   errors?: any
 }
 
 export function handlerWrapper<Input extends z.ZodTypeAny>(config: {
-  inputSchema: Input
+  inputSchema: Input | null
   dataGetter: (req: NextApiRequest) => unknown
 }) {
   return <Output>(handlerConfig: {
@@ -30,6 +30,19 @@ export function handlerWrapper<Input extends z.ZodTypeAny>(config: {
         return res.status(404).end()
 
       const { dataGetter, inputSchema } = config
+      if (!inputSchema) {
+        try {
+          return await handler(null, req, res)
+        } catch (err) {
+          console.error(`Error in ${errorLabel || 'handler'}:`, err)
+          return res.status(500).send({
+            success: false,
+            message: 'Internal server error',
+            errors: err,
+          } as ApiResponse<Output>)
+        }
+      }
+
       const params = inputSchema.safeParse(dataGetter(req))
 
       if (!params.success) {

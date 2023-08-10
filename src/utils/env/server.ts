@@ -63,3 +63,9 @@ export function getSubsocialPromoSecret() {
     'SUBSOCIAL_PROMO_SECRET_HEX'
   )
 }
+
+export function getModerationConfig() {
+  const url = checkEnv(process.env.MODERATION_URL, 'MODERATION_URL')
+  const token = checkEnv(process.env.MODERATION_TOKEN, 'MODERATION_TOKEN')
+  return { url, token }
+}

@@ -10,11 +10,15 @@ import { getMessageElementId, scrollToMessageElement } from '../utils'
 export type RepliedMessageProps = ComponentProps<'div'> & {
   replyMessageId: string
   scrollContainer?: React.RefObject<HTMLElement | null>
+  chatId: string
+  hubId: string
 }
 
 export default function RepliedMessage({
   replyMessageId,
   scrollContainer,
+  hubId,
+  chatId,
 }: RepliedMessageProps) {
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
 
@@ -38,6 +42,8 @@ export default function RepliedMessage({
         className='mt-1 w-full'
         repliedMessageId={replyMessageId}
         scrollToMessage={onRepliedMessageClick}
+        chatId={chatId}
+        hubId={hubId}
       />
       <Button
         size='noPadding'

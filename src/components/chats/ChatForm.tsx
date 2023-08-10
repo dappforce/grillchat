@@ -198,7 +198,6 @@ export default function ChatForm({
         ...messageParams,
       })
       setIsRequestingEnergy(true)
-      sendEvent('request energy and send message')
     }
 
     onSubmit?.()

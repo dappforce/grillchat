@@ -1,3 +1,4 @@
+import { useMyAccount } from '@/stores/my-account'
 import type { Keyring } from '@polkadot/keyring'
 
 export type Signer = ReturnType<Keyring['addFromSeed']>
@@ -57,4 +58,19 @@ export async function validateAddress(address: string) {
   } catch (error) {
     return false
   }
+}
+
+export async function signMessage(message: string) {
+  const { u8aToHex } = await import('@polkadot/util')
+  const { address, signer } = useMyAccount.getState()
+
+  if (!address) {
+    throw new Error('No account connected')
+  }
+
+  if (!signer) {
+    throw new Error('No signer connected')
+  }
+
+  return u8aToHex(signer.sign(message))
 }

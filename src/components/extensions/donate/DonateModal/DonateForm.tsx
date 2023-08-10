@@ -1,5 +1,5 @@
 import Button from '@/components/Button'
-import Dropdown, { ListItem } from '@/components/inputs/SelectInput'
+import SelectInput from '@/components/inputs/SelectInput'
 import MetamaskDeepLink, {
   isInsideMetamaskBrowser,
 } from '@/components/MetamaskDeepLink'
@@ -24,7 +24,7 @@ import CommonExtensionModal from '../../common/CommonExtensionModal'
 import { chainIdByChainName } from '../api/config'
 import { useDonate, useGetBalance } from '../api/hooks'
 import AmountInput from './AmountInput'
-import { DonateProps } from './types'
+import { DonateProps, TokenListItem } from './types'
 import { chainItems, tokensItems } from './utils'
 
 function DonateForm({
@@ -158,7 +158,7 @@ function DonateForm({
           />
         </div>
         <div className='flex flex-col gap-6'>
-          <Dropdown
+          <SelectInput
             selected={selectedChain}
             setSelected={setSelectedChain}
             fieldLabel='Chain'
@@ -188,7 +188,7 @@ function DonateForm({
               </Button>
             ) : (
               <>
-                <Dropdown
+                <SelectInput
                   selected={selectedToken}
                   setSelected={setSelectedToken}
                   fieldLabel='Token'
@@ -221,7 +221,7 @@ function DonateForm({
 }
 
 type RokenItemPreviewProps = {
-  item: ListItem
+  item: TokenListItem
   chainName: string
   open: boolean
 }
@@ -245,15 +245,17 @@ const TokenItemPreview = ({ item, chainName, open }: RokenItemPreviewProps) => {
 
   return (
     <div className='flex w-full items-center justify-between'>
-      <div className='flex items-center'>
-        <Image
-          src={item.icon}
-          className={cx('w-[38px] rounded-full')}
-          alt=''
-          role='presentation'
-        />
+      <div className='flex items-center gap-3'>
+        {item.icon && (
+          <Image
+            src={item.icon}
+            className={cx('w-[38px] rounded-full')}
+            alt=''
+            role='presentation'
+          />
+        )}
         <span
-          className={cx('ml-3 mr-3 block truncate text-base', {
+          className={cx('mr-3 block truncate text-base', {
             ['text-gray-500']: item.disabledItem,
           })}
         >
