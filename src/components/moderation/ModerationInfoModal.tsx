@@ -4,13 +4,15 @@ import { getBlockedInPostIdDetailedQuery } from '@/services/api/moderation/query
 import { useMyAccount } from '@/stores/my-account'
 import Image from 'next/image'
 import { useReducer } from 'react'
-import { HiXMark } from 'react-icons/hi2'
+import { toast } from 'react-hot-toast'
+import { HiOutlineInformationCircle, HiXMark } from 'react-icons/hi2'
 import AddressAvatar from '../AddressAvatar'
 import Button from '../Button'
 import DataCard, { DataCardProps } from '../DataCard'
 import ConfirmationModal from '../modals/ConfirmationModal'
 import Modal, { ModalFunctionalityProps } from '../modals/Modal'
-import Name from '../Name'
+import Name, { useName } from '../Name'
+import Toast from '../Toast'
 
 export type ModerationInfoModalProps = ModalFunctionalityProps & {
   chatId: string
@@ -64,7 +66,22 @@ export default function ModerationInfoModal({
   const blockedUsers = data?.address ?? []
   const blockedUsersCount = blockedUsers.length
 
-  const { mutate } = useCommitModerationAction()
+  const { name } = useName(toBeUnblocked?.id ?? '')
+  const { mutate } = useCommitModerationAction({
+    onSuccess: (_, variables) => {
+      if (variables.action === 'unblock') {
+        toast.custom((t) => (
+          <Toast
+            icon={(classNames) => (
+              <HiOutlineInformationCircle className={classNames} />
+            )}
+            t={t}
+            title={`You have unblocked the user ${name}`}
+          />
+        ))
+      }
+    },
+  })
 
   if (!myAddress) return null
 

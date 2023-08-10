@@ -15,8 +15,9 @@ export async function getAccountsData(addresses: string[]) {
 
 const getAccountData = poolQuery<string, AccountData>({
   multiCall: async (addresses) => {
-    if (addresses.length === 0) return []
-    return getAccountsData(addresses)
+    const filteredAddresses = addresses.filter(Boolean)
+    if (filteredAddresses.length === 0) return []
+    return getAccountsData(filteredAddresses)
   },
   resultMapper: {
     paramToKey: (address) => address,

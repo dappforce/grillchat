@@ -50,3 +50,19 @@ export const COMMUNITY_CHAT_HUB_ID: string | null = getCommunityHubId() || null
 export const PINNED_HUB_IDS = [COMMUNITY_CHAT_HUB_ID].filter(
   Boolean
 ) as string[]
+
+const HUB_ID_WITHOUT_JOIN_BUTTON = [
+  '1023',
+  '1002',
+  '1005',
+  '1010',
+  '1011',
+  '1007',
+]
+const CHAT_WITH_JOIN_BUTTON = ['6914']
+export function getIsHubWithoutJoinButton(hubId: string, chatId: string) {
+  return (
+    HUB_ID_WITHOUT_JOIN_BUTTON.includes(hubId) &&
+    !CHAT_WITH_JOIN_BUTTON.includes(chatId)
+  )
+}

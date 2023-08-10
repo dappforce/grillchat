@@ -155,12 +155,13 @@ export default function Navbar({
 }
 
 const BELL_CHAT_ID = '6914'
+const BELL_SPACE_ID = '1002'
 const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
 const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
 function NotificationBell() {
   const { data: messageIds } = useCommentIdsByPostId(BELL_CHAT_ID)
   const { data: blockedEntities } = getBlockedResourcesQuery.useQuery({
-    postId: BELL_CHAT_ID,
+    spaceId: BELL_SPACE_ID,
   })
   const blockedIds = blockedEntities?.blockedResources.postId
 

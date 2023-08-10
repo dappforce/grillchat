@@ -13,6 +13,16 @@ export type NameProps = ComponentProps<'span'> & {
   color?: string
 }
 
+export function useName(address: string) {
+  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
+  const textColor = useRandomColor(address, { isAddress: true })
+
+  const { ensName, evmAddress } = accountData || {}
+  const name = ensName || generateRandomName(address)
+
+  return { name, accountData, evmAddress, isLoading, textColor }
+}
+
 const Name = ({
   address,
   className,
@@ -21,11 +31,8 @@ const Name = ({
   color,
   ...props
 }: NameProps) => {
-  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
-  const textColor = useRandomColor(address, { isAddress: true })
-
-  const { ensName, evmAddress } = accountData || {}
-  const name = ensName || generateRandomName(address)
+  const { accountData, evmAddress, isLoading, name, textColor } =
+    useName(address)
 
   if (!accountData && isLoading) {
     return (
