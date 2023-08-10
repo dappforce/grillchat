@@ -34,7 +34,7 @@ export default function Toast({
           'flex max-w-lg items-center rounded-full border border-border-gray bg-background-light px-4 py-3 text-text shadow-xl ring-1 ring-black ring-opacity-5'
         )}
       >
-        {icon?.(cx('text-3xl mr-2.5'))}
+        {icon?.(cx('text-3xl mr-2.5 text-text-muted'))}
         <div className={cx('flex flex-col', !icon && 'mx-2')}>
           <p className={cx(!description && 'text-sm')}>{title}</p>
           {description && (

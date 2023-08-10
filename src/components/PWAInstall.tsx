@@ -1,3 +1,4 @@
+import useIsInIframe from '@/hooks/useIsInIframe'
 import '@khmyznikov/pwa-install'
 import { createPortal } from 'react-dom'
 
@@ -10,6 +11,9 @@ declare global {
 }
 
 export default function PWAInstall() {
+  const isInIframe = useIsInIframe(true)
+  if (isInIframe) return null
+
   return createPortal(
     <pwa-install
       id='pwa-install'
