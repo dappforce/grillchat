@@ -5,7 +5,7 @@ import { useMyAccount } from '@/stores/my-account'
 import Image from 'next/image'
 import { useReducer } from 'react'
 import { toast } from 'react-hot-toast'
-import { HiXMark } from 'react-icons/hi2'
+import { HiOutlineInformationCircle, HiXMark } from 'react-icons/hi2'
 import AddressAvatar from '../AddressAvatar'
 import Button from '../Button'
 import DataCard, { DataCardProps } from '../DataCard'
@@ -71,7 +71,13 @@ export default function ModerationInfoModal({
     onSuccess: (_, variables) => {
       if (variables.action === 'unblock') {
         toast.custom((t) => (
-          <Toast t={t} title={`You have unblocked the user ${name}`} />
+          <Toast
+            icon={(classNames) => (
+              <HiOutlineInformationCircle className={classNames} />
+            )}
+            t={t}
+            title={`You have unblocked the user ${name}`}
+          />
         ))
       }
     },

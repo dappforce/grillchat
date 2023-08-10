@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ComponentProps, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
+import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import { z } from 'zod'
 import FormButton from '../FormButton'
 import SelectInput, { ListItem } from '../inputs/SelectInput'
@@ -76,6 +77,9 @@ export default function ModerationForm({
         toast.custom((t) => (
           <Toast
             t={t}
+            icon={(classNames) => (
+              <HiOutlineInformationCircle className={classNames} />
+            )}
             title={`You have blocked the ${
               !isBlockingOwner ? 'message from ' : ''
             }user ${name}`}
