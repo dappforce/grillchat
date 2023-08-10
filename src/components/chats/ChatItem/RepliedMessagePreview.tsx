@@ -1,5 +1,6 @@
 import { getExtensionConfig } from '@/components/extensions/config'
 import Name from '@/components/Name'
+import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
@@ -13,6 +14,8 @@ export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   scrollToMessage?: (messageId: string) => Promise<void>
   replyToExtension?: boolean
   textColor?: string
+  hubId: string
+  chatId: string
 }
 
 const MINIMUM_REPLY_CHAR = 35
@@ -23,10 +26,25 @@ export default function RepliedMessagePreview({
   minimumReplyChar = MINIMUM_REPLY_CHAR,
   replyToExtension = false,
   textColor,
+  hubId,
+  chatId,
   ...props
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { data: message } = getPostQuery.useQuery(repliedMessageId)
+  const isMessageBlockedInCurrentHub = useIsMessageBlocked(
+    hubId,
+    message,
+    chatId
+  )
+  const isMessageBlockedInOriginalHub = useIsMessageBlocked(
+    message?.struct.spaceId ?? '',
+    message,
+    chatId
+  )
+  const isMessageBlocked =
+    isMessageBlockedInCurrentHub || isMessageBlockedInOriginalHub
+
   const replySender = message?.struct.ownerId ?? ''
   const replySenderColor = useRandomColor(replySender, { isAddress: true })
 
@@ -65,7 +83,7 @@ export default function RepliedMessagePreview({
 
   const bodyText = (
     <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
-      {showedText || emptyBodyText}
+      {isMessageBlocked ? '<message moderated>' : showedText || emptyBodyText}
     </span>
   )
 
@@ -85,14 +103,14 @@ export default function RepliedMessagePreview({
         props.onClick?.(e)
       }}
     >
-      {place === 'inside' && extensionPart}
+      {place === 'inside' && !isMessageBlocked && extensionPart}
       <div className='flex flex-col overflow-hidden'>
         <Name
           address={message?.struct.ownerId}
           className='mb-1 font-medium'
           color={textColor}
         />
-        {place === 'body' && extensionPart ? (
+        {place === 'body' && !isMessageBlocked && extensionPart ? (
           <div className={cx('flex items-center gap-2')}>
             {extensionPart}
             {bodyText}

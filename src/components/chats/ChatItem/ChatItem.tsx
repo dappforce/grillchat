@@ -23,6 +23,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   scrollToMessage?: (chatId: string) => Promise<void>
   enableChatMenu?: boolean
   chatId: string
+  hubId: string
 }
 
 type CheckMarkModalReducerState = {
@@ -46,6 +47,7 @@ export default function ChatItem({
   messageBubbleId,
   enableChatMenu = true,
   chatId,
+  hubId,
   ...props
 }: ChatItemProps) {
   const setReplyTo = useMessageData((state) => state.setReplyTo)
@@ -105,6 +107,7 @@ export default function ChatItem({
         chatId={chatId}
         messageId={message.id}
         enableChatMenu={enableChatMenu}
+        hubId={hubId}
       >
         {(config) => {
           const { toggleDisplay, referenceProps } = config || {}
@@ -125,6 +128,8 @@ export default function ChatItem({
                   scrollToMessage={scrollToMessage}
                   message={message}
                   isMyMessage={isMyMessage}
+                  chatId={chatId}
+                  hubId={hubId}
                 />
               ) : (
                 <ChatItemContentVariant
@@ -137,6 +142,8 @@ export default function ChatItem({
                   createdAtTime={createdAtTime}
                   inReplyTo={inReplyTo}
                   scrollToMessage={scrollToMessage}
+                  chatId={chatId}
+                  hubId={hubId}
                 />
               )}
             </div>

@@ -1,11 +1,13 @@
 import { ActionCardProps } from '@/components/ActionCard'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import UpsertChatModal from '@/components/community/UpsertChatModal'
+import ModerationInfoModal from '@/components/moderation/ModerationInfoModal'
 import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
+import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
@@ -28,6 +30,7 @@ import {
   HiPencilSquare,
   HiQrCode,
 } from 'react-icons/hi2'
+import { LuShield } from 'react-icons/lu'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import ConfirmationModal from '../ConfirmationModal'
@@ -41,11 +44,22 @@ export type AboutChatModalProps = ModalFunctionalityProps & {
   messageCount?: number
 }
 
+type InnerModalType =
+  | 'metadata'
+  | 'qr'
+  | 'confirmation-leave'
+  | 'edit'
+  | 'hide'
+  | 'unhide'
+  | 'moderation'
+  | null
+
 export default function AboutChatModal({
   chatId,
   messageCount = 0,
   ...props
 }: AboutChatModalProps) {
+  const { isAuthorized } = useAuthorizedForModeration(chatId)
   const address = useMyAccount((state) => state.address)
   const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId, {
@@ -53,9 +67,7 @@ export default function AboutChatModal({
   })
   const sendEvent = useSendEvent()
 
-  const [openedModalType, setOpenedModalType] = useState<
-    'metadata' | 'qr' | 'confirmation-leave' | 'edit' | 'hide' | 'unhide' | null
-  >(null)
+  const [openedModalType, setOpenedModalType] = useState<InnerModalType>(null)
 
   const isInIframe = useIsInIframe()
   const { isJoined, isLoading } = useIsJoinedToChat(chatId)
@@ -120,9 +132,16 @@ export default function AboutChatModal({
       },
     ]
 
+    const additionalMenus: ActionCardProps['actions'] = []
+    if (isAuthorized) {
+      additionalMenus.push({
+        text: 'Moderation',
+        icon: LuShield,
+        iconClassName: cx('text-text-muted'),
+        onClick: () => setOpenedModalType('moderation'),
+      })
+    }
     if (chatOwner === address) {
-      const additionalMenus: ActionCardProps['actions'] = []
-
       additionalMenus.push({
         text: 'Edit',
         icon: HiPencilSquare,
@@ -275,9 +294,18 @@ export default function AboutChatModal({
       <UpsertChatModal
         isOpen={openedModalType === 'edit'}
         closeModal={closeModal}
-        onBackClick={() => setOpenedModalType(null)}
+        onBackClick={closeModal}
         formProps={{ chat }}
       />
+      {COMMUNITY_CHAT_HUB_ID && (
+        <ModerationInfoModal
+          hubId={COMMUNITY_CHAT_HUB_ID}
+          isOpen={openedModalType === 'moderation'}
+          closeModal={closeModal}
+          onBackClick={closeModal}
+          chatId={chatId}
+        />
+      )}
       <HideUnhideChatWrapper>
         {({ isLoading, mutateAsync }) => {
           return (

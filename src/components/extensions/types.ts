@@ -6,6 +6,8 @@ export type ExtensionChatItemProps = {
   isMyMessage?: boolean
   onCheckMarkClick: (e: SyntheticEvent) => void
   scrollToMessage?: (messageId: string) => Promise<void>
+  chatId: string
+  hubId: string
 }
 
 export type RepliedMessagePreviewPartProps = {

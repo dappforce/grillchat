@@ -9,6 +9,7 @@ import LinkText from '../LinkText'
 export type ModalFunctionalityProps = {
   isOpen: boolean
   closeModal: () => void
+  onBackClick?: () => void
 }
 
 const panelStyles = cva(
@@ -40,7 +41,6 @@ export type ModalProps = ModalFunctionalityProps &
     withCloseButton?: boolean
     children: React.ReactNode
     title?: React.ReactNode
-    onBackClick?: () => void
     description?: React.ReactNode
     containerClassName?: string
     panelClassName?: string
@@ -115,7 +115,7 @@ export default function Modal({
                     contentClassName
                   )}
                 >
-                  {withCloseButton && (
+                  {withCloseButton && !onBackClick && (
                     <Button
                       className='absolute right-6 m-1 mr-0 p-0 text-2xl text-text-muted'
                       variant='transparent'

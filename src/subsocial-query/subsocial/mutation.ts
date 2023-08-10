@@ -183,7 +183,13 @@ const noncePromise = generatePromiseQueue()
  */
 async function getNonce(substrateApi: ApiPromise, address: string) {
   const previousQueue = noncePromise.addQueue()
+
+  const timeoutId = setTimeout(() => {
+    throw new Error('Timeout: Cannot get nonce for the next transaction.')
+  }, 10_000)
   await previousQueue
+  clearTimeout(timeoutId)
+
   const nonce = await substrateApi.rpc.system.accountNextIndex(address)
   return { nonce, nonceResolver: noncePromise.resolveQueue }
 }

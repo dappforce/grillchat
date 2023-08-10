@@ -29,16 +29,14 @@ setupTxCallbacks({
   },
 })
 
-const createClient = () => {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: Infinity,
-        refetchOnWindowFocus: false,
-      },
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+      refetchOnWindowFocus: false,
     },
-  })
-}
+  },
+})
 
 export function QueryProvider({
   dehydratedState,
@@ -47,7 +45,7 @@ export function QueryProvider({
   dehydratedState: any
   children: any
 }) {
-  const [client] = useState(createClient)
+  const [client] = useState(() => queryClient)
 
   return (
     <QueryClientProvider client={client}>

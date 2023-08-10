@@ -83,6 +83,8 @@ export default function DonateMessagePreview({
   message,
   onCheckMarkClick,
   scrollToMessage,
+  chatId,
+  hubId,
 }: DonateMessagePreviewProps) {
   const { content } = message
 
@@ -101,6 +103,8 @@ export default function DonateMessagePreview({
       scrollToMessage={scrollToMessage}
       myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
       className={cx('relative flex flex-col overflow-hidden')}
+      chatId={chatId}
+      hubId={hubId}
     >
       {({ isMyMessage }) => (
         <div>
