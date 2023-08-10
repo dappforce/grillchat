@@ -77,7 +77,7 @@ export default function ModerationForm({
           <Toast
             t={t}
             title={`You have blocked the ${
-              !isBlockingOwner && 'message from '
+              !isBlockingOwner ? 'message from ' : ''
             }user ${name}`}
           />
         ))
