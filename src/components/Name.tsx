@@ -1,5 +1,6 @@
 import EthIcon from '@/assets/icons/eth-medium.svg'
 import useRandomColor from '@/hooks/useRandomColor'
+import { getProfileQuery } from '@/services/mainnet-squid/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
@@ -15,10 +16,12 @@ export type NameProps = ComponentProps<'span'> & {
 
 export function useName(address: string) {
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
+  const { data: profile } = getProfileQuery.useQuery(address)
   const textColor = useRandomColor(address, { isAddress: true })
 
   const { ensName, evmAddress } = accountData || {}
-  const name = ensName || generateRandomName(address)
+  const name =
+    profile?.profileSpace?.name || ensName || generateRandomName(address)
 
   return { name, accountData, evmAddress, isLoading, textColor }
 }

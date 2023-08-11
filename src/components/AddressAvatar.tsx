@@ -1,6 +1,8 @@
 import useRandomColor from '@/hooks/useRandomColor'
+import { getProfileQuery } from '@/services/mainnet-squid/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
@@ -27,10 +29,18 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     })
 
     const [isEnsAvatarError, setIsEnsAvatarError] = useState(false)
-    const onImageError = useCallback(() => setIsEnsAvatarError(true), [])
+    const [isProfileAvatarError, setIsProfileAvatarError] = useState(false)
+
+    const onProfileImageError = useCallback(
+      () => setIsProfileAvatarError(true),
+      []
+    )
+    const onEnsImageError = useCallback(() => setIsEnsAvatarError(true), [])
 
     const { data: accountData, isLoading } =
       getAccountDataQuery.useQuery(address)
+
+    const { data: profile } = getProfileQuery.useQuery(address)
 
     const { ensName } = accountData || {}
 
@@ -61,6 +71,8 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       )
     }
 
+    let profileAvatar = profile?.profileSpace?.image
+
     return (
       <div
         {...props}
@@ -84,7 +96,27 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
                 className='relative rounded-full'
                 fill
                 src={resolveEnsAvatarSrc(ensName)}
-                onError={onImageError}
+                onError={onEnsImageError}
+                alt='avatar'
+              />
+            </div>
+          </div>
+        )}
+
+        {profileAvatar && (
+          <div
+            className={cx(
+              'absolute inset-0 h-full w-full transition-opacity',
+              !isProfileAvatarError ? 'z-10 opacity-100' : '-z-10 opacity-0'
+            )}
+          >
+            <div className='relative h-full w-full'>
+              <Image
+                sizes='5rem'
+                className='relative rounded-full'
+                fill
+                src={getIpfsContentUrl(profileAvatar)}
+                onError={onProfileImageError}
                 alt='avatar'
               />
             </div>

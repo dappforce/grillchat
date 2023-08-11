@@ -16,7 +16,8 @@
     "prepare": "husky install",
     "codegen:moderation": "graphql-codegen --require dotenv/config --config codegen-moderation.ts",
     "codegen:squid": "graphql-codegen --require dotenv/config --config codegen-squid.ts",
-    "codegen:notifications": "graphql-codegen --require dotenv/config --config codegen-notifications.ts"
+    "codegen:notifications": "graphql-codegen --require dotenv/config --config codegen-notifications.ts",
+    "codegen:mainnet-squid": "graphql-codegen --require dotenv/config --config codegen-mainnet-squid.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.9.1",
