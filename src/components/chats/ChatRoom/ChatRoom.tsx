@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import Container from '@/components/Container'
 import ExtensionModals from '@/components/extensions'
 import TextArea from '@/components/inputs/TextArea'
+import { getIsHubWithoutJoinButton } from '@/constants/hubs'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
 import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
@@ -23,22 +24,6 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   scrollableContainerClassName?: string
   chatId: string
   hubId: string
-}
-
-const HUB_ID_WITHOUT_JOIN_BUTTON = [
-  '1023',
-  '1002',
-  '1005',
-  '1010',
-  '1011',
-  '1007',
-]
-const CHAT_WITH_JOIN_BUTTON = ['6914']
-function getIsHubWithoutJoinButton(hubId: string, chatId: string) {
-  return (
-    HUB_ID_WITHOUT_JOIN_BUTTON.includes(hubId) &&
-    !CHAT_WITH_JOIN_BUTTON.includes(chatId)
-  )
 }
 
 export default function ChatRoom({

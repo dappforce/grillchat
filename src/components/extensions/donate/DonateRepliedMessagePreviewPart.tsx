@@ -1,13 +1,13 @@
 import { cx, getCommonClassNames } from '@/utils/class-names'
 import { formatUnits } from 'ethers'
 import { RepliedMessagePreviewPartProps } from '../types'
-import { getMessageExtensionProperties } from '../utils'
+import { getPostExtensionProperties } from '../utils'
 
 const DonateRepliedMessagePreviewPart = ({
   extensions,
 }: RepliedMessagePreviewPartProps) => {
   const firstExtension = extensions?.[0]
-  const properties = getMessageExtensionProperties(
+  const properties = getPostExtensionProperties(
     firstExtension,
     'subsocial-donations'
   )

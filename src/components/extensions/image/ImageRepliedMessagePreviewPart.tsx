@@ -1,14 +1,14 @@
 import MediaLoader from '@/components/MediaLoader'
 import { cx } from '@/utils/class-names'
 import { RepliedMessagePreviewPartProps } from '../types'
-import { getMessageExtensionProperties } from '../utils'
+import { getPostExtensionProperties } from '../utils'
 
 export default function ImageRepliedMessagePreviewPart({
   extensions,
   className,
 }: RepliedMessagePreviewPartProps) {
   const firstExtension = extensions?.[0]
-  const properties = getMessageExtensionProperties(
+  const properties = getPostExtensionProperties(
     firstExtension,
     'subsocial-image'
   )
@@ -17,7 +17,7 @@ export default function ImageRepliedMessagePreviewPart({
     <span className={cx('block w-10 flex-shrink-0', className)}>
       <MediaLoader
         containerClassName={cx('rounded-md overflow-hidden flex-shrink-0')}
-        className={cx('aspect-square w-full object-cover')}
+        className={cx('aspect-square w-full rounded-md object-cover')}
         placeholderClassName={cx('w-full aspect-square')}
         width={50}
         height={50}
