@@ -61,7 +61,7 @@ export default function Embed({ url, ...props }: EmbedProps) {
   return (
     <div
       {...props}
-      className={cx('w-full overflow-hidden rounded-2xl', props.className)}
+      className={cx('w-full overflow-hidden rounded-lg', props.className)}
     >
       {Test && <Test url={url} />}
     </div>
