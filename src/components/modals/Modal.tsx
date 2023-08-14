@@ -167,7 +167,7 @@ export default function Modal({
                 {withFooter && (
                   <div className='flex items-center justify-center gap-4 border-t border-background-lightest px-6 py-5 text-sm text-text-muted'>
                     <LinkText
-                      href='https://polkaverse.com/legal/privacy'
+                      href='https://subsocial.network/legal/privacy'
                       className='font-normal'
                       openInNewTab
                     >
@@ -175,7 +175,7 @@ export default function Modal({
                     </LinkText>
                     <span>&middot;</span>
                     <LinkText
-                      href='https://polkaverse.com/legal/terms'
+                      href='https://subsocial.network/legal/terms'
                       className='font-normal'
                       openInNewTab
                     >

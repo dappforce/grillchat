@@ -1,9 +1,9 @@
+import { spaceMono } from '@/fonts'
 import { cx, interactionRingStyles } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import { copyToClipboard } from '@/utils/strings'
 import { Placement } from '@floating-ui/react'
 import { cva, VariantProps } from 'class-variance-authority'
-import { Space_Mono } from 'next/font/google'
 import { ComponentProps, ReactNode, useEffect, useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { MdOutlineContentCopy } from 'react-icons/md'
@@ -17,11 +17,6 @@ type CommonCopyTextProps = ComponentProps<'div'> & {
   isCodeText?: boolean
   withHideButton?: boolean
 }
-
-const spaceMono = Space_Mono({
-  weight: '400',
-  subsets: ['latin'],
-})
 
 const copyTextStyles = cva('', {
   variants: {

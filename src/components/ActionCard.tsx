@@ -22,6 +22,12 @@ export type ActionCardProps = ComponentProps<'div'> & {
   size?: 'md' | 'sm'
 }
 
+/**
+ * A card that displays a list of actions.
+ *
+ * **Note**: This component's default background are not compatible if you use light theme and place this component inside `--background` colored component.
+ * Either put this component inside `--background-lighter` colored component or change the background of this component instead.
+ */
 export default function ActionCard({
   actions,
   size = 'md',
