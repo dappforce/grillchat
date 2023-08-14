@@ -73,6 +73,7 @@ function ChatListContent({
 
   const [initialNewMessageCount, setInitialNewMessageCount] = useState(0)
   const lastReadId = useFocusedLastMessageId(chatId)
+  const [recipient, setRecipient] = useState('')
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
   const prevMessageModalMsgId = usePrevious(messageModalMsgId)
 
@@ -136,6 +137,7 @@ function ChatListContent({
     hasScrolledToMessageRef.current = true
 
     const messageId = getUrlQuery('messageId')
+    const recipient = getUrlQuery('address')
     const isMessageIdsFetched = rawMessageIds !== undefined
 
     if (!isMessageIdsFetched) return
@@ -160,6 +162,7 @@ function ChatListContent({
     }
 
     setMessageModalMsgId(messageId)
+    setRecipient(recipient)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawMessageIds, filteredMessageIdsRef, hasScrolledToMessageRef])
 
@@ -298,6 +301,7 @@ function ChatListContent({
         closeModal={() => setMessageModalMsgId('')}
         messageId={messageModalMsgId}
         scrollToMessage={scrollToMessage}
+        recipient={recipient}
       />
       <Component>
         <div className='relative'>

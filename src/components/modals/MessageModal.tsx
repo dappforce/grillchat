@@ -2,22 +2,29 @@ import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { CommentData } from '@subsocial/api/types'
 import { useRef, useState } from 'react'
+import LoginModal from '../auth/LoginModal'
 import Button from '../Button'
+import Card from '../Card'
 import ChatItem from '../chats/ChatItem'
+import ProfilePreview from '../ProfilePreview'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
 export type MessageModalProps = ModalFunctionalityProps & {
   messageId: string
   scrollToMessage?: (messageId: string) => Promise<void>
   hubId: string
+  recipient: string
 }
 
 export default function MessageModal({
   messageId,
   scrollToMessage,
   hubId,
+  recipient,
   ...props
 }: MessageModalProps) {
+  const [isOpenLoginModal, setIsOpenLoginModal] = useState(false)
+
   const { data: message } = getPostQuery.useQuery(messageId)
   const chatId = (message as unknown as CommentData)?.struct.rootPostId
   const { data: chat } = getPostQuery.useQuery(chatId)
@@ -41,41 +48,69 @@ export default function MessageModal({
   }
 
   return (
-    <Modal
-      {...props}
-      initialFocus={buttonRef}
-      title={
-        <span className='flex items-center'>Message from {chatTitle}</span>
-      }
-    >
-      <div
-        className={cx(
-          'max-h-96 overflow-y-auto rounded-2xl bg-background p-4',
-          !message && 'h-28 animate-pulse'
-        )}
+    <>
+      <Modal
+        {...props}
+        isOpen={props.isOpen && !isOpenLoginModal}
+        initialFocus={buttonRef}
+        title={
+          <span className='flex items-center'>Message from {chatTitle}</span>
+        }
       >
-        {message && (
-          <ChatItem
-            enableChatMenu={false}
-            isMyMessage={false}
-            message={message}
-            chatId={chatId}
-            hubId={hubId}
-          />
-        )}
-      </div>
-      {scrollToMessage && (
-        <Button
-          ref={buttonRef}
-          isLoading={isScrolling}
-          onClick={handleScrollToMessage}
-          className={cx('mt-6')}
-          size='lg'
-          variant='primary'
+        <div
+          className={cx(
+            'flex max-h-96 flex-col gap-4 overflow-y-auto rounded-2xl bg-background p-4',
+            !message && 'h-28 animate-pulse'
+          )}
         >
-          Scroll to message
-        </Button>
-      )}
-    </Modal>
+          {message && (
+            <ChatItem
+              enableChatMenu={false}
+              isMyMessage={false}
+              message={message}
+              chatId={chatId}
+              hubId={hubId}
+            />
+          )}
+          {scrollToMessage && (
+            <Button
+              ref={buttonRef}
+              isLoading={isScrolling}
+              onClick={handleScrollToMessage}
+              size='lg'
+              variant='primaryOutline'
+            >
+              Scroll to message
+            </Button>
+          )}
+        </div>
+        {recipient && (
+          <Card className='mt-4 bg-background-lighter'>
+            <span className='text-sm text-text-muted'>
+              Notification recipient
+            </span>
+            <ProfilePreview
+              className='mt-3'
+              address={recipient}
+              avatarClassName='h-12 w-12'
+              showMaxOneAddress
+            />
+            <Button
+              size='lg'
+              className='mt-4 w-full'
+              onClick={() => setIsOpenLoginModal(true)}
+            >
+              Log In
+            </Button>
+          </Card>
+        )}
+      </Modal>
+      <LoginModal
+        isOpen={isOpenLoginModal}
+        closeModal={() => setIsOpenLoginModal(false)}
+        initialOpenState='enter-secret-key'
+        onBackClick={() => setIsOpenLoginModal(false)}
+      />
+    </>
   )
 }
