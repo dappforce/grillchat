@@ -1,0 +1,5 @@
+html {
+  background-color: rgb(var(--background));
+  color: rgb(var(--text));
+  font-family: 'Source Sans 3', sans-serif;
+}
