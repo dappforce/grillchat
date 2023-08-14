@@ -194,6 +194,11 @@ export default function AboutChatModal({
         className: cx('text-text-secondary'),
         onClick: async () => {
           await joinChat({ chatId })
+          sendEvent(
+            'join_chat',
+            { chatId, eventSource: 'chat_modal' },
+            { hasJoinedChats: true }
+          )
           props.closeModal()
         },
       })

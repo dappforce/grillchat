@@ -1,3 +1,4 @@
+import { ANN_CHAT_ID } from '@/constants/chat'
 import { getPinnedChatsInHubId } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useSendEvent } from '@/stores/analytics'
@@ -78,10 +79,15 @@ function ChatPreviewContainer({
   )
 
   const onChatClick = () => {
-    sendEvent(`click on chat`, {
-      title: content?.title ?? '',
+    sendEvent(`open_chat`, {
       chatId: chat.id,
     })
+
+    if (chat.id === ANN_CHAT_ID) {
+      sendEvent(`open_ann_chat`, {
+        eventSource: 'pinned-chat',
+      })
+    }
   }
 
   const isPinned = getPinnedChatsInHubId(usedHubId ?? '').includes(chat.id)

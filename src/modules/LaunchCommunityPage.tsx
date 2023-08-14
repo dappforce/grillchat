@@ -8,7 +8,6 @@ import Container from '@/components/Container'
 import FixedBottomActionLayout from '@/components/layouts/FixedBottomActionLayout'
 import LinkText from '@/components/LinkText'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
-import { useSendEvent } from '@/stores/analytics'
 import { getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
@@ -16,7 +15,6 @@ import { useInView } from 'react-intersection-observer'
 const GITHUB_LINK = 'https://github.com/dappforce/grillchat'
 
 export default function LaunchCommunityPage() {
-  const sendEvent = useSendEvent()
   const { ref, inView } = useInView({ initialInView: true })
   const title = '🚀 Launch your own community'
 
@@ -35,7 +33,6 @@ export default function LaunchCommunityPage() {
             href='https://forms.gle/9ByHSa9rzAuAsDmHA'
             target='_blank'
             rel='noopener noreferrer'
-            onClick={() => sendEvent('click join_waitlist_button')}
           >
             Join Waitlist
           </Button>
@@ -60,7 +57,6 @@ export default function LaunchCommunityPage() {
               href={GITHUB_LINK}
               variant='primary'
               className='font-semibold'
-              onClick={() => sendEvent('click github_link')}
               openInNewTab
             >
               open source code
@@ -136,7 +132,6 @@ export default function LaunchCommunityPage() {
             href={SUGGEST_FEATURE_LINK}
             target='_blank'
             rel='noopener noreferrer'
-            onClick={() => sendEvent('click vote_for_features_button')}
           >
             Vote for features
           </Button>

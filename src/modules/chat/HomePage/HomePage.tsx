@@ -169,7 +169,9 @@ export default function HubsPage(props: HubsPageProps) {
                   className='flex items-center gap-2'
                   onClick={() => {
                     setIsOpenNewCommunity(true)
-                    sendEvent('click new_community_button in home_page')
+                    sendEvent('open_community_creation_modal', {
+                      eventSource: 'home',
+                    })
                   }}
                 >
                   <CommunityAddIcon className='text-text-muted-on-primary' />

@@ -2,10 +2,12 @@ import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
+import { ANN_CHAT_ID } from '@/constants/chat'
 import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { useAnalytics } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getHubPageLink } from '@/utils/links'
@@ -154,14 +156,14 @@ export default function Navbar({
   )
 }
 
-const BELL_CHAT_ID = '6914'
 const BELL_SPACE_ID = '1002'
 const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
 const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
 function NotificationBell() {
-  const { data: messageIds } = useCommentIdsByPostId(BELL_CHAT_ID)
+  const sendEvent = useAnalytics((state) => state.sendEvent)
+  const { data: messageIds } = useCommentIdsByPostId(ANN_CHAT_ID)
   const { data: blockedEntities } = getBlockedResourcesQuery.useQuery({
-    spaceId: BELL_SPACE_ID,
+    postId: ANN_CHAT_ID,
   })
   const blockedIds = blockedEntities?.blockedResources.postId
 
@@ -175,7 +177,7 @@ function NotificationBell() {
   const { query } = useRouter()
   useEffect(() => {
     if (typeof query.slug !== 'string' || !filteredMessageIds) return
-    if (getIdFromSlug(query.slug) === BELL_CHAT_ID) {
+    if (getIdFromSlug(query.slug) === ANN_CHAT_ID) {
       const lastMessageId = filteredMessageIds[filteredMessageIds.length - 1]
       bellLastReadStorage.set(lastMessageId)
       setUnreadCount(0)
@@ -200,7 +202,8 @@ function NotificationBell() {
       size='circle'
       variant='transparent'
       className='text-text-muted dark:text-text'
-      href={`/x/grill-announcements-${BELL_CHAT_ID}`}
+      href={`/x/grill-announcements-${ANN_CHAT_ID}`}
+      onClick={() => sendEvent('open_ann_chat', { eventSource: 'notifs_bell' })}
     >
       <div className='relative'>
         <HiOutlineBell className='text-xl' />

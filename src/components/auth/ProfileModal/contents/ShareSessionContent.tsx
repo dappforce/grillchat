@@ -10,7 +10,7 @@ function ShareSessionContent() {
   const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
-    sendEvent('click copy_share_session_link')
+    sendEvent('copy_share_session_link')
   }
 
   const shareSessionLink = urlJoin(

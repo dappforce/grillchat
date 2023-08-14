@@ -2,6 +2,7 @@ import { CommonEvmAddressLinked } from '@/components/auth/CommonModalContent'
 import Modal from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { useAnalytics } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
@@ -40,6 +41,7 @@ export default function ProfileModal({
 }: ProfileModalProps) {
   // Prefetch telegram linked account data
   getLinkedTelegramAccountsQuery.useQuery({ address })
+  useAnalytics().sendEvent('open_account_menu')
 
   const [currentState, setCurrentState] = useState<ModalState>(
     step || 'account'

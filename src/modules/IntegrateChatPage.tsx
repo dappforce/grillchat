@@ -8,15 +8,24 @@ import Button from '@/components/Button'
 import ClickableMedia from '@/components/ClickableMedia'
 import Container from '@/components/Container'
 import FixedBottomActionLayout from '@/components/layouts/FixedBottomActionLayout'
-import { useSendEvent } from '@/stores/analytics'
+import { useAnalytics } from '@/stores/analytics'
+import { useLocation } from '@/stores/location'
 import { getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
+import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 export default function IntegrateChatPage() {
-  const sendEvent = useSendEvent()
+  const sendEvent = useAnalytics((state) => state.sendEvent)
   const { ref, inView } = useInView({ initialInView: true })
   const title = '🛠 Add a chatbox to any existing app'
+  const prevLocation = useLocation((state) => state.prevUrl)
+
+  useEffect(() => {
+    sendEvent('open_integrate_chat_lp', {
+      eventSource: prevLocation ? 'pinned-chat' : 'direct',
+    })
+  }, [sendEvent])
 
   return (
     <FixedBottomActionLayout
@@ -33,7 +42,7 @@ export default function IntegrateChatPage() {
             href='https://github.com/dappforce/grillchat/tree/main/integration#readme'
             target='_blank'
             rel='noopener noreferrer'
-            onClick={() => sendEvent('click integrate_button')}
+            onClick={() => sendEvent('open_integrate_chat_docs')}
           >
             Integrate
           </Button>

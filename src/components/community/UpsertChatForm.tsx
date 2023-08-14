@@ -82,12 +82,18 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                 if (isUpdating || !myAddress) return
 
                 setIsProcessingData(true)
-                const newId = await getNewIdFromTxResult(txResult)
-                mutateAsync({ chatId: newId })
+                const chatId = await getNewIdFromTxResult(txResult)
+                mutateAsync({ chatId })
+
+                sendEvent(
+                  'community_chat_created',
+                  { hubId },
+                  { ownedChat: true }
+                )
 
                 await router.push(
                   urlJoin(
-                    getChatPageLink({ query: {} }, newId, hubId),
+                    getChatPageLink({ query: {} }, chatId, hubId),
                     '?new=true'
                   )
                 )
@@ -101,8 +107,9 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
         >
           {({ isLoading: isMutating, mutateAsync }) => {
             const onSubmit: SubmitHandler<FormSchema> = async (data) => {
-              if (isUpdating) sendEvent('click edit_chat_button')
-              else sendEvent('click create_chat_button')
+              if (!isUpdating) {
+                sendEvent('start_community_chat_creation')
+              }
 
               await mutateAsync({
                 spaceId: hubId,

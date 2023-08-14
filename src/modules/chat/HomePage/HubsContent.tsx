@@ -78,8 +78,9 @@ function ChatPreviewContainer({
   )
 
   const onChatClick = () => {
-    sendEvent(`click on hub`, {
+    sendEvent(`open_hub`, {
       title: content?.name ?? '',
+      hubId: hub.id,
     })
   }
 

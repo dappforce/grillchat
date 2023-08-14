@@ -61,3 +61,16 @@ export function replaceUrl(url: string) {
     url
   )
 }
+
+export function isPWA() {
+  // @ts-ignore
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone ||
+    document.referrer.includes('android-app://')
+  )
+}
+
+export function isWebNotificationsEnabled() {
+  return Notification?.permission === 'granted'
+}

@@ -8,8 +8,8 @@ import { useVersion } from './version'
 // order of the registry can be important if you have dependencies between stores in the init function.
 const storesRegistry = [
   useParentData,
-  useAnalytics,
   useLocation,
+  useAnalytics,
   useMyAccount,
   useMessageData,
   useVersion,

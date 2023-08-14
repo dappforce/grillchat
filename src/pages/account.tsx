@@ -1,4 +1,5 @@
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { useAnalytics } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey } from '@/utils/account'
 import { getUrlQuery } from '@/utils/links'
@@ -10,6 +11,7 @@ export const ACCOUNT_SECRET_KEY_URL_PARAMS = 'sk'
 export default function AccountPage() {
   const login = useMyAccount((state) => state.login)
   const isInitialized = useMyAccount((state) => state.isInitialized)
+  const sendEvent = useAnalytics((state) => state.sendEvent)
 
   const router = useRouter()
   const routeReplace = useRef(router.replace)
@@ -27,6 +29,7 @@ export default function AccountPage() {
     login(decodeSecretKey(encodedSecretKey)).then((data) => {
       routeReplace.current(returnUrl)
     })
+    sendEvent('login', { eventSource: 'share_session_link' })
   }, [login, isInitialized])
 
   return <DefaultLayout />

@@ -6,6 +6,7 @@ import { getIsHubWithoutJoinButton } from '@/constants/hubs'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
 import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
+import { useAnalytics } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
@@ -36,6 +37,8 @@ export default function ChatRoom({
 }: ChatRoomProps) {
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
   const replyTo = useMessageData((state) => state.replyTo)
+  const sendEvent = useAnalytics((state) => state.sendEvent)
+
   useEffect(() => {
     return () => clearReplyTo()
   }, [clearReplyTo])
@@ -123,7 +126,14 @@ export default function ChatRoom({
                     )}
                     disabledStyle='subtle'
                     isLoading={isButtonLoading}
-                    onClick={() => mutateAsync({ chatId })}
+                    onClick={async () => {
+                      await mutateAsync({ chatId })
+                      sendEvent(
+                        'join_chat',
+                        { chatId, hubId, eventSource: 'chat_required_btn' },
+                        { hasJoinedChats: true }
+                      )
+                    }}
                   >
                     Join
                   </Button>

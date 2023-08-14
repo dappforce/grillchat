@@ -4,6 +4,8 @@ const PINNED_MESSAGE_IN_CHAT_ID: Record<string, string> = {
   '6039': '6165',
   '3454': '6159',
 }
+
+export const ANN_CHAT_ID = '6914'
 export function getPinnedMessageInChatId(chatId: string) {
   return PINNED_MESSAGE_IN_CHAT_ID[chatId] ?? ''
 }
