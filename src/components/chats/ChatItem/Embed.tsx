@@ -37,7 +37,11 @@ const urlMapper: {
       const tweetId = urlWithoutQuery.split('/').pop()
       if (!tweetId) return null
 
-      return <Tweet id={tweetId} />
+      return (
+        <div className='w-full [&>*]:!my-0'>
+          <Tweet id={tweetId} />
+        </div>
+      )
     },
     checker: (url: string) =>
       /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com)\/(.+)/.test(url),
@@ -66,7 +70,9 @@ const urlMapper: {
 ]
 
 function DefaultLinkPreview({ url }: { url: string }) {
-  const { data } = getMetadataQuery.useQuery(url)
+  const { data } = getMetadataQuery.useQuery(url, {
+    retry: false,
+  })
   if (!data) return null
   const siteName = truncate(data.siteName || data.hostName || data.title, {
     length: 30,
