@@ -4,9 +4,9 @@ import {
   FacebookEmbed,
   InstagramEmbed,
   TikTokEmbed,
-  TwitterEmbed,
   YouTubeEmbed,
 } from 'react-social-media-embed'
+import { Tweet } from 'react-tweet'
 
 export type EmbedProps = ComponentProps<'div'> & {
   url: string
@@ -18,7 +18,9 @@ const urlMapper: {
 }[] = [
   {
     component: ({ url }) => (
-      <YouTubeEmbed url={url} width='100%' height={300} />
+      <div className='overflow-hidden rounded-lg'>
+        <YouTubeEmbed url={url} width='100%' height={300} />
+      </div>
     ),
     checker: (url: string) =>
       /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.+)/.test(
@@ -26,7 +28,13 @@ const urlMapper: {
       ),
   },
   {
-    component: ({ url }) => <TwitterEmbed url={url} width='100%' />,
+    component: ({ url }) => {
+      const urlWithoutQuery = url.split('?')[0]
+      const tweetId = urlWithoutQuery.split('/').pop()
+      if (!tweetId) return null
+
+      return <Tweet id={tweetId} />
+    },
     checker: (url: string) =>
       /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com)\/(.+)/.test(url),
   },
@@ -59,10 +67,7 @@ export default function Embed({ url, ...props }: EmbedProps) {
   const Test = useMemo(() => getComponent(url), [url])
 
   return (
-    <div
-      {...props}
-      className={cx('w-full overflow-hidden rounded-lg', props.className)}
-    >
+    <div {...props} className={cx('w-full', props.className)}>
       {Test && <Test url={url} />}
     </div>
   )
