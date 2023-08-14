@@ -17,6 +17,7 @@
     "codegen:moderation": "graphql-codegen --require dotenv/config --config codegen-moderation.ts",
     "codegen:squid": "graphql-codegen --require dotenv/config --config codegen-squid.ts",
     "codegen:notifications": "graphql-codegen --require dotenv/config --config codegen-notifications.ts",
+    "codegen:mainnet-squid": "graphql-codegen --require dotenv/config --config codegen-mainnet-squid.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "start-storybook": "node ./.storybook/index.js"

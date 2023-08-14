@@ -22,11 +22,11 @@ metadata:
   name: grillchat-storybook
   namespace: sub-back
   annotations:
-    ingress.kubernetes.io/from-to-www-redirect: "true"
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    nginx.org/client-max-body-size: "10m"
-    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
-    nginx.ingress.kubernetes.io/client-max-body-size: "10m"
+    ingress.kubernetes.io/from-to-www-redirect: 'true'
+    nginx.ingress.kubernetes.io/from-to-www-redirect: 'true'
+    nginx.org/client-max-body-size: '10m'
+    nginx.ingress.kubernetes.io/proxy-body-size: '10m'
+    nginx.ingress.kubernetes.io/client-max-body-size: '10m'
 
 spec:
   ingressClassName: nginx
@@ -39,7 +39,7 @@ spec:
                 name: grillchat-storybook
                 port:
                   number: 6006
-            path: "/"
+            path: '/'
             pathType: Prefix
 
   tls:
