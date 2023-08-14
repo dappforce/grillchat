@@ -2,7 +2,6 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/mainnet-squid/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
-import { getIpfsContentUrl } from '@/utils/ipfs'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
@@ -28,14 +27,8 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       theme: 'dark',
     })
 
-    const [isEnsAvatarError, setIsEnsAvatarError] = useState(false)
-    const [isProfileAvatarError, setIsProfileAvatarError] = useState(false)
-
-    const onProfileImageError = useCallback(
-      () => setIsProfileAvatarError(true),
-      []
-    )
-    const onEnsImageError = useCallback(() => setIsEnsAvatarError(true), [])
+    const [isAvatarError, setIsAvatarError] = useState(false)
+    const onImageError = useCallback(() => setIsAvatarError(true), [])
 
     const { data: accountData, isLoading } =
       getAccountDataQuery.useQuery(address)
@@ -71,7 +64,10 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       )
     }
 
-    let profileAvatar = profile?.profileSpace?.image
+    let usedAvatar = profile?.profileSpace?.image
+    if (ensName) {
+      usedAvatar = resolveEnsAvatarSrc(ensName)
+    }
 
     return (
       <div
@@ -83,11 +79,11 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
         style={{ backgroundColor }}
       >
-        {ensName && (
+        {usedAvatar && (
           <div
             className={cx(
               'absolute inset-0 h-full w-full transition-opacity',
-              !isEnsAvatarError ? 'z-10 opacity-100' : '-z-10 opacity-0'
+              !isAvatarError ? 'z-10 opacity-100' : '-z-10 opacity-0'
             )}
           >
             <div className='relative h-full w-full'>
@@ -95,28 +91,8 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
                 sizes='5rem'
                 className='relative rounded-full'
                 fill
-                src={resolveEnsAvatarSrc(ensName)}
-                onError={onEnsImageError}
-                alt='avatar'
-              />
-            </div>
-          </div>
-        )}
-
-        {profileAvatar && (
-          <div
-            className={cx(
-              'absolute inset-0 h-full w-full transition-opacity',
-              !isProfileAvatarError ? 'z-10 opacity-100' : '-z-10 opacity-0'
-            )}
-          >
-            <div className='relative h-full w-full'>
-              <Image
-                sizes='5rem'
-                className='relative rounded-full'
-                fill
-                src={getIpfsContentUrl(profileAvatar)}
-                onError={onProfileImageError}
+                src={usedAvatar}
+                onError={onImageError}
                 alt='avatar'
               />
             </div>
