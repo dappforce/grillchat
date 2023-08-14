@@ -1,8 +1,8 @@
 import LinkText from '@/components/LinkText'
+import MediaLoader from '@/components/MediaLoader'
 import { getMetadataQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import truncate from 'lodash/truncate'
-import Image from 'next/image'
 import { ComponentProps, useMemo } from 'react'
 import {
   FacebookEmbed,
@@ -86,7 +86,7 @@ function DefaultLinkPreview({ url }: { url: string }) {
         </LinkText>
         <p className='font-semibold'>{data.title}</p>
         <p className='text-text-muted'>{data.description}</p>
-        <Image
+        <MediaLoader
           src={data.image ?? ''}
           alt=''
           width={600}
