@@ -3,9 +3,12 @@ on:
   push:
     branches:
       - main
+      - storybook
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   front_build:
     name: build & Push Docker image to Docker Hub
@@ -41,6 +44,7 @@ jobs:
             ${{ runner.os }}-single-buildx
 
       - name: Build production image
+        if: ${{ github.ref == 'refs/heads/main' }}
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -73,9 +77,42 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=grill-web-push.appspot.com
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=762898090466
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:762898090466:web:2a09d26c3bab706b95d1bb
+          target: runner
           tags: |
             ${{ env.image }}
             dappforce/subsocial-web-app:grillchat-master-latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Build storybook image
+        if: ${{ github.ref == 'refs/heads/storybook' }}
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          builder: ${{ steps.buildx.outputs.name }}
+          file: docker/Dockerfile
+          push: true
+          build-args: |
+            GH_NEXT_PUBLIC_SPACE_IDS=1002,1005,1010,1011,1023,1030
+            GH_NEXT_PUBLIC_MODERATION_URL=https://moderation.subsocial.network/graphql
+            GH_NOTIFICATIONS_URL=https://grill-notifications.subsocial.network/graphql
+            GH_NOTIFICATIONS_TOKEN=${{ secrets.NOTIFICATIONS_AUTH_TOKEN }}
+            GH_NEXT_PUBLIC_AMP_ID=81d0fc2014ce14eed5a475efe9a44035
+            GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/xsocial/graphql
+            GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
+            GH_IPFS_PIN_URL=https://pin.crustcloud.io/psa
+            GH_CRUST_IPFS_AUTH=${{ secrets.CRUST_IPFS_AUTH }}
+            GH_SUBSOCIAL_PROMO_SECRET_HEX=${{ secrets.SUBSOCIAL_PROMO_SECRET_HEX }}
+            GH_USER_ID_SALT=${{ secrets.USER_ID_SALT }}
+            GH_SERVER_MNEMONIC=${{ secrets.SERVER_ENERGY_MNEMONIC }}
+            GH_CAPTCHA_SECRET=${{ secrets.CAPTCHA_SECRET }}
+            GH_NEXT_PUBLIC_CAPTCHA_SITE_KEY=6LcnGU0lAAAAANPvuR2I3gZswHpX1GJnpJG2ocVb
+            GH_SERVER_DISCUSSION_CREATOR_MNEMONIC=${{ secrets.SERVER_DISCUSSION_CREATOR_MNEMONIC }}
+            GH_COVALENT_API_KEY=${{ secrets.COVALENT_API_KEY }}
+          target: storybook
+          tags: |
+            ${{ env.image }}
+            dappforce/subsocial-web-app:grillchat-storybook-master-latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -145,3 +182,37 @@ jobs:
           script: |
             cd /root/grillchat
             ./update.sh
+
+  storybook_deploy:
+    name: prod-deploy
+    needs: front_build
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/storybook' }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
+
+      - name: Update deploy file
+        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/storybook/deployment.yaml
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/deployment/storybook/
+
+      - name: Verify deployment
+        run: kubectl -n sub-back rollout status deployment/grillchat-storybook
+
+      - name: Verify deployment
+        run: kubectl -n sub-back rollout status deployment/grillchat-storybook

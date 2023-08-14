@@ -14,16 +14,14 @@ export default function useFirstVisitNotification(storageKey: string) {
   const [showNotification, setShowNotification] = useState(false)
 
   useEffect(() => {
-    if (!myAddress) return
-
     const storage = getStorage(storageKey)
-    if (!storage.get(myAddress)) {
+    if (!storage.get(myAddress ?? '')) {
       setShowNotification(true)
     }
   }, [myAddress, storageKey])
 
   return {
-    showNotification: showNotification,
+    showNotification,
     closeNotification: () => {
       setShowNotification(false)
       if (!myAddress) return
