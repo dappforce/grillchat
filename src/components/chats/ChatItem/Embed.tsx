@@ -1,4 +1,8 @@
+import LinkText from '@/components/LinkText'
+import { getMetadataQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
+import truncate from 'lodash/truncate'
+import Image from 'next/image'
 import { ComponentProps, useMemo } from 'react'
 import {
   FacebookEmbed,
@@ -53,7 +57,40 @@ const urlMapper: {
     checker: (url: string) =>
       /(?:https?:\/\/)?(?:www\.)?(?:facebook\.com)\/(.+)/.test(url),
   },
+
+  // fallback, default link preview
+  {
+    checker: () => true,
+    component: DefaultLinkPreview,
+  },
 ]
+
+function DefaultLinkPreview({ url }: { url: string }) {
+  const { data } = getMetadataQuery.useQuery(url)
+  if (!data) return null
+  const siteName = truncate(data.siteName || data.hostName || data.title, {
+    length: 30,
+  })
+
+  return (
+    <div className='w-full rounded-2xl bg-background-light p-3'>
+      <div className='border-l-2 border-background-primary pl-2.5'>
+        <LinkText href={url} variant='primary'>
+          {siteName}
+        </LinkText>
+        <p className='font-semibold'>{data.title}</p>
+        <p className='text-text-muted'>{data.description}</p>
+        <Image
+          src={data.image ?? ''}
+          alt=''
+          width={800}
+          height={800}
+          className='mt-2 rounded-lg'
+        />
+      </div>
+    </div>
+  )
+}
 
 const getComponent = (url: string) => {
   const component = urlMapper.find((item) => item.checker(url))?.component
