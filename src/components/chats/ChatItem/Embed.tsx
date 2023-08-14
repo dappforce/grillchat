@@ -18,7 +18,7 @@ const urlMapper: {
 }[] = [
   {
     component: ({ url }) => (
-      <div className='overflow-hidden rounded-lg'>
+      <div className='w-full overflow-hidden rounded-lg'>
         <YouTubeEmbed url={url} width='100%' height={300} />
       </div>
     ),
