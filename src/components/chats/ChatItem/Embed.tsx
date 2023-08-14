@@ -89,8 +89,8 @@ function DefaultLinkPreview({ url }: { url: string }) {
         <Image
           src={data.image ?? ''}
           alt=''
-          width={800}
-          height={800}
+          width={600}
+          height={400}
           className='mt-2 rounded-lg'
         />
       </div>
