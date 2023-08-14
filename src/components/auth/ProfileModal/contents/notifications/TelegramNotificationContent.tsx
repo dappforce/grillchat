@@ -31,7 +31,7 @@ export default function TelegramNotificationContent(props: ContentProps) {
   if (!isLoadingAccount && !firstLinkedAccount) {
     return (
       <>
-        {!isAfterDisconnect && (
+        {isAfterDisconnect && (
           <Notice className='mb-6' leftIcon='✅'>
             You have disconnected your account from Grill&apos;s telegram bot.
           </Notice>
