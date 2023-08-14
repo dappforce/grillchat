@@ -66,6 +66,7 @@ export function isPWA() {
   // @ts-ignore
   return (
     window.matchMedia('(display-mode: standalone)').matches ||
+    // @ts-ignore
     window.navigator.standalone ||
     document.referrer.includes('android-app://')
   )
