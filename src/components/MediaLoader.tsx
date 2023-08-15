@@ -72,7 +72,12 @@ export default function MediaLoader({
     } else {
       return (
         <>
-          <div className='absolute inset-0 h-full w-full animate-pulse bg-background-lighter' />
+          <div
+            className={cx(
+              commonProps.className,
+              'absolute inset-0 m-0 h-full w-full animate-pulse bg-background-lighter p-0'
+            )}
+          />
           <Image
             {...commonProps}
             style={{ backfaceVisibility: 'hidden', ...commonProps.style }}
@@ -81,7 +86,10 @@ export default function MediaLoader({
             width={10}
             height={10}
             alt={props.alt || ''}
-            className='absolute inset-0 h-full w-full'
+            className={cx(
+              commonProps.className,
+              'absolute inset-0 m-0 h-full w-full p-0'
+            )}
           />
           <Image
             {...commonProps}
