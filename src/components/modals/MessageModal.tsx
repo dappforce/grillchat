@@ -1,8 +1,9 @@
 import { getPostQuery } from '@/services/api/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { CommentData } from '@subsocial/api/types'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import LoginModal from '../auth/LoginModal'
 import Button from '../Button'
@@ -27,6 +28,7 @@ export default function MessageModal({
   ...props
 }: MessageModalProps) {
   const myAddress = useMyAccount((state) => state.address)
+  const isInitialized = useMyAccount((state) => state.isInitialized)
   const isDifferentRecipient = recipient !== myAddress
 
   const [isOpenLoginModal, setIsOpenLoginModal] = useState(false)
@@ -42,6 +44,17 @@ export default function MessageModal({
   const chatTitle = chat?.content?.title || (
     <span className='ml-2 inline-block h-[1.3em] w-28 animate-pulse rounded-lg bg-background' />
   )
+
+  const sendEvent = useSendEvent()
+  useEffect(() => {
+    if (!isInitialized) return
+
+    if (props.isOpen && recipient)
+      sendEvent('open_tg_notification', {
+        isMyNotif: (myAddress === recipient) + '',
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.isOpen, isInitialized])
 
   const handleScrollToMessage = async () => {
     if (!scrollToMessage) return
