@@ -17,7 +17,7 @@ export type MessageModalProps = ModalFunctionalityProps & {
   messageId: string
   scrollToMessage?: (messageId: string) => Promise<void>
   hubId: string
-  recipient: string
+  recipient?: string
 }
 
 export default function MessageModal({
@@ -103,7 +103,7 @@ export default function MessageModal({
             </Button>
           )}
         </div>
-        {isDifferentRecipient && (
+        {isDifferentRecipient && recipient && (
           <Card className='mt-4 bg-background-lighter'>
             <div className='flex items-center gap-2 text-text-muted'>
               <span className='text-sm'>Notification recipient</span>
