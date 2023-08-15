@@ -98,7 +98,9 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
     )
     postsFromBlockchain.forEach((post) => {
       if (!post.content) return
-      post.content.link = getUrlFromText(post.content.body)
+      const link = getUrlFromText(post.content.body)
+      if (!link) return
+      post.content.link = link
     })
     mergedPosts.push(...postsFromBlockchain)
   } catch (e) {
@@ -139,9 +141,9 @@ async function getLinkMetadata(link: string): Promise<LinkMetadata | null> {
       ...metadata.meta,
       ...metadata.og,
     }
-    const parsedMetadata: LinkMetadata = {
-      ...allMetadata,
-      siteName: allMetadata.site_name,
+    const parsedMetadata: LinkMetadata = allMetadata
+    if (allMetadata.site_name) {
+      parsedMetadata.siteName = allMetadata.site_name
     }
 
     redisCallWrapper((redis) =>
