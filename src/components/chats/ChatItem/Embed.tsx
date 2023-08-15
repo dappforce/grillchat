@@ -5,7 +5,6 @@ import { LinkMetadata } from '@subsocial/api/types'
 import truncate from 'lodash/truncate'
 import { ComponentProps, useMemo } from 'react'
 import {
-  FacebookEmbed,
   InstagramEmbed,
   TikTokEmbed,
   YouTubeEmbed,
@@ -74,11 +73,6 @@ const urlMapper: {
     component: ({ link }) => <InstagramEmbed url={link} width='100%' />,
     checker: (link: string) =>
       /(?:https?:\/\/)?(?:www\.)?(?:instagram\.com)\/(.+)/.test(link),
-  },
-  {
-    component: ({ link }) => <FacebookEmbed url={link} width='100%' />,
-    checker: (link: string) =>
-      /(?:https?:\/\/)?(?:www\.)?(?:facebook\.com)\/(.+)/.test(link),
   },
 
   // fallback, default link preview
