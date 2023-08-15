@@ -1,4 +1,3 @@
-import { ApiMetadataResponse } from '@/pages/api/metadata'
 import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
@@ -96,17 +95,4 @@ async function getNft(nft: ApiNftParams | null) {
 export const getNftQuery = createQuery({
   key: 'nft',
   fetcher: getNft,
-})
-
-export type GetMetadataData = ApiMetadataResponse['data']
-async function getMetadata(url: string) {
-  const res = await axios.get('/api/metadata', {
-    params: { url },
-  })
-  const responseData = res.data as ApiMetadataResponse
-  return responseData.data
-}
-export const getMetadataQuery = createQuery({
-  key: 'metadata',
-  fetcher: getMetadata,
 })

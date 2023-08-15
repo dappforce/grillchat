@@ -4,7 +4,6 @@ import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
-import { getUrlFromText } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { ComponentProps, SyntheticEvent, useReducer } from 'react'
 import ChatItemMenus from './ChatItemMenus'
@@ -85,8 +84,6 @@ export default function ChatItem({
   const isEmojiOnly = shouldRenderEmojiChatItem(body ?? '')
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
-  const urlFromBody = getUrlFromText(body ?? '')
-
   return (
     <>
       <div
@@ -164,13 +161,14 @@ export default function ChatItem({
         />
       </div>
 
-      {urlFromBody && (
+      {message.content?.link && (
         <div className={cx(isMyMessage ? 'flex justify-end' : 'flex')}>
           {/* Offset for avatar */}
           {!isMyMessage && <div className='w-11 flex-shrink-0' />}
           <Embed
             className={cx('mt-1', isMyMessage ? 'flex justify-end' : 'flex')}
-            url={urlFromBody}
+            link={message.content?.link}
+            linkMetadata={message.content.linkMetadata}
           />
         </div>
       )}
