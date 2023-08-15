@@ -1,4 +1,5 @@
 import { getPostQuery } from '@/services/api/query'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { CommentData } from '@subsocial/api/types'
 import { useRef, useState } from 'react'
@@ -23,6 +24,9 @@ export default function MessageModal({
   recipient,
   ...props
 }: MessageModalProps) {
+  const myAddress = useMyAccount((state) => state.address)
+  const isDifferentRecipient = recipient !== myAddress
+
   const [isOpenLoginModal, setIsOpenLoginModal] = useState(false)
 
   const { data: message } = getPostQuery.useQuery(messageId)
@@ -84,7 +88,7 @@ export default function MessageModal({
             </Button>
           )}
         </div>
-        {recipient && (
+        {isDifferentRecipient && (
           <Card className='mt-4 bg-background-lighter'>
             <span className='text-sm text-text-muted'>
               Notification recipient

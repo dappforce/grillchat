@@ -137,7 +137,7 @@ function ChatListContent({
     hasScrolledToMessageRef.current = true
 
     const messageId = getUrlQuery('messageId')
-    const recipient = getUrlQuery('address')
+    const recipient = getUrlQuery('targetAcc')
     const isMessageIdsFetched = rawMessageIds !== undefined
 
     if (!isMessageIdsFetched) return
