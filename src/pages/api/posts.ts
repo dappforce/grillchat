@@ -136,7 +136,7 @@ async function getLinkMetadata(link: string): Promise<LinkMetadata | null> {
   }
 
   try {
-    const metadata = await parser(link)
+    const metadata = await parser(link, { timeout: 5_000 })
     const allMetadata = {
       ...metadata.meta,
       ...metadata.og,
