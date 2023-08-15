@@ -13,6 +13,7 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   address: string
   className?: string
   avatarClassName?: string
+  addressesContainerClassName?: string
   showMaxOneAddress?: boolean
   withGrillAddress?: boolean
   withEvmAddress?: boolean
@@ -24,6 +25,7 @@ const ProfilePreview = ({
   className,
   avatarClassName,
   nameClassName,
+  addressesContainerClassName,
   showMaxOneAddress = false,
   withGrillAddress = true,
   withEvmAddress = true,
@@ -44,14 +46,14 @@ const ProfilePreview = ({
         address={address}
         className={cx('h-20 w-20', avatarClassName)}
       />
-      <div className='flex flex-col'>
+      <div className={cx('flex flex-col gap-2', addressesContainerClassName)}>
         <Name
           address={address}
           showEthIcon={false}
           className={cx('text-lg leading-none', nameClassName)}
         />
         {showingAnyAddress && (
-          <div className='mt-2 flex flex-col gap-1'>
+          <div className='flex flex-col gap-1'>
             {withGrillAddress &&
               (!isShowingEvmAddress || !showMaxOneAddress) && (
                 <div className='flex flex-row items-center gap-2'>

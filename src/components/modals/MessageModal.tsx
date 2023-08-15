@@ -105,9 +105,10 @@ export default function MessageModal({
               </PopOver>
             </div>
             <ProfilePreview
-              className='mt-3'
+              className='mt-3 gap-3'
               address={recipient}
-              avatarClassName='h-12 w-12'
+              addressesContainerClassName='gap-1'
+              avatarClassName='h-9 w-9'
               showMaxOneAddress
             />
             <Button
