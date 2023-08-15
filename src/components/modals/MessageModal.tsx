@@ -3,10 +3,12 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { CommentData } from '@subsocial/api/types'
 import { useRef, useState } from 'react'
+import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import LoginModal from '../auth/LoginModal'
 import Button from '../Button'
 import Card from '../Card'
 import ChatItem from '../chats/ChatItem'
+import PopOver from '../floating/PopOver'
 import ProfilePreview from '../ProfilePreview'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
@@ -90,9 +92,18 @@ export default function MessageModal({
         </div>
         {isDifferentRecipient && (
           <Card className='mt-4 bg-background-lighter'>
-            <span className='text-sm text-text-muted'>
-              Notification recipient
-            </span>
+            <div className='flex items-center gap-2 text-text-muted'>
+              <span className='text-sm'>Notification recipient</span>
+              <PopOver
+                trigger={<HiOutlineInformationCircle />}
+                triggerOnHover
+                panelSize='sm'
+                yOffset={6}
+                placement='top'
+              >
+                <p>You are not currently logged in to this account.</p>
+              </PopOver>
+            </div>
             <ProfilePreview
               className='mt-3'
               address={recipient}
