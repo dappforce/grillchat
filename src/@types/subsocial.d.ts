@@ -64,7 +64,15 @@ declare module '@subsocial/api/types' {
     | DecodedPromoExtension
     | PinsExtension
 
+  export type LinkMetadata = {
+    title?: string
+    description?: string
+    image?: string
+    siteName?: string
+    hostName?: string
+  }
   export interface PostContent extends SubsocialPostContent {
+    linkMetadata?: LinkMetadata
     inReplyTo?: {
       kind: 'Post'
       id: string
