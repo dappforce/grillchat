@@ -7,13 +7,13 @@ import NavbarWithSearch, {
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getHubIds } from '@/utils/env/client'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 
 export type HubPageNavbarProps = {
-  logo: JSX.Element
-  auth: JSX.Element
-  backButton: JSX.Element
-  notificationBell: JSX.Element
+  logo: ReactNode
+  auth: ReactNode
+  backButton: ReactNode
+  notificationBell: ReactNode
   searchProps: NavbarWithSearchProps['searchProps']
   hubId: string
   chatsCount: number
