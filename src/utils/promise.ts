@@ -1,3 +1,7 @@
+export function wait(ms?: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 /**
  * This function generates a promise that can be resolved manually.
  * This is useful when you want to wait for a resolve process but doesn't want all the code inside a promise.

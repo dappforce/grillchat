@@ -197,23 +197,20 @@ function BottomPanel() {
   return (
     <Container as='div' className='pb-2 text-center text-sm text-text-muted'>
       {shouldSendMessageWithoutCaptcha ? (
-        <div className='flex items-center justify-center'>
-          <p>
-            Powered by{' '}
-            <LinkText
-              variant='primary'
-              href='https://subsocial.network/'
-              openInNewTab
-            >
-              Subsocial
-            </LinkText>
-          </p>
-
-          <NetworkStatus className='ml-2' />
-        </div>
+        <p className='inline'>
+          Powered by{' '}
+          <LinkText
+            variant='primary'
+            href='https://subsocial.network/'
+            openInNewTab
+          >
+            Subsocial
+          </LinkText>
+        </p>
       ) : (
-        <CaptchaTermsAndService />
+        <CaptchaTermsAndService className='inline' />
       )}
+      <NetworkStatus className='ml-2 inline-block' />
     </Container>
   )
 }

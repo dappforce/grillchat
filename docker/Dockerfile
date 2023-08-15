@@ -95,3 +95,10 @@ WORKDIR /opt/subsocial/app
 COPY --from=builder /opt/subsocial/app .
 
 CMD [ "/opt/subsocial/app/node_modules/.bin/next", "start" ]
+
+
+FROM builder as storybook
+
+RUN yarn build-storybook
+
+CMD [ "yarn", "start-storybook"]
