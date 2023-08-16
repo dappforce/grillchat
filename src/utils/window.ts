@@ -61,3 +61,14 @@ export function replaceUrl(url: string) {
     url
   )
 }
+
+export function getWorkbox() {
+  if (
+    typeof window !== 'undefined' &&
+    'serviceWorker' in navigator &&
+    (window as any).workbox !== undefined
+  ) {
+    return (window as any).workbox
+  }
+  return null
+}
