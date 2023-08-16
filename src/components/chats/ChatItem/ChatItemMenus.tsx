@@ -211,7 +211,6 @@ export default function ChatItemMenus({
       )}
       <LoginModal
         isOpen={modalState === 'login'}
-        openModal={() => setModalState('login')}
         closeModal={() => setModalState(null)}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}

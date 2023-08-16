@@ -1,7 +1,57 @@
-import Toast from '@/components/Toast'
-import { useEffect, useRef } from 'react'
-import { toast } from 'react-hot-toast'
+import CustomToast from '@/components/Toast'
+import { ReactNode, useEffect, useRef } from 'react'
+import { toast, Toast, ToastOptions } from 'react-hot-toast'
 import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
+
+export function showErrorToast<ErrorType>(
+  error: unknown,
+  errorTitle: ReactNode,
+  config?: {
+    additionalDescription?: (t: Toast) => ReactNode
+    withIcon?: boolean
+    getMessage?: (error: ErrorType) => string
+    actionButton?: (t: Toast) => ReactNode
+    toastConfig?: ToastOptions
+  }
+) {
+  const {
+    actionButton,
+    getMessage,
+    toastConfig,
+    withIcon = true,
+  } = config ?? {}
+  let message: string | undefined = (error as any)?.message
+
+  const response = (error as any)?.response?.data
+  if (getMessage) {
+    const responseMessage = getMessage(response)
+    if (responseMessage) message = responseMessage
+  }
+
+  toast.custom(
+    (t) => (
+      <CustomToast
+        t={t}
+        icon={
+          withIcon
+            ? (classNames) => (
+                <HiOutlineExclamationTriangle className={classNames} />
+              )
+            : undefined
+        }
+        title={errorTitle}
+        description={
+          <div className='flex flex-col'>
+            <p>{message}</p>
+            {config?.additionalDescription?.(t)}
+          </div>
+        }
+        action={actionButton?.(t)}
+      />
+    ),
+    toastConfig
+  )
+}
 
 export default function useToastError<ErrorType>(
   error: unknown,
@@ -11,24 +61,7 @@ export default function useToastError<ErrorType>(
   const getMessageRef = useRef(getMessage)
   useEffect(() => {
     if (error) {
-      let message: string | undefined = (error as any)?.message
-
-      const response = (error as any)?.response?.data
-      if (getMessageRef.current) {
-        const responseMessage = getMessageRef.current(response)
-        if (responseMessage) message = responseMessage
-      }
-
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          icon={(classNames) => (
-            <HiOutlineExclamationTriangle className={classNames} />
-          )}
-          title={errorTitle}
-          description={message}
-        />
-      ))
+      showErrorToast(error, errorTitle, { getMessage: getMessageRef.current })
     }
   }, [error, errorTitle])
 }

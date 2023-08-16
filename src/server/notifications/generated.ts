@@ -20,9 +20,35 @@ export type AccountsLinkingMessageTemplateGql = {
   messageTpl: Scalars['String']['output'];
 };
 
+export type AddFcmTokenToAddressMessageMessageInput = {
+  fcmToken: Scalars['String']['input'];
+  substrateAddress: Scalars['String']['input'];
+};
+
+export type CommitSignedMessageResponse = {
+  __typename?: 'CommitSignedMessageResponse';
+  data?: Maybe<CommitSignedMessageResponseData>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type CommitSignedMessageResponseData = {
+  __typename?: 'CommitSignedMessageResponseData';
+  tmpLinkingIdForTelegram?: Maybe<Scalars['String']['output']>;
+};
+
 export type CreateTemporaryLinkingIdForTelegramResponseDto = {
   __typename?: 'CreateTemporaryLinkingIdForTelegramResponseDto';
   id: Scalars['String']['output'];
+};
+
+export type DeleteFcmTokenFromAddressMessageInput = {
+  fcmToken: Scalars['String']['input'];
+  substrateAddress: Scalars['String']['input'];
+};
+
+export type LinkAddressWithTelegramAccountMessageInput = {
+  substrateAddress: Scalars['String']['input'];
 };
 
 export type LinkedTgAccountsToSubstrateAccountResponseType = {
@@ -32,15 +58,23 @@ export type LinkedTgAccountsToSubstrateAccountResponseType = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  commitSignedMessageWithAction?: Maybe<CommitSignedMessageResponse>;
   createNotificationSettingsToAccount: NotificationSettingsGql;
+  /** This mutation is deprecated and "commitSignedMessageWithAction" must be used instead. */
   createTemporaryLinkingIdForTelegram: CreateTemporaryLinkingIdForTelegramResponseDto;
+  /** This mutation is deprecated and "commitSignedMessageWithAction" must be used instead. */
   unlinkTelegramAccount: UnlinkTelegramAccountResponseDto;
   updateNotificationSettingsToAccount: NotificationSettingsGql;
 };
 
 
+export type MutationCommitSignedMessageWithActionArgs = {
+  signedMessage: Scalars['String']['input'];
+};
+
+
 export type MutationCreateNotificationSettingsToAccountArgs = {
-  createNotificationSettingsInput: NotificationSettingsGqlInput;
+  createNotificationSettingsInput: NotificationSettingsInputGql;
 };
 
 
@@ -55,7 +89,7 @@ export type MutationUnlinkTelegramAccountArgs = {
 
 
 export type MutationUpdateNotificationSettingsToAccountArgs = {
-  updateNotificationSettingsInput: NotificationSettingsGqlInput;
+  updateNotificationSettingsInput: NotificationSettingsInputGql;
 };
 
 export type NotificationSettingsGql = {
@@ -66,7 +100,7 @@ export type NotificationSettingsGql = {
   substrateAccountId: Scalars['String']['output'];
 };
 
-export type NotificationSettingsGqlInput = {
+export type NotificationSettingsInputGql = {
   subscriptions: Array<NotificationSubscriptionInputType>;
   substrateAccountId: Scalars['String']['input'];
 };
@@ -74,20 +108,41 @@ export type NotificationSettingsGqlInput = {
 export type NotificationSubscription = {
   __typename?: 'NotificationSubscription';
   eventName: Scalars['String']['output'];
+  fcm: Scalars['Boolean']['output'];
   telegramBot: Scalars['Boolean']['output'];
 };
 
 export type NotificationSubscriptionInputType = {
   eventName: Scalars['String']['input'];
+  fcm: Scalars['Boolean']['input'];
   telegramBot: Scalars['Boolean']['input'];
 };
 
 export type Query = {
   __typename?: 'Query';
+  addFcmTokenToAddressMessage: SignedMessageWithActionTemplateResponseDto;
+  deleteFcmTokenFromAddressMessage: SignedMessageWithActionTemplateResponseDto;
+  linkAddressWithTelegramAccountMessage: SignedMessageWithActionTemplateResponseDto;
   linkingMessageForTelegramAccount: AccountsLinkingMessageTemplateGql;
   notificationSettingsByAccountId: NotificationSettingsGql;
   telegramAccountsLinkedToSubstrateAccount: LinkedTgAccountsToSubstrateAccountResponseType;
+  unlinkAddressFromTelegramAccountMessage: SignedMessageWithActionTemplateResponseDto;
   unlinkingMessageForTelegramAccount: AccountsLinkingMessageTemplateGql;
+};
+
+
+export type QueryAddFcmTokenToAddressMessageArgs = {
+  input: AddFcmTokenToAddressMessageMessageInput;
+};
+
+
+export type QueryDeleteFcmTokenFromAddressMessageArgs = {
+  input: DeleteFcmTokenFromAddressMessageInput;
+};
+
+
+export type QueryLinkAddressWithTelegramAccountMessageArgs = {
+  input: LinkAddressWithTelegramAccountMessageInput;
 };
 
 
@@ -106,8 +161,18 @@ export type QueryTelegramAccountsLinkedToSubstrateAccountArgs = {
 };
 
 
+export type QueryUnlinkAddressFromTelegramAccountMessageArgs = {
+  input: UnlinkAddressWithTelegramAccountMessageInput;
+};
+
+
 export type QueryUnlinkingMessageForTelegramAccountArgs = {
   substrateAccount: Scalars['String']['input'];
+};
+
+export type SignedMessageWithActionTemplateResponseDto = {
+  __typename?: 'SignedMessageWithActionTemplateResponseDto';
+  messageTpl: Scalars['String']['output'];
 };
 
 export type TelegramAccountDetails = {
@@ -117,6 +182,10 @@ export type TelegramAccountDetails = {
   lastName?: Maybe<Scalars['String']['output']>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
   userName: Scalars['String']['output'];
+};
+
+export type UnlinkAddressWithTelegramAccountMessageInput = {
+  substrateAddress: Scalars['String']['input'];
 };
 
 export type UnlinkTelegramAccountResponseDto = {
@@ -160,6 +229,29 @@ export type UnlinkTelegramAccountMutationVariables = Exact<{
 
 export type UnlinkTelegramAccountMutation = { __typename?: 'Mutation', unlinkTelegramAccount: { __typename?: 'UnlinkTelegramAccountResponseDto', message?: string | null, success: boolean } };
 
+export type GetLinkingMessageForFcmQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+  fcmToken: Scalars['String']['input'];
+}>;
+
+
+export type GetLinkingMessageForFcmQuery = { __typename?: 'Query', addFcmTokenToAddressMessage: { __typename?: 'SignedMessageWithActionTemplateResponseDto', messageTpl: string } };
+
+export type GetUnlinkingMessageFromFcmQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+  fcmToken: Scalars['String']['input'];
+}>;
+
+
+export type GetUnlinkingMessageFromFcmQuery = { __typename?: 'Query', deleteFcmTokenFromAddressMessage: { __typename?: 'SignedMessageWithActionTemplateResponseDto', messageTpl: string } };
+
+export type CommitSignedMessageMutationVariables = Exact<{
+  signedMessageWithDetails: Scalars['String']['input'];
+}>;
+
+
+export type CommitSignedMessageMutation = { __typename?: 'Mutation', commitSignedMessageWithAction?: { __typename?: 'CommitSignedMessageResponse', message?: string | null, success: boolean } | null };
+
 
 export const GetTelegramAccountsLinked = gql`
     query GetTelegramAccountsLinked($address: String!) {
@@ -196,6 +288,32 @@ export const GetUnlinkingMessageForTelegram = gql`
 export const UnlinkTelegramAccount = gql`
     mutation UnlinkTelegramAccount($signedMessageWithDetails: String!) {
   unlinkTelegramAccount(signedMessageWithDetails: $signedMessageWithDetails) {
+    message
+    success
+  }
+}
+    `;
+export const GetLinkingMessageForFcm = gql`
+    query GetLinkingMessageForFcm($address: String!, $fcmToken: String!) {
+  addFcmTokenToAddressMessage(
+    input: {substrateAddress: $address, fcmToken: $fcmToken}
+  ) {
+    messageTpl
+  }
+}
+    `;
+export const GetUnlinkingMessageFromFcm = gql`
+    query GetUnlinkingMessageFromFcm($address: String!, $fcmToken: String!) {
+  deleteFcmTokenFromAddressMessage(
+    input: {substrateAddress: $address, fcmToken: $fcmToken}
+  ) {
+    messageTpl
+  }
+}
+    `;
+export const CommitSignedMessage = gql`
+    mutation CommitSignedMessage($signedMessageWithDetails: String!) {
+  commitSignedMessageWithAction(signedMessage: $signedMessageWithDetails) {
     message
     success
   }

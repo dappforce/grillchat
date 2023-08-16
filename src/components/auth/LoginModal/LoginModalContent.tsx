@@ -38,7 +38,6 @@ export type LoginModalStep =
 type ContentProps = ModalFunctionalityProps & {
   setCurrentStep: Dispatch<SetStateAction<LoginModalStep>>
   currentStep: LoginModalStep
-  openModal: () => void
   runCaptcha: () => Promise<string | null>
   termsAndService: (className?: string) => JSX.Element
   afterLogin?: () => void

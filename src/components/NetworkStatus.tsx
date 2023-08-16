@@ -5,7 +5,7 @@ import { ComponentProps } from 'react'
 export type NetworkStatusProps = ComponentProps<'div'>
 
 export default function NetworkStatus({ ...props }: NetworkStatusProps) {
-  const status = useNetworkStatus()
+  const { status } = useNetworkStatus()
 
   return (
     <div
@@ -14,7 +14,7 @@ export default function NetworkStatus({ ...props }: NetworkStatusProps) {
         'h-2 w-2 rounded-full',
         {
           'bg-orange-500': status === 'connecting',
-          'bg-background-red': status === 'error',
+          'bg-red-500': status === 'error',
           'bg-green-600': status === 'connected',
         },
         props.className

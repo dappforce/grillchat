@@ -14,12 +14,11 @@ export default function NotificationContent({
   address,
   setCurrentState,
 }: ContentProps) {
+  const pwa = useFirstVisitNotification('pwa-notification')
+  const telegram = useFirstVisitNotification('telegram-notification')
   const { data: linkedAccounts } = getLinkedTelegramAccountsQuery.useQuery({
     address,
   })
-  const { showNotification, closeNotification } = useFirstVisitNotification(
-    'telegram-notification'
-  )
 
   return (
     <MenuList
@@ -30,21 +29,29 @@ export default function NotificationContent({
             <span className='flex items-center gap-2'>
               <span>Telegram Bot</span>
               {!!linkedAccounts?.length && <Notice size='sm'>Enabled</Notice>}
-              {showNotification && <DotBlinkingNotification />}
+              {telegram.showNotification && <DotBlinkingNotification />}
             </span>
           ),
           iconClassName: cx('text-[#A3ACBE]'),
           icon: FaTelegram,
           onClick: () => {
-            closeNotification()
+            telegram.closeNotification()
             setCurrentState('telegram-notifications')
           },
         },
         {
-          text: <SoonMenu text='Push Notifications' />,
+          text: (
+            <span className='flex items-center gap-2'>
+              <span>Push Notifications</span>
+              {pwa.showNotification && <DotBlinkingNotification />}
+            </span>
+          ),
           iconClassName: cx('text-[#A3ACBE]'),
           icon: BellIcon,
-          disabled: true,
+          onClick: () => {
+            pwa.closeNotification()
+            setCurrentState('push-notifications')
+          },
         },
         {
           text: <SoonMenu text='Email Notifications' />,

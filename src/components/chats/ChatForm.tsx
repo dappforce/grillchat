@@ -4,10 +4,8 @@ import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useAutofocus from '@/hooks/useAutofocus'
-import useNetworkStatus from '@/hooks/useNetworkStatus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
-import useToastError from '@/hooks/useToastError'
-import { ApiRequestTokenResponse } from '@/pages/api/request-token'
+import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import {
@@ -27,11 +25,9 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
-import { IoRefresh } from 'react-icons/io5'
+import { HiXMark } from 'react-icons/hi2'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
-import PopOver from '../floating/PopOver'
-import Toast from '../Toast'
 
 const CaptchaInvisible = dynamic(
   () => import('@/components/captcha/CaptchaInvisible'),
@@ -77,8 +73,6 @@ export default function ChatForm({
   beforeMesageSend,
   ...props
 }: ChatFormProps) {
-  const networkStatus = useNetworkStatus()
-
   const replyTo = useMessageData((state) => state.replyTo)
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
 
@@ -97,15 +91,17 @@ export default function ChatForm({
   )
   const [isRequestingEnergy, setIsRequestingEnergy] = useState(false)
 
-  const {
-    mutateAsync: requestTokenAndSendMessage,
-    error: errorRequestTokenAndSendMessage,
-  } = useRequestTokenAndSendMessage()
-  useToastError<ApiRequestTokenResponse>(
-    errorRequestTokenAndSendMessage,
-    'Create account failed',
-    (e) => e.message
-  )
+  const { mutateAsync: requestTokenAndSendMessage } =
+    useRequestTokenAndSendMessage({
+      onError: (error, variables) => {
+        showErrorSendingMessageToast(
+          error,
+          'Create account failed',
+          variables.message,
+          setMessageBody
+        )
+      },
+    })
 
   let messageBody = useMessageData((state) => state.messageBody)
   const showEmptyPrimaryChatInput = useMessageData(
@@ -117,8 +113,16 @@ export default function ChatForm({
 
   const setMessageBody = useMessageData((state) => state.setMessageBody)
 
-  const { mutate: sendMessage, error } = useSendMessage()
-  useToastError(error, 'Message failed to send, please try again')
+  const { mutate: sendMessage } = useSendMessage({
+    onError: (error, variables) => {
+      showErrorSendingMessageToast(
+        error,
+        'Failed to send message, please try again',
+        variables.message,
+        setMessageBody
+      )
+    },
+  })
 
   const { enableInputAutofocus } = useConfigContext()
   const { autofocus: runAutofocus } = useAutofocus()
@@ -141,9 +145,7 @@ export default function ChatForm({
   const shouldSendMessage =
     isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
 
-  const isNetworkConnected = networkStatus === 'connected'
   const isDisabled =
-    !isNetworkConnected ||
     (mustHaveMessageBody && !processMessage(messageBody)) ||
     sendButtonProps?.disabled
 
@@ -162,26 +164,6 @@ export default function ChatForm({
     }
 
     const processedMessage = processMessage(messageBody)
-
-    if (!isNetworkConnected) {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          title='Network is reconnecting'
-          description='Please try again later, or refresh the page'
-          action={
-            <Button
-              size='circle'
-              className='ml-2'
-              onClick={() => window.location.reload()}
-            >
-              <IoRefresh />
-            </Button>
-          }
-        />
-      ))
-    }
-
     if (isDisabled) return
 
     const additionalTxParams = await buildAdditionalTxParams?.()
@@ -238,43 +220,24 @@ export default function ChatForm({
             handleSubmit(token)
           }
 
-          const renderSendButton = (classNames: string) => {
-            const sendButton = (
-              <Button
-                onTouchEnd={(e) => {
-                  // For mobile, to prevent keyboard from hiding
-                  if (shouldSendMessage) {
-                    submitForm(e)
-                  }
-                }}
-                tabIndex={-1}
-                onClick={submitForm}
-                size='circle'
-                variant={isDisabled ? 'mutedOutline' : 'primary'}
-                {...sendButtonProps}
-                className={cx(
-                  isNetworkConnected && classNames,
-                  sendButtonProps?.className
-                )}
-              >
-                <Send className='relative top-px h-4 w-4' />
-              </Button>
-            )
-
-            if (isNetworkConnected) return sendButton
-            return (
-              <PopOver
-                triggerOnHover
-                yOffset={8}
-                triggerClassName={classNames}
-                trigger={sendButton}
-                placement='top-end'
-                panelSize='sm'
-              >
-                <p>Network connecting...</p>
-              </PopOver>
-            )
-          }
+          const renderSendButton = (classNames: string) => (
+            <Button
+              onTouchEnd={(e) => {
+                // For mobile, to prevent keyboard from hiding
+                if (shouldSendMessage) {
+                  submitForm(e)
+                }
+              }}
+              tabIndex={-1}
+              onClick={submitForm}
+              size='circle'
+              variant={isDisabled ? 'mutedOutline' : 'primary'}
+              {...sendButtonProps}
+              className={cx(classNames, sendButtonProps?.className)}
+            >
+              <Send className='relative top-px h-4 w-4' />
+            </Button>
+          )
 
           return (
             <form
@@ -321,4 +284,39 @@ export default function ChatForm({
       <EmailSubscribeModal chatId={chatId} />
     </>
   )
+}
+
+function showErrorSendingMessageToast(
+  error: unknown,
+  errorTitle: string,
+  message: string | undefined,
+  setMessageBody: (message: string) => void
+) {
+  showErrorToast(error, errorTitle, {
+    withIcon: false,
+    toastConfig: { duration: Infinity },
+    additionalDescription: message
+      ? (t) => (
+          <span
+            className='cursor-pointer text-text-primary'
+            onClick={() => {
+              toast.dismiss(t.id)
+              setMessageBody(message ?? '')
+            }}
+          >
+            Click here to recover your message
+          </span>
+        )
+      : undefined,
+    actionButton: (t) => (
+      <Button
+        className='ml-2'
+        size='circle'
+        variant='transparent'
+        onClick={() => toast.dismiss(t.id)}
+      >
+        <HiXMark />
+      </Button>
+    ),
+  })
 }

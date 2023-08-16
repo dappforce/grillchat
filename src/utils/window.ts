@@ -62,6 +62,17 @@ export function replaceUrl(url: string) {
   )
 }
 
+export function getWorkbox() {
+  if (
+    typeof window !== 'undefined' &&
+    'serviceWorker' in navigator &&
+    (window as any).workbox !== undefined
+  ) {
+    return (window as any).workbox
+  }
+  return null
+}
+
 export function isPWA() {
   // @ts-ignore
   return (

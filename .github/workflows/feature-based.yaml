@@ -63,12 +63,21 @@ jobs:
             GH_MODERATION_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.Ao4w7g-TvV-o5KgxEiHvSgdxN6MAe0mHe7jS0ZT5rLY
             GH_NOTIFICATIONS_URL=https://staging-grill-notifications.subsocial.network/graphql
             GH_NOTIFICATIONS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.ff24KWuoI8DJD1npesUMB6cVYTlOkwQYQBUOBcOpJxc
-            GH_NEXT_PUBLIC_AMP_ID=d3fe3a999abcf58b216ff2adcb9ff5ad
+            GH_NEXT_PUBLIC_AMP_ID=19b9413e325bc2321fae1ea80cfb2915
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/xsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=1025
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
             GH_IPFS_PIN_URL=https://test-pin.crustcloud.io/psa
             GH_COVALENT_API_KEY=cqt_rQtDdp9G9DFvqcGjVPDD4FFCyhFQ
+            GH_NEXT_PUBLIC_NOTIFICATION_APP_ID=BJaKjx7xtiIXtSUT8tR6VDG0WwhFwdqOqp8L5kc6alGBUtndnlV_DUJ6sze_z70VEBOKk4AT_wZTJqE9dC7sbEQ
+            GH_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=gl-notifications-dev.firebaseapp.com
+            GH_NEXT_PUBLIC_FIREBASE_PROJECT_ID=gl-notifications-dev
+            GH_NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyC7pSekdJQ0PpUDCY4eEkEeDGCazVES6QI
+            GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=gl-notifications-dev.appspot.com
+            GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=581626459774
+            GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:581626459774:web:6b7098eb48c0b142f50a2f
+            GH_NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-ZJBCKJR5F3
+          target: runner
           tags: |
             ${{ env.image }}
           cache-from: type=local,src=/tmp/.buildx-cache

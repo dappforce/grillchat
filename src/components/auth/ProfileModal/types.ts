@@ -23,6 +23,7 @@ export type ModalState =
   | 'evm-address-linked'
   | 'notifications'
   | 'telegram-notifications'
+  | 'push-notifications'
 
 export type ContentProps = {
   address: string

@@ -3,6 +3,7 @@ import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import { ANN_CHAT_ID } from '@/constants/chat'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
@@ -16,7 +17,14 @@ import { LocalStorage } from '@/utils/storage'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ComponentProps,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
@@ -33,10 +41,10 @@ export type NavbarProps = ComponentProps<'div'> & {
     forceUseDefaultBackLink?: boolean
   }
   customContent?: (elements: {
-    logoLink: JSX.Element
-    authComponent: JSX.Element
-    notificationBell: JSX.Element
-    backButton: JSX.Element
+    logoLink: ReactNode
+    authComponent: ReactNode
+    notificationBell: ReactNode
+    backButton: ReactNode
   }) => JSX.Element
 }
 
@@ -115,7 +123,8 @@ export default function Navbar({
     </div>
   )
 
-  const notificationBell = <NotificationBell />
+  const isInIframe = useIsInIframe()
+  const notificationBell = !isInIframe && <NotificationBell />
 
   return (
     <>
@@ -147,7 +156,6 @@ export default function Navbar({
       </nav>
       <LoginModal
         isOpen={openLoginModal}
-        openModal={() => setOpenLoginModal(true)}
         closeModal={() => setOpenLoginModal(false)}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}

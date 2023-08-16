@@ -4,7 +4,7 @@ import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import Toast from '@/components/Toast'
-import { useLinkingAccount } from '@/services/api/notifications/mutation'
+import { useLinkTelegramAccount } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { useAnalytics } from '@/stores/analytics'
 import { getIsInIos } from '@/utils/window'
@@ -32,7 +32,7 @@ export default function TelegramNotificationContent(props: ContentProps) {
   if (!isLoadingAccount && !firstLinkedAccount) {
     return (
       <>
-        {!isAfterDisconnect && (
+        {isAfterDisconnect && (
           <Notice className='mb-6' leftIcon='✅'>
             You have disconnected your account from Grill&apos;s telegram bot.
           </Notice>
@@ -86,7 +86,7 @@ function DisconnectButton({
   address,
   afterDisconnect,
 }: ContentProps & { afterDisconnect?: () => void }) {
-  const { mutate: getLinkingMessage, isLoading } = useLinkingAccount({
+  const { mutate: getLinkingMessage, isLoading } = useLinkTelegramAccount({
     onSuccess: () => {
       afterDisconnect?.()
     },
@@ -118,7 +118,7 @@ function ConnectTelegramButton({ address }: ContentProps) {
   const [openedTelegramBotLink, setOpenedTelegramBotLink] = useState(false)
   const sendEvent = useAnalytics((state) => state.sendEvent)
 
-  const { mutate: getLinkingMessage, isLoading } = useLinkingAccount({
+  const { mutate: getLinkingMessage, isLoading } = useLinkTelegramAccount({
     onSuccess: async (url) => {
       if (!url) throw new Error('Error generating url')
       if (!getIsInIos()) {

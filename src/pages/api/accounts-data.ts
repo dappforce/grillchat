@@ -22,7 +22,7 @@ export type ApiAccountDataResponse = {
   success: boolean
   message: string
   errors?: any
-  data?: any
+  data?: AccountData[]
   hash?: string
 }
 

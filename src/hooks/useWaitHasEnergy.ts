@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from 'react'
 export default function useWaitHasEnergy(timeout = 5_000) {
   const address = useMyAccount((state) => state.address)
   const energy = useMyAccount((state) => state.energy)
+  const resubscribeEnergy = useMyAccount((state) => state._subscribeEnergy)
 
   const hasEnergyResolvers = useRef<(() => void)[]>([])
 
@@ -12,16 +13,17 @@ export default function useWaitHasEnergy(timeout = 5_000) {
       const timeoutId = setTimeout(() => {
         reject(
           new Error(
-            "Energy timeout: You don't have enough energy to perform this action."
+            "You don't have enough energy to perform this action. Please try again"
           )
         )
+        resubscribeEnergy()
       }, timeout)
       hasEnergyResolvers.current.push(() => {
         clearTimeout(timeoutId)
         resolve()
       })
     })
-  }, [timeout])
+  }, [timeout, resubscribeEnergy])
 
   useEffect(() => {
     if (!energy || energy <= 0) return
