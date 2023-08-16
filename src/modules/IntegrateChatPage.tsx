@@ -8,7 +8,7 @@ import Button from '@/components/Button'
 import ClickableMedia from '@/components/ClickableMedia'
 import Container from '@/components/Container'
 import FixedBottomActionLayout from '@/components/layouts/FixedBottomActionLayout'
-import { useAnalytics } from '@/stores/analytics'
+import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
 import { getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
@@ -16,7 +16,7 @@ import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 export default function IntegrateChatPage() {
-  const sendEvent = useAnalytics((state) => state.sendEvent)
+  const sendEvent = useSendEvent()
   const { ref, inView } = useInView({ initialInView: true })
   const title = '🛠 Add a chatbox to any existing app'
   const prevLocation = useLocation((state) => state.prevUrl)

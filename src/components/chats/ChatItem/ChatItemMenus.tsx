@@ -16,7 +16,7 @@ import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { isOptimisticId } from '@/services/subsocial/utils'
-import { useAnalytics } from '@/stores/analytics'
+import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
@@ -64,7 +64,7 @@ export default function ChatItemMenus({
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
 
-  const sendEvent = useAnalytics((state) => state.sendEvent)
+  const sendEvent = useSendEvent()
 
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal
@@ -230,7 +230,7 @@ export default function ChatItemMenus({
 
 function usePinUnpinMenuItem(chatId: string, messageId: string) {
   const { mutate: pinMessage, error: pinningError } = usePinMessage()
-  const sendEvent = useAnalytics((state) => state.sendEvent)
+  const sendEvent = useSendEvent()
   useToastError(pinningError, 'Error pinning message')
   const isChatOwner = useIsOwnerOfPost(chatId)
 

@@ -2,7 +2,7 @@ import useToastError from '@/hooks/useToastError'
 import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getModerationReasonsQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
-import { useAnalytics } from '@/stores/analytics'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -56,7 +56,7 @@ export default function ModerationForm({
   onSuccess,
   ...props
 }: ModerationFormProps) {
-  const sendEvent = useAnalytics((state) => state.sendEvent)
+  const sendEvent = useSendEvent()
   const { data: reasons } = getModerationReasonsQuery.useQuery(null)
   const reasonsMapped = useMemo(
     () =>

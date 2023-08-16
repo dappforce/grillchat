@@ -1,5 +1,6 @@
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
-import { getEvmAddressesFromSubsocial } from '@/services/subsocial/evmAddresses/fetcher'
+import { queryClient } from '@/services/provider'
+import { getAccountsData } from '@/services/subsocial/evmAddresses'
 import { useParentData } from '@/stores/parent'
 import {
   decodeSecretKey,
@@ -171,16 +172,15 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         set({ address: null })
       } else {
         // TODO: check how we can do it more elegant
-        const { data: linkedAccounts } =
-          await getLinkedTelegramAccountsQuery.useQuery({
+        const linkedTgAccData = await getLinkedTelegramAccountsQuery.fetchQuery(
+          queryClient,
+          {
             address,
-          })
-        userProperties.tgNotifsConnected = (linkedAccounts?.length || 0) > 0
-
-        const [evmLinkedAddress] = await getEvmAddressesFromSubsocial(
-          [address],
-          'blockchain'
+          }
         )
+        userProperties.tgNotifsConnected = (linkedTgAccData?.length || 0) > 0
+
+        const [evmLinkedAddress] = await getAccountsData([address])
 
         userProperties.evmLinked = !!evmLinkedAddress
       }

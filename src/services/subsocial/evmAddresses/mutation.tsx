@@ -1,7 +1,7 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { AccountData } from '@/pages/api/accounts-data'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useAnalytics } from '@/stores/analytics'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
@@ -30,7 +30,7 @@ export function useLinkEvmAddress({
 }: LinkEvmAddressProps) {
   const address = useMyAccount((state) => state.address ?? '')
   const signer = useMyAccount((state) => state.signer)
-  const sendEvent = useAnalytics((state) => state.sendEvent)
+  const sendEvent = useSendEvent()
   const client = useQueryClient()
   const [onCallbackLoading, setOnCallbackLoading] = useState(false)
 

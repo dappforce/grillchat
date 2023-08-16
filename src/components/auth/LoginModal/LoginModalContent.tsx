@@ -15,7 +15,7 @@ import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
-import { useAnalytics } from '@/stores/analytics'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import {
@@ -116,7 +116,7 @@ export const EnterSecretKeyContent = ({
   const login = useMyAccount((state) => state.login)
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  const sendEvent = useAnalytics((state) => state.sendEvent)
+  const sendEvent = useSendEvent()
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()

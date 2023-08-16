@@ -8,7 +8,7 @@ import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
-import { useAnalytics } from '@/stores/analytics'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getHubPageLink } from '@/utils/links'
@@ -168,7 +168,7 @@ const BELL_SPACE_ID = '1002'
 const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
 const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
 function NotificationBell() {
-  const sendEvent = useAnalytics((state) => state.sendEvent)
+  const sendEvent = useSendEvent()
   const { data: messageIds } = useCommentIdsByPostId(ANN_CHAT_ID)
   const { data: blockedEntities } = getBlockedResourcesQuery.useQuery({
     postId: ANN_CHAT_ID,
