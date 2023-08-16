@@ -132,14 +132,6 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   return filteredPosts
 }
 
-async function addMetadataToPost(post: PostData) {
-  const link = post.content?.link
-  if (!link) return
-
-  const metadata = await getLinkMetadata(link)
-  if (metadata) post.content!.linkMetadata = metadata
-}
-
 const getMetadataRedisKey = (url: string) => 'metadata:' + url
 const METADATA_MAX_AGE = 60 * 60 * 24 * 30 // 1 month
 async function getLinkMetadata(link: string): Promise<LinkMetadata | null> {
