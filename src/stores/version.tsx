@@ -52,7 +52,7 @@ async function validateSameVersion(currentVersion: string | undefined) {
   }
 }
 
-function notifyDifferentVersion() {
+function notifyDifferentVersion(onClick?: () => void) {
   toast.custom(
     (t) => (
       <Toast
@@ -61,7 +61,7 @@ function notifyDifferentVersion() {
           <Button
             size='circle'
             className='ml-2'
-            onClick={() => window.location.reload()}
+            onClick={onClick ?? (() => window.location.reload())}
           >
             <IoRefresh />
           </Button>

@@ -5,6 +5,7 @@ import {
   loginWithSecretKey,
   Signer,
 } from '@/utils/account'
+import { wait } from '@/utils/promise'
 import { LocalStorage } from '@/utils/storage'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
@@ -25,7 +26,7 @@ type Actions = {
     isInitialization?: boolean
   ) => Promise<string | false>
   logout: () => void
-  _subscribeEnergy: () => Promise<void>
+  _subscribeEnergy: (isRetrying?: boolean) => Promise<void>
 }
 
 const initialState: State = {
@@ -81,7 +82,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
     return address
   },
-  _subscribeEnergy: async () => {
+  _subscribeEnergy: async (isRetrying) => {
     const { address, _unsubscribeEnergy } = get()
     _unsubscribeEnergy()
     if (!address) return
@@ -92,6 +93,19 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
 
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
+    if (!substrateApi.isConnected && !isRetrying) {
+      await substrateApi.disconnect()
+      await substrateApi.connect()
+    }
+
+    if (!substrateApi.isConnected) {
+      // If energy subscription is run when the api is not connected, even after some more ms it connect, the subscription won't work
+      // Here we wait for some delay because the api is not connected immediately even after awaiting the connect() method.
+      // And we retry it recursively after 500ms delay until it's connected (without reconnecting the api again)
+      await wait(500)
+      return get()._subscribeEnergy(true)
+    }
+
     const unsub = substrateApi.query.energy.energyBalance(
       address,
       (energyAmount) => {

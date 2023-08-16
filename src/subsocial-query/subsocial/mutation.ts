@@ -45,6 +45,17 @@ export function useSubsocialMutation<Data, Context = undefined>(
     const { getSubsocialApi } = await import('./connection')
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
+
+    if (!substrateApi.isConnected) {
+      // try reconnecting, if it fails, it will throw an error
+      try {
+        await substrateApi.disconnect()
+        await substrateApi.connect()
+      } catch (err) {
+        throw new Error(`Failed to reconnect to the Substrate node: ${err}`)
+      }
+    }
+
     const ipfsApi = subsocialApi.ipfs
 
     try {

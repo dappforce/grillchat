@@ -1,19 +1,24 @@
 import { useRequestToken } from '@/services/api/mutation'
-import { useSendMessage } from '@/services/subsocial/commentIds'
+import {
+  SendMessageParams,
+  useSendMessage,
+} from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, UseMutationOptions } from '@tanstack/react-query'
 
-export default function useRequestTokenAndSendMessage() {
+type Params = SendMessageParams & {
+  captchaToken: string
+}
+export default function useRequestTokenAndSendMessage(
+  options?: UseMutationOptions<void, unknown, Params, unknown>
+) {
   const address = useMyAccount((state) => state.address)
 
   const { mutateAsync: requestToken } = useRequestToken()
   const { mutateAsync: sendMessage } = useSendMessage()
   const login = useMyAccount((state) => state.login)
 
-  const requestTokenAndSendMessage = async (
-    params: Omit<Parameters<typeof requestToken>[0], 'address'> &
-      Parameters<typeof sendMessage>[0]
-  ) => {
+  const requestTokenAndSendMessage = async (params: Params) => {
     const { captchaToken, ...sendMessageParams } = params
     let usedAddress: string = address ?? ''
     if (!address) {
@@ -26,5 +31,5 @@ export default function useRequestTokenAndSendMessage() {
     await sendMessage(sendMessageParams)
   }
 
-  return useMutation(requestTokenAndSendMessage)
+  return useMutation(requestTokenAndSendMessage, options)
 }
