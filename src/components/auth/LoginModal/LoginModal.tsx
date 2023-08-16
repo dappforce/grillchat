@@ -13,9 +13,10 @@ const CaptchaInvisible = dynamic(
 )
 
 export type LoginModalProps = ModalFunctionalityProps & {
+  initialOpenState?: LoginModalStep
+  onBackClick?: () => void
   afterLogin?: () => void
   beforeLogin?: () => void
-  openModal: () => void
 }
 
 type ModalTitle = {
@@ -69,15 +70,18 @@ const modalHeader: ModalTitle = {
 export default function LoginModal({
   afterLogin,
   beforeLogin,
+  initialOpenState = 'login',
+  onBackClick,
   ...props
 }: LoginModalProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  const [currentStep, setCurrentStep] = useState<LoginModalStep>('login')
+  const [currentStep, setCurrentStep] =
+    useState<LoginModalStep>(initialOpenState)
 
-  const onBackClick = () => setCurrentStep('login')
+  const usedOnBackClick = onBackClick || (() => setCurrentStep('login'))
 
   useEffect(() => {
-    if (props.isOpen) setCurrentStep('login')
+    if (props.isOpen) setCurrentStep(initialOpenState)
   }, [props.isOpen])
 
   const ModalContent = loginModalContents[currentStep]
@@ -91,7 +95,7 @@ export default function LoginModal({
       title={title}
       withCloseButton
       description={desc}
-      onBackClick={withBackButton ? onBackClick : undefined}
+      onBackClick={withBackButton ? usedOnBackClick : undefined}
       closeModal={() => {
         props.closeModal()
       }}

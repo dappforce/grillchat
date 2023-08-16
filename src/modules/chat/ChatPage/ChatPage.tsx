@@ -68,7 +68,7 @@ export default function ChatPage({
     if (isNewChat) setIsOpenCreateSuccessModal(true)
   }, [])
   useEffect(() => {
-    if (!isOpenCreateSuccessModal) replaceUrl(getCurrentUrlWithoutQuery())
+    if (!isOpenCreateSuccessModal) replaceUrl(getCurrentUrlWithoutQuery('new'))
   }, [isOpenCreateSuccessModal])
 
   const { data: messageIds } = useCommentIdsByPostId(chatId, {

@@ -154,7 +154,6 @@ export default function Navbar({
       </nav>
       <LoginModal
         isOpen={openLoginModal}
-        openModal={() => setOpenLoginModal(true)}
         closeModal={() => setOpenLoginModal(false)}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}

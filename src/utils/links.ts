@@ -22,6 +22,7 @@ export function getCurrentUrlWithoutQuery(queryNameToRemove?: string) {
     return (
       window.location.origin +
       window.location.pathname +
+      '?' +
       searchParams.toString()
     )
   }
