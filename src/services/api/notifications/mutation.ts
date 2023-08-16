@@ -1,7 +1,15 @@
 import {
+  ApiCommitSignedMessageBody,
+  ApiCommitSignedMessageResponse,
+} from '@/pages/api/notifications/commit'
+import {
   ApiNotificationsLinkUrlBody,
   ApiNotificationsLinkUrlResponse,
 } from '@/pages/api/notifications/link'
+import {
+  ApiFcmNotificationsLinkMessageBody,
+  ApiFcmNotificationsLinkMessageResponse,
+} from '@/pages/api/notifications/link-fcm'
 import {
   ApiNotificationsLinkMessageBody,
   ApiNotificationsLinkMessageResponse,
@@ -12,7 +20,7 @@ import axios, { AxiosResponse } from 'axios'
 import { processMessageTpl } from '../utils'
 import { getLinkedTelegramAccountsQuery } from './query'
 
-async function linkingAccount(data: ApiNotificationsLinkMessageBody) {
+async function linkTelegramAccount(data: ApiNotificationsLinkMessageBody) {
   if (!data) return null
 
   const res = await axios.post('/api/notifications/link-message', data)
@@ -30,7 +38,7 @@ async function linkingAccount(data: ApiNotificationsLinkMessageBody) {
   const resData = linkRes.data
   return resData.url
 }
-export const useLinkingAccount = mutationWrapper(linkingAccount, {
+export const useLinkTelegramAccount = mutationWrapper(linkTelegramAccount, {
   onSuccess: (_, variables) => {
     if (variables.action === 'unlink') {
       getLinkedTelegramAccountsQuery.invalidate(queryClient, {
@@ -39,3 +47,21 @@ export const useLinkingAccount = mutationWrapper(linkingAccount, {
     }
   },
 })
+
+async function linkFcm(data: ApiFcmNotificationsLinkMessageBody) {
+  if (!data) return null
+
+  const res = await axios.post('/api/notifications/link-fcm', data)
+  const encodedMessage = (res.data as ApiFcmNotificationsLinkMessageResponse)
+    .data
+  const signedMessage = await processMessageTpl(encodedMessage)
+
+  const linkRes = await axios.post<
+    any,
+    AxiosResponse<ApiCommitSignedMessageResponse>,
+    ApiCommitSignedMessageBody
+  >('/api/notifications/commit', { signedMessageWithDetails: signedMessage })
+  const resData = linkRes.data
+  return resData.message
+}
+export const useLinkFcm = mutationWrapper(linkFcm)
