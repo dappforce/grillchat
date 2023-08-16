@@ -13,7 +13,7 @@ function PrivateKeyContent() {
     }
 
     return {
-      secretKey: Buffer.from(decodedSecretKey, 'hex').toString(),
+      secretKey: decodedSecretKey,
       isUsingMiniSecret: false,
     }
   }, [encodedSecretKey])

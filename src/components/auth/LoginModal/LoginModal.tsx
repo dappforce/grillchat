@@ -82,6 +82,7 @@ export default function LoginModal({
 
   useEffect(() => {
     if (props.isOpen) setCurrentStep(initialOpenState)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
 
   const ModalContent = loginModalContents[currentStep]
