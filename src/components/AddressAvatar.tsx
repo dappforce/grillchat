@@ -1,4 +1,5 @@
 import useRandomColor from '@/hooks/useRandomColor'
+import { getProfileQuery } from '@/services/mainnet-squid/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import * as bottts from '@dicebear/bottts'
@@ -26,11 +27,13 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       theme: 'dark',
     })
 
-    const [isEnsAvatarError, setIsEnsAvatarError] = useState(false)
-    const onImageError = useCallback(() => setIsEnsAvatarError(true), [])
+    const [isAvatarError, setIsAvatarError] = useState(false)
+    const onImageError = useCallback(() => setIsAvatarError(true), [])
 
     const { data: accountData, isLoading } =
       getAccountDataQuery.useQuery(address)
+
+    const { data: profile } = getProfileQuery.useQuery(address)
 
     const { ensName } = accountData || {}
 
@@ -61,6 +64,11 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       )
     }
 
+    let usedAvatar = profile?.profileSpace?.image
+    if (ensName) {
+      usedAvatar = resolveEnsAvatarSrc(ensName)
+    }
+
     return (
       <div
         {...props}
@@ -71,11 +79,11 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
         style={{ backgroundColor }}
       >
-        {ensName && (
+        {usedAvatar && (
           <div
             className={cx(
               'absolute inset-0 h-full w-full transition-opacity',
-              !isEnsAvatarError ? 'z-10 opacity-100' : '-z-10 opacity-0'
+              !isAvatarError ? 'z-10 opacity-100' : '-z-10 opacity-0'
             )}
           >
             <div className='relative h-full w-full'>
@@ -83,7 +91,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
                 sizes='5rem'
                 className='relative rounded-full'
                 fill
-                src={resolveEnsAvatarSrc(ensName)}
+                src={usedAvatar}
                 onError={onImageError}
                 alt='avatar'
               />

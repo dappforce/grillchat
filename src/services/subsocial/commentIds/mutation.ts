@@ -1,3 +1,4 @@
+import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useSaveFile } from '@/services/api/mutation'
 import { MutationConfig } from '@/subsocial-query'
@@ -28,6 +29,12 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   return useSubsocialMutation<SendMessageParams, string>(
     getWallet,
     async (params, { substrateApi }) => {
+      const maxLength = getMaxMessageLength(params.chatId)
+      if (params.message && params.message.length > maxLength)
+        throw new Error(
+          'Your message is too long, please split it up to multiple messages'
+        )
+
       console.log('waiting energy...')
       await waitHasEnergy()
       const { cid, success } = await saveFile(generateMessageContent(params))
