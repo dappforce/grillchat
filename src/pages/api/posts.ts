@@ -108,11 +108,26 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   }
 
   const filteredPosts = mergedPosts.filter((post) => !!post)
-  const promises = filteredPosts.map(async (post) => {
+  const linksToFetch = new Set<string>()
+  filteredPosts.forEach((post) => {
     post.struct.ownerId = toSubsocialAddress(post.struct.ownerId)!
-    await addMetadataToPost(post)
+    if (post.content?.link) linksToFetch.add(post.content.link)
   })
-  await Promise.all(promises)
+
+  const metadataMap: Record<string, LinkMetadata> = {}
+  const metadataPromises = Array.from(linksToFetch).map(async (link) => {
+    const metadata = await getLinkMetadata(link)
+    if (metadata) metadataMap[link] = metadata
+  })
+  await Promise.allSettled(metadataPromises)
+
+  filteredPosts.forEach((post) => {
+    const link = post.content?.link
+    const linkMetadata = metadataMap[link ?? '']
+    if (!linkMetadata || !post.content) return
+
+    post.content.linkMetadata = linkMetadata
+  })
 
   return filteredPosts
 }
