@@ -6,13 +6,16 @@ import { useMemo } from 'react'
 
 function PrivateKeyContent() {
   const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
-  const secretKey = useMemo(() => {
+  const { secretKey, isUsingMiniSecret } = useMemo(() => {
     const decodedSecretKey = decodeSecretKey(encodedSecretKey ?? '')
     if (isSecretKeyUsingMiniSecret(decodedSecretKey)) {
-      return `0x${decodedSecretKey}`
+      return { secretKey: `0x${decodedSecretKey}`, isUsingMiniSecret: true }
     }
 
-    return Buffer.from(decodedSecretKey, 'hex').toString()
+    return {
+      secretKey: Buffer.from(decodedSecretKey, 'hex').toString(),
+      isUsingMiniSecret: false,
+    }
   }, [encodedSecretKey])
 
   const sendEvent = useSendEvent()
@@ -26,7 +29,12 @@ function PrivateKeyContent() {
         Grill secret key is like a long password. We recommend keeping it in a
         safe place, so you can recover your account.
       </p>
-      <CopyText onCopyClick={onCopyClick} isCodeText text={secretKey || ''} />
+      <CopyText
+        onCopyClick={onCopyClick}
+        isCodeText
+        wordBreakType={isUsingMiniSecret ? 'all' : 'words'}
+        text={secretKey || ''}
+      />
     </div>
   )
 }
