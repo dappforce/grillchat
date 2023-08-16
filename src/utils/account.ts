@@ -13,24 +13,31 @@ async function getKeyring() {
 }
 
 export async function generateAccount() {
-  const { mnemonicGenerate, mnemonicToMiniSecret } = await import(
-    '@polkadot/util-crypto'
-  )
+  const { mnemonicGenerate } = await import('@polkadot/util-crypto')
   const keyring = await getKeyring()
 
   const mnemonic = mnemonicGenerate()
-  const seed = mnemonicToMiniSecret(mnemonic)
-  const pair = keyring.addFromSeed(seed, {}, 'sr25519')
+  const pair = keyring.addFromMnemonic(mnemonic, {}, 'sr25519')
 
-  const secretKey = Buffer.from(seed).toString('hex')
+  const secretKey = Buffer.from(mnemonic).toString('hex')
   return { publicKey: pair.address, secretKey }
+}
+
+export function isSecretKeyUsingMiniSecret(secretKey: string) {
+  return secretKey.length === 64
 }
 
 export async function loginWithSecretKey(secretKey: string): Promise<Signer> {
   const keyring = await getKeyring()
 
-  const secret = Buffer.from(secretKey, 'hex')
-  const signer = keyring.addFromSeed(secret, {}, 'sr25519')
+  if (isSecretKeyUsingMiniSecret(secretKey)) {
+    const secret = Buffer.from(secretKey, 'hex')
+    const signer = keyring.addFromSeed(secret, {}, 'sr25519')
+    return signer
+  }
+
+  const secret = Buffer.from(secretKey, 'hex').toString()
+  const signer = keyring.addFromMnemonic(secret, {}, 'sr25519')
   return signer
 }
 

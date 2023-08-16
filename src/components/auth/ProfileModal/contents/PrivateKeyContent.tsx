@@ -1,11 +1,19 @@
 import { CopyText } from '@/components/CopyText'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import { decodeSecretKey } from '@/utils/account'
+import { decodeSecretKey, isSecretKeyUsingMiniSecret } from '@/utils/account'
+import { useMemo } from 'react'
 
 function PrivateKeyContent() {
   const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
-  const secretKey = decodeSecretKey(encodedSecretKey ?? '')
+  const secretKey = useMemo(() => {
+    const decodedSecretKey = decodeSecretKey(encodedSecretKey ?? '')
+    if (isSecretKeyUsingMiniSecret(decodedSecretKey)) {
+      return `0x${decodedSecretKey}`
+    }
+
+    return Buffer.from(decodedSecretKey, 'hex').toString()
+  }, [encodedSecretKey])
 
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
