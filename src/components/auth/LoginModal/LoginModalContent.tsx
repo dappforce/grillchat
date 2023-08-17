@@ -121,6 +121,7 @@ export const EnterSecretKeyContent = ({
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
     beforeLogin?.()
+
     if (await login(privateKey)) {
       afterLogin?.()
       sendEvent('login', { eventSource: 'login_modal' })

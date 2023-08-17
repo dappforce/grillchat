@@ -13,6 +13,7 @@ type EventProperties = {
   hubId?: string
   chatId?: string
   chatOwner?: boolean
+  wpNotifsAllowed?: boolean
   [key: string]: any
 }
 

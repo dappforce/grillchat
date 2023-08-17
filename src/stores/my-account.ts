@@ -6,6 +6,7 @@ import {
   decodeSecretKey,
   encodeSecretKey,
   generateAccount,
+  isSecretKeyUsingMiniSecret,
   loginWithSecretKey,
   Signer,
 } from '@/utils/account'
@@ -74,6 +75,13 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
             cohortDate: dayjs().toDate(),
           }
         )
+      } else {
+        if (secretKey.startsWith('0x')) {
+          const augmented = secretKey.substring(2)
+          if (isSecretKeyUsingMiniSecret(augmented)) {
+            secretKey = augmented
+          }
+        }
       }
 
       const signer = await loginWithSecretKey(secretKey)

@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { getMessageToken } from '@/services/firebase/messaging'
+import { useSendEvent } from '@/stores/analytics'
 import { LocalStorage } from '@/utils/storage'
 import { useEffect, useState } from 'react'
 import { ContentProps } from '../../types'
@@ -85,6 +86,7 @@ function EnableNotificationButton({
 }: NotificationButtonProps) {
   const [isGettingToken, setIsGettingToken] = useState(false)
   const [fcmToken, setFcmToken] = useState<string | undefined>()
+  const sendEvent = useSendEvent()
 
   const { mutate: linkFcm, isLoading: isLinking } = useLinkFcm({
     onSuccess: (data) => {
@@ -92,6 +94,7 @@ function EnableNotificationButton({
       if (fcmToken) {
         fcmPushNotificationStorage.set(fcmToken)
         setIsRegistered(true)
+        sendEvent('wp_notifs_allowed', { wpNotifsAllowed: true })
       }
     },
   })
@@ -108,6 +111,7 @@ function EnableNotificationButton({
 
     setFcmToken(fcmToken)
     linkFcm({ address, fcmToken, action: 'link' })
+    sendEvent('wp_notifs_asked')
   }
 
   return (

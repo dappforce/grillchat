@@ -21,7 +21,11 @@ function ShareSessionContent() {
   return (
     <div className='mt-2 flex flex-col gap-4'>
       <QrCode url={shareSessionLink} />
-      <CopyText text={shareSessionLink} onCopyClick={onCopyClick} />
+      <CopyText
+        wordBreakType='all'
+        text={shareSessionLink}
+        onCopyClick={onCopyClick}
+      />
     </div>
   )
 }

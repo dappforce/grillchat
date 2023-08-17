@@ -11,6 +11,7 @@ export function getIpfsApi() {
   const ipfs = new SubsocialIpfsApi({
     ...CRUST_IPFS_CONFIG,
     headers,
+    offchainUrl: 'https://api.subsocial.network',
   })
   ipfs.setWriteHeaders(headers)
   ipfs.setPinHeaders(headers)
@@ -18,14 +19,16 @@ export function getIpfsApi() {
   return {
     ipfs,
     saveAndPinJson: async (content: Record<any, any>) => {
-      const cid = await ipfs.saveJson(content)
-      await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
-      return cid
+      const cid = await ipfs.saveContentToOffchain(content as any)
+      // const cid = await ipfs.saveJson(content)
+      // await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
+      return cid?.toString() ?? ''
     },
     saveAndPinImage: async (content: any) => {
-      const cid = await ipfs.saveFile(content)
-      await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
-      return cid
+      const cid = await ipfs.saveContentToOffchain(content as any)!
+      // const cid = await ipfs.saveFile(content)
+      // await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
+      return cid?.toString() ?? ''
     },
   }
 }

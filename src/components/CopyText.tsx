@@ -37,13 +37,16 @@ function getTextToCopy({
 }
 
 export type CopyTextProps = CommonCopyTextProps &
-  VariantProps<typeof copyTextStyles>
+  VariantProps<typeof copyTextStyles> & {
+    wordBreakType?: 'words' | 'all'
+  }
 export function CopyText({
   text,
   textToCopy,
   onCopyClick,
   isCodeText,
   withHideButton,
+  wordBreakType = 'words',
   size,
   ...props
 }: CopyTextProps) {
@@ -75,7 +78,8 @@ export function CopyText({
       >
         <div
           className={cx(
-            'cursor-pointer select-all break-all px-4 py-2',
+            'cursor-pointer select-all break-words px-4 py-2',
+            wordBreakType === 'words' ? 'break-words' : 'break-all',
             copyTextStyles({ size }),
             isHidden && 'blur-sm'
           )}
