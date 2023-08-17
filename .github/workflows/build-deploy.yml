@@ -57,7 +57,7 @@ jobs:
             GH_MODERATION_TOKEN=${{ secrets.MODERATION_TOKEN }}
             GH_NOTIFICATIONS_URL=https://grill-notifications.subsocial.network/graphql
             GH_NOTIFICATIONS_TOKEN=${{ secrets.NOTIFICATIONS_AUTH_TOKEN }}
-            GH_NEXT_PUBLIC_AMP_ID=19b9413e325bc2321fae1ea80cfb2915
+            GH_NEXT_PUBLIC_AMP_ID=a05f8e7876f03e8bffeb039125345da1
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/xsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=1030
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
