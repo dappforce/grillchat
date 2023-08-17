@@ -78,8 +78,6 @@ export default function LinkPreview({
             variant={isMyMessage ? 'whiteOutline' : 'primaryOutline'}
             className='mt-2 w-full'
             href={link}
-            target='_blank'
-            rel='noopener noreferrer'
           >
             {customButtonText}
           </Button>
