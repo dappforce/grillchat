@@ -54,7 +54,7 @@ export type ChatListProps = ComponentProps<'div'> & {
 export default function ChatList(props: ChatListProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
   if (!isInitialized) return null
-  return <ChatListContent {...props} />
+  return <ChatListContent key={props.chatId} {...props} />
 }
 
 const SCROLL_THRESHOLD = 1000

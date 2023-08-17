@@ -69,6 +69,10 @@ export default function DefaultChatItem({
                   variant={isMyMessage ? 'secondary-light' : 'secondary'}
                   className={cx('underline')}
                   openInNewTab
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    attributes.onClick?.(e)
+                  }}
                 >
                   {content}
                 </LinkText>

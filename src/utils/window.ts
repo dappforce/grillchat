@@ -55,8 +55,9 @@ export function getIsInIos() {
 }
 
 export function replaceUrl(url: string) {
+  const pathname = url.replace(window.location.origin, '')
   window.history.replaceState(
-    { ...window.history.state, url, as: url },
+    { ...window.history.state, url: pathname, as: pathname },
     '',
     url
   )
