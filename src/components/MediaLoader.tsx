@@ -2,6 +2,7 @@ import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { validateVideoUrl } from '@/utils/links'
 import Image, { ImageProps } from 'next/image'
+import { useState } from 'react'
 
 export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   alt?: string
@@ -22,6 +23,8 @@ export default function MediaLoader({
   withSpinner,
   ...props
 }: MediaLoaderProps) {
+  const [isLoaded, setIsLoaded] = useState(false)
+
   let usedImage = src
   if (typeof src === 'string') {
     usedImage = getIpfsContentUrl(src)
@@ -34,6 +37,10 @@ export default function MediaLoader({
       ...props,
       className: commonClassName,
       src: usedImage,
+      onLoad: (e: any) => {
+        setIsLoaded(true)
+        props.onLoad?.(e)
+      },
     }
 
     if (
@@ -75,7 +82,8 @@ export default function MediaLoader({
           <div
             className={cx(
               commonProps.className,
-              'absolute inset-0 m-0 h-full w-full animate-pulse bg-background-lighter p-0'
+              'absolute inset-0 m-0 h-full w-full animate-pulse bg-background-lighter p-0',
+              isLoaded && 'hidden'
             )}
           />
           <Image
