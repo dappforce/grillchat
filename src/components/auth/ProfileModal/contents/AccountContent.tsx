@@ -136,7 +136,7 @@ function useColorModeOptions(): MenuListProps['menus'] {
   if (configTheme) return []
 
   const lightModeOption: MenuListProps['menus'][number] = {
-    text: 'Light Mode',
+    text: 'Light mode',
     onClick: () => setTheme('light'),
     icon: HiSun,
     iconClassName: cx('text-text-muted-on-primary'),

@@ -1,8 +1,11 @@
 import Button from '@/components/Button'
+import Toast from '@/components/Toast'
 import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { getMessageToken } from '@/services/firebase/messaging'
 import { LocalStorage } from '@/utils/storage'
 import { useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 import { ContentProps } from '../../types'
 
 const FCM_PUSH_NOTIFICATION_STORAGE_KEY = 'push-notification-fcm-token'
@@ -44,6 +47,26 @@ type NotificationButtonProps = ContentProps & {
   setIsRegistered: (v: boolean) => void
 }
 
+async function getMessageTokenWithCatch() {
+  try {
+    const fcmToken = await getMessageToken()
+    console.log('FCM Token', fcmToken)
+    if (!fcmToken) return
+    return fcmToken
+  } catch (err: any) {
+    toast.custom((t) => (
+      <Toast
+        title='Failed to enable push notification'
+        icon={(className) => (
+          <HiOutlineExclamationTriangle className={className} />
+        )}
+        t={t}
+        description='If you are using Brave browser, please go to brave://settings/privacy and turn on "Use Google services for push messaging".'
+      />
+    ))
+  }
+}
+
 function DisableNotificationButton({
   address,
   setIsRegistered,
@@ -65,7 +88,7 @@ function DisableNotificationButton({
   const handleClickDisable = async () => {
     if (!address) return
     setIsGettingToken(true)
-    const fcmToken = await getMessageToken()
+    const fcmToken = await getMessageTokenWithCatch()
     setIsGettingToken(false)
     if (!fcmToken) return
 
@@ -87,7 +110,7 @@ function EnableNotificationButton({
   const [fcmToken, setFcmToken] = useState<string | undefined>()
 
   const { mutate: linkFcm, isLoading: isLinking } = useLinkFcm({
-    onSuccess: (data) => {
+    onSuccess: () => {
       // FCM Token Enabled.
       if (fcmToken) {
         fcmPushNotificationStorage.set(fcmToken)
@@ -101,9 +124,8 @@ function EnableNotificationButton({
   const handleClickEnable = async () => {
     if (!address) return
     setIsGettingToken(true)
-    const fcmToken = await getMessageToken()
+    const fcmToken = await getMessageTokenWithCatch()
     setIsGettingToken(false)
-    console.log('FCM Token', fcmToken)
     if (!fcmToken) return
 
     setFcmToken(fcmToken)
@@ -115,4 +137,19 @@ function EnableNotificationButton({
       Enable Notifications
     </Button>
   )
+}
+
+export function useIsPushNotificationEnabled() {
+  const [isPushNotificationEnabled, setIsPushNotificationEnabled] =
+    useState(false)
+
+  useEffect(() => {
+    if (typeof Notification === 'undefined') return
+
+    const permission = Notification.permission
+    const storedFcmToken = fcmPushNotificationStorage.get()
+    setIsPushNotificationEnabled(!!storedFcmToken && permission === 'granted')
+  }, [])
+
+  return isPushNotificationEnabled
 }

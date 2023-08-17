@@ -62,7 +62,7 @@ export default function TelegramNotificationContent(props: ContentProps) {
             <LinkText
               className='flex-shrink-0'
               withArrow
-              href='https://t.me/GrillNotificationsStagingBot'
+              href='https://t.me/grill_notifications_bot'
               openInNewTab
               variant='primary'
             >
