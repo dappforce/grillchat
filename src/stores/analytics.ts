@@ -13,7 +13,6 @@ type EventProperties = {
   hubId?: string
   chatId?: string
   chatOwner?: boolean
-  wpNotifsAllowed?: boolean
   [key: string]: any
 }
 
@@ -23,7 +22,7 @@ type UserProperties = {
   pwaInstalled?: boolean
   evmLinked?: boolean
   tgNotifsConnected?: boolean
-  webNotifsEnabled?: boolean
+  wpNotifsAllowed?: boolean
   ownedChat?: boolean
   hasJoinedChats?: boolean
 }

@@ -94,7 +94,7 @@ function EnableNotificationButton({
       if (fcmToken) {
         fcmPushNotificationStorage.set(fcmToken)
         setIsRegistered(true)
-        sendEvent('wp_notifs_allowed', { wpNotifsAllowed: true })
+        sendEvent('wp_notifs_allowed', undefined, { wpNotifsAllowed: true })
       }
     },
   })
