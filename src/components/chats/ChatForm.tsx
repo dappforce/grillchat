@@ -197,7 +197,8 @@ export default function ChatForm({
 
     // TODO: wrap it into hook
     const isFirstMessageInSession = sessionStorage.getItem('FIRST_MESSAGE_SENT')
-    if (isFirstMessageInSession) {
+    console.log('isFirstMessageInSession', isFirstMessageInSession)
+    if (!isFirstMessageInSession) {
       sendEvent('send_first_message', { chatId, title: chatTitle })
       sessionStorage.setItem('FIRST_MESSAGE_SENT', 'true')
     }

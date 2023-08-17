@@ -50,6 +50,7 @@ function DisableNotificationButton({
   setIsRegistered,
 }: NotificationButtonProps) {
   const [isGettingToken, setIsGettingToken] = useState(false)
+  const sendEvent = useSendEvent()
 
   const { mutate: unlinkFcm, isLoading: isUnlinking } = useLinkFcm({
     onSuccess: (data) => {
@@ -58,6 +59,7 @@ function DisableNotificationButton({
       // FCM Token Disabled.
       fcmPushNotificationStorage.remove()
       setIsRegistered(false)
+      sendEvent('wp_notifs_disabled', undefined, { wpNotifsEnabled: false })
     },
   })
 
@@ -94,7 +96,7 @@ function EnableNotificationButton({
       if (fcmToken) {
         fcmPushNotificationStorage.set(fcmToken)
         setIsRegistered(true)
-        sendEvent('wp_notifs_allowed', undefined, { wpNotifsAllowed: true })
+        sendEvent('wp_notifs_allowed', undefined, { wpNotifsEnabled: true })
       }
     },
   })

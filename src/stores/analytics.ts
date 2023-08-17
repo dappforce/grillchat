@@ -22,7 +22,7 @@ type UserProperties = {
   pwaInstalled?: boolean
   evmLinked?: boolean
   tgNotifsConnected?: boolean
-  wpNotifsAllowed?: boolean
+  wpNotifsEnabled?: boolean
   ownedChat?: boolean
   hasJoinedChats?: boolean
 }
