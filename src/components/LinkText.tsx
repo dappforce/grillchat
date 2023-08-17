@@ -11,6 +11,7 @@ export const linkTextStyles = cva(
       variant: {
         primary: 'text-text-primary',
         secondary: 'text-text-secondary',
+        'secondary-light': 'text-text-secondary-light',
         default: '',
       },
     },

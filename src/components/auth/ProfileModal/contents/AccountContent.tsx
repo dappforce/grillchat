@@ -139,13 +139,13 @@ function useColorModeOptions(): MenuListProps['menus'] {
     text: 'Light Mode',
     onClick: () => setTheme('light'),
     icon: HiSun,
-    iconClassName: cx('text-text-muted-on-primary'),
+    iconClassName: cx('text-[#A3ACBE]'),
   }
   const darkModeOption: MenuListProps['menus'][number] = {
     text: 'Dark Mode',
     onClick: () => setTheme('dark'),
     icon: HiMoon,
-    iconClassName: cx('text-text-muted-on-primary'),
+    iconClassName: cx('text-[#A3ACBE]'),
   }
 
   if (theme === 'light') return [darkModeOption]

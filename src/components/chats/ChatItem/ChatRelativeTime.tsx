@@ -1,4 +1,5 @@
 import FloatingWrapper from '@/components/floating/FloatingWrapper'
+import { cx } from '@/utils/class-names'
 import { formatDate, getTimeRelativeToNow } from '@/utils/date'
 import { ComponentProps } from 'react'
 
@@ -8,6 +9,7 @@ export type ChatRelativeTimeProps = ComponentProps<'span'> & {
 
 export default function ChatRelativeTime({
   createdAtTime,
+  ...props
 }: ChatRelativeTimeProps) {
   const relativeTime = getTimeRelativeToNow(createdAtTime)
 
@@ -24,12 +26,13 @@ export default function ChatRelativeTime({
     >
       {({ referenceProps, onClick }) => (
         <span
+          {...props}
           {...referenceProps}
           onClick={(e) => {
             e.stopPropagation()
             onClick?.(e)
           }}
-          className='text-xs text-text-muted'
+          className={cx('text-xs', props.className)}
         >
           {relativeTime}
         </span>

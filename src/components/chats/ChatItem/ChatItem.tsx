@@ -11,6 +11,7 @@ import ChatItemWithExtension from './ChatItemWithExtension'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
+import Embed, { useCanRenderEmbed } from './Embed'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
@@ -55,7 +56,7 @@ export default function ChatItem({
   const messageId = message.id
   const isSent = !isOptimisticId(messageId)
   const { createdAtBlock, ownerId, contentId } = message.struct
-  const { body, extensions } = message.content || {}
+  const { body, extensions, link } = message.content || {}
 
   const sendEvent = useSendEvent()
 
@@ -68,6 +69,8 @@ export default function ChatItem({
     if (isOptimisticId(messageId)) return
     setReplyTo(messageId)
   }
+
+  const canRenderEmbed = useCanRenderEmbed(link ?? '')
 
   if (!body && (!extensions || extensions.length === 0)) return null
 
@@ -155,6 +158,16 @@ export default function ChatItem({
           cid={contentId}
         />
       </div>
+      {canRenderEmbed && (
+        <div className={cx(isMyMessage ? 'flex justify-end' : 'flex')}>
+          {/* Offset for avatar */}
+          {!isMyMessage && <div className='w-11 flex-shrink-0' />}
+          <Embed
+            className={cx('mt-1', isMyMessage ? 'flex justify-end' : 'flex')}
+            link={link ?? ''}
+          />
+        </div>
+      )}
     </>
   )
 }
