@@ -11,6 +11,7 @@ import ChatItemWithExtension from './ChatItemWithExtension'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
+import Embed, { useCanRenderEmbed } from './Embed'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
@@ -54,8 +55,8 @@ export default function ChatItem({
 
   const messageId = message.id
   const isSent = !isOptimisticId(messageId)
-  const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
-  const { body, inReplyTo, extensions } = message.content || {}
+  const { createdAtBlock, ownerId, contentId } = message.struct
+  const { body, extensions, link } = message.content || {}
 
   const sendEvent = useSendEvent()
 
@@ -68,6 +69,8 @@ export default function ChatItem({
     if (isOptimisticId(messageId)) return
     setReplyTo(messageId)
   }
+
+  const canRenderEmbed = useCanRenderEmbed(link ?? '')
 
   if (!body && (!extensions || extensions.length === 0)) return null
 
@@ -84,79 +87,87 @@ export default function ChatItem({
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
   return (
-    <div
-      {...props}
-      className={cx(
-        'relative flex items-start justify-start gap-2',
-        isMyMessage && 'flex-row-reverse',
-        props.className
-      )}
-    >
-      {!isMyMessage && (
-        <ProfilePreviewModalWrapper address={ownerId} messageId={message.id}>
-          {(onClick) => (
-            <AddressAvatar
-              onClick={onClick}
-              address={ownerId}
-              className='flex-shrink-0 cursor-pointer'
-            />
-          )}
-        </ProfilePreviewModalWrapper>
-      )}
-      <ChatItemMenus
-        chatId={chatId}
-        messageId={message.id}
-        enableChatMenu={enableChatMenu}
-        hubId={hubId}
+    <>
+      <div
+        {...props}
+        className={cx(
+          'relative flex items-start justify-start gap-2',
+          isMyMessage && 'flex-row-reverse',
+          props.className
+        )}
       >
-        {(config) => {
-          const { toggleDisplay, referenceProps } = config || {}
-          return (
-            <div
-              className={cx('flex flex-col overflow-hidden', props.className)}
-              onContextMenu={(e) => {
-                e.preventDefault()
-                toggleDisplay?.(e)
-              }}
-              onDoubleClick={() => setMessageAsReply(messageId)}
-              {...referenceProps}
-              id={messageBubbleId}
-            >
-              {extensions && extensions.length > 0 ? (
-                <ChatItemWithExtension
-                  onCheckMarkClick={onCheckMarkClick}
-                  scrollToMessage={scrollToMessage}
-                  message={message}
-                  isMyMessage={isMyMessage}
-                  chatId={chatId}
-                  hubId={hubId}
-                />
-              ) : (
-                <ChatItemContentVariant
-                  messageId={message.id}
-                  body={body ?? ''}
-                  isMyMessage={isMyMessage}
-                  isSent={isSent}
-                  onCheckMarkClick={onCheckMarkClick}
-                  ownerId={ownerId}
-                  createdAtTime={createdAtTime}
-                  inReplyTo={inReplyTo}
-                  scrollToMessage={scrollToMessage}
-                  chatId={chatId}
-                  hubId={hubId}
-                />
-              )}
-            </div>
-          )
-        }}
-      </ChatItemMenus>
-      <CheckMarkExplanationModal
-        isOpen={checkMarkModalState.isOpen}
-        variant={checkMarkModalState.variant || 'recording'}
-        closeModal={() => dispatch('')}
-        blockNumber={createdAtBlock}
-        cid={contentId}
-      />
-    </div>
+        {!isMyMessage && (
+          <ProfilePreviewModalWrapper address={ownerId} messageId={message.id}>
+            {(onClick) => (
+              <AddressAvatar
+                onClick={onClick}
+                address={ownerId}
+                className='flex-shrink-0 cursor-pointer'
+              />
+            )}
+          </ProfilePreviewModalWrapper>
+        )}
+        <ChatItemMenus
+          chatId={chatId}
+          messageId={message.id}
+          enableChatMenu={enableChatMenu}
+          hubId={hubId}
+        >
+          {(config) => {
+            const { toggleDisplay, referenceProps } = config || {}
+            return (
+              <div
+                className={cx('flex flex-col overflow-hidden', props.className)}
+                onContextMenu={(e) => {
+                  e.preventDefault()
+                  toggleDisplay?.(e)
+                }}
+                onDoubleClick={() => setMessageAsReply(messageId)}
+                {...referenceProps}
+                id={messageBubbleId}
+              >
+                {extensions && extensions.length > 0 ? (
+                  <ChatItemWithExtension
+                    onCheckMarkClick={onCheckMarkClick}
+                    scrollToMessage={scrollToMessage}
+                    message={message}
+                    isMyMessage={isMyMessage}
+                    chatId={chatId}
+                    hubId={hubId}
+                  />
+                ) : (
+                  <ChatItemContentVariant
+                    message={message}
+                    isMyMessage={isMyMessage}
+                    isSent={isSent}
+                    onCheckMarkClick={onCheckMarkClick}
+                    scrollToMessage={scrollToMessage}
+                    chatId={chatId}
+                    hubId={hubId}
+                  />
+                )}
+              </div>
+            )
+          }}
+        </ChatItemMenus>
+        <CheckMarkExplanationModal
+          isOpen={checkMarkModalState.isOpen}
+          variant={checkMarkModalState.variant || 'recording'}
+          closeModal={() => dispatch('')}
+          blockNumber={createdAtBlock}
+          cid={contentId}
+        />
+      </div>
+      {canRenderEmbed && (
+        <div className={cx(isMyMessage ? 'flex justify-end' : 'flex')}>
+          {/* Offset for avatar */}
+          {!isMyMessage && <div className='w-11 flex-shrink-0' />}
+          <Embed
+            className={cx('mt-1', isMyMessage ? 'flex justify-end' : 'flex')}
+            link={link ?? ''}
+          />
+        </div>
+      )}
+    </>
   )
 }

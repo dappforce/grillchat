@@ -12,6 +12,7 @@
   --text: 32 41 58;
   --text-primary: 99 102 241;
   --text-secondary: 99 102 241;
+  --text-secondary-light: 37 99 235;
   --text-muted: 100 116 139;
   --text-dark: 17 23 41;
   --text-warning: 230 121 38;
@@ -35,11 +36,12 @@
   --text: 255 255 255;
   --text-primary: 136 131 232;
   --text-secondary: 130 161 248;
+  --text-secondary-light: 191 219 254;
   --text-muted: 163 172 190;
   --text-dark: 17 23 41;
   --text-warning: 225 181 62;
   --text-on-primary: 255 255 255;
-  --text-muted-on-primary: 163 172 190;
+  --text-muted-on-primary: 197 205 222;
   --text-red: 219 88 88;
   --border-gray: 51 59 74;
 }

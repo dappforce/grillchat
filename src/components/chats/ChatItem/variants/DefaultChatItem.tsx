@@ -5,6 +5,7 @@ import { cx } from '@/utils/class-names'
 import Linkify from 'linkify-react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import ChatRelativeTime from '../ChatRelativeTime'
+import LinkPreview from '../LinkPreview'
 import RepliedMessagePreview from '../RepliedMessagePreview'
 import { ChatItemContentProps } from './types'
 
@@ -13,17 +14,18 @@ export type DefaultChatItemProps = ChatItemContentProps
 export default function DefaultChatItem({
   chatId,
   hubId,
-  messageId,
+  message,
   isMyMessage,
   isSent,
   onCheckMarkClick,
-  body,
-  ownerId,
-  createdAtTime,
-  inReplyTo,
   scrollToMessage,
   ...props
 }: DefaultChatItemProps) {
+  const messageId = message.id
+
+  const { createdAtTime, ownerId } = message.struct
+  const { inReplyTo, body, link, linkMetadata } = message.content || {}
+
   return (
     <div className={cx('flex flex-col', props.className)}>
       <div
@@ -49,7 +51,7 @@ export default function DefaultChatItem({
         )}
         {inReplyTo && (
           <RepliedMessagePreview
-            originalMessage={body}
+            originalMessage={body ?? ''}
             className='mt-1'
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
@@ -64,7 +66,7 @@ export default function DefaultChatItem({
                 <LinkText
                   {...attributes}
                   href={attributes.href}
-                  variant={isMyMessage ? 'default' : 'secondary'}
+                  variant={isMyMessage ? 'secondary-light' : 'secondary'}
                   className={cx('underline')}
                   openInNewTab
                 >
@@ -76,6 +78,15 @@ export default function DefaultChatItem({
             {body}
           </Linkify>
         </p>
+        {link && (
+          <LinkPreview
+            renderNullIfLinkEmbedable
+            className={cx('my-1')}
+            link={link}
+            linkMetadata={linkMetadata}
+            isMyMessage={isMyMessage}
+          />
+        )}
         {isMyMessage && (
           <div
             className={cx('flex items-center gap-1', isMyMessage && 'self-end')}
@@ -95,7 +106,7 @@ export default function DefaultChatItem({
               ) : (
                 <IoCheckmarkOutline
                   className={cx(
-                    'text-muted text-sm dark:text-text-muted-on-primary'
+                    'text-sm text-text-muted dark:text-text-muted-on-primary'
                   )}
                 />
               )}

@@ -15,6 +15,7 @@ const nextConfig = {
     scrollRestoration: true,
     largePageDataBytes: 200 * 1024, // 200kb
   },
+  transpilePackages: ['react-tweet'],
 
   webpack(config) {
     config.module.rules.push({

@@ -1,8 +1,10 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
-import { PostData } from '@subsocial/api/types'
+import { getUrlFromText } from '@/utils/strings'
+import { LinkMetadata, PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
+import { parser } from 'html-metadata-parser'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -94,15 +96,74 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
       notFoundPostIds,
       'blockchain'
     )
+    postsFromBlockchain.forEach((post) => {
+      if (!post.content) return
+      const link = getUrlFromText(post.content.body)
+      if (!link) return
+      post.content.link = link
+    })
     mergedPosts.push(...postsFromBlockchain)
   } catch (e) {
     console.error('Error fetching posts from blockchain', e)
   }
 
   const filteredPosts = mergedPosts.filter((post) => !!post)
+  const linksToFetch = new Set<string>()
   filteredPosts.forEach((post) => {
     post.struct.ownerId = toSubsocialAddress(post.struct.ownerId)!
+    if (post.content?.link) linksToFetch.add(post.content.link)
+  })
+
+  const metadataMap: Record<string, LinkMetadata> = {}
+  const metadataPromises = Array.from(linksToFetch).map(async (link) => {
+    const metadata = await getLinkMetadata(link)
+    if (metadata) metadataMap[link] = metadata
+  })
+  await Promise.allSettled(metadataPromises)
+
+  filteredPosts.forEach((post) => {
+    const link = post.content?.link
+    const linkMetadata = metadataMap[link ?? '']
+    if (!linkMetadata || !post.content) return
+
+    post.content.linkMetadata = linkMetadata
   })
 
   return filteredPosts
+}
+
+const getMetadataRedisKey = (url: string) => 'metadata:' + url
+const METADATA_MAX_AGE = 60 * 60 * 24 * 30 // 1 month
+async function getLinkMetadata(link: string): Promise<LinkMetadata | null> {
+  const cachedData = await redisCallWrapper((redis) =>
+    redis?.get(getMetadataRedisKey(link))
+  )
+  if (cachedData) {
+    return JSON.parse(cachedData)
+  }
+
+  try {
+    const metadata = await parser(link, { timeout: 5_000 })
+    const allMetadata = {
+      ...metadata.meta,
+      ...metadata.og,
+    }
+    const parsedMetadata: LinkMetadata = allMetadata
+    if (allMetadata.site_name) {
+      parsedMetadata.siteName = allMetadata.site_name
+    }
+
+    redisCallWrapper((redis) =>
+      redis?.set(
+        getMetadataRedisKey(link),
+        JSON.stringify(parsedMetadata),
+        'EX',
+        METADATA_MAX_AGE
+      )
+    )
+    return parsedMetadata
+  } catch (err) {
+    console.error('Error fetching page metadata for link: ', link)
+    return null
+  }
 }

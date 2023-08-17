@@ -76,7 +76,10 @@ export default function CommonChatItem({
     >
       <ChatRelativeTime
         createdAtTime={createdAtTime}
-        className='text-xs text-text-muted dark:text-text-muted-on-primary'
+        className={cx(
+          'text-xs text-text-muted',
+          isMyMessage && 'dark:text-text-muted-on-primary'
+        )}
       />
       <Button
         variant='transparent'
@@ -116,7 +119,7 @@ export default function CommonChatItem({
             />
             <ChatRelativeTime
               createdAtTime={createdAtTime}
-              className={'text-xs'}
+              className='text-xs text-text-muted'
               style={{ color: textColor }}
             />
           </div>
