@@ -42,7 +42,6 @@ export default function ProfileModal({
 }: ProfileModalProps) {
   // Prefetch telegram linked account data
   getLinkedTelegramAccountsQuery.useQuery({ address })
-
   const [currentState, setCurrentState] = useState<ModalState>(
     step || 'account'
   )

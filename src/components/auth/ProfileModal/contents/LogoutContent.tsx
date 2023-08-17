@@ -15,11 +15,10 @@ function LogoutContent({ setCurrentState }: ContentProps) {
   })
 
   const onShowPrivateKeyClick = () => {
-    sendEvent('click no_show_me_my_private_key_button')
     setCurrentState('private-key')
   }
   const onLogoutClick = () => {
-    sendEvent('click yes_log_out_button')
+    sendEvent('account_logout')
     logout()
 
     const fcmToken = fcmPushNotificationStorage.get()

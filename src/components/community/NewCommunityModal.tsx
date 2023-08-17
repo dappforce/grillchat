@@ -26,7 +26,7 @@ export default function NewCommunityModal({
       firstVisitNotificationStorageName: 'new-community-chat',
       onClick: () => {
         setOpenedModalState('chat')
-        sendEvent('click new_group_chat_button')
+        sendEvent('open_chat_creation_form')
       },
     },
     {

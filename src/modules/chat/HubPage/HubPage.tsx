@@ -176,7 +176,7 @@ function CommunityHubToolbar({
           )}
           onClick={() => {
             setIsOpenNewCommunity(true)
-            sendEvent('click new_community_button in hub_page')
+            sendEvent('open_community_creation_modal', { eventSource: 'hub' })
           }}
         >
           <CommunityAddIcon className='text-text-muted-on-primary' />

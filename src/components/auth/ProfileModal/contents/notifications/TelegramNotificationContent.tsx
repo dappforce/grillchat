@@ -6,6 +6,7 @@ import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import Toast from '@/components/Toast'
 import { useLinkTelegramAccount } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { useSendEvent } from '@/stores/analytics'
 import { getIsInIos } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -115,6 +116,7 @@ function ConnectTelegramButton({ address }: ContentProps) {
       address,
     })
   const [openedTelegramBotLink, setOpenedTelegramBotLink] = useState(false)
+  const sendEvent = useSendEvent()
 
   const { mutate: getLinkingMessage, isLoading } = useLinkTelegramAccount({
     onSuccess: async (url) => {
@@ -122,6 +124,7 @@ function ConnectTelegramButton({ address }: ContentProps) {
       if (!getIsInIos()) {
         window.open(url, '_blank')
         setOpenedTelegramBotLink(true)
+        sendEvent('open_tg_notifs_bot_link')
       } else {
         toast.custom(
           (t) => (
@@ -153,6 +156,7 @@ function ConnectTelegramButton({ address }: ContentProps) {
 
   const handleClickLinking = async () => {
     if (!address) return
+    sendEvent('start_connecting_tg_notifs')
     getLinkingMessage({ address, action: 'link' })
   }
 

@@ -31,29 +31,30 @@ export default function AccountContent({
     useFirstVisitNotification('notification-menu')
 
   const sendEvent = useSendEvent()
+  const commonEventProps = { eventSource: 'profile_menu' }
   const { disconnect } = useDisconnect()
 
   const colorModeOptions = useColorModeOptions()
 
   const onLinkEvmAddressClick = () => {
-    sendEvent('click link_evm_address')
+    sendEvent('start_link_evm_address', commonEventProps)
     setCurrentState('link-evm-address')
   }
   const onShowPrivateKeyClick = () => {
-    sendEvent('click show_private_key_button')
+    sendEvent('open_show_private_key_modal', commonEventProps)
     setCurrentState('private-key')
   }
   const onShareSessionClick = () => {
-    sendEvent('click share_session_button')
+    sendEvent('open_share_session_modal', commonEventProps)
     setCurrentState('share-session')
   }
   const onLogoutClick = () => {
     disconnect()
-    sendEvent('click log_out_button')
+    sendEvent('open_log_out_modal', commonEventProps)
     setCurrentState('logout')
   }
   const onAboutClick = () => {
-    sendEvent('click about_app_button')
+    sendEvent('open_about_app_info', commonEventProps)
     setCurrentState('about')
   }
 

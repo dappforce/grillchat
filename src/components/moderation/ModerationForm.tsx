@@ -2,6 +2,7 @@ import useToastError from '@/hooks/useToastError'
 import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getModerationReasonsQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -55,6 +56,7 @@ export default function ModerationForm({
   onSuccess,
   ...props
 }: ModerationFormProps) {
+  const sendEvent = useSendEvent()
   const { data: reasons } = getModerationReasonsQuery.useQuery(null)
   const reasonsMapped = useMemo(
     () =>
@@ -128,12 +130,20 @@ export default function ModerationForm({
             throw new Error('Invalid blocking content')
         }
 
+        const reasonId = reason.id
         mutate({
           action: 'block',
           address: myAddress,
           ctxPostId: chatId,
-          reasonId: reason.id,
+          reasonId,
           resourceId,
+        })
+
+        sendEvent('client_moderation', {
+          eventSource: 'moderate-action',
+          chatId,
+          reasonId,
+          resourceType: blockingContent.id,
         })
       })}
     >

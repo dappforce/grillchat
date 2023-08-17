@@ -186,11 +186,6 @@ export default function ChatForm({
       resetForm()
       sendMessage(messageParams)
     } else {
-      if (isLoggedIn) {
-        sendEvent('request energy')
-      } else {
-        sendEvent('send first message', { chatId, name: chatTitle })
-      }
       if (!captchaToken) return
       resetForm()
       requestTokenAndSendMessage({
@@ -198,6 +193,14 @@ export default function ChatForm({
         ...messageParams,
       })
       setIsRequestingEnergy(true)
+    }
+
+    // TODO: wrap it into hook
+    const isFirstMessageInSession = sessionStorage.getItem('FIRST_MESSAGE_SENT')
+    console.log('isFirstMessageInSession', isFirstMessageInSession)
+    if (!isFirstMessageInSession) {
+      sendEvent('send_first_message', { chatId, title: chatTitle })
+      sessionStorage.setItem('FIRST_MESSAGE_SENT', 'true')
     }
 
     onSubmit?.()

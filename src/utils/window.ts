@@ -72,3 +72,17 @@ export function getWorkbox() {
   }
   return null
 }
+
+export function isPWA() {
+  // @ts-ignore
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    // @ts-ignore
+    window.navigator.standalone ||
+    document.referrer.includes('android-app://')
+  )
+}
+
+export function isWebNotificationsEnabled() {
+  return Notification?.permission === 'granted'
+}

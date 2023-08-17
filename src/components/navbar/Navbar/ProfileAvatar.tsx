@@ -1,6 +1,7 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import ProfileModal from '@/components/auth/ProfileModal'
 import PopOver from '@/components/floating/PopOver'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
@@ -23,6 +24,8 @@ export default function ProfileAvatar({
   const [directlyOpenEvmLinking, setDirectlyOpenEvmLinking] = useState(false)
 
   const [showNotif, setShowNotif] = useState(false)
+
+  const sendEvent = useSendEvent()
   useEffect(() => {
     if (popOverControl?.isOpen) {
       setShowNotif(true)
@@ -52,7 +55,9 @@ export default function ProfileAvatar({
       />
       <div {...props} className={cx('relative h-9 w-9', props.className)}>
         <AddressAvatar
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setIsOpen(true)
+          }}
           address={address}
           className='relative z-10 cursor-pointer'
         />

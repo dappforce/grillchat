@@ -16,6 +16,7 @@ import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { isOptimisticId } from '@/services/subsocial/utils'
+import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
@@ -63,6 +64,8 @@ export default function ChatItemMenus({
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
 
+  const sendEvent = useSendEvent()
+
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal
   )
@@ -101,6 +104,7 @@ export default function ChatItemMenus({
           return
         }
 
+        sendEvent('open_donate_action_modal', { hubId, chatId })
         openDonateExtension()
       },
     }
@@ -122,7 +126,10 @@ export default function ChatItemMenus({
             {
               icon: LuShield,
               text: 'Moderate',
-              onClick: () => setModalState('moderate'),
+              onClick: () => {
+                sendEvent('open_moderate_action_modal', { hubId, chatId })
+                setModalState('moderate')
+              },
             },
           ]
         : []),
@@ -223,6 +230,7 @@ export default function ChatItemMenus({
 
 function usePinUnpinMenuItem(chatId: string, messageId: string) {
   const { mutate: pinMessage, error: pinningError } = usePinMessage()
+  const sendEvent = useSendEvent()
   useToastError(pinningError, 'Error pinning message')
   const isChatOwner = useIsOwnerOfPost(chatId)
 
@@ -232,6 +240,7 @@ function usePinUnpinMenuItem(chatId: string, messageId: string) {
     text: 'Pin',
     icon: BsFillPinAngleFill,
     onClick: () => {
+      sendEvent('pin_message')
       pinMessage({ action: 'pin', chatId, messageId })
     },
   }

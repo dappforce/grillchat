@@ -2,7 +2,6 @@ import { ContentProps } from '@/components/auth/ProfileModal/types'
 import Button from '@/components/Button'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useUnlinkEvmAddress } from '@/services/subsocial/evmAddresses/mutation'
-import { useSendEvent } from '@/stores/analytics'
 import { useEffect } from 'react'
 
 function UnlinkEvmConfirmationContent({
@@ -10,7 +9,6 @@ function UnlinkEvmConfirmationContent({
   address,
   evmAddress,
 }: ContentProps) {
-  const sendEvent = useSendEvent()
   const { isStale } = getAccountDataQuery.useQuery(address)
 
   const {
@@ -21,7 +19,6 @@ function UnlinkEvmConfirmationContent({
 
   const onButtonClick = () => {
     setCurrentState('link-evm-address')
-    sendEvent(`click keep-evm-address-linked`)
   }
 
   useEffect(() => {
@@ -33,7 +30,6 @@ function UnlinkEvmConfirmationContent({
 
   const onDisconnectClick = () => {
     if (!evmAddress) return
-    sendEvent('click unlink-evm-address')
     unlinkEvmAddress({ evmAddress })
   }
 

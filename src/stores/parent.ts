@@ -1,5 +1,5 @@
 import { getUrlQuery } from '@/utils/links'
-import { getIsInIframe } from '@/utils/window'
+import { getIsInIframe, isPWA } from '@/utils/window'
 import { create } from './utils'
 
 type State = {
@@ -14,7 +14,7 @@ export const useParentData = create<State>()((set) => ({
   ...initialState,
   init: async () => {
     const isInIframe = getIsInIframe()
-    let parentOrigin = 'grill-app'
+    let parentOrigin = isPWA() ? 'grill-pwa' : 'grill-web'
     if (isInIframe) {
       parentOrigin = getUrlQuery('parent') || 'iframe'
     }
