@@ -9,6 +9,7 @@ import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/que
 import { cx } from '@/utils/class-names'
 import { FaDiscord, FaTelegram } from 'react-icons/fa'
 import { ContentProps } from '../../types'
+import { useIsPushNotificationEnabled } from './PushNotificationContent'
 
 export default function NotificationContent({
   address,
@@ -19,6 +20,8 @@ export default function NotificationContent({
   const { data: linkedAccounts } = getLinkedTelegramAccountsQuery.useQuery({
     address,
   })
+
+  const isPushNotificationEnabled = useIsPushNotificationEnabled()
 
   return (
     <MenuList
@@ -43,6 +46,7 @@ export default function NotificationContent({
           text: (
             <span className='flex items-center gap-2'>
               <span>Push Notifications</span>
+              {isPushNotificationEnabled && <Notice size='sm'>Enabled</Notice>}
               {pwa.showNotification && <DotBlinkingNotification />}
             </span>
           ),

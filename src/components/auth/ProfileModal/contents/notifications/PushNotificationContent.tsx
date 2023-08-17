@@ -116,3 +116,18 @@ function EnableNotificationButton({
     </Button>
   )
 }
+
+export function useIsPushNotificationEnabled() {
+  const [isPushNotificationEnabled, setIsPushNotificationEnabled] =
+    useState(false)
+
+  useEffect(() => {
+    if (typeof Notification === 'undefined') return
+
+    const permission = Notification.permission
+    const storedFcmToken = fcmPushNotificationStorage.get()
+    setIsPushNotificationEnabled(!!storedFcmToken && permission === 'granted')
+  }, [])
+
+  return isPushNotificationEnabled
+}
