@@ -92,14 +92,21 @@ function DefaultLinkPreview({ link, linkMetadata }: EmbedComponentProps) {
     }
   )
 
+  const truncatedTitle = truncate(linkMetadata.title, {
+    length: 100,
+  })
+  const truncatedDesc = truncate(linkMetadata.description, {
+    length: 300,
+  })
+
   return (
     <div className='w-full rounded-2xl bg-background-light p-3'>
       <div className='border-l-2 border-background-primary pl-2.5'>
         <LinkText href={link} variant='primary'>
           {siteName}
         </LinkText>
-        <p className='font-semibold'>{linkMetadata.title}</p>
-        <p className='text-text-muted'>{linkMetadata.description}</p>
+        <p className='font-semibold'>{truncatedTitle}</p>
+        <p className='text-text-muted'>{truncatedDesc}</p>
         <MediaLoader
           src={linkMetadata.image ?? ''}
           alt=''
