@@ -21,7 +21,7 @@ export default function LinkPreview({
   ...props
 }: LinkPreviewProps) {
   const canEmbed = useCanRenderEmbed(link)
-  const customButtonText = useMemo(() => getCustomButtonText(link), [link])
+  const internalLinkText = useMemo(() => getInternalLinkText(link), [link])
 
   if (!linkMetadata || (canEmbed && renderNullIfLinkEmbedable)) return null
 
@@ -74,14 +74,14 @@ export default function LinkPreview({
           height={400}
           className='mt-2 max-h-72 rounded-lg bg-background-lighter/50 object-contain'
         />
-        {customButtonText && (
+        {internalLinkText && (
           <Button
             onClick={(e) => e.stopPropagation()}
             variant={isMyMessage ? 'whiteOutline' : 'primaryOutline'}
             className='mt-2 w-full'
             href={link}
           >
-            {customButtonText}
+            {internalLinkText}
           </Button>
         )}
       </div>
@@ -89,26 +89,26 @@ export default function LinkPreview({
   )
 }
 
-const customButtonTexts = [
+const internalLinkTexts = [
   {
     checker: (link: string) =>
-      // regex for url grill.chat/[any text]/[any text]
+      // regex for url grill.chat/[any text]/[any text] for message page
       /(?:https?:\/\/)?(?:www\.)?(?:grill\.chat)\/(.+)\/(.+)\/(.+)/.test(link),
     text: 'View message',
   },
   {
     checker: (link: string) =>
-      // regex for url grill.chat/[any text]/[any text]
+      // regex for url grill.chat/[any text]/[any text] for chat page
       /(?:https?:\/\/)?(?:www\.)?(?:grill\.chat)\/(.+)\/(.+)/.test(link),
     text: 'Open chat',
   },
   {
     checker: (link: string) =>
-      // regex for url grill.chat/[any text]
+      // regex for url grill.chat/[any text] for hub page
       /(?:https?:\/\/)?(?:www\.)?(?:grill\.chat)\/(.+)/.test(link),
-    text: 'Open hub',
+    text: 'Open page',
   },
 ]
-function getCustomButtonText(link: string) {
-  return customButtonTexts.find((item) => item.checker(link))?.text
+function getInternalLinkText(link: string) {
+  return internalLinkTexts.find((item) => item.checker(link))?.text
 }
