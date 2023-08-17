@@ -55,6 +55,7 @@ export default function LinkPreview({
             'font-semibold',
             isMyMessage ? 'text-text-secondary-light' : 'text-text-primary'
           )}
+          onClick={(e) => e.stopPropagation()}
         >
           {siteName}
         </LinkText>
@@ -75,6 +76,7 @@ export default function LinkPreview({
         />
         {customButtonText && (
           <Button
+            onClick={(e) => e.stopPropagation()}
             variant={isMyMessage ? 'whiteOutline' : 'primaryOutline'}
             className='mt-2 w-full'
             href={link}
