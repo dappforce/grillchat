@@ -71,7 +71,7 @@ export default function LinkPreview({
           alt=''
           width={600}
           height={400}
-          className='mt-2 rounded-lg'
+          className='mt-2 max-h-72 rounded-lg object-contain'
         />
         {customButtonText && (
           <Button
