@@ -1,9 +1,10 @@
+import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
 import { cx } from '@/utils/class-names'
 import { LinkMetadata } from '@subsocial/api/types'
 import truncate from 'lodash.truncate'
-import { ComponentProps } from 'react'
+import { ComponentProps, useMemo } from 'react'
 import { useCanRenderEmbed } from './Embed'
 
 export type LinkPreviewProps = ComponentProps<'div'> & {
@@ -20,6 +21,7 @@ export default function LinkPreview({
   ...props
 }: LinkPreviewProps) {
   const canEmbed = useCanRenderEmbed(link)
+  const customButtonText = useMemo(() => getCustomButtonText(link), [link])
 
   if (!linkMetadata || (canEmbed && renderNullIfLinkEmbedable)) return null
 
@@ -48,6 +50,7 @@ export default function LinkPreview({
         <LinkText
           href={link}
           variant='primary'
+          openInNewTab
           className={cx(
             'font-semibold',
             isMyMessage ? 'text-text-secondary-light' : 'text-text-primary'
@@ -70,7 +73,42 @@ export default function LinkPreview({
           height={400}
           className='mt-2 rounded-lg'
         />
+        {customButtonText && (
+          <Button
+            variant={isMyMessage ? 'whiteOutline' : 'primaryOutline'}
+            className='mt-2 w-full'
+            href={link}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            {customButtonText}
+          </Button>
+        )}
       </div>
     </div>
   )
+}
+
+const customButtonTexts = [
+  {
+    checker: (link: string) =>
+      // regex for url grill.chat/[any text]/[any text]
+      /(?:https?:\/\/)?(?:www\.)?(?:grill\.chat)\/(.+)\/(.+)\/(.+)/.test(link),
+    text: 'View message',
+  },
+  {
+    checker: (link: string) =>
+      // regex for url grill.chat/[any text]/[any text]
+      /(?:https?:\/\/)?(?:www\.)?(?:grill\.chat)\/(.+)\/(.+)/.test(link),
+    text: 'Open chat',
+  },
+  {
+    checker: (link: string) =>
+      // regex for url grill.chat/[any text]
+      /(?:https?:\/\/)?(?:www\.)?(?:grill\.chat)\/(.+)/.test(link),
+    text: 'Open hub',
+  },
+]
+function getCustomButtonText(link: string) {
+  return customButtonTexts.find((item) => item.checker(link))?.text
 }
