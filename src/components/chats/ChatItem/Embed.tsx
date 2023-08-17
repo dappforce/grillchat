@@ -36,10 +36,12 @@ type EmbedComponentProps = {
   linkMetadata?: LinkMetadata
 }
 const urlMapper: {
+  name: string
   component: React.ElementType<EmbedComponentProps>
   checker: (link: string) => boolean
 }[] = [
   {
+    name: 'youtube',
     component: ({ link }) => (
       <div className='w-full overflow-hidden rounded-lg'>
         <YouTubeEmbed url={link} width='100%' height={300} />
@@ -51,6 +53,7 @@ const urlMapper: {
       ),
   },
   {
+    name: 'twitter',
     component: ({ link }) => {
       const urlWithoutQuery = link.split('?')[0]
       const tweetId = urlWithoutQuery.split('/').pop()
@@ -66,11 +69,13 @@ const urlMapper: {
       /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com)\/(.+)/.test(link),
   },
   {
+    name: 'tiktok',
     component: ({ link }) => <TikTokEmbed url={link} width={325} />,
     checker: (link: string) =>
       /(?:https?:\/\/)?(?:www\.)?(?:tiktok\.com)\/(.+)/.test(link),
   },
   {
+    name: 'instagram',
     component: ({ link }) => <InstagramEmbed url={link} width='100%' />,
     checker: (link: string) =>
       /(?:https?:\/\/)?(?:www\.)?(?:instagram\.com)\/(.+)/.test(link),
@@ -78,6 +83,7 @@ const urlMapper: {
 
   // fallback, default link preview
   {
+    name: 'preview',
     checker: () => true,
     component: DefaultLinkPreview,
   },
@@ -120,10 +126,17 @@ function DefaultLinkPreview({ link, linkMetadata }: EmbedComponentProps) {
   )
 }
 
-function getComponent(url: string) {
-  const component = urlMapper.find((item) => item.checker(url))?.component
+function getComponent(link: string) {
+  const component = urlMapper.find((item) => item.checker(link))?.component
   if (component) {
     return component
   }
   return null
+}
+
+export function useIsRenderingExternalEmbed(link: string) {
+  return useMemo(() => {
+    const embedType = urlMapper.find((item) => item.checker(link))?.name
+    return embedType && embedType !== 'preview'
+  }, [link])
 }
