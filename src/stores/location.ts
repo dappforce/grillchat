@@ -1,7 +1,7 @@
 import { Router } from 'next/router'
 import { create } from './utils'
 
-let history: string[] = []
+let histories: string[] = []
 let startHistoryLength: number
 
 type State = {
@@ -24,22 +24,22 @@ export const useLocation = create<State>()((set, get) => ({
 
     Router.events.on('routeChangeComplete', () => {
       const prevUrl = get().currentUrl
-      const trackedHistoryLength = startHistoryLength + history.length
+      const trackedHistoryLength = startHistoryLength + histories.length
 
       const isPopped = trackedHistoryLength > window.history.length
       const isReplaced = trackedHistoryLength === window.history.length
       if (isPopped) {
-        history.pop()
+        histories.pop()
       } else if (isReplaced) {
-        if (history.length > 0) {
-          history.pop()
-          history.push(prevUrl)
+        if (histories.length > 0) {
+          histories.pop()
+          histories.push(prevUrl)
         }
       } else {
-        history.push(prevUrl)
+        histories.push(prevUrl)
       }
 
-      const lastHistory = history[history.length - 1]
+      const lastHistory = histories[histories.length - 1]
       set({
         currentUrl: window.location.href,
         prevUrl: lastHistory,

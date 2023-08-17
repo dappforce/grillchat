@@ -19,12 +19,12 @@ export function getCurrentUrlWithoutQuery(queryNameToRemove?: string) {
     const query = window.location.search
     const searchParams = new URLSearchParams(query)
     searchParams.delete(queryNameToRemove)
-    return (
-      window.location.origin +
-      window.location.pathname +
-      '?' +
-      searchParams.toString()
-    )
+
+    const url = window.location.origin + window.location.pathname
+    const search = searchParams.toString()
+
+    if (!search) return url
+    return url + '?' + search
   }
   return window.location.origin + window.location.pathname
 }
