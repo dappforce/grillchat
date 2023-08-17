@@ -10,6 +10,7 @@ import {
   YouTubeEmbed,
 } from 'react-social-media-embed'
 import { Tweet } from 'react-tweet'
+import styles from './Embed.module.css'
 
 export type EmbedProps = ComponentProps<'div'> & {
   link: string
@@ -56,7 +57,7 @@ const urlMapper: {
       if (!tweetId) return null
 
       return (
-        <div className='w-full [&>*]:!my-0'>
+        <div className={cx('w-full [&>*]:!my-0', styles.Embed)}>
           <Tweet id={tweetId} />
         </div>
       )
@@ -100,7 +101,7 @@ function DefaultLinkPreview({ link, linkMetadata }: EmbedComponentProps) {
   })
 
   return (
-    <div className='w-full rounded-2xl bg-background-light p-3'>
+    <div className={cx('w-full rounded-2xl bg-background-light p-3')}>
       <div className='border-l-2 border-background-primary pl-2.5'>
         <LinkText href={link} variant='primary'>
           {siteName}
