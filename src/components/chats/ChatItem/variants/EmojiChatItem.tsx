@@ -23,20 +23,21 @@ export function shouldRenderEmojiChatItem(body: string) {
 }
 
 export default function EmojiChatItem({
-  messageId,
+  message,
   isMyMessage,
   isSent,
   onCheckMarkClick,
-  body,
-  createdAtTime,
-  ownerId,
-  inReplyTo,
   scrollToMessage,
   chatId,
   hubId,
   ...props
 }: EmojiChatItemProps) {
-  const emojiCount = getEmojiAmount(body)
+  const messageId = message.id
+
+  const { createdAtTime, ownerId } = message.struct
+  const { inReplyTo, body } = message.content || {}
+
+  const emojiCount = getEmojiAmount(body ?? '')
 
   const emojiDiff = EMOJI_FONT_SIZE.max - EMOJI_FONT_SIZE.min
   const emojiFontIncrement = emojiDiff / (MAX_EMOJI_AMOUNT - 1)
@@ -87,7 +88,7 @@ export default function EmojiChatItem({
           {inReplyTo?.id && (
             <div className='w-full overflow-hidden rounded-xl bg-background-light px-2.5 py-2'>
               <RepliedMessagePreview
-                originalMessage={body}
+                originalMessage={body ?? ''}
                 repliedMessageId={inReplyTo.id}
                 scrollToMessage={scrollToMessage}
                 chatId={chatId}

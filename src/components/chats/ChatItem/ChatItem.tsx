@@ -11,7 +11,6 @@ import ChatItemWithExtension from './ChatItemWithExtension'
 import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
-import Embed from './Embed'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
@@ -55,8 +54,8 @@ export default function ChatItem({
 
   const messageId = message.id
   const isSent = !isOptimisticId(messageId)
-  const { createdAtTime, createdAtBlock, ownerId, contentId } = message.struct
-  const { body, inReplyTo, extensions } = message.content || {}
+  const { createdAtBlock, ownerId, contentId } = message.struct
+  const { body, extensions } = message.content || {}
 
   const sendEvent = useSendEvent()
 
@@ -135,14 +134,10 @@ export default function ChatItem({
                   />
                 ) : (
                   <ChatItemContentVariant
-                    messageId={message.id}
-                    body={body ?? ''}
+                    message={message}
                     isMyMessage={isMyMessage}
                     isSent={isSent}
                     onCheckMarkClick={onCheckMarkClick}
-                    ownerId={ownerId}
-                    createdAtTime={createdAtTime}
-                    inReplyTo={inReplyTo}
                     scrollToMessage={scrollToMessage}
                     chatId={chatId}
                     hubId={hubId}
@@ -160,18 +155,6 @@ export default function ChatItem({
           cid={contentId}
         />
       </div>
-
-      {message.content?.link && (
-        <div className={cx(isMyMessage ? 'flex justify-end' : 'flex')}>
-          {/* Offset for avatar */}
-          {!isMyMessage && <div className='w-11 flex-shrink-0' />}
-          <Embed
-            className={cx('mt-1', isMyMessage ? 'flex justify-end' : 'flex')}
-            link={message.content?.link}
-            linkMetadata={message.content.linkMetadata}
-          />
-        </div>
-      )}
     </>
   )
 }
