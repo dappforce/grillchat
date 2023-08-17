@@ -20,7 +20,7 @@ function PrivateKeyContent() {
 
   const sendEvent = useSendEvent()
   const onCopyClick = () => {
-    sendEvent('click copy_private_key_button')
+    sendEvent('copy_private_key')
   }
 
   return (

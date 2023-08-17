@@ -57,7 +57,6 @@ export default function ProfileAvatar({
         <AddressAvatar
           onClick={() => {
             setIsOpen(true)
-            sendEvent('open_account_modal')
           }}
           address={address}
           className='relative z-10 cursor-pointer'

@@ -45,7 +45,7 @@ export default function AccountContent({
     setCurrentState('private-key')
   }
   const onShareSessionClick = () => {
-    sendEvent('start_sharing_session', commonEventProps)
+    sendEvent('open_share_session_modal', commonEventProps)
     setCurrentState('share-session')
   }
   const onLogoutClick = () => {
