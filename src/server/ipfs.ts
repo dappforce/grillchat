@@ -25,9 +25,9 @@ export function getIpfsApi() {
       return cid?.toString() ?? ''
     },
     saveAndPinImage: async (content: any) => {
-      const cid = await ipfs.saveFileToOffchain(content as any)!
-      // const cid = await ipfs.saveFile(content)
-      // await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
+      // const cid = await ipfs.saveFileToOffchain(content as any)!
+      const cid = await ipfs.saveFile(content)
+      await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
       return cid?.toString() ?? ''
     },
   }
