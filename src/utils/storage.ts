@@ -29,6 +29,33 @@ export class LocalStorage<Params extends unknown[]> implements Storage<Params> {
   }
 }
 
+export class SessionStorage<Params extends unknown[]>
+  implements Storage<Params>
+{
+  constructor(private readonly nameGetter: (...params: Params) => string) {}
+
+  get(...params: Params) {
+    try {
+      if (typeof window === 'undefined') return null
+      return sessionStorage.getItem(this.nameGetter(...params))
+    } catch {
+      return null
+    }
+  }
+  set(value: string, ...params: Params) {
+    try {
+      if (typeof window === 'undefined') return
+      sessionStorage.setItem(this.nameGetter(...params), value)
+    } catch {}
+  }
+  remove(...params: Params) {
+    try {
+      if (typeof window === 'undefined') return
+      sessionStorage.removeItem(this.nameGetter(...params))
+    } catch {}
+  }
+}
+
 export class SafeLocalStorage {
   static getItem(key: string) {
     try {
