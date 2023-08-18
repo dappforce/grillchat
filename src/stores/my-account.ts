@@ -167,6 +167,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       webNotifsEnabled: isWebNotificationsEnabled(),
     }
 
+    alert(encodedSecretKey)
     if (encodedSecretKey) {
       const storageAddress = accountAddressStorage.get()
       set({ address: storageAddress || undefined })
@@ -194,7 +195,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       }
     }
 
-    useAnalytics.getState().sendEvent('launch_app', undefined, userProperties)
+    // useAnalytics.getState().sendEvent('launch_app', undefined, userProperties)
 
     set({ isInitialized: true })
   },
