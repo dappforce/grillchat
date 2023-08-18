@@ -16,6 +16,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { SessionStorage } from '@/utils/storage'
 import dynamic from 'next/dynamic'
 import {
   ComponentProps,
@@ -196,11 +197,12 @@ export default function ChatForm({
     }
 
     // TODO: wrap it into hook
-    const isFirstMessageInSession = sessionStorage.getItem('FIRST_MESSAGE_SENT')
+    const storage = new SessionStorage(() => 'FIRST_MESSAGE_SENT')
+    const isFirstMessageInSession = storage.get()
     console.log('isFirstMessageInSession', isFirstMessageInSession)
     if (!isFirstMessageInSession) {
       sendEvent('send_first_message', { chatId, title: chatTitle })
-      sessionStorage.setItem('FIRST_MESSAGE_SENT', 'true')
+      storage.set('true')
     }
 
     onSubmit?.()
