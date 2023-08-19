@@ -67,13 +67,15 @@ export default function LinkPreview({
         >
           {truncatedDesc}
         </p>
-        <MediaLoader
-          src={linkMetadata.image ?? ''}
-          alt=''
-          width={600}
-          height={400}
-          className='mt-2 max-h-72 rounded-lg bg-background-lighter/50 object-contain'
-        />
+        {linkMetadata.image && (
+          <MediaLoader
+            src={linkMetadata.image ?? ''}
+            alt=''
+            width={600}
+            height={400}
+            className='mt-2 max-h-72 rounded-lg bg-background-lighter/50 object-contain'
+          />
+        )}
         {internalLinkText && (
           <Button
             onClick={(e) => e.stopPropagation()}
