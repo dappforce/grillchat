@@ -81,6 +81,7 @@ function ChatPreviewContainer({
   const onChatClick = () => {
     sendEvent(`open_chat`, {
       chatId: chat.id,
+      hubId,
     })
 
     if (chat.id === ANN_CHAT_ID) {
