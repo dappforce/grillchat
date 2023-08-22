@@ -6555,10 +6555,10 @@
     "@types/express" "^4.7.0"
     file-system-cache "2.3.0"
 
-"@subsocial/api@^0.8.12":
-  version "0.8.13"
-  resolved "https://registry.yarnpkg.com/@subsocial/api/-/api-0.8.13.tgz#94f69c8d870419d2becc346fd1202e36b8c066f6"
-  integrity sha512-jnbHm4bblYeYAYnriQDS9ehigGektPhwtxsHieXP+rYMKl3tu5ebbCOyCu/HXNavlEGFVGQmW1tYqw2VKhIC7w==
+"@subsocial/api@^0.8.14":
+  version "0.8.14"
+  resolved "https://registry.yarnpkg.com/@subsocial/api/-/api-0.8.14.tgz#108d7827593c07090c1aca33b56113456b5428bb"
+  integrity sha512-xu91us11HwsJpsSULXuZLv8sH4cOw1xVN1vLKBQqJ1jaC7qsY5J0KGHA8hkT6STLWQ75tJjaxrXerPavhu/tQQ==
   dependencies:
     "@polkadot/api" latest
     "@polkadot/types" latest
@@ -6588,7 +6588,30 @@
   resolved "https://registry.yarnpkg.com/@subsocial/grill-widget/-/grill-widget-0.0.8.tgz#a8a584daffdac4edbb319ec59579a0bdd0004441"
   integrity sha512-dRPBcn+LU4LLVzHmVCm3MuIVc6dRZ2vC80PAys05NBVTdak+Jz1RQbc1yozPg6ReHgzZhQhU5z+ErYsYRvF09Q==
 
-"@subsocial/utils@0.8.13", "@subsocial/utils@latest":
+"@subsocial/utils@0.8.14":
+  version "0.8.14"
+  resolved "https://registry.yarnpkg.com/@subsocial/utils/-/utils-0.8.14.tgz#40a1e29404dced28236d412f941a5a26821dcc9e"
+  integrity sha512-yblvEQ2v5aqGr+aK/kMMqYFsnLqXq3fBDAM55mpfPoBNrCsmXH1AAEN2LGeYRnBV0lfO6FwZEpW9CfBES1AujA==
+  dependencies:
+    "@polkadot/util-crypto" latest
+    "@sindresorhus/slugify" "^1.1.0"
+    autolinker "^4.0.0"
+    bignumber.js "^9.0.1"
+    bn.js "^5.1.1"
+    chalk "^3.0.0"
+    dayjs "^1.10.7"
+    lodash.isempty "^4.4.0"
+    lodash.memoize "^4.1.2"
+    lodash.truncate "^4.4.2"
+    loglevel "^1.7.0"
+    loglevel-plugin-prefix "^0.8.4"
+    remark "^13.0.0"
+    remark-gfm "^1.0.0"
+    remark-html "^13.0.1"
+    strip-markdown "^4.0.0"
+    tweetnacl "^1.0.3"
+
+"@subsocial/utils@latest":
   version "0.8.13"
   resolved "https://registry.yarnpkg.com/@subsocial/utils/-/utils-0.8.13.tgz#a1b79a30e4cbd2d1a7c30255fda9c5bff1cc3b0e"
   integrity sha512-VivzKojUa2RQgY+tjaKaIlK7fjkY+JYCSoRLWlTP/A5aYpIZDIqRCMTFLAEvWy79zw92grm08MZGe+W4NbV97A==
