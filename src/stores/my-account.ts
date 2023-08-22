@@ -1,6 +1,7 @@
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { queryClient } from '@/services/provider'
 import { getAccountsData } from '@/services/subsocial/evmAddresses'
+import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
 import { useParentData } from '@/stores/parent'
 import {
   decodeSecretKey,
@@ -56,6 +57,43 @@ export const followedIdsStorage = new LocalStorage(
   (address: string) => `${FOLLOWED_IDS_STORAGE_KEY}:${address}`
 )
 const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
+
+const sendLaunchEvent = async (address?: string | false) => {
+  let userProperties = {
+    tgNotifsConnected: false,
+    evmLinked: false,
+    webNotifsEnabled: false,
+    ownedChat: false,
+  }
+
+  const sendEvent = useAnalytics.getState().sendEvent
+
+  if (!address) {
+    sendEvent('launch_app', undefined, userProperties)
+  } else {
+    const linkedTgAccData = await getLinkedTelegramAccountsQuery.fetchQuery(
+      queryClient,
+      {
+        address,
+      }
+    )
+    userProperties.tgNotifsConnected = (linkedTgAccData?.length || 0) > 0
+
+    const [evmLinkedAddress] = await getAccountsData([address])
+
+    userProperties.evmLinked = !!evmLinkedAddress
+
+    const ownedPostIds = await getOwnedPostIdsQuery.fetchQuery(
+      queryClient,
+      address
+    )
+    userProperties.ownedChat = (ownedPostIds?.length || 0) > 0
+
+    userProperties.webNotifsEnabled = isWebNotificationsEnabled()
+
+    sendEvent('launch_app', undefined, userProperties)
+  }
+}
 
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
@@ -161,12 +199,6 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
 
     const encodedSecretKey = accountStorage.get()
 
-    let userProperties = {
-      tgNotifsConnected: false,
-      evmLinked: false,
-      webNotifsEnabled: isWebNotificationsEnabled(),
-    }
-
     if (encodedSecretKey) {
       const storageAddress = accountAddressStorage.get()
       set({ address: storageAddress || undefined })
@@ -178,23 +210,12 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         accountStorage.remove()
         accountAddressStorage.remove()
         set({ address: null })
-      } else {
-        // TODO: check how we can do it more elegant
-        const linkedTgAccData = await getLinkedTelegramAccountsQuery.fetchQuery(
-          queryClient,
-          {
-            address,
-          }
-        )
-        userProperties.tgNotifsConnected = (linkedTgAccData?.length || 0) > 0
-
-        const [evmLinkedAddress] = await getAccountsData([address])
-
-        userProperties.evmLinked = !!evmLinkedAddress
       }
-    }
 
-    useAnalytics.getState().sendEvent('launch_app', undefined, userProperties)
+      sendLaunchEvent(address)
+    } else {
+      sendLaunchEvent()
+    }
 
     set({ isInitialized: true })
   },
