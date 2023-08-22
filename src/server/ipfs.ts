@@ -3,7 +3,7 @@ import { SubsocialIpfsApi } from '@subsocial/api'
 
 export function getIpfsApi() {
   const CRUST_IPFS_CONFIG = {
-    ipfsNodeUrl: 'https://gw-seattle.crustcloud.io',
+    ipfsNodeUrl: 'http://new-ipfs-cluster:5001',
     ipfsClusterUrl: getIpfsPinUrl(),
   }
   const headers = { authorization: `Bearer ${getCrustIpfsAuth()}` }
@@ -24,9 +24,8 @@ export function getIpfsApi() {
       // await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
       return cid?.toString() ?? ''
     },
-    saveAndPinImage: async (content: any) => {
-      // const cid = await ipfs.saveFileToOffchain(content as any)!
-      const cid = await ipfs.saveFile(content)
+    saveAndPinImage: async (file: any) => {
+      const cid = await ipfs.saveFile(file)
       await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
       return cid?.toString() ?? ''
     },

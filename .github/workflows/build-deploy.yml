@@ -61,7 +61,7 @@ jobs:
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/xsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=1030
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
-            GH_IPFS_PIN_URL=https://pin.crustcloud.io/psa
+            GH_IPFS_PIN_URL=http://new-ipfs-cluster:9094
             GH_CRUST_IPFS_AUTH=${{ secrets.CRUST_IPFS_AUTH }}
             GH_SUBSOCIAL_PROMO_SECRET_HEX=${{ secrets.SUBSOCIAL_PROMO_SECRET_HEX }}
             GH_USER_ID_SALT=${{ secrets.USER_ID_SALT }}
