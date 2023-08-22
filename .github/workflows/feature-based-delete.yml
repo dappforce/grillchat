@@ -13,7 +13,7 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v3
 
-      - uses: mdecoleman/pr-branch-name@1.2.0
+      - uses: mdecoleman/pr-branch-name@2.0.0
         id: vars
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
