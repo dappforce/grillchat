@@ -1,15 +1,26 @@
-import { getCrustIpfsAuth, getIpfsPinUrl } from '@/utils/env/server'
+import {
+  getCrustIpfsAuth,
+  getIpfsPinUrl,
+  getIpfsWriteUrl,
+} from '@/utils/env/server'
 import { SubsocialIpfsApi } from '@subsocial/api'
 
 export function getIpfsApi() {
-  const CRUST_IPFS_CONFIG = {
-    ipfsNodeUrl: 'http://new-ipfs-cluster:5001',
-    ipfsClusterUrl: getIpfsPinUrl(),
-  }
+  const pinUrl = getIpfsPinUrl()
+  const writeUrl = getIpfsWriteUrl()
+
+  console.log('pinUrl', pinUrl)
+  console.log('writeUrl', writeUrl)
+
+  const props = pinUrl.includes('crust')
+    ? { asLink: false, 'meta.gatewayId': 1 }
+    : { asLink: true }
+
   const headers = { authorization: `Bearer ${getCrustIpfsAuth()}` }
 
   const ipfs = new SubsocialIpfsApi({
-    ...CRUST_IPFS_CONFIG,
+    ipfsNodeUrl: writeUrl,
+    ipfsClusterUrl: pinUrl,
     headers,
     offchainUrl: 'https://api.subsocial.network',
   })
@@ -19,14 +30,14 @@ export function getIpfsApi() {
   return {
     ipfs,
     saveAndPinJson: async (content: Record<any, any>) => {
-      const cid = await ipfs.saveContentToOffchain(content as any)
-      // const cid = await ipfs.saveJson(content)
-      // await ipfs.pinContent(cid, { 'meta.gatewayId': 1 })
+      // const cid = await ipfs.saveContentToOffchain(content as any)
+      const cid = await ipfs.saveJson(content)
+      await ipfs.pinContent(cid, props)
       return cid?.toString() ?? ''
     },
     saveAndPinImage: async (file: any) => {
       const cid = await ipfs.saveFile(file)
-      await ipfs.pinContent(cid, { asLink: true, 'meta.gatewayId': 1 })
+      await ipfs.pinContent(cid, props)
       return cid?.toString() ?? ''
     },
   }

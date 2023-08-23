@@ -30,6 +30,13 @@ export function getIpfsPinUrl() {
   )
 }
 
+export function getIpfsWriteUrl() {
+  return (
+    checkEnv(process.env.IPFS_WRITE_URL, 'IPFS_WRITE_URL') ||
+    'https://gw-seattle.crustcloud.io'
+  )
+}
+
 export function getCovalentApiKey() {
   return checkEnv(process.env.COVALENT_API_KEY, 'COVALENT_API_KEY')
 }
