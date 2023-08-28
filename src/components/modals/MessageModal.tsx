@@ -78,29 +78,34 @@ export default function MessageModal({
       >
         <div
           className={cx(
-            'flex max-h-96 flex-col gap-4 overflow-y-auto rounded-2xl bg-background p-4',
+            'relative flex max-h-96 flex-col overflow-y-auto rounded-2xl bg-background p-2 pb-0 md:p-4',
             !message && 'h-28 animate-pulse'
           )}
         >
           {message && (
-            <ChatItem
-              enableChatMenu={false}
-              isMyMessage={false}
-              message={message}
-              chatId={chatId}
-              hubId={hubId}
-            />
+            <div className='flex flex-col pb-2'>
+              <ChatItem
+                enableChatMenu={false}
+                isMyMessage={false}
+                message={message}
+                chatId={chatId}
+                hubId={hubId}
+              />
+            </div>
           )}
           {scrollToMessage && (
-            <Button
-              ref={buttonRef}
-              isLoading={isScrolling}
-              onClick={handleScrollToMessage}
-              size='lg'
-              variant='primaryOutline'
-            >
-              Scroll to message
-            </Button>
+            <div className='sticky -bottom-px left-0 bg-background pb-4 pt-2'>
+              <Button
+                ref={buttonRef}
+                isLoading={isScrolling}
+                onClick={handleScrollToMessage}
+                size='lg'
+                variant='primaryOutline'
+                className='w-full'
+              >
+                Scroll to message
+              </Button>
+            </div>
           )}
         </div>
         {isDifferentRecipient && recipient && (

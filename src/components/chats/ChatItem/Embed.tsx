@@ -17,7 +17,7 @@ export default function Embed({ link: url, ...props }: EmbedProps) {
 
   return (
     Component && (
-      <div {...props} className={cx('w-full', props.className)}>
+      <div {...props} className={cx('w-full overflow-hidden', props.className)}>
         <Component link={url} />
       </div>
     )
