@@ -39,6 +39,8 @@ export default function LinkPreview({
     length: 300,
   })
 
+  const isValidImage = linkMetadata.image?.startsWith('https://')
+
   return (
     <div {...props} className={cx('w-full', props.className)}>
       <div
@@ -67,7 +69,7 @@ export default function LinkPreview({
         >
           {truncatedDesc}
         </p>
-        {linkMetadata.image && (
+        {linkMetadata.image && isValidImage && (
           <MediaLoader
             src={linkMetadata.image ?? ''}
             alt=''
