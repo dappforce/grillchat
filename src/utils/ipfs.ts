@@ -21,14 +21,18 @@ export function getIpfsContentUrl(
 
   if (uri.startsWith('http')) return uri
 
-  const ipfsCid = CID.parse(uri)
-  if (!ipfsCid) return uri
+  try {
+    const ipfsCid = CID.parse(uri)
+    if (!ipfsCid) return uri
 
-  const isCbor = ipfsCid.code === CID_KIND.CBOR
-  if (isCbor) {
-    return urlJoin(SUBSOCIAL_IPFS_GATEWAY, `/api/v0/dag/get?arg=${uri}`)
-  }
-  return urlJoin(SUBSOCIAL_IPFS_GATEWAY, `/ipfs/${uri}`)
+    const isCbor = ipfsCid.code === CID_KIND.CBOR
+    if (isCbor) {
+      return urlJoin(SUBSOCIAL_IPFS_GATEWAY, `/api/v0/dag/get?arg=${uri}`)
+    }
+    return urlJoin(SUBSOCIAL_IPFS_GATEWAY, `/ipfs/${uri}`)
+  } catch {}
+
+  return uri
 }
 
 export function getCidFromMetadataLink(link: string) {
