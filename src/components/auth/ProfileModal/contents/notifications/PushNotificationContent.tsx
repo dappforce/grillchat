@@ -82,7 +82,7 @@ function DisableNotificationButton({
       // FCM Token Disabled.
       fcmPushNotificationStorage.remove()
       setIsRegistered(false)
-      sendEvent('wp_notifs_disabled', undefined, { wpNotifsEnabled: false })
+      sendEvent('wp_notifs_disabled', undefined, { webNotifsEnabled: false })
     },
   })
 
@@ -119,7 +119,7 @@ function EnableNotificationButton({
       if (fcmToken) {
         fcmPushNotificationStorage.set(fcmToken)
         setIsRegistered(true)
-        sendEvent('wp_notifs_allowed', undefined, { wpNotifsEnabled: true })
+        sendEvent('wp_notifs_allowed', undefined, { webNotifsEnabled: true })
       }
     },
   })

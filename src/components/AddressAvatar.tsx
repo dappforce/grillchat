@@ -2,6 +2,7 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/mainnet-squid/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
@@ -65,6 +66,9 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     }
 
     let usedAvatar = profile?.profileSpace?.image
+      ? getIpfsContentUrl(profile?.profileSpace?.image)
+      : undefined
+
     if (ensName) {
       usedAvatar = resolveEnsAvatarSrc(ensName)
     }

@@ -44,7 +44,7 @@ jobs:
             ${{ runner.os }}-single-buildx
 
       - name: Build docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           builder: ${{ steps.buildx.outputs.name }}
@@ -67,6 +67,7 @@ jobs:
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/xsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=1025
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
+            GH_IPFS_WRITE_URL=https://gw-seattle.crustcloud.io
             GH_IPFS_PIN_URL=https://test-pin.crustcloud.io/psa
             GH_COVALENT_API_KEY=cqt_rQtDdp9G9DFvqcGjVPDD4FFCyhFQ
             GH_NEXT_PUBLIC_NOTIFICATION_APP_ID=BJaKjx7xtiIXtSUT8tR6VDG0WwhFwdqOqp8L5kc6alGBUtndnlV_DUJ6sze_z70VEBOKk4AT_wZTJqE9dC7sbEQ

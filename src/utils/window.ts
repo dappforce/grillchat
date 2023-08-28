@@ -85,5 +85,6 @@ export function isPWA() {
 }
 
 export function isWebNotificationsEnabled() {
+  if (typeof Notification === 'undefined') return false
   return Notification?.permission === 'granted'
 }
