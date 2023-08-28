@@ -2,6 +2,7 @@ import { CommonEvmAddressLinked } from '@/components/auth/CommonModalContent'
 import Modal from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
@@ -46,11 +47,15 @@ export default function ProfileModal({
     step || 'account'
   )
   const { data: accountData } = getAccountDataQuery.useQuery(address)
+  const sendEvent = useSendEvent()
 
   const { evmAddress: linkedEvmAddress } = accountData || {}
 
   useEffect(() => {
-    if (props.isOpen) setCurrentState(step || 'account')
+    if (props.isOpen) {
+      sendEvent('open_profile_modal')
+      setCurrentState(step || 'account')
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
 
