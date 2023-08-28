@@ -1,3 +1,4 @@
 .Embed :global(.react-tweet-theme) {
   --tweet-body-font-size: 1rem;
+  min-width: auto;
 }

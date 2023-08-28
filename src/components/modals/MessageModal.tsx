@@ -78,7 +78,7 @@ export default function MessageModal({
       >
         <div
           className={cx(
-            'relative flex max-h-96 flex-col overflow-y-auto rounded-2xl bg-background p-2 pb-0 md:p-4',
+            'relative flex max-h-96 flex-col overflow-y-auto rounded-2xl bg-background p-2 pb-0 md:p-4 md:pb-0',
             !message && 'h-28 animate-pulse'
           )}
         >
