@@ -1,5 +1,6 @@
 import { getCaptchaSiteKey } from '@/utils/env/client'
 import React, { useRef } from 'react'
+import { createPortal } from 'react-dom'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { toast } from 'react-hot-toast'
 import Toast from '../Toast'
@@ -38,13 +39,16 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
       {children(runCaptcha, (className) => (
         <CaptchaTermsAndService className={className} />
       ))}
-      <ReCAPTCHA
-        sitekey={getCaptchaSiteKey()}
-        theme='dark'
-        ref={captchaRef}
-        size='invisible'
-        badge='inline'
-      />
+      {createPortal(
+        <ReCAPTCHA
+          sitekey={getCaptchaSiteKey()}
+          theme='dark'
+          ref={captchaRef}
+          size='invisible'
+          badge='inline'
+        />,
+        document.body
+      )}
     </>
   )
 }

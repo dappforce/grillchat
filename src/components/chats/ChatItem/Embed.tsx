@@ -17,7 +17,7 @@ export default function Embed({ link: url, ...props }: EmbedProps) {
 
   return (
     Component && (
-      <div {...props} className={cx('w-full', props.className)}>
+      <div {...props} className={cx('w-full overflow-hidden', props.className)}>
         <Component link={url} />
       </div>
     )
@@ -55,7 +55,8 @@ const urlMapper: {
       )
     },
     checker: (link: string) =>
-      /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com)\/(.+)/.test(link),
+      /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com)\/(.+)/.test(link) &&
+      /\/status\/\d+/.test(link),
   },
   {
     name: 'tiktok',

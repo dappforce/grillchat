@@ -52,6 +52,13 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       replicated.textContent = (props.value ?? '') + ' '
     }, [props.value])
 
+    useEffect(() => {
+      const textArea = textAreaRef.current
+      const replicated = replicatedRef.current
+      if (!replicated || !textArea) return
+      replicated.textContent = textArea.value + ' '
+    }, [])
+
     const onKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
       if (!isTouchDevice() && e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
