@@ -28,6 +28,10 @@ const getProfile = poolQuery<string, GetProfilesQuery['accounts'][number]>({
     })
     return res.accounts
   },
+  resultMapper: {
+    paramToKey: (param) => param,
+    resultToKey: (res) => res.id,
+  },
 })
 export const getProfileQuery = createQuery({
   key: 'getProfile',
