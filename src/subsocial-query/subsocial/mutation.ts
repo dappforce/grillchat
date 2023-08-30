@@ -19,7 +19,7 @@ type Apis = {
 }
 
 export function useSubsocialMutation<Data, Context = undefined>(
-  getWallet: () => Promise<WalletAccount>,
+  getWallet: () => Promise<WalletAccount> | WalletAccount,
   transactionGenerator: (
     data: Data,
     apis: Apis

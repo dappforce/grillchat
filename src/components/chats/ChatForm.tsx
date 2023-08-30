@@ -97,7 +97,7 @@ export default function ChatForm({
       onError: (error, variables) => {
         showErrorSendingMessageToast(
           error,
-          'Create account failed',
+          'Creating account or sending message failed',
           variables.message,
           setMessageBody
         )

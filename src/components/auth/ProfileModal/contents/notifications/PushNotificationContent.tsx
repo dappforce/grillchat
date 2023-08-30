@@ -99,7 +99,12 @@ function DisableNotificationButton({
   }
 
   return (
-    <Button size='lg' onClick={handleClickDisable} isLoading={isLoading}>
+    <Button
+      size='lg'
+      variant='redOutline'
+      onClick={handleClickDisable}
+      isLoading={isLoading}
+    >
       Disable Notifications
     </Button>
   )

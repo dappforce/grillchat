@@ -5,10 +5,10 @@ import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 
 export function useWalletGetter() {
-  const address = useMyAccount((state) => state.address ?? '')
-  const signer = useMyAccount((state) => state.signer)
-
-  return async () => ({ address, signer })
+  return () => ({
+    address: useMyAccount.getState().address ?? '',
+    signer: useMyAccount.getState().signer,
+  })
 }
 
 export default function useCommonTxSteps<Data, ReturnValue>(
