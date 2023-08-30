@@ -138,6 +138,8 @@ const grill = {
       waitingCallbacks: (() => void)[]
     }
   >,
+  currentUnreadCount: 0,
+  unreadCountListeners: [] as ((count: number) => void)[],
 
   init(config: GrillConfig) {
     const createInitError = (message: string) => new GrillError(message, 'init')
@@ -202,6 +204,14 @@ const grill = {
 
         currentInstance.isReady = true
         currentInstance.waitingCallbacks.forEach((callback) => callback())
+      } else if ((event.data + '').startsWith('grill:unread:')) {
+        const unreadCount = parseInt(event.data.split('grill:unread:')[1])
+        if (!isNaN(unreadCount) && this.currentUnreadCount !== unreadCount) {
+          this.currentUnreadCount = unreadCount
+          this.unreadCountListeners.forEach((listener) =>
+            listener(this.currentUnreadCount)
+          )
+        }
       }
     }
 
@@ -233,6 +243,16 @@ const grill = {
       return
     }
     sendSetConfigMessage()
+  },
+
+  addUnreadCountListener(listener: (count: number) => void) {
+    listener(this.currentUnreadCount)
+    this.unreadCountListeners.push(listener)
+  },
+  removeUnreadCountListener(listener: (count: number) => void) {
+    this.unreadCountListeners = this.unreadCountListeners.filter(
+      (l) => l !== listener
+    )
   },
 }
 

@@ -155,6 +155,8 @@ function ChatListContent({
             lastReadIdIndex === -1
               ? 0
               : filteredMessageIdsRef.current.length - lastReadIdIndex - 1
+          window.parent?.postMessage(`grill:unread:${newMessageCount}`, '*')
+
           setInitialNewMessageCount(newMessageCount)
         })
       }
