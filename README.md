@@ -1,3 +1,4 @@
+
 <a href="https://x.grill.chat">
   <p align="center"><img height=100 src="https://raw.githubusercontent.com/dappforce/grillchat/main/src/assets/logo/logo.svg"/></p>
 </a>
@@ -9,6 +10,8 @@
 <p align="center">
   Grill.chat offers a smooth and simple onboarding and user experience while still leveraging the power of blockchain technology.
 </p>
+</br>
+<p align="center"><img height=20 src="https://github.com/dappforce/grillchat/actions/workflows/build-deploy.yml/badge.svg" alt="production-build"/></p>
 ---
 
 ## How to integrate Grill.chat into your app 🤝
