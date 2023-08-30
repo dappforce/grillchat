@@ -14,6 +14,7 @@ type State = {
   replyTo: string | undefined
 
   showEmptyPrimaryChatInput: boolean
+  doing: string
 }
 
 type Actions = {
@@ -22,6 +23,7 @@ type Actions = {
   setReplyTo: (replyTo: string) => void
   clearReplyTo: () => void
   setShowEmptyPrimaryChatInput: (show: boolean) => void
+  setDoing: (doing: string) => void
 }
 
 const INITIAL_STATE: State = {
@@ -29,10 +31,14 @@ const INITIAL_STATE: State = {
   messageBody: '',
   replyTo: '',
   showEmptyPrimaryChatInput: false,
+  doing: '',
 }
 
 export const useMessageData = create<State & Actions>()((set, get) => ({
   ...INITIAL_STATE,
+  setDoing: (doing: string) => {
+    set({ doing })
+  },
   setMessageBody: (messageBody: string) => {
     set({ messageBody: messageBody })
   },

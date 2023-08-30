@@ -1,3 +1,4 @@
+import { useMessageData } from '@/stores/message'
 import { generatePromiseQueue } from '@/utils/promise'
 import type { ApiPromise } from '@polkadot/api'
 import type { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
@@ -46,6 +47,9 @@ export function useSubsocialMutation<Data, Context = undefined>(
     const subsocialApi = await getSubsocialApi()
     const substrateApi = await subsocialApi.substrateApi
 
+    useMessageData
+      .getState()
+      .setDoing('connection: ' + substrateApi.isConnected)
     if (!substrateApi.isConnected) {
       // try reconnecting, if it fails, it will throw an error
       try {
@@ -134,6 +138,7 @@ function sendTransaction<Data, Context>(
       )
       danglingNonceResolver = nonceResolver
       const unsub = await tx.signAndSend(signer, { nonce }, async (result) => {
+        useMessageData.getState().setDoing('donee...')
         resolve(result.txHash.toString())
         if (result.status.isInvalid) {
           txCallbacks?.onError()
@@ -193,34 +198,25 @@ const noncePromise = generatePromiseQueue()
  * @param address Address of the account
  */
 async function getNonce(substrateApi: ApiPromise, address: string) {
+  useMessageData.getState().setDoing('Getting nonce...')
   const previousQueue = noncePromise.addQueue()
 
-  return new Promise<{ nonce: number; nonceResolver: () => void }>(
-    (resolve, reject) => {
-      async function getNonce() {
-        try {
-          const timeoutId = setTimeout(() => {
-            reject(
-              new Error('Timeout: Cannot get nonce for the next transaction.')
-            )
-          }, 10_000)
+  const timeoutId = setTimeout(() => {
+    useMessageData.getState().setDoing('Rejected...')
+    alert('rejected')
+    throw new Error('Timeout: Cannot get nonce for the next transaction.')
+  }, 10_000)
 
-          await previousQueue
-          clearTimeout(timeoutId)
+  useMessageData.getState().setDoing('Waiting prev nonce...')
+  await previousQueue
+  useMessageData
+    .getState()
+    .setDoing('getting nonce... ' + substrateApi.isConnected)
+  const nonce = await substrateApi.rpc.system.accountNextIndex(address)
 
-          const nonce = await substrateApi.rpc.system.accountNextIndex(address)
-          resolve({
-            nonce: nonce.toNumber(),
-            nonceResolver: noncePromise.resolveQueue,
-          })
-        } catch (err) {
-          console.log('Error getting nonce', err)
-          reject(new Error('Failed to get nonce'))
-        }
-      }
-      getNonce()
-    }
-  )
+  useMessageData.getState().setDoing('nonce done')
+  clearTimeout(timeoutId)
+  return { nonce, nonceResolver: noncePromise.resolveQueue }
 }
 
 function generateTxCallbacks<Data, Context>(
