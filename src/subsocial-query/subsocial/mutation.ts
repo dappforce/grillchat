@@ -195,14 +195,32 @@ const noncePromise = generatePromiseQueue()
 async function getNonce(substrateApi: ApiPromise, address: string) {
   const previousQueue = noncePromise.addQueue()
 
-  const timeoutId = setTimeout(() => {
-    throw new Error('Timeout: Cannot get nonce for the next transaction.')
-  }, 10_000)
-  await previousQueue
-  clearTimeout(timeoutId)
+  return new Promise<{ nonce: number; nonceResolver: () => void }>(
+    (resolve, reject) => {
+      async function getNonce() {
+        try {
+          const timeoutId = setTimeout(() => {
+            reject(
+              new Error('Timeout: Cannot get nonce for the next transaction.')
+            )
+          }, 10_000)
 
-  const nonce = await substrateApi.rpc.system.accountNextIndex(address)
-  return { nonce, nonceResolver: noncePromise.resolveQueue }
+          await previousQueue
+          clearTimeout(timeoutId)
+
+          const nonce = await substrateApi.rpc.system.accountNextIndex(address)
+          resolve({
+            nonce: nonce.toNumber(),
+            nonceResolver: noncePromise.resolveQueue,
+          })
+        } catch (err) {
+          console.log('Error getting nonce', err)
+          reject(new Error('Failed to get nonce'))
+        }
+      }
+      getNonce()
+    }
+  )
 }
 
 function generateTxCallbacks<Data, Context>(
