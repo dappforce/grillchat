@@ -30,7 +30,7 @@ export default function AccountPage() {
       routeReplace.current(returnUrl)
     })
     sendEvent('login', { eventSource: 'share_session_link' })
-  }, [login, isInitialized])
+  }, [login, isInitialized, sendEvent])
 
   return <DefaultLayout />
 }
