@@ -256,12 +256,15 @@ const grill = {
   },
 }
 
-export type Grill = typeof grill
+export type Grill = Omit<
+  typeof grill,
+  'unreadCountListeners' | 'currentUnreadCount'
+>
 if (typeof window !== 'undefined') {
-  ;(window as any).GRILL = grill
+  ;(window as any).GRILL = grill as Grill
 }
 
-export default grill
+export default grill as Grill
 
 export class GrillError extends Error {
   constructor(message = '', method = '') {
