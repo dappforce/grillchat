@@ -111,7 +111,10 @@ export const useAnalytics = create<State & Actions>()((set, get) => {
 
       set({ amp, deviceId })
       queuedEvents.forEach((props) => {
-        amp?.logEvent(props)
+        amp?.logEvent({
+          ...props,
+          device_id: deviceId,
+        })
       })
     },
   }
