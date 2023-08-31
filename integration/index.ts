@@ -138,6 +138,8 @@ const grill = {
       waitingCallbacks: (() => void)[]
     }
   >,
+  currentUnreadCount: 0,
+  unreadCountListeners: [] as ((count: number) => void)[],
 
   init(config: GrillConfig) {
     const createInitError = (message: string) => new GrillError(message, 'init')
@@ -202,6 +204,14 @@ const grill = {
 
         currentInstance.isReady = true
         currentInstance.waitingCallbacks.forEach((callback) => callback())
+      } else if ((event.data + '').startsWith('grill:unread:')) {
+        const unreadCount = parseInt(event.data.split('grill:unread:')[1])
+        if (!isNaN(unreadCount) && this.currentUnreadCount !== unreadCount) {
+          this.currentUnreadCount = unreadCount
+          this.unreadCountListeners.forEach((listener) =>
+            listener(this.currentUnreadCount)
+          )
+        }
       }
     }
 
@@ -234,14 +244,27 @@ const grill = {
     }
     sendSetConfigMessage()
   },
+
+  addUnreadCountListener(listener: (count: number) => void) {
+    listener(this.currentUnreadCount)
+    this.unreadCountListeners.push(listener)
+  },
+  removeUnreadCountListener(listener: (count: number) => void) {
+    this.unreadCountListeners = this.unreadCountListeners.filter(
+      (l) => l !== listener
+    )
+  },
 }
 
-export type Grill = typeof grill
+export type Grill = Omit<
+  typeof grill,
+  'unreadCountListeners' | 'currentUnreadCount'
+>
 if (typeof window !== 'undefined') {
-  ;(window as any).GRILL = grill
+  ;(window as any).GRILL = grill as Grill
 }
 
-export default grill
+export default grill as Grill
 
 export class GrillError extends Error {
   constructor(message = '', method = '') {
