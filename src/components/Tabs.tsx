@@ -80,7 +80,7 @@ export default function Tabs({
             {({ selected }) => (
               <span
                 className={cx(
-                  'group relative block cursor-pointer rounded-t-2xl px-3 outline-none after:absolute after:bottom-0 after:left-0 after:h-[90%] after:w-full after:rounded-t-2xl after:bg-background-light after:opacity-0 after:transition-opacity',
+                  'group relative block cursor-pointer rounded-t-2xl px-2 outline-none after:absolute after:bottom-0 after:left-0 after:h-[90%] after:w-full after:rounded-t-2xl after:bg-background-light after:opacity-0 after:transition-opacity sm:px-3',
                   'focus-visible:after:opacity-100'
                 )}
               >
