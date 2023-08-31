@@ -39,7 +39,7 @@ export const homePageAdditionalTabs: {
   // },
   {
     id: 'ai-bots',
-    text: 'AI Experts',
+    text: 'AI Bots',
     hubId: '1031',
   },
 ]
