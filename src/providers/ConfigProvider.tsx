@@ -7,6 +7,7 @@ type State = {
   theme?: Theme
   order?: string[]
   channels?: Set<string>
+  rootFontSize?: string
   enableBackButton?: boolean
   enableLoginButton?: boolean
   enableInputAutofocus?: boolean
@@ -61,7 +62,16 @@ export function ConfigProvider({ children }: { children: any }) {
   }, [state])
 
   return (
-    <ConfigContext.Provider value={state}>{children}</ConfigContext.Provider>
+    <>
+      <ConfigContext.Provider value={state}>{children}</ConfigContext.Provider>
+      {state.rootFontSize && (
+        <style jsx global>{`
+          :root {
+            font-size: ${state.rootFontSize};
+          }
+        `}</style>
+      )}
+    </>
   )
 }
 
@@ -85,6 +95,7 @@ const schemaGetter = {
     const theme = getUrlQuery('theme')
     const order = getUrlQuery('order')
     const channels = getUrlQuery('channels')
+    const rootFontSize = getUrlQuery('rootFontSize')
 
     const enableBackButton = getUrlQuery('enableBackButton')
     const enableLoginButton = getUrlQuery('enableLoginButton')
@@ -101,6 +112,7 @@ const schemaGetter = {
       order: usedOrder,
       channels: usedChannels.size > 0 ? usedChannels : undefined,
       theme: validateStringConfig(theme, ['dark', 'light']),
+      rootFontSize,
       enableBackButton: validateStringConfig(
         enableBackButton,
         ['true', 'false'],
