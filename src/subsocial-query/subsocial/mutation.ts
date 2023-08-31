@@ -214,6 +214,7 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
             reject(
               new Error('Timeout: Cannot get nonce for the next transaction.')
             )
+            substrateApi.disconnect().then(() => substrateApi.connect())
           }, 10_000)
 
           useMessageData.getState().setDoing('Waiting prev nonce...')
