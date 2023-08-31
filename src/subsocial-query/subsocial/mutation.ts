@@ -97,7 +97,9 @@ async function createTxAndSend<Data>(
   },
   optimisticCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
+  useMessageData.getState().setDoing('creating tx')
   const { tx, summary } = await transactionGenerator(data, apis)
+  useMessageData.getState().setDoing('tx created')
   return sendTransaction(
     {
       tx,
@@ -110,7 +112,7 @@ async function createTxAndSend<Data>(
     optimisticCallbacks
   )
 }
-function sendTransaction<Data, Context>(
+function sendTransaction<Data>(
   txInfo: {
     tx: Transaction
     summary: string

@@ -1,6 +1,7 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useSaveFile } from '@/services/api/mutation'
+import { useMessageData } from '@/stores/message'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
@@ -35,12 +36,16 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           'Your message is too long, please split it up to multiple messages'
         )
 
+      useMessageData.getState().setDoing('waiting energy')
       console.log('waiting energy...')
       await waitHasEnergy()
+      useMessageData.getState().setDoing('got energy')
       const { cid, success } = await saveFile(generateMessageContent(params))
+      useMessageData.getState().setDoing('file saved')
 
       if (!success) throw new Error('Failed to save file to IPFS')
 
+      useMessageData.getState().setDoing('creating post')
       return {
         tx: substrateApi.tx.posts.createPost(
           null,
