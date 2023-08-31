@@ -2,6 +2,7 @@ type QueryParams = {
   parent?: string
   order?: string
   theme?: string
+  rootFontSize?: string
   resourceId?: string
   metadata?: string
   enableBackButton?: string
@@ -165,6 +166,8 @@ const grill = {
     query.set('parent', window.location.origin)
     if (mergedConfig.order) query.set('order', mergedConfig.order.join(','))
     if (mergedConfig.theme) query.set('theme', mergedConfig.theme)
+    if (mergedConfig.rootFontSize)
+      query.set('rootFontSize', mergedConfig.rootFontSize)
 
     if (channelConfig) {
       const channelSettings = {
