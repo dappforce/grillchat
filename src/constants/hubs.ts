@@ -12,6 +12,7 @@ const ALIAS_TO_HUB_ID_MAP: Record<string, string> = {
   decoded: '1023',
   d: '1023',
   cc: '1030',
+  ai: '1031',
 }
 
 const HUB_ID_TO_ALIAS_MAP = Object.entries(ALIAS_TO_HUB_ID_MAP).reduce(
@@ -47,7 +48,7 @@ export function getPinnedChatsInHubId(hubId: string) {
 }
 
 export const COMMUNITY_CHAT_HUB_ID: string | null = getCommunityHubId() || null
-export const PINNED_HUB_IDS = [COMMUNITY_CHAT_HUB_ID].filter(
+export const PINNED_HUB_IDS = [COMMUNITY_CHAT_HUB_ID, '1031'].filter(
   Boolean
 ) as string[]
 
@@ -58,6 +59,7 @@ const HUB_ID_WITHOUT_JOIN_BUTTON = [
   '1010',
   '1011',
   '1007',
+  '1031',
 ]
 const CHAT_WITH_JOIN_BUTTON = ['6914']
 export function getIsHubWithoutJoinButton(hubId: string, chatId: string) {
