@@ -16,11 +16,12 @@ export async function scrollToMessageElement(
     smooth: true,
   }
 ) {
-  if (!element) return
+  if (!element || !scrollContainer) return
 
-  element.scrollIntoView({
+  const y = element.getBoundingClientRect().top
+  scrollContainer.scrollTo({
+    top: y,
     behavior: config?.smooth ? 'smooth' : 'auto',
-    block: 'center',
   })
   await waitStopScrolling(scrollContainer)
   if (config?.shouldHighlight) {
