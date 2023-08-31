@@ -44,20 +44,24 @@ export function generateManuallyTriggeredPromise() {
  * - resolveQueue: function that resolves the first promise in the queue
  */
 export function generatePromiseQueue() {
-  const queue: { promise: Promise<void>; resolve: VoidFunction }[] = []
+  let queue: { promise: Promise<void>; resolve: VoidFunction }[] = []
 
   const addQueue = () => {
     const { getPromise, getResolver } = generateManuallyTriggeredPromise()
     const lastPromise = queue[queue.length - 1]?.promise || Promise.resolve()
-    queue.push({ promise: getPromise(), resolve: getResolver() })
-    return lastPromise
+
+    const currentPromise = {
+      promise: getPromise(),
+      resolve: () => {
+        getResolver()()
+        queue = queue.filter((item) => item.promise !== getPromise())
+      },
+    }
+    queue.push(currentPromise)
+    return { lastPromise, currentPromise }
   }
 
   return {
     addQueue,
-    resolveQueue: () => {
-      const { resolve } = queue.shift() ?? {}
-      resolve?.()
-    },
   }
 }

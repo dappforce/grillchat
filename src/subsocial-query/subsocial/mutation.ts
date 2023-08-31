@@ -202,7 +202,7 @@ const noncePromise = generatePromiseQueue()
 
 async function getNonce(substrateApi: ApiPromise, address: string) {
   useMessageData.getState().setDoing('Getting nonce...')
-  const previousQueue = noncePromise.addQueue()
+  const { lastPromise, currentPromise } = noncePromise.addQueue()
 
   return new Promise<{ nonce: number; nonceResolver: () => void }>(
     (resolve, reject) => {
@@ -210,13 +210,14 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
         try {
           const timeoutId = setTimeout(() => {
             useMessageData.getState().setDoing('Rejected...')
+            currentPromise.resolve()
             reject(
               new Error('Timeout: Cannot get nonce for the next transaction.')
             )
           }, 10_000)
 
           useMessageData.getState().setDoing('Waiting prev nonce...')
-          await previousQueue
+          await lastPromise
 
           useMessageData
             .getState()
@@ -224,7 +225,7 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
           const nonce = await substrateApi.rpc.system.accountNextIndex(address)
           resolve({
             nonce: nonce.toNumber(),
-            nonceResolver: noncePromise.resolveQueue,
+            nonceResolver: currentPromise.resolve,
           })
 
           useMessageData.getState().setDoing('nonce done')
