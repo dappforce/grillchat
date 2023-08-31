@@ -33,16 +33,22 @@ export const homePageAdditionalTabs: {
 }[] = [
   // Example additional tabs
   // {
-  //   id: 'decoded',
-  //   text: 'Decoded',
-  //   hubId: '1023',
+  //   id: 'ai-bots',
+  //   text: 'AI Experts',
+  //   hubId: '1031',
   // },
+  {
+    id: 'ai-bots',
+    text: 'AI Bots',
+    hubId: '1031',
+  },
 ]
 
 const pathnameTabIdMapper: Record<string, number> = {
   '/my-chats': 0,
   '/hot-chats': 1,
-  '/hubs': 2,
+  '/ai-bots': 2,
+  '/hubs': 3,
 }
 
 export default function HubsPage(props: HubsPageProps) {
@@ -61,16 +67,16 @@ export default function HubsPage(props: HubsPageProps) {
         <MyChatsContent changeTab={setSelectedTab} />
       ),
     },
-    ...homePageAdditionalTabs.map(({ id, text, hubId }) => ({
-      id,
-      text,
-      content: () => <HotChatsContent hubId={hubId} />,
-    })),
     {
       id: 'hot-chats',
       text: 'Hot Chats',
       content: () => <HotChatsContent hubId={hotChatsHubId} />,
     },
+    ...homePageAdditionalTabs.map(({ id, text, hubId }) => ({
+      id,
+      text,
+      content: () => <HotChatsContent hubId={hubId} />,
+    })),
     {
       id: 'hubs',
       text: 'Hubs',
