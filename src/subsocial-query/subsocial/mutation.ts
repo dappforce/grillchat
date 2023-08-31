@@ -197,26 +197,44 @@ const noncePromise = generatePromiseQueue()
  * @param substrateApi Substrate API
  * @param address Address of the account
  */
+
 async function getNonce(substrateApi: ApiPromise, address: string) {
   useMessageData.getState().setDoing('Getting nonce...')
   const previousQueue = noncePromise.addQueue()
 
-  const timeoutId = setTimeout(() => {
-    useMessageData.getState().setDoing('Rejected...')
-    alert('rejected')
-    throw new Error('Timeout: Cannot get nonce for the next transaction.')
-  }, 10_000)
+  return new Promise<{ nonce: number; nonceResolver: () => void }>(
+    (resolve, reject) => {
+      async function getNonce() {
+        try {
+          const timeoutId = setTimeout(() => {
+            useMessageData.getState().setDoing('Rejected...')
+            reject(
+              new Error('Timeout: Cannot get nonce for the next transaction.')
+            )
+          }, 10_000)
 
-  useMessageData.getState().setDoing('Waiting prev nonce...')
-  await previousQueue
-  useMessageData
-    .getState()
-    .setDoing('getting nonce... ' + substrateApi.isConnected)
-  const nonce = await substrateApi.rpc.system.accountNextIndex(address)
+          useMessageData.getState().setDoing('Waiting prev nonce...')
+          await previousQueue
 
-  useMessageData.getState().setDoing('nonce done')
-  clearTimeout(timeoutId)
-  return { nonce, nonceResolver: noncePromise.resolveQueue }
+          useMessageData
+            .getState()
+            .setDoing('getting nonce... ' + substrateApi.isConnected)
+          const nonce = await substrateApi.rpc.system.accountNextIndex(address)
+          resolve({
+            nonce: nonce.toNumber(),
+            nonceResolver: noncePromise.resolveQueue,
+          })
+
+          useMessageData.getState().setDoing('nonce done')
+          clearTimeout(timeoutId)
+        } catch (err) {
+          console.log('Error getting nonce', err)
+          reject(new Error('Failed to get nonce'))
+        }
+      }
+      getNonce()
+    }
+  )
 }
 
 function generateTxCallbacks<Data, Context>(
