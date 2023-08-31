@@ -124,7 +124,7 @@ export default function ProfileModal({
     },
     'push-notifications': {
       title: '🔔 Push Notifications',
-      desc: 'Enable Push Notifications on your browser to receive direct updates from Grill.',
+      desc: 'Push notifications allow you to receive direct updates from Grill in your browser.',
       withBackButton: 'notifications',
     },
   }

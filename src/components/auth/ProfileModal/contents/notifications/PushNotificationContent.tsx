@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import Notice from '@/components/Notice'
 import Toast from '@/components/Toast'
 import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { getMessageToken } from '@/services/firebase/messaging'
@@ -35,7 +36,13 @@ export default function PushNotificationContent(props: ContentProps) {
   const permission = Notification.permission
   if (permission === 'granted' && isRegistered) {
     return (
-      <DisableNotificationButton setIsRegistered={setIsRegistered} {...props} />
+      <div className='flex flex-col gap-6'>
+        <Notice leftIcon='✅'>Push Notifications Enabled</Notice>
+        <DisableNotificationButton
+          setIsRegistered={setIsRegistered}
+          {...props}
+        />
+      </div>
     )
   }
 
