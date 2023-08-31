@@ -71,6 +71,8 @@ export type GrillConfig = {
   /** Option to make the iframe open chat room (a channel) directly */
   channel?: Channel
   order?: string[]
+  /** The root font size of the . You can change it if you want all font sizes to be smaller/bigger. Default root font size is 1rem (16px). For example, you can change it to 0.875rem to make it 14px, or just straight up use 14px. */
+  rootFontSize?: string
   /** The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat> */
   theme?: Theme
   /** A function that will be called when the iframe is created. You can use this to customize the iframe attributes. */
