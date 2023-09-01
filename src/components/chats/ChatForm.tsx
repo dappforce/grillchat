@@ -17,6 +17,7 @@ import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { SessionStorage } from '@/utils/storage'
+import { copyToClipboard } from '@/utils/strings'
 import dynamic from 'next/dynamic'
 import {
   ComponentProps,
@@ -97,7 +98,7 @@ export default function ChatForm({
       onError: (error, variables) => {
         showErrorSendingMessageToast(
           error,
-          'Failed to register or send message, please refresh the page and try again',
+          'Failed to register or send message',
           variables.message,
           setMessageBody
         )
@@ -118,7 +119,7 @@ export default function ChatForm({
     onError: (error, variables) => {
       showErrorSendingMessageToast(
         error,
-        'Failed to send message, please refresh the page and try again',
+        'Failed to send message',
         variables.message,
         setMessageBody
       )
@@ -300,23 +301,21 @@ function showErrorSendingMessageToast(
     toastConfig: { duration: Infinity },
     additionalDescription: message
       ? (t) => (
-          <span
-            className='cursor-pointer text-text-primary'
-            onClick={() => {
-              toast.dismiss(t.id)
-              setMessageBody(message ?? '')
-            }}
-          >
-            Click here to recover your message
+          <span>
+            Click refresh button to copy your message to clipboard and try again
           </span>
         )
       : undefined,
-    actionButton: () => (
+    actionButton: (t) => (
       <Button
         className='ml-2'
         size='circle'
         variant='transparent'
-        onClick={() => window.location.reload()}
+        onClick={() => {
+          copyToClipboard(message ?? '')
+          toast.dismiss(t.id)
+          window.location.reload()
+        }}
       >
         <IoRefresh />
       </Button>
