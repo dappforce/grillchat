@@ -10,6 +10,7 @@ import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
@@ -70,6 +71,7 @@ function ChatListContent({
   ...props
 }: ChatListProps) {
   const router = useRouter()
+  const { enableBackButton } = useConfigContext()
 
   const [initialNewMessageCount, setInitialNewMessageCount] = useState(0)
   const lastReadId = useFocusedLastMessageId(chatId)
@@ -229,7 +231,10 @@ function ChatListContent({
           scrollableContainerClassName
         )}
       >
-        <Component ref={innerRef}>
+        <Component
+          ref={innerRef}
+          className={cx(enableBackButton === false && 'px-0')}
+        >
           <InfiniteScroll
             dataLength={loadedMessageQueries.length}
             next={loadMore}
