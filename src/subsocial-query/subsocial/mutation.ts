@@ -206,13 +206,13 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
           }, 10_000)
 
           await previousQueue
-          clearTimeout(timeoutId)
-
           const nonce = await substrateApi.rpc.system.accountNextIndex(address)
           resolve({
             nonce: nonce.toNumber(),
             nonceResolver: noncePromise.resolveQueue,
           })
+
+          clearTimeout(timeoutId)
         } catch (err) {
           console.log('Error getting nonce', err)
           reject(new Error('Failed to get nonce'))

@@ -17,6 +17,7 @@ import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { SessionStorage } from '@/utils/storage'
+import { copyToClipboard } from '@/utils/strings'
 import dynamic from 'next/dynamic'
 import {
   ComponentProps,
@@ -26,7 +27,7 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
-import { HiXMark } from 'react-icons/hi2'
+import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
 
@@ -97,7 +98,7 @@ export default function ChatForm({
       onError: (error, variables) => {
         showErrorSendingMessageToast(
           error,
-          'Creating account or sending message failed',
+          'Failed to register or send message',
           variables.message,
           setMessageBody
         )
@@ -118,7 +119,7 @@ export default function ChatForm({
     onError: (error, variables) => {
       showErrorSendingMessageToast(
         error,
-        'Failed to send message, please try again',
+        'Failed to send message',
         variables.message,
         setMessageBody
       )
@@ -299,15 +300,9 @@ function showErrorSendingMessageToast(
     withIcon: false,
     toastConfig: { duration: Infinity },
     additionalDescription: message
-      ? (t) => (
-          <span
-            className='cursor-pointer text-text-primary'
-            onClick={() => {
-              toast.dismiss(t.id)
-              setMessageBody(message ?? '')
-            }}
-          >
-            Click here to recover your message
+      ? () => (
+          <span className='text-text'>
+            Click refresh to recover your message to clipboard
           </span>
         )
       : undefined,
@@ -316,9 +311,13 @@ function showErrorSendingMessageToast(
         className='ml-2'
         size='circle'
         variant='transparent'
-        onClick={() => toast.dismiss(t.id)}
+        onClick={() => {
+          copyToClipboard(message ?? '')
+          toast.dismiss(t.id)
+          window.location.reload()
+        }}
       >
-        <HiXMark />
+        <IoRefresh />
       </Button>
     ),
   })
