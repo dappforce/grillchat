@@ -300,9 +300,9 @@ function showErrorSendingMessageToast(
     withIcon: false,
     toastConfig: { duration: Infinity },
     additionalDescription: message
-      ? (t) => (
-          <span>
-            Click refresh button to copy your message to clipboard and try again
+      ? () => (
+          <span className='text-text'>
+            Click refresh to recover your message to clipboard
           </span>
         )
       : undefined,
