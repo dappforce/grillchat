@@ -19,8 +19,9 @@ export async function scrollToMessageElement(
   if (!element || !scrollContainer) return
 
   const y = element.getBoundingClientRect().top
+  const offset = -72
   scrollContainer.scrollTo({
-    top: y,
+    top: y + scrollContainer.scrollTop + offset,
     behavior: config?.smooth ? 'smooth' : 'auto',
   })
   await waitStopScrolling(scrollContainer)
