@@ -150,7 +150,11 @@ export async function getNftDataServer(
       const collectionName = metadata.contract_name
       const externalData = metadata.nft_data?.external_data
       const nftName = externalData?.name
-      const image = externalData?.image
+      let image = externalData?.image as string | undefined
+      // manually fix wrong image url for some nfts
+      if (image) {
+        image = image.replace('/ipfs/ipfs', '/ipfs')
+      }
 
       nftData = {
         name: nftName ?? collectionName ?? '',
@@ -158,7 +162,7 @@ export async function getNftDataServer(
         collectionName: collectionName ?? '',
         price: 0,
       }
-      isMetadataRecognizedAsValid = image
+      isMetadataRecognizedAsValid = !!image
     }
 
     if (isMetadataRecognizedAsValid) {
