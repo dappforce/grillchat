@@ -26,7 +26,7 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
-import { HiXMark } from 'react-icons/hi2'
+import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
 
@@ -97,7 +97,7 @@ export default function ChatForm({
       onError: (error, variables) => {
         showErrorSendingMessageToast(
           error,
-          'Creating account or sending message failed',
+          'Failed to register or send message, please refresh the page and try again',
           variables.message,
           setMessageBody
         )
@@ -118,7 +118,7 @@ export default function ChatForm({
     onError: (error, variables) => {
       showErrorSendingMessageToast(
         error,
-        'Failed to send message, please try again',
+        'Failed to send message, please refresh the page and try again',
         variables.message,
         setMessageBody
       )
@@ -311,14 +311,14 @@ function showErrorSendingMessageToast(
           </span>
         )
       : undefined,
-    actionButton: (t) => (
+    actionButton: () => (
       <Button
         className='ml-2'
         size='circle'
         variant='transparent'
-        onClick={() => toast.dismiss(t.id)}
+        onClick={() => window.location.reload()}
       >
-        <HiXMark />
+        <IoRefresh />
       </Button>
     ),
   })
