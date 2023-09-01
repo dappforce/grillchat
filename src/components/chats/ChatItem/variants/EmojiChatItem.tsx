@@ -72,7 +72,7 @@ export default function EmojiChatItem({
         )}
       >
         <p
-          className={cx('flex items-center')}
+          className={cx('flex items-center whitespace-nowrap')}
           style={{
             fontSize: emojiFontSize,
           }}
