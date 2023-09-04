@@ -88,3 +88,7 @@ export function isWebNotificationsEnabled() {
   if (typeof Notification === 'undefined') return false
   return Notification?.permission === 'granted'
 }
+
+export function sendMessageToParentWindow(name: string, value: string) {
+  window.parent?.postMessage(`grill:${name}:${value}`, '*')
+}

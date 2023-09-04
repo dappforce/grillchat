@@ -132,6 +132,9 @@ function createUrl(
   return { url, query, fullUrl }
 }
 
+// to make the autocomplete still appears, but enables any string to be passed in
+type KnownEvents = 'ready' | 'unread' | 'totalMessage' | (string & {})
+export type GrillEventListener = (eventName: KnownEvents, value: string) => void
 const grill = {
   instances: {} as Record<
     string,
@@ -141,8 +144,7 @@ const grill = {
       waitingCallbacks: (() => void)[]
     }
   >,
-  currentUnreadCount: 0,
-  unreadCountListeners: [] as ((count: number) => void)[],
+  eventListeners: [] as GrillEventListener[],
 
   init(config: GrillConfig) {
     const createInitError = (message: string) => new GrillError(message, 'init')
@@ -202,22 +204,20 @@ const grill = {
     iframe.style.opacity = '0'
     iframe.style.transition = 'opacity 0.15s ease-in-out'
     window.onmessage = (event) => {
-      if (event.data === 'grill:ready') {
+      const message = parseMessage(event.data + '')
+      if (!message) return
+
+      const { name, value } = message
+      if (name === 'ready') {
         iframe.style.opacity = '1'
         const currentInstance = this.instances[mergedConfig.widgetElementId]
         if (!currentInstance) return
 
         currentInstance.isReady = true
         currentInstance.waitingCallbacks.forEach((callback) => callback())
-      } else if ((event.data + '').startsWith('grill:unread:')) {
-        const unreadCount = parseInt(event.data.split('grill:unread:')[1])
-        if (!isNaN(unreadCount) && this.currentUnreadCount !== unreadCount) {
-          this.currentUnreadCount = unreadCount
-          this.unreadCountListeners.forEach((listener) =>
-            listener(this.currentUnreadCount)
-          )
-        }
       }
+
+      if (name) this.eventListeners.forEach((listener) => listener(name, value))
     }
 
     widgetElement.appendChild(iframe)
@@ -250,15 +250,18 @@ const grill = {
     sendSetConfigMessage()
   },
 
-  addUnreadCountListener(listener: (count: number) => void) {
-    listener(this.currentUnreadCount)
-    this.unreadCountListeners.push(listener)
+  addUnreadCountListener(listener: GrillEventListener) {
+    this.eventListeners.push(listener)
   },
-  removeUnreadCountListener(listener: (count: number) => void) {
-    this.unreadCountListeners = this.unreadCountListeners.filter(
-      (l) => l !== listener
-    )
+  removeUnreadCountListener(listener: GrillEventListener) {
+    this.eventListeners = this.eventListeners.filter((l) => l !== listener)
   },
+}
+
+function parseMessage(data: string) {
+  const [origin, name, value] = data.split(':')
+  if (origin !== 'grill') return null
+  return { name: name ?? '', value: value ?? '' }
 }
 
 export type Grill = Omit<
