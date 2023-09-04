@@ -83,7 +83,7 @@ const AmountInput = ({
         )}
         type='number'
         className={cx(
-          'h-[54px] pr-16 text-base leading-6 ring-1 ring-inset ring-gray-500',
+          'h-[54px] appearance-none pr-16 text-base leading-6 ring-1 ring-inset ring-gray-500',
           'focus:outline-none focus:ring-1 focus:ring-gray-400',
           'hover:outline-none hover:ring-1 hover:ring-gray-400',
           'focus-visible:!ring-1 focus-visible:ring-gray-400',

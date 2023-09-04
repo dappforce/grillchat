@@ -48,7 +48,7 @@ export default function SelectInput<AdditionalData = {}>({
                   'relative w-full cursor-default rounded-2xl',
                   selected?.icon ? 'py-2' : 'py-3',
                   'pl-4 pr-12 text-left',
-                  'text-base leading-6 ring-1 ring-inset ring-border-gray',
+                  'appearance-none text-base leading-6 ring-1 ring-inset ring-border-gray',
                   'bg-background text-text',
                   interactionRingStyles()
                 )}
