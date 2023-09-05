@@ -17,7 +17,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { validateNumber } from '@/utils/strings'
-import { replaceUrl } from '@/utils/window'
+import { replaceUrl, sendMessageToParentWindow } from '@/utils/window'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import {
@@ -107,6 +107,14 @@ function ChatListContent({
     currentPageMessageIds
   )
 
+  useEffect(() => {
+    sendMessageToParentWindow(
+      'totalMessage',
+      (filteredMessageIds.length ?? 0).toString()
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const messageQueries = getPostQuery.useQueries(filteredCurrentPageIds)
   const loadedMessageQueries = useMemo(() => {
     return messageQueries.filter((message) => message.isLoading === false)
@@ -157,7 +165,11 @@ function ChatListContent({
             lastReadIdIndex === -1
               ? 0
               : filteredMessageIdsRef.current.length - lastReadIdIndex - 1
-          window.parent?.postMessage(`grill:unread:${newMessageCount}`, '*')
+
+          sendMessageToParentWindow(
+            'unread',
+            (filteredMessageIds.length ?? 0).toString()
+          )
 
           setInitialNewMessageCount(newMessageCount)
         })
