@@ -10,6 +10,7 @@ import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
 import { accountAddressStorage, useMyAccount } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
 import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
@@ -160,8 +161,9 @@ export default function HubsPage(props: HubsPageProps) {
         getFocusedElementIndex={getFocusedElementIndex}
       >
         <Tabs
-          className='border-b border-border-gray bg-background-light px-0 text-sm md:bg-background-light/50'
+          className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
           panelClassName='mt-0 px-0'
+          tabClassName={cx('px-1.5 sm:px-2')}
           asContainer
           tabs={tabs}
           withHashIntegration={false}
