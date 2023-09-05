@@ -67,7 +67,7 @@ export const LoginContent = ({
   return (
     <div>
       <div className='flex w-full flex-col justify-center'>
-        <Logo className='mb-8 text-5xl' />
+        <Logo className='mb-8 mt-4 text-5xl' />
         <div className='flex flex-col gap-4'>
           <Button onClick={() => setCurrentStep('enter-secret-key')} size='lg'>
             <div className='flex items-center justify-center gap-2'>
@@ -169,7 +169,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
     <div className='flex flex-col'>
       {address && (
         <div className={cx('mb-6 mt-2 rounded-2xl bg-background-lighter p-4')}>
-          <ProfilePreview address={address} />
+          <ProfilePreview address={address} avatarClassName={cx('h-16 w-16')} />
         </div>
       )}
       <div className='flex items-center'>
