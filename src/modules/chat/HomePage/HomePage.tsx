@@ -160,7 +160,7 @@ export default function HubsPage(props: HubsPageProps) {
         getFocusedElementIndex={getFocusedElementIndex}
       >
         <Tabs
-          className='border-b border-border-gray bg-background-light px-0 md:bg-background-light/50'
+          className='border-b border-border-gray bg-background-light px-0 text-sm md:bg-background-light/50'
           panelClassName='mt-0 px-0'
           asContainer
           tabs={tabs}
@@ -168,9 +168,9 @@ export default function HubsPage(props: HubsPageProps) {
           tabsRightElement={
             isLoggedIn &&
             COMMUNITY_CHAT_HUB_ID && (
-              <div className='ml-4 mr-2 flex flex-1 items-center justify-end self-stretch'>
+              <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
                 <Button
-                  size='sm'
+                  size='xs'
                   variant='primary'
                   className='flex items-center gap-2'
                   onClick={() => {
