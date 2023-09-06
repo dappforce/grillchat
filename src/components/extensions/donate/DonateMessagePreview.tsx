@@ -47,13 +47,11 @@ const DonatePreview = ({
       ? new BigNumber(price).multipliedBy(amountValue).toFixed(4)
       : '0'
 
-  const cardMargin = body ? 'mt-1' : 'mt-2'
-
   return (
     <div
       className={cx(
         'rounded-[4px] px-5 py-5',
-        { [cardMargin]: inReplyTo },
+        { 'mt-1': inReplyTo },
         getCommonClassNames('donateMessagePreviewBg')
       )}
     >

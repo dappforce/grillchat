@@ -90,6 +90,13 @@ export const NftMessage: Story = {
   },
 }
 
+export const NftMessageWithReply: Story = {
+  args: {
+    messageId: '5580',
+    isMyMessage: false,
+  },
+}
+
 export const NftGifMessage: Story = {
   args: {
     messageId: '5386',
@@ -111,6 +118,20 @@ export const ImageMessage: Story = {
   },
 }
 
+export const ImageMessageWithReply: Story = {
+  args: {
+    messageId: '9607',
+    isMyMessage: false,
+  },
+}
+
+export const ImageMessageWithBodyAndReply: Story = {
+  args: {
+    messageId: '9608',
+    isMyMessage: false,
+  },
+}
+
 export const ImageWithLongTextMessage: Story = {
   args: {
     messageId: '7461',
@@ -121,6 +142,13 @@ export const ImageWithLongTextMessage: Story = {
 export const DonationMessage: Story = {
   args: {
     messageId: '7480',
+    isMyMessage: false,
+  },
+}
+
+export const DonationMessageWithReply: Story = {
+  args: {
+    messageId: '7027',
     isMyMessage: false,
   },
 }

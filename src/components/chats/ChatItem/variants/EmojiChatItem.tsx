@@ -57,7 +57,7 @@ export default function EmojiChatItem({
           <ProfilePreviewModalName
             messageId={messageId}
             address={ownerId}
-            className={cx('mr-2 text-sm text-text-secondary')}
+            className={cx('mr-2 text-sm font-medium text-text-secondary')}
           />
           <ChatRelativeTime
             createdAtTime={createdAtTime}

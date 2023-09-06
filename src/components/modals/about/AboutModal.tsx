@@ -39,8 +39,8 @@ export default function AboutModal({
             image={image}
             rounding={isImageCircle ? 'circle' : '2xl'}
           />
-          <div className='flex flex-col'>
-            <h1 className='pr-8 text-2xl font-medium'>
+          <div className='flex flex-col gap-1'>
+            <h1 className='pr-8 text-xl font-medium leading-tight'>
               {modalTitle || entityTitle}
             </h1>
             <span className='text-text-muted'>{subtitle}</span>

@@ -112,8 +112,7 @@ function ChatListContent({
       'totalMessage',
       (filteredMessageIds.length ?? 0).toString()
     )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [filteredMessageIds.length])
 
   const messageQueries = getPostQuery.useQueries(filteredCurrentPageIds)
   const loadedMessageQueries = useMemo(() => {
