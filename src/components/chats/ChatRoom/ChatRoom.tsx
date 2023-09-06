@@ -76,7 +76,6 @@ export default function ChatRoom({
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}
         scrollContainerRef={scrollContainerRef}
-        replyTo={replyTo}
       />
       <Component
         className={cx('mt-auto flex flex-col py-2', replyTo && 'pt-0')}

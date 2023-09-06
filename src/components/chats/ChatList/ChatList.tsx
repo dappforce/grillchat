@@ -1,11 +1,8 @@
-import PinIcon from '@/assets/icons/pin.png'
 import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfiniteScrollData'
 import Container from '@/components/Container'
-import { getPostExtension } from '@/components/extensions/utils'
-import LinkText from '@/components/LinkText'
 import MessageModal from '@/components/modals/MessageModal'
 import ScrollableContainer from '@/components/ScrollableContainer'
-import { CHAT_PER_PAGE, getPinnedMessageInChatId } from '@/constants/chat'
+import { CHAT_PER_PAGE } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
@@ -13,12 +10,12 @@ import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { validateNumber } from '@/utils/strings'
 import { replaceUrl, sendMessageToParentWindow } from '@/utils/window'
-import Image from 'next/image'
 import { useRouter } from 'next/router'
 import {
   ComponentProps,
@@ -33,6 +30,7 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import urlJoin from 'url-join'
 import ChatItemMenus from '../ChatItem/ChatItemMenus'
 import { getMessageElementId } from '../utils'
+import CenterChatNotice from './CenterChatNotice'
 import ChatItemContainer from './ChatItemContainer'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
@@ -41,6 +39,7 @@ import useIsAtBottom from './hooks/useIsAtBottom'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import useScrollToMessage from './hooks/useScrollToMessage'
 import { NewMessageNotice } from './NewMessageNotice'
+import PinnedMessage from './PinnedMessage'
 
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
@@ -48,7 +47,6 @@ export type ChatListProps = ComponentProps<'div'> & {
   scrollableContainerClassName?: string
   hubId: string
   chatId: string
-  replyTo?: string
   newMessageNoticeClassName?: string
 }
 
@@ -66,7 +64,6 @@ function ChatListContent({
   hubId,
   chatId,
   scrollContainerRef: _scrollContainerRef,
-  replyTo,
   newMessageNoticeClassName,
   ...props
 }: ChatListProps) {
@@ -85,7 +82,6 @@ function ChatListContent({
   const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
 
   const innerRef = useRef<HTMLDivElement>(null)
-  const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
 
   const { data: rawMessageIds } = useCommentIdsByPostId(chatId, {
     subscribe: true,
@@ -197,15 +193,6 @@ function ChatListContent({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prevMessageModalMsgId, messageModalMsgId])
-
-  const isAtBottomRef = useWrapInRef(isAtBottom)
-  useEffect(() => {
-    if (!isAtBottomRef.current) return
-    scrollContainerRef.current?.scrollTo({
-      top: scrollContainerRef.current?.scrollHeight,
-      behavior: 'auto',
-    })
-  }, [loadedMessageQueries.length, isAtBottomRef, scrollContainerRef, replyTo])
 
   const myAddress = useMyAccount((state) => state.address)
   const { data: chat } = getPostQuery.useQuery(chatId)
@@ -336,105 +323,32 @@ function ChatListContent({
           />
         </div>
       </Component>
+      <ScrollToBottom
+        loadedMessageLength={loadedMessageQueries.length}
+        scrollContainerRef={scrollContainerRef}
+      />
     </div>
   )
 }
 
-function CenterChatNotice({
-  isMyChat,
-  ...props
-}: ComponentProps<'div'> & { isMyChat: boolean }) {
-  return (
-    <div
-      {...props}
-      className={cx(
-        'flex flex-col rounded-2xl bg-background-light/50 px-6 py-4 text-sm text-text-muted',
-        props.className
-      )}
-    >
-      {isMyChat ? (
-        <>
-          <div>
-            <span>You have created a public group chat, which is:</span>
-            <div className='pl-4'>
-              <ul className='mb-1 list-disc whitespace-nowrap pl-2'>
-                <li>Persistent & on-chain</li>
-                <li>Censorship resistant</li>
-                <li>
-                  Powered by{' '}
-                  <LinkText
-                    href='https://subsocial.network'
-                    openInNewTab
-                    variant='primary'
-                  >
-                    Subsocial
-                  </LinkText>
-                </li>
-              </ul>
-            </div>
+function ScrollToBottom({
+  scrollContainerRef,
+  loadedMessageLength,
+}: {
+  scrollContainerRef: React.RefObject<HTMLDivElement>
+  loadedMessageLength: number
+}) {
+  const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
+  const replyTo = useMessageData((state) => state.replyTo)
 
-            <span>You can:</span>
-            <div className='pl-4'>
-              <ul className='list-disc whitespace-nowrap pl-2'>
-                <li>Moderate content and users</li>
-                <li>Hide the chat from others on Grill</li>
-              </ul>
-            </div>
-          </div>
-        </>
-      ) : (
-        <span>No messages here yet</span>
-      )}
-    </div>
-  )
-}
+  const isAtBottomRef = useWrapInRef(isAtBottom)
+  useEffect(() => {
+    if (!isAtBottomRef.current) return
+    scrollContainerRef.current?.scrollTo({
+      top: scrollContainerRef.current?.scrollHeight,
+      behavior: 'auto',
+    })
+  }, [loadedMessageLength, isAtBottomRef, scrollContainerRef, replyTo])
 
-type PinnedMessageProps = {
-  chatId: string
-  asContainer?: boolean
-  scrollToMessage: ReturnType<typeof useScrollToMessage>
-}
-function PinnedMessage({
-  chatId,
-  asContainer,
-  scrollToMessage,
-}: PinnedMessageProps) {
-  const { data: chat } = getPostQuery.useQuery(chatId)
-  const pinExtension = getPostExtension(
-    chat?.content?.extensions,
-    'subsocial-pinned-posts'
-  )
-
-  const pinnedMessage =
-    getPinnedMessageInChatId(chatId) || pinExtension?.properties.ids[0]
-  const { data: message } = getPostQuery.useQuery(pinnedMessage ?? '', {
-    enabled: !!pinnedMessage,
-  })
-  if (!message) return null
-
-  const Component = asContainer ? Container<'div'> : 'div'
-  return (
-    <div className='sticky top-0 z-10 border-b border-border-gray bg-background-light text-sm'>
-      <Component
-        className='flex cursor-pointer items-center gap-4 overflow-hidden py-2'
-        onClick={() => scrollToMessage(message.id)}
-      >
-        <div className='mr-0.5 flex-shrink-0'>
-          <Image
-            src={PinIcon}
-            alt='pin'
-            width={16}
-            height={16}
-            className='ml-3 h-4 w-4'
-          />
-        </div>
-        <div className='flex flex-col overflow-hidden'>
-          <span className='font-medium text-text-primary'>Pinned Message</span>
-          <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
-            {message.content?.body}
-          </span>
-        </div>
-      </Component>
-    </div>
-  )
+  return null
 }
