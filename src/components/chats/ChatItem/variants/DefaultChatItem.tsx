@@ -52,7 +52,7 @@ export default function DefaultChatItem({
         {inReplyTo && (
           <RepliedMessagePreview
             originalMessage={body ?? ''}
-            className='mt-1'
+            className='my-1'
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
             chatId={chatId}
