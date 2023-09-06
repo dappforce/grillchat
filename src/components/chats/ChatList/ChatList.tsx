@@ -19,7 +19,6 @@ import { replaceUrl, sendMessageToParentWindow } from '@/utils/window'
 import { useRouter } from 'next/router'
 import {
   ComponentProps,
-  Fragment,
   useEffect,
   useId,
   useMemo,
@@ -28,10 +27,8 @@ import {
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import urlJoin from 'url-join'
-import ChatItemMenus from '../ChatItem/ChatItemMenus'
-import { getMessageElementId } from '../utils'
 import CenterChatNotice from './CenterChatNotice'
-import ChatItemContainer from './ChatItemContainer'
+import MemoizedChatItemWrapper from './ChatItemWrapper'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
@@ -254,48 +251,18 @@ function ChatListContent({
             scrollThreshold={`${SCROLL_THRESHOLD}px`}
           >
             {messageQueries.map(({ data: message }, index) => {
-              const isLastReadMessage = lastReadId === message?.id
               // bottom message is the first element, because the flex direction is reversed
               const isBottomMessage = index === 0
-              const showLastUnreadMessageNotice =
-                isLastReadMessage && !isBottomMessage
-
-              const chatElement = message && (
-                <ChatItemMenus
-                  chatId={chatId}
-                  messageId={message.id}
-                  key={message.id}
-                  hubId={hubId}
-                >
-                  {(config) => {
-                    const { referenceProps, toggleDisplay } = config || {}
-                    return (
-                      <ChatItemContainer
-                        {...referenceProps}
-                        onContextMenu={(e) => {
-                          e.preventDefault()
-                          toggleDisplay?.(e)
-                        }}
-                        enableChatMenu={false}
-                        hubId={hubId}
-                        chatId={chatId}
-                        message={message}
-                        messageBubbleId={getMessageElementId(message.id)}
-                        scrollToMessage={scrollToMessage}
-                      />
-                    )
-                  }}
-                </ChatItemMenus>
-              )
-              if (!showLastUnreadMessageNotice) return chatElement
-
               return (
-                <Fragment key={message?.id || index}>
-                  <div className='my-2 w-full rounded-md bg-background-light py-0.5 text-center text-sm'>
-                    Unread messages
-                  </div>
-                  {chatElement}
-                </Fragment>
+                <MemoizedChatItemWrapper
+                  key={message?.id ?? index}
+                  chatId={chatId}
+                  hubId={hubId}
+                  isBottomMessage={isBottomMessage}
+                  message={message}
+                  scrollToMessage={scrollToMessage}
+                  lastReadId={lastReadId}
+                />
               )
             })}
           </InfiniteScroll>

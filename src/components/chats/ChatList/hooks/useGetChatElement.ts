@@ -3,7 +3,7 @@ import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
 import { PostData } from '@subsocial/api/types'
 import { UseQueryResult } from '@tanstack/react-query'
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { getMessageElementId } from '../../utils'
 
 // TODO: refactor this hook to have better readability
@@ -57,42 +57,49 @@ export default function useGetMessageElement({
     })
   }, [loadedMessageIds])
 
-  const loadMoreUntilMessageIdIsLoaded = async (messageId: string) => {
-    const isMessageIdIncluded = messageIdsRef.current.includes(messageId)
-    if (isMessageIdIncluded) return
+  const loadMoreUntilMessageIdIsLoaded = useCallback(
+    async (messageId: string) => {
+      const isMessageIdIncluded = messageIdsRef.current.includes(messageId)
+      if (isMessageIdIncluded) return
 
-    await awaitableLoadMore()
-    await loadMoreUntilMessageIdIsLoaded(messageId)
-  }
-
-  const getMessageElement = async (messageId: string) => {
-    const {
-      getPromise: getMessageDataLoadedPromise,
-      getResolver: getMessageDataLoadedResolver,
-    } = generateManuallyTriggeredPromise()
-    const elementId = getMessageElementId(messageId)
-    const element = document.getElementById(elementId)
-    if (element) return element
-
-    const { resolvers, waitingMessageDataLoadedIds: waitingMessageIds } =
-      promiseRef.current
-
-    if (!resolvers.get(messageId)) {
-      resolvers.set(messageId, [])
-    }
-    resolvers.get(messageId)?.push(getMessageDataLoadedResolver())
-    waitingMessageIds.add(messageId)
-
-    const isMessageIdIncluded = messageIds.includes(messageId)
-    if (!isMessageIdIncluded) {
+      await awaitableLoadMore()
       await loadMoreUntilMessageIdIsLoaded(messageId)
-    }
+    },
+    [awaitableLoadMore, messageIdsRef]
+  )
 
-    await getMessageDataLoadedPromise()
-    await waitAllMessagesLoadedRef.current()
+  const getMessageElement = useCallback(
+    async (messageId: string) => {
+      const messageIds = messageIdsRef.current
+      const {
+        getPromise: getMessageDataLoadedPromise,
+        getResolver: getMessageDataLoadedResolver,
+      } = generateManuallyTriggeredPromise()
+      const elementId = getMessageElementId(messageId)
+      const element = document.getElementById(elementId)
+      if (element) return element
 
-    return document.getElementById(elementId)
-  }
+      const { resolvers, waitingMessageDataLoadedIds: waitingMessageIds } =
+        promiseRef.current
+
+      if (!resolvers.get(messageId)) {
+        resolvers.set(messageId, [])
+      }
+      resolvers.get(messageId)?.push(getMessageDataLoadedResolver())
+      waitingMessageIds.add(messageId)
+
+      const isMessageIdIncluded = messageIds.includes(messageId)
+      if (!isMessageIdIncluded) {
+        await loadMoreUntilMessageIdIsLoaded(messageId)
+      }
+
+      await getMessageDataLoadedPromise()
+      await waitAllMessagesLoadedRef.current()
+
+      return document.getElementById(elementId)
+    },
+    [loadMoreUntilMessageIdIsLoaded, messageIdsRef, waitAllMessagesLoadedRef]
+  )
 
   return getMessageElement
 }
@@ -109,12 +116,13 @@ function useAwaitableLoadMore(
     resolverRef.current = []
   }, [loadedMessagesCount])
 
-  return async () => {
+  const loadMoreRef = useWrapInRef(loadMore)
+  return useCallback(async () => {
     const { getResolver, getPromise } = generateManuallyTriggeredPromise()
-    loadMore()
+    loadMoreRef.current()
     resolverRef.current.push(getResolver())
     await getPromise()
-  }
+  }, [loadMoreRef])
 }
 
 function useWaitMessagesLoading(
