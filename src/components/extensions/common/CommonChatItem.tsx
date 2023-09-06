@@ -115,7 +115,7 @@ export default function CommonChatItem({
               messageId={message.id}
               address={ownerId}
               color={textColor}
-              className={cx('mr-2 text-sm text-text-secondary')}
+              className={cx('mr-2 text-sm font-medium text-text-secondary')}
             />
             <ChatRelativeTime
               createdAtTime={createdAtTime}
@@ -130,7 +130,7 @@ export default function CommonChatItem({
         {inReplyTo && (
           <RepliedMessagePreview
             originalMessage={body ?? ''}
-            className='mx-2.5 mt-1 first:mt-2.5'
+            className='mx-2.5 my-1 first:mt-2.5'
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
             textColor={textColor}

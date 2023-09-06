@@ -107,7 +107,7 @@ export default function RepliedMessagePreview({
       <div className='flex flex-col overflow-hidden'>
         <Name
           address={message?.struct.ownerId}
-          className='mb-1 font-medium'
+          className='font-medium'
           color={textColor}
         />
         {place === 'body' && !isMessageBlocked && extensionPart ? (

@@ -3,7 +3,6 @@ import type { Preview } from '@storybook/react'
 import { initialize, mswLoader } from 'msw-storybook-addon'
 import { ThemeProvider, useTheme } from 'next-themes'
 import React, { useEffect } from 'react'
-import { sourceSans3 } from '../src/fonts'
 import { QueryProvider } from '../src/services/provider'
 
 initialize()
@@ -39,10 +38,7 @@ const preview: Preview = {
     }),
     (Story) => (
       <QueryProvider dehydratedState={{}}>
-        <div
-          className={`${sourceSans3.className} mx-auto max-w-lg`}
-          style={{ fontFamily: '"Source Sans 3"' }}
-        >
+        <div className='mx-auto max-w-lg'>
           <Story />
         </div>
       </QueryProvider>

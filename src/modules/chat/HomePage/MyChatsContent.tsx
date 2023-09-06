@@ -132,7 +132,7 @@ function Toolbar({ filter, changeFilter, hasAnyHiddenChats }: ToolbarProps) {
   return (
     <Container as='div' className='border-b border-border-gray'>
       <div className='flex justify-between gap-4 py-2'>
-        <div className='flex gap-0.5'>
+        <div className='flex gap-0.5 text-sm'>
           {filters.map((text) => {
             if (!hasAnyHiddenChats && text === 'hidden') return null
 

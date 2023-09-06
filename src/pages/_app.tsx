@@ -1,6 +1,5 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
-import { sourceSans3 } from '@/fonts'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
@@ -44,10 +43,6 @@ export default function App(props: AppProps<AppCommonProps>) {
   return (
     <ConfigProvider>
       <style jsx global>{`
-        html {
-          --source-sans-pro: ${sourceSans3.style.fontFamily};
-        }
-
         ${isInIframe
           ? // Fix issue with iframe height not calculated correctly in iframe
             `

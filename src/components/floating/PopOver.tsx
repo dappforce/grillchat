@@ -16,7 +16,7 @@ import {
 } from '@floating-ui/react'
 import { Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
-import React, { useRef, useState } from 'react'
+import React, { ComponentProps, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { HiXMark } from 'react-icons/hi2'
 import Button from '../Button'
@@ -59,6 +59,7 @@ export type PopOverProps = VariantProps<typeof panelStyles> & {
   }
   triggerOnHover?: boolean
   initialFocus?: Parameters<typeof FloatingFocusManager>[0]['initialFocus']
+  popOverProps?: ComponentProps<'div'>
 }
 
 export default function PopOver({
@@ -76,6 +77,7 @@ export default function PopOver({
   triggerOnHover,
   manualTrigger,
   initialFocus,
+  popOverProps,
 }: PopOverProps) {
   const [_isOpen, _setIsOpen] = useState(false)
   const isOpen = manualTrigger?.isOpen ?? _isOpen
@@ -159,12 +161,16 @@ export default function PopOver({
                   color,
                   popOverClassName
                 )}
+                {...popOverProps}
                 {...getFloatingProps()}
               >
                 <div className='relative z-10'>{children}</div>
                 {withCloseButton && (
                   <Button
-                    onClick={() => setIsOpen(false)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setIsOpen(false)
+                    }}
                     className='my-1 ml-4 mr-0 p-0 text-2xl text-current'
                     variant='transparent'
                   >
