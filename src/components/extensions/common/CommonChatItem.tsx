@@ -130,7 +130,7 @@ export default function CommonChatItem({
         {inReplyTo && (
           <RepliedMessagePreview
             originalMessage={body ?? ''}
-            className='mx-2.5 mt-1 first:mt-2.5'
+            className='mx-2.5 my-1 first:mt-2.5'
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
             textColor={textColor}
