@@ -44,7 +44,8 @@ export default function ChatList(props: ChatListProps) {
   return <ChatListContent key={props.chatId} {...props} />
 }
 
-const SCROLL_THRESHOLD = 1000
+// If using any threshold, the scroll will be janky
+const SCROLL_THRESHOLD = 0
 
 function ChatListContent({
   asContainer,
