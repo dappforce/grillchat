@@ -3,15 +3,20 @@ import { isMessageBlocked } from '@/utils/chat'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'
 
-const cachedBlockedMap = new Map<readonly [any, any], Set<string>>()
+const cachedBlockedMap = new Map<any, Map<any, Set<string>>>()
 function getBlockedSet(ids1: string[] | undefined, ids2: string[] | undefined) {
-  const key = [ids1, ids2] as const
-  if (cachedBlockedMap.has(key)) {
-    return cachedBlockedMap.get(key)!
+  if (cachedBlockedMap.has(ids1)) {
+    const cachedMap = cachedBlockedMap.get(ids1)!
+    if (cachedMap.has(ids2)) {
+      return cachedMap.get(ids2)!
+    }
   }
 
   const set = new Set([...(ids1 ?? []), ...(ids2 ?? [])])
-  cachedBlockedMap.set(key, set)
+  if (!cachedBlockedMap.has(ids1)) {
+    cachedBlockedMap.set(ids1, new Map())
+  }
+  cachedBlockedMap.get(ids1)!.set(ids2, set)
 
   return set
 }
