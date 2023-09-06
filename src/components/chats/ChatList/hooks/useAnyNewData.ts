@@ -2,16 +2,16 @@ import usePrevious from '@/hooks/usePrevious'
 import { useCallback, useEffect, useState } from 'react'
 
 export default function useAnyNewData(
-  data: unknown[],
+  dataLength: number,
   initialNewMessageCount?: number
 ) {
   const [anyNewData, setAnyNewData] = useState(initialNewMessageCount ?? 0)
-  const previousDataLength = usePrevious(data.length)
+  const previousDataLength = usePrevious(dataLength)
 
   useEffect(() => {
-    const newDataLength = data.length - (previousDataLength ?? data.length)
+    const newDataLength = dataLength - (previousDataLength ?? dataLength)
     if (newDataLength > 0) setAnyNewData((prev) => prev + newDataLength)
-  }, [previousDataLength, data])
+  }, [previousDataLength, dataLength])
 
   const clearAnyNewData = useCallback(() => setAnyNewData(0), [])
 

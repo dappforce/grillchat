@@ -23,7 +23,7 @@ export function NewMessageNotice({
 }: NewMessageNoticeProps) {
   const isAtBottom = useIsAtBottom(scrollContainerRef, IS_AT_BOTTOM_OFFSET)
   const { anyNewData, clearAnyNewData } = useAnyNewData(
-    messageIds,
+    messageIds.length,
     initialNewMessageCount
   )
 
