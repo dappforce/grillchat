@@ -7,6 +7,7 @@ import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useMyAccount } from '@/stores/my-account'
+import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { sendMessageToParentWindow } from '@/utils/window'
 import {
@@ -92,12 +93,34 @@ function ChatListContent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const messageQueries = getPostQuery.useQueries(filteredCurrentPageIds)
-  const loadedMessageQueries = useMemo(() => {
-    return messageQueries.filter((message) => message.isLoading === false)
-  }, [messageQueries])
+  const [renderedMessageIds, setRenderedMessageIds] = useState<string[]>(
+    currentPageMessageIds
+  )
+  const renderedMessageQueries = getPostQuery.useQueries(renderedMessageIds)
+  const lastBatchIds = useMemo(
+    () =>
+      currentPageMessageIds.slice(currentPageMessageIds.length - CHAT_PER_PAGE),
+    [currentPageMessageIds]
+  )
+  const lastBatchQueries = getPostQuery.useQueries(lastBatchIds)
+  const isLastBatchLoading = useIsAnyQueriesLoading(lastBatchQueries)
+  useEffect(() => {
+    if (isLastBatchLoading) return
+    setRenderedMessageIds((prev) => {
+      let newRenderedMessageIds = [...currentPageMessageIds]
+      if (isLastBatchLoading) {
+        newRenderedMessageIds = newRenderedMessageIds.slice(
+          0,
+          newRenderedMessageIds.length - CHAT_PER_PAGE
+        )
+      }
+      if (newRenderedMessageIds.length === prev.length) return prev
 
-  useLoadMoreIfNoScroll(loadMore, loadedMessageQueries?.length ?? 0, {
+      return newRenderedMessageIds
+    })
+  }, [isLastBatchLoading, currentPageMessageIds])
+
+  useLoadMoreIfNoScroll(loadMore, renderedMessageIds?.length ?? 0, {
     scrollContainer: scrollContainerRef,
     innerContainer: innerRef,
   })
@@ -106,9 +129,9 @@ function ChatListContent({
     scrollContainerRef,
     {
       messageIds: currentPageMessageIds,
-      messageQueries,
-      loadedMessageQueries,
+      renderedMessageIds,
       loadMore,
+      isLoading: isLastBatchLoading,
     },
     {
       pause: () => setIsPausedLoadMore(true),
@@ -123,7 +146,7 @@ function ChatListContent({
   const Component = asContainer ? Container<'div'> : 'div'
 
   const isAllMessagesLoaded =
-    loadedMessageQueries.length === filteredMessageIds.length
+    renderedMessageIds.length === filteredMessageIds.length
 
   return (
     <div
@@ -157,7 +180,7 @@ function ChatListContent({
           className={cx(enableBackButton === false && 'px-0')}
         >
           <InfiniteScroll
-            dataLength={loadedMessageQueries.length}
+            dataLength={renderedMessageIds.length}
             next={loadMore}
             className={cx(
               'relative flex flex-col-reverse gap-2 !overflow-hidden pb-2',
@@ -169,13 +192,13 @@ function ChatListContent({
             scrollableTarget={scrollableContainerId}
             loader={<ChatLoading className='pb-2 pt-4' />}
             endMessage={
-              messageQueries.length === 0 ? null : (
+              filteredCurrentPageIds.length === 0 ? null : (
                 <ChatTopNotice className='pb-2 pt-4' />
               )
             }
             scrollThreshold={`${SCROLL_THRESHOLD}px`}
           >
-            {messageQueries.map(({ data: message }, index) => {
+            {renderedMessageQueries.map(({ data: message }, index) => {
               // bottom message is the first element, because the flex direction is reversed
               const isBottomMessage = index === 0
               return (
@@ -198,7 +221,7 @@ function ChatListContent({
         chatId={chatId}
         hubId={hubId}
         filteredMessageIds={filteredMessageIds}
-        loadedMessageQueries={loadedMessageQueries}
+        renderedMessageLength={renderedMessageIds.length}
         rawMessageIds={rawMessageIds}
         scrollContainerRef={scrollContainerRef}
         scrollToMessage={scrollToMessage}

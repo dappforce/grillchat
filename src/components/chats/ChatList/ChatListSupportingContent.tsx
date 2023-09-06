@@ -3,7 +3,6 @@ import MessageModal from '@/components/modals/MessageModal'
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
@@ -23,7 +22,7 @@ export type ChatListSupportingContentProps = Pick<
   'hubId' | 'chatId' | 'asContainer' | 'newMessageNoticeClassName'
 > & {
   scrollToMessage: ScrollToMessage
-  loadedMessageQueries: ReturnType<typeof getPostQuery.useQueries>
+  renderedMessageLength: number
   rawMessageIds: string[] | undefined | null
   filteredMessageIds: string[]
   scrollContainerRef: React.RefObject<HTMLDivElement>
@@ -35,7 +34,7 @@ export default function ChatListSupportingContent({
   asContainer,
   newMessageNoticeClassName,
   scrollContainerRef,
-  loadedMessageQueries,
+  renderedMessageLength,
   rawMessageIds,
   filteredMessageIds,
 }: ChatListSupportingContentProps) {
@@ -133,7 +132,7 @@ export default function ChatListSupportingContent({
         </div>
       </Component>
       <ScrollToBottom
-        loadedMessageLength={loadedMessageQueries.length}
+        renderedMessageLength={renderedMessageLength}
         scrollContainerRef={scrollContainerRef}
       />
     </>
@@ -142,10 +141,10 @@ export default function ChatListSupportingContent({
 
 function ScrollToBottom({
   scrollContainerRef,
-  loadedMessageLength,
+  renderedMessageLength,
 }: {
   scrollContainerRef: React.RefObject<HTMLDivElement>
-  loadedMessageLength: number
+  renderedMessageLength: number
 }) {
   const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
   const replyTo = useMessageData((state) => state.replyTo)
@@ -157,7 +156,7 @@ function ScrollToBottom({
       top: scrollContainerRef.current?.scrollHeight,
       behavior: 'auto',
     })
-  }, [loadedMessageLength, isAtBottomRef, scrollContainerRef, replyTo])
+  }, [renderedMessageLength, isAtBottomRef, scrollContainerRef, replyTo])
 
   return null
 }
