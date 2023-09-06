@@ -1,3 +1,5 @@
+import useWrapInRef from '@/hooks/useWrapInRef'
+import { useCallback } from 'react'
 import {
   scrollToMessageElement,
   ScrollToMessageElementConfig,
@@ -12,12 +14,16 @@ export default function useScrollToMessage(
 ) {
   const getElement = useGetMessageElement(getMessageElementArgs)
 
-  return async (chatId: string, config?: ScrollToMessageElementConfig) => {
-    const element = await getElement(chatId)
-    if (!element) return
+  const loadMoreControllerRef = useWrapInRef(loadMoreController)
+  return useCallback(
+    async (chatId: string, config?: ScrollToMessageElementConfig) => {
+      const element = await getElement(chatId)
+      if (!element) return
 
-    loadMoreController.pause()
-    await scrollToMessageElement(element, scrollContainerRef.current, config)
-    loadMoreController.unpause()
-  }
+      loadMoreControllerRef.current.pause()
+      await scrollToMessageElement(element, scrollContainerRef.current, config)
+      loadMoreControllerRef.current.unpause()
+    },
+    [getElement, loadMoreControllerRef, scrollContainerRef]
+  )
 }

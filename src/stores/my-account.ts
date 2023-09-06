@@ -71,23 +71,28 @@ const sendLaunchEvent = async (address?: string | false) => {
   if (!address) {
     sendEvent('launch_app', undefined, userProperties)
   } else {
-    const linkedTgAccData = await getLinkedTelegramAccountsQuery.fetchQuery(
-      queryClient,
-      {
-        address,
-      }
-    )
-    userProperties.tgNotifsConnected = (linkedTgAccData?.length || 0) > 0
+    try {
+      const linkedTgAccData = await getLinkedTelegramAccountsQuery.fetchQuery(
+        queryClient,
+        {
+          address,
+        }
+      )
+      userProperties.tgNotifsConnected = (linkedTgAccData?.length || 0) > 0
+    } catch {}
 
-    const [evmLinkedAddress] = await getAccountsData([address])
+    try {
+      const [evmLinkedAddress] = await getAccountsData([address])
+      userProperties.evmLinked = !!evmLinkedAddress
+    } catch {}
 
-    userProperties.evmLinked = !!evmLinkedAddress
-
-    const ownedPostIds = await getOwnedPostIdsQuery.fetchQuery(
-      queryClient,
-      address
-    )
-    userProperties.ownedChat = (ownedPostIds?.length || 0) > 0
+    try {
+      const ownedPostIds = await getOwnedPostIdsQuery.fetchQuery(
+        queryClient,
+        address
+      )
+      userProperties.ownedChat = (ownedPostIds?.length || 0) > 0
+    } catch {}
 
     userProperties.webNotifsEnabled = isWebNotificationsEnabled()
 

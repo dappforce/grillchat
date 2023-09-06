@@ -117,36 +117,7 @@ export default function ChatItemMenus({
 
     const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage
 
-    return [
-      ...(canSendMessage ? [replyItem] : []),
-      ...(pinUnpinMenu ? [pinUnpinMenu] : []),
-      ...(showDonateMenuItem ? [donateMenuItem] : []),
-      ...(isAuthorized
-        ? [
-            {
-              icon: LuShield,
-              text: 'Moderate',
-              onClick: () => {
-                sendEvent('open_moderate_action_modal', { hubId, chatId })
-                setModalState('moderate')
-              },
-            },
-          ]
-        : []),
-      ...(address && canUsePromoExtensionAccounts.includes(address)
-        ? [
-            {
-              text: 'Secret Box',
-              icon: BiGift,
-              onClick: () => {
-                openExtensionModal('subsocial-decoded-promo', {
-                  recipient: ownerId ?? '',
-                  messageId,
-                })
-              },
-            },
-          ]
-        : []),
+    const menus: FloatingMenusProps['menus'] = [
       {
         text: 'Copy Text',
         icon: MdContentCopy,
@@ -177,6 +148,35 @@ export default function ChatItemMenus({
         onClick: () => setModalState('metadata'),
       },
     ]
+
+    if (address && canUsePromoExtensionAccounts.includes(address)) {
+      menus.unshift({
+        text: 'Secret Box',
+        icon: BiGift,
+        onClick: () => {
+          openExtensionModal('subsocial-decoded-promo', {
+            recipient: ownerId ?? '',
+            messageId,
+          })
+        },
+      })
+    }
+    if (isAuthorized) {
+      menus.unshift({
+        icon: LuShield,
+        text: 'Moderate',
+        onClick: () => {
+          sendEvent('open_moderate_action_modal', { hubId, chatId })
+          setModalState('moderate')
+        },
+      })
+    }
+
+    if (showDonateMenuItem) menus.unshift(donateMenuItem)
+    if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
+    if (canSendMessage) menus.unshift(replyItem)
+
+    return menus
   }
   const menus = enableChatMenu && isSent ? getChatMenus() : []
 

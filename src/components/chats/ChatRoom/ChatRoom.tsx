@@ -10,7 +10,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
-import { ComponentProps, useEffect, useRef } from 'react'
+import { ComponentProps, RefObject, useEffect, useRef } from 'react'
 import ChatInputBar from './ChatInputBar'
 
 const ChatList = dynamic(() => import('../ChatList/ChatList'), {
@@ -35,6 +35,41 @@ export default function ChatRoom({
   hubId,
   ...props
 }: ChatRoomProps) {
+  const replyTo = useMessageData((state) => state.replyTo)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  return (
+    <div {...props} className={cx('flex flex-col', className)}>
+      <ChatList
+        hubId={hubId}
+        newMessageNoticeClassName={cx(replyTo && 'bottom-2')}
+        chatId={chatId}
+        asContainer={asContainer}
+        scrollableContainerClassName={scrollableContainerClassName}
+        scrollContainerRef={scrollContainerRef}
+      />
+      <ChatInputWrapper
+        chatId={chatId}
+        hubId={hubId}
+        asContainer={asContainer}
+        scrollContainerRef={scrollContainerRef}
+      />
+    </div>
+  )
+}
+
+type ChatInputWrapperProps = Pick<
+  ChatRoomProps,
+  'asContainer' | 'chatId' | 'hubId'
+> & {
+  scrollContainerRef: RefObject<HTMLDivElement>
+}
+function ChatInputWrapper({
+  asContainer,
+  chatId,
+  hubId,
+  scrollContainerRef,
+}: ChatInputWrapperProps) {
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
   const replyTo = useMessageData((state) => state.replyTo)
   const sendEvent = useSendEvent()
@@ -47,7 +82,6 @@ export default function ChatRoom({
   )
 
   const Component = asContainer ? Container<'div'> : 'div'
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
     const scrollContainer = scrollContainerRef.current
@@ -68,16 +102,7 @@ export default function ChatRoom({
   const isHidden = chat?.struct.hidden
 
   return (
-    <div {...props} className={cx('flex flex-col', className)}>
-      <ChatList
-        hubId={hubId}
-        newMessageNoticeClassName={cx(replyTo && 'bottom-2')}
-        chatId={chatId}
-        asContainer={asContainer}
-        scrollableContainerClassName={scrollableContainerClassName}
-        scrollContainerRef={scrollContainerRef}
-        replyTo={replyTo}
-      />
+    <>
       <Component
         className={cx('mt-auto flex flex-col py-2', replyTo && 'pt-0')}
       >
@@ -145,6 +170,6 @@ export default function ChatRoom({
       </Component>
 
       <ExtensionModals chatId={chatId} onSubmit={scrollToBottom} />
-    </div>
+    </>
   )
 }
