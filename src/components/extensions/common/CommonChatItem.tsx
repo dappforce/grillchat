@@ -115,7 +115,7 @@ export default function CommonChatItem({
               messageId={message.id}
               address={ownerId}
               color={textColor}
-              className={cx('mr-2 text-sm text-text-secondary')}
+              className={cx('mr-2 text-sm font-medium text-text-secondary')}
             />
             <ChatRelativeTime
               createdAtTime={createdAtTime}
