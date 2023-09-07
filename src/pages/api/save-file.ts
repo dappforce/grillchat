@@ -20,7 +20,9 @@ export default handlerWrapper({
 
     let cid: string
     try {
+      console.log('saving')
       cid = await saveAndPinJson(data)
+      console.log('done??')
     } catch (e: any) {
       return res.status(500).send({
         message: 'Failed to save file',

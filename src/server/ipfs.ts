@@ -30,9 +30,12 @@ export function getIpfsApi() {
   return {
     ipfs,
     saveAndPinJson: async (content: Record<any, any>) => {
-      // const cid = await ipfs.saveContentToOffchain(content as any)
-      const cid = await ipfs.saveJson(content)
-      await ipfs.pinContent(cid, props)
+      const cid = await ipfs.saveContentToOffchain(content as any)
+      // console.log('saving json')
+      // const cid = await ipfs.saveJson(content)
+      // console.log('pinning json')
+      // await ipfs.pinContent(cid, props)
+      // console.log('done')
       return cid?.toString() ?? ''
     },
     saveAndPinImage: async (file: any) => {
