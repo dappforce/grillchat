@@ -47,7 +47,6 @@ export default function useGetMessageElement({
   const loadMoreUntilMessageIdIsLoaded = useCallback(
     async (messageId: string) => {
       const isMessageIdIncluded = messageIdsRef.current.includes(messageId)
-      console.log('messageid included', isMessageIdIncluded)
       if (isMessageIdIncluded) return
 
       await awaitableLoadMore()

@@ -44,8 +44,8 @@ export default function ChatList(props: ChatListProps) {
   return <ChatListContent key={props.chatId} {...props} />
 }
 
-// If using any threshold, the scroll will be janky
-const SCROLL_THRESHOLD = 0
+// If using bigger threshold, the scroll will be janky, but if using 0 threshold, it sometimes won't trigger `next` callback
+const SCROLL_THRESHOLD = 20
 
 function ChatListContent({
   asContainer,
@@ -99,8 +99,10 @@ function ChatListContent({
   const renderedMessageQueries = getPostQuery.useQueries(renderedMessageIds)
   const lastBatchIds = useMemo(
     () =>
-      currentPageMessageIds.slice(currentPageMessageIds.length - CHAT_PER_PAGE),
-    [currentPageMessageIds]
+      filteredCurrentPageIds.slice(
+        filteredCurrentPageIds.length - CHAT_PER_PAGE
+      ),
+    [filteredCurrentPageIds]
   )
   const lastBatchQueries = getPostQuery.useQueries(lastBatchIds)
   const isLastBatchLoading = useIsAnyQueriesLoading(lastBatchQueries)
@@ -127,7 +129,7 @@ function ChatListContent({
   const scrollToMessage = useScrollToMessage(
     scrollContainerRef,
     {
-      messageIds: currentPageMessageIds,
+      messageIds: filteredCurrentPageIds,
       renderedMessageIds,
       loadMore,
       isLoading: isLastBatchLoading,
