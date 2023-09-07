@@ -1,5 +1,5 @@
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
 import { ComponentProps, useMemo } from 'react'
 
@@ -12,7 +12,7 @@ export default function ChatUnreadCount({
   ...props
 }: ChatUnreadCountProps) {
   const { getLastReadMessageId } = useLastReadMessageId(chatId)
-  const { data: messageIds } = useCommentIdsByPostId(chatId)
+  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId)
 
   const lastReadId = getLastReadMessageId()
   const unreadCount = useMemo(() => {
@@ -28,7 +28,7 @@ export default function ChatUnreadCount({
   return (
     <div
       className={cx(
-        'rounded-full bg-background-primary py-0.5 px-2 text-sm text-text-on-primary',
+        'rounded-full bg-background-primary px-2 py-0.5 text-sm text-text-on-primary',
         props.className
       )}
     >

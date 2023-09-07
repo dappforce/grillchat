@@ -7,7 +7,7 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -169,7 +169,7 @@ const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
 const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
 function NotificationBell() {
   const sendEvent = useSendEvent()
-  const { data: messageIds } = useCommentIdsByPostId(ANN_CHAT_ID)
+  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(ANN_CHAT_ID)
   const { data: blockedEntities } = getBlockedResourcesQuery.useQuery({
     postId: ANN_CHAT_ID,
   })

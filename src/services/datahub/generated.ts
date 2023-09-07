@@ -397,10 +397,37 @@ export type CreatePostOptimisticMutationVariables = Exact<{
 
 export type CreatePostOptimisticMutation = { __typename?: 'Mutation', createPostOptimistic: { __typename?: 'Post', id: string } };
 
+export type PostSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PostSubscription = { __typename?: 'Subscription', post: { __typename?: 'PostSubscriptionPayload', event: DataHubSubscriptionEventEnum, entityId: string } };
+
+export type GetMessageIdsInChatIdQueryVariables = Exact<{
+  where: FindPostsArgs;
+}>;
+
+
+export type GetMessageIdsInChatIdQuery = { __typename?: 'Query', findPosts: Array<{ __typename?: 'Post', id: string }> };
+
 
 export const CreatePostOptimistic = gql`
     mutation CreatePostOptimistic($createPostOptimisticInput: CreatePostOptimisticInput!) {
   createPostOptimistic(createPostOptimisticInput: $createPostOptimisticInput) {
+    id
+  }
+}
+    `;
+export const Post = gql`
+    subscription Post {
+  post {
+    event
+    entityId
+  }
+}
+    `;
+export const GetMessageIdsInChatId = gql`
+    query GetMessageIdsInChatId($where: FindPostsArgs!) {
+  findPosts(where: $where) {
     id
   }
 }

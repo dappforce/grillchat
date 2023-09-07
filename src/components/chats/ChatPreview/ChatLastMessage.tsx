@@ -1,6 +1,6 @@
 import { getExtensionConfig } from '@/components/extensions/config'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
 import { PostContentExtension } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
@@ -18,7 +18,7 @@ export default function ChatLastMessage({
   defaultDesc,
   ...props
 }: ChatLastMessageProps) {
-  const { data: messageIds } = useCommentIdsByPostId(chatId)
+  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId)
 
   const { data: lastMessage } = useLastMessage(chatId)
 

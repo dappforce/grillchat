@@ -1,7 +1,7 @@
 import PluralText from '@/components/PluralText'
 import { SortChatOption } from '@/modules/chat/hooks/useSortedChats'
 import { getPostQuery } from '@/services/api/query'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { ComponentProps } from 'react'
@@ -58,7 +58,7 @@ function ChatMembersCount({ chatId, ...props }: ChatAdditionalInfoDataProps) {
 }
 
 function ChatMessagesCount({ chatId, ...props }: ChatAdditionalInfoDataProps) {
-  const { data: messageIds } = useCommentIdsByPostId(chatId)
+  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId)
   const messagesCount = messageIds?.length ?? 0
 
   return (

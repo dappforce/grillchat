@@ -1,10 +1,9 @@
 import { getPostQuery } from '@/services/api/query'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
 
 export default function useLastMessage(chatId: string) {
-  const { data: messageIds } = useCommentIdsByPostId(chatId, {
-    subscribe: true,
-  })
+  const { data: messageIds } =
+    getCommentIdsByPostIdQuery.useQuerySubscription(chatId)
   const lastMessageId = messageIds?.[messageIds?.length - 1]
   return getPostQuery.useQuery(lastMessageId ?? '')
 }

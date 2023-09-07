@@ -19,7 +19,7 @@ import { useConfigContext } from '@/providers/ConfigProvider'
 import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getModeratorQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
 import { useExtensionData } from '@/stores/extension'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -72,9 +72,8 @@ export default function ChatPage({
     if (!isOpenCreateSuccessModal) replaceUrl(getCurrentUrlWithoutQuery('new'))
   }, [isOpenCreateSuccessModal])
 
-  const { data: messageIds } = useCommentIdsByPostId(chatId, {
-    subscribe: true,
-  })
+  const { data: messageIds } =
+    getCommentIdsByPostIdQuery.useQuerySubscription(chatId)
 
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal

@@ -5,7 +5,7 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
 import { useMyAccount } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
@@ -66,9 +66,8 @@ function ChatListContent({
 
   const innerRef = useRef<HTMLDivElement>(null)
 
-  const { data: rawMessageIds } = useCommentIdsByPostId(chatId, {
-    subscribe: true,
-  })
+  const { data: rawMessageIds } =
+    getCommentIdsByPostIdQuery.useQuerySubscription(chatId)
   const messageIds = rawMessageIds || []
 
   const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)
