@@ -43,6 +43,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
       if (!success || !cid) throw new Error('Failed to save file to IPFS')
 
+      // make it a mutation and have it not needing to await this
       await createPostData({
         address,
         content,
