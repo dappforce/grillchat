@@ -20,7 +20,7 @@ import {
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import CenterChatNotice from './CenterChatNotice'
-import MemoizedChatItemWrapper from './ChatItemWithMenu'
+import MemoizedChatItemWithMenu from './ChatItemWithMenu'
 import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
@@ -94,7 +94,7 @@ function ChatListContent({
   }, [filteredMessageIds.length])
 
   const [renderedMessageIds, setRenderedMessageIds] = useState<string[]>(
-    currentPageMessageIds
+    filteredCurrentPageIds
   )
   const renderedMessageQueries = getPostQuery.useQueries(renderedMessageIds)
   const lastBatchIds = useMemo(
@@ -182,7 +182,7 @@ function ChatListContent({
             dataLength={renderedMessageIds.length}
             next={loadMore}
             className={cx(
-              'relative flex flex-col-reverse gap-2 !overflow-hidden pb-2',
+              'relative flex flex-col-reverse !overflow-hidden pb-2',
               // need to have enough room to open message menu
               'min-h-[400px]'
             )}
@@ -201,8 +201,9 @@ function ChatListContent({
               // bottom message is the first element, because the flex direction is reversed
               const isBottomMessage = index === 0
               return (
-                <MemoizedChatItemWrapper
+                <MemoizedChatItemWithMenu
                   key={message?.id ?? index}
+                  chatItemClassName='mt-2'
                   chatId={chatId}
                   hubId={hubId}
                   isBottomMessage={isBottomMessage}

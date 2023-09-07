@@ -8,6 +8,7 @@ import { ScrollToMessage } from './hooks/useScrollToMessage'
 const MemoizedChatItemContainer = memo(ChatItemContainer)
 
 export type ChatItemWithMenuProps = {
+  chatItemClassName?: string
   message: PostData | null | undefined
   isBottomMessage: boolean
   chatId: string
@@ -15,9 +16,10 @@ export type ChatItemWithMenuProps = {
   lastReadId: string | null | undefined
   scrollToMessage: ScrollToMessage
 }
-function ChatItemWithMenu({
+export function ChatItemWithMenu({
   message,
   isBottomMessage,
+  chatItemClassName,
   chatId,
   hubId,
   lastReadId,
@@ -45,6 +47,7 @@ function ChatItemWithMenu({
             }}
           >
             <MemoizedChatItemContainer
+              className={chatItemClassName}
               enableChatMenu={false}
               hubId={hubId}
               chatId={chatId}
@@ -68,5 +71,5 @@ function ChatItemWithMenu({
     </Fragment>
   )
 }
-const MemoizedChatItemWrapper = memo(ChatItemWithMenu)
-export default MemoizedChatItemWrapper
+const MemoizedChatItemWithMenu = memo(ChatItemWithMenu)
+export default MemoizedChatItemWithMenu
