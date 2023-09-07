@@ -106,7 +106,7 @@ function ChatListContent({
   const isLastBatchLoading = useIsAnyQueriesLoading(lastBatchQueries)
   useEffect(() => {
     if (isLastBatchLoading) return
-    setRenderedMessageIds((prev) => {
+    setRenderedMessageIds(() => {
       let newRenderedMessageIds = [...currentPageMessageIds]
       if (isLastBatchLoading) {
         newRenderedMessageIds = newRenderedMessageIds.slice(
@@ -114,7 +114,6 @@ function ChatListContent({
           newRenderedMessageIds.length - CHAT_PER_PAGE
         )
       }
-      if (newRenderedMessageIds.length === prev.length) return prev
 
       return newRenderedMessageIds
     })
