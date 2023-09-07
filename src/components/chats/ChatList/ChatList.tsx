@@ -20,7 +20,7 @@ import {
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import CenterChatNotice from './CenterChatNotice'
-import MemoizedChatItemWrapper from './ChatItemWithMenu'
+import MemoizedChatItemWithMenu from './ChatItemWithMenu'
 import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
@@ -44,8 +44,8 @@ export default function ChatList(props: ChatListProps) {
   return <ChatListContent key={props.chatId} {...props} />
 }
 
-// If using any threshold, the scroll will be janky
-const SCROLL_THRESHOLD = 0
+// If using bigger threshold, the scroll will be janky, but if using 0 threshold, it sometimes won't trigger `next` callback
+const SCROLL_THRESHOLD = 20
 
 function ChatListContent({
   asContainer,
@@ -94,20 +94,22 @@ function ChatListContent({
   }, [filteredMessageIds.length])
 
   const [renderedMessageIds, setRenderedMessageIds] = useState<string[]>(
-    currentPageMessageIds
+    filteredCurrentPageIds
   )
   const renderedMessageQueries = getPostQuery.useQueries(renderedMessageIds)
   const lastBatchIds = useMemo(
     () =>
-      currentPageMessageIds.slice(currentPageMessageIds.length - CHAT_PER_PAGE),
-    [currentPageMessageIds]
+      filteredCurrentPageIds.slice(
+        filteredCurrentPageIds.length - CHAT_PER_PAGE
+      ),
+    [filteredCurrentPageIds]
   )
   const lastBatchQueries = getPostQuery.useQueries(lastBatchIds)
   const isLastBatchLoading = useIsAnyQueriesLoading(lastBatchQueries)
   useEffect(() => {
     if (isLastBatchLoading) return
     setRenderedMessageIds(() => {
-      let newRenderedMessageIds = [...currentPageMessageIds]
+      let newRenderedMessageIds = [...filteredCurrentPageIds]
       if (isLastBatchLoading) {
         newRenderedMessageIds = newRenderedMessageIds.slice(
           0,
@@ -117,7 +119,7 @@ function ChatListContent({
 
       return newRenderedMessageIds
     })
-  }, [isLastBatchLoading, currentPageMessageIds])
+  }, [isLastBatchLoading, filteredCurrentPageIds])
 
   useLoadMoreIfNoScroll(loadMore, renderedMessageIds?.length ?? 0, {
     scrollContainer: scrollContainerRef,
@@ -127,7 +129,7 @@ function ChatListContent({
   const scrollToMessage = useScrollToMessage(
     scrollContainerRef,
     {
-      messageIds: currentPageMessageIds,
+      messageIds: filteredCurrentPageIds,
       renderedMessageIds,
       loadMore,
       isLoading: isLastBatchLoading,
@@ -182,7 +184,7 @@ function ChatListContent({
             dataLength={renderedMessageIds.length}
             next={loadMore}
             className={cx(
-              'relative flex flex-col-reverse gap-2 !overflow-hidden pb-2',
+              'relative flex flex-col-reverse !overflow-hidden pb-2',
               // need to have enough room to open message menu
               'min-h-[400px]'
             )}
@@ -201,8 +203,9 @@ function ChatListContent({
               // bottom message is the first element, because the flex direction is reversed
               const isBottomMessage = index === 0
               return (
-                <MemoizedChatItemWrapper
+                <MemoizedChatItemWithMenu
                   key={message?.id ?? index}
+                  chatItemClassName='mt-2'
                   chatId={chatId}
                   hubId={hubId}
                   isBottomMessage={isBottomMessage}

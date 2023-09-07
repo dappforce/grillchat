@@ -25,7 +25,7 @@ export default function DefaultLayout({
         'flex flex-col bg-background text-text',
         withFixedHeight && 'h-screen'
       )}
-      style={withFixedHeight ? { height: '100svh' } : { minHeight: '100svh' }}
+      style={withFixedHeight ? { height: '100dvh' } : { minHeight: '100svh' }}
       {...props}
     >
       <Navbar {...navbarProps} />

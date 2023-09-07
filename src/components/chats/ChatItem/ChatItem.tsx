@@ -117,7 +117,7 @@ export default function ChatItem({
             const { toggleDisplay, referenceProps } = config || {}
             return (
               <div
-                className={cx('flex flex-col overflow-hidden', props.className)}
+                className={cx('flex flex-col overflow-hidden')}
                 onContextMenu={(e) => {
                   e.preventDefault()
                   toggleDisplay?.(e)
