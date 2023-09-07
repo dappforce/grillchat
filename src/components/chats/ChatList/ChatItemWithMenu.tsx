@@ -38,6 +38,7 @@ function ChatItemWithMenu({
         return (
           <div
             {...referenceProps}
+            className='flex flex-col'
             onContextMenu={(e) => {
               e.preventDefault()
               toggleDisplay?.(e)
