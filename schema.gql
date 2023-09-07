@@ -1,0 +1,392 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type SpaceFollowers {
+  id: String!
+  dataType: DataType!
+  followerAccount: Account!
+  followingSpace: Space!
+}
+
+enum DataType {
+  persistent
+  optimistic
+  offChain
+}
+
+type EvmSubstrateAccountLink {
+  id: String!
+  dataType: DataType!
+  ownedPostsCount: Int
+  evmAccount: EvmAccount!
+  substrateAccount: Account!
+  active: Boolean!
+  createdAtBlock: Int!
+  createdAtTime: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type EvmAccount {
+  id: String!
+  linkedSubstrateAccounts: [EvmSubstrateAccountLink!]!
+}
+
+type ContentExtension {
+  id: String!
+  extensionSchemaId: ContentExtensionSchemaId!
+  parentPost: Post!
+  createdBy: Account
+  fromSubstrate: Account
+  fromEvm: EvmAccount
+  toSubstrate: Account
+  toEvm: EvmAccount
+  token: String
+  amount: String
+  decimals: Int
+  txHash: String
+  chain: String
+  collectionId: String
+  nftId: String
+  url: String
+  image: String
+  message: String
+  nonce: String
+  recipient: Account
+  pinnedResources: [ExtensionPinnedResource!]!
+}
+
+enum ContentExtensionSchemaId {
+  subsocial_donations
+  subsocial_evm_nft
+  subsocial_image
+  subsocial_secret_box
+  subsocial_decoded_promo
+  subsocial_pinned_posts
+}
+
+type ExtensionPinnedResource {
+  id: String!
+  resourceType: PinnedResourceType!
+  contentExtension: ContentExtension!
+  post: Post
+  space: Space
+}
+
+enum PinnedResourceType {
+  Post
+  Space
+}
+
+type Space {
+  id: String!
+  persistentId: String
+  optimisticId: String
+  offChainId: String
+  dataType: DataType!
+
+  """
+  is off-chain data CID backed up in blockchain
+  """
+  backupInBlockchain: Boolean
+
+  """
+  persistent data schema version from indexer
+  """
+  persistentDataVersion: String
+  createdByAccount: Account!
+  ownedByAccount: Account!
+  followers: [SpaceFollowers!]!
+  hidden: Boolean!
+  createdAtBlock: Int
+  createdAtTime: DateTime
+  posts: Post
+  name: String
+  image: String
+
+  """
+  content CID
+  """
+  content: String
+
+  """
+  space body
+  """
+  about: String
+  summary: String
+  isShowMore: Boolean!
+  pinnedByExtensions: [ExtensionPinnedResource!]
+}
+
+type PostFollowers {
+  id: String!
+  dataType: DataType!
+  followerAccount: Account!
+  followingPost: Post!
+}
+
+type AccountFollowers {
+  id: String!
+  dataType: DataType!
+  followerAccount: Account!
+  followingAccount: Account!
+}
+
+type Account {
+  id: String!
+  dataType: DataType!
+
+  """
+  is off-chain data CID backed up in blockchain
+  """
+  backupInBlockchain: Boolean
+
+  """
+  persistent data schema version from indexer
+  """
+  persistentDataVersion: String
+  followersCount: Int
+  followingAccountsCount: Int
+  followingSpacesCount: Int
+  followingPostsCount: Int
+  followers: [AccountFollowers!]!
+  followingAccounts: [AccountFollowers!]!
+  followingPosts: [PostFollowers!]!
+  followingSpaces: [SpaceFollowers!]!
+  ownedPostsCount: Int
+  spacesCreated: [Space!]!
+  spacesOwned: [Space!]!
+  postsCreated: [Post!]!
+  postsOwned: [Post!]!
+  extensions: [ContentExtension!]!
+  linkedAccountsAccounts: [EvmSubstrateAccountLink!]!
+}
+
+type Post {
+  id: String!
+  persistentId: String
+  optimisticId: String
+  offChainId: String
+  dataType: DataType!
+
+  """
+  is off-chain data CID backed up in blockchain
+  """
+  backupInBlockchain: Boolean
+
+  """
+  persistent data schema version from indexer
+  """
+  persistentDataVersion: String
+  createdAtBlock: Int
+  createdAtTime: DateTime
+  updatedAtTime: DateTime
+  kind: PostKind!
+  hidden: Boolean!
+  isComment: Boolean!
+  space: Space
+  rootPost: Post
+  parentPost: Post
+  sharedPost: Post
+  postFollowers: [PostFollowers!]
+  ownedByAccount: Account!
+  createdByAccount: Account
+  inReplyToKind: InReplyToKind!
+  inReplyToPost: Boolean!
+  title: String
+  image: String
+
+  """
+  content CID
+  """
+  content: String
+
+  """
+  post body
+  """
+  body: String
+  summary: String
+  isShowMore: Boolean!
+  link: String
+  canonical: String
+  slug: String
+  tagsOriginal: String
+  format: String
+  experimental: JSON
+  extensions: [ContentExtension!]
+  pinnedByExtensions: [ExtensionPinnedResource!]
+}
+
+enum PostKind {
+  Comment
+  SharedPost
+  RegularPost
+}
+
+enum InReplyToKind {
+  Post
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type PostSubscriptionPayload {
+  event: DataHubSubscriptionEventEnum!
+  entityId: String!
+  optimisticId: String
+  persistentId: String
+  dataType: SocialEventDataType!
+  body: String
+  ownedByAccountId: String
+  createdAtTime: String
+}
+
+enum DataHubSubscriptionEventEnum {
+  POST_CREATED
+  POST_UPDATED
+  POST_FOLLOWED
+  POST_UNFOLLOWED
+  EVM_ADDRESS_LINKED_TO_ACCOUNT
+  EVM_ADDRESS_UNLINKED_TO_ACCOUNT
+}
+
+enum SocialEventDataType {
+  persistent
+  optimistic
+  offChain
+}
+
+type IngestPersistentDataFromSquidResponseDto {
+  processed: Boolean!
+  message: String
+}
+
+type Query {
+  findPostById(id: String!): Post!
+  findPosts(where: FindPostsArgs!): [Post!]!
+}
+
+input FindPostsArgs {
+  ids: [String!]
+  spaceId: String
+  rootPostId: String
+  rootPostPersistentId: String
+  parentPostId: String
+  parentPostPersistentId: String
+  dataType: SocialEventDataType
+  orderBy: String
+  orderDirection: QueryOrder
+}
+
+enum QueryOrder {
+  DESC
+  ASC
+}
+
+type Mutation {
+  createPostOptimistic(
+    createPostOptimisticInput: CreatePostOptimisticInput!
+  ): Post!
+  createPostPersistent(
+    createPostPersistentInput: CreatePostPersistentInput!
+  ): Post!
+  ingestPersistentDataSquid(
+    ingestPersistentDataSquidInput: IngestPersistentDataFromSquidInputDto!
+  ): IngestPersistentDataFromSquidResponseDto!
+}
+
+input CreatePostOptimisticInput {
+  dataType: SocialEventDataType!
+  callData: SocialCallDataInput
+  content: String
+}
+
+input SocialCallDataInput {
+  name: SocialCallName!
+
+  """
+  Call signer address
+  """
+  signer: String!
+
+  """
+  Stringified JSON with call arguments
+  """
+  args: String!
+}
+
+enum SocialCallName {
+  create_post
+  force_create_post
+  update_post
+  move_post
+  create_space
+  force_create_space
+  create_space_as_profile
+  update_space
+  create_post_reaction
+  force_create_post_reaction
+  update_post_reaction
+  delete_post_reaction
+  force_delete_post_reaction
+}
+
+input CreatePostPersistentInput {
+  dataType: SocialEventDataType!
+  callData: SocialCallDataInput
+  eventData: SocialEventData
+}
+
+input SocialEventData {
+  name: SocialEventName!
+  metadata: String!
+
+  """
+  Stringified JSON with event arguments
+  """
+  params: String!
+}
+
+enum SocialEventName {
+  PostCreated
+  PostUpdated
+  PostMoved
+  PostReactionCreated
+  PostReactionUpdated
+  PostReactionDeleted
+  SpaceCreated
+  SpaceUpdated
+  ProfileUpdated
+  SpaceFollowed
+  SpaceUnfollowed
+  SpaceOwnershipTransferAccepted
+  SpaceOwnershipTransferCreated
+  AccountFollowed
+  AccountUnfollowed
+  DomainRegistered
+  DomainMetaUpdated
+}
+
+input IngestPersistentDataFromSquidInputDto {
+  socialEvents: [PersistentDataItemFromSquid!]!
+}
+
+input PersistentDataItemFromSquid {
+  id: String!
+  blockNumber: Int!
+
+  """
+  Stringified JSON with social event data
+  """
+  dataStr: String!
+}
+
+type Subscription {
+  post: PostSubscriptionPayload!
+}

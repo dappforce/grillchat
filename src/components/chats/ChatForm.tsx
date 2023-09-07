@@ -39,6 +39,7 @@ const CaptchaInvisible = dynamic(
 )
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
+  hubId: string
   chatId: string
   onSubmit?: () => void
   disabled?: boolean
@@ -62,6 +63,7 @@ function processMessage(message: string) {
 
 export default function ChatForm({
   className,
+  hubId,
   chatId,
   onSubmit,
   disabled,
@@ -173,6 +175,7 @@ export default function ChatForm({
     const sendMessageParams = {
       message: processedMessage,
       chatId,
+      hubId,
       replyTo,
       ...additionalTxParams,
     }

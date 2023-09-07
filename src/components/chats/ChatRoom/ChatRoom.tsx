@@ -130,8 +130,8 @@ function ChatInputWrapper({
           if (isJoined || isHubWithoutJoinButton)
             return (
               <ChatInputBar
-                hubId={hubId}
                 formProps={{
+                  hubId,
                   chatId,
                   onSubmit: scrollToBottom,
                   isPrimary: true,
@@ -169,7 +169,11 @@ function ChatInputWrapper({
         })()}
       </Component>
 
-      <ExtensionModals chatId={chatId} onSubmit={scrollToBottom} />
+      <ExtensionModals
+        hubId={hubId}
+        chatId={chatId}
+        onSubmit={scrollToBottom}
+      />
     </>
   )
 }

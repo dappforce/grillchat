@@ -1,6 +1,7 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useSaveFile } from '@/services/api/mutation'
+import { createPostData } from '@/services/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
@@ -28,7 +29,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
   return useSubsocialMutation<SendMessageParams, string>(
     getWallet,
-    async (params, { substrateApi }) => {
+    async (params, { substrateApi }, { address }) => {
       const maxLength = getMaxMessageLength(params.chatId)
       if (params.message && params.message.length > maxLength)
         throw new Error(
@@ -37,9 +38,18 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
       console.log('waiting energy...')
       await waitHasEnergy()
-      const { cid, success } = await saveFile(generateMessageContent(params))
+      const content = generateMessageContent(params)
+      const { cid, success } = await saveFile(content)
 
-      if (!success) throw new Error('Failed to save file to IPFS')
+      if (!success || !cid) throw new Error('Failed to save file to IPFS')
+
+      await createPostData({
+        address,
+        content,
+        contentCid: cid,
+        rootPostId: params.chatId,
+        spaceId: params.hubId,
+      })
 
       return {
         tx: substrateApi.tx.posts.createPost(

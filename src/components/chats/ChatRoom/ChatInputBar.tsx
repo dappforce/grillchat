@@ -12,19 +12,17 @@ const AttachmentInput = dynamic(import('./AttachmentInput'), { ssr: false })
 
 type ChatInputBarProps = ComponentProps<'div'> & {
   formProps: ChatFormProps
-  hubId: string
 }
 
 export default function ChatInputBar({
   formProps,
-  hubId,
   ...props
 }: ChatInputBarProps) {
   const myAddress = useMyAccount((state) => state.address)
   const isBlocked = useIsAddressBlockedInChat(
     myAddress ?? '',
     formProps.chatId,
-    hubId
+    formProps.hubId
   )
 
   const { data: accountData } = getAccountDataQuery.useQuery(myAddress ?? '')

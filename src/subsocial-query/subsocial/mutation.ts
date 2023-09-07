@@ -22,7 +22,8 @@ export function useSubsocialMutation<Data, Context = undefined>(
   getWallet: () => Promise<WalletAccount> | WalletAccount,
   transactionGenerator: (
     data: Data,
-    apis: Apis
+    apis: Apis,
+    wallet: WalletAccount
   ) => Promise<{ tx: Transaction; summary: string }>,
   config?: SubsocialMutationConfig<Data, Context>,
   defaultConfig?: SubsocialMutationConfig<Data, Context>
@@ -83,7 +84,8 @@ export function useSubsocialMutation<Data, Context = undefined>(
 async function createTxAndSend<Data>(
   transactionGenerator: (
     data: Data,
-    apis: Apis
+    apis: Apis,
+    wallet: WalletAccount
   ) => Promise<{ tx: Transaction; summary: string }>,
   data: Data,
   apis: Apis,
@@ -93,7 +95,11 @@ async function createTxAndSend<Data>(
   },
   optimisticCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
-  const { tx, summary } = await transactionGenerator(data, apis)
+  const { tx, summary } = await transactionGenerator(
+    data,
+    apis,
+    txConfig.wallet
+  )
   return sendTransaction(
     {
       tx,
