@@ -107,7 +107,7 @@ function ChatListContent({
   useEffect(() => {
     if (isLastBatchLoading) return
     setRenderedMessageIds(() => {
-      let newRenderedMessageIds = [...currentPageMessageIds]
+      let newRenderedMessageIds = [...filteredCurrentPageIds]
       if (isLastBatchLoading) {
         newRenderedMessageIds = newRenderedMessageIds.slice(
           0,
@@ -117,7 +117,7 @@ function ChatListContent({
 
       return newRenderedMessageIds
     })
-  }, [isLastBatchLoading, currentPageMessageIds])
+  }, [isLastBatchLoading, filteredCurrentPageIds])
 
   useLoadMoreIfNoScroll(loadMore, renderedMessageIds?.length ?? 0, {
     scrollContainer: scrollContainerRef,
