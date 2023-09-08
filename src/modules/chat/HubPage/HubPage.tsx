@@ -30,15 +30,18 @@ export type HubPageProps = {
   hubId: string
 }
 export default function HubPage({ hubId }: HubPageProps) {
+  const isCommunityHub = hubId === COMMUNITY_CHAT_HUB_ID
+
   const [sortBy, setSortBy] = useState<SortChatOption | null>(null)
   useEffect(() => {
-    const savedSortBy = sortByStorage.get() as SortChatOption
+    const savedSortBy =
+      isCommunityHub && (sortByStorage.get() as SortChatOption)
     if (savedSortBy && sortChatOptions.includes(savedSortBy)) {
       setSortBy(savedSortBy)
     } else {
       setSortBy('activity')
     }
-  }, [])
+  }, [isCommunityHub])
   const changeSortBy = (sortBy: SortChatOption) => {
     setSortBy(sortBy)
     sortByStorage.set(sortBy)
@@ -47,8 +50,6 @@ export default function HubPage({ hubId }: HubPageProps) {
   const { chats, allChatIds } = useSortedChats(hubId, sortBy ?? 'activity')
   const { search, getFocusedElementIndex, setSearch, focusController } =
     useSearch()
-
-  const isCommunityHub = hubId === COMMUNITY_CHAT_HUB_ID
 
   return (
     <DefaultLayout
