@@ -75,10 +75,7 @@ export default function ChatListSupportingContent({
               ? 0
               : filteredMessageIdsRef.current.length - lastReadIdIndex - 1
 
-          sendMessageToParentWindow(
-            'unread',
-            (filteredMessageIds.length ?? 0).toString()
-          )
+          sendMessageToParentWindow('unread', newMessageCount.toString())
 
           setInitialNewMessageCount(newMessageCount)
         })
