@@ -1,3 +1,9 @@
+@media screen and (min-width: 768px) {
+  :root {
+    font-size: 0.9375rem;
+  }
+}
+
 :root {
   --background: 236 239 244;
   --background-light: 248 250 252;
