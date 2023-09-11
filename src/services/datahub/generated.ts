@@ -418,12 +418,12 @@ export type GetMessageIdsInChatIdQueryVariables = Exact<{
 }>;
 
 
-export type GetMessageIdsInChatIdQuery = { __typename?: 'Query', findPosts: Array<{ __typename?: 'Post', persistentId?: string | null }> };
+export type GetMessageIdsInChatIdQuery = { __typename?: 'Query', findPosts: Array<{ __typename?: 'Post', id: string, persistentId?: string | null }> };
 
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SubscribePostSubscription = { __typename?: 'Subscription', post: { __typename?: 'PostSubscriptionPayload', event: DataHubSubscriptionEventEnum, entityId: string } };
+export type SubscribePostSubscription = { __typename?: 'Subscription', post: { __typename?: 'PostSubscriptionPayload', event: DataHubSubscriptionEventEnum, entityId: string, persistentId?: string | null } };
 
 export const PostFragment = gql`
     fragment PostFragment on Post {
@@ -517,6 +517,7 @@ export const CreatePostOptimistic = gql`
 export const GetMessageIdsInChatId = gql`
     query GetMessageIdsInChatId($where: FindPostsArgs!) {
   findPosts(where: $where) {
+    id
     persistentId
   }
 }
@@ -526,6 +527,7 @@ export const SubscribePost = gql`
   post {
     event
     entityId
+    persistentId
   }
 }
     `;

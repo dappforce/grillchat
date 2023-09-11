@@ -6,14 +6,12 @@ import {
   QueryOrder,
 } from '../generated'
 import { datahubRequest } from '../utils'
-import {
-  useSubscribeCommentIdsByPostId,
-  useSubscribeCommentIdsByPostIds,
-} from './subscription'
+import { useSubscribeCommentIdsByPostId } from './subscription'
 
 const GET_MESSAGE_IDS_IN_CHAT_ID = gql`
   query GetMessageIdsInChatId($where: FindPostsArgs!) {
     findPosts(where: $where) {
+      id
       persistentId
     }
   }
@@ -33,26 +31,24 @@ async function getCommentIdsByPostIds(postId: string) {
       },
     },
   })
-  return res.findPosts.map((post) => post.persistentId)
+  return res.findPosts.map((post) => post.persistentId || post.id)
 }
 
-const getCommentIdsByPostIdQueryPlain = createQuery({
+const getCommentIdsByPostIdQueryRaw = createQuery({
   key: 'commentIdsByPostId',
   fetcher: getCommentIdsByPostIds,
 })
-export const getCommentIdsByPostIdQuery: typeof getCommentIdsByPostIdQueryPlain & {
-  useQuerySubscription: (typeof getCommentIdsByPostIdQueryPlain)['useQuery']
-  useQueriesSubscription: (typeof getCommentIdsByPostIdQueryPlain)['useQueries']
+export const getCommentIdsByPostIdQuery: typeof getCommentIdsByPostIdQueryRaw & {
+  useQuerySubscription: (typeof getCommentIdsByPostIdQueryRaw)['useQuery']
+  useQueriesSubscription: (typeof getCommentIdsByPostIdQueryRaw)['useQueries']
 } = {
-  ...getCommentIdsByPostIdQueryPlain,
+  ...getCommentIdsByPostIdQueryRaw,
   useQuerySubscription: (...args) => {
-    const [data] = args
-    useSubscribeCommentIdsByPostId(data, true)
-    return getCommentIdsByPostIdQueryPlain.useQuery(...args)
+    useSubscribeCommentIdsByPostId()
+    return getCommentIdsByPostIdQueryRaw.useQuery(...args)
   },
   useQueriesSubscription: (...args) => {
-    const [data] = args
-    useSubscribeCommentIdsByPostIds(data, true)
-    return getCommentIdsByPostIdQueryPlain.useQueries(...args)
+    useSubscribeCommentIdsByPostId()
+    return getCommentIdsByPostIdQueryRaw.useQueries(...args)
   },
 }
