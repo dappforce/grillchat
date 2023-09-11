@@ -18,11 +18,10 @@ export const POST_FRAGMENT = gql`
     image
     link
     hidden
-    id
+    persistentId
     isComment
     kind
     updatedAtTime
-    inReplyToKind
     canonical
     tagsOriginal
     ownedByAccount {
@@ -75,7 +74,7 @@ export const POST_FRAGMENT = gql`
 const GET_POSTS = gql`
   ${POST_FRAGMENT}
   query getPosts($ids: [String!]) {
-    findPosts(where: { ids: $ids }) {
+    findPosts(where: { persistentIds: $ids }) {
       ...PostFragment
     }
   }
@@ -87,5 +86,8 @@ export async function getPostsFromDatahub(postIds: string[]) {
     document: GET_POSTS,
     variables: { ids: postIds },
   })
-  return res.findPosts.map((post) => mapPostFragment(post as any))
+  return res.findPosts.map((post) => {
+    ;(post as any).id = post.persistentId
+    return mapPostFragment(post as any)
+  })
 }

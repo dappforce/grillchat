@@ -14,12 +14,12 @@ import {
 const GET_MESSAGE_IDS_IN_CHAT_ID = gql`
   query GetMessageIdsInChatId($where: FindPostsArgs!) {
     findPosts(where: $where) {
-      id
+      persistentId
     }
   }
 `
 
-async function getCommentIdsByPostId(postId: string) {
+async function getCommentIdsByPostIds(postId: string) {
   const res = await datahubRequest<
     GetMessageIdsInChatIdQuery,
     GetMessageIdsInChatIdQueryVariables
@@ -33,12 +33,12 @@ async function getCommentIdsByPostId(postId: string) {
       },
     },
   })
-  return res.findPosts.map((post) => post.id)
+  return res.findPosts.map((post) => post.persistentId)
 }
 
 const getCommentIdsByPostIdQueryPlain = createQuery({
   key: 'commentIdsByPostId',
-  fetcher: getCommentIdsByPostId,
+  fetcher: getCommentIdsByPostIds,
 })
 export const getCommentIdsByPostIdQuery: typeof getCommentIdsByPostIdQueryPlain & {
   useQuerySubscription: (typeof getCommentIdsByPostIdQueryPlain)['useQuery']
