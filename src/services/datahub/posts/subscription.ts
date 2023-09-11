@@ -2,15 +2,16 @@ import { getPostQuery } from '@/services/api/query'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
-import { PostSubscriptionPayload } from '../generated'
+import { SubscribePostSubscription } from '../generated'
 import { datahubSubscription } from '../utils'
 import { getCommentIdsByPostIdQuery } from './query'
 
 const SUBSCRIBE_POST = gql`
-  subscription Post {
+  subscription SubscribePost {
     post {
       event
       entityId
+      persistentId
     }
   }
 `
@@ -25,7 +26,7 @@ const subscription = (
   subscribedPostIds.add(postId)
 
   const client = datahubSubscription()
-  let unsub = client.subscribe<PostSubscriptionPayload, null>(
+  let unsub = client.subscribe<SubscribePostSubscription, null>(
     {
       query: SUBSCRIBE_POST,
     },
@@ -37,13 +38,14 @@ const subscription = (
         console.log('Subscription Data:', data.data)
         if (!data.data) return
 
-        const id = data.data?.entityId
+        const id = data.data?.post.entityId
         await getPostQuery.fetchQuery(queryClient, id)
         getCommentIdsByPostIdQuery.setQueryData(
           queryClient,
           postId,
           (oldIds) => {
             if (!oldIds) return [id]
+            if (oldIds.includes(id)) return oldIds
             return [...oldIds, id]
           }
         )
@@ -54,7 +56,10 @@ const subscription = (
     }
   )
 
-  return unsub
+  return () => {
+    unsub()
+    subscribedPostIds.delete(postId)
+  }
 }
 
 export function useSubscribeCommentIdsByPostId(
@@ -68,7 +73,6 @@ export function useSubscribeCommentIdsByPostId(
 
     return () => {
       unsub?.()
-      subscribedPostIds.delete(postId)
     }
   }, [postId, queryClient, enabled])
 }
@@ -88,9 +92,8 @@ export function useSubscribeCommentIdsByPostIds(
 
     return () => {
       lastIdInPreviousSub.current = {}
-      unsubs.forEach((unsub, idx) => {
+      unsubs.forEach((unsub) => {
         unsub?.()
-        subscribedPostIds.delete(postIds[idx])
       })
     }
   }, [postIds, queryClient, enabled])

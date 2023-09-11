@@ -63,7 +63,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
-  const validIds = postIds.filter((id) => !!id && parseInt(id) >= 0)
+  const validIds = postIds.filter((id) => !!id)
   return getPostsFromDatahub(validIds)
 }
 

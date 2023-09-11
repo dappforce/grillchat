@@ -1,5 +1,6 @@
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 import { createClient } from 'graphql-ws'
+import ws from 'isomorphic-ws'
 
 export function datahubRequest<T, V extends Variables = Variables>(
   config: RequestOptions<V, T>
@@ -16,6 +17,7 @@ export function datahubRequest<T, V extends Variables = Variables>(
 
 export function datahubSubscription() {
   return createClient({
+    webSocketImpl: ws,
     url: 'wss://staging-data-hub-service.subsocial.network/graphql-ws',
   })
 }

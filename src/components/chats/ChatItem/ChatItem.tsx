@@ -1,6 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
-import { isOptimisticId } from '@/services/subsocial/utils'
+import { isOptimisticId } from '@/services/datahub/posts/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'

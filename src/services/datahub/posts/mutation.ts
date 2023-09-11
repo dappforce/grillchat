@@ -67,6 +67,7 @@ export async function createPostData({
     CreatePostOptimisticMutation,
     CreatePostOptimisticMutationVariables
   >({
+    document: CREATE_POST_OPTIMISTIC_MUTATION,
     variables: {
       // @ts-ignore
       createPostOptimisticInput: dataHubDataApiInput,

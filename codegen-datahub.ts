@@ -2,7 +2,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli'
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: './schema.gql',
+  schema: 'https://staging-data-hub-service.subsocial.network/graphql',
   documents: 'src/services/datahub/**/*.ts',
   generates: {
     'src/services/datahub/generated.ts': {

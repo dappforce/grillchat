@@ -5,20 +5,18 @@ import { createPostData } from '@/services/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
-import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PostContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
-import { generateOptimisticId } from '../utils'
-import { addOptimisticData, deleteOptimisticData } from './optimistic'
-import { OptimisticMessageIdData, SendMessageParams } from './types'
+import { SendMessageParams } from './types'
 
 function generateMessageContent(params: SendMessageParams) {
   return {
     body: params.message,
     inReplyTo: ReplyWrapper(params.replyTo),
     extensions: params.extensions,
-  } as PostContent
+    optimisticId: crypto.randomUUID(),
+  } as PostContent & { optimisticId: string }
 }
 export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const client = useQueryClient()
@@ -61,27 +59,27 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         summary: 'Sending message',
       }
     },
-    config,
-    {
-      txCallbacks: {
-        // Removal of optimistic message generated is done by the subscription of messageIds
-        // this is done to prevent a bit of flickering because the optimistic message is done first, before the message data finished fetching
-        getContext: ({ data: params, address }) => {
-          return generateOptimisticId<OptimisticMessageIdData>({
-            address,
-            messageData: generateMessageContent(params),
-          })
-        },
-        onStart: ({ address, data: params }, tempId) => {
-          preventWindowUnload()
-          addOptimisticData({ address, params, tempId, client })
-        },
-        onSend: allowWindowUnload,
-        onError: ({ address, data: params }, tempId) => {
-          allowWindowUnload()
-          deleteOptimisticData({ tempId, address, client, params })
-        },
-      },
-    }
+    config
+    // {
+    //   txCallbacks: {
+    //     // Removal of optimistic message generated is done by the subscription of messageIds
+    //     // this is done to prevent a bit of flickering because the optimistic message is done first, before the message data finished fetching
+    //     getContext: ({ data: params, address }) => {
+    //       return generateOptimisticId<OptimisticMessageIdData>({
+    //         address,
+    //         messageData: generateMessageContent(params),
+    //       })
+    //     },
+    //     onStart: ({ address, data: params }, tempId) => {
+    //       preventWindowUnload()
+    //       addOptimisticData({ address, params, tempId, client })
+    //     },
+    //     onSend: allowWindowUnload,
+    //     onError: ({ address, data: params }, tempId) => {
+    //       allowWindowUnload()
+    //       deleteOptimisticData({ tempId, address, client, params })
+    //     },
+    //   },
+    // }
   )
 }

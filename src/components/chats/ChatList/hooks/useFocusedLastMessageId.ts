@@ -1,6 +1,6 @@
 import useLastReadMessageId from '@/hooks/useLastReadMessageId'
 import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
-import { isOptimisticId } from '@/services/subsocial/utils'
+import { isOptimisticId } from '@/services/datahub/posts/utils'
 import { useEffect, useRef, useState } from 'react'
 
 export default function useFocusedLastMessageId(chatId: string) {

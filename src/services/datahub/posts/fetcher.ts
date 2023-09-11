@@ -1,10 +1,18 @@
 import { mapPostFragment } from '@/services/subsocial/squid/mappers'
+import { PostData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
-import { GetPostsQuery, GetPostsQueryVariables } from '../generated'
+import {
+  GetOptimisticPostsQuery,
+  GetOptimisticPostsQueryVariables,
+  GetPostsQuery,
+  GetPostsQueryVariables,
+} from '../generated'
 import { datahubRequest } from '../utils'
+import { isOptimisticId } from './utils'
 
 export const POST_FRAGMENT = gql`
   fragment PostFragment on Post {
+    id
     content
     createdAtBlock
     createdAtTime
@@ -73,8 +81,17 @@ export const POST_FRAGMENT = gql`
 
 const GET_POSTS = gql`
   ${POST_FRAGMENT}
-  query getPosts($ids: [String!]) {
+  query GetPosts($ids: [String!]) {
     findPosts(where: { persistentIds: $ids }) {
+      ...PostFragment
+    }
+  }
+`
+
+const GET_OPTIMISTIC_POSTS = gql`
+  ${POST_FRAGMENT}
+  query GetOptimisticPosts($ids: [String!]) {
+    findPosts(where: { ids: $ids }) {
       ...PostFragment
     }
   }
@@ -82,12 +99,40 @@ const GET_POSTS = gql`
 
 export async function getPostsFromDatahub(postIds: string[]) {
   if (postIds.length === 0) return []
-  const res = await datahubRequest<GetPostsQuery, GetPostsQueryVariables>({
-    document: GET_POSTS,
-    variables: { ids: postIds },
+
+  const persistentIds: string[] = []
+  const optimisticIds: string[] = []
+  postIds.forEach((id) => {
+    if (isOptimisticId(id)) optimisticIds.push(id)
+    else persistentIds.push(id)
   })
-  return res.findPosts.map((post) => {
-    ;(post as any).id = post.persistentId
-    return mapPostFragment(post as any)
-  })
+
+  let persistentPosts: PostData[] = []
+  let optimisticPosts: PostData[] = []
+
+  if (persistentIds.length > 0) {
+    const res = await datahubRequest<GetPostsQuery, GetPostsQueryVariables>({
+      document: GET_POSTS,
+      variables: { ids: persistentIds },
+    })
+    persistentPosts = res.findPosts.map((post) => {
+      ;(post as any).id = post.persistentId || post.id
+      return mapPostFragment(post as any)
+    })
+  }
+
+  if (optimisticIds.length > 0) {
+    const res = await datahubRequest<
+      GetOptimisticPostsQuery,
+      GetOptimisticPostsQueryVariables
+    >({
+      document: GET_OPTIMISTIC_POSTS,
+      variables: { ids: optimisticIds },
+    })
+    optimisticPosts = res.findPosts.map((post) => {
+      return mapPostFragment(post as any)
+    })
+  }
+
+  return [...persistentPosts, ...optimisticPosts]
 }
