@@ -19,16 +19,17 @@ export type LoginModalProps = ModalFunctionalityProps & {
   beforeLogin?: () => void
 }
 
-type ModalTitle = {
+type ModalConfig = {
   [key in LoginModalStep]: {
     title: React.ReactNode
     desc: React.ReactNode
+    backToStep?: LoginModalStep
     withBackButton?: boolean
     withFooter?: boolean
   }
 }
 
-const modalHeader: ModalTitle = {
+const modalHeader: ModalConfig = {
   login: {
     title: '🔐 Login',
     desc: '',
@@ -50,6 +51,12 @@ const modalHeader: ModalTitle = {
     ),
     withBackButton: true,
     withFooter: true,
+  },
+  'subsocial-profile': {
+    title: '🎩 Update nickname',
+    desc: 'Create a nickname so other people can recognize you. You can change it at any time.',
+    withBackButton: true,
+    backToStep: 'account-created',
   },
   'account-created': {
     title: '🎉 Account created',
@@ -78,15 +85,16 @@ export default function LoginModal({
   const [currentStep, setCurrentStep] =
     useState<LoginModalStep>(initialOpenState)
 
-  const usedOnBackClick = onBackClick || (() => setCurrentStep('login'))
+  const ModalContent = loginModalContents[currentStep]
+  const { title, desc, withBackButton, withFooter, backToStep } =
+    modalHeader[currentStep]
+  const usedOnBackClick =
+    onBackClick || (() => setCurrentStep(backToStep || 'login'))
 
   useEffect(() => {
     if (props.isOpen) setCurrentStep(initialOpenState)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
-
-  const ModalContent = loginModalContents[currentStep]
-  const { title, desc, withBackButton, withFooter } = modalHeader[currentStep]
 
   return (
     <Modal

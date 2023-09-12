@@ -1,6 +1,5 @@
 import { CommonEvmAddressLinked } from '@/components/auth/CommonModalContent'
 import Modal from '@/components/modals/Modal'
-import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
@@ -17,13 +16,14 @@ import PushNotificationContent from './contents/notifications/PushNotificationCo
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
+import SubsocialProfileContent from './contents/SubsocialProfileContent'
 import { ContentProps, ModalState, ProfileModalProps } from './types'
 
 const modalContents: {
   [key in ModalState]: (props: ContentProps) => JSX.Element
 } = {
   account: AccountContent,
-  'subsocial-profile': () => <SubsocialProfileForm />,
+  'subsocial-profile': SubsocialProfileContent,
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
