@@ -16,7 +16,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { SessionStorage } from '@/utils/storage'
+import { LocalStorage, SessionStorage } from '@/utils/storage'
 import { copyToClipboard } from '@/utils/strings'
 import dynamic from 'next/dynamic'
 import {
@@ -30,6 +30,7 @@ import { toast } from 'react-hot-toast'
 import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
+import NameModal from '../modals/NameModal'
 
 const CaptchaInvisible = dynamic(
   () => import('@/components/captcha/CaptchaInvisible'),
@@ -37,6 +38,8 @@ const CaptchaInvisible = dynamic(
     ssr: false,
   }
 )
+
+const hasSentMessageStorage = new LocalStorage(() => 'has-sent-message')
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   chatId: string
@@ -78,6 +81,7 @@ export default function ChatForm({
   const replyTo = useMessageData((state) => state.replyTo)
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
 
+  const [isOpenNameModal, setIsOpenNameModal] = useState(false)
   const { data: chat } = getPostQuery.useQuery(chatId)
   const chatTitle = chat?.content?.title ?? ''
 
@@ -182,6 +186,13 @@ export default function ChatForm({
 
     const messageParams = newMessageParams || sendMessageParams
 
+    if (!hasSentMessageStorage.get()) {
+      setTimeout(() => {
+        setIsOpenNameModal(true)
+      }, 1000)
+      hasSentMessageStorage.set('true')
+    }
+
     if (shouldSendMessage) {
       resetForm()
       sendMessage(messageParams)
@@ -283,7 +294,14 @@ export default function ChatForm({
           )
         }}
       </CaptchaInvisible>
+
       <EmailSubscribeModal chatId={chatId} />
+      <NameModal
+        title='🎩 Do you want to set a nickname?'
+        isOpen={isOpenNameModal}
+        closeModal={() => setIsOpenNameModal(false)}
+        cancelButtonText='No, I want to stay anonymous'
+      />
     </>
   )
 }

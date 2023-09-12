@@ -4,6 +4,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import Button from '../Button'
 import FormButton from '../FormButton'
 import Input from '../inputs/Input'
 import Modal, { ModalFunctionalityProps, ModalProps } from './Modal'
@@ -18,7 +19,11 @@ const formSchema = z.object({
 })
 type FormSchema = z.infer<typeof formSchema>
 
-export default function NameModal({ title, ...props }: NameModalProps) {
+export default function NameModal({
+  title,
+  cancelButtonText,
+  ...props
+}: NameModalProps) {
   const myAddress = useMyAccount((state) => state.address)
   const { data } = getProfileQuery.useQuery(myAddress ?? '', {
     enabled: !!myAddress,
@@ -60,6 +65,15 @@ export default function NameModal({ title, ...props }: NameModalProps) {
               >
                 Save
               </FormButton>
+              {cancelButtonText && (
+                <Button
+                  onClick={() => props.closeModal()}
+                  size='lg'
+                  variant='primaryOutline'
+                >
+                  {cancelButtonText}
+                </Button>
+              )}
             </form>
           )
         }}
