@@ -4,6 +4,7 @@ import { getProfileQuery } from '@/services/api/query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { IpfsWrapper } from '@/utils/ipfs'
+import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
@@ -69,6 +70,7 @@ export function useUpsertProfile(
     {
       txCallbacks: {
         onStart: ({ data, address }) => {
+          preventWindowUnload()
           getProfileQuery.setQueryData(client, address, {
             address,
             profileSpace: {
@@ -76,6 +78,9 @@ export function useUpsertProfile(
               ...data.content,
             },
           })
+        },
+        onSend: () => {
+          allowWindowUnload()
         },
         onError: async ({ address }) => {
           getProfileQuery.invalidate(client, address)

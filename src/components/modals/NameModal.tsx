@@ -3,10 +3,13 @@ import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { toast } from 'react-hot-toast'
+import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import { z } from 'zod'
 import Button from '../Button'
 import FormButton from '../FormButton'
 import Input from '../inputs/Input'
+import Toast from '../Toast'
 import Modal, { ModalFunctionalityProps, ModalProps } from './Modal'
 
 export type NameModalProps = ModalFunctionalityProps &
@@ -45,9 +48,19 @@ export default function NameModal({
       description='Let other people know who you are. You can change it in any time.'
     >
       <UpsertProfileWrapper>
-        {({ mutateAsync, isLoading }) => {
+        {({ mutateAsync }) => {
           const onSubmit = handleSubmit((data) => {
             mutateAsync({ content: { name: data.name } })
+            props.closeModal()
+            toast.custom((t) => (
+              <Toast
+                t={t}
+                title='Your username was set'
+                icon={(className) => (
+                  <HiOutlineInformationCircle className={className} />
+                )}
+              />
+            ))
           })
 
           return (
@@ -57,12 +70,7 @@ export default function NameModal({
                 {...register('name')}
                 error={errors.name?.message}
               />
-              <FormButton
-                schema={formSchema}
-                watch={watch}
-                isLoading={isLoading}
-                size='lg'
-              >
+              <FormButton schema={formSchema} watch={watch} size='lg'>
                 Save
               </FormButton>
               {cancelButtonText && (
