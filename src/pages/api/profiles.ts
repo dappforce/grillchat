@@ -5,6 +5,7 @@ import {
   getProfilesFromSubsocial,
   SubsocialProfile,
 } from '@/services/subsocial/profiles/fetcher'
+import { toSubsocialAddress } from '@subsocial/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -75,6 +76,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 export const getProfilesServer = generateGetDataFromSquidWithBlockchainFallback(
   getProfilesFromSubsocial,
   { paramToId: (param) => param, responseToId: (response) => response.address },
-  undefined,
+  {
+    blockchainResponse: (data) => {
+      data.address = toSubsocialAddress(data.address)!
+    },
+  },
   getInvalidatedProfileRedisKey
 )
