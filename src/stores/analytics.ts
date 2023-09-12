@@ -80,8 +80,6 @@ export const useAnalytics = create<State & Actions>()((set, get) => {
       eventProperties?: EventProperties,
       userProperties?: UserProperties
     ) => {
-      // const { currentUrl } = useLocation.getState()
-      console.log(Router.query, Router.pathname, Router)
       const { amp, userId, deviceId } = get()
 
       const { parentOrigin } = useParentData.getState()
