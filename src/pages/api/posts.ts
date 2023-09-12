@@ -1,7 +1,7 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
+import { generateGetDataFromSquidWithBlockchainFallback } from '@/server/squid'
 import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
-import { generateGetDataFromSquidWithBlockchainFallback } from '@/services/subsocial/utils'
 import { getUrlFromText } from '@/utils/strings'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'

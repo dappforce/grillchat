@@ -1,10 +1,10 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
+import { generateGetDataFromSquidWithBlockchainFallback } from '@/server/squid'
 import {
   getProfilesFromSubsocial,
   SubsocialProfile,
 } from '@/services/subsocial/profiles/fetcher'
-import { generateGetDataFromSquidWithBlockchainFallback } from '@/services/subsocial/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
