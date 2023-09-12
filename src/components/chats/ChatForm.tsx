@@ -99,8 +99,7 @@ export default function ChatForm({
         showErrorSendingMessageToast(
           error,
           'Failed to register or send message',
-          variables.message,
-          setMessageBody
+          variables.message
         )
       },
     })
@@ -120,8 +119,7 @@ export default function ChatForm({
       showErrorSendingMessageToast(
         error,
         'Failed to send message',
-        variables.message,
-        setMessageBody
+        variables.message
       )
     },
   })
@@ -293,8 +291,7 @@ export default function ChatForm({
 function showErrorSendingMessageToast(
   error: unknown,
   errorTitle: string,
-  message: string | undefined,
-  setMessageBody: (message: string) => void
+  message: string | undefined
 ) {
   showErrorToast(error, errorTitle, {
     withIcon: false,
