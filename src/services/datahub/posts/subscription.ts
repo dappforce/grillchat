@@ -2,7 +2,10 @@ import { getPostQuery } from '@/services/api/query'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect } from 'react'
-import { SubscribePostSubscription } from '../generated'
+import {
+  DataHubSubscriptionEventEnum,
+  SubscribePostSubscription,
+} from '../generated'
 import { datahubSubscription } from '../utils'
 import { getCommentIdsByPostIdQuery } from './query'
 
@@ -32,20 +35,36 @@ const subscription = (queryClient: QueryClient) => {
       },
       next: async (data) => {
         console.log('Subscription Data:', data.data)
-        if (!data.data) return
+        const eventData = data.data?.post
+        if (!eventData) return
 
-        const id = data.data?.post.entityId
-        const post = await getPostQuery.fetchQuery(queryClient, id)
-        if (post?.struct.rootPostId) {
-          getCommentIdsByPostIdQuery.setQueryData(
-            queryClient,
-            post?.struct.rootPostId,
-            (oldIds) => {
-              if (!oldIds) return oldIds
-              if (oldIds.includes(id)) return oldIds
-              return [...oldIds, id]
-            }
-          )
+        if (
+          eventData.event ===
+            DataHubSubscriptionEventEnum.PostCreatedOptimistic ||
+          eventData.event === DataHubSubscriptionEventEnum.PostCreatedPersistent
+        ) {
+          const id = eventData.persistentId || eventData.entityId
+          const post = await getPostQuery.fetchQuery(queryClient, id)
+          if (post?.struct.rootPostId) {
+            getCommentIdsByPostIdQuery.setQueryData(
+              queryClient,
+              post?.struct.rootPostId,
+              (oldIds) => {
+                if (!oldIds) return oldIds
+                const oldIdsSet = new Set(oldIds)
+                if (oldIdsSet.has(id)) return oldIds
+
+                if (
+                  eventData.persistentId &&
+                  oldIdsSet.has(eventData.entityId)
+                ) {
+                  oldIdsSet.delete(eventData.entityId)
+                }
+                console.log('masuk sini', id)
+                return [...oldIdsSet, id]
+              }
+            )
+          }
         }
       },
       error: () => {

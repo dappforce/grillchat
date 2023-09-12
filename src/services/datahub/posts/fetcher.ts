@@ -1,4 +1,3 @@
-import { mapPostFragment } from '@/services/subsocial/squid/mappers'
 import { PostData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
 import {
@@ -7,6 +6,7 @@ import {
   GetPostsQuery,
   GetPostsQueryVariables,
 } from '../generated'
+import { mapPostFragment } from '../mappers'
 import { datahubRequest } from '../utils'
 import { isOptimisticId } from './utils'
 
@@ -36,16 +36,13 @@ export const POST_FRAGMENT = gql`
       id
     }
     space {
-      id
+      persistentId
     }
     rootPost {
-      id
+      persistentId
       space {
-        id
+        persistentId
       }
-    }
-    sharedPost {
-      id
     }
     extensions {
       image

@@ -97,12 +97,18 @@ export type CreatePostPersistentInput = {
 };
 
 export enum DataHubSubscriptionEventEnum {
-  EvmAddressLinkedToAccount = 'EVM_ADDRESS_LINKED_TO_ACCOUNT',
-  EvmAddressUnlinkedToAccount = 'EVM_ADDRESS_UNLINKED_TO_ACCOUNT',
-  PostCreated = 'POST_CREATED',
-  PostFollowed = 'POST_FOLLOWED',
-  PostUnfollowed = 'POST_UNFOLLOWED',
-  PostUpdated = 'POST_UPDATED'
+  EvmAddressLinkedToAccountOptimistic = 'EVM_ADDRESS_LINKED_TO_ACCOUNT_OPTIMISTIC',
+  EvmAddressLinkedToAccountPersistent = 'EVM_ADDRESS_LINKED_TO_ACCOUNT_PERSISTENT',
+  EvmAddressUnlinkedToAccountOptimistic = 'EVM_ADDRESS_UNLINKED_TO_ACCOUNT_OPTIMISTIC',
+  EvmAddressUnlinkedToAccountPersistent = 'EVM_ADDRESS_UNLINKED_TO_ACCOUNT_PERSISTENT',
+  PostCreatedOptimistic = 'POST_CREATED_OPTIMISTIC',
+  PostCreatedPersistent = 'POST_CREATED_PERSISTENT',
+  PostFollowedOptimistic = 'POST_FOLLOWED_OPTIMISTIC',
+  PostFollowedPersistent = 'POST_FOLLOWED_PERSISTENT',
+  PostUnfollowedOptimistic = 'POST_UNFOLLOWED_OPTIMISTIC',
+  PostUnfollowedPersistent = 'POST_UNFOLLOWED_PERSISTENT',
+  PostUpdatedOptimistic = 'POST_UPDATED_OPTIMISTIC',
+  PostUpdatedPersistent = 'POST_UPDATED_PERSISTENT'
 }
 
 export enum DataType {
@@ -390,21 +396,21 @@ export type Subscription = {
   post: PostSubscriptionPayload;
 };
 
-export type PostFragmentFragment = { __typename?: 'Post', id: string, content?: string | null, createdAtBlock?: number | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore: boolean, image?: string | null, link?: string | null, hidden: boolean, persistentId?: string | null, isComment: boolean, kind: PostKind, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: string | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources?: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> | null }> };
+export type PostFragmentFragment = { __typename?: 'Post', id: string, content?: string | null, createdAtBlock?: number | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore: boolean, image?: string | null, link?: string | null, hidden: boolean, persistentId?: string | null, isComment: boolean, kind: PostKind, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', persistentId?: string | null } | null, rootPost?: { __typename?: 'Post', persistentId?: string | null, space?: { __typename?: 'Space', persistentId?: string | null } | null } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: string | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources?: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> | null }> };
 
 export type GetPostsQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 
-export type GetPostsQuery = { __typename?: 'Query', findPosts: Array<{ __typename?: 'Post', id: string, content?: string | null, createdAtBlock?: number | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore: boolean, image?: string | null, link?: string | null, hidden: boolean, persistentId?: string | null, isComment: boolean, kind: PostKind, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: string | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources?: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> | null }> }> };
+export type GetPostsQuery = { __typename?: 'Query', findPosts: Array<{ __typename?: 'Post', id: string, content?: string | null, createdAtBlock?: number | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore: boolean, image?: string | null, link?: string | null, hidden: boolean, persistentId?: string | null, isComment: boolean, kind: PostKind, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', persistentId?: string | null } | null, rootPost?: { __typename?: 'Post', persistentId?: string | null, space?: { __typename?: 'Space', persistentId?: string | null } | null } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: string | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources?: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> | null }> }> };
 
 export type GetOptimisticPostsQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 
-export type GetOptimisticPostsQuery = { __typename?: 'Query', findPosts: Array<{ __typename?: 'Post', id: string, content?: string | null, createdAtBlock?: number | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore: boolean, image?: string | null, link?: string | null, hidden: boolean, persistentId?: string | null, isComment: boolean, kind: PostKind, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: string | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources?: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> | null }> }> };
+export type GetOptimisticPostsQuery = { __typename?: 'Query', findPosts: Array<{ __typename?: 'Post', id: string, content?: string | null, createdAtBlock?: number | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore: boolean, image?: string | null, link?: string | null, hidden: boolean, persistentId?: string | null, isComment: boolean, kind: PostKind, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', persistentId?: string | null } | null, rootPost?: { __typename?: 'Post', persistentId?: string | null, space?: { __typename?: 'Space', persistentId?: string | null } | null } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: string | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources?: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> | null }> }> };
 
 export type CreatePostOptimisticMutationVariables = Exact<{
   createPostOptimisticInput: CreatePostOptimisticInput;
@@ -451,16 +457,13 @@ export const PostFragment = gql`
     id
   }
   space {
-    id
+    persistentId
   }
   rootPost {
-    id
+    persistentId
     space {
-      id
+      persistentId
     }
-  }
-  sharedPost {
-    id
   }
   extensions {
     image
