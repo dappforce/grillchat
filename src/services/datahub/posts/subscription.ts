@@ -58,9 +58,14 @@ const subscription = (queryClient: QueryClient) => {
                   eventData.persistentId &&
                   oldIdsSet.has(eventData.entityId)
                 ) {
-                  oldIdsSet.delete(eventData.entityId)
+                  const newIds = [...oldIds]
+                  const optimisticIdIndex = oldIds.findIndex(
+                    (id) => id === eventData.entityId
+                  )
+                  newIds.splice(optimisticIdIndex, 1, id)
+                  return newIds
                 }
-                console.log('masuk sini', id)
+
                 return [...oldIdsSet, id]
               }
             )
