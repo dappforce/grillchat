@@ -39,6 +39,7 @@ export default function DefaultChatItem({
         {!isMyMessage && (
           <div className='flex items-center'>
             <ProfilePreviewModalName
+              labelingData={{ chatId }}
               messageId={messageId}
               address={ownerId}
               className={cx('mr-2 text-sm font-medium text-text-secondary')}
