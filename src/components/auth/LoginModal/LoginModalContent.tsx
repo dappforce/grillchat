@@ -158,6 +158,7 @@ export const EnterSecretKeyContent = ({
 }
 
 export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
+  const sendEvent = useSendEvent()
   const address = useMyAccount((state) => state.address)
 
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
@@ -187,6 +188,9 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
         signAndLinkEvmAddress={signAndLinkEvmAddress}
         isLoading={isLoading}
         secondLabel='Sign Message'
+        onClick={() =>
+          sendEvent('click connect_wallet_button from account_created')
+        }
         label={
           <div className='flex items-center justify-center gap-2'>
             <WalletIcon />
