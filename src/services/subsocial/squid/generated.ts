@@ -5872,7 +5872,7 @@ export type GetProfilesQueryVariables = Exact<{
 }>;
 
 
-export type GetProfilesQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, profileSpace?: { __typename?: 'Space', name?: string | null, image?: string | null } | null }> };
+export type GetProfilesQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, profileSpace?: { __typename?: 'Space', id: string, name?: string | null, image?: string | null } | null }> };
 
 export type GetSpacesQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -6030,6 +6030,7 @@ export const GetProfiles = gql`
   accounts(where: {id_in: $addresses}) {
     id
     profileSpace {
+      id
       name
       image
     }

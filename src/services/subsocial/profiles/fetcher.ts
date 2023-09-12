@@ -5,8 +5,11 @@ import { squidRequest } from '../squid/utils'
 import { standaloneDynamicFetcherWrapper } from '../utils'
 
 export type SubsocialProfile = {
-  name?: string
-  image?: string
+  profileSpace: {
+    id: string
+    name?: string
+    image?: string
+  } | null
   address: string
 }
 
@@ -16,10 +19,13 @@ async function getProfilesFromBlockchain({
 }: SubsocialQueryData<string[]>): Promise<SubsocialProfile[]> {
   if (addresses.length === 0) return []
   const res = await api.findProfileSpaces(addresses)
-  return res.map(({ content, id }) => ({
-    name: content?.name,
-    address: id,
-    image: content?.image,
+  return res.map(({ content, id, struct: { ownerId } }) => ({
+    profileSpace: {
+      id,
+      name: content?.name,
+      image: content?.image,
+    },
+    address: ownerId,
   }))
 }
 
@@ -28,6 +34,7 @@ const GET_PROFILES = gql`
     accounts(where: { id_in: $addresses }) {
       id
       profileSpace {
+        id
         name
         image
       }
@@ -43,9 +50,14 @@ async function getProfilesFromSquid(
     variables: { addresses },
   })
   return res.accounts.map(({ id, profileSpace }) => ({
-    name: profileSpace?.name ?? undefined,
+    profileSpace: profileSpace
+      ? {
+          id: profileSpace.id,
+          name: profileSpace.name ?? undefined,
+          image: profileSpace.image ?? undefined,
+        }
+      : null,
     address: id,
-    image: profileSpace?.image ?? undefined,
   }))
 }
 
