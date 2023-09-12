@@ -512,6 +512,8 @@ export type Activity = {
   blockNumber: Scalars['BigInt']['output'];
   /** The DateTime when the current activity was done */
   date: Scalars['DateTime']['output'];
+  /** A One-to-One relationship with the domain recipient Account */
+  domainRecipient?: Maybe<Account>;
   /** The event's name */
   event: EventName;
   /** The event's index in the block */
@@ -569,6 +571,22 @@ export enum ActivityOrderByInput {
   BlockNumberDesc = 'blockNumber_DESC',
   DateAsc = 'date_ASC',
   DateDesc = 'date_DESC',
+  DomainRecipientFollowersCountAsc = 'domainRecipient_followersCount_ASC',
+  DomainRecipientFollowersCountDesc = 'domainRecipient_followersCount_DESC',
+  DomainRecipientFollowingAccountsCountAsc = 'domainRecipient_followingAccountsCount_ASC',
+  DomainRecipientFollowingAccountsCountDesc = 'domainRecipient_followingAccountsCount_DESC',
+  DomainRecipientFollowingPostsCountAsc = 'domainRecipient_followingPostsCount_ASC',
+  DomainRecipientFollowingPostsCountDesc = 'domainRecipient_followingPostsCount_DESC',
+  DomainRecipientFollowingSpacesCountAsc = 'domainRecipient_followingSpacesCount_ASC',
+  DomainRecipientFollowingSpacesCountDesc = 'domainRecipient_followingSpacesCount_DESC',
+  DomainRecipientIdAsc = 'domainRecipient_id_ASC',
+  DomainRecipientIdDesc = 'domainRecipient_id_DESC',
+  DomainRecipientOwnedPostsCountAsc = 'domainRecipient_ownedPostsCount_ASC',
+  DomainRecipientOwnedPostsCountDesc = 'domainRecipient_ownedPostsCount_DESC',
+  DomainRecipientUpdatedAtBlockAsc = 'domainRecipient_updatedAtBlock_ASC',
+  DomainRecipientUpdatedAtBlockDesc = 'domainRecipient_updatedAtBlock_DESC',
+  DomainRecipientUpdatedAtTimeAsc = 'domainRecipient_updatedAtTime_ASC',
+  DomainRecipientUpdatedAtTimeDesc = 'domainRecipient_updatedAtTime_DESC',
   EventIndexAsc = 'eventIndex_ASC',
   EventIndexDesc = 'eventIndex_DESC',
   EventAsc = 'event_ASC',
@@ -868,6 +886,8 @@ export type ActivityWhereInput = {
   date_lte?: InputMaybe<Scalars['DateTime']['input']>;
   date_not_eq?: InputMaybe<Scalars['DateTime']['input']>;
   date_not_in?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  domainRecipient?: InputMaybe<AccountWhereInput>;
+  domainRecipient_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   eventIndex_eq?: InputMaybe<Scalars['Int']['input']>;
   eventIndex_gt?: InputMaybe<Scalars['Int']['input']>;
   eventIndex_gte?: InputMaybe<Scalars['Int']['input']>;
@@ -1616,6 +1636,7 @@ export type ElasticSearchQueryResultEntity = {
  * * ExtensionEvmNftShared - *synthetic*
  * * ExtensionImageCreated - *synthetic*
  * * ExtensionSecretBoxCreated - *synthetic*
+ * * ExtensionPinnedPostsCreated - *synthetic*
  * * EvmAddressLinkedToAccount
  * * EvmAddressUnlinkedFromAccount
  */
@@ -1643,6 +1664,7 @@ export enum EventName {
   ExtensionDonationCreated = 'ExtensionDonationCreated',
   ExtensionEvmNftShared = 'ExtensionEvmNftShared',
   ExtensionImageCreated = 'ExtensionImageCreated',
+  ExtensionPinnedPostsCreated = 'ExtensionPinnedPostsCreated',
   ExtensionSecretBoxCreated = 'ExtensionSecretBoxCreated',
   PostCreated = 'PostCreated',
   PostDeleted = 'PostDeleted',
@@ -2066,6 +2088,80 @@ export type HitItemContent = {
   title?: Maybe<Scalars['String']['output']>;
   /** Value of field `username` (actual only for Space entity) */
   username?: Maybe<Scalars['String']['output']>;
+};
+
+export type InBatchNotifications = {
+  __typename?: 'InBatchNotifications';
+  activityIds: Array<Scalars['String']['output']>;
+  batchEndBlockNumber: Scalars['BigInt']['output'];
+  batchStartBlockNumber: Scalars['BigInt']['output'];
+  id: Scalars['String']['output'];
+};
+
+export type InBatchNotificationsConnection = {
+  __typename?: 'InBatchNotificationsConnection';
+  edges: Array<InBatchNotificationsEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type InBatchNotificationsEdge = {
+  __typename?: 'InBatchNotificationsEdge';
+  cursor: Scalars['String']['output'];
+  node: InBatchNotifications;
+};
+
+export enum InBatchNotificationsOrderByInput {
+  BatchEndBlockNumberAsc = 'batchEndBlockNumber_ASC',
+  BatchEndBlockNumberDesc = 'batchEndBlockNumber_DESC',
+  BatchStartBlockNumberAsc = 'batchStartBlockNumber_ASC',
+  BatchStartBlockNumberDesc = 'batchStartBlockNumber_DESC',
+  IdAsc = 'id_ASC',
+  IdDesc = 'id_DESC'
+}
+
+export type InBatchNotificationsWhereInput = {
+  AND?: InputMaybe<Array<InBatchNotificationsWhereInput>>;
+  OR?: InputMaybe<Array<InBatchNotificationsWhereInput>>;
+  activityIds_containsAll?: InputMaybe<Array<Scalars['String']['input']>>;
+  activityIds_containsAny?: InputMaybe<Array<Scalars['String']['input']>>;
+  activityIds_containsNone?: InputMaybe<Array<Scalars['String']['input']>>;
+  activityIds_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  batchEndBlockNumber_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  batchEndBlockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  batchEndBlockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  batchEndBlockNumber_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  batchEndBlockNumber_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  batchEndBlockNumber_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  batchEndBlockNumber_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  batchEndBlockNumber_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  batchEndBlockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  batchStartBlockNumber_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  batchStartBlockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  batchStartBlockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  batchStartBlockNumber_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  batchStartBlockNumber_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  batchStartBlockNumber_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  batchStartBlockNumber_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  batchStartBlockNumber_not_eq?: InputMaybe<Scalars['BigInt']['input']>;
+  batchStartBlockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_eq?: InputMaybe<Scalars['String']['input']>;
+  id_gt?: InputMaybe<Scalars['String']['input']>;
+  id_gte?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  id_lt?: InputMaybe<Scalars['String']['input']>;
+  id_lte?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  id_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  id_not_eq?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  id_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  id_startsWith?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum InReplyToKind {
@@ -3499,6 +3595,11 @@ export type Query = {
   extensionPinnedResourceByUniqueInput?: Maybe<ExtensionPinnedResource>;
   extensionPinnedResources: Array<ExtensionPinnedResource>;
   extensionPinnedResourcesConnection: ExtensionPinnedResourcesConnection;
+  inBatchNotifications: Array<InBatchNotifications>;
+  inBatchNotificationsById?: Maybe<InBatchNotifications>;
+  /** @deprecated Use inBatchNotificationsById */
+  inBatchNotificationsByUniqueInput?: Maybe<InBatchNotifications>;
+  inBatchNotificationsConnection: InBatchNotificationsConnection;
   ipfsFetchLogById?: Maybe<IpfsFetchLog>;
   /** @deprecated Use ipfsFetchLogById */
   ipfsFetchLogByUniqueInput?: Maybe<IpfsFetchLog>;
@@ -3764,6 +3865,32 @@ export type QueryExtensionPinnedResourcesConnectionArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: Array<ExtensionPinnedResourceOrderByInput>;
   where?: InputMaybe<ExtensionPinnedResourceWhereInput>;
+};
+
+
+export type QueryInBatchNotificationsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<InBatchNotificationsOrderByInput>>;
+  where?: InputMaybe<InBatchNotificationsWhereInput>;
+};
+
+
+export type QueryInBatchNotificationsByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryInBatchNotificationsByUniqueInputArgs = {
+  where: WhereIdInput;
+};
+
+
+export type QueryInBatchNotificationsConnectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: Array<InBatchNotificationsOrderByInput>;
+  where?: InputMaybe<InBatchNotificationsWhereInput>;
 };
 
 
@@ -5306,6 +5433,265 @@ export enum Status {
   Deleted = 'Deleted'
 }
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  accountById?: Maybe<Account>;
+  accountFollowers: Array<AccountFollowers>;
+  accountFollowersById?: Maybe<AccountFollowers>;
+  accounts: Array<Account>;
+  activities: Array<Activity>;
+  activityById?: Maybe<Activity>;
+  commentFollowers: Array<CommentFollowers>;
+  commentFollowersById?: Maybe<CommentFollowers>;
+  contentExtensionById?: Maybe<ContentExtension>;
+  contentExtensions: Array<ContentExtension>;
+  evmAccountById?: Maybe<EvmAccount>;
+  evmAccounts: Array<EvmAccount>;
+  evmSubstrateAccountLinkById?: Maybe<EvmSubstrateAccountLink>;
+  evmSubstrateAccountLinks: Array<EvmSubstrateAccountLink>;
+  extensionPinnedResourceById?: Maybe<ExtensionPinnedResource>;
+  extensionPinnedResources: Array<ExtensionPinnedResource>;
+  inBatchNotifications: Array<InBatchNotifications>;
+  inBatchNotificationsById?: Maybe<InBatchNotifications>;
+  ipfsFetchLogById?: Maybe<IpfsFetchLog>;
+  ipfsFetchLogs: Array<IpfsFetchLog>;
+  newsFeedById?: Maybe<NewsFeed>;
+  newsFeeds: Array<NewsFeed>;
+  notificationById?: Maybe<Notification>;
+  notifications: Array<Notification>;
+  postById?: Maybe<Post>;
+  postFollowers: Array<PostFollowers>;
+  postFollowersById?: Maybe<PostFollowers>;
+  posts: Array<Post>;
+  reactionById?: Maybe<Reaction>;
+  reactions: Array<Reaction>;
+  spaceById?: Maybe<Space>;
+  spaceFollowers: Array<SpaceFollowers>;
+  spaceFollowersById?: Maybe<SpaceFollowers>;
+  spaces: Array<Space>;
+};
+
+
+export type SubscriptionAccountByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionAccountFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<AccountFollowersOrderByInput>>;
+  where?: InputMaybe<AccountFollowersWhereInput>;
+};
+
+
+export type SubscriptionAccountFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionAccountsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<AccountOrderByInput>>;
+  where?: InputMaybe<AccountWhereInput>;
+};
+
+
+export type SubscriptionActivitiesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ActivityOrderByInput>>;
+  where?: InputMaybe<ActivityWhereInput>;
+};
+
+
+export type SubscriptionActivityByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionCommentFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<CommentFollowersOrderByInput>>;
+  where?: InputMaybe<CommentFollowersWhereInput>;
+};
+
+
+export type SubscriptionCommentFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionContentExtensionByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionContentExtensionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ContentExtensionOrderByInput>>;
+  where?: InputMaybe<ContentExtensionWhereInput>;
+};
+
+
+export type SubscriptionEvmAccountByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionEvmAccountsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EvmAccountOrderByInput>>;
+  where?: InputMaybe<EvmAccountWhereInput>;
+};
+
+
+export type SubscriptionEvmSubstrateAccountLinkByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionEvmSubstrateAccountLinksArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EvmSubstrateAccountLinkOrderByInput>>;
+  where?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+};
+
+
+export type SubscriptionExtensionPinnedResourceByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionExtensionPinnedResourcesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ExtensionPinnedResourceOrderByInput>>;
+  where?: InputMaybe<ExtensionPinnedResourceWhereInput>;
+};
+
+
+export type SubscriptionInBatchNotificationsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<InBatchNotificationsOrderByInput>>;
+  where?: InputMaybe<InBatchNotificationsWhereInput>;
+};
+
+
+export type SubscriptionInBatchNotificationsByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionIpfsFetchLogByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionIpfsFetchLogsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<IpfsFetchLogOrderByInput>>;
+  where?: InputMaybe<IpfsFetchLogWhereInput>;
+};
+
+
+export type SubscriptionNewsFeedByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionNewsFeedsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<NewsFeedOrderByInput>>;
+  where?: InputMaybe<NewsFeedWhereInput>;
+};
+
+
+export type SubscriptionNotificationByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionNotificationsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<NotificationOrderByInput>>;
+  where?: InputMaybe<NotificationWhereInput>;
+};
+
+
+export type SubscriptionPostByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionPostFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostFollowersOrderByInput>>;
+  where?: InputMaybe<PostFollowersWhereInput>;
+};
+
+
+export type SubscriptionPostFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionPostsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostOrderByInput>>;
+  where?: InputMaybe<PostWhereInput>;
+};
+
+
+export type SubscriptionReactionByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionReactionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ReactionOrderByInput>>;
+  where?: InputMaybe<ReactionWhereInput>;
+};
+
+
+export type SubscriptionSpaceByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionSpaceFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceFollowersOrderByInput>>;
+  where?: InputMaybe<SpaceFollowersWhereInput>;
+};
+
+
+export type SubscriptionSpaceFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionSpacesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceOrderByInput>>;
+  where?: InputMaybe<SpaceWhereInput>;
+};
+
 export type TweetAttachmentsDetails = {
   __typename?: 'TweetAttachmentsDetails';
   mediaKeys?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -5481,6 +5867,13 @@ export type GetOwnedPostIdsQueryVariables = Exact<{
 
 export type GetOwnedPostIdsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string }> };
 
+export type GetProfilesQueryVariables = Exact<{
+  addresses?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
+
+
+export type GetProfilesQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, profileSpace?: { __typename?: 'Space', name?: string | null, image?: string | null } | null }> };
+
 export type GetSpacesQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
@@ -5610,7 +6003,7 @@ export const GetEvmAddresses = gql`
 }
     `;
 export const GetPosts = gql`
-    query getPosts($ids: [String!]) {
+    query GetPosts($ids: [String!]) {
   posts(where: {id_in: $ids}) {
     ...PostFragment
   }
@@ -5629,6 +6022,17 @@ export const GetOwnedPostIds = gql`
     query GetOwnedPostIds($address: String!) {
   posts(where: {ownedByAccount: {id_eq: $address}, isComment_eq: false}) {
     id
+  }
+}
+    `;
+export const GetProfiles = gql`
+    query GetProfiles($addresses: [String!]) {
+  accounts(where: {id_in: $addresses}) {
+    id
+    profileSpace {
+      name
+      image
+    }
   }
 }
     `;

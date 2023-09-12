@@ -1,4 +1,5 @@
-import { PostData } from '@subsocial/api/types'
+import { ApiPostsResponse } from '@/pages/api/posts'
+import { ApiProfilesResponse } from '@/pages/api/profiles'
 import axios from 'axios'
 
 export async function getPosts(postIds: string[]) {
@@ -7,5 +8,14 @@ export async function getPosts(postIds: string[]) {
   const res = await axios.get(
     '/api/posts?' + requestedIds.map((n) => `postIds=${n}`).join('&')
   )
-  return res.data.data as PostData[]
+  return (res.data as ApiPostsResponse).data ?? []
+}
+
+export async function getProfiles(addresses: string[]) {
+  const requestedIds = addresses.filter((id) => !!id)
+  if (requestedIds.length === 0) return []
+  const res = await axios.get(
+    '/api/profiles?' + requestedIds.map((n) => `addresses=${n}`).join('&')
+  )
+  return (res.data as ApiProfilesResponse).data ?? []
 }

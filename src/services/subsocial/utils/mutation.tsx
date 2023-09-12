@@ -1,16 +1,9 @@
 import useToastError from '@/hooks/useToastError'
-import { createQuery } from '@/subsocial-query'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import {
-  createSubsocialQuery,
-  SubsocialQueryData,
-} from '@/subsocial-query/subsocial/query'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
-import { getSquidUrl } from '@/utils/env/client'
 import { UseMutationResult } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import useCommonTxSteps from './hooks'
+import useCommonTxSteps from '../hooks'
 
 const CaptchaInvisible = dynamic(
   () => import('@/components/captcha/CaptchaInvisible'),
@@ -18,63 +11,6 @@ const CaptchaInvisible = dynamic(
     ssr: false,
   }
 )
-
-type DynamicSubsocialQueryFetcher<Data, ReturnValue> = {
-  blockchain: (data: SubsocialQueryData<Data>) => Promise<ReturnValue>
-  squid: (data: Data) => Promise<ReturnValue>
-}
-export function createDynamicSubsocialQuery<Data, ReturnValue>(
-  key: string,
-  fetcher: DynamicSubsocialQueryFetcher<Data, ReturnValue>
-) {
-  const isExistSquidUrl = !!getSquidUrl()
-
-  if (isExistSquidUrl) {
-    return createQuery({
-      key,
-      fetcher: fetcher.squid,
-    })
-  }
-
-  return createSubsocialQuery({
-    key,
-    fetcher: fetcher.blockchain,
-  })
-}
-
-type DataSource = 'blockchain' | 'squid'
-export function standaloneDynamicFetcherWrapper<Data, ReturnValue>(
-  fetcher: DynamicSubsocialQueryFetcher<Data, ReturnValue>
-) {
-  return async (data: Data, dataSource: DataSource = 'squid') => {
-    const isExistSquidUrl = !!getSquidUrl()
-
-    if (isExistSquidUrl && dataSource === 'squid') {
-      return fetcher.squid(data)
-    }
-
-    const api = await getSubsocialApi()
-    return fetcher.blockchain({ data, api })
-  }
-}
-
-const OPTIMISTIC_ID_PREFIX = 'optimistic-'
-const ID_DATA_SEPARATOR = '|||'
-export function generateOptimisticId<Data = any>(data?: Data) {
-  return `${OPTIMISTIC_ID_PREFIX}${Date.now()}${ID_DATA_SEPARATOR}${JSON.stringify(
-    data
-  )}`
-}
-
-export function isOptimisticId(id: string) {
-  return id.startsWith(OPTIMISTIC_ID_PREFIX)
-}
-
-export function extractOptimisticIdData<Data>(id: string) {
-  if (!isOptimisticId(id)) return undefined
-  const [, param] = id.split(ID_DATA_SEPARATOR)
-  return JSON.parse(param) as Data
-}
 
 type Status =
   | 'idle'

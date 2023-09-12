@@ -17,7 +17,7 @@ async function getPostsFromBlockchain({
 
 const GET_POSTS = gql`
   ${POST_FRAGMENT}
-  query getPosts($ids: [String!]) {
+  query GetPosts($ids: [String!]) {
     posts(where: { id_in: $ids }) {
       ...PostFragment
     }
