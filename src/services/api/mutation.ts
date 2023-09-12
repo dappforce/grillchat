@@ -70,6 +70,6 @@ export async function invalidatePostServerCache(postId: string) {
   return res.data as ApiPostsInvalidationResponse
 }
 export async function invalidateProfileServerCache(address: string) {
-  const res = await axios.post('/api/profile', { address })
+  const res = await axios.post('/api/profiles', { address })
   return res.data as ApiPostsInvalidationResponse
 }

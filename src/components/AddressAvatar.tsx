@@ -65,8 +65,8 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       )
     }
 
-    let usedAvatar = profile?.image
-      ? getIpfsContentUrl(profile?.image)
+    let usedAvatar = profile?.profileSpace?.image
+      ? getIpfsContentUrl(profile.profileSpace.image)
       : undefined
 
     if (ensName) {

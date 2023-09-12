@@ -20,7 +20,8 @@ export function useName(address: string) {
   const textColor = useRandomColor(address, { isAddress: true })
 
   const { ensName, evmAddress } = accountData || {}
-  const name = ensName || profile?.name || generateRandomName(address)
+  const name =
+    ensName || profile?.profileSpace?.name || generateRandomName(address)
 
   return { name, accountData, evmAddress, isLoading, textColor }
 }
