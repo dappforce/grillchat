@@ -30,7 +30,7 @@ import { toast } from 'react-hot-toast'
 import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
-import NameModal from '../modals/NameModal'
+import SubsocialProfileModal from '../subsocial-profile/SubsocialProfileModal'
 
 const CaptchaInvisible = dynamic(
   () => import('@/components/captcha/CaptchaInvisible'),
@@ -296,7 +296,7 @@ export default function ChatForm({
       </CaptchaInvisible>
 
       <EmailSubscribeModal chatId={chatId} />
-      <NameModal
+      <SubsocialProfileModal
         title='🎩 Do you want to set a nickname?'
         isOpen={isOpenNameModal}
         closeModal={() => setIsOpenNameModal(false)}

@@ -1,5 +1,6 @@
 import { CommonEvmAddressLinked } from '@/components/auth/CommonModalContent'
 import Modal from '@/components/modals/Modal'
+import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
@@ -22,6 +23,7 @@ const modalContents: {
   [key in ModalState]: (props: ContentProps) => JSX.Element
 } = {
   account: AccountContent,
+  'subsocial-profile': () => <SubsocialProfileForm />,
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
@@ -48,6 +50,7 @@ export default function ProfileModal({
       enabled: props.isOpen,
     }
   )
+
   const [currentState, setCurrentState] = useState<ModalState>(
     step || 'account'
   )
@@ -77,6 +80,11 @@ export default function ProfileModal({
       title: <span className='font-medium'>My Account</span>,
       withoutDefaultPadding: true,
       withFooter: true,
+    },
+    'subsocial-profile': {
+      title: '🎩 Update nickname',
+      desc: 'Create a nickname so other people can recognize you. You can change it at any time.',
+      withBackButton: true,
     },
     logout: {
       title: '🤔 Did you back up your Grill secret key?',

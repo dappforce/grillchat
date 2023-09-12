@@ -5,6 +5,7 @@ import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
+import Button from '@/components/Button'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
@@ -119,13 +120,20 @@ export default function AccountContent({
   ]
 
   return (
-    <div className='mt-2 flex flex-col'>
-      <ProfilePreview
-        address={address}
-        className='border-b border-background-lightest px-6 pb-6'
-      />
-      <MenuList menus={menus} />
-    </div>
+    <>
+      <div className='mt-2 flex flex-col'>
+        <div className='flex flex-col gap-4 border-b border-background-lightest px-6 pb-6'>
+          <ProfilePreview address={address} />
+          <Button
+            variant='primaryOutline'
+            onClick={() => setCurrentState('subsocial-profile')}
+          >
+            Update nickname
+          </Button>
+        </div>
+        <MenuList menus={menus} />
+      </div>
+    </>
   )
 }
 
