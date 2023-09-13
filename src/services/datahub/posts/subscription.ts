@@ -102,6 +102,7 @@ async function processMessage(
             (id) => id === clientOptimisticId
           )
           newIds.splice(optimisticIdIndex, 1, id)
+          return newIds
         }
 
         if (eventData.persistentId && oldIdsSet.has(eventData.entityId)) {
@@ -109,8 +110,10 @@ async function processMessage(
             (id) => id === eventData.entityId
           )
           newIds.splice(optimisticIdIndex, 1, id)
+          return newIds
         }
 
+        newIds.push(id)
         return newIds
       }
     )
