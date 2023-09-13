@@ -10,6 +10,17 @@ import {
 import { datahubSubscription } from '../utils'
 import { getCommentIdsByPostIdQuery } from './query'
 
+export function useSubscribeCommentIdsByPostId() {
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    const unsub = subscription(queryClient)
+    return () => {
+      unsub?.()
+    }
+  }, [queryClient])
+}
+
 const SUBSCRIBE_POST = gql`
   subscription SubscribePost {
     post {
@@ -22,7 +33,7 @@ const SUBSCRIBE_POST = gql`
 `
 
 let isSubscribed = false
-const subscription = (queryClient: QueryClient) => {
+function subscription(queryClient: QueryClient) {
   if (isSubscribed) return
   isSubscribed = true
 
@@ -40,44 +51,7 @@ const subscription = (queryClient: QueryClient) => {
         const eventData = data.data?.post
         if (!eventData) return
 
-        if (
-          eventData.event ===
-            DataHubSubscriptionEventEnum.PostCreatedOptimistic ||
-          eventData.event === DataHubSubscriptionEventEnum.PostCreatedPersistent
-        ) {
-          const id = eventData.persistentId || eventData.entityId
-          const post = await getPostQuery.fetchQuery(queryClient, id)
-          if (post?.struct.rootPostId) {
-            getCommentIdsByPostIdQuery.setQueryData(
-              queryClient,
-              post?.struct.rootPostId,
-              (oldIds) => {
-                if (!oldIds) return oldIds
-                const oldIdsSet = new Set(oldIds)
-                if (oldIdsSet.has(id)) return oldIds
-
-                const clientOptimisticId = commentIdsOptimisticEncoder.encode(
-                  eventData.optimisticId ?? ''
-                )
-                oldIdsSet.delete(clientOptimisticId)
-
-                if (
-                  eventData.persistentId &&
-                  oldIdsSet.has(eventData.entityId)
-                ) {
-                  const newIds = [...oldIdsSet]
-                  const optimisticIdIndex = oldIds.findIndex(
-                    (id) => id === eventData.entityId
-                  )
-                  newIds.splice(optimisticIdIndex, 1, id)
-                  return newIds
-                }
-
-                return [...oldIdsSet, id]
-              }
-            )
-          }
-        }
+        await processSubscriptionEvent(queryClient, eventData)
       },
       error: () => {
         console.log('error subscription')
@@ -91,14 +65,49 @@ const subscription = (queryClient: QueryClient) => {
   }
 }
 
-export function useSubscribeCommentIdsByPostId() {
-  const queryClient = useQueryClient()
+async function processSubscriptionEvent(
+  queryClient: QueryClient,
+  eventData: SubscribePostSubscription['post']
+) {
+  if (
+    eventData.event === DataHubSubscriptionEventEnum.PostCreated ||
+    eventData.event === DataHubSubscriptionEventEnum.PostStateUpdated
+  ) {
+    await processMessage(queryClient, eventData)
+  }
+}
 
-  useEffect(() => {
-    const unsub = subscription(queryClient)
+async function processMessage(
+  queryClient: QueryClient,
+  eventData: SubscribePostSubscription['post']
+) {
+  const id = eventData.persistentId || eventData.entityId
+  const post = await getPostQuery.fetchQuery(queryClient, id)
+  if (post?.struct.rootPostId) {
+    getCommentIdsByPostIdQuery.setQueryData(
+      queryClient,
+      post?.struct.rootPostId,
+      (oldIds) => {
+        if (!oldIds) return oldIds
+        const oldIdsSet = new Set(oldIds)
+        if (oldIdsSet.has(id)) return oldIds
 
-    return () => {
-      unsub?.()
-    }
-  }, [queryClient])
+        const clientOptimisticId = commentIdsOptimisticEncoder.encode(
+          eventData.optimisticId ?? ''
+        )
+        oldIdsSet.delete(clientOptimisticId)
+
+        if (eventData.persistentId && oldIdsSet.has(eventData.entityId)) {
+          const newIds = [...oldIdsSet]
+          const optimisticIdIndex = oldIds.findIndex(
+            (id) => id === eventData.entityId
+          )
+          newIds.splice(optimisticIdIndex, 1, id)
+          return newIds
+        }
+
+        return [...oldIdsSet, id]
+      }
+    )
+  }
 }
