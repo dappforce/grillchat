@@ -89,7 +89,8 @@ export const useAnalytics = create<State & Actions>()((set, get) => {
       const commonProperties = {
         from: parentOrigin,
         pathname: Router.asPath,
-        query: { ...Router.query, chatId },
+        hubId: Router.query.hubId,
+        chatId,
       }
 
       const mergedEventProperties = {
