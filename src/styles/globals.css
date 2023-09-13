@@ -1,6 +1,10 @@
-:root {
-  line-height: 1.35;
+@media screen and (min-width: 768px) {
+  :root {
+    font-size: 0.9375rem;
+  }
+}
 
+:root {
   --background: 236 239 244;
   --background-light: 248 250 252;
   --background-lighter: 236 239 244;
@@ -60,13 +64,6 @@ html,
 body {
   @apply font-sans;
   @apply text-base;
-}
-
-@media screen and (min-width: 768px) {
-  :root {
-    font-size: 0.9375rem;
-    line-height: 1.4;
-  }
 }
 
 #pwa-install {
