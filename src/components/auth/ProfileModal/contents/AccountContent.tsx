@@ -13,6 +13,7 @@ import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useConfigContext } from '@/providers/ConfigProvider'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { installApp, isInstallAvailable } from '@/utils/install'
@@ -30,6 +31,9 @@ export default function AccountContent({
 }: ContentProps) {
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
+
+  const { data: accountData } = getAccountDataQuery.useQuery(address)
+  const ensName = accountData?.ensName
 
   const sendEvent = useSendEvent()
   const commonEventProps = { eventSource: 'profile_menu' }
@@ -124,12 +128,14 @@ export default function AccountContent({
       <div className='mt-2 flex flex-col'>
         <div className='flex flex-col gap-4 border-b border-background-lightest px-6 pb-6'>
           <ProfilePreview address={address} />
-          <Button
-            variant='primaryOutline'
-            onClick={() => setCurrentState('subsocial-profile')}
-          >
-            Update nickname
-          </Button>
+          {!ensName && (
+            <Button
+              variant='primaryOutline'
+              onClick={() => setCurrentState('subsocial-profile')}
+            >
+              Update nickname
+            </Button>
+          )}
         </div>
         <MenuList menus={menus} />
       </div>
