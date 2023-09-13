@@ -2,8 +2,8 @@ import Button from '@/components/Button'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { cx } from '@/utils/class-names'
 import { getEmojiAmount, validateTextContainsOnlyEmoji } from '@/utils/strings'
-import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import ChatRelativeTime from '../ChatRelativeTime'
+import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
 import { ChatItemContentProps } from './types'
 
@@ -25,7 +25,6 @@ export function shouldRenderEmojiChatItem(body: string) {
 export default function EmojiChatItem({
   message,
   isMyMessage,
-  isSent,
   onCheckMarkClick,
   scrollToMessage,
   chatId,
@@ -110,11 +109,7 @@ export default function EmojiChatItem({
             interactive='brightness-only'
             onClick={onCheckMarkClick}
           >
-            {isSent ? (
-              <IoCheckmarkDoneOutline className='text-sm' />
-            ) : (
-              <IoCheckmarkOutline className={cx('text-sm text-text-muted')} />
-            )}
+            <MessageStatusIndicator messageId={messageId} />
           </Button>
         </div>
       )}

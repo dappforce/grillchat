@@ -6,7 +6,6 @@ export type ChatItemContentProps = ComponentProps<'div'> & {
   hubId: string
   message: PostData
   isMyMessage: boolean
-  isSent: boolean
   onCheckMarkClick: (e: SyntheticEvent) => void
   scrollToMessage?: (messageId: string) => Promise<void>
 }

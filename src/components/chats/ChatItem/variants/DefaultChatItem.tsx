@@ -3,9 +3,9 @@ import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { cx } from '@/utils/class-names'
 import Linkify from 'linkify-react'
-import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import ChatRelativeTime from '../ChatRelativeTime'
 import LinkPreview from '../LinkPreview'
+import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
 import { ChatItemContentProps } from './types'
 
@@ -16,7 +16,6 @@ export default function DefaultChatItem({
   hubId,
   message,
   isMyMessage,
-  isSent,
   onCheckMarkClick,
   scrollToMessage,
   ...props
@@ -105,15 +104,7 @@ export default function DefaultChatItem({
               interactive='brightness-only'
               onClick={onCheckMarkClick}
             >
-              {isSent ? (
-                <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
-              ) : (
-                <IoCheckmarkOutline
-                  className={cx(
-                    'text-sm text-text-muted dark:text-text-muted-on-primary'
-                  )}
-                />
-              )}
+              <MessageStatusIndicator messageId={messageId} />
             </Button>
           </div>
         )}

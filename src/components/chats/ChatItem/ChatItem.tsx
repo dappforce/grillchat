@@ -139,7 +139,6 @@ export default function ChatItem({
                   <ChatItemContentVariant
                     message={message}
                     isMyMessage={isMyMessage}
-                    isSent={isSent}
                     onCheckMarkClick={onCheckMarkClick}
                     scrollToMessage={scrollToMessage}
                     chatId={chatId}
