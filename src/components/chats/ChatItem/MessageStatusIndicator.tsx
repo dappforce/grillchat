@@ -17,18 +17,22 @@ export default function MessageStatusIndicator({
   const messageStatus = getMessageStatusById(messageId)
 
   if (messageStatus === 'sending') {
-    return <Spinner className='h-2 w-2' />
-  } else if (messageStatus === 'datahub') {
     return (
-      <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
+      <span className='flex flex-shrink-0 items-center justify-center'>
+        <Spinner className='h-2.5 w-2.5' />
+      </span>
     )
-  } else {
+  } else if (messageStatus === 'datahub') {
     return (
       <IoCheckmarkOutline
         className={cx(
           'text-sm text-text-muted dark:text-text-muted-on-primary'
         )}
       />
+    )
+  } else {
+    return (
+      <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
     )
   }
 }
