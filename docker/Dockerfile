@@ -62,6 +62,8 @@ COPY package.json yarn.lock* ./
 
 RUN yarn install
 
+RUN yarn dh-sdk-i
+
 COPY . .
 
 RUN set -x \
