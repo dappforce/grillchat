@@ -78,7 +78,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
         <UpsertPostWrapper
           config={{
             txCallbacks: {
-              onSuccess: async (_data, _, txResult) => {
+              onSuccess: async (_data, txResult) => {
                 if (isUpdating || !myAddress) return
 
                 setIsProcessingData(true)
