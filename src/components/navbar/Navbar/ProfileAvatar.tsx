@@ -76,7 +76,7 @@ export default function ProfileAvatar({
           onClose={() => sendEvent('close evm_linking_popover')}
           popOverProps={{
             onClick: () => {
-              sendEvent('click evm_linking_popover')
+              sendEvent('evm_linking_popover_clicked')
               setDirectlyOpenEvmLinking(true)
               setIsOpen(true)
             },
