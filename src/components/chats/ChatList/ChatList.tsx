@@ -6,6 +6,7 @@ import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
@@ -56,6 +57,7 @@ function ChatListContent({
   newMessageNoticeClassName,
   ...props
 }: ChatListProps) {
+  const sendEvent = useSendEvent()
   const { enableBackButton } = useConfigContext()
   const lastReadId = useFocusedLastMessageId(chatId)
 
@@ -72,8 +74,11 @@ function ChatListContent({
   const messageIds = rawMessageIds || []
 
   const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)
-  const { currentData: currentPageMessageIds, loadMore } =
-    useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
+  const {
+    currentData: currentPageMessageIds,
+    loadMore,
+    currentPage,
+  } = useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
 
   const filteredMessageIds = useFilterBlockedMessageIds(
     hubId,
@@ -182,7 +187,10 @@ function ChatListContent({
         >
           <InfiniteScroll
             dataLength={renderedMessageIds.length}
-            next={loadMore}
+            next={() => {
+              loadMore()
+              sendEvent('load_more_messages', { currentPage })
+            }}
             className={cx(
               'relative flex flex-col-reverse !overflow-hidden pb-2',
               // need to have enough room to open message menu

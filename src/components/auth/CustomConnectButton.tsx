@@ -102,11 +102,12 @@ export const CustomConnectButton = ({
         if (!connected) {
           return (
             <Button
-              onClick={() => {
+              {...commonButtonProps}
+              onClick={(e) => {
                 setHasInteractedOnce(true)
                 openConnectModal()
+                commonButtonProps.onClick?.(e as any)
               }}
-              {...commonButtonProps}
             >
               {usedLabel}
             </Button>
@@ -116,11 +117,12 @@ export const CustomConnectButton = ({
         if (chain.unsupported) {
           return (
             <Button
-              onClick={() => {
+              {...commonButtonProps}
+              onClick={(e) => {
                 setHasInteractedOnce(true)
                 openChainModal()
+                commonButtonProps.onClick?.(e as any)
               }}
-              {...commonButtonProps}
             >
               Wrong network
             </Button>

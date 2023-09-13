@@ -1,6 +1,7 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import ProfileModal from '@/components/auth/ProfileModal'
 import PopOver from '@/components/floating/PopOver'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
@@ -23,6 +24,7 @@ export default function ProfileAvatar({
   const [directlyOpenEvmLinking, setDirectlyOpenEvmLinking] = useState(false)
 
   const [showNotif, setShowNotif] = useState(false)
+  const sendEvent = useSendEvent()
 
   useEffect(() => {
     if (popOverControl?.isOpen) {
@@ -71,8 +73,10 @@ export default function ProfileAvatar({
           withCloseButton
           trigger={null}
           initialFocus={-1}
+          onClose={() => sendEvent('evm_linking_popover_closed')}
           popOverProps={{
             onClick: () => {
+              sendEvent('evm_linking_popover_clicked')
               setDirectlyOpenEvmLinking(true)
               setIsOpen(true)
             },

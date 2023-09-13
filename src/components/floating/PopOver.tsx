@@ -57,6 +57,7 @@ export type PopOverProps = VariantProps<typeof panelStyles> & {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   }
+  onClose?: () => void
   triggerOnHover?: boolean
   initialFocus?: Parameters<typeof FloatingFocusManager>[0]['initialFocus']
   popOverProps?: ComponentProps<'div'>
@@ -66,6 +67,7 @@ export default function PopOver({
   children,
   trigger,
   asButton = false,
+  onClose,
   withCloseButton,
   withArrow = true,
   placement = 'bottom',
@@ -169,6 +171,7 @@ export default function PopOver({
                   <Button
                     onClick={(e) => {
                       e.stopPropagation()
+                      onClose?.()
                       setIsOpen(false)
                     }}
                     className='my-1 ml-4 mr-0 p-0 text-2xl text-current'
