@@ -18,7 +18,7 @@ export default function MessageStatusIndicator({
 
   if (messageStatus === 'sending') {
     return (
-      <span className='flex flex-shrink-0 items-center justify-center'>
+      <span className='relative top-px flex flex-shrink-0 items-center justify-center'>
         <Spinner className='h-2.5 w-2.5' />
       </span>
     )
