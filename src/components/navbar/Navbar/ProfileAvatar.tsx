@@ -1,5 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import ProfileModal from '@/components/auth/ProfileModal'
+import Button from '@/components/Button'
 import PopOver from '@/components/floating/PopOver'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
@@ -43,27 +44,17 @@ export default function ProfileAvatar({
 
   return (
     <>
-      <ProfileModal
-        address={address}
-        isOpen={isOpen}
-        step={directlyOpenEvmLinking ? 'link-evm-address' : undefined}
-        closeModal={() => {
-          setIsOpen(false)
-          setDirectlyOpenEvmLinking(false)
-        }}
-        notification={{
-          showNotif: showNotif,
-          setNotifDone: () => setShowNotif(false),
-        }}
-      />
-      <div {...props} className={cx('relative h-9 w-9', props.className)}>
-        <AddressAvatar
+      <div {...props} className={cx('relative', props.className)}>
+        <Button
+          className='relative z-10 flex items-center gap-2 py-1.5 pl-2 pr-3'
+          variant='primaryOutline'
           onClick={() => {
             setIsOpen(true)
           }}
-          address={address}
-          className='relative z-10 cursor-pointer'
-        />
+        >
+          <AddressAvatar address={address} className='h-7 w-7' />
+          <span>Account</span>
+        </Button>
         <PopOver
           manualTrigger={popOverControl}
           popOverClassName='font-semibold cursor-pointer'
@@ -85,6 +76,19 @@ export default function ProfileAvatar({
           <p>Connect an EVM wallet to unlock more features</p>
         </PopOver>
       </div>
+      <ProfileModal
+        address={address}
+        isOpen={isOpen}
+        step={directlyOpenEvmLinking ? 'link-evm-address' : undefined}
+        closeModal={() => {
+          setIsOpen(false)
+          setDirectlyOpenEvmLinking(false)
+        }}
+        notification={{
+          showNotif: showNotif,
+          setNotifDone: () => setShowNotif(false),
+        }}
+      />
     </>
   )
 }
