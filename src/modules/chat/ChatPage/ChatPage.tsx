@@ -294,7 +294,7 @@ function NavbarChatInfo({
               <ChatHiddenChip popOverProps={{ placement: 'bottom' }} />
             )}
           </div>
-          <span className='text-xs text-text-muted'>
+          <span className='overflow-hidden overflow-ellipsis whitespace-nowrap text-xs text-text-muted'>
             {membersCount
               ? `${membersCount} ${getPluralText({
                   count: membersCount,
