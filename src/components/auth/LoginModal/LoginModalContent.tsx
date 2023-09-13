@@ -189,7 +189,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
         isLoading={isLoading}
         secondLabel='Sign Message'
         onClick={() =>
-          sendEvent('click connect_wallet_button from account_created')
+          sendEvent('start_link_evm_address', { eventSource: 'account_created' })
         }
         label={
           <div className='flex items-center justify-center gap-2'>
