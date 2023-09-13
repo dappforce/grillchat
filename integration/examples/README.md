@@ -25,4 +25,4 @@
 
    From Dotfinder you can discuss the Polkadot and Kusama ecosystem while searching for your favorite information directly from Grill Chat and from the [website](https://dotfinder.xyz).
 
-   Code: <https://github.com/dappforce/grillchat/integration/examples/dotfinder>
+   Code: <https://github.com/dappforce/grillchat/tree/main/integration/examples/dotfinder>
