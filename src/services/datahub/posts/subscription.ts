@@ -92,21 +92,26 @@ async function processMessage(
         const oldIdsSet = new Set(oldIds)
         if (oldIdsSet.has(id)) return oldIds
 
+        const newIds = [...oldIds]
+
         const clientOptimisticId = commentIdsOptimisticEncoder.encode(
           eventData.optimisticId ?? ''
         )
-        oldIdsSet.delete(clientOptimisticId)
+        if (oldIdsSet.has(clientOptimisticId)) {
+          const optimisticIdIndex = newIds.findIndex(
+            (id) => id === clientOptimisticId
+          )
+          newIds.splice(optimisticIdIndex, 1, id)
+        }
 
         if (eventData.persistentId && oldIdsSet.has(eventData.entityId)) {
-          const newIds = [...oldIdsSet]
-          const optimisticIdIndex = oldIds.findIndex(
+          const optimisticIdIndex = newIds.findIndex(
             (id) => id === eventData.entityId
           )
           newIds.splice(optimisticIdIndex, 1, id)
-          return newIds
         }
 
-        return [...oldIdsSet, id]
+        return newIds
       }
     )
   }
