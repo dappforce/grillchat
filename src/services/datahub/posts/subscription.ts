@@ -1,4 +1,5 @@
 import { getPostQuery } from '@/services/api/query'
+import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect } from 'react'
@@ -15,6 +16,7 @@ const SUBSCRIBE_POST = gql`
       event
       entityId
       persistentId
+      optimisticId
     }
   }
 `
@@ -54,11 +56,16 @@ const subscription = (queryClient: QueryClient) => {
                 const oldIdsSet = new Set(oldIds)
                 if (oldIdsSet.has(id)) return oldIds
 
+                const clientOptimisticId = commentIdsOptimisticEncoder.encode(
+                  eventData.optimisticId ?? ''
+                )
+                oldIdsSet.delete(clientOptimisticId)
+
                 if (
                   eventData.persistentId &&
                   oldIdsSet.has(eventData.entityId)
                 ) {
-                  const newIds = [...oldIds]
+                  const newIds = [...oldIdsSet]
                   const optimisticIdIndex = oldIds.findIndex(
                     (id) => id === eventData.entityId
                   )

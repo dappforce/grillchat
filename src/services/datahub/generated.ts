@@ -97,14 +97,20 @@ export type CreatePostPersistentInput = {
 };
 
 export enum DataHubSubscriptionEventEnum {
+  EvmAddressLinkedToAccount = 'EVM_ADDRESS_LINKED_TO_ACCOUNT',
   EvmAddressLinkedToAccountOptimistic = 'EVM_ADDRESS_LINKED_TO_ACCOUNT_OPTIMISTIC',
   EvmAddressLinkedToAccountPersistent = 'EVM_ADDRESS_LINKED_TO_ACCOUNT_PERSISTENT',
+  EvmAddressLinkToAccountStateUpdated = 'EVM_ADDRESS_LINK_TO_ACCOUNT_STATE_UPDATED',
   EvmAddressUnlinkedToAccountOptimistic = 'EVM_ADDRESS_UNLINKED_TO_ACCOUNT_OPTIMISTIC',
   EvmAddressUnlinkedToAccountPersistent = 'EVM_ADDRESS_UNLINKED_TO_ACCOUNT_PERSISTENT',
+  PostCreated = 'POST_CREATED',
   PostCreatedOptimistic = 'POST_CREATED_OPTIMISTIC',
   PostCreatedPersistent = 'POST_CREATED_PERSISTENT',
+  PostFollowed = 'POST_FOLLOWED',
   PostFollowedOptimistic = 'POST_FOLLOWED_OPTIMISTIC',
   PostFollowedPersistent = 'POST_FOLLOWED_PERSISTENT',
+  PostFollowStateUpdated = 'POST_FOLLOW_STATE_UPDATED',
+  PostStateUpdated = 'POST_STATE_UPDATED',
   PostUnfollowedOptimistic = 'POST_UNFOLLOWED_OPTIMISTIC',
   PostUnfollowedPersistent = 'POST_UNFOLLOWED_PERSISTENT',
   PostUpdatedOptimistic = 'POST_UPDATED_OPTIMISTIC',
@@ -177,6 +183,8 @@ export type Mutation = {
   createPostOptimistic: Post;
   createPostPersistent: Post;
   ingestPersistentDataSquid: IngestPersistentDataFromSquidResponseDto;
+  updatePostOptimistic: Post;
+  updatePostPersistent: Post;
 };
 
 
@@ -192,6 +200,16 @@ export type MutationCreatePostPersistentArgs = {
 
 export type MutationIngestPersistentDataSquidArgs = {
   ingestPersistentDataSquidInput: IngestPersistentDataFromSquidInputDto;
+};
+
+
+export type MutationUpdatePostOptimisticArgs = {
+  updatePostOptimisticInput: UpdatePostOptimisticInput;
+};
+
+
+export type MutationUpdatePostPersistentArgs = {
+  updatePostPersistentInput: UpdatePostPersistentInput;
 };
 
 export type PersistentDataItemFromSquid = {
@@ -278,13 +296,7 @@ export type PostSubscriptionPayload = {
 
 export type Query = {
   __typename?: 'Query';
-  findPostById: Post;
   findPosts: Array<Post>;
-};
-
-
-export type QueryFindPostByIdArgs = {
-  id: Scalars['String']['input'];
 };
 
 
@@ -396,6 +408,18 @@ export type Subscription = {
   post: PostSubscriptionPayload;
 };
 
+export type UpdatePostOptimisticInput = {
+  callData?: InputMaybe<SocialCallDataInput>;
+  content?: InputMaybe<Scalars['String']['input']>;
+  dataType: SocialEventDataType;
+};
+
+export type UpdatePostPersistentInput = {
+  callData?: InputMaybe<SocialCallDataInput>;
+  dataType: SocialEventDataType;
+  eventData?: InputMaybe<SocialEventData>;
+};
+
 export type PostFragmentFragment = { __typename?: 'Post', id: string, content?: string | null, createdAtBlock?: number | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore: boolean, image?: string | null, link?: string | null, hidden: boolean, persistentId?: string | null, isComment: boolean, kind: PostKind, updatedAtTime?: any | null, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', persistentId?: string | null } | null, rootPost?: { __typename?: 'Post', persistentId?: string | null, space?: { __typename?: 'Space', persistentId?: string | null } | null } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: string | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources?: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> | null }> };
 
 export type GetPostsQueryVariables = Exact<{
@@ -429,7 +453,7 @@ export type GetMessageIdsInChatIdQuery = { __typename?: 'Query', findPosts: Arra
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SubscribePostSubscription = { __typename?: 'Subscription', post: { __typename?: 'PostSubscriptionPayload', event: DataHubSubscriptionEventEnum, entityId: string, persistentId?: string | null } };
+export type SubscribePostSubscription = { __typename?: 'Subscription', post: { __typename?: 'PostSubscriptionPayload', event: DataHubSubscriptionEventEnum, entityId: string, persistentId?: string | null, optimisticId?: string | null } };
 
 export const PostFragment = gql`
     fragment PostFragment on Post {
@@ -531,6 +555,7 @@ export const SubscribePost = gql`
     event
     entityId
     persistentId
+    optimisticId
   }
 }
     `;

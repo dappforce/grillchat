@@ -5,9 +5,11 @@ import { createPostData } from '@/services/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
+import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PostContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
+import { addOptimisticData, deleteOptimisticData } from './optimistic'
 import { SendMessageParams } from './types'
 
 function generateMessageContent(params: SendMessageParams) {
@@ -25,61 +27,72 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const { mutateAsync: saveFile } = useSaveFile()
   const waitHasEnergy = useWaitHasEnergy()
 
-  return useSubsocialMutation<SendMessageParams, string>(
-    getWallet,
-    async (params, { substrateApi }, { address }) => {
-      const maxLength = getMaxMessageLength(params.chatId)
-      if (params.message && params.message.length > maxLength)
-        throw new Error(
-          'Your message is too long, please split it up to multiple messages'
-        )
+  return useSubsocialMutation<
+    SendMessageParams,
+    ReturnType<typeof generateMessageContent>
+  >(
+    {
+      getWallet,
+      generateContext: (data) => generateMessageContent(data),
+      transactionGenerator: async ({
+        apis: { substrateApi },
+        wallet: { address },
+        data,
+        context: ipfsContent,
+      }) => {
+        const maxLength = getMaxMessageLength(data.chatId)
+        if (data.message && data.message.length > maxLength)
+          throw new Error(
+            'Your message is too long, please split it up to multiple messages'
+          )
 
-      console.log('waiting energy...')
-      await waitHasEnergy()
-      const content = generateMessageContent(params)
-      const { cid, success } = await saveFile(content)
+        console.log('waiting energy...')
+        await waitHasEnergy()
+        const { cid, success } = await saveFile(ipfsContent)
 
-      if (!success || !cid) throw new Error('Failed to save file to IPFS')
+        if (!success || !cid) throw new Error('Failed to save file to IPFS')
 
-      // make it a mutation and have it not needing to await this
-      await createPostData({
-        address,
-        content,
-        contentCid: cid,
-        rootPostId: params.chatId,
-        spaceId: params.hubId,
-      })
+        // make it a mutation and have it not needing to await this
+        await createPostData({
+          address,
+          content: ipfsContent,
+          contentCid: cid,
+          rootPostId: data.chatId,
+          spaceId: data.hubId,
+        })
 
-      return {
-        tx: substrateApi.tx.posts.createPost(
-          null,
-          { Comment: { parentId: null, rootPostId: params.chatId } },
-          IpfsWrapper(cid)
-        ),
-        summary: 'Sending message',
-      }
+        return {
+          tx: substrateApi.tx.posts.createPost(
+            null,
+            { Comment: { parentId: null, rootPostId: data.chatId } },
+            IpfsWrapper(cid)
+          ),
+          summary: 'Sending message',
+        }
+      },
     },
-    config
-    // {
-    //   txCallbacks: {
-    //     // Removal of optimistic message generated is done by the subscription of messageIds
-    //     // this is done to prevent a bit of flickering because the optimistic message is done first, before the message data finished fetching
-    //     getContext: ({ data: params, address }) => {
-    //       return generateOptimisticId<OptimisticMessageIdData>({
-    //         address,
-    //         messageData: generateMessageContent(params),
-    //       })
-    //     },
-    //     onStart: ({ address, data: params }, tempId) => {
-    //       preventWindowUnload()
-    //       addOptimisticData({ address, params, tempId, client })
-    //     },
-    //     onSend: allowWindowUnload,
-    //     onError: ({ address, data: params }, tempId) => {
-    //       allowWindowUnload()
-    //       deleteOptimisticData({ tempId, address, client, params })
-    //     },
-    //   },
-    // }
+    config,
+    {
+      txCallbacks: {
+        onStart: ({ address, context, data }) => {
+          preventWindowUnload()
+          addOptimisticData({
+            address,
+            params: data,
+            ipfsContent: context,
+            client,
+          })
+        },
+        onSend: allowWindowUnload,
+        onError: ({ data, context }) => {
+          allowWindowUnload()
+          deleteOptimisticData({
+            client,
+            chatId: data.chatId,
+            optimisticId: context.optimisticId,
+          })
+        },
+      },
+    }
   )
 }

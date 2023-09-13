@@ -5,7 +5,7 @@ import { useMutation, UseMutationResult } from '@tanstack/react-query'
 import { makeCombinedCallback } from '../base'
 import { getConnectionConfig, getGlobalTxCallbacks } from './config'
 import {
-  OptimisticData,
+  CallbackData,
   SubsocialMutationConfig,
   Transaction,
   WalletAccount,
@@ -18,13 +18,24 @@ type Apis = {
   substrateApi: ApiPromise
 }
 
+type TransactionGenerator<Data, Context> = (params: {
+  data: Data
+  context: Context
+  apis: Apis
+  wallet: WalletAccount
+}) => Promise<{ tx: Transaction; summary: string }>
 export function useSubsocialMutation<Data, Context = undefined>(
-  getWallet: () => Promise<WalletAccount> | WalletAccount,
-  transactionGenerator: (
-    data: Data,
-    apis: Apis,
-    wallet: WalletAccount
-  ) => Promise<{ tx: Transaction; summary: string }>,
+  {
+    getWallet,
+    generateContext,
+    transactionGenerator,
+  }: {
+    getWallet: () => Promise<WalletAccount> | WalletAccount
+    generateContext: Context extends undefined
+      ? undefined
+      : (data: Data, wallet: WalletAccount) => Promise<Context> | Context
+    transactionGenerator: TransactionGenerator<Data, Context>
+  },
   config?: SubsocialMutationConfig<Data, Context>,
   defaultConfig?: SubsocialMutationConfig<Data, Context>
 ): UseMutationResult<string, Error, Data, unknown> {
@@ -33,10 +44,13 @@ export function useSubsocialMutation<Data, Context = undefined>(
     if (!wallet.address || !wallet.signer)
       throw new Error('You need to connect your wallet first!')
 
+    const context = (await generateContext?.(data, wallet)) as Context
+
     const txCallbacks = generateTxCallbacks(
       {
         address: wallet.address,
         data,
+        context,
       },
       config?.txCallbacks,
       defaultConfig?.txCallbacks
@@ -63,6 +77,7 @@ export function useSubsocialMutation<Data, Context = undefined>(
       return await createTxAndSend(
         transactionGenerator,
         data,
+        context,
         { subsocialApi, substrateApi, ipfsApi },
         { wallet, networkRpc: getConnectionConfig().substrateUrl },
         txCallbacks
@@ -81,13 +96,10 @@ export function useSubsocialMutation<Data, Context = undefined>(
   })
 }
 
-async function createTxAndSend<Data>(
-  transactionGenerator: (
-    data: Data,
-    apis: Apis,
-    wallet: WalletAccount
-  ) => Promise<{ tx: Transaction; summary: string }>,
+async function createTxAndSend<Data, Context>(
+  transactionGenerator: TransactionGenerator<Data, Context>,
   data: Data,
+  context: Context,
   apis: Apis,
   txConfig: {
     wallet: WalletAccount
@@ -95,11 +107,12 @@ async function createTxAndSend<Data>(
   },
   optimisticCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
-  const { tx, summary } = await transactionGenerator(
+  const { tx, summary } = await transactionGenerator({
     data,
     apis,
-    txConfig.wallet
-  )
+    wallet: txConfig.wallet,
+    context,
+  })
   return sendTransaction(
     {
       tx,
@@ -230,43 +243,25 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
 }
 
 function generateTxCallbacks<Data, Context>(
-  data: OptimisticData<Data>,
+  data: CallbackData<Data, Context>,
   callbacks: SubsocialMutationConfig<Data, Context>['txCallbacks'],
   defaultCallbacks: SubsocialMutationConfig<Data, Context>['txCallbacks']
 ) {
   if (!callbacks && !defaultCallbacks) return
-  const { getContext } = defaultCallbacks || {}
-  const context = getContext?.(data)
   return {
     onError: () =>
-      makeCombinedCallback(
-        defaultCallbacks,
-        callbacks,
-        'onError'
-      )(data, context),
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onError')(data),
     onBroadcast: () =>
-      makeCombinedCallback(
-        defaultCallbacks,
-        callbacks,
-        'onBroadcast'
-      )(data, context),
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onBroadcast')(data),
     onSuccess: (txResult: any) =>
-      makeCombinedCallback(defaultCallbacks, callbacks, 'onSuccess')(
-        data,
-        context,
-        txResult
-      ),
+      makeCombinedCallback(
+        defaultCallbacks,
+        callbacks,
+        'onSuccess'
+      )(data, txResult),
     onSend: () =>
-      makeCombinedCallback(
-        defaultCallbacks,
-        callbacks,
-        'onSend'
-      )(data, context),
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onSend')(data),
     onStart: () =>
-      makeCombinedCallback(
-        defaultCallbacks,
-        callbacks,
-        'onStart'
-      )(data, context),
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onStart')(data),
   }
 }
