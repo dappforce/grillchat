@@ -58,20 +58,24 @@ export default function Toast({
         <div className={cx('flex flex-col', !icon && 'mx-2')}>
           <p className={cx(isTitleOnly && 'text-sm')}>{title}</p>
           {subtitle && (
-            <p className={cx('text-sm text-text-muted')}>{subtitle}</p>
+            <p className={cx('mt-0.5 text-sm text-text-muted')}>{subtitle}</p>
           )}
           {description && (
             <p
               className={cx(
-                'text-sm text-text-muted',
-                title && subtitle && 'mt-2'
+                'mt-0.5 text-sm text-text-muted',
+                title && subtitle && 'mt-1.5'
               )}
             >
               {description}
             </p>
           )}
         </div>
-        <div className='flex-shrink-0 self-center'>{action}</div>
+        {action && (
+          <div className='ml-2 flex-shrink-0 self-center text-text'>
+            {action}
+          </div>
+        )}
       </div>
     </Transition>
   )

@@ -6,7 +6,7 @@ export function showErrorToast<ErrorType>(
   error: unknown,
   errorTitle: ReactNode,
   config?: {
-    additionalDescription?: (t: Toast) => ReactNode
+    getDescription?: (t: Toast) => ReactNode
     getMessage?: (error: ErrorType) => string
     actionButton?: (t: Toast) => ReactNode
     toastConfig?: ToastOptions
@@ -27,12 +27,8 @@ export function showErrorToast<ErrorType>(
         t={t}
         type='error'
         title={errorTitle}
-        description={
-          <div className='flex flex-col'>
-            <p>{message}</p>
-            {config?.additionalDescription?.(t)}
-          </div>
-        }
+        subtitle={message}
+        description={config?.getDescription?.(t)}
         action={actionButton?.(t)}
       />
     ),

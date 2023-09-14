@@ -135,7 +135,7 @@ function ConnectTelegramButton({ address }: ContentProps) {
               action={
                 <Button
                   size='circle'
-                  className='ml-2'
+                  className='text-lg'
                   href={url}
                   target='_blank'
                   onClick={() => {

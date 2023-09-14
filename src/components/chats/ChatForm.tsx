@@ -313,20 +313,15 @@ function showErrorSendingMessageToast(
   message: string | undefined
 ) {
   showErrorToast(error, errorTitle, {
-    withIcon: false,
     toastConfig: { duration: Infinity },
-    additionalDescription: message
-      ? () => (
-          <span className='text-text'>
-            Click refresh to recover your message to clipboard
-          </span>
-        )
+    getDescription: message
+      ? () => 'Click refresh to recover your message to clipboard'
       : undefined,
     actionButton: (t) => (
       <Button
-        className='ml-2'
         size='circle'
         variant='transparent'
+        className='text-lg'
         onClick={() => {
           copyToClipboard(message ?? '')
           toast.dismiss(t.id)
