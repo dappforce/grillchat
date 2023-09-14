@@ -4,6 +4,7 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
+import { useSubscribePosts } from '@/services/datahub/posts/subscription'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
@@ -94,9 +95,15 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
             </EvmProvider>
           </ErrorBoundary>
         </div>
+        <PostSubscriber />
       </QueryProvider>
     </ThemeProvider>
   )
+}
+
+function PostSubscriber() {
+  useSubscribePosts()
+  return null
 }
 
 function ToasterConfig() {
