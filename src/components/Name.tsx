@@ -23,7 +23,15 @@ export function useName(address: string) {
   const name =
     ensName || profile?.profileSpace?.name || generateRandomName(address)
 
-  return { name, accountData, evmAddress, isLoading, textColor }
+  return {
+    name,
+    accountData,
+    profile,
+    evmAddress,
+    isLoading,
+    textColor,
+    ensName,
+  }
 }
 
 const Name = ({
