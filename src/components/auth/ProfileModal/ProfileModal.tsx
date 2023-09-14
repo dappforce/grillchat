@@ -82,7 +82,7 @@ export default function ProfileModal({
       withFooter: true,
     },
     'subsocial-profile': {
-      title: '🎩 Update name',
+      title: '🎩 Update nickname',
       desc: 'Create a name so other people can recognize you. You can change it at any time.',
       withBackButton: true,
     },

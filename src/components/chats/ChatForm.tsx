@@ -298,7 +298,7 @@ export default function ChatForm({
 
       <EmailSubscribeModal chatId={chatId} />
       <SubsocialProfileModal
-        title='🎩 Do you want to set a name?'
+        title='🎩 Set nickname?'
         isOpen={isOpenNameModal}
         closeModal={() => setIsOpenNameModal(false)}
         cancelButtonText='No, I want to stay anonymous'

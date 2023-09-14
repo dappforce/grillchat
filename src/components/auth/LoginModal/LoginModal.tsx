@@ -53,7 +53,7 @@ const modalHeader: ModalConfig = {
     withFooter: true,
   },
   'subsocial-profile': {
-    title: '🎩 Update name',
+    title: '🎩 Update nickname',
     desc: 'Create a name so other people can recognize you. You can change it at any time.',
     withBackButton: true,
     backToStep: 'account-created',
@@ -63,7 +63,7 @@ const modalHeader: ModalConfig = {
     desc: 'We have created an anonymous account for you. You can now use Grill.chat!',
   },
   'account-created-after-name-set': {
-    title: '🎉 Name updated',
+    title: '🎉 Nickname set',
     desc: 'Other users will be able to remember and recognize you now!',
   },
   'evm-address-linked': {
