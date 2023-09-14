@@ -44,6 +44,10 @@ or using CDN
 
 3. That's it! 🥳
 
+## Integration Examples
+
+Our community is using Grill Widget in various ways. You can check out some of the examples in the [examples folder](./examples).
+
 ## Customization
 
 You can customize the Grill UI by passing a config object to the `grill.init()` function. For example:

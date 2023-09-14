@@ -32,6 +32,7 @@ export default function useSortChatIdsByLatestMessage(chatIds: string[] = []) {
     })
 
     const restIds = chatIds.filter((id) => !hasAddedIds.has(id))
+    restIds.reverse()
     return [...sortedIds, ...restIds]
   }, [lastMessageQueries, chatIds])
 }

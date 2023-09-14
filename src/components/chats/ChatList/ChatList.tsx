@@ -6,6 +6,7 @@ import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
@@ -40,8 +41,13 @@ export type ChatListProps = ComponentProps<'div'> & {
 
 export default function ChatList(props: ChatListProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
-  if (!isInitialized) return null
-  return <ChatListContent key={props.chatId} {...props} />
+  return (
+    <ChatListContent
+      key={props.chatId}
+      {...props}
+      className={cx(!isInitialized && 'opacity-0', props.className)}
+    />
+  )
 }
 
 // If using bigger threshold, the scroll will be janky, but if using 0 threshold, it sometimes won't trigger `next` callback
@@ -56,6 +62,7 @@ function ChatListContent({
   newMessageNoticeClassName,
   ...props
 }: ChatListProps) {
+  const sendEvent = useSendEvent()
   const { enableBackButton } = useConfigContext()
   const lastReadId = useFocusedLastMessageId(chatId)
 
@@ -71,8 +78,11 @@ function ChatListContent({
   const messageIds = rawMessageIds || []
 
   const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)
-  const { currentData: currentPageMessageIds, loadMore } =
-    useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
+  const {
+    currentData: currentPageMessageIds,
+    loadMore,
+    currentPage,
+  } = useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
 
   const filteredMessageIds = useFilterBlockedMessageIds(
     hubId,
@@ -181,7 +191,10 @@ function ChatListContent({
         >
           <InfiniteScroll
             dataLength={renderedMessageIds.length}
-            next={loadMore}
+            next={() => {
+              loadMore()
+              sendEvent('load_more_messages', { currentPage })
+            }}
             className={cx(
               'relative flex flex-col-reverse !overflow-hidden pb-2',
               // need to have enough room to open message menu

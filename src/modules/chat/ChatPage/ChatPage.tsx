@@ -286,7 +286,7 @@ function NavbarChatInfo({
         <div className='flex flex-col overflow-hidden'>
           <div className='flex items-center gap-2 overflow-hidden'>
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
-              {chatTitle ?? 'Topic'}
+              {chatTitle || 'Untitled'}
             </span>
             <ChatModerateChip chatId={chatId} />
             {chat?.struct.hidden && (

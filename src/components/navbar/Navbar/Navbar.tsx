@@ -29,7 +29,7 @@ import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
-  loading: () => <div className='w-9' />,
+  loading: () => <div className='w-20' />,
 })
 const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), {
   ssr: false,
@@ -89,7 +89,7 @@ export default function Navbar({
   }
 
   const renderAuthComponent = () => {
-    if (!isInitialized) return <div className='w-9' />
+    if (!isInitialized) return <div className='w-20' />
 
     if (isLoggedIn) {
       return (
