@@ -62,9 +62,9 @@ COPY package.json yarn.lock* ./
 
 RUN yarn install
 
-RUN yarn dh-sdk-i
-
 COPY . .
+
+RUN yarn dh-sdk-i
 
 RUN set -x \
     && mv ci.env .env \
