@@ -64,6 +64,7 @@ export default function ProfileAvatar({
         />
         <PopOver
           manualTrigger={popOverControl}
+          popOverContainerClassName='z-30'
           popOverClassName='font-semibold cursor-pointer'
           yOffset={16}
           placement='bottom-end'
