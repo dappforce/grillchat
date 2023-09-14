@@ -16,7 +16,6 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { hasSentMessageStorage, useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { SessionStorage } from '@/utils/storage'
 import { copyToClipboard } from '@/utils/strings'
 import dynamic from 'next/dynamic'
 import {
@@ -209,14 +208,16 @@ export default function ChatForm({
       setIsRequestingEnergy(true)
     }
 
-    // TODO: wrap it into hook
-    const storage = new SessionStorage(() => 'FIRST_MESSAGE_SENT')
-    const isFirstMessageInSession = storage.get()
-    console.log('isFirstMessageInSession', isFirstMessageInSession)
-    if (!isFirstMessageInSession) {
-      sendEvent('send_first_message', { chatId, title: chatTitle })
-      storage.set('true')
-    }
+    // // TODO: wrap it into hook
+    // const storage = new SessionStorage(() => 'FIRST_MESSAGE_SENT')
+    // const isFirstMessageInSession = storage.get()
+    // console.log('isFirstMessageInSession', isFirstMessageInSession)
+    // if (!isFirstMessageInSession) {
+    //   sendEvent('send_first_message', { chatId, title: chatTitle })
+    //   storage.set('true')
+    // }
+    const firstExtension = sendMessageParams.extensions?.[0]
+    sendEvent('send_message', { extensionType: firstExtension?.id })
 
     onSubmit?.()
     incrementMessageCount()
