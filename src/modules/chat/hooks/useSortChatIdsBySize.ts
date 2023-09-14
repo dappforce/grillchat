@@ -2,8 +2,7 @@ import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
 import { useMemo } from 'react'
 
 export default function useSortChatIdsBySize(chatIds: string[]) {
-  const messageIdsQueries =
-    getCommentIdsByPostIdQuery.useQueriesSubscription(chatIds)
+  const messageIdsQueries = getCommentIdsByPostIdQuery.useQueries(chatIds)
 
   return useMemo(() => {
     const chatIdsContentLengths: { size: number; id: string }[] =

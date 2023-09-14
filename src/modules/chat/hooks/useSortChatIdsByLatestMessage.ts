@@ -4,8 +4,7 @@ import { CommentData } from '@subsocial/api/types'
 import { useMemo } from 'react'
 
 export default function useSortChatIdsByLatestMessage(chatIds: string[] = []) {
-  const messageIdsQueries =
-    getCommentIdsByPostIdQuery.useQueriesSubscription(chatIds)
+  const messageIdsQueries = getCommentIdsByPostIdQuery.useQueries(chatIds)
   const latestMessageIds = useMemo(() => {
     return messageIdsQueries
       ?.map((query) => {
