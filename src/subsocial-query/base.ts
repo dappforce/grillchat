@@ -141,6 +141,9 @@ export function createQuery<Data, ReturnValue>({
         }),
       })
     },
+    getQueryData: (client: QueryClient, data: Data) => {
+      return client?.getQueryData(getQueryKey(data)) as ReturnValue
+    },
     setQueryData: (
       client: QueryClient,
       data: Data,

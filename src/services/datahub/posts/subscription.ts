@@ -87,39 +87,53 @@ async function processMessage(
   eventData: SubscribePostSubscription['post']
 ) {
   const entity = eventData.entity
-  const id = entity.persistentId || entity.id
-  const post = await getPostQuery.fetchQuery(queryClient, id)
-  if (!post?.struct.rootPostId) return
+  const newestId = entity.persistentId || entity.id
+  const rootPostId = entity.rootPost?.persistentId
+  if (!rootPostId) return
 
-  getCommentIdsByPostIdQuery.setQueryData(
-    queryClient,
-    post?.struct.rootPostId,
-    (oldIds) => {
-      if (!oldIds) return oldIds
-      const oldIdsSet = new Set(oldIds)
-      if (oldIdsSet.has(id)) return oldIds
+  getCommentIdsByPostIdQuery.setQueryData(queryClient, rootPostId, (oldIds) => {
+    if (!oldIds) return oldIds
+    const oldIdsSet = new Set(oldIds)
+    if (oldIdsSet.has(newestId)) return oldIds
 
-      const newIds = [...oldIds]
+    const newIds = [...oldIds]
 
-      const clientOptimisticId = commentIdsOptimisticEncoder.encode(
-        entity.optimisticId ?? ''
+    const clientOptimisticId = commentIdsOptimisticEncoder.encode(
+      entity.optimisticId ?? ''
+    )
+    if (oldIdsSet.has(clientOptimisticId)) {
+      const optimisticIdIndex = newIds.findIndex(
+        (id) => id === clientOptimisticId
       )
-      if (oldIdsSet.has(clientOptimisticId)) {
-        const optimisticIdIndex = newIds.findIndex(
-          (id) => id === clientOptimisticId
-        )
-        newIds.splice(optimisticIdIndex, 1, id)
-        return newIds
-      }
+      newIds.splice(optimisticIdIndex, 1, newestId)
 
-      if (entity.persistentId && oldIdsSet.has(entity.id)) {
-        const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
-        newIds.splice(optimisticIdIndex, 1, id)
-        return newIds
+      const data = getPostQuery.getQueryData(queryClient, clientOptimisticId)
+      if (data) {
+        data.id = newestId
       }
+      getPostQuery.setQueryData(queryClient, newestId, data)
+      console.log({ clientOptimisticId, id: newestId })
 
-      newIds.push(id)
       return newIds
     }
-  )
+
+    if (entity.persistentId && oldIdsSet.has(entity.id)) {
+      const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
+      newIds.splice(optimisticIdIndex, 1, newestId)
+
+      const data = getPostQuery.getQueryData(queryClient, entity.id)
+      if (data) {
+        data.id = newestId
+      }
+
+      // set initial data for immediate render but refetch it in background
+      getPostQuery.setQueryData(queryClient, newestId, data && { ...data })
+      getPostQuery.invalidate(queryClient)
+
+      return newIds
+    }
+
+    newIds.push(newestId)
+    return newIds
+  })
 }
