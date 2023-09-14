@@ -52,8 +52,8 @@ export default function ProfileAvatar({
             setIsOpen(true)
           }}
         >
-          <AddressAvatar address={address} className='h-7 w-7' />
-          <span>Account</span>
+          <AddressAvatar address={address} className='h-6 w-6' />
+          <span className='text-sm'>Account</span>
         </Button>
         <PopOver
           manualTrigger={popOverControl}
