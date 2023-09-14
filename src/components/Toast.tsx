@@ -9,7 +9,7 @@ const toastStyles = cva(
   {
     variants: {
       type: {
-        default: 'border border-border-gray bg-background-lighter',
+        default: 'border border-border-gray bg-background-light',
         error: 'border border-text-red bg-background-red text-text-red',
       },
     },
