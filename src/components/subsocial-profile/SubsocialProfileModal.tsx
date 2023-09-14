@@ -1,5 +1,4 @@
 import { toast } from 'react-hot-toast'
-import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import Button from '../Button'
 import Modal, { ModalFunctionalityProps, ModalProps } from '../modals/Modal'
 import Toast from '../Toast'
@@ -17,15 +16,7 @@ export default function SubsocialProfileModal({
 }: SubsocialProfileModalProps) {
   const onSuccess = () => {
     props.closeModal()
-    toast.custom((t) => (
-      <Toast
-        t={t}
-        title='Your username was set'
-        icon={(className) => (
-          <HiOutlineInformationCircle className={className} />
-        )}
-      />
-    ))
+    toast.custom((t) => <Toast t={t} title='Your username was set' />)
   }
 
   return (

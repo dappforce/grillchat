@@ -52,9 +52,9 @@ export default function Toast({
       leaveTo={cx('-translate-y-6 opacity-0')}
     >
       <div className={cx(toastStyles({ type }), isTitleOnly && 'items-center')}>
-        {icon?.(cx('text-3xl mr-2.5 text-text-muted')) ?? type === 'error'
-          ? '😥'
-          : 'ℹ️'}
+        {icon?.(cx('text-3xl mr-2.5 text-text-muted')) ?? (
+          <span className='mr-1'>{type === 'error' ? '😥' : 'ℹ️'}</span>
+        )}
         <div className={cx('flex flex-col', !icon && 'mx-2')}>
           <p className={cx(isTitleOnly && 'text-sm')}>{title}</p>
           {subtitle && (
