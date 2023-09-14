@@ -63,7 +63,7 @@ const modalHeader: ModalConfig = {
     desc: 'We have created an anonymous account for you. You can now use Grill.chat!',
   },
   'account-created-after-name-set': {
-    title: '🎉 Your name is set',
+    title: '🎉 Name updated',
     desc: 'Other users will be able to remember and recognize you now!',
   },
   'evm-address-linked': {

@@ -16,14 +16,14 @@ export default function SubsocialProfileModal({
 }: SubsocialProfileModalProps) {
   const onSuccess = () => {
     props.closeModal()
-    toast.custom((t) => <Toast t={t} title='Your username was set' />)
+    toast.custom((t) => <Toast t={t} title='Your name was set' />)
   }
 
   return (
     <Modal
       {...props}
       title={title || '🎩 Update name'}
-      description='Create a name so other people can recognize you. You can change it at any time.'
+      description='This will help other people recognize you better. You can change it at any time.'
     >
       <SubsocialProfileForm onSuccess={onSuccess} />
       {cancelButtonText && (

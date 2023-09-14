@@ -133,7 +133,7 @@ export default function AccountContent({
               variant='primaryOutline'
               onClick={() => setCurrentState('subsocial-profile')}
             >
-              Update name
+              Change my name
             </Button>
           )}
         </div>
