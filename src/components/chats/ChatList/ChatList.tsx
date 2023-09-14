@@ -41,8 +41,13 @@ export type ChatListProps = ComponentProps<'div'> & {
 
 export default function ChatList(props: ChatListProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
-  if (!isInitialized) return null
-  return <ChatListContent key={props.chatId} {...props} />
+  return (
+    <ChatListContent
+      key={props.chatId}
+      {...props}
+      className={cx(!isInitialized && 'opacity-0', props.className)}
+    />
+  )
 }
 
 // If using bigger threshold, the scroll will be janky, but if using 0 threshold, it sometimes won't trigger `next` callback
