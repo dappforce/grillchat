@@ -46,11 +46,11 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             'Your message is too long, please split it up to multiple messages'
           )
 
+        const { cid, success } = await saveFile(ipfsContent)
+        if (!success || !cid) throw new Error('Failed to save file to IPFS')
+
         console.log('waiting energy...')
         await waitHasEnergy()
-        const { cid, success } = await saveFile(ipfsContent)
-
-        if (!success || !cid) throw new Error('Failed to save file to IPFS')
 
         // make it a mutation and have it not needing to await this
         await createPostData({

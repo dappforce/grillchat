@@ -83,39 +83,39 @@ async function processMessage(
 ) {
   const id = eventData.persistentId || eventData.entityId
   const post = await getPostQuery.fetchQuery(queryClient, id)
-  if (post?.struct.rootPostId) {
-    getCommentIdsByPostIdQuery.setQueryData(
-      queryClient,
-      post?.struct.rootPostId,
-      (oldIds) => {
-        if (!oldIds) return oldIds
-        const oldIdsSet = new Set(oldIds)
-        if (oldIdsSet.has(id)) return oldIds
+  if (!post?.struct.rootPostId) return
 
-        const newIds = [...oldIds]
+  getCommentIdsByPostIdQuery.setQueryData(
+    queryClient,
+    post?.struct.rootPostId,
+    (oldIds) => {
+      if (!oldIds) return oldIds
+      const oldIdsSet = new Set(oldIds)
+      if (oldIdsSet.has(id)) return oldIds
 
-        const clientOptimisticId = commentIdsOptimisticEncoder.encode(
-          eventData.optimisticId ?? ''
+      const newIds = [...oldIds]
+
+      const clientOptimisticId = commentIdsOptimisticEncoder.encode(
+        eventData.optimisticId ?? ''
+      )
+      if (oldIdsSet.has(clientOptimisticId)) {
+        const optimisticIdIndex = newIds.findIndex(
+          (id) => id === clientOptimisticId
         )
-        if (oldIdsSet.has(clientOptimisticId)) {
-          const optimisticIdIndex = newIds.findIndex(
-            (id) => id === clientOptimisticId
-          )
-          newIds.splice(optimisticIdIndex, 1, id)
-          return newIds
-        }
-
-        if (eventData.persistentId && oldIdsSet.has(eventData.entityId)) {
-          const optimisticIdIndex = newIds.findIndex(
-            (id) => id === eventData.entityId
-          )
-          newIds.splice(optimisticIdIndex, 1, id)
-          return newIds
-        }
-
-        newIds.push(id)
+        newIds.splice(optimisticIdIndex, 1, id)
         return newIds
       }
-    )
-  }
+
+      if (eventData.persistentId && oldIdsSet.has(eventData.entityId)) {
+        const optimisticIdIndex = newIds.findIndex(
+          (id) => id === eventData.entityId
+        )
+        newIds.splice(optimisticIdIndex, 1, id)
+        return newIds
+      }
+
+      newIds.push(id)
+      return newIds
+    }
+  )
 }
