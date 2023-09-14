@@ -1,10 +1,12 @@
 import EthIcon from '@/assets/icons/eth-medium.svg'
+import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
+import { LuShield } from 'react-icons/lu'
 
 export type NameProps = ComponentProps<'span'> & {
   address: string
@@ -12,6 +14,7 @@ export type NameProps = ComponentProps<'span'> & {
   className?: string
   showEthIcon?: boolean
   color?: string
+  labelingData?: { chatId: string }
 }
 
 export function useName(address: string) {
@@ -32,10 +35,13 @@ const Name = ({
   additionalText,
   showEthIcon = true,
   color,
+  labelingData,
   ...props
 }: NameProps) => {
   const { accountData, evmAddress, isLoading, name, textColor } =
     useName(address)
+
+  const isOwnerOfChat = useIsOwnerOfPost(labelingData?.chatId ?? '', address)
 
   if (!accountData && isLoading) {
     return (
@@ -58,7 +64,12 @@ const Name = ({
       style={{ color: color || textColor }}
     >
       {evmAddress && showEthIcon && <EthIcon className='mr-2 flex-shrink-0' />}
-      {additionalText} {name}
+      {additionalText} {name}{' '}
+      {isOwnerOfChat && (
+        <span className='ml-1 flex items-center gap-1'>
+          <LuShield className={cx('text-sm text-text-muted')} />
+        </span>
+      )}
     </span>
   )
 }

@@ -1,6 +1,8 @@
 import { createUserId } from '@/services/api/mutation'
+import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
 import { type BaseEvent, type BrowserClient } from '@amplitude/analytics-types'
+import Router from 'next/router'
 import { useParentData } from './parent'
 import { create } from './utils'
 
@@ -81,7 +83,16 @@ export const useAnalytics = create<State & Actions>()((set, get) => {
       const { amp, userId, deviceId } = get()
 
       const { parentOrigin } = useParentData.getState()
-      const commonProperties = { from: parentOrigin }
+
+      const slug = Router.query.slug as string
+      const chatId = slug && getIdFromSlug(slug)
+      const commonProperties = {
+        from: parentOrigin,
+        pathname: Router.asPath,
+        hubId: Router.query.hubId,
+        chatId,
+      }
+
       const mergedEventProperties = {
         ...commonProperties,
         ...eventProperties,

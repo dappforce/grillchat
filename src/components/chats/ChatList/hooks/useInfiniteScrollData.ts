@@ -44,5 +44,5 @@ export default function useInfiniteScrollData<Data>(
     }
   }, [hasMore, isPausedLoadMore])
 
-  return { currentData, hasMore, loadMore }
+  return { currentData, hasMore, loadMore, currentPage }
 }
