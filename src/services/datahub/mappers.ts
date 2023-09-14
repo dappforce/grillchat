@@ -128,16 +128,16 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
     data.content.extensions = extensions
   }
 
-  // const replyToId = post.inReplyToPost?.id
-  // const replyData =
-  //   replyToId &&
-  //   ({
-  //     kind: post.inReplyToKind ?? 'Post',
-  //     id: replyToId,
-  //   } as PostContent['inReplyTo'])
-  // if (replyData) {
-  //   data.content.inReplyTo = replyData
-  // }
+  const replyToId = post.inReplyToPost?.persistentId
+  const replyData =
+    replyToId &&
+    ({
+      kind: post.inReplyToKind ?? 'Post',
+      id: replyToId,
+    } as PostContent['inReplyTo'])
+  if (replyData) {
+    data.content.inReplyTo = replyData
+  }
 
   return data
 }

@@ -44,6 +44,10 @@ export const POST_FRAGMENT = gql`
         persistentId
       }
     }
+    inReplyToKind
+    inReplyToPost {
+      persistentId
+    }
     extensions {
       image
       amount
