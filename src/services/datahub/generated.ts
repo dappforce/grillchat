@@ -287,6 +287,7 @@ export type PostSubscriptionPayload = {
   body?: Maybe<Scalars['String']['output']>;
   createdAtTime?: Maybe<Scalars['String']['output']>;
   dataType: SocialEventDataType;
+  entity: Post;
   entityId: Scalars['String']['output'];
   event: DataHubSubscriptionEventEnum;
   optimisticId?: Maybe<Scalars['String']['output']>;
@@ -453,7 +454,7 @@ export type GetMessageIdsInChatIdQuery = { __typename?: 'Query', findPosts: Arra
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SubscribePostSubscription = { __typename?: 'Subscription', post: { __typename?: 'PostSubscriptionPayload', event: DataHubSubscriptionEventEnum, entityId: string, persistentId?: string | null, optimisticId?: string | null } };
+export type SubscribePostSubscription = { __typename?: 'Subscription', post: { __typename?: 'PostSubscriptionPayload', event: DataHubSubscriptionEventEnum, entity: { __typename?: 'Post', id: string, persistentId?: string | null, optimisticId?: string | null, rootPost?: { __typename?: 'Post', persistentId?: string | null } | null } } };
 
 export const PostFragment = gql`
     fragment PostFragment on Post {
@@ -553,9 +554,14 @@ export const SubscribePost = gql`
     subscription SubscribePost {
   post {
     event
-    entityId
-    persistentId
-    optimisticId
+    entity {
+      id
+      persistentId
+      optimisticId
+      rootPost {
+        persistentId
+      }
+    }
   }
 }
     `;

@@ -25,9 +25,14 @@ const SUBSCRIBE_POST = gql`
   subscription SubscribePost {
     post {
       event
-      entityId
-      persistentId
-      optimisticId
+      entity {
+        id
+        persistentId
+        optimisticId
+        rootPost {
+          persistentId
+        }
+      }
     }
   }
 `
@@ -81,7 +86,8 @@ async function processMessage(
   queryClient: QueryClient,
   eventData: SubscribePostSubscription['post']
 ) {
-  const id = eventData.persistentId || eventData.entityId
+  const entity = eventData.entity
+  const id = entity.persistentId || entity.id
   const post = await getPostQuery.fetchQuery(queryClient, id)
   if (!post?.struct.rootPostId) return
 
@@ -96,7 +102,7 @@ async function processMessage(
       const newIds = [...oldIds]
 
       const clientOptimisticId = commentIdsOptimisticEncoder.encode(
-        eventData.optimisticId ?? ''
+        entity.optimisticId ?? ''
       )
       if (oldIdsSet.has(clientOptimisticId)) {
         const optimisticIdIndex = newIds.findIndex(
@@ -106,10 +112,8 @@ async function processMessage(
         return newIds
       }
 
-      if (eventData.persistentId && oldIdsSet.has(eventData.entityId)) {
-        const optimisticIdIndex = newIds.findIndex(
-          (id) => id === eventData.entityId
-        )
+      if (entity.persistentId && oldIdsSet.has(entity.id)) {
+        const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
         newIds.splice(optimisticIdIndex, 1, id)
         return newIds
       }
