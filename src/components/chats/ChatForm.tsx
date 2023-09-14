@@ -7,7 +7,6 @@ import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getPostQuery } from '@/services/api/query'
 import {
   SendMessageParams,
   useSendMessage,
@@ -84,8 +83,6 @@ export default function ChatForm({
   const hasName = ensName || profile?.profileSpace?.name
 
   const [isOpenNameModal, setIsOpenNameModal] = useState(false)
-  const { data: chat } = getPostQuery.useQuery(chatId)
-  const chatTitle = chat?.content?.title ?? ''
 
   const sendEvent = useSendEvent()
   const incrementMessageCount = useMessageData(
