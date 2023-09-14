@@ -53,8 +53,8 @@ const modalHeader: ModalConfig = {
     withFooter: true,
   },
   'subsocial-profile': {
-    title: '🎩 Update nickname',
-    desc: 'Create a nickname so other people can recognize you. You can change it at any time.',
+    title: '🎩 Update name',
+    desc: 'Create a name so other people can recognize you. You can change it at any time.',
     withBackButton: true,
     backToStep: 'account-created',
   },

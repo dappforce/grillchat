@@ -31,8 +31,8 @@ export default function SubsocialProfileModal({
   return (
     <Modal
       {...props}
-      title={title || '🎩 Update nickname'}
-      description='Create a nickname so other people can recognize you. You can change it at any time.'
+      title={title || '🎩 Update name'}
+      description='Create a name so other people can recognize you. You can change it at any time.'
     >
       <SubsocialProfileForm onSuccess={onSuccess} />
       {cancelButtonText && (

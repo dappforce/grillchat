@@ -182,7 +182,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
             className='mt-4'
             onClick={() => setCurrentStep('subsocial-profile')}
           >
-            Change my nickname
+            Change my name
           </Button>
         </div>
       )}
