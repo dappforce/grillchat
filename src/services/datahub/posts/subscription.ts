@@ -112,7 +112,6 @@ async function processMessage(
         data.id = newestId
       }
       getPostQuery.setQueryData(queryClient, newestId, data)
-      console.log({ clientOptimisticId, id: newestId })
 
       return newIds
     }
