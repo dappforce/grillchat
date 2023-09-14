@@ -62,6 +62,10 @@ const modalHeader: ModalConfig = {
     title: '🎉 Account created',
     desc: 'We have created an anonymous account for you. You can now use Grill.chat!',
   },
+  'account-created-after-name-set': {
+    title: '🎉 Your name is set',
+    desc: 'Other users will be able to remember and recognize you now!',
+  },
   'evm-address-linked': {
     title: '🎉 EVM address linked',
     desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,

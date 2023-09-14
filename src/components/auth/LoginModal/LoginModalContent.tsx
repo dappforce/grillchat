@@ -34,6 +34,7 @@ export type LoginModalStep =
   | 'enter-secret-key'
   | 'subsocial-profile'
   | 'account-created'
+  | 'account-created-after-name-set'
   | 'evm-address-linked'
   | 'evm-linking-error'
 
@@ -225,7 +226,9 @@ export const EvmLoginError = ({ setCurrentStep }: ContentProps) => (
 )
 
 export const SubsocialProfileContent = ({ setCurrentStep }: ContentProps) => (
-  <SubsocialProfileForm onSuccess={() => setCurrentStep('account-created')} />
+  <SubsocialProfileForm
+    onSuccess={() => setCurrentStep('account-created-after-name-set')}
+  />
 )
 
 type LoginModalContents = {
@@ -237,6 +240,7 @@ export const loginModalContents: LoginModalContents = {
   'enter-secret-key': EnterSecretKeyContent,
   'subsocial-profile': SubsocialProfileContent,
   'account-created': AccountCreatedContent,
+  'account-created-after-name-set': AccountCreatedContent,
   'evm-address-linked': CommonEvmAddressLinked,
   'evm-linking-error': EvmLoginError,
 }
