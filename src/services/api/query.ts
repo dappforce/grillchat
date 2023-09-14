@@ -3,7 +3,8 @@ import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import axios from 'axios'
 import { useMemo } from 'react'
-import { getPosts } from './fetcher'
+import { SubsocialProfile } from '../subsocial/profiles/fetcher'
+import { getPosts, getProfiles } from './fetcher'
 
 const getPost = poolQuery<string, PostData>({
   multiCall: async (postIds) => {
@@ -95,4 +96,19 @@ async function getNft(nft: ApiNftParams | null) {
 export const getNftQuery = createQuery({
   key: 'nft',
   fetcher: getNft,
+})
+
+const getProfile = poolQuery<string, SubsocialProfile>({
+  multiCall: async (addresses) => {
+    if (addresses.length === 0) return []
+    return getProfiles(addresses)
+  },
+  resultMapper: {
+    paramToKey: (address) => address,
+    resultToKey: (result) => result?.address ?? '',
+  },
+})
+export const getProfileQuery = createQuery({
+  key: 'profile',
+  fetcher: getProfile,
 })

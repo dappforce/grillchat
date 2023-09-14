@@ -19,6 +19,7 @@ setupTxCallbacks({
     toast.custom((t) => (
       <Toast
         t={t}
+        type='error'
         title='Failed to send transaction'
         description={errorMessage ?? 'Please refresh the page and try again'}
         icon={(classNames) => (

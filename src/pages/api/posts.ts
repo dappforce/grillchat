@@ -23,8 +23,8 @@ type ResponseData = {
 export type ApiPostsResponse = ApiResponse<ResponseData>
 export type ApiPostsInvalidationResponse = ApiResponse<{}>
 
-const MAX_AGE = 1 * 60 // 1 minute
-const getRedisKey = (id: string) => {
+const INVALIDATED_MAX_AGE = 1 * 60 // 1 minute
+const getInvalidatedPostRedisKey = (id: string) => {
   return `posts-invalidated:${id}`
 }
 
@@ -47,7 +47,12 @@ const POST_handler = handlerWrapper({
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     redisCallWrapper(async (redis) => {
-      return redis?.set(getRedisKey(data.postId), data.postId, 'EX', MAX_AGE)
+      return redis?.set(
+        getInvalidatedPostRedisKey(data.postId),
+        data.postId,
+        'EX',
+        INVALIDATED_MAX_AGE
+      )
     })
 
     return res.status(200).send({ success: true, message: 'OK' })

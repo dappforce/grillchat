@@ -89,7 +89,7 @@ export default function Tabs({
               >
                 <span
                   className={cx(
-                    'relative z-10 block py-3.5 font-medium text-text-muted transition-colors',
+                    'relative z-10 block py-3.5 text-text-muted transition-colors',
                     'after:absolute after:bottom-0 after:left-0 after:h-1 after:w-full after:origin-bottom after:scale-y-0 after:rounded-t-full after:bg-text-primary after:opacity-0 after:transition',
                     'group-hover:text-text-primary group-hover:after:scale-y-100 group-hover:after:opacity-100',
                     selected &&

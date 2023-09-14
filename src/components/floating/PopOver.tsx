@@ -53,6 +53,7 @@ export type PopOverProps = VariantProps<typeof panelStyles> & {
   panelColor?: keyof typeof panelColors
   triggerClassName?: string
   popOverClassName?: string
+  popOverContainerClassName?: string
   manualTrigger?: {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -76,6 +77,7 @@ export default function PopOver({
   panelColor = 'default',
   popOverClassName,
   triggerClassName,
+  popOverContainerClassName,
   triggerOnHover,
   manualTrigger,
   initialFocus,
@@ -147,7 +149,7 @@ export default function PopOver({
               leave='transition duration-75 ease-out'
               leaveFrom='transform opacity-100'
               leaveTo='transform opacity-0'
-              className='relative z-50'
+              className={cx('relative z-50', popOverContainerClassName)}
               show={isOpen}
             >
               <div

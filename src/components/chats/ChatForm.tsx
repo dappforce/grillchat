@@ -7,14 +7,13 @@ import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getPostQuery } from '@/services/api/query'
 import {
   SendMessageParams,
   useSendMessage,
 } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
-import { useMyAccount } from '@/stores/my-account'
+import { hasSentMessageStorage, useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { copyToClipboard } from '@/utils/strings'
 import dynamic from 'next/dynamic'
@@ -29,6 +28,8 @@ import { toast } from 'react-hot-toast'
 import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
+import { useName } from '../Name'
+import SubsocialProfileModal from '../subsocial-profile/SubsocialProfileModal'
 
 const CaptchaInvisible = dynamic(
   () => import('@/components/captcha/CaptchaInvisible'),
@@ -79,8 +80,11 @@ export default function ChatForm({
   const replyTo = useMessageData((state) => state.replyTo)
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
 
-  const { data: chat } = getPostQuery.useQuery(chatId)
-  const chatTitle = chat?.content?.title ?? ''
+  const myAddress = useMyAccount((state) => state.address)
+  const { ensName, profile } = useName(myAddress ?? '')
+  const hasName = ensName || profile?.profileSpace?.name
+
+  const [isOpenNameModal, setIsOpenNameModal] = useState(false)
 
   const sendEvent = useSendEvent()
   const incrementMessageCount = useMessageData(
@@ -100,8 +104,7 @@ export default function ChatForm({
         showErrorSendingMessageToast(
           error,
           'Failed to register or send message',
-          variables.message,
-          setMessageBody
+          variables.message
         )
       },
     })
@@ -121,8 +124,7 @@ export default function ChatForm({
       showErrorSendingMessageToast(
         error,
         'Failed to send message',
-        variables.message,
-        setMessageBody
+        variables.message
       )
     },
   })
@@ -185,6 +187,13 @@ export default function ChatForm({
     if (txPrevented) return
 
     const messageParams = newMessageParams || sendMessageParams
+
+    if (!hasSentMessageStorage.get() && !hasName) {
+      setTimeout(() => {
+        setIsOpenNameModal(true)
+      }, 1000)
+    }
+    hasSentMessageStorage.set('true')
 
     if (shouldSendMessage) {
       resetForm()
@@ -289,7 +298,14 @@ export default function ChatForm({
           )
         }}
       </CaptchaInvisible>
+
       <EmailSubscribeModal chatId={chatId} />
+      <SubsocialProfileModal
+        title='🎩 Set nickname?'
+        isOpen={isOpenNameModal}
+        closeModal={() => setIsOpenNameModal(false)}
+        cancelButtonText='No, I want to stay anonymous'
+      />
     </>
   )
 }
@@ -297,24 +313,18 @@ export default function ChatForm({
 function showErrorSendingMessageToast(
   error: unknown,
   errorTitle: string,
-  message: string | undefined,
-  setMessageBody: (message: string) => void
+  message: string | undefined
 ) {
   showErrorToast(error, errorTitle, {
-    withIcon: false,
     toastConfig: { duration: Infinity },
-    additionalDescription: message
-      ? () => (
-          <span className='text-text'>
-            Click refresh to recover your message to clipboard
-          </span>
-        )
+    getDescription: message
+      ? () => 'Click refresh to recover your message to clipboard'
       : undefined,
     actionButton: (t) => (
       <Button
-        className='ml-2'
         size='circle'
         variant='transparent'
+        className='text-lg'
         onClick={() => {
           copyToClipboard(message ?? '')
           toast.dismiss(t.id)

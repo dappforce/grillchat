@@ -1,5 +1,5 @@
 import useRandomColor from '@/hooks/useRandomColor'
-import { getProfileQuery } from '@/services/mainnet-squid/query'
+import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -66,7 +66,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     }
 
     let usedAvatar = profile?.profileSpace?.image
-      ? getIpfsContentUrl(profile?.profileSpace?.image)
+      ? getIpfsContentUrl(profile.profileSpace.image)
       : undefined
 
     if (ensName) {
