@@ -134,6 +134,7 @@ export const EnterSecretKeyContent = ({
       toast.custom((t) => (
         <Toast
           t={t}
+          type='error'
           title='Login Failed'
           description='The Grill secret key you provided is not valid'
         />
