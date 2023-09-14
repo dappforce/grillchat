@@ -49,17 +49,15 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         const { cid, success } = await saveFile(ipfsContent)
         if (!success || !cid) throw new Error('Failed to save file to IPFS')
 
-        console.log('waiting energy...')
-        await waitHasEnergy()
-
-        // make it a mutation and have it not needing to await this
-        await createPostData({
+        createPostData({
           address,
           content: ipfsContent,
           contentCid: cid,
           rootPostId: data.chatId,
           spaceId: data.hubId,
         })
+
+        await waitHasEnergy()
 
         return {
           tx: substrateApi.tx.posts.createPost(
