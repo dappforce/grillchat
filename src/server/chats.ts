@@ -38,7 +38,7 @@ export async function prefetchChatPreviewsData(
   )
 
   messageIdsByChatIds.forEach((messageIds, idx) => {
-    getCommentIdsByPostIdQuery.setQueryData(
+    getCommentIdsByPostIdQuery.setQueryInitialData(
       queryClient,
       allChatIds[idx],
       messageIds ?? null

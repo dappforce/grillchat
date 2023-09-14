@@ -119,7 +119,7 @@ export const getStaticProps = getCommonStaticProps<
       }
 
       getPostQuery.setQueryData(queryClient, chatId, chatData)
-      getCommentIdsByPostIdQuery.setQueryData(
+      getCommentIdsByPostIdQuery.setQueryInitialData(
         queryClient,
         chatId,
         messageIds ?? null
