@@ -7,13 +7,14 @@ import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
+import { getPostQuery } from '@/services/api/query'
 import {
   SendMessageParams,
   useSendMessage,
 } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
-import { useMyAccount } from '@/stores/my-account'
+import { hasSentMessageStorage, useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { copyToClipboard } from '@/utils/strings'
 import dynamic from 'next/dynamic'
@@ -28,6 +29,7 @@ import { toast } from 'react-hot-toast'
 import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
+import { useName } from '../Name'
 import SubsocialProfileModal from '../subsocial-profile/SubsocialProfileModal'
 
 const CaptchaInvisible = dynamic(
@@ -77,7 +79,13 @@ export default function ChatForm({
   const replyTo = useMessageData((state) => state.replyTo)
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
 
+  const myAddress = useMyAccount((state) => state.address)
+  const { ensName, profile } = useName(myAddress ?? '')
+  const hasName = ensName || profile?.profileSpace?.name
+
   const [isOpenNameModal, setIsOpenNameModal] = useState(false)
+  const { data: chat } = getPostQuery.useQuery(chatId)
+  const chatTitle = chat?.content?.title ?? ''
 
   const sendEvent = useSendEvent()
   const incrementMessageCount = useMessageData(
@@ -180,16 +188,19 @@ export default function ChatForm({
 
     const messageParams = newMessageParams || sendMessageParams
 
+    if (!hasSentMessageStorage.get() && !hasName) {
+      setTimeout(() => {
+        setIsOpenNameModal(true)
+      }, 1000)
+    }
+    hasSentMessageStorage.set('true')
+
     if (shouldSendMessage) {
       resetForm()
       sendMessage(messageParams)
     } else {
       if (!captchaToken) return
       resetForm()
-      setTimeout(() => {
-        setIsOpenNameModal(true)
-      }, 1000)
-
       requestTokenAndSendMessage({
         captchaToken,
         ...messageParams,
