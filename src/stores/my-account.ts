@@ -56,7 +56,6 @@ export const accountAddressStorage = new LocalStorage(
 export const followedIdsStorage = new LocalStorage(
   (address: string) => `${FOLLOWED_IDS_STORAGE_KEY}:${address}`
 )
-export const hasSentMessageStorage = new LocalStorage(() => 'has-sent-message')
 const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
 
 const sendLaunchEvent = async (address?: string | false) => {
@@ -192,7 +191,6 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
 
     accountStorage.remove()
     accountAddressStorage.remove()
-    hasSentMessageStorage.remove()
     if (address) followedIdsStorage.remove(address)
 
     set({ ...initialState })
