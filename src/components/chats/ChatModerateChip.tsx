@@ -33,10 +33,7 @@ export default function ChatModerateChip({
           }}
         >
           <LuShield
-            className={cx(
-              'relative -top-px text-sm text-text-muted',
-              props.className
-            )}
+            className={cx('text-sm text-text-muted', props.className)}
           />
         </div>
       }

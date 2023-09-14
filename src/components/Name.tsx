@@ -1,7 +1,7 @@
 import EthIcon from '@/assets/icons/eth-medium.svg'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRandomColor from '@/hooks/useRandomColor'
-import { getProfileQuery } from '@/services/mainnet-squid/query'
+import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
@@ -26,7 +26,15 @@ export function useName(address: string) {
   const name =
     ensName || profile?.profileSpace?.name || generateRandomName(address)
 
-  return { name, accountData, evmAddress, isLoading, textColor }
+  return {
+    name,
+    accountData,
+    profile,
+    evmAddress,
+    isLoading,
+    textColor,
+    ensName,
+  }
 }
 
 const Name = ({

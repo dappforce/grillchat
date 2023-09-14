@@ -19,16 +19,17 @@ export type LoginModalProps = ModalFunctionalityProps & {
   beforeLogin?: () => void
 }
 
-type ModalTitle = {
+type ModalConfig = {
   [key in LoginModalStep]: {
     title: React.ReactNode
     desc: React.ReactNode
+    backToStep?: LoginModalStep
     withBackButton?: boolean
     withFooter?: boolean
   }
 }
 
-const modalHeader: ModalTitle = {
+const modalHeader: ModalConfig = {
   login: {
     title: '🔐 Login',
     desc: '',
@@ -55,6 +56,16 @@ const modalHeader: ModalTitle = {
     title: '🎉 Account created',
     desc: 'We have created an anonymous account for you. You can now use Grill.chat!',
   },
+  'subsocial-profile': {
+    title: '🎩 Update nickname',
+    desc: 'This will help other people recognize you better. You can change it at any time.',
+    withBackButton: true,
+    backToStep: 'account-created',
+  },
+  'account-created-after-name-set': {
+    title: '🎉 Nickname set',
+    desc: 'Other users will be able to remember and recognize you now!',
+  },
   'evm-address-linked': {
     title: '🎉 EVM address linked',
     desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
@@ -78,15 +89,16 @@ export default function LoginModal({
   const [currentStep, setCurrentStep] =
     useState<LoginModalStep>(initialOpenState)
 
-  const usedOnBackClick = onBackClick || (() => setCurrentStep('login'))
+  const ModalContent = loginModalContents[currentStep]
+  const { title, desc, withBackButton, withFooter, backToStep } =
+    modalHeader[currentStep]
+  const usedOnBackClick =
+    onBackClick || (() => setCurrentStep(backToStep || 'login'))
 
   useEffect(() => {
     if (props.isOpen) setCurrentStep(initialOpenState)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
-
-  const ModalContent = loginModalContents[currentStep]
-  const { title, desc, withBackButton, withFooter } = modalHeader[currentStep]
 
   return (
     <Modal

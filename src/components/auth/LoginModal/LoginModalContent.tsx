@@ -10,6 +10,7 @@ import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
+import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import Toast from '@/components/Toast'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
@@ -31,7 +32,9 @@ import { CustomConnectButton } from '../CustomConnectButton'
 export type LoginModalStep =
   | 'login'
   | 'enter-secret-key'
+  | 'subsocial-profile'
   | 'account-created'
+  | 'account-created-after-name-set'
   | 'evm-address-linked'
   | 'evm-linking-error'
 
@@ -131,6 +134,7 @@ export const EnterSecretKeyContent = ({
       toast.custom((t) => (
         <Toast
           t={t}
+          type='error'
           title='Login Failed'
           description='The Grill secret key you provided is not valid'
         />
@@ -169,8 +173,19 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
   return (
     <div className='flex flex-col'>
       {address && (
-        <div className={cx('mb-6 mt-2 rounded-2xl bg-background-lighter p-4')}>
+        <div
+          className={cx(
+            'mb-6 mt-2 flex flex-col rounded-2xl bg-background-lighter p-4'
+          )}
+        >
           <ProfilePreview address={address} avatarClassName={cx('h-16 w-16')} />
+          <Button
+            variant='primaryOutline'
+            className='mt-4'
+            onClick={() => setCurrentStep('subsocial-profile')}
+          >
+            Change my name
+          </Button>
         </div>
       )}
       <div className='flex items-center'>
@@ -189,7 +204,9 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
         isLoading={isLoading}
         secondLabel='Sign Message'
         onClick={() =>
-          sendEvent('start_link_evm_address', { eventSource: 'account_created' })
+          sendEvent('start_link_evm_address', {
+            eventSource: 'account_created',
+          })
         }
         label={
           <div className='flex items-center justify-center gap-2'>
@@ -209,6 +226,12 @@ export const EvmLoginError = ({ setCurrentStep }: ContentProps) => (
   />
 )
 
+export const SubsocialProfileContent = ({ setCurrentStep }: ContentProps) => (
+  <SubsocialProfileForm
+    onSuccess={() => setCurrentStep('account-created-after-name-set')}
+  />
+)
+
 type LoginModalContents = {
   [key in LoginModalStep]: (props: ContentProps) => JSX.Element
 }
@@ -216,7 +239,9 @@ type LoginModalContents = {
 export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'enter-secret-key': EnterSecretKeyContent,
+  'subsocial-profile': SubsocialProfileContent,
   'account-created': AccountCreatedContent,
+  'account-created-after-name-set': AccountCreatedContent,
   'evm-address-linked': CommonEvmAddressLinked,
   'evm-linking-error': EvmLoginError,
 }

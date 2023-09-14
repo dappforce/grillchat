@@ -1,25 +1,18 @@
 import CustomToast from '@/components/Toast'
 import { ReactNode, useEffect, useRef } from 'react'
 import { toast, Toast, ToastOptions } from 'react-hot-toast'
-import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 
 export function showErrorToast<ErrorType>(
   error: unknown,
   errorTitle: ReactNode,
   config?: {
-    additionalDescription?: (t: Toast) => ReactNode
-    withIcon?: boolean
+    getDescription?: (t: Toast) => ReactNode
     getMessage?: (error: ErrorType) => string
     actionButton?: (t: Toast) => ReactNode
     toastConfig?: ToastOptions
   }
 ) {
-  const {
-    actionButton,
-    getMessage,
-    toastConfig,
-    withIcon = true,
-  } = config ?? {}
+  const { actionButton, getMessage, toastConfig } = config ?? {}
   let message: string | undefined = (error as any)?.message
 
   const response = (error as any)?.response?.data
@@ -32,20 +25,10 @@ export function showErrorToast<ErrorType>(
     (t) => (
       <CustomToast
         t={t}
-        icon={
-          withIcon
-            ? (classNames) => (
-                <HiOutlineExclamationTriangle className={classNames} />
-              )
-            : undefined
-        }
+        type='error'
         title={errorTitle}
-        description={
-          <div className='flex flex-col'>
-            <p>{message}</p>
-            {config?.additionalDescription?.(t)}
-          </div>
-        }
+        subtitle={message}
+        description={config?.getDescription?.(t)}
         action={actionButton?.(t)}
       />
     ),

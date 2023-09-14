@@ -7,7 +7,6 @@ import { useSendEvent } from '@/stores/analytics'
 import { LocalStorage } from '@/utils/storage'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
 import { ContentProps } from '../../types'
 
 const FCM_PUSH_NOTIFICATION_STORAGE_KEY = 'push-notification-fcm-token'
@@ -64,10 +63,8 @@ async function getMessageTokenWithCatch() {
   } catch (err: any) {
     toast.custom((t) => (
       <Toast
+        type='error'
         title='Failed to enable push notification'
-        icon={(className) => (
-          <HiOutlineExclamationTriangle className={className} />
-        )}
         t={t}
         description='If you are using Brave browser, please go to brave://settings/privacy and turn on "Use Google services for push messaging".'
       />

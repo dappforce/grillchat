@@ -16,12 +16,14 @@ import PushNotificationContent from './contents/notifications/PushNotificationCo
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
+import SubsocialProfileContent from './contents/SubsocialProfileContent'
 import { ContentProps, ModalState, ProfileModalProps } from './types'
 
 const modalContents: {
   [key in ModalState]: (props: ContentProps) => JSX.Element
 } = {
   account: AccountContent,
+  'subsocial-profile': SubsocialProfileContent,
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
@@ -48,6 +50,7 @@ export default function ProfileModal({
       enabled: props.isOpen,
     }
   )
+
   const [currentState, setCurrentState] = useState<ModalState>(
     step || 'account'
   )
@@ -77,6 +80,11 @@ export default function ProfileModal({
       title: <span className='font-medium'>My Account</span>,
       withoutDefaultPadding: true,
       withFooter: true,
+    },
+    'subsocial-profile': {
+      title: '🎩 Update nickname',
+      desc: 'Create a name so other people can recognize you. You can change it at any time.',
+      withBackButton: true,
     },
     logout: {
       title: '🤔 Did you back up your Grill secret key?',

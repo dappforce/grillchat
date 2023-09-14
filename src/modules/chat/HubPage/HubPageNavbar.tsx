@@ -59,7 +59,7 @@ export default function HubPageNavbar({
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
               {content?.name ?? ''}
             </span>
-            <span className='text-xs text-text-muted'>
+            <span className='overflow-hidden overflow-ellipsis whitespace-nowrap text-xs text-text-muted'>
               {chatsCount} chats in hub
             </span>
           </div>

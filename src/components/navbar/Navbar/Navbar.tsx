@@ -103,7 +103,13 @@ export default function Navbar({
       )
     }
 
-    return enableLoginButton ? <Button onClick={login}>Login</Button> : <></>
+    return enableLoginButton ? (
+      <Button onClick={login} className='px-5 text-sm'>
+        Login
+      </Button>
+    ) : (
+      <></>
+    )
   }
   const authComponent = renderAuthComponent()
 

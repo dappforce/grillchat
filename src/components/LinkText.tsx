@@ -5,7 +5,7 @@ import { ComponentProps, forwardRef } from 'react'
 import { HiArrowUpRight } from 'react-icons/hi2'
 
 export const linkTextStyles = cva(
-  'font-medium cursor-pointer hover:underline focus-visible:underline',
+  'cursor-pointer hover:underline focus-visible:underline',
   {
     variants: {
       variant: {

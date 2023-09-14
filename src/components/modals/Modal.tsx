@@ -128,7 +128,7 @@ export default function Modal({
                     <Dialog.Title
                       as='h3'
                       className={cx(
-                        'mb-2 text-2xl md:mb-4',
+                        'mb-2 text-2xl',
                         withCloseButton && 'pr-8',
                         titleClassName
                       )}

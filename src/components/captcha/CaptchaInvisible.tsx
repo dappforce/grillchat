@@ -25,7 +25,12 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
     }
     if (!token) {
       toast.custom((t) => (
-        <Toast t={t} title='Captcha Failed' description='Please try again' />
+        <Toast
+          t={t}
+          type='error'
+          title='Captcha Failed'
+          description='Please try again'
+        />
       ))
       return null
     }

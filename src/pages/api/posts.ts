@@ -1,5 +1,6 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
+import { generateGetDataFromSquidWithBlockchainFallback } from '@/server/squid'
 import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
 import { getUrlFromText } from '@/utils/strings'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
@@ -25,8 +26,8 @@ type ResponseData = {
 export type ApiPostsResponse = ApiResponse<ResponseData>
 export type ApiPostsInvalidationResponse = ApiResponse<{}>
 
-const MAX_AGE = 1 * 60 // 1 minute
-const getRedisKey = (id: string) => {
+const INVALIDATED_MAX_AGE = 1 * 60 // 1 minute
+const getInvalidatedPostRedisKey = (id: string) => {
   return `posts-invalidated:${id}`
 }
 
@@ -49,7 +50,12 @@ const POST_handler = handlerWrapper({
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     redisCallWrapper(async (redis) => {
-      return redis?.set(getRedisKey(data.postId), data.postId, 'EX', MAX_AGE)
+      return redis?.set(
+        getInvalidatedPostRedisKey(data.postId),
+        data.postId,
+        'EX',
+        INVALIDATED_MAX_AGE
+      )
     })
 
     return res.status(200).send({ success: true, message: 'OK' })
@@ -64,52 +70,24 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
-  const validIds = postIds.filter((id) => !!id && parseInt(id) >= 0)
-
-  let posts: PostData[] = []
-
-  const canFetchedUsingSquid: string[] = []
-  await Promise.all(
-    validIds.map(async (id) => {
-      return redisCallWrapper(async (redis) => {
-        const isInvalidated = await redis?.get(getRedisKey(id))
-        if (!isInvalidated) canFetchedUsingSquid.push(id)
-      })
-    })
-  )
-
-  try {
-    posts = await getPostsFromSubsocial(canFetchedUsingSquid)
-  } catch (e) {
-    console.error('Error fetching posts from squid', e)
-  }
-
-  const foundPostIds = new Set()
-  posts.forEach((post) => foundPostIds.add(post.id))
-
-  const notFoundPostIds = validIds.filter((id) => !foundPostIds.has(id))
-
-  const mergedPosts = posts
-  try {
-    const postsFromBlockchain = await getPostsFromSubsocial(
-      notFoundPostIds,
-      'blockchain'
-    )
-    postsFromBlockchain.forEach((post) => {
+const getPostsData = generateGetDataFromSquidWithBlockchainFallback(
+  getPostsFromSubsocial,
+  { paramToId: (param) => param, responseToId: (post) => post.id },
+  {
+    blockchainResponse: (post) => {
       if (!post.content) return
       const link = getUrlFromText(post.content.body)
       if (!link) return
       post.content.link = link
-    })
-    mergedPosts.push(...postsFromBlockchain)
-  } catch (e) {
-    console.error('Error fetching posts from blockchain', e)
-  }
+    },
+  },
+  getInvalidatedPostRedisKey
+)
+export async function getPostsServer(postIds: string[]) {
+  const posts = await getPostsData(postIds)
 
-  const filteredPosts = mergedPosts.filter((post) => !!post)
   const linksToFetch = new Set<string>()
-  filteredPosts.forEach((post) => {
+  posts.forEach((post) => {
     post.struct.ownerId = toSubsocialAddress(post.struct.ownerId)!
     if (post.content?.link) linksToFetch.add(post.content.link)
   })
@@ -121,7 +99,7 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   })
   await Promise.allSettled(metadataPromises)
 
-  filteredPosts.forEach((post) => {
+  posts.forEach((post) => {
     const link = post.content?.link
     const linkMetadata = metadataMap[link ?? '']
     if (!linkMetadata || !post.content) return
@@ -129,7 +107,7 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
     post.content.linkMetadata = linkMetadata
   })
 
-  return filteredPosts
+  return posts
 }
 
 const getMetadataRedisKey = (url: string) => 'metadata:' + url
