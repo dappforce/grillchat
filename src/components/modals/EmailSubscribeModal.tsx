@@ -124,6 +124,7 @@ export default function EmailSubscribeModal({
       </p>
       <form className='mt-8 flex w-full flex-col' onSubmit={onSubmit}>
         <Input
+          variant='fill-bg'
           placeholder='Your email address'
           value={email}
           onChange={onEmailChange}

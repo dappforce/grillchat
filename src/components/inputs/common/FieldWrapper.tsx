@@ -12,7 +12,7 @@ const inputStyles = cva('', {
     },
     pill: {
       true: 'rounded-3xl',
-      false: 'rounded-2xl',
+      false: 'rounded-xl',
     },
     size: {
       sm: 'px-4 py-2',
