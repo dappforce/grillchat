@@ -1,12 +1,11 @@
 import EthIcon from '@/assets/icons/eth-medium.svg'
-import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
-import { LuShield } from 'react-icons/lu'
+import ChatModerateChip from './chats/ChatModerateChip'
 
 export type NameProps = ComponentProps<'span'> & {
   address: string
@@ -49,8 +48,6 @@ const Name = ({
   const { accountData, evmAddress, isLoading, name, textColor } =
     useName(address)
 
-  const isOwnerOfChat = useIsOwnerOfPost(labelingData?.chatId ?? '', address)
-
   if (!accountData && isLoading) {
     return (
       <span
@@ -73,11 +70,11 @@ const Name = ({
     >
       {evmAddress && showEthIcon && <EthIcon className='mr-2 flex-shrink-0' />}
       {additionalText} {name}{' '}
-      {isOwnerOfChat && (
-        <span className='ml-1 flex items-center gap-1'>
-          <LuShield className={cx('text-sm text-text-muted')} />
-        </span>
-      )}
+      <ChatModerateChip
+        className='ml-1 flex items-center'
+        chatId={labelingData?.chatId ?? ''}
+        address={address}
+      />
     </span>
   )
 }

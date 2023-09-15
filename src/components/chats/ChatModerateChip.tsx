@@ -1,4 +1,4 @@
-import { getPostQuery } from '@/services/api/query'
+import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
@@ -7,17 +7,19 @@ import PopOver, { PopOverProps } from '../floating/PopOver'
 
 export type ChatModerateChipProps = ComponentProps<'div'> & {
   chatId: string
+  address?: string
   popOverProps?: Omit<PopOverProps, 'trigger' | 'children'>
 }
 
 export default function ChatModerateChip({
   chatId,
+  address,
   popOverProps,
   ...props
 }: ChatModerateChipProps) {
   const myAddress = useMyAccount((state) => state.address)
-  const { data: chat } = getPostQuery.useQuery(chatId)
-  const isOwner = chat?.struct.ownerId === myAddress
+  const usedAddress = address ?? myAddress ?? ''
+  const isOwner = useIsOwnerOfPost(chatId, usedAddress)
   if (!isOwner) {
     return null
   }
@@ -32,9 +34,7 @@ export default function ChatModerateChip({
             props.onClick?.(e)
           }}
         >
-          <LuShield
-            className={cx('text-sm text-text-muted', props.className)}
-          />
+          <LuShield className={cx('text-sm text-text-muted')} />
         </div>
       }
       panelSize='sm'
@@ -42,7 +42,9 @@ export default function ChatModerateChip({
       yOffset={10}
       {...popOverProps}
     >
-      <p>You can moderate this chat</p>
+      <p>
+        {myAddress === address ? 'You can moderate this chat' : 'Moderator'}
+      </p>
     </PopOver>
   )
 }
