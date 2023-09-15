@@ -88,6 +88,15 @@ async function processMessage(
 ) {
   const entity = eventData.entity
   const newestId = entity.persistentId || entity.id
+
+  const data = getPostQuery.getQueryData(queryClient, entity.id)
+  if (data) {
+    data.id = newestId
+    // set initial data for immediate render but refetch it in background
+    getPostQuery.setQueryData(queryClient, newestId, { ...data })
+    getPostQuery.invalidate(queryClient)
+  }
+
   const rootPostId = entity.rootPost?.persistentId
   if (!rootPostId) return
 
@@ -108,9 +117,7 @@ async function processMessage(
       newIds.splice(optimisticIdIndex, 1, newestId)
 
       const data = getPostQuery.getQueryData(queryClient, clientOptimisticId)
-      if (data) {
-        data.id = newestId
-      }
+      if (data) data.id = newestId
       getPostQuery.setQueryData(queryClient, newestId, data)
 
       return newIds
@@ -119,15 +126,6 @@ async function processMessage(
     if (entity.persistentId && oldIdsSet.has(entity.id)) {
       const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
       newIds.splice(optimisticIdIndex, 1, newestId)
-
-      const data = getPostQuery.getQueryData(queryClient, entity.id)
-      if (data) {
-        data.id = newestId
-      }
-
-      // set initial data for immediate render but refetch it in background
-      getPostQuery.setQueryData(queryClient, newestId, data && { ...data })
-      getPostQuery.invalidate(queryClient)
 
       return newIds
     }
