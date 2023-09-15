@@ -137,6 +137,7 @@ export default function NftModal({ chatId, onSubmit }: ExtensionModalsProps) {
                 rows={1}
                 ref={ref}
                 placeholder='Paste NFT URL'
+                variant='fill-bg'
               />
             )}
           </AutofocusWrapper>

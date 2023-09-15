@@ -45,7 +45,7 @@ export default function SelectInput<AdditionalData = {}>({
             <div className='relative mt-2'>
               <Listbox.Button
                 className={cx(
-                  'relative w-full cursor-default rounded-2xl',
+                  'relative w-full cursor-default rounded-xl',
                   selected?.icon ? 'py-2' : 'py-3',
                   'pl-4 pr-12 text-left',
                   'appearance-none text-base leading-6 ring-1 ring-inset ring-border-gray',
