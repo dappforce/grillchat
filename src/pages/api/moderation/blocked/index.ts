@@ -28,6 +28,13 @@ export default handlerWrapper({
     const postIds = handleArrayParam(data.postIds)
     const spaceIds = handleArrayParam(data.spaceIds)
 
+    if (!postIds.length && !spaceIds.length)
+      res.json({
+        data: { blockedInPostIds: [], blockedInSpaceIds: [] },
+        success: true,
+        message: 'OK',
+      })
+
     const response = await getBlockedResources({ postIds, spaceIds })
 
     res.json({ data: response, success: true, message: 'OK' })
