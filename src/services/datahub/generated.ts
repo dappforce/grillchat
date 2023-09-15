@@ -444,6 +444,13 @@ export type CreatePostOptimisticMutationVariables = Exact<{
 
 export type CreatePostOptimisticMutation = { __typename?: 'Mutation', createPostOptimistic: { __typename?: 'Post', id: string } };
 
+export type UpdatePostOptimisticMutationVariables = Exact<{
+  updatePostOptimisticInput: UpdatePostOptimisticInput;
+}>;
+
+
+export type UpdatePostOptimisticMutation = { __typename?: 'Mutation', updatePostOptimistic: { __typename?: 'Post', id: string } };
+
 export type GetMessageIdsInChatIdQueryVariables = Exact<{
   where: FindPostsArgs;
 }>;
@@ -542,6 +549,13 @@ export const GetOptimisticPosts = gql`
 export const CreatePostOptimistic = gql`
     mutation CreatePostOptimistic($createPostOptimisticInput: CreatePostOptimisticInput!) {
   createPostOptimistic(createPostOptimisticInput: $createPostOptimisticInput) {
+    id
+  }
+}
+    `;
+export const UpdatePostOptimistic = gql`
+    mutation UpdatePostOptimistic($updatePostOptimisticInput: UpdatePostOptimisticInput!) {
+  updatePostOptimistic(updatePostOptimisticInput: $updatePostOptimisticInput) {
     id
   }
 }

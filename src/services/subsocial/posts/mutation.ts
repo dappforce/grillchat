@@ -1,10 +1,14 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { invalidatePostServerCache, saveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
+import {
+  createPostData,
+  updatePostData,
+} from '@/services/datahub/posts/mutation'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
-import { IpfsWrapper } from '@/utils/ipfs'
+import { getCID, IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
@@ -127,6 +131,23 @@ type Content = {
 }
 export type UpsertPostParams = ({ postId: string } | { spaceId: string }) &
   Content
+
+async function generateMessageContent(params: Content) {
+  const { image, title, body } = params
+  const content = {
+    image,
+    title,
+    body,
+    optimisticId: crypto.randomUUID(),
+  } as PostContent & { optimisticId: string }
+
+  const cid = await getCID(content)
+
+  return { content, cid: cid?.toString() ?? '' }
+}
+type GeneratedMessageContent = Awaited<
+  ReturnType<typeof generateMessageContent>
+>
 function checkAction(data: UpsertPostParams) {
   if ('spaceId' in data && data.spaceId) {
     return { payload: data, action: 'create' } as const
@@ -138,22 +159,42 @@ function checkAction(data: UpsertPostParams) {
   return { payload: data, action: 'invalid' } as const
 }
 export function useUpsertPost(
-  config?: SubsocialMutationConfig<UpsertPostParams>
+  config?: SubsocialMutationConfig<UpsertPostParams, GeneratedMessageContent>
 ) {
   const client = useQueryClient()
   const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
 
-  return useSubsocialMutation<UpsertPostParams>(
+  return useSubsocialMutation<UpsertPostParams, GeneratedMessageContent>(
     {
       getWallet,
-      generateContext: undefined,
+      generateContext: (params) => generateMessageContent(params),
       transactionGenerator: async ({
+        wallet: { address },
         data: params,
         apis: { substrateApi },
+        context: { cid: prebuiltCid, content },
       }) => {
         const { image, title, body } = params
+
+        const { payload, action } = checkAction(params)
+        if (action === 'create') {
+          createPostData({
+            address,
+            content,
+            contentCid: prebuiltCid,
+            spaceId: payload.spaceId,
+          })
+        } else if (action === 'update') {
+          updatePostData({
+            address,
+            content,
+            contentCid: prebuiltCid,
+            postId: payload.postId,
+          })
+        }
+
         console.log('waiting energy...')
         await waitHasEnergy()
 
@@ -164,7 +205,6 @@ export function useUpsertPost(
         })
         if (!success || !cid) throw new Error('Failed to save file')
 
-        const { payload, action } = checkAction(params)
         if (action === 'update') {
           return {
             tx: substrateApi.tx.posts.updatePost(payload.postId, {
