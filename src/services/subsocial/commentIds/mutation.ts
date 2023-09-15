@@ -4,7 +4,7 @@ import { useSaveFile } from '@/services/api/mutation'
 import { createPostData } from '@/services/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
+import { getCID, IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PostContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
@@ -12,13 +12,17 @@ import { useWalletGetter } from '../hooks'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
 import { SendMessageParams } from './types'
 
-function generateMessageContent(params: SendMessageParams) {
-  return {
+async function generateMessageContent(params: SendMessageParams) {
+  const content = {
     body: params.message,
     inReplyTo: ReplyWrapper(params.replyTo),
     extensions: params.extensions,
     optimisticId: crypto.randomUUID(),
   } as PostContent & { optimisticId: string }
+
+  const cid = await getCID(content)
+
+  return { content, cid: cid?.toString() ?? '' }
 }
 export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const client = useQueryClient()
@@ -29,7 +33,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
   return useSubsocialMutation<
     SendMessageParams,
-    ReturnType<typeof generateMessageContent>
+    Awaited<ReturnType<typeof generateMessageContent>>
   >(
     {
       getWallet,
@@ -38,7 +42,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         apis: { substrateApi },
         wallet: { address },
         data,
-        context: ipfsContent,
+        context: { cid: prebuiltCid, content },
       }) => {
         const maxLength = getMaxMessageLength(data.chatId)
         if (data.message && data.message.length > maxLength)
@@ -46,16 +50,16 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             'Your message is too long, please split it up to multiple messages'
           )
 
-        const { cid, success } = await saveFile(ipfsContent)
-        if (!success || !cid) throw new Error('Failed to save file to IPFS')
-
         createPostData({
           address,
-          content: ipfsContent,
-          contentCid: cid,
+          content: content,
+          contentCid: prebuiltCid,
           rootPostId: data.chatId,
           spaceId: data.hubId,
         })
+
+        const { cid, success } = await saveFile(content)
+        if (!success || !cid) throw new Error('Failed to save file to IPFS')
 
         await waitHasEnergy()
 
@@ -77,7 +81,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           addOptimisticData({
             address,
             params: data,
-            ipfsContent: context,
+            ipfsContent: context.content,
             client,
           })
         },
@@ -87,7 +91,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           deleteOptimisticData({
             client,
             chatId: data.chatId,
-            optimisticId: context.optimisticId,
+            optimisticId: context.content.optimisticId,
           })
         },
       },
