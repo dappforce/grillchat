@@ -325,8 +325,25 @@ function useLoadUnsentMessage(chatId: string) {
     setMessageBody(unsentMessage.message ?? '')
     setReplyTo(unsentMessage.replyTo ?? '')
     const firstExtension = unsentMessage.extensions?.[0]
-    if (firstExtension && firstExtension.id !== 'subsocial-pinned-posts') {
-      openExtensionModal(firstExtension.id, firstExtension.properties as any)
+    switch (firstExtension?.id) {
+      case 'subsocial-image':
+        openExtensionModal(firstExtension.id, firstExtension.properties.image)
+        break
+      case 'subsocial-decoded-promo':
+        openExtensionModal(firstExtension.id, {
+          recipient: firstExtension.properties.recipient,
+          messageId: firstExtension.properties.message,
+        })
+        break
+      case 'subsocial-evm-nft':
+        openExtensionModal(firstExtension.id, firstExtension.properties.url)
+        break
+      case 'subsocial-donations':
+        openExtensionModal(firstExtension.id, {
+          recipient: firstExtension.properties.to,
+          messageId: unsentMessage.replyTo ?? '',
+        })
+        break
     }
   }, [chatId, setMessageBody, setReplyTo, openExtensionModal])
 }
