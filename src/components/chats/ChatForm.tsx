@@ -12,10 +12,11 @@ import {
   useSendMessage,
 } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
+import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { hasSentMessageStorage, useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { copyToClipboard } from '@/utils/strings'
+import { LocalStorage } from '@/utils/storage'
 import dynamic from 'next/dynamic'
 import {
   ComponentProps,
@@ -77,6 +78,9 @@ export default function ChatForm({
 }: ChatFormProps) {
   const replyTo = useMessageData((state) => state.replyTo)
   const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+  const setMessageBody = useMessageData((state) => state.setMessageBody)
+
+  useLoadUnsentMessage(chatId)
 
   const myAddress = useMyAccount((state) => state.address)
   const { ensName, profile } = useName(myAddress ?? '')
@@ -102,7 +106,7 @@ export default function ChatForm({
         showErrorSendingMessageToast(
           error,
           'Failed to register or send message',
-          variables.message
+          variables
         )
       },
     })
@@ -115,15 +119,9 @@ export default function ChatForm({
     messageBody = ''
   }
 
-  const setMessageBody = useMessageData((state) => state.setMessageBody)
-
   const { mutate: sendMessage } = useSendMessage({
     onError: (error, variables) => {
-      showErrorSendingMessageToast(
-        error,
-        'Failed to send message',
-        variables.message
-      )
+      showErrorSendingMessageToast(error, 'Failed to send message', variables)
     },
   })
 
@@ -307,15 +305,43 @@ export default function ChatForm({
   )
 }
 
+const unsentMessageStorage = new LocalStorage(
+  (chatId: string) => `unsent-message-${chatId}`
+)
+
+function useLoadUnsentMessage(chatId: string) {
+  const setMessageBody = useMessageData((state) => state.setMessageBody)
+  const setReplyTo = useMessageData((state) => state.setReplyTo)
+  const openExtensionModal = useExtensionData(
+    (state) => state.openExtensionModal
+  )
+
+  useEffect(() => {
+    const unsentMessageData = unsentMessageStorage.get(chatId)
+    if (!unsentMessageData) return
+    const unsentMessage = JSON.parse(unsentMessageData) as SendMessageParams
+    unsentMessageStorage.remove(chatId)
+
+    setMessageBody(unsentMessage.message ?? '')
+    setReplyTo(unsentMessage.replyTo ?? '')
+    const firstExtension = unsentMessage.extensions?.[0]
+    if (firstExtension && firstExtension.id !== 'subsocial-pinned-posts') {
+      openExtensionModal(firstExtension.id, firstExtension.properties as any)
+    }
+  }, [chatId, setMessageBody, setReplyTo, openExtensionModal])
+}
+
 function showErrorSendingMessageToast(
   error: unknown,
   errorTitle: string,
-  message: string | undefined
+  message: SendMessageParams
 ) {
+  unsentMessageStorage.set(JSON.stringify(message), message.chatId)
+
   showErrorToast(error, errorTitle, {
     toastConfig: { duration: Infinity },
     getDescription: message
-      ? () => 'Click refresh to recover your message to clipboard'
+      ? () => 'Click refresh to recover your message and try again'
       : undefined,
     actionButton: (t) => (
       <Button
@@ -323,7 +349,6 @@ function showErrorSendingMessageToast(
         variant='transparent'
         className='text-lg'
         onClick={() => {
-          copyToClipboard(message ?? '')
           toast.dismiss(t.id)
           window.location.reload()
         }}
