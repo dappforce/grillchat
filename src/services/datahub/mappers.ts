@@ -8,14 +8,17 @@ import {
   PostContentExtension,
   PostData,
 } from '@subsocial/api/types'
-import { ContentExtensionSchemaId, PostFragmentFragment } from './generated'
+import {
+  ContentExtensionSchemaId,
+  DatahubPostFragmentFragment,
+} from './generated'
 
 const SQUID_SEPARATOR = ','
 const getTokensFromUnifiedString = (data: string | null) =>
   data?.split(SQUID_SEPARATOR).filter(Boolean) ?? []
 
 const mapPostExtensions = (
-  extensions: PostFragmentFragment['extensions']
+  extensions: DatahubPostFragmentFragment['extensions']
 ): PostContentExtension[] | undefined => {
   const mappedExtensions = extensions?.map((ext) => {
     switch (ext.extensionSchemaId) {
@@ -84,7 +87,9 @@ const mapPostExtensions = (
   return exts
 }
 
-export const mapPostFragment = (post: PostFragmentFragment): PostData => {
+export const mapDatahubPostFragment = (
+  post: DatahubPostFragmentFragment
+): PostData => {
   const struct: PostData['struct'] = {
     createdAtBlock: parseInt(post.createdAtBlock?.toString() ?? '0'),
     createdAtTime: new Date(post.createdAtTime).getTime(),
