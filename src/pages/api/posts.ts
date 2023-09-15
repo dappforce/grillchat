@@ -84,7 +84,8 @@ const getPostsData = generateGetDataFromSquidWithBlockchainFallback(
   getInvalidatedPostRedisKey
 )
 export async function getPostsServer(postIds: string[]) {
-  const posts = await getPostsData(postIds)
+  const validPostIds = postIds.filter((id) => id && !isNaN(Number(id)))
+  const posts = await getPostsData(validPostIds)
 
   const linksToFetch = new Set<string>()
   posts.forEach((post) => {

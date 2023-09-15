@@ -23,6 +23,8 @@ const getBlockedResources = poolQuery<
       else if ('spaceId' in param && param.spaceId) spaceIds.push(param.spaceId)
     })
 
+    if (!postIds.length && !spaceIds.length) return []
+
     const response = await axios.get(
       '/api/moderation/blocked?' +
         spaceIds.map((n) => `spaceIds=${n}`).join('&') +
