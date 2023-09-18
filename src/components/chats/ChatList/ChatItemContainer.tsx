@@ -3,7 +3,7 @@ import usePrevious from '@/hooks/usePrevious'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { ComponentProps, forwardRef, useCallback, useEffect } from 'react'
+import { ComponentProps, forwardRef, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import ChatItem, { ChatItemProps } from '../ChatItem'
 
@@ -77,25 +77,17 @@ function UnreadMessageChecker({ messageId }: { messageId: string }) {
   const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
   const prevCount = usePrevious(unreadMessage.count)
 
-  const handleInView = useCallback(
-    (isAfterScroll?: boolean) => {
-      setUnreadMessage((prev) => {
-        if (!prev.lastId || !prev.count) return prev
-
-        const prevLastId = Number(prev.lastId)
-        const currentMessageId = Number(messageId)
-        if (isAfterScroll || prevLastId < currentMessageId) {
-          return {
-            count: prev.count - 1,
-            lastId: Math.max(prevLastId, currentMessageId).toString(),
-          }
-        }
-
-        return prev
-      })
-    },
-    [messageId, setUnreadMessage]
-  )
+  const handleInView = (isAfterScroll?: boolean) => {
+    if (!unreadMessage.lastId || !unreadMessage.count) return
+    const prevLastId = Number(unreadMessage.lastId)
+    const currentMessageId = Number(messageId)
+    if (isAfterScroll || prevLastId < currentMessageId) {
+      setUnreadMessage((prev) => ({
+        count: prev.count - 1,
+        lastId: Math.max(prevLastId, currentMessageId).toString(),
+      }))
+    }
+  }
 
   const isPrevCountZero = prevCount === 0
   useEffect(() => {
@@ -107,7 +99,7 @@ function UnreadMessageChecker({ messageId }: { messageId: string }) {
       handleInView(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleInView, inView, isPrevCountZero, unreadMessage.count, messageId])
+  }, [inView, isPrevCountZero, unreadMessage.count, messageId])
 
   return (
     <div
