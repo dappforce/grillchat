@@ -40,7 +40,7 @@ export default function ChatListSupportingContent({
 }: ChatListSupportingContentProps) {
   const router = useRouter()
 
-  const [initialNewMessageCount, setInitialNewMessageCount] = useState(0)
+  const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
   const lastReadId = useFocusedLastMessageId(chatId)
   const [recipient, setRecipient] = useState('')
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
@@ -77,7 +77,7 @@ export default function ChatListSupportingContent({
 
           sendMessageToParentWindow('unread', newMessageCount.toString())
 
-          setInitialNewMessageCount(newMessageCount)
+          setUnreadMessage({ count: newMessageCount, lastId: lastReadId })
         })
       }
       return
@@ -117,12 +117,10 @@ export default function ChatListSupportingContent({
       <Component>
         <div className='relative'>
           <NewMessageNotice
-            key={initialNewMessageCount}
             className={cx(
               'absolute bottom-2 right-3',
               newMessageNoticeClassName
             )}
-            initialNewMessageCount={initialNewMessageCount}
             messageIds={rawMessageIds ?? []}
             scrollContainerRef={scrollContainerRef}
           />

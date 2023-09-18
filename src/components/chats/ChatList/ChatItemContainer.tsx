@@ -1,7 +1,10 @@
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
+import usePrevious from '@/hooks/usePrevious'
+import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { ComponentProps, forwardRef } from 'react'
+import { ComponentProps, forwardRef, useCallback, useEffect } from 'react'
+import { useInView } from 'react-intersection-observer'
 import ChatItem, { ChatItemProps } from '../ChatItem'
 
 export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
@@ -52,6 +55,7 @@ function ChatItemContainer(
         containerProps?.className
       )}
     >
+      <UnreadMessageChecker messageId={message.id} />
       <ChatItem
         {...props}
         chatId={chatId}
@@ -59,6 +63,59 @@ function ChatItemContainer(
         hubId={hubId}
       />
     </div>
+  )
+}
+
+function UnreadMessageChecker({ messageId }: { messageId: string }) {
+  const { ref, inView } = useInView({
+    onChange: (inView) => {
+      if (inView) handleInView()
+    },
+  })
+
+  const unreadMessage = useMessageData((state) => state.unreadMessage)
+  const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
+  const prevCount = usePrevious(unreadMessage.count)
+
+  const handleInView = useCallback(
+    (isAfterScroll?: boolean) => {
+      setUnreadMessage((prev) => {
+        if (!prev.lastId || !prev.count) return prev
+
+        const prevLastId = Number(prev.lastId)
+        const currentMessageId = Number(messageId)
+        if (isAfterScroll || prevLastId < currentMessageId) {
+          return {
+            count: prev.count - 1,
+            lastId: Math.max(prevLastId, currentMessageId).toString(),
+          }
+        }
+
+        return prev
+      })
+    },
+    [messageId, setUnreadMessage]
+  )
+
+  const isPrevCountZero = prevCount === 0
+  useEffect(() => {
+    if (
+      inView &&
+      isPrevCountZero &&
+      Number(unreadMessage.lastId) < Number(messageId)
+    ) {
+      handleInView(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleInView, inView, isPrevCountZero, unreadMessage.count, messageId])
+
+  return (
+    <div
+      ref={ref}
+      onChange={(inView) => {
+        if (inView) handleInView()
+      }}
+    />
   )
 }
 
