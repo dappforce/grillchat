@@ -3,6 +3,7 @@ import MessageModal from '@/components/modals/MessageModal'
 import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
+import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
@@ -95,13 +96,16 @@ export default function ChatListSupportingContent({
   useEffect(() => {
     if (!isInitialized.current) return
 
+    let lastId = ''
     if (unreadMessage.count === 0) {
-      const lastId = rawMessageIds?.[rawMessageIds.length - 1]
+      lastId = rawMessageIds?.[rawMessageIds.length - 1] ?? ''
       if (!lastId) return
-      setLastReadMessageId(lastId)
     } else {
-      setLastReadMessageId(unreadMessage.lastId)
+      lastId = unreadMessage.lastId
     }
+
+    if (isOptimisticId(lastId)) return
+    setLastReadMessageId(lastId)
   }, [setLastReadMessageId, rawMessageIds, unreadMessage])
 
   useEffect(() => {
