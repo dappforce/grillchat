@@ -23,6 +23,7 @@ type State = {
 }
 
 type Actions = {
+  reset: () => void
   incrementMessageCount: () => void
   setMessageBody: (message: string) => void
   setReplyTo: (replyTo: string) => void
@@ -73,6 +74,9 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
       return
     }
     set({ unreadMessage })
+  },
+  reset: () => {
+    set(INITIAL_STATE)
   },
   init: () => {
     const { parentOrigin } = useParentData.getState()
