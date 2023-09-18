@@ -16,30 +16,39 @@ export default function StubChatPage() {
     (response) => response.message
   )
 
-  const [metadata, setMetadata] = useState<ChatPageProps['stubMetadata']>({
-    body: '',
-    image: '',
-    title: '',
+  const [params, setParams] = useState<{
+    metadata: NonNullable<ChatPageProps['stubMetadata']>
+    hubId: string
+    resourceId: string
+  }>({
+    metadata: {
+      body: '',
+      image: '',
+      title: '',
+    },
+    hubId: '',
+    resourceId: '',
   })
 
   const router = useRouter()
   useEffect(() => {
-    setMetadata(getMetadataFromUrl())
-  }, [])
-
-  const createDiscussion = async function handleDiscussion() {
     const hubIdOrAlias = router.query.hubId as string
     if (!router.isReady || !hubIdOrAlias) return
 
     const hubId = getHubIdFromAlias(hubIdOrAlias) || hubIdOrAlias
-
     const resourceId = router.query.resourceId as string
+
     const metadata = getMetadataFromUrl()
 
-    if (!metadata || !resourceId) {
+    if (!metadata || !resourceId || !hubId) {
       router.replace('/')
       return
     }
+    setParams({ metadata, hubId, resourceId })
+  }, [router])
+
+  const createDiscussion = async function handleDiscussion() {
+    const { hubId, metadata, resourceId } = params
 
     const { data } = await mutateAsync({
       spaceId: hubId,
@@ -57,7 +66,7 @@ export default function StubChatPage() {
   return (
     <ChatPage
       hubId=''
-      stubMetadata={metadata}
+      stubMetadata={params.metadata}
       customAction={
         <Button size='lg' onClick={createDiscussion} isLoading={isLoading}>
           Start Discussion
