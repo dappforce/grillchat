@@ -66,13 +66,14 @@ export default function ChatListSupportingContent({
 
     if (!isMessageIdsFetched) return
 
-    isInitialized.current = true
     if (!messageId || !validateNumber(messageId)) {
       if (lastReadId) {
         scrollToMessage(lastReadId ?? '', {
           shouldHighlight: false,
           smooth: false,
         }).then(() => {
+          isInitialized.current = true
+
           const lastReadIdIndex = filteredMessageIdsRef.current.findIndex(
             (id) => id === lastReadId
           )
@@ -84,10 +85,13 @@ export default function ChatListSupportingContent({
           sendMessageToParentWindow('unread', newMessageCount.toString())
           setUnreadMessage({ count: newMessageCount, lastId: lastReadId })
         })
+      } else {
+        isInitialized.current = true
       }
       return
     }
 
+    isInitialized.current = true
     setMessageModalMsgId(messageId)
     setRecipient(recipient)
     // eslint-disable-next-line react-hooks/exhaustive-deps
