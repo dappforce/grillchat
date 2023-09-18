@@ -43,7 +43,7 @@ export default handlerWrapper({
   dataGetter: (req: NextApiRequest) => req.body,
 })<DiscussionDataResponse>({
   allowedMethods: ['POST'],
-  handler: async (data, req, res) => {
+  handler: async (data, _, res) => {
     const { resourceId, spaceId, content } = data
 
     const response: ApiDiscussionResponse = await getOrCreateDiscussion({

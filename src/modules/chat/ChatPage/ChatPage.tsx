@@ -53,10 +53,12 @@ export type ChatPageProps = {
   hubId: string
   chatId?: string
   stubMetadata?: ChatMetadata
+  customAction?: ReactNode
 }
 export default function ChatPage({
   hubId,
   chatId = '',
+  customAction,
   stubMetadata,
 }: ChatPageProps) {
   const router = useRouter()
@@ -171,6 +173,7 @@ export default function ChatPage({
           chatId={chatId}
           asContainer
           className='flex-1 overflow-hidden'
+          customAction={customAction}
         />
         <BottomPanel />
       </DefaultLayout>
@@ -245,6 +248,7 @@ function NavbarChatInfo({
       isInitialized.current = true
       return
     }
+    if (!chatId) return
 
     const baseUrl = getChatPageLink(routerRef.current)
     if (isOpenAboutChatModal) {
@@ -252,7 +256,7 @@ function NavbarChatInfo({
     } else if (!isOpenAboutChatModal && prevIsOpenAboutChatModal) {
       replaceUrl(baseUrl)
     }
-  }, [isOpenAboutChatModal, prevIsOpenAboutChatModal, routerRef])
+  }, [isOpenAboutChatModal, prevIsOpenAboutChatModal, routerRef, chatId])
 
   useEffect(() => {
     const open = getUrlQuery('open')
