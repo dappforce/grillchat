@@ -47,7 +47,7 @@ export default function StubChatPage() {
     setParams({ metadata, hubId, resourceId })
   }, [router])
 
-  const createDiscussion = async function handleDiscussion() {
+  const createDiscussion = async function () {
     const { hubId, metadata, resourceId } = params
 
     const { data } = await mutateAsync({
