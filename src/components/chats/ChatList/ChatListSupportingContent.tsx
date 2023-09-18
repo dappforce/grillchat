@@ -1,6 +1,6 @@
 import Container from '@/components/Container'
 import MessageModal from '@/components/modals/MessageModal'
-import useLastReadMessageId from '@/hooks/useLastReadMessageId'
+import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useMessageData } from '@/stores/message'
@@ -39,8 +39,12 @@ export default function ChatListSupportingContent({
   filteredMessageIds,
 }: ChatListSupportingContentProps) {
   const router = useRouter()
+  const isInitialized = useRef(false)
 
+  const unreadMessage = useMessageData((state) => state.unreadMessage)
   const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
+  const { setLastReadMessageId } = useLastReadMessageIdFromStorage(chatId)
+
   const lastReadId = useFocusedLastMessageId(chatId)
   const [recipient, setRecipient] = useState('')
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
@@ -61,6 +65,7 @@ export default function ChatListSupportingContent({
 
     if (!isMessageIdsFetched) return
 
+    isInitialized.current = true
     if (!messageId || !validateNumber(messageId)) {
       if (lastReadId) {
         scrollToMessage(lastReadId ?? '', {
@@ -76,7 +81,6 @@ export default function ChatListSupportingContent({
               : filteredMessageIdsRef.current.length - lastReadIdIndex - 1
 
           sendMessageToParentWindow('unread', newMessageCount.toString())
-
           setUnreadMessage({ count: newMessageCount, lastId: lastReadId })
         })
       }
@@ -88,12 +92,17 @@ export default function ChatListSupportingContent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawMessageIds, filteredMessageIdsRef, hasScrolledToMessageRef])
 
-  const { setLastReadMessageId } = useLastReadMessageId(chatId)
   useEffect(() => {
-    const lastId = rawMessageIds?.[rawMessageIds.length - 1]
-    if (!lastId) return
-    setLastReadMessageId(lastId)
-  }, [setLastReadMessageId, rawMessageIds])
+    if (!isInitialized.current) return
+
+    if (unreadMessage.count === 0) {
+      const lastId = rawMessageIds?.[rawMessageIds.length - 1]
+      if (!lastId) return
+      setLastReadMessageId(lastId)
+    } else {
+      setLastReadMessageId(unreadMessage.lastId)
+    }
+  }, [setLastReadMessageId, rawMessageIds, unreadMessage])
 
   useEffect(() => {
     if (messageModalMsgId) {
