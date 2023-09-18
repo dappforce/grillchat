@@ -70,7 +70,7 @@ const sendLaunchEvent = async (address?: string | false) => {
   const sendEvent = useAnalytics.getState().sendEvent
 
   if (!address) {
-    sendEvent('launch_app', undefined, userProperties)
+    sendEvent('launch_app')
   } else {
     try {
       const linkedTgAccData = await getLinkedTelegramAccountsQuery.fetchQuery(

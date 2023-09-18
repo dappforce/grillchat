@@ -27,6 +27,7 @@ type UserProperties = {
   webNotifsEnabled?: boolean
   ownedChat?: boolean
   hasJoinedChats?: boolean
+  hasPersonalizedProfile?: boolean
 }
 
 type State = {
