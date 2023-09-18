@@ -1,3 +1,5 @@
+import { useAnalytics } from '@/stores/analytics'
+import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import Button from '../Button'
 import Modal, { ModalFunctionalityProps, ModalProps } from '../modals/Modal'
@@ -14,8 +16,19 @@ export default function SubsocialProfileModal({
   cancelButtonText,
   ...props
 }: SubsocialProfileModalProps) {
+  const sendEvent = useAnalytics((state) => state.sendEvent)
+
+  useEffect(() => {
+    if (props.isOpen) {
+      sendEvent('account_settings_opened')
+    }
+  }, [props.isOpen])
+
   const onSuccess = () => {
     props.closeModal()
+    sendEvent('account_settings_changed', undefined, {
+      hasPersonalizedProfile: true,
+    })
     toast.custom((t) => <Toast t={t} title='Your nickname was set' />)
   }
 

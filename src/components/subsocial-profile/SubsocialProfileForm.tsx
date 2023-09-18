@@ -1,10 +1,9 @@
 import { getProfileQuery } from '@/services/api/query'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
-import { useAnalytics } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ComponentProps, useEffect } from 'react'
+import { ComponentProps } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import FormButton from '../FormButton'
@@ -36,20 +35,12 @@ export default function SubsocialProfileForm({
     defaultValues: { name: data?.profileSpace?.name ?? '' },
     resolver: zodResolver(formSchema),
   })
-  const sendEvent = useAnalytics((state) => state.sendEvent)
-
-  useEffect(() => {
-    sendEvent('account_settings_opened')
-  }, [])
 
   return (
     <UpsertProfileWrapper>
       {({ mutateAsync }) => {
         const onSubmit = handleSubmit((data) => {
           mutateAsync({ content: { name: data.name } })
-          sendEvent('account_settings_changed', undefined, {
-            hasPersonalizedProfile: true,
-          })
           onSuccess?.()
         })
 
