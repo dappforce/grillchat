@@ -68,7 +68,11 @@ export default function StubChatPage() {
       hubId=''
       stubMetadata={params.metadata}
       customAction={
-        <Button size='lg' onClick={createDiscussion} isLoading={isLoading}>
+        <Button
+          size='lg'
+          onClick={createDiscussion}
+          isLoading={isLoading || !params.resourceId}
+        >
           Start Discussion
         </Button>
       }
