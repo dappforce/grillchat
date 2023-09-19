@@ -1,6 +1,5 @@
-const enableEvmLogin = true
-export const featureConfig = {
+export const DEFAULT_FEATURE_CONFIG = {
   enableNft: true,
-  enableEvmLogin,
-  enableDonations: enableEvmLogin && true,
+  enableEvmLinking: true,
+  enableDonations: true,
 }

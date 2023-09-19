@@ -8,6 +8,9 @@ type QueryParams = {
   enableBackButton?: string
   enableLoginButton?: string
   enableInputAutofocus?: string
+  enableNft?: string
+  enableEvmLinking?: string
+  enableDonations?: string
 }
 
 type ResourceLike = { toResourceId: () => string }
@@ -31,13 +34,19 @@ class QueryParamsBuilder {
   }
 }
 
-type ChannelSettings = {
+type Settings = {
   /** If set to `true`, it will show the back button in the channel iframe. Default to `false` */
   enableBackButton?: boolean
   /** If set to `true`, it will show the login button in the channel iframe. Default to `false` */
   enableLoginButton?: boolean
   /** If set to `true`, it will autofocus on the message input when the iframe is loaded. The default behavior is `true`, except on touch devices. If set `true`, it will autofocus the input on all devices. */
   enableInputAutofocus?: boolean
+  /** If set to `true`, it will enable user to send NFT. Default to `true` */
+  enableNft?: boolean
+  /** If set to `true`, it will enable user to link their evm account and it will show user's ENS name if any. If disabled, donations feature will also be disabled. Default to `true` */
+  enableEvmLinking?: boolean
+  /** If set to `true`, it will enable user to send donations. This feature needs evm linking feature to be enabled too. Default to `true` */
+  enableDonations?: boolean
 }
 
 type ChanelTypeChannel = {
@@ -55,10 +64,7 @@ type ChanelTypeResource = {
   metadata: ResourceMetadata
 }
 
-type Channel = { settings?: ChannelSettings } & (
-  | ChanelTypeChannel
-  | ChanelTypeResource
-)
+type Channel = ChanelTypeChannel | ChanelTypeResource
 
 type Theme = 'light' | 'dark'
 export type GrillConfig = {
@@ -69,6 +75,8 @@ export type GrillConfig = {
     /** The `space id` or `domain name` of your space. */
     id: string
   }
+  /** Settings for enabling/disabling features in grill.chat */
+  settings?: Settings
   /** Option to make the iframe open chat room (a channel) directly */
   channel?: Channel
   order?: string[]
@@ -86,7 +94,7 @@ const DEFAULT_CONFIG = {
   hub: { id: 'x' },
 } satisfies GrillConfig
 
-const DEFAULT_CHANNEL_SETTINGS: Channel['settings'] = {
+const DEFAULT_CHANNEL_SETTINGS: Settings = {
   enableBackButton: false,
   enableLoginButton: false,
 }
@@ -162,7 +170,6 @@ const grill = {
     iframe.style.width = '100%'
     iframe.style.height = '100%'
 
-    const channelConfig = mergedConfig.channel
     const { url: baseUrl, query } = createUrl(mergedConfig)
 
     query.set('parent', window.location.origin)
@@ -171,21 +178,20 @@ const grill = {
     if (mergedConfig.rootFontSize)
       query.set('rootFontSize', mergedConfig.rootFontSize)
 
-    if (channelConfig) {
-      const channelSettings = {
-        ...DEFAULT_CHANNEL_SETTINGS,
-        ...channelConfig.settings,
-      }
-
-      query.set('enableBackButton', channelSettings.enableBackButton + '')
-      query.set('enableLoginButton', channelSettings.enableLoginButton + '')
-
-      if (channelSettings.enableInputAutofocus !== undefined)
-        query.set(
-          'enableInputAutofocus',
-          channelSettings.enableInputAutofocus + ''
-        )
+    const settings = {
+      ...DEFAULT_CHANNEL_SETTINGS,
+      ...mergedConfig.settings,
     }
+
+    query.set('enableBackButton', settings.enableBackButton + '')
+    query.set('enableLoginButton', settings.enableLoginButton + '')
+
+    query.set('enableEvmLinking', settings.enableEvmLinking + '')
+    query.set('enableDonations', settings.enableDonations + '')
+    query.set('enableNft', settings.enableNft + '')
+
+    if (settings.enableInputAutofocus !== undefined)
+      query.set('enableInputAutofocus', settings.enableInputAutofocus + '')
 
     iframe.src = `${baseUrl}?${query.get()}`
     iframe.allow = 'clipboard-write'

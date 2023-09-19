@@ -1,4 +1,5 @@
 import { Theme } from '@/@types/theme'
+import { DEFAULT_FEATURE_CONFIG } from '@/constants/config'
 import { getCurrentUrlOrigin, getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
@@ -12,20 +13,43 @@ type State = {
   enableLoginButton?: boolean
   enableInputAutofocus?: boolean
   subscribeMessageCountThreshold?: number
+  enableNft: boolean
+  enableEvmLinking: boolean
+  enableDonations: boolean
 }
-const ConfigContext = createContext<State>({ theme: undefined, order: [] })
+
+function processState(state: State) {
+  // Check all config with feature config so its enabled only if both are config from url and constant are enabled
+  Object.entries(DEFAULT_FEATURE_CONFIG).forEach(([key, value]) => {
+    const parsedKey = key as keyof State
+    if (state[parsedKey]) {
+      ;(state[parsedKey] as any) = state[parsedKey] && value
+    }
+  })
+  state.enableDonations = state.enableEvmLinking && state.enableDonations
+  return state
+}
+
+const ConfigContext = createContext<State>({
+  theme: undefined,
+  order: [],
+  ...DEFAULT_FEATURE_CONFIG,
+})
 
 export function ConfigProvider({ children }: { children: any }) {
-  const [state, setState] = useState<State>({
-    theme: undefined,
-    order: [],
-  })
+  const [state, setState] = useState<State>(() =>
+    processState({
+      theme: undefined,
+      order: [],
+      ...DEFAULT_FEATURE_CONFIG,
+    })
+  )
   const { push } = useRouter()
 
   const configRef = useRef<State | null>(null)
   useEffect(() => {
     const config = getConfig()
-    setState(config)
+    setState(processState(config))
     configRef.current = config
   }, [])
 
@@ -105,6 +129,10 @@ const schemaGetter = {
       'subscribeMessageCountThreshold'
     )
 
+    const enableNft = getUrlQuery('enableNft')
+    const enableEvmLinking = getUrlQuery('enableEvmLinking')
+    const enableDonations = getUrlQuery('enableDonations')
+
     const usedChannels = new Set(channels.split(',').filter((value) => !!value))
     const usedOrder = order.split(',').filter((value) => !!value)
 
@@ -137,6 +165,24 @@ const schemaGetter = {
           return parsedValue
         }
       ),
+      enableNft:
+        validateStringConfig(
+          enableNft,
+          ['true', 'false'],
+          (value) => value === 'true'
+        ) ?? true,
+      enableEvmLinking:
+        validateStringConfig(
+          enableEvmLinking,
+          ['true', 'false'],
+          (value) => value === 'true'
+        ) ?? true,
+      enableDonations:
+        validateStringConfig(
+          enableDonations,
+          ['true', 'false'],
+          (value) => value === 'true'
+        ) ?? true,
     }
   },
 } satisfies SchemaGetter

@@ -9,7 +9,6 @@ import Button from '@/components/Button'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
-import { featureConfig } from '@/constants/config'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import useGetTheme from '@/hooks/useGetTheme'
@@ -30,6 +29,7 @@ export default function AccountContent({
   notification,
   evmAddress,
 }: ContentProps) {
+  const { enableEvmLinking } = useConfigContext()
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
 
@@ -78,7 +78,7 @@ export default function AccountContent({
         setCurrentState('notifications')
       },
     },
-    ...(featureConfig.enableEvmLogin
+    ...(enableEvmLinking
       ? [
           {
             text: evmAddress ? 'My EVM Address' : 'Link EVM address',

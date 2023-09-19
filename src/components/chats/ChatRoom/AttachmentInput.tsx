@@ -3,7 +3,7 @@ import Button, { ButtonProps } from '@/components/Button'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
-import { featureConfig } from '@/constants/config'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { useExtensionData } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { ImAttachment } from 'react-icons/im'
@@ -16,6 +16,7 @@ export default function AttachmentInput({
   chatId,
   ...props
 }: AttachmentInputProps) {
+  const { enableNft } = useConfigContext()
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal
   )
@@ -27,7 +28,7 @@ export default function AttachmentInput({
       onClick: () => openExtensionModal('subsocial-image', null),
     },
   ]
-  if (featureConfig.enableNft) {
+  if (enableNft) {
     menus.unshift({
       icon: NftIcon,
       text: 'NFT',

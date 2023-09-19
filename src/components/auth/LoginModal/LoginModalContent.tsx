@@ -12,11 +12,11 @@ import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import Toast from '@/components/Toast'
-import { featureConfig } from '@/constants/config'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -165,6 +165,7 @@ export const EnterSecretKeyContent = ({
 export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
   const sendEvent = useSendEvent()
   const address = useMyAccount((state) => state.address)
+  const { enableEvmLinking } = useConfigContext()
 
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
     setModalStep: () => setCurrentStep('evm-address-linked'),
@@ -189,7 +190,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
           </Button>
         </div>
       )}
-      {featureConfig.enableEvmLogin && (
+      {enableEvmLinking && (
         <>
           <div className='mt-6 flex items-center'>
             <div className='w-full border-b border-background-lightest'></div>
