@@ -1,4 +1,3 @@
-import Spinner from '@/components/Spinner'
 import { isOptimisticId } from '@/services/datahub/posts/utils'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
 import { cx } from '@/utils/class-names'
@@ -12,17 +11,10 @@ export type MessageStatusIndicatorProps = {
 
 export default function MessageStatusIndicator({
   messageId,
-  ...props
 }: MessageStatusIndicatorProps) {
   const messageStatus = getMessageStatusById(messageId)
 
   if (messageStatus === 'sending') {
-    return (
-      <span className='relative top-px flex flex-shrink-0 items-center justify-center'>
-        <Spinner className='h-2.5 w-2.5' />
-      </span>
-    )
-  } else if (messageStatus === 'datahub') {
     return (
       <IoCheckmarkOutline
         className={cx(
