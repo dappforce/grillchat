@@ -58,15 +58,26 @@ async function getMessageTokenWithCatch() {
   try {
     const fcmToken = await getMessageToken()
     console.log('FCM Token', fcmToken)
-    if (!fcmToken) return
+    if (!fcmToken) {
+      toast.custom((t) => (
+        <Toast
+          type='error'
+          title='Failed to enable push notification'
+          subtitle='Notification permission was not granted.'
+          t={t}
+          description='If you have blocked the notification permission, please go to your browser settings or go to "chrome://settings/content/notifications" and allow it.'
+        />
+      ))
+      return
+    }
     return fcmToken
-  } catch (err: any) {
+  } catch {
     toast.custom((t) => (
       <Toast
         type='error'
         title='Failed to enable push notification'
         t={t}
-        description='If you are using Brave browser, please go to brave://settings/privacy and turn on "Use Google services for push messaging".'
+        description='If you are using Brave browser, please go to "brave://settings/privacy" and turn on "Use Google services for push messaging".'
       />
     ))
   }
