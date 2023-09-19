@@ -94,8 +94,8 @@ async function processMessage(
     data.id = newestId
     // set initial data for immediate render but refetch it in background
     getPostQuery.setQueryData(queryClient, newestId, { ...data })
-    getPostQuery.invalidate(queryClient)
   }
+  getPostQuery.invalidate(queryClient, newestId)
 
   const rootPostId = entity.rootPost?.persistentId
   if (!rootPostId) return

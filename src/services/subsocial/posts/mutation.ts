@@ -229,29 +229,6 @@ export function useUpsertPost(
     config,
     {
       txCallbacks: {
-        onSend: ({ data }) => {
-          const { payload, action } = checkAction(data)
-          if (action === 'update') {
-            getPostQuery.setQueryData(client, payload.postId, (post) => {
-              if (!post) return post
-              return {
-                ...post,
-                content: {
-                  ...post.content,
-                  title: data.title,
-                  image: data.image,
-                  body: data.body ?? '',
-                } as PostContent,
-              }
-            })
-          }
-        },
-        onError: async ({ data }) => {
-          const { payload, action } = checkAction(data)
-          if (action === 'update') {
-            getPostQuery.invalidate(client, payload.postId)
-          }
-        },
         onSuccess: async ({ data, address }, txResult) => {
           const { payload, action } = checkAction(data)
           if (action === 'create') {
@@ -261,9 +238,6 @@ export function useUpsertPost(
               if (!ids) return ids
               return [...ids, newId]
             })
-          } else if ('postId' in data && data.postId) {
-            await invalidatePostServerCache(data.postId)
-            getPostQuery.invalidate(client, data.postId)
           }
         },
       },
