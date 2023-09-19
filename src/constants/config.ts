@@ -1,4 +1,4 @@
-export const DEFAULT_FEATURE_CONFIG = {
+export const FEATURE_CONFIG = {
   enableNft: true,
   enableEvmLinking: true,
   enableDonations: true,

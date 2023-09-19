@@ -1,5 +1,5 @@
 import { Theme } from '@/@types/theme'
-import { DEFAULT_FEATURE_CONFIG } from '@/constants/config'
+import { FEATURE_CONFIG } from '@/constants/config'
 import { getCurrentUrlOrigin, getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
@@ -20,7 +20,7 @@ type State = {
 
 function processState(state: State) {
   // Check all config with feature config so its enabled only if both are config from url and constant are enabled
-  Object.entries(DEFAULT_FEATURE_CONFIG).forEach(([key, value]) => {
+  Object.entries(FEATURE_CONFIG).forEach(([key, value]) => {
     const parsedKey = key as keyof State
     if (state[parsedKey]) {
       ;(state[parsedKey] as any) = state[parsedKey] && value
@@ -33,7 +33,7 @@ function processState(state: State) {
 const ConfigContext = createContext<State>({
   theme: undefined,
   order: [],
-  ...DEFAULT_FEATURE_CONFIG,
+  ...FEATURE_CONFIG,
 })
 
 export function ConfigProvider({ children }: { children: any }) {
@@ -41,7 +41,7 @@ export function ConfigProvider({ children }: { children: any }) {
     processState({
       theme: undefined,
       order: [],
-      ...DEFAULT_FEATURE_CONFIG,
+      ...FEATURE_CONFIG,
     })
   )
   const { push } = useRouter()
