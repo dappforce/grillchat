@@ -1,4 +1,5 @@
 import LinkText from '@/components/LinkText'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 
@@ -6,6 +7,8 @@ export default function CenterChatNotice({
   isMyChat,
   ...props
 }: ComponentProps<'div'> & { isMyChat: boolean }) {
+  const { customTexts } = useConfigContext()
+
   return (
     <div
       {...props}
@@ -45,7 +48,7 @@ export default function CenterChatNotice({
           </div>
         </>
       ) : (
-        <span>No messages here yet</span>
+        <span>{customTexts?.noMessageText ?? 'No messages here yet'}</span>
       )}
     </div>
   )

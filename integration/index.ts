@@ -8,6 +8,7 @@ type QueryParams = {
   enableBackButton?: string
   enableLoginButton?: string
   enableInputAutofocus?: string
+  customTexts?: string
 }
 
 type ResourceLike = { toResourceId: () => string }
@@ -60,6 +61,13 @@ type Channel = { settings?: ChannelSettings } & (
   | ChanelTypeResource
 )
 
+type CustomTextConfig = {
+  /** The text to show when there is no message in the channel. Defaults to `No messages here yet` */
+  noMessageText?: string
+  /** The text in button that shows if channel is not created yet when you use channel type `resource`. Defaults to `Start Discussion`  */
+  createResourceText?: string
+}
+
 type Theme = 'light' | 'dark'
 export type GrillConfig = {
   /** The `id` of the div that you want to render the chat to. Default to `grill` */
@@ -69,6 +77,8 @@ export type GrillConfig = {
     /** The `space id` or `domain name` of your space. */
     id: string
   }
+  /** Custom texts to customize the chat based on your needs. */
+  customTexts?: CustomTextConfig
   /** Option to make the iframe open chat room (a channel) directly */
   channel?: Channel
   order?: string[]
@@ -185,6 +195,13 @@ const grill = {
           'enableInputAutofocus',
           channelSettings.enableInputAutofocus + ''
         )
+    }
+
+    if (mergedConfig.customTexts) {
+      query.set(
+        'customTexts',
+        encodeURIComponent(JSON.stringify(mergedConfig.customTexts))
+      )
     }
 
     iframe.src = `${baseUrl}?${query.get()}`
