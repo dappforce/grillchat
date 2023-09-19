@@ -77,7 +77,7 @@ async function getMessageTokenWithCatch() {
         type='error'
         title='Failed to enable push notification'
         t={t}
-        description='If you are using Brave browser, please go to brave://settings/privacy and turn on "Use Google services for push messaging".'
+        description='If you are using Brave browser, please go to "brave://settings/privacy" and turn on "Use Google services for push messaging".'
       />
     ))
   }
