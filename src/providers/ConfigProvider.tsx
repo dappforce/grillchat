@@ -105,9 +105,12 @@ const schemaGetter = {
 
     const customTextsString = getUrlQuery('customTexts')
     let customTexts: GrillConfig['customTexts']
+    console.log('prev', decodeURIComponent(customTextsString))
     try {
       customTexts = JSON.parse(decodeURIComponent(customTextsString))
-    } catch {
+      console.log(customTexts)
+    } catch (err) {
+      console.log(err)
       customTexts = undefined
     }
 
