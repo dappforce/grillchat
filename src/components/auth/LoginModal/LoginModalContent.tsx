@@ -176,7 +176,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
       {address && (
         <div
           className={cx(
-            'mb-6 mt-2 flex flex-col rounded-2xl bg-background-lighter p-4'
+            'mt-2 flex flex-col rounded-2xl bg-background-lighter p-4'
           )}
         >
           <ProfilePreview address={address} avatarClassName={cx('h-16 w-16')} />
@@ -191,7 +191,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
       )}
       {featureConfig.enableEvmLogin && (
         <>
-          <div className='flex items-center'>
+          <div className='mt-6 flex items-center'>
             <div className='w-full border-b border-background-lightest'></div>
             <p className='min-w-fit px-4 text-text-muted'>WHAT’S NEXT?</p>
             <div className='w-full border-b border-background-lightest'></div>
