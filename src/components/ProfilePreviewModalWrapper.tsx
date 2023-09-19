@@ -1,3 +1,4 @@
+import { featureConfig } from '@/constants/config'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
@@ -39,7 +40,7 @@ export default function ProfilePreviewModalWrapper({
         closeModal={() => setIsOpenAccountModal(false)}
       >
         <ProfilePreview address={address} className='mb-2' />
-        {evmAddress && messageId && (
+        {evmAddress && messageId && featureConfig.enableDonations && (
           <ActionCard
             className='mt-2'
             actions={[

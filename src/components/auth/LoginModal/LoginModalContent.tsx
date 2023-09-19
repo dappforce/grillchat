@@ -12,6 +12,7 @@ import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import Toast from '@/components/Toast'
+import { featureConfig } from '@/constants/config'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
@@ -188,33 +189,37 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
           </Button>
         </div>
       )}
-      <div className='flex items-center'>
-        <div className='w-full border-b border-background-lightest'></div>
-        <p className='min-w-fit px-4 text-text-muted'>WHAT’S NEXT?</p>
-        <div className='w-full border-b border-background-lightest'></div>
-      </div>
-      <p className='mb-4 mt-6 text-text-muted'>
-        Now, you can connect an EVM wallet to benefit from EVM features such as
-        ERC-20 tokens, NFTs, and other smart contracts.
-      </p>
-      <CustomConnectButton
-        withWalletActionImage={false}
-        className='w-full'
-        signAndLinkEvmAddress={signAndLinkEvmAddress}
-        isLoading={isLoading}
-        secondLabel='Sign Message'
-        onClick={() =>
-          sendEvent('start_link_evm_address', {
-            eventSource: 'account_created',
-          })
-        }
-        label={
-          <div className='flex items-center justify-center gap-2'>
-            <WalletIcon />
-            Connect Wallet
+      {featureConfig.enableEvmLogin && (
+        <>
+          <div className='flex items-center'>
+            <div className='w-full border-b border-background-lightest'></div>
+            <p className='min-w-fit px-4 text-text-muted'>WHAT’S NEXT?</p>
+            <div className='w-full border-b border-background-lightest'></div>
           </div>
-        }
-      />
+          <p className='mb-4 mt-6 text-text-muted'>
+            Now, you can connect an EVM wallet to benefit from EVM features such
+            as ERC-20 tokens, NFTs, and other smart contracts.
+          </p>
+          <CustomConnectButton
+            withWalletActionImage={false}
+            className='w-full'
+            signAndLinkEvmAddress={signAndLinkEvmAddress}
+            isLoading={isLoading}
+            secondLabel='Sign Message'
+            onClick={() =>
+              sendEvent('start_link_evm_address', {
+                eventSource: 'account_created',
+              })
+            }
+            label={
+              <div className='flex items-center justify-center gap-2'>
+                <WalletIcon />
+                Connect Wallet
+              </div>
+            }
+          />
+        </>
+      )}
     </div>
   )
 }

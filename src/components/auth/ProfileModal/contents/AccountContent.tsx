@@ -9,6 +9,7 @@ import Button from '@/components/Button'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
+import { featureConfig } from '@/constants/config'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import useGetTheme from '@/hooks/useGetTheme'
@@ -77,14 +78,18 @@ export default function AccountContent({
         setCurrentState('notifications')
       },
     },
-    {
-      text: evmAddress ? 'My EVM Address' : 'Link EVM address',
-      icon: EthIcon,
-      onClick: () => {
-        notification?.setNotifDone()
-        onLinkEvmAddressClick()
-      },
-    },
+    ...(featureConfig.enableEvmLogin
+      ? [
+          {
+            text: evmAddress ? 'My EVM Address' : 'Link EVM address',
+            icon: EthIcon,
+            onClick: () => {
+              notification?.setNotifDone()
+              onLinkEvmAddressClick()
+            },
+          },
+        ]
+      : []),
     {
       text: (
         <span className='flex items-center gap-2'>

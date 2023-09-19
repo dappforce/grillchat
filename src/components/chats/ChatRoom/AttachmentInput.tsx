@@ -1,6 +1,9 @@
 import NftIcon from '@/assets/icons/nft.svg'
 import Button, { ButtonProps } from '@/components/Button'
-import FloatingMenus from '@/components/floating/FloatingMenus'
+import FloatingMenus, {
+  FloatingMenusProps,
+} from '@/components/floating/FloatingMenus'
+import { featureConfig } from '@/constants/config'
 import { useExtensionData } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { ImAttachment } from 'react-icons/im'
@@ -17,21 +20,25 @@ export default function AttachmentInput({
     (state) => state.openExtensionModal
   )
 
+  const menus: FloatingMenusProps['menus'] = [
+    {
+      icon: IoImageOutline,
+      text: 'Image',
+      onClick: () => openExtensionModal('subsocial-image', null),
+    },
+  ]
+  if (featureConfig.enableNft) {
+    menus.unshift({
+      icon: NftIcon,
+      text: 'NFT',
+      onClick: () => openExtensionModal('subsocial-evm-nft', null),
+    })
+  }
+
   return (
     <FloatingMenus
       showOnHover
-      menus={[
-        {
-          icon: NftIcon,
-          text: 'NFT',
-          onClick: () => openExtensionModal('subsocial-evm-nft', null),
-        },
-        {
-          icon: IoImageOutline,
-          text: 'Image',
-          onClick: () => openExtensionModal('subsocial-image', null),
-        },
-      ]}
+      menus={menus}
       allowedPlacements={['top-start']}
       mainAxisOffset={20}
     >
