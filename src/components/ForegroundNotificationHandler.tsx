@@ -1,7 +1,7 @@
 import { getPostQuery } from '@/services/api/query'
 import firebaseApp from '@/services/firebase/config'
 import { cx } from '@/utils/class-names'
-import { getMessaging, onMessage } from 'firebase/messaging'
+import firebaseMessaging from 'firebase/messaging'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { HiArrowUpRight } from 'react-icons/hi2'
@@ -11,8 +11,8 @@ import Toast from './Toast'
 
 export default function ForegroundNotificationHandler() {
   useEffect(() => {
-    const messaging = getMessaging(firebaseApp)
-    const unsub = onMessage(messaging, async (payload) => {
+    const messaging = firebaseMessaging.getMessaging(firebaseApp)
+    const unsub = firebaseMessaging.onMessage(messaging, async (payload) => {
       const data = payload.data
       const notification = payload.notification
 
