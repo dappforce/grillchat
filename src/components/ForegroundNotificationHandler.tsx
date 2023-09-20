@@ -6,7 +6,7 @@ export default function ForegroundNotificationHandler() {
   useEffect(() => {
     console.log('SUBSCRIBED FOREGROUND NOTIFICATION')
     const messaging = getMessaging(firebaseApp)
-    onMessage(messaging, (payload) => {
+    const unsub = onMessage(messaging, (payload) => {
       const notificationData = payload.data
       console.log('RECEIVE NOTIFICATION', payload)
 
@@ -23,6 +23,8 @@ export default function ForegroundNotificationHandler() {
         console.log('Error in loading notification response:', e)
       }
     })
+
+    return unsub
   }, [])
   return null
 }
