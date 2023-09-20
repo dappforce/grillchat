@@ -4,6 +4,7 @@ import Toast from '@/components/Toast'
 import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { getMessageToken } from '@/services/firebase/messaging'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount } from '@/stores/my-account'
 import { LocalStorage } from '@/utils/storage'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -11,18 +12,20 @@ import { ContentProps } from '../../types'
 
 const FCM_PUSH_NOTIFICATION_STORAGE_KEY = 'push-notification-fcm-token'
 export const fcmPushNotificationStorage = new LocalStorage(
-  () => FCM_PUSH_NOTIFICATION_STORAGE_KEY
+  (address: string) => `${FCM_PUSH_NOTIFICATION_STORAGE_KEY}-${address}`
 )
 
 export default function PushNotificationContent(props: ContentProps) {
+  const myAddress = useMyAccount((state) => state.address)
   const isNotificationNotSupported = typeof Notification === 'undefined'
 
   const [isRegistered, setIsRegistered] = useState(false)
 
   useEffect(() => {
-    const storedFcmToken = fcmPushNotificationStorage.get()
+    if (!myAddress) return
+    const storedFcmToken = fcmPushNotificationStorage.get(myAddress)
     setIsRegistered(!!storedFcmToken)
-  }, [isRegistered])
+  }, [isRegistered, myAddress])
 
   if (isNotificationNotSupported) {
     return (
@@ -89,13 +92,14 @@ function DisableNotificationButton({
 }: NotificationButtonProps) {
   const [isGettingToken, setIsGettingToken] = useState(false)
   const sendEvent = useSendEvent()
+  const myAccount = useMyAccount((state) => state.address)
 
   const { mutate: unlinkFcm, isLoading: isUnlinking } = useLinkFcm({
     onSuccess: (data) => {
       if (!data) throw new Error('Error in disabling notification request')
 
       // FCM Token Disabled.
-      fcmPushNotificationStorage.remove()
+      fcmPushNotificationStorage.remove(myAccount ?? '')
       setIsRegistered(false)
       sendEvent('wp_notifs_disabled', undefined, { webNotifsEnabled: false })
     },
@@ -129,6 +133,7 @@ function EnableNotificationButton({
   address,
   setIsRegistered,
 }: NotificationButtonProps) {
+  const myAddress = useMyAccount((state) => state.address)
   const [isGettingToken, setIsGettingToken] = useState(false)
   const [fcmToken, setFcmToken] = useState<string | undefined>()
   const sendEvent = useSendEvent()
@@ -136,8 +141,8 @@ function EnableNotificationButton({
   const { mutate: linkFcm, isLoading: isLinking } = useLinkFcm({
     onSuccess: () => {
       // FCM Token Enabled.
-      if (fcmToken) {
-        fcmPushNotificationStorage.set(fcmToken)
+      if (fcmToken && myAddress) {
+        fcmPushNotificationStorage.set(fcmToken, myAddress)
         setIsRegistered(true)
         sendEvent('wp_notifs_allowed', undefined, { webNotifsEnabled: true })
       }
@@ -166,16 +171,17 @@ function EnableNotificationButton({
 }
 
 export function useIsPushNotificationEnabled() {
+  const myAddress = useMyAccount((state) => state.address)
   const [isPushNotificationEnabled, setIsPushNotificationEnabled] =
     useState(false)
 
   useEffect(() => {
-    if (typeof Notification === 'undefined') return
+    if (typeof Notification === 'undefined' || !myAddress) return
 
     const permission = Notification.permission
-    const storedFcmToken = fcmPushNotificationStorage.get()
+    const storedFcmToken = fcmPushNotificationStorage.get(myAddress)
     setIsPushNotificationEnabled(!!storedFcmToken && permission === 'granted')
-  }, [])
+  }, [myAddress])
 
   return isPushNotificationEnabled
 }
