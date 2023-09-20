@@ -11,44 +11,40 @@ import Toast from './Toast'
 
 export default function ForegroundNotificationHandler() {
   useEffect(() => {
-    console.log('SUBSCRIBED FOREGROUND NOTIFICATION')
     const messaging = getMessaging(firebaseApp)
     const unsub = onMessage(messaging, async (payload) => {
       const data = payload.data
       const notification = payload.notification
 
       if (!data || !notification) return
-      try {
-        const { postId, rootPostId, spaceId } = data || {}
-        const urlToOpen = `https://grill.chat/${spaceId}/${rootPostId}?messageId=${postId}`
-        toast.custom(
-          (t) => (
-            <Toast
-              t={t}
-              icon={(className) => (
-                <ChatImageWrapper chatId={rootPostId} className={className} />
-              )}
-              title={notification.title}
-              description={notification.body}
-              action={
-                <Button
-                  size='circle'
-                  className='ml-2 text-lg text-text-primary'
-                  href={urlToOpen}
-                  target='_blank'
-                  variant='transparent'
-                  onClick={() => toast.dismiss(t.id)}
-                >
-                  <HiArrowUpRight />
-                </Button>
-              }
-            />
-          ),
-          { duration: 5_000 }
-        )
-      } catch (e) {
-        console.log('Error in loading notification response:', e)
-      }
+
+      const { postId, rootPostId, spaceId } = data || {}
+      const urlToOpen = `https://grill.chat/${spaceId}/${rootPostId}?messageId=${postId}`
+      toast.custom(
+        (t) => (
+          <Toast
+            t={t}
+            icon={(className) => (
+              <ChatImageWrapper chatId={rootPostId} className={className} />
+            )}
+            title={notification.title}
+            description={notification.body}
+            action={
+              <Button
+                size='circle'
+                className='ml-2 text-lg text-text-primary'
+                href={urlToOpen}
+                target='_blank'
+                variant='transparent'
+                onClick={() => toast.dismiss(t.id)}
+              >
+                <HiArrowUpRight />
+              </Button>
+            }
+          />
+        ),
+        { duration: 5_000 }
+      )
     })
 
     return unsub
