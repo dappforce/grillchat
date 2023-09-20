@@ -21,6 +21,7 @@ import { getModeratorQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useExtensionData } from '@/stores/extension'
+import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -61,6 +62,11 @@ export default function ChatPage({
   customAction,
   stubMetadata,
 }: ChatPageProps) {
+  const resetMessageData = useMessageData((state) => state.reset)
+  useEffect(() => {
+    return () => resetMessageData()
+  }, [resetMessageData])
+
   const router = useRouter()
   const [isOpenCreateSuccessModal, setIsOpenCreateSuccessModal] =
     useState(false)
