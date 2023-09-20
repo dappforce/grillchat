@@ -34,6 +34,7 @@ export default function SubsocialProfileForm({
   } = useForm<FormSchema>({
     defaultValues: { name: data?.profileSpace?.name ?? '' },
     resolver: zodResolver(formSchema),
+    mode: 'onBlur',
   })
 
   return (
