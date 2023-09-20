@@ -1,6 +1,7 @@
 # Grill Widget
-
 Grill Widget is a tiny package (< 1kb compressed) that you can use to integrate [Grill.chat](https://grill.chat) into your app. It wraps all of the available configs in a simple function call.
+
+https://github.com/dappforce/grillchat/assets/39906111/1d1ca9b5-c49f-49e4-9c04-ae4a4a390b33
 
 ## Installation
 
