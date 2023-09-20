@@ -35,9 +35,9 @@ class QueryParamsBuilder {
 }
 
 type Settings = {
-  /** If set to `true`, it will show the back button in the channel iframe. Default to `false` */
+  /** If set to `true`, it will show the back button in the chat page. Default to `true` */
   enableBackButton?: boolean
-  /** If set to `true`, it will show the login button in the channel iframe. Default to `false` */
+  /** If set to `true`, it will show the login button in the iframe. Default to `true` */
   enableLoginButton?: boolean
   /** If set to `true`, it will autofocus on the message input when the iframe is loaded. The default behavior is `true`, except on touch devices. If set `true`, it will autofocus the input on all devices. */
   enableInputAutofocus?: boolean
@@ -94,9 +94,9 @@ const DEFAULT_CONFIG = {
   hub: { id: 'x' },
 } satisfies GrillConfig
 
-const DEFAULT_CHANNEL_SETTINGS: Settings = {
-  enableBackButton: false,
-  enableLoginButton: false,
+const DEFAULT_SETTINGS: Settings = {
+  enableBackButton: true,
+  enableLoginButton: true,
 }
 
 function createUrl(
@@ -179,7 +179,7 @@ const grill = {
       query.set('rootFontSize', mergedConfig.rootFontSize)
 
     const settings = {
-      ...DEFAULT_CHANNEL_SETTINGS,
+      ...DEFAULT_SETTINGS,
       ...mergedConfig.settings,
     }
 

@@ -141,16 +141,18 @@ const schemaGetter = {
       channels: usedChannels.size > 0 ? usedChannels : undefined,
       theme: validateStringConfig(theme, ['dark', 'light']),
       rootFontSize,
-      enableBackButton: validateStringConfig(
-        enableBackButton,
-        ['true', 'false'],
-        (value) => value === 'true'
-      ),
-      enableLoginButton: validateStringConfig(
-        enableLoginButton,
-        ['true', 'false'],
-        (value) => value === 'true'
-      ),
+      enableBackButton:
+        validateStringConfig(
+          enableBackButton,
+          ['true', 'false'],
+          (value) => value === 'true'
+        ) ?? true,
+      enableLoginButton:
+        validateStringConfig(
+          enableLoginButton,
+          ['true', 'false'],
+          (value) => value === 'true'
+        ) ?? true,
       enableInputAutofocus: validateStringConfig(
         enableInputAutofocus,
         ['true', 'false'],
