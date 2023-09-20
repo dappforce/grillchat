@@ -6,12 +6,12 @@ import { ContentProps } from '../types'
 import { fcmPushNotificationStorage } from './notifications/PushNotificationContent'
 
 function LogoutContent({ setCurrentState }: ContentProps) {
-  const { address } = useMyAccount()
+  const address = useMyAccount((state) => state.address)
   const logout = useMyAccount((state) => state.logout)
   const sendEvent = useSendEvent()
 
   const { mutate: linkFcm, isLoading } = useLinkFcm({
-    onSuccess: () => fcmPushNotificationStorage.remove(),
+    onSuccess: () => fcmPushNotificationStorage.remove(address ?? ''),
   })
 
   const onShowPrivateKeyClick = () => {
@@ -19,9 +19,9 @@ function LogoutContent({ setCurrentState }: ContentProps) {
   }
   const onLogoutClick = () => {
     sendEvent('account_logout')
-    logout()
+    const fcmToken = fcmPushNotificationStorage.get(address ?? '')
 
-    const fcmToken = fcmPushNotificationStorage.get()
+    logout()
 
     if (fcmToken && address) {
       linkFcm({ address, fcmToken, action: 'unlink' })
