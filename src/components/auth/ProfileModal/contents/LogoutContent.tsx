@@ -21,11 +21,10 @@ function LogoutContent({ setCurrentState }: ContentProps) {
     sendEvent('account_logout')
     const fcmToken = fcmPushNotificationStorage.get(address ?? '')
 
-    logout()
-
     if (fcmToken && address) {
       linkFcm({ address, fcmToken, action: 'unlink' })
     }
+    logout()
   }
 
   return (
