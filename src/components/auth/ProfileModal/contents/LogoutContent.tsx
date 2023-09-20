@@ -10,9 +10,7 @@ function LogoutContent({ setCurrentState }: ContentProps) {
   const logout = useMyAccount((state) => state.logout)
   const sendEvent = useSendEvent()
 
-  const { mutate: linkFcm, isLoading } = useLinkFcm({
-    onSuccess: () => fcmPushNotificationStorage.remove(address ?? ''),
-  })
+  const { mutate: linkFcm, isLoading } = useLinkFcm()
 
   const onShowPrivateKeyClick = () => {
     setCurrentState('private-key')
@@ -21,11 +19,11 @@ function LogoutContent({ setCurrentState }: ContentProps) {
     sendEvent('account_logout')
     const fcmToken = fcmPushNotificationStorage.get(address ?? '')
 
-    logout()
-
     if (fcmToken && address) {
+      fcmPushNotificationStorage.remove(address ?? '')
       linkFcm({ address, fcmToken, action: 'unlink' })
     }
+    logout()
   }
 
   return (
