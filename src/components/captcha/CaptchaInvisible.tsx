@@ -43,13 +43,15 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
       {children(runCaptcha, (className) => (
         <CaptchaTermsAndService className={className} />
       ))}
-      <ReCAPTCHA
-        sitekey={getCaptchaSiteKey()}
-        theme='dark'
-        ref={captchaRef}
-        size='invisible'
-        badge='inline'
-      />
+      <div className='hidden'>
+        <ReCAPTCHA
+          sitekey={getCaptchaSiteKey()}
+          theme='dark'
+          ref={captchaRef}
+          size='invisible'
+          badge='inline'
+        />
+      </div>
     </>
   )
 }
