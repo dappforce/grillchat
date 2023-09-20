@@ -19,9 +19,9 @@ function LogoutContent({ setCurrentState }: ContentProps) {
   }
   const onLogoutClick = () => {
     sendEvent('account_logout')
-    logout()
-
     const fcmToken = fcmPushNotificationStorage.get(address ?? '')
+
+    logout()
 
     if (fcmToken && address) {
       linkFcm({ address, fcmToken, action: 'unlink' })
