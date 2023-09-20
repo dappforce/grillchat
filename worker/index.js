@@ -4,13 +4,15 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close()
 
   let urlToOpen = self.location.origin
+  let spaceId = ''
 
   try {
     const notification = event.notification?.data
 
     if (notification) {
       const data = notification['FCM_MSG']['data']
-      const { postId, rootPostId, spaceId } = data
+      const { postId, rootPostId } = data
+      spaceId = data.spaceId
       urlToOpen += `/${spaceId}/${rootPostId}/${postId}`
     }
   } catch (e) {
@@ -49,8 +51,12 @@ self.addEventListener('push', (event) => {
   event.waitUntil(navigator.setAppBadge())
 })
 
-importScripts('https://www.gstatic.com/firebasejs/3.5.0/firebase-app.js')
-importScripts('https://www.gstatic.com/firebasejs/3.5.0/firebase-messaging.js')
+importScripts(
+  'https://www.gstatic.com/firebasejs/10.1.0/firebase-app-compat.js'
+)
+importScripts(
+  'https://www.gstatic.com/firebasejs/10.1.0/firebase-messaging-compat.js'
+)
 
 firebase.initializeApp({
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
