@@ -25,6 +25,7 @@ import {
 import InfiniteScroll from 'react-infinite-scroll-component'
 import CenterChatNotice from './CenterChatNotice'
 import MemoizedChatItemWithMenu from './ChatItemWithMenu'
+import ChatListEventManager from './ChatListEventManager'
 import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
@@ -169,6 +170,7 @@ function ChatListContent({
 
   return (
     <ChatListContext.Provider value={scrollContainerRef}>
+      <ChatListEventManager />
       <div
         {...props}
         className={cx(
