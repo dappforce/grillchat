@@ -100,16 +100,16 @@ export default function ChatForm({
   )
   const [isRequestingEnergy, setIsRequestingEnergy] = useState(false)
 
-  const { mutateAsync: requestTokenAndSendMessage } =
-    useRequestTokenAndSendMessage({
-      onError: (error, variables) => {
-        showErrorSendingMessageToast(
-          error,
-          'Failed to register or send message',
-          variables
-        )
-      },
-    })
+  const { mutate: requestTokenAndSendMessage } = useRequestTokenAndSendMessage({
+    onSuccess: () => unsentMessageStorage.remove(chatId),
+    onError: (error, variables) => {
+      showErrorSendingMessageToast(
+        error,
+        'Failed to register or send message',
+        variables
+      )
+    },
+  })
 
   let messageBody = useMessageData((state) => state.messageBody)
   const showEmptyPrimaryChatInput = useMessageData(
@@ -120,6 +120,7 @@ export default function ChatForm({
   }
 
   const { mutate: sendMessage } = useSendMessage({
+    onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
       showErrorSendingMessageToast(error, 'Failed to send message', variables)
     },
@@ -188,6 +189,8 @@ export default function ChatForm({
         setIsOpenNameModal(true)
       }, 1000)
     }
+
+    unsentMessageStorage.set(JSON.stringify(messageParams), chatId)
     hasSentMessageStorage.set('true')
 
     if (shouldSendMessage) {
