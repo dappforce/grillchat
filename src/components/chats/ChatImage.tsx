@@ -8,7 +8,6 @@ export type ChatImageProps = ComponentProps<'div'> & {
   chatTitle?: string
   chatId?: string
   image?: ImageProps['src'] | JSX.Element
-  isImageInCidFormat?: boolean
   rounding?: 'circle' | 'xl' | '2xl'
 }
 
@@ -16,7 +15,6 @@ export default function ChatImage({
   chatId,
   chatTitle,
   image,
-  isImageInCidFormat = true,
   rounding = 'circle',
   ...props
 }: ChatImageProps) {
@@ -77,11 +75,7 @@ export default function ChatImage({
         ) : (
           <Image
             className='h-full w-full object-cover'
-            src={
-              isImageInCidFormat
-                ? getIpfsContentUrl(image as string)
-                : (image as string)
-            }
+            src={getIpfsContentUrl(image as string)}
             sizes='150px'
             width={120}
             height={120}
