@@ -1,18 +1,44 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useSaveFile } from '@/services/api/mutation'
-import { createPostData } from '@/services/datahub/posts/mutation'
+import { getPostQuery } from '@/services/api/query'
+import {
+  createPostData,
+  updatePostData,
+} from '@/services/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { getCID, IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PostContent } from '@subsocial/api/types'
-import { useQueryClient } from '@tanstack/react-query'
+import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
 import { SendMessageParams } from './types'
 
-async function generateMessageContent(params: SendMessageParams) {
+async function generateMessageContent(
+  params: SendMessageParams,
+  client: QueryClient
+): Promise<{
+  cid: string
+  content: PostContent | (PostContent & { optimisticId: string })
+}> {
+  if (params.messageIdToEdit) {
+    const originalPost = await getPostQuery.fetchQuery(
+      client,
+      params.messageIdToEdit
+    )
+    const content = originalPost?.content
+    const savedContent = {
+      body: params.message,
+      inReplyTo: ReplyWrapper(content?.inReplyTo?.id),
+      extensions: content?.extensions,
+    } as PostContent
+    const cid = getCID(savedContent)
+
+    return { content: savedContent, cid: cid?.toString() ?? '' }
+  }
+
   const content = {
     body: params.message,
     inReplyTo: ReplyWrapper(params.replyTo),
@@ -37,7 +63,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   >(
     {
       getWallet,
-      generateContext: (data) => generateMessageContent(data),
+      generateContext: (data) => generateMessageContent(data, client),
       transactionGenerator: async ({
         apis: { substrateApi },
         wallet: { address },
@@ -50,26 +76,44 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             'Your message is too long, please split it up to multiple messages'
           )
 
-        createPostData({
-          address,
-          content: content,
-          contentCid: prebuiltCid,
-          rootPostId: data.chatId,
-          spaceId: data.hubId,
-        })
+        if (!data.messageIdToEdit) {
+          createPostData({
+            address,
+            content: content,
+            contentCid: prebuiltCid,
+            rootPostId: data.chatId,
+            spaceId: data.hubId,
+          })
+        } else {
+          updatePostData({
+            address,
+            content: content,
+            contentCid: prebuiltCid,
+            postId: data.messageIdToEdit,
+          })
+        }
 
         const { cid, success } = await saveFile(content)
         if (!success || !cid) throw new Error('Failed to save file to IPFS')
 
         await waitHasEnergy()
 
-        return {
-          tx: substrateApi.tx.posts.createPost(
-            null,
-            { Comment: { parentId: null, rootPostId: data.chatId } },
-            IpfsWrapper(cid)
-          ),
-          summary: 'Sending message',
+        if (data.messageIdToEdit) {
+          return {
+            tx: substrateApi.tx.posts.updatePost(data.messageIdToEdit, {
+              content: IpfsWrapper(cid),
+            }),
+            summary: 'Updating message',
+          }
+        } else {
+          return {
+            tx: substrateApi.tx.posts.createPost(
+              null,
+              { Comment: { parentId: null, rootPostId: data.chatId } },
+              IpfsWrapper(cid)
+            ),
+            summary: 'Sending message',
+          }
         }
       },
     },
@@ -78,21 +122,27 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
       txCallbacks: {
         onStart: ({ address, context, data }) => {
           preventWindowUnload()
-          addOptimisticData({
-            address,
-            params: data,
-            ipfsContent: context.content,
-            client,
-          })
+          const content = context.content
+          if (!data.messageIdToEdit && 'optimisticId' in content) {
+            addOptimisticData({
+              address,
+              params: data,
+              ipfsContent: content,
+              client,
+            })
+          }
         },
         onSend: allowWindowUnload,
         onError: ({ data, context }) => {
           allowWindowUnload()
-          deleteOptimisticData({
-            client,
-            chatId: data.chatId,
-            optimisticId: context.content.optimisticId,
-          })
+          const content = context.content
+          if (!data.messageIdToEdit && 'optimisticId' in content) {
+            deleteOptimisticData({
+              client,
+              chatId: data.chatId,
+              optimisticId: content.optimisticId,
+            })
+          }
         },
       },
     }
