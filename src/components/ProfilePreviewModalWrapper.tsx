@@ -1,3 +1,4 @@
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
@@ -25,6 +26,7 @@ export default function ProfilePreviewModalWrapper({
   const [isOpenAccountModal, setIsOpenAccountModal] = useState(false)
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { evmAddress } = accountData || {}
+  const { enableDonations } = useConfigContext()
 
   return (
     <>
@@ -39,7 +41,7 @@ export default function ProfilePreviewModalWrapper({
         closeModal={() => setIsOpenAccountModal(false)}
       >
         <ProfilePreview address={address} className='mb-2' />
-        {evmAddress && messageId && (
+        {evmAddress && messageId && enableDonations && (
           <ActionCard
             className='mt-2'
             actions={[

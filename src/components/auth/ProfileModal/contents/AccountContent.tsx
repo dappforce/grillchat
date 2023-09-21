@@ -29,6 +29,7 @@ export default function AccountContent({
   notification,
   evmAddress,
 }: ContentProps) {
+  const { enableEvmLinking } = useConfigContext()
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
 
@@ -77,14 +78,18 @@ export default function AccountContent({
         setCurrentState('notifications')
       },
     },
-    {
-      text: evmAddress ? 'My EVM Address' : 'Link EVM address',
-      icon: EthIcon,
-      onClick: () => {
-        notification?.setNotifDone()
-        onLinkEvmAddressClick()
-      },
-    },
+    ...(enableEvmLinking
+      ? [
+          {
+            text: evmAddress ? 'My EVM Address' : 'Link EVM address',
+            icon: EthIcon,
+            onClick: () => {
+              notification?.setNotifDone()
+              onLinkEvmAddressClick()
+            },
+          },
+        ]
+      : []),
     {
       text: (
         <span className='flex items-center gap-2'>

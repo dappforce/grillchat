@@ -12,6 +12,7 @@ import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useCanSendMessage } from '@/hooks/useCanSendMessage'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useToastError from '@/hooks/useToastError'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
@@ -52,6 +53,7 @@ export default function ChatItemMenus({
   hubId,
   enableChatMenu = true,
 }: ChatItemMenusProps) {
+  const { enableDonations } = useConfigContext()
   const canSendMessage = useCanSendMessage(hubId, chatId)
 
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
@@ -115,7 +117,8 @@ export default function ChatItemMenus({
       onClick: () => setMessageAsReply(messageId),
     }
 
-    const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage
+    const showDonateMenuItem =
+      enableDonations && messageOwnerEvmAddress && canSendMessage
 
     const menus: FloatingMenusProps['menus'] = [
       {
