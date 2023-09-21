@@ -75,16 +75,11 @@ function ChatInputWrapper({
   scrollContainerRef,
 }: ChatInputWrapperProps) {
   const clearAction = useMessageData((state) => state.clearAction)
-  const replyTo = useMessageData((state) => state.replyTo)
-  const messageToEdit = useMessageData((state) => state.messageToEdit)
   const sendEvent = useSendEvent()
 
   useEffect(() => {
     return () => clearAction()
   }, [clearAction])
-  const showEmptyPrimaryChatInput = useMessageData(
-    (state) => state.showEmptyPrimaryChatInput
-  )
 
   const Component = asContainer ? Container<'div'> : 'div'
 

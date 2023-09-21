@@ -23,6 +23,8 @@ type State = {
   unreadMessage: UnreadMessage
 }
 
+let savedStateBeforeEditing: State | null = null
+
 type Actions = {
   reset: () => void
   incrementMessageCount: () => void
@@ -58,10 +60,16 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
   setReplyTo: (replyTo: string) => {
     set({ replyTo, messageToEdit: '' })
   },
-  setMessageToEdit: (messageToEdit: string) => {
+  setMessageToEdit: async (messageToEdit: string) => {
+    savedStateBeforeEditing = get()
     set({ messageToEdit, replyTo: '' })
   },
   clearAction: () => {
+    if (savedStateBeforeEditing) {
+      set(savedStateBeforeEditing)
+      savedStateBeforeEditing = null
+      return
+    }
     set({ replyTo: '', messageToEdit: '' })
   },
   incrementMessageCount: () => {
@@ -84,6 +92,7 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
     set({ unreadMessage })
   },
   reset: () => {
+    savedStateBeforeEditing = null
     set(INITIAL_STATE)
   },
   init: () => {
