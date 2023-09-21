@@ -10,7 +10,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
-import { ComponentProps, RefObject, useEffect, useRef } from 'react'
+import { ComponentProps, ReactNode, RefObject, useEffect, useRef } from 'react'
 import ChatInputBar from './ChatInputBar'
 
 const ChatList = dynamic(() => import('../ChatList/ChatList'), {
@@ -23,6 +23,7 @@ const ActionDetailBar = dynamic(() => import('./ActionDetailBar'), {
 export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
+  customAction?: ReactNode
   chatId: string
   hubId: string
 }
@@ -31,6 +32,7 @@ export default function ChatRoom({
   className,
   asContainer,
   scrollableContainerClassName,
+  customAction,
   chatId,
   hubId,
   ...props
@@ -49,6 +51,7 @@ export default function ChatRoom({
         scrollContainerRef={scrollContainerRef}
       />
       <ChatInputWrapper
+        customAction={customAction}
         chatId={chatId}
         hubId={hubId}
         asContainer={asContainer}
@@ -60,7 +63,7 @@ export default function ChatRoom({
 
 type ChatInputWrapperProps = Pick<
   ChatRoomProps,
-  'asContainer' | 'chatId' | 'hubId'
+  'asContainer' | 'chatId' | 'hubId' | 'customAction'
 > & {
   scrollContainerRef: RefObject<HTMLDivElement>
 }
@@ -68,6 +71,7 @@ function ChatInputWrapper({
   asContainer,
   chatId,
   hubId,
+  customAction,
   scrollContainerRef,
 }: ChatInputWrapperProps) {
   const clearAction = useMessageData((state) => state.clearAction)
@@ -111,6 +115,8 @@ function ChatInputWrapper({
           scrollContainer={scrollContainerRef}
         />
         {(() => {
+          if (customAction) return customAction
+
           if (isHidden)
             return (
               <TextArea

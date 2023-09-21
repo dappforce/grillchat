@@ -58,12 +58,17 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'miro.medium.com',
+        port: '',
       },
       {
         protocol: 'https',
         hostname: 'metadata.ens.domains',
         port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
       },
     ],
   },

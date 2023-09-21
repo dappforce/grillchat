@@ -1,8 +1,9 @@
 import Container from '@/components/Container'
 import MessageModal from '@/components/modals/MessageModal'
-import useLastReadMessageId from '@/hooks/useLastReadMessageId'
+import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
+import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
@@ -39,8 +40,12 @@ export default function ChatListSupportingContent({
   filteredMessageIds,
 }: ChatListSupportingContentProps) {
   const router = useRouter()
+  const isInitialized = useRef(false)
 
-  const [initialNewMessageCount, setInitialNewMessageCount] = useState(0)
+  const unreadMessage = useMessageData((state) => state.unreadMessage)
+  const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
+  const { setLastReadMessageId } = useLastReadMessageIdFromStorage(chatId)
+
   const lastReadId = useFocusedLastMessageId(chatId)
   const [recipient, setRecipient] = useState('')
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
@@ -67,6 +72,8 @@ export default function ChatListSupportingContent({
           shouldHighlight: false,
           smooth: false,
         }).then(() => {
+          isInitialized.current = true
+
           const lastReadIdIndex = filteredMessageIdsRef.current.findIndex(
             (id) => id === lastReadId
           )
@@ -76,24 +83,34 @@ export default function ChatListSupportingContent({
               : filteredMessageIdsRef.current.length - lastReadIdIndex - 1
 
           sendMessageToParentWindow('unread', newMessageCount.toString())
-
-          setInitialNewMessageCount(newMessageCount)
+          setUnreadMessage({ count: newMessageCount, lastId: lastReadId })
         })
+      } else {
+        isInitialized.current = true
       }
       return
     }
 
+    isInitialized.current = true
     setMessageModalMsgId(messageId)
     setRecipient(recipient)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawMessageIds, filteredMessageIdsRef, hasScrolledToMessageRef])
 
-  const { setLastReadMessageId } = useLastReadMessageId(chatId)
   useEffect(() => {
-    const lastId = rawMessageIds?.[rawMessageIds.length - 1]
-    if (!lastId) return
+    if (!isInitialized.current) return
+
+    let lastId = ''
+    if (unreadMessage.count === 0) {
+      lastId = rawMessageIds?.[rawMessageIds.length - 1] ?? ''
+      if (!lastId) return
+    } else {
+      lastId = unreadMessage.lastId
+    }
+
+    if (isOptimisticId(lastId)) return
     setLastReadMessageId(lastId)
-  }, [setLastReadMessageId, rawMessageIds])
+  }, [setLastReadMessageId, rawMessageIds, unreadMessage])
 
   useEffect(() => {
     if (messageModalMsgId) {
@@ -117,12 +134,10 @@ export default function ChatListSupportingContent({
       <Component>
         <div className='relative'>
           <NewMessageNotice
-            key={initialNewMessageCount}
             className={cx(
               'absolute bottom-2 right-3',
               newMessageNoticeClassName
             )}
-            initialNewMessageCount={initialNewMessageCount}
             messageIds={rawMessageIds ?? []}
             scrollContainerRef={scrollContainerRef}
           />

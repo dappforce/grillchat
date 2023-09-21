@@ -22,6 +22,10 @@ import { Toaster } from 'react-hot-toast'
 const PWAInstall = dynamic(() => import('@/components/PWAInstall'), {
   ssr: false,
 })
+const ForegroundNotificationHandler = dynamic(
+  () => import('@/components/ForegroundNotificationHandler'),
+  { ssr: false }
+)
 
 export type AppCommonProps = {
   alwaysShowScrollbarOffset?: boolean
@@ -81,6 +85,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
       <QueryProvider dehydratedState={dehydratedState}>
         <SubsocialApiReconnect />
         <ToasterConfig />
+        <ForegroundNotificationHandler />
         <NextNProgress
           color='#4d46dc'
           options={{ showSpinner: false }}
@@ -88,7 +93,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         />
         <HeadConfig {...head} />
         <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
-        <div className={cx('font-sans')}>
+        <div className={cx('font-s33ns')}>
           <ErrorBoundary>
             <EvmProvider>
               <Component {...props} />

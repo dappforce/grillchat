@@ -21,6 +21,7 @@ import { getModeratorQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
 import { useExtensionData } from '@/stores/extension'
+import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -53,12 +54,19 @@ export type ChatPageProps = {
   hubId: string
   chatId?: string
   stubMetadata?: ChatMetadata
+  customAction?: ReactNode
 }
 export default function ChatPage({
   hubId,
   chatId = '',
+  customAction,
   stubMetadata,
 }: ChatPageProps) {
+  const resetMessageData = useMessageData((state) => state.reset)
+  useEffect(() => {
+    return () => resetMessageData()
+  }, [resetMessageData])
+
   const router = useRouter()
   const [isOpenCreateSuccessModal, setIsOpenCreateSuccessModal] =
     useState(false)
@@ -169,6 +177,7 @@ export default function ChatPage({
           chatId={chatId}
           asContainer
           className='flex-1 overflow-hidden'
+          customAction={customAction}
         />
         <BottomPanel />
       </DefaultLayout>
@@ -243,6 +252,7 @@ function NavbarChatInfo({
       isInitialized.current = true
       return
     }
+    if (!chatId) return
 
     const baseUrl = getChatPageLink(routerRef.current)
     if (isOpenAboutChatModal) {
@@ -250,7 +260,7 @@ function NavbarChatInfo({
     } else if (!isOpenAboutChatModal && prevIsOpenAboutChatModal) {
       replaceUrl(baseUrl)
     }
-  }, [isOpenAboutChatModal, prevIsOpenAboutChatModal, routerRef])
+  }, [isOpenAboutChatModal, prevIsOpenAboutChatModal, routerRef, chatId])
 
   useEffect(() => {
     const open = getUrlQuery('open')

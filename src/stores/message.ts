@@ -7,6 +7,10 @@ const messageCountStorage = new LocalStorage(
   (origin: string) => `${MESSAGE_COUNT_STORAGE_KEY}:${origin}`
 )
 
+type UnreadMessage = {
+  lastId: string
+  count: number
+}
 type State = {
   messageCount: number
 
@@ -15,9 +19,12 @@ type State = {
   messageToEdit: string
 
   showEmptyPrimaryChatInput: boolean
+
+  unreadMessage: UnreadMessage
 }
 
 type Actions = {
+  reset: () => void
   incrementMessageCount: () => void
   setMessageBody: (message: string) => void
 
@@ -26,6 +33,9 @@ type Actions = {
   clearAction: () => void
 
   setShowEmptyPrimaryChatInput: (show: boolean) => void
+  setUnreadMessage: (
+    unreadData: UnreadMessage | ((prev: UnreadMessage) => UnreadMessage)
+  ) => void
 }
 
 const INITIAL_STATE: State = {
@@ -34,6 +44,10 @@ const INITIAL_STATE: State = {
   replyTo: '',
   messageToEdit: '',
   showEmptyPrimaryChatInput: false,
+  unreadMessage: {
+    count: 0,
+    lastId: '',
+  },
 }
 
 export const useMessageData = create<State & Actions>()((set, get) => ({
@@ -61,6 +75,16 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
   },
   setShowEmptyPrimaryChatInput: (show: boolean) => {
     set({ showEmptyPrimaryChatInput: show })
+  },
+  setUnreadMessage: (unreadMessage) => {
+    if (typeof unreadMessage === 'function') {
+      set((state) => ({ unreadMessage: unreadMessage(state.unreadMessage) }))
+      return
+    }
+    set({ unreadMessage })
+  },
+  reset: () => {
+    set(INITIAL_STATE)
   },
   init: () => {
     const { parentOrigin } = useParentData.getState()

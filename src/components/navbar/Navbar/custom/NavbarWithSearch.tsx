@@ -110,8 +110,8 @@ export default function NavbarWithSearch({
           size='sm'
           pill
           placeholder='Search rooms'
-          variant='fill'
-          className='bg-background pl-10'
+          variant='fill-bg'
+          className='pl-10'
         />
       </div>
       <div

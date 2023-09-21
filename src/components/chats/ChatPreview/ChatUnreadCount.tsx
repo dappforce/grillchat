@@ -1,4 +1,4 @@
-import useLastReadMessageId from '@/hooks/useLastReadMessageId'
+import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
 import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
 import { ComponentProps, useMemo } from 'react'
@@ -11,7 +11,7 @@ export default function ChatUnreadCount({
   chatId,
   ...props
 }: ChatUnreadCountProps) {
-  const { getLastReadMessageId } = useLastReadMessageId(chatId)
+  const { getLastReadMessageId } = useLastReadMessageIdFromStorage(chatId)
   const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId)
 
   const lastReadId = getLastReadMessageId()

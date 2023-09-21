@@ -22,7 +22,6 @@ export type ChatPreviewProps = ComponentProps<'div'> & {
   title: string | undefined
   description: string | undefined
   image: ImageProps['src'] | JSX.Element | undefined
-  isImageInCidFormat?: boolean
   rounding?: ChatImageProps['rounding']
   additionalDesc?: string
   asLink?: LinkProps
@@ -43,7 +42,6 @@ export default function ChatPreview({
   description,
   image,
   rounding,
-  isImageInCidFormat = true,
   additionalDesc,
   asContainer,
   chatInfo,
@@ -115,7 +113,6 @@ export default function ChatPreview({
           chatTitle={title ?? ''}
           image={image}
           rounding={rounding}
-          isImageInCidFormat={isImageInCidFormat}
           className='self-center sm:h-14 sm:w-14'
         />
         <div className='flex flex-1 items-center overflow-hidden'>

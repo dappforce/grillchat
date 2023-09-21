@@ -142,6 +142,7 @@ export default function NftModal({
                 rows={1}
                 ref={ref}
                 placeholder='Paste NFT URL'
+                variant='fill-bg'
               />
             )}
           </AutofocusWrapper>

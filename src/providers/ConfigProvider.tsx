@@ -1,3 +1,4 @@
+import { GrillConfig } from '@/../integration/index'
 import { Theme } from '@/@types/theme'
 import { getCurrentUrlOrigin, getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
@@ -12,6 +13,7 @@ type State = {
   enableLoginButton?: boolean
   enableInputAutofocus?: boolean
   subscribeMessageCountThreshold?: number
+  customTexts?: GrillConfig['customTexts']
 }
 const ConfigContext = createContext<State>({ theme: undefined, order: [] })
 
@@ -101,6 +103,16 @@ const schemaGetter = {
     const enableLoginButton = getUrlQuery('enableLoginButton')
     const enableInputAutofocus = getUrlQuery('enableInputAutofocus')
 
+    const customTextsString = getUrlQuery('customTexts')
+    let customTexts: GrillConfig['customTexts']
+    if (customTextsString) {
+      try {
+        customTexts = JSON.parse(decodeURIComponent(customTextsString))
+      } catch (err) {
+        customTexts = undefined
+      }
+    }
+
     const subscribeMessageCountThreshold = getUrlQuery(
       'subscribeMessageCountThreshold'
     )
@@ -137,6 +149,7 @@ const schemaGetter = {
           return parsedValue
         }
       ),
+      customTexts,
     }
   },
 } satisfies SchemaGetter

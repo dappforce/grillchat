@@ -168,6 +168,7 @@ function ImageLinkInput({
             rows={1}
             ref={ref}
             placeholder='Paste Image URL'
+            variant='fill-bg'
             error={!!isImageLinkError}
           />
         )}

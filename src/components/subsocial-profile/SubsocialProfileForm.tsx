@@ -34,6 +34,7 @@ export default function SubsocialProfileForm({
   } = useForm<FormSchema>({
     defaultValues: { name: data?.profileSpace?.name ?? '' },
     resolver: zodResolver(formSchema),
+    mode: 'onBlur',
   })
 
   return (
@@ -53,6 +54,7 @@ export default function SubsocialProfileForm({
             <Input
               placeholder='Name (3-25 symbols)'
               {...register('name')}
+              variant='fill-bg'
               error={errors.name?.message}
             />
             <FormButton schema={formSchema} watch={watch} size='lg'>

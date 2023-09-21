@@ -1,6 +1,8 @@
+import Button from '@/components/Button'
 import { getHubIdFromAlias } from '@/constants/hubs'
 import useToastError from '@/hooks/useToastError'
 import { ApiDiscussionResponse } from '@/pages/api/discussion'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { useCreateDiscussion } from '@/services/api/mutation'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
@@ -8,55 +10,80 @@ import { useEffect, useState } from 'react'
 import ChatPage, { ChatPageProps } from './ChatPage'
 
 export default function StubChatPage() {
-  const { mutateAsync: createDiscussion, error } = useCreateDiscussion()
+  const { customTexts } = useConfigContext()
+  const { mutateAsync, error, isLoading } = useCreateDiscussion()
   useToastError<ApiDiscussionResponse>(
     error,
     'Failed to create discussion',
     (response) => response.message
   )
 
-  const [metadata, setMetadata] = useState<ChatPageProps['stubMetadata']>({
-    body: '',
-    image: '',
-    title: '',
+  const [params, setParams] = useState<{
+    metadata: NonNullable<ChatPageProps['stubMetadata']>
+    hubId: string
+    resourceId: string
+  }>({
+    metadata: {
+      body: '',
+      image: '',
+      title: '',
+    },
+    hubId: '',
+    resourceId: '',
   })
 
   const router = useRouter()
-
   useEffect(() => {
-    async function handleDiscussion() {
-      const hubIdOrAlias = router.query.hubId as string
-      if (!router.isReady || !hubIdOrAlias) return
+    const hubIdOrAlias = router.query.hubId as string
+    if (!router.isReady || !hubIdOrAlias) return
 
-      const hubId = getHubIdFromAlias(hubIdOrAlias) || hubIdOrAlias
+    const hubId = getHubIdFromAlias(hubIdOrAlias) || hubIdOrAlias
+    const resourceId = router.query.resourceId as string
 
-      const metadata = decodeURIComponent(getUrlQuery('metadata'))
-      const resourceId = router.query.resourceId as string
+    const metadata = getMetadataFromUrl()
 
-      const parsedMetadata = metadata ? JSON.parse(metadata) : undefined
-      if (!parsedMetadata || !resourceId) {
-        router.replace('/')
-        return
-      }
-
-      setMetadata(parsedMetadata)
-
-      const { data } = await createDiscussion({
-        spaceId: hubId,
-        content: parsedMetadata,
-        resourceId,
-      })
-      if (!data?.postId) {
-        router.replace('/')
-        return
-      }
-
-      router.replace(getChatPageLink(router, data?.postId))
+    if (!metadata || !resourceId || !hubId) {
+      router.replace('/')
+      return
     }
-
-    handleDiscussion()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setParams({ metadata, hubId, resourceId })
   }, [router])
 
-  return <ChatPage hubId='' stubMetadata={metadata} />
+  const createDiscussion = async function () {
+    const { hubId, metadata, resourceId } = params
+
+    const { data } = await mutateAsync({
+      spaceId: hubId,
+      content: metadata,
+      resourceId,
+    })
+    if (!data?.postId) {
+      router.replace('/')
+      return
+    }
+
+    router.replace(getChatPageLink(router, data?.postId))
+  }
+
+  return (
+    <ChatPage
+      hubId=''
+      stubMetadata={params.metadata}
+      customAction={
+        <Button
+          size='lg'
+          onClick={createDiscussion}
+          isLoading={isLoading || !params.resourceId}
+        >
+          {customTexts?.createChannelButton ?? 'Start Discussion'}
+        </Button>
+      }
+    />
+  )
+}
+
+function getMetadataFromUrl() {
+  const metadata = decodeURIComponent(getUrlQuery('metadata'))
+  const parsedMetadata = metadata ? JSON.parse(metadata) : undefined
+  return parsedMetadata
 }

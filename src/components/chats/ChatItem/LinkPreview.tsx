@@ -4,7 +4,7 @@ import MediaLoader from '@/components/MediaLoader'
 import { cx } from '@/utils/class-names'
 import { LinkMetadata } from '@subsocial/api/types'
 import truncate from 'lodash.truncate'
-import { ComponentProps, useMemo } from 'react'
+import { ComponentProps, useMemo, useState } from 'react'
 import { useCanRenderEmbed } from './Embed'
 
 export type LinkPreviewProps = ComponentProps<'div'> & {
@@ -22,6 +22,7 @@ export default function LinkPreview({
 }: LinkPreviewProps) {
   const canEmbed = useCanRenderEmbed(link)
   const internalLinkText = useMemo(() => getInternalLinkText(link), [link])
+  const [isImageError, setIsImageError] = useState(false)
 
   if (!linkMetadata || (canEmbed && renderNullIfLinkEmbedable)) return null
 
@@ -69,12 +70,13 @@ export default function LinkPreview({
         >
           {truncatedDesc}
         </p>
-        {linkMetadata.image && isValidImage && (
+        {!isImageError && linkMetadata.image && isValidImage && (
           <MediaLoader
             src={linkMetadata.image ?? ''}
             alt=''
             width={600}
             height={400}
+            onError={() => setIsImageError(true)}
             className='mt-2 max-h-72 rounded-lg bg-background-lighter/50 object-contain'
           />
         )}

@@ -13,6 +13,9 @@ import { cx } from '@/utils/class-names'
 import { sendMessageToParentWindow } from '@/utils/window'
 import {
   ComponentProps,
+  createContext,
+  RefObject,
+  useContext,
   useEffect,
   useId,
   useMemo,
@@ -29,6 +32,11 @@ import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import useScrollToMessage from './hooks/useScrollToMessage'
 import PinnedMessage from './PinnedMessage'
+
+const ChatListContext = createContext<RefObject<HTMLDivElement> | null>(null)
+export function useChatListContext() {
+  return useContext(ChatListContext)
+}
 
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
@@ -158,89 +166,91 @@ function ChatListContent({
     renderedMessageIds.length === filteredMessageIds.length
 
   return (
-    <div
-      {...props}
-      className={cx(
-        'relative flex flex-1 flex-col overflow-hidden',
-        props.className
-      )}
-    >
-      <PinnedMessage
-        scrollToMessage={scrollToMessage}
-        chatId={chatId}
-        asContainer={asContainer}
-      />
-      {messageIds.length === 0 && (
-        <CenterChatNotice
-          isMyChat={isMyChat}
-          className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
-        />
-      )}
-      <ScrollableContainer
-        id={scrollableContainerId}
-        ref={scrollContainerRef}
+    <ChatListContext.Provider value={scrollContainerRef}>
+      <div
+        {...props}
         className={cx(
-          'flex flex-col-reverse overflow-x-hidden overflow-y-scroll pl-2',
-          scrollableContainerClassName
+          'relative flex flex-1 flex-col overflow-hidden',
+          props.className
         )}
       >
-        <Component
-          ref={innerRef}
-          className={cx(enableBackButton === false && 'px-0')}
+        <PinnedMessage
+          scrollToMessage={scrollToMessage}
+          chatId={chatId}
+          asContainer={asContainer}
+        />
+        {messageIds.length === 0 && (
+          <CenterChatNotice
+            isMyChat={isMyChat}
+            className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
+          />
+        )}
+        <ScrollableContainer
+          id={scrollableContainerId}
+          ref={scrollContainerRef}
+          className={cx(
+            'flex flex-col-reverse overflow-x-hidden overflow-y-scroll pl-2',
+            scrollableContainerClassName
+          )}
         >
-          <InfiniteScroll
-            dataLength={renderedMessageIds.length}
-            next={() => {
-              loadMore()
-              sendEvent('load_more_messages', { currentPage })
-            }}
-            className={cx(
-              'relative flex flex-col-reverse !overflow-hidden pb-2',
-              // need to have enough room to open message menu
-              'min-h-[400px]'
-            )}
-            hasMore={!isAllMessagesLoaded}
-            inverse
-            scrollableTarget={scrollableContainerId}
-            loader={<ChatLoading className='pb-2 pt-4' />}
-            endMessage={
-              filteredCurrentPageIds.length === 0 ? null : (
-                <ChatTopNotice className='pb-2 pt-4' />
-              )
-            }
-            scrollThreshold={`${SCROLL_THRESHOLD}px`}
+          <Component
+            ref={innerRef}
+            className={cx(enableBackButton === false && 'px-0')}
           >
-            {renderedMessageQueries.map(({ data: message }, index) => {
-              // bottom message is the first element, because the flex direction is reversed
-              const isBottomMessage = index === 0
-              return (
-                <MemoizedChatItemWithMenu
-                  key={message?.id ?? index}
-                  chatItemClassName='mt-2'
-                  chatId={chatId}
-                  hubId={hubId}
-                  isBottomMessage={isBottomMessage}
-                  message={message}
-                  scrollToMessage={scrollToMessage}
-                  lastReadId={lastReadId}
-                />
-              )
-            })}
-          </InfiniteScroll>
-        </Component>
-      </ScrollableContainer>
+            <InfiniteScroll
+              dataLength={renderedMessageIds.length}
+              next={() => {
+                loadMore()
+                sendEvent('load_more_messages', { currentPage })
+              }}
+              className={cx(
+                'relative flex flex-col-reverse !overflow-hidden pb-2',
+                // need to have enough room to open message menu
+                'min-h-[400px]'
+              )}
+              hasMore={!isAllMessagesLoaded}
+              inverse
+              scrollableTarget={scrollableContainerId}
+              loader={<ChatLoading className='pb-2 pt-4' />}
+              endMessage={
+                filteredCurrentPageIds.length === 0 ? null : (
+                  <ChatTopNotice className='pb-2 pt-4' />
+                )
+              }
+              scrollThreshold={`${SCROLL_THRESHOLD}px`}
+            >
+              {renderedMessageQueries.map(({ data: message }, index) => {
+                // bottom message is the first element, because the flex direction is reversed
+                const isBottomMessage = index === 0
+                return (
+                  <MemoizedChatItemWithMenu
+                    key={message?.id ?? index}
+                    chatItemClassName='mt-2'
+                    chatId={chatId}
+                    hubId={hubId}
+                    isBottomMessage={isBottomMessage}
+                    message={message}
+                    scrollToMessage={scrollToMessage}
+                    lastReadId={lastReadId}
+                  />
+                )
+              })}
+            </InfiniteScroll>
+          </Component>
+        </ScrollableContainer>
 
-      <ChatListSupportingContent
-        chatId={chatId}
-        hubId={hubId}
-        filteredMessageIds={filteredMessageIds}
-        renderedMessageLength={renderedMessageIds.length}
-        rawMessageIds={rawMessageIds}
-        scrollContainerRef={scrollContainerRef}
-        scrollToMessage={scrollToMessage}
-        asContainer={asContainer}
-        newMessageNoticeClassName={newMessageNoticeClassName}
-      />
-    </div>
+        <ChatListSupportingContent
+          chatId={chatId}
+          hubId={hubId}
+          filteredMessageIds={filteredMessageIds}
+          renderedMessageLength={renderedMessageIds.length}
+          rawMessageIds={rawMessageIds}
+          scrollContainerRef={scrollContainerRef}
+          scrollToMessage={scrollToMessage}
+          asContainer={asContainer}
+          newMessageNoticeClassName={newMessageNoticeClassName}
+        />
+      </div>
+    </ChatListContext.Provider>
   )
 }
