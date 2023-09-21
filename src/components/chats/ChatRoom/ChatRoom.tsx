@@ -16,7 +16,7 @@ import ChatInputBar from './ChatInputBar'
 const ChatList = dynamic(() => import('../ChatList/ChatList'), {
   ssr: false,
 })
-const RepliedMessage = dynamic(() => import('./RepliedMessage'), {
+const ActionDetailBar = dynamic(() => import('./ActionDetailBar'), {
   ssr: false,
 })
 
@@ -70,13 +70,14 @@ function ChatInputWrapper({
   hubId,
   scrollContainerRef,
 }: ChatInputWrapperProps) {
-  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+  const clearAction = useMessageData((state) => state.clearAction)
   const replyTo = useMessageData((state) => state.replyTo)
+  const messageToEdit = useMessageData((state) => state.messageToEdit)
   const sendEvent = useSendEvent()
 
   useEffect(() => {
-    return () => clearReplyTo()
-  }, [clearReplyTo])
+    return () => clearAction()
+  }, [clearAction])
   const showEmptyPrimaryChatInput = useMessageData(
     (state) => state.showEmptyPrimaryChatInput
   )
@@ -103,17 +104,12 @@ function ChatInputWrapper({
 
   return (
     <>
-      <Component
-        className={cx('mt-auto flex flex-col py-2', replyTo && 'pt-0')}
-      >
-        {replyTo && !showEmptyPrimaryChatInput && (
-          <RepliedMessage
-            chatId={chatId}
-            hubId={hubId}
-            replyMessageId={replyTo}
-            scrollContainer={scrollContainerRef}
-          />
-        )}
+      <Component className={cx('mt-auto flex flex-col py-2')}>
+        <ActionDetailBar
+          chatId={chatId}
+          hubId={hubId}
+          scrollContainer={scrollContainerRef}
+        />
         {(() => {
           if (isHidden)
             return (

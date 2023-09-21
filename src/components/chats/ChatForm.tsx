@@ -7,6 +7,7 @@ import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
+import { getPostQuery } from '@/services/api/query'
 import {
   SendMessageParams,
   useSendMessage,
@@ -78,7 +79,8 @@ export default function ChatForm({
   ...props
 }: ChatFormProps) {
   const replyTo = useMessageData((state) => state.replyTo)
-  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+  const messageToEdit = useMessageData((state) => state.messageToEdit)
+  const clearAction = useMessageData((state) => state.clearAction)
 
   const myAddress = useMyAccount((state) => state.address)
   const { ensName, profile } = useName(myAddress ?? '')
@@ -118,6 +120,14 @@ export default function ChatForm({
   }
 
   const setMessageBody = useMessageData((state) => state.setMessageBody)
+  const { data: editedMessage } = getPostQuery.useQuery(messageToEdit, {
+    enabled: !!messageToEdit,
+  })
+  const editedMessageBody = editedMessage?.content?.body
+  useEffect(() => {
+    if (!editedMessageBody) return
+    setMessageBody(editedMessageBody)
+  }, [editedMessageBody, setMessageBody])
 
   const { mutate: sendMessage } = useSendMessage({
     onError: (error, variables) => {
@@ -140,8 +150,8 @@ export default function ChatForm({
   }, [runAutofocus, autofocus, enableInputAutofocus])
 
   useEffect(() => {
-    if (replyTo) textAreaRef.current?.focus()
-  }, [replyTo])
+    if (replyTo || messageToEdit) textAreaRef.current?.focus()
+  }, [replyTo, messageToEdit])
 
   useEffect(() => {
     setIsRequestingEnergy(false)
@@ -156,7 +166,7 @@ export default function ChatForm({
 
   const resetForm = () => {
     setMessageBody('')
-    clearReplyTo?.()
+    clearAction?.()
   }
 
   const handleSubmit = async (captchaToken: string | null) => {
@@ -178,6 +188,7 @@ export default function ChatForm({
       chatId,
       hubId,
       replyTo,
+      messageIdToEdit: messageToEdit,
       ...additionalTxParams,
     }
 

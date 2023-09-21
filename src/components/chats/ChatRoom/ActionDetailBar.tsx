@@ -2,29 +2,32 @@ import Button from '@/components/Button'
 import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { ComponentProps } from 'react'
-import { BsFillReplyFill } from 'react-icons/bs'
+import { BsFillPencilFill, BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
 import RepliedMessagePreview from '../ChatItem/RepliedMessagePreview'
 import { getMessageElementId, scrollToMessageElement } from '../utils'
 
-export type RepliedMessageProps = ComponentProps<'div'> & {
-  replyMessageId: string
+export type ActionDetailBarProps = ComponentProps<'div'> & {
   scrollContainer?: React.RefObject<HTMLElement | null>
   chatId: string
   hubId: string
 }
 
-export default function RepliedMessage({
-  replyMessageId,
+export default function ActionDetailBar({
   scrollContainer,
   hubId,
   chatId,
-}: RepliedMessageProps) {
-  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+}: ActionDetailBarProps) {
+  const clearAction = useMessageData((state) => state.clearAction)
+  const replyTo = useMessageData((state) => state.replyTo)
+  const messageToEdit = useMessageData((state) => state.messageToEdit)
+  const messageId = replyTo || messageToEdit
 
-  const { data: message } = getPostQuery.useQuery(replyMessageId)
+  const { data: message } = getPostQuery.useQuery(messageId, {
+    enabled: !!replyTo,
+  })
 
-  const onRepliedMessageClick = async (messageId: string) => {
+  const onMessageClick = async (messageId: string) => {
     const element = document.getElementById(getMessageElementId(messageId))
     await scrollToMessageElement(element, scrollContainer?.current ?? null)
   }
@@ -32,16 +35,22 @@ export default function RepliedMessage({
   return (
     <div
       className='flex cursor-pointer items-center overflow-hidden border-t border-border-gray pb-3 pt-2'
-      onClick={() => onRepliedMessageClick(replyMessageId)}
+      onClick={() => onMessageClick(replyTo)}
     >
-      <div className='flex-shrink-0 pl-2 pr-3 text-text-muted'>
-        <BsFillReplyFill className='text-2xl' />
-      </div>
+      {replyTo ? (
+        <div className='flex-shrink-0 pl-2 pr-3 text-text-muted'>
+          <BsFillReplyFill className='text-2xl' />
+        </div>
+      ) : (
+        <div className='flex-shrink-0 pl-2 pr-3 text-text-muted'>
+          <BsFillPencilFill className='text-2xl' />
+        </div>
+      )}
       <RepliedMessagePreview
         originalMessage={message?.content?.body || ''}
         className='mt-1 w-full'
-        repliedMessageId={replyMessageId}
-        scrollToMessage={onRepliedMessageClick}
+        repliedMessageId={replyTo}
+        scrollToMessage={onMessageClick}
         chatId={chatId}
         hubId={hubId}
       />
@@ -51,7 +60,7 @@ export default function RepliedMessage({
         variant='transparent'
         onClick={(e) => {
           e.stopPropagation()
-          clearReplyTo()
+          clearAction()
         }}
       >
         <HiXMark className='text-2xl' />

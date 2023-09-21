@@ -11,7 +11,8 @@ type State = {
   messageCount: number
 
   messageBody: string
-  replyTo: string | undefined
+  replyTo: string
+  messageToEdit: string
 
   showEmptyPrimaryChatInput: boolean
 }
@@ -19,8 +20,11 @@ type State = {
 type Actions = {
   incrementMessageCount: () => void
   setMessageBody: (message: string) => void
+
   setReplyTo: (replyTo: string) => void
-  clearReplyTo: () => void
+  setMessageToEdit: (messageToEdit: string) => void
+  clearAction: () => void
+
   setShowEmptyPrimaryChatInput: (show: boolean) => void
 }
 
@@ -28,6 +32,7 @@ const INITIAL_STATE: State = {
   messageCount: 0,
   messageBody: '',
   replyTo: '',
+  messageToEdit: '',
   showEmptyPrimaryChatInput: false,
 }
 
@@ -37,10 +42,13 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
     set({ messageBody: messageBody })
   },
   setReplyTo: (replyTo: string) => {
-    set({ replyTo })
+    set({ replyTo, messageToEdit: '' })
   },
-  clearReplyTo: () => {
-    set({ replyTo: undefined })
+  setMessageToEdit: (messageToEdit: string) => {
+    set({ messageToEdit, replyTo: '' })
+  },
+  clearAction: () => {
+    set({ replyTo: '', messageToEdit: '' })
   },
   incrementMessageCount: () => {
     const { messageCount } = get()

@@ -27,7 +27,11 @@ import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
-import { BsFillPinAngleFill, BsFillReplyFill } from 'react-icons/bs'
+import {
+  BsFillPencilFill,
+  BsFillPinAngleFill,
+  BsFillReplyFill,
+} from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
@@ -56,6 +60,7 @@ export default function ChatItemMenus({
 
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
+  const isMessageOwner = useIsOwnerOfPost(messageId)
 
   const router = useRouter()
   const isLoggingInWithKey = useRef(false)
@@ -75,9 +80,10 @@ export default function ChatItemMenus({
   )
 
   const setReplyTo = useMessageData((state) => state.setReplyTo)
-  const setMessageAsReply = (messageId: string) => {
+  const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
+  const actionWrapper = (func: (id: string) => void) => {
     if (isOptimisticId(messageId)) return
-    setReplyTo(messageId)
+    func(messageId)
   }
 
   const { isAuthorized } = useAuthorizedForModeration(chatId)
@@ -112,7 +118,12 @@ export default function ChatItemMenus({
     const replyItem: FloatingMenusProps['menus'][number] = {
       text: 'Reply',
       icon: BsFillReplyFill,
-      onClick: () => setMessageAsReply(messageId),
+      onClick: () => actionWrapper(setReplyTo),
+    }
+    const editItem: FloatingMenusProps['menus'][number] = {
+      text: 'Edit',
+      icon: BsFillPencilFill,
+      onClick: () => actionWrapper(setMessageToEdit),
     }
 
     const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage
@@ -174,6 +185,7 @@ export default function ChatItemMenus({
 
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
+    if (canSendMessage && isMessageOwner) menus.unshift(editItem)
     if (canSendMessage) menus.unshift(replyItem)
 
     return menus
