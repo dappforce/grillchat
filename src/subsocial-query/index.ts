@@ -57,38 +57,43 @@ export function poolQuery<SingleParam, SingleReturn>(
 
     const { currentBatchResolver, currentQueryPool } = resetQueryPoolData()
 
-    let response: Promise<SingleReturn[]>
-    if (singleCall && currentQueryPool.length === 1) {
-      const queries = currentQueryPool.map((singleParam) => {
-        return singleCall(singleParam)
-      })
-      response = Promise.all(queries)
-    } else {
-      let allParams = currentQueryPool
-      if (getQueryId) {
-        allParams = []
-        const uniqueQueries = new Set()
-        for (let i = currentQueryPool.length - 1; i >= 0; i--) {
-          const queryId = getQueryId(currentQueryPool[i])
-          if (uniqueQueries.has(queryId)) continue
-          uniqueQueries.add(queryId)
-          allParams.push(currentQueryPool[i])
+    try {
+      let response: Promise<SingleReturn[]>
+      if (singleCall && currentQueryPool.length === 1) {
+        const queries = currentQueryPool.map((singleParam) => {
+          return singleCall(singleParam)
+        })
+        response = Promise.all(queries)
+      } else {
+        let allParams = currentQueryPool
+        if (getQueryId) {
+          allParams = []
+          const uniqueQueries = new Set()
+          for (let i = currentQueryPool.length - 1; i >= 0; i--) {
+            const queryId = getQueryId(currentQueryPool[i])
+            if (uniqueQueries.has(queryId)) continue
+            uniqueQueries.add(queryId)
+            allParams.push(currentQueryPool[i])
+          }
         }
+        response = multiCall(allParams)
       }
-      response = multiCall(allParams)
-    }
-    const resultArray = await response
+      const resultArray = await response
 
-    let result: { [key: string]: SingleReturn } | SingleReturn[] = resultArray
-    if (resultMapper) {
-      const resultMap: { [key: string]: SingleReturn } = {}
-      resultArray.forEach((singleResult) => {
-        const key = resultMapper.resultToKey(singleResult)
-        resultMap[key] = singleResult
-      })
-      result = resultMap
+      let result: { [key: string]: SingleReturn } | SingleReturn[] = resultArray
+      if (resultMapper) {
+        const resultMap: { [key: string]: SingleReturn } = {}
+        resultArray.forEach((singleResult) => {
+          const key = resultMapper.resultToKey(singleResult)
+          resultMap[key] = singleResult
+        })
+        result = resultMap
+      }
+      currentBatchResolver(result)
+    } catch (e) {
+      console.error('Error in poolQuery: ', e)
+      currentBatchResolver([])
     }
-    currentBatchResolver(result)
   }
 
   return async function executedFunction(
