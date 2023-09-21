@@ -1,7 +1,7 @@
 import { getPostQuery } from '@/services/api/query'
 import firebaseApp from '@/services/firebase/config'
 import { cx } from '@/utils/class-names'
-import firebaseMessaging from 'firebase/messaging'
+import * as firebaseMessaging from 'firebase/messaging'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { HiArrowUpRight } from 'react-icons/hi2'
