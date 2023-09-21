@@ -63,9 +63,9 @@ type Channel = { settings?: ChannelSettings } & (
 
 type CustomTextConfig = {
   /** The text to show when there is no message in the channel. Defaults to `No messages here yet` */
-  noMessageText?: string
+  noTextInChannel?: string
   /** The text in button that shows if channel is not created yet when you use channel type `resource`. Defaults to `Start Discussion`  */
-  createResourceText?: string
+  createChannelButton?: string
 }
 
 type Theme = 'light' | 'dark'

@@ -75,7 +75,7 @@ export default function StubChatPage() {
           onClick={createDiscussion}
           isLoading={isLoading || !params.resourceId}
         >
-          {customTexts?.createResourceText ?? 'Start Discussion'}
+          {customTexts?.createChannelButton ?? 'Start Discussion'}
         </Button>
       }
     />

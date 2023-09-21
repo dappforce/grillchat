@@ -48,7 +48,7 @@ export default function CenterChatNotice({
           </div>
         </>
       ) : (
-        <span>{customTexts?.noMessageText ?? 'No messages here yet'}</span>
+        <span>{customTexts?.noTextInChannel ?? 'No messages here yet'}</span>
       )}
     </div>
   )
