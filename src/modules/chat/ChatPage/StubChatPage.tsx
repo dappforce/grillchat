@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import { getHubIdFromAlias } from '@/constants/hubs'
 import useToastError from '@/hooks/useToastError'
 import { ApiDiscussionResponse } from '@/pages/api/discussion'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { useCreateDiscussion } from '@/services/api/mutation'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
@@ -9,6 +10,7 @@ import { useEffect, useState } from 'react'
 import ChatPage, { ChatPageProps } from './ChatPage'
 
 export default function StubChatPage() {
+  const { customTexts } = useConfigContext()
   const { mutateAsync, error, isLoading } = useCreateDiscussion()
   useToastError<ApiDiscussionResponse>(
     error,
@@ -73,7 +75,7 @@ export default function StubChatPage() {
           onClick={createDiscussion}
           isLoading={isLoading || !params.resourceId}
         >
-          Start Discussion
+          {customTexts?.createChannelButton ?? 'Start Discussion'}
         </Button>
       }
     />
