@@ -103,7 +103,7 @@ function ChatInputWrapper({
 
   return (
     <>
-      <Component className={cx('mt-auto flex flex-col py-2')}>
+      <Component className={cx('mt-auto flex flex-col py-2 pt-0')}>
         <ActionDetailBar
           chatId={chatId}
           hubId={hubId}
@@ -130,7 +130,9 @@ function ChatInputWrapper({
                 formProps={{
                   hubId,
                   chatId,
-                  onSubmit: scrollToBottom,
+                  onSubmit: (isEditing) => {
+                    if (!isEditing) scrollToBottom()
+                  },
                   isPrimary: true,
                 }}
               />

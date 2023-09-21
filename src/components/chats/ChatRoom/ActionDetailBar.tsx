@@ -24,13 +24,15 @@ export default function ActionDetailBar({
   const messageId = replyTo || messageToEdit
 
   const { data: message } = getPostQuery.useQuery(messageId, {
-    enabled: !!replyTo,
+    enabled: !!messageId,
   })
 
   const onMessageClick = async (messageId: string) => {
     const element = document.getElementById(getMessageElementId(messageId))
     await scrollToMessageElement(element, scrollContainer?.current ?? null)
   }
+
+  if (!messageId) return <div className='pt-2' />
 
   return (
     <div
@@ -47,9 +49,10 @@ export default function ActionDetailBar({
         </div>
       )}
       <RepliedMessagePreview
+        isEditing={!!messageToEdit}
         originalMessage={message?.content?.body || ''}
-        className='mt-1 w-full'
-        repliedMessageId={replyTo}
+        className='w-full'
+        repliedMessageId={messageId}
         scrollToMessage={onMessageClick}
         chatId={chatId}
         hubId={hubId}

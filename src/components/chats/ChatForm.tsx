@@ -43,7 +43,7 @@ const CaptchaInvisible = dynamic(
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   hubId: string
   chatId: string
-  onSubmit?: () => void
+  onSubmit?: (isEditing: boolean) => void
   disabled?: boolean
   mustHaveMessageBody?: boolean
   inputProps?: TextAreaProps
@@ -197,6 +197,10 @@ export default function ChatForm({
     if (txPrevented) return
 
     const messageParams = newMessageParams || sendMessageParams
+    if (editedMessage?.content?.body === messageParams.message) {
+      resetForm()
+      return
+    }
 
     if (!hasSentMessageStorage.get() && !hasName) {
       setTimeout(() => {
@@ -229,7 +233,7 @@ export default function ChatForm({
     const firstExtension = sendMessageParams.extensions?.[0]
     sendEvent('send_message', { extensionType: firstExtension?.id })
 
-    onSubmit?.()
+    onSubmit?.(!!messageParams.messageIdToEdit)
     incrementMessageCount()
   }
 

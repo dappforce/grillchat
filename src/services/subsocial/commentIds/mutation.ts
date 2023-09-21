@@ -130,6 +130,20 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               ipfsContent: content,
               client,
             })
+          } else if (data.messageIdToEdit) {
+            getPostQuery.setQueryData(client, data.messageIdToEdit, (old) => {
+              if (!old) return old
+              return {
+                ...old,
+                content: old.content
+                  ? {
+                      ...old.content,
+                      body: data.message ?? '',
+                      extensions: data.extensions,
+                    }
+                  : null,
+              }
+            })
           }
         },
         onSend: allowWindowUnload,
@@ -142,6 +156,8 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               chatId: data.chatId,
               optimisticId: content.optimisticId,
             })
+          } else if (data.messageIdToEdit) {
+            getPostQuery.invalidate(client, data.messageIdToEdit)
           }
         },
       },

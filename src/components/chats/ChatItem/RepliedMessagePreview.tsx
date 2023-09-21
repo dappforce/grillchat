@@ -16,6 +16,7 @@ export type RepliedMessagePreviewProps = ComponentProps<'div'> & {
   textColor?: string
   hubId: string
   chatId: string
+  isEditing?: boolean
 }
 
 const MINIMUM_REPLY_CHAR = 35
@@ -28,6 +29,7 @@ export default function RepliedMessagePreview({
   textColor,
   hubId,
   chatId,
+  isEditing,
   ...props
 }: RepliedMessagePreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
@@ -94,9 +96,13 @@ export default function RepliedMessagePreview({
         'flex items-center gap-2 overflow-hidden border-l-2 pl-2 text-sm',
         scrollToMessage && 'cursor-pointer',
         isLoading && 'animate-pulse',
+        isEditing && 'border-text-primary',
         props.className
       )}
-      style={{ borderColor: textColor || replySenderColor, ...props.style }}
+      style={{
+        borderColor: isEditing ? undefined : textColor || replySenderColor,
+        ...props.style,
+      }}
       onClick={(e) => {
         e.stopPropagation()
         onRepliedMessageClick()
@@ -105,11 +111,15 @@ export default function RepliedMessagePreview({
     >
       {place === 'inside' && !isMessageBlocked && extensionPart}
       <div className='flex flex-col overflow-hidden'>
-        <Name
-          address={message?.struct.ownerId}
-          className='font-medium'
-          color={textColor}
-        />
+        {isEditing ? (
+          <span className='font-medium text-text-primary'>Edit message</span>
+        ) : (
+          <Name
+            address={message?.struct.ownerId}
+            className='font-medium'
+            color={textColor}
+          />
+        )}
         {place === 'body' && !isMessageBlocked && extensionPart ? (
           <div className={cx('flex items-center gap-2')}>
             {extensionPart}
