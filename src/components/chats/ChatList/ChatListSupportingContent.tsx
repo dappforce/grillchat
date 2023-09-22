@@ -68,7 +68,7 @@ export default function ChatListSupportingContent({
     if (!isMessageIdsFetched) return
 
     if (!messageId || !validateNumber(messageId)) {
-      if (lastReadId && filteredMessageIdsRef.current?.includes(messageId)) {
+      if (lastReadId && filteredMessageIdsRef.current?.includes(lastReadId)) {
         setLoadingToUnread(true)
         scrollToMessage(lastReadId ?? '', {
           shouldHighlight: false,
