@@ -83,7 +83,6 @@ export const useConnectOrSwitchNetwork = (
     if (!isConnected) {
       openConnectModal?.()
     } else {
-      console.log('switchNetwork', destChainId)
       isTouchDevice() && (await openMobileWallet({ connector }))
       switchNetwork?.(destChainId)
     }

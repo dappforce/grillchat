@@ -40,8 +40,9 @@ const useSignEvmLinkMessage = () => {
 
       setIsSigningMessage(false)
       return data.toString()
-    } catch {
+    } catch (e: any) {
       setIsError(true)
+      console.error('Signing evm link message error:', e.message)
       setIsSigningMessage(false)
       return
     }
@@ -95,7 +96,6 @@ export default function useSignMessageAndLinkEvmAddress({
     if (!evmAddress) return
 
     const data = await signEvmLinkMessage(evmAddress, substrateAddress)
-
     if (data) {
       linkEvmAddress({
         evmAddress,
