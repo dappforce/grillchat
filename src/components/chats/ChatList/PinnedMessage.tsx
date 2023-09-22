@@ -1,9 +1,8 @@
 import PinIcon from '@/assets/icons/pin.png'
 import Container from '@/components/Container'
-import { getPostExtension } from '@/components/extensions/utils'
-import { getPinnedMessageInChatId } from '@/constants/chat'
 import { getPostQuery } from '@/services/api/query'
 import Image from 'next/image'
+import usePinnedMessage from '../hooks/usePinnedMessage'
 import useScrollToMessage from './hooks/useScrollToMessage'
 
 type PinnedMessageProps = {
@@ -16,16 +15,9 @@ export default function PinnedMessage({
   asContainer,
   scrollToMessage,
 }: PinnedMessageProps) {
-  const { data: chat } = getPostQuery.useQuery(chatId)
-  const pinExtension = getPostExtension(
-    chat?.content?.extensions,
-    'subsocial-pinned-posts'
-  )
-
-  const pinnedMessage =
-    getPinnedMessageInChatId(chatId) || pinExtension?.properties.ids[0]
-  const { data: message } = getPostQuery.useQuery(pinnedMessage ?? '', {
-    enabled: !!pinnedMessage,
+  const pinnedMessageId = usePinnedMessage(chatId)
+  const { data: message } = getPostQuery.useQuery(pinnedMessageId ?? '', {
+    enabled: !!pinnedMessageId,
   })
   if (!message) return null
 

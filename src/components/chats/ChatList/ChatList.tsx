@@ -23,6 +23,7 @@ import {
   useState,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import usePinnedMessage from '../hooks/usePinnedMessage'
 import CenterChatNotice from './CenterChatNotice'
 import MemoizedChatItemWithMenu from './ChatItemWithMenu'
 import ChatListEventManager from './ChatListEventManager'
@@ -146,6 +147,7 @@ function ChatListContent({
     innerContainer: innerRef,
   })
 
+  const pinnedMessageId = usePinnedMessage(chatId)
   const scrollToMessage = useScrollToMessage(
     scrollContainerRef,
     {
@@ -159,6 +161,9 @@ function ChatListContent({
     {
       pause: () => setIsPausedLoadMore(true),
       unpause: () => setIsPausedLoadMore(false),
+    },
+    {
+      scrollOffset: pinnedMessageId ? 'large' : 'normal',
     }
   )
 
