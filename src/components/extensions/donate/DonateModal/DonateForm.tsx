@@ -163,21 +163,6 @@ function DonateForm({
           />
 
           {(() => {
-            // if (!isInsideMetamaskBrowser())
-            //   return (
-            //     <MetamaskDeepLink
-            //       customDeeplinkReturnUrl={(currentUrl) =>
-            //         urlJoin(
-            //           currentUrl,
-            //           `?donateTo=${JSON.stringify(initialData)}`
-            //         )
-            //       }
-            //       size='lg'
-            //     >
-            //       Connect Wallet
-            //     </MetamaskDeepLink>
-            //   )
-
             return showSwitchButton ? (
               <Button size={'lg'} onClick={onSwitchButtonClick}>
                 {!isConnected ? 'Connect' : 'Switch'} to {selectedChain.label}

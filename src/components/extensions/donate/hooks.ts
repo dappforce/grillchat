@@ -21,13 +21,9 @@ export function useOpenDonateExtension(messageId: string, ownerId: string) {
   })
 
   return () => {
-    // if (!isInsideMetamaskBrowser()) {
-    //   router.push(deepLink)
-    // } else {
     openExtensionModal('subsocial-donations', {
       messageId,
       recipient: ownerId,
     })
-    // }
   }
 }
