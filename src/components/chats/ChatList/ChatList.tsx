@@ -92,6 +92,7 @@ function ChatListContent({
     currentData: currentPageMessageIds,
     loadMore,
     currentPage,
+    hasMore,
   } = useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
 
   const filteredMessageIds = useFilterBlockedMessageIds(
@@ -148,10 +149,12 @@ function ChatListContent({
   const scrollToMessage = useScrollToMessage(
     scrollContainerRef,
     {
-      messageIds: filteredCurrentPageIds,
+      // need to provide all the ids, including blocked ones
+      messageIds: currentPageMessageIds,
       renderedMessageIds,
       loadMore,
       isLoading: isLastBatchLoading,
+      hasMore,
     },
     {
       pause: () => setIsPausedLoadMore(true),
