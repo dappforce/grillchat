@@ -11,6 +11,7 @@ import {
   coinbaseWallet,
   ledgerWallet,
   metaMaskWallet,
+  walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets'
 import { Chain, Connector } from 'wagmi'
 
@@ -64,6 +65,7 @@ const getWallet = (chains: Chain[]) => {
     argent: argentWallet(walletOptions),
     coinbase: coinbaseWallet(walletOptions),
     ledger: ledgerWallet(walletOptions),
+    walletConnect: walletConnectWallet(walletOptions),
     // subwallet: subWalletWallet({ chains }),
   }
 
@@ -73,7 +75,7 @@ const getWallet = (chains: Chain[]) => {
     ? supportedWallets[currentWalletId]
     : metaMaskWallet(walletOptions)
 
-  return wallet ? wallet : metaMaskWallet(walletOptions)
+  return wallet
 }
 
 export const getConnector = () => {
@@ -81,7 +83,7 @@ export const getConnector = () => {
 
   const wallet = getWallet(chains)
 
-  return wallet.createConnector()
+  return wallet?.createConnector()
 }
 
 type OpenWalletProps = {
@@ -92,6 +94,7 @@ export const openMobileWallet = async ({ connector }: OpenWalletProps) => {
   const getUri = connector.mobile?.getUri
   if (getUri) {
     const mobileUri = await getUri()
+
     if (mobileUri.startsWith('http')) {
       const link = document.createElement('a')
       link.href = mobileUri

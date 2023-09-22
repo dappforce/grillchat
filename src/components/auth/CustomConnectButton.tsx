@@ -1,16 +1,13 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button, { ButtonProps } from '@/components/Button'
-import MetamaskDeepLink, {
-  isInsideMetamaskBrowser,
-} from '@/components/MetamaskDeepLink'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import urlJoin from 'url-join'
 import { useAccount, useDisconnect } from 'wagmi'
+import { getConnector, openMobileWallet } from '../extensions/donate/api/utils'
 
 type CustomConnectButtonProps = ButtonProps & {
   className?: string
@@ -69,19 +66,6 @@ export const CustomConnectButton = ({
 
   const usedLabel = (hasInteractedOnce && secondLabel) || label
 
-  if (!isInsideMetamaskBrowser()) {
-    return (
-      <MetamaskDeepLink
-        customDeeplinkReturnUrl={(currentUrl) =>
-          urlJoin(currentUrl, `?evmLinking=true`)
-        }
-        {...commonButtonProps}
-      >
-        {usedLabel}
-      </MetamaskDeepLink>
-    )
-  }
-
   const customButton = (
     <ConnectButton.Custom>
       {({
@@ -131,11 +115,13 @@ export const CustomConnectButton = ({
 
         return (
           <Button
+            {...commonButtonProps}
             onClick={async () => {
               setHasInteractedOnce(true)
+              const connector = getConnector()
+              isTouchDevice() && (await openMobileWallet({ connector }))
               signAndLinkEvmAddress(account.address, mySubstrateAddress)
             }}
-            {...commonButtonProps}
           >
             {usedLabel}
           </Button>

@@ -1,11 +1,8 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
-import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import Modal from '@/components/modals/Modal'
 import { useExtensionModalState } from '@/stores/extension'
-import { isTouchDevice } from '@/utils/device'
 import Image from 'next/image'
-import { getConnector, openMobileWallet } from '../api/utils'
 import { DonateProps, TokenListItem } from './types'
 
 type WalletActionRequiredModalStep = 'wallet-action-required' | 'add-network'
@@ -57,11 +54,6 @@ function WalletActionRequiredModal({ currentStep, chainState }: DonateProps) {
   const { isOpen, closeModal } = useExtensionModalState('subsocial-donations')
   const [selectedChain] = chainState
 
-  const onButtonClick = async () => {
-    const connector = getConnector()
-    await openMobileWallet({ connector })
-  }
-
   const { title, desc } = getModalHeader(
     selectedChain,
     currentStep as WalletActionRequiredModalStep
@@ -81,12 +73,6 @@ function WalletActionRequiredModal({ currentStep, chainState }: DonateProps) {
           src={ProcessingHumster}
           alt=''
         />
-
-        {isTouchDevice() && (
-          <Button className='w-full' size={'lg'} onClick={onButtonClick}>
-            Open wallet
-          </Button>
-        )}
       </div>
     </Modal>
   )

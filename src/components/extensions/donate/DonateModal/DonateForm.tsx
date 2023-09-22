@@ -1,8 +1,5 @@
 import Button from '@/components/Button'
 import SelectInput from '@/components/inputs/SelectInput'
-import MetamaskDeepLink, {
-  isInsideMetamaskBrowser,
-} from '@/components/MetamaskDeepLink'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -18,7 +15,6 @@ import BigNumber from 'bignumber.js'
 import { formatUnits, parseUnits } from 'ethers'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import urlJoin from 'url-join'
 import { useAccount, useNetwork } from 'wagmi'
 import CommonExtensionModal from '../../common/CommonExtensionModal'
 import { chainIdByChainName } from '../api/config'
@@ -167,21 +163,6 @@ function DonateForm({
           />
 
           {(() => {
-            if (!isInsideMetamaskBrowser())
-              return (
-                <MetamaskDeepLink
-                  customDeeplinkReturnUrl={(currentUrl) =>
-                    urlJoin(
-                      currentUrl,
-                      `?donateTo=${JSON.stringify(initialData)}`
-                    )
-                  }
-                  size='lg'
-                >
-                  Connect Wallet
-                </MetamaskDeepLink>
-              )
-
             return showSwitchButton ? (
               <Button size={'lg'} onClick={onSwitchButtonClick}>
                 {!isConnected ? 'Connect' : 'Switch'} to {selectedChain.label}
