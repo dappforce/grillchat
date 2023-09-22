@@ -5,18 +5,19 @@ import { ComponentProps } from 'react'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
 import RepliedMessagePreview from '../ChatItem/RepliedMessagePreview'
-import { ScrollToMessage } from '../ChatList/hooks/useScrollToMessage'
+import usePinnedMessage from '../hooks/usePinnedMessage'
+import { getMessageElementId, scrollToMessageElement } from '../utils'
 
 export type RepliedMessageProps = ComponentProps<'div'> & {
   replyMessageId: string
-  scrollToMessage: ScrollToMessage
+  scrollContainer?: React.RefObject<HTMLDivElement>
   chatId: string
   hubId: string
 }
 
 export default function RepliedMessage({
   replyMessageId,
-  scrollToMessage,
+  scrollContainer,
   hubId,
   chatId,
 }: RepliedMessageProps) {
@@ -24,8 +25,12 @@ export default function RepliedMessage({
 
   const { data: message } = getPostQuery.useQuery(replyMessageId)
 
+  const pinnedMessage = usePinnedMessage(chatId)
   const onRepliedMessageClick = async (messageId: string) => {
-    await scrollToMessage(messageId)
+    const element = document.getElementById(getMessageElementId(messageId))
+    await scrollToMessageElement(element, scrollContainer?.current ?? null, {
+      scrollOffset: pinnedMessage ? 'large' : 'normal',
+    })
   }
 
   return (
