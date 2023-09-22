@@ -25,11 +25,11 @@ export default function RepliedMessage({
 
   const { data: message } = getPostQuery.useQuery(replyMessageId)
 
-  const pinnedMessage = usePinnedMessage(chatId)
+  const pinnedMessageId = usePinnedMessage(chatId)
   const onRepliedMessageClick = async (messageId: string) => {
     const element = document.getElementById(getMessageElementId(messageId))
     await scrollToMessageElement(element, scrollContainer?.current ?? null, {
-      scrollOffset: pinnedMessage ? 'large' : 'normal',
+      scrollOffset: pinnedMessageId ? 'large' : 'normal',
     })
   }
 
