@@ -53,7 +53,6 @@ export default function ChatListSupportingContent({
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  // TODO: refactor this by putting the url query getter logic to ChatPage
   const hasScrolledToMessageRef = useRef(false)
   const filteredMessageIdsRef = useWrapInRef(filteredMessageIds)
   useEffect(() => {

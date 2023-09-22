@@ -34,7 +34,7 @@ export default function useGetMessageElement({
     const { waitingMessageDataLoadedIds } = promiseRef.current
 
     waitingMessageDataLoadedIds.forEach((messageId) => {
-      if (renderedMessageIds.includes(messageId)) {
+      if (checkIfMessageIdIsIncluded(messageId, renderedMessageIds)) {
         const resolvers = promiseRef.current.resolvers.get(messageId)
         resolvers?.forEach((resolve) => resolve())
 
@@ -64,6 +64,8 @@ export default function useGetMessageElement({
       } = generateManuallyTriggeredPromise()
       const elementId = getMessageElementId(messageId)
       const element = document.getElementById(elementId)
+
+      if (checkIfMessageIdIsIncluded(messageId, messageIds)) return null
       if (element) return element
 
       const { resolvers, waitingMessageDataLoadedIds: waitingMessageIds } =
@@ -75,7 +77,10 @@ export default function useGetMessageElement({
       resolvers.get(messageId)?.push(getMessageDataLoadedResolver())
       waitingMessageIds.add(messageId)
 
-      const isMessageIdIncluded = messageIds.includes(messageId)
+      const isMessageIdIncluded = checkIfMessageIdIsIncluded(
+        messageId,
+        messageIds
+      )
       if (!isMessageIdIncluded) {
         await loadMoreUntilMessageIdIsLoaded(messageId)
       }
@@ -130,4 +135,13 @@ function useWaitMessagesLoading(isLoading: boolean) {
       await getPromise()
     }
   }
+}
+
+function checkIfMessageIdIsIncluded(messageId: string, messageIds: string[]) {
+  if (messageIds.includes(messageId)) return true
+  const parsedMessageId = Number(messageId)
+  if (isNaN(parsedMessageId)) return true
+
+  const smallestId = Number(messageIds[messageIds.length - 1])
+  return parsedMessageId >= smallestId
 }
