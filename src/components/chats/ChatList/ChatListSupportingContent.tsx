@@ -1,5 +1,6 @@
 import Container from '@/components/Container'
 import MessageModal from '@/components/modals/MessageModal'
+import Spinner from '@/components/Spinner'
 import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -41,6 +42,7 @@ export default function ChatListSupportingContent({
 }: ChatListSupportingContentProps) {
   const router = useRouter()
   const isInitialized = useRef(false)
+  const [loadingToUnread, setLoadingToUnread] = useState(false)
 
   const unreadMessage = useMessageData((state) => state.unreadMessage)
   const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
@@ -67,10 +69,12 @@ export default function ChatListSupportingContent({
 
     if (!messageId || !validateNumber(messageId)) {
       if (lastReadId) {
+        setLoadingToUnread(true)
         scrollToMessage(lastReadId ?? '', {
           shouldHighlight: false,
           smooth: false,
         }).then(() => {
+          setLoadingToUnread(false)
           isInitialized.current = true
 
           const lastReadIdIndex = filteredMessageIdsRef.current.findIndex(
@@ -130,16 +134,18 @@ export default function ChatListSupportingContent({
         scrollToMessage={scrollToMessage}
         recipient={recipient}
       />
-      <Component>
-        <div className='relative'>
-          <NewMessageNotice
-            className={cx(
-              'absolute bottom-2 right-3',
-              newMessageNoticeClassName
-            )}
-            messageIds={rawMessageIds ?? []}
-            scrollContainerRef={scrollContainerRef}
-          />
+      <Component className='relative'>
+        <div
+          className={cx('absolute bottom-2 right-3', newMessageNoticeClassName)}
+        >
+          {loadingToUnread ? (
+            <Spinner />
+          ) : (
+            <NewMessageNotice
+              messageIds={rawMessageIds ?? []}
+              scrollContainerRef={scrollContainerRef}
+            />
+          )}
         </div>
       </Component>
       <ScrollToBottom

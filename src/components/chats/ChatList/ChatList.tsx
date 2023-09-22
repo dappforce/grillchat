@@ -150,7 +150,7 @@ function ChatListContent({
     scrollContainerRef,
     {
       // need to provide all the ids, including blocked ones
-      messageIds,
+      messageIds: currentPageMessageIds,
       renderedMessageIds,
       loadMore,
       isLoading: isLastBatchLoading,

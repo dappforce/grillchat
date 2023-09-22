@@ -21,6 +21,7 @@ export default function useGetMessageElement({
 
   const waitAllMessagesLoadedRef = useWrapInRef(waitAllMessagesLoaded)
   const messageIdsRef = useWrapInRef(messageIds)
+  const renderedIdsRef = useWrapInRef(renderedMessageIds)
 
   const promiseRef = useRef<{
     resolvers: Map<string, VoidFunction[]>
@@ -58,8 +59,7 @@ export default function useGetMessageElement({
 
   const loadMoreUntilMessageIdIsLoaded = useCallback(
     async (messageId: string) => {
-      const isMessageIdIncluded = messageIdsRef.current.includes(messageId)
-      if (isMessageIdIncluded) return
+      if (checkIfMessageIdIsIncluded(messageId, messageIdsRef.current)) return
 
       await awaitableLoadMore()
       await loadMoreUntilMessageIdIsLoaded(messageId)
@@ -69,7 +69,6 @@ export default function useGetMessageElement({
 
   const getMessageElement = useCallback(
     async (messageId: string) => {
-      const messageIds = messageIdsRef.current
       const {
         getPromise: getMessageDataLoadedPromise,
         getResolver: getMessageDataLoadedResolver,
@@ -77,32 +76,32 @@ export default function useGetMessageElement({
       const elementId = getMessageElementId(messageId)
       const element = document.getElementById(elementId)
 
-      if (checkIfMessageIdIsIncluded(messageId, messageIds)) return null
+      // check if element is already rendered
       if (element) return element
 
+      // load more until message id is included in current page
+      await loadMoreUntilMessageIdIsLoaded(messageId)
+
+      // if its already rendered, get and return it
+      if (checkIfMessageIdIsIncluded(messageId, renderedIdsRef.current)) {
+        return document.getElementById(elementId)
+      }
+
+      // if not rendered yet, create a promise and wait for it to be rendered
       const { resolvers, waitingMessageDataLoadedIds: waitingMessageIds } =
         promiseRef.current
-
       if (!resolvers.get(messageId)) {
         resolvers.set(messageId, [])
       }
       resolvers.get(messageId)?.push(getMessageDataLoadedResolver())
       waitingMessageIds.add(messageId)
 
-      const isMessageIdIncluded = checkIfMessageIdIsIncluded(
-        messageId,
-        messageIds
-      )
-      if (!isMessageIdIncluded) {
-        await loadMoreUntilMessageIdIsLoaded(messageId)
-      }
-
       await getMessageDataLoadedPromise()
       await waitAllMessagesLoadedRef.current()
 
       return document.getElementById(elementId)
     },
-    [loadMoreUntilMessageIdIsLoaded, messageIdsRef, waitAllMessagesLoadedRef]
+    [loadMoreUntilMessageIdIsLoaded, renderedIdsRef, waitAllMessagesLoadedRef]
   )
 
   return getMessageElement
@@ -150,7 +149,6 @@ function useWaitMessagesLoading(isLoading: boolean) {
 }
 
 function checkIfMessageIdIsIncluded(messageId: string, messageIds: string[]) {
-  if (messageIds.includes(messageId)) return true
   const parsedMessageId = Number(messageId)
   if (isNaN(parsedMessageId)) return true
 
