@@ -43,7 +43,7 @@ const CaptchaInvisible = dynamic(
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   hubId: string
   chatId: string
-  onSubmit?: (isEditing: boolean) => void
+  onSubmit?: (isEditing?: boolean) => void
   disabled?: boolean
   mustHaveMessageBody?: boolean
   inputProps?: TextAreaProps
