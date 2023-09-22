@@ -96,7 +96,7 @@ export default function RepliedMessagePreview({
         'flex items-center gap-2 overflow-hidden border-l-2 pl-2 text-sm',
         scrollToMessage && 'cursor-pointer',
         isLoading && 'animate-pulse',
-        isEditing && 'border-text-primary',
+        isEditing && 'border-text-secondary',
         props.className
       )}
       style={{
@@ -112,7 +112,7 @@ export default function RepliedMessagePreview({
       {place === 'inside' && !isMessageBlocked && extensionPart}
       <div className='flex flex-col overflow-hidden'>
         {isEditing ? (
-          <span className='font-medium text-text-primary'>Edit message</span>
+          <span className='font-medium text-text-secondary'>Edit message</span>
         ) : (
           <Name
             address={message?.struct.ownerId}
