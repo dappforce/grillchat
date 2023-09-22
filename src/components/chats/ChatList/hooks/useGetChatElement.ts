@@ -9,11 +9,13 @@ export default function useGetMessageElement({
   loadMore,
   isLoading,
   renderedMessageIds,
+  hasMore,
 }: {
   messageIds: string[]
   renderedMessageIds: string[]
   isLoading: boolean
   loadMore: () => void
+  hasMore: boolean
 }) {
   const waitAllMessagesLoaded = useWaitMessagesLoading(isLoading)
 
@@ -31,10 +33,14 @@ export default function useGetMessageElement({
   )
 
   useEffect(() => {
-    const { waitingMessageDataLoadedIds } = promiseRef.current
+    const { waitingMessageDataLoadedIds, resolvers: allIdsResolver } =
+      promiseRef.current
 
     waitingMessageDataLoadedIds.forEach((messageId) => {
-      if (checkIfMessageIdIsIncluded(messageId, renderedMessageIds)) {
+      if (
+        checkIfMessageIdIsIncluded(messageId, renderedMessageIds) ||
+        !hasMore
+      ) {
         const resolvers = promiseRef.current.resolvers.get(messageId)
         resolvers?.forEach((resolve) => resolve())
 
@@ -42,7 +48,13 @@ export default function useGetMessageElement({
         waitingMessageDataLoadedIds.delete(messageId)
       }
     })
-  }, [renderedMessageIds])
+
+    return () => {
+      allIdsResolver.forEach((resolvers) => {
+        resolvers.forEach((resolve) => resolve())
+      })
+    }
+  }, [renderedMessageIds, hasMore])
 
   const loadMoreUntilMessageIdIsLoaded = useCallback(
     async (messageId: string) => {
