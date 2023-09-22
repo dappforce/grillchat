@@ -148,7 +148,8 @@ function ChatListContent({
   const scrollToMessage = useScrollToMessage(
     scrollContainerRef,
     {
-      messageIds: filteredCurrentPageIds,
+      // need to provide all the ids, including blocked ones
+      messageIds,
       renderedMessageIds,
       loadMore,
       isLoading: isLastBatchLoading,
