@@ -9,13 +9,15 @@ import LoginModal from '../auth/LoginModal'
 import Button from '../Button'
 import Card from '../Card'
 import ChatItem from '../chats/ChatItem'
+import { ScrollToMessage } from '../chats/ChatList/hooks/useScrollToMessage'
 import PopOver from '../floating/PopOver'
 import ProfilePreview from '../ProfilePreview'
+import { Skeleton } from '../SkeletonFallback'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
 export type MessageModalProps = ModalFunctionalityProps & {
   messageId: string
-  scrollToMessage?: (messageId: string) => Promise<void>
+  scrollToMessage?: ScrollToMessage
   hubId: string
   recipient?: string
 }
@@ -60,7 +62,7 @@ export default function MessageModal({
     if (!scrollToMessage) return
 
     setIsScrolling(true)
-    await scrollToMessage(messageId)
+    await scrollToMessage(messageId, { smooth: false })
     setIsScrolling(false)
 
     props.closeModal()
@@ -82,7 +84,7 @@ export default function MessageModal({
             !message && 'h-28 animate-pulse'
           )}
         >
-          {message && (
+          {message ? (
             <div className='flex flex-col pb-2'>
               <ChatItem
                 enableChatMenu={false}
@@ -92,6 +94,8 @@ export default function MessageModal({
                 hubId={hubId}
               />
             </div>
+          ) : (
+            <Skeleton />
           )}
           {scrollToMessage && (
             <div className='sticky -bottom-px left-0 bg-background pb-4 pt-2'>

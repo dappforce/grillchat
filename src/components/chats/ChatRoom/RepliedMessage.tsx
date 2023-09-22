@@ -5,18 +5,18 @@ import { ComponentProps } from 'react'
 import { BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
 import RepliedMessagePreview from '../ChatItem/RepliedMessagePreview'
-import { getMessageElementId, scrollToMessageElement } from '../utils'
+import { ScrollToMessage } from '../ChatList/hooks/useScrollToMessage'
 
 export type RepliedMessageProps = ComponentProps<'div'> & {
   replyMessageId: string
-  scrollContainer?: React.RefObject<HTMLElement | null>
+  scrollToMessage: ScrollToMessage
   chatId: string
   hubId: string
 }
 
 export default function RepliedMessage({
   replyMessageId,
-  scrollContainer,
+  scrollToMessage,
   hubId,
   chatId,
 }: RepliedMessageProps) {
@@ -25,8 +25,7 @@ export default function RepliedMessage({
   const { data: message } = getPostQuery.useQuery(replyMessageId)
 
   const onRepliedMessageClick = async (messageId: string) => {
-    const element = document.getElementById(getMessageElementId(messageId))
-    await scrollToMessageElement(element, scrollContainer?.current ?? null)
+    await scrollToMessage(messageId)
   }
 
   return (
