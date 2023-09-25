@@ -10,6 +10,7 @@ import {
   Transaction,
   WalletAccount,
 } from './types'
+import { getBlockExplorerBlockInfoLink } from './utils'
 
 type Apis = {
   subsocialApi: SubsocialApi
@@ -72,14 +73,19 @@ export function useSubsocialMutation<Data, Context = undefined>(
 
     const ipfsApi = subsocialApi.ipfs
 
-    return await createTxAndSend(
-      transactionGenerator,
-      data,
-      context,
-      { subsocialApi, substrateApi, ipfsApi },
-      { wallet, networkRpc: getConnectionConfig().substrateUrl },
-      txCallbacks
-    )
+    try {
+      return await createTxAndSend(
+        transactionGenerator,
+        data,
+        context,
+        { subsocialApi, substrateApi, ipfsApi },
+        { wallet, networkRpc: getConnectionConfig().substrateUrl },
+        txCallbacks
+      )
+    } catch (e) {
+      txCallbacks?.onError()
+      throw e
+    }
   }
 
   return useMutation(workerFunc, {
@@ -131,6 +137,7 @@ function sendTransaction<Data>(
   txCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
   const {
+    networkRpc,
     data,
     summary,
     tx,
@@ -149,8 +156,53 @@ function sendTransaction<Data>(
       const signature = await tx.signAsync(signer, { nonce })
       const txSig = signature.toHex()
 
-      globalTxCallbacks.onBeforeSend({ summary, address, data })
       txCallbacks?.onBeforeSend(txSig)
+
+      const unsub = await signature.send(async (result) => {
+        resolve(result.txHash.toString())
+        if (result.status.isInvalid) {
+          txCallbacks?.onError()
+          globalTxCallbacks.onError({
+            summary,
+            address,
+            data,
+          })
+        } else if (result.status.isBroadcast) {
+          txCallbacks?.onBroadcast()
+          globalTxCallbacks.onBroadcast({
+            summary,
+            data,
+            address,
+          })
+        } else if (result.status.isInBlock) {
+          const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
+          let explorerLink: string | undefined
+          if (networkRpc) {
+            explorerLink = getBlockExplorerBlockInfoLink(networkRpc, blockHash)
+          }
+          if (result.isError || result.dispatchError || result.internalError) {
+            txCallbacks?.onError()
+            globalTxCallbacks.onError({
+              error: result.dispatchError?.toString(),
+              summary,
+              address,
+              data,
+              explorerLink,
+            })
+          } else {
+            txCallbacks?.onSuccess(result)
+            globalTxCallbacks.onSuccess({
+              explorerLink,
+              summary,
+              address,
+              data,
+            })
+          }
+          unsub()
+        }
+      })
+      nonceResolver()
+      txCallbacks?.onSend()
 
       const hash = await signature.send()
       nonceResolver()
@@ -213,18 +265,24 @@ function generateTxCallbacks<Data, Context>(
 ) {
   if (!callbacks && !defaultCallbacks) return
   return {
-    onSuccess: (txHash: string) =>
+    onError: () =>
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onError')(data),
+    onBroadcast: () =>
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onBroadcast')(data),
+    onSuccess: (txResult: any) =>
       makeCombinedCallback(
         defaultCallbacks,
         callbacks,
         'onSuccess'
-      )(data, txHash),
+      )(data, txResult),
     onBeforeSend: (txSig: string) =>
       makeCombinedCallback(
         defaultCallbacks,
         callbacks,
         'onBeforeSend'
       )(data, txSig),
+    onSend: () =>
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onSend')(data),
     onStart: () =>
       makeCombinedCallback(defaultCallbacks, callbacks, 'onStart')(data),
   }
