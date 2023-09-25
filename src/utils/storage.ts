@@ -1,7 +1,16 @@
+import localforage from 'localforage'
+
 type Storage<Params extends unknown[]> = {
   get: (...params: Params) => string | undefined | null
   set: (value: string, ...params: Params) => void
   remove: () => void
+}
+type AsyncStorage<Params extends unknown[], Data = string> = {
+  get: (
+    ...params: Params
+  ) => Promise<Data | undefined | null> | Data | undefined | null
+  set: (value: Data, ...params: Params) => Promise<void> | void
+  remove: () => Promise<void> | void
 }
 
 export class LocalStorage<Params extends unknown[]> implements Storage<Params> {
@@ -52,6 +61,33 @@ export class SessionStorage<Params extends unknown[]>
     try {
       if (typeof window === 'undefined') return
       sessionStorage.removeItem(this.nameGetter(...params))
+    } catch {}
+  }
+}
+
+export class LocalForage<Params extends unknown[], Data = string>
+  implements AsyncStorage<Params, Data>
+{
+  constructor(private readonly nameGetter: (...params: Params) => string) {}
+
+  get(...params: Params) {
+    try {
+      if (typeof window === 'undefined') return null
+      return localforage.getItem<Data>(this.nameGetter(...params))
+    } catch {
+      return null
+    }
+  }
+  set(value: Data, ...params: Params) {
+    try {
+      if (typeof window === 'undefined') return
+      localforage.setItem(this.nameGetter(...params), value)
+    } catch {}
+  }
+  remove(...params: Params) {
+    try {
+      if (typeof window === 'undefined') return
+      localforage.removeItem(this.nameGetter(...params))
     } catch {}
   }
 }

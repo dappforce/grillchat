@@ -4,12 +4,14 @@ import Spinner from '@/components/Spinner'
 import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
+import { getPostQuery } from '@/services/api/query'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { validateNumber } from '@/utils/strings'
 import { replaceUrl, sendMessageToParentWindow } from '@/utils/window'
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
@@ -40,6 +42,7 @@ export default function ChatListSupportingContent({
   rawMessageIds,
   filteredMessageIds,
 }: ChatListSupportingContentProps) {
+  const queryClient = useQueryClient()
   const router = useRouter()
   const isInitialized = useRef(false)
   const [loadingToUnread, setLoadingToUnread] = useState(false)
@@ -112,8 +115,11 @@ export default function ChatListSupportingContent({
     }
 
     if (isOptimisticId(lastId)) return
-    setLastReadMessageId(lastId)
-  }, [setLastReadMessageId, rawMessageIds, unreadMessage])
+    setLastReadMessageId(
+      lastId,
+      getPostQuery.getQueryData(queryClient, lastId)?.struct.createdAtTime
+    )
+  }, [setLastReadMessageId, rawMessageIds, unreadMessage, queryClient])
 
   useEffect(() => {
     if (messageModalMsgId) {
