@@ -66,9 +66,8 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
       generateContext: (data) => generateMessageContent(data, client),
       transactionGenerator: async ({
         apis: { substrateApi },
-        wallet: { address },
         data,
-        context: { cid: prebuiltCid, content },
+        context: { content, cid },
       }) => {
         const maxLength = getMaxMessageLength(data.chatId)
         if (data.message && data.message.length > maxLength)
@@ -76,26 +75,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             'Your message is too long, please split it up to multiple messages'
           )
 
-        if (!data.messageIdToEdit) {
-          createPostData({
-            address,
-            content: content,
-            contentCid: prebuiltCid,
-            rootPostId: data.chatId,
-            spaceId: data.hubId,
-          })
-        } else {
-          updatePostData({
-            address,
-            content: content,
-            contentCid: prebuiltCid,
-            postId: data.messageIdToEdit,
-          })
-        }
-
-        const { cid, success } = await saveFile(content)
-        if (!success || !cid) throw new Error('Failed to save file to IPFS')
-
+        saveFile(content)
         await waitHasEnergy()
 
         if (data.messageIdToEdit) {
@@ -123,14 +103,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         onStart: ({ address, context, data }) => {
           preventWindowUnload()
           const content = context.content
-          if (!data.messageIdToEdit && 'optimisticId' in content) {
-            addOptimisticData({
-              address,
-              params: data,
-              ipfsContent: content,
-              client,
-            })
-          } else if (data.messageIdToEdit) {
+          if (data.messageIdToEdit) {
             getPostQuery.setQueryData(client, data.messageIdToEdit, (old) => {
               if (!old) return old
               return {
@@ -144,9 +117,38 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
                   : null,
               }
             })
+          } else if (!data.messageIdToEdit && 'optimisticId' in content) {
+            addOptimisticData({
+              address,
+              params: data,
+              ipfsContent: content,
+              client,
+            })
           }
         },
-        onSend: allowWindowUnload,
+        onBeforeSend: ({ data, context: { cid, content }, address }, txSig) => {
+          if (!data.messageIdToEdit) {
+            createPostData({
+              address,
+              content: content,
+              contentCid: cid,
+              rootPostId: data.chatId,
+              spaceId: data.hubId,
+              txSig,
+            })
+          } else {
+            updatePostData({
+              address,
+              content: content,
+              contentCid: cid,
+              postId: data.messageIdToEdit,
+              txSig,
+            })
+          }
+        },
+        onSuccess: () => {
+          allowWindowUnload()
+        },
         onError: ({ data, context }) => {
           allowWindowUnload()
           const content = context.content

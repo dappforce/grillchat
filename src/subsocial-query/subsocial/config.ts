@@ -22,17 +22,11 @@ export interface TxCallbackInfo {
   summary: string
   address: string
   data: unknown
-  explorerLink?: string
   error?: unknown
 }
 const DEFAULT_TX_CALLBACKS = {
-  onBroadcast: ({ summary }: TxCallbackInfo) =>
-    console.info(`Broadcasting ${summary}...`),
-  onError: ({ error }: TxCallbackInfo) =>
-    console.error(
-      'Tx Error',
-      typeof error === 'string' ? error : (error as Error)?.message
-    ),
+  onBeforeSend: ({ summary }: TxCallbackInfo) =>
+    console.info(`Before sending ${summary}...`),
   onSuccess: ({ summary }: TxCallbackInfo) =>
     console.log(`Success submit ${summary}...`),
 }

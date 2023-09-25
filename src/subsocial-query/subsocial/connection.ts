@@ -11,12 +11,12 @@ export const getSubsocialApi = async (renew?: boolean) => {
 
 async function connectToSubsocialApi(config: SubsocialConnectionConfig) {
   const { SubsocialApi } = await import('@subsocial/api')
-  const { WsProvider, ApiPromise } = await import('@polkadot/api')
+  const { ApiPromise, HttpProvider } = await import('@polkadot/api')
 
   const { ipfsNodeUrl, substrateUrl, postConnectConfig, ipfsAdminNodeUrl } =
     config
 
-  const provider = new WsProvider(substrateUrl, 15_000, {})
+  const provider = new HttpProvider(substrateUrl)
   const substrateApi = await ApiPromise.create({ provider })
   const api = new SubsocialApi({
     substrateApi,

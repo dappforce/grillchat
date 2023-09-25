@@ -14,6 +14,10 @@ import {
 } from '../generated'
 import { datahubRequest } from '../utils'
 
+type DatahubParams<T> = T & {
+  txSig: string
+}
+
 const CREATE_POST_OPTIMISTIC_MUTATION = gql`
   mutation CreatePostOptimistic(
     $createPostOptimisticInput: CreatePostOptimisticInput!
@@ -31,13 +35,14 @@ export async function createPostData({
   rootPostId,
   spaceId,
   content,
-}: {
+  txSig,
+}: DatahubParams<{
   address: string
   rootPostId?: string
   spaceId: string
   contentCid: string
   content: PostContent
-}) {
+}>) {
   const dataHubData: SocialEventData = {
     dataType: SocialEventDataType.optimistic,
     callData: {
@@ -50,13 +55,17 @@ export async function createPostData({
         spaceId,
         ipfsSrc: contentCid,
       },
+      txSig,
     },
     content,
   }
 
   const dataHubDataApiInput = {
     dataType: dataHubData.dataType,
+    // @ts-ignore
     callData: {
+      // TODO: uncomment this when staging updated
+      // txSig,
       name: dataHubData.callData.name,
       signer: dataHubData.callData.signer,
       args: JSON.stringify(dataHubData.callData.args),
@@ -93,16 +102,18 @@ export async function updatePostData({
   contentCid,
   rootPostId,
   content,
-}: {
+  txSig,
+}: DatahubParams<{
   address: string
   postId: string
   rootPostId?: string
   contentCid: string
   content: PostContent
-}) {
+}>) {
   const dataHubData: SocialEventData = {
     dataType: SocialEventDataType.optimistic,
     callData: {
+      txSig,
       name: 'update_post',
       signer: address || '',
       args: {
@@ -117,7 +128,10 @@ export async function updatePostData({
 
   const dataHubDataApiInput = {
     dataType: dataHubData.dataType,
+    // @ts-ignore
     callData: {
+      // TODO: uncomment this when staging updated
+      // txSig,
       name: dataHubData.callData.name,
       signer: dataHubData.callData.signer,
       args: JSON.stringify(dataHubData.callData.args),

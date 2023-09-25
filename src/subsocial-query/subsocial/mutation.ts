@@ -10,7 +10,6 @@ import {
   Transaction,
   WalletAccount,
 } from './types'
-import { getBlockExplorerBlockInfoLink } from './utils'
 
 type Apis = {
   subsocialApi: SubsocialApi
@@ -73,19 +72,14 @@ export function useSubsocialMutation<Data, Context = undefined>(
 
     const ipfsApi = subsocialApi.ipfs
 
-    try {
-      return await createTxAndSend(
-        transactionGenerator,
-        data,
-        context,
-        { subsocialApi, substrateApi, ipfsApi },
-        { wallet, networkRpc: getConnectionConfig().substrateUrl },
-        txCallbacks
-      )
-    } catch (e) {
-      txCallbacks?.onError()
-      throw e
-    }
+    return await createTxAndSend(
+      transactionGenerator,
+      data,
+      context,
+      { subsocialApi, substrateApi, ipfsApi },
+      { wallet, networkRpc: getConnectionConfig().substrateUrl },
+      txCallbacks
+    )
   }
 
   return useMutation(workerFunc, {
@@ -125,7 +119,7 @@ async function createTxAndSend<Data, Context>(
     optimisticCallbacks
   )
 }
-function sendTransaction<Data, Context>(
+function sendTransaction<Data>(
   txInfo: {
     tx: Transaction
     summary: string
@@ -137,7 +131,6 @@ function sendTransaction<Data, Context>(
   txCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
   const {
-    networkRpc,
     data,
     summary,
     tx,
@@ -152,51 +145,22 @@ function sendTransaction<Data, Context>(
         address
       )
       danglingNonceResolver = nonceResolver
-      const unsub = await tx.signAndSend(signer, { nonce }, async (result) => {
-        resolve(result.txHash.toString())
-        if (result.status.isInvalid) {
-          txCallbacks?.onError()
-          globalTxCallbacks.onError({
-            summary,
-            address,
-            data,
-          })
-        } else if (result.status.isBroadcast) {
-          txCallbacks?.onBroadcast()
-          globalTxCallbacks.onBroadcast({
-            summary,
-            data,
-            address,
-          })
-        } else if (result.status.isInBlock) {
-          const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
-          let explorerLink: string | undefined
-          if (networkRpc) {
-            explorerLink = getBlockExplorerBlockInfoLink(networkRpc, blockHash)
-          }
-          if (result.isError || result.dispatchError || result.internalError) {
-            txCallbacks?.onError()
-            globalTxCallbacks.onError({
-              error: result.dispatchError?.toString(),
-              summary,
-              address,
-              data,
-              explorerLink,
-            })
-          } else {
-            txCallbacks?.onSuccess(result)
-            globalTxCallbacks.onSuccess({
-              explorerLink,
-              summary,
-              address,
-              data,
-            })
-          }
-          unsub()
-        }
-      })
+
+      const signature = await tx.signAsync(signer, { nonce })
+      const txSig = signature.toHex()
+
+      globalTxCallbacks.onBeforeSend({ summary, address, data })
+      txCallbacks?.onBeforeSend(txSig)
+
+      const hash = await signature.send()
       nonceResolver()
-      txCallbacks?.onSend()
+
+      txCallbacks?.onSuccess(hash.toHex())
+      globalTxCallbacks.onSuccess({
+        summary,
+        address,
+        data,
+      })
     } catch (e) {
       danglingNonceResolver?.()
       reject(e)
@@ -249,18 +213,18 @@ function generateTxCallbacks<Data, Context>(
 ) {
   if (!callbacks && !defaultCallbacks) return
   return {
-    onError: () =>
-      makeCombinedCallback(defaultCallbacks, callbacks, 'onError')(data),
-    onBroadcast: () =>
-      makeCombinedCallback(defaultCallbacks, callbacks, 'onBroadcast')(data),
-    onSuccess: (txResult: any) =>
+    onSuccess: (txHash: string) =>
       makeCombinedCallback(
         defaultCallbacks,
         callbacks,
         'onSuccess'
-      )(data, txResult),
-    onSend: () =>
-      makeCombinedCallback(defaultCallbacks, callbacks, 'onSend')(data),
+      )(data, txHash),
+    onBeforeSend: (txSig: string) =>
+      makeCombinedCallback(
+        defaultCallbacks,
+        callbacks,
+        'onBeforeSend'
+      )(data, txSig),
     onStart: () =>
       makeCombinedCallback(defaultCallbacks, callbacks, 'onStart')(data),
   }
