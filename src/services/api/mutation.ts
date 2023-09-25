@@ -62,7 +62,9 @@ export async function saveImage(content: File) {
   if (!data.success) throw new Error(data.errors)
   return data
 }
-export const useSaveImage = mutationWrapper(saveImage)
+export const useSaveImage = mutationWrapper(saveImage, {
+  retry: 2,
+})
 
 // NOTE: this invalidations won't work if server doesn't have redis
 export async function invalidatePostServerCache(postId: string) {
