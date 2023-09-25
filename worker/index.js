@@ -60,7 +60,8 @@ self.addEventListener('push', async (event) => {
 
   const queries = []
   chatIdsToFetch.forEach(async (chatId) => {
-    const lastReadTime = await appStorage.getItem(getStorageKey())
+    const lastReadTime = await appStorage.getItem(getStorageKey(chatId))
+    console.log('lastReadTime', chatId, lastReadTime)
     if (!lastReadTime) return
     queries.push({
       query: `
