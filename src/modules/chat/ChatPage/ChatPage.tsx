@@ -218,7 +218,6 @@ function BottomPanel() {
       ) : (
         <CaptchaTermsAndService className='inline' />
       )}
-      <NetworkStatus className='ml-2 inline-block' />
     </Container>
   )
 }

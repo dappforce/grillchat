@@ -1,7 +1,6 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { useSubscribePosts } from '@/services/datahub/posts/subscription'
@@ -83,7 +82,6 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
-        <SubsocialApiReconnect />
         <ToasterConfig />
         <ForegroundNotificationHandler />
         <NextNProgress
@@ -113,17 +111,4 @@ function PostSubscriber() {
 
 function ToasterConfig() {
   return <Toaster position='top-center' />
-}
-
-function SubsocialApiReconnect() {
-  const { status, reconnect } = useNetworkStatus()
-  const isConnected = status === 'connected'
-
-  useEffect(() => {
-    if (!isConnected && document.visibilityState === 'visible') {
-      reconnect()
-    }
-  }, [isConnected, reconnect])
-
-  return null
 }
