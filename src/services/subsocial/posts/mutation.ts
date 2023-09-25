@@ -171,39 +171,16 @@ export function useUpsertPost(
       getWallet,
       generateContext: (params) => generateMessageContent(params),
       transactionGenerator: async ({
-        wallet: { address },
         data: params,
         apis: { substrateApi },
-        context: { cid: prebuiltCid, content },
+        context: { cid, content },
       }) => {
-        const { image, title, body } = params
-
         const { payload, action } = checkAction(params)
-        if (action === 'create') {
-          createPostData({
-            address,
-            content,
-            contentCid: prebuiltCid,
-            spaceId: payload.spaceId,
-          })
-        } else if (action === 'update') {
-          updatePostData({
-            address,
-            content,
-            contentCid: prebuiltCid,
-            postId: payload.postId,
-          })
-        }
 
         console.log('waiting energy...')
         await waitHasEnergy()
 
-        const { success, cid } = await saveFile({
-          title,
-          body,
-          image,
-        })
-        if (!success || !cid) throw new Error('Failed to save file')
+        saveFile(content)
 
         if (action === 'update') {
           return {
@@ -229,6 +206,29 @@ export function useUpsertPost(
     config,
     {
       txCallbacks: {
+        onBeforeSend: (
+          { data: params, address, context: { content, cid } },
+          txSig
+        ) => {
+          const { payload, action } = checkAction(params)
+          if (action === 'create') {
+            createPostData({
+              address,
+              content,
+              contentCid: cid,
+              spaceId: payload.spaceId,
+              txSig,
+            })
+          } else if (action === 'update') {
+            updatePostData({
+              address,
+              content,
+              contentCid: cid,
+              postId: payload.postId,
+              txSig,
+            })
+          }
+        },
         onSuccess: async ({ data, address }, txResult) => {
           const { payload, action } = checkAction(data)
           if (action === 'create') {
