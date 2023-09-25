@@ -4,6 +4,7 @@ import type { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 import { makeCombinedCallback } from '../base'
 import { getConnectionConfig, getGlobalTxCallbacks } from './config'
+import { getSubstrateHttpApi } from './connection'
 import {
   CallbackData,
   SubsocialMutationConfig,
@@ -16,6 +17,7 @@ type Apis = {
   subsocialApi: SubsocialApi
   ipfsApi: SubsocialIpfsApi
   substrateApi: ApiPromise
+  useHttp: boolean
 }
 
 type TransactionGenerator<Data, Context> = (params: {
@@ -58,8 +60,15 @@ export function useSubsocialMutation<Data, Context = undefined>(
     txCallbacks?.onStart()
 
     const { getSubsocialApi } = await import('./connection')
+
     const subsocialApi = await getSubsocialApi()
-    const substrateApi = await subsocialApi.substrateApi
+    const useHttp = config?.useHttp ?? defaultConfig?.useHttp
+    let substrateApi: ApiPromise
+    if (useHttp) {
+      substrateApi = await getSubstrateHttpApi()
+    } else {
+      substrateApi = await subsocialApi.substrateApi
+    }
 
     if (!substrateApi.isConnected) {
       // try reconnecting, if it fails, it will throw an error
@@ -78,7 +87,7 @@ export function useSubsocialMutation<Data, Context = undefined>(
         transactionGenerator,
         data,
         context,
-        { subsocialApi, substrateApi, ipfsApi },
+        { subsocialApi, substrateApi, ipfsApi, useHttp: !!useHttp },
         { wallet, networkRpc: getConnectionConfig().substrateUrl },
         txCallbacks
       )

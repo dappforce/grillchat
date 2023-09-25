@@ -99,6 +99,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     },
     config,
     {
+      useHttp: true,
       txCallbacks: {
         onStart: ({ address, context, data }) => {
           preventWindowUnload()
@@ -146,9 +147,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             })
           }
         },
-        onSuccess: () => {
-          allowWindowUnload()
-        },
+        onSend: allowWindowUnload,
         onError: ({ data, context }) => {
           allowWindowUnload()
           const content = context.content
