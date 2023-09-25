@@ -1,5 +1,5 @@
 import { request } from 'graphql-request'
-import localforage from 'localforage'
+import { appStorage } from '../src/constants/localforage'
 
 // Handling Notification Click event.
 // Keep this method above the importScripts to avoid overriding.
@@ -60,7 +60,7 @@ self.addEventListener('push', async (event) => {
 
   const queries = []
   chatIdsToFetch.forEach(async (chatId) => {
-    const lastReadTime = await localforage.getItem(getStorageKey())
+    const lastReadTime = await appStorage.getItem(getStorageKey())
     if (!lastReadTime) return
     queries.push({
       query: `

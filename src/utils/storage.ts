@@ -1,4 +1,4 @@
-import localforage from 'localforage'
+import { appStorage } from '@/constants/localforage'
 
 type Storage<Params extends unknown[]> = {
   get: (...params: Params) => string | undefined | null
@@ -73,7 +73,7 @@ export class LocalForage<Params extends unknown[], Data = string>
   get(...params: Params) {
     try {
       if (typeof window === 'undefined') return null
-      return localforage.getItem<Data>(this.nameGetter(...params))
+      return appStorage.getItem<Data>(this.nameGetter(...params))
     } catch {
       return null
     }
@@ -81,13 +81,13 @@ export class LocalForage<Params extends unknown[], Data = string>
   set(value: Data, ...params: Params) {
     try {
       if (typeof window === 'undefined') return
-      localforage.setItem(this.nameGetter(...params), value)
+      appStorage.setItem(this.nameGetter(...params), value)
     } catch {}
   }
   remove(...params: Params) {
     try {
       if (typeof window === 'undefined') return
-      localforage.removeItem(this.nameGetter(...params))
+      appStorage.removeItem(this.nameGetter(...params))
     } catch {}
   }
 }
