@@ -46,9 +46,10 @@ self.addEventListener('notificationclick', (event) => {
 })
 
 self.addEventListener('push', (event) => {
+  console.log('in push event')
   // Fetch the value for setting app badge from GraphQL.
   // And pass it like this: navigator.setAppBadge(value).
-  event.waitUntil(navigator.setAppBadge())
+  event.waitUntil(navigator.setAppBadge(5))
 })
 
 importScripts(
