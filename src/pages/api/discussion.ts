@@ -6,7 +6,10 @@ import {
 } from '@/server/common'
 import { getIpfsApi } from '@/server/ipfs'
 import { WalletManager } from '@/server/wallet-client'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
+import {
+  getSubsocialApi,
+  getSubstrateWebsocketApi,
+} from '@/subsocial-query/subsocial/connection'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { ApiPromise, SubmittableResult } from '@polkadot/api'
 import { stringToHex } from '@polkadot/util'
@@ -187,7 +190,7 @@ export async function getOrCreateDiscussion({
   let existingDiscussionId: string | null = null
   try {
     existingDiscussionId = await getDiscussion(resourceId)
-    const subsocialApi = await (await getSubsocialApi()).substrateApi
+    const subsocialApi = await getSubstrateWebsocketApi()
 
     if (existingDiscussionId)
       return {

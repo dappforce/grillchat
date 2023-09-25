@@ -1,8 +1,9 @@
-import { SUBSTRATE_URL } from '@/constants/subsocial'
+import { SUBSTRATE_URL, SUBSTRATE_WSS_URL } from '@/constants/subsocial'
 import type { SubsocialApi } from '@subsocial/api'
 
 export interface SubsocialConnectionConfig {
   substrateUrl: string
+  substrateWebsocketUrl?: string
   ipfsNodeUrl: string
   ipfsAdminNodeUrl?: string
   postConnectConfig?: (api: SubsocialApi) => void
@@ -11,6 +12,7 @@ export interface SubsocialConnectionConfig {
 // TODO: research better way to have this config set outside of this subsocial-query folder
 let config: SubsocialConnectionConfig = {
   substrateUrl: SUBSTRATE_URL,
+  substrateWebsocketUrl: SUBSTRATE_WSS_URL,
   ipfsNodeUrl: 'https://ipfs.subsocial.network',
   ipfsAdminNodeUrl: 'https://gw.crustfiles.app',
 }

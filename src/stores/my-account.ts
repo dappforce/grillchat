@@ -155,12 +155,11 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     _unsubscribeEnergy()
     if (!address) return
 
-    const { getSubsocialApi } = await import(
+    const { getSubstrateWebsocketApi } = await import(
       '@/subsocial-query/subsocial/connection'
     )
 
-    const subsocialApi = await getSubsocialApi()
-    const substrateApi = await subsocialApi.substrateApi
+    const substrateApi = await getSubstrateWebsocketApi()
     if (!substrateApi.isConnected && !isRetrying) {
       await substrateApi.disconnect()
       await substrateApi.connect()
