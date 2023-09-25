@@ -1,4 +1,4 @@
-import { request } from 'graphql-request'
+import { gql, GraphQLClient } from 'graphql-request'
 import { appStorage } from '../src/constants/localforage'
 
 // Handling Notification Click event.
@@ -51,7 +51,6 @@ self.addEventListener('notificationclick', (event) => {
 const getStorageKey = (chatId) => `last-read-${chatId}`
 const chatIdsToFetch = ['754', '7465', '9247', '9248', '9249']
 self.addEventListener('push', async (event) => {
-  console.log('in push event')
   const squidUrl = process.env.NEXT_PUBLIC_SQUID_URL
   if (!squidUrl) {
     event.waitUntil(navigator.setAppBadge())
@@ -59,43 +58,41 @@ self.addEventListener('push', async (event) => {
   }
 
   const queries = []
-  chatIdsToFetch.forEach(async (chatId) => {
+  const promises = chatIdsToFetch.map(async (chatId) => {
     const lastReadTime = await appStorage.getItem(getStorageKey(chatId))
-    console.log('lastReadTime', chatId, lastReadTime)
     if (!lastReadTime) return
     queries.push({
       query: `
-        chat${chatId}: postsConnection (where: { createdAtTime_gt: ${lastReadTime} }, orderBy: id_ASC) {
+        chat${chatId}: postsConnection (where: { createdAtTime_gt: "${lastReadTime}", rootPost: { id_eq: "${chatId}" } }, orderBy: id_ASC) {
           totalCount
         }
       `,
       chatId,
     })
   })
-
-  console.log('QUERIES', queries)
+  await Promise.all(promises)
 
   if (queries.length === 0) {
     event.waitUntil(navigator.setAppBadge())
     return
   }
 
-  const data = await request(
-    process.env.NEXT_PUBLIC_SQUID_URL,
-    `
+  try {
+    const client = new GraphQLClient(squidUrl, { fetch: fetch })
+    const data = await client.request(gql`
       query {
         ${queries.map(({ query }) => query).join('\n')}
       }
-    `
-  )
-  console.log('DATA', data)
-  let totalUnread = 0
-  queries.forEach(({ chatId }) => {
-    totalUnread += data[`chat${chatId}`].totalCount
-  })
-  console.log('total unread', totalUnread)
+    `)
+    let totalUnread = 0
+    queries.forEach(({ chatId }) => {
+      totalUnread += data[`chat${chatId}`].totalCount
+    })
 
-  event.waitUntil(navigator.setAppBadge())
+    navigator.setAppBadge(totalUnread)
+  } catch (e) {
+    console.log('Error fetching unreads in service worker', e)
+  }
 })
 
 importScripts(
