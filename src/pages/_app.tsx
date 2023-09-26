@@ -82,6 +82,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
+        <BadgeManager />
         <SubsocialApiReconnect />
         <ToasterConfig />
         <ForegroundNotificationHandler />
@@ -106,6 +107,30 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
 
 function ToasterConfig() {
   return <Toaster position='top-center' />
+}
+
+async function clearBadge() {
+  if (
+    'clearAppBadge' in navigator &&
+    typeof navigator.clearAppBadge === 'function'
+  ) {
+    try {
+      await navigator.clearAppBadge()
+    } catch (error) {
+      console.error('Failed to clear app badge:', error)
+    }
+  }
+}
+function BadgeManager() {
+  useEffect(() => {
+    function listener() {
+      if (document.visibilityState === 'visible') clearBadge()
+    }
+    document.addEventListener('visibilitychange', listener)
+    return () => document.removeEventListener('visibilitychange', listener)
+  }, [])
+
+  return null
 }
 
 function SubsocialApiReconnect() {
