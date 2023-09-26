@@ -100,12 +100,13 @@ async function setBadge(count) {
 }
 self.addEventListener('push', async (event) => {
   const squidUrl = process.env.NEXT_PUBLIC_SQUID_URL
+  const promises = []
   if (!squidUrl) {
-    setBadge()
+    promises.push(setBadge(50))
   } else {
-    const unreadCount = await getUnreadCount(squidUrl)
-    setBadge(unreadCount)
+    promises.push(getUnreadCount(squidUrl).then((value) => setBadge(value)))
   }
+  event.waitUntil(Promise.all(promises))
 })
 
 importScripts(
