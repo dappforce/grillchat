@@ -53,7 +53,7 @@ const chatIdsToFetch = ['754', '7465', '9247', '9248', '9249', '7120']
 self.addEventListener('push', async (event) => {
   const squidUrl = process.env.NEXT_PUBLIC_SQUID_URL
   if (!squidUrl) {
-    navigator.setAppBadge(100)
+    navigator.setAppBadge()
     return
   }
 
@@ -73,13 +73,11 @@ self.addEventListener('push', async (event) => {
   await Promise.all(promises)
 
   if (queries.length === 0) {
-    navigator.setAppBadge(200)
+    navigator.setAppBadge()
     return
   }
 
   try {
-    navigator.setAppBadge(500)
-
     const client = new GraphQLClient(squidUrl, { fetch: fetch })
     const data = await client.request(gql`
       query {
@@ -91,10 +89,10 @@ self.addEventListener('push', async (event) => {
       totalUnread += data[`chat${chatId}`].totalCount
     })
 
-    navigator.setAppBadge(totalUnread || 900)
+    navigator.setAppBadge(totalUnread)
   } catch (e) {
     console.log('Error fetching unreads in service worker', e)
-    navigator.setAppBadge(300)
+    navigator.setAppBadge()
   }
 })
 
