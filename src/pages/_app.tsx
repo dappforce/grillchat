@@ -109,7 +109,7 @@ function ToasterConfig() {
 }
 
 function SubsocialApiReconnect() {
-  const { status, reconnect } = useNetworkStatus()
+  const { status, reconnect, disconnect, connect } = useNetworkStatus()
   const isConnected = status === 'connected'
 
   useEffect(() => {
@@ -117,6 +117,15 @@ function SubsocialApiReconnect() {
       reconnect()
     }
   }, [isConnected, reconnect])
+
+  useEffect(() => {
+    const listener = () => {
+      if (document.visibilityState === 'visible') connect()
+      else disconnect()
+    }
+    document.addEventListener('visibilitychange', listener)
+    return () => document.removeEventListener('visibilitychange', listener)
+  }, [connect, disconnect])
 
   return null
 }
