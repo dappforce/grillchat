@@ -4,6 +4,7 @@ import type { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 import { makeCombinedCallback } from '../base'
 import { getConnectionConfig, getGlobalTxCallbacks } from './config'
+import { getSubstrateHttpApi } from './connection'
 import {
   OptimisticData,
   SubsocialMutationConfig,
@@ -16,6 +17,7 @@ type Apis = {
   subsocialApi: SubsocialApi
   ipfsApi: SubsocialIpfsApi
   substrateApi: ApiPromise
+  useHttp: boolean
 }
 
 export function useSubsocialMutation<Data, Context = undefined>(
@@ -44,7 +46,13 @@ export function useSubsocialMutation<Data, Context = undefined>(
 
     const { getSubsocialApi } = await import('./connection')
     const subsocialApi = await getSubsocialApi()
-    const substrateApi = await subsocialApi.substrateApi
+    const useHttp = config?.useHttp ?? defaultConfig?.useHttp
+    let substrateApi: ApiPromise
+    if (useHttp) {
+      substrateApi = await getSubstrateHttpApi()
+    } else {
+      substrateApi = await subsocialApi.substrateApi
+    }
 
     if (!substrateApi.isConnected) {
       // try reconnecting, if it fails, it will throw an error
@@ -62,7 +70,7 @@ export function useSubsocialMutation<Data, Context = undefined>(
       return await createTxAndSend(
         transactionGenerator,
         data,
-        { subsocialApi, substrateApi, ipfsApi },
+        { subsocialApi, substrateApi, ipfsApi, useHttp: !!useHttp },
         { wallet, networkRpc: getConnectionConfig().substrateUrl },
         txCallbacks
       )
@@ -106,7 +114,7 @@ async function createTxAndSend<Data>(
     optimisticCallbacks
   )
 }
-function sendTransaction<Data, Context>(
+function sendTransaction<Data>(
   txInfo: {
     tx: Transaction
     summary: string
@@ -134,7 +142,12 @@ function sendTransaction<Data, Context>(
       )
       danglingNonceResolver = nonceResolver
       const unsub = await tx.signAndSend(signer, { nonce }, async (result) => {
-        resolve(result.txHash.toString())
+        // the result is only tx hash if its using http connection
+        if (typeof result.toHuman() === 'string') {
+          return resolve(result.toString())
+        }
+
+        resolve(result?.txHash?.toString())
         if (result.status.isInvalid) {
           txCallbacks?.onError()
           globalTxCallbacks.onError({

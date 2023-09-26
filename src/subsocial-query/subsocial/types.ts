@@ -11,6 +11,7 @@ export interface WalletAccount {
 export type OptimisticData<Data> = { data: Data; address: string }
 export interface SubsocialMutationConfig<Data, Context = undefined>
   extends MutationConfig<Data> {
+  useHttp?: boolean
   txCallbacks?: {
     getContext?: (data: OptimisticData<Data>) => Context
     onStart?: (data: OptimisticData<Data>, context: Context) => void

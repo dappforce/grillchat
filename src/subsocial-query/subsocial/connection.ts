@@ -1,3 +1,4 @@
+import { type ApiPromise } from '@polkadot/api'
 import { type SubsocialApi } from '@subsocial/api'
 import { getConnectionConfig, SubsocialConnectionConfig } from './config'
 
@@ -26,4 +27,18 @@ async function connectToSubsocialApi(config: SubsocialConnectionConfig) {
 
   postConnectConfig?.(api)
   return api
+}
+
+let substrateHttpApi: Promise<ApiPromise> | null = null
+export const getSubstrateHttpApi = async () => {
+  const { ApiPromise, HttpProvider } = await import('@polkadot/api')
+  if (substrateHttpApi) return substrateHttpApi
+
+  const { substrateHttpUrl } = getConnectionConfig()
+
+  const provider = new HttpProvider(substrateHttpUrl)
+  const substrateApi = ApiPromise.create({ provider })
+  substrateHttpApi = substrateApi
+
+  return substrateApi
 }
