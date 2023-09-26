@@ -50,13 +50,7 @@ self.addEventListener('notificationclick', (event) => {
 
 const getStorageKey = (chatId) => `last-read-${chatId}`
 const chatIdsToFetch = ['754', '7465', '9247', '9248', '9249', '7120']
-self.addEventListener('push', async (event) => {
-  const squidUrl = process.env.NEXT_PUBLIC_SQUID_URL
-  if (!squidUrl) {
-    navigator.setAppBadge()
-    return
-  }
-
+async function getUnreadCount(squidUrl) {
   const queries = []
   const promises = chatIdsToFetch.map(async (chatId) => {
     const lastReadTime = await appStorage.getItem(getStorageKey(chatId))
@@ -73,8 +67,7 @@ self.addEventListener('push', async (event) => {
   await Promise.all(promises)
 
   if (queries.length === 0) {
-    navigator.setAppBadge()
-    return
+    return undefined
   }
 
   try {
@@ -89,10 +82,20 @@ self.addEventListener('push', async (event) => {
       totalUnread += data[`chat${chatId}`].totalCount
     })
 
-    navigator.setAppBadge(totalUnread)
+    return totalUnread
   } catch (e) {
     console.log('Error fetching unreads in service worker', e)
+    return undefined
+  }
+}
+
+self.addEventListener('push', async (event) => {
+  const squidUrl = process.env.NEXT_PUBLIC_SQUID_URL
+  if (!squidUrl) {
     navigator.setAppBadge()
+  } else {
+    const unreadCount = await getUnreadCount(squidUrl)
+    navigator.setAppBadge(unreadCount)
   }
 })
 
