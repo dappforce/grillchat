@@ -89,13 +89,22 @@ async function getUnreadCount(squidUrl) {
   }
 }
 
+async function setBadge(count) {
+  if ('setAppBadge' in navigator) {
+    try {
+      await navigator.setAppBadge(count)
+    } catch (error) {
+      console.error('Failed to set app badge:', error)
+    }
+  }
+}
 self.addEventListener('push', async (event) => {
   const squidUrl = process.env.NEXT_PUBLIC_SQUID_URL
   if (!squidUrl) {
-    navigator.setAppBadge()
+    setBadge()
   } else {
     const unreadCount = await getUnreadCount(squidUrl)
-    navigator.setAppBadge(unreadCount)
+    setBadge(unreadCount)
   }
 })
 
