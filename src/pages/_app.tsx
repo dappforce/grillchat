@@ -1,3 +1,4 @@
+import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import useIsInIframe from '@/hooks/useIsInIframe'
@@ -82,6 +83,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
+        <BadgeManager />
         <SubsocialApiReconnect />
         <ToasterConfig />
         <ForegroundNotificationHandler />
