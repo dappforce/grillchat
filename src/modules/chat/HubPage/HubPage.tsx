@@ -95,7 +95,7 @@ export default function HubPage({ hubId }: HubPageProps) {
                 hubId={hubId}
               />
             )}
-            <ChatPreviewList chatInfo={sortBy} chats={chats} />
+            <ChatPreviewList chatInfo={sortBy} chats={chats} hubId={hubId} />
           </>
         ) : null}
       </SearchChannelsWrapper>
