@@ -60,7 +60,7 @@ async function getUnreadCount(squidUrl) {
         (await appStorage.getItem(getFollowedIdsStorageKey(address))) ?? ''
       )
       if (followedIds) {
-        chatIdsToFetch.push(...followedIds.slice(0, 5))
+        chatIdsToFetch.push(...followedIds.slice(0, 10))
         chatIdsToFetch = Array.from(new Set(chatIdsToFetch))
       }
     } catch {}

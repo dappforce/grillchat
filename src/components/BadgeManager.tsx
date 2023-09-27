@@ -11,11 +11,8 @@ export default function BadgeManager() {
 
   useEffect(() => {
     function listener() {
-      if (document.visibilityState === 'hidden') {
-        syncBadge(myAddressRef.current)
-      } else {
-        clearBadge()
-      }
+      if (document.visibilityState === 'hidden') syncBadge(myAddressRef.current)
+      else clearBadge()
     }
     document.addEventListener('visibilitychange', listener)
     return () => document.removeEventListener('visibilitychange', listener)
@@ -42,7 +39,7 @@ async function getUnreadCount(address: string | null) {
     try {
       const followedIds = JSON.parse(followedIdsStorage.get(address) ?? '[]')
       if (followedIds) {
-        chatIdsToFetch.push(...followedIds.slice(0, 5))
+        chatIdsToFetch.push(...followedIds.slice(0, 10))
         chatIdsToFetch = Array.from(new Set(chatIdsToFetch))
       }
     } catch {}
