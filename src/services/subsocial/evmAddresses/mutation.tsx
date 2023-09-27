@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { useState } from 'react'
 import { useDisconnect } from 'wagmi'
+import { createMutationWrapper } from '../utils'
 
 type LinkEvmAddressMutationProps = {
   evmAddress: string
@@ -141,6 +142,10 @@ export function useUnlinkEvmAddress(
     onCallbackLoading,
   }
 }
+export const UnlinkEvmAddressWrapper = createMutationWrapper(
+  useUnlinkEvmAddress,
+  'unlink-evm-address'
+)
 
 async function mutateAccountsDataCache(address: string) {
   const res = await axios.post('/api/accounts-data?' + `addresses=${address}`)
