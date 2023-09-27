@@ -66,7 +66,8 @@ function notifyDifferentVersion(onClick?: () => void) {
             <IoRefresh />
           </Button>
         }
-        title='🎉 We have new version!'
+        icon={() => <span className='mr-1'>🎉</span>}
+        title='We have new version!'
         description='Please reload the page to get the latest version.'
       />
     ),
