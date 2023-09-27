@@ -1,4 +1,4 @@
-import { lastReadStorage } from '@/hooks/useLastReadMessageId'
+import { lastReadTimeLocalForage } from '@/hooks/useLastReadMessageId'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { followedIdsStorage, useMyAccount } from '@/stores/my-account'
 import { getSquidUrl } from '@/utils/env/client'
@@ -11,7 +11,11 @@ export default function BadgeManager() {
 
   useEffect(() => {
     function listener() {
-      if (document.visibilityState === 'hidden') syncBadge(myAddressRef.current)
+      console.log('masuk bro')
+      if (document.visibilityState === 'hidden') {
+        console.log('hidden man')
+        syncBadge(myAddressRef.current)
+      }
     }
     document.addEventListener('visibilitychange', listener)
     return () => document.removeEventListener('visibilitychange', listener)
@@ -21,7 +25,9 @@ export default function BadgeManager() {
 }
 
 async function syncBadge(address: string | null) {
+  console.log('getting unreads...')
   const unreadCount = await getUnreadCount(address)
+  console.log('unread', unreadCount)
   if (!unreadCount) {
     await clearBadge()
   } else {
@@ -35,16 +41,18 @@ async function getUnreadCount(address: string | null) {
 
   let chatIdsToFetch = ['754', '7465']
   if (address) {
-    const followedIds = followedIdsStorage.get(address)
-    if (followedIds) {
-      chatIdsToFetch.push(...followedIds.slice(0, 5))
-      chatIdsToFetch = Array.from(new Set(chatIdsToFetch))
-    }
+    try {
+      const followedIds = JSON.parse(followedIdsStorage.get(address) ?? '[]')
+      if (followedIds) {
+        chatIdsToFetch.push(...followedIds.slice(0, 5))
+        chatIdsToFetch = Array.from(new Set(chatIdsToFetch))
+      }
+    } catch {}
   }
 
   const queries: { query: string; chatId: string }[] = []
   const promises = chatIdsToFetch.map(async (chatId) => {
-    const lastReadTime = lastReadStorage.get(chatId)
+    const lastReadTime = await lastReadTimeLocalForage.get(chatId)
     if (!lastReadTime) return
     queries.push({
       query: `

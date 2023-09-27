@@ -5,7 +5,7 @@ const getStorageKey = (chatId: string) => `last-read-${chatId}`
 export const lastReadStorage = new LocalStorage(getStorageKey)
 
 // need localforage instead of localStorage because needs to be used in service worker
-const localforage = new LocalForage(getStorageKey)
+export const lastReadTimeLocalForage = new LocalForage(getStorageKey)
 
 export default function useLastReadMessageIdFromStorage(chatId: string) {
   const getLastReadMessageId = useCallback(
@@ -16,7 +16,10 @@ export default function useLastReadMessageIdFromStorage(chatId: string) {
     (id: string, createdAtTime?: number) => {
       lastReadStorage.set(id, chatId)
       if (createdAtTime)
-        localforage.set(new Date(createdAtTime).toISOString(), chatId)
+        lastReadTimeLocalForage.set(
+          new Date(createdAtTime).toISOString(),
+          chatId
+        )
     },
     [chatId]
   )

@@ -55,13 +55,15 @@ async function getUnreadCount(squidUrl) {
   const address = await appStorage.getItem(getAddressStorageKey())
   let chatIdsToFetch = ['754', '7465']
   if (address) {
-    const followedIds = await appStorage.getItem(
-      getFollowedIdsStorageKey(address)
-    )
-    if (followedIds) {
-      chatIdsToFetch.push(...followedIds.slice(0, 5))
-      chatIdsToFetch = Array.from(new Set(chatIdsToFetch))
-    }
+    try {
+      const followedIds = JSON.parse(
+        (await appStorage.getItem(getFollowedIdsStorageKey(address))) ?? ''
+      )
+      if (followedIds) {
+        chatIdsToFetch.push(...followedIds.slice(0, 5))
+        chatIdsToFetch = Array.from(new Set(chatIdsToFetch))
+      }
+    } catch {}
   }
 
   const queries = []
