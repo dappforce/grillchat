@@ -92,6 +92,32 @@ export class LocalForage<Params extends unknown[], Data = string>
   }
 }
 
+export class LocalStorageAndForage<Params extends unknown[]>
+  implements Storage<Params>
+{
+  private localStorage: LocalStorage<Params>
+  private localForage: LocalForage<Params>
+
+  constructor(nameGetter: (...params: Params) => string) {
+    this.localStorage = new LocalStorage(nameGetter)
+    this.localForage = new LocalForage(nameGetter)
+  }
+
+  get(...params: Params) {
+    return this.localStorage.get(...params)
+  }
+
+  set(value: string, ...params: Params) {
+    this.localStorage.set(value, ...params)
+    this.localForage.set(value, ...params)
+  }
+
+  remove(...params: Params) {
+    this.localStorage.remove(...params)
+    this.localForage.remove(...params)
+  }
+}
+
 export class SafeLocalStorage {
   static getItem(key: string) {
     try {

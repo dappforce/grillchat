@@ -49,8 +49,21 @@ self.addEventListener('notificationclick', (event) => {
 })
 
 const getStorageKey = (chatId) => `last-read-${chatId}`
-const chatIdsToFetch = ['754', '7465', '9247', '9248', '9249', '7120']
+const getAddressStorageKey = () => 'accountPublicKey'
+const getFollowedIdsStorageKey = (address) => `followedPostIds:${address}`
 async function getUnreadCount(squidUrl) {
+  const address = await appStorage.getItem(getAddressStorageKey())
+  let chatIdsToFetch = ['754', '7465']
+  if (address) {
+    const followedIds = await appStorage.getItem(
+      getFollowedIdsStorageKey(address)
+    )
+    if (followedIds) {
+      chatIdsToFetch.push(...followedIds.slice(0, 5))
+      chatIdsToFetch = Array.from(new Set(chatIdsToFetch))
+    }
+  }
+
   const queries = []
   const promises = chatIdsToFetch.map(async (chatId) => {
     const lastReadTime = await appStorage.getItem(getStorageKey(chatId))
