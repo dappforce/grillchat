@@ -7,6 +7,12 @@ export default function useNetworkStatus() {
     'connecting'
   )
   const [substrateApi, setSubstrateApi] = useState<ApiPromise | null>(null)
+  const disconnect = useCallback(() => {
+    if (substrateApi) substrateApi.disconnect()
+  }, [substrateApi])
+  const connect = useCallback(() => {
+    if (substrateApi && !substrateApi.isConnected) substrateApi.connect()
+  }, [substrateApi])
   const reconnect = useCallback(() => {
     if (substrateApi) {
       substrateApi.disconnect()
@@ -43,5 +49,5 @@ export default function useNetworkStatus() {
     }
   }, [substrateApi])
 
-  return { status, reconnect }
+  return { status, reconnect, connect, disconnect }
 }
