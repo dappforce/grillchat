@@ -1,13 +1,26 @@
-import { LocalStorage } from '@/utils/storage'
+import { LocalForage, LocalStorage } from '@/utils/storage'
 import { useCallback } from 'react'
 
 const getStorageKey = (chatId: string) => `last-read-${chatId}`
-const storage = new LocalStorage(getStorageKey)
+export const lastReadStorage = new LocalStorage(getStorageKey)
+
+// need localforage instead of localStorage because needs to be used in service worker
+export const lastReadTimeLocalForage = new LocalForage(getStorageKey)
 
 export default function useLastReadMessageIdFromStorage(chatId: string) {
-  const getLastReadMessageId = useCallback(() => storage.get(chatId), [chatId])
+  const getLastReadMessageId = useCallback(
+    () => lastReadStorage.get(chatId),
+    [chatId]
+  )
   const setLastReadMessageId = useCallback(
-    (id: string) => storage.set(id, chatId),
+    (id: string, createdAtTime?: number) => {
+      lastReadStorage.set(id, chatId)
+      if (createdAtTime)
+        lastReadTimeLocalForage.set(
+          new Date(createdAtTime).toISOString(),
+          chatId
+        )
+    },
     [chatId]
   )
   return {

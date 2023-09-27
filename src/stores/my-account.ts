@@ -12,7 +12,7 @@ import {
   Signer,
 } from '@/utils/account'
 import { wait } from '@/utils/promise'
-import { LocalStorage } from '@/utils/storage'
+import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
 import dayjs from 'dayjs'
 import { useAnalytics } from './analytics'
@@ -50,10 +50,10 @@ const ACCOUNT_ADDRESS_STORAGE_KEY = 'accountPublicKey'
 const ACCOUNT_STORAGE_KEY = 'account'
 const FOLLOWED_IDS_STORAGE_KEY = 'followedPostIds'
 
-export const accountAddressStorage = new LocalStorage(
+export const accountAddressStorage = new LocalStorageAndForage(
   () => ACCOUNT_ADDRESS_STORAGE_KEY
 )
-export const followedIdsStorage = new LocalStorage(
+export const followedIdsStorage = new LocalStorageAndForage(
   (address: string) => `${FOLLOWED_IDS_STORAGE_KEY}:${address}`
 )
 export const hasSentMessageStorage = new LocalStorage(() => 'has-sent-message')
