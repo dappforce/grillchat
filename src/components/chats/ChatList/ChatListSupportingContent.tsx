@@ -69,11 +69,7 @@ export default function ChatListSupportingContent({
 
     if (!messageId || !validateNumber(messageId)) {
       if (lastReadId && filteredMessageIdsRef.current?.includes(lastReadId)) {
-        setLoadingToUnread(true)
-        scrollToMessage(lastReadId ?? '', {
-          shouldHighlight: false,
-          smooth: false,
-        }).then(() => {
+        const afterScroll = () => {
           setLoadingToUnread(false)
           isInitialized.current = true
 
@@ -87,7 +83,18 @@ export default function ChatListSupportingContent({
 
           sendMessageToParentWindow('unread', newMessageCount.toString())
           setUnreadMessage({ count: newMessageCount, lastId: lastReadId })
-        })
+        }
+
+        setLoadingToUnread(true)
+
+        const ids = filteredMessageIdsRef.current
+        const lastMessageId = ids?.[ids.length - 1]
+        if (lastReadId === lastMessageId) afterScroll()
+        else
+          scrollToMessage(lastReadId ?? '', {
+            shouldHighlight: false,
+            smooth: false,
+          }).then(afterScroll)
       } else {
         isInitialized.current = true
       }
