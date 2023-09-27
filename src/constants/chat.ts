@@ -36,3 +36,8 @@ const CUSTOM_CHAT_MAX_LENGTH: Record<string, number> = {
 export function getMaxMessageLength(chatId: string) {
   return CUSTOM_CHAT_MAX_LENGTH[chatId] ?? DEFAULT_MAX_MESSAGE_LENGTH
 }
+
+const INCLUDED_CHAT_IDS_FOR_UNREAD_COUNT: string[] = ['754', '7465']
+export function getIncludedChatIdsForUnreadCount() {
+  return INCLUDED_CHAT_IDS_FOR_UNREAD_COUNT
+}

@@ -1,4 +1,5 @@
 import { gql, GraphQLClient } from 'graphql-request'
+import { getIncludedChatIdsForUnreadCount } from '../src/constants/chat'
 import { appStorage } from '../src/constants/localforage'
 
 // Handling Notification Click event.
@@ -53,7 +54,7 @@ const getAddressStorageKey = () => 'accountPublicKey'
 const getFollowedIdsStorageKey = (address) => `followedPostIds:${address}`
 async function getUnreadCount(squidUrl) {
   const address = await appStorage.getItem(getAddressStorageKey())
-  let chatIdsToFetch = ['754', '7465']
+  let chatIdsToFetch = getIncludedChatIdsForUnreadCount()
   if (address) {
     try {
       const followedIds = JSON.parse(
