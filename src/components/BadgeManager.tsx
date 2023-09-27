@@ -11,10 +11,10 @@ export default function BadgeManager() {
 
   useEffect(() => {
     function listener() {
-      console.log('masuk bro')
       if (document.visibilityState === 'hidden') {
-        console.log('hidden man')
         syncBadge(myAddressRef.current)
+      } else {
+        clearBadge()
       }
     }
     document.addEventListener('visibilitychange', listener)
@@ -25,9 +25,7 @@ export default function BadgeManager() {
 }
 
 async function syncBadge(address: string | null) {
-  console.log('getting unreads...')
   const unreadCount = await getUnreadCount(address)
-  console.log('unread', unreadCount)
   if (!unreadCount) {
     await clearBadge()
   } else {
