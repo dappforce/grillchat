@@ -40,6 +40,7 @@ export function getIsInIframe() {
   }
 }
 export function getIsInIos() {
+  if (typeof window === 'undefined') return false
   return (
     [
       'iPad Simulator',
