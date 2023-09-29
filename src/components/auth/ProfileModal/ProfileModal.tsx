@@ -159,10 +159,13 @@ export default function ProfileModal({
 
   const { title, desc, withBackButton, withoutDefaultPadding, withFooter } =
     modalTitles[currentState] || {}
-  const onBackClick = () =>
-    setCurrentState(
-      typeof withBackButton === 'string' ? withBackButton : 'account'
-    )
+  const onBackClick = () => {
+    if (props.onBackClick) props.onBackClick()
+    else
+      setCurrentState(
+        typeof withBackButton === 'string' ? withBackButton : 'account'
+      )
+  }
   const Content = modalContents[currentState]
 
   return (
