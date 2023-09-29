@@ -6,12 +6,11 @@ type NotificationControl = {
 }
 
 export type ProfileModalProps = ModalFunctionalityProps & {
-  address: string
   notification?: NotificationControl
-  step?: ModalState
+  step?: ProfileModalState
 }
 
-export type ModalState =
+export type ProfileModalState =
   | 'account'
   | 'subsocial-profile'
   | 'private-key'
@@ -28,7 +27,7 @@ export type ModalState =
 
 export type ContentProps = {
   address: string
-  setCurrentState: React.Dispatch<React.SetStateAction<ModalState>>
+  setCurrentState: React.Dispatch<React.SetStateAction<ProfileModalState>>
   notification?: NotificationControl
   evmAddress?: string | null
 }
