@@ -12,7 +12,9 @@ import LinkEvmAddressContent from './contents/evm-linking/LinkEvmAddressContent'
 import UnlinkEvmConfirmationContent from './contents/evm-linking/UnlinkEvmConfirmationContent'
 import LogoutContent from './contents/LogoutContent'
 import NotificationContent from './contents/notifications/NotificationContent'
-import PushNotificationContent from './contents/notifications/PushNotificationContent'
+import PushNotificationContent, {
+  getPushNotificationUsableStatus,
+} from './contents/notifications/PushNotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
@@ -35,6 +37,17 @@ const modalContents: {
   notifications: NotificationContent,
   'telegram-notifications': TelegramNotificationContent,
   'push-notifications': PushNotificationContent,
+}
+
+const pushNotificationDesc: Record<
+  ReturnType<typeof getPushNotificationUsableStatus>,
+  string
+> = {
+  'need-install':
+    'Push notifications are not available in your browser. You can connect push notification after you install Grill.chat',
+  unsupported: 'Push notifications are not available in your browser.',
+  usable:
+    'Push notifications allow you to receive direct updates from Grill in your browser.',
 }
 
 export default function ProfileModal({
@@ -67,6 +80,7 @@ export default function ProfileModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
 
+  const pushNotificationUsableStatus = getPushNotificationUsableStatus()
   const modalTitles: {
     [key in ModalState]: {
       title: React.ReactNode
@@ -137,7 +151,7 @@ export default function ProfileModal({
     },
     'push-notifications': {
       title: '🔔 Push Notifications',
-      desc: 'Push notifications allow you to receive direct updates from Grill in your browser.',
+      desc: pushNotificationDesc[pushNotificationUsableStatus],
       withBackButton: 'notifications',
     },
   }
