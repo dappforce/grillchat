@@ -70,6 +70,30 @@ module.exports = [
     },
   },
   {
+    // js chunks won't change because the name is based on hashed content
+    urlPattern: /\/_next\/static\/chunks\/.*\.js$/i,
+    handler: 'CacheFirst',
+    options: {
+      cacheName: 'next-chunks',
+      expiration: {
+        maxEntries: 256,
+        maxAgeSeconds: 365 * 24 * 60 * 60, // 365 days
+      },
+    },
+  },
+  {
+    // media chunks won't change because the name is based on hashed content
+    urlPattern: /\/_next\/static\/media\/.*$/i,
+    handler: 'CacheFirst',
+    options: {
+      cacheName: 'next-media',
+      expiration: {
+        maxEntries: 128,
+        maxAgeSeconds: 365 * 24 * 60 * 60, // 365 days
+      },
+    },
+  },
+  {
     urlPattern: /\/_next\/image\?url=.+$/i,
     handler: 'StaleWhileRevalidate',
     options: {
