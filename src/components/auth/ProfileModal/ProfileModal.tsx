@@ -45,7 +45,7 @@ const pushNotificationDesc: Record<
   string
 > = {
   'need-install':
-    'Push notifications are not available in your browser. You can connect push notification after you install Grill.chat',
+    'Push notifications are not available in your browser. Please install Grill.chat to activate notifications.',
   unsupported: 'Push notifications are not available in your browser.',
   usable:
     'Push notifications allow you to receive direct updates from Grill in your browser.',

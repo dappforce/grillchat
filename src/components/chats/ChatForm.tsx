@@ -29,8 +29,7 @@ import { toast } from 'react-hot-toast'
 import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
-import { useName } from '../Name'
-import SubsocialProfileModal from '../subsocial-profile/SubsocialProfileModal'
+import StayUpdatedModal from './StayUpdatedModal'
 
 const CaptchaInvisible = dynamic(
   () => import('@/components/captcha/CaptchaInvisible'),
@@ -82,11 +81,7 @@ export default function ChatForm({
 
   useLoadUnsentMessage(chatId)
 
-  const myAddress = useMyAccount((state) => state.address)
-  const { ensName, profile } = useName(myAddress ?? '')
-  const hasName = ensName || profile?.profileSpace?.name
-
-  const [isOpenNameModal, setIsOpenNameModal] = useState(false)
+  const [isOpenCtaModal, setIsOpenCtaModal] = useState(false)
 
   const sendEvent = useSendEvent()
   const incrementMessageCount = useMessageData(
@@ -184,9 +179,9 @@ export default function ChatForm({
 
     const messageParams = newMessageParams || sendMessageParams
 
-    if (!hasSentMessageStorage.get() && !hasName) {
+    if (!hasSentMessageStorage.get()) {
       setTimeout(() => {
-        setIsOpenNameModal(true)
+        setIsOpenCtaModal(true)
       }, 1000)
     }
 
@@ -298,11 +293,9 @@ export default function ChatForm({
       </CaptchaInvisible>
 
       <EmailSubscribeModal chatId={chatId} />
-      <SubsocialProfileModal
-        title='🎩 What is your name?'
-        isOpen={isOpenNameModal}
-        closeModal={() => setIsOpenNameModal(false)}
-        cancelButtonText='No, I want to stay anonymous'
+      <StayUpdatedModal
+        isOpen={isOpenCtaModal}
+        closeModal={() => setIsOpenCtaModal(false)}
       />
     </>
   )

@@ -10,11 +10,9 @@ import { ProfileModalState } from '../auth/ProfileModal/types'
 import MenuList from '../MenuList'
 import Modal, { ModalFunctionalityProps } from '../modals/Modal'
 
-export type KeepMeUpdatedModalProps = ModalFunctionalityProps
+export type StayUpdatedModalProps = ModalFunctionalityProps
 
-export default function KeepMeUpdatedModal({
-  ...props
-}: KeepMeUpdatedModalProps) {
+export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
   const sendEvent = useSendEvent()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [profileModalState, setProfileModalState] =
@@ -29,8 +27,8 @@ export default function KeepMeUpdatedModal({
           sendEvent('close_keep_me_updated_modal')
           props.closeModal()
         }}
-        title='🔔 Keep Me Updated'
-        description='Receive Grill.chat notifications in various locations. You can edit it in any time.'
+        title='🔔 Stay Updated'
+        description='Enable Grill.chat notifications to stay engaged. You can disable them at any time.'
         contentClassName={cx('!px-0')}
         titleClassName={cx('px-6')}
         descriptionClassName={cx('px-6')}
