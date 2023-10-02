@@ -3,13 +3,13 @@ import ProfileModal from '@/components/auth/ProfileModal'
 import Button from '@/components/Button'
 import PopOver from '@/components/floating/PopOver'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
 import { ComponentProps, useEffect, useState } from 'react'
 
 export type ProfileAvatarProps = ComponentProps<'div'> & {
-  address: string
   popOverControl?: {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -17,10 +17,10 @@ export type ProfileAvatarProps = ComponentProps<'div'> & {
 }
 
 export default function ProfileAvatar({
-  address,
   popOverControl,
   ...props
 }: ProfileAvatarProps) {
+  const address = useMyAccount((state) => state.address ?? '')
   const [isOpen, setIsOpen] = useState(false)
   const [directlyOpenEvmLinking, setDirectlyOpenEvmLinking] = useState(false)
 
@@ -78,7 +78,6 @@ export default function ProfileAvatar({
         </PopOver>
       </div>
       <ProfileModal
-        address={address}
         isOpen={isOpen}
         step={directlyOpenEvmLinking ? 'link-evm-address' : undefined}
         closeModal={() => {

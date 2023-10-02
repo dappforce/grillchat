@@ -64,6 +64,7 @@ html,
 body {
   @apply font-sans;
   @apply text-base;
+  @apply bg-background;
 }
 
 #pwa-install {

@@ -98,7 +98,6 @@ export default function Navbar({
             isOpen: openPrivateKeyNotice,
             setIsOpen: setOpenPrivateKeyNotice,
           }}
-          address={address}
         />
       )
     }

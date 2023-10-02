@@ -5,7 +5,9 @@ import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { getMessageToken } from '@/services/firebase/messaging'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
+import { installApp } from '@/utils/install'
 import { LocalStorage } from '@/utils/storage'
+import { getIsInIos } from '@/utils/window'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { ContentProps } from '../../types'
@@ -15,10 +17,19 @@ export const fcmPushNotificationStorage = new LocalStorage(
   (address: string) => `${FCM_PUSH_NOTIFICATION_STORAGE_KEY}-${address}`
 )
 
+type NotificationUsableStatus = 'need-install' | 'unsupported' | 'usable'
+export function getPushNotificationUsableStatus(): NotificationUsableStatus {
+  if (typeof Notification === 'undefined') {
+    if (getIsInIos()) {
+      return 'need-install'
+    }
+    return 'unsupported'
+  }
+  return 'usable'
+}
+
 export default function PushNotificationContent(props: ContentProps) {
   const myAddress = useMyAccount((state) => state.address)
-  const isNotificationNotSupported = typeof Notification === 'undefined'
-
   const [isRegistered, setIsRegistered] = useState(false)
 
   useEffect(() => {
@@ -27,7 +38,15 @@ export default function PushNotificationContent(props: ContentProps) {
     setIsRegistered(!!storedFcmToken)
   }, [isRegistered, myAddress])
 
-  if (isNotificationNotSupported) {
+  const usableStatus = getPushNotificationUsableStatus()
+  if (usableStatus === 'need-install') {
+    return (
+      <Button variant='primaryOutline' size='lg' onClick={installApp}>
+        Install app
+      </Button>
+    )
+  }
+  if (usableStatus === 'unsupported') {
     return (
       <Button disabled size='lg'>
         Unsupported Browser Notifications

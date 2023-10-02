@@ -3,6 +3,7 @@ import Modal from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
@@ -12,15 +13,17 @@ import LinkEvmAddressContent from './contents/evm-linking/LinkEvmAddressContent'
 import UnlinkEvmConfirmationContent from './contents/evm-linking/UnlinkEvmConfirmationContent'
 import LogoutContent from './contents/LogoutContent'
 import NotificationContent from './contents/notifications/NotificationContent'
-import PushNotificationContent from './contents/notifications/PushNotificationContent'
+import PushNotificationContent, {
+  getPushNotificationUsableStatus,
+} from './contents/notifications/PushNotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
 import SubsocialProfileContent from './contents/SubsocialProfileContent'
-import { ContentProps, ModalState, ProfileModalProps } from './types'
+import { ContentProps, ProfileModalProps, ProfileModalState } from './types'
 
 const modalContents: {
-  [key in ModalState]: (props: ContentProps) => JSX.Element
+  [key in ProfileModalState]: (props: ContentProps) => JSX.Element
 } = {
   account: AccountContent,
   'subsocial-profile': SubsocialProfileContent,
@@ -37,12 +40,23 @@ const modalContents: {
   'push-notifications': PushNotificationContent,
 }
 
+const pushNotificationDesc: Record<
+  ReturnType<typeof getPushNotificationUsableStatus>,
+  string
+> = {
+  'need-install':
+    'Push notifications are not available in your browser. Please install Grill.chat to activate notifications.',
+  unsupported: 'Push notifications are not available in your browser.',
+  usable:
+    'Push notifications allow you to receive direct updates from Grill in your browser.',
+}
+
 export default function ProfileModal({
-  address,
   notification,
   step,
   ...props
 }: ProfileModalProps) {
+  const address = useMyAccount((state) => state.address ?? '')
   // Prefetch telegram linked account data
   getLinkedTelegramAccountsQuery.useQuery(
     { address },
@@ -51,7 +65,7 @@ export default function ProfileModal({
     }
   )
 
-  const [currentState, setCurrentState] = useState<ModalState>(
+  const [currentState, setCurrentState] = useState<ProfileModalState>(
     step || 'account'
   )
   const { data: accountData } = getAccountDataQuery.useQuery(address)
@@ -67,11 +81,12 @@ export default function ProfileModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
 
+  const pushNotificationUsableStatus = getPushNotificationUsableStatus()
   const modalTitles: {
-    [key in ModalState]: {
+    [key in ProfileModalState]: {
       title: React.ReactNode
       desc?: React.ReactNode
-      withBackButton?: boolean | ModalState
+      withBackButton?: boolean | ProfileModalState
       withoutDefaultPadding?: boolean
       withFooter?: boolean
     }
@@ -137,17 +152,20 @@ export default function ProfileModal({
     },
     'push-notifications': {
       title: '🔔 Push Notifications',
-      desc: 'Push notifications allow you to receive direct updates from Grill in your browser.',
+      desc: pushNotificationDesc[pushNotificationUsableStatus],
       withBackButton: 'notifications',
     },
   }
 
   const { title, desc, withBackButton, withoutDefaultPadding, withFooter } =
     modalTitles[currentState] || {}
-  const onBackClick = () =>
-    setCurrentState(
-      typeof withBackButton === 'string' ? withBackButton : 'account'
-    )
+  const onBackClick = () => {
+    if (props.onBackClick) props.onBackClick()
+    else
+      setCurrentState(
+        typeof withBackButton === 'string' ? withBackButton : 'account'
+      )
+  }
   const Content = modalContents[currentState]
 
   return (
