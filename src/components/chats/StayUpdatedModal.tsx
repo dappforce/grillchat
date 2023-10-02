@@ -2,7 +2,7 @@ import BellIcon from '@/assets/icons/bell.svg'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { installApp } from '@/utils/install'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaTelegramPlane } from 'react-icons/fa'
 import { HiOutlineDownload } from 'react-icons/hi'
 import ProfileModal from '../auth/ProfileModal'
@@ -18,13 +18,19 @@ export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
   const [profileModalState, setProfileModalState] =
     useState<ProfileModalState>('push-notifications')
 
+  useEffect(() => {
+    if (props.isOpen) {
+      sendEvent('reengagement_modal_opened')
+    }
+  }, [props.isOpen, sendEvent])
+
   return (
     <>
       <Modal
         {...props}
         isOpen={props.isOpen && !isProfileModalOpen}
         closeModal={() => {
-          sendEvent('close_keep_me_updated_modal')
+          sendEvent('reengagement_modal_closed')
           props.closeModal()
         }}
         title='🔔 Stay Updated'
@@ -41,7 +47,9 @@ export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
               text: 'Install app',
               icon: HiOutlineDownload,
               onClick: () => {
-                sendEvent('keep_me_updated_install_app')
+                sendEvent('reengagement_modal_item_selected', {
+                  eventSource: 'install_app',
+                })
                 installApp()
               },
             },
@@ -49,7 +57,9 @@ export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
               text: 'Push notifications',
               icon: BellIcon,
               onClick: () => {
-                sendEvent('keep_me_updated_push_notifications')
+                sendEvent('reengagement_modal_item_selected', {
+                  eventSource: 'push_notifs',
+                })
                 setProfileModalState('push-notifications')
                 setIsProfileModalOpen(true)
               },
@@ -58,7 +68,9 @@ export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
               text: 'Telegram bot',
               icon: FaTelegramPlane,
               onClick: () => {
-                sendEvent('keep_me_updated_telegram_notifications')
+                sendEvent('reengagement_modal_item_selected', {
+                  eventSource: 'telegram_notifs',
+                })
                 setProfileModalState('telegram-notifications')
                 setIsProfileModalOpen(true)
               },
