@@ -21,6 +21,14 @@ import { create } from './utils'
 type State = {
   isInitialized?: boolean
   isInitializedAddress?: boolean
+
+  connectedWallet?: {
+    address: string
+    signer: Signer | null
+    energy?: number
+    _unsubscribeEnergy?: () => void
+  }
+
   address: string | null
   signer: Signer | null
   energy: number | null
@@ -34,7 +42,8 @@ type Actions = {
     isInitialization?: boolean
   ) => Promise<string | false>
   logout: () => void
-  _subscribeEnergy: (isRetrying?: boolean) => Promise<void>
+  connectWallet: (address: string, signer: Signer) => Promise<void>
+  _subscribeEnergy: () => Promise<void>
 }
 
 const initialState: State = {
@@ -49,6 +58,7 @@ const initialState: State = {
 const ACCOUNT_ADDRESS_STORAGE_KEY = 'accountPublicKey'
 const ACCOUNT_STORAGE_KEY = 'account'
 const FOLLOWED_IDS_STORAGE_KEY = 'followedPostIds'
+const CONNECTED_WALLET_ADDRESS_STORAGE_KEY = 'connectedWalletAddress'
 
 export const accountAddressStorage = new LocalStorageAndForage(
   () => ACCOUNT_ADDRESS_STORAGE_KEY
@@ -58,6 +68,9 @@ export const followedIdsStorage = new LocalStorageAndForage(
 )
 export const hasSentMessageStorage = new LocalStorage(() => 'has-sent-message')
 const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
+const connectedWalletAddressStorage = new LocalStorage(
+  () => CONNECTED_WALLET_ADDRESS_STORAGE_KEY
+)
 
 const sendLaunchEvent = async (address?: string | false) => {
   let userProperties = {
@@ -103,6 +116,25 @@ const sendLaunchEvent = async (address?: string | false) => {
 
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
+  connectWallet: async (address, signer) => {
+    const { toSubsocialAddress } = await import('@subsocial/utils')
+    const parsedAddress = toSubsocialAddress(address)!
+
+    const unsub = subscribeEnergy(parsedAddress, (energy) => {
+      const wallet = get().connectedWallet
+      if (!wallet) return
+      set({ connectedWallet: { ...wallet, energy } })
+    })
+
+    set({
+      connectedWallet: {
+        address: parsedAddress,
+        signer,
+        _unsubscribeEnergy: () => unsub.then((unsub) => unsub?.()),
+      },
+    })
+    connectedWalletAddressStorage.set(parsedAddress)
+  },
   login: async (secretKey, isInitialization) => {
     const { toSubsocialAddress } = await import('@subsocial/utils')
     const analytics = useAnalytics.getState()
@@ -119,12 +151,10 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
             cohortDate: dayjs().toDate(),
           }
         )
-      } else {
-        if (secretKey.startsWith('0x')) {
-          const augmented = secretKey.substring(2)
-          if (isSecretKeyUsingMiniSecret(augmented)) {
-            secretKey = augmented
-          }
+      } else if (secretKey.startsWith('0x')) {
+        const augmented = secretKey.substring(2)
+        if (isSecretKeyUsingMiniSecret(augmented)) {
+          secretKey = augmented
         }
       }
 
@@ -150,45 +180,14 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
     return address
   },
-  _subscribeEnergy: async (isRetrying) => {
+  _subscribeEnergy: async () => {
     const { address, _unsubscribeEnergy } = get()
     _unsubscribeEnergy()
-    if (!address) return
 
-    const { getSubsocialApi } = await import(
-      '@/subsocial-query/subsocial/connection'
-    )
-
-    const subsocialApi = await getSubsocialApi()
-    const substrateApi = await subsocialApi.substrateApi
-    if (!substrateApi.isConnected && !isRetrying) {
-      await substrateApi.disconnect()
-      await substrateApi.connect()
-    }
-
-    if (!substrateApi.isConnected) {
-      // If energy subscription is run when the api is not connected, even after some more ms it connect, the subscription won't work
-      // Here we wait for some delay because the api is not connected immediately even after awaiting the connect() method.
-      // And we retry it recursively after 500ms delay until it's connected (without reconnecting the api again)
-      await wait(500)
-      return get()._subscribeEnergy(true)
-    }
-
-    const unsub = substrateApi.query.energy.energyBalance(
-      address,
-      (energyAmount) => {
-        let parsedEnergy: unknown = energyAmount
-        if (typeof energyAmount.toPrimitive === 'function') {
-          parsedEnergy = energyAmount.toPrimitive()
-        }
-        const energy = parseFloat(parsedEnergy + '')
-        console.log('Current energy: ', energy)
-        set({
-          energy,
-          _unsubscribeEnergy: () => unsub.then((unsub) => unsub()),
-        })
-      }
-    )
+    const unsub = subscribeEnergy(address, (energy) => {
+      set({ energy })
+    })
+    set({ _unsubscribeEnergy: () => unsub.then((unsub) => unsub?.()) })
   },
   logout: () => {
     const { _unsubscribeEnergy, address } = get()
@@ -231,3 +230,44 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     set({ isInitialized: true })
   },
 }))
+
+async function subscribeEnergy(
+  address: string | null,
+  onEnergyUpdate: (energy: number) => void,
+  isRetrying?: boolean
+): Promise<undefined | (() => void)> {
+  if (!address) return
+
+  const { getSubsocialApi } = await import(
+    '@/subsocial-query/subsocial/connection'
+  )
+
+  const subsocialApi = await getSubsocialApi()
+  const substrateApi = await subsocialApi.substrateApi
+  if (!substrateApi.isConnected && !isRetrying) {
+    await substrateApi.disconnect()
+    await substrateApi.connect()
+  }
+
+  if (!substrateApi.isConnected) {
+    // If energy subscription is run when the api is not connected, even after some more ms it connect, the subscription won't work
+    // Here we wait for some delay because the api is not connected immediately even after awaiting the connect() method.
+    // And we retry it recursively after 500ms delay until it's connected (without reconnecting the api again)
+    await wait(500)
+    return subscribeEnergy(address, onEnergyUpdate, true)
+  }
+
+  const unsub = substrateApi.query.energy.energyBalance(
+    address,
+    (energyAmount) => {
+      let parsedEnergy: unknown = energyAmount
+      if (typeof energyAmount.toPrimitive === 'function') {
+        parsedEnergy = energyAmount.toPrimitive()
+      }
+      const energy = parseFloat(parsedEnergy + '')
+      console.log('Current energy: ', address, energy)
+      onEnergyUpdate(energy)
+    }
+  )
+  return unsub
+}

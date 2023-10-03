@@ -4,6 +4,8 @@ import Modal from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import Spinner from '@/components/Spinner'
 import Toast from '@/components/Toast'
+import { useMyAccount } from '@/stores/my-account'
+import { Signer } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
 import Image from 'next/image'
@@ -11,6 +13,8 @@ import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
 export default function SubstrateConnectContent() {
+  const connectWallet = useMyAccount((state) => state.connectWallet)
+
   const supportedWallets: Wallet[] = getWallets()
   const [isWalletLoading, setIsWalletLoading] = useState<Set<string>>(new Set())
 
@@ -18,7 +22,10 @@ export default function SubstrateConnectContent() {
   const [accounts, setAccounts] = useState<WalletAccount[] | null>(null)
 
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
-  const [selectedAccount, setSelectedAccount] = useState('')
+  const [selectedAccount, setSelectedAccount] = useState<{
+    address: string
+    signer: Signer
+  } | null>(null)
 
   useEffect(() => {
     if (!selectedWallet) return
@@ -119,7 +126,11 @@ export default function SubstrateConnectContent() {
                 return {
                   text: account.name || account.address,
                   onClick: () => {
-                    setSelectedAccount(account.address)
+                    if (!account.signer) return
+                    setSelectedAccount({
+                      address: account.address,
+                      signer: account.signer as Signer,
+                    })
                     setIsAccountModalOpen(true)
                   },
                   icon: () =>
@@ -148,12 +159,20 @@ export default function SubstrateConnectContent() {
         <div className='mt-2 flex flex-col gap-6'>
           <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
             <ProfilePreview
-              address={selectedAccount}
+              address={selectedAccount?.address ?? ''}
               avatarClassName={cx('h-16 w-16')}
             />
           </div>
           <div className='flex flex-col gap-4'>
-            <Button size='lg'>Use this account</Button>
+            <Button
+              size='lg'
+              onClick={() => {
+                const { address, signer } = selectedAccount ?? {}
+                if (address && signer) connectWallet(address, signer)
+              }}
+            >
+              Use this account
+            </Button>
             <Button size='lg' variant='primaryOutline'>
               Select another account
             </Button>
