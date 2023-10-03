@@ -22,12 +22,12 @@ type State = {
   isInitialized?: boolean
   isInitializedAddress?: boolean
 
-  connectedWallet?: {
+  connectedWallet: {
     address: string
     signer: Signer | null
     energy?: number
     _unsubscribeEnergy?: () => void
-  }
+  } | null
 
   address: string | null
   signer: Signer | null
@@ -43,11 +43,13 @@ type Actions = {
   ) => Promise<string | false>
   logout: () => void
   connectWallet: (address: string, signer: Signer) => Promise<void>
-  _subscribeEnergy: () => Promise<void>
+  _subscribeEnergy: () => void
+  _subscribeConnectedWalletEnergy: () => void
 }
 
 const initialState: State = {
   isInitializedAddress: true,
+  connectedWallet: null,
   address: null,
   signer: null,
   energy: null,
@@ -116,23 +118,28 @@ const sendLaunchEvent = async (address?: string | false) => {
 
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
-  connectWallet: async (address, signer) => {
-    const { toSubsocialAddress } = await import('@subsocial/utils')
-    const parsedAddress = toSubsocialAddress(address)!
+  _subscribeConnectedWalletEnergy: () => {
+    const { connectedWallet } = get()
+    if (!connectedWallet) return
 
-    const unsub = subscribeEnergy(parsedAddress, (energy) => {
+    const { address } = connectedWallet
+    const unsub = subscribeEnergy(address, (energy) => {
       const wallet = get().connectedWallet
       if (!wallet) return
       set({ connectedWallet: { ...wallet, energy } })
     })
-
     set({
       connectedWallet: {
-        address: parsedAddress,
-        signer,
+        ...connectedWallet,
         _unsubscribeEnergy: () => unsub.then((unsub) => unsub?.()),
       },
     })
+  },
+  connectWallet: async (address, signer) => {
+    const { toSubsocialAddress } = await import('@subsocial/utils')
+    const parsedAddress = toSubsocialAddress(address)!
+
+    set({ connectedWallet: { address: parsedAddress, signer } })
     connectedWalletAddressStorage.set(parsedAddress)
   },
   login: async (secretKey, isInitialization) => {
@@ -180,7 +187,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
     return address
   },
-  _subscribeEnergy: async () => {
+  _subscribeEnergy: () => {
     const { address, _unsubscribeEnergy } = get()
     _unsubscribeEnergy()
 

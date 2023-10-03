@@ -4,6 +4,7 @@ import Modal from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import Spinner from '@/components/Spinner'
 import Toast from '@/components/Toast'
+import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { Signer } from '@/utils/account'
 import { cx } from '@/utils/class-names'
@@ -164,15 +165,25 @@ export default function SubstrateConnectContent() {
             />
           </div>
           <div className='flex flex-col gap-4'>
-            <Button
-              size='lg'
-              onClick={() => {
-                const { address, signer } = selectedAccount ?? {}
-                if (address && signer) connectWallet(address, signer)
+            <AddProxyWrapper>
+              {({ isLoading, mutateAsync: addProxy }) => {
+                return (
+                  <Button
+                    size='lg'
+                    onClick={() => {
+                      const { address, signer } = selectedAccount ?? {}
+                      if (address && signer) {
+                        connectWallet(address, signer)
+                        addProxy(null)
+                      }
+                    }}
+                    isLoading={isLoading}
+                  >
+                    Use this account
+                  </Button>
+                )
               }}
-            >
-              Use this account
-            </Button>
+            </AddProxyWrapper>
             <Button size='lg' variant='primaryOutline'>
               Select another account
             </Button>

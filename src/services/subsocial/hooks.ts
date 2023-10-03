@@ -4,7 +4,16 @@ import { useMyAccount } from '@/stores/my-account'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 
-export function useWalletGetter() {
+export function useWalletGetter(isUsingConnectedWallet?: boolean) {
+  if (isUsingConnectedWallet) {
+    return () => {
+      const wallet = useMyAccount.getState().connectedWallet
+      return {
+        address: wallet?.address ?? '',
+        signer: wallet?.signer,
+      }
+    }
+  }
   return () => ({
     address: useMyAccount.getState().address ?? '',
     signer: useMyAccount.getState().signer,
