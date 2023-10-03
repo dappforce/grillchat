@@ -177,10 +177,14 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const unsub = substrateApi.query.energy.energyBalance(
       address,
       (energyAmount) => {
-        const parsedEnergy = parseFloat(energyAmount.toPrimitive().toString())
-        console.log('Current energy: ', parsedEnergy)
+        let parsedEnergy: unknown = energyAmount
+        if (typeof energyAmount.toPrimitive === 'function') {
+          parsedEnergy = energyAmount.toPrimitive()
+        }
+        const energy = parseFloat(parsedEnergy + '')
+        console.log('Current energy: ', energy)
         set({
-          energy: parsedEnergy,
+          energy,
           _unsubscribeEnergy: () => unsub.then((unsub) => unsub()),
         })
       }

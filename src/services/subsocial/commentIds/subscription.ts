@@ -33,7 +33,11 @@ const subscription = (
     const addressesSet = new Set<string>()
 
     return substrateApi.query.posts.replyIdsByPostId(postId, async (ids) => {
-      const newIds = Array.from(ids.toPrimitive() as any).map((id) => id + '')
+      let parsedIds: unknown[] = ids
+      if (typeof ids.toPrimitive === 'function') {
+        parsedIds = ids.toPrimitive() as any
+      }
+      const newIds = Array.from(parsedIds).map((id) => id + '')
       const lastId = newIds[newIds.length - 1] ?? ''
       const lastSubscribedId = lastIdInPreviousSub.get()
 
