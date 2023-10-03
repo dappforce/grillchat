@@ -20,6 +20,7 @@ import TelegramNotificationContent from './contents/notifications/TelegramNotifi
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
 import SubsocialProfileContent from './contents/SubsocialProfileContent'
+import SubstrateConnectContent from './contents/SubstrateConnectContent'
 import { ContentProps, ProfileModalProps, ProfileModalState } from './types'
 
 const modalContents: {
@@ -38,6 +39,7 @@ const modalContents: {
   notifications: NotificationContent,
   'telegram-notifications': TelegramNotificationContent,
   'push-notifications': PushNotificationContent,
+  'substrate-connect': SubstrateConnectContent,
 }
 
 const pushNotificationDesc: Record<
@@ -154,6 +156,12 @@ export default function ProfileModal({
       title: '🔔 Push Notifications',
       desc: pushNotificationDesc[pushNotificationUsableStatus],
       withBackButton: 'notifications',
+    },
+    'substrate-connect': {
+      title: '🔗 Substrate Connect',
+      desc: 'Choose a wallet to connect to Grill.chat.',
+      withBackButton: true,
+      withoutDefaultPadding: true,
     },
   }
 

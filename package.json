@@ -38,7 +38,7 @@
     "@subsocial/grill-widget": "^0.0.8",
     "@subsocial/utils": "0.8.14",
     "@subwallet/wagmi-connector": "0.2.1",
-    "@talisman-connect/wallets": "^1.1.3",
+    "@talismn/connect-wallets": "^1.2.3",
     "@talismn/wagmi-connector": "^0.3.1",
     "@tanstack/react-query": "^4.24.10",
     "@types/jsonabc": "^2.3.1",

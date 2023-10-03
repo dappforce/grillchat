@@ -86,6 +86,11 @@ export default function AccountContent({
       },
     },
     {
+      text: 'Substrate Connect',
+      icon: EthIcon,
+      onClick: () => setCurrentState('substrate-connect'),
+    },
+    {
       text: (
         <span className='flex items-center gap-2'>
           <span>Show Grill secret key</span>
