@@ -28,7 +28,7 @@ export default function SubstrateConnectContent({ ...props }: ContentProps) {
   return (
     <div className='flex flex-col'>
       {(() => {
-        if (!accounts)
+        if (!selectedWallet)
           return (
             <MenuList
               className='pb-6 pt-0'
