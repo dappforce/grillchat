@@ -55,7 +55,8 @@ const urlMapper: {
       )
     },
     checker: (link: string) =>
-      /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com)\/(.+)/.test(link) &&
+      (/(?:https?:\/\/)?(?:www\.)?(?:x\.com)\/(.+)/.test(link) ||
+        /(?:https?:\/\/)?(?:www\.)?(?:twitter\.com)\/(.+)/.test(link)) &&
       /\/status\/\d+/.test(link),
   },
   {
