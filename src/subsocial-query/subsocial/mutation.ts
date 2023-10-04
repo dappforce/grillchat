@@ -130,7 +130,7 @@ function sendTransaction<Data>(
     data,
     summary,
     tx,
-    wallet: { address, signer },
+    wallet: { address, signer, proxyToAddress },
   } = txInfo
   const globalTxCallbacks = getGlobalTxCallbacks()
   return new Promise<string>(async (resolve, reject) => {
@@ -141,9 +141,23 @@ function sendTransaction<Data>(
         address
       )
       danglingNonceResolver = nonceResolver
-      const unsub = await tx.signAndSend(
-        address,
-        { nonce, signer },
+
+      let usedTx = tx
+      if (proxyToAddress) {
+        usedTx = apis.substrateApi.tx.proxy.proxy(proxyToAddress, null, tx)
+      }
+
+      // signer from talisman and signer from keyring are different
+      // so they need to be handled differently, the one that have 'signPayload' are for talisman signer
+      let account = signer
+      let signerOpt = undefined
+      if ('signPayload' in signer) {
+        account = address
+        signerOpt = signer
+      }
+      const unsub = await usedTx.signAndSend(
+        account,
+        { nonce, signer: signerOpt },
         async (result) => {
           // the result is only tx hash if its using http connection
           if (typeof result.toHuman() === 'string') {

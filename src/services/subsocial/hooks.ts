@@ -1,10 +1,15 @@
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { useRequestToken } from '@/services/api/mutation'
 import { useMyAccount } from '@/stores/my-account'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
+import {
+  SubsocialMutationConfig,
+  WalletAccount,
+} from '@/subsocial-query/subsocial/types'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 
-export function useWalletGetter(isUsingConnectedWallet?: boolean) {
+export function useWalletGetter(
+  isUsingConnectedWallet?: boolean
+): () => WalletAccount {
   if (isUsingConnectedWallet) {
     return () => {
       const wallet = useMyAccount.getState().connectedWallet
@@ -17,6 +22,7 @@ export function useWalletGetter(isUsingConnectedWallet?: boolean) {
   return () => ({
     address: useMyAccount.getState().address ?? '',
     signer: useMyAccount.getState().signer,
+    proxyToAddress: useMyAccount.getState().connectedWallet?.address,
   })
 }
 
