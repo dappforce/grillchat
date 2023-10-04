@@ -9,7 +9,7 @@ import { useConfigContext } from '@/providers/ConfigProvider'
 import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getHubPageLink } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
@@ -60,7 +60,7 @@ export default function Navbar({
   )
   const router = useRouter()
 
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
   const prevAddress = usePrevious(address)
   const isLoggedIn = !!address
 

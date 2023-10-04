@@ -3,7 +3,7 @@ import Modal from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
@@ -58,7 +58,7 @@ export default function ProfileModal({
   step,
   ...props
 }: ProfileModalProps) {
-  const address = useMyAccount((state) => state.address ?? '')
+  const address = useMyMainAddress() ?? ''
   // Prefetch telegram linked account data
   getLinkedTelegramAccountsQuery.useQuery(
     { address },

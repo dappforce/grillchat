@@ -1,6 +1,6 @@
 import { getProfileQuery } from '@/services/api/query'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ComponentProps } from 'react'
@@ -22,7 +22,7 @@ export default function SubsocialProfileForm({
   onSuccess,
   ...props
 }: SubsocialProfileFormProps) {
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const { data } = getProfileQuery.useQuery(myAddress ?? '', {
     enabled: !!myAddress,
   })

@@ -4,7 +4,7 @@ import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePre
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { isOptimisticId } from '@/services/subsocial/utils'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
@@ -53,7 +53,7 @@ export default function CommonChatItem({
   chatId,
   hubId,
 }: CommonChatItemProps) {
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const connectedWalletAddress = useMyAccount(
     (state) => state.connectedWallet?.address
   )

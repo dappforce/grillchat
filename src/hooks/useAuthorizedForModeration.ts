@@ -1,10 +1,10 @@
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import { getModeratorQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 
 export default function useAuthorizedForModeration(chatId: string) {
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const { data: chat } = getPostQuery.useQuery(chatId)
 
   const isOwner = chat?.struct.ownerId === myAddress

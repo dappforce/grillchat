@@ -1,7 +1,7 @@
 import BlockedImage from '@/assets/graphics/blocked.png'
 import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getBlockedInPostIdDetailedQuery } from '@/services/api/moderation/query'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import Image from 'next/image'
 import { useReducer } from 'react'
 import { toast } from 'react-hot-toast'
@@ -38,7 +38,7 @@ export default function ModerationInfoModal({
   hubId,
   ...props
 }: ModerationInfoModalProps) {
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const [{ isOpenConfirmation, toBeUnblocked }, dispatch] = useReducer(
     (state: ConfirmationModalState, action: ConfirmationModalAction) => {
       switch (action.type) {

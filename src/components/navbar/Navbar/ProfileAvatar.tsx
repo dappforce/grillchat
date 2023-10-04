@@ -3,7 +3,7 @@ import ProfileModal from '@/components/auth/ProfileModal'
 import Button from '@/components/Button'
 import PopOver from '@/components/floating/PopOver'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
@@ -20,7 +20,7 @@ export default function ProfileAvatar({
   popOverControl,
   ...props
 }: ProfileAvatarProps) {
-  const address = useMyAccount((state) => state.address ?? '')
+  const address = useMyMainAddress()
   const [isOpen, setIsOpen] = useState(false)
   const [directlyOpenEvmLinking, setDirectlyOpenEvmLinking] = useState(false)
 
@@ -52,7 +52,7 @@ export default function ProfileAvatar({
             setIsOpen(true)
           }}
         >
-          <AddressAvatar address={address} className='h-6 w-6' />
+          <AddressAvatar address={address ?? ''} className='h-6 w-6' />
           <span className='text-sm'>Account</span>
         </Button>
         <PopOver

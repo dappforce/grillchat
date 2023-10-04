@@ -17,7 +17,7 @@ import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAdd
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import {
   Dispatch,
@@ -163,7 +163,7 @@ export const EnterSecretKeyContent = ({
 
 export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
   const sendEvent = useSendEvent()
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
 
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
     setModalStep: () => setCurrentStep('evm-address-linked'),

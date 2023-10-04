@@ -9,7 +9,7 @@ import {
 } from '@/services/subsocial/prices/query'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { formatUnits, parseUnits } from 'ethers'
@@ -47,7 +47,7 @@ function DonateForm({
   const { isConnected } = useAccount()
   const [inputError, setInputError] = useState<string | undefined>()
   const [amount, setAmount] = useState<string>('')
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
   const { chain } = useNetwork()
   const { address: myEvmAddress } = useAccount()
 

@@ -22,7 +22,7 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
@@ -100,7 +100,7 @@ export default function ChatPage({
     } catch {}
   }, [openExtensionModal])
 
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },

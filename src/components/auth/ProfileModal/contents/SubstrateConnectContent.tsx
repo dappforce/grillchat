@@ -5,6 +5,7 @@ import ProfilePreview from '@/components/ProfilePreview'
 import Spinner from '@/components/Spinner'
 import Toast from '@/components/Toast'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
+import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useMyAccount } from '@/stores/my-account'
 import { Signer } from '@/utils/account'
 import { cx } from '@/utils/class-names'
@@ -18,6 +19,16 @@ export default function SubstrateConnectContent() {
   const isLoadingEnergy = useMyAccount(
     (state) => state.connectedWallet?.energy === null
   )
+  const connectedWalletAddress = useMyAccount(
+    (state) => state.connectedWallet?.address
+  )
+  const { data: proxies } = getProxiesQuery.useQuery(
+    { address: connectedWalletAddress ?? '' },
+    {
+      enabled: !!connectedWalletAddress,
+    }
+  )
+  console.log(proxies)
 
   const supportedWallets: Wallet[] = getWallets()
   const [isWalletLoading, setIsWalletLoading] = useState<Set<string>>(new Set())

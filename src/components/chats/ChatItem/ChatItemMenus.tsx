@@ -20,7 +20,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
 import { useRouter } from 'next/router'
@@ -60,7 +60,7 @@ export default function ChatItemMenus({
   const router = useRouter()
   const isLoggingInWithKey = useRef(false)
 
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
 

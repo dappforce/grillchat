@@ -3,7 +3,7 @@ import {
   SendMessageParams,
   useSendMessage,
 } from '@/services/subsocial/commentIds'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useMutation, UseMutationOptions } from '@tanstack/react-query'
 
 type Params = SendMessageParams & {
@@ -12,7 +12,7 @@ type Params = SendMessageParams & {
 export default function useRequestTokenAndSendMessage(
   options?: UseMutationOptions<void, unknown, Params, unknown>
 ) {
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
 
   const { mutateAsync: requestToken } = useRequestToken()
   const { mutateAsync: sendMessage } = useSendMessage()

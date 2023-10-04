@@ -1,7 +1,7 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button, { ButtonProps } from '@/components/Button'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
@@ -34,7 +34,7 @@ export const CustomConnectButton = ({
 }: CustomConnectButtonProps) => {
   const [hasInteractedOnce, setHasInteractedOnce] = useState(false)
 
-  const mySubstrateAddress = useMyAccount((state) => state.address)
+  const mySubstrateAddress = useMyMainAddress()
   const { disconnect } = useDisconnect()
   const { data: accountData, isLoading: isAccountDataLoading } =
     getAccountDataQuery.useQuery(mySubstrateAddress || '')

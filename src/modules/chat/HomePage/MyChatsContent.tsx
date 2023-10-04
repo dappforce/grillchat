@@ -10,7 +10,7 @@ import {
   getFollowedPostIdsByAddressQuery,
   getOwnedPostIdsQuery,
 } from '@/services/subsocial/posts'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
@@ -28,7 +28,7 @@ type Filter = (typeof filters)[number]
 
 export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
 
   const [filter, setFilter] = useState<Filter | null>(null)
   const changeFilter = (filter: Filter) => {

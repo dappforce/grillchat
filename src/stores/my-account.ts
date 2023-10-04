@@ -298,3 +298,11 @@ async function subscribeEnergy(
   )
   return unsub
 }
+
+export function useMyMainAddress() {
+  const address = useMyAccount((state) => state.address)
+  const connectedWalletAddress = useMyAccount(
+    (state) => state.connectedWallet?.address
+  )
+  return connectedWalletAddress || address
+}

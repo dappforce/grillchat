@@ -1,5 +1,5 @@
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { useMemo } from 'react'
 import useIsInIframe from './useIsInIframe'
 
@@ -11,7 +11,7 @@ const isJoinedValue = {
 export default function useIsJoinedToChat(chatId: string, address?: string) {
   const isInIframe = useIsInIframe()
 
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const usedAddress = address || myAddress
 
   const isEnabledQuery = !!usedAddress

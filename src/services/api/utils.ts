@@ -12,6 +12,7 @@ function parseMessageTpl(messageTpl: string) {
   }
 }
 
+// TODO: fix issue where this needs sign from the wallet
 export async function processMessageTpl(encodedMessage: string) {
   const parsedMessage = parseMessageTpl(encodedMessage)
   const signedPayload = await signMessage(parsedMessage.payloadToSign)

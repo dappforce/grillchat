@@ -1,7 +1,7 @@
 import EthIcon from '@/assets/icons/eth.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
@@ -33,7 +33,7 @@ const ProfilePreview = ({
 }: ProfilePreviewProps) => {
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { evmAddress } = accountData || {}
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
