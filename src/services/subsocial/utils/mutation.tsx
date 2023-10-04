@@ -21,7 +21,8 @@ type Status =
   | 'error'
 export function createMutationWrapper<Data, ReturnValue>(
   useMutationHook: () => UseMutationResult<ReturnValue, Error, Data, unknown>,
-  errorMessage: string
+  errorMessage: string,
+  isUsingConnectedWallet?: boolean
 ) {
   return function MutationWrapper({
     children,
@@ -42,31 +43,35 @@ export function createMutationWrapper<Data, ReturnValue>(
     const {
       mutation: { mutateAsync, isLoading, error },
       needToRunCaptcha,
-    } = useCommonTxSteps(useMutationHook, {
-      ...config,
-      txCallbacks: {
-        onStart: (...params) => {
-          setStatus('starting')
-          config?.txCallbacks?.onStart?.(...params)
-        },
-        onSend: (...params) => {
-          setStatus('sending')
-          config?.txCallbacks?.onSend?.(...params)
-        },
-        onBroadcast: (...params) => {
-          setStatus('broadcasting')
-          config?.txCallbacks?.onBroadcast?.(...params)
-        },
-        onSuccess: (...params) => {
-          setStatus('success')
-          config?.txCallbacks?.onSuccess?.(...params)
-        },
-        onError: (...params) => {
-          setStatus('error')
-          config?.txCallbacks?.onError?.(...params)
+    } = useCommonTxSteps(
+      useMutationHook,
+      {
+        ...config,
+        txCallbacks: {
+          onStart: (...params) => {
+            setStatus('starting')
+            config?.txCallbacks?.onStart?.(...params)
+          },
+          onSend: (...params) => {
+            setStatus('sending')
+            config?.txCallbacks?.onSend?.(...params)
+          },
+          onBroadcast: (...params) => {
+            setStatus('broadcasting')
+            config?.txCallbacks?.onBroadcast?.(...params)
+          },
+          onSuccess: (...params) => {
+            setStatus('success')
+            config?.txCallbacks?.onSuccess?.(...params)
+          },
+          onError: (...params) => {
+            setStatus('error')
+            config?.txCallbacks?.onError?.(...params)
+          },
         },
       },
-    })
+      isUsingConnectedWallet
+    )
     useToastError(error, errorMessage)
 
     let loadingText: string | undefined = undefined

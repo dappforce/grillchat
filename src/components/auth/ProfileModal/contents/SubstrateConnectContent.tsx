@@ -15,6 +15,9 @@ import { toast } from 'react-hot-toast'
 
 export default function SubstrateConnectContent() {
   const connectWallet = useMyAccount((state) => state.connectWallet)
+  const isLoadingEnergy = useMyAccount(
+    (state) => state.connectedWallet?.energy === null
+  )
 
   const supportedWallets: Wallet[] = getWallets()
   const [isWalletLoading, setIsWalletLoading] = useState<Set<string>>(new Set())
@@ -128,10 +131,12 @@ export default function SubstrateConnectContent() {
                   text: account.name || account.address,
                   onClick: () => {
                     if (!account.signer) return
-                    setSelectedAccount({
-                      address: account.address,
-                      signer: account.signer as Signer,
-                    })
+
+                    const address = account.address
+                    const signer = account.signer as Signer
+                    setSelectedAccount({ address, signer })
+                    connectWallet(address, signer)
+
                     setIsAccountModalOpen(true)
                   },
                   icon: () =>
@@ -177,7 +182,7 @@ export default function SubstrateConnectContent() {
                         addProxy(null)
                       }
                     }}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isLoadingEnergy}
                   >
                     Use this account
                   </Button>

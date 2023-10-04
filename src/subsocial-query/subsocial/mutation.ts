@@ -141,54 +141,65 @@ function sendTransaction<Data>(
         address
       )
       danglingNonceResolver = nonceResolver
-      const unsub = await tx.signAndSend(signer, { nonce }, async (result) => {
-        // the result is only tx hash if its using http connection
-        if (typeof result.toHuman() === 'string') {
-          return resolve(result.toString())
-        }
-
-        resolve(result?.txHash?.toString())
-        if (result.status.isInvalid) {
-          txCallbacks?.onError()
-          globalTxCallbacks.onError({
-            summary,
-            address,
-            data,
-          })
-        } else if (result.status.isBroadcast) {
-          txCallbacks?.onBroadcast()
-          globalTxCallbacks.onBroadcast({
-            summary,
-            data,
-            address,
-          })
-        } else if (result.status.isInBlock) {
-          const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
-          let explorerLink: string | undefined
-          if (networkRpc) {
-            explorerLink = getBlockExplorerBlockInfoLink(networkRpc, blockHash)
+      const unsub = await tx.signAndSend(
+        address,
+        { nonce, signer },
+        async (result) => {
+          // the result is only tx hash if its using http connection
+          if (typeof result.toHuman() === 'string') {
+            return resolve(result.toString())
           }
-          if (result.isError || result.dispatchError || result.internalError) {
+
+          resolve(result?.txHash?.toString())
+          if (result.status.isInvalid) {
             txCallbacks?.onError()
             globalTxCallbacks.onError({
-              error: result.dispatchError?.toString(),
-              summary,
-              address,
-              data,
-              explorerLink,
-            })
-          } else {
-            txCallbacks?.onSuccess(result)
-            globalTxCallbacks.onSuccess({
-              explorerLink,
               summary,
               address,
               data,
             })
+          } else if (result.status.isBroadcast) {
+            txCallbacks?.onBroadcast()
+            globalTxCallbacks.onBroadcast({
+              summary,
+              data,
+              address,
+            })
+          } else if (result.status.isInBlock) {
+            const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
+            let explorerLink: string | undefined
+            if (networkRpc) {
+              explorerLink = getBlockExplorerBlockInfoLink(
+                networkRpc,
+                blockHash
+              )
+            }
+            if (
+              result.isError ||
+              result.dispatchError ||
+              result.internalError
+            ) {
+              txCallbacks?.onError()
+              globalTxCallbacks.onError({
+                error: result.dispatchError?.toString(),
+                summary,
+                address,
+                data,
+                explorerLink,
+              })
+            } else {
+              txCallbacks?.onSuccess(result)
+              globalTxCallbacks.onSuccess({
+                explorerLink,
+                summary,
+                address,
+                data,
+              })
+            }
+            unsub()
           }
-          unsub()
         }
-      })
+      )
       nonceResolver()
       txCallbacks?.onSend()
     } catch (e) {

@@ -42,7 +42,7 @@ type Actions = {
     isInitialization?: boolean
   ) => Promise<string | false>
   logout: () => void
-  connectWallet: (address: string, signer: Signer) => Promise<void>
+  connectWallet: (address: string, signer: Signer | null) => Promise<void>
   _subscribeEnergy: () => void
   _subscribeConnectedWalletEnergy: () => void
 }
@@ -141,6 +141,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
 
     set({ connectedWallet: { address: parsedAddress, signer } })
     connectedWalletAddressStorage.set(parsedAddress)
+    get()._subscribeConnectedWalletEnergy()
   },
   login: async (secretKey, isInitialization) => {
     const { toSubsocialAddress } = await import('@subsocial/utils')
@@ -235,6 +236,12 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
 
     set({ isInitialized: true })
+
+    const connectedWalletAddress = connectedWalletAddressStorage.get()
+    if (connectedWalletAddress) {
+      get().connectWallet(connectedWalletAddress, null)
+      // TODO: get wallet proxy to validate if its connected to current grill
+    }
   },
 }))
 

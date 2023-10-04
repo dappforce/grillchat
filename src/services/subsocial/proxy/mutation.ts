@@ -32,5 +32,6 @@ export function useAddProxy(config?: SubsocialMutationConfig<null>) {
 }
 export const AddProxyWrapper = createMutationWrapper(
   useAddProxy,
-  'Failed to add proxy'
+  'Failed to add proxy',
+  true
 )
