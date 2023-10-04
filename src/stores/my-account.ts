@@ -2,6 +2,7 @@ import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/que
 import { queryClient } from '@/services/provider'
 import { getAccountsData } from '@/services/subsocial/evmAddresses'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
+import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useParentData } from '@/stores/parent'
 import {
   decodeSecretKey,
@@ -241,7 +242,18 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const connectedWalletAddress = connectedWalletAddressStorage.get()
     if (connectedWalletAddress) {
       get().connectWallet(connectedWalletAddress, null)
-      // TODO: get wallet proxy to validate if its connected to current grill
+      try {
+        const proxy = await getProxiesQuery.fetchQuery(queryClient, {
+          address: connectedWalletAddress,
+        })
+        const isProxyValid = proxy.includes(get().address)
+        if (!isProxyValid) {
+          connectedWalletAddressStorage.remove()
+          set({ connectedWallet: null })
+        }
+      } catch (err) {
+        console.error('Failed to fetch proxies', err)
+      }
     }
   },
 }))

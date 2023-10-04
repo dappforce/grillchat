@@ -155,6 +155,7 @@ function sendTransaction<Data>(
         account = address
         signerOpt = signer
       }
+      // TODO: if the proxy call failed because of unauthorized, the proxy account needs to be removed
       const unsub = await usedTx.signAndSend(
         account,
         { nonce, signer: signerOpt },
