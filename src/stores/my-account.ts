@@ -204,6 +204,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     accountStorage.remove()
     accountAddressStorage.remove()
     hasSentMessageStorage.remove()
+    connectedWalletAddressStorage.remove()
     if (address) followedIdsStorage.remove(address)
 
     set({ ...initialState })
