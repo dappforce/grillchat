@@ -17,16 +17,15 @@ import { toast } from 'react-hot-toast'
 
 export default function SubstrateConnectContent() {
   const connectWallet = useMyAccount((state) => state.connectWallet)
+  const disconnectWallet = useMyAccount((state) => state.disconnectWallet)
   const isLoadingEnergy = useMyAccount(
     (state) => state.connectedWallet?.energy === null
   )
-  const connectedWalletAddress = useMyAccount(
-    (state) => state.connectedWallet?.address
-  )
+  const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const { data: proxies } = getProxiesQuery.useQuery(
-    { address: connectedWalletAddress ?? '' },
+    { address: connectedWallet?.address ?? '' },
     {
-      enabled: !!connectedWalletAddress,
+      enabled: !!connectedWallet?.address,
     }
   )
   console.log(proxies)
@@ -38,10 +37,6 @@ export default function SubstrateConnectContent() {
   const [accounts, setAccounts] = useState<WalletAccount[] | null>(null)
 
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
-  const [selectedAccount, setSelectedAccount] = useState<{
-    address: string
-    signer: Signer
-  } | null>(null)
 
   useEffect(() => {
     if (!selectedWallet) return
@@ -146,7 +141,6 @@ export default function SubstrateConnectContent() {
 
                     const address = toSubsocialAddress(account.address)!
                     const signer = account.signer as Signer
-                    setSelectedAccount({ address, signer })
                     connectWallet(address, signer)
 
                     setIsAccountModalOpen(true)
@@ -177,7 +171,7 @@ export default function SubstrateConnectContent() {
         <div className='mt-2 flex flex-col gap-6'>
           <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
             <ProfilePreview
-              address={selectedAccount?.address ?? ''}
+              address={connectedWallet?.address ?? ''}
               avatarClassName={cx('h-16 w-16')}
             />
           </div>
@@ -188,7 +182,7 @@ export default function SubstrateConnectContent() {
                   <Button
                     size='lg'
                     onClick={() => {
-                      const { address, signer } = selectedAccount ?? {}
+                      const { address, signer } = connectedWallet ?? {}
                       if (address && signer) {
                         connectWallet(address, signer)
                         addProxy(null)
@@ -201,7 +195,14 @@ export default function SubstrateConnectContent() {
                 )
               }}
             </AddProxyWrapper>
-            <Button size='lg' variant='primaryOutline'>
+            <Button
+              size='lg'
+              variant='primaryOutline'
+              onClick={() => {
+                disconnectWallet()
+                setIsAccountModalOpen(false)
+              }}
+            >
               Select another account
             </Button>
           </div>

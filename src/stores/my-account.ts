@@ -44,6 +44,7 @@ type Actions = {
   ) => Promise<string | false>
   logout: () => void
   connectWallet: (address: string, signer: Signer | null) => Promise<void>
+  disconnectWallet: () => void
   _subscribeEnergy: () => void
   _subscribeConnectedWalletEnergy: () => void
 }
@@ -143,6 +144,11 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     set({ connectedWallet: { address: parsedAddress, signer } })
     connectedWalletAddressStorage.set(parsedAddress)
     get()._subscribeConnectedWalletEnergy()
+  },
+  disconnectWallet: () => {
+    get().connectedWallet?._unsubscribeEnergy?.()
+    set({ connectedWallet: null })
+    connectedWalletAddressStorage.remove()
   },
   login: async (secretKey, isInitialization) => {
     const { toSubsocialAddress } = await import('@subsocial/utils')
