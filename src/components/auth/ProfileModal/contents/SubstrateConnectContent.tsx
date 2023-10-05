@@ -9,6 +9,7 @@ import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useMyAccount } from '@/stores/my-account'
 import { Signer } from '@/utils/account'
 import { cx } from '@/utils/class-names'
+import { toSubsocialAddress } from '@subsocial/utils'
 import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
@@ -143,7 +144,7 @@ export default function SubstrateConnectContent() {
                   onClick: () => {
                     if (!account.signer) return
 
-                    const address = account.address
+                    const address = toSubsocialAddress(account.address)!
                     const signer = account.signer as Signer
                     setSelectedAccount({ address, signer })
                     connectWallet(address, signer)
