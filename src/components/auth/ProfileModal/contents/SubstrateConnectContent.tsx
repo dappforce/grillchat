@@ -177,7 +177,17 @@ export default function SubstrateConnectContent() {
             />
           </div>
           <div className='flex flex-col gap-4'>
-            <AddProxyWrapper>
+            <AddProxyWrapper
+              loadingUntilTxSuccess
+              config={{
+                txCallbacks: {
+                  onSuccess: () => {
+                    saveConnectedWallet()
+                    setIsAccountModalOpen(false)
+                  },
+                },
+              }}
+            >
               {({ isLoading, mutateAsync: addProxy }) => {
                 return (
                   <Button
@@ -186,8 +196,7 @@ export default function SubstrateConnectContent() {
                       const { address, signer } = connectedWallet ?? {}
                       if (address && signer) {
                         connectWallet(address, signer)
-                        await addProxy(null)
-                        saveConnectedWallet()
+                        addProxy(null)
                       }
                     }}
                     isLoading={isLoading || isLoadingEnergy}
