@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
 export default function SubstrateConnectContent() {
+  const saveConnectedWallet = useMyAccount((state) => state.saveConnectedWallet)
   const connectWallet = useMyAccount((state) => state.connectWallet)
   const disconnectWallet = useMyAccount((state) => state.disconnectWallet)
   const isLoadingEnergy = useMyAccount(
@@ -181,11 +182,12 @@ export default function SubstrateConnectContent() {
                 return (
                   <Button
                     size='lg'
-                    onClick={() => {
+                    onClick={async () => {
                       const { address, signer } = connectedWallet ?? {}
                       if (address && signer) {
                         connectWallet(address, signer)
-                        addProxy(null)
+                        await addProxy(null)
+                        saveConnectedWallet()
                       }
                     }}
                     isLoading={isLoading || isLoadingEnergy}

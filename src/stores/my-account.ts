@@ -44,6 +44,7 @@ type Actions = {
   ) => Promise<string | false>
   logout: () => void
   connectWallet: (address: string, signer: Signer | null) => Promise<void>
+  saveConnectedWallet: () => void
   disconnectWallet: () => void
   _subscribeEnergy: () => void
   _subscribeConnectedWalletEnergy: () => void
@@ -142,8 +143,12 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     const parsedAddress = toSubsocialAddress(address)!
 
     set({ connectedWallet: { address: parsedAddress, signer } })
-    connectedWalletAddressStorage.set(parsedAddress)
     get()._subscribeConnectedWalletEnergy()
+  },
+  saveConnectedWallet: () => {
+    const { connectedWallet } = get()
+    if (!connectedWallet) return
+    connectedWalletAddressStorage.set(connectedWallet.address)
   },
   disconnectWallet: () => {
     get().connectedWallet?._unsubscribeEnergy?.()
