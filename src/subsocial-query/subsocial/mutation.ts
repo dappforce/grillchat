@@ -1,3 +1,4 @@
+import { useTransactions } from '@/stores/transactions'
 import { generatePromiseQueue } from '@/utils/promise'
 import type { ApiPromise } from '@polkadot/api'
 import type { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
@@ -155,6 +156,12 @@ function sendTransaction<Data>(
         account = address
         signerOpt = signer
       }
+
+      const txHashAndNonce = tx.toHex() + nonce
+      if (!apis.useHttp) {
+        useTransactions.getState().addPendingTransaction(txHashAndNonce)
+      }
+
       // TODO: if the proxy call failed because of unauthorized, the proxy account needs to be removed
       const unsub = await usedTx.signAndSend(
         account,
@@ -194,6 +201,9 @@ function sendTransaction<Data>(
               result.dispatchError ||
               result.internalError
             ) {
+              useTransactions
+                .getState()
+                .removePendingTransaction(txHashAndNonce)
               txCallbacks?.onError()
               globalTxCallbacks.onError({
                 error: result.dispatchError?.toString(),
@@ -203,6 +213,9 @@ function sendTransaction<Data>(
                 explorerLink,
               })
             } else {
+              useTransactions
+                .getState()
+                .removePendingTransaction(txHashAndNonce)
               txCallbacks?.onSuccess(result)
               globalTxCallbacks.onSuccess({
                 explorerLink,
