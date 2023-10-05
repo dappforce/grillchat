@@ -1,3 +1,4 @@
+import { useTransactions } from '@/stores/transactions'
 import { generatePromiseQueue } from '@/utils/promise'
 import type { ApiPromise } from '@polkadot/api'
 import type { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
@@ -182,6 +183,10 @@ function sendTransaction<Data>(
       )
       danglingNonceResolver = nonceResolver
 
+      const txHashAndNonce = tx.toHex() + nonce
+      if (!apis.useHttp) {
+        useTransactions.getState().addPendingTransaction(txHashAndNonce)
+      }
       const unsub = await tx.signAndSend(signer, { nonce }, async (result) => {
         // the result is only tx hash if its using http connection
         if (typeof result.toHuman() === 'string') {
