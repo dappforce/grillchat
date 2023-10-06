@@ -9,6 +9,7 @@ export type NewMessageNoticeProps = ButtonProps & {
   scrollContainerRef: RefObject<HTMLDivElement | null>
   messageIds: string[]
   asContainer?: boolean
+  isLoading?: boolean
 }
 
 const IS_AT_BOTTOM_OFFSET = 50
@@ -17,6 +18,7 @@ export function NewMessageNotice({
   scrollContainerRef,
   messageIds,
   asContainer,
+  isLoading,
   ...props
 }: NewMessageNoticeProps) {
   const isAtBottom = useIsAtBottom(scrollContainerRef, IS_AT_BOTTOM_OFFSET)
@@ -26,7 +28,7 @@ export function NewMessageNotice({
     if (isAtBottom) clearAnyNewData()
   }, [clearAnyNewData, isAtBottom, anyNewData])
 
-  if (isAtBottom) return null
+  if (isAtBottom && !isLoading) return null
 
   const scrollToBottom = () => {
     scrollContainerRef.current?.scrollTo({

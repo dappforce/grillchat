@@ -1,11 +1,13 @@
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
+const runtimeCaching = require('./cache')
 const withPWA = require('next-pwa')({
   dest: 'public',
   disable: process.env.NODE_ENV !== 'production',
   buildExcludes: [/chunks\/.*$/, /media\/.*$/],
   publicExcludes: ['!splashscreens/**/*', '!screenshots/**/*'],
+  runtimeCaching,
 })
 
 /** @type {import('next').NextConfig} */

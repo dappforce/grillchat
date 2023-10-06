@@ -5,6 +5,7 @@ import { ComponentProps } from 'react'
 import { BsFillPencilFill, BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
 import RepliedMessagePreview from '../ChatItem/RepliedMessagePreview'
+import usePinnedMessage from '../hooks/usePinnedMessage'
 import { getMessageElementId, scrollToMessageElement } from '../utils'
 
 export type ActionDetailBarProps = ComponentProps<'div'> & {
@@ -27,9 +28,12 @@ export default function ActionDetailBar({
     enabled: !!messageId,
   })
 
+  const pinnedMessageId = usePinnedMessage(chatId)
   const onMessageClick = async (messageId: string) => {
     const element = document.getElementById(getMessageElementId(messageId))
-    await scrollToMessageElement(element, scrollContainer?.current ?? null)
+    await scrollToMessageElement(element, scrollContainer?.current ?? null, {
+      scrollOffset: pinnedMessageId ? 'large' : 'normal',
+    })
   }
 
   if (!messageId) return <div className='pt-2' />

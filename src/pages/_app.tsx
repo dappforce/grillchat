@@ -1,3 +1,4 @@
+import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import useIsInIframe from '@/hooks/useIsInIframe'
@@ -83,6 +84,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
+        <BadgeManager />
         <SubsocialApiReconnect />
         <ToasterConfig />
         <ForegroundNotificationHandler />
@@ -116,7 +118,7 @@ function ToasterConfig() {
 }
 
 function SubsocialApiReconnect() {
-  const { status, reconnect } = useNetworkStatus()
+  const { status, reconnect, disconnect, connect } = useNetworkStatus()
   const isConnected = status === 'connected'
 
   useEffect(() => {
@@ -124,6 +126,15 @@ function SubsocialApiReconnect() {
       reconnect()
     }
   }, [isConnected, reconnect])
+
+  useEffect(() => {
+    const listener = () => {
+      if (document.visibilityState === 'visible') connect()
+      else disconnect()
+    }
+    document.addEventListener('visibilitychange', listener)
+    return () => document.removeEventListener('visibilitychange', listener)
+  }, [connect, disconnect])
 
   return null
 }

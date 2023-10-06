@@ -168,6 +168,11 @@ function sendTransaction<Data>(
       txCallbacks?.onBeforeSend(txSig)
 
       const unsub = await signature.send(async (result) => {
+        // the result is only tx hash if its using http connection
+        if (typeof result.toHuman() === 'string') {
+          return resolve(result.toString())
+        }
+
         resolve(result.txHash.toString())
         if (result.status.isInvalid) {
           txCallbacks?.onError()

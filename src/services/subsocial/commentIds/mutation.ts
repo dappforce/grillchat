@@ -99,6 +99,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     },
     config,
     {
+      retry: 2,
       useHttp: true,
       txCallbacks: {
         onStart: ({ address, context, data }) => {

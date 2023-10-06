@@ -1,4 +1,4 @@
-import { ApiPromise } from '@polkadot/api'
+import { type ApiPromise } from '@polkadot/api'
 import { type SubsocialApi } from '@subsocial/api'
 import { getConnectionConfig, SubsocialConnectionConfig } from './config'
 

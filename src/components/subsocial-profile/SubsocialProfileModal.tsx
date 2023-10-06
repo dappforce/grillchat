@@ -22,7 +22,7 @@ export default function SubsocialProfileModal({
     if (props.isOpen) {
       sendEvent('account_settings_opened')
     }
-  }, [props.isOpen])
+  }, [props.isOpen, sendEvent])
 
   const onSuccess = () => {
     props.closeModal()

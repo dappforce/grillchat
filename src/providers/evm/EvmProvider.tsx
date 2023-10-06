@@ -11,8 +11,10 @@ import {
 import {
   argentWallet,
   coinbaseWallet,
+  injectedWallet,
   ledgerWallet,
   metaMaskWallet,
+  walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets'
 import { createConfig, createStorage, WagmiConfig } from 'wagmi'
 import { getConfiguredChains } from '../utils'
@@ -35,7 +37,10 @@ const desktopWallets = [
   // subWalletWallet({ chains }),
 ]
 
-const mobileWallets = [...commonWallets]
+const mobileWallets = [
+  walletConnectWallet(walletOptions),
+  injectedWallet(walletOptions),
+]
 
 const connectors = connectorsForWallets([
   {

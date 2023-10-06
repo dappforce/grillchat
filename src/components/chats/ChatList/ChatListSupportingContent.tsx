@@ -1,14 +1,17 @@
 import Container from '@/components/Container'
 import MessageModal from '@/components/modals/MessageModal'
+import Spinner from '@/components/Spinner'
 import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
+import { getPostQuery } from '@/services/api/query'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { validateNumber } from '@/utils/strings'
 import { replaceUrl, sendMessageToParentWindow } from '@/utils/window'
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
@@ -39,8 +42,10 @@ export default function ChatListSupportingContent({
   rawMessageIds,
   filteredMessageIds,
 }: ChatListSupportingContentProps) {
+  const queryClient = useQueryClient()
   const router = useRouter()
   const isInitialized = useRef(false)
+  const [loadingToUnread, setLoadingToUnread] = useState(false)
 
   const unreadMessage = useMessageData((state) => state.unreadMessage)
   const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
@@ -53,7 +58,6 @@ export default function ChatListSupportingContent({
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  // TODO: refactor this by putting the url query getter logic to ChatPage
   const hasScrolledToMessageRef = useRef(false)
   const filteredMessageIdsRef = useWrapInRef(filteredMessageIds)
   useEffect(() => {
@@ -67,11 +71,9 @@ export default function ChatListSupportingContent({
     if (!isMessageIdsFetched) return
 
     if (!messageId || !validateNumber(messageId)) {
-      if (lastReadId) {
-        scrollToMessage(lastReadId ?? '', {
-          shouldHighlight: false,
-          smooth: false,
-        }).then(() => {
+      if (lastReadId && filteredMessageIdsRef.current?.includes(lastReadId)) {
+        const afterScroll = () => {
+          setLoadingToUnread(false)
           isInitialized.current = true
 
           const lastReadIdIndex = filteredMessageIdsRef.current.findIndex(
@@ -84,7 +86,18 @@ export default function ChatListSupportingContent({
 
           sendMessageToParentWindow('unread', newMessageCount.toString())
           setUnreadMessage({ count: newMessageCount, lastId: lastReadId })
-        })
+        }
+
+        setLoadingToUnread(true)
+
+        const ids = filteredMessageIdsRef.current
+        const lastMessageId = ids?.[ids.length - 1]
+        if (lastReadId === lastMessageId) afterScroll()
+        else
+          scrollToMessage(lastReadId ?? '', {
+            shouldHighlight: false,
+            smooth: false,
+          }).then(afterScroll)
       } else {
         isInitialized.current = true
       }
@@ -109,8 +122,11 @@ export default function ChatListSupportingContent({
     }
 
     if (isOptimisticId(lastId)) return
-    setLastReadMessageId(lastId)
-  }, [setLastReadMessageId, rawMessageIds, unreadMessage])
+    setLastReadMessageId(
+      lastId,
+      getPostQuery.getQueryData(queryClient, lastId)?.struct.createdAtTime
+    )
+  }, [setLastReadMessageId, rawMessageIds, unreadMessage, queryClient])
 
   useEffect(() => {
     if (messageModalMsgId) {
@@ -131,16 +147,18 @@ export default function ChatListSupportingContent({
         scrollToMessage={scrollToMessage}
         recipient={recipient}
       />
-      <Component>
-        <div className='relative'>
-          <NewMessageNotice
-            className={cx(
-              'absolute bottom-2 right-3',
-              newMessageNoticeClassName
-            )}
-            messageIds={rawMessageIds ?? []}
-            scrollContainerRef={scrollContainerRef}
-          />
+      <Component className='relative'>
+        <div
+          className={cx('absolute bottom-2 right-3', newMessageNoticeClassName)}
+        >
+          {loadingToUnread ? (
+            <Spinner />
+          ) : (
+            <NewMessageNotice
+              messageIds={rawMessageIds ?? []}
+              scrollContainerRef={scrollContainerRef}
+            />
+          )}
         </div>
       </Component>
       <ScrollToBottom

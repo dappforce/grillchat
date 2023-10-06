@@ -23,8 +23,10 @@ import {
   useState,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import usePinnedMessage from '../hooks/usePinnedMessage'
 import CenterChatNotice from './CenterChatNotice'
 import MemoizedChatItemWithMenu from './ChatItemWithMenu'
+import ChatListEventManager from './ChatListEventManager'
 import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
@@ -89,6 +91,7 @@ function ChatListContent({
     currentData: currentPageMessageIds,
     loadMore,
     currentPage,
+    hasMore,
   } = useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
 
   const filteredMessageIds = useFilterBlockedMessageIds(
@@ -142,17 +145,23 @@ function ChatListContent({
     innerContainer: innerRef,
   })
 
+  const pinnedMessageId = usePinnedMessage(chatId)
   const scrollToMessage = useScrollToMessage(
     scrollContainerRef,
     {
-      messageIds: filteredCurrentPageIds,
+      // need to provide all the ids, including blocked ones
+      messageIds: currentPageMessageIds,
       renderedMessageIds,
       loadMore,
       isLoading: isLastBatchLoading,
+      hasMore,
     },
     {
       pause: () => setIsPausedLoadMore(true),
       unpause: () => setIsPausedLoadMore(false),
+    },
+    {
+      scrollOffset: pinnedMessageId ? 'large' : 'normal',
     }
   )
 
@@ -167,6 +176,7 @@ function ChatListContent({
 
   return (
     <ChatListContext.Provider value={scrollContainerRef}>
+      <ChatListEventManager />
       <div
         {...props}
         className={cx(

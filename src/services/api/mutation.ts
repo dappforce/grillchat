@@ -33,7 +33,7 @@ export async function saveFile(content: SaveFileRequest) {
   if (!data.success) throw new Error(data.errors)
   return data
 }
-export const useSaveFile = mutationWrapper(saveFile)
+export const useSaveFile = mutationWrapper(saveFile, { retry: 2 })
 
 export async function createUserId(address: string) {
   const res = await axios.post('/api/create-user-id', { address })
@@ -62,7 +62,9 @@ export async function saveImage(content: File) {
   if (!data.success) throw new Error(data.errors)
   return data
 }
-export const useSaveImage = mutationWrapper(saveImage)
+export const useSaveImage = mutationWrapper(saveImage, {
+  retry: 2,
+})
 
 // NOTE: this invalidations won't work if server doesn't have redis
 export async function invalidatePostServerCache(postId: string) {
