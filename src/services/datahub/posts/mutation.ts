@@ -11,7 +11,7 @@ import {
   CreatePostOptimisticMutationVariables,
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
-} from '../generated'
+} from '../generated-mutation'
 import { datahubRequest } from '../utils'
 
 type DatahubParams<T> = T & {
@@ -25,7 +25,7 @@ const CREATE_POST_OPTIMISTIC_MUTATION = gql`
     createPostOptimistic(
       createPostOptimisticInput: $createPostOptimisticInput
     ) {
-      id
+      message
     }
   }
 `
@@ -62,10 +62,8 @@ export async function createPostData({
 
   const dataHubDataApiInput = {
     dataType: dataHubData.dataType,
-    // @ts-ignore
     callData: {
-      // TODO: uncomment this when staging updated
-      // txSig,
+      txSig,
       name: dataHubData.callData.name,
       signer: dataHubData.callData.signer,
       args: JSON.stringify(dataHubData.callData.args),
@@ -92,7 +90,7 @@ const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
     updatePostOptimistic(
       updatePostOptimisticInput: $updatePostOptimisticInput
     ) {
-      id
+      message
     }
   }
 `
@@ -128,10 +126,8 @@ export async function updatePostData({
 
   const dataHubDataApiInput = {
     dataType: dataHubData.dataType,
-    // @ts-ignore
     callData: {
-      // TODO: uncomment this when staging updated
-      // txSig,
+      txSig,
       name: dataHubData.callData.name,
       signer: dataHubData.callData.signer,
       args: JSON.stringify(dataHubData.callData.args),

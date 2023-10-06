@@ -2,10 +2,10 @@ import type { CodegenConfig } from '@graphql-codegen/cli'
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: 'https://staging-data-hub-service.subsocial.network/graphql',
-  documents: 'src/services/datahub/**/*.ts',
+  schema: 'https://first-test-queue-data-hub.subsocial.network/graphql',
+  documents: 'src/services/datahub/**/mutation.ts',
   generates: {
-    'src/services/datahub/generated.ts': {
+    'src/services/datahub/generated-mutation.ts': {
       plugins: [
         'typescript',
         'typescript-operations',
