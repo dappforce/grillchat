@@ -5,9 +5,9 @@ import {
   GetOptimisticPostsQueryVariables,
   GetPostsQuery,
   GetPostsQueryVariables,
-} from '../generated'
+} from '../generated-query'
 import { mapDatahubPostFragment } from '../mappers'
-import { datahubRequest } from '../utils'
+import { datahubQueryRequest } from '../utils'
 import { isOptimisticId } from './utils'
 
 export const DATAHUB_POST_FRAGMENT = gql`
@@ -112,7 +112,10 @@ export async function getPostsFromDatahub(postIds: string[]) {
   let optimisticPosts: PostData[] = []
 
   if (persistentIds.length > 0) {
-    const res = await datahubRequest<GetPostsQuery, GetPostsQueryVariables>({
+    const res = await datahubQueryRequest<
+      GetPostsQuery,
+      GetPostsQueryVariables
+    >({
       document: GET_POSTS,
       variables: { ids: persistentIds },
     })
@@ -123,7 +126,7 @@ export async function getPostsFromDatahub(postIds: string[]) {
   }
 
   if (optimisticIds.length > 0) {
-    const res = await datahubRequest<
+    const res = await datahubQueryRequest<
       GetOptimisticPostsQuery,
       GetOptimisticPostsQueryVariables
     >({

@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 import {
   DataHubSubscriptionEventEnum,
   SubscribePostSubscription,
-} from '../generated'
+} from '../generated-query'
 import { datahubSubscription } from '../utils'
 import { getCommentIdsByPostIdQuery } from './query'
 

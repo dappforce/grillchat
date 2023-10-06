@@ -4,8 +4,8 @@ import {
   GetMessageIdsInChatIdQuery,
   GetMessageIdsInChatIdQueryVariables,
   QueryOrder,
-} from '../generated'
-import { datahubRequest } from '../utils'
+} from '../generated-query'
+import { datahubQueryRequest } from '../utils'
 
 const GET_MESSAGE_IDS_IN_CHAT_ID = gql`
   query GetMessageIdsInChatId($where: FindPostsArgs!) {
@@ -17,7 +17,7 @@ const GET_MESSAGE_IDS_IN_CHAT_ID = gql`
 `
 
 async function getCommentIdsByPostIds(postId: string) {
-  const res = await datahubRequest<
+  const res = await datahubQueryRequest<
     GetMessageIdsInChatIdQuery,
     GetMessageIdsInChatIdQueryVariables
   >({

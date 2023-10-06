@@ -12,7 +12,7 @@ import {
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
 } from '../generated-mutation'
-import { datahubRequest } from '../utils'
+import { datahubMutationRequest } from '../utils'
 
 type DatahubParams<T> = T & {
   txSig: string
@@ -71,7 +71,7 @@ export async function createPostData({
     content: JSON.stringify(dataHubData.content),
   } satisfies SocialEventDataApiInput
 
-  await datahubRequest<
+  await datahubMutationRequest<
     CreatePostOptimisticMutation,
     CreatePostOptimisticMutationVariables
   >({
@@ -135,7 +135,7 @@ export async function updatePostData({
     content: JSON.stringify(dataHubData.content),
   } satisfies SocialEventDataApiInput
 
-  await datahubRequest<
+  await datahubMutationRequest<
     UpdatePostOptimisticMutation,
     UpdatePostOptimisticMutationVariables
   >({
