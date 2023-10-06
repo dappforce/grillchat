@@ -257,7 +257,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         const proxy = await getProxiesQuery.fetchQuery(queryClient, {
           address: connectedWalletAddress,
         })
-        const isProxyValid = proxy.includes(get().address)
+        const isProxyValid = proxy.includes(get().address ?? '')
         if (!isProxyValid) {
           connectedWalletAddressStorage.remove()
           set({ connectedWallet: null })
