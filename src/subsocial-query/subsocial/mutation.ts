@@ -37,7 +37,7 @@ export function useSubsocialMutation<Data, Context = undefined>(
 
     const txCallbacks = generateTxCallbacks(
       {
-        address: wallet.address,
+        address: wallet.proxyToAddress || wallet.address,
         data,
       },
       config?.txCallbacks,
@@ -144,6 +144,7 @@ function sendTransaction<Data>(
       danglingNonceResolver = nonceResolver
 
       let usedTx = tx
+      console.log(proxyToAddress)
       if (proxyToAddress) {
         usedTx = apis.substrateApi.tx.proxy.proxy(proxyToAddress, null, tx)
       }
