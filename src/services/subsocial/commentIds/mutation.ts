@@ -67,7 +67,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
       transactionGenerator: async ({
         apis: { substrateApi },
         data,
-        context: { content, cid },
+        context: { content },
       }) => {
         const maxLength = getMaxMessageLength(data.chatId)
         if (data.message && data.message.length > maxLength)
@@ -75,7 +75,9 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             'Your message is too long, please split it up to multiple messages'
           )
 
-        saveFile(content)
+        const res = await saveFile(content)
+        const cid = res.cid
+        if (!cid) throw new Error('Failed to save file')
         await waitHasEnergy()
 
         if (data.messageIdToEdit) {
