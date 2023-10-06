@@ -19,9 +19,11 @@ export default function SubstrateConnectContent() {
   const saveConnectedWallet = useMyAccount((state) => state.saveConnectedWallet)
   const connectWallet = useMyAccount((state) => state.connectWallet)
   const disconnectWallet = useMyAccount((state) => state.disconnectWallet)
+
   const isLoadingEnergy = useMyAccount(
     (state) => state.connectedWallet?.energy === null
   )
+  const address = useMyAccount((state) => state.address)
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const { data: proxies } = getProxiesQuery.useQuery(
     { address: connectedWallet?.address ?? '' },
@@ -29,7 +31,6 @@ export default function SubstrateConnectContent() {
       enabled: !!connectedWallet?.address,
     }
   )
-  console.log(proxies)
 
   const supportedWallets: Wallet[] = getWallets()
   const [isWalletLoading, setIsWalletLoading] = useState<Set<string>>(new Set())
@@ -62,6 +63,26 @@ export default function SubstrateConnectContent() {
 
   const closeAccountSelectorModal = () => {
     setSelectedWallet(null)
+  }
+
+  if (proxies?.includes(address)) {
+    return (
+      <div className='p-6'>
+        <p className='text-center'>Your proxy are active!</p>
+        <div className='mt-6 flex flex-col gap-4'>
+          <Button
+            size='lg'
+            variant='primaryOutline'
+            onClick={() => {
+              disconnectWallet()
+              setIsAccountModalOpen(false)
+            }}
+          >
+            Select another account
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
