@@ -11,7 +11,7 @@ import {
 import {
   ContentExtensionSchemaId,
   DatahubPostFragmentFragment,
-} from './generated'
+} from './generated-query'
 
 const SQUID_SEPARATOR = ','
 const getTokensFromUnifiedString = (data: string | null) =>
