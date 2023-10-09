@@ -59,7 +59,7 @@ export async function getChatPreviewsData(chatIds: string[]) {
   const [messageIdsByChatIds, chats] = await Promise.all([
     Promise.all(
       chatIds.map((chatId) => {
-        return subsocialApi.blockchain.getReplyIdsByPostId(chatId)
+        return getCommentIdsByPostIdQuery.fetchQuery(null, chatId)
       })
     ),
     getPostsServer(chatIds),

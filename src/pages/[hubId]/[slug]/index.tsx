@@ -13,7 +13,6 @@ import {
   coingeckoTokenIds,
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -37,8 +36,7 @@ function getValidatedChatId(slugParam: string) {
 }
 
 async function getChatsData(chatId: string) {
-  const subsocialApi = await getSubsocialApi()
-  const messageIds = await subsocialApi.blockchain.getReplyIdsByPostId(chatId)
+  const messageIds = await getCommentIdsByPostIdQuery.fetchQuery(null, chatId)
 
   const preloadedPostCount = CHAT_PER_PAGE * 2
   const startSlice = Math.max(0, messageIds.length - preloadedPostCount)
