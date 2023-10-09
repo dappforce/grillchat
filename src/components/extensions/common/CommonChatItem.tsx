@@ -1,4 +1,3 @@
-import Button from '@/components/Button'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
@@ -46,7 +45,6 @@ export default function CommonChatItem({
   message,
   children,
   scrollToMessage,
-  onCheckMarkClick,
   textColor,
   className,
   isMyMessage: _isMyMessage,
@@ -81,14 +79,7 @@ export default function CommonChatItem({
           isMyMessage && 'dark:text-text-muted-on-primary'
         )}
       />
-      <Button
-        variant='transparent'
-        size='noPadding'
-        interactive='brightness-only'
-        onClick={onCheckMarkClick}
-      >
-        <MessageStatusIndicator message={message} />
-      </Button>
+      <MessageStatusIndicator message={message} />
     </div>
   )
 
