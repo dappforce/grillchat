@@ -154,6 +154,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         },
         onSend: allowWindowUnload,
         onErrorBlockchain: ({ data, context, address }, error) => {
+          allowWindowUnload()
           const content = context.content
           const signer = getWallet().signer
           if (!signer) return
