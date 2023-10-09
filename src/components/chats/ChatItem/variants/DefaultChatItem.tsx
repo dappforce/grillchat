@@ -1,4 +1,3 @@
-import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { cx } from '@/utils/class-names'
@@ -16,7 +15,6 @@ export default function DefaultChatItem({
   hubId,
   message,
   isMyMessage,
-  onCheckMarkClick,
   scrollToMessage,
   ...props
 }: DefaultChatItemProps) {
@@ -99,14 +97,7 @@ export default function DefaultChatItem({
               createdAtTime={createdAtTime}
               className='text-xs text-text-muted dark:text-text-muted-on-primary'
             />
-            <Button
-              variant='transparent'
-              size='noPadding'
-              interactive='brightness-only'
-              onClick={onCheckMarkClick}
-            >
-              <MessageStatusIndicator message={message} />
-            </Button>
+            <MessageStatusIndicator message={message} />
           </div>
         )}
       </div>

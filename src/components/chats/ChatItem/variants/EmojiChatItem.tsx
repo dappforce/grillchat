@@ -1,4 +1,3 @@
-import Button from '@/components/Button'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { cx } from '@/utils/class-names'
 import { getEmojiAmount, validateTextContainsOnlyEmoji } from '@/utils/strings'
@@ -25,7 +24,6 @@ export function shouldRenderEmojiChatItem(body: string) {
 export default function EmojiChatItem({
   message,
   isMyMessage,
-  onCheckMarkClick,
   scrollToMessage,
   chatId,
   hubId,
@@ -104,14 +102,7 @@ export default function EmojiChatItem({
             className='text-xs text-text-muted'
             createdAtTime={createdAtTime}
           />
-          <Button
-            variant='transparent'
-            size='noPadding'
-            interactive='brightness-only'
-            onClick={onCheckMarkClick}
-          >
-            <MessageStatusIndicator messageId={messageId} />
-          </Button>
+          <MessageStatusIndicator message={message} />
         </div>
       )}
     </div>
