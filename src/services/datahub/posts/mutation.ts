@@ -11,8 +11,8 @@ import { sortObj } from 'jsonabc'
 import {
   CreatePostOptimisticMutation,
   CreatePostOptimisticMutationVariables,
-  NotifyPostTxFailedMutation,
-  NotifyPostTxFailedMutationVariables,
+  NotifyPostTxFailedOrRetryStatusMutation,
+  NotifyPostTxFailedOrRetryStatusMutationVariables,
   SocialCallName,
   SocialEventDataType,
   UpdatePostOptimisticMutation,
@@ -124,8 +124,8 @@ export async function updatePostData({
   })
 }
 
-const NOTIFY_POST_TX_FAILED_MUTATION = gql`
-  mutation NotifyPostTxFailed(
+const NOTIFY_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
+  mutation NotifyPostTxFailedOrRetryStatus(
     $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
   ) {
     updatePostBlockchainSyncStatus(
@@ -135,7 +135,7 @@ const NOTIFY_POST_TX_FAILED_MUTATION = gql`
     }
   }
 `
-export async function notifyCreatePostFailed({
+export async function notifyCreatePostFailedOrRetryStatus({
   address,
   isRetrying,
   signer,
@@ -177,13 +177,12 @@ export async function notifyCreatePostFailed({
   const txSig = Buffer.from(
     signer.sign(JSON.stringify(sortObj(event.args))).buffer
   ).toString('hex')
-  console.log(txSig)
 
   await datahubMutationRequest<
-    NotifyPostTxFailedMutation,
-    NotifyPostTxFailedMutationVariables
+    NotifyPostTxFailedOrRetryStatusMutation,
+    NotifyPostTxFailedOrRetryStatusMutationVariables
   >({
-    document: NOTIFY_POST_TX_FAILED_MUTATION,
+    document: NOTIFY_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
     variables: {
       updatePostBlockchainSyncStatusInput: {
         dataType: SocialEventDataType.Optimistic,

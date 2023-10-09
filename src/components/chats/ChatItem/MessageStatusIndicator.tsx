@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import Modal from '@/components/modals/Modal'
 import { isOptimisticId } from '@/services/datahub/posts/utils'
-import { useResendFailedMessage } from '@/services/subsocial/commentIds'
+import { ResendFailedMessageWrapper } from '@/services/subsocial/commentIds/mutation'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
@@ -40,8 +40,6 @@ const checkMarkModalReducer = (
 export default function MessageStatusIndicator({
   message,
 }: MessageStatusIndicatorProps) {
-  const [isResendOpen, setIsResendOpen] = useState(false)
-  const { mutate: resendFailedMessage } = useResendFailedMessage()
   const sendEvent = useSendEvent()
 
   const messageStatus = getMessageStatusById(message.id)
@@ -51,42 +49,7 @@ export default function MessageStatusIndicator({
   })
 
   if (message.struct.blockchainSyncFailed) {
-    return (
-      <>
-        <Button
-          className='flex items-center rounded-full bg-text-warning/40 text-text-warning'
-          variant='transparent'
-          size='noPadding'
-          onClick={() => {
-            sendEvent('click message_failed_status_button')
-            setIsResendOpen(true)
-          }}
-        >
-          <BsExclamationLg className={cx('block text-sm')} />
-        </Button>
-        <Modal
-          isOpen={isResendOpen}
-          closeModal={() => setIsResendOpen(false)}
-          title='Message failed to be sent to blockchain'
-          description="Don't worry, your message is still visible to everyone, but it's not censorship-resistant. You can try to resend it."
-          withCloseButton
-        >
-          <Button
-            size='lg'
-            onClick={() => {
-              if (!message.content) return
-              sendEvent('click resend_message_button')
-              resendFailedMessage({
-                chatId: message.struct.rootPostId,
-                content: message.content,
-              })
-            }}
-          >
-            Resend Message
-          </Button>
-        </Modal>
-      </>
-    )
+    return <ResendMessageIndicator message={message} />
   }
 
   const onCheckMarkClick = (e: SyntheticEvent) => {
@@ -133,4 +96,54 @@ export function getMessageStatusById(id: string): MessageStatus {
   } else {
     return 'blockchain'
   }
+}
+
+function ResendMessageIndicator({ message }: MessageStatusIndicatorProps) {
+  const [isResendOpen, setIsResendOpen] = useState(false)
+  const sendEvent = useSendEvent()
+
+  return (
+    <>
+      <Button
+        className='flex items-center rounded-full bg-text-warning/40 text-text-warning'
+        variant='transparent'
+        size='noPadding'
+        onClick={() => {
+          sendEvent('click message_failed_status_button')
+          setIsResendOpen(true)
+        }}
+      >
+        <BsExclamationLg className={cx('block text-sm')} />
+      </Button>
+      <Modal
+        isOpen={isResendOpen}
+        closeModal={() => setIsResendOpen(false)}
+        title='Message failed to be sent to blockchain'
+        description="Don't worry, your message is still visible to everyone, but it's not censorship-resistant. You can try to resend it."
+        withCloseButton
+      >
+        <ResendFailedMessageWrapper>
+          {({ isLoading, mutateAsync }) => {
+            return (
+              <Button
+                size='lg'
+                isLoading={isLoading}
+                onClick={async () => {
+                  if (!message.content) return
+                  sendEvent('click resend_message_button')
+                  await mutateAsync({
+                    chatId: message.struct.rootPostId,
+                    content: message.content,
+                  })
+                  setIsResendOpen(false)
+                }}
+              >
+                Resend Message
+              </Button>
+            )
+          }}
+        </ResendFailedMessageWrapper>
+      </Modal>
+    </>
+  )
 }

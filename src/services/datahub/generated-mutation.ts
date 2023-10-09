@@ -235,11 +235,11 @@ export type UpdatePostOptimisticMutation = {
   }
 }
 
-export type NotifyPostTxFailedMutationVariables = Exact<{
+export type NotifyPostTxFailedOrRetryStatusMutationVariables = Exact<{
   updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput
 }>
 
-export type NotifyPostTxFailedMutation = {
+export type NotifyPostTxFailedOrRetryStatusMutation = {
   __typename?: 'Mutation'
   updatePostBlockchainSyncStatus: {
     __typename?: 'IngestDataResponseDto'
@@ -269,8 +269,8 @@ export const UpdatePostOptimistic = gql`
     }
   }
 `
-export const NotifyPostTxFailed = gql`
-  mutation NotifyPostTxFailed(
+export const NotifyPostTxFailedOrRetryStatus = gql`
+  mutation NotifyPostTxFailedOrRetryStatus(
     $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
   ) {
     updatePostBlockchainSyncStatus(

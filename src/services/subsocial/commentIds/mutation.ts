@@ -4,16 +4,18 @@ import { useSaveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import {
   createPostData,
-  notifyCreatePostFailed,
+  notifyCreatePostFailedOrRetryStatus,
   updatePostData,
 } from '@/services/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { getCID, IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
+import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
+import { createMutationWrapper } from '../utils'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
 import { SendMessageParams } from './types'
 
@@ -161,7 +163,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
           const optimisticId = content.optimisticId
           if (!data.messageIdToEdit && optimisticId) {
-            notifyCreatePostFailed({
+            notifyCreatePostFailedOrRetryStatus({
               address,
               optimisticId,
               timestamp: Date.now().toString(),
@@ -236,18 +238,43 @@ export function useResendFailedMessage(
       useHttp: true,
       txCallbacks: {
         onStart: () => preventWindowUnload(),
-        onSend: () => {
+        onSend: ({ address, data }) => {
           allowWindowUnload()
-          // TODO: notify retry create post success
+
+          const signer = getWallet().signer
+          notifyRetryStatus(address, data.content, signer, true)
         },
-        onErrorBlockchain: () => {
-          // TODO: notify retry create post failed
+        onErrorBlockchain: ({ data, address }) => {
+          const signer = getWallet().signer
+          notifyRetryStatus(address, data.content, signer, false)
         },
-        onError: ({ data, context }) => {
+        onError: ({ data, address }) => {
           allowWindowUnload()
-          // TODO: notify retry create post failed
+          const signer = getWallet().signer
+          notifyRetryStatus(address, data.content, signer, false)
         },
       },
     }
   )
 }
+function notifyRetryStatus(
+  address: string,
+  content: PostContent,
+  signer: KeyringPair | null,
+  success: boolean
+) {
+  if (!signer || !content.optimisticId) return
+
+  notifyCreatePostFailedOrRetryStatus({
+    address,
+    optimisticId: content.optimisticId,
+    timestamp: Date.now().toString(),
+    signer,
+    isRetrying: { success },
+  })
+}
+
+export const ResendFailedMessageWrapper = createMutationWrapper(
+  useResendFailedMessage,
+  'resend failed message'
+)
