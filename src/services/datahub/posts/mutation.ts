@@ -1,4 +1,5 @@
 import { PostContent } from '@subsocial/api/types'
+import { SocialEventData } from '@subsocial/data-hub-sdk'
 import { gql } from 'graphql-request'
 import {
   CreatePostOptimisticMutation,
@@ -40,6 +41,14 @@ export async function createPostData({
   contentCid: string
   content: PostContent
 }>) {
+  const eventArgs: SocialEventData['callData']['args'] = {
+    forced: false,
+    postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
+    rootPostId,
+    spaceId,
+    ipfsSrc: contentCid,
+  }
+
   await datahubMutationRequest<
     CreatePostOptimisticMutation,
     CreatePostOptimisticMutationVariables
@@ -52,13 +61,7 @@ export async function createPostData({
           txSig,
           name: SocialCallName.CreatePost,
           signer: address || '',
-          args: JSON.stringify({
-            forced: false,
-            postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
-            rootPostId,
-            spaceId,
-            ipfsSrc: contentCid,
-          }),
+          args: JSON.stringify(eventArgs),
         },
         content: JSON.stringify(content),
       },
@@ -91,6 +94,13 @@ export async function updatePostData({
   contentCid: string
   content: PostContent
 }>) {
+  const eventArgs: SocialEventData['callData']['args'] = {
+    forced: false,
+    postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
+    postId,
+    ipfsSrc: contentCid,
+  }
+
   await datahubMutationRequest<
     UpdatePostOptimisticMutation,
     UpdatePostOptimisticMutationVariables
@@ -103,12 +113,7 @@ export async function updatePostData({
           txSig,
           name: SocialCallName.UpdatePost,
           signer: address || '',
-          args: JSON.stringify({
-            forced: false,
-            postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
-            postId,
-            ipfsSrc: contentCid,
-          }),
+          args: JSON.stringify(eventArgs),
         },
         content: JSON.stringify(content),
       },
