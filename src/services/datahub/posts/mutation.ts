@@ -185,7 +185,7 @@ export async function notifyCreatePostFailedOrRetryStatus({
     document: NOTIFY_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
     variables: {
       updatePostBlockchainSyncStatusInput: {
-        dataType: SocialEventDataType.Optimistic,
+        dataType: SocialEventDataType.OffChain,
         callData: {
           txSig,
           name: event.name,
