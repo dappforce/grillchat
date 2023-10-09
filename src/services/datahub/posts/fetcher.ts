@@ -13,6 +13,7 @@ import { isOptimisticId } from './utils'
 export const DATAHUB_POST_FRAGMENT = gql`
   fragment DatahubPostFragment on Post {
     id
+    optimisticId
     content
     createdAtBlock
     createdAtTime

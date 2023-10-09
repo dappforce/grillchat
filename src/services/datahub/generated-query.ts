@@ -312,6 +312,7 @@ export type Subscription = {
 export type DatahubPostFragmentFragment = {
   __typename?: 'Post'
   id: string
+  optimisticId?: string | null
   content?: string | null
   createdAtBlock?: number | null
   createdAtTime?: any | null
@@ -375,6 +376,7 @@ export type GetPostsQuery = {
   findPosts: Array<{
     __typename?: 'Post'
     id: string
+    optimisticId?: string | null
     content?: string | null
     createdAtBlock?: number | null
     createdAtTime?: any | null
@@ -439,6 +441,7 @@ export type GetOptimisticPostsQuery = {
   findPosts: Array<{
     __typename?: 'Post'
     id: string
+    optimisticId?: string | null
     content?: string | null
     createdAtBlock?: number | null
     createdAtTime?: any | null
@@ -525,6 +528,7 @@ export type SubscribePostSubscription = {
 export const DatahubPostFragment = gql`
   fragment DatahubPostFragment on Post {
     id
+    optimisticId
     content
     createdAtBlock
     createdAtTime

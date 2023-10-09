@@ -23,7 +23,7 @@ export const commentIdsOptimisticEncoder = {
 type OptimisticGeneratorParams = {
   client: QueryClient
   params: SendMessageParams
-  ipfsContent: PostContent & { optimisticId: string }
+  ipfsContent: PostContent
   address: string
 }
 export function addOptimisticData({
@@ -32,6 +32,8 @@ export function addOptimisticData({
   ipfsContent,
   address,
 }: OptimisticGeneratorParams) {
+  if (!ipfsContent.optimisticId) return
+
   const tempId = commentIdsOptimisticEncoder.encode(ipfsContent.optimisticId)
   getPostQuery.setQueryData(client, tempId, {
     id: tempId,

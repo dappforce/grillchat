@@ -126,6 +126,7 @@ export const mapDatahubPostFragment = (
       canonical: post.canonical ?? '',
       isShowMore: post.isShowMore ?? false,
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
+      optimisticId: post.optimisticId,
     } as PostContent,
   }
 

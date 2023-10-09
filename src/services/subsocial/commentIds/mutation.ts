@@ -45,7 +45,7 @@ async function generateMessageContent(
     inReplyTo: ReplyWrapper(params.replyTo),
     extensions: params.extensions,
     optimisticId: crypto.randomUUID(),
-  } as PostContent & { optimisticId: string }
+  } as PostContent
 
   const cid = await getCID(content)
 
@@ -121,7 +121,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
                   : null,
               }
             })
-          } else if (!data.messageIdToEdit && 'optimisticId' in content) {
+          } else if (!data.messageIdToEdit) {
             addOptimisticData({
               address,
               params: data,
@@ -159,10 +159,11 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           const signer = getWallet().signer
           if (!signer) return
 
-          if (!data.messageIdToEdit && 'optimisticId' in content) {
+          const optimisticId = content.optimisticId
+          if (!data.messageIdToEdit && optimisticId) {
             notifyCreatePostFailed({
               address,
-              optimisticId: content.optimisticId,
+              optimisticId,
               timestamp: Date.now().toString(),
               signer,
               reason: error,
@@ -174,15 +175,77 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         onError: ({ data, context }) => {
           allowWindowUnload()
           const content = context.content
-          if (!data.messageIdToEdit && 'optimisticId' in content) {
+          const optimisticId = content.optimisticId
+          if (!data.messageIdToEdit && optimisticId) {
             deleteOptimisticData({
               chatId: data.chatId,
-              optimisticId: content.optimisticId,
+              optimisticId,
               client,
             })
           } else if (data.messageIdToEdit) {
             getPostQuery.invalidate(client, data.messageIdToEdit)
           }
+        },
+      },
+    }
+  )
+}
+
+type ResendFailedMessageParams = {
+  chatId: string
+  content: PostContent
+}
+export function useResendFailedMessage(
+  config?: MutationConfig<ResendFailedMessageParams>
+) {
+  const getWallet = useWalletGetter()
+
+  const { mutateAsync: saveFile } = useSaveFile()
+  const waitHasEnergy = useWaitHasEnergy()
+
+  return useSubsocialMutation<ResendFailedMessageParams>(
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({ apis: { substrateApi }, data }) => {
+        const content = {
+          body: data.content.body,
+          inReplyTo: data.content.inReplyTo,
+          extensions: data.content.extensions,
+          optimisticId: data.content.optimisticId,
+        } as PostContent & { optimisticId: string }
+
+        const res = await saveFile(content)
+        const cid = res.cid
+        if (!cid) throw new Error('Failed to save file')
+
+        await waitHasEnergy()
+
+        return {
+          tx: substrateApi.tx.posts.createPost(
+            null,
+            { Comment: { parentId: null, rootPostId: data.chatId } },
+            IpfsWrapper(cid)
+          ),
+          summary: 'Retrying sending message',
+        }
+      },
+    },
+    config,
+    {
+      useHttp: true,
+      txCallbacks: {
+        onStart: () => preventWindowUnload(),
+        onSend: () => {
+          allowWindowUnload()
+          // TODO: notify retry create post success
+        },
+        onErrorBlockchain: () => {
+          // TODO: notify retry create post failed
+        },
+        onError: ({ data, context }) => {
+          allowWindowUnload()
+          // TODO: notify retry create post failed
         },
       },
     }

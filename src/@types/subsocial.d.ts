@@ -72,6 +72,7 @@ declare module '@subsocial/api/types' {
     hostName?: string
   }
   export interface PostContent extends SubsocialPostContent {
+    optimisticId?: string
     linkMetadata?: LinkMetadata
     inReplyTo?: {
       kind: 'Post'
