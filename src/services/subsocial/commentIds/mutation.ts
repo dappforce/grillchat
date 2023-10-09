@@ -4,6 +4,7 @@ import { useSaveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import {
   createPostData,
+  notifyCreatePostFailed,
   updatePostData,
 } from '@/services/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
@@ -101,7 +102,6 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     },
     config,
     {
-      retry: 2,
       useHttp: true,
       txCallbacks: {
         onStart: ({ address, context, data }) => {
@@ -130,9 +130,12 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             })
           }
         },
-        onBeforeSend: ({ data, context: { cid, content }, address }, txSig) => {
-          if (!data.messageIdToEdit) {
-            createPostData({
+        onBeforeSend: async (
+          { data, context: { cid, content }, address },
+          txSig
+        ) => {
+          if (!data.messageIdToEdit && 'optimisticId' in content) {
+            await createPostData({
               address,
               content: content,
               contentCid: cid,
@@ -140,25 +143,41 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               spaceId: data.hubId,
               txSig,
             })
-          } else {
-            updatePostData({
+          } else if (data.messageIdToEdit) {
+            await updatePostData({
               address,
-              content: content,
-              contentCid: cid,
+              content,
               postId: data.messageIdToEdit,
               txSig,
             })
           }
         },
         onSend: allowWindowUnload,
+        onErrorBlockchain: ({ data, context, address }, error) => {
+          const content = context.content
+          const signer = getWallet().signer
+          if (!signer) return
+
+          if (!data.messageIdToEdit && 'optimisticId' in content) {
+            notifyCreatePostFailed({
+              address,
+              optimisticId: content.optimisticId,
+              timestamp: Date.now().toString(),
+              signer,
+              reason: error,
+            })
+          } else if (data.messageIdToEdit) {
+            // TODO: Notify update post failed
+          }
+        },
         onError: ({ data, context }) => {
           allowWindowUnload()
           const content = context.content
           if (!data.messageIdToEdit && 'optimisticId' in content) {
             deleteOptimisticData({
-              client,
               chatId: data.chatId,
               optimisticId: content.optimisticId,
+              client,
             })
           } else if (data.messageIdToEdit) {
             getPostQuery.invalidate(client, data.messageIdToEdit)

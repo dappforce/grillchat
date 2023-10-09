@@ -87,7 +87,7 @@ export default function CommonChatItem({
         interactive='brightness-only'
         onClick={onCheckMarkClick}
       >
-        <MessageStatusIndicator messageId={message.id} />
+        <MessageStatusIndicator message={message} />
       </Button>
     </div>
   )

@@ -20,8 +20,15 @@ export interface SubsocialMutationConfig<Data, Context = undefined>
     onStart?: (data: CallbackData<Data, Context>) => void
     onSend?: (data: CallbackData<Data, Context>) => void
     onBroadcast?: (data: CallbackData<Data, Context>) => void
-    onError?: (data: CallbackData<Data, Context>) => void
+    onError?: (data: CallbackData<Data, Context>, error: string) => void
+    onErrorBlockchain?: (
+      data: CallbackData<Data, Context>,
+      error: string
+    ) => void
     onSuccess?: (data: CallbackData<Data, Context>, txResult: any) => void
-    onBeforeSend?: (data: CallbackData<Data, Context>, txSig: string) => void
+    onBeforeSend?: (
+      data: CallbackData<Data, Context>,
+      txSig: string
+    ) => Promise<void> | void
   }
 }

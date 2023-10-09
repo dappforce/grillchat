@@ -56,8 +56,8 @@ export function deleteOptimisticData({
   optimisticId: string
 }) {
   const tempId = commentIdsOptimisticEncoder.encode(optimisticId)
-  client.removeQueries(getPostQuery.getQueryKey(tempId))
   getCommentIdsByPostIdQuery.setQueryData(client, chatId, (ids) => {
     return ids?.filter((id) => id !== tempId)
   })
+  client.removeQueries(getPostQuery.getQueryKey(tempId))
 }

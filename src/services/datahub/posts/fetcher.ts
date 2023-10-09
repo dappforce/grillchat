@@ -27,6 +27,7 @@ export const DATAHUB_POST_FRAGMENT = gql`
     link
     hidden
     persistentId
+    blockchainSyncFailed
     isComment
     kind
     updatedAtTime

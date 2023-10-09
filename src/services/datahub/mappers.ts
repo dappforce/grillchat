@@ -111,6 +111,7 @@ export const mapDatahubPostFragment = (
     rootPostId: post.rootPost?.persistentId ?? '',
     // TODO: update followers count
     followersCount: 0,
+    blockchainSyncFailed: post.blockchainSyncFailed,
   }
 
   const data = {

@@ -323,6 +323,7 @@ export type DatahubPostFragmentFragment = {
   link?: string | null
   hidden: boolean
   persistentId?: string | null
+  blockchainSyncFailed: boolean
   isComment: boolean
   kind: PostKind
   updatedAtTime?: any | null
@@ -385,6 +386,7 @@ export type GetPostsQuery = {
     link?: string | null
     hidden: boolean
     persistentId?: string | null
+    blockchainSyncFailed: boolean
     isComment: boolean
     kind: PostKind
     updatedAtTime?: any | null
@@ -448,6 +450,7 @@ export type GetOptimisticPostsQuery = {
     link?: string | null
     hidden: boolean
     persistentId?: string | null
+    blockchainSyncFailed: boolean
     isComment: boolean
     kind: PostKind
     updatedAtTime?: any | null
@@ -536,6 +539,7 @@ export const DatahubPostFragment = gql`
     link
     hidden
     persistentId
+    blockchainSyncFailed
     isComment
     kind
     updatedAtTime

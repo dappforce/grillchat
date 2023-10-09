@@ -1,9 +1,18 @@
+import { Signer } from '@/utils/account'
 import { PostContent } from '@subsocial/api/types'
-import { SocialEventData } from '@subsocial/data-hub-sdk'
+import {
+  CreatePostCallParsedArgs,
+  SynthCreatePostTxFailedCallParsedArgs,
+  SynthCreatePostTxRetryCallParsedArgs,
+  UpdatePostCallParsedArgs,
+} from '@subsocial/data-hub-sdk'
 import { gql } from 'graphql-request'
+import { sortObj } from 'jsonabc'
 import {
   CreatePostOptimisticMutation,
   CreatePostOptimisticMutationVariables,
+  NotifyPostTxFailedMutation,
+  NotifyPostTxFailedMutationVariables,
   SocialCallName,
   SocialEventDataType,
   UpdatePostOptimisticMutation,
@@ -14,6 +23,7 @@ import { datahubMutationRequest } from '../utils'
 
 type DatahubParams<T> = T & {
   txSig: string
+  address: string
 }
 
 const CREATE_POST_OPTIMISTIC_MUTATION = gql`
@@ -35,13 +45,12 @@ export async function createPostData({
   content,
   txSig,
 }: DatahubParams<{
-  address: string
   rootPostId?: string
   spaceId: string
   contentCid: string
   content: PostContent
 }>) {
-  const eventArgs: SocialEventData['callData']['args'] = {
+  const eventArgs: CreatePostCallParsedArgs = {
     forced: false,
     postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
     rootPostId,
@@ -83,22 +92,16 @@ const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
 export async function updatePostData({
   address,
   postId,
-  contentCid,
-  rootPostId,
   content,
   txSig,
 }: DatahubParams<{
-  address: string
   postId: string
-  rootPostId?: string
-  contentCid: string
   content: PostContent
 }>) {
-  const eventArgs: SocialEventData['callData']['args'] = {
-    forced: false,
-    postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
+  const eventArgs: UpdatePostCallParsedArgs = {
+    spaceId: null,
+    hidden: null,
     postId,
-    ipfsSrc: contentCid,
   }
 
   await datahubMutationRequest<
@@ -116,6 +119,80 @@ export async function updatePostData({
           args: JSON.stringify(eventArgs),
         },
         content: JSON.stringify(content),
+      },
+    },
+  })
+}
+
+const NOTIFY_POST_TX_FAILED_MUTATION = gql`
+  mutation NotifyPostTxFailed(
+    $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
+  ) {
+    updatePostBlockchainSyncStatus(
+      updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
+    ) {
+      message
+    }
+  }
+`
+export async function notifyCreatePostFailed({
+  address,
+  isRetrying,
+  signer,
+  ...args
+}: Omit<
+  DatahubParams<{
+    signer: Signer
+    isRetrying?: {
+      success: boolean
+    }
+    reason?: string
+    optimisticId: string
+    timestamp: string
+  }>,
+  'txSig'
+>) {
+  let event:
+    | {
+        name: SocialCallName.SynthCreatePostTxFailed
+        args: SynthCreatePostTxFailedCallParsedArgs
+      }
+    | {
+        name: SocialCallName.SynthUpdatePostTxRetry
+        args: SynthCreatePostTxRetryCallParsedArgs
+      } = {
+    name: SocialCallName.SynthCreatePostTxFailed,
+    args,
+  }
+  if (isRetrying) {
+    event = {
+      name: SocialCallName.SynthUpdatePostTxRetry,
+      args: {
+        ...args,
+        success: isRetrying.success,
+      },
+    }
+  }
+
+  const txSig = Buffer.from(
+    signer.sign(JSON.stringify(sortObj(event.args))).buffer
+  ).toString('hex')
+  console.log(txSig)
+
+  await datahubMutationRequest<
+    NotifyPostTxFailedMutation,
+    NotifyPostTxFailedMutationVariables
+  >({
+    document: NOTIFY_POST_TX_FAILED_MUTATION,
+    variables: {
+      updatePostBlockchainSyncStatusInput: {
+        dataType: SocialEventDataType.Optimistic,
+        callData: {
+          txSig,
+          name: event.name,
+          signer: address || '',
+          args: JSON.stringify(event.args),
+        },
       },
     },
   })
