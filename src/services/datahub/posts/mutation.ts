@@ -1,17 +1,14 @@
 import { PostContent } from '@subsocial/api/types'
-import {
-  PostKind,
-  SocialEventData,
-  SocialEventDataApiInput,
-  SocialEventDataType,
-} from '@subsocial/data-hub-sdk'
 import { gql } from 'graphql-request'
 import {
   CreatePostOptimisticMutation,
   CreatePostOptimisticMutationVariables,
+  SocialCallName,
+  SocialEventDataType,
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
 } from '../generated-mutation'
+import { PostKind } from '../generated-query'
 import { datahubMutationRequest } from '../utils'
 
 type DatahubParams<T> = T & {
@@ -43,42 +40,28 @@ export async function createPostData({
   contentCid: string
   content: PostContent
 }>) {
-  const dataHubData: SocialEventData = {
-    dataType: SocialEventDataType.optimistic,
-    callData: {
-      name: 'create_post',
-      signer: address || '',
-      args: {
-        forced: false,
-        postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
-        rootPostId,
-        spaceId,
-        ipfsSrc: contentCid,
-      },
-      txSig,
-    },
-    content,
-  }
-
-  const dataHubDataApiInput = {
-    dataType: dataHubData.dataType,
-    callData: {
-      txSig,
-      name: dataHubData.callData.name,
-      signer: dataHubData.callData.signer,
-      args: JSON.stringify(dataHubData.callData.args),
-    },
-    content: JSON.stringify(dataHubData.content),
-  } satisfies SocialEventDataApiInput
-
   await datahubMutationRequest<
     CreatePostOptimisticMutation,
     CreatePostOptimisticMutationVariables
   >({
     document: CREATE_POST_OPTIMISTIC_MUTATION,
     variables: {
-      // @ts-ignore
-      createPostOptimisticInput: dataHubDataApiInput,
+      createPostOptimisticInput: {
+        dataType: SocialEventDataType.Optimistic,
+        callData: {
+          txSig,
+          name: SocialCallName.CreatePost,
+          signer: address || '',
+          args: JSON.stringify({
+            forced: false,
+            postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
+            rootPostId,
+            spaceId,
+            ipfsSrc: contentCid,
+          }),
+        },
+        content: JSON.stringify(content),
+      },
     },
   })
 }
@@ -108,41 +91,27 @@ export async function updatePostData({
   contentCid: string
   content: PostContent
 }>) {
-  const dataHubData: SocialEventData = {
-    dataType: SocialEventDataType.optimistic,
-    callData: {
-      txSig,
-      name: 'update_post',
-      signer: address || '',
-      args: {
-        postId,
-        forced: false,
-        postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
-        ipfsSrc: contentCid,
-      },
-    },
-    content,
-  }
-
-  const dataHubDataApiInput = {
-    dataType: dataHubData.dataType,
-    callData: {
-      txSig,
-      name: dataHubData.callData.name,
-      signer: dataHubData.callData.signer,
-      args: JSON.stringify(dataHubData.callData.args),
-    },
-    content: JSON.stringify(dataHubData.content),
-  } satisfies SocialEventDataApiInput
-
   await datahubMutationRequest<
     UpdatePostOptimisticMutation,
     UpdatePostOptimisticMutationVariables
   >({
     document: UPDATE_POST_OPTIMISTIC_MUTATION,
     variables: {
-      // @ts-ignore
-      updatePostOptimisticInput: dataHubDataApiInput,
+      updatePostOptimisticInput: {
+        dataType: SocialEventDataType.Optimistic,
+        callData: {
+          txSig,
+          name: SocialCallName.UpdatePost,
+          signer: address || '',
+          args: JSON.stringify({
+            forced: false,
+            postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
+            postId,
+            ipfsSrc: contentCid,
+          }),
+        },
+        content: JSON.stringify(content),
+      },
     },
   })
 }

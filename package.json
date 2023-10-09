@@ -38,6 +38,7 @@
     "@polkadot/util": "^12.1.2",
     "@rainbow-me/rainbowkit": "^1.0.11",
     "@subsocial/api": "^0.8.14",
+    "@subsocial/data-hub-sdk": "dappforce/subsocial-data-hub-sdk#staging",
     "@subsocial/grill-widget": "^0.0.8",
     "@subsocial/utils": "0.8.14",
     "@subwallet/wagmi-connector": "0.2.1",
