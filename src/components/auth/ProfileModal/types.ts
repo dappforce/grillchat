@@ -12,6 +12,7 @@ export type ProfileModalProps = ModalFunctionalityProps & {
 
 export type ProfileModalState =
   | 'account'
+  | 'account-settings'
   | 'subsocial-profile'
   | 'substrate-connect'
   | 'private-key'

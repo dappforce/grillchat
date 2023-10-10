@@ -8,6 +8,7 @@ import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
+import AccountSettingsContent from './contents/AccountSettingsContent'
 import EvmLoginError from './contents/evm-linking/EvmLoginError'
 import LinkEvmAddressContent from './contents/evm-linking/LinkEvmAddressContent'
 import UnlinkEvmConfirmationContent from './contents/evm-linking/UnlinkEvmConfirmationContent'
@@ -27,6 +28,7 @@ const modalContents: {
   [key in ProfileModalState]: (props: ContentProps) => JSX.Element
 } = {
   account: AccountContent,
+  'account-settings': AccountSettingsContent,
   'subsocial-profile': SubsocialProfileContent,
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
@@ -98,10 +100,16 @@ export default function ProfileModal({
       withoutDefaultPadding: true,
       withFooter: true,
     },
+    'account-settings': {
+      title: '🎩 Account Settings',
+      desc: 'Set nickname, Link EVM and Substrate accounts',
+      withBackButton: true,
+      withoutDefaultPadding: true,
+    },
     'subsocial-profile': {
       title: '🎩 Update nickname',
       desc: 'Create a name so other people can recognize you. You can change it at any time.',
-      withBackButton: true,
+      withBackButton: 'account-settings',
     },
     logout: {
       title: '🤔 Did you back up your Grill secret key?',
@@ -124,7 +132,7 @@ export default function ProfileModal({
     'link-evm-address': {
       title: linkedEvmAddress ? '🔑 My EVM address' : '🔑 Link EVM Address',
       desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display NFTs, and interact with ERC20s and smart contracts. ',
-      withBackButton: true,
+      withBackButton: 'account-settings',
     },
     'evm-linking-error': {
       title: '😕 Something went wrong',
@@ -160,7 +168,7 @@ export default function ProfileModal({
     'substrate-connect': {
       title: '🔗 Substrate Connect',
       desc: 'Choose a wallet to connect to Grill.chat.',
-      withBackButton: true,
+      withBackButton: 'account-settings',
       withoutDefaultPadding: true,
     },
   }

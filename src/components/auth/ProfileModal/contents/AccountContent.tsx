@@ -1,11 +1,9 @@
 import BellIcon from '@/assets/icons/bell.svg'
-import EthIcon from '@/assets/icons/eth.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
-import Button from '@/components/Button'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
@@ -19,7 +17,7 @@ import { cx } from '@/utils/class-names'
 import { installApp, isInstallAvailable } from '@/utils/install'
 import { useTheme } from 'next-themes'
 import { HiOutlineDownload } from 'react-icons/hi'
-import { HiMoon, HiSun } from 'react-icons/hi2'
+import { HiMiniCog6Tooth, HiMoon, HiSun } from 'react-icons/hi2'
 import { useDisconnect } from 'wagmi'
 import { ContentProps } from '../types'
 
@@ -27,7 +25,6 @@ export default function AccountContent({
   address,
   setCurrentState,
   notification,
-  evmAddress,
 }: ContentProps) {
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
@@ -41,9 +38,9 @@ export default function AccountContent({
 
   const colorModeOptions = useColorModeOptions()
 
-  const onLinkEvmAddressClick = () => {
-    sendEvent('start_link_evm_address', commonEventProps)
-    setCurrentState('link-evm-address')
+  const onAccountSettingsClick = () => {
+    sendEvent('open_account_settings', commonEventProps)
+    setCurrentState('account-settings')
   }
   const onShowPrivateKeyClick = () => {
     sendEvent('open_show_private_key_modal', commonEventProps)
@@ -78,17 +75,9 @@ export default function AccountContent({
       },
     },
     {
-      text: evmAddress ? 'My EVM Address' : 'Link EVM address',
-      icon: EthIcon,
-      onClick: () => {
-        notification?.setNotifDone()
-        onLinkEvmAddressClick()
-      },
-    },
-    {
-      text: 'Substrate Connect',
-      icon: EthIcon,
-      onClick: () => setCurrentState('substrate-connect'),
+      text: 'Account Settings',
+      icon: HiMiniCog6Tooth,
+      onClick: onAccountSettingsClick,
     },
     {
       text: (
@@ -133,14 +122,6 @@ export default function AccountContent({
       <div className='mt-2 flex flex-col'>
         <div className='flex flex-col gap-4 border-b border-background-lightest px-6 pb-6'>
           <ProfilePreview address={address} />
-          {!ensName && (
-            <Button
-              variant='primaryOutline'
-              onClick={() => setCurrentState('subsocial-profile')}
-            >
-              Change my name
-            </Button>
-          )}
         </div>
         <MenuList menus={menus} />
       </div>
