@@ -15,6 +15,7 @@ import {
 import { wait } from '@/utils/promise'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
+import { getWallets, Wallet } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
@@ -23,6 +24,7 @@ type State = {
   isInitialized?: boolean
   isInitializedAddress?: boolean
 
+  preferredWallet: Wallet | null
   connectedWallet: {
     address: string
     signer: Signer | null
@@ -43,6 +45,7 @@ type Actions = {
     isInitialization?: boolean
   ) => Promise<string | false>
   logout: () => void
+  setPreferredWallet: (wallet: Wallet | null) => void
   connectWallet: (address: string, signer: Signer | null) => Promise<void>
   saveConnectedWallet: () => void
   disconnectWallet: () => void
@@ -52,6 +55,7 @@ type Actions = {
 
 const initialState: State = {
   isInitializedAddress: true,
+  preferredWallet: null,
   connectedWallet: null,
   address: null,
   signer: null,
@@ -76,6 +80,7 @@ const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
 const connectedWalletAddressStorage = new LocalStorage(
   () => CONNECTED_WALLET_ADDRESS_STORAGE_KEY
 )
+const preferredWalletStorage = new LocalStorage(() => 'preferred-wallet')
 
 const sendLaunchEvent = async (address?: string | false) => {
   let userProperties = {
@@ -121,6 +126,11 @@ const sendLaunchEvent = async (address?: string | false) => {
 
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
+  setPreferredWallet: (wallet) => {
+    set({ preferredWallet: wallet })
+    if (!wallet) preferredWalletStorage.remove()
+    else preferredWalletStorage.set(wallet.title)
+  },
   _subscribeConnectedWalletEnergy: () => {
     const { connectedWallet } = get()
     if (!connectedWallet) return
@@ -249,6 +259,15 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
 
     set({ isInitialized: true })
+
+    const preferredWallet = preferredWalletStorage.get()
+    if (preferredWallet) {
+      const wallet = getWallets().find(
+        (wallet) => wallet.title === preferredWallet
+      )
+      if (wallet) set({ preferredWallet: wallet })
+      else preferredWalletStorage.remove()
+    }
 
     const connectedWalletAddress = connectedWalletAddressStorage.get()
     if (connectedWalletAddress) {

@@ -3,7 +3,7 @@ import Modal from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
@@ -18,7 +18,8 @@ import PushNotificationContent, {
   getPushNotificationUsableStatus,
 } from './contents/notifications/PushNotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
-import PolkadotConnectContent from './contents/PolkadotConnectContent'
+import PolkadotConnectAccountContent from './contents/PolkadotConnectAccountContent'
+import PolkadotConnectContent from './contents/PolkadotConnectWalletContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
 import SubsocialProfileContent from './contents/SubsocialProfileContent'
@@ -42,6 +43,7 @@ const modalContents: {
   'telegram-notifications': TelegramNotificationContent,
   'push-notifications': PushNotificationContent,
   'polkadot-connect': PolkadotConnectContent,
+  'polkadot-connect-account': PolkadotConnectAccountContent,
 }
 
 const pushNotificationDesc: Record<
@@ -69,6 +71,8 @@ export default function ProfileModal({
     }
   )
 
+  const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
+
   const [currentState, setCurrentState] = useState<ProfileModalState>(
     step || 'account'
   )
@@ -90,7 +94,7 @@ export default function ProfileModal({
     [key in ProfileModalState]: {
       title: React.ReactNode
       desc?: React.ReactNode
-      withBackButton?: boolean | ProfileModalState
+      withBackButton?: boolean | ProfileModalState | (() => ProfileModalState)
       withoutDefaultPadding?: boolean
       withFooter?: boolean
     }
@@ -166,9 +170,18 @@ export default function ProfileModal({
       withBackButton: 'notifications',
     },
     'polkadot-connect': {
-      title: '🔗 Substrate Connect',
-      desc: 'Choose a wallet to connect to Grill.chat.',
+      title: '🔗 Polkadot Connect',
+      desc: 'Choose a wallet to connect to Grill.chat',
       withBackButton: 'account-settings',
+      withoutDefaultPadding: true,
+    },
+    'polkadot-connect-account': {
+      title: '🔗 Select an account',
+      desc: 'Select an account to connect to Grill.chat',
+      withBackButton: () => {
+        setPreferredWallet(null)
+        return 'polkadot-connect'
+      },
       withoutDefaultPadding: true,
     },
   }
@@ -177,6 +190,8 @@ export default function ProfileModal({
     modalTitles[currentState] || {}
   const onBackClick = () => {
     if (props.onBackClick) props.onBackClick()
+    else if (typeof withBackButton === 'function')
+      setCurrentState(withBackButton())
     else
       setCurrentState(
         typeof withBackButton === 'string' ? withBackButton : 'account'
