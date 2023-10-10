@@ -34,12 +34,16 @@ export type CreatePostOffChainInput = {
   callData?: InputMaybe<SocialCallDataInput>
   content?: InputMaybe<Scalars['String']['input']>
   dataType: SocialEventDataType
+  providerAddr: Scalars['String']['input']
+  sig: Scalars['String']['input']
 }
 
 export type CreatePostOptimisticInput = {
   callData?: InputMaybe<SocialCallDataInput>
   content?: InputMaybe<Scalars['String']['input']>
   dataType: SocialEventDataType
+  providerAddr: Scalars['String']['input']
+  sig: Scalars['String']['input']
 }
 
 export enum DataType {
@@ -57,7 +61,6 @@ export type FindSocialEventsArgs = {
   queueJobIds?: InputMaybe<Array<Scalars['String']['input']>>
   signers?: InputMaybe<Array<Scalars['String']['input']>>
   timestampGte?: InputMaybe<Scalars['BigInt']['input']>
-  txSigs?: InputMaybe<Array<Scalars['String']['input']>>
   unixTimestamp?: InputMaybe<Scalars['BigInt']['input']>
 }
 
@@ -159,8 +162,6 @@ export type SocialCallDataInput = {
   name: SocialCallName
   /** Call signer address */
   signer: Scalars['String']['input']
-  /** Blockchain transaction signature */
-  txSig?: InputMaybe<Scalars['String']['input']>
 }
 
 export enum SocialCallName {
@@ -196,19 +197,22 @@ export type SocialEventRecoveryData = {
   id: Scalars['String']['output']
   queueJobId: Scalars['String']['output']
   signer: Scalars['String']['output']
-  txSig?: Maybe<Scalars['String']['output']>
   unixTimestamp: Scalars['BigInt']['output']
 }
 
 export type UpdatePostBlockchainSyncStatusInput = {
   callData: SocialCallDataInput
   dataType: SocialEventDataType
+  providerAddr: Scalars['String']['input']
+  sig: Scalars['String']['input']
 }
 
 export type UpdatePostOptimisticInput = {
   callData?: InputMaybe<SocialCallDataInput>
   content?: InputMaybe<Scalars['String']['input']>
   dataType: SocialEventDataType
+  providerAddr: Scalars['String']['input']
+  sig: Scalars['String']['input']
 }
 
 export type CreatePostOptimisticMutationVariables = Exact<{

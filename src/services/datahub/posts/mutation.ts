@@ -1,4 +1,5 @@
 import { Signer } from '@/utils/account'
+import { u8aToHex } from '@polkadot/util'
 import { PostContent } from '@subsocial/api/types'
 import {
   CreatePostCallParsedArgs,
@@ -7,14 +8,17 @@ import {
   UpdatePostCallParsedArgs,
 } from '@subsocial/data-hub-sdk'
 import { gql } from 'graphql-request'
-import { sortObj } from 'jsonabc'
+import sortKeys from 'sort-keys-recursive'
 import {
+  CreatePostOptimisticInput,
   CreatePostOptimisticMutation,
   CreatePostOptimisticMutationVariables,
   NotifyPostTxFailedOrRetryStatusMutation,
   NotifyPostTxFailedOrRetryStatusMutationVariables,
   SocialCallName,
   SocialEventDataType,
+  UpdatePostBlockchainSyncStatusInput,
+  UpdatePostOptimisticInput,
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
 } from '../generated-mutation'
@@ -22,8 +26,16 @@ import { PostKind } from '../generated-query'
 import { datahubMutationRequest } from '../utils'
 
 type DatahubParams<T> = T & {
-  txSig: string
   address: string
+  signer: Signer | null
+}
+
+function augmentInputSig(signer: Signer | null, payload: { sig: string }) {
+  if (!signer) throw new Error('Signer is not defined')
+  const sortedPayload = sortKeys(payload)
+  const sig = signer.sign(JSON.stringify(sortedPayload))
+  const hexSig = u8aToHex(sig)
+  payload.sig = hexSig
 }
 
 const CREATE_POST_OPTIMISTIC_MUTATION = gql`
@@ -43,7 +55,7 @@ export async function createPostData({
   rootPostId,
   spaceId,
   content,
-  txSig,
+  signer,
 }: DatahubParams<{
   rootPostId?: string
   spaceId: string
@@ -58,22 +70,26 @@ export async function createPostData({
     ipfsSrc: contentCid,
   }
 
+  const input: CreatePostOptimisticInput = {
+    dataType: SocialEventDataType.Optimistic,
+    callData: {
+      name: SocialCallName.CreatePost,
+      signer: address || '',
+      args: JSON.stringify(eventArgs),
+    },
+    content: JSON.stringify(content),
+    providerAddr: address,
+    sig: '',
+  }
+  augmentInputSig(signer, input)
+
   await datahubMutationRequest<
     CreatePostOptimisticMutation,
     CreatePostOptimisticMutationVariables
   >({
     document: CREATE_POST_OPTIMISTIC_MUTATION,
     variables: {
-      createPostOptimisticInput: {
-        dataType: SocialEventDataType.Optimistic,
-        callData: {
-          txSig,
-          name: SocialCallName.CreatePost,
-          signer: address || '',
-          args: JSON.stringify(eventArgs),
-        },
-        content: JSON.stringify(content),
-      },
+      createPostOptimisticInput: input,
     },
   })
 }
@@ -93,7 +109,7 @@ export async function updatePostData({
   address,
   postId,
   content,
-  txSig,
+  signer,
 }: DatahubParams<{
   postId: string
   content: PostContent
@@ -104,22 +120,26 @@ export async function updatePostData({
     postId,
   }
 
+  const input: UpdatePostOptimisticInput = {
+    dataType: SocialEventDataType.Optimistic,
+    callData: {
+      name: SocialCallName.UpdatePost,
+      signer: address || '',
+      args: JSON.stringify(eventArgs),
+    },
+    providerAddr: address,
+    content: JSON.stringify(content),
+    sig: '',
+  }
+  augmentInputSig(signer, input)
+
   await datahubMutationRequest<
     UpdatePostOptimisticMutation,
     UpdatePostOptimisticMutationVariables
   >({
     document: UPDATE_POST_OPTIMISTIC_MUTATION,
     variables: {
-      updatePostOptimisticInput: {
-        dataType: SocialEventDataType.Optimistic,
-        callData: {
-          txSig,
-          name: SocialCallName.UpdatePost,
-          signer: address || '',
-          args: JSON.stringify(eventArgs),
-        },
-        content: JSON.stringify(content),
-      },
+      updatePostOptimisticInput: input,
     },
   })
 }
@@ -142,7 +162,6 @@ export async function notifyCreatePostFailedOrRetryStatus({
   ...args
 }: Omit<
   DatahubParams<{
-    signer: Signer
     isRetrying?: {
       success: boolean
     }
@@ -174,9 +193,17 @@ export async function notifyCreatePostFailedOrRetryStatus({
     }
   }
 
-  const txSig = Buffer.from(
-    signer.sign(JSON.stringify(sortObj(event.args))).buffer
-  ).toString('hex')
+  const input: UpdatePostBlockchainSyncStatusInput = {
+    dataType: SocialEventDataType.OffChain,
+    callData: {
+      name: event.name,
+      signer: address || '',
+      args: JSON.stringify(event.args),
+    },
+    providerAddr: address,
+    sig: '',
+  }
+  augmentInputSig(signer, input)
 
   await datahubMutationRequest<
     NotifyPostTxFailedOrRetryStatusMutation,
@@ -184,15 +211,7 @@ export async function notifyCreatePostFailedOrRetryStatus({
   >({
     document: NOTIFY_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
     variables: {
-      updatePostBlockchainSyncStatusInput: {
-        dataType: SocialEventDataType.OffChain,
-        callData: {
-          txSig,
-          name: event.name,
-          signer: address || '',
-          args: JSON.stringify(event.args),
-        },
-      },
+      updatePostBlockchainSyncStatusInput: input,
     },
   })
 }

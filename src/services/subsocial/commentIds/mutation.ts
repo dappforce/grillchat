@@ -84,6 +84,11 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         await waitHasEnergy()
 
         if (data.messageIdToEdit) {
+          await updatePostData({
+            ...getWallet(),
+            content,
+            postId: data.messageIdToEdit,
+          })
           return {
             tx: substrateApi.tx.posts.updatePost(data.messageIdToEdit, {
               content: IpfsWrapper(cid),
@@ -91,6 +96,13 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             summary: 'Updating message',
           }
         } else {
+          await createPostData({
+            ...getWallet(),
+            content: content,
+            contentCid: cid,
+            rootPostId: data.chatId,
+            spaceId: data.hubId,
+          })
           return {
             tx: substrateApi.tx.posts.createPost(
               null,
@@ -104,6 +116,8 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     },
     config,
     {
+      // tx sending error supressed because it successfully sent to datahub
+      supressTxSendingError: true,
       useHttp: true,
       txCallbacks: {
         onStart: ({ address, context, data }) => {
@@ -129,28 +143,6 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               params: data,
               ipfsContent: content,
               client,
-            })
-          }
-        },
-        onBeforeSend: async (
-          { data, context: { cid, content }, address },
-          txSig
-        ) => {
-          if (!data.messageIdToEdit && 'optimisticId' in content) {
-            await createPostData({
-              address,
-              content: content,
-              contentCid: cid,
-              rootPostId: data.chatId,
-              spaceId: data.hubId,
-              txSig,
-            })
-          } else if (data.messageIdToEdit) {
-            await updatePostData({
-              address,
-              content,
-              postId: data.messageIdToEdit,
-              txSig,
             })
           }
         },

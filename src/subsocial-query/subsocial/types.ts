@@ -16,6 +16,7 @@ export type CallbackData<Data, Context> = {
 export interface SubsocialMutationConfig<Data, Context = undefined>
   extends MutationConfig<Data> {
   useHttp?: boolean
+  supressTxSendingError?: boolean
   txCallbacks?: {
     onStart?: (data: CallbackData<Data, Context>) => void
     onSend?: (data: CallbackData<Data, Context>) => void

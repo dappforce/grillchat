@@ -62,7 +62,7 @@ export function useSubsocialMutation<Data, Context = undefined>(
     const { getSubsocialApi } = await import('./connection')
 
     const subsocialApi = await getSubsocialApi()
-    const useHttp = config?.useHttp ?? defaultConfig?.useHttp
+    const useHttp = config?.useHttp || defaultConfig?.useHttp
     let substrateApi: ApiPromise
     if (useHttp) {
       substrateApi = await getSubstrateHttpApi()
@@ -82,13 +82,19 @@ export function useSubsocialMutation<Data, Context = undefined>(
 
     const ipfsApi = subsocialApi.ipfs
 
+    const supressTxSendingError =
+      config?.supressTxSendingError || defaultConfig?.supressTxSendingError
     try {
       return await createTxAndSend(
         transactionGenerator,
         data,
         context,
         { subsocialApi, substrateApi, ipfsApi, useHttp: !!useHttp },
-        { wallet, networkRpc: getConnectionConfig().substrateUrl },
+        {
+          wallet,
+          networkRpc: getConnectionConfig().substrateUrl,
+          supressTxSendingError,
+        },
         txCallbacks
       )
     } catch (e) {
@@ -113,10 +119,11 @@ async function createTxAndSend<Data, Context>(
   context: Context,
   apis: Apis,
   txConfig: {
+    supressTxSendingError?: boolean
     wallet: WalletAccount
     networkRpc?: string
   },
-  optimisticCallbacks?: ReturnType<typeof generateTxCallbacks>
+  txCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
   const { tx, summary } = await transactionGenerator({
     data,
@@ -124,17 +131,28 @@ async function createTxAndSend<Data, Context>(
     wallet: txConfig.wallet,
     context,
   })
-  return sendTransaction(
-    {
-      tx,
-      wallet: txConfig.wallet,
-      data,
-      networkRpc: txConfig.networkRpc,
-      summary,
-    },
-    apis,
-    optimisticCallbacks
-  )
+  try {
+    return await sendTransaction(
+      {
+        tx,
+        wallet: txConfig.wallet,
+        data,
+        networkRpc: txConfig.networkRpc,
+        summary,
+      },
+      apis,
+      txCallbacks
+    )
+  } catch (err) {
+    txCallbacks?.onErrorBlockchain(
+      (err as any).message || 'Error processing transaction'
+    )
+    if (txConfig.supressTxSendingError) {
+      console.warn('Error supressed when sending tx: ', err)
+      return ''
+    }
+    throw err
+  }
 }
 function sendTransaction<Data>(
   txInfo: {
@@ -249,7 +267,7 @@ function sendTransaction<Data>(
       }
 
       // only throw error if both onBeforeSend and sendTx fail
-      // this is for datahub implementation, so its only showing error to use if:
+      // this is for "previous" datahub implementation, so its only showing error to use if:
       // datahub and blockchain sending both failed
       const promises = [txCallbacks?.onBeforeSend(txSig), sendTx()]
       const res = await Promise.allSettled(promises)
