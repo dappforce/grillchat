@@ -15,7 +15,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
-export default function SubstrateConnectContent() {
+export default function PolkadotConnectContent() {
   const saveConnectedWallet = useMyAccount((state) => state.saveConnectedWallet)
   const connectWallet = useMyAccount((state) => state.connectWallet)
   const disconnectWallet = useMyAccount((state) => state.disconnectWallet)
@@ -65,7 +65,7 @@ export default function SubstrateConnectContent() {
     setSelectedWallet(null)
   }
 
-  if (proxies?.includes(address)) {
+  if (proxies?.includes(address ?? '')) {
     return (
       <div className='p-6'>
         <p className='text-center'>Your proxy are active!</p>

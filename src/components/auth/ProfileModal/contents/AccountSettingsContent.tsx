@@ -32,7 +32,7 @@ export default function AccountSettingsContent({
   }
   const onPolkadotConnectClick = () => {
     sendEvent('open_polkadot_connect', commonEventProps)
-    setCurrentState('substrate-connect')
+    setCurrentState('polkadot-connect')
   }
 
   return (
