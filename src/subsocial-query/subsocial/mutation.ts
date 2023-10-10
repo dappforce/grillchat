@@ -82,8 +82,6 @@ export function useSubsocialMutation<Data, Context = undefined>(
 
     const ipfsApi = subsocialApi.ipfs
 
-    const supressTxSendingError =
-      config?.supressTxSendingError || defaultConfig?.supressTxSendingError
     try {
       return await createTxAndSend(
         transactionGenerator,
@@ -93,7 +91,6 @@ export function useSubsocialMutation<Data, Context = undefined>(
         {
           wallet,
           networkRpc: getConnectionConfig().substrateUrl,
-          supressTxSendingError,
         },
         txCallbacks
       )
@@ -119,7 +116,6 @@ async function createTxAndSend<Data, Context>(
   context: Context,
   apis: Apis,
   txConfig: {
-    supressTxSendingError?: boolean
     wallet: WalletAccount
     networkRpc?: string
   },
@@ -131,28 +127,17 @@ async function createTxAndSend<Data, Context>(
     wallet: txConfig.wallet,
     context,
   })
-  try {
-    return await sendTransaction(
-      {
-        tx,
-        wallet: txConfig.wallet,
-        data,
-        networkRpc: txConfig.networkRpc,
-        summary,
-      },
-      apis,
-      txCallbacks
-    )
-  } catch (err) {
-    txCallbacks?.onErrorBlockchain(
-      (err as any).message || 'Error processing transaction'
-    )
-    if (txConfig.supressTxSendingError) {
-      console.warn('Error supressed when sending tx: ', err)
-      return ''
-    }
-    throw err
-  }
+  return sendTransaction(
+    {
+      tx,
+      wallet: txConfig.wallet,
+      data,
+      networkRpc: txConfig.networkRpc,
+      summary,
+    },
+    apis,
+    txCallbacks
+  )
 }
 function sendTransaction<Data>(
   txInfo: {
@@ -182,98 +167,57 @@ function sendTransaction<Data>(
       )
       danglingNonceResolver = nonceResolver
 
-      const signature = await tx.signAsync(signer, { nonce })
-      const txSig = signature.toHex()
+      const unsub = await tx.signAndSend(signer, { nonce }, async (result) => {
+        // the result is only tx hash if its using http connection
+        if (typeof result.toHuman() === 'string') {
+          return resolve(result.toString())
+        }
 
-      async function sendTx() {
-        try {
-          const unsub = await signature.send(async (result) => {
-            // the result is only tx hash if its using http connection
-            if (typeof result.toHuman() === 'string') {
-              return resolve(result.toString())
-            }
-
-            resolve(result.txHash.toString())
-            if (result.status.isInvalid) {
-              txCallbacks?.onErrorBlockchain('Transaction is invalid')
-              globalTxCallbacks.onError({
-                summary,
-                address,
-                data,
-              })
-            } else if (result.status.isBroadcast) {
-              txCallbacks?.onBroadcast()
-              globalTxCallbacks.onBroadcast({
-                summary,
-                data,
-                address,
-              })
-            } else if (result.status.isInBlock) {
-              const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
-              let explorerLink: string | undefined
-              if (networkRpc) {
-                explorerLink = getBlockExplorerBlockInfoLink(
-                  networkRpc,
-                  blockHash
-                )
-              }
-              if (
-                result.isError ||
-                result.dispatchError ||
-                result.internalError
-              ) {
-                const error = result.dispatchError?.toString()
-                txCallbacks?.onErrorBlockchain(
-                  error || 'Error when executing transaction'
-                )
-                globalTxCallbacks.onError({
-                  error,
-                  summary,
-                  address,
-                  data,
-                  explorerLink,
-                })
-              } else {
-                txCallbacks?.onSuccess(result)
-                globalTxCallbacks.onSuccess({
-                  explorerLink,
-                  summary,
-                  address,
-                  data,
-                })
-              }
-              unsub()
-            }
-          })
-          nonceResolver()
-          txCallbacks?.onSend()
-          globalTxCallbacks.onSuccess({
+        resolve(result.txHash.toString())
+        if (result.status.isInvalid) {
+          txCallbacks?.onError('Transaction is invalid')
+          globalTxCallbacks.onError({
             summary,
             address,
             data,
           })
-        } catch (err) {
-          nonceResolver()
-          txCallbacks?.onErrorBlockchain(
-            (err as any).message || 'Error sending to blockchain'
-          )
-          throw err
+        } else if (result.status.isBroadcast) {
+          txCallbacks?.onBroadcast()
+          globalTxCallbacks.onBroadcast({
+            summary,
+            data,
+            address,
+          })
+        } else if (result.status.isInBlock) {
+          const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
+          let explorerLink: string | undefined
+          if (networkRpc) {
+            explorerLink = getBlockExplorerBlockInfoLink(networkRpc, blockHash)
+          }
+          if (result.isError || result.dispatchError || result.internalError) {
+            const error = result.dispatchError?.toString()
+            txCallbacks?.onError(error || 'Error when executing transaction')
+            globalTxCallbacks.onError({
+              error,
+              summary,
+              address,
+              data,
+              explorerLink,
+            })
+          } else {
+            txCallbacks?.onSuccess(result)
+            globalTxCallbacks.onSuccess({
+              explorerLink,
+              summary,
+              address,
+              data,
+            })
+          }
+          unsub()
         }
-      }
-
-      if (!txCallbacks?.onBeforeSend) {
-        await sendTx()
-        return
-      }
-
-      // only throw error if both onBeforeSend and sendTx fail
-      // this is for "previous" datahub implementation, so its only showing error to use if:
-      // datahub and blockchain sending both failed
-      const promises = [txCallbacks?.onBeforeSend(txSig), sendTx()]
-      const res = await Promise.allSettled(promises)
-      if (res[0].status === 'rejected' && res[1].status === 'rejected') {
-        throw res[0].reason
-      }
+      })
+      nonceResolver()
+      txCallbacks?.onSend()
     } catch (e) {
       danglingNonceResolver?.()
       reject(e)
@@ -336,23 +280,9 @@ function generateTxCallbacks<Data, Context>(
         callbacks,
         'onSuccess'
       )(data, txResult),
-    onBeforeSend: async (txSig: string) => {
-      try {
-        await defaultCallbacks?.onBeforeSend?.(data, txSig)
-        await callbacks?.onBeforeSend?.(data, txSig)
-      } catch (err) {
-        throw err
-      }
-    },
     onSend: () =>
       makeCombinedCallback(defaultCallbacks, callbacks, 'onSend')(data),
     onStart: () =>
       makeCombinedCallback(defaultCallbacks, callbacks, 'onStart')(data),
-    onErrorBlockchain: (error: string) =>
-      makeCombinedCallback(
-        defaultCallbacks,
-        callbacks,
-        'onErrorBlockchain'
-      )(data, error),
   }
 }
