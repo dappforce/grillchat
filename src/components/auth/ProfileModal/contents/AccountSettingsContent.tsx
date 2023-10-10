@@ -4,6 +4,7 @@ import UserIcon from '@/assets/icons/user.svg'
 import MenuList from '@/components/MenuList'
 import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
+import { getProfileQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -14,6 +15,9 @@ export default function AccountSettingsContent({
   evmAddress,
   setCurrentState,
 }: ContentProps) {
+  const { data: profile } = getProfileQuery.useQuery(address)
+  const hasNickname = !!profile?.profileSpace?.name
+
   const hasConnectedWallet = useMyAccount((state) => !!state.connectedWallet)
   const sendEvent = useSendEvent()
 
@@ -40,16 +44,21 @@ export default function AccountSettingsContent({
       </div>
       <MenuList
         menus={[
-          { text: 'Nickname', icon: UserIcon, onClick: onNicknameClick },
+          {
+            text: (
+              <span className='flex items-center gap-2'>
+                <span>Nickname</span>
+                {hasNickname && <Notice size='sm'>Set</Notice>}
+              </span>
+            ),
+            icon: UserIcon,
+            onClick: onNicknameClick,
+          },
           {
             text: (
               <span className='flex items-center gap-2'>
                 <span>EVM Address</span>
-                {evmAddress && (
-                  <Notice size='sm' className='relative top-px'>
-                    Connected
-                  </Notice>
-                )}
+                {evmAddress && <Notice size='sm'>Connected</Notice>}
               </span>
             ),
             icon: EthIcon,
