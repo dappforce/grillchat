@@ -82,24 +82,20 @@ export function useSubsocialMutation<Data, Context = undefined>(
 
     const ipfsApi = subsocialApi.ipfs
 
-    try {
-      return await createTxAndSend(
-        transactionGenerator,
-        data,
-        context,
-        { subsocialApi, substrateApi, ipfsApi, useHttp: !!useHttp },
-        {
-          wallet,
-          networkRpc: getConnectionConfig().substrateUrl,
-        },
-        txCallbacks
-      )
-    } catch (e) {
-      txCallbacks?.onError(
-        (e as any)?.message || 'Error when sending transaction'
-      )
-      throw e
-    }
+    const supressSendingTxError =
+      config?.supressSendingTxError || defaultConfig?.supressSendingTxError
+    return createTxAndSend(
+      transactionGenerator,
+      data,
+      context,
+      { subsocialApi, substrateApi, ipfsApi, useHttp: !!useHttp },
+      {
+        wallet,
+        networkRpc: getConnectionConfig().substrateUrl,
+        supressSendingTxError,
+      },
+      txCallbacks
+    )
   }
 
   return useMutation(workerFunc, {
@@ -118,26 +114,45 @@ async function createTxAndSend<Data, Context>(
   txConfig: {
     wallet: WalletAccount
     networkRpc?: string
+    supressSendingTxError?: boolean
   },
   txCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
-  const { tx, summary } = await transactionGenerator({
-    data,
-    apis,
-    wallet: txConfig.wallet,
-    context,
-  })
-  return sendTransaction(
-    {
-      tx,
-      wallet: txConfig.wallet,
+  let tx: Transaction
+  let summary: string
+  try {
+    const txData = await transactionGenerator({
       data,
-      networkRpc: txConfig.networkRpc,
-      summary,
-    },
-    apis,
-    txCallbacks
-  )
+      apis,
+      wallet: txConfig.wallet,
+      context,
+    })
+    tx = txData.tx
+    summary = txData.summary
+  } catch (err) {
+    txCallbacks?.onError((err as any)?.message || 'Error generating tx', false)
+    throw err
+  }
+  try {
+    return await sendTransaction(
+      {
+        tx,
+        wallet: txConfig.wallet,
+        data,
+        networkRpc: txConfig.networkRpc,
+        summary,
+      },
+      apis,
+      txCallbacks
+    )
+  } catch (err) {
+    txCallbacks?.onError((err as any)?.message || 'Error generating tx', true)
+    if (txConfig.supressSendingTxError) {
+      console.warn('Error supressed:', err)
+      return ''
+    }
+    throw err
+  }
 }
 function sendTransaction<Data>(
   txInfo: {
@@ -175,7 +190,7 @@ function sendTransaction<Data>(
 
         resolve(result.txHash.toString())
         if (result.status.isInvalid) {
-          txCallbacks?.onError('Transaction is invalid')
+          txCallbacks?.onError('Transaction is invalid', true)
           globalTxCallbacks.onError({
             summary,
             address,
@@ -196,7 +211,10 @@ function sendTransaction<Data>(
           }
           if (result.isError || result.dispatchError || result.internalError) {
             const error = result.dispatchError?.toString()
-            txCallbacks?.onError(error || 'Error when executing transaction')
+            txCallbacks?.onError(
+              error || 'Error when executing transaction',
+              true
+            )
             globalTxCallbacks.onError({
               error,
               summary,
@@ -270,8 +288,12 @@ function generateTxCallbacks<Data, Context>(
 ) {
   if (!callbacks && !defaultCallbacks) return
   return {
-    onError: (error: string) =>
-      makeCombinedCallback(defaultCallbacks, callbacks, 'onError')(data, error),
+    onError: (error: string, isAfterTxGenerated: boolean) =>
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onError')(
+        data,
+        error,
+        isAfterTxGenerated
+      ),
     onBroadcast: () =>
       makeCombinedCallback(defaultCallbacks, callbacks, 'onBroadcast')(data),
     onSuccess: (txResult: any) =>

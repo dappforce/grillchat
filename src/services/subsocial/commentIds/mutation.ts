@@ -116,9 +116,9 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     },
     config,
     {
-      // tx sending error supressed because it successfully sent to datahub
-      supressTxSendingError: true,
       useHttp: true,
+      // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
+      supressSendingTxError: true,
       txCallbacks: {
         onStart: ({ address, context, data }) => {
           preventWindowUnload()
@@ -147,37 +147,35 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           }
         },
         onSend: allowWindowUnload,
-        onErrorBlockchain: ({ data, context, address }, error) => {
+        onError: ({ data, context, address }, error, isAfterTxGenerated) => {
           allowWindowUnload()
           const content = context.content
-          const signer = getWallet().signer
-          if (!signer) return
+          const optimisticId = content.optimisticId
+          const isCreating = !data.messageIdToEdit && optimisticId
+          const isUpdating = data.messageIdToEdit
 
-          const optimisticId = content.optimisticId
-          if (!data.messageIdToEdit && optimisticId) {
-            notifyCreatePostFailedOrRetryStatus({
-              address,
-              optimisticId,
-              timestamp: Date.now().toString(),
-              signer,
-              reason: error,
-            })
-          } else if (data.messageIdToEdit) {
-            // TODO: Notify update post failed
-          }
-        },
-        onError: ({ data, context }) => {
-          allowWindowUnload()
-          const content = context.content
-          const optimisticId = content.optimisticId
-          if (!data.messageIdToEdit && optimisticId) {
-            deleteOptimisticData({
-              chatId: data.chatId,
-              optimisticId,
-              client,
-            })
-          } else if (data.messageIdToEdit) {
-            getPostQuery.invalidate(client, data.messageIdToEdit)
+          if (!isAfterTxGenerated) {
+            if (isCreating) {
+              deleteOptimisticData({
+                chatId: data.chatId,
+                optimisticId,
+                client,
+              })
+            } else if (isUpdating) {
+              getPostQuery.invalidate(client, data.messageIdToEdit)
+            }
+          } else {
+            if (isCreating) {
+              notifyCreatePostFailedOrRetryStatus({
+                address,
+                optimisticId,
+                timestamp: Date.now().toString(),
+                signer: getWallet().signer,
+                reason: error,
+              })
+            } else if (isUpdating) {
+              // TODO: Notify update post failed
+            }
           }
         },
       },
@@ -236,14 +234,12 @@ export function useResendFailedMessage(
           const signer = getWallet().signer
           notifyRetryStatus(address, data.content, signer, true)
         },
-        onErrorBlockchain: ({ data, address }) => {
-          const signer = getWallet().signer
-          notifyRetryStatus(address, data.content, signer, false)
-        },
-        onError: ({ data, address }) => {
+        onError: ({ data, address }, error, isAfterTxGenerated) => {
           allowWindowUnload()
           const signer = getWallet().signer
-          notifyRetryStatus(address, data.content, signer, false)
+
+          if (isAfterTxGenerated)
+            notifyRetryStatus(address, data.content, signer, false, error)
         },
       },
     }
@@ -253,7 +249,8 @@ function notifyRetryStatus(
   address: string,
   content: PostContent,
   signer: KeyringPair | null,
-  success: boolean
+  success: boolean,
+  reason?: string
 ) {
   if (!signer || !content.optimisticId) return
 
@@ -262,6 +259,7 @@ function notifyRetryStatus(
     optimisticId: content.optimisticId,
     timestamp: Date.now().toString(),
     signer,
+    reason,
     isRetrying: { success },
   })
 }
