@@ -103,7 +103,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
               },
             },
           }}
-          loadingUntilTxSuccess
+          loadingUntilTxSuccess={!isUpdating}
         >
           {({ isLoading: isMutating, mutateAsync }) => {
             const onSubmit: SubmitHandler<FormSchema> = async (data) => {

@@ -3,12 +3,13 @@ import { invalidatePostServerCache, saveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import {
   createPostData,
+  notifyCreatePostFailedOrRetryStatus,
   updatePostData,
 } from '@/services/datahub/posts/mutation'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
-import { getCID, IpfsWrapper } from '@/utils/ipfs'
+import { IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
@@ -141,9 +142,7 @@ async function generateMessageContent(params: Content) {
     optimisticId: crypto.randomUUID(),
   } as PostContent & { optimisticId: string }
 
-  const cid = await getCID(content)
-
-  return { content, cid: cid?.toString() ?? '' }
+  return { content }
 }
 type GeneratedMessageContent = Awaited<
   ReturnType<typeof generateMessageContent>
@@ -173,16 +172,24 @@ export function useUpsertPost(
       transactionGenerator: async ({
         data: params,
         apis: { substrateApi },
-        context: { cid, content },
+        context: { content },
       }) => {
         const { payload, action } = checkAction(params)
 
         console.log('waiting energy...')
         await waitHasEnergy()
 
-        saveFile(content)
+        const res = await saveFile(content)
+        const cid = res.cid
+        if (!cid) throw new Error('Failed to save file')
 
         if (action === 'update') {
+          await updatePostData({
+            ...getWallet(),
+            cid,
+            content,
+            postId: payload.postId,
+          })
           return {
             tx: substrateApi.tx.posts.updatePost(payload.postId, {
               content: IpfsWrapper(cid),
@@ -190,6 +197,12 @@ export function useUpsertPost(
             summary: 'Updating post',
           }
         } else if (action === 'create') {
+          await createPostData({
+            ...getWallet(),
+            content,
+            cid: cid,
+            spaceId: payload.spaceId,
+          })
           return {
             tx: substrateApi.tx.posts.createPost(
               payload.spaceId,
@@ -205,28 +218,23 @@ export function useUpsertPost(
     },
     config,
     {
+      // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
+      supressSendingTxError: true,
       txCallbacks: {
-        onBeforeSend: (
-          { data: params, address, context: { content, cid } },
-          txSig
-        ) => {
-          const { payload, action } = checkAction(params)
+        onError: ({ data, address, context }, error, isAfterTxGenerated) => {
+          const { action } = checkAction(data)
+          if (!isAfterTxGenerated) return
+
           if (action === 'create') {
-            createPostData({
+            notifyCreatePostFailedOrRetryStatus({
               address,
-              content,
-              contentCid: cid,
-              spaceId: payload.spaceId,
-              txSig,
+              optimisticId: context.content.optimisticId,
+              timestamp: Date.now().toString(),
+              signer: getWallet().signer,
+              reason: error,
             })
-          } else if (action === 'update') {
-            updatePostData({
-              address,
-              content,
-              contentCid: cid,
-              postId: payload.postId,
-              txSig,
-            })
+          } else {
+            // TODO: notify update post failed
           }
         },
         onSuccess: async ({ data, address }, txResult) => {

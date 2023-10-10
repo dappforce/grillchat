@@ -51,7 +51,7 @@ const CREATE_POST_OPTIMISTIC_MUTATION = gql`
 `
 export async function createPostData({
   address,
-  contentCid,
+  cid,
   rootPostId,
   spaceId,
   content,
@@ -59,7 +59,7 @@ export async function createPostData({
 }: DatahubParams<{
   rootPostId?: string
   spaceId: string
-  contentCid: string
+  cid: string
   content: PostContent
 }>) {
   const eventArgs: CreatePostCallParsedArgs = {
@@ -67,7 +67,7 @@ export async function createPostData({
     postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
     rootPostId,
     spaceId,
-    ipfsSrc: contentCid,
+    ipfsSrc: cid,
   }
 
   const input: CreatePostOptimisticInput = {
@@ -110,14 +110,17 @@ export async function updatePostData({
   postId,
   content,
   signer,
+  cid,
 }: DatahubParams<{
   postId: string
   content: PostContent
+  cid: string
 }>) {
   const eventArgs: UpdatePostCallParsedArgs = {
     spaceId: null,
     hidden: null,
     postId,
+    ipfsSrc: cid,
   }
 
   const input: UpdatePostOptimisticInput = {

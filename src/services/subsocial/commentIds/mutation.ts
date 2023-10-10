@@ -9,7 +9,7 @@ import {
 } from '@/services/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { getCID, IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
+import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
@@ -23,8 +23,7 @@ async function generateMessageContent(
   params: SendMessageParams,
   client: QueryClient
 ): Promise<{
-  cid: string
-  content: PostContent | (PostContent & { optimisticId: string })
+  content: PostContent
 }> {
   if (params.messageIdToEdit) {
     const originalPost = await getPostQuery.fetchQuery(
@@ -37,9 +36,8 @@ async function generateMessageContent(
       inReplyTo: ReplyWrapper(content?.inReplyTo?.id),
       extensions: content?.extensions,
     } as PostContent
-    const cid = getCID(savedContent)
 
-    return { content: savedContent, cid: cid?.toString() ?? '' }
+    return { content: savedContent }
   }
 
   const content = {
@@ -49,9 +47,7 @@ async function generateMessageContent(
     optimisticId: crypto.randomUUID(),
   } as PostContent
 
-  const cid = await getCID(content)
-
-  return { content, cid: cid?.toString() ?? '' }
+  return { content }
 }
 export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const client = useQueryClient()
@@ -86,6 +82,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         if (data.messageIdToEdit) {
           await updatePostData({
             ...getWallet(),
+            cid,
             content,
             postId: data.messageIdToEdit,
           })
@@ -99,7 +96,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           await createPostData({
             ...getWallet(),
             content: content,
-            contentCid: cid,
+            cid: cid,
             rootPostId: data.chatId,
             spaceId: data.hubId,
           })
