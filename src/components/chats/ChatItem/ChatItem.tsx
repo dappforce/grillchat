@@ -1,6 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
-import { isOptimisticId } from '@/services/datahub/posts/utils'
+import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
@@ -36,8 +36,7 @@ export default function ChatItem({
   const setReplyTo = useMessageData((state) => state.setReplyTo)
 
   const messageId = message.id
-  const isSent = !isOptimisticId(messageId)
-  const { createdAtBlock, ownerId, contentId } = message.struct
+  const { ownerId } = message.struct
   const { body, extensions, link } = message.content || {}
 
   const setMessageAsReply = (messageId: string) => {

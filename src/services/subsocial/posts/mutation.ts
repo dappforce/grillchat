@@ -1,11 +1,6 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { invalidatePostServerCache, saveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
-import {
-  createPostData,
-  notifyCreatePostFailedOrRetryStatus,
-  updatePostData,
-} from '@/services/datahub/posts/mutation'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
@@ -13,6 +8,7 @@ import { IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import datahubMutation from '../datahub/posts/mutation'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import {
@@ -184,7 +180,7 @@ export function useUpsertPost(
         if (!cid) throw new Error('Failed to save file')
 
         if (action === 'update') {
-          await updatePostData({
+          await datahubMutation.updatePostData({
             ...getWallet(),
             cid,
             content,
@@ -197,7 +193,7 @@ export function useUpsertPost(
             summary: 'Updating post',
           }
         } else if (action === 'create') {
-          await createPostData({
+          await datahubMutation.createPostData({
             ...getWallet(),
             content,
             cid: cid,
@@ -226,7 +222,7 @@ export function useUpsertPost(
           if (!isAfterTxGenerated) return
 
           if (action === 'create') {
-            notifyCreatePostFailedOrRetryStatus({
+            datahubMutation.notifyCreatePostFailedOrRetryStatus({
               address,
               optimisticId: context.content.optimisticId,
               timestamp: Date.now().toString(),

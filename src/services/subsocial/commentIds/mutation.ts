@@ -2,11 +2,7 @@ import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useSaveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
-import {
-  createPostData,
-  notifyCreatePostFailedOrRetryStatus,
-  updatePostData,
-} from '@/services/datahub/posts/mutation'
+import datahubMutation from '@/services/subsocial/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
@@ -80,7 +76,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         await waitHasEnergy()
 
         if (data.messageIdToEdit) {
-          await updatePostData({
+          await datahubMutation.updatePostData({
             ...getWallet(),
             cid,
             content,
@@ -93,7 +89,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             summary: 'Updating message',
           }
         } else {
-          await createPostData({
+          await datahubMutation.createPostData({
             ...getWallet(),
             content: content,
             cid: cid,
@@ -163,7 +159,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             }
           } else {
             if (isCreating) {
-              notifyCreatePostFailedOrRetryStatus({
+              datahubMutation.notifyCreatePostFailedOrRetryStatus({
                 address,
                 optimisticId,
                 timestamp: Date.now().toString(),
@@ -251,7 +247,7 @@ function notifyRetryStatus(
 ) {
   if (!signer || !content.optimisticId) return
 
-  notifyCreatePostFailedOrRetryStatus({
+  datahubMutation.notifyCreatePostFailedOrRetryStatus({
     address,
     optimisticId: content.optimisticId,
     timestamp: Date.now().toString(),

@@ -1,3 +1,4 @@
+import { isOptimisticId } from '@/services/subsocial/utils'
 import { PostData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
 import {
@@ -8,7 +9,6 @@ import {
 } from '../generated-query'
 import { mapDatahubPostFragment } from '../mappers'
 import { datahubQueryRequest } from '../utils'
-import { isOptimisticId } from './utils'
 
 export const DATAHUB_POST_FRAGMENT = gql`
   fragment DatahubPostFragment on Post {

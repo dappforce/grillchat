@@ -3,7 +3,7 @@ import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusInd
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
-import { isOptimisticId } from '@/services/datahub/posts/utils'
+import { isOptimisticId } from '@/services/subsocial/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'

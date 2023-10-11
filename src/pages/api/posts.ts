@@ -1,6 +1,6 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { getPostsFromDatahub } from '@/services/datahub/posts/fetcher'
+import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { parser } from 'html-metadata-parser'
@@ -70,7 +70,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   const validIds = postIds.filter((id) => !!id)
-  const posts = await getPostsFromDatahub(validIds)
+  const posts = await getPostsFromSubsocial(validIds)
 
   const linksToFetch = new Set<string>()
   posts.forEach((post) => {

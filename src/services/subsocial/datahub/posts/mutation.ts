@@ -23,7 +23,7 @@ import {
   UpdatePostOptimisticMutationVariables,
 } from '../generated-mutation'
 import { PostKind } from '../generated-query'
-import { datahubMutationRequest } from '../utils'
+import { datahubMutationRequest, datahubMutationWrapper } from '../utils'
 
 type DatahubParams<T> = T & {
   address: string
@@ -49,7 +49,7 @@ const CREATE_POST_OPTIMISTIC_MUTATION = gql`
     }
   }
 `
-export async function createPostData({
+async function createPostData({
   address,
   cid,
   rootPostId,
@@ -105,7 +105,7 @@ const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
     }
   }
 `
-export async function updatePostData({
+async function updatePostData({
   address,
   postId,
   content,
@@ -158,7 +158,7 @@ const NOTIFY_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
     }
   }
 `
-export async function notifyCreatePostFailedOrRetryStatus({
+async function notifyCreatePostFailedOrRetryStatus({
   address,
   isRetrying,
   signer,
@@ -218,3 +218,12 @@ export async function notifyCreatePostFailedOrRetryStatus({
     },
   })
 }
+
+const datahubMutation = {
+  createPostData: datahubMutationWrapper(createPostData),
+  updatePostData: datahubMutationWrapper(updatePostData),
+  notifyCreatePostFailedOrRetryStatus: datahubMutationWrapper(
+    notifyCreatePostFailedOrRetryStatus
+  ),
+}
+export default datahubMutation

@@ -7,7 +7,7 @@ export function generateOptimisticId<Data = any>(data?: Data) {
 }
 
 export function isOptimisticId(id: string) {
-  return id.startsWith(OPTIMISTIC_ID_PREFIX)
+  return isNaN(Number(id))
 }
 
 export function extractOptimisticIdData<Data>(id: string) {
