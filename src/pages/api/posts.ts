@@ -2,6 +2,7 @@ import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { getPostsFromDatahub } from '@/services/datahub/posts/fetcher'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
+import { toSubsocialAddress } from '@subsocial/utils'
 import { parser } from 'html-metadata-parser'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -69,7 +70,30 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   const validIds = postIds.filter((id) => !!id)
-  return getPostsFromDatahub(validIds)
+  const posts = await getPostsFromDatahub(validIds)
+
+  const linksToFetch = new Set<string>()
+  posts.forEach((post) => {
+    post.struct.ownerId = toSubsocialAddress(post.struct.ownerId)!
+    if (post.content?.link) linksToFetch.add(post.content.link)
+  })
+
+  const metadataMap: Record<string, LinkMetadata> = {}
+  const metadataPromises = Array.from(linksToFetch).map(async (link) => {
+    const metadata = await getLinkMetadata(link)
+    if (metadata) metadataMap[link] = metadata
+  })
+  await Promise.allSettled(metadataPromises)
+
+  posts.forEach((post) => {
+    const link = post.content?.link
+    const linkMetadata = metadataMap[link ?? '']
+    if (!linkMetadata || !post.content) return
+
+    post.content.linkMetadata = linkMetadata
+  })
+
+  return posts
 }
 
 const getMetadataRedisKey = (url: string) => 'metadata:' + url
