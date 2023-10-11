@@ -54,6 +54,7 @@ export const PINNED_HUB_IDS = [COMMUNITY_CHAT_HUB_ID, '1031'].filter(
 
 const HUB_ID_WITHOUT_JOIN_BUTTON = [
   '1023',
+  '1025',
   '1002',
   '1005',
   '1010',
