@@ -130,8 +130,27 @@ type Content = {
 export type UpsertPostParams = ({ postId: string } | { spaceId: string }) &
   Content
 
-async function generateMessageContent(params: Content) {
+async function generateMessageContent(
+  params: UpsertPostParams,
+  client: QueryClient
+) {
   const { image, title, body } = params
+
+  if ('postId' in params) {
+    const post = await getPostQuery.fetchQuery(client, params.postId)
+    if (!post) throw new Error('Post not found')
+
+    const content = post?.content
+    const savedContent = {
+      ...content,
+      image,
+      title,
+      body,
+    } as PostContent
+
+    return { content: savedContent }
+  }
+
   const content = {
     image,
     title,
@@ -165,7 +184,7 @@ export function useUpsertPost(
   return useSubsocialMutation<UpsertPostParams, GeneratedMessageContent>(
     {
       getWallet,
-      generateContext: (params) => generateMessageContent(params),
+      generateContext: (params) => generateMessageContent(params, client),
       transactionGenerator: async ({
         data: params,
         apis: { substrateApi },
@@ -241,7 +260,7 @@ export function useUpsertPost(
           const { action, payload } = checkAction(data)
           if (!isAfterTxGenerated) return
 
-          if (action === 'create') {
+          if (action === 'create' && context.content.optimisticId) {
             datahubMutation.notifyCreatePostFailedOrRetryStatus({
               address,
               optimisticId: context.content.optimisticId,
