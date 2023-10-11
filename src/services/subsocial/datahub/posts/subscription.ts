@@ -11,7 +11,7 @@ import {
 import { datahubSubscription } from '../utils'
 import { getCommentIdsByPostIdFromDatahubQuery } from './query'
 
-export function useSubscribePosts() {
+export function useSubscribePostsInDatahub() {
   const queryClient = useQueryClient()
 
   useEffect(() => {

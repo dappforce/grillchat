@@ -10,7 +10,7 @@ import {
 import { mapDatahubPostFragment } from '../mappers'
 import { datahubQueryRequest } from '../utils'
 
-export const DATAHUB_POST_FRAGMENT = gql`
+const DATAHUB_POST_FRAGMENT = gql`
   fragment DatahubPostFragment on Post {
     id
     optimisticId
