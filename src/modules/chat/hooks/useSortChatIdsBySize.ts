@@ -2,7 +2,9 @@ import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { useMemo } from 'react'
 
 export default function useSortChatIdsBySize(chatIds: string[]) {
-  const messageIdsQueries = getCommentIdsByPostIdQuery.useQueries(chatIds)
+  const messageIdsQueries = getCommentIdsByPostIdQuery.useQueries(chatIds, {
+    subscribe: true,
+  })
 
   return useMemo(() => {
     const chatIdsContentLengths: { size: number; id: string }[] =

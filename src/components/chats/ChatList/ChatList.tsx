@@ -83,7 +83,9 @@ function ChatListContent({
 
   const innerRef = useRef<HTMLDivElement>(null)
 
-  const { data: rawMessageIds } = getCommentIdsByPostIdQuery.useQuery(chatId)
+  const { data: rawMessageIds } = getCommentIdsByPostIdQuery.useQuery(chatId, {
+    subscribe: true,
+  })
   const messageIds = rawMessageIds || []
 
   const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)

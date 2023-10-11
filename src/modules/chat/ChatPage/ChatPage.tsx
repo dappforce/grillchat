@@ -80,7 +80,9 @@ export default function ChatPage({
     if (!isOpenCreateSuccessModal) replaceUrl(getCurrentUrlWithoutQuery('new'))
   }, [isOpenCreateSuccessModal])
 
-  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId)
+  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId, {
+    subscribe: true,
+  })
 
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal

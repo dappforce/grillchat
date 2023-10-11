@@ -63,46 +63,43 @@ function useCommentIdsByPostIds(
   )
 }
 
-export let getCommentIdsByPostIdQuery = getCommentIdsByPostIdFromDatahubQuery
-if (!getDatahubConfig()) {
-  async function fetchQuery(client: QueryClient | null, data: string) {
-    const cachedData = client?.getQueryData(getCommentIdsQueryKey(data))
-    if (cachedData) {
-      return cachedData as string[]
-    }
-
-    const { getSubsocialApi } = await import(
-      '@/subsocial-query/subsocial/connection'
-    )
-    const api = await getSubsocialApi()
-    const res = await api.blockchain.getReplyIdsByPostId(data)
-
-    if (client) {
-      client.setQueryData(getCommentIdsQueryKey(data), res ?? null)
-    }
-    return res
+async function fetchQuery(client: QueryClient | null, data: string) {
+  const cachedData = client?.getQueryData(getCommentIdsQueryKey(data))
+  if (cachedData) {
+    return cachedData as string[]
   }
 
-  getCommentIdsByPostIdQuery = {
-    getQueryKey: getCommentIdsQueryKey,
-    useQuery: useCommentIdsByPostId,
-    useQueries: useCommentIdsByPostIds,
-    invalidate: createQueryInvalidation(commentIdsByPostIdKey),
-    setQueryData: (client, data, value) => {
-      client.setQueryData(getCommentIdsQueryKey(data), value ?? null)
-    },
-    setQueryInitialData: (client, data, value) => {
-      client.setQueryData(getCommentIdsQueryKey(data), value ?? null)
-      client.invalidateQueries(getCommentIdsQueryKey(data))
-    },
-    getQueryData: (client, data) => {
-      return client.getQueryData(getCommentIdsQueryKey(data)) as string[]
-    },
-    fetchQuery,
-    fetchQueries: async (client, data) => {
-      return Promise.all(
-        data.map((singleData) => fetchQuery(client, singleData))
-      )
-    },
+  const { getSubsocialApi } = await import(
+    '@/subsocial-query/subsocial/connection'
+  )
+  const api = await getSubsocialApi()
+  const res = await api.blockchain.getReplyIdsByPostId(data)
+
+  if (client) {
+    client.setQueryData(getCommentIdsQueryKey(data), res ?? null)
   }
+  return res
+}
+export let getCommentIdsByPostIdQuery = {
+  getQueryKey: getCommentIdsQueryKey,
+  useQuery: useCommentIdsByPostId,
+  useQueries: useCommentIdsByPostIds,
+  invalidate: createQueryInvalidation(commentIdsByPostIdKey),
+  setQueryData: (client, data, value) => {
+    client.setQueryData(getCommentIdsQueryKey(data), value ?? null)
+  },
+  setQueryInitialData: (client, data, value) => {
+    client.setQueryData(getCommentIdsQueryKey(data), value ?? null)
+    client.invalidateQueries(getCommentIdsQueryKey(data))
+  },
+  getQueryData: (client, data) => {
+    return client.getQueryData(getCommentIdsQueryKey(data)) as string[]
+  },
+  fetchQuery,
+  fetchQueries: async (client, data) => {
+    return Promise.all(data.map((singleData) => fetchQuery(client, singleData)))
+  },
+} satisfies typeof getCommentIdsByPostIdFromDatahubQuery
+if (getDatahubConfig()) {
+  getCommentIdsByPostIdQuery = getCommentIdsByPostIdFromDatahubQuery
 }

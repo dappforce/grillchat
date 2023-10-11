@@ -169,7 +169,6 @@ export default function Navbar({
   )
 }
 
-const BELL_SPACE_ID = '1002'
 const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
 const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
 function NotificationBell() {
