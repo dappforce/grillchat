@@ -305,17 +305,11 @@ function NavbarChatInfo({
             )}
           </div>
           <span className='overflow-hidden overflow-ellipsis whitespace-nowrap text-xs text-text-muted'>
-            {membersCount
-              ? `${membersCount} ${getPluralText({
-                  count: membersCount,
-                  plural: 'members',
-                  singular: 'member',
-                })}`
-              : `${messageCount} ${getPluralText({
-                  count: messageCount,
-                  plural: 'messages',
-                  singular: 'message',
-                })}`}
+            {`${messageCount} ${getPluralText({
+              count: messageCount,
+              plural: 'messages',
+              singular: 'message',
+            })}`}
           </span>
         </div>
       </Button>
