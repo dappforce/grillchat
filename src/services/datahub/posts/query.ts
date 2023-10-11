@@ -1,14 +1,14 @@
 import { createQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
 import {
-  GetMessageIdsInChatIdQuery,
-  GetMessageIdsInChatIdQueryVariables,
+  GetCommentIdsInPostIdQuery,
+  GetCommentIdsInPostIdQueryVariables,
   QueryOrder,
 } from '../generated-query'
 import { datahubQueryRequest } from '../utils'
 
-const GET_MESSAGE_IDS_IN_CHAT_ID = gql`
-  query GetMessageIdsInChatId($where: FindPostsArgs!) {
+const GET_COMMENT_IDS_IN_POST_ID = gql`
+  query GetCommentIdsInPostId($where: FindPostsArgs!) {
     findPosts(where: $where) {
       id
       persistentId
@@ -18,10 +18,10 @@ const GET_MESSAGE_IDS_IN_CHAT_ID = gql`
 
 async function getCommentIdsByPostIds(postId: string) {
   const res = await datahubQueryRequest<
-    GetMessageIdsInChatIdQuery,
-    GetMessageIdsInChatIdQueryVariables
+    GetCommentIdsInPostIdQuery,
+    GetCommentIdsInPostIdQueryVariables
   >({
-    document: GET_MESSAGE_IDS_IN_CHAT_ID,
+    document: GET_COMMENT_IDS_IN_POST_ID,
     variables: {
       where: {
         rootPostPersistentId: postId,

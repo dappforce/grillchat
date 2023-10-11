@@ -495,11 +495,11 @@ export type GetOptimisticPostsQuery = {
   }>
 }
 
-export type GetMessageIdsInChatIdQueryVariables = Exact<{
+export type GetCommentIdsInPostIdQueryVariables = Exact<{
   where: FindPostsArgs
 }>
 
-export type GetMessageIdsInChatIdQuery = {
+export type GetCommentIdsInPostIdQuery = {
   __typename?: 'Query'
   findPosts: Array<{
     __typename?: 'Post'
@@ -612,8 +612,8 @@ export const GetOptimisticPosts = gql`
   }
   ${DatahubPostFragment}
 `
-export const GetMessageIdsInChatId = gql`
-  query GetMessageIdsInChatId($where: FindPostsArgs!) {
+export const GetCommentIdsInPostId = gql`
+  query GetCommentIdsInPostId($where: FindPostsArgs!) {
     findPosts(where: $where) {
       id
       persistentId
