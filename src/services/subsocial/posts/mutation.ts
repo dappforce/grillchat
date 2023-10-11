@@ -218,6 +218,25 @@ export function useUpsertPost(
       // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
       supressSendingTxError: !!getDatahubConfig(),
       txCallbacks: {
+        onSend: ({ data }) => {
+          if (getDatahubConfig()) return
+
+          const { payload, action } = checkAction(data)
+          if (action === 'update') {
+            getPostQuery.setQueryData(client, payload.postId, (post) => {
+              if (!post) return post
+              return {
+                ...post,
+                content: {
+                  ...post.content,
+                  title: data.title,
+                  image: data.image,
+                  body: data.body ?? '',
+                } as PostContent,
+              }
+            })
+          }
+        },
         onError: ({ data, address, context }, error, isAfterTxGenerated) => {
           const { action } = checkAction(data)
           if (!isAfterTxGenerated) return
@@ -243,6 +262,9 @@ export function useUpsertPost(
               if (!ids) return ids
               return [...ids, newId]
             })
+          } else if ('postId' in data && data.postId) {
+            await invalidatePostServerCache(data.postId)
+            getPostQuery.invalidate(client, data.postId)
           }
         },
       },
