@@ -4,6 +4,7 @@ import { getPostQuery } from '@/services/api/query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
+import { getDatahubConfig } from '@/utils/env/client'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
@@ -215,7 +216,7 @@ export function useUpsertPost(
     config,
     {
       // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
-      supressSendingTxError: true,
+      supressSendingTxError: !!getDatahubConfig(),
       txCallbacks: {
         onError: ({ data, address, context }, error, isAfterTxGenerated) => {
           const { action } = checkAction(data)

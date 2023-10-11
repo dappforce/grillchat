@@ -5,6 +5,7 @@ import { getPostQuery } from '@/services/api/query'
 import datahubMutation from '@/services/subsocial/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
+import { getDatahubConfig } from '@/utils/env/client'
 import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { KeyringPair } from '@polkadot/keyring/types'
@@ -111,7 +112,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     {
       useHttp: true,
       // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
-      supressSendingTxError: true,
+      supressSendingTxError: !!getDatahubConfig(),
       txCallbacks: {
         onStart: ({ address, context, data }) => {
           preventWindowUnload()
@@ -147,7 +148,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           const isCreating = !data.messageIdToEdit && optimisticId
           const isUpdating = data.messageIdToEdit
 
-          if (!isAfterTxGenerated) {
+          if (!isAfterTxGenerated || !getDatahubConfig()) {
             if (isCreating) {
               deleteOptimisticData({
                 chatId: data.chatId,
