@@ -1,11 +1,14 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
 
+const mutationUrl = process.env.NEXT_PUBLIC_DATAHUB_MUTATION_URL
+if (!mutationUrl) throw new Error('Codegen error: Datahub Mutation URL not set')
+
 const config: CodegenConfig = {
   overwrite: true,
-  schema: 'https://first-test-queue-data-hub.subsocial.network/graphql',
-  documents: 'src/services/datahub/**/mutation.ts',
+  schema: mutationUrl,
+  documents: 'src/services/subsocial/datahub/**/mutation.ts',
   generates: {
-    'src/services/datahub/generated-mutation.ts': {
+    'src/services/subsocial/datahub/generated-mutation.ts': {
       plugins: [
         'typescript',
         'typescript-operations',

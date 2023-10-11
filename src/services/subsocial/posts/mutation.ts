@@ -238,7 +238,7 @@ export function useUpsertPost(
           }
         },
         onError: ({ data, address, context }, error, isAfterTxGenerated) => {
-          const { action } = checkAction(data)
+          const { action, payload } = checkAction(data)
           if (!isAfterTxGenerated) return
 
           if (action === 'create') {
@@ -249,8 +249,14 @@ export function useUpsertPost(
               signer: getWallet().signer,
               reason: error,
             })
-          } else {
-            // TODO: notify update post failed
+          } else if (action === 'update') {
+            datahubMutation.notifyUpdatePostFailedOrRetryStatus({
+              postId: payload.postId,
+              address,
+              timestamp: Date.now().toString(),
+              signer: getWallet().signer,
+              reason: error,
+            })
           }
         },
         onSuccess: async ({ data, address }, txResult) => {

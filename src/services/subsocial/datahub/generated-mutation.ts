@@ -160,6 +160,8 @@ export type SocialCallDataInput = {
   /** Stringified JSON with call arguments */
   args?: InputMaybe<Scalars['String']['input']>
   name: SocialCallName
+  /** Proxy of call signer address */
+  proxy?: InputMaybe<Scalars['String']['input']>
   /** Call signer address */
   signer: Scalars['String']['input']
 }
@@ -239,11 +241,23 @@ export type UpdatePostOptimisticMutation = {
   }
 }
 
-export type NotifyPostTxFailedOrRetryStatusMutationVariables = Exact<{
+export type NotifyCreatePostTxFailedOrRetryStatusMutationVariables = Exact<{
   updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput
 }>
 
-export type NotifyPostTxFailedOrRetryStatusMutation = {
+export type NotifyCreatePostTxFailedOrRetryStatusMutation = {
+  __typename?: 'Mutation'
+  updatePostBlockchainSyncStatus: {
+    __typename?: 'IngestDataResponseDto'
+    message?: string | null
+  }
+}
+
+export type NotifyUpdatePostTxFailedOrRetryStatusMutationVariables = Exact<{
+  updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput
+}>
+
+export type NotifyUpdatePostTxFailedOrRetryStatusMutation = {
   __typename?: 'Mutation'
   updatePostBlockchainSyncStatus: {
     __typename?: 'IngestDataResponseDto'
@@ -273,8 +287,19 @@ export const UpdatePostOptimistic = gql`
     }
   }
 `
-export const NotifyPostTxFailedOrRetryStatus = gql`
-  mutation NotifyPostTxFailedOrRetryStatus(
+export const NotifyCreatePostTxFailedOrRetryStatus = gql`
+  mutation NotifyCreatePostTxFailedOrRetryStatus(
+    $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
+  ) {
+    updatePostBlockchainSyncStatus(
+      updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
+    ) {
+      message
+    }
+  }
+`
+export const NotifyUpdatePostTxFailedOrRetryStatus = gql`
+  mutation NotifyUpdatePostTxFailedOrRetryStatus(
     $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
   ) {
     updatePostBlockchainSyncStatus(

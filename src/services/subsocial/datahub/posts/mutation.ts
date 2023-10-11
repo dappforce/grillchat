@@ -5,6 +5,8 @@ import {
   CreatePostCallParsedArgs,
   SynthCreatePostTxFailedCallParsedArgs,
   SynthCreatePostTxRetryCallParsedArgs,
+  SynthUpdatePostTxFailedCallParsedArgs,
+  SynthUpdatePostTxRetryCallParsedArgs,
   UpdatePostCallParsedArgs,
 } from '@subsocial/data-hub-sdk'
 import { gql } from 'graphql-request'
@@ -13,8 +15,10 @@ import {
   CreatePostOptimisticInput,
   CreatePostOptimisticMutation,
   CreatePostOptimisticMutationVariables,
-  NotifyPostTxFailedOrRetryStatusMutation,
-  NotifyPostTxFailedOrRetryStatusMutationVariables,
+  NotifyCreatePostTxFailedOrRetryStatusMutation,
+  NotifyCreatePostTxFailedOrRetryStatusMutationVariables,
+  NotifyUpdatePostTxFailedOrRetryStatusMutation,
+  NotifyUpdatePostTxFailedOrRetryStatusMutationVariables,
   SocialCallName,
   SocialEventDataType,
   UpdatePostBlockchainSyncStatusInput,
@@ -147,8 +151,8 @@ async function updatePostData({
   })
 }
 
-const NOTIFY_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
-  mutation NotifyPostTxFailedOrRetryStatus(
+const NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
+  mutation NotifyCreatePostTxFailedOrRetryStatus(
     $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
   ) {
     updatePostBlockchainSyncStatus(
@@ -180,7 +184,7 @@ async function notifyCreatePostFailedOrRetryStatus({
         args: SynthCreatePostTxFailedCallParsedArgs
       }
     | {
-        name: SocialCallName.SynthUpdatePostTxRetry
+        name: SocialCallName.SynthCreatePostTxRetry
         args: SynthCreatePostTxRetryCallParsedArgs
       } = {
     name: SocialCallName.SynthCreatePostTxFailed,
@@ -188,7 +192,7 @@ async function notifyCreatePostFailedOrRetryStatus({
   }
   if (isRetrying) {
     event = {
-      name: SocialCallName.SynthUpdatePostTxRetry,
+      name: SocialCallName.SynthCreatePostTxRetry,
       args: {
         ...args,
         success: isRetrying.success,
@@ -209,10 +213,87 @@ async function notifyCreatePostFailedOrRetryStatus({
   augmentInputSig(signer, input)
 
   await datahubMutationRequest<
-    NotifyPostTxFailedOrRetryStatusMutation,
-    NotifyPostTxFailedOrRetryStatusMutationVariables
+    NotifyCreatePostTxFailedOrRetryStatusMutation,
+    NotifyCreatePostTxFailedOrRetryStatusMutationVariables
   >({
-    document: NOTIFY_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
+    document: NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
+    variables: {
+      updatePostBlockchainSyncStatusInput: input,
+    },
+  })
+}
+
+const NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
+  mutation NotifyUpdatePostTxFailedOrRetryStatus(
+    $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
+  ) {
+    updatePostBlockchainSyncStatus(
+      updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
+    ) {
+      message
+    }
+  }
+`
+async function notifyUpdatePostFailedOrRetryStatus({
+  postId,
+  address,
+  isRetrying,
+  signer,
+  ...args
+}: Omit<
+  DatahubParams<{
+    postId: string
+    isRetrying?: {
+      success: boolean
+    }
+    reason?: string
+    timestamp: string
+  }>,
+  'txSig'
+>) {
+  const eventArgs = {
+    ...args,
+    persistentId: postId,
+  }
+  let event:
+    | {
+        name: SocialCallName.SynthUpdatePostTxFailed
+        args: SynthUpdatePostTxFailedCallParsedArgs
+      }
+    | {
+        name: SocialCallName.SynthUpdatePostTxRetry
+        args: SynthUpdatePostTxRetryCallParsedArgs
+      } = {
+    name: SocialCallName.SynthUpdatePostTxFailed,
+    args: eventArgs,
+  }
+  if (isRetrying) {
+    event = {
+      name: SocialCallName.SynthUpdatePostTxRetry,
+      args: {
+        ...eventArgs,
+        success: isRetrying.success,
+      },
+    }
+  }
+
+  const input: UpdatePostBlockchainSyncStatusInput = {
+    dataType: SocialEventDataType.OffChain,
+    callData: {
+      name: event.name,
+      signer: address || '',
+      args: JSON.stringify(event.args),
+    },
+    providerAddr: address,
+    sig: '',
+  }
+  augmentInputSig(signer, input)
+
+  await datahubMutationRequest<
+    NotifyUpdatePostTxFailedOrRetryStatusMutation,
+    NotifyUpdatePostTxFailedOrRetryStatusMutationVariables
+  >({
+    document: NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
     variables: {
       updatePostBlockchainSyncStatusInput: input,
     },
@@ -224,6 +305,9 @@ const datahubMutation = {
   updatePostData: datahubMutationWrapper(updatePostData),
   notifyCreatePostFailedOrRetryStatus: datahubMutationWrapper(
     notifyCreatePostFailedOrRetryStatus
+  ),
+  notifyUpdatePostFailedOrRetryStatus: datahubMutationWrapper(
+    notifyUpdatePostFailedOrRetryStatus
   ),
 }
 export default datahubMutation

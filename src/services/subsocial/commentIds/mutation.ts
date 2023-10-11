@@ -146,8 +146,9 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           allowWindowUnload()
           const content = context.content
           const optimisticId = content.optimisticId
-          const isCreating = !data.messageIdToEdit && optimisticId
-          const isUpdating = data.messageIdToEdit
+          const messageIdToEdit = data.messageIdToEdit
+          const isCreating = !messageIdToEdit && optimisticId
+          const isUpdating = messageIdToEdit
 
           if (!isAfterTxGenerated || !getDatahubConfig()) {
             if (isCreating) {
@@ -169,7 +170,13 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
                 reason: error,
               })
             } else if (isUpdating) {
-              // TODO: Notify update post failed
+              datahubMutation.notifyUpdatePostFailedOrRetryStatus({
+                postId: messageIdToEdit,
+                address,
+                timestamp: Date.now().toString(),
+                signer: getWallet().signer,
+                reason: error,
+              })
             }
           }
         },
