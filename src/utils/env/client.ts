@@ -87,3 +87,21 @@ export function getCommunityHubId() {
     'NEXT_PUBLIC_COMMUNITY_HUB_ID'
   )
 }
+
+export function getDatahubConfig() {
+  const queryUrl = checkEnv(
+    process.env.NEXT_PUBLIC_DATAHUB_QUERY_URL,
+    'NEXT_PUBLIC_DATAHUB_QUERY_URL'
+  )
+  const mutationUrl = checkEnv(
+    process.env.NEXT_PUBLIC_DATAHUB_MUTATION_URL,
+    'NEXT_PUBLIC_DATAHUB_MUTATION_URL'
+  )
+  const subscriptionUrl = checkEnv(
+    process.env.NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL,
+    'NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL'
+  )
+  if (!mutationUrl || !queryUrl || !subscriptionUrl) return null
+
+  return { mutationUrl, queryUrl, subscriptionUrl }
+}
