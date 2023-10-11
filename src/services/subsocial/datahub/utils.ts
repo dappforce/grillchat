@@ -37,7 +37,7 @@ export function datahubMutationWrapper<
   T extends (...args: any[]) => Promise<any>
 >(func: T) {
   return (...args: Parameters<T>) => {
-    if (!!getDatahubConfig()) return
+    if (!getDatahubConfig()) return
     return func(...args)
   }
 }
