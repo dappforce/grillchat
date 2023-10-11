@@ -4,12 +4,10 @@ import { getPostQuery } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
-import sortKeys from 'sort-keys-recursive'
 import { getAccountDataQuery, getAccountsData } from '../evmAddresses'
-import { extractOptimisticIdData, isOptimisticId } from '../utils'
-import { getOptimisticContent } from './optimistic'
+import { isOptimisticId } from '../utils'
+import { commentIdsOptimisticEncoder } from './optimistic'
 import { getCommentIdsQueryKey } from './query'
-import { OptimisticMessageIdData } from './types'
 
 const subscribedPostIds = new Set<string>()
 const subscription = (
@@ -159,21 +157,10 @@ function filterOptimisticIds(
   // this is needed for case where same user sends multiple same messages
   const mutableNewPosts = [...newPosts]
   return optimisticIds.filter((id) => {
-    const idData = extractOptimisticIdData<OptimisticMessageIdData>(id)
-    if (!idData) return
-
     const foundData = mutableNewPosts.find((post) => {
-      function sortAndStringify(data: any) {
-        return JSON.stringify(sortKeys(data ?? {}))
-      }
-
       if (!post.content) return false
-
-      const importantContents = getOptimisticContent(post.content)
       return (
-        sortAndStringify(importantContents) ===
-          sortAndStringify(idData.messageData) &&
-        post.struct.ownerId === idData.address
+        post.content.optimisticId === commentIdsOptimisticEncoder.decode(id)
       )
     })
     if (foundData) mutableNewPosts.splice(mutableNewPosts.indexOf(foundData), 1)

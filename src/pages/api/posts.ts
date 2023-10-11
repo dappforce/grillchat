@@ -1,6 +1,8 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
+import { generateGetDataFromSquidWithBlockchainFallback } from '@/server/squid'
 import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
+import { getUrlFromText } from '@/utils/strings'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { parser } from 'html-metadata-parser'
@@ -68,9 +70,22 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
+const getPostsData = generateGetDataFromSquidWithBlockchainFallback(
+  getPostsFromSubsocial,
+  { paramToId: (param) => param, responseToId: (post) => post.id },
+  {
+    blockchainResponse: (post) => {
+      if (!post.content) return
+      const link = getUrlFromText(post.content.body)
+      if (!link) return
+      post.content.link = link
+    },
+  },
+  getInvalidatedPostRedisKey
+)
 export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   const validIds = postIds.filter((id) => !!id)
-  const posts = await getPostsFromSubsocial(validIds)
+  const posts = await getPostsData(validIds)
 
   const linksToFetch = new Set<string>()
   posts.forEach((post) => {

@@ -28,6 +28,8 @@ export interface TxCallbackInfo {
   error?: unknown
 }
 const DEFAULT_TX_CALLBACKS = {
+  onSend: ({ summary }: TxCallbackInfo) =>
+    console.info(`Sending ${summary}...`),
   onBroadcast: ({ summary }: TxCallbackInfo) =>
     console.info(`Broadcasting ${summary}...`),
   onError: ({ error }: TxCallbackInfo) =>

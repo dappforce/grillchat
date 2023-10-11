@@ -236,6 +236,7 @@ function sendTransaction<Data>(
       })
       nonceResolver()
       txCallbacks?.onSend()
+      globalTxCallbacks.onSend({ summary, address, data })
     } catch (e) {
       danglingNonceResolver?.()
       reject(e)
