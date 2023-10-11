@@ -1,5 +1,5 @@
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { CommentData } from '@subsocial/api/types'
 import { useMemo } from 'react'
 

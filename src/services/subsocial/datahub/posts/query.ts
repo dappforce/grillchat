@@ -33,7 +33,7 @@ async function getCommentIdsByPostIds(postId: string) {
   return res.findPosts.map((post) => post.persistentId || post.id)
 }
 
-export const getCommentIdsByPostIdQuery = createQuery({
-  key: 'commentIdsByPostId',
+export const getCommentIdsByPostIdFromDatahubQuery = createQuery({
+  key: 'comments',
   fetcher: getCommentIdsByPostIds,
 })

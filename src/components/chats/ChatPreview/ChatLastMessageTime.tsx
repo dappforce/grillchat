@@ -1,7 +1,7 @@
 import PluralText from '@/components/PluralText'
 import { SortChatOption } from '@/modules/chat/hooks/useSortedChats'
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { ComponentProps } from 'react'

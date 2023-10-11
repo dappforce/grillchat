@@ -1,7 +1,7 @@
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'

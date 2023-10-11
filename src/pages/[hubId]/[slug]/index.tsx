@@ -7,7 +7,7 @@ import { getPricesFromCache } from '@/pages/api/prices'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import {
   coingeckoTokenIds,

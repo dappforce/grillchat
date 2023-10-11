@@ -1,5 +1,5 @@
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { PostContent, PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
 import { SendMessageParams } from './types'

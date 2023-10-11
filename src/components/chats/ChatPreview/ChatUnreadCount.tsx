@@ -1,5 +1,5 @@
 import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
-import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
 import { ComponentProps, useMemo } from 'react'
 

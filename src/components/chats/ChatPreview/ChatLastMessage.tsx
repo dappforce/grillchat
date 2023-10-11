@@ -1,6 +1,6 @@
 import { getExtensionConfig } from '@/components/extensions/config'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
-import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
 import { PostContentExtension } from '@subsocial/api/types'
 import { ComponentProps } from 'react'

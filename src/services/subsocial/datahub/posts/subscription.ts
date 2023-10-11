@@ -1,5 +1,6 @@
 import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
+import { getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect } from 'react'
@@ -8,12 +9,14 @@ import {
   SubscribePostSubscription,
 } from '../generated-query'
 import { datahubSubscription } from '../utils'
-import { getCommentIdsByPostIdQuery } from './query'
+import { getCommentIdsByPostIdFromDatahubQuery } from './query'
 
 export function useSubscribePosts() {
   const queryClient = useQueryClient()
 
   useEffect(() => {
+    if (!getDatahubConfig()) return
+
     const unsub = subscription(queryClient)
     return () => {
       unsub?.()
@@ -100,37 +103,41 @@ async function processMessage(
   const rootPostId = entity.rootPost?.persistentId
   if (!rootPostId) return
 
-  getCommentIdsByPostIdQuery.setQueryData(queryClient, rootPostId, (oldIds) => {
-    if (!oldIds) return oldIds
-    const oldIdsSet = new Set(oldIds)
-    if (oldIdsSet.has(newestId)) return oldIds
+  getCommentIdsByPostIdFromDatahubQuery.setQueryData(
+    queryClient,
+    rootPostId,
+    (oldIds) => {
+      if (!oldIds) return oldIds
+      const oldIdsSet = new Set(oldIds)
+      if (oldIdsSet.has(newestId)) return oldIds
 
-    const newIds = [...oldIds]
+      const newIds = [...oldIds]
 
-    const clientOptimisticId = commentIdsOptimisticEncoder.encode(
-      entity.optimisticId ?? ''
-    )
-    if (oldIdsSet.has(clientOptimisticId)) {
-      const optimisticIdIndex = newIds.findIndex(
-        (id) => id === clientOptimisticId
+      const clientOptimisticId = commentIdsOptimisticEncoder.encode(
+        entity.optimisticId ?? ''
       )
-      newIds.splice(optimisticIdIndex, 1, newestId)
+      if (oldIdsSet.has(clientOptimisticId)) {
+        const optimisticIdIndex = newIds.findIndex(
+          (id) => id === clientOptimisticId
+        )
+        newIds.splice(optimisticIdIndex, 1, newestId)
 
-      const data = getPostQuery.getQueryData(queryClient, clientOptimisticId)
-      if (data) data.id = newestId
-      getPostQuery.setQueryData(queryClient, newestId, data)
+        const data = getPostQuery.getQueryData(queryClient, clientOptimisticId)
+        if (data) data.id = newestId
+        getPostQuery.setQueryData(queryClient, newestId, data)
 
+        return newIds
+      }
+
+      if (entity.persistentId && oldIdsSet.has(entity.id)) {
+        const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
+        newIds.splice(optimisticIdIndex, 1, newestId)
+
+        return newIds
+      }
+
+      newIds.push(newestId)
       return newIds
     }
-
-    if (entity.persistentId && oldIdsSet.has(entity.id)) {
-      const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
-      newIds.splice(optimisticIdIndex, 1, newestId)
-
-      return newIds
-    }
-
-    newIds.push(newestId)
-    return newIds
-  })
+  )
 }

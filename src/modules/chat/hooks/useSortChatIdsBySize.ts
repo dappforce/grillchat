@@ -1,4 +1,4 @@
-import { getCommentIdsByPostIdQuery } from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { useMemo } from 'react'
 
 export default function useSortChatIdsBySize(chatIds: string[]) {
