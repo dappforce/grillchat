@@ -74,6 +74,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         const res = await saveFile(content)
         const cid = res.cid
         if (!cid) throw new Error('Failed to save file')
+        console.log('waiting energy...')
         await waitHasEnergy()
 
         if (data.messageIdToEdit) {
