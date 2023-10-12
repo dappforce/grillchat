@@ -1,6 +1,6 @@
 import { getExtensionConfig } from '@/components/extensions/config'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
-import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
+import { useMessagesCount } from '@/hooks/useMessagesCount'
 import { cx } from '@/utils/class-names'
 import { PostContentExtension } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
@@ -19,8 +19,7 @@ export default function ChatLastMessage({
   ...props
 }: ChatLastMessageProps) {
   const { data: lastMessage } = useLastMessage(chatId)
-  const { data } = getPostMetadataQuery.useQuery(chatId)
-  const messageCount = data?.totalCommentsCount ?? 0
+  const messagesCount = useMessagesCount(chatId)
 
   const isMessageBlockedInCurrentHub = useIsMessageBlocked(
     hubId,
@@ -35,7 +34,7 @@ export default function ChatLastMessage({
   const isMessageBlocked =
     isMessageBlockedInCurrentHub || isMessageBlockedInOriginalHub
 
-  const defaultDescOrMessageCount = defaultDesc || `${messageCount} messages`
+  const defaultDescOrMessageCount = defaultDesc || `${messagesCount} messages`
 
   const extensions = lastMessage?.content?.extensions
 

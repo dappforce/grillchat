@@ -1,5 +1,5 @@
 import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
-import { getUnreadCountQuery } from '@/services/subsocial/datahub/posts/query'
+import useUnreadCount from '@/hooks/useUnreadCount'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 
@@ -13,13 +13,7 @@ export default function ChatUnreadCount({
 }: ChatUnreadCountProps) {
   const { getLastReadMessageId } = useLastReadMessageIdFromStorage(chatId)
   const lastReadId = getLastReadMessageId() ?? ''
-  const { data } = getUnreadCountQuery.useQuery(
-    { chatId, lastRead: { postId: lastReadId } },
-    {
-      enabled: !!lastReadId,
-    }
-  )
-  const unreadCount = data ?? 0
+  const unreadCount = useUnreadCount(chatId, lastReadId)
 
   if (unreadCount <= 0) return null
 

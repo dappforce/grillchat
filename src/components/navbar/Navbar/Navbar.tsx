@@ -10,6 +10,7 @@ import { getUnreadCountQuery } from '@/services/subsocial/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getDatahubConfig } from '@/utils/env/client'
 import { getHubPageLink } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
@@ -169,10 +170,11 @@ function NotificationBell() {
     parseInt(bellLastReadStorage.get() ?? '')
   )
 
+  // enable unread count only from datahub data because we can't get unread count by timestamp from squid/chain
   const { data: unreadCount } = getUnreadCountQuery.useQuery(
     { chatId: ANN_CHAT_ID, lastRead: { timestamp: lastTimestamp } },
     {
-      enabled: !!lastTimestamp,
+      enabled: !!getDatahubConfig() && !!lastTimestamp,
     }
   )
 

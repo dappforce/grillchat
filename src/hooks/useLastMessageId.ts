@@ -18,3 +18,21 @@ export function useLastMessageId(chatId: string) {
 
   return canUseDatahub ? lastIdFromDatahub : lastMessageId
 }
+
+export function useLastMessageIds(chatIds: string[]) {
+  const canUseDatahub = !!getDatahubConfig()
+
+  const commentIdsQueries = getCommentIdsByPostIdQuery.useQueries(chatIds, {
+    subscribe: true,
+    enabled: !canUseDatahub,
+  })
+
+  const postMetadatas = getPostMetadataQuery.useQueries(chatIds, {
+    enabled: canUseDatahub,
+  })
+
+  const lastMessageIds = canUseDatahub
+    ? postMetadatas.map(({ data }) => data?.lastCommentId)
+    : commentIdsQueries.map(({ data }) => data?.[data?.length - 1])
+  return lastMessageIds
+}
