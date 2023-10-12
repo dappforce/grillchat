@@ -80,7 +80,7 @@ async function fetchQuery(client: QueryClient | null, data: string) {
   }
   return res
 }
-export let getCommentIdsByPostIdQuery = {
+let getCommentIdsByPostIdQueryFromChain = {
   getQueryKey: getCommentIdsQueryKey,
   useQuery: useCommentIdsByPostId,
   useQueries: useCommentIdsByPostIds,
@@ -100,6 +100,6 @@ export let getCommentIdsByPostIdQuery = {
     return Promise.all(data.map((singleData) => fetchQuery(client, singleData)))
   },
 } satisfies typeof getCommentIdsByPostIdFromDatahubQuery
-if (getDatahubConfig()) {
-  getCommentIdsByPostIdQuery = getCommentIdsByPostIdFromDatahubQuery
-}
+export const getCommentIdsByPostIdQuery = getDatahubConfig()
+  ? getCommentIdsByPostIdFromDatahubQuery
+  : getCommentIdsByPostIdQueryFromChain

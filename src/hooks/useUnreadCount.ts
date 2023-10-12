@@ -4,14 +4,18 @@ import { getDatahubConfig } from '@/utils/env/client'
 import { useMemo } from 'react'
 
 export default function useUnreadCount(chatId: string, lastReadId: string) {
+  const isDatahubEnabled = !!getDatahubConfig()
+
   const { data: unreadCountFromDatahub } = getUnreadCountQuery.useQuery(
     { chatId: chatId, lastRead: { postId: lastReadId } },
     {
-      enabled: !!getDatahubConfig() && !!lastReadId,
+      enabled: isDatahubEnabled && !!lastReadId,
     }
   )
 
-  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId)
+  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId, {
+    enabled: !isDatahubEnabled,
+  })
 
   const unreadCount = useMemo(() => {
     const messagesLength = messageIds?.length
