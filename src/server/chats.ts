@@ -1,7 +1,7 @@
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
-import { getLastCommentIdQuery } from '@/services/subsocial/datahub/posts/query'
+import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { PostData } from '@subsocial/api/types'
@@ -48,17 +48,20 @@ export async function getChatPreviewsData(
   queryClient: QueryClient,
   chatIds: string[]
 ) {
-  const [lastCommentIds, chats] = await Promise.all([
+  const [postMetadatas, chats] = await Promise.all([
     Promise.all(
       chatIds
         .map((chatId) => {
-          return getLastCommentIdQuery.fetchQuery(queryClient, chatId)
+          return getPostMetadataQuery.fetchQuery(queryClient, chatId)
         })
         .filter(Boolean)
     ),
     getPostsServer(chatIds),
   ] as const)
 
+  const lastCommentIds = postMetadatas.map(
+    (metadata) => metadata?.lastCommentId
+  )
   const lastMessages = await getLastMessages(lastCommentIds as string[])
 
   return { chats, lastMessages }

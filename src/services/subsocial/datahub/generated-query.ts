@@ -178,13 +178,13 @@ export type FindPostsArgs = {
   spaceId?: InputMaybe<Scalars['String']['input']>
 }
 
-export enum InReplyToKind {
-  Post = 'Post',
+export type IdTimestampPair = {
+  id: Scalars['String']['input']
+  timestamp_gt: Scalars['String']['input']
 }
 
-export type LatestCommentsInput = {
-  ids?: InputMaybe<Array<Scalars['String']['input']>>
-  persistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+export enum InReplyToKind {
+  Post = 'Post',
 }
 
 export enum PinnedResourceType {
@@ -252,6 +252,17 @@ export enum PostKind {
   SharedPost = 'SharedPost',
 }
 
+export type PostMetadataInput = {
+  persistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type PostMetadataResponse = {
+  __typename?: 'PostMetadataResponse'
+  latestComment?: Maybe<CommentDataShort>
+  persistentId: Scalars['String']['output']
+  totalCommentsCount: Scalars['String']['output']
+}
+
 export type PostSubscriptionPayload = {
   __typename?: 'PostSubscriptionPayload'
   body?: Maybe<Scalars['String']['output']>
@@ -268,31 +279,30 @@ export type PostSubscriptionPayload = {
 export type Query = {
   __typename?: 'Query'
   findPosts: Array<Post>
-  latestComments: Array<RootPostIdCommentDataShortPair>
+  postMetadata: Array<PostMetadataResponse>
   posts: Array<Post>
+  unreadMessages: Array<UnreadPostsCountResponse>
 }
 
 export type QueryFindPostsArgs = {
   where: FindPostsArgs
 }
 
-export type QueryLatestCommentsArgs = {
-  where: LatestCommentsInput
+export type QueryPostMetadataArgs = {
+  where: PostMetadataInput
 }
 
 export type QueryPostsArgs = {
   where: FindPostsArgs
 }
 
+export type QueryUnreadMessagesArgs = {
+  where: UnreadMessagesInput
+}
+
 export enum QueryOrder {
   Asc = 'ASC',
   Desc = 'DESC',
-}
-
-export type RootPostIdCommentDataShortPair = {
-  __typename?: 'RootPostIdCommentDataShortPair'
-  commentData: CommentDataShort
-  id: Scalars['String']['output']
 }
 
 export enum SocialEventDataType {
@@ -341,6 +351,16 @@ export type SpaceFollowers = {
 export type Subscription = {
   __typename?: 'Subscription'
   post: PostSubscriptionPayload
+}
+
+export type UnreadMessagesInput = {
+  idTimestampPairs: Array<IdTimestampPair>
+}
+
+export type UnreadPostsCountResponse = {
+  __typename?: 'UnreadPostsCountResponse'
+  id: Scalars['String']['output']
+  unreadCount: Scalars['Int']['output']
 }
 
 export type DatahubPostFragmentFragment = {
@@ -542,20 +562,21 @@ export type GetCommentIdsInPostIdQuery = {
   }>
 }
 
-export type GetLastCommentIdQueryVariables = Exact<{
-  where: LatestCommentsInput
+export type GetPostMetadataQueryVariables = Exact<{
+  where: PostMetadataInput
 }>
 
-export type GetLastCommentIdQuery = {
+export type GetPostMetadataQuery = {
   __typename?: 'Query'
-  latestComments: Array<{
-    __typename?: 'RootPostIdCommentDataShortPair'
-    commentData: {
+  postMetadata: Array<{
+    __typename?: 'PostMetadataResponse'
+    totalCommentsCount: string
+    latestComment?: {
       __typename?: 'CommentDataShort'
       id: string
       persistentId?: string | null
       rootPostPersistentId: string
-    }
+    } | null
   }>
 }
 
@@ -671,10 +692,11 @@ export const GetCommentIdsInPostId = gql`
     }
   }
 `
-export const GetLastCommentId = gql`
-  query GetLastCommentId($where: LatestCommentsInput!) {
-    latestComments(where: $where) {
-      commentData {
+export const GetPostMetadata = gql`
+  query GetPostMetadata($where: PostMetadataInput!) {
+    postMetadata(where: $where) {
+      totalCommentsCount
+      latestComment {
         id
         persistentId
         rootPostPersistentId

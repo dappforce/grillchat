@@ -11,7 +11,7 @@ import {
 import { datahubSubscription } from '../utils'
 import {
   getCommentIdsByPostIdFromDatahubQuery,
-  getLastCommentIdQuery,
+  getPostMetadataQuery,
 } from './query'
 
 export function useSubscribePostsInDatahub() {
@@ -145,5 +145,5 @@ async function processMessage(
   )
 
   if (!data) await getPostQuery.fetchQuery(queryClient, newestId)
-  getLastCommentIdQuery.invalidate(queryClient, rootPostId)
+  getPostMetadataQuery.invalidate(queryClient, rootPostId)
 }

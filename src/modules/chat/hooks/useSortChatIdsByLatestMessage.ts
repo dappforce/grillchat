@@ -1,14 +1,14 @@
 import { getPostQuery } from '@/services/api/query'
-import { getLastCommentIdQuery } from '@/services/subsocial/datahub/posts/query'
+import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { CommentData } from '@subsocial/api/types'
 import { useMemo } from 'react'
 
 export default function useSortChatIdsByLatestMessage(chatIds: string[] = []) {
-  const latestMessageIdsQueries = getLastCommentIdQuery.useQueries(chatIds)
+  const latestMessageIdsQueries = getPostMetadataQuery.useQueries(chatIds)
   const latestMessageIds = useMemo(() => {
     return latestMessageIdsQueries
       ?.map((query) => {
-        return query.data
+        return query.data?.lastCommentId
       })
       .filter((id) => !!id) as string[]
   }, [latestMessageIdsQueries])

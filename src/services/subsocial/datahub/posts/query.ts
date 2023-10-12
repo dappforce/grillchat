@@ -3,8 +3,8 @@ import { gql } from 'graphql-request'
 import {
   GetCommentIdsInPostIdQuery,
   GetCommentIdsInPostIdQueryVariables,
-  GetLastCommentIdQuery,
-  GetLastCommentIdQueryVariables,
+  GetPostMetadataQuery,
+  GetPostMetadataQueryVariables,
   QueryOrder,
 } from '../generated-query'
 import { datahubQueryRequest } from '../utils'
@@ -40,8 +40,8 @@ export const getCommentIdsByPostIdFromDatahubQuery = createQuery({
   fetcher: getCommentIdsByPostIds,
 })
 
-const GET_LAST_COMMENT_ID = gql`
-  query GetLastCommentId($where: LatestCommentsInput!) {
+const GET_POST_METADATA = gql`
+  query GetPostMetadata($where: PostMetadataInput!) {
     postMetadata(where: $where) {
       totalCommentsCount
       latestComment {
@@ -52,29 +52,32 @@ const GET_LAST_COMMENT_ID = gql`
     }
   }
 `
-
-const getLastCommentId = poolQuery<string, string>({
+const getPostMetadata = poolQuery<
+  string,
+  { lastCommentId: string; totalCommentsCount: number; postId: string }
+>({
   multiCall: async (data) => {
     const res = await datahubQueryRequest<
-      GetLastCommentIdQuery,
-      GetLastCommentIdQueryVariables
+      GetPostMetadataQuery,
+      GetPostMetadataQueryVariables
     >({
-      document: GET_LAST_COMMENT_ID,
+      document: GET_POST_METADATA,
       variables: {
         where: { persistentIds: data },
       },
     })
-    const latestComments = res.latestComments
-    return data.map((chatId) => {
-      const comment = latestComments.find(
-        (comment) => comment.commentData.rootPostPersistentId === chatId
-      )?.commentData
-      return comment?.persistentId || comment?.id || ''
+    const postMetadata = res.postMetadata
+    return postMetadata.map((metadata) => {
+      const comment = metadata.latestComment
+      return {
+        lastCommentId: comment?.persistentId || comment?.id || '',
+        totalCommentsCount: parseInt(metadata.totalCommentsCount),
+        postId: metadata.latestComment?.rootPostPersistentId || '',
+      }
     })
   },
 })
-
-export const getLastCommentIdQuery = createQuery({
-  key: 'last-comment-id',
-  fetcher: getLastCommentId,
+export const getPostMetadataQuery = createQuery({
+  key: 'post-metadata',
+  fetcher: getPostMetadata,
 })
