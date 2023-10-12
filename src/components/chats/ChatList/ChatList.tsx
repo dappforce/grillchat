@@ -63,6 +63,7 @@ export default function ChatList(props: ChatListProps) {
 // If using bigger threshold, the scroll will be janky, but if using 0 threshold, it sometimes won't trigger `next` callback
 const SCROLL_THRESHOLD = 20
 
+const EMPTY_ARRAY: string[] = []
 function ChatListContent({
   asContainer,
   scrollableContainerClassName,
@@ -86,7 +87,7 @@ function ChatListContent({
   const { data: rawMessageIds } = getCommentIdsByPostIdQuery.useQuery(chatId, {
     subscribe: true,
   })
-  const messageIds = rawMessageIds || []
+  const messageIds = rawMessageIds || EMPTY_ARRAY
 
   const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)
   const {

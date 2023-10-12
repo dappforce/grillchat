@@ -9,7 +9,7 @@ export function datahubQueryRequest<T, V extends Variables = Variables>(
   const { queryUrl } = getDatahubConfig() || {}
   if (!queryUrl) throw new Error('Datahub (Query) config is not set')
 
-  const TIMEOUT = 3 * 1000 // 3 seconds
+  const TIMEOUT = 10 * 1000 // 10 seconds
   const client = new GraphQLClient(queryUrl, {
     timeout: TIMEOUT,
     ...config,
