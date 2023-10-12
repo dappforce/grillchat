@@ -580,6 +580,19 @@ export type GetPostMetadataQuery = {
   }>
 }
 
+export type GetUnreadCountQueryVariables = Exact<{
+  where: UnreadMessagesInput
+}>
+
+export type GetUnreadCountQuery = {
+  __typename?: 'Query'
+  unreadMessages: Array<{
+    __typename?: 'UnreadPostsCountResponse'
+    id: string
+    unreadCount: number
+  }>
+}
+
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never }>
 
 export type SubscribePostSubscription = {
@@ -701,6 +714,14 @@ export const GetPostMetadata = gql`
         persistentId
         rootPostPersistentId
       }
+    }
+  }
+`
+export const GetUnreadCount = gql`
+  query GetUnreadCount($where: UnreadMessagesInput!) {
+    unreadMessages(where: $where) {
+      id
+      unreadCount
     }
   }
 `

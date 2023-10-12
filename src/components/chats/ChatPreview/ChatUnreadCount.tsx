@@ -1,6 +1,7 @@
 import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
+import { getUnreadCountQuery } from '@/services/subsocial/datahub/posts/query'
 import { cx } from '@/utils/class-names'
-import { ComponentProps, useMemo } from 'react'
+import { ComponentProps } from 'react'
 
 export type ChatUnreadCountProps = ComponentProps<'div'> & {
   chatId: string
@@ -11,17 +12,14 @@ export default function ChatUnreadCount({
   ...props
 }: ChatUnreadCountProps) {
   const { getLastReadMessageId } = useLastReadMessageIdFromStorage(chatId)
-  // TODO: fix issue with unread count
-  const messageIds: string[] = []
-
-  const lastReadId = getLastReadMessageId()
-  const unreadCount = useMemo(() => {
-    const messagesLength = messageIds?.length
-    if (!lastReadId || !messagesLength || messagesLength === 0) return 0
-    const lastReadIndex = messageIds?.findIndex((id) => id === lastReadId)
-    if (lastReadIndex === -1) return 0
-    return messagesLength - 1 - lastReadIndex
-  }, [messageIds, lastReadId])
+  const lastReadId = getLastReadMessageId() ?? ''
+  const { data } = getUnreadCountQuery.useQuery(
+    { chatId, lastRead: { postId: lastReadId } },
+    {
+      enabled: !!lastReadId,
+    }
+  )
+  const unreadCount = data ?? 0
 
   if (unreadCount <= 0) return null
 

@@ -1,3 +1,5 @@
+import { getPostQuery } from '@/services/api/query'
+import { queryClient } from '@/services/provider'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
 import {
@@ -5,6 +7,8 @@ import {
   GetCommentIdsInPostIdQueryVariables,
   GetPostMetadataQuery,
   GetPostMetadataQueryVariables,
+  GetUnreadCountQuery,
+  GetUnreadCountQueryVariables,
   QueryOrder,
 } from '../generated-query'
 import { datahubQueryRequest } from '../utils'
@@ -17,7 +21,6 @@ const GET_COMMENT_IDS_IN_POST_ID = gql`
     }
   }
 `
-
 async function getCommentIdsByPostIds(postId: string) {
   const res = await datahubQueryRequest<
     GetCommentIdsInPostIdQuery,
@@ -34,7 +37,6 @@ async function getCommentIdsByPostIds(postId: string) {
   })
   return res.findPosts.map((post) => post.persistentId || post.id)
 }
-
 export const getCommentIdsByPostIdFromDatahubQuery = createQuery({
   key: 'comments',
   fetcher: getCommentIdsByPostIds,
@@ -80,4 +82,70 @@ const getPostMetadata = poolQuery<
 export const getPostMetadataQuery = createQuery({
   key: 'post-metadata',
   fetcher: getPostMetadata,
+})
+
+const GET_UNREAD_COUNT = gql`
+  query GetUnreadCount($where: UnreadMessagesInput!) {
+    unreadMessages(where: $where) {
+      id
+      unreadCount
+    }
+  }
+`
+const getUnreadCount = poolQuery<
+  { chatId: string; lastRead: { postId?: string; timestamp?: number } },
+  number
+>({
+  multiCall: async (data) => {
+    const pairs = await Promise.all(
+      data.map(async ({ chatId, lastRead }) => {
+        const { postId, timestamp } = lastRead
+        if (postId) {
+          const lastReadPost = await getPostQuery.fetchQuery(
+            queryClient,
+            postId
+          )
+          const lastReadTime = lastReadPost?.struct.createdAtTime
+          if (!lastReadTime) return
+
+          return {
+            id: chatId,
+            timestamp_gt: new Date(
+              lastReadPost.struct.createdAtTime
+            ).toISOString(),
+          }
+        } else {
+          return {
+            id: chatId,
+            timestamp_gt: new Date(timestamp || 0).toISOString(),
+          }
+        }
+      })
+    )
+    const filteredPairs = pairs.filter(Boolean) as NonNullable<
+      (typeof pairs)[number]
+    >[]
+    const res = await datahubQueryRequest<
+      GetUnreadCountQuery,
+      GetUnreadCountQueryVariables
+    >({
+      document: GET_UNREAD_COUNT,
+      variables: {
+        where: {
+          idTimestampPairs: filteredPairs,
+        },
+      },
+    })
+
+    return data.map(({ chatId }) => {
+      const unreadCount = res.unreadMessages.find(
+        (message) => message.id === chatId
+      )?.unreadCount
+      return unreadCount || 0
+    })
+  },
+})
+export const getUnreadCountQuery = createQuery({
+  key: 'unread-count',
+  fetcher: getUnreadCount,
 })
