@@ -77,9 +77,9 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=gl-notifications-dev.appspot.com
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=581626459774
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:581626459774:web:6b7098eb48c0b142f50a2f
-            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://first-test-data-hub.subsocial.network/graphql
-            GH_NEXT_PUBLIC_DATAHUB_MUTATION_URL=https://first-test-queue-data-hub.subsocial.network/graphql
-            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://first-test-data-hub.subsocial.network/graphql-ws
+            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://second-test-data-hub.subsocial.network/graphql
+            GH_NEXT_PUBLIC_DATAHUB_MUTATION_URL=https://second-test-queue-data-hub.subsocial.network/graphql
+            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://second-test-data-hub.subsocial.network/graphql-ws
           target: runner
           tags: |
             ${{ env.image }}
