@@ -62,7 +62,11 @@ export default function useCommonTxSteps<Data, ReturnValue>(
     }
 
     if (!hasEnoughEnergy && captchaToken) {
-      await requestToken({ address: usedAddress, captchaToken })
+      const [_, res] = await Promise.all([
+        requestToken({ address: usedAddress, captchaToken }),
+        mutateAsync(params),
+      ])
+      return res
     }
 
     return await mutateAsync(params)
