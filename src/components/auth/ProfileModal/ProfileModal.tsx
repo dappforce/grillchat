@@ -19,6 +19,7 @@ import PushNotificationContent, {
 } from './contents/notifications/PushNotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
 import PolkadotConnectAccountContent from './contents/PolkadotConnectAccountContent'
+import PolkadotConnectConfirmationContent from './contents/PolkadotConnectConfirmationContent'
 import PolkadotConnectContent from './contents/PolkadotConnectWalletContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
@@ -44,6 +45,7 @@ const modalContents: {
   'push-notifications': PushNotificationContent,
   'polkadot-connect': PolkadotConnectContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
+  'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
 }
 
 const pushNotificationDesc: Record<
@@ -183,6 +185,11 @@ export default function ProfileModal({
         return 'polkadot-connect'
       },
       withoutDefaultPadding: true,
+    },
+    'polkadot-connect-confirmation': {
+      title: '🔗 Proxy Confirmation',
+      desc: 'Please confirm the connection in your Polkadot extension.',
+      withBackButton: 'polkadot-connect-account',
     },
   }
 

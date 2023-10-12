@@ -43,6 +43,7 @@ export default function AccountSettingsContent({
         </div>
       </div>
       <MenuList
+        className='mb-3'
         menus={[
           {
             text: (

@@ -16,6 +16,7 @@ export type ProfileModalState =
   | 'subsocial-profile'
   | 'polkadot-connect'
   | 'polkadot-connect-account'
+  | 'polkadot-connect-confirmation'
   | 'private-key'
   | 'logout'
   | 'share-session'

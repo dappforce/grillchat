@@ -25,6 +25,10 @@ type State = {
   isInitializedAddress?: boolean
 
   preferredWallet: Wallet | null
+  temporarySelectedAccount: {
+    address: string
+    signer: Signer | null
+  } | null
   connectedWallet: {
     address: string
     signer: Signer | null
@@ -46,6 +50,7 @@ type Actions = {
   ) => Promise<string | false>
   logout: () => void
   setPreferredWallet: (wallet: Wallet | null) => void
+  setTemporarySelectedWallet: (address: string, signer: Signer | null) => void
   connectWallet: (address: string, signer: Signer | null) => Promise<void>
   saveConnectedWallet: () => void
   disconnectWallet: () => void
@@ -55,6 +60,7 @@ type Actions = {
 
 const initialState: State = {
   isInitializedAddress: true,
+  temporarySelectedAccount: null,
   preferredWallet: null,
   connectedWallet: null,
   address: null,
@@ -130,6 +136,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     set({ preferredWallet: wallet })
     if (!wallet) preferredWalletStorage.remove()
     else preferredWalletStorage.set(wallet.title)
+  },
+  setTemporarySelectedWallet: (address, signer) => {
+    set({ temporarySelectedAccount: { address, signer } })
   },
   _subscribeConnectedWalletEnergy: () => {
     const { connectedWallet } = get()
