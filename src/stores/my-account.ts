@@ -25,12 +25,12 @@ type State = {
   isInitializedAddress?: boolean
 
   preferredWallet: Wallet | null
-  connectedWallet: {
+  connectedWallet?: {
     address: string
     signer: Signer | null
     energy?: number
     _unsubscribeEnergy?: () => void
-  } | null
+  }
   parentProxyAddress?: string
 
   address: string | null
@@ -57,7 +57,6 @@ type Actions = {
 const initialState: State = {
   isInitializedAddress: true,
   preferredWallet: null,
-  connectedWallet: null,
   address: null,
   signer: null,
   energy: null,
@@ -164,7 +163,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   },
   disconnectWallet: () => {
     get().connectedWallet?._unsubscribeEnergy?.()
-    set({ connectedWallet: null })
+    set({ connectedWallet: undefined })
     parentProxyAddressStorage.remove()
   },
   login: async (secretKey, isInitialization) => {

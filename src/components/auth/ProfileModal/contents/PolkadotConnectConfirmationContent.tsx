@@ -11,7 +11,7 @@ export default function PolkadotConnectConfirmationContent({
 }: ContentProps) {
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const isLoadingEnergy = useMyAccount(
-    (state) => state.connectedWallet?.energy === null
+    (state) => state.connectedWallet?.energy === undefined
   )
   const connectWallet = useMyAccount((state) => state.connectWallet)
   const saveProxyAddress = useMyAccount((state) => state.saveProxyAddress)
