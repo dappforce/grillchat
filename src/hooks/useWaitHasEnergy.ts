@@ -1,10 +1,13 @@
 import { useMyAccount } from '@/stores/my-account'
 import { useCallback, useEffect, useRef } from 'react'
+import useWrapInRef from './useWrapInRef'
 
 export default function useWaitHasEnergy(timeout = 5_000) {
   const address = useMyAccount((state) => state.address)
   const energy = useMyAccount((state) => state.energy)
   const resubscribeEnergy = useMyAccount((state) => state._subscribeEnergy)
+
+  const energyRef = useWrapInRef(energy)
 
   const hasEnergyResolvers = useRef<(() => void)[]>([])
 
@@ -39,6 +42,6 @@ export default function useWaitHasEnergy(timeout = 5_000) {
   }, [address])
 
   return () => {
-    return !energy ? generateNewPromise() : Promise.resolve()
+    return !energyRef.current ? generateNewPromise() : Promise.resolve()
   }
 }
