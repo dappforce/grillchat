@@ -19,7 +19,7 @@ export async function prefetchChatPreviewsData(
   ]
 
   const [{ lastMessages, chats }] = await Promise.all([
-    getChatPreviewsData(allChatIds),
+    getChatPreviewsData(queryClient, allChatIds),
     getSpaceQuery.fetchQuery(queryClient, hubId),
   ] as const)
 
@@ -44,12 +44,15 @@ export async function prefetchChatPreviewsData(
   })
 }
 
-export async function getChatPreviewsData(chatIds: string[]) {
+export async function getChatPreviewsData(
+  queryClient: QueryClient,
+  chatIds: string[]
+) {
   const [lastCommentIds, chats] = await Promise.all([
     Promise.all(
       chatIds
         .map((chatId) => {
-          return getLastCommentIdQuery.fetchQuery(null, chatId)
+          return getLastCommentIdQuery.fetchQuery(queryClient, chatId)
         })
         .filter(Boolean)
     ),
