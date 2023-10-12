@@ -1,5 +1,5 @@
+import { useLastMessageId } from '@/hooks/useLastMessageId'
 import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
-import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { isOptimisticId } from '@/services/subsocial/utils'
 import { useEffect, useRef, useState } from 'react'
 
@@ -8,8 +8,7 @@ export default function useFocusedLastMessageId(chatId: string) {
   const [lastReadId, setLastReadId] = useState(() => getLastReadMessageId())
   const shouldUpdateLastReadId = useRef(false)
 
-  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId)
-  const lastMessageId = messageIds?.[messageIds.length - 1]
+  const lastMessageId = useLastMessageId(chatId)
 
   const hasSentMessage = isOptimisticId(lastMessageId ?? '')
   const hasReadAll = lastReadId === lastMessageId

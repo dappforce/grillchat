@@ -1,10 +1,9 @@
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
+import { getLastCommentIdQuery } from '@/services/subsocial/datahub/posts/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
 import { prefetchBlockedEntities } from './moderation/prefetch'
@@ -19,7 +18,7 @@ export async function prefetchChatPreviewsData(
     ...getLinkedChatIdsForHubId(hubId),
   ]
 
-  const [{ lastMessages, chats, messageIdsByChatIds }] = await Promise.all([
+  const [{ lastMessages, chats }] = await Promise.all([
     getChatPreviewsData(allChatIds),
     getSpaceQuery.fetchQuery(queryClient, hubId),
   ] as const)
@@ -36,14 +35,6 @@ export async function prefetchChatPreviewsData(
     [hubId, ...Array.from(additionalHubIds)],
     allChatIds
   )
-
-  messageIdsByChatIds.forEach((messageIds, idx) => {
-    getCommentIdsByPostIdQuery.setQueryInitialData(
-      queryClient,
-      allChatIds[idx],
-      messageIds ?? null
-    )
-  })
   ;[...lastMessages, ...chats].forEach((post) => {
     getPostQuery.setQueryData(
       queryClient,
@@ -54,26 +45,22 @@ export async function prefetchChatPreviewsData(
 }
 
 export async function getChatPreviewsData(chatIds: string[]) {
-  const subsocialApi = await getSubsocialApi()
-
-  const [messageIdsByChatIds, chats] = await Promise.all([
+  const [lastCommentIds, chats] = await Promise.all([
     Promise.all(
-      chatIds.map((chatId) => {
-        return getCommentIdsByPostIdQuery.fetchQuery(null, chatId)
-      })
+      chatIds
+        .map((chatId) => {
+          return getLastCommentIdQuery.fetchQuery(null, chatId)
+        })
+        .filter(Boolean)
     ),
     getPostsServer(chatIds),
   ] as const)
 
-  const lastMessages = await getLastMessages(messageIdsByChatIds)
+  const lastMessages = await getLastMessages(lastCommentIds as string[])
 
-  return { chats, lastMessages, messageIdsByChatIds }
+  return { chats, lastMessages }
 }
-async function getLastMessages(messageIdsByChatIds: string[][]) {
-  const lastMessageIds = messageIdsByChatIds
-    .map((ids) => ids[ids.length - 1])
-    .filter((id) => !!id)
-
+async function getLastMessages(lastMessageIds: string[]) {
   let lastMessages: PostData[] = []
   if (lastMessageIds.length > 0) {
     lastMessages = await getPostsServer(lastMessageIds)

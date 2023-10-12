@@ -9,7 +9,10 @@ import {
   SubscribePostSubscription,
 } from '../generated-query'
 import { datahubSubscription } from '../utils'
-import { getCommentIdsByPostIdFromDatahubQuery } from './query'
+import {
+  getCommentIdsByPostIdFromDatahubQuery,
+  getLastCommentIdQuery,
+} from './query'
 
 export function useSubscribePostsInDatahub() {
   const queryClient = useQueryClient()
@@ -140,4 +143,7 @@ async function processMessage(
       return newIds
     }
   )
+
+  if (!data) await getPostQuery.fetchQuery(queryClient, newestId)
+  getLastCommentIdQuery.invalidate(queryClient, rootPostId)
 }

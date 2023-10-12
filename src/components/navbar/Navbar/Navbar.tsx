@@ -173,6 +173,7 @@ const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
 const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
 function NotificationBell() {
   const sendEvent = useSendEvent()
+  // TODO: fix issue with unread count
   const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(ANN_CHAT_ID)
   const { data: blockedEntities } = getBlockedResourcesQuery.useQuery({
     postId: ANN_CHAT_ID,

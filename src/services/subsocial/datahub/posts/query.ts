@@ -1,8 +1,10 @@
-import { createQuery } from '@/subsocial-query'
+import { createQuery, poolQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
 import {
   GetCommentIdsInPostIdQuery,
   GetCommentIdsInPostIdQueryVariables,
+  GetLastCommentIdQuery,
+  GetLastCommentIdQueryVariables,
   QueryOrder,
 } from '../generated-query'
 import { datahubQueryRequest } from '../utils'
@@ -36,4 +38,42 @@ async function getCommentIdsByPostIds(postId: string) {
 export const getCommentIdsByPostIdFromDatahubQuery = createQuery({
   key: 'comments',
   fetcher: getCommentIdsByPostIds,
+})
+
+const GET_LAST_COMMENT_ID = gql`
+  query GetLastCommentId($where: LatestCommentsInput!) {
+    latestComments(where: $where) {
+      commentData {
+        id
+        persistentId
+        rootPostPersistentId
+      }
+    }
+  }
+`
+
+const getLastCommentId = poolQuery<string, string>({
+  multiCall: async (data) => {
+    const res = await datahubQueryRequest<
+      GetLastCommentIdQuery,
+      GetLastCommentIdQueryVariables
+    >({
+      document: GET_LAST_COMMENT_ID,
+      variables: {
+        where: { persistentIds: data },
+      },
+    })
+    const latestComments = res.latestComments
+    return data.map((chatId) => {
+      const comment = latestComments.find(
+        (comment) => comment.commentData.rootPostPersistentId === chatId
+      )?.commentData
+      return comment?.persistentId || comment?.id || ''
+    })
+  },
+})
+
+export const getLastCommentIdQuery = createQuery({
+  key: 'last-comment-id',
+  fetcher: getLastCommentId,
 })

@@ -63,6 +63,19 @@ export type AccountFollowers = {
   id: Scalars['String']['output']
 }
 
+export type CommentDataShort = {
+  __typename?: 'CommentDataShort'
+  body?: Maybe<Scalars['String']['output']>
+  content?: Maybe<Scalars['String']['output']>
+  createdAtTime: Scalars['DateTime']['output']
+  id: Scalars['String']['output']
+  optimisticId?: Maybe<Scalars['String']['output']>
+  persistentId?: Maybe<Scalars['String']['output']>
+  rootPostId: Scalars['String']['output']
+  rootPostPersistentId: Scalars['String']['output']
+  summary?: Maybe<Scalars['String']['output']>
+}
+
 export type ContentExtension = {
   __typename?: 'ContentExtension'
   amount?: Maybe<Scalars['String']['output']>
@@ -169,6 +182,11 @@ export enum InReplyToKind {
   Post = 'Post',
 }
 
+export type LatestCommentsInput = {
+  ids?: InputMaybe<Array<Scalars['String']['input']>>
+  persistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
 export enum PinnedResourceType {
   Post = 'Post',
   Space = 'Space',
@@ -250,15 +268,31 @@ export type PostSubscriptionPayload = {
 export type Query = {
   __typename?: 'Query'
   findPosts: Array<Post>
+  latestComments: Array<RootPostIdCommentDataShortPair>
+  posts: Array<Post>
 }
 
 export type QueryFindPostsArgs = {
   where: FindPostsArgs
 }
 
+export type QueryLatestCommentsArgs = {
+  where: LatestCommentsInput
+}
+
+export type QueryPostsArgs = {
+  where: FindPostsArgs
+}
+
 export enum QueryOrder {
   Asc = 'ASC',
   Desc = 'DESC',
+}
+
+export type RootPostIdCommentDataShortPair = {
+  __typename?: 'RootPostIdCommentDataShortPair'
+  commentData: CommentDataShort
+  id: Scalars['String']['output']
 }
 
 export enum SocialEventDataType {
@@ -508,6 +542,23 @@ export type GetCommentIdsInPostIdQuery = {
   }>
 }
 
+export type GetLastCommentIdQueryVariables = Exact<{
+  where: LatestCommentsInput
+}>
+
+export type GetLastCommentIdQuery = {
+  __typename?: 'Query'
+  latestComments: Array<{
+    __typename?: 'RootPostIdCommentDataShortPair'
+    commentData: {
+      __typename?: 'CommentDataShort'
+      id: string
+      persistentId?: string | null
+      rootPostPersistentId: string
+    }
+  }>
+}
+
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never }>
 
 export type SubscribePostSubscription = {
@@ -617,6 +668,17 @@ export const GetCommentIdsInPostId = gql`
     findPosts(where: $where) {
       id
       persistentId
+    }
+  }
+`
+export const GetLastCommentId = gql`
+  query GetLastCommentId($where: LatestCommentsInput!) {
+    latestComments(where: $where) {
+      commentData {
+        id
+        persistentId
+        rootPostPersistentId
+      }
     }
   }
 `

@@ -104,9 +104,9 @@ export async function getPostsFromDatahub(postIds: string[]) {
   if (postIds.length === 0) return []
 
   const persistentIds: string[] = []
-  const optimisticIds: string[] = []
+  const entityIds: string[] = []
   postIds.forEach((id) => {
-    if (isOptimisticId(id)) optimisticIds.push(id)
+    if (isOptimisticId(id)) entityIds.push(id)
     else persistentIds.push(id)
   })
 
@@ -127,13 +127,13 @@ export async function getPostsFromDatahub(postIds: string[]) {
     })
   }
 
-  if (optimisticIds.length > 0) {
+  if (entityIds.length > 0) {
     const res = await datahubQueryRequest<
       GetOptimisticPostsQuery,
       GetOptimisticPostsQueryVariables
     >({
       document: GET_OPTIMISTIC_POSTS,
-      variables: { ids: optimisticIds },
+      variables: { ids: entityIds },
     })
     optimisticPosts = res.findPosts.map((post) => {
       return mapDatahubPostFragment(post as any)
