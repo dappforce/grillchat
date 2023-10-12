@@ -18,7 +18,7 @@ export default function AccountSettingsContent({
   const { data: profile } = getProfileQuery.useQuery(address)
   const hasNickname = !!profile?.profileSpace?.name
 
-  const hasConnectedWallet = useMyAccount((state) => !!state.connectedWallet)
+  const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
   const sendEvent = useSendEvent()
 
   const commonEventProps = { eventSource: 'account_settings_menu' }
@@ -69,7 +69,7 @@ export default function AccountSettingsContent({
             text: (
               <span className='flex items-center gap-2'>
                 <span>Polkadot Connect</span>
-                {hasConnectedWallet && <Notice size='sm'>Connected</Notice>}
+                {hasProxyAddress && <Notice size='sm'>Connected</Notice>}
               </span>
             ),
             icon: PolkadotIcon,

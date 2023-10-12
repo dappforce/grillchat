@@ -25,16 +25,13 @@ type State = {
   isInitializedAddress?: boolean
 
   preferredWallet: Wallet | null
-  temporarySelectedAccount: {
-    address: string
-    signer: Signer | null
-  } | null
   connectedWallet: {
     address: string
     signer: Signer | null
     energy?: number
     _unsubscribeEnergy?: () => void
   } | null
+  parentProxyAddress?: string
 
   address: string | null
   signer: Signer | null
@@ -50,9 +47,8 @@ type Actions = {
   ) => Promise<string | false>
   logout: () => void
   setPreferredWallet: (wallet: Wallet | null) => void
-  setTemporarySelectedWallet: (address: string, signer: Signer | null) => void
   connectWallet: (address: string, signer: Signer | null) => Promise<void>
-  saveConnectedWallet: () => void
+  saveProxyAddress: () => void
   disconnectWallet: () => void
   _subscribeEnergy: () => void
   _subscribeConnectedWalletEnergy: () => void
@@ -60,7 +56,6 @@ type Actions = {
 
 const initialState: State = {
   isInitializedAddress: true,
-  temporarySelectedAccount: null,
   preferredWallet: null,
   connectedWallet: null,
   address: null,
@@ -83,7 +78,7 @@ export const followedIdsStorage = new LocalStorageAndForage(
 )
 export const hasSentMessageStorage = new LocalStorage(() => 'has-sent-message')
 const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
-const connectedWalletAddressStorage = new LocalStorage(
+const parentProxyAddressStorage = new LocalStorage(
   () => CONNECTED_WALLET_ADDRESS_STORAGE_KEY
 )
 const preferredWalletStorage = new LocalStorage(() => 'preferred-wallet')
@@ -137,9 +132,6 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     if (!wallet) preferredWalletStorage.remove()
     else preferredWalletStorage.set(wallet.title)
   },
-  setTemporarySelectedWallet: (address, signer) => {
-    set({ temporarySelectedAccount: { address, signer } })
-  },
   _subscribeConnectedWalletEnergy: () => {
     const { connectedWallet } = get()
     if (!connectedWallet) return
@@ -164,15 +156,16 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     set({ connectedWallet: { address: parsedAddress, signer } })
     get()._subscribeConnectedWalletEnergy()
   },
-  saveConnectedWallet: () => {
+  saveProxyAddress: () => {
     const { connectedWallet } = get()
     if (!connectedWallet) return
-    connectedWalletAddressStorage.set(connectedWallet.address)
+    parentProxyAddressStorage.set(connectedWallet.address)
+    set({ parentProxyAddress: connectedWallet.address })
   },
   disconnectWallet: () => {
     get().connectedWallet?._unsubscribeEnergy?.()
     set({ connectedWallet: null })
-    connectedWalletAddressStorage.remove()
+    parentProxyAddressStorage.remove()
   },
   login: async (secretKey, isInitialization) => {
     const { toSubsocialAddress } = await import('@subsocial/utils')
@@ -235,7 +228,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     accountStorage.remove()
     accountAddressStorage.remove()
     hasSentMessageStorage.remove()
-    connectedWalletAddressStorage.remove()
+    parentProxyAddressStorage.remove()
     if (address) followedIdsStorage.remove(address)
 
     set({ ...initialState })
@@ -278,17 +271,17 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       else preferredWalletStorage.remove()
     }
 
-    const connectedWalletAddress = connectedWalletAddressStorage.get()
-    if (connectedWalletAddress) {
-      get().connectWallet(connectedWalletAddress, null)
+    const parentProxyAddress = parentProxyAddressStorage.get()
+    if (parentProxyAddress) {
+      set({ parentProxyAddress })
       try {
         const proxy = await getProxiesQuery.fetchQuery(queryClient, {
-          address: connectedWalletAddress,
+          address: parentProxyAddress,
         })
         const isProxyValid = proxy.includes(get().address ?? '')
         if (!isProxyValid) {
-          connectedWalletAddressStorage.remove()
-          set({ connectedWallet: null })
+          parentProxyAddressStorage.remove()
+          set({ parentProxyAddress: undefined })
         }
       } catch (err) {
         console.error('Failed to fetch proxies', err)
@@ -340,8 +333,6 @@ async function subscribeEnergy(
 
 export function useMyMainAddress() {
   const address = useMyAccount((state) => state.address)
-  const connectedWalletAddress = useMyAccount(
-    (state) => state.connectedWallet?.address
-  )
-  return connectedWalletAddress || address
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+  return parentProxyAddress || address
 }

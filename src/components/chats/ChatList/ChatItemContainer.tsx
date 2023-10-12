@@ -34,9 +34,7 @@ function ChatItemContainer(
   const { content } = message
   const { body, extensions } = content || {}
   const address = useMyAccount((state) => state.address)
-  const connectedWalletAddress = useMyAccount(
-    (state) => state.connectedWallet?.address
-  )
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
 
   if (isMessageBlocked || (!body && !extensions)) return null
 
@@ -44,7 +42,7 @@ function ChatItemContainer(
   const senderAddress = ownerId ?? ''
 
   const isMyMessage =
-    address === senderAddress || senderAddress === connectedWalletAddress
+    address === senderAddress || senderAddress === parentProxyAddress
 
   return (
     <div

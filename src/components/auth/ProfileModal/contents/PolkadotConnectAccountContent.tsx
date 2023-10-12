@@ -21,9 +21,7 @@ export default function PolkadotConnectAccountContent({
 }: ContentProps) {
   const preferredWallet = useMyAccount((state) => state.preferredWallet)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
-  const setTemporarySelectedWallet = useMyAccount(
-    (state) => state.setTemporarySelectedWallet
-  )
+  const connectWallet = useMyAccount((state) => state.connectWallet)
 
   const [accounts, setAccounts] = useState<WalletAccount[] | null>(null)
 
@@ -108,10 +106,7 @@ export default function PolkadotConnectAccountContent({
                   onClick: () => {
                     if (!account.signer) return
 
-                    setTemporarySelectedWallet(
-                      account.address,
-                      account.signer as Signer
-                    )
+                    connectWallet(account.address, account.signer as Signer)
                     setCurrentState('polkadot-connect-confirmation')
                   },
                   icon: () =>

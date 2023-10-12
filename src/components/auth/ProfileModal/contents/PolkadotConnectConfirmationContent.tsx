@@ -9,20 +9,18 @@ import { ContentProps } from '../types'
 export default function PolkadotConnectConfirmationContent({
   setCurrentState,
 }: ContentProps) {
-  const temporarySelectedAccount = useMyAccount(
-    (state) => state.temporarySelectedAccount
-  )
+  const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const isLoadingEnergy = useMyAccount(
     (state) => state.connectedWallet?.energy === null
   )
   const connectWallet = useMyAccount((state) => state.connectWallet)
-  const saveConnectedWallet = useMyAccount((state) => state.saveConnectedWallet)
+  const saveProxyAddress = useMyAccount((state) => state.saveProxyAddress)
 
   return (
     <div className='mt-2 flex flex-col gap-6'>
       <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
         <ProfilePreview
-          address={toSubsocialAddress(temporarySelectedAccount?.address) ?? ''}
+          address={toSubsocialAddress(connectedWallet?.address) ?? ''}
           avatarClassName={cx('h-16 w-16')}
         />
       </div>
@@ -32,7 +30,7 @@ export default function PolkadotConnectConfirmationContent({
           config={{
             txCallbacks: {
               onSuccess: () => {
-                saveConnectedWallet()
+                saveProxyAddress()
                 setCurrentState('account-settings')
               },
             },
@@ -43,10 +41,8 @@ export default function PolkadotConnectConfirmationContent({
               <Button
                 size='lg'
                 onClick={async () => {
-                  const address = toSubsocialAddress(
-                    temporarySelectedAccount?.address
-                  )
-                  const signer = temporarySelectedAccount?.signer
+                  const address = toSubsocialAddress(connectedWallet?.address)
+                  const signer = connectedWallet?.signer
                   if (address && signer) {
                     connectWallet(address, signer)
                     addProxy(null)

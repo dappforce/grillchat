@@ -144,7 +144,6 @@ function sendTransaction<Data>(
       danglingNonceResolver = nonceResolver
 
       let usedTx = tx
-      console.log(proxyToAddress)
       if (proxyToAddress) {
         usedTx = apis.substrateApi.tx.proxy.proxy(proxyToAddress, null, tx)
       }

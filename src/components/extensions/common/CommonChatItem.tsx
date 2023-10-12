@@ -54,16 +54,13 @@ export default function CommonChatItem({
   hubId,
 }: CommonChatItemProps) {
   const myAddress = useMyMainAddress()
-  const connectedWalletAddress = useMyAccount(
-    (state) => state.connectedWallet?.address
-  )
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const { struct, content } = message
   const { ownerId, createdAtTime } = struct
   const { inReplyTo, body } = content || {}
 
   const isMyMessage =
-    _isMyMessage ??
-    (ownerId === myAddress || connectedWalletAddress === ownerId)
+    _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = !isOptimisticId(message.id)
 

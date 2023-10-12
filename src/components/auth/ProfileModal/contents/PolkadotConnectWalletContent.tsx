@@ -17,10 +17,10 @@ export default function PolkadotConnectContent({
   }, [preferredWallet, setCurrentState])
 
   const address = useMyAccount((state) => state.address)
-  const connectedWallet = useMyAccount((state) => state.connectedWallet)
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const { data: proxies } = getProxiesQuery.useQuery(
-    { address: connectedWallet?.address ?? '' },
-    { enabled: !!connectedWallet?.address }
+    { address: parentProxyAddress ?? '' },
+    { enabled: !!parentProxyAddress }
   )
 
   const supportedWallets: Wallet[] = getWallets()

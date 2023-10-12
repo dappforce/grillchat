@@ -22,7 +22,7 @@ export function useWalletGetter(
   return () => ({
     address: useMyAccount.getState().address ?? '',
     signer: useMyAccount.getState().signer,
-    proxyToAddress: useMyAccount.getState().connectedWallet?.address,
+    proxyToAddress: useMyAccount.getState().parentProxyAddress,
   })
 }
 
