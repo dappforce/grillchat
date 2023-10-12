@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react'
 
 export default function useWaitHasEnergy(
   isUsingConnectedWallet?: boolean,
-  timeout = 5_000
+  timeout = 10_000
 ) {
   const hasEnergyResolvers = useRef<(() => void)[]>([])
   const { address, energy, resubscribeEnergy } = useAccountSwitch(
