@@ -42,8 +42,9 @@ export const getCommentIdsByPostIdFromDatahubQuery = createQuery({
 
 const GET_LAST_COMMENT_ID = gql`
   query GetLastCommentId($where: LatestCommentsInput!) {
-    latestComments(where: $where) {
-      commentData {
+    postMetadata(where: $where) {
+      totalCommentsCount
+      latestComment {
         id
         persistentId
         rootPostPersistentId
