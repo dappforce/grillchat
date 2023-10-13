@@ -8,6 +8,7 @@ import {
   ApiRequestTokenBody,
   ApiRequestTokenResponse,
 } from '@/pages/api/request-token'
+import { RevalidateChatInput } from '@/pages/api/revalidation/chat'
 import { SaveFileRequest, SaveFileResponse } from '@/pages/api/save-file'
 import { SaveImageResponse } from '@/pages/api/save-image'
 import { useTransactions } from '@/stores/transactions'
@@ -84,3 +85,8 @@ export async function invalidateProfileServerCache(address: string) {
   const res = await axios.post('/api/profiles', { address })
   return res.data as ApiPostsInvalidationResponse
 }
+
+export function revalidateChatPage(input: RevalidateChatInput) {
+  return axios.post('/revalidation/chat', input)
+}
+export const useRevalidateChatPage = mutationWrapper(revalidateChatPage)

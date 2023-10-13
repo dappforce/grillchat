@@ -1,6 +1,6 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import { useSaveFile } from '@/services/api/mutation'
+import { useRevalidateChatPage, useSaveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import datahubMutation from '@/services/subsocial/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
@@ -11,6 +11,7 @@ import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/router'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
@@ -52,6 +53,8 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
   const { mutateAsync: saveFile } = useSaveFile()
   const waitHasEnergy = useWaitHasEnergy()
+  const { mutate: revalidateChatPage } = useRevalidateChatPage()
+  const router = useRouter()
 
   return useSubsocialMutation<
     SendMessageParams,
@@ -84,6 +87,8 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             content,
             postId: data.messageIdToEdit,
           })
+          revalidateChatPage({ chatId: data.chatId, hubId: data.hubId })
+
           return {
             tx: substrateApi.tx.posts.updatePost(data.messageIdToEdit, {
               content: IpfsWrapper(cid),
@@ -98,6 +103,8 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             rootPostId: data.chatId,
             spaceId: data.hubId,
           })
+          revalidateChatPage({ chatId: data.chatId, hubId: data.hubId })
+
           return {
             tx: substrateApi.tx.posts.createPost(
               null,

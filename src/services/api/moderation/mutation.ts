@@ -8,6 +8,7 @@ import { ResourceTypes } from '@/server/moderation/utils'
 import { queryClient } from '@/services/provider'
 import mutationWrapper from '@/subsocial-query/base'
 import axios, { AxiosResponse } from 'axios'
+import { revalidateChatPage } from '../mutation'
 import { processMessageTpl } from '../utils'
 import {
   getBlockedInPostIdDetailedQuery,
@@ -103,6 +104,11 @@ export const useCommitModerationAction = mutationWrapper(
     },
     onSuccess: (_, variables) => {
       onErrorOrSuccess(variables)
+      if (variables.action === 'block' || variables.action === 'unblock') {
+        try {
+          revalidateChatPage({ chatId: variables.ctxPostId })
+        } catch {}
+      }
     },
   }
 )

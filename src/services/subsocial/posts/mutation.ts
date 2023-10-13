@@ -1,14 +1,20 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import { invalidatePostServerCache, saveFile } from '@/services/api/mutation'
+import {
+  invalidatePostServerCache,
+  saveFile,
+  useRevalidateChatPage,
+} from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { getDatahubConfig } from '@/utils/env/client'
 import { IpfsWrapper } from '@/utils/ipfs'
+import { getChatPageLink } from '@/utils/links'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/router'
 import datahubMutation from '../datahub/posts/mutation'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
@@ -180,6 +186,8 @@ export function useUpsertPost(
   const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
+  const { mutate: revalidateChatPage } = useRevalidateChatPage()
+  const router = useRouter()
 
   return useSubsocialMutation<UpsertPostParams, GeneratedMessageContent>(
     {
@@ -206,6 +214,8 @@ export function useUpsertPost(
             content,
             postId: payload.postId,
           })
+          revalidateChatPage({ pathname: getChatPageLink(router) })
+
           return {
             tx: substrateApi.tx.posts.updatePost(payload.postId, {
               content: IpfsWrapper(cid),
