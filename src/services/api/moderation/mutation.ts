@@ -102,11 +102,11 @@ export const useCommitModerationAction = mutationWrapper(
     onError: (_, variables) => {
       onErrorOrSuccess(variables)
     },
-    onSuccess: (_, variables) => {
+    onSuccess: async (_, variables) => {
       onErrorOrSuccess(variables)
       if (variables.action === 'block' || variables.action === 'unblock') {
         try {
-          revalidateChatPage({ chatId: variables.ctxPostId })
+          await revalidateChatPage({ chatId: variables.ctxPostId })
         } catch {}
       }
     },
