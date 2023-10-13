@@ -87,6 +87,6 @@ export async function invalidateProfileServerCache(address: string) {
 }
 
 export function revalidateChatPage(input: RevalidateChatInput) {
-  return axios.post('/revalidation/chat', input)
+  return axios.post('/api/revalidation/chat', input)
 }
 export const useRevalidateChatPage = mutationWrapper(revalidateChatPage)
