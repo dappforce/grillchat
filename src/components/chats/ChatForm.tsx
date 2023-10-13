@@ -29,8 +29,10 @@ import { toast } from 'react-hot-toast'
 import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
-import StayUpdatedModal from './StayUpdatedModal'
 
+const StayUpdatedModal = dynamic(() => import('./StayUpdatedModal'), {
+  ssr: false,
+})
 const CaptchaInvisible = dynamic(
   () => import('@/components/captcha/CaptchaInvisible'),
   {
