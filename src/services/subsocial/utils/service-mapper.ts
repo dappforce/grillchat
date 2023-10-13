@@ -46,7 +46,8 @@ export function standaloneDynamicFetcherWrapper<Data, ReturnValue>(
     const isExistSquidUrl = !!getSquidUrl()
     const isExistDatahubUrl = !!getDatahubConfig()
 
-    if (isExistDatahubUrl && dataSource === 'datahub' && fetcher.datahub) {
+    // datahub is the default data source
+    if (isExistDatahubUrl && fetcher.datahub) {
       return fetcher.datahub(data)
     }
 
