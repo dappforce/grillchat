@@ -38,8 +38,8 @@ async function getUnreadCount(address: string | null) {
   if (address) {
     try {
       const followedIds = JSON.parse(followedIdsStorage.get(address) ?? '[]')
-      if (followedIds) {
-        chatIdsToFetch.push(...followedIds.slice(0, 10))
+      if (followedIds && Array.isArray(followedIds)) {
+        chatIdsToFetch.push(...(followedIds as string[]).slice(0, 10))
         chatIdsToFetch = Array.from(new Set(chatIdsToFetch))
       }
     } catch {}

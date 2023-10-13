@@ -105,7 +105,7 @@ async function verifyCaptcha(captchaToken: string) {
     body: formData,
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   })
-  const jsonRes = await res.json()
+  const jsonRes = (await res.json()) as any
   if (!jsonRes.success) throw new Error('Invalid Token')
   return true
 }

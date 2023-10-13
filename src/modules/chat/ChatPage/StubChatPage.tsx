@@ -84,6 +84,6 @@ export default function StubChatPage() {
 
 function getMetadataFromUrl() {
   const metadata = decodeURIComponent(getUrlQuery('metadata'))
-  const parsedMetadata = metadata ? JSON.parse(metadata) : undefined
+  const parsedMetadata = metadata ? (JSON.parse(metadata) as any) : undefined
   return parsedMetadata
 }
