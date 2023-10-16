@@ -1,12 +1,12 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
 import { Listbox, Transition } from '@headlessui/react'
 import Image, { ImageProps } from 'next/image'
-import { Fragment } from 'react'
+import { Fragment, isValidElement } from 'react'
 import { IoIosArrowDown } from 'react-icons/io'
 
 export type ListItem<AdditionalData = {}> = {
   id: string
-  icon?: ImageProps['src']
+  icon?: ImageProps['src'] | JSX.Element
   label: string
   disabledItem?: boolean | string
 } & AdditionalData
@@ -46,7 +46,9 @@ export default function SelectInput<AdditionalData = {}>({
               <Listbox.Button
                 className={cx(
                   'relative w-full cursor-default rounded-xl',
-                  selected?.icon ? 'py-2' : 'py-3',
+                  selected?.icon && !isValidElement(selected?.icon)
+                    ? 'py-2'
+                    : 'py-3',
                   'pl-4 pr-12 text-left',
                   'appearance-none text-base leading-6 ring-1 ring-inset ring-border-gray',
                   'bg-background text-text',
@@ -54,14 +56,17 @@ export default function SelectInput<AdditionalData = {}>({
                 )}
               >
                 <span className='flex items-center gap-3'>
-                  {selected?.icon && (
-                    <Image
-                      src={selected.icon}
-                      className={cx('rounded-full', imgClassName)}
-                      alt=''
-                      role='presentation'
-                    />
-                  )}
+                  {selected?.icon &&
+                    (isValidElement(selected.icon) ? (
+                      selected.icon
+                    ) : (
+                      <Image
+                        src={selected.icon as string}
+                        className={cx('rounded-full', imgClassName)}
+                        alt=''
+                        role='presentation'
+                      />
+                    ))}
                   <span className='block truncate'>
                     {selected?.label ?? placeholder ?? ''}
                   </span>
@@ -141,14 +146,17 @@ function SelectListItem<AdditionalData>({
           ) : (
             <>
               <div className='flex items-center gap-3'>
-                {item.icon && (
-                  <Image
-                    src={item.icon}
-                    className={cx('rounded-full', imgClassName)}
-                    alt=''
-                    role='presentation'
-                  />
-                )}
+                {item.icon &&
+                  (isValidElement(item.icon) ? (
+                    item.icon
+                  ) : (
+                    <Image
+                      src={item.icon as string}
+                      className={cx('rounded-full', imgClassName)}
+                      alt=''
+                      role='presentation'
+                    />
+                  ))}
                 <span
                   className={cx('block truncate text-base', {
                     ['text-gray-500']: item.disabledItem,
@@ -161,7 +169,7 @@ function SelectListItem<AdditionalData>({
                 <div className='text-gray-500'>
                   {typeof item.disabledItem === 'string'
                     ? item.disabledItem
-                    : 'Soon'}
+                    : ''}
                 </div>
               )}
             </>

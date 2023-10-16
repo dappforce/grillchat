@@ -9,6 +9,7 @@ export type SubsocialProfile = {
     id: string
     name?: string
     image?: string
+    defaultProfile?: string
   } | null
   address: string
 }
@@ -24,6 +25,7 @@ async function getProfilesFromBlockchain({
       id,
       name: content?.name,
       image: content?.image,
+      defaultProfile: (content as any)?.defaultProfile,
     },
     address: ownerId,
   }))
