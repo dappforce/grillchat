@@ -76,7 +76,9 @@ export default function AccountContent({
     },
     {
       text: 'Account Settings',
-      icon: HiMiniCog6Tooth,
+      icon: ({ className }) => (
+        <HiMiniCog6Tooth className={cx(className, 'text-[#A3ACBE]')} />
+      ),
       onClick: onAccountSettingsClick,
     },
     {
