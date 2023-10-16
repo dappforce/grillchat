@@ -94,7 +94,10 @@ export default function ChatPage({
 
     replaceUrl(getCurrentUrlWithoutQuery('donateTo'))
     try {
-      const donateTo = JSON.parse(query)
+      const donateTo = (JSON.parse(query) || {}) as {
+        messageId: string
+        recipient: string
+      }
       if (donateTo.messageId && donateTo.recipient)
         openExtensionModal('subsocial-donations', donateTo)
     } catch {}
