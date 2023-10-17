@@ -1,7 +1,7 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button, { ButtonProps } from '@/components/Button'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
@@ -17,7 +17,8 @@ type CustomConnectButtonProps = ButtonProps & {
   signAndLinkOnConnect?: boolean
   signAndLinkEvmAddress: (
     emvAddress?: string,
-    substrateAddress?: string | null
+    substrateAddress?: string | null,
+    signerAddress?: string
   ) => Promise<void>
   isLoading: boolean
 }
@@ -35,6 +36,7 @@ export const CustomConnectButton = ({
   const [hasInteractedOnce, setHasInteractedOnce] = useState(false)
 
   const mySubstrateAddress = useMyMainAddress()
+  const signerAddress = useMyAccount((state) => state.address ?? undefined)
   const { disconnect } = useDisconnect()
   const { data: accountData, isLoading: isAccountDataLoading } =
     getAccountDataQuery.useQuery(mySubstrateAddress || '')
@@ -46,7 +48,7 @@ export const CustomConnectButton = ({
       !isConnected &&
         !isTouchDevice() &&
         signAndLinkOnConnect &&
-        signAndLinkEvmAddress(address, mySubstrateAddress)
+        signAndLinkEvmAddress(address, mySubstrateAddress, signerAddress)
     },
   })
 
@@ -120,7 +122,11 @@ export const CustomConnectButton = ({
               setHasInteractedOnce(true)
               const connector = getConnector()
               isTouchDevice() && (await openMobileWallet({ connector }))
-              signAndLinkEvmAddress(account.address, mySubstrateAddress)
+              signAndLinkEvmAddress(
+                account.address,
+                mySubstrateAddress,
+                signerAddress
+              )
             }}
           >
             {usedLabel}

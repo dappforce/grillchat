@@ -5,13 +5,18 @@ import { BN, u8aToHex } from '@polkadot/util'
 import { useEffect, useState } from 'react'
 import { useDisconnect, useSignMessage } from 'wagmi'
 
-const buildMsgParams = async (substrateAddress: string) => {
+const buildMsgParams = async (
+  substrateAddress: string,
+  signerAddress?: string
+) => {
   const decodedAddress = u8aToHex(decodeAddress(substrateAddress))
   const subsocialApi = await getSubsocialApi()
 
   const api = await subsocialApi.blockchain.api
 
-  const account = await api.query.system.account(substrateAddress)
+  const account = await api.query.system.account(
+    signerAddress || substrateAddress
+  )
 
   const nonce = account.nonce.add(new BN(1)).toString()
 
@@ -27,13 +32,14 @@ const useSignEvmLinkMessage = () => {
 
   const signEvmLinkMessage = async (
     emvAddress?: string,
-    substrateAddress?: string | null
+    substrateAddress?: string | null,
+    signerAddress?: string
   ) => {
     setIsError(false)
 
     if (!emvAddress || !substrateAddress) return
 
-    const message = await buildMsgParams(substrateAddress)
+    const message = await buildMsgParams(substrateAddress, signerAddress)
     try {
       setIsSigningMessage(true)
       const data = await signMessageAsync({ message })
@@ -91,11 +97,16 @@ export default function useSignMessageAndLinkEvmAddress({
 
   const signAndLinkEvmAddress = async (
     evmAddress?: string,
-    substrateAddress?: string | null
+    substrateAddress?: string | null,
+    signerAddress?: string
   ) => {
     if (!evmAddress) return
 
-    const data = await signEvmLinkMessage(evmAddress, substrateAddress)
+    const data = await signEvmLinkMessage(
+      evmAddress,
+      substrateAddress,
+      signerAddress
+    )
     if (data) {
       linkEvmAddress({
         evmAddress,

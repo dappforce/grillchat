@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { useState } from 'react'
 import { useDisconnect } from 'wagmi'
+import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 
 type LinkEvmAddressMutationProps = {
@@ -29,16 +30,15 @@ export function useLinkEvmAddress({
   onError,
   linkedEvmAddress,
 }: LinkEvmAddressProps) {
-  const address = useMyAccount((state) => state.address ?? '')
-  const signer = useMyAccount((state) => state.signer)
   const sendEvent = useSendEvent()
   const client = useQueryClient()
   const [onCallbackLoading, setOnCallbackLoading] = useState(false)
 
   const waitHasBalance = useWaitHasEnergy()
+  const getWallet = useWalletGetter()
 
   const mutation = useSubsocialMutation<LinkEvmAddressMutationProps>(
-    async () => ({ address, signer }),
+    getWallet,
     async (params, { substrateApi }) => {
       await waitHasBalance()
 
