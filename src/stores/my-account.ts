@@ -31,7 +31,7 @@ type State = {
     energy?: number
     _unsubscribeEnergy?: () => void
   }
-  parentProxyAddress?: string
+  parentProxyAddress: string | undefined
 
   address: string | null
   signer: Signer | null
@@ -57,6 +57,7 @@ type Actions = {
 const initialState: State = {
   isInitializedAddress: true,
   preferredWallet: null,
+  parentProxyAddress: undefined,
   address: null,
   signer: null,
   energy: null,
