@@ -1,16 +1,13 @@
 import MenuList from '@/components/MenuList'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { Skeleton } from '@/components/SkeletonFallback'
-import Toast from '@/components/Toast'
 import { useMyAccount } from '@/stores/my-account'
 import { Signer, truncateAddress } from '@/utils/account'
 import { toSubsocialAddress } from '@subsocial/utils'
-import { WalletAccount } from '@talismn/connect-wallets'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
-import { toast } from 'react-hot-toast'
 import { ContentProps } from '../../types'
+import useAccountsFromPreferredWallet from './hooks/useAccountsFromPreferredWallet'
 
 const Identicon = dynamic(() => import('@polkadot/react-identicon'), {
   ssr: false,
@@ -19,46 +16,15 @@ const Identicon = dynamic(() => import('@polkadot/react-identicon'), {
 export default function PolkadotConnectAccountContent({
   setCurrentState,
 }: ContentProps) {
-  const preferredWallet = useMyAccount((state) => state.preferredWallet)
-  const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
   const connectWallet = useMyAccount((state) => state.connectWallet)
-
-  const [accounts, setAccounts] = useState<WalletAccount[] | null>(null)
-
-  useEffect(() => {
-    async function enableWallet() {
-      if (!preferredWallet) return
-      try {
-        await preferredWallet.enable('grill.chat')
-        const unsub = preferredWallet.subscribeAccounts((accounts) => {
-          setAccounts(accounts ?? [])
-        })
-        return unsub
-      } catch (err) {
-        toast.custom((t) => (
-          <Toast
-            t={t}
-            title={`Failed to get accounts from ${preferredWallet.title}`}
-            description={(err as any)?.message}
-          />
-        ))
-        setPreferredWallet(null)
-        setCurrentState('polkadot-connect-wallet')
-      }
-    }
-
-    const unsub = enableWallet()
-    return () => {
-      unsub.then((unsub) => {
-        if (typeof unsub === 'function') unsub()
-      })
-    }
-  }, [preferredWallet, setCurrentState, setPreferredWallet])
+  const { accounts, isLoading } = useAccountsFromPreferredWallet(() =>
+    setCurrentState('polkadot-connect-wallet')
+  )
 
   return (
     <div>
       {(() => {
-        if (accounts === null) {
+        if (isLoading || !accounts) {
           return (
             <div className='flex flex-col gap-4'>
               {Array.from({ length: 3 }).map((_, i) => (
