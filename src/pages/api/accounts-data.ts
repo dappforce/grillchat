@@ -183,7 +183,7 @@ export async function getAccountsDataFromCache(
     )
 
     if (cachedData) {
-      const parsedData = JSON.parse(cachedData)
+      const parsedData = JSON.parse(cachedData) as AccountData
       evmAddressByGrillAddress.push(parsedData)
     } else {
       needToFetchIds.push(address)

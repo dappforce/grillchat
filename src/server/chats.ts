@@ -41,7 +41,7 @@ export async function prefetchChatPreviewsData(
     getPostQuery.setQueryData(
       queryClient,
       post.id,
-      JSON.parse(JSON.stringify(post))
+      JSON.parse(JSON.stringify(post)) as PostData
     )
   })
 }

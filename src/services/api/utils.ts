@@ -4,7 +4,7 @@ import sortKeys from 'sort-keys-recursive'
 function parseMessageTpl(messageTpl: string) {
   const decodedMessage = decodeURIComponent(messageTpl)
 
-  const parsedMessage = JSON.parse(decodedMessage)
+  const parsedMessage = JSON.parse(decodedMessage) as any
   const sortedPayload = sortKeys(parsedMessage.payload)
   return {
     payloadToSign: JSON.stringify(sortedPayload),

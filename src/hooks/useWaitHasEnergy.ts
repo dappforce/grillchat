@@ -5,8 +5,9 @@ import useWrapInRef from './useWrapInRef'
 export default function useWaitHasEnergy(timeout = 5_000) {
   const address = useMyAccount((state) => state.address)
   const energy = useMyAccount((state) => state.energy)
-  const energyRef = useWrapInRef(energy)
   const resubscribeEnergy = useMyAccount((state) => state._subscribeEnergy)
+
+  const energyRef = useWrapInRef(energy)
 
   const hasEnergyResolvers = useRef<(() => void)[]>([])
 

@@ -95,7 +95,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         />
         <HeadConfig {...head} />
         <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
-        <div className={cx('font-s33ns')}>
+        <div className={cx('font-sans')}>
           <ErrorBoundary>
             <EvmProvider>
               <Component {...props} />
