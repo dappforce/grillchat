@@ -4,7 +4,7 @@ import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { toSubsocialAddress } from '@subsocial/utils'
 import Image from 'next/image'
-import { ContentProps } from '../types'
+import { ContentProps } from '../../types'
 
 export default function PolkadotConnectConfirmationContent({
   setCurrentState,
@@ -31,7 +31,7 @@ export default function PolkadotConnectConfirmationContent({
             txCallbacks: {
               onSuccess: () => {
                 saveProxyAddress()
-                setCurrentState('account-settings')
+                setCurrentState('polkadot-connect-success')
               },
             },
           }}

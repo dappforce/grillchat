@@ -3,7 +3,7 @@ import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useMyAccount } from '@/stores/my-account'
 import { getWallets, Wallet } from '@talismn/connect-wallets'
 import Image from 'next/image'
-import { ContentProps } from '../types'
+import { ContentProps } from '../../types'
 
 export default function PolkadotConnectWalletContent({
   setCurrentState,

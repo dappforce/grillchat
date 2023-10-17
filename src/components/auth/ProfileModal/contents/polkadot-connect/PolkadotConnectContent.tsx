@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
 import { useMyAccount } from '@/stores/my-account'
-import { ContentProps } from '../types'
+import { ContentProps } from '../../types'
 
 export default function PolkadotConnectContent({
   setCurrentState,

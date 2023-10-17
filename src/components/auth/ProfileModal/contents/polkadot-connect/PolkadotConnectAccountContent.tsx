@@ -10,7 +10,7 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { ContentProps } from '../types'
+import { ContentProps } from '../../types'
 
 const Identicon = dynamic(() => import('@polkadot/react-identicon'), {
   ssr: false,

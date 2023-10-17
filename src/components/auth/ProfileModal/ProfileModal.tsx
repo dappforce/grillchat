@@ -18,10 +18,11 @@ import PushNotificationContent, {
   getPushNotificationUsableStatus,
 } from './contents/notifications/PushNotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
-import PolkadotConnectAccountContent from './contents/PolkadotConnectAccountContent'
-import PolkadotConnectConfirmationContent from './contents/PolkadotConnectConfirmationContent'
-import PolkadotConnectContent from './contents/PolkadotConnectContent'
-import PolkadotConnectWalletContent from './contents/PolkadotConnectWalletContent'
+import PolkadotConnectAccountContent from './contents/polkadot-connect/PolkadotConnectAccountContent'
+import PolkadotConnectConfirmationContent from './contents/polkadot-connect/PolkadotConnectConfirmationContent'
+import PolkadotConnectContent from './contents/polkadot-connect/PolkadotConnectContent'
+import PolkadotConnectSuccess from './contents/polkadot-connect/PolkadotConnectSuccess'
+import PolkadotConnectWalletContent from './contents/polkadot-connect/PolkadotConnectWalletContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
 import SubsocialProfileContent from './contents/SubsocialProfileContent'
@@ -48,6 +49,7 @@ const modalContents: {
   'polkadot-connect-wallet': PolkadotConnectWalletContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
+  'polkadot-connect-success': PolkadotConnectSuccess,
 }
 
 const pushNotificationDesc: Record<
@@ -197,6 +199,11 @@ export default function ProfileModal({
       title: '🔑 Link Confirmation',
       desc: 'Please confirm the connection in your Polkadot wallet.',
       withBackButton: 'polkadot-connect-account',
+    },
+    'polkadot-connect-success': {
+      title: '🎉 Polkadot account linked',
+      desc: "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
+      withBackButton: false,
     },
   }
 
