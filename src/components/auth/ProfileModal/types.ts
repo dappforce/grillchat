@@ -19,6 +19,7 @@ export type ProfileModalState =
   | 'polkadot-connect-account'
   | 'polkadot-connect-confirmation'
   | 'polkadot-connect-success'
+  | 'polkadot-connect-unlink'
   | 'private-key'
   | 'logout'
   | 'share-session'

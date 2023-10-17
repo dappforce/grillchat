@@ -22,6 +22,7 @@ import PolkadotConnectAccountContent from './contents/polkadot-connect/PolkadotC
 import PolkadotConnectConfirmationContent from './contents/polkadot-connect/PolkadotConnectConfirmationContent'
 import PolkadotConnectContent from './contents/polkadot-connect/PolkadotConnectContent'
 import PolkadotConnectSuccess from './contents/polkadot-connect/PolkadotConnectSuccess'
+import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUnlink'
 import PolkadotConnectWalletContent from './contents/polkadot-connect/PolkadotConnectWalletContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
@@ -50,6 +51,7 @@ const modalContents: {
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
   'polkadot-connect-success': PolkadotConnectSuccess,
+  'polkadot-connect-unlink': PolkadotConnectUnlink,
 }
 
 const pushNotificationDesc: Record<
@@ -203,6 +205,11 @@ export default function ProfileModal({
     'polkadot-connect-success': {
       title: '🎉 Polkadot account linked',
       desc: "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
+      withBackButton: false,
+    },
+    'polkadot-connect-unlink': {
+      title: '🤔 Unlink Polkadot address?',
+      desc: undefined,
       withBackButton: false,
     },
   }

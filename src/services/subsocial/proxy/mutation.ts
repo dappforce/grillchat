@@ -30,7 +30,7 @@ export function useAddProxy(config?: SubsocialMutationConfig<null>) {
       const currentConnectedAddress =
         useMyAccount.getState().connectedWallet?.address
       if (!currentConnectedAddress)
-        throw new Error('No address connected to use proxy')
+        throw new Error('No address connected as the parent proxy')
 
       let userProxies = []
       try {
@@ -71,4 +71,36 @@ export const AddProxyWrapper = createMutationWrapper(
   useAddProxy,
   'Failed to add proxy',
   true
+)
+
+export function useRemoveProxy(config?: SubsocialMutationConfig<null>) {
+  const client = useQueryClient()
+  const getWallet = useWalletGetter()
+  const waitHasEnergy = useWaitHasEnergy()
+
+  return useSubsocialMutation(
+    getWallet,
+    async (_, { substrateApi }) => {
+      console.log('waiting energy...')
+      await waitHasEnergy()
+      const removeProxyTx = substrateApi.tx.proxy.removeProxies()
+
+      return {
+        tx: removeProxyTx,
+        summary: 'Remove all proxy',
+      }
+    },
+    config,
+    {
+      txCallbacks: {
+        onSuccess: () => {
+          getProxiesQuery.invalidate(client)
+        },
+      },
+    }
+  )
+}
+export const RemoveProxyWrapper = createMutationWrapper(
+  useRemoveProxy,
+  'Failed to remove proxy'
 )

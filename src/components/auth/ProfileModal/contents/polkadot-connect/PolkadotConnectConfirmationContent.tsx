@@ -13,7 +13,6 @@ export default function PolkadotConnectConfirmationContent({
   const isLoadingEnergy = useMyAccount(
     (state) => state.connectedWallet?.energy === undefined
   )
-  const connectWallet = useMyAccount((state) => state.connectWallet)
   const saveProxyAddress = useMyAccount((state) => state.saveProxyAddress)
 
   return (
@@ -45,7 +44,6 @@ export default function PolkadotConnectConfirmationContent({
                   const address = toSubsocialAddress(connectedWallet?.address)
                   const signer = connectedWallet?.signer
                   if (address && signer) {
-                    connectWallet(address, signer)
                     addProxy(null)
                   }
                 }}

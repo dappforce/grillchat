@@ -49,7 +49,7 @@ type Actions = {
   setPreferredWallet: (wallet: Wallet | null) => void
   connectWallet: (address: string, signer: Signer | null) => Promise<void>
   saveProxyAddress: () => void
-  disconnectWallet: () => void
+  disconnectProxy: () => void
   _subscribeEnergy: () => void
   _subscribeConnectedWalletEnergy: () => void
 }
@@ -162,9 +162,9 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     parentProxyAddressStorage.set(connectedWallet.address)
     set({ parentProxyAddress: connectedWallet.address })
   },
-  disconnectWallet: () => {
+  disconnectProxy: () => {
     get().connectedWallet?._unsubscribeEnergy?.()
-    set({ connectedWallet: undefined })
+    set({ connectedWallet: undefined, parentProxyAddress: undefined })
     parentProxyAddressStorage.remove()
   },
   login: async (secretKey, isInitialization) => {
