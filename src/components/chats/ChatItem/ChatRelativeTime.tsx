@@ -1,4 +1,5 @@
 import FloatingWrapper from '@/components/floating/FloatingWrapper'
+import useRerender from '@/hooks/useRerender'
 import { cx } from '@/utils/class-names'
 import { formatDate, getTimeRelativeToNow } from '@/utils/date'
 import { ComponentProps, useEffect, useState } from 'react'
@@ -12,8 +13,21 @@ export default function ChatRelativeTime({
   createdAtTime,
   ...props
 }: ChatRelativeTimeProps) {
+  const rerender = useRerender()
+
   const scrollContainerRef = useChatListContext()
   const [openDetail, setOpenDetail] = useState(false)
+
+  useEffect(() => {
+    const REFRESH_INTERVAL = 60 * 1000 * 3 // 3 minutes
+    const intervalId = setInterval(() => {
+      rerender()
+    }, REFRESH_INTERVAL)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [rerender])
 
   useEffect(() => {
     const container = scrollContainerRef?.current
