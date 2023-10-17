@@ -96,9 +96,9 @@ export default function PolkadotConnectAccountContent({
                 const avatar = (account as any).avatar
                 return {
                   text: (
-                    <span className='flex flex-1 items-center justify-between'>
+                    <span className='flex flex-1 items-center justify-between gap-4'>
                       <span>{account.name || account.address}</span>
-                      <span className='font-mono text-text-muted'>
+                      <span className='whitespace-nowrap font-mono text-text-muted'>
                         {truncateAddress(toSubsocialAddress(account.address)!)}
                       </span>
                     </span>
