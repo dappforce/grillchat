@@ -2,7 +2,6 @@ import { ContentProps } from '@/components/auth/ProfileModal/types'
 import Button from '@/components/Button'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { UnlinkEvmAddressWrapper } from '@/services/subsocial/evmAddresses/mutation'
-import { useEffect, useState } from 'react'
 
 function UnlinkEvmConfirmationContent({
   setCurrentState,
@@ -10,18 +9,9 @@ function UnlinkEvmConfirmationContent({
   evmAddress,
 }: ContentProps) {
   const { isStale } = getAccountDataQuery.useQuery(address)
-  const [doneUnlinking, setDoneUnlinking] = useState(false)
-
   const onButtonClick = () => {
     setCurrentState('link-evm-address')
   }
-
-  useEffect(() => {
-    if (!evmAddress && doneUnlinking) {
-      setCurrentState('link-evm-address')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evmAddress, doneUnlinking])
 
   return (
     <div className='mt-4 flex flex-col gap-4'>
@@ -30,7 +20,9 @@ function UnlinkEvmConfirmationContent({
       </Button>
       <UnlinkEvmAddressWrapper
         loadingUntilTxSuccess
-        config={{ txCallbacks: { onSuccess: () => setDoneUnlinking(true) } }}
+        config={{
+          txCallbacks: { onSuccess: () => setCurrentState('link-evm-address') },
+        }}
       >
         {({ mutateAsync, isLoading }) => (
           <Button

@@ -91,11 +91,7 @@ type UnlinkEvmAddress = {
   evmAddress: string
 }
 
-export function useUnlinkEvmAddress(
-  setModalStep?: () => void,
-  config?: MutationConfig<UnlinkEvmAddress>,
-  onError?: () => void
-) {
+export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
   const address = useMyAccount((state) => state.address ?? '')
   const signer = useMyAccount((state) => state.signer)
   const client = useQueryClient()
@@ -120,6 +116,16 @@ export function useUnlinkEvmAddress(
     {
       txCallbacks: {
         onStart: () => setOnCallbackLoading(true),
+        onSend: ({ address }) => {
+          getAccountDataQuery.setQueryData(client, address, (data) => {
+            if (!data) return data
+            return {
+              ...data,
+              evmAddress: null,
+              ensName: null,
+            }
+          })
+        },
         onSuccess: async ({ address }) => {
           await mutateAccountsDataCache(address)
 
@@ -127,11 +133,9 @@ export function useUnlinkEvmAddress(
 
           setOnCallbackLoading(false)
           disconnect()
-          setModalStep?.()
         },
         onError: () => {
           setOnCallbackLoading(false)
-          onError?.()
         },
       },
     }
