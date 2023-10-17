@@ -4,7 +4,7 @@ import { sortObj } from 'jsonabc'
 function parseMessageTpl(messageTpl: string) {
   const decodedMessage = decodeURIComponent(messageTpl)
 
-  const parsedMessage = JSON.parse(decodedMessage)
+  const parsedMessage = JSON.parse(decodedMessage) as any
   const sortedPayload = sortObj(parsedMessage.payload)
   return {
     payloadToSign: JSON.stringify(sortedPayload),

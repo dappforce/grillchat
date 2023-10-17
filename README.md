@@ -1,4 +1,3 @@
-
 <a href="https://x.grill.chat">
   <p align="center"><img height=100 src="https://raw.githubusercontent.com/dappforce/grillchat/main/src/assets/logo/logo.svg"/></p>
 </a>
@@ -75,6 +74,6 @@ Below is the list of environment variables that you can use to customize your ch
 
 ## How to Manage Your Space
 
-[Grill.chat](https://grill.chat) home page contains list of topics for user to choose from. This topics are listed from all the posts in a [subsocial space](https://docs.subsocial.network/docs/develop/concepts/spaces/). You can create space in xSocial chain using [Gazer](https://x.gazer.app/) - a CMS for Subsocial Network.
+[Grill.chat](https://grill.chat) home page contains list of topics for user to choose from. This topics are listed from all the posts in a [subsocial space](https://docs.subsocial.network/docs/develop/concepts/spaces/). You can create space in xSocial chain using [Gazer](https://x.gazer.app/) - a CMS for xSocial Network.
 
 You can add chat rooms into your space by creating [posts](https://docs.subsocial.network/docs/develop/concepts/postsAndComments) inside it. After you created your post, you can check that it is listed in Grill.chat by going to `https://grill.chat/{your space id}`.

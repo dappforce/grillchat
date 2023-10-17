@@ -20,7 +20,9 @@ type Status =
   | 'success'
   | 'error'
 export function createMutationWrapper<Data, ReturnValue>(
-  useMutationHook: () => UseMutationResult<ReturnValue, Error, Data, unknown>,
+  useMutationHook: (
+    config?: SubsocialMutationConfig<Data>
+  ) => UseMutationResult<ReturnValue, Error, Data, unknown>,
   errorMessage: string,
   isUsingConnectedWallet?: boolean
 ) {

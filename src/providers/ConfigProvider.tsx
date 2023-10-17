@@ -107,7 +107,7 @@ const schemaGetter = {
     let customTexts: GrillConfig['customTexts']
     if (customTextsString) {
       try {
-        customTexts = JSON.parse(decodeURIComponent(customTextsString))
+        customTexts = JSON.parse(decodeURIComponent(customTextsString)) as any
       } catch (err) {
         customTexts = undefined
       }

@@ -94,7 +94,10 @@ export default function ChatPage({
 
     replaceUrl(getCurrentUrlWithoutQuery('donateTo'))
     try {
-      const donateTo = JSON.parse(query)
+      const donateTo = (JSON.parse(query) || {}) as {
+        messageId: string
+        recipient: string
+      }
       if (donateTo.messageId && donateTo.recipient)
         openExtensionModal('subsocial-donations', donateTo)
     } catch {}
@@ -305,17 +308,11 @@ function NavbarChatInfo({
             )}
           </div>
           <span className='overflow-hidden overflow-ellipsis whitespace-nowrap text-xs text-text-muted'>
-            {membersCount
-              ? `${membersCount} ${getPluralText({
-                  count: membersCount,
-                  plural: 'members',
-                  singular: 'member',
-                })}`
-              : `${messageCount} ${getPluralText({
-                  count: messageCount,
-                  plural: 'messages',
-                  singular: 'message',
-                })}`}
+            {`${messageCount} ${getPluralText({
+              count: messageCount,
+              plural: 'messages',
+              singular: 'message',
+            })}`}
           </span>
         </div>
       </Button>

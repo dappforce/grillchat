@@ -119,7 +119,7 @@ async function getLinkMetadata(link: string): Promise<LinkMetadata | null> {
     redis?.get(getMetadataRedisKey(link))
   )
   if (cachedData) {
-    return JSON.parse(cachedData)
+    return JSON.parse(cachedData) as LinkMetadata
   }
 
   try {

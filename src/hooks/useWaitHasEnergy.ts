@@ -1,5 +1,6 @@
 import { useMyAccount } from '@/stores/my-account'
 import { useCallback, useEffect, useRef } from 'react'
+import useWrapInRef from './useWrapInRef'
 
 export default function useWaitHasEnergy(
   isUsingConnectedWallet?: boolean,
@@ -9,6 +10,7 @@ export default function useWaitHasEnergy(
   const { address, energy, resubscribeEnergy } = useAccountSwitch(
     isUsingConnectedWallet
   )
+  const energyRef = useWrapInRef(energy)
 
   const generateNewPromise = useCallback(() => {
     return new Promise<void>((resolve, reject) => {
@@ -41,7 +43,7 @@ export default function useWaitHasEnergy(
   }, [address])
 
   return () => {
-    return !energy ? generateNewPromise() : Promise.resolve()
+    return !energyRef.current ? generateNewPromise() : Promise.resolve()
   }
 }
 
