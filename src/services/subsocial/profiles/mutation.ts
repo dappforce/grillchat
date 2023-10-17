@@ -87,7 +87,8 @@ export function useUpsertProfile(
         },
         onSuccess: async ({ address }) => {
           await invalidateProfileServerCache(address)
-          getProfileQuery.invalidate(client, address)
+          // Remove invalidation because the data will be same, and sometimes IPFS errors out, making the profile gone
+          // getProfileQuery.invalidate(client, address)
         },
       },
     }
