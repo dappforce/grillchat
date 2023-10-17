@@ -22,39 +22,32 @@ export default function AccountSettingsContent({
   const { data: profile } = getProfileQuery.useQuery(address)
   const { data: accountData } = getAccountDataQuery.useQuery(address)
 
-  const hasNickname = !!profile?.profileSpace?.name
-  const hasEvmAddress = !!accountData?.ensName
+  const nickname = profile?.profileSpace?.name
+  const ensName = accountData?.ensName
   const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
 
-  const hasMoreThanOneName =
-    [hasNickname, hasEvmAddress, hasProxyAddress].filter(Boolean).length > 1
+  const hasMoreThanOneName = [nickname, ensName].filter(Boolean).length > 1
 
   const { defaultProfileItemsObject, defaultProfileItems } = useMemo(() => {
     const defaultProfileItemsObject = {
       nickname: {
         id: 'nickname',
-        label: 'Nickname',
+        label: nickname || 'Nickname',
         icon: <UserIcon />,
-        disabledItem: !hasNickname,
+        disabledItem: !nickname,
       },
       'evm-address': {
         id: 'evm-address',
-        label: 'EVM Address',
+        label: ensName || 'ENS',
         icon: <EthIcon />,
-        disabledItem: !hasEvmAddress,
-      },
-      'polkadot-connect': {
-        id: 'polkadot-connect',
-        label: 'Polkadot Connect',
-        icon: <PolkadotIcon />,
-        disabledItem: !hasProxyAddress,
+        disabledItem: !ensName,
       },
     } satisfies Record<string, ListItem>
     return {
       defaultProfileItemsObject,
       defaultProfileItems: Object.values(defaultProfileItemsObject),
     }
-  }, [hasEvmAddress, hasNickname, hasProxyAddress])
+  }, [ensName, nickname])
 
   const [defaultProfile, setDefaultProfile] = useState<ListItem | null>(
     defaultProfileItemsObject['evm-address']
@@ -111,7 +104,7 @@ export default function AccountSettingsContent({
             text: (
               <span className='flex items-center gap-2'>
                 <span>Nickname</span>
-                {hasNickname && <Notice size='sm'>Connected</Notice>}
+                {!!nickname && <Notice size='sm'>Connected</Notice>}
               </span>
             ),
             icon: UserIcon,
