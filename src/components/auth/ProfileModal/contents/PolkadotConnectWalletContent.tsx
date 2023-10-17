@@ -3,18 +3,12 @@ import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useMyAccount } from '@/stores/my-account'
 import { getWallets, Wallet } from '@talismn/connect-wallets'
 import Image from 'next/image'
-import { useEffect } from 'react'
 import { ContentProps } from '../types'
 
-export default function PolkadotConnectContent({
+export default function PolkadotConnectWalletContent({
   setCurrentState,
 }: ContentProps) {
-  const preferredWallet = useMyAccount((state) => state.preferredWallet)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
-
-  useEffect(() => {
-    if (preferredWallet) setCurrentState('polkadot-connect-account')
-  }, [preferredWallet, setCurrentState])
 
   const address = useMyAccount((state) => state.address)
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)

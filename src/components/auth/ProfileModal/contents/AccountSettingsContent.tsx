@@ -111,7 +111,7 @@ export default function AccountSettingsContent({
             text: (
               <span className='flex items-center gap-2'>
                 <span>Nickname</span>
-                {hasNickname && <Notice size='sm'>Set</Notice>}
+                {hasNickname && <Notice size='sm'>Connected</Notice>}
               </span>
             ),
             icon: UserIcon,

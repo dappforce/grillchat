@@ -43,7 +43,7 @@ export default function PolkadotConnectAccountContent({
           />
         ))
         setPreferredWallet(null)
-        setCurrentState('polkadot-connect')
+        setCurrentState('polkadot-connect-wallet')
       }
     }
 

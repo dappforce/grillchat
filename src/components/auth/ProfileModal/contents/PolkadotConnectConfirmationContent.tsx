@@ -1,9 +1,9 @@
+import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button from '@/components/Button'
-import ProfilePreview from '@/components/ProfilePreview'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useMyAccount } from '@/stores/my-account'
-import { cx } from '@/utils/class-names'
 import { toSubsocialAddress } from '@subsocial/utils'
+import Image from 'next/image'
 import { ContentProps } from '../types'
 
 export default function PolkadotConnectConfirmationContent({
@@ -18,13 +18,13 @@ export default function PolkadotConnectConfirmationContent({
 
   return (
     <div className='mt-2 flex flex-col gap-6'>
-      <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
-        <ProfilePreview
-          address={toSubsocialAddress(connectedWallet?.address) ?? ''}
-          avatarClassName={cx('h-16 w-16')}
+      <div className='flex w-full flex-col items-center gap-4'>
+        <Image
+          className='w-64 max-w-xs rounded-full'
+          priority
+          src={ProcessingHumster}
+          alt=''
         />
-      </div>
-      <div className='flex flex-col gap-4'>
         <AddProxyWrapper
           loadingUntilTxSuccess
           config={{
@@ -39,6 +39,7 @@ export default function PolkadotConnectConfirmationContent({
           {({ isLoading, mutateAsync: addProxy }) => {
             return (
               <Button
+                className='w-full'
                 size='lg'
                 onClick={async () => {
                   const address = toSubsocialAddress(connectedWallet?.address)
@@ -50,18 +51,11 @@ export default function PolkadotConnectConfirmationContent({
                 }}
                 isLoading={isLoading || isLoadingEnergy}
               >
-                Use this account
+                Confirm
               </Button>
             )
           }}
         </AddProxyWrapper>
-        <Button
-          size='lg'
-          variant='primaryOutline'
-          onClick={() => setCurrentState('polkadot-connect-account')}
-        >
-          Select another account
-        </Button>
       </div>
     </div>
   )

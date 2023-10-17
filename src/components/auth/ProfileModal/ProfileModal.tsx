@@ -20,7 +20,8 @@ import PushNotificationContent, {
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
 import PolkadotConnectAccountContent from './contents/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from './contents/PolkadotConnectConfirmationContent'
-import PolkadotConnectContent from './contents/PolkadotConnectWalletContent'
+import PolkadotConnectContent from './contents/PolkadotConnectContent'
+import PolkadotConnectWalletContent from './contents/PolkadotConnectWalletContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
 import SubsocialProfileContent from './contents/SubsocialProfileContent'
@@ -44,6 +45,7 @@ const modalContents: {
   'telegram-notifications': TelegramNotificationContent,
   'push-notifications': PushNotificationContent,
   'polkadot-connect': PolkadotConnectContent,
+  'polkadot-connect-wallet': PolkadotConnectWalletContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
 }
@@ -173,6 +175,11 @@ export default function ProfileModal({
     },
     'polkadot-connect': {
       title: '🔗 Polkadot Connect',
+      desc: 'Use your Polkadot identity and enable donations, NFTs, and more.',
+      withBackButton: 'account-settings',
+    },
+    'polkadot-connect-wallet': {
+      title: '🔗 Polkadot Connect',
       desc: 'Choose a wallet to connect to Grill.chat',
       withBackButton: 'account-settings',
       withoutDefaultPadding: true,
@@ -182,13 +189,13 @@ export default function ProfileModal({
       desc: 'Select an account to connect to Grill.chat',
       withBackButton: () => {
         setPreferredWallet(null)
-        return 'polkadot-connect'
+        return 'polkadot-connect-wallet'
       },
       withoutDefaultPadding: true,
     },
     'polkadot-connect-confirmation': {
-      title: '🔗 Proxy Confirmation',
-      desc: 'Please confirm the connection in your Polkadot extension.',
+      title: '🔑 Link Confirmation',
+      desc: 'Please confirm the connection in your Polkadot wallet.',
       withBackButton: 'polkadot-connect-account',
     },
   }
