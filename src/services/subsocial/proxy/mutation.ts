@@ -75,8 +75,8 @@ export const AddProxyWrapper = createMutationWrapper(
 
 export function useRemoveProxy(config?: SubsocialMutationConfig<null>) {
   const client = useQueryClient()
-  const getWallet = useWalletGetter(true)
-  const waitHasEnergy = useWaitHasEnergy(true)
+  const getWallet = useWalletGetter()
+  const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation(
     getWallet,
@@ -102,6 +102,5 @@ export function useRemoveProxy(config?: SubsocialMutationConfig<null>) {
 }
 export const RemoveProxyWrapper = createMutationWrapper(
   useRemoveProxy,
-  'Failed to remove proxy',
-  true
+  'Failed to remove proxy'
 )
