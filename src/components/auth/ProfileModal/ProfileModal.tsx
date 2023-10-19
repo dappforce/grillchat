@@ -8,10 +8,10 @@ import { cx } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
-import AccountSettingsContent from './contents/AccountSettingsContent'
 import EvmLoginError from './contents/evm-linking/EvmLoginError'
 import LinkEvmAddressContent from './contents/evm-linking/LinkEvmAddressContent'
 import UnlinkEvmConfirmationContent from './contents/evm-linking/UnlinkEvmConfirmationContent'
+import LinkedAddressesContent from './contents/LinkedAddressesContent'
 import LogoutContent from './contents/LogoutContent'
 import NotificationContent from './contents/notifications/NotificationContent'
 import PushNotificationContent, {
@@ -23,7 +23,6 @@ import PolkadotConnectConfirmationContent from './contents/polkadot-connect/Polk
 import PolkadotConnectContent from './contents/polkadot-connect/PolkadotConnectContent'
 import PolkadotConnectSuccess from './contents/polkadot-connect/PolkadotConnectSuccess'
 import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUnlink'
-import PolkadotConnectWalletContent from './contents/polkadot-connect/PolkadotConnectWalletContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ShareSessionContent from './contents/ShareSessionContent'
 import SubsocialProfileContent from './contents/SubsocialProfileContent'
@@ -33,7 +32,7 @@ const modalContents: {
   [key in ProfileModalState]: (props: ContentProps) => JSX.Element
 } = {
   account: AccountContent,
-  'account-settings': AccountSettingsContent,
+  'linked-addresses': LinkedAddressesContent,
   'subsocial-profile': SubsocialProfileContent,
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
@@ -47,7 +46,6 @@ const modalContents: {
   'telegram-notifications': TelegramNotificationContent,
   'push-notifications': PushNotificationContent,
   'polkadot-connect': PolkadotConnectContent,
-  'polkadot-connect-wallet': PolkadotConnectWalletContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
   'polkadot-connect-success': PolkadotConnectSuccess,
@@ -79,6 +77,7 @@ export default function ProfileModal({
     }
   )
 
+  const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
 
   const [currentState, setCurrentState] = useState<ProfileModalState>(
@@ -112,16 +111,16 @@ export default function ProfileModal({
       withoutDefaultPadding: true,
       withFooter: true,
     },
-    'account-settings': {
-      title: '🎩 Account Settings',
-      desc: 'Set nickname, Link EVM and Substrate accounts',
+    'linked-addresses': {
+      title: '🔗 Linked Addresses',
+      desc: 'Link your EVM and Polkadot accounts to use features such as donations and NFTs, display your identity, and much more.',
       withBackButton: true,
       withoutDefaultPadding: true,
     },
     'subsocial-profile': {
       title: '🎩 Update nickname',
       desc: 'Create a name so other people can recognize you. You can change it at any time.',
-      withBackButton: 'account-settings',
+      withBackButton: 'linked-addresses',
     },
     logout: {
       title: '🤔 Did you back up your Grill secret key?',
@@ -144,7 +143,7 @@ export default function ProfileModal({
     'link-evm-address': {
       title: linkedEvmAddress ? '🔑 My EVM address' : '🔑 Link EVM Address',
       desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display NFTs, and interact with ERC20s and smart contracts. ',
-      withBackButton: 'account-settings',
+      withBackButton: 'linked-addresses',
     },
     'evm-linking-error': {
       title: '😕 Something went wrong',
@@ -179,13 +178,13 @@ export default function ProfileModal({
     },
     'polkadot-connect': {
       title: '🔗 Polkadot Connect',
-      desc: 'Use your Polkadot identity and enable donations, NFTs, and more.',
-      withBackButton: 'account-settings',
-    },
-    'polkadot-connect-wallet': {
-      title: '🔗 Polkadot Connect',
-      desc: 'Choose a wallet to connect to Grill.chat',
-      withBackButton: 'account-settings',
+      desc: hasProxy
+        ? 'Use your Polkadot identity and enable donations, NFTs, and more.'
+        : 'Choose a wallet to connect to Grill.chat',
+      withBackButton: () => {
+        if (!hasProxy) setPreferredWallet(null)
+        return 'linked-addresses'
+      },
       withoutDefaultPadding: true,
     },
     'polkadot-connect-account': {
@@ -193,7 +192,7 @@ export default function ProfileModal({
       desc: 'Select an account to connect to Grill.chat',
       withBackButton: () => {
         setPreferredWallet(null)
-        return 'polkadot-connect-wallet'
+        return 'polkadot-connect'
       },
       withoutDefaultPadding: true,
     },

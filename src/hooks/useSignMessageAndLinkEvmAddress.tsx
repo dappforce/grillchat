@@ -43,6 +43,7 @@ const useSignEvmLinkMessage = () => {
     try {
       setIsSigningMessage(true)
       const data = await signMessageAsync({ message })
+      console.log(data.toString())
 
       setIsSigningMessage(false)
       return data.toString()

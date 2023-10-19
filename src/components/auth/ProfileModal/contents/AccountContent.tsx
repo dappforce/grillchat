@@ -2,6 +2,7 @@ import BellIcon from '@/assets/icons/bell.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
+import LinkedAddressesIcon from '@/assets/icons/linked-addresses.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
@@ -11,13 +12,12 @@ import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { installApp, isInstallAvailable } from '@/utils/install'
 import { useTheme } from 'next-themes'
 import { HiOutlineDownload } from 'react-icons/hi'
-import { HiMiniCog6Tooth, HiMoon, HiSun } from 'react-icons/hi2'
+import { HiMoon, HiSun } from 'react-icons/hi2'
 import { useDisconnect } from 'wagmi'
 import { ContentProps } from '../types'
 
@@ -28,9 +28,10 @@ export default function AccountContent({
 }: ContentProps) {
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
-
-  const { data: accountData } = getAccountDataQuery.useQuery(address)
-  const ensName = accountData?.ensName
+  const {
+    showNotification: showLinkedNotif,
+    closeNotification: closeLinkedNotif,
+  } = useFirstVisitNotification('linked-addresses-menu')
 
   const sendEvent = useSendEvent()
   const commonEventProps = { eventSource: 'profile_menu' }
@@ -38,9 +39,10 @@ export default function AccountContent({
 
   const colorModeOptions = useColorModeOptions()
 
-  const onAccountSettingsClick = () => {
-    sendEvent('open_account_settings', commonEventProps)
-    setCurrentState('account-settings')
+  const onLinkedAddressesClick = () => {
+    sendEvent('open_linked_addresses', commonEventProps)
+    setCurrentState('linked-addresses')
+    closeLinkedNotif()
   }
   const onShowPrivateKeyClick = () => {
     sendEvent('open_show_private_key_modal', commonEventProps)
@@ -75,11 +77,14 @@ export default function AccountContent({
       },
     },
     {
-      text: 'Account Settings',
-      icon: ({ className }) => (
-        <HiMiniCog6Tooth className={cx(className, 'text-[#A3ACBE]')} />
+      text: (
+        <span className='flex items-center gap-2'>
+          <span>Linked Addresses</span>
+          {showLinkedNotif && <DotBlinkingNotification />}
+        </span>
       ),
-      onClick: onAccountSettingsClick,
+      icon: LinkedAddressesIcon,
+      onClick: onLinkedAddressesClick,
     },
     {
       text: (

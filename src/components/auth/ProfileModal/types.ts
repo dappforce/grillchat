@@ -12,10 +12,9 @@ export type ProfileModalProps = ModalFunctionalityProps & {
 
 export type ProfileModalState =
   | 'account'
-  | 'account-settings'
+  | 'linked-addresses'
   | 'subsocial-profile'
   | 'polkadot-connect'
-  | 'polkadot-connect-wallet'
   | 'polkadot-connect-account'
   | 'polkadot-connect-confirmation'
   | 'polkadot-connect-success'

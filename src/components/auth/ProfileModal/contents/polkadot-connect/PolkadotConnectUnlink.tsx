@@ -10,9 +10,6 @@ export default function PolkadotConnectUnlink({
 }: ContentProps) {
   const { isStale } = getProxiesQuery.useQuery({ address })
   const disconnectProxy = useMyAccount((state) => state.disconnectProxy)
-  const isWalletConnected = useMyAccount(
-    (state) => !!state.connectedWallet?.signer
-  )
 
   const onButtonClick = () => {
     setCurrentState('polkadot-connect')
@@ -28,7 +25,7 @@ export default function PolkadotConnectUnlink({
         config={{
           txCallbacks: {
             onSuccess: () => {
-              setCurrentState('account-settings')
+              setCurrentState('account')
               disconnectProxy()
             },
           },
@@ -40,7 +37,7 @@ export default function PolkadotConnectUnlink({
             onClick={() => mutateAsync(null)}
             variant='primaryOutline'
             className='border-red-500'
-            isLoading={isLoading || isStale || !isWalletConnected}
+            isLoading={isLoading || isStale}
           >
             Yes, unlink
           </Button>
