@@ -5,7 +5,8 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import React, { useEffect, useState } from 'react'
+import { SessionStorage } from '@/utils/storage'
+import React, { useCallback, useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
 import EvmLoginError from './contents/evm-linking/EvmLoginError'
@@ -64,6 +65,8 @@ const pushNotificationDesc: Record<
   usable:
     'Push notifications allow you to receive direct updates from Grill in your browser.',
 }
+
+const forceBackFlowStorage = new SessionStorage(() => 'force-back-profile-flow')
 
 export default function ProfileModal({
   notification,
@@ -219,9 +222,22 @@ export default function ProfileModal({
     },
   }
 
+  useEffect(() => {
+    if (!props.isOpen) forceBackFlowStorage.remove()
+  }, [props.isOpen])
+
   const { title, desc, withBackButton, withoutDefaultPadding, withFooter } =
     modalTitles[currentState] || {}
   const onBackClick = () => {
+    try {
+      const data = JSON.parse(forceBackFlowStorage.get() || '{}')
+      const { from, to } = data
+      if (from === currentState) {
+        setCurrentState(to)
+        return
+      }
+    } catch {}
+
     if (props.onBackClick) props.onBackClick()
     else if (typeof withBackButton === 'function')
       setCurrentState(withBackButton())
@@ -231,6 +247,34 @@ export default function ProfileModal({
       )
   }
   const Content = modalContents[currentState]
+
+  const setCurrentStateAugmented = useCallback(
+    (
+      newData: Parameters<typeof setCurrentState>[0],
+      forceBackFlowTo?: ProfileModalState
+    ) => {
+      setCurrentState((prevState) => {
+        let data: ProfileModalState
+        if (typeof newData === 'function') {
+          data = newData(prevState)
+        } else {
+          data = newData
+        }
+
+        if (forceBackFlowTo)
+          forceBackFlowStorage.set(
+            JSON.stringify({ from: data, to: prevState })
+          )
+
+        if (data === 'account') {
+          forceBackFlowStorage.remove()
+        }
+
+        return data
+      })
+    },
+    []
+  )
 
   return (
     <Modal
@@ -251,7 +295,7 @@ export default function ProfileModal({
     >
       <Content
         address={address}
-        setCurrentState={setCurrentState}
+        setCurrentState={setCurrentStateAugmented}
         notification={notification}
         evmAddress={linkedEvmAddress}
       />

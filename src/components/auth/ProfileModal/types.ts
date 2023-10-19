@@ -1,4 +1,5 @@
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
+import React from 'react'
 
 type NotificationControl = {
   showNotif: boolean
@@ -34,7 +35,10 @@ export type ProfileModalState =
 
 export type ContentProps = {
   address: string
-  setCurrentState: React.Dispatch<React.SetStateAction<ProfileModalState>>
+  setCurrentState: (
+    state: React.SetStateAction<ProfileModalState>,
+    forceFlowBackTo?: ProfileModalState
+  ) => void
   notification?: NotificationControl
   evmAddress?: string | null
 }
