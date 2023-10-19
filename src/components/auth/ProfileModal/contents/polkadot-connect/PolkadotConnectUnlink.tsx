@@ -25,7 +25,7 @@ export default function PolkadotConnectUnlink({
         config={{
           txCallbacks: {
             onSuccess: () => {
-              setCurrentState('account')
+              setCurrentState('linked-addresses')
               disconnectProxy()
             },
           },

@@ -18,7 +18,7 @@ export default function PolkadotConnectAccountContent({
 }: ContentProps) {
   const connectWallet = useMyAccount((state) => state.connectWallet)
   const { accounts, isLoading } = useAccountsFromPreferredWallet(() =>
-    setCurrentState('polkadot-connect-wallet')
+    setCurrentState('polkadot-connect')
   )
 
   return (

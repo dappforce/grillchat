@@ -21,6 +21,7 @@ import TelegramNotificationContent from './contents/notifications/TelegramNotifi
 import PolkadotConnectAccountContent from './contents/polkadot-connect/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from './contents/polkadot-connect/PolkadotConnectConfirmationContent'
 import PolkadotConnectContent from './contents/polkadot-connect/PolkadotConnectContent'
+import PolkadotConnectIdentityRemovedContent from './contents/polkadot-connect/PolkadotConnectIdentityRemovedContent'
 import PolkadotConnectSuccess from './contents/polkadot-connect/PolkadotConnectSuccess'
 import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUnlink'
 import PrivateKeyContent from './contents/PrivateKeyContent'
@@ -50,6 +51,7 @@ const modalContents: {
   'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
   'polkadot-connect-success': PolkadotConnectSuccess,
   'polkadot-connect-unlink': PolkadotConnectUnlink,
+  'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
 }
 
 const pushNotificationDesc: Record<
@@ -211,6 +213,11 @@ export default function ProfileModal({
       desc: undefined,
       withBackButton: false,
     },
+    'polkadot-connect-identity-removed': {
+      title: '😕 Your previous identity was removed',
+      desc: 'You will need to reset your nickname or reconnect your EVM address to continue using them.',
+      withBackButton: false,
+    },
   }
 
   const { title, desc, withBackButton, withoutDefaultPadding, withFooter } =
@@ -229,6 +236,11 @@ export default function ProfileModal({
   return (
     <Modal
       {...props}
+      closeModal={() => {
+        if (currentState === 'polkadot-connect-success')
+          setCurrentState('polkadot-connect-identity-removed')
+        else props.closeModal()
+      }}
       title={title}
       description={desc}
       contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
