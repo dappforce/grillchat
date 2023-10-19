@@ -75,12 +75,21 @@ export function useUpsertProfile(
       txCallbacks: {
         onStart: ({ data, address }) => {
           preventWindowUnload()
-          getProfileQuery.setQueryData(client, address, {
-            address,
-            profileSpace: {
-              id: OPTIMISTIC_PROFILE_ID,
-              ...data.content,
-            },
+          getProfileQuery.setQueryData(client, address, (oldData) => {
+            const oldProfileSpaceId = oldData?.profileSpace?.id
+            const oldProfileContent = oldData?.profileSpace?.content || {}
+            return {
+              address,
+              profileSpace: {
+                id: oldProfileSpaceId
+                  ? oldProfileSpaceId
+                  : OPTIMISTIC_PROFILE_ID,
+                content: {
+                  ...oldProfileContent,
+                  ...data.content,
+                } as SpaceContent,
+              },
+            }
           })
         },
         onSend: () => {

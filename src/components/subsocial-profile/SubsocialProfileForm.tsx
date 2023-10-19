@@ -23,7 +23,7 @@ export default function SubsocialProfileForm({
   ...props
 }: SubsocialProfileFormProps) {
   const myAddress = useMyMainAddress()
-  const { data } = getProfileQuery.useQuery(myAddress ?? '', {
+  const { data: profile } = getProfileQuery.useQuery(myAddress ?? '', {
     enabled: !!myAddress,
   })
   const {
@@ -32,7 +32,7 @@ export default function SubsocialProfileForm({
     watch,
     formState: { errors },
   } = useForm<FormSchema>({
-    defaultValues: { name: data?.profileSpace?.name ?? '' },
+    defaultValues: { name: profile?.profileSpace?.content?.name ?? '' },
     resolver: zodResolver(formSchema),
     mode: 'onChange',
   })
@@ -41,7 +41,9 @@ export default function SubsocialProfileForm({
     <UpsertProfileWrapper>
       {({ mutateAsync }) => {
         const onSubmit = handleSubmit((data) => {
-          mutateAsync({ content: { name: data.name } })
+          mutateAsync({
+            content: { ...profile?.profileSpace?.content, name: data.name },
+          })
           onSuccess?.()
         })
 
@@ -78,8 +80,8 @@ function ProfileFormButton({
   })
 
   const isNameNotChanged =
-    name === data?.profileSpace?.name &&
-    data.profileSpace.defaultProfile === 'custom'
+    name === data?.profileSpace?.content?.name &&
+    data.profileSpace.content.defaultProfile === 'custom'
 
   return (
     <FormButton

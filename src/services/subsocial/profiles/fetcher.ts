@@ -1,16 +1,12 @@
 import { SubsocialQueryData } from '@/subsocial-query/subsocial/query'
+import { SpaceContent } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
 import { GetProfilesQuery, GetProfilesQueryVariables } from '../squid/generated'
 import { squidRequest } from '../squid/utils'
 import { standaloneDynamicFetcherWrapper } from '../utils'
 
 export type SubsocialProfile = {
-  profileSpace: {
-    id: string
-    name?: string
-    image?: string
-    defaultProfile?: string
-  } | null
+  profileSpace: { id: string; content: SpaceContent | null } | null
   address: string
 }
 
@@ -23,9 +19,7 @@ async function getProfilesFromBlockchain({
   return res.map(({ content, id, struct: { ownerId } }) => ({
     profileSpace: {
       id,
-      name: content?.name,
-      image: content?.image,
-      defaultProfile: content?.defaultProfile,
+      content,
     },
     address: ownerId,
   }))
@@ -39,6 +33,10 @@ const GET_PROFILES = gql`
         id
         name
         image
+        about
+        email
+        linksOriginal
+        tagsOriginal
       }
     }
   }
@@ -55,8 +53,16 @@ async function getProfilesFromSquid(
     profileSpace: profileSpace
       ? {
           id: profileSpace.id,
-          name: profileSpace.name ?? undefined,
-          image: profileSpace.image ?? undefined,
+          content: {
+            name: profileSpace.name,
+            about: profileSpace.about,
+            email: profileSpace.email,
+            image: profileSpace.image,
+            links: profileSpace.linksOriginal?.split(','),
+            tags: profileSpace.tagsOriginal?.split(','),
+            // TODO: have squid support for this attr
+            // defaultProfile:
+          } as SpaceContent,
         }
       : null,
     address: id,

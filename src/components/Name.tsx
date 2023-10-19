@@ -23,7 +23,9 @@ export function useName(address: string) {
 
   const { ensName, evmAddress } = accountData || {}
   const name =
-    ensName || profile?.profileSpace?.name || generateRandomName(address)
+    ensName ||
+    profile?.profileSpace?.content?.name ||
+    generateRandomName(address)
 
   return {
     name,
