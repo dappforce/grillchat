@@ -2,12 +2,28 @@ import Button from '@/components/Button'
 import ProfilePreview from '@/components/ProfilePreview'
 import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import Tabs from '@/components/Tabs'
+import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
+import { useEffect, useState } from 'react'
 import { ContentProps } from '../types'
 
 export default function ProfileSettingsContent(props: ContentProps) {
   const { address } = props
+
+  const [selectedTab, setSelectedTab] = useState(2)
+  const { data: accountData } = getAccountDataQuery.useQuery(address)
+  const hasEvmAddress = !!accountData?.ensName
+  const { data: profile } = getProfileQuery.useQuery(address)
+  const hasCustomName = !!profile?.profileSpace?.content?.name
+  const defaultProfile = profile?.profileSpace?.content?.defaultProfile
+
+  useEffect(() => {
+    // TODO: check based on default profile
+    if (hasEvmAddress) {
+      setSelectedTab(1)
+    }
+  }, [defaultProfile, hasEvmAddress])
 
   return (
     <div className='mt-2 flex flex-col gap-6'>
@@ -17,6 +33,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
       <div className='flex flex-col'>
         <span className='mb-2 text-text-muted'>Identity provider</span>
         <Tabs
+          manualTabControl={{ selectedTab, setSelectedTab }}
           panelClassName='mt-4'
           tabStyle='buttons'
           tabs={[
