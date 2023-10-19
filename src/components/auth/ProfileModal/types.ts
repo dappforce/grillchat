@@ -13,7 +13,7 @@ export type ProfileModalProps = ModalFunctionalityProps & {
 export type ProfileModalState =
   | 'account'
   | 'linked-addresses'
-  | 'subsocial-profile'
+  | 'profile-settings'
   | 'polkadot-connect'
   | 'polkadot-connect-account'
   | 'polkadot-connect-confirmation'

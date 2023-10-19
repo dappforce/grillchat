@@ -10,6 +10,7 @@ type Tab = {
   content: (changeTab: (selectedTab: number) => void) => JSX.Element
 }
 export type TabsProps = ComponentProps<'div'> & {
+  tabStyle?: 'buttons' | 'texts'
   asContainer?: boolean
   tabs: Tab[]
   tabsRightElement?: ReactNode
@@ -25,6 +26,7 @@ export type TabsProps = ComponentProps<'div'> & {
 }
 
 export default function Tabs({
+  tabStyle = 'texts',
   asContainer,
   tabs,
   panelClassName,
@@ -75,15 +77,29 @@ export default function Tabs({
     >
       <Tab.List
         as={component}
-        className={cx('flex items-end', props.className)}
+        className={cx(
+          'flex items-end',
+          tabStyle === 'buttons' && 'items-stretch',
+          props.className
+        )}
       >
-        {tabs.map(({ text, id }) => (
+        {tabs.map(({ text, id }, idx) => (
           <Tab key={id} as={Fragment}>
             {({ selected }) => (
               <span
                 className={cx(
                   'group relative block cursor-pointer rounded-t-2xl px-2 outline-none after:absolute after:bottom-0 after:left-0 after:h-[90%] after:w-full after:rounded-t-2xl after:bg-background-light after:opacity-0 after:transition-opacity sm:px-3',
-                  'focus-visible:after:opacity-100',
+                  'border-collapse focus-visible:after:opacity-100',
+                  tabStyle === 'buttons' &&
+                    cx(
+                      'flex flex-1 items-center justify-center rounded-none border border-r-0 border-border-gray py-2 after:hidden',
+                      idx === 0 && 'rounded-l-xl',
+                      idx === tabs.length - 1 && 'rounded-r-xl border-r',
+                      selected &&
+                        'border-r border-background-primary bg-background-primary/30',
+                      selectedIndex === idx - 1 && 'border-l-0'
+                    ),
+
                   tabClassName
                 )}
               >
@@ -93,7 +109,10 @@ export default function Tabs({
                     'after:absolute after:bottom-0 after:left-0 after:h-1 after:w-full after:origin-bottom after:scale-y-0 after:rounded-t-full after:bg-text-primary after:opacity-0 after:transition',
                     'group-hover:text-text-primary group-hover:after:scale-y-100 group-hover:after:opacity-100',
                     selected &&
-                      'text-text-primary after:scale-y-100 after:opacity-100'
+                      tabStyle === 'texts' &&
+                      'text-text-primary after:scale-y-100 after:opacity-100',
+                    tabStyle === 'buttons' && 'text-text',
+                    tabStyle === 'buttons' && 'py-0 after:hidden'
                   )}
                 >
                   {text}

@@ -4,7 +4,7 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ComponentProps } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, UseFormWatch } from 'react-hook-form'
 import { z } from 'zod'
 import FormButton from '../FormButton'
 import Input from '../inputs/Input'
@@ -57,12 +57,38 @@ export default function SubsocialProfileForm({
               variant='fill-bg'
               error={errors.name?.message}
             />
-            <FormButton schema={formSchema} watch={watch} size='lg'>
-              Save
-            </FormButton>
+            <ProfileFormButton address={myAddress || ''} watch={watch} />
           </form>
         )
       }}
     </UpsertProfileWrapper>
+  )
+}
+
+function ProfileFormButton({
+  address,
+  watch,
+}: {
+  address: string
+  watch: UseFormWatch<FormSchema>
+}) {
+  const { name } = watch()
+  const { data } = getProfileQuery.useQuery(address, {
+    enabled: !!address,
+  })
+
+  const isNameNotChanged =
+    name === data?.profileSpace?.name &&
+    data.profileSpace.defaultProfile === 'custom'
+
+  return (
+    <FormButton
+      schema={formSchema}
+      disabled={isNameNotChanged}
+      watch={watch}
+      size='lg'
+    >
+      Save
+    </FormButton>
   )
 }

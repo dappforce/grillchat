@@ -4,6 +4,8 @@ import { PostStruct } from '@subsocial/api/types'
 import {
   CommentStruct,
   PostContent as SubsocialPostContent,
+  SpaceContent as SubsocialSpaceContent,
+  SpaceStruct,
 } from '@subsocial/api/types/dto'
 
 declare module '@subsocial/api/types' {
@@ -71,6 +73,11 @@ declare module '@subsocial/api/types' {
     siteName?: string
     hostName?: string
   }
+
+  // TODO: change default profile to literal strings
+  export interface SpaceContent extends SubsocialSpaceContent {
+    defaultProfile?: string
+  }
   export interface PostContent extends SubsocialPostContent {
     linkMetadata?: LinkMetadata
     inReplyTo?: {
@@ -79,6 +86,7 @@ declare module '@subsocial/api/types' {
     }
     extensions?: PostContentExtension[]
   }
+
   export declare type EntityPostData<
     S extends HasId,
     C extends CommonContent
@@ -87,6 +95,8 @@ declare module '@subsocial/api/types' {
     struct: S
     content: C | null
   }
+
+  export declare type SpaceData = EntityPostData<SpaceStruct, SpaceContent>
   export declare type PostData = EntityPostData<
     PostStruct &
       Pick<CommentStruct, 'rootPostId'> & { followersCount?: number },

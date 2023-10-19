@@ -25,8 +25,8 @@ import PolkadotConnectIdentityRemovedContent from './contents/polkadot-connect/P
 import PolkadotConnectSuccess from './contents/polkadot-connect/PolkadotConnectSuccess'
 import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUnlink'
 import PrivateKeyContent from './contents/PrivateKeyContent'
+import ProfileSettingsContent from './contents/ProfileSettingsContent'
 import ShareSessionContent from './contents/ShareSessionContent'
-import SubsocialProfileContent from './contents/SubsocialProfileContent'
 import { ContentProps, ProfileModalProps, ProfileModalState } from './types'
 
 const modalContents: {
@@ -34,7 +34,7 @@ const modalContents: {
 } = {
   account: AccountContent,
   'linked-addresses': LinkedAddressesContent,
-  'subsocial-profile': SubsocialProfileContent,
+  'profile-settings': ProfileSettingsContent,
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
@@ -119,10 +119,9 @@ export default function ProfileModal({
       withBackButton: true,
       withoutDefaultPadding: true,
     },
-    'subsocial-profile': {
-      title: '🎩 Update nickname',
-      desc: 'Create a name so other people can recognize you. You can change it at any time.',
-      withBackButton: 'linked-addresses',
+    'profile-settings': {
+      title: '✏️ Edit Profile',
+      withBackButton: true,
     },
     logout: {
       title: '🤔 Did you back up your Grill secret key?',

@@ -5,7 +5,9 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
+import { HiPencil } from 'react-icons/hi2'
 import AddressAvatar from './AddressAvatar'
+import Button from './Button'
 import { CopyTextInline } from './CopyText'
 import Name from './Name'
 
@@ -18,6 +20,7 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   withGrillAddress?: boolean
   withEvmAddress?: boolean
   nameClassName?: string
+  onEditClick?: () => void
 }
 
 const ProfilePreview = ({
@@ -26,6 +29,7 @@ const ProfilePreview = ({
   avatarClassName,
   nameClassName,
   addressesContainerClassName,
+  onEditClick,
   showMaxOneAddress = false,
   withGrillAddress = true,
   withEvmAddress = true,
@@ -46,12 +50,24 @@ const ProfilePreview = ({
         address={address}
         className={cx('h-20 w-20', avatarClassName)}
       />
-      <div className={cx('flex flex-col gap-2', addressesContainerClassName)}>
-        <Name
-          address={address}
-          showEthIcon={false}
-          className={cx('text-lg leading-none', nameClassName)}
-        />
+      <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
+        <div className='flex items-center'>
+          <Name
+            address={address}
+            showEthIcon={false}
+            className={cx('text-lg', nameClassName)}
+          />
+          {onEditClick && (
+            <Button
+              size='noPadding'
+              className='relative top-px ml-2 p-1 text-text-primary'
+              variant='transparent'
+              onClick={onEditClick}
+            >
+              <HiPencil />
+            </Button>
+          )}
+        </div>
         {showingAnyAddress && (
           <div className='flex flex-col gap-1'>
             {withGrillAddress &&

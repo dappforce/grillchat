@@ -5,6 +5,7 @@ import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
+import { SpaceContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
@@ -47,7 +48,10 @@ export function useUpsertProfile(
           'Please wait until we finalized your previous name change'
         )
 
-      const { success, cid } = await saveFile(content)
+      const { success, cid } = await saveFile({
+        ...content,
+        defaultProfile: 'custom',
+      } as SpaceContent)
       if (!success || !cid) throw new Error('Failed to save file')
 
       if (action === 'update') {

@@ -25,7 +25,7 @@ async function getProfilesFromBlockchain({
       id,
       name: content?.name,
       image: content?.image,
-      defaultProfile: (content as any)?.defaultProfile,
+      defaultProfile: content?.defaultProfile,
     },
     address: ownerId,
   }))
