@@ -40,6 +40,10 @@ async function getCommentIdsByPostIds(postId: string) {
 export const getCommentIdsByPostIdFromDatahubQuery = createQuery({
   key: 'comments',
   fetcher: getCommentIdsByPostIds,
+  defaultConfigGenerator: () => ({
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  }),
 })
 
 const GET_POST_METADATA = gql`
@@ -82,6 +86,10 @@ const getPostMetadata = poolQuery<
 export const getPostMetadataQuery = createQuery({
   key: 'post-metadata',
   fetcher: getPostMetadata,
+  defaultConfigGenerator: () => ({
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  }),
 })
 
 const GET_UNREAD_COUNT = gql`
@@ -122,9 +130,7 @@ const getUnreadCount = poolQuery<
         }
       })
     )
-    const filteredPairs = pairs.filter(Boolean) as NonNullable<
-      (typeof pairs)[number]
-    >[]
+    const filteredPairs = pairs.filter(Boolean)
     const res = await datahubQueryRequest<
       GetUnreadCountQuery,
       GetUnreadCountQueryVariables
@@ -148,4 +154,8 @@ const getUnreadCount = poolQuery<
 export const getUnreadCountQuery = createQuery({
   key: 'unread-count',
   fetcher: getUnreadCount,
+  defaultConfigGenerator: () => ({
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  }),
 })

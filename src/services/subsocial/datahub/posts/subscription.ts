@@ -3,7 +3,7 @@ import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/opt
 import { getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   DataHubSubscriptionEventEnum,
   SubscribePostSubscription,
@@ -14,15 +14,27 @@ import {
   getPostMetadataQuery,
 } from './query'
 
+// Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
+// the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
 export function useSubscribePostsInDatahub() {
   const queryClient = useQueryClient()
+  const unsubRef = useRef<(() => void) | undefined>()
 
   useEffect(() => {
     if (!getDatahubConfig()) return
 
-    const unsub = subscription(queryClient)
+    const listener = () => {
+      if (document.visibilityState === 'visible') {
+        unsubRef.current = subscription(queryClient)
+      } else {
+        unsubRef.current?.()
+      }
+    }
+    listener()
+    document.addEventListener('visibilitychange', listener)
     return () => {
-      unsub?.()
+      document.removeEventListener('visibilitychange', listener)
+      unsubRef.current?.()
     }
   }, [queryClient])
 }
@@ -48,6 +60,7 @@ function subscription(queryClient: QueryClient) {
   if (isSubscribed) return
   isSubscribed = true
 
+  console.log('subscribing')
   const client = datahubSubscription()
   let unsub = client.subscribe<SubscribePostSubscription, null>(
     {
@@ -71,6 +84,7 @@ function subscription(queryClient: QueryClient) {
   )
 
   return () => {
+    console.log('unsubscribe')
     unsub()
     isSubscribed = false
   }
@@ -100,6 +114,8 @@ async function processMessage(
     data.id = newestId
     // set initial data for immediate render but refetch it in background
     getPostQuery.setQueryData(queryClient, newestId, { ...data })
+  } else {
+    await getPostQuery.fetchQuery(queryClient, newestId)
   }
   getPostQuery.invalidate(queryClient, newestId)
 
@@ -144,6 +160,5 @@ async function processMessage(
     }
   )
 
-  if (!data) await getPostQuery.fetchQuery(queryClient, newestId)
   getPostMetadataQuery.invalidate(queryClient, rootPostId)
 }
