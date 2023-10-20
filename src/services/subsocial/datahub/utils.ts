@@ -1,4 +1,5 @@
 import { getDatahubConfig } from '@/utils/env/client'
+import { wait } from '@/utils/promise'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 import { Client, createClient } from 'graphql-ws'
 import ws from 'isomorphic-ws'
@@ -51,6 +52,10 @@ function getClient() {
     client = createClient({
       webSocketImpl: ws,
       url: subscriptionUrl,
+      shouldRetry: () => true,
+      retryWait: async (attempt) => {
+        await wait(2 ** attempt * 1000)
+      },
     })
   }
   return client
