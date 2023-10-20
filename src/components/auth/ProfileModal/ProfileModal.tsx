@@ -230,7 +230,7 @@ export default function ProfileModal({
     modalTitles[currentState] || {}
   const onBackClick = () => {
     try {
-      const data = JSON.parse(forceBackFlowStorage.get() || '{}')
+      const data = JSON.parse(forceBackFlowStorage.get() || '{}') as any
       const { from, to } = data
       if (from === currentState) {
         setCurrentState(to)
