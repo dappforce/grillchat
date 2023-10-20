@@ -1,10 +1,13 @@
 import Button from '@/components/Button'
+import Input from '@/components/inputs/Input'
 import ProfilePreview from '@/components/ProfilePreview'
 import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import Tabs from '@/components/Tabs'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useMyAccount } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import { ContentProps } from '../types'
 
@@ -59,7 +62,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
   )
 }
 
-function PolkadotProfileTabContent({ address, setCurrentState }: ContentProps) {
+function PolkadotProfileTabContent({ setCurrentState }: ContentProps) {
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const hasConnectedPolkadot = !!parentProxyAddress
 
@@ -87,9 +90,12 @@ function PolkadotProfileTabContent({ address, setCurrentState }: ContentProps) {
 
 function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
   const { data: accountData } = getAccountDataQuery.useQuery(address)
-  const hasEvmAddress = !!accountData?.evmAddress
+  const { data: profile } = getProfileQuery.useQuery(address)
+  const evmAddress = accountData?.evmAddress
 
-  if (!hasEvmAddress) {
+  const defaultProfile = profile?.profileSpace?.content?.defaultProfile
+
+  if (!evmAddress) {
     return (
       <div className='flex flex-col gap-4'>
         <p className='text-text-muted'>
@@ -101,6 +107,7 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
             setCurrentState('link-evm-address', 'profile-settings')
           }
           size='lg'
+          disabled={defaultProfile === 'evm'}
         >
           Connect Address
         </Button>
@@ -108,5 +115,30 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
     )
   }
 
-  return <div>evm form</div>
+  return (
+    <UpsertProfileWrapper>
+      {({ mutateAsync }) => {
+        const onSubmit = () => {
+          mutateAsync({
+            content: {
+              ...profile?.profileSpace?.content,
+              name: profile?.profileSpace?.content?.name ?? '',
+              defaultProfile: 'evm',
+            },
+          })
+        }
+
+        return (
+          <form onSubmit={onSubmit} className={cx('flex flex-col gap-4')}>
+            <Input
+              placeholder='Name (3-25 symbols)'
+              variant='fill-bg'
+              value={evmAddress}
+            />
+            <Button size='lg'>Save changes</Button>
+          </form>
+        )
+      }}
+    </UpsertProfileWrapper>
+  )
 }

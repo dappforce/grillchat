@@ -14,6 +14,7 @@ type CommonParams = {
   content: {
     name: string
     image?: string
+    defaultProfile?: string
   }
 }
 export type UpsertProfileParams =
@@ -50,7 +51,7 @@ export function useUpsertProfile(
 
       const { success, cid } = await saveFile({
         ...content,
-        defaultProfile: 'custom',
+        defaultProfile: content.defaultProfile || 'custom',
       } as SpaceContent)
       if (!success || !cid) throw new Error('Failed to save file')
 
