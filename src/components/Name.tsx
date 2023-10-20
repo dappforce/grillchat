@@ -7,6 +7,11 @@ import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import ChatModerateChip from './chats/ChatModerateChip'
 
+export type ForceDefaultProfile = {
+  defaultProfile?: string
+  name?: string
+}
+
 export type NameProps = ComponentProps<'span'> & {
   address: string
   additionalText?: string
@@ -14,21 +19,40 @@ export type NameProps = ComponentProps<'span'> & {
   showEthIcon?: boolean
   color?: string
   labelingData?: { chatId: string }
+  forceDefaultProfile?: ForceDefaultProfile
 }
 
-export function useName(address: string) {
+export function useName(
+  address: string,
+  forceDefaultProfile?: ForceDefaultProfile
+) {
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
   const { data: profile } = getProfileQuery.useQuery(address)
   const textColor = useRandomColor(address, { isAddress: true })
 
   const { ensName, evmAddress } = accountData || {}
-  const name =
+  let name =
     ensName ||
     profile?.profileSpace?.content?.name ||
     generateRandomName(address)
 
+  const defaultProfile =
+    forceDefaultProfile?.defaultProfile ||
+    profile?.profileSpace?.content?.defaultProfile
+  console.log(defaultProfile, forceDefaultProfile)
+  if (defaultProfile) {
+    switch (defaultProfile) {
+      case 'evm':
+        name = ensName || name
+        break
+      case 'custom':
+        name = profile?.profileSpace?.content?.name || name
+        break
+    }
+  }
+
   return {
-    name,
+    name: forceDefaultProfile?.name || name,
     accountData,
     profile,
     evmAddress,
@@ -45,10 +69,13 @@ const Name = ({
   showEthIcon = true,
   color,
   labelingData,
+  forceDefaultProfile,
   ...props
 }: NameProps) => {
-  const { accountData, evmAddress, isLoading, name, textColor } =
-    useName(address)
+  const { accountData, evmAddress, isLoading, name, textColor } = useName(
+    address,
+    forceDefaultProfile
+  )
 
   if (!accountData && isLoading) {
     return (

@@ -13,16 +13,21 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { ForceDefaultProfile } from './Name'
 
 export const resolveEnsAvatarSrc = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}`
 
 export type AddressAvatarProps = ComponentProps<'div'> & {
   address: string
+  forceDefaultProfile?: ForceDefaultProfile
 }
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
-  function AddressAvatar({ address, ...props }: AddressAvatarProps, ref) {
+  function AddressAvatar(
+    { address, forceDefaultProfile, ...props }: AddressAvatarProps,
+    ref
+  ) {
     const backgroundColor = useRandomColor(address, {
       isAddress: true,
       theme: 'dark',
@@ -71,6 +76,20 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
 
     if (ensName) {
       usedAvatar = resolveEnsAvatarSrc(ensName)
+    }
+
+    const defaultProfile =
+      forceDefaultProfile?.defaultProfile ||
+      profile?.profileSpace?.content?.defaultProfile
+    if (defaultProfile) {
+      switch (defaultProfile) {
+        case 'evm':
+          usedAvatar = ensName ? resolveEnsAvatarSrc(ensName) : undefined
+          break
+        case 'custom':
+          usedAvatar = profile?.profileSpace?.content?.image || undefined
+          break
+      }
     }
 
     return (

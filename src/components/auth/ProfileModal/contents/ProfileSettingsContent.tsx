@@ -29,10 +29,26 @@ export default function ProfileSettingsContent(props: ContentProps) {
     }
   }, [defaultProfile, hasEvmAddress])
 
+  let forceDefaultProfile: string | undefined = undefined
+  switch (selectedTab) {
+    case 0:
+      forceDefaultProfile = 'evm'
+      break
+    case 1:
+      forceDefaultProfile = 'polkadot'
+      break
+    case 2:
+      forceDefaultProfile = 'custom'
+      break
+  }
+
   return (
     <div className='mt-2 flex flex-col gap-6'>
       <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
-        <ProfilePreview address={address} />
+        <ProfilePreview
+          address={address}
+          forceDefaultProfile={{ defaultProfile: forceDefaultProfile }}
+        />
       </div>
       <div className='flex flex-col'>
         <span className='mb-2 text-text-muted'>Identity provider</span>

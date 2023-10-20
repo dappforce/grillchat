@@ -9,10 +9,11 @@ import { HiPencil } from 'react-icons/hi2'
 import AddressAvatar from './AddressAvatar'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
-import Name from './Name'
+import Name, { ForceDefaultProfile } from './Name'
 
 export type ProfilePreviewProps = ComponentProps<'div'> & {
   address: string
+  forceDefaultProfile?: ForceDefaultProfile
   className?: string
   avatarClassName?: string
   addressesContainerClassName?: string
@@ -25,6 +26,7 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
 
 const ProfilePreview = ({
   address,
+  forceDefaultProfile,
   className,
   avatarClassName,
   nameClassName,
@@ -49,6 +51,7 @@ const ProfilePreview = ({
       <AddressAvatar
         address={address}
         className={cx('h-20 w-20', avatarClassName)}
+        forceDefaultProfile={forceDefaultProfile}
       />
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
         <div className='flex items-center'>
@@ -56,6 +59,7 @@ const ProfilePreview = ({
             address={address}
             showEthIcon={false}
             className={cx('text-lg', nameClassName)}
+            forceDefaultProfile={forceDefaultProfile}
           />
           {onEditClick && (
             <Button
