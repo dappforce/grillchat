@@ -18,7 +18,7 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
   const captchaSiteKey = getCaptchaSiteKey()
 
   const runCaptcha = async () => {
-    if (!captchaSiteKey) return ''
+    if (!captchaSiteKey) return 'dummy-captcha'
 
     let token: string | null = null
     try {
