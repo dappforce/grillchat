@@ -62,7 +62,6 @@ export default function ProfileSettingsContent(props: ContentProps) {
 function PolkadotProfileTabContent({ address, setCurrentState }: ContentProps) {
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const hasConnectedPolkadot = !!parentProxyAddress
-  console.log(parentProxyAddress)
 
   if (!hasConnectedPolkadot) {
     return (
