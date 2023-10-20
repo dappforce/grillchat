@@ -12,7 +12,7 @@ export function getDiscussionCreatorMnemonic() {
 }
 
 export function getCaptchaSecret() {
-  return checkEnv(process.env.CAPTCHA_SECRET, 'CAPTCHA_SECRET', true)
+  return checkEnv(process.env.CAPTCHA_SECRET, 'CAPTCHA_SECRET')
 }
 
 export function getCrustIpfsAuth() {
