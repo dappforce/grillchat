@@ -1,7 +1,7 @@
 import { useLinkEvmAddress } from '@/services/subsocial/evmAddresses/mutation'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { decodeAddress } from '@polkadot/keyring'
-import { BN, u8aToHex } from '@polkadot/util'
+import { u8aToHex } from '@polkadot/util'
 import { useEffect, useState } from 'react'
 import { useDisconnect, useSignMessage } from 'wagmi'
 
@@ -14,11 +14,12 @@ const buildMsgParams = async (
 
   const api = await subsocialApi.blockchain.api
 
-  const account = await api.query.system.account(
-    signerAddress || substrateAddress
-  )
+  const account = await api.query.system.account(substrateAddress)
 
-  const nonce = account.nonce.add(new BN(1)).toString()
+  let nonce: string
+  const isUsingProxy = signerAddress && signerAddress !== substrateAddress
+  if (isUsingProxy) nonce = account.nonce.toString()
+  else nonce = account.nonce.addn(1).toString()
 
   const decodedAddressHex = decodedAddress.replace('0x', '')
 
