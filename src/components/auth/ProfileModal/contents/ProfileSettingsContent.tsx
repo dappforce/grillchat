@@ -22,6 +22,8 @@ export default function ProfileSettingsContent(props: ContentProps) {
   const hasCustomName = !!profile?.profileSpace?.content?.name
   const defaultProfile = profile?.profileSpace?.content?.defaultProfile
 
+  const [inputtedName, setInputtedName] = useState('')
+
   useEffect(() => {
     // TODO: check based on default profile
     if (hasEvmAddress) {
@@ -47,7 +49,10 @@ export default function ProfileSettingsContent(props: ContentProps) {
       <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
         <ProfilePreview
           address={address}
-          forceDefaultProfile={{ defaultProfile: forceDefaultProfile }}
+          forceDefaultProfile={{
+            defaultProfile: forceDefaultProfile,
+            name: inputtedName,
+          }}
         />
       </div>
       <div className='flex flex-col'>
@@ -70,7 +75,9 @@ export default function ProfileSettingsContent(props: ContentProps) {
             {
               id: 'custom',
               text: 'Custom',
-              content: () => <SubsocialProfileForm />,
+              content: () => (
+                <SubsocialProfileForm onNameChange={setInputtedName} />
+              ),
             },
           ]}
         />

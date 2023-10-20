@@ -39,7 +39,6 @@ export function useName(
   const defaultProfile =
     forceDefaultProfile?.defaultProfile ||
     profile?.profileSpace?.content?.defaultProfile
-  console.log(defaultProfile, forceDefaultProfile)
   if (defaultProfile) {
     switch (defaultProfile) {
       case 'evm':

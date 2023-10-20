@@ -1,9 +1,10 @@
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { getProfileQuery } from '@/services/api/query'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ComponentProps } from 'react'
+import { ComponentProps, useEffect } from 'react'
 import { useForm, UseFormWatch } from 'react-hook-form'
 import { z } from 'zod'
 import FormButton from '../FormButton'
@@ -11,6 +12,7 @@ import Input from '../inputs/Input'
 
 export type SubsocialProfileFormProps = ComponentProps<'form'> & {
   onSuccess?: () => void
+  onNameChange?: (name: string) => void
 }
 
 const formSchema = z.object({
@@ -20,6 +22,7 @@ type FormSchema = z.infer<typeof formSchema>
 
 export default function SubsocialProfileForm({
   onSuccess,
+  onNameChange,
   ...props
 }: SubsocialProfileFormProps) {
   const myAddress = useMyMainAddress()
@@ -36,6 +39,12 @@ export default function SubsocialProfileForm({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
   })
+
+  const { name } = watch()
+  const onNameChangeRef = useWrapInRef(onNameChange)
+  useEffect(() => {
+    onNameChangeRef.current?.(name)
+  }, [onNameChangeRef, name])
 
   return (
     <UpsertProfileWrapper>
