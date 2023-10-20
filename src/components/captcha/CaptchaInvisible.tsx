@@ -14,8 +14,11 @@ export type CaptchaInvisibleProps = {
 
 export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
   const captchaRef = useRef<ReCAPTCHA>(null)
+
+  const captchaSiteKey = getCaptchaSiteKey()
+
   const runCaptcha = async () => {
-    if (!getCaptchaSiteKey()) return ''
+    if (!captchaSiteKey) return ''
 
     let token: string | null = null
     try {
@@ -45,15 +48,17 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
       {children(runCaptcha, (className) => (
         <CaptchaTermsAndService className={className} />
       ))}
-      <div className='hidden'>
-        <ReCAPTCHA
-          sitekey={getCaptchaSiteKey()}
-          theme='dark'
-          ref={captchaRef}
-          size='invisible'
-          badge='inline'
-        />
-      </div>
+      {captchaSiteKey && (
+        <div className='hidden'>
+          <ReCAPTCHA
+            sitekey={getCaptchaSiteKey()}
+            theme='dark'
+            ref={captchaRef}
+            size='invisible'
+            badge='inline'
+          />
+        </div>
+      )}
     </>
   )
 }
