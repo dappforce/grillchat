@@ -13,6 +13,7 @@ import Input from '../inputs/Input'
 export type SubsocialProfileFormProps = ComponentProps<'form'> & {
   onSuccess?: () => void
   onNameChange?: (name: string) => void
+  shouldSetAsDefaultProfile?: boolean
 }
 
 const formSchema = z.object({
@@ -23,6 +24,7 @@ type FormSchema = z.infer<typeof formSchema>
 export default function SubsocialProfileForm({
   onSuccess,
   onNameChange,
+  shouldSetAsDefaultProfile,
   ...props
 }: SubsocialProfileFormProps) {
   const myAddress = useMyMainAddress()
@@ -48,10 +50,16 @@ export default function SubsocialProfileForm({
 
   return (
     <UpsertProfileWrapper>
-      {({ mutateAsync }) => {
+      {({ mutateAsync, isLoading }) => {
         const onSubmit = handleSubmit((data) => {
           mutateAsync({
-            content: { ...profile?.profileSpace?.content, name: data.name },
+            content: {
+              ...profile?.profileSpace?.content,
+              name: data.name,
+              defaultProfile: shouldSetAsDefaultProfile
+                ? 'custom'
+                : profile?.profileSpace?.content?.defaultProfile,
+            },
           })
           onSuccess?.()
         })
@@ -68,7 +76,11 @@ export default function SubsocialProfileForm({
               variant='fill-bg'
               error={errors.name?.message}
             />
-            <ProfileFormButton address={myAddress || ''} watch={watch} />
+            <ProfileFormButton
+              isLoading={isLoading}
+              address={myAddress || ''}
+              watch={watch}
+            />
           </form>
         )
       }}
@@ -79,9 +91,11 @@ export default function SubsocialProfileForm({
 function ProfileFormButton({
   address,
   watch,
+  isLoading,
 }: {
   address: string
   watch: UseFormWatch<FormSchema>
+  isLoading: boolean
 }) {
   const { name } = watch()
   const { data } = getProfileQuery.useQuery(address, {
@@ -98,8 +112,9 @@ function ProfileFormButton({
       disabled={isNameNotChanged}
       watch={watch}
       size='lg'
+      isLoading={isLoading}
     >
-      Save
+      Save changes
     </FormButton>
   )
 }

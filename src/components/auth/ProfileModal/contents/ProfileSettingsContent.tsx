@@ -25,9 +25,20 @@ export default function ProfileSettingsContent(props: ContentProps) {
   const [inputtedName, setInputtedName] = useState('')
 
   useEffect(() => {
-    // TODO: check based on default profile
-    if (hasEvmAddress) {
-      setSelectedTab(0)
+    switch (defaultProfile) {
+      case 'evm':
+        setSelectedTab(0)
+        break
+      case 'polkadot':
+        setSelectedTab(1)
+        break
+      case 'custom':
+        setSelectedTab(2)
+        break
+      default:
+        if (hasEvmAddress) {
+          setSelectedTab(0)
+        }
     }
   }, [defaultProfile, hasEvmAddress])
 
@@ -51,7 +62,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
           address={address}
           forceDefaultProfile={{
             defaultProfile: forceDefaultProfile,
-            name: inputtedName,
+            name: forceDefaultProfile === 'custom' ? inputtedName : undefined,
           }}
         />
       </div>
@@ -76,7 +87,11 @@ export default function ProfileSettingsContent(props: ContentProps) {
               id: 'custom',
               text: 'Custom',
               content: () => (
-                <SubsocialProfileForm onNameChange={setInputtedName} />
+                <SubsocialProfileForm
+                  onNameChange={setInputtedName}
+                  // set as default only if the user have set this, even when he has better identity
+                  shouldSetAsDefaultProfile={hasEvmAddress}
+                />
               ),
             },
           ]}
