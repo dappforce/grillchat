@@ -1,3 +1,4 @@
+import EthIcon from '@/assets/icons/eth.svg'
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
 import ProfilePreview from '@/components/ProfilePreview'
@@ -24,7 +25,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
   useEffect(() => {
     // TODO: check based on default profile
     if (hasEvmAddress) {
-      setSelectedTab(1)
+      setSelectedTab(0)
     }
   }, [defaultProfile, hasEvmAddress])
 
@@ -92,6 +93,7 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { data: profile } = getProfileQuery.useQuery(address)
   const evmAddress = accountData?.evmAddress
+  const ensName = accountData?.ensName
 
   const defaultProfile = profile?.profileSpace?.content?.defaultProfile
 
@@ -107,7 +109,6 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
             setCurrentState('link-evm-address', 'profile-settings')
           }
           size='lg'
-          disabled={defaultProfile === 'evm'}
         >
           Connect Address
         </Button>
@@ -117,8 +118,9 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
 
   return (
     <UpsertProfileWrapper>
-      {({ mutateAsync }) => {
-        const onSubmit = () => {
+      {({ mutateAsync, isLoading }) => {
+        const onSubmit = (e: any) => {
+          e.preventDefault()
           mutateAsync({
             content: {
               ...profile?.profileSpace?.content,
@@ -133,9 +135,21 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
             <Input
               placeholder='Name (3-25 symbols)'
               variant='fill-bg'
-              value={evmAddress}
+              className='pl-10 !brightness-100'
+              value={ensName ?? 'You have no ENS'}
+              disabled
+              leftElement={(className) => (
+                <EthIcon className={cx(className, 'left-3')} />
+              )}
             />
-            <Button size='lg'>Save changes</Button>
+            <Button
+              type='submit'
+              isLoading={isLoading}
+              size='lg'
+              disabled={defaultProfile === 'evm'}
+            >
+              Save changes
+            </Button>
           </form>
         )
       }}
