@@ -15,6 +15,8 @@ export type CaptchaInvisibleProps = {
 export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
   const captchaRef = useRef<ReCAPTCHA>(null)
   const runCaptcha = async () => {
+    if (!getCaptchaSiteKey()) return ''
+
     let token: string | null = null
     try {
       console.log('waiting captcha...')
