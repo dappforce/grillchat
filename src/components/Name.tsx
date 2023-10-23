@@ -4,11 +4,12 @@ import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
+import { SpaceContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import ChatModerateChip from './chats/ChatModerateChip'
 
-export type ForceDefaultProfile = {
-  defaultProfile?: string
+export type ForceProfileSource = {
+  profileSource?: SpaceContent['profileSource']
   name?: string
 }
 
@@ -19,12 +20,12 @@ export type NameProps = ComponentProps<'span'> & {
   showEthIcon?: boolean
   color?: string
   labelingData?: { chatId: string }
-  forceDefaultProfile?: ForceDefaultProfile
+  forceProfileSource?: ForceProfileSource
 }
 
 export function useName(
   address: string,
-  forceDefaultProfile?: ForceDefaultProfile
+  forceProfileSource?: ForceProfileSource
 ) {
   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
   const { data: profile } = getProfileQuery.useQuery(address)
@@ -36,22 +37,22 @@ export function useName(
     profile?.profileSpace?.content?.name ||
     generateRandomName(address)
 
-  const defaultProfile =
-    forceDefaultProfile?.defaultProfile ||
-    profile?.profileSpace?.content?.defaultProfile
-  if (defaultProfile) {
-    switch (defaultProfile) {
-      case 'evm':
+  const profileSource =
+    forceProfileSource?.profileSource ||
+    profile?.profileSpace?.content?.profileSource
+  if (profileSource) {
+    switch (profileSource) {
+      case 'ens':
         name = ensName || name
         break
-      case 'custom':
+      case 'subsocial-profile':
         name = profile?.profileSpace?.content?.name || name
         break
     }
   }
 
   return {
-    name: forceDefaultProfile?.name || name,
+    name: forceProfileSource?.name || name,
     accountData,
     profile,
     evmAddress,
@@ -68,12 +69,12 @@ const Name = ({
   showEthIcon = true,
   color,
   labelingData,
-  forceDefaultProfile,
+  forceProfileSource,
   ...props
 }: NameProps) => {
   const { accountData, evmAddress, isLoading, name, textColor } = useName(
     address,
-    forceDefaultProfile
+    forceProfileSource
   )
 
   if (!accountData && isLoading) {

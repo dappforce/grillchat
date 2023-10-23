@@ -14,8 +14,7 @@ type CommonParams = {
   content: {
     name: string
     image?: string
-    defaultProfile?: string
-  }
+  } & Pick<SpaceContent, 'profileSource'>
 }
 export type UpsertProfileParams =
   | CommonParams

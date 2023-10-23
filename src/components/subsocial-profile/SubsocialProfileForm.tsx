@@ -13,7 +13,7 @@ import Input from '../inputs/Input'
 export type SubsocialProfileFormProps = ComponentProps<'form'> & {
   onSuccess?: () => void
   onNameChange?: (name: string) => void
-  shouldSetAsDefaultProfile?: boolean
+  shouldSetAsProfileSource?: boolean
 }
 
 const formSchema = z.object({
@@ -24,7 +24,7 @@ type FormSchema = z.infer<typeof formSchema>
 export default function SubsocialProfileForm({
   onSuccess,
   onNameChange,
-  shouldSetAsDefaultProfile,
+  shouldSetAsProfileSource,
   ...props
 }: SubsocialProfileFormProps) {
   const myAddress = useMyMainAddress()
@@ -56,9 +56,9 @@ export default function SubsocialProfileForm({
             content: {
               ...profile?.profileSpace?.content,
               name: data.name,
-              defaultProfile: shouldSetAsDefaultProfile
-                ? 'custom'
-                : profile?.profileSpace?.content?.defaultProfile,
+              profileSource: shouldSetAsProfileSource
+                ? 'subsocial-profile'
+                : profile?.profileSpace?.content?.profileSource,
             },
           })
           onSuccess?.()
@@ -104,7 +104,7 @@ function ProfileFormButton({
 
   const isNameNotChanged =
     name === data?.profileSpace?.content?.name &&
-    data.profileSpace.content.defaultProfile === 'custom'
+    data.profileSpace.content.profileSource === 'subsocial-profile'
 
   return (
     <FormButton

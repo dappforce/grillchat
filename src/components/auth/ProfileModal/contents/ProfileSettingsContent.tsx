@@ -9,6 +9,7 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { SpaceContent } from '@subsocial/api/types'
 import { useEffect, useState } from 'react'
 import { ContentProps } from '../types'
 
@@ -20,19 +21,19 @@ export default function ProfileSettingsContent(props: ContentProps) {
   const hasEvmAddress = !!accountData?.ensName
   const { data: profile } = getProfileQuery.useQuery(address)
   const hasCustomName = !!profile?.profileSpace?.content?.name
-  const defaultProfile = profile?.profileSpace?.content?.defaultProfile
+  const profileSource = profile?.profileSpace?.content?.profileSource
 
   const [inputtedName, setInputtedName] = useState('')
 
   useEffect(() => {
-    switch (defaultProfile) {
-      case 'evm':
+    switch (profileSource) {
+      case 'ens':
         setSelectedTab(0)
         break
-      case 'polkadot':
+      case 'polkadot-identity':
         setSelectedTab(1)
         break
-      case 'custom':
+      case 'subsocial-profile':
         setSelectedTab(2)
         break
       default:
@@ -40,18 +41,18 @@ export default function ProfileSettingsContent(props: ContentProps) {
           setSelectedTab(0)
         }
     }
-  }, [defaultProfile, hasEvmAddress])
+  }, [profileSource, hasEvmAddress])
 
-  let forceDefaultProfile: string | undefined = undefined
+  let forceProfileSource: SpaceContent['profileSource'] | undefined = undefined
   switch (selectedTab) {
     case 0:
-      forceDefaultProfile = 'evm'
+      forceProfileSource = 'ens'
       break
     case 1:
-      forceDefaultProfile = 'polkadot'
+      forceProfileSource = 'polkadot-identity'
       break
     case 2:
-      forceDefaultProfile = 'custom'
+      forceProfileSource = 'subsocial-profile'
       break
   }
 
@@ -60,9 +61,12 @@ export default function ProfileSettingsContent(props: ContentProps) {
       <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
         <ProfilePreview
           address={address}
-          forceDefaultProfile={{
-            defaultProfile: forceDefaultProfile,
-            name: forceDefaultProfile === 'custom' ? inputtedName : undefined,
+          forceProfileSource={{
+            profileSource: forceProfileSource,
+            name:
+              forceProfileSource === 'subsocial-profile'
+                ? inputtedName
+                : undefined,
           }}
         />
       </div>
@@ -90,7 +94,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
                 <SubsocialProfileForm
                   onNameChange={setInputtedName}
                   // set as default only if the user have set this, even when he has better identity
-                  shouldSetAsDefaultProfile={hasEvmAddress}
+                  shouldSetAsProfileSource={hasEvmAddress}
                 />
               ),
             },
@@ -133,7 +137,7 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
   const evmAddress = accountData?.evmAddress
   const ensName = accountData?.ensName
 
-  const defaultProfile = profile?.profileSpace?.content?.defaultProfile
+  const profileSource = profile?.profileSpace?.content?.profileSource
 
   if (!evmAddress) {
     return (
@@ -163,7 +167,7 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
             content: {
               ...profile?.profileSpace?.content,
               name: profile?.profileSpace?.content?.name ?? '',
-              defaultProfile: 'evm',
+              profileSource: 'ens',
             },
           })
         }
@@ -184,7 +188,7 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
               type='submit'
               isLoading={isLoading}
               size='lg'
-              disabled={defaultProfile === 'evm'}
+              disabled={profileSource === 'ens'}
             >
               Save changes
             </Button>
