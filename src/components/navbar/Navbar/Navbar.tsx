@@ -55,6 +55,7 @@ export default function Navbar({
 }: NavbarProps) {
   const { enableLoginButton = true } = useConfigContext()
   const isInitialized = useMyAccount((state) => state.isInitialized)
+  const isTemporaryAccount = useMyAccount((state) => state.isTemporaryAccount)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
   )
@@ -91,7 +92,7 @@ export default function Navbar({
   const renderAuthComponent = () => {
     if (!isInitialized) return <div className='w-20' />
 
-    if (isLoggedIn) {
+    if (isLoggedIn && !isTemporaryAccount) {
       return (
         <ProfileAvatar
           popOverControl={{

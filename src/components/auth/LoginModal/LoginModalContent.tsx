@@ -245,22 +245,24 @@ export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
 
 function useLoginBeforeSignEvm() {
   const [isCreatingAcc, setIsCreatingAcc] = useState(false)
-  const logout = useMyAccount((state) => state.logout)
   const { mutate: requestToken, error } = useRequestToken()
-  const login = useMyAccount((state) => state.login)
+  const loginAsTemporaryAccount = useMyAccount(
+    (state) => state.loginAsTemporaryAccount
+  )
+  const myAddress = useMyMainAddress()
   useToastError(error, 'Retry linking EVM address failed')
 
   return {
     mutate: async (runCaptcha: () => Promise<string | null>) => {
+      if (myAddress) return
+
       setIsCreatingAcc(true)
       try {
         const captchaToken = await runCaptcha()
         if (!captchaToken) throw new Error('Captcha failed')
-        const address = await login()
+        const address = await loginAsTemporaryAccount()
         if (!address) throw new Error('Login failed')
         requestToken({ captchaToken, address })
-      } catch {
-        logout()
       } finally {
         setIsCreatingAcc(false)
       }
@@ -271,6 +273,7 @@ function useLoginBeforeSignEvm() {
 
 export const EvmLoginError = ({ setCurrentState }: ContentProps) => {
   const { mutate, isLoading } = useLoginBeforeSignEvm()
+
   return (
     <CaptchaInvisible>
       {(runCaptcha) => (
@@ -288,12 +291,10 @@ export const EvmLoginError = ({ setCurrentState }: ContentProps) => {
 export const LinkEvmContent = ({ setCurrentState }: ContentProps) => {
   const { mutate, isLoading: isLoggingIn } = useLoginBeforeSignEvm()
 
-  const logout = useMyAccount((state) => state.logout)
   const { signAndLinkEvmAddress, isLoading: isLinking } =
     useSignMessageAndLinkEvmAddress({
       setModalStep: () => setCurrentState('evm-address-linked'),
       onError: () => {
-        logout()
         setCurrentState('evm-linking-error')
       },
     })
@@ -316,17 +317,16 @@ export const LinkEvmContent = ({ setCurrentState }: ContentProps) => {
 }
 
 const PolkadotConnectConfirmation = ({ setCurrentState }: ContentProps) => {
-  const logout = useMyAccount((state) => state.logout)
   const { mutateAsync, error } = useLoginAndRequestToken({
-    onError: () => logout(),
+    asTemporaryAccount: true,
   })
   useToastError(error, 'Create account for polkadot connection failed')
+
   return (
     <CaptchaInvisible>
       {(runCaptcha) => (
         <PolkadotConnectConfirmationContent
           setCurrentState={setCurrentState}
-          onError={logout}
           beforeAddProxy={async () => {
             const captchaToken = await runCaptcha()
             if (!captchaToken) return false

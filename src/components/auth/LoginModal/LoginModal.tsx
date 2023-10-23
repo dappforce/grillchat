@@ -1,6 +1,6 @@
 import InfoPanel from '@/components/InfoPanel'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import dynamic from 'next/dynamic'
@@ -27,9 +27,9 @@ type ModalConfig = {
     desc: React.ReactNode
     withoutDefaultPadding?: boolean
     backToStep?: LoginModalStep
-    withBackButton?: boolean
+    withBackButton?: boolean | ((address: string | null) => boolean)
     withFooter?: boolean
-    logoutIfClosedInCurrentStep?: boolean
+    finalizeTemporaryAccount?: boolean
   }
 }
 
@@ -59,6 +59,7 @@ const modalHeader: ModalConfig = {
   'account-created': {
     title: '🎉 Account created',
     desc: 'We have created an anonymous account for you. You can now use Grill.chat!',
+    finalizeTemporaryAccount: true,
   },
   'next-actions': {
     title: '🎉 Unlock the Full Potential of Web3',
@@ -67,26 +68,25 @@ const modalHeader: ModalConfig = {
   'connect-wallet': {
     title: '🔑 Connect Wallet',
     desc: 'Choose a wallet to connect to Grill.chat',
-    withBackButton: true,
+    withBackButton: (address) => !address,
     withoutDefaultPadding: true,
   },
   'evm-address-link': {
     title: '🔑 Connect EVM',
     desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display ENS names and NFTs, and interact with ERC20s.',
-    logoutIfClosedInCurrentStep: true,
     withBackButton: true,
     backToStep: 'connect-wallet',
   },
   'evm-address-linked': {
     title: '🎉 EVM address linked',
     desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
+    finalizeTemporaryAccount: true,
   },
   'evm-linking-error': {
     title: '😕 Something went wrong',
     desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
     withBackButton: true,
     withFooter: false,
-    logoutIfClosedInCurrentStep: true,
     backToStep: 'connect-wallet',
   },
   'polkadot-connect': {
@@ -106,13 +106,13 @@ const modalHeader: ModalConfig = {
   'polkadot-connect-confirmation': {
     title: '🔑 Link Confirmation',
     desc: 'Please confirm the connection in your Polkadot wallet.',
-    logoutIfClosedInCurrentStep: true,
     withBackButton: true,
     backToStep: 'polkadot-connect-account',
   },
   'polkadot-connect-success': {
     title: '🎉 Polkadot account linked',
     desc: "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
+    finalizeTemporaryAccount: true,
   },
 }
 
@@ -126,9 +126,9 @@ export default function LoginModal({
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [currentState, setCurrentState] =
     useState<LoginModalStep>(initialOpenState)
-  const logout = useMyAccount((state) => state.logout)
 
   const ModalContent = loginModalContents[currentState]
+  const header = modalHeader[currentState]
   const {
     title,
     desc,
@@ -136,15 +136,31 @@ export default function LoginModal({
     withFooter,
     backToStep,
     withoutDefaultPadding,
-    logoutIfClosedInCurrentStep,
-  } = modalHeader[currentState]
+  } = header
   const usedOnBackClick =
     onBackClick || (() => setCurrentState(backToStep || 'login'))
 
   useEffect(() => {
     if (props.isOpen) setCurrentState(initialOpenState)
+    else {
+      const { isTemporaryAccount, logout } = useMyAccount.getState()
+      if (isTemporaryAccount) logout()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
+
+  useEffect(() => {
+    if (header.finalizeTemporaryAccount) {
+      const { finalizeTemporaryAccount } = useMyAccount.getState()
+      finalizeTemporaryAccount()
+    }
+  }, [header])
+
+  const address = useMyMainAddress()
+  const showBackButton =
+    typeof withBackButton === 'function'
+      ? withBackButton(address)
+      : withBackButton
 
   return (
     <Modal
@@ -154,12 +170,11 @@ export default function LoginModal({
       title={title}
       withCloseButton
       description={desc}
-      onBackClick={withBackButton ? usedOnBackClick : undefined}
+      onBackClick={showBackButton ? usedOnBackClick : undefined}
       contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
       titleClassName={cx(withoutDefaultPadding && 'px-6')}
       descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
       closeModal={() => {
-        if (logoutIfClosedInCurrentStep) logout()
         props.closeModal()
       }}
     >

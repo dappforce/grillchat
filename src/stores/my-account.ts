@@ -23,6 +23,7 @@ import { create } from './utils'
 type State = {
   isInitialized?: boolean
   isInitializedAddress?: boolean
+  isTemporaryAccount: boolean
 
   preferredWallet: Wallet | null
   connectedWallet?: {
@@ -45,6 +46,8 @@ type Actions = {
     secretKey?: string,
     isInitialization?: boolean
   ) => Promise<string | false>
+  loginAsTemporaryAccount: () => Promise<string | false>
+  finalizeTemporaryAccount: () => void
   logout: () => void
   setPreferredWallet: (wallet: Wallet | null) => void
   connectWallet: (address: string, signer: Signer | null) => Promise<void>
@@ -56,6 +59,7 @@ type Actions = {
 
 const initialState: State = {
   isInitializedAddress: true,
+  isTemporaryAccount: false,
   preferredWallet: null,
   parentProxyAddress: undefined,
   address: null,
@@ -211,6 +215,13 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       return false
     }
     return address
+  },
+  loginAsTemporaryAccount: () => {
+    set({ isTemporaryAccount: true })
+    return get().login()
+  },
+  finalizeTemporaryAccount: () => {
+    set({ isTemporaryAccount: false })
   },
   _subscribeEnergy: () => {
     const { address, _unsubscribeEnergy } = get()
