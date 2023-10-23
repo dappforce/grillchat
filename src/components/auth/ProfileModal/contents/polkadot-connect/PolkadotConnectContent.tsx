@@ -1,13 +1,11 @@
+import PolkadotConnectWalletContent from '@/components/auth/common/polkadot-connect/PolkadotConnectWalletContent'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import { CopyTextInline } from '@/components/CopyText'
 import LinkText from '@/components/LinkText'
-import MenuList from '@/components/MenuList'
 import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
-import { getWallets, Wallet } from '@talismn/connect-wallets'
-import Image from 'next/image'
 import { ContentProps } from '../../types'
 
 export default function PolkadotConnectContent({
@@ -15,34 +13,8 @@ export default function PolkadotConnectContent({
 }: ContentProps) {
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
 
-  const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
-  const supportedWallets: Wallet[] = getWallets()
-
   if (!parentProxyAddress) {
-    return (
-      <div className='flex flex-col'>
-        <MenuList
-          className='pb-6 pt-0'
-          menus={supportedWallets.map((wallet: Wallet) => ({
-            text: wallet.title,
-            className: 'gap-4',
-            icon: () => (
-              <Image
-                width={32}
-                height={32}
-                className='h-10 w-10'
-                src={wallet.logo.src}
-                alt={wallet.logo.alt}
-              />
-            ),
-            onClick: () => {
-              setPreferredWallet(wallet)
-              setCurrentState('polkadot-connect-account')
-            },
-          }))}
-        />
-      </div>
-    )
+    return <PolkadotConnectWalletContent setCurrentState={setCurrentState} />
   }
 
   return (

@@ -1,4 +1,4 @@
-import { CustomConnectButton } from '@/components/auth/CustomConnectButton'
+import { CustomConnectButton } from '@/components/auth/common/evm/CustomConnectButton'
 import { ContentProps } from '@/components/auth/ProfileModal/types'
 import Button from '@/components/Button'
 import EvmAddress from '@/components/EvmAddress'

@@ -32,13 +32,14 @@ const useSignEvmLinkMessage = () => {
   const [isError, setIsError] = useState(false)
 
   const signEvmLinkMessage = async (
-    emvAddress?: string,
+    evmAddress?: string,
     substrateAddress?: string | null,
     signerAddress?: string
   ) => {
     setIsError(false)
 
-    if (!emvAddress || !substrateAddress) return
+    console.log(evmAddress, substrateAddress)
+    if (!evmAddress || !substrateAddress) return
 
     const message = await buildMsgParams(substrateAddress, signerAddress)
     try {
@@ -104,12 +105,15 @@ export default function useSignMessageAndLinkEvmAddress({
   ) => {
     if (!evmAddress) return
 
+    console.log('signing')
     const data = await signEvmLinkMessage(
       evmAddress,
       substrateAddress,
       signerAddress
     )
+    console.log('done signing')
     if (data) {
+      console.log('linking')
       linkEvmAddress({
         evmAddress,
         evmSignature: data,

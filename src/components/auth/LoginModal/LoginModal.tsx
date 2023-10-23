@@ -1,5 +1,6 @@
 import InfoPanel from '@/components/InfoPanel'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
@@ -23,6 +24,7 @@ type ModalConfig = {
   [key in LoginModalStep]: {
     title: React.ReactNode
     desc: React.ReactNode
+    withoutDefaultPadding?: boolean
     backToStep?: LoginModalStep
     withBackButton?: boolean
     withFooter?: boolean
@@ -56,15 +58,18 @@ const modalHeader: ModalConfig = {
     title: '🎉 Account created',
     desc: 'We have created an anonymous account for you. You can now use Grill.chat!',
   },
-  'subsocial-profile': {
-    title: '🎩 Update nickname',
-    desc: 'This will help other people recognize you better. You can change it at any time.',
-    withBackButton: true,
-    backToStep: 'account-created',
+  'next-actions': {
+    title: '🎉 Unlock the Full Potential of Web3',
+    desc: "By connecting an EVM or Polkadot address, you'll be able to use features such as donations and NFTs, display your identity, and much more.",
   },
-  'account-created-after-name-set': {
-    title: '🎉 Nickname set',
-    desc: 'Other users will be able to remember and recognize you now!',
+  'connect-wallet': {
+    title: '🔑 Connect Wallet',
+    desc: 'Choose a wallet to connect to Grill.chat',
+    withoutDefaultPadding: true,
+  },
+  'evm-address-link': {
+    title: '🔑 Connect EVM',
+    desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display ENS names and NFTs, and interact with ERC20s.',
   },
   'evm-address-linked': {
     title: '🎉 EVM address linked',
@@ -76,6 +81,22 @@ const modalHeader: ModalConfig = {
     withBackButton: false,
     withFooter: false,
   },
+  'polkadot-connect': {
+    title: '🔗 Connect Polkadot',
+    desc: 'Choose a wallet to connect to Grill.chat',
+  },
+  'polkadot-connect-account': {
+    title: '🔗 Select an account',
+    desc: 'Select an account to connect to Grill.chat.',
+  },
+  'polkadot-connect-confirmation': {
+    title: '🔑 Link Confirmation',
+    desc: 'Please confirm the connection in your Polkadot wallet.',
+  },
+  'polkadot-connect-success': {
+    title: '🎉 Polkadot account linked',
+    desc: "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
+  },
 }
 
 export default function LoginModal({
@@ -86,17 +107,23 @@ export default function LoginModal({
   ...props
 }: LoginModalProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  const [currentStep, setCurrentStep] =
+  const [currentState, setCurrentState] =
     useState<LoginModalStep>(initialOpenState)
 
-  const ModalContent = loginModalContents[currentStep]
-  const { title, desc, withBackButton, withFooter, backToStep } =
-    modalHeader[currentStep]
+  const ModalContent = loginModalContents[currentState]
+  const {
+    title,
+    desc,
+    withBackButton,
+    withFooter,
+    backToStep,
+    withoutDefaultPadding,
+  } = modalHeader[currentState]
   const usedOnBackClick =
-    onBackClick || (() => setCurrentStep(backToStep || 'login'))
+    onBackClick || (() => setCurrentState(backToStep || 'login'))
 
   useEffect(() => {
-    if (props.isOpen) setCurrentStep(initialOpenState)
+    if (props.isOpen) setCurrentState(initialOpenState)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
 
@@ -109,6 +136,9 @@ export default function LoginModal({
       withCloseButton
       description={desc}
       onBackClick={withBackButton ? usedOnBackClick : undefined}
+      contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
+      titleClassName={cx(withoutDefaultPadding && 'px-6')}
+      descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
       closeModal={() => {
         props.closeModal()
       }}
@@ -117,8 +147,8 @@ export default function LoginModal({
         {(runCaptcha, termsAndService) => {
           return (
             <ModalContent
-              setCurrentStep={setCurrentStep}
-              currentStep={currentStep}
+              setCurrentState={setCurrentState}
+              currentStep={currentState}
               runCaptcha={runCaptcha}
               termsAndService={termsAndService}
               {...props}

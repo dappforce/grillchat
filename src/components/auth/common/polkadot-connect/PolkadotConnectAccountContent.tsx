@@ -6,8 +6,8 @@ import { Signer, truncateAddress } from '@/utils/account'
 import { toSubsocialAddress } from '@subsocial/utils'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { ContentProps } from '../../types'
 import useAccountsFromPreferredWallet from './hooks/useAccountsFromPreferredWallet'
+import { PolkadotConnectContentProps } from './types'
 
 const Identicon = dynamic(() => import('@polkadot/react-identicon'), {
   ssr: false,
@@ -15,7 +15,7 @@ const Identicon = dynamic(() => import('@polkadot/react-identicon'), {
 
 export default function PolkadotConnectAccountContent({
   setCurrentState,
-}: ContentProps) {
+}: PolkadotConnectContentProps) {
   const connectWallet = useMyAccount((state) => state.connectWallet)
   const { accounts, isLoading } = useAccountsFromPreferredWallet(() =>
     setCurrentState('polkadot-connect')

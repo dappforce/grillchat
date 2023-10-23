@@ -4,11 +4,11 @@ import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { toSubsocialAddress } from '@subsocial/utils'
 import Image from 'next/image'
-import { ContentProps } from '../../types'
+import { PolkadotConnectContentProps } from './types'
 
 export default function PolkadotConnectConfirmationContent({
   setCurrentState,
-}: ContentProps) {
+}: PolkadotConnectContentProps) {
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const isLoadingEnergy = useMyAccount(
     (state) => state.connectedWallet?.energy === undefined

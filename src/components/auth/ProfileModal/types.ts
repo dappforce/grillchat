@@ -1,5 +1,6 @@
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import React from 'react'
+import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 
 type NotificationControl = {
   showNotif: boolean
@@ -12,13 +13,10 @@ export type ProfileModalProps = ModalFunctionalityProps & {
 }
 
 export type ProfileModalState =
+  | PolkadotConnectSteps
   | 'account'
   | 'linked-addresses'
   | 'profile-settings'
-  | 'polkadot-connect'
-  | 'polkadot-connect-account'
-  | 'polkadot-connect-confirmation'
-  | 'polkadot-connect-success'
   | 'polkadot-connect-unlink'
   | 'polkadot-connect-identity-removed'
   | 'private-key'

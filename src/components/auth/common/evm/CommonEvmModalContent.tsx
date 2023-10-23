@@ -9,12 +9,16 @@ type CommonEVMLoginErrorProps = {
   setModalStep?: () => void
   onError?: () => void
   signAndLinkOnConnect?: boolean
+  beforeSignEvmAddress?: () => Promise<void>
+  isLoading?: boolean
 }
 
 export const CommonEVMLoginErrorContent = ({
   setModalStep,
   onError,
   signAndLinkOnConnect,
+  beforeSignEvmAddress,
+  isLoading: _isLoading,
 }: CommonEVMLoginErrorProps) => {
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
     setModalStep,
@@ -23,9 +27,10 @@ export const CommonEVMLoginErrorContent = ({
 
   return (
     <CustomConnectButton
-      isLoading={isLoading}
+      isLoading={_isLoading || isLoading}
       signAndLinkOnConnect={signAndLinkOnConnect}
       signAndLinkEvmAddress={signAndLinkEvmAddress}
+      beforeSignEvmAddress={beforeSignEvmAddress}
       className='w-full'
       label='Try again'
       secondLabel='Sign Message'

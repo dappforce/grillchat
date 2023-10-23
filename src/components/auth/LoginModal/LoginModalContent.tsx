@@ -1,16 +1,20 @@
-import CreateAccountIcon from '@/assets/icons/create-account.svg'
+import PotentialImage from '@/assets/graphics/potential.png'
+import EthIcon from '@/assets/icons/eth.svg'
+import IncognitoIcon from '@/assets/icons/incognito.svg'
 import KeyIcon from '@/assets/icons/key.svg'
+import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
 import {
   CommonEvmAddressLinked,
   CommonEVMLoginErrorContent,
-} from '@/components/auth/CommonModalContent'
+} from '@/components/auth/common/evm/CommonEvmModalContent'
 import Button from '@/components/Button'
+import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
+import MenuList from '@/components/MenuList'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
-import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import Toast from '@/components/Toast'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
@@ -19,6 +23,7 @@ import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import Image from 'next/image'
 import {
   Dispatch,
   SetStateAction,
@@ -27,19 +32,26 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
-import { CustomConnectButton } from '../CustomConnectButton'
+import { CustomConnectButton } from '../common/evm/CustomConnectButton'
+import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
+import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
+import PolkadotConnectSuccess from '../common/polkadot-connect/PolkadotConnectSuccess'
+import PolkadotConnectWalletContent from '../common/polkadot-connect/PolkadotConnectWalletContent'
+import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 
 export type LoginModalStep =
+  | PolkadotConnectSteps
   | 'login'
   | 'enter-secret-key'
-  | 'subsocial-profile'
   | 'account-created'
-  | 'account-created-after-name-set'
+  | 'next-actions'
+  | 'connect-wallet'
+  | 'evm-address-link'
   | 'evm-address-linked'
   | 'evm-linking-error'
 
 type ContentProps = ModalFunctionalityProps & {
-  setCurrentStep: Dispatch<SetStateAction<LoginModalStep>>
+  setCurrentState: Dispatch<SetStateAction<LoginModalStep>>
   currentStep: LoginModalStep
   runCaptcha: () => Promise<string | null>
   termsAndService: (className?: string) => JSX.Element
@@ -48,7 +60,7 @@ type ContentProps = ModalFunctionalityProps & {
 }
 
 export const LoginContent = ({
-  setCurrentStep,
+  setCurrentState,
   runCaptcha,
   termsAndService,
 }: ContentProps) => {
@@ -72,7 +84,17 @@ export const LoginContent = ({
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className='flex flex-col gap-4'>
-          <Button onClick={() => setCurrentStep('enter-secret-key')} size='lg'>
+          <Button onClick={() => setCurrentState('connect-wallet')} size='lg'>
+            <div className='flex items-center justify-center gap-2'>
+              <WalletIcon />
+              Connect Wallet
+            </div>
+          </Button>
+          <Button
+            variant='primaryOutline'
+            onClick={() => setCurrentState('enter-secret-key')}
+            size='lg'
+          >
             <div className='flex items-center justify-center gap-2'>
               <KeyIcon />
               Enter Grill secret key
@@ -93,14 +115,13 @@ export const LoginContent = ({
                 captchaToken: token,
               })
               if (newAddress) {
-                setCurrentStep('account-created')
+                setCurrentState('account-created')
               }
-              // props.closeModal()
             }}
           >
             <div className='flex items-center justify-center gap-2'>
-              <CreateAccountIcon />
-              Create an account
+              <IncognitoIcon />
+              Continue anonymously
             </div>
           </Button>
 
@@ -161,14 +182,8 @@ export const EnterSecretKeyContent = ({
   )
 }
 
-export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
-  const sendEvent = useSendEvent()
+export const AccountCreatedContent = ({ setCurrentState }: ContentProps) => {
   const address = useMyMainAddress()
-
-  const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
-    setModalStep: () => setCurrentStep('evm-address-linked'),
-    onError: () => setCurrentStep('evm-linking-error'),
-  })
 
   return (
     <div className='flex flex-col'>
@@ -179,58 +194,129 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
           )}
         >
           <ProfilePreview address={address} avatarClassName={cx('h-16 w-16')} />
-          <Button
-            variant='primaryOutline'
-            className='mt-4'
-            onClick={() => setCurrentStep('subsocial-profile')}
-          >
-            Change my name
-          </Button>
         </div>
       )}
-      <div className='flex items-center'>
-        <div className='w-full border-b border-background-lightest'></div>
-        <p className='min-w-fit px-4 text-text-muted'>WHAT’S NEXT?</p>
-        <div className='w-full border-b border-background-lightest'></div>
-      </div>
-      <p className='mb-4 mt-6 text-text-muted'>
-        Now, you can connect an EVM wallet to benefit from EVM features such as
-        ERC-20 tokens, NFTs, and other smart contracts.
-      </p>
-      <CustomConnectButton
-        withWalletActionImage={false}
-        className='w-full'
-        signAndLinkEvmAddress={signAndLinkEvmAddress}
-        isLoading={isLoading}
-        secondLabel='Sign Message'
-        onClick={() =>
-          sendEvent('start_link_evm_address', {
-            eventSource: 'account_created',
-          })
-        }
-        label={
-          <div className='flex items-center justify-center gap-2'>
-            <WalletIcon />
-            Connect Wallet
-          </div>
-        }
-      />
+      <Button size='lg' onClick={() => setCurrentState('next-actions')}>
+        Continue
+      </Button>
     </div>
   )
 }
 
-export const EvmLoginError = ({ setCurrentStep }: ContentProps) => (
-  <CommonEVMLoginErrorContent
-    setModalStep={() => setCurrentStep('evm-address-linked')}
-    signAndLinkOnConnect={true}
-  />
-)
+export const NextActionsContent = ({
+  setCurrentState,
+  closeModal,
+}: ContentProps) => {
+  return (
+    <div className='flex flex-col'>
+      <Image src={PotentialImage} alt='' className='mb-6 w-full' />
+      <div className='flex flex-col gap-4'>
+        <Button size='lg' onClick={() => setCurrentState('connect-wallet')}>
+          Connect Addresses
+        </Button>
+        <Button size='lg' variant='primaryOutline' onClick={closeModal}>
+          I&apos;ll do this later
+        </Button>
+      </div>
+    </div>
+  )
+}
 
-export const SubsocialProfileContent = ({ setCurrentStep }: ContentProps) => (
-  <SubsocialProfileForm
-    onSuccess={() => setCurrentStep('account-created-after-name-set')}
-  />
-)
+export const EvmLoginError = ({ setCurrentState }: ContentProps) => {
+  const [isCreatingAcc, setIsCreatingAcc] = useState(false)
+  const logout = useMyAccount((state) => state.logout)
+  const { mutateAsync: loginAndRequestToken, error } = useLoginAndRequestToken()
+  useToastError(error, 'Retry linking EVM address failed')
+
+  return (
+    <CaptchaInvisible>
+      {(runCaptcha) => (
+        <CommonEVMLoginErrorContent
+          isLoading={isCreatingAcc}
+          beforeSignEvmAddress={async () => {
+            console.log('hey')
+            setIsCreatingAcc(true)
+            try {
+              const captchaToken = await runCaptcha()
+              if (!captchaToken) throw new Error('Captcha failed')
+              await loginAndRequestToken({ captchaToken })
+            } catch {
+              logout()
+            } finally {
+              setIsCreatingAcc(false)
+            }
+          }}
+          setModalStep={() => setCurrentState('evm-address-linked')}
+          signAndLinkOnConnect={true}
+        />
+      )}
+    </CaptchaInvisible>
+  )
+}
+
+export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
+  return (
+    <MenuList
+      className='pb-4 pt-0'
+      menus={[
+        {
+          text: 'Connect EVM',
+          icon: EthIcon,
+          onClick: () => setCurrentState('evm-address-link'),
+        },
+        {
+          text: 'Connect Polkadot',
+          icon: PolkadotIcon,
+          onClick: () => setCurrentState('polkadot-connect'),
+        },
+      ]}
+    />
+  )
+}
+
+export const LinkEvmContent = ({ setCurrentState }: ContentProps) => {
+  const [isCreatingAcc, setIsCreatingAcc] = useState(false)
+
+  const { mutateAsync: loginAndRequestToken, error } = useLoginAndRequestToken()
+  useToastError(error, 'Link EVM address failed')
+
+  const logout = useMyAccount((state) => state.logout)
+  const { signAndLinkEvmAddress, isLoading: isLinking } =
+    useSignMessageAndLinkEvmAddress({
+      setModalStep: () => setCurrentState('evm-address-linked'),
+      onError: () => {
+        logout()
+        setCurrentState('evm-linking-error')
+      },
+    })
+
+  const isLoading = isCreatingAcc || isLinking
+
+  return (
+    <CaptchaInvisible>
+      {(runCaptcha) => (
+        <CustomConnectButton
+          className={cx('w-full')}
+          beforeSignEvmAddress={async () => {
+            setIsCreatingAcc(true)
+            try {
+              const captchaToken = await runCaptcha()
+              if (!captchaToken) throw new Error('Captcha failed')
+              await loginAndRequestToken({ captchaToken })
+            } catch {
+              logout()
+            } finally {
+              setIsCreatingAcc(false)
+            }
+          }}
+          signAndLinkEvmAddress={signAndLinkEvmAddress}
+          isLoading={isLoading}
+          secondLabel='Sign Message'
+        />
+      )}
+    </CaptchaInvisible>
+  )
+}
 
 type LoginModalContents = {
   [key in LoginModalStep]: (props: ContentProps) => JSX.Element
@@ -239,9 +325,14 @@ type LoginModalContents = {
 export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'enter-secret-key': EnterSecretKeyContent,
-  'subsocial-profile': SubsocialProfileContent,
   'account-created': AccountCreatedContent,
-  'account-created-after-name-set': AccountCreatedContent,
+  'next-actions': NextActionsContent,
+  'connect-wallet': ConnectWalletContent,
+  'evm-address-link': LinkEvmContent,
   'evm-address-linked': CommonEvmAddressLinked,
   'evm-linking-error': EvmLoginError,
+  'polkadot-connect': PolkadotConnectWalletContent,
+  'polkadot-connect-account': PolkadotConnectAccountContent,
+  'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
+  'polkadot-connect-success': PolkadotConnectSuccess,
 }
