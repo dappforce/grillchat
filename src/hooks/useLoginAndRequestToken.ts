@@ -1,8 +1,9 @@
 import { useRequestToken } from '@/services/api/mutation'
 import { useMyAccount } from '@/stores/my-account'
+import { MutationConfig } from '@/subsocial-query'
 import { useMutation } from '@tanstack/react-query'
 
-export default function useLoginAndRequestToken() {
+export default function useLoginAndRequestToken(config?: MutationConfig<any>) {
   const { mutateAsync: requestToken } = useRequestToken()
   const login = useMyAccount((state) => state.login)
 
@@ -18,5 +19,5 @@ export default function useLoginAndRequestToken() {
     return address
   }
 
-  return useMutation(loginAndRequestToken)
+  return useMutation(loginAndRequestToken, config)
 }

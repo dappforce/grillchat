@@ -26,9 +26,9 @@ export default function PolkadotConnectAccountContent({
       {(() => {
         if (isLoading || !accounts) {
           return (
-            <div className='flex flex-col gap-4'>
+            <div className='flex flex-col pb-3'>
               {Array.from({ length: 3 }).map((_, i) => (
-                <div className='w-full px-7 pb-3' key={i}>
+                <div className='w-full px-7' key={i}>
                   <div className='flex w-full items-center gap-6 py-3'>
                     <Skeleton className='h-8 w-8 rounded-full' />
                     <div className='flex flex-1 justify-between'>

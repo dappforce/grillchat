@@ -1,5 +1,6 @@
 import InfoPanel from '@/components/InfoPanel'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import dynamic from 'next/dynamic'
@@ -28,6 +29,7 @@ type ModalConfig = {
     backToStep?: LoginModalStep
     withBackButton?: boolean
     withFooter?: boolean
+    logoutIfClosedInCurrentStep?: boolean
   }
 }
 
@@ -65,11 +67,15 @@ const modalHeader: ModalConfig = {
   'connect-wallet': {
     title: '🔑 Connect Wallet',
     desc: 'Choose a wallet to connect to Grill.chat',
+    withBackButton: true,
     withoutDefaultPadding: true,
   },
   'evm-address-link': {
     title: '🔑 Connect EVM',
     desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display ENS names and NFTs, and interact with ERC20s.',
+    logoutIfClosedInCurrentStep: true,
+    withBackButton: true,
+    backToStep: 'connect-wallet',
   },
   'evm-address-linked': {
     title: '🎉 EVM address linked',
@@ -78,20 +84,31 @@ const modalHeader: ModalConfig = {
   'evm-linking-error': {
     title: '😕 Something went wrong',
     desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
-    withBackButton: false,
+    withBackButton: true,
     withFooter: false,
+    logoutIfClosedInCurrentStep: true,
+    backToStep: 'connect-wallet',
   },
   'polkadot-connect': {
     title: '🔗 Connect Polkadot',
     desc: 'Choose a wallet to connect to Grill.chat',
+    withBackButton: true,
+    backToStep: 'connect-wallet',
+    withoutDefaultPadding: true,
   },
   'polkadot-connect-account': {
     title: '🔗 Select an account',
     desc: 'Select an account to connect to Grill.chat.',
+    withBackButton: true,
+    backToStep: 'polkadot-connect',
+    withoutDefaultPadding: true,
   },
   'polkadot-connect-confirmation': {
     title: '🔑 Link Confirmation',
     desc: 'Please confirm the connection in your Polkadot wallet.',
+    logoutIfClosedInCurrentStep: true,
+    withBackButton: true,
+    backToStep: 'polkadot-connect-account',
   },
   'polkadot-connect-success': {
     title: '🎉 Polkadot account linked',
@@ -109,6 +126,7 @@ export default function LoginModal({
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [currentState, setCurrentState] =
     useState<LoginModalStep>(initialOpenState)
+  const logout = useMyAccount((state) => state.logout)
 
   const ModalContent = loginModalContents[currentState]
   const {
@@ -118,6 +136,7 @@ export default function LoginModal({
     withFooter,
     backToStep,
     withoutDefaultPadding,
+    logoutIfClosedInCurrentStep,
   } = modalHeader[currentState]
   const usedOnBackClick =
     onBackClick || (() => setCurrentState(backToStep || 'login'))
@@ -140,6 +159,7 @@ export default function LoginModal({
       titleClassName={cx(withoutDefaultPadding && 'px-6')}
       descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
       closeModal={() => {
+        if (logoutIfClosedInCurrentStep) logout()
         props.closeModal()
       }}
     >

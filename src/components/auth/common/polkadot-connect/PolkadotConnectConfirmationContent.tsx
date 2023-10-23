@@ -4,11 +4,18 @@ import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { toSubsocialAddress } from '@subsocial/utils'
 import Image from 'next/image'
+import { useState } from 'react'
 import { PolkadotConnectContentProps } from './types'
 
 export default function PolkadotConnectConfirmationContent({
   setCurrentState,
-}: PolkadotConnectContentProps) {
+  beforeAddProxy,
+  onError,
+}: PolkadotConnectContentProps & {
+  onError?: () => void
+  beforeAddProxy?: () => Promise<boolean>
+}) {
+  const [isProcessing, setIsProcessing] = useState(false)
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const isLoadingEnergy = useMyAccount(
     (state) => state.connectedWallet?.energy === undefined
@@ -32,7 +39,9 @@ export default function PolkadotConnectConfirmationContent({
                 saveProxyAddress()
                 setCurrentState('polkadot-connect-success')
               },
+              onError,
             },
+            onError,
           }}
         >
           {({ isLoading, mutateAsync: addProxy }) => {
@@ -44,10 +53,14 @@ export default function PolkadotConnectConfirmationContent({
                   const address = toSubsocialAddress(connectedWallet?.address)
                   const signer = connectedWallet?.signer
                   if (address && signer) {
+                    setIsProcessing(true)
+                    const shouldProceed = await beforeAddProxy?.()
+                    setIsProcessing(false)
+                    if (!shouldProceed) return
                     addProxy(null)
                   }
                 }}
-                isLoading={isLoading || isLoadingEnergy}
+                isLoading={isLoading || isLoadingEnergy || isProcessing}
               >
                 Confirm
               </Button>

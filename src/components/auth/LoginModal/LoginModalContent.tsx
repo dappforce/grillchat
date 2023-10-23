@@ -20,6 +20,7 @@ import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
+import { useRequestToken } from '@/services/api/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -222,38 +223,6 @@ export const NextActionsContent = ({
   )
 }
 
-export const EvmLoginError = ({ setCurrentState }: ContentProps) => {
-  const [isCreatingAcc, setIsCreatingAcc] = useState(false)
-  const logout = useMyAccount((state) => state.logout)
-  const { mutateAsync: loginAndRequestToken, error } = useLoginAndRequestToken()
-  useToastError(error, 'Retry linking EVM address failed')
-
-  return (
-    <CaptchaInvisible>
-      {(runCaptcha) => (
-        <CommonEVMLoginErrorContent
-          isLoading={isCreatingAcc}
-          beforeSignEvmAddress={async () => {
-            console.log('hey')
-            setIsCreatingAcc(true)
-            try {
-              const captchaToken = await runCaptcha()
-              if (!captchaToken) throw new Error('Captcha failed')
-              await loginAndRequestToken({ captchaToken })
-            } catch {
-              logout()
-            } finally {
-              setIsCreatingAcc(false)
-            }
-          }}
-          setModalStep={() => setCurrentState('evm-address-linked')}
-          signAndLinkOnConnect={true}
-        />
-      )}
-    </CaptchaInvisible>
-  )
-}
-
 export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
   return (
     <MenuList
@@ -274,11 +243,50 @@ export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
   )
 }
 
-export const LinkEvmContent = ({ setCurrentState }: ContentProps) => {
+function useLoginBeforeSignEvm() {
   const [isCreatingAcc, setIsCreatingAcc] = useState(false)
+  const logout = useMyAccount((state) => state.logout)
+  const { mutate: requestToken, error } = useRequestToken()
+  const login = useMyAccount((state) => state.login)
+  useToastError(error, 'Retry linking EVM address failed')
 
-  const { mutateAsync: loginAndRequestToken, error } = useLoginAndRequestToken()
-  useToastError(error, 'Link EVM address failed')
+  return {
+    mutate: async (runCaptcha: () => Promise<string | null>) => {
+      setIsCreatingAcc(true)
+      try {
+        const captchaToken = await runCaptcha()
+        if (!captchaToken) throw new Error('Captcha failed')
+        const address = await login()
+        if (!address) throw new Error('Login failed')
+        requestToken({ captchaToken, address })
+      } catch {
+        logout()
+      } finally {
+        setIsCreatingAcc(false)
+      }
+    },
+    isLoading: isCreatingAcc,
+  }
+}
+
+export const EvmLoginError = ({ setCurrentState }: ContentProps) => {
+  const { mutate, isLoading } = useLoginBeforeSignEvm()
+  return (
+    <CaptchaInvisible>
+      {(runCaptcha) => (
+        <CommonEVMLoginErrorContent
+          isLoading={isLoading}
+          beforeSignEvmAddress={() => mutate(runCaptcha)}
+          setModalStep={() => setCurrentState('evm-address-linked')}
+          signAndLinkOnConnect={true}
+        />
+      )}
+    </CaptchaInvisible>
+  )
+}
+
+export const LinkEvmContent = ({ setCurrentState }: ContentProps) => {
+  const { mutate, isLoading: isLoggingIn } = useLoginBeforeSignEvm()
 
   const logout = useMyAccount((state) => state.logout)
   const { signAndLinkEvmAddress, isLoading: isLinking } =
@@ -290,28 +298,41 @@ export const LinkEvmContent = ({ setCurrentState }: ContentProps) => {
       },
     })
 
-  const isLoading = isCreatingAcc || isLinking
+  const isLoading = isLoggingIn || isLinking
 
   return (
     <CaptchaInvisible>
       {(runCaptcha) => (
         <CustomConnectButton
           className={cx('w-full')}
-          beforeSignEvmAddress={async () => {
-            setIsCreatingAcc(true)
-            try {
-              const captchaToken = await runCaptcha()
-              if (!captchaToken) throw new Error('Captcha failed')
-              await loginAndRequestToken({ captchaToken })
-            } catch {
-              logout()
-            } finally {
-              setIsCreatingAcc(false)
-            }
-          }}
+          beforeSignEvmAddress={() => mutate(runCaptcha)}
           signAndLinkEvmAddress={signAndLinkEvmAddress}
           isLoading={isLoading}
           secondLabel='Sign Message'
+        />
+      )}
+    </CaptchaInvisible>
+  )
+}
+
+const PolkadotConnectConfirmation = ({ setCurrentState }: ContentProps) => {
+  const logout = useMyAccount((state) => state.logout)
+  const { mutateAsync, error } = useLoginAndRequestToken({
+    onError: () => logout(),
+  })
+  useToastError(error, 'Create account for polkadot connection failed')
+  return (
+    <CaptchaInvisible>
+      {(runCaptcha) => (
+        <PolkadotConnectConfirmationContent
+          setCurrentState={setCurrentState}
+          onError={logout}
+          beforeAddProxy={async () => {
+            const captchaToken = await runCaptcha()
+            if (!captchaToken) return false
+            await mutateAsync({ captchaToken })
+            return true
+          }}
         />
       )}
     </CaptchaInvisible>
@@ -333,6 +354,6 @@ export const loginModalContents: LoginModalContents = {
   'evm-linking-error': EvmLoginError,
   'polkadot-connect': PolkadotConnectWalletContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
-  'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
+  'polkadot-connect-confirmation': PolkadotConnectConfirmation,
   'polkadot-connect-success': PolkadotConnectSuccess,
 }
