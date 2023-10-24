@@ -1,16 +1,17 @@
 import EthIcon from '@/assets/icons/eth.svg'
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
+import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
 import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import Tabs from '@/components/Tabs'
-import { getProfileQuery } from '@/services/api/query'
+import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { SpaceContent } from '@subsocial/api/types'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ContentProps } from '../types'
 
 export default function ProfileSettingsContent(props: ContentProps) {
@@ -20,7 +21,6 @@ export default function ProfileSettingsContent(props: ContentProps) {
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const hasEvmAddress = !!accountData?.ensName
   const { data: profile } = getProfileQuery.useQuery(address)
-  const hasCustomName = !!profile?.profileSpace?.content?.name
   const profileSource = profile?.profileSpace?.content?.profileSource
 
   const [inputtedName, setInputtedName] = useState('')
@@ -91,11 +91,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
               id: 'custom',
               text: 'Custom',
               content: () => (
-                <SubsocialProfileForm
-                  onNameChange={setInputtedName}
-                  // set as default only if the user have set this, even when he has better identity
-                  shouldSetAsProfileSource={hasEvmAddress}
-                />
+                <SubsocialProfileForm onNameChange={setInputtedName} />
               ),
             },
           ]}
@@ -105,9 +101,44 @@ export default function ProfileSettingsContent(props: ContentProps) {
   )
 }
 
-function PolkadotProfileTabContent({ setCurrentState }: ContentProps) {
+function PolkadotProfileTabContent({ address, setCurrentState }: ContentProps) {
+  const { data: profile } = getProfileQuery.useQuery(address)
+  const profileSource = profile?.profileSpace?.content?.profileSource
+
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const hasConnectedPolkadot = !!parentProxyAddress
+  const { data: identities } = getIdentityQuery.useQuery(
+    parentProxyAddress ?? '',
+    {
+      enabled: !!parentProxyAddress,
+    }
+  )
+
+  const identityOptionsMap = useMemo(
+    () =>
+      ({
+        kilt: {
+          id: 'kilt-w3n',
+          label: identities?.kilt ?? 'Web3Name',
+          disabledItem: !identities?.kilt,
+        },
+        polkadot: {
+          id: 'polkadot-identity',
+          label: identities?.polkadot ?? 'Polkadot Identity',
+          disabledItem: !identities?.polkadot,
+        },
+      } satisfies Record<string, ListItem>),
+    [identities]
+  )
+
+  const [selected, setSelected] = useState<null | ListItem>(null)
+  useEffect(() => {
+    if (identities?.polkadot) {
+      setSelected(identityOptionsMap.polkadot)
+    } else if (identities?.kilt) {
+      setSelected(identityOptionsMap.kilt)
+    }
+  }, [identities, identityOptionsMap])
 
   if (!hasConnectedPolkadot) {
     return (
@@ -128,7 +159,42 @@ function PolkadotProfileTabContent({ setCurrentState }: ContentProps) {
     )
   }
 
-  return <div>polkadot form</div>
+  return (
+    <UpsertProfileWrapper>
+      {({ mutateAsync, isLoading }) => {
+        const onSubmit = (e: any) => {
+          e.preventDefault()
+          const selectedId = selected?.id
+          if (!selectedId) return
+          mutateAsync({
+            content: {
+              ...profile?.profileSpace?.content,
+              profileSource: selectedId as SpaceContent['profileSource'],
+            },
+          })
+        }
+
+        return (
+          <form onSubmit={onSubmit} className={cx('flex flex-col gap-4')}>
+            <SelectInput
+              items={Object.values(identityOptionsMap)}
+              selected={selected}
+              setSelected={setSelected}
+              placeholder='Select identity provider'
+            />
+            <Button
+              type='submit'
+              isLoading={isLoading}
+              size='lg'
+              disabled={!selected?.id || profileSource === selected?.id}
+            >
+              Save changes
+            </Button>
+          </form>
+        )
+      }}
+    </UpsertProfileWrapper>
+  )
 }
 
 function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {

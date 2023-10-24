@@ -37,18 +37,22 @@ export function useName(
     profile?.profileSpace?.content?.name ||
     generateRandomName(address)
 
-  const profileSource =
-    forceProfileSource?.profileSource ||
-    profile?.profileSpace?.content?.profileSource
-  if (profileSource) {
+  const userProfileSource = profile?.profileSpace?.content?.profileSource
+
+  function getNameFromSource(profileSource?: SpaceContent['profileSource']) {
     switch (profileSource) {
       case 'ens':
-        name = ensName || name
-        break
+        return ensName
       case 'subsocial-profile':
-        name = profile?.profileSpace?.content?.name || name
-        break
+        return profile?.profileSpace?.content?.name
     }
+  }
+
+  const forceName = getNameFromSource(forceProfileSource?.profileSource)
+  if (forceName) name = forceName
+  else {
+    const userProfileName = getNameFromSource(userProfileSource)
+    if (userProfileName) name = userProfileName
   }
 
   return {

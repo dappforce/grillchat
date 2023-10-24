@@ -124,7 +124,7 @@ const getIdentity = poolQuery<string, Identities>({
     resultToKey: (result) => result?.address ?? '',
   },
 })
-const getIdentityQuery = createQuery({
+export const getIdentityQuery = createQuery({
   key: 'identities',
   fetcher: getIdentity,
 })

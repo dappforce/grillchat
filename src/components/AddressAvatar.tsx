@@ -84,10 +84,10 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     if (profileSource) {
       switch (profileSource) {
         case 'ens':
-          usedAvatar = ensName ? resolveEnsAvatarSrc(ensName) : undefined
+          usedAvatar = ensName ? resolveEnsAvatarSrc(ensName) : usedAvatar
           break
         case 'subsocial-profile':
-          usedAvatar = profile?.profileSpace?.content?.image || undefined
+          usedAvatar = profile?.profileSpace?.content?.image || usedAvatar
           break
       }
     }

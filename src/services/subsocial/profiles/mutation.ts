@@ -12,7 +12,7 @@ import { createMutationWrapper } from '../utils'
 
 type CommonParams = {
   content: {
-    name: string
+    name?: string
     image?: string
   } & Pick<SpaceContent, 'profileSource'>
 }

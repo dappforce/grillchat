@@ -38,11 +38,11 @@ export default function SelectInput<AdditionalData = {}>({
         {({ open }) => (
           <>
             {fieldLabel && (
-              <Listbox.Label className='block text-sm font-normal leading-4 text-text-muted'>
+              <Listbox.Label className='mb-2 block text-sm font-normal leading-4 text-text-muted'>
                 {fieldLabel}
               </Listbox.Label>
             )}
-            <div className='relative mt-2'>
+            <div className='relative'>
               <Listbox.Button
                 className={cx(
                   'relative w-full cursor-default rounded-xl',
