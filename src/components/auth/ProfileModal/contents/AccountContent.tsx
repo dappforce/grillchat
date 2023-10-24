@@ -111,7 +111,7 @@ export default function AccountContent({
             text: 'Install app',
             icon: HiOutlineDownload,
             onClick: installApp,
-            iconClassName: 'text-[#A3ACBE]',
+            iconClassName: 'text-text-muted',
           },
         ]
       : []),
@@ -154,13 +154,13 @@ function useColorModeOptions(): MenuListProps['menus'] {
     text: 'Light mode',
     onClick: () => setTheme('light'),
     icon: HiSun,
-    iconClassName: cx('text-[#A3ACBE]'),
+    iconClassName: cx('text-text-muted'),
   }
   const darkModeOption: MenuListProps['menus'][number] = {
     text: 'Dark Mode',
     onClick: () => setTheme('dark'),
     icon: HiMoon,
-    iconClassName: cx('text-[#A3ACBE]'),
+    iconClassName: cx('text-text-muted'),
   }
 
   if (theme === 'light') return [darkModeOption]

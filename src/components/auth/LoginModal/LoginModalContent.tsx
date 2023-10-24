@@ -99,7 +99,7 @@ export const LoginContent = ({
             }}
           >
             <div className='flex items-center justify-center gap-2'>
-              <CreateAccountIcon />
+              <CreateAccountIcon className='text-text-muted' />
               Create an account
             </div>
           </Button>

@@ -4,7 +4,7 @@
 <path d="M20 0H0V20H20V0Z" fill="url(#pattern0)"/>
 </mask>
 <g mask="url(#mask0_1_4)">
-<path d="M20 0H0V20H20V0Z" fill="#A3ACBE"/>
+<path d="M20 0H0V20H20V0Z" fill="currentColor"/>
 </g>
 </g>
 <defs>

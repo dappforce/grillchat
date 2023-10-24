@@ -35,7 +35,7 @@ export default function NotificationContent({
               {telegram.showNotification && <DotBlinkingNotification />}
             </span>
           ),
-          iconClassName: cx('text-[#A3ACBE]'),
+          iconClassName: cx('text-text-muted'),
           icon: FaTelegram,
           onClick: () => {
             telegram.closeNotification()
@@ -50,7 +50,7 @@ export default function NotificationContent({
               {pwa.showNotification && <DotBlinkingNotification />}
             </span>
           ),
-          iconClassName: cx('text-[#A3ACBE]'),
+          iconClassName: cx('text-text-muted'),
           icon: BellIcon,
           onClick: () => {
             pwa.closeNotification()
@@ -59,13 +59,13 @@ export default function NotificationContent({
         },
         {
           text: <SoonMenu text='Email Notifications' />,
-          iconClassName: cx('text-[#A3ACBE]'),
+          iconClassName: cx('text-text-muted'),
           icon: MailIcon,
           disabled: true,
         },
         {
           text: <SoonMenu text='Discord notifications' />,
-          iconClassName: cx('text-[#A3ACBE]'),
+          iconClassName: cx('text-text-muted'),
           icon: FaDiscord,
           disabled: true,
         },
