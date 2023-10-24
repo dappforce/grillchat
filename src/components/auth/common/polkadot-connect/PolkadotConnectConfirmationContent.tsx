@@ -54,7 +54,9 @@ export default function PolkadotConnectConfirmationContent({
                   const signer = connectedWallet?.signer
                   if (address && signer) {
                     setIsProcessing(true)
-                    const shouldProceed = await beforeAddProxy?.()
+                    const shouldProceed = beforeAddProxy
+                      ? await beforeAddProxy?.()
+                      : true
                     setIsProcessing(false)
                     if (!shouldProceed) return
                     addProxy(null)
