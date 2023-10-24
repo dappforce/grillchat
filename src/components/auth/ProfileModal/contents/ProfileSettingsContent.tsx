@@ -31,6 +31,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
         setSelectedTab(0)
         break
       case 'polkadot-identity':
+      case 'kilt-w3n':
         setSelectedTab(1)
         break
       case 'subsocial-profile':
@@ -43,13 +44,17 @@ export default function ProfileSettingsContent(props: ContentProps) {
     }
   }, [profileSource, hasEvmAddress])
 
+  const [polkadotIdentitySelected, setPolkadotIdentitySelected] = useState<
+    SpaceContent['profileSource'] | undefined
+  >()
+
   let forceProfileSource: SpaceContent['profileSource'] | undefined = undefined
   switch (selectedTab) {
     case 0:
       forceProfileSource = 'ens'
       break
     case 1:
-      forceProfileSource = 'polkadot-identity'
+      forceProfileSource = polkadotIdentitySelected
       break
     case 2:
       forceProfileSource = 'subsocial-profile'
@@ -85,7 +90,12 @@ export default function ProfileSettingsContent(props: ContentProps) {
             {
               id: 'polkadot',
               text: 'Polkadot',
-              content: () => <PolkadotProfileTabContent {...props} />,
+              content: () => (
+                <PolkadotProfileTabContent
+                  setSelectedSource={setPolkadotIdentitySelected}
+                  {...props}
+                />
+              ),
             },
             {
               id: 'custom',
@@ -101,7 +111,13 @@ export default function ProfileSettingsContent(props: ContentProps) {
   )
 }
 
-function PolkadotProfileTabContent({ address, setCurrentState }: ContentProps) {
+function PolkadotProfileTabContent({
+  address,
+  setCurrentState,
+  setSelectedSource,
+}: ContentProps & {
+  setSelectedSource: (source: SpaceContent['profileSource'] | undefined) => void
+}) {
   const { data: profile } = getProfileQuery.useQuery(address)
   const profileSource = profile?.profileSpace?.content?.profileSource
 
@@ -132,6 +148,10 @@ function PolkadotProfileTabContent({ address, setCurrentState }: ContentProps) {
   )
 
   const [selected, setSelected] = useState<null | ListItem>(null)
+  useEffect(() => {
+    setSelectedSource(selected?.id as SpaceContent['profileSource'])
+  }, [selected, setSelectedSource])
+
   useEffect(() => {
     if (identities?.polkadot) {
       setSelected(identityOptionsMap.polkadot)
