@@ -97,7 +97,7 @@ export const LoginContent = ({
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <KeyIcon />
+              <KeyIcon className='text-text-muted-on-primary' />
               Enter Grill secret key
             </div>
           </Button>
@@ -121,7 +121,7 @@ export const LoginContent = ({
             }}
           >
             <div className='flex items-center justify-center gap-2'>
-              <IncognitoIcon />
+              <IncognitoIcon className='text-text-muted' />
               Continue anonymously
             </div>
           </Button>

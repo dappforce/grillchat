@@ -1,4 +1,4 @@
-import EthIcon from '@/assets/icons/eth.svg'
+import EthIcon from '@/assets/icons/eth-medium.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -77,7 +77,7 @@ const ProfilePreview = ({
             {withGrillAddress &&
               (!isShowingEvmAddress || !showMaxOneAddress) && (
                 <div className='flex flex-row items-center gap-2'>
-                  <GrillIcon />
+                  <GrillIcon className='text-xl text-text-muted' />
                   <CopyTextInline
                     text={truncateAddress(address)}
                     tooltip={`Copy${isMyAddressPart} Grill public address`}
@@ -88,7 +88,7 @@ const ProfilePreview = ({
               )}
             {isShowingEvmAddress && (
               <div className='flex flex-row items-center gap-2'>
-                <EthIcon />
+                <EthIcon className='relative left-1 text-xl text-text-muted' />
                 <CopyTextInline
                   text={truncateAddress(evmAddress)}
                   tooltip={`Copy${isMyAddressPart} EVM address`}

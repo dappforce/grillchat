@@ -97,7 +97,9 @@ const Name = ({
       className={cx(className, 'flex items-center')}
       style={{ color: color || textColor }}
     >
-      {evmAddress && showEthIcon && <EthIcon className='mr-2 flex-shrink-0' />}
+      {evmAddress && showEthIcon && (
+        <EthIcon className='mr-1 flex-shrink-0 text-text-muted' />
+      )}
       {additionalText} {name}{' '}
       <ChatModerateChip
         className='ml-1 flex items-center'
