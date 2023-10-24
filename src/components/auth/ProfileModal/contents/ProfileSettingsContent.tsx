@@ -1,4 +1,5 @@
 import EthIcon from '@/assets/icons/eth.svg'
+import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
 import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
@@ -133,15 +134,16 @@ function PolkadotProfileTabContent({
   const identityOptionsMap = useMemo(
     () =>
       ({
-        kilt: {
-          id: 'kilt-w3n',
-          label: identities?.kilt ?? 'Web3Name',
-          disabledItem: !identities?.kilt,
-        },
         polkadot: {
           id: 'polkadot-identity',
           label: identities?.polkadot ?? 'Polkadot Identity',
           disabledItem: !identities?.polkadot,
+          icon: <PolkadotIcon className='text-text-muted' />,
+        },
+        kilt: {
+          id: 'kilt-w3n',
+          label: identities?.kilt ?? 'Kilt Web3Name',
+          disabledItem: !identities?.kilt,
         },
       } satisfies Record<string, ListItem>),
     [identities]
