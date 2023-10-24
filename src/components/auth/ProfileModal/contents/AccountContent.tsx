@@ -3,8 +3,10 @@ import EthIcon from '@/assets/icons/eth.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
+import MoonIcon from '@/assets/icons/moon.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
+import SunIcon from '@/assets/icons/sun.svg'
 import Button from '@/components/Button'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
@@ -18,8 +20,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { installApp, isInstallAvailable } from '@/utils/install'
 import { useTheme } from 'next-themes'
-import { HiOutlineDownload } from 'react-icons/hi'
-import { HiMoon, HiSun } from 'react-icons/hi2'
+import { FiDownload } from 'react-icons/fi'
 import { useDisconnect } from 'wagmi'
 import { ContentProps } from '../types'
 
@@ -109,9 +110,9 @@ export default function AccountContent({
       ? [
           {
             text: 'Install app',
-            icon: HiOutlineDownload,
+            icon: FiDownload,
             onClick: installApp,
-            iconClassName: 'text-text-muted',
+            iconClassName: 'text-text-muted text-xl',
           },
         ]
       : []),
@@ -153,13 +154,13 @@ function useColorModeOptions(): MenuListProps['menus'] {
   const lightModeOption: MenuListProps['menus'][number] = {
     text: 'Light mode',
     onClick: () => setTheme('light'),
-    icon: HiSun,
+    icon: SunIcon,
     iconClassName: cx('text-text-muted'),
   }
   const darkModeOption: MenuListProps['menus'][number] = {
     text: 'Dark Mode',
     onClick: () => setTheme('dark'),
-    icon: HiMoon,
+    icon: MoonIcon,
     iconClassName: cx('text-text-muted'),
   }
 

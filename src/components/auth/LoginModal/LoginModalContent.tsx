@@ -74,7 +74,7 @@ export const LoginContent = ({
         <div className='flex flex-col gap-4'>
           <Button onClick={() => setCurrentStep('enter-secret-key')} size='lg'>
             <div className='flex items-center justify-center gap-2'>
-              <KeyIcon />
+              <KeyIcon className='text-text-muted-on-primary' />
               Enter Grill secret key
             </div>
           </Button>
@@ -210,7 +210,7 @@ export const AccountCreatedContent = ({ setCurrentStep }: ContentProps) => {
         }
         label={
           <div className='flex items-center justify-center gap-2'>
-            <WalletIcon />
+            <WalletIcon className='text-text-muted-on-primary' />
             Connect Wallet
           </div>
         }
