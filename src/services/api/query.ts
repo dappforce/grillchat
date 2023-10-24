@@ -1,10 +1,11 @@
+import { Identities } from '@/pages/api/identities'
 import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import axios from 'axios'
 import { useMemo } from 'react'
 import { SubsocialProfile } from '../subsocial/profiles/fetcher'
-import { getPosts, getProfiles } from './fetcher'
+import { getIdentities, getPosts, getProfiles } from './fetcher'
 
 const getPost = poolQuery<string, PostData>({
   multiCall: async (postIds) => {
@@ -111,4 +112,19 @@ const getProfile = poolQuery<string, SubsocialProfile>({
 export const getProfileQuery = createQuery({
   key: 'profile',
   fetcher: getProfile,
+})
+
+const getIdentity = poolQuery<string, Identities>({
+  multiCall: async (addresses) => {
+    if (addresses.length === 0) return []
+    return getIdentities(addresses)
+  },
+  resultMapper: {
+    paramToKey: (address) => address,
+    resultToKey: (result) => result?.address ?? '',
+  },
+})
+const getIdentityQuery = createQuery({
+  key: 'identities',
+  fetcher: getIdentity,
 })
