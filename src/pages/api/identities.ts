@@ -38,15 +38,15 @@ export default handlerWrapper({
 })
 
 async function getIdentities(addresses: string[]): Promise<Identities[]> {
-  const [polkadotIdentities] = await Promise.all([
+  const [polkadotIdentities, kiltIdentities] = await Promise.all([
     getPolkadotIdentities(addresses),
-    // TODO: KILT IDENTITIES
-    // getKiltIdentities(addresses),
+    getKiltIdentities(addresses),
   ] as const)
 
   return addresses.map((address) => ({
     address,
     polkadot: polkadotIdentities[address],
+    kilt: kiltIdentities[address],
   }))
 }
 
@@ -116,17 +116,15 @@ async function getKiltIdentities(addresses: string[]) {
   })
   await Promise.all(cachePromises)
 
-  const identities = await api.query.identity.identityOf.multi(
-    needToFetchAddresses
-  )
+  const identities = await api.query.web3Names.names.multi(needToFetchAddresses)
 
   identities.forEach((identityCodec, i) => {
     const identity = identityCodec.toPrimitive() as any
-    const name = identity?.info?.display?.raw
+    const name = identity
     const address = needToFetchAddresses[i]
     redisCallWrapper((redis) =>
       redis?.set(
-        getIdentitiesRedisKey(address, 'polkadot'),
+        getIdentitiesRedisKey(address, 'kilt'),
         JSON.stringify({ name }),
         'EX',
         MAX_AGE
