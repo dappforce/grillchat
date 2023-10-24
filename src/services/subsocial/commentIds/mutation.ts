@@ -53,8 +53,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     config,
     {
       retry: 2,
-      // TODO: uncomment this, its for subsocial
-      // useHttp: true,
+      useHttp: true,
       txCallbacks: {
         // Removal of optimistic message generated is done by the subscription of messageIds
         // this is done to prevent a bit of flickering because the optimistic message is done first, before the message data finished fetching

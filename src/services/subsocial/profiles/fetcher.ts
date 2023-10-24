@@ -37,6 +37,7 @@ const GET_PROFILES = gql`
         email
         linksOriginal
         tagsOriginal
+        profileSource
       }
     }
   }
@@ -60,8 +61,7 @@ async function getProfilesFromSquid(
             image: profileSpace.image,
             links: profileSpace.linksOriginal?.split(','),
             tags: profileSpace.tagsOriginal?.split(','),
-            // TODO: have squid support for this attr
-            // defaultProfile:
+            profileSource: profileSpace.profileSource,
           } as SpaceContent,
         }
       : null,
