@@ -92,15 +92,11 @@ export function getDatahubConfig() {
     process.env.NEXT_PUBLIC_DATAHUB_QUERY_URL,
     'NEXT_PUBLIC_DATAHUB_QUERY_URL'
   )
-  const mutationUrl = checkEnv(
-    process.env.NEXT_PUBLIC_DATAHUB_MUTATION_URL,
-    'NEXT_PUBLIC_DATAHUB_MUTATION_URL'
-  )
   const subscriptionUrl = checkEnv(
     process.env.NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL,
     'NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL'
   )
-  if (!mutationUrl || !queryUrl || !subscriptionUrl) return null
+  if (!queryUrl || !subscriptionUrl) return null
 
-  return { mutationUrl, queryUrl, subscriptionUrl }
+  return { queryUrl, subscriptionUrl }
 }

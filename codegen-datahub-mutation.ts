@@ -1,6 +1,6 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
 
-const mutationUrl = process.env.NEXT_PUBLIC_DATAHUB_MUTATION_URL
+const mutationUrl = process.env.DATAHUB_MUTATION_URL
 if (!mutationUrl) throw new Error('Codegen error: Datahub Mutation URL not set')
 
 const config: CodegenConfig = {

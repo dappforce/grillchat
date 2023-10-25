@@ -75,3 +75,16 @@ export function getModerationConfig() {
   const token = checkEnv(process.env.MODERATION_TOKEN, 'MODERATION_TOKEN')
   return { url, token }
 }
+
+export function getDatahubMutationConfig() {
+  const mutationUrl = checkEnv(
+    process.env.DATAHUB_MUTATION_URL,
+    'DATAHUB_MUTATION_URL'
+  )
+  const mutationToken = checkEnv(
+    process.env.DATAHUB_QUERY_TOKEN,
+    'DATAHUB_QUERY_TOKEN'
+  )
+
+  return { url: mutationUrl, token: mutationToken }
+}
