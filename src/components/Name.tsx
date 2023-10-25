@@ -1,6 +1,6 @@
 import EthIcon from '@/assets/icons/eth-medium.svg'
 import useRandomColor from '@/hooks/useRandomColor'
-import { getProfileQuery } from '@/services/api/query'
+import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { generateRandomName } from '@/utils/random-name'
@@ -38,11 +38,18 @@ export function useName(
     generateRandomName(address)
 
   const userProfileSource = profile?.profileSpace?.content?.profileSource
+  const { data: identities } = getIdentityQuery.useQuery(address ?? '', {
+    enabled: !!address,
+  })
 
   function getNameFromSource(profileSource?: SpaceContent['profileSource']) {
     switch (profileSource) {
       case 'ens':
         return ensName
+      case 'polkadot-identity':
+        return identities?.polkadot
+      case 'kilt-w3n':
+        return identities?.kilt
       case 'subsocial-profile':
         return profile?.profileSpace?.content?.name
     }

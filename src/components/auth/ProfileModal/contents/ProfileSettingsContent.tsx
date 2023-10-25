@@ -136,7 +136,7 @@ function PolkadotProfileTabContent({
       ({
         polkadot: {
           id: 'polkadot-identity',
-          label: identities?.polkadot ?? 'Polkadot Identity',
+          label: identities?.polkadot ?? '- Polkadot Identity -',
           disabledItem: !identities?.polkadot,
           icon: <PolkadotIcon className='text-text-muted' />,
         },
@@ -144,6 +144,7 @@ function PolkadotProfileTabContent({
           id: 'kilt-w3n',
           label: identities?.kilt ?? 'Kilt Web3Name',
           disabledItem: !identities?.kilt,
+          icon: <PolkadotIcon className='text-text-muted' />,
         },
       } satisfies Record<string, ListItem>),
     [identities]
