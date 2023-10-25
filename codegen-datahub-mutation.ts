@@ -6,9 +6,9 @@ if (!mutationUrl) throw new Error('Codegen error: Datahub Mutation URL not set')
 const config: CodegenConfig = {
   overwrite: true,
   schema: mutationUrl,
-  documents: 'src/services/subsocial/datahub/**/mutation.ts',
+  documents: 'src/server/datahub/**/*.ts',
   generates: {
-    'src/services/subsocial/datahub/generated-mutation.ts': {
+    'src/server/datahub/generated-mutation.ts': {
       plugins: [
         'typescript',
         'typescript-operations',

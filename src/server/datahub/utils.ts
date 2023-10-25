@@ -1,0 +1,26 @@
+import { getDatahubConfig } from '@/utils/env/client'
+import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
+
+export function datahubMutationRequest<T, V extends Variables = Variables>(
+  config: RequestOptions<V, T>
+) {
+  const { mutationUrl } = getDatahubConfig() || {}
+  if (!mutationUrl) throw new Error('Datahub (Mutation) config is not set')
+
+  const TIMEOUT = 3 * 1000 // 3 seconds
+  const client = new GraphQLClient(mutationUrl, {
+    timeout: TIMEOUT,
+    ...config,
+  })
+
+  return client.request({ mutationUrl, ...config })
+}
+
+export function datahubMutationWrapper<
+  T extends (...args: any[]) => Promise<any>
+>(func: T) {
+  return (...args: Parameters<T>) => {
+    if (!getDatahubConfig()) return
+    return func(...args)
+  }
+}

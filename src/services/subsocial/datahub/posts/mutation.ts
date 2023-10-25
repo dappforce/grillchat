@@ -1,33 +1,21 @@
+import { DatahubMutationInput } from '@/pages/api/datahub'
 import { Signer } from '@/utils/account'
 import { u8aToHex } from '@polkadot/util'
 import { PostContent } from '@subsocial/api/types'
 import {
   CreatePostCallParsedArgs,
+  socialCallName,
+  SocialEventDataApiInput,
+  SocialEventDataType,
   SynthCreatePostTxFailedCallParsedArgs,
   SynthCreatePostTxRetryCallParsedArgs,
   SynthUpdatePostTxFailedCallParsedArgs,
   SynthUpdatePostTxRetryCallParsedArgs,
   UpdatePostCallParsedArgs,
 } from '@subsocial/data-hub-sdk'
-import { gql } from 'graphql-request'
+import axios from 'axios'
 import sortKeys from 'sort-keys-recursive'
-import {
-  CreatePostOptimisticInput,
-  CreatePostOptimisticMutation,
-  CreatePostOptimisticMutationVariables,
-  NotifyCreatePostTxFailedOrRetryStatusMutation,
-  NotifyCreatePostTxFailedOrRetryStatusMutationVariables,
-  NotifyUpdatePostTxFailedOrRetryStatusMutation,
-  NotifyUpdatePostTxFailedOrRetryStatusMutationVariables,
-  SocialCallName,
-  SocialEventDataType,
-  UpdatePostBlockchainSyncStatusInput,
-  UpdatePostOptimisticInput,
-  UpdatePostOptimisticMutation,
-  UpdatePostOptimisticMutationVariables,
-} from '../generated-mutation'
 import { PostKind } from '../generated-query'
-import { datahubMutationRequest, datahubMutationWrapper } from '../utils'
 
 type DatahubParams<T> = T & {
   address: string
@@ -42,17 +30,6 @@ function augmentInputSig(signer: Signer | null, payload: { sig: string }) {
   payload.sig = hexSig
 }
 
-const CREATE_POST_OPTIMISTIC_MUTATION = gql`
-  mutation CreatePostOptimistic(
-    $createPostOptimisticInput: CreatePostOptimisticInput!
-  ) {
-    createPostOptimistic(
-      createPostOptimisticInput: $createPostOptimisticInput
-    ) {
-      message
-    }
-  }
-`
 async function createPostData({
   address,
   cid,
@@ -74,10 +51,10 @@ async function createPostData({
     ipfsSrc: cid,
   }
 
-  const input: CreatePostOptimisticInput = {
-    dataType: SocialEventDataType.Optimistic,
+  const input: SocialEventDataApiInput = {
+    dataType: SocialEventDataType.optimistic,
     callData: {
-      name: SocialCallName.CreatePost,
+      name: socialCallName.create_post,
       signer: address || '',
       args: JSON.stringify(eventArgs),
     },
@@ -87,28 +64,12 @@ async function createPostData({
   }
   augmentInputSig(signer, input)
 
-  await datahubMutationRequest<
-    CreatePostOptimisticMutation,
-    CreatePostOptimisticMutationVariables
-  >({
-    document: CREATE_POST_OPTIMISTIC_MUTATION,
-    variables: {
-      createPostOptimisticInput: input,
-    },
+  await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
+    action: 'create-post',
+    payload: input as any,
   })
 }
 
-const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
-  mutation UpdatePostOptimistic(
-    $updatePostOptimisticInput: UpdatePostOptimisticInput!
-  ) {
-    updatePostOptimistic(
-      updatePostOptimisticInput: $updatePostOptimisticInput
-    ) {
-      message
-    }
-  }
-`
 async function updatePostData({
   address,
   postId,
@@ -127,10 +88,10 @@ async function updatePostData({
     ipfsSrc: cid,
   }
 
-  const input: UpdatePostOptimisticInput = {
-    dataType: SocialEventDataType.Optimistic,
+  const input: SocialEventDataApiInput = {
+    dataType: SocialEventDataType.optimistic,
     callData: {
-      name: SocialCallName.UpdatePost,
+      name: socialCallName.update_post,
       signer: address || '',
       args: JSON.stringify(eventArgs),
     },
@@ -140,28 +101,12 @@ async function updatePostData({
   }
   augmentInputSig(signer, input)
 
-  await datahubMutationRequest<
-    UpdatePostOptimisticMutation,
-    UpdatePostOptimisticMutationVariables
-  >({
-    document: UPDATE_POST_OPTIMISTIC_MUTATION,
-    variables: {
-      updatePostOptimisticInput: input,
-    },
+  await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
+    action: 'update-post',
+    payload: input as any,
   })
 }
 
-const NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
-  mutation NotifyCreatePostTxFailedOrRetryStatus(
-    $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
-  ) {
-    updatePostBlockchainSyncStatus(
-      updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
-    ) {
-      message
-    }
-  }
-`
 async function notifyCreatePostFailedOrRetryStatus({
   address,
   isRetrying,
@@ -180,19 +125,19 @@ async function notifyCreatePostFailedOrRetryStatus({
 >) {
   let event:
     | {
-        name: SocialCallName.SynthCreatePostTxFailed
+        name: (typeof socialCallName)['synth_create_post_tx_failed']
         args: SynthCreatePostTxFailedCallParsedArgs
       }
     | {
-        name: SocialCallName.SynthCreatePostTxRetry
+        name: (typeof socialCallName)['synth_create_post_tx_retry']
         args: SynthCreatePostTxRetryCallParsedArgs
       } = {
-    name: SocialCallName.SynthCreatePostTxFailed,
+    name: socialCallName.synth_create_post_tx_failed,
     args,
   }
   if (isRetrying) {
     event = {
-      name: SocialCallName.SynthCreatePostTxRetry,
+      name: socialCallName.synth_create_post_tx_retry,
       args: {
         ...args,
         success: isRetrying.success,
@@ -200,8 +145,8 @@ async function notifyCreatePostFailedOrRetryStatus({
     }
   }
 
-  const input: UpdatePostBlockchainSyncStatusInput = {
-    dataType: SocialEventDataType.OffChain,
+  const input: SocialEventDataApiInput = {
+    dataType: SocialEventDataType.offChain,
     callData: {
       name: event.name,
       signer: address || '',
@@ -212,28 +157,12 @@ async function notifyCreatePostFailedOrRetryStatus({
   }
   augmentInputSig(signer, input)
 
-  await datahubMutationRequest<
-    NotifyCreatePostTxFailedOrRetryStatusMutation,
-    NotifyCreatePostTxFailedOrRetryStatusMutationVariables
-  >({
-    document: NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
-    variables: {
-      updatePostBlockchainSyncStatusInput: input,
-    },
+  await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
+    action: 'notify-create-failed',
+    payload: input as any,
   })
 }
 
-const NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
-  mutation NotifyUpdatePostTxFailedOrRetryStatus(
-    $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
-  ) {
-    updatePostBlockchainSyncStatus(
-      updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
-    ) {
-      message
-    }
-  }
-`
 async function notifyUpdatePostFailedOrRetryStatus({
   postId,
   address,
@@ -257,19 +186,19 @@ async function notifyUpdatePostFailedOrRetryStatus({
   }
   let event:
     | {
-        name: SocialCallName.SynthUpdatePostTxFailed
+        name: (typeof socialCallName)['synth_update_post_tx_failed']
         args: SynthUpdatePostTxFailedCallParsedArgs
       }
     | {
-        name: SocialCallName.SynthUpdatePostTxRetry
+        name: (typeof socialCallName)['synth_update_post_tx_retry']
         args: SynthUpdatePostTxRetryCallParsedArgs
       } = {
-    name: SocialCallName.SynthUpdatePostTxFailed,
+    name: socialCallName.synth_update_post_tx_failed,
     args: eventArgs,
   }
   if (isRetrying) {
     event = {
-      name: SocialCallName.SynthUpdatePostTxRetry,
+      name: socialCallName.synth_update_post_tx_retry,
       args: {
         ...eventArgs,
         success: isRetrying.success,
@@ -277,8 +206,8 @@ async function notifyUpdatePostFailedOrRetryStatus({
     }
   }
 
-  const input: UpdatePostBlockchainSyncStatusInput = {
-    dataType: SocialEventDataType.OffChain,
+  const input: SocialEventDataApiInput = {
+    dataType: SocialEventDataType.offChain,
     callData: {
       name: event.name,
       signer: address || '',
@@ -289,25 +218,16 @@ async function notifyUpdatePostFailedOrRetryStatus({
   }
   augmentInputSig(signer, input)
 
-  await datahubMutationRequest<
-    NotifyUpdatePostTxFailedOrRetryStatusMutation,
-    NotifyUpdatePostTxFailedOrRetryStatusMutationVariables
-  >({
-    document: NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
-    variables: {
-      updatePostBlockchainSyncStatusInput: input,
-    },
+  await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
+    action: 'notify-update-failed',
+    payload: input as any,
   })
 }
 
 const datahubMutation = {
-  createPostData: datahubMutationWrapper(createPostData),
-  updatePostData: datahubMutationWrapper(updatePostData),
-  notifyCreatePostFailedOrRetryStatus: datahubMutationWrapper(
-    notifyCreatePostFailedOrRetryStatus
-  ),
-  notifyUpdatePostFailedOrRetryStatus: datahubMutationWrapper(
-    notifyUpdatePostFailedOrRetryStatus
-  ),
+  createPostData,
+  updatePostData,
+  notifyCreatePostFailedOrRetryStatus,
+  notifyUpdatePostFailedOrRetryStatus,
 }
 export default datahubMutation
