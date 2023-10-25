@@ -97,7 +97,6 @@ async function getPolkadotIdentities(addresses: string[]) {
 }
 
 async function getKiltIdentities(addresses: string[]) {
-  const api = await getKiltApi()
   const w3names: Record<string, string | undefined> = {}
 
   const needToFetchAddresses: string[] = []
@@ -116,11 +115,13 @@ async function getKiltIdentities(addresses: string[]) {
   })
   await Promise.all(cachePromises)
 
-  const identities = await api.query.web3Names.names.multi(needToFetchAddresses)
+  const identities = await Promise.all(
+    needToFetchAddresses.map((address) => {
+      return queryAccountWeb3Name(address)
+    })
+  )
 
-  identities.forEach((identityCodec, i) => {
-    const identity = identityCodec.toPrimitive() as any
-    const name = identity
+  identities.forEach((name, i) => {
     const address = needToFetchAddresses[i]
     redisCallWrapper((redis) =>
       redis?.set(
@@ -134,4 +135,25 @@ async function getKiltIdentities(addresses: string[]) {
   })
 
   return w3names
+}
+
+export async function queryAccountWeb3Name(
+  lookupAccountAddress: string
+): Promise<string | undefined> {
+  const api = await getKiltApi()
+
+  const didDetails: any = await api.call.did.queryByAccount({
+    AccountId32: lookupAccountAddress,
+  })
+  if (didDetails.isNone) {
+    throw new Error(`No DID for the KILT account "${lookupAccountAddress}".`)
+  }
+
+  const { w3n } = didDetails.unwrap()
+  if (w3n.isNone) {
+    return undefined
+  }
+
+  const web3Name = w3n.unwrap().toHuman()
+  return web3Name
 }

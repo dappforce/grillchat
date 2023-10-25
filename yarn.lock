@@ -4805,6 +4805,18 @@
     "@lit/localize" "^0.11.4"
     lit "^2.7.5"
 
+"@kiltprotocol/augment-api@^0.34.0":
+  version "0.34.0"
+  resolved "https://registry.yarnpkg.com/@kiltprotocol/augment-api/-/augment-api-0.34.0.tgz#08f6a183ebc3cc79d045e5c441da0b8ef5602775"
+  integrity sha512-0dLLShwFLmc95L8yGKWHvZ6X/EooVJfOLmb8mL/ioG8mwEjmDz9g1FC0eAUcPtJfjVaHTuRYJUcV8w04BuhU+g==
+  dependencies:
+    "@kiltprotocol/type-definitions" "0.34.0"
+
+"@kiltprotocol/type-definitions@0.34.0", "@kiltprotocol/type-definitions@^0.34.0":
+  version "0.34.0"
+  resolved "https://registry.yarnpkg.com/@kiltprotocol/type-definitions/-/type-definitions-0.34.0.tgz#101c67c84c553b6339545532a28d8af76645205d"
+  integrity sha512-LMQ7HtIq8n/M/G9sg77xGJVJFVXCA/9w+PWMTK+TGR3KvbM9qmQSnhIPJ2KOU4WFe+62HlJ0V1sOoTZDFr7QNw==
+
 "@kodadot1/static@0.0.3-rc.4":
   version "0.0.3-rc.4"
   resolved "https://registry.yarnpkg.com/@kodadot1/static/-/static-0.0.3-rc.4.tgz#705788914598df8a8d20d99b23800a504c8a4c98"

@@ -1,4 +1,6 @@
 import { getCovalentApiKey } from '@/utils/env/server'
+import '@kiltprotocol/augment-api'
+import { typesBundle } from '@kiltprotocol/type-definitions'
 import { ApiPromise, HttpProvider } from '@polkadot/api'
 import axios from 'axios'
 
@@ -27,7 +29,7 @@ export const getKiltApi = async () => {
   if (kiltApi) return kiltApi
 
   const provider = new HttpProvider(kiltApiUrl)
-  const api = ApiPromise.create({ provider })
+  const api = ApiPromise.create({ provider, typesBundle })
   kiltApi = api
 
   return api
