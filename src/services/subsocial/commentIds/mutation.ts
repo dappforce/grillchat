@@ -11,7 +11,6 @@ import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/router'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
@@ -54,7 +53,6 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const { mutateAsync: saveFile } = useSaveFile()
   const waitHasEnergy = useWaitHasEnergy()
   const { mutate: revalidateChatPage } = useRevalidateChatPage()
-  const router = useRouter()
 
   return useSubsocialMutation<
     SendMessageParams,

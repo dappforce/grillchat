@@ -2,6 +2,7 @@ import { getPostQuery } from '@/services/api/query'
 import { queryClient } from '@/services/provider'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
+import { commentIdsOptimisticEncoder } from '../../commentIds/optimistic'
 import {
   GetCommentIdsInPostIdQuery,
   GetCommentIdsInPostIdQueryVariables,
@@ -21,7 +22,7 @@ const GET_COMMENT_IDS_IN_POST_ID = gql`
     }
   }
 `
-async function getCommentIdsByPostIds(postId: string) {
+async function getCommentIdsByPostIds(postId: string): Promise<string[]> {
   const res = await datahubQueryRequest<
     GetCommentIdsInPostIdQuery,
     GetCommentIdsInPostIdQueryVariables
@@ -35,7 +36,14 @@ async function getCommentIdsByPostIds(postId: string) {
       },
     },
   })
-  return res.findPosts.map((post) => post.persistentId || post.id)
+  const ids = res.findPosts.map((post) => post.persistentId || post.id)
+  const oldIds = getCommentIdsByPostIdFromDatahubQuery.getQueryData(
+    queryClient,
+    postId
+  )
+  const oldOptimisticIds =
+    oldIds?.filter((id) => commentIdsOptimisticEncoder.checker(id)) || []
+  return [...ids, ...oldOptimisticIds]
 }
 export const getCommentIdsByPostIdFromDatahubQuery = createQuery({
   key: 'comments',
