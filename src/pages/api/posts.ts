@@ -85,7 +85,7 @@ const getPostsData = generateGetDataFromSquidWithBlockchainFallback(
   getInvalidatedPostRedisKey
 )
 export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
-  const validIds = postIds.filter((id) => !!id)
+  const validIds = postIds.filter((id) => !!id && !id.startsWith('optimistic-'))
   let posts: PostData[]
   if (getDatahubConfig()) {
     // to bypass the invalidation cache for squid

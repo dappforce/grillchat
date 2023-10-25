@@ -71,5 +71,4 @@ export function deleteOptimisticData({
     return ids?.filter((id) => id !== tempId)
   })
   getPostMetadataQuery.invalidate(client, chatId)
-  client.removeQueries(getPostQuery.getQueryKey(tempId))
 }
