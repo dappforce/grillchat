@@ -28,14 +28,15 @@ export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
     <>
       <Modal
         {...props}
-        isOpen={props.isOpen && !isProfileModalOpen}
+        isOpen={true}
         closeModal={() => {
           sendEvent('reengagement_modal_closed')
           props.closeModal()
         }}
         title='🔔 Stay Updated'
         description='Enable Grill.chat notifications to stay engaged. You can disable them at any time.'
-        contentClassName={cx('!px-0')}
+        panelClassName={cx('rounded-b-xl')}
+        contentClassName={cx('!px-0 !pb-3')}
         titleClassName={cx('px-6')}
         descriptionClassName={cx('px-6')}
         withCloseButton
