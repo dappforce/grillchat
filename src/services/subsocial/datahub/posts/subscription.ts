@@ -60,18 +60,14 @@ function subscription(queryClient: QueryClient) {
   if (isSubscribed) return
   isSubscribed = true
 
-  console.log('subscribing')
   const client = datahubSubscription()
   let unsub = client.subscribe<SubscribePostSubscription, null>(
     {
       query: SUBSCRIBE_POST,
     },
     {
-      complete: () => {
-        console.log('subscription completed')
-      },
+      complete: () => undefined,
       next: async (data) => {
-        console.log('Subscription Data:', data.data)
         const eventData = data.data?.post
         if (!eventData) return
 
@@ -84,7 +80,6 @@ function subscription(queryClient: QueryClient) {
   )
 
   return () => {
-    console.log('unsubscribe')
     unsub()
     isSubscribed = false
   }
