@@ -163,7 +163,7 @@ export default function ChatForm({
   }, [hasEnoughEnergy])
 
   const shouldSendMessage =
-    isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
+    isLoggedIn && (isRequestingEnergy || hasEnoughEnergy)
 
   const isDisabled =
     (mustHaveMessageBody && !processMessage(messageBody)) ||
