@@ -19,6 +19,7 @@ const GET_COMMENT_IDS_IN_POST_ID = gql`
     findPosts(where: $where) {
       id
       persistentId
+      optimisticId
     }
   }
 `
@@ -36,14 +37,21 @@ async function getCommentIdsByPostIds(postId: string): Promise<string[]> {
       },
     },
   })
-  const ids = res.findPosts.map((post) => post.persistentId || post.id)
+  const optimisticIds = new Set<string>()
+  const ids = res.findPosts.map((post) => {
+    optimisticIds.add(post.optimisticId ?? '')
+    return post.persistentId || post.id
+  })
   const oldIds = getCommentIdsByPostIdFromDatahubQuery.getQueryData(
     queryClient,
     postId
   )
   const oldOptimisticIds =
     oldIds?.filter((id) => commentIdsOptimisticEncoder.checker(id)) || []
-  return [...ids, ...oldOptimisticIds]
+  const unincludedIds = oldOptimisticIds.filter(
+    (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
+  )
+  return [...ids, ...unincludedIds]
 }
 export const getCommentIdsByPostIdFromDatahubQuery = createQuery({
   key: 'comments',

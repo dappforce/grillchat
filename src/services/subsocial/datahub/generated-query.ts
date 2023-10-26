@@ -51,6 +51,7 @@ export type Account = {
   persistentDataVersion?: Maybe<Scalars['String']['output']>
   postsCreated: Array<Post>
   postsOwned: Array<Post>
+  profileSpace?: Maybe<Space>
   spacesCreated: Array<Space>
   spacesOwned: Array<Space>
 }
@@ -151,7 +152,6 @@ export type EvmSubstrateAccountLink = {
   dataType: DataType
   evmAccount: EvmAccount
   id: Scalars['String']['output']
-  ownedPostsCount?: Maybe<Scalars['Int']['output']>
   substrateAccount: Account
 }
 
@@ -207,10 +207,13 @@ export type Post = {
   createdAtTime?: Maybe<Scalars['DateTime']['output']>
   createdByAccount: Account
   dataType: DataType
+  downvotesCount?: Maybe<Scalars['Int']['output']>
   experimental?: Maybe<Scalars['JSON']['output']>
   extensions: Array<ContentExtension>
+  followersCount?: Maybe<Scalars['Int']['output']>
   format?: Maybe<Scalars['String']['output']>
   hidden: Scalars['Boolean']['output']
+  hiddenRepliesCount?: Maybe<Scalars['Int']['output']>
   id: Scalars['String']['output']
   image?: Maybe<Scalars['String']['output']>
   inReplyToKind?: Maybe<InReplyToKind>
@@ -228,14 +231,19 @@ export type Post = {
   persistentId?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   postFollowers?: Maybe<Array<PostFollowers>>
+  publicRepliesCount?: Maybe<Scalars['Int']['output']>
+  reactionsCount?: Maybe<Scalars['Int']['output']>
   rootPost?: Maybe<Post>
   sharedPost?: Maybe<Post>
+  sharesCount?: Maybe<Scalars['Int']['output']>
   slug?: Maybe<Scalars['String']['output']>
   space?: Maybe<Space>
   summary?: Maybe<Scalars['String']['output']>
   tagsOriginal?: Maybe<Scalars['String']['output']>
   title?: Maybe<Scalars['String']['output']>
+  tweetId?: Maybe<Scalars['String']['output']>
   updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+  upvotesCount?: Maybe<Scalars['Int']['output']>
 }
 
 export type PostFollowers = {
@@ -323,11 +331,18 @@ export type Space = {
   createdAtTime?: Maybe<Scalars['DateTime']['output']>
   createdByAccount: Account
   dataType: DataType
+  email?: Maybe<Scalars['String']['output']>
+  experimental?: Maybe<Scalars['JSON']['output']>
   followers: Array<SpaceFollowers>
+  followersCount?: Maybe<Scalars['Int']['output']>
+  handle?: Maybe<Scalars['String']['output']>
   hidden: Scalars['Boolean']['output']
+  hiddenPostsCount?: Maybe<Scalars['Int']['output']>
   id: Scalars['String']['output']
   image?: Maybe<Scalars['String']['output']>
+  interestsOriginal?: Maybe<Scalars['String']['output']>
   isShowMore: Scalars['Boolean']['output']
+  linksOriginal?: Maybe<Scalars['String']['output']>
   name?: Maybe<Scalars['String']['output']>
   offChainId?: Maybe<Scalars['String']['output']>
   optimisticId?: Maybe<Scalars['String']['output']>
@@ -337,7 +352,15 @@ export type Space = {
   persistentId?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   posts?: Maybe<Post>
+  postsCount?: Maybe<Scalars['Int']['output']>
+  profileSource?: Maybe<Scalars['String']['output']>
+  profileSpace?: Maybe<Account>
+  publicPostsCount?: Maybe<Scalars['Int']['output']>
   summary?: Maybe<Scalars['String']['output']>
+  tagsOriginal?: Maybe<Scalars['String']['output']>
+  updatedAtBlock?: Maybe<Scalars['Int']['output']>
+  updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+  username?: Maybe<Scalars['String']['output']>
 }
 
 export type SpaceFollowers = {
@@ -559,6 +582,7 @@ export type GetCommentIdsInPostIdQuery = {
     __typename?: 'Post'
     id: string
     persistentId?: string | null
+    optimisticId?: string | null
   }>
 }
 
@@ -702,6 +726,7 @@ export const GetCommentIdsInPostId = gql`
     findPosts(where: $where) {
       id
       persistentId
+      optimisticId
     }
   }
 `
