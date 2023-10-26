@@ -75,10 +75,10 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=gl-notifications-dev.appspot.com
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=581626459774
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:581626459774:web:6b7098eb48c0b142f50a2f
-            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://second-test-data-hub.subsocial.network/graphql
-            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://second-test-data-hub.subsocial.network/graphql-ws
-            GH_DATAHUB_MUTATION_URL=https://second-test-queue-data-hub.subsocial.network/graphql
-            GH_DATAHUB_MUTATION_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.NSP9-48-eBvgABOxiVyihsb6c06CMjsqbvWjbNOudAM
+            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://data-hub.subsocial.network/graphql
+            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://data-hub.subsocial.network/graphql-ws
+            GH_DATAHUB_MUTATION_URL=https://queue-data-hub.subsocial.network/graphql
+            GH_DATAHUB_MUTATION_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.NW7BiYFiJXLCM2F07QDmal2OK0vglW-ssZASX8P-C3E
           target: runner
           tags: |
             ${{ env.image }}
