@@ -33,16 +33,21 @@ export function datahubMutationWrapper<
         const rateLimitError = errors.find(
           (e: any) => e?.code === 'TOO_MANY_REQUESTS_PER_TIME_RANGE'
         ) as any
-        const rateLimitData = rateLimitError?.data
-        if (rateLimitError)
+        const rateLimitData = rateLimitError?.payload
+        if (rateLimitError) {
+          const range = Math.max(rateLimitData.msRange / 1000, 1)
+          const timeLeft = Math.max(rateLimitData.msBeforeNext / 1000, 1)
           throw new Error(
-            `You can only send ${rateLimitData.maxPoints} messages per ${
-              rateLimitData.range / 1000
-            } seconds`,
+            `You can only send ${
+              rateLimitData.maxPoints
+            } messages per ${range} seconds${
+              timeLeft > 1 ? `(${timeLeft} seconds remaining)` : ''
+            }`,
             {
               cause: RATE_LIMIT_EXCEEDED,
             }
           )
+        }
       }
       throw err
     }
