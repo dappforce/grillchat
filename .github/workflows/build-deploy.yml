@@ -118,7 +118,7 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://second-test-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://second-test-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_MUTATION_URL=https://second-test-queue-data-hub.subsocial.network/graphql
-            GH_DATAHUB_MUTATION_TOKEN=
+            GH_DATAHUB_MUTATION_TOKEN=${{ secrets.DATAHUB_MUTATION_TOKEN }}
           target: storybook
           tags: |
             ${{ env.image }}
