@@ -82,8 +82,8 @@ export function getDatahubMutationConfig() {
     'DATAHUB_MUTATION_URL'
   )
   const mutationToken = checkEnv(
-    process.env.DATAHUB_QUERY_TOKEN,
-    'DATAHUB_QUERY_TOKEN'
+    process.env.DATAHUB_MUTATION_TOKEN,
+    'DATAHUB_MUTATION_TOKEN'
   )
 
   return { url: mutationUrl, token: mutationToken }
