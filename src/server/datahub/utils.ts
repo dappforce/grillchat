@@ -1,3 +1,4 @@
+import { RATE_LIMIT_EXCEEDED } from '@/constants/error'
 import { getDatahubMutationConfig } from '@/utils/env/server'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 
@@ -22,8 +23,28 @@ export function datahubMutationRequest<T, V extends Variables = Variables>(
 export function datahubMutationWrapper<
   T extends (...args: any[]) => Promise<any>
 >(func: T) {
-  return (...args: Parameters<T>) => {
+  return async (...args: Parameters<T>) => {
     if (!getDatahubMutationConfig()) return
-    return func(...args)
+    try {
+      return await func(...args)
+    } catch (err) {
+      const errors = (err as any)?.response?.errors
+      if (Array.isArray(errors)) {
+        const rateLimitError = errors.find(
+          (e: any) => e?.code === 'TOO_MANY_REQUESTS_PER_TIME_RANGE'
+        ) as any
+        const rateLimitData = rateLimitError?.data
+        if (rateLimitError)
+          throw new Error(
+            `You can only send ${rateLimitData.maxPoints} messages per ${
+              rateLimitData.range / 1000
+            } seconds`,
+            {
+              cause: RATE_LIMIT_EXCEEDED,
+            }
+          )
+      }
+      throw err
+    }
   }
 }

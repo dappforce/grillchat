@@ -2,6 +2,7 @@ import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
+import { RATE_LIMIT_EXCEEDED } from '@/constants/error'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
@@ -22,6 +23,7 @@ import dynamic from 'next/dynamic'
 import {
   ComponentProps,
   SyntheticEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -94,7 +96,7 @@ export default function ChatForm({
     setMessageBody(editedMessageBody)
   }, [editedMessageBody, setMessageBody])
 
-  useLoadUnsentMessage(chatId)
+  const loadUnsentMessage = useLoadUnsentMessage(chatId)
 
   const [isOpenCtaModal, setIsOpenCtaModal] = useState(false)
 
@@ -116,7 +118,8 @@ export default function ChatForm({
       showErrorSendingMessageToast(
         error,
         'Failed to register or send message',
-        variables
+        variables,
+        loadUnsentMessage
       )
     },
   })
@@ -132,7 +135,12 @@ export default function ChatForm({
   const { mutate: sendMessage } = useSendMessage({
     onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
-      showErrorSendingMessageToast(error, 'Failed to send message', variables)
+      showErrorSendingMessageToast(
+        error,
+        'Failed to send message',
+        variables,
+        loadUnsentMessage
+      )
     },
   })
 
@@ -333,7 +341,7 @@ function useLoadUnsentMessage(chatId: string) {
     (state) => state.openExtensionModal
   )
 
-  useEffect(() => {
+  const loadUnsentMessage = useCallback(() => {
     const unsentMessageData = unsentMessageStorage.get(chatId)
     if (!unsentMessageData) return
     const unsentMessage = JSON.parse(unsentMessageData) as SendMessageParams
@@ -363,32 +371,52 @@ function useLoadUnsentMessage(chatId: string) {
         break
     }
   }, [chatId, setMessageBody, setReplyTo, openExtensionModal])
+
+  useEffect(() => {
+    loadUnsentMessage()
+  }, [loadUnsentMessage])
+
+  return loadUnsentMessage
 }
 
 function showErrorSendingMessageToast(
   error: unknown,
   errorTitle: string,
-  message: SendMessageParams
+  message: SendMessageParams,
+  loadUnsentMessage?: () => void
 ) {
   unsentMessageStorage.set(JSON.stringify(message), message.chatId)
 
-  showErrorToast(error, errorTitle, {
-    toastConfig: { duration: Infinity },
-    getDescription: message
-      ? () => 'Click refresh to recover your message and try again'
-      : undefined,
-    actionButton: (t) => (
-      <Button
-        size='circle'
-        variant='transparent'
-        className='text-lg'
-        onClick={() => {
-          toast.dismiss(t.id)
-          window.location.reload()
-        }}
-      >
-        <IoRefresh />
-      </Button>
-    ),
+  const isRateLimited =
+    (error as any)?.response?.data?.errors === RATE_LIMIT_EXCEEDED
+
+  let title = errorTitle
+  if (isRateLimited) {
+    title =
+      'You sent too many messages, please wait for a few moments and try again'
+    loadUnsentMessage?.()
+  }
+
+  showErrorToast(error, title, {
+    toastConfig: { duration: isRateLimited ? 5000 : Infinity },
+    getDescription:
+      message && !isRateLimited
+        ? () => 'Click refresh to recover your message and try again'
+        : undefined,
+    actionButton: isRateLimited
+      ? undefined
+      : (t) => (
+          <Button
+            size='circle'
+            variant='transparent'
+            className='text-lg'
+            onClick={() => {
+              toast.dismiss(t.id)
+              window.location.reload()
+            }}
+          >
+            <IoRefresh />
+          </Button>
+        ),
   })
 }

@@ -40,7 +40,16 @@ export default handlerWrapper({
   errorLabel: 'datahub-mutation',
   handler: async (data: DatahubMutationInput, _, res) => {
     const mapper = datahubMutationWrapper(datahubActionMapping)
-    await mapper(data)
+    try {
+      await mapper(data)
+    } catch (err) {
+      const cause = (err as Error).cause
+      return res.status(500).send({
+        success: false,
+        message: (err as any).message,
+        errors: cause || err,
+      } as ApiResponse)
+    }
     res.status(200).json({ message: 'OK', success: true })
   },
 })
