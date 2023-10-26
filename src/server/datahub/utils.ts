@@ -37,19 +37,24 @@ export function datahubMutationWrapper<
         if (rateLimitError) {
           const range = Math.max(rateLimitData.msRange / 1000, 1)
           const timeLeft = Math.max(rateLimitData.msBeforeNext / 1000, 1)
-          throw new Error(
+          throw new RateLimitError(
             `You can only send ${
               rateLimitData.maxPoints
             } messages per ${range} seconds${
               timeLeft > 1 ? `(${timeLeft} seconds remaining)` : ''
             }`,
-            {
-              cause: RATE_LIMIT_EXCEEDED,
-            }
+            timeLeft
           )
         }
       }
       throw err
     }
+  }
+}
+
+export class RateLimitError extends Error {
+  constructor(message: string, public remainingSeconds: number) {
+    super(message)
+    this.name = RATE_LIMIT_EXCEEDED
   }
 }

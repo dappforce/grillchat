@@ -96,7 +96,8 @@ export default function ChatForm({
     setMessageBody(editedMessageBody)
   }, [editedMessageBody, setMessageBody])
 
-  const loadUnsentMessage = useLoadUnsentMessage(chatId)
+  const [isDisabledInput, setIsDisabledInput] = useState(false)
+  const reloadUnsentMessage = useLoadUnsentMessage(chatId)
 
   const [isOpenCtaModal, setIsOpenCtaModal] = useState(false)
 
@@ -119,7 +120,7 @@ export default function ChatForm({
         error,
         'Failed to register or send message',
         variables,
-        loadUnsentMessage
+        { reloadUnsentMessage, setIsDisabledInput }
       )
     },
   })
@@ -135,12 +136,10 @@ export default function ChatForm({
   const { mutate: sendMessage } = useSendMessage({
     onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
-      showErrorSendingMessageToast(
-        error,
-        'Failed to send message',
-        variables,
-        loadUnsentMessage
-      )
+      showErrorSendingMessageToast(error, 'Failed to send message', variables, {
+        reloadUnsentMessage,
+        setIsDisabledInput,
+      })
     },
   })
 
@@ -167,7 +166,8 @@ export default function ChatForm({
 
   const isDisabled =
     (mustHaveMessageBody && !processMessage(messageBody)) ||
-    sendButtonProps?.disabled
+    sendButtonProps?.disabled ||
+    isDisabledInput
 
   const resetForm = () => {
     setMessageBody('')
@@ -383,18 +383,30 @@ function showErrorSendingMessageToast(
   error: unknown,
   errorTitle: string,
   message: SendMessageParams,
-  loadUnsentMessage?: () => void
+  additionalConfig?: {
+    reloadUnsentMessage?: () => void
+    setIsDisabledInput?: (disabled: boolean) => void
+  }
 ) {
   unsentMessageStorage.set(JSON.stringify(message), message.chatId)
 
-  const isRateLimited =
-    (error as any)?.response?.data?.errors === RATE_LIMIT_EXCEEDED
+  const errorData = (error as any)?.response?.data?.errors
+  const isRateLimited = errorData?.name === RATE_LIMIT_EXCEEDED
 
   let title = errorTitle
   if (isRateLimited) {
+    const { reloadUnsentMessage, setIsDisabledInput } = additionalConfig || {}
     title =
       'You sent too many messages, please wait for a few moments and try again'
-    loadUnsentMessage?.()
+    reloadUnsentMessage?.()
+
+    const remainingSeconds = errorData?.remainingSeconds
+    if (setIsDisabledInput && remainingSeconds) {
+      setIsDisabledInput?.(true)
+      setTimeout(() => {
+        setIsDisabledInput(false)
+      }, remainingSeconds)
+    }
   }
 
   showErrorToast(error, title, {

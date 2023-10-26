@@ -10,7 +10,7 @@ import {
   notifyUpdatePostFailedOrRetryStatus,
   updatePostData,
 } from '@/server/datahub/post'
-import { datahubMutationWrapper } from '@/server/datahub/utils'
+import { datahubMutationWrapper, RateLimitError } from '@/server/datahub/utils'
 import { z } from 'zod'
 
 export type DatahubMutationInput =
@@ -43,12 +43,14 @@ export default handlerWrapper({
     try {
       await mapper(data)
     } catch (err) {
-      const cause = (err as Error).cause
-      return res.status(500).send({
-        success: false,
-        message: (err as any).message,
-        errors: cause || err,
-      } as ApiResponse)
+      if (err instanceof RateLimitError) {
+        return res.status(429).send({
+          success: false,
+          message: err.message,
+          errors: err,
+        } as ApiResponse)
+      }
+      throw err
     }
     res.status(200).json({ message: 'OK', success: true })
   },
