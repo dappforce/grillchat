@@ -119,12 +119,10 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
             cohortDate: dayjs().toDate(),
           }
         )
-      } else {
-        if (secretKey.startsWith('0x')) {
-          const augmented = secretKey.substring(2)
-          if (isSecretKeyUsingMiniSecret(augmented)) {
-            secretKey = augmented
-          }
+      } else if (secretKey.startsWith('0x')) {
+        const augmented = secretKey.substring(2)
+        if (isSecretKeyUsingMiniSecret(augmented)) {
+          secretKey = augmented
         }
       }
 
