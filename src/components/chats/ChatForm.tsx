@@ -405,7 +405,7 @@ function showErrorSendingMessageToast(
       setIsDisabledInput?.(true)
       setTimeout(() => {
         setIsDisabledInput(false)
-      }, remainingSeconds)
+      }, remainingSeconds * 1000)
     }
   }
 
