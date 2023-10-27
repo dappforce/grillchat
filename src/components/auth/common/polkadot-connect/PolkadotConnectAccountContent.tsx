@@ -54,7 +54,7 @@ export default function PolkadotConnectAccountContent({
         return (
           <ScrollableContainer
             as='div'
-            className='mb-4 max-h-96 scrollbar-track-background-light'
+            className='mb-3 max-h-96 scrollbar-track-background-light'
           >
             <MenuList
               className='py-0'

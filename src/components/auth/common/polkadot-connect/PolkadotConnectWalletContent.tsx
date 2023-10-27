@@ -13,7 +13,7 @@ export default function PolkadotConnectWalletContent({
   return (
     <div className='flex flex-col'>
       <MenuList
-        className='pb-6 pt-0'
+        className='pt-0'
         menus={supportedWallets.map((wallet: Wallet) => ({
           text: wallet.title,
           className: 'gap-4',
