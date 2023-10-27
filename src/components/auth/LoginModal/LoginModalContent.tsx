@@ -226,7 +226,7 @@ export const NextActionsContent = ({
 export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
   return (
     <MenuList
-      className='pb-5 pt-0'
+      className='pt-0'
       menus={[
         {
           text: 'Connect EVM',
