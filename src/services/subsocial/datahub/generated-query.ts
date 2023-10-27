@@ -407,6 +407,7 @@ export type DatahubPostFragmentFragment = {
   updatedAtTime?: any | null
   canonical?: string | null
   tagsOriginal?: string | null
+  followersCount?: number | null
   inReplyToKind?: InReplyToKind | null
   createdByAccount: { __typename?: 'Account'; id: string }
   ownedByAccount: { __typename?: 'Account'; id: string }
@@ -471,6 +472,7 @@ export type GetPostsQuery = {
     updatedAtTime?: any | null
     canonical?: string | null
     tagsOriginal?: string | null
+    followersCount?: number | null
     inReplyToKind?: InReplyToKind | null
     createdByAccount: { __typename?: 'Account'; id: string }
     ownedByAccount: { __typename?: 'Account'; id: string }
@@ -536,6 +538,7 @@ export type GetOptimisticPostsQuery = {
     updatedAtTime?: any | null
     canonical?: string | null
     tagsOriginal?: string | null
+    followersCount?: number | null
     inReplyToKind?: InReplyToKind | null
     createdByAccount: { __typename?: 'Account'; id: string }
     ownedByAccount: { __typename?: 'Account'; id: string }
@@ -658,6 +661,7 @@ export const DatahubPostFragment = gql`
     updatedAtTime
     canonical
     tagsOriginal
+    followersCount
     ownedByAccount {
       id
     }

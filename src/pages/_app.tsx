@@ -74,6 +74,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
 
   const isInitialized = useRef(false)
   const { theme } = useConfigContext()
+  useSubscribePostsInDatahub()
 
   useEffect(() => {
     if (isInitialized.current) return
@@ -102,15 +103,9 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
             </EvmProvider>
           </ErrorBoundary>
         </div>
-        <PostSubscriber />
       </QueryProvider>
     </ThemeProvider>
   )
-}
-
-function PostSubscriber() {
-  useSubscribePostsInDatahub()
-  return null
 }
 
 function ToasterConfig() {

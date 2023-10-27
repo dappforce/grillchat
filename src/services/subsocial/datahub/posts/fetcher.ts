@@ -34,6 +34,7 @@ const DATAHUB_POST_FRAGMENT = gql`
     updatedAtTime
     canonical
     tagsOriginal
+    followersCount
     ownedByAccount {
       id
     }
