@@ -205,7 +205,7 @@ function NoChats({ changeTab }: NoChatsProps) {
               size='lg'
               onClick={() => changeTab(1)}
             >
-              View Experiments Chats
+              View Recommended Chats
             </Button>
             <Button
               className='w-full'

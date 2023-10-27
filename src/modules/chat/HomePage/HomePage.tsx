@@ -76,7 +76,7 @@ export default function HubsPage(props: HubsPageProps) {
     },
     {
       id: 'hot-chats',
-      text: 'Experiments',
+      text: 'Recommended',
       content: () => <HotChatsContent hubId={hotChatsHubId} />,
     },
     ...homePageAdditionalTabs.map(({ id, text, hubId }) => ({
