@@ -35,7 +35,8 @@ export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
         }}
         title='🔔 Stay Updated'
         description='Enable Grill.chat notifications to stay engaged. You can disable them at any time.'
-        contentClassName={cx('!px-0')}
+        panelClassName={cx('rounded-b-xl')}
+        contentClassName={cx('!px-0 !pb-3')}
         titleClassName={cx('px-6')}
         descriptionClassName={cx('px-6')}
         withCloseButton
