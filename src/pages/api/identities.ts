@@ -38,10 +38,19 @@ export default handlerWrapper({
 })
 
 async function getIdentities(addresses: string[]): Promise<Identities[]> {
-  const [polkadotIdentities, kiltIdentities] = await Promise.all([
-    getPolkadotIdentities(addresses),
-    getKiltIdentities(addresses),
-  ] as const)
+  const [polkadotIdentitiesPromise, kiltIdentitiesPromise] =
+    await Promise.allSettled([
+      getPolkadotIdentities(addresses),
+      getKiltIdentities(addresses),
+    ] as const)
+  const polkadotIdentities =
+    polkadotIdentitiesPromise.status === 'fulfilled'
+      ? polkadotIdentitiesPromise.value
+      : {}
+  const kiltIdentities =
+    kiltIdentitiesPromise.status === 'fulfilled'
+      ? kiltIdentitiesPromise.value
+      : {}
 
   return addresses.map((address) => ({
     address,
