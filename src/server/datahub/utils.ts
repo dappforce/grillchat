@@ -38,11 +38,9 @@ export function datahubMutationWrapper<
           const range = Math.max(rateLimitData.msRange / 1000, 1)
           const timeLeft = Math.max(rateLimitData.msBeforeNext / 1000, 1)
           throw new RateLimitError(
-            `You can only send ${
-              rateLimitData.maxPoints
-            } messages per ${range} second${range > 1 ? 's' : ''}${
-              timeLeft > 1 ? `(${timeLeft} seconds remaining)` : ''
-            }`,
+            `You can only send ${rateLimitData.maxPoints} messages per ${
+              range > 1 ? `${range} seconds` : 'second'
+            }${timeLeft > 1 ? ` (${timeLeft} seconds remaining)` : ''}`,
             timeLeft
           )
         }
