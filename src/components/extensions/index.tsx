@@ -14,7 +14,6 @@ const SecretBoxModal = dynamic(() => import('./secret-box/SecretBoxModal'), {
 })
 
 export type ExtensionModalsProps = {
-  hubId: string
   chatId: string
   onSubmit: () => void
 }

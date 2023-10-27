@@ -16,7 +16,6 @@ export function showErrorToast<ErrorType>(
   let message: string | undefined = (error as any)?.message
 
   const response = (error as any)?.response?.data
-  message = response?.message ?? message
   if (getMessage) {
     const responseMessage = getMessage(response)
     if (responseMessage) message = responseMessage

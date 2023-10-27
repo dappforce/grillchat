@@ -1,11 +1,11 @@
 import { signMessage } from '@/utils/account'
-import sortKeys from 'sort-keys-recursive'
+import { sortObj } from 'jsonabc'
 
 function parseMessageTpl(messageTpl: string) {
   const decodedMessage = decodeURIComponent(messageTpl)
 
   const parsedMessage = JSON.parse(decodedMessage) as any
-  const sortedPayload = sortKeys(parsedMessage.payload)
+  const sortedPayload = sortObj(parsedMessage.payload)
   return {
     payloadToSign: JSON.stringify(sortedPayload),
     messageData: parsedMessage,
@@ -18,7 +18,7 @@ export async function processMessageTpl(encodedMessage: string) {
   parsedMessage.messageData['signature'] = signedPayload
 
   const signedMessage = encodeURIComponent(
-    JSON.stringify(sortKeys(parsedMessage.messageData))
+    JSON.stringify(sortObj(parsedMessage.messageData))
   )
   return signedMessage
 }

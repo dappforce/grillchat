@@ -6,7 +6,6 @@ import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { QueryProvider } from '@/services/provider'
-import { useSubscribePostsInDatahub } from '@/services/subsocial/datahub/posts/subscription'
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
@@ -84,7 +83,6 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
-        <PostSubscriber />
         <BadgeManager />
         <SubsocialApiReconnect />
         <ToasterConfig />
@@ -106,11 +104,6 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
       </QueryProvider>
     </ThemeProvider>
   )
-}
-
-function PostSubscriber() {
-  useSubscribePostsInDatahub()
-  return null
 }
 
 function ToasterConfig() {

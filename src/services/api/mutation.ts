@@ -8,10 +8,8 @@ import {
   ApiRequestTokenBody,
   ApiRequestTokenResponse,
 } from '@/pages/api/request-token'
-import { RevalidateChatInput } from '@/pages/api/revalidation/chat'
 import { SaveFileRequest, SaveFileResponse } from '@/pages/api/save-file'
 import { SaveImageResponse } from '@/pages/api/save-image'
-import { useTransactions } from '@/stores/transactions'
 import mutationWrapper from '@/subsocial-query/base'
 import axios from 'axios'
 
@@ -19,14 +17,6 @@ export async function requestToken({
   address,
   captchaToken,
 }: ApiRequestTokenBody) {
-  // make request token as pending transaction so websocket won't disconnect for 10 secs after request token
-  // this is to make energy subscription work
-  const requestTokenId = `request-token-${Date.now()}`
-  useTransactions.getState().addPendingTransaction(requestTokenId)
-  setTimeout(() => {
-    useTransactions.getState().removePendingTransaction(requestTokenId)
-  }, 10_000)
-
   const res = await axios.post('/api/request-token', {
     captchaToken,
     address,
@@ -85,8 +75,3 @@ export async function invalidateProfileServerCache(address: string) {
   const res = await axios.post('/api/profiles', { address })
   return res.data as ApiPostsInvalidationResponse
 }
-
-export function revalidateChatPage(input: RevalidateChatInput) {
-  return axios.post('/api/revalidation/chat', input)
-}
-export const useRevalidateChatPage = mutationWrapper(revalidateChatPage)

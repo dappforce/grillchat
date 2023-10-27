@@ -14,12 +14,7 @@ export type CaptchaInvisibleProps = {
 
 export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
   const captchaRef = useRef<ReCAPTCHA>(null)
-
-  const captchaSiteKey = getCaptchaSiteKey()
-
   const runCaptcha = async () => {
-    if (!captchaSiteKey) return 'dummy-captcha'
-
     let token: string | null = null
     try {
       console.log('waiting captcha...')
@@ -48,17 +43,15 @@ export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
       {children(runCaptcha, (className) => (
         <CaptchaTermsAndService className={className} />
       ))}
-      {captchaSiteKey && (
-        <div className='hidden'>
-          <ReCAPTCHA
-            sitekey={getCaptchaSiteKey()}
-            theme='dark'
-            ref={captchaRef}
-            size='invisible'
-            badge='inline'
-          />
-        </div>
-      )}
+      <div className='hidden'>
+        <ReCAPTCHA
+          sitekey={getCaptchaSiteKey()}
+          theme='dark'
+          ref={captchaRef}
+          size='invisible'
+          badge='inline'
+        />
+      </div>
     </>
   )
 }

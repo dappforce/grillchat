@@ -78,7 +78,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
         <UpsertPostWrapper
           config={{
             txCallbacks: {
-              onSuccess: async (_data, txResult) => {
+              onSuccess: async (_data, _, txResult) => {
                 if (isUpdating || !myAddress) return
 
                 setIsProcessingData(true)
@@ -103,7 +103,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
               },
             },
           }}
-          loadingUntilTxSuccess={!isUpdating}
+          loadingUntilTxSuccess
         >
           {({ isLoading: isMutating, mutateAsync }) => {
             const onSubmit: SubmitHandler<FormSchema> = async (data) => {

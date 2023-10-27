@@ -2,7 +2,6 @@ import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { generateGetDataFromSquidWithBlockchainFallback } from '@/server/squid'
 import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
-import { getDatahubConfig } from '@/utils/env/client'
 import { getUrlFromText } from '@/utils/strings'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
@@ -84,15 +83,9 @@ const getPostsData = generateGetDataFromSquidWithBlockchainFallback(
   },
   getInvalidatedPostRedisKey
 )
-export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
-  const validIds = postIds.filter((id) => !!id && !id.startsWith('optimistic-'))
-  let posts: PostData[]
-  if (getDatahubConfig()) {
-    // to bypass the invalidation cache for squid
-    posts = await getPostsFromSubsocial(validIds)
-  } else {
-    posts = await getPostsData(validIds)
-  }
+export async function getPostsServer(postIds: string[]) {
+  const validPostIds = postIds.filter((id) => id && !isNaN(Number(id)))
+  const posts = await getPostsData(validPostIds)
 
   const linksToFetch = new Set<string>()
   posts.forEach((post) => {

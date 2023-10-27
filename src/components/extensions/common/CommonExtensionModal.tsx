@@ -15,7 +15,6 @@ export type CommonExtensionModalProps = ModalProps &
     ChatFormProps,
     | 'buildAdditionalTxParams'
     | 'chatId'
-    | 'hubId'
     | 'sendButtonText'
     | 'autofocus'
     | 'onSubmit'
@@ -31,7 +30,6 @@ export type CommonExtensionModalProps = ModalProps &
 
 export default function CommonExtensionModal({
   chatId,
-  hubId,
   sendButtonText,
   disableSendButton,
   mustHaveMessageBody = false,
@@ -73,7 +71,6 @@ export default function CommonExtensionModal({
         <ChatForm
           autofocus={!!autofocus}
           chatId={chatId}
-          hubId={hubId}
           mustHaveMessageBody={mustHaveMessageBody}
           beforeMesageSend={beforeMesageSend}
           sendButtonText={sendButtonText}

@@ -12,21 +12,25 @@ const AttachmentInput = dynamic(import('./AttachmentInput'), { ssr: false })
 
 type ChatInputBarProps = ComponentProps<'div'> & {
   formProps: ChatFormProps
+  hubId: string
 }
 
 export default function ChatInputBar({
   formProps,
+  hubId,
   ...props
 }: ChatInputBarProps) {
   const myAddress = useMyAccount((state) => state.address)
-
-  const { chatId, hubId } = formProps
-  const isBlocked = useIsAddressBlockedInChat(myAddress ?? '', chatId, hubId)
+  const isBlocked = useIsAddressBlockedInChat(
+    myAddress ?? '',
+    formProps.chatId,
+    hubId
+  )
 
   const { data: accountData } = getAccountDataQuery.useQuery(myAddress ?? '')
   const myEvmAddress = accountData?.evmAddress
 
-  const whitelistedAddresses = getWhitelistedAddressesInChatId(chatId)
+  const whitelistedAddresses = getWhitelistedAddressesInChatId(formProps.chatId)
 
   const isWhitelisted =
     whitelistedAddresses?.includes(myAddress ?? '') ||
@@ -51,7 +55,7 @@ export default function ChatInputBar({
 
   return (
     <div {...props} className={cx('flex items-center gap-2', props.className)}>
-      <AttachmentInput chatId={chatId} />
+      <AttachmentInput chatId={formProps.chatId} />
       <ChatForm {...formProps} />
     </div>
   )
