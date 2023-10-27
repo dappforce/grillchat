@@ -1,6 +1,7 @@
 import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
 import Modal from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -81,6 +82,7 @@ export default function ProfileModal({
       enabled: props.isOpen,
     }
   )
+  const hasPreviousIdentity = useHasPreviousGrillIdentity()
 
   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
@@ -280,9 +282,12 @@ export default function ProfileModal({
     <Modal
       {...props}
       closeModal={() => {
-        if (currentState === 'polkadot-connect-success')
+        if (
+          currentState === 'polkadot-connect-success' &&
+          hasPreviousIdentity
+        ) {
           setCurrentState('polkadot-connect-identity-removed')
-        else props.closeModal()
+        } else props.closeModal()
       }}
       title={title}
       description={desc}
@@ -301,4 +306,15 @@ export default function ProfileModal({
       />
     </Modal>
   )
+}
+
+function useHasPreviousGrillIdentity() {
+  const grillAddress = useMyAccount((state) => state.address)
+  const { data: grillAccountData } = getAccountDataQuery.useQuery(
+    grillAddress ?? ''
+  )
+  const { data: grillProfile } = getProfileQuery.useQuery(grillAddress ?? '')
+  const hasPreviousIdentity =
+    grillAccountData?.evmAddress && grillProfile?.profileSpace?.content?.name
+  return !!hasPreviousIdentity
 }
