@@ -28,7 +28,7 @@ export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
     <>
       <Modal
         {...props}
-        isOpen={true}
+        isOpen={props.isOpen && !isProfileModalOpen}
         closeModal={() => {
           sendEvent('reengagement_modal_closed')
           props.closeModal()
