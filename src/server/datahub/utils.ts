@@ -40,7 +40,7 @@ export function datahubMutationWrapper<
           throw new RateLimitError(
             `You can only send ${
               rateLimitData.maxPoints
-            } messages per ${range} seconds${
+            } messages per ${range} second${range > 1 ? 's' : ''}${
               timeLeft > 1 ? `(${timeLeft} seconds remaining)` : ''
             }`,
             timeLeft

@@ -396,8 +396,7 @@ function showErrorSendingMessageToast(
   let title = errorTitle
   if (isRateLimited) {
     const { reloadUnsentMessage, setIsDisabledInput } = additionalConfig || {}
-    title =
-      'You sent too many messages, please wait for a few moments and try again'
+    title = 'Please try again in a moment'
     reloadUnsentMessage?.()
 
     const remainingSeconds = errorData?.remainingSeconds
