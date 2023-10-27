@@ -1,7 +1,7 @@
 import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
-import useUnreadCount from '@/hooks/useUnreadCount'
+import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
-import { ComponentProps } from 'react'
+import { ComponentProps, useMemo } from 'react'
 
 export type ChatUnreadCountProps = ComponentProps<'div'> & {
   chatId: string
@@ -12,8 +12,16 @@ export default function ChatUnreadCount({
   ...props
 }: ChatUnreadCountProps) {
   const { getLastReadMessageId } = useLastReadMessageIdFromStorage(chatId)
-  const lastReadId = getLastReadMessageId() ?? ''
-  const unreadCount = useUnreadCount(chatId, lastReadId)
+  const { data: messageIds } = useCommentIdsByPostId(chatId)
+
+  const lastReadId = getLastReadMessageId()
+  const unreadCount = useMemo(() => {
+    const messagesLength = messageIds?.length
+    if (!lastReadId || !messagesLength || messagesLength === 0) return 0
+    const lastReadIndex = messageIds?.findIndex((id) => id === lastReadId)
+    if (lastReadIndex === -1) return 0
+    return messagesLength - 1 - lastReadIndex
+  }, [messageIds, lastReadId])
 
   if (unreadCount <= 0) return null
 

@@ -2,13 +2,11 @@ import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
-import { RATE_LIMIT_EXCEEDED } from '@/constants/error'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getPostQuery } from '@/services/api/query'
 import {
   SendMessageParams,
   useSendMessage,
@@ -23,7 +21,6 @@ import dynamic from 'next/dynamic'
 import {
   ComponentProps,
   SyntheticEvent,
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -44,9 +41,8 @@ const CaptchaInvisible = dynamic(
 )
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
-  hubId: string
   chatId: string
-  onSubmit?: (isEditing?: boolean) => void
+  onSubmit?: () => void
   disabled?: boolean
   mustHaveMessageBody?: boolean
   inputProps?: TextAreaProps
@@ -68,7 +64,6 @@ function processMessage(message: string) {
 
 export default function ChatForm({
   className,
-  hubId,
   chatId,
   onSubmit,
   disabled,
@@ -83,21 +78,10 @@ export default function ChatForm({
   ...props
 }: ChatFormProps) {
   const replyTo = useMessageData((state) => state.replyTo)
-  const messageToEdit = useMessageData((state) => state.messageToEdit)
-  const clearAction = useMessageData((state) => state.clearAction)
+  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
   const setMessageBody = useMessageData((state) => state.setMessageBody)
 
-  const { data: editedMessage } = getPostQuery.useQuery(messageToEdit, {
-    enabled: !!messageToEdit,
-  })
-  const editedMessageBody = editedMessage?.content?.body
-  useEffect(() => {
-    if (!editedMessageBody) return
-    setMessageBody(editedMessageBody)
-  }, [editedMessageBody, setMessageBody])
-
-  const [isDisabledInput, setIsDisabledInput] = useState(false)
-  const reloadUnsentMessage = useLoadUnsentMessage(chatId)
+  useLoadUnsentMessage(chatId)
 
   const [isOpenCtaModal, setIsOpenCtaModal] = useState(false)
 
@@ -119,8 +103,7 @@ export default function ChatForm({
       showErrorSendingMessageToast(
         error,
         'Failed to register or send message',
-        variables,
-        { reloadUnsentMessage, setIsDisabledInput }
+        variables
       )
     },
   })
@@ -136,10 +119,7 @@ export default function ChatForm({
   const { mutate: sendMessage } = useSendMessage({
     onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
-      showErrorSendingMessageToast(error, 'Failed to send message', variables, {
-        reloadUnsentMessage,
-        setIsDisabledInput,
-      })
+      showErrorSendingMessageToast(error, 'Failed to send message', variables)
     },
   })
 
@@ -154,24 +134,23 @@ export default function ChatForm({
   }, [runAutofocus, autofocus, enableInputAutofocus])
 
   useEffect(() => {
-    if (replyTo || messageToEdit) textAreaRef.current?.focus()
-  }, [replyTo, messageToEdit])
+    if (replyTo) textAreaRef.current?.focus()
+  }, [replyTo])
 
   useEffect(() => {
     setIsRequestingEnergy(false)
   }, [hasEnoughEnergy])
 
   const shouldSendMessage =
-    isLoggedIn && (isRequestingEnergy || hasEnoughEnergy)
+    isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
 
   const isDisabled =
     (mustHaveMessageBody && !processMessage(messageBody)) ||
-    sendButtonProps?.disabled ||
-    isDisabledInput
+    sendButtonProps?.disabled
 
   const resetForm = () => {
     setMessageBody('')
-    clearAction?.()
+    clearReplyTo?.()
   }
 
   const handleSubmit = async (captchaToken: string | null) => {
@@ -191,9 +170,7 @@ export default function ChatForm({
     const sendMessageParams = {
       message: processedMessage,
       chatId,
-      hubId,
       replyTo,
-      messageIdToEdit: messageToEdit,
       ...additionalTxParams,
     }
 
@@ -203,10 +180,6 @@ export default function ChatForm({
     if (txPrevented) return
 
     const messageParams = newMessageParams || sendMessageParams
-    if (editedMessage?.content?.body === messageParams.message) {
-      resetForm()
-      return
-    }
 
     if (!hasSentMessageStorage.get()) {
       setTimeout(() => {
@@ -241,7 +214,7 @@ export default function ChatForm({
     const firstExtension = sendMessageParams.extensions?.[0]
     sendEvent('send_message', { extensionType: firstExtension?.id })
 
-    onSubmit?.(!!messageParams.messageIdToEdit)
+    onSubmit?.()
     incrementMessageCount()
   }
 
@@ -341,7 +314,7 @@ function useLoadUnsentMessage(chatId: string) {
     (state) => state.openExtensionModal
   )
 
-  const loadUnsentMessage = useCallback(() => {
+  useEffect(() => {
     const unsentMessageData = unsentMessageStorage.get(chatId)
     if (!unsentMessageData) return
     const unsentMessage = JSON.parse(unsentMessageData) as SendMessageParams
@@ -371,63 +344,32 @@ function useLoadUnsentMessage(chatId: string) {
         break
     }
   }, [chatId, setMessageBody, setReplyTo, openExtensionModal])
-
-  useEffect(() => {
-    loadUnsentMessage()
-  }, [loadUnsentMessage])
-
-  return loadUnsentMessage
 }
 
 function showErrorSendingMessageToast(
   error: unknown,
   errorTitle: string,
-  message: SendMessageParams,
-  additionalConfig?: {
-    reloadUnsentMessage?: () => void
-    setIsDisabledInput?: (disabled: boolean) => void
-  }
+  message: SendMessageParams
 ) {
   unsentMessageStorage.set(JSON.stringify(message), message.chatId)
 
-  const errorData = (error as any)?.response?.data?.errors
-  const isRateLimited = errorData?.name === RATE_LIMIT_EXCEEDED
-
-  let title = errorTitle
-  if (isRateLimited) {
-    const { reloadUnsentMessage, setIsDisabledInput } = additionalConfig || {}
-    title = 'Please try again in a moment'
-    reloadUnsentMessage?.()
-
-    const remainingSeconds = errorData?.remainingSeconds
-    if (setIsDisabledInput && remainingSeconds) {
-      setIsDisabledInput?.(true)
-      setTimeout(() => {
-        setIsDisabledInput(false)
-      }, remainingSeconds * 1000)
-    }
-  }
-
-  showErrorToast(error, title, {
-    toastConfig: { duration: isRateLimited ? 5000 : Infinity },
-    getDescription:
-      message && !isRateLimited
-        ? () => 'Click refresh to recover your message and try again'
-        : undefined,
-    actionButton: isRateLimited
-      ? undefined
-      : (t) => (
-          <Button
-            size='circle'
-            variant='transparent'
-            className='text-lg'
-            onClick={() => {
-              toast.dismiss(t.id)
-              window.location.reload()
-            }}
-          >
-            <IoRefresh />
-          </Button>
-        ),
+  showErrorToast(error, errorTitle, {
+    toastConfig: { duration: Infinity },
+    getDescription: message
+      ? () => 'Click refresh to recover your message and try again'
+      : undefined,
+    actionButton: (t) => (
+      <Button
+        size='circle'
+        variant='transparent'
+        className='text-lg'
+        onClick={() => {
+          toast.dismiss(t.id)
+          window.location.reload()
+        }}
+      >
+        <IoRefresh />
+      </Button>
+    ),
   })
 }

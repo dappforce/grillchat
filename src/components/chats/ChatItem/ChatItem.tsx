@@ -1,12 +1,16 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import { isOptimisticId } from '@/services/subsocial/utils'
+import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
-import { ComponentProps } from 'react'
+import { ComponentProps, SyntheticEvent, useReducer } from 'react'
 import ChatItemMenus from './ChatItemMenus'
 import ChatItemWithExtension from './ChatItemWithExtension'
+import CheckMarkExplanationModal, {
+  CheckMarkModalVariant,
+} from './CheckMarkExplanationModal'
 import Embed, { useCanRenderEmbed } from './Embed'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
@@ -23,6 +27,20 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   hubId: string
 }
 
+type CheckMarkModalReducerState = {
+  isOpen: boolean
+  variant: CheckMarkModalVariant | ''
+}
+const checkMarkModalReducer = (
+  state: CheckMarkModalReducerState,
+  action: CheckMarkModalVariant | ''
+): CheckMarkModalReducerState => {
+  if (action === '') {
+    return { ...state, isOpen: false }
+  }
+  return { isOpen: true, variant: action }
+}
+
 export default function ChatItem({
   message,
   isMyMessage,
@@ -36,8 +54,16 @@ export default function ChatItem({
   const setReplyTo = useMessageData((state) => state.setReplyTo)
 
   const messageId = message.id
-  const { ownerId } = message.struct
+  const isSent = !isOptimisticId(messageId)
+  const { createdAtBlock, ownerId, contentId } = message.struct
   const { body, extensions, link } = message.content || {}
+
+  const sendEvent = useSendEvent()
+
+  const [checkMarkModalState, dispatch] = useReducer(checkMarkModalReducer, {
+    isOpen: false,
+    variant: '',
+  })
 
   const setMessageAsReply = (messageId: string) => {
     if (isOptimisticId(messageId)) return
@@ -47,6 +73,15 @@ export default function ChatItem({
   const canRenderEmbed = useCanRenderEmbed(link ?? '')
 
   if (!body && (!extensions || extensions.length === 0)) return null
+
+  const onCheckMarkClick = (e: SyntheticEvent) => {
+    e.stopPropagation()
+    const checkMarkType: CheckMarkModalVariant = isSent
+      ? 'recorded'
+      : 'recording'
+    sendEvent('click check_mark_button', { type: checkMarkType })
+    dispatch(checkMarkType)
+  }
 
   const isEmojiOnly = shouldRenderEmojiChatItem(body ?? '')
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
@@ -93,6 +128,7 @@ export default function ChatItem({
               >
                 {extensions && extensions.length > 0 ? (
                   <ChatItemWithExtension
+                    onCheckMarkClick={onCheckMarkClick}
                     scrollToMessage={scrollToMessage}
                     message={message}
                     isMyMessage={isMyMessage}
@@ -103,6 +139,8 @@ export default function ChatItem({
                   <ChatItemContentVariant
                     message={message}
                     isMyMessage={isMyMessage}
+                    isSent={isSent}
+                    onCheckMarkClick={onCheckMarkClick}
                     scrollToMessage={scrollToMessage}
                     chatId={chatId}
                     hubId={hubId}
@@ -112,6 +150,13 @@ export default function ChatItem({
             )
           }}
         </ChatItemMenus>
+        <CheckMarkExplanationModal
+          isOpen={checkMarkModalState.isOpen}
+          variant={checkMarkModalState.variant || 'recording'}
+          closeModal={() => dispatch('')}
+          blockNumber={createdAtBlock}
+          cid={contentId}
+        />
       </div>
       {canRenderEmbed && (
         <div className={cx(isMyMessage ? 'flex justify-end' : 'flex')}>

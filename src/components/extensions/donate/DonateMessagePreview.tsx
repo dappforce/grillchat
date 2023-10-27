@@ -79,6 +79,7 @@ type DonateMessagePreviewProps = ExtensionChatItemProps
 
 export default function DonateMessagePreview({
   message,
+  onCheckMarkClick,
   scrollToMessage,
   chatId,
   hubId,
@@ -96,6 +97,7 @@ export default function DonateMessagePreview({
   return (
     <CommonChatItem
       message={message}
+      onCheckMarkClick={onCheckMarkClick}
       scrollToMessage={scrollToMessage}
       myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
       className={cx('relative flex flex-col overflow-hidden')}

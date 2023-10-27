@@ -34,16 +34,14 @@ export default handlerWrapper({
         message: 'Invalid address format',
       })
 
-    if (getCaptchaSecret()) {
-      try {
-        await verifyCaptcha(data.captchaToken)
-      } catch (e: any) {
-        return res.status(400).send({
-          success: false,
-          message: 'Captcha failed',
-          errors: e.message,
-        })
-      }
+    try {
+      await verifyCaptcha(data.captchaToken)
+    } catch (e: any) {
+      return res.status(400).send({
+        success: false,
+        message: 'Captcha failed',
+        errors: e.message,
+      })
     }
 
     let hash: string

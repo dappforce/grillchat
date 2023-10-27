@@ -78,10 +78,6 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=grill-web-push.appspot.com
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=762898090466
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:762898090466:web:2a09d26c3bab706b95d1bb
-            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://data-hub.subsocial.network/graphql
-            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://data-hub.subsocial.network/graphql-ws
-            GH_DATAHUB_MUTATION_URL=https://queue-data-hub.subsocial.network/graphql
-            GH_DATAHUB_MUTATION_TOKEN=${{ secrets.DATAHUB_MUTATION_TOKEN }}
           target: runner
           tags: |
             ${{ env.image }}
@@ -115,10 +111,6 @@ jobs:
             GH_NEXT_PUBLIC_CAPTCHA_SITE_KEY=6LcnGU0lAAAAANPvuR2I3gZswHpX1GJnpJG2ocVb
             GH_SERVER_DISCUSSION_CREATOR_MNEMONIC=${{ secrets.SERVER_DISCUSSION_CREATOR_MNEMONIC }}
             GH_COVALENT_API_KEY=${{ secrets.COVALENT_API_KEY }}
-            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://data-hub.subsocial.network/graphql
-            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://data-hub.subsocial.network/graphql-ws
-            GH_DATAHUB_MUTATION_URL=https://queue-data-hub.subsocial.network/graphql
-            GH_DATAHUB_MUTATION_TOKEN=${{ secrets.DATAHUB_MUTATION_TOKEN }}
           target: storybook
           tags: |
             ${{ env.image }}

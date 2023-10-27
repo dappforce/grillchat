@@ -5,7 +5,7 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
+import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
@@ -63,7 +63,6 @@ export default function ChatList(props: ChatListProps) {
 // If using bigger threshold, the scroll will be janky, but if using 0 threshold, it sometimes won't trigger `next` callback
 const SCROLL_THRESHOLD = 20
 
-const EMPTY_ARRAY: string[] = []
 function ChatListContent({
   asContainer,
   scrollableContainerClassName,
@@ -84,10 +83,10 @@ function ChatListContent({
 
   const innerRef = useRef<HTMLDivElement>(null)
 
-  const { data: rawMessageIds } = getCommentIdsByPostIdQuery.useQuery(chatId, {
+  const { data: rawMessageIds } = useCommentIdsByPostId(chatId, {
     subscribe: true,
   })
-  const messageIds = rawMessageIds || EMPTY_ARRAY
+  const messageIds = rawMessageIds || []
 
   const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)
   const {

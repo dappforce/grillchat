@@ -120,24 +120,24 @@ const mapPostExtensions = (
 
 export const mapPostFragment = (post: PostFragmentFragment): PostData => {
   const struct: PostData['struct'] = {
-    createdAtBlock: parseInt(post.createdAtBlock?.toString() ?? '0'),
+    createdAtBlock: parseInt(post.createdAtBlock),
     createdAtTime: new Date(post.createdAtTime).getTime(),
-    createdByAccount: post.createdByAccount?.id ?? '',
-    downvotesCount: post.downvotesCount ?? 0,
+    createdByAccount: post.createdByAccount.id,
+    downvotesCount: post.downvotesCount,
     hidden: post.hidden,
     id: post.id,
     isComment: post.isComment,
     isRegularPost: post.kind === 'RegularPost',
     isSharedPost: post.kind === 'SharedPost',
     ownerId: post.ownedByAccount.id,
-    upvotesCount: post.upvotesCount ?? 0,
+    upvotesCount: post.upvotesCount,
     contentId: post.content ?? '',
-    repliesCount: post.repliesCount ?? 0,
-    sharesCount: post.sharesCount ?? 0,
+    repliesCount: post.repliesCount,
+    sharesCount: post.sharesCount,
     spaceId: post.space?.id ?? post.rootPost?.space?.id ?? '',
     isUpdated: !!post.updatedAtTime,
     rootPostId: post.rootPost?.id ?? '',
-    followersCount: post.followersCount ?? 0,
+    followersCount: post.followersCount,
   }
 
   const data = {

@@ -1,15 +1,17 @@
-import { useMessagesCounts } from '@/hooks/useMessagesCount'
+import { useCommentIdsByPostIds } from '@/services/subsocial/commentIds'
 import { useMemo } from 'react'
 
 export default function useSortChatIdsBySize(chatIds: string[]) {
-  const messagesCounts = useMessagesCounts(chatIds)
+  const messageIdsQueries = useCommentIdsByPostIds(chatIds, {
+    subscribe: true,
+  })
 
   return useMemo(() => {
     const chatIdsContentLengths: { size: number; id: string }[] =
-      messagesCounts.map((count, idx) => {
+      messageIdsQueries.map((query, idx) => {
         return {
           id: chatIds[idx],
-          size: count,
+          size: query.data?.length ?? 0,
         }
       })
 
@@ -20,5 +22,5 @@ export default function useSortChatIdsBySize(chatIds: string[]) {
     })
 
     return chatIdsContentLengths.map(({ id }) => id)
-  }, [chatIds, messagesCounts])
+  }, [messageIdsQueries, chatIds])
 }

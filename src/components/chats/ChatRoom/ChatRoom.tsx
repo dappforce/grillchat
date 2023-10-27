@@ -16,7 +16,7 @@ import ChatInputBar from './ChatInputBar'
 const ChatList = dynamic(() => import('../ChatList/ChatList'), {
   ssr: false,
 })
-const ActionDetailBar = dynamic(() => import('./ActionDetailBar'), {
+const RepliedMessage = dynamic(() => import('./RepliedMessage'), {
   ssr: false,
 })
 
@@ -74,12 +74,16 @@ function ChatInputWrapper({
   customAction,
   scrollContainerRef,
 }: ChatInputWrapperProps) {
-  const clearAction = useMessageData((state) => state.clearAction)
+  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+  const replyTo = useMessageData((state) => state.replyTo)
   const sendEvent = useSendEvent()
 
   useEffect(() => {
-    return () => clearAction()
-  }, [clearAction])
+    return () => clearReplyTo()
+  }, [clearReplyTo])
+  const showEmptyPrimaryChatInput = useMessageData(
+    (state) => state.showEmptyPrimaryChatInput
+  )
 
   const Component = asContainer ? Container<'div'> : 'div'
 
@@ -103,12 +107,17 @@ function ChatInputWrapper({
 
   return (
     <>
-      <Component className={cx('mt-auto flex flex-col py-2 pt-0')}>
-        <ActionDetailBar
-          chatId={chatId}
-          hubId={hubId}
-          scrollContainer={scrollContainerRef}
-        />
+      <Component
+        className={cx('mt-auto flex flex-col py-2', replyTo && 'pt-0')}
+      >
+        {replyTo && !showEmptyPrimaryChatInput && (
+          <RepliedMessage
+            chatId={chatId}
+            hubId={hubId}
+            replyMessageId={replyTo}
+            scrollContainer={scrollContainerRef}
+          />
+        )}
         {(() => {
           if (customAction) return customAction
 
@@ -127,12 +136,10 @@ function ChatInputWrapper({
           if (isJoined || isHubWithoutJoinButton)
             return (
               <ChatInputBar
+                hubId={hubId}
                 formProps={{
-                  hubId,
                   chatId,
-                  onSubmit: (isEditing) => {
-                    if (!isEditing) scrollToBottom()
-                  },
+                  onSubmit: scrollToBottom,
                   isPrimary: true,
                 }}
               />
@@ -168,11 +175,7 @@ function ChatInputWrapper({
         })()}
       </Component>
 
-      <ExtensionModals
-        hubId={hubId}
-        chatId={chatId}
-        onSubmit={scrollToBottom}
-      />
+      <ExtensionModals chatId={chatId} onSubmit={scrollToBottom} />
     </>
   )
 }

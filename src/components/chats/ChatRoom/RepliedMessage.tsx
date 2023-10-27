@@ -2,62 +2,50 @@ import Button from '@/components/Button'
 import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { ComponentProps } from 'react'
-import { BsFillPencilFill, BsFillReplyFill } from 'react-icons/bs'
+import { BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
 import RepliedMessagePreview from '../ChatItem/RepliedMessagePreview'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 import { getMessageElementId, scrollToMessageElement } from '../utils'
 
-export type ActionDetailBarProps = ComponentProps<'div'> & {
-  scrollContainer?: React.RefObject<HTMLElement | null>
+export type RepliedMessageProps = ComponentProps<'div'> & {
+  replyMessageId: string
+  scrollContainer?: React.RefObject<HTMLDivElement>
   chatId: string
   hubId: string
 }
 
-export default function ActionDetailBar({
+export default function RepliedMessage({
+  replyMessageId,
   scrollContainer,
   hubId,
   chatId,
-}: ActionDetailBarProps) {
-  const clearAction = useMessageData((state) => state.clearAction)
-  const replyTo = useMessageData((state) => state.replyTo)
-  const messageToEdit = useMessageData((state) => state.messageToEdit)
-  const messageId = replyTo || messageToEdit
+}: RepliedMessageProps) {
+  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
 
-  const { data: message } = getPostQuery.useQuery(messageId, {
-    enabled: !!messageId,
-  })
+  const { data: message } = getPostQuery.useQuery(replyMessageId)
 
   const pinnedMessageId = usePinnedMessage(chatId)
-  const onMessageClick = async (messageId: string) => {
+  const onRepliedMessageClick = async (messageId: string) => {
     const element = document.getElementById(getMessageElementId(messageId))
     await scrollToMessageElement(element, scrollContainer?.current ?? null, {
       scrollOffset: pinnedMessageId ? 'large' : 'normal',
     })
   }
 
-  if (!messageId) return <div className='pt-2' />
-
   return (
     <div
       className='flex cursor-pointer items-center overflow-hidden border-t border-border-gray pb-3 pt-2'
-      onClick={() => onMessageClick(replyTo)}
+      onClick={() => onRepliedMessageClick(replyMessageId)}
     >
-      {replyTo ? (
-        <div className='flex-shrink-0 pl-2 pr-3 text-text-muted'>
-          <BsFillReplyFill className='text-2xl' />
-        </div>
-      ) : (
-        <div className='flex-shrink-0 pl-2 pr-3 text-text-muted'>
-          <BsFillPencilFill className='text-2xl' />
-        </div>
-      )}
+      <div className='flex-shrink-0 pl-2 pr-3 text-text-muted'>
+        <BsFillReplyFill className='text-2xl' />
+      </div>
       <RepliedMessagePreview
-        isEditing={!!messageToEdit}
         originalMessage={message?.content?.body || ''}
-        className='w-full'
-        repliedMessageId={messageId}
-        scrollToMessage={onMessageClick}
+        className='mt-1 w-full'
+        repliedMessageId={replyMessageId}
+        scrollToMessage={onRepliedMessageClick}
         chatId={chatId}
         hubId={hubId}
       />
@@ -67,7 +55,7 @@ export default function ActionDetailBar({
         variant='transparent'
         onClick={(e) => {
           e.stopPropagation()
-          clearAction()
+          clearReplyTo()
         }}
       >
         <HiXMark className='text-2xl' />
