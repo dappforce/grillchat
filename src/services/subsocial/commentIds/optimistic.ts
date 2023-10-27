@@ -1,8 +1,8 @@
 import { getPostQuery } from '@/services/api/query'
-import { ReplyWrapper } from '@/utils/ipfs'
+import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { PostContent, PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
-import { getCommentIdsQueryKey } from './query'
+import { getPostMetadataQuery } from '../datahub/posts/query'
 import { SendMessageParams } from './types'
 
 export function getOptimisticContent(
@@ -15,18 +15,27 @@ export function getOptimisticContent(
   }
 }
 
+export const commentIdsOptimisticEncoder = {
+  encode: (id: string) => `optimistic-${id}`,
+  decode: (id: string) => id.replace('optimistic-', ''),
+  checker: (id: string) => id.startsWith('optimistic-'),
+}
+
 type OptimisticGeneratorParams = {
   client: QueryClient
   params: SendMessageParams
-  tempId: string
+  ipfsContent: PostContent
   address: string
 }
 export function addOptimisticData({
   client,
   params,
-  tempId,
+  ipfsContent,
   address,
 }: OptimisticGeneratorParams) {
+  if (!ipfsContent.optimisticId) return
+
+  const tempId = commentIdsOptimisticEncoder.encode(ipfsContent.optimisticId)
   getPostQuery.setQueryData(client, tempId, {
     id: tempId,
     struct: {
@@ -34,23 +43,32 @@ export function addOptimisticData({
       ownerId: address,
       rootPostId: params.chatId,
     },
-    content: getOptimisticContent({
-      body: params.message ?? '',
-      inReplyTo: ReplyWrapper(params.replyTo),
-      extensions: params.extensions,
-    }),
-  } as PostData)
-  client.setQueryData<string[]>(getCommentIdsQueryKey(params.chatId), (ids) => {
+    content: ipfsContent,
+  } as unknown as PostData)
+  getCommentIdsByPostIdQuery.setQueryData(client, params.chatId, (ids) => {
     return [...(ids ?? []), tempId]
+  })
+  getPostMetadataQuery.setQueryData(client, params.chatId, (oldData) => {
+    if (!oldData) return oldData
+    return {
+      ...oldData,
+      totalCommentsCount: oldData.totalCommentsCount + 1,
+      lastCommentId: tempId,
+    }
   })
 }
 export function deleteOptimisticData({
   client,
-  params,
-  tempId,
-}: OptimisticGeneratorParams) {
-  client.removeQueries(getPostQuery.getQueryKey(tempId))
-  client.setQueryData<string[]>(getCommentIdsQueryKey(params.chatId), (ids) => {
+  chatId,
+  optimisticId,
+}: {
+  client: QueryClient
+  chatId: string
+  optimisticId: string
+}) {
+  const tempId = commentIdsOptimisticEncoder.encode(optimisticId)
+  getCommentIdsByPostIdQuery.setQueryData(client, chatId, (ids) => {
     return ids?.filter((id) => id !== tempId)
   })
+  getPostMetadataQuery.invalidate(client, chatId)
 }

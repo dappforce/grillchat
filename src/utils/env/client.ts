@@ -3,8 +3,7 @@ import { checkEnv } from './common'
 export function getCaptchaSiteKey() {
   return checkEnv(
     process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY,
-    'NEXT_PUBLIC_CAPTCHA_SITE_KEY',
-    true
+    'NEXT_PUBLIC_CAPTCHA_SITE_KEY'
   )
 }
 
@@ -86,4 +85,18 @@ export function getCommunityHubId() {
     process.env.NEXT_PUBLIC_COMMUNITY_HUB_ID,
     'NEXT_PUBLIC_COMMUNITY_HUB_ID'
   )
+}
+
+export function getDatahubConfig() {
+  const queryUrl = checkEnv(
+    process.env.NEXT_PUBLIC_DATAHUB_QUERY_URL,
+    'NEXT_PUBLIC_DATAHUB_QUERY_URL'
+  )
+  const subscriptionUrl = checkEnv(
+    process.env.NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL,
+    'NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL'
+  )
+  if (!queryUrl || !subscriptionUrl) return null
+
+  return { queryUrl, subscriptionUrl }
 }

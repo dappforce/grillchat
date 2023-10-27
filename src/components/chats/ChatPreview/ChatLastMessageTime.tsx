@@ -1,7 +1,7 @@
 import PluralText from '@/components/PluralText'
+import { useMessagesCount } from '@/hooks/useMessagesCount'
 import { SortChatOption } from '@/modules/chat/hooks/useSortedChats'
 import { getPostQuery } from '@/services/api/query'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { ComponentProps } from 'react'
@@ -58,8 +58,7 @@ function ChatMembersCount({ chatId, ...props }: ChatAdditionalInfoDataProps) {
 }
 
 function ChatMessagesCount({ chatId, ...props }: ChatAdditionalInfoDataProps) {
-  const { data: messageIds } = useCommentIdsByPostId(chatId)
-  const messagesCount = messageIds?.length ?? 0
+  const messagesCount = useMessagesCount(chatId)
 
   return (
     <span {...props} className={cx('whitespace-nowrap', props.className)}>

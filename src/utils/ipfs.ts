@@ -1,5 +1,6 @@
 import { SUBSOCIAL_IPFS_GATEWAY } from '@/constants/links'
 import { CID } from 'ipfs-http-client'
+import { importer } from 'ipfs-unixfs-importer'
 import urlJoin from 'url-join'
 
 enum CID_KIND {
@@ -54,4 +55,31 @@ export function ReplyWrapper(replyToMessageId: string | undefined | null) {
         kind: 'Post',
       } as const)
     : undefined
+}
+
+const block = {
+  get: async (cid: string) => {
+    throw new Error(`unexpected block API get for ${cid}`)
+  },
+  put: async () => {
+    throw new Error('unexpected block API put')
+  },
+}
+export async function getCID(content: any) {
+  if (typeof content !== 'string') {
+    content = JSON.stringify(content)
+  }
+
+  content = new TextEncoder().encode(content)
+
+  let lastCid
+  for await (const { cid } of importer([{ content }], block as any, {
+    onlyHash: true,
+  })) {
+    lastCid = cid
+  }
+  if (!lastCid) return ''
+  const parsedCid = CID.parse(lastCid.toString())
+
+  return parsedCid.toV1().toString()
 }

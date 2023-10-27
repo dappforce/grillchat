@@ -154,6 +154,17 @@ export function createQuery<Data, ReturnValue>({
     ) => {
       client.setQueryData(getQueryKey(data), value ?? null)
     },
+    setQueryInitialData: (
+      client: QueryClient,
+      data: Data,
+      value: Updater<
+        ReturnValue | null | undefined,
+        ReturnValue | null | undefined
+      >
+    ) => {
+      client.setQueryData(getQueryKey(data), value ?? null)
+      client.invalidateQueries(getQueryKey(data))
+    },
     fetchQuery,
     fetchQueries: async (client: QueryClient, data: Data[]) => {
       return Promise.all(

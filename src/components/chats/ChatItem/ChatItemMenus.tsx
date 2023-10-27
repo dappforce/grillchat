@@ -27,7 +27,11 @@ import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
-import { BsFillPinAngleFill, BsFillReplyFill } from 'react-icons/bs'
+import {
+  BsFillPencilFill,
+  BsFillPinAngleFill,
+  BsFillReplyFill,
+} from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
@@ -56,6 +60,7 @@ export default function ChatItemMenus({
 
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
+  const isMessageOwner = useIsOwnerOfPost(messageId)
 
   const router = useRouter()
   const isLoggingInWithKey = useRef(false)
@@ -75,10 +80,7 @@ export default function ChatItemMenus({
   )
 
   const setReplyTo = useMessageData((state) => state.setReplyTo)
-  const setMessageAsReply = (messageId: string) => {
-    if (isOptimisticId(messageId)) return
-    setReplyTo(messageId)
-  }
+  const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
 
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { ownerId } = message?.struct || {}
@@ -91,32 +93,6 @@ export default function ChatItemMenus({
 
   const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
-    const donateMenuItem: FloatingMenusProps['menus'][number] = {
-      text: 'Donate',
-      icon: RiCopperCoinLine,
-      onClick: () => {
-        if (!messageOwnerEvmAddress) {
-          return
-        }
-
-        if (!address) {
-          setModalState('login')
-          return
-        }
-
-        sendEvent('open_donate_action_modal', { hubId, chatId })
-        openDonateExtension()
-      },
-    }
-
-    const replyItem: FloatingMenusProps['menus'][number] = {
-      text: 'Reply',
-      icon: BsFillReplyFill,
-      onClick: () => setMessageAsReply(messageId),
-    }
-
-    const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage
-
     const menus: FloatingMenusProps['menus'] = [
       {
         text: 'Copy Text',
@@ -148,6 +124,7 @@ export default function ChatItemMenus({
         onClick: () => setModalState('metadata'),
       },
     ]
+    if (!isSent) return menus
 
     if (address && canUsePromoExtensionAccounts.includes(address)) {
       menus.unshift({
@@ -172,17 +149,55 @@ export default function ChatItemMenus({
       })
     }
 
+    const donateMenuItem: FloatingMenusProps['menus'][number] = {
+      text: 'Donate',
+      icon: RiCopperCoinLine,
+      onClick: () => {
+        if (!messageOwnerEvmAddress) {
+          return
+        }
+
+        if (!address) {
+          setModalState('login')
+          return
+        }
+
+        sendEvent('open_donate_action_modal', { hubId, chatId })
+        openDonateExtension()
+      },
+    }
+    const replyItem: FloatingMenusProps['menus'][number] = {
+      text: 'Reply',
+      icon: BsFillReplyFill,
+      onClick: () => setReplyTo(messageId),
+    }
+    const editItem: FloatingMenusProps['menus'][number] = {
+      text: 'Edit',
+      icon: BsFillPencilFill,
+      onClick: () => setMessageToEdit(messageId),
+    }
+    const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage
+
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
+    if (canSendMessage && isMessageOwner) menus.unshift(editItem)
     if (canSendMessage) menus.unshift(replyItem)
 
     return menus
   }
-  const menus = enableChatMenu && isSent ? getChatMenus() : []
+  const menus = enableChatMenu ? getChatMenus() : []
 
   return (
     <>
       <FloatingMenus
+        beforeMenus={
+          !isSent && (
+            <p className='border-b border-border-gray p-4 pb-3 text-sm text-text-muted'>
+              To interact with this message, please wait until it is saved to
+              the blockchain (≈ 15 sec).
+            </p>
+          )
+        }
         menus={menus}
         allowedPlacements={[
           'right',

@@ -1,12 +1,10 @@
 import { PostData } from '@subsocial/api/types'
-import { ComponentProps, SyntheticEvent } from 'react'
+import { ComponentProps } from 'react'
 
 export type ChatItemContentProps = ComponentProps<'div'> & {
   chatId: string
   hubId: string
   message: PostData
   isMyMessage: boolean
-  isSent: boolean
-  onCheckMarkClick: (e: SyntheticEvent) => void
   scrollToMessage?: (messageId: string) => Promise<void>
 }

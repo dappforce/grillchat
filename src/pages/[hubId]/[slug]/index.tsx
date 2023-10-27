@@ -7,13 +7,12 @@ import { getPricesFromCache } from '@/pages/api/prices'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsQueryKey } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import {
   coingeckoTokenIds,
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -37,8 +36,7 @@ function getValidatedChatId(slugParam: string) {
 }
 
 async function getChatsData(chatId: string) {
-  const subsocialApi = await getSubsocialApi()
-  const messageIds = await subsocialApi.blockchain.getReplyIdsByPostId(chatId)
+  const messageIds = await getCommentIdsByPostIdQuery.fetchQuery(null, chatId)
 
   const preloadedPostCount = CHAT_PER_PAGE * 2
   const startSlice = Math.max(0, messageIds.length - preloadedPostCount)
@@ -119,8 +117,9 @@ export const getStaticProps = getCommonStaticProps<
       }
 
       getPostQuery.setQueryData(queryClient, chatId, chatData)
-      queryClient.setQueryData(
-        getCommentIdsQueryKey(chatId),
+      getCommentIdsByPostIdQuery.setQueryInitialData(
+        queryClient,
+        chatId,
         messageIds ?? null
       )
 

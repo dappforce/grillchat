@@ -1,5 +1,5 @@
-import Button from '@/components/Button'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
+import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
@@ -8,7 +8,6 @@ import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
-import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import { ExtensionChatItemProps } from '../types'
 
 type DerivativesData = {
@@ -46,7 +45,6 @@ export default function CommonChatItem({
   message,
   children,
   scrollToMessage,
-  onCheckMarkClick,
   textColor,
   className,
   isMyMessage: _isMyMessage,
@@ -81,20 +79,7 @@ export default function CommonChatItem({
           isMyMessage && 'dark:text-text-muted-on-primary'
         )}
       />
-      <Button
-        variant='transparent'
-        size='noPadding'
-        interactive='brightness-only'
-        onClick={onCheckMarkClick}
-      >
-        {isSent ? (
-          <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
-        ) : (
-          <IoCheckmarkOutline
-            className={cx('text-muted text-sm dark:text-text-muted-on-primary')}
-          />
-        )}
-      </Button>
+      <MessageStatusIndicator message={message} />
     </div>
   )
 
