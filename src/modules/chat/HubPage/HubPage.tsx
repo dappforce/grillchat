@@ -124,7 +124,7 @@ function CommunityHubToolbar({
           'flex items-center justify-between border-b border-border-gray py-2'
         )}
       >
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 text-sm'>
           <span className='text-text-muted'>Sort by:</span>
           <FloatingMenus
             menus={[
@@ -169,10 +169,10 @@ function CommunityHubToolbar({
           </FloatingMenus>
         </div>
         <Button
-          size='sm'
+          size='xs'
           variant='primary'
           className={cx(
-            'flex items-center gap-2',
+            'flex items-center gap-2 text-sm',
             !isLoggedIn && 'pointer-events-none select-none opacity-0'
           )}
           onClick={() => {
