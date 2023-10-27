@@ -145,7 +145,7 @@ export default function ProfileModal({
       withBackButton: true,
     },
     'link-evm-address': {
-      title: linkedEvmAddress ? '🔑 My EVM address' : '🔑 Link EVM Address',
+      title: linkedEvmAddress ? '🔑 My EVM address' : '🔑 Connect EVM',
       desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display NFTs, and interact with ERC20s and smart contracts. ',
       withBackButton: 'linked-addresses',
     },
@@ -181,7 +181,7 @@ export default function ProfileModal({
       withBackButton: 'notifications',
     },
     'polkadot-connect': {
-      title: '🔗 Polkadot Connect',
+      title: '🔗 Connect Polkadot',
       desc: hasProxy
         ? 'Use your Polkadot identity and enable donations, NFTs, and more.'
         : 'Choose a wallet to connect to Grill.chat',
