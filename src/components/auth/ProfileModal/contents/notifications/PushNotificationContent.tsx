@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import Toast from '@/components/Toast'
 import { useLinkFcm } from '@/services/api/notifications/mutation'
@@ -87,7 +88,16 @@ async function getMessageTokenWithCatch() {
           title='Failed to enable push notification'
           subtitle='Notification permission was not granted.'
           t={t}
-          description='If you have blocked the notification permission, please go to your browser settings or go to "chrome://settings/content/notifications" and allow it.'
+          description={
+            <span>
+              If you have blocked the notification permission, please go to your
+              browser settings or go to{' '}
+              <LinkText href='chrome://settings/content/notifications'>
+                chrome://settings/content/notifications
+              </LinkText>{' '}
+              and allow it.
+            </span>
+          }
         />
       ))
       return
