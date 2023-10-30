@@ -1,4 +1,4 @@
-import { useLastMessageIds } from '@/hooks/useLastMessageId'
+import { useLastMessageIds } from '@/components/chats/hooks/useLastMessageId'
 import { getPostQuery } from '@/services/api/query'
 import { CommentData } from '@subsocial/api/types'
 import { useMemo } from 'react'

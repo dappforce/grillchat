@@ -1,7 +1,7 @@
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
@@ -84,7 +84,7 @@ async function getLastMessagesFromDatahub(
 async function getLastMessages(queryClient: QueryClient, chatIds: string[]) {
   const messageIdsByChatIds = await Promise.all(
     chatIds.map((chatId) => {
-      return getCommentIdsByPostIdQuery.fetchQuery(queryClient, chatId)
+      return getCommentIdsByPostIdFromChainQuery.fetchQuery(queryClient, chatId)
     })
   )
   const lastMessageIds = messageIdsByChatIds

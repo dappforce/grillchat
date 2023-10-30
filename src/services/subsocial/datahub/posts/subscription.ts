@@ -9,10 +9,7 @@ import {
   SubscribePostSubscription,
 } from '../generated-query'
 import { datahubSubscription } from '../utils'
-import {
-  getCommentIdsByPostIdFromDatahubQuery,
-  getPostMetadataQuery,
-} from './query'
+import { getCommentIdsByPostIdFromDatahub, getPostMetadataQuery } from './query'
 
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
 // the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
@@ -117,15 +114,15 @@ async function processMessage(
   const rootPostId = entity.rootPost?.persistentId
   if (!rootPostId) return
 
-  getCommentIdsByPostIdFromDatahubQuery.setQueryData(
+  getCommentIdsByPostIdFromDatahub.setQueryFirstPageData(
     queryClient,
     rootPostId,
-    (oldIds) => {
-      if (!oldIds) return oldIds
-      const oldIdsSet = new Set(oldIds)
-      if (oldIdsSet.has(newestId)) return oldIds
+    (oldData) => {
+      if (!oldData) return oldData
+      const oldIdsSet = new Set(oldData.data)
+      if (oldIdsSet.has(newestId)) return oldData
 
-      const newIds = [...oldIds]
+      const newIds = [...oldData.data]
 
       const clientOptimisticId = commentIdsOptimisticEncoder.encode(
         entity.optimisticId ?? ''
@@ -140,18 +137,18 @@ async function processMessage(
         if (data) data.id = newestId
         getPostQuery.setQueryData(queryClient, newestId, data)
 
-        return newIds
+        return { ...oldData, data: newIds }
       }
 
       if (entity.persistentId && oldIdsSet.has(entity.id)) {
         const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
         newIds.splice(optimisticIdIndex, 1, newestId)
 
-        return newIds
+        return { ...oldData, data: newIds }
       }
 
       newIds.push(newestId)
-      return newIds
+      return { ...oldData, data: newIds }
     }
   )
 

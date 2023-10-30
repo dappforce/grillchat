@@ -1,5 +1,5 @@
+import { useMessagesCount } from '@/components/chats/hooks/useMessagesCount'
 import PluralText from '@/components/PluralText'
-import { useMessagesCount } from '@/hooks/useMessagesCount'
 import { SortChatOption } from '@/modules/chat/hooks/useSortedChats'
 import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'

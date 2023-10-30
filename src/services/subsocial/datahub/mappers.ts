@@ -114,7 +114,7 @@ export const mapDatahubPostFragment = (
   }
 
   const data = {
-    id: post.id,
+    id: post.persistentId || post.id,
     struct,
     content: {
       summary: post.summary ?? '',

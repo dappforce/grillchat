@@ -1,5 +1,5 @@
-import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
-import useUnreadCount from '@/hooks/useUnreadCount'
+import useLastReadMessageIdFromStorage from '@/components/chats/hooks/useLastReadMessageId'
+import useUnreadCount from '@/components/chats/hooks/useUnreadCount'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 

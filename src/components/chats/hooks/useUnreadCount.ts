@@ -1,4 +1,4 @@
-import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { getUnreadCountQuery } from '@/services/subsocial/datahub/posts/query'
 import { getDatahubConfig } from '@/utils/env/client'
 import { useMemo } from 'react'
@@ -13,9 +13,13 @@ export default function useUnreadCount(chatId: string, lastReadId: string) {
     }
   )
 
-  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId, {
-    enabled: !isDatahubEnabled,
-  })
+  // need all, and only if no datahub
+  const { data: messageIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
+    chatId,
+    {
+      enabled: !isDatahubEnabled,
+    }
+  )
 
   const unreadCount = useMemo(() => {
     const messagesLength = messageIds?.length

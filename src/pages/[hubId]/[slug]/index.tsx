@@ -7,12 +7,17 @@ import { getPricesFromCache } from '@/pages/api/prices'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
+import {
+  getCommentIdsByPostIdFromDatahub,
+  getPostMetadataQuery,
+} from '@/services/subsocial/datahub/posts/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import {
   coingeckoTokenIds,
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
+import { getDatahubConfig } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -35,14 +40,8 @@ function getValidatedChatId(slugParam: string) {
   return chatId
 }
 
-async function getChatsData(chatId: string) {
-  const messageIds = await getCommentIdsByPostIdQuery.fetchQuery(null, chatId)
-
-  const preloadedPostCount = CHAT_PER_PAGE * 2
-  const startSlice = Math.max(0, messageIds.length - preloadedPostCount)
-  const endSlice = messageIds.length
-  const prefetchedMessageIds = messageIds.slice(startSlice, endSlice)
-  const messages = await getPostsServer(prefetchedMessageIds)
+async function getChatsData(client: QueryClient, chatId: string) {
+  const { messageIds, messages } = await getMessageIds(client, chatId)
 
   const owners = messages.map((message) => message.struct.ownerId)
 
@@ -56,7 +55,46 @@ async function getChatsData(chatId: string) {
     'GET'
   )
 
-  return { messages, messageIds, accountsAddresses, prices }
+  return {
+    messages,
+    messageIds,
+    accountsAddresses,
+    prices,
+  }
+}
+
+async function getMessageIds(client: QueryClient, postId: string) {
+  return getDatahubConfig()
+    ? getMessageIdsFromDatahub(client, postId)
+    : getMessageIdsFromChain(client, postId)
+}
+
+async function getMessageIdsFromDatahub(client: QueryClient, chatId: string) {
+  const res = await getCommentIdsByPostIdFromDatahub.fetchFirstPageQuery(
+    client,
+    chatId
+  )
+  getCommentIdsByPostIdFromDatahub.invalidateFirstQuery(client, chatId)
+
+  return { messageIds: res.data, messages: res.messages }
+}
+async function getMessageIdsFromChain(client: QueryClient, chatId: string) {
+  const messageIds = await getCommentIdsByPostIdFromChainQuery.fetchQuery(
+    client,
+    chatId
+  )
+
+  const preloadedPostCount = CHAT_PER_PAGE * 2
+  const startSlice = Math.max(0, messageIds.length - preloadedPostCount)
+  const endSlice = messageIds.length
+  const prefetchedMessageIds = messageIds.slice(startSlice, endSlice)
+
+  const messages = await getPostsServer(prefetchedMessageIds)
+  messages.forEach((message) => {
+    getPostQuery.setQueryData(client, message.id, message)
+  })
+
+  return { messageIds: prefetchedMessageIds, messages }
 }
 
 export const getStaticProps = getCommonStaticProps<
@@ -86,11 +124,10 @@ export const getStaticProps = getCommonStaticProps<
         hubIds.push(originalHubId)
       }
 
-      const [{ messageIds, messages, accountsAddresses, prices }, blockedData] =
-        await Promise.all([
-          getChatsData(chatId),
-          prefetchBlockedEntities(queryClient, hubIds, [chatId]),
-        ] as const)
+      const [{ accountsAddresses, prices }, blockedData] = await Promise.all([
+        getChatsData(queryClient, chatId),
+        prefetchBlockedEntities(queryClient, hubIds, [chatId]),
+      ] as const)
 
       if (blockedData) {
         let isChatModerated = false
@@ -116,16 +153,8 @@ export const getStaticProps = getCommonStaticProps<
         image = chatImage ? getIpfsContentUrl(chatImage) : null
       }
 
+      getPostMetadataQuery.fetchQuery(queryClient, chatId)
       getPostQuery.setQueryData(queryClient, chatId, chatData)
-      getCommentIdsByPostIdQuery.setQueryInitialData(
-        queryClient,
-        chatId,
-        messageIds ?? null
-      )
-
-      messages.forEach((post) => {
-        getPostQuery.setQueryData(queryClient, post.id, post)
-      })
 
       accountsAddresses.forEach((accountAddresses) => {
         if (accountAddresses.evmAddress) {

@@ -1,11 +1,9 @@
-import useInfiniteScrollData from '@/components/chats/ChatList/hooks/useInfiniteScrollData'
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
@@ -23,6 +21,7 @@ import {
   useState,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import usePaginatedMessageIds from '../hooks/usePaginatedMessageIds'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 import CenterChatNotice from './CenterChatNotice'
 import MemoizedChatItemWithMenu from './ChatItemWithMenu'
@@ -31,7 +30,6 @@ import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
-import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import useScrollToMessage from './hooks/useScrollToMessage'
 import PinnedMessage from './PinnedMessage'
 
@@ -84,24 +82,19 @@ function ChatListContent({
 
   const innerRef = useRef<HTMLDivElement>(null)
 
-  const { data: rawMessageIds } = getCommentIdsByPostIdQuery.useQuery(chatId, {
-    subscribe: true,
-  })
-  const messageIds = rawMessageIds || EMPTY_ARRAY
-
   const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)
   const {
-    currentData: currentPageMessageIds,
-    loadMore,
-    currentPage,
+    currentPageMessageIds,
     hasMore,
-  } = useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
-
-  const filteredMessageIds = useFilterBlockedMessageIds(
+    loadMore,
+    totalDataCount,
+    currentPage,
+  } = usePaginatedMessageIds({
     hubId,
     chatId,
-    messageIds
-  )
+    isPausedLoadMore,
+  })
+
   const filteredCurrentPageIds = useFilterBlockedMessageIds(
     hubId,
     chatId,
@@ -109,11 +102,8 @@ function ChatListContent({
   )
 
   useEffect(() => {
-    sendMessageToParentWindow(
-      'totalMessage',
-      (filteredMessageIds.length ?? 0).toString()
-    )
-  }, [filteredMessageIds.length])
+    sendMessageToParentWindow('totalMessage', (totalDataCount ?? 0).toString())
+  }, [totalDataCount])
 
   const [renderedMessageIds, setRenderedMessageIds] = useState<string[]>(
     filteredCurrentPageIds
@@ -143,10 +133,10 @@ function ChatListContent({
     })
   }, [isLastBatchLoading, filteredCurrentPageIds])
 
-  useLoadMoreIfNoScroll(loadMore, renderedMessageIds?.length ?? 0, {
-    scrollContainer: scrollContainerRef,
-    innerContainer: innerRef,
-  })
+  // useLoadMoreIfNoScroll(loadMore, renderedMessageIds?.length ?? 0, {
+  //   scrollContainer: scrollContainerRef,
+  //   innerContainer: innerRef,
+  // })
 
   const pinnedMessageId = usePinnedMessage(chatId)
   const scrollToMessage = useScrollToMessage(
@@ -174,8 +164,7 @@ function ChatListContent({
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  const isAllMessagesLoaded =
-    renderedMessageIds.length === filteredMessageIds.length
+  const isAllMessagesLoaded = renderedMessageIds.length === totalDataCount
 
   return (
     <ChatListContext.Provider value={scrollContainerRef}>
@@ -192,7 +181,7 @@ function ChatListContent({
           chatId={chatId}
           asContainer={asContainer}
         />
-        {messageIds.length === 0 && (
+        {totalDataCount === 0 && (
           <CenterChatNotice
             isMyChat={isMyChat}
             className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
@@ -255,9 +244,11 @@ function ChatListContent({
         <ChatListSupportingContent
           chatId={chatId}
           hubId={hubId}
-          filteredMessageIds={filteredMessageIds}
           renderedMessageLength={renderedMessageIds.length}
-          rawMessageIds={rawMessageIds}
+          filteredMessageIds={[]}
+          rawMessageIds={[]}
+          // filteredMessageIds={filteredMessageIds}
+          // rawMessageIds={rawMessageIds}
           scrollContainerRef={scrollContainerRef}
           scrollToMessage={scrollToMessage}
           asContainer={asContainer}

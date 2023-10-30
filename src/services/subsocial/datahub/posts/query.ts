@@ -1,8 +1,10 @@
+import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getPostQuery } from '@/services/api/query'
 import { queryClient } from '@/services/provider'
 import { createQuery, poolQuery } from '@/subsocial-query'
+import { PostData } from '@subsocial/api/types'
+import { QueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
-import { commentIdsOptimisticEncoder } from '../../commentIds/optimistic'
 import {
   GetCommentIdsInPostIdQuery,
   GetCommentIdsInPostIdQueryVariables,
@@ -12,18 +14,41 @@ import {
   GetUnreadCountQueryVariables,
   QueryOrder,
 } from '../generated-query'
+import { mapDatahubPostFragment } from '../mappers'
 import { datahubQueryRequest } from '../utils'
+import { DATAHUB_POST_FRAGMENT } from './fetcher'
 
 const GET_COMMENT_IDS_IN_POST_ID = gql`
+  ${DATAHUB_POST_FRAGMENT}
   query GetCommentIdsInPostId($where: FindPostsArgs!) {
     findPosts(where: $where) {
-      id
-      persistentId
-      optimisticId
+      data {
+        id
+        persistentId
+        optimisticId
+        ...DatahubPostFragment
+      }
+      total
     }
   }
 `
-async function getCommentIdsByPostIds(postId: string): Promise<string[]> {
+// TODO: rename to better name
+export type CommentIdsData = {
+  data: string[]
+  page: number
+  hasMore: boolean
+  totalData: number
+  messages: PostData[]
+}
+async function getCommentIdsByPostIds({
+  page,
+  postId,
+  client = queryClient,
+}: {
+  postId: string
+  page: number
+  client?: QueryClient
+}): Promise<CommentIdsData> {
   const res = await datahubQueryRequest<
     GetCommentIdsInPostIdQuery,
     GetCommentIdsInPostIdQueryVariables
@@ -33,34 +58,104 @@ async function getCommentIdsByPostIds(postId: string): Promise<string[]> {
       where: {
         rootPostPersistentId: postId,
         orderBy: 'createdAtTime',
-        orderDirection: QueryOrder.Asc,
+        orderDirection: QueryOrder.Desc,
+        pageSize: CHAT_PER_PAGE,
+        offset: (page - 1) * CHAT_PER_PAGE,
       },
     },
   })
   const optimisticIds = new Set<string>()
-  const ids = res.findPosts.map((post) => {
+  const messages: PostData[] = []
+  const ids = res.findPosts.data.map((post) => {
     optimisticIds.add(post.optimisticId ?? '')
-    return post.persistentId || post.id
+    const message = mapDatahubPostFragment(post)
+    messages.push(message)
+
+    const id = post.persistentId || post.id
+    getPostQuery.setQueryData(client, id, message)
+    return id
   })
-  const oldIds = getCommentIdsByPostIdFromDatahubQuery.getQueryData(
-    queryClient,
-    postId
-  )
-  const oldOptimisticIds =
-    oldIds?.filter((id) => commentIdsOptimisticEncoder.checker(id)) || []
-  const unincludedIds = oldOptimisticIds.filter(
-    (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
-  )
-  return [...ids, ...unincludedIds]
+  const totalData = res.findPosts.total ?? 0
+  const hasMore = totalData > page * CHAT_PER_PAGE + ids.length
+  return { data: ids, page, hasMore, totalData, messages }
+  // TODO: fix optimistic ids
+  // const oldIds = getCommentIdsByPostIdFromDatahub.fetchQuery(
+  //   queryClient,
+  //   postId
+  // )
+  // const oldOptimisticIds =
+  //   oldIds?.filter((id) => commentIdsOptimisticEncoder.checker(id)) || []
+  // const unincludedIds = oldOptimisticIds.filter(
+  //   (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
+  // )
+  // return [...ids, ...unincludedIds]
 }
-export const getCommentIdsByPostIdFromDatahubQuery = createQuery({
-  key: 'comments',
-  fetcher: getCommentIdsByPostIds,
-  defaultConfigGenerator: () => ({
-    refetchOnWindowFocus: true,
-    staleTime: 0,
-  }),
-})
+const COMMENT_IDS_QUERY_KEY = 'comments'
+const getQueryKey = (postId: string) => [COMMENT_IDS_QUERY_KEY, postId]
+export const getCommentIdsByPostIdFromDatahub = {
+  getQueryKey,
+  fetchFirstPageQuery: async (
+    client: QueryClient | null,
+    postId: string,
+    page = 1
+  ) => {
+    const cachedData = client?.getQueryData(getQueryKey(postId))
+    if (cachedData) {
+      return cachedData as CommentIdsData
+    }
+
+    const res = await getCommentIdsByPostIds({
+      postId,
+      page,
+      client: client ?? undefined,
+    })
+    if (!client) return res
+
+    client.setQueryData(getQueryKey(postId), {
+      pageProps: [1],
+      pages: [res],
+    })
+    return res
+  },
+  setQueryFirstPageData: (
+    client: QueryClient,
+    postId: string,
+    updater: (oldIds?: string[]) => string[]
+  ) => {
+    client.setQueryData(getQueryKey(postId), (oldData: any) => {
+      const firstPage = oldData?.pages?.[0]
+      const newPages = [...oldData.pages]
+      const newFirstPage = updater(firstPage)
+      newPages.splice(0, 1, newFirstPage)
+      return {
+        pageParams: [...oldData.pageParams],
+        pages: [...newPages],
+      }
+    })
+  },
+  invalidateFirstQuery: (client: QueryClient, postId: string) => {
+    client.invalidateQueries(getQueryKey(postId), {
+      refetchPage: (_, index) => index === 0,
+    })
+  },
+  useInfiniteQuery: (postId: string) => {
+    return useInfiniteQuery({
+      queryKey: getQueryKey(postId),
+      queryFn: ({ pageParam = 1, queryKey: [_, postId] }) =>
+        getCommentIdsByPostIds({ postId, page: pageParam }),
+      getNextPageParam: (lastPage) =>
+        lastPage.hasMore ? lastPage.page + 1 : undefined,
+    })
+  },
+}
+// const getCommentIdsByPostIdFromDatahubQueryRaw = createQuery({
+//   key: 'comments',
+//   fetcher: getCommentIdsByPostIds,
+//   defaultConfigGenerator: () => ({
+//     refetchOnWindowFocus: true,
+//     staleTime: 0,
+//   }),
+// })
 
 const GET_POST_METADATA = gql`
   query GetPostMetadata($where: PostMetadataInput!) {

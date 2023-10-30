@@ -1,4 +1,5 @@
 import {
+  createQuery,
   createQueryInvalidation,
   createQueryKeys,
   QueryConfig,
@@ -7,9 +8,7 @@ import {
   useSubsocialQueries,
   useSubsocialQuery,
 } from '@/subsocial-query/subsocial/query'
-import { getDatahubConfig } from '@/utils/env/client'
 import { QueryClient } from '@tanstack/react-query'
-import { getCommentIdsByPostIdFromDatahubQuery } from '../datahub/posts/query'
 import {
   useSubscribeCommentIdsByPostId,
   useSubscribeCommentIdsByPostIds,
@@ -80,7 +79,7 @@ async function fetchQuery(client: QueryClient | null, data: string) {
   }
   return res
 }
-let getCommentIdsByPostIdQueryFromChain = {
+export const getCommentIdsByPostIdFromChainQuery = {
   getQueryKey: getCommentIdsQueryKey,
   useQuery: useCommentIdsByPostId,
   useQueries: useCommentIdsByPostIds,
@@ -99,7 +98,4 @@ let getCommentIdsByPostIdQueryFromChain = {
   fetchQueries: async (client, data) => {
     return Promise.all(data.map((singleData) => fetchQuery(client, singleData)))
   },
-} satisfies typeof getCommentIdsByPostIdFromDatahubQuery
-export const getCommentIdsByPostIdQuery = getDatahubConfig()
-  ? getCommentIdsByPostIdFromDatahubQuery
-  : getCommentIdsByPostIdQueryFromChain
+} satisfies ReturnType<typeof createQuery<string, string[]>>

@@ -1,14 +1,18 @@
-import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { getDatahubConfig } from '@/utils/env/client'
 
 export function useLastMessageId(chatId: string) {
   const canUseDatahub = !!getDatahubConfig()
 
-  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId, {
-    subscribe: true,
-    enabled: !canUseDatahub,
-  })
+  // need last message only
+  const { data: messageIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
+    chatId,
+    {
+      subscribe: true,
+      enabled: !canUseDatahub,
+    }
+  )
   const lastMessageId = messageIds?.[messageIds?.length - 1]
 
   const { data } = getPostMetadataQuery.useQuery(chatId, {
@@ -22,10 +26,13 @@ export function useLastMessageId(chatId: string) {
 export function useLastMessageIds(chatIds: string[]) {
   const canUseDatahub = !!getDatahubConfig()
 
-  const commentIdsQueries = getCommentIdsByPostIdQuery.useQueries(chatIds, {
-    subscribe: true,
-    enabled: !canUseDatahub,
-  })
+  const commentIdsQueries = getCommentIdsByPostIdFromChainQuery.useQueries(
+    chatIds,
+    {
+      subscribe: true,
+      enabled: !canUseDatahub,
+    }
+  )
 
   const postMetadatas = getPostMetadataQuery.useQueries(chatIds, {
     enabled: canUseDatahub,

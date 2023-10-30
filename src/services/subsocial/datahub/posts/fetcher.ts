@@ -10,7 +10,7 @@ import {
 import { mapDatahubPostFragment } from '../mappers'
 import { datahubQueryRequest } from '../utils'
 
-const DATAHUB_POST_FRAGMENT = gql`
+export const DATAHUB_POST_FRAGMENT = gql`
   fragment DatahubPostFragment on Post {
     id
     optimisticId
@@ -87,7 +87,9 @@ const GET_POSTS = gql`
   ${DATAHUB_POST_FRAGMENT}
   query GetPosts($ids: [String!]) {
     findPosts(where: { persistentIds: $ids }) {
-      ...DatahubPostFragment
+      data {
+        ...DatahubPostFragment
+      }
     }
   }
 `
@@ -96,7 +98,9 @@ const GET_OPTIMISTIC_POSTS = gql`
   ${DATAHUB_POST_FRAGMENT}
   query GetOptimisticPosts($ids: [String!]) {
     findPosts(where: { ids: $ids }) {
-      ...DatahubPostFragment
+      data {
+        ...DatahubPostFragment
+      }
     }
   }
 `
@@ -122,9 +126,9 @@ export async function getPostsFromDatahub(postIds: string[]) {
       document: GET_POSTS,
       variables: { ids: persistentIds },
     })
-    persistentPosts = res.findPosts.map((post) => {
-      ;(post as any).id = post.persistentId || post.id
-      return mapDatahubPostFragment(post as any)
+    persistentPosts = res.findPosts.data.map((post) => {
+      post.id = post.persistentId || post.id
+      return mapDatahubPostFragment(post)
     })
   }
 
@@ -136,7 +140,7 @@ export async function getPostsFromDatahub(postIds: string[]) {
       document: GET_OPTIMISTIC_POSTS,
       variables: { ids: entityIds },
     })
-    optimisticPosts = res.findPosts.map((post) => {
+    optimisticPosts = res.findPosts.data.map((post) => {
       return mapDatahubPostFragment(post as any)
     })
   }

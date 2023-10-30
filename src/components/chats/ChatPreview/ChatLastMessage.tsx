@@ -1,6 +1,6 @@
+import { useMessagesCount } from '@/components/chats/hooks/useMessagesCount'
 import { getExtensionConfig } from '@/components/extensions/config'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
-import { useMessagesCount } from '@/hooks/useMessagesCount'
 import { cx } from '@/utils/class-names'
 import { PostContentExtension } from '@subsocial/api/types'
 import { ComponentProps } from 'react'

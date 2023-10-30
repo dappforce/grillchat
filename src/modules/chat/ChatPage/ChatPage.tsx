@@ -19,7 +19,7 @@ import { useConfigContext } from '@/providers/ConfigProvider'
 import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getModeratorQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
+import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
@@ -80,9 +80,7 @@ export default function ChatPage({
     if (!isOpenCreateSuccessModal) replaceUrl(getCurrentUrlWithoutQuery('new'))
   }, [isOpenCreateSuccessModal])
 
-  const { data: messageIds } = getCommentIdsByPostIdQuery.useQuery(chatId, {
-    subscribe: true,
-  })
+  const { data: chatMetadata } = getPostMetadataQuery.useQuery(chatId)
 
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal
@@ -165,7 +163,7 @@ export default function ChatPage({
               <NavbarChatInfo
                 backButton={backButton}
                 image={content?.image ? getIpfsContentUrl(content.image) : ''}
-                messageCount={messageIds?.length ?? 0}
+                messageCount={chatMetadata?.totalCommentsCount ?? 0}
                 chatMetadata={content}
                 chatId={chatId}
               />
@@ -276,7 +274,6 @@ function NavbarChatInfo({
   }, [router])
 
   const chatTitle = chatMetadata?.title
-  const membersCount = chat?.struct.followersCount
 
   return (
     <div className='flex flex-1 items-center overflow-hidden'>

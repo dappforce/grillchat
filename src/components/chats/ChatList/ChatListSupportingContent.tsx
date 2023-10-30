@@ -1,7 +1,7 @@
+import useLastReadMessageIdFromStorage from '@/components/chats/hooks/useLastReadMessageId'
 import Container from '@/components/Container'
 import MessageModal from '@/components/modals/MessageModal'
 import Spinner from '@/components/Spinner'
-import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'

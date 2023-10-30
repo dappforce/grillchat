@@ -1,4 +1,4 @@
-import { useMessagesCounts } from '@/hooks/useMessagesCount'
+import { useMessagesCounts } from '@/components/chats/hooks/useMessagesCount'
 import { useMemo } from 'react'
 
 export default function useSortChatIdsBySize(chatIds: string[]) {

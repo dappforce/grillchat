@@ -1,5 +1,4 @@
 import { getPostQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdQuery } from '@/services/subsocial/commentIds'
 import { PostContent, PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
 import { getPostMetadataQuery } from '../datahub/posts/query'
@@ -45,9 +44,9 @@ export function addOptimisticData({
     },
     content: ipfsContent,
   } as unknown as PostData)
-  getCommentIdsByPostIdQuery.setQueryData(client, params.chatId, (ids) => {
-    return [...(ids ?? []), tempId]
-  })
+  // getCommentIdsByPostIdQuery.setQueryData(client, params.chatId, (ids) => {
+  //   return [...(ids ?? []), tempId]
+  // })
   getPostMetadataQuery.setQueryData(client, params.chatId, (oldData) => {
     if (!oldData) return oldData
     return {
@@ -67,8 +66,8 @@ export function deleteOptimisticData({
   optimisticId: string
 }) {
   const tempId = commentIdsOptimisticEncoder.encode(optimisticId)
-  getCommentIdsByPostIdQuery.setQueryData(client, chatId, (ids) => {
-    return ids?.filter((id) => id !== tempId)
-  })
+  // getCommentIdsByPostIdQuery.setQueryData(client, chatId, (ids) => {
+  //   return ids?.filter((id) => id !== tempId)
+  // })
   getPostMetadataQuery.invalidate(client, chatId)
 }
