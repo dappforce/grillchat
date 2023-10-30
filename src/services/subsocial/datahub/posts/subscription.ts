@@ -16,7 +16,7 @@ import {
 
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
 // the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
-export function useSubscribePostsInDatahub() {
+export function useSubscribePostsInDatahub(subscribedPostId?: string) {
   const queryClient = useQueryClient()
   const unsubRef = useRef<(() => void) | undefined>()
 
@@ -26,6 +26,12 @@ export function useSubscribePostsInDatahub() {
     const listener = () => {
       if (document.visibilityState === 'visible') {
         unsubRef.current = subscription(queryClient)
+        if (subscribedPostId) {
+          getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(
+            queryClient,
+            subscribedPostId
+          )
+        }
       } else {
         unsubRef.current?.()
       }
@@ -36,7 +42,7 @@ export function useSubscribePostsInDatahub() {
       document.removeEventListener('visibilitychange', listener)
       unsubRef.current?.()
     }
-  }, [queryClient])
+  }, [queryClient, subscribedPostId])
 }
 
 const SUBSCRIBE_POST = gql`

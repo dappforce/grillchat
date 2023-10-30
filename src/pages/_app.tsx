@@ -11,10 +11,12 @@ import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
+import { getIdFromSlug } from '@/utils/slug'
 import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
@@ -109,7 +111,11 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
 }
 
 function PostSubscriber() {
-  useSubscribePostsInDatahub()
+  const { query } = useRouter()
+  const slugParam = (query?.slug || '') as string
+  const chatId = getIdFromSlug(slugParam)
+  useSubscribePostsInDatahub(chatId)
+
   return null
 }
 

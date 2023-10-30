@@ -5,6 +5,7 @@ import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
+import { commentIdsOptimisticEncoder } from '../../commentIds/optimistic'
 import {
   GetCommentIdsInPostIdQuery,
   GetCommentIdsInPostIdQueryVariables,
@@ -76,33 +77,43 @@ async function getPaginatedPostsByRootPostId({
   })
   const totalData = res.findPosts.total ?? 0
   const hasMore = totalData > page * CHAT_PER_PAGE + ids.length
-  return { data: ids, page, hasMore, totalData, messages }
-  // TODO: fix optimistic ids
-  // const oldIds = getCommentIdsByPostIdFromDatahub.fetchQuery(
-  //   queryClient,
-  //   postId
-  // )
-  // const oldOptimisticIds =
-  //   oldIds?.filter((id) => commentIdsOptimisticEncoder.checker(id)) || []
-  // const unincludedIds = oldOptimisticIds.filter(
-  //   (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
-  // )
-  // return [...ids, ...unincludedIds]
+
+  let unincludedIds: string[] = []
+  // only adding the client optimistic ids if refetching first page
+  if (page === 1) {
+    const oldIds = getPaginatedPostsByPostIdFromDatahubQuery.getFirstPageData(
+      queryClient,
+      postId
+    )
+    const oldOptimisticIds =
+      oldIds?.filter((id) => commentIdsOptimisticEncoder.checker(id)) || []
+    unincludedIds = oldOptimisticIds.filter(
+      (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
+    )
+  }
+
+  return {
+    data: [...ids, ...unincludedIds],
+    page,
+    hasMore,
+    totalData,
+    messages,
+  }
 }
 const COMMENT_IDS_QUERY_KEY = 'comments'
 const getQueryKey = (postId: string) => [COMMENT_IDS_QUERY_KEY, postId]
 export const getPaginatedPostsByPostIdFromDatahubQuery = {
   getQueryKey,
+  getFirstPageData: (client: QueryClient, postId: string) => {
+    const cachedData = client?.getQueryData(getQueryKey(postId))
+    return ((cachedData as any)?.pages?.[0] as PaginatedPostsData | undefined)
+      ?.data
+  },
   fetchFirstPageQuery: async (
     client: QueryClient | null,
     postId: string,
     page = 1
   ) => {
-    const cachedData = client?.getQueryData(getQueryKey(postId))
-    if (cachedData) {
-      return cachedData as PaginatedPostsData
-    }
-
     const res = await getPaginatedPostsByRootPostId({
       postId,
       page,
@@ -151,14 +162,6 @@ export const getPaginatedPostsByPostIdFromDatahubQuery = {
     })
   },
 }
-// const getCommentIdsByPostIdFromDatahubQueryRaw = createQuery({
-//   key: 'comments',
-//   fetcher: getCommentIdsByPostIds,
-//   defaultConfigGenerator: () => ({
-//     refetchOnWindowFocus: true,
-//     staleTime: 0,
-//   }),
-// })
 
 const GET_POST_METADATA = gql`
   query GetPostMetadata($where: PostMetadataInput!) {
