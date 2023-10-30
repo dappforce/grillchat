@@ -9,7 +9,7 @@ import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import {
-  getCommentIdsByPostIdFromDatahubQuery,
+  getPaginatedPostsByPostIdFromDatahubQuery,
   getPostMetadataQuery,
 } from '@/services/subsocial/datahub/posts/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -70,11 +70,12 @@ async function getMessageIds(client: QueryClient, postId: string) {
 }
 
 async function getMessageIdsFromDatahub(client: QueryClient, chatId: string) {
-  const res = await getCommentIdsByPostIdFromDatahubQuery.fetchFirstPageQuery(
-    client,
-    chatId
-  )
-  getCommentIdsByPostIdFromDatahubQuery.invalidateFirstQuery(client, chatId)
+  const res =
+    await getPaginatedPostsByPostIdFromDatahubQuery.fetchFirstPageQuery(
+      client,
+      chatId
+    )
+  getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(client, chatId)
 
   return { messageIds: res.data, messages: res.messages }
 }

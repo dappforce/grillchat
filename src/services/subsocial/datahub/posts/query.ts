@@ -32,15 +32,14 @@ const GET_COMMENT_IDS_IN_POST_ID = gql`
     }
   }
 `
-// TODO: rename to better name
-export type CommentIdsData = {
+export type PaginatedPostsData = {
   data: string[]
   page: number
   hasMore: boolean
   totalData: number
   messages: PostData[]
 }
-async function getCommentIdsByPostIds({
+async function getPaginatedPostsByRootPostId({
   page,
   postId,
   client = queryClient,
@@ -48,7 +47,7 @@ async function getCommentIdsByPostIds({
   postId: string
   page: number
   client?: QueryClient
-}): Promise<CommentIdsData> {
+}): Promise<PaginatedPostsData> {
   const res = await datahubQueryRequest<
     GetCommentIdsInPostIdQuery,
     GetCommentIdsInPostIdQueryVariables
@@ -92,7 +91,7 @@ async function getCommentIdsByPostIds({
 }
 const COMMENT_IDS_QUERY_KEY = 'comments'
 const getQueryKey = (postId: string) => [COMMENT_IDS_QUERY_KEY, postId]
-export const getCommentIdsByPostIdFromDatahubQuery = {
+export const getPaginatedPostsByPostIdFromDatahubQuery = {
   getQueryKey,
   fetchFirstPageQuery: async (
     client: QueryClient | null,
@@ -101,10 +100,10 @@ export const getCommentIdsByPostIdFromDatahubQuery = {
   ) => {
     const cachedData = client?.getQueryData(getQueryKey(postId))
     if (cachedData) {
-      return cachedData as CommentIdsData
+      return cachedData as PaginatedPostsData
     }
 
-    const res = await getCommentIdsByPostIds({
+    const res = await getPaginatedPostsByRootPostId({
       postId,
       page,
       client: client ?? undefined,
@@ -123,14 +122,14 @@ export const getCommentIdsByPostIdFromDatahubQuery = {
     updater: (oldIds?: string[]) => string[] | undefined | null
   ) => {
     client.setQueryData(getQueryKey(postId), (oldData: any) => {
-      const firstPage = oldData?.pages?.[0] as CommentIdsData | undefined
+      const firstPage = oldData?.pages?.[0] as PaginatedPostsData | undefined
       const newPages = [...oldData.pages]
       const newFirstPageMessageIds = updater(firstPage?.data)
       newPages.splice(0, 1, {
         ...firstPage,
         data: newFirstPageMessageIds,
         totalData: newFirstPageMessageIds?.length ?? 0,
-      } as CommentIdsData)
+      } as PaginatedPostsData)
       return {
         pageParams: [...(oldData.pageParams ?? [])],
         pages: [...newPages],
@@ -146,7 +145,7 @@ export const getCommentIdsByPostIdFromDatahubQuery = {
     return useInfiniteQuery({
       queryKey: getQueryKey(postId),
       queryFn: ({ pageParam = 1, queryKey: [_, postId] }) =>
-        getCommentIdsByPostIds({ postId, page: pageParam }),
+        getPaginatedPostsByRootPostId({ postId, page: pageParam }),
       getNextPageParam: (lastPage) =>
         lastPage.hasMore ? lastPage.page + 1 : undefined,
     })

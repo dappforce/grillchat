@@ -3,7 +3,7 @@ import { getDatahubConfig } from '@/utils/env/client'
 import { PostContent, PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
 import {
-  getCommentIdsByPostIdFromDatahubQuery,
+  getPaginatedPostsByPostIdFromDatahubQuery,
   getPostMetadataQuery,
 } from '../datahub/posts/query'
 import { getCommentIdsByPostIdFromChainQuery } from './query'
@@ -50,7 +50,7 @@ export function addOptimisticData({
     content: ipfsContent,
   } as unknown as PostData)
   if (getDatahubConfig()) {
-    getCommentIdsByPostIdFromDatahubQuery.setQueryFirstPageData(
+    getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
       client,
       params.chatId,
       (oldData) => {

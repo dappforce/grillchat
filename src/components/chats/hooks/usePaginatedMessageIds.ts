@@ -2,8 +2,8 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import {
-  CommentIdsData,
-  getCommentIdsByPostIdFromDatahubQuery,
+  getPaginatedPostsByPostIdFromDatahubQuery,
+  PaginatedPostsData,
 } from '@/services/subsocial/datahub/posts/query'
 import { getDatahubConfig } from '@/utils/env/client'
 import { useMemo } from 'react'
@@ -39,10 +39,10 @@ export function usePaginatedMessageIdsFromDatahub({
   isPausedLoadMore,
 }: PaginatedConfig): PaginatedData {
   const { data, fetchNextPage } =
-    getCommentIdsByPostIdFromDatahubQuery.useInfiniteQuery(chatId)
+    getPaginatedPostsByPostIdFromDatahubQuery.useInfiniteQuery(chatId)
 
   const page = data?.pages
-  let lastPage: CommentIdsData | null = null
+  let lastPage: PaginatedPostsData | null = null
   if (page && page.length > 0) {
     const last = page[page.length - 1]
     if (last) {

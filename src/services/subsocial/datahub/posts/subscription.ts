@@ -10,7 +10,7 @@ import {
 } from '../generated-query'
 import { datahubSubscription } from '../utils'
 import {
-  getCommentIdsByPostIdFromDatahubQuery,
+  getPaginatedPostsByPostIdFromDatahubQuery,
   getPostMetadataQuery,
 } from './query'
 
@@ -68,6 +68,7 @@ function subscription(queryClient: QueryClient) {
     {
       complete: () => undefined,
       next: async (data) => {
+        console.log('SUBSCRIPTION DATA', data)
         const eventData = data.data?.post
         if (!eventData) return
 
@@ -117,7 +118,7 @@ async function processMessage(
   const rootPostId = entity.rootPost?.persistentId
   if (!rootPostId) return
 
-  getCommentIdsByPostIdFromDatahubQuery.setQueryFirstPageData(
+  getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
     queryClient,
     rootPostId,
     (oldData) => {
