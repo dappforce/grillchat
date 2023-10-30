@@ -127,6 +127,7 @@ export const getStaticProps = getCommonStaticProps<
       const [{ accountsAddresses, prices }, blockedData] = await Promise.all([
         getChatsData(queryClient, chatId),
         prefetchBlockedEntities(queryClient, hubIds, [chatId]),
+        getPostMetadataQuery.fetchQuery(queryClient, chatId),
       ] as const)
 
       if (blockedData) {
@@ -153,7 +154,6 @@ export const getStaticProps = getCommonStaticProps<
         image = chatImage ? getIpfsContentUrl(chatImage) : null
       }
 
-      getPostMetadataQuery.fetchQuery(queryClient, chatId)
       getPostQuery.setQueryData(queryClient, chatId, chatData)
 
       accountsAddresses.forEach((accountAddresses) => {
