@@ -1,7 +1,12 @@
 import { getPostQuery } from '@/services/api/query'
+import { getDatahubConfig } from '@/utils/env/client'
 import { PostContent, PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
-import { getPostMetadataQuery } from '../datahub/posts/query'
+import {
+  getCommentIdsByPostIdFromDatahubQuery,
+  getPostMetadataQuery,
+} from '../datahub/posts/query'
+import { getCommentIdsByPostIdFromChainQuery } from './query'
 import { SendMessageParams } from './types'
 
 export function getOptimisticContent(
@@ -44,17 +49,31 @@ export function addOptimisticData({
     },
     content: ipfsContent,
   } as unknown as PostData)
-  // getCommentIdsByPostIdQuery.setQueryData(client, params.chatId, (ids) => {
-  //   return [...(ids ?? []), tempId]
-  // })
-  getPostMetadataQuery.setQueryData(client, params.chatId, (oldData) => {
-    if (!oldData) return oldData
-    return {
-      ...oldData,
-      totalCommentsCount: oldData.totalCommentsCount + 1,
-      lastCommentId: tempId,
-    }
-  })
+  if (getDatahubConfig()) {
+    getCommentIdsByPostIdFromDatahubQuery.setQueryFirstPageData(
+      client,
+      params.chatId,
+      (oldData) => {
+        return [tempId, ...(oldData ?? [])]
+      }
+    )
+    getPostMetadataQuery.setQueryData(client, params.chatId, (oldData) => {
+      if (!oldData) return oldData
+      return {
+        ...oldData,
+        totalCommentsCount: oldData.totalCommentsCount + 1,
+        lastCommentId: tempId,
+      }
+    })
+  } else {
+    getCommentIdsByPostIdFromChainQuery.setQueryData(
+      client,
+      params.chatId,
+      (ids) => {
+        return [...(ids ?? []), tempId]
+      }
+    )
+  }
 }
 export function deleteOptimisticData({
   client,

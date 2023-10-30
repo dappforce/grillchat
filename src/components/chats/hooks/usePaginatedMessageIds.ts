@@ -3,7 +3,7 @@ import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import {
   CommentIdsData,
-  getCommentIdsByPostIdFromDatahub,
+  getCommentIdsByPostIdFromDatahubQuery,
 } from '@/services/subsocial/datahub/posts/query'
 import { getDatahubConfig } from '@/utils/env/client'
 import { useMemo } from 'react'
@@ -39,7 +39,7 @@ export function usePaginatedMessageIdsFromDatahub({
   isPausedLoadMore,
 }: PaginatedConfig): PaginatedData {
   const { data, fetchNextPage } =
-    getCommentIdsByPostIdFromDatahub.useInfiniteQuery(chatId)
+    getCommentIdsByPostIdFromDatahubQuery.useInfiniteQuery(chatId)
 
   const page = data?.pages
   let lastPage: CommentIdsData | null = null

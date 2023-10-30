@@ -92,7 +92,7 @@ async function getCommentIdsByPostIds({
 }
 const COMMENT_IDS_QUERY_KEY = 'comments'
 const getQueryKey = (postId: string) => [COMMENT_IDS_QUERY_KEY, postId]
-export const getCommentIdsByPostIdFromDatahub = {
+export const getCommentIdsByPostIdFromDatahubQuery = {
   getQueryKey,
   fetchFirstPageQuery: async (
     client: QueryClient | null,
@@ -112,7 +112,7 @@ export const getCommentIdsByPostIdFromDatahub = {
     if (!client) return res
 
     client.setQueryData(getQueryKey(postId), {
-      pageProps: [1],
+      pageParams: [1],
       pages: [res],
     })
     return res
@@ -120,15 +120,19 @@ export const getCommentIdsByPostIdFromDatahub = {
   setQueryFirstPageData: (
     client: QueryClient,
     postId: string,
-    updater: (oldIds?: string[]) => string[]
+    updater: (oldIds?: string[]) => string[] | undefined | null
   ) => {
     client.setQueryData(getQueryKey(postId), (oldData: any) => {
-      const firstPage = oldData?.pages?.[0]
+      const firstPage = oldData?.pages?.[0] as CommentIdsData | undefined
       const newPages = [...oldData.pages]
-      const newFirstPage = updater(firstPage)
-      newPages.splice(0, 1, newFirstPage)
+      const newFirstPageMessageIds = updater(firstPage?.data)
+      newPages.splice(0, 1, {
+        ...firstPage,
+        data: newFirstPageMessageIds,
+        totalData: newFirstPageMessageIds?.length ?? 0,
+      } as CommentIdsData)
       return {
-        pageParams: [...oldData.pageParams],
+        pageParams: [...(oldData.pageParams ?? [])],
         pages: [...newPages],
       }
     })
