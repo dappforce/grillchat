@@ -175,6 +175,7 @@ function NotificationBell() {
     { chatId: ANN_CHAT_ID, lastRead: { timestamp: lastTimestamp } },
     {
       enabled: !!getDatahubConfig() && !!lastTimestamp,
+      staleTime: Infinity,
     }
   )
 
