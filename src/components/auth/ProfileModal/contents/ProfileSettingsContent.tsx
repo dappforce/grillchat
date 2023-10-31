@@ -152,7 +152,14 @@ function PolkadotProfileTabContent({
     [identities]
   )
 
-  const [selected, setSelected] = useState<null | ListItem>(null)
+  const [selected, setSelected] = useState<null | ListItem>(() => {
+    if (identities?.polkadot) {
+      return identityOptionsMap.polkadot
+    } else if (identities?.kilt) {
+      return identityOptionsMap.kilt
+    }
+    return null
+  })
   useEffect(() => {
     setSelectedSource(selected?.id as SpaceContent['profileSource'])
   }, [selected, setSelectedSource])
@@ -271,11 +278,11 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
             <Input
               placeholder='Name (3-25 symbols)'
               variant='fill-bg'
-              className='pl-10 !brightness-100'
+              className='pl-12 !brightness-100'
               value={ensName ?? 'You have no ENS'}
               disabled
               leftElement={(className) => (
-                <EthIcon className={cx(className, 'left-3')} />
+                <EthIcon className={cx(className, 'left-4 text-text-muted')} />
               )}
             />
             <Button
