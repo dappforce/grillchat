@@ -1,8 +1,10 @@
 import EthIcon from '@/assets/icons/eth.svg'
+import KiltIcon from '@/assets/icons/kilt.svg'
 import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
 import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
+import { useName } from '@/components/Name'
 import ProfilePreview from '@/components/ProfilePreview'
 import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import Tabs from '@/components/Tabs'
@@ -120,7 +122,7 @@ function PolkadotProfileTabContent({
   setSelectedSource: (source: SpaceContent['profileSource'] | undefined) => void
 }) {
   const { data: profile } = getProfileQuery.useQuery(address)
-  const profileSource = profile?.profileSpace?.content?.profileSource
+  const { name } = useName(address)
 
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const hasConnectedPolkadot = !!parentProxyAddress
@@ -142,9 +144,9 @@ function PolkadotProfileTabContent({
         },
         kilt: {
           id: 'kilt-w3n',
-          label: identities?.kilt ?? 'Kilt Web3Name',
+          label: identities?.kilt ?? '-Kilt Web3Name-',
           disabledItem: !identities?.kilt,
-          icon: <PolkadotIcon className='text-text-muted' />,
+          icon: <KiltIcon className='text-text-muted' />,
         },
       } satisfies Record<string, ListItem>),
     [identities]
@@ -182,6 +184,8 @@ function PolkadotProfileTabContent({
     )
   }
 
+  const isCurrentProfile = name === selected?.label
+
   return (
     <UpsertProfileWrapper>
       {({ mutateAsync, isLoading }) => {
@@ -209,9 +213,9 @@ function PolkadotProfileTabContent({
               type='submit'
               isLoading={isLoading}
               size='lg'
-              disabled={!selected?.id || profileSource === selected?.id}
+              disabled={!selected?.id || isCurrentProfile}
             >
-              Save changes
+              {isCurrentProfile ? 'Your current profile' : 'Save changes'}
             </Button>
           </form>
         )
@@ -225,8 +229,7 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
   const { data: profile } = getProfileQuery.useQuery(address)
   const evmAddress = accountData?.evmAddress
   const ensName = accountData?.ensName
-
-  const profileSource = profile?.profileSpace?.content?.profileSource
+  const { name } = useName(address)
 
   if (!evmAddress) {
     return (
@@ -246,6 +249,8 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
       </div>
     )
   }
+
+  const isCurrentProfile = name === ensName
 
   return (
     <UpsertProfileWrapper>
@@ -277,9 +282,9 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
               type='submit'
               isLoading={isLoading}
               size='lg'
-              disabled={profileSource === 'ens'}
+              disabled={isCurrentProfile}
             >
-              Save changes
+              {isCurrentProfile ? 'Your current profile' : 'Save changes'}
             </Button>
           </form>
         )

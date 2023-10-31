@@ -1,4 +1,4 @@
-import EthIcon from '@/assets/icons/eth-medium.svg'
+import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'

@@ -9,6 +9,7 @@ import { useForm, UseFormWatch } from 'react-hook-form'
 import { z } from 'zod'
 import FormButton from '../FormButton'
 import Input from '../inputs/Input'
+import { useName } from '../Name'
 
 export type SubsocialProfileFormProps = ComponentProps<'form'> & {
   onSuccess?: () => void
@@ -80,6 +81,7 @@ export default function SubsocialProfileForm({
               isLoading={isLoading}
               address={myAddress || ''}
               watch={watch}
+              shouldSetAsProfileSource={shouldSetAsProfileSource}
             />
           </form>
         )
@@ -92,19 +94,17 @@ function ProfileFormButton({
   address,
   watch,
   isLoading,
+  shouldSetAsProfileSource,
 }: {
   address: string
   watch: UseFormWatch<FormSchema>
   isLoading: boolean
+  shouldSetAsProfileSource?: boolean
 }) {
   const { name } = watch()
-  const { data } = getProfileQuery.useQuery(address, {
-    enabled: !!address,
-  })
+  const currentName = useName(address)
 
-  const isNameNotChanged =
-    name === data?.profileSpace?.content?.name &&
-    data.profileSpace.content.profileSource === 'subsocial-profile'
+  const isNameNotChanged = currentName.name === name
 
   return (
     <FormButton
@@ -114,7 +114,7 @@ function ProfileFormButton({
       size='lg'
       isLoading={isLoading}
     >
-      Save changes
+      {isNameNotChanged ? 'Your current profile' : 'Save changes'}
     </FormButton>
   )
 }
