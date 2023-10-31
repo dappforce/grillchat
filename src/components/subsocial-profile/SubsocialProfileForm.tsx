@@ -81,7 +81,6 @@ export default function SubsocialProfileForm({
               isLoading={isLoading}
               address={myAddress || ''}
               watch={watch}
-              shouldSetAsProfileSource={shouldSetAsProfileSource}
             />
           </form>
         )
@@ -94,12 +93,10 @@ function ProfileFormButton({
   address,
   watch,
   isLoading,
-  shouldSetAsProfileSource,
 }: {
   address: string
   watch: UseFormWatch<FormSchema>
   isLoading: boolean
-  shouldSetAsProfileSource?: boolean
 }) {
   const { name } = watch()
   const currentName = useName(address)

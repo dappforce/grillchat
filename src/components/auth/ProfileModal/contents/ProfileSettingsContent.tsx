@@ -4,6 +4,7 @@ import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
 import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
+import LinkText from '@/components/LinkText'
 import { useName } from '@/components/Name'
 import ProfilePreview from '@/components/ProfilePreview'
 import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
@@ -197,6 +198,26 @@ function PolkadotProfileTabContent({
           Connect Address
         </Button>
       </div>
+    )
+  }
+
+  if (!identities?.polkadot && !identities?.kilt) {
+    return (
+      <p className='text-text-muted'>
+        To use a Polkadot identity, you need to set it up first. We support{' '}
+        <LinkText
+          href='https://support.polkadot.network/support/solutions/articles/65000181981-how-to-set-and-clear-an-identity#Setting-an-Identity'
+          openInNewTab
+          variant='primary'
+        >
+          Polkadot Identity
+        </LinkText>{' '}
+        and{' '}
+        <LinkText href='https://w3n.id/' variant='primary' openInNewTab>
+          KILT w3name
+        </LinkText>
+        .
+      </p>
     )
   }
 
