@@ -14,7 +14,11 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { SpaceContent } from '@subsocial/api/types'
+import {
+  decodeProfileSource,
+  encodeProfileSource,
+  ProfileSource,
+} from '@/utils/profile'
 import { useEffect, useMemo, useState } from 'react'
 import { ContentProps } from '../types'
 
@@ -28,15 +32,11 @@ export default function ProfileSettingsContent(props: ContentProps) {
   const { data: profile } = getProfileQuery.useQuery(address)
   const profileSource = profile?.profileSpace?.content?.profileSource
 
-  const { data: identities } = getIdentityQuery.useQuery(address, {
-    enabled: !!address,
-  })
-  const hasPolkadotIdentity = !!(identities?.polkadot || identities?.kilt)
-
   const [inputtedName, setInputtedName] = useState('')
 
   useEffect(() => {
-    switch (profileSource) {
+    const { source } = decodeProfileSource(profileSource)
+    switch (source) {
       case 'ens':
         setSelectedTab(0)
         break
@@ -44,21 +44,17 @@ export default function ProfileSettingsContent(props: ContentProps) {
       case 'kilt-w3n':
         setSelectedTab(1)
         break
-      case 'subsocial-profile':
+      default:
         setSelectedTab(2)
         break
-      default:
-        if (hasEns) {
-          setSelectedTab(0)
-        }
     }
   }, [profileSource, hasEns])
 
   const [polkadotIdentitySelected, setPolkadotIdentitySelected] = useState<
-    SpaceContent['profileSource'] | undefined
+    ProfileSource | undefined
   >()
 
-  let forceProfileSource: SpaceContent['profileSource'] | undefined = undefined
+  let forceProfileSource: ProfileSource | undefined = undefined
   switch (selectedTab) {
     case 0:
       forceProfileSource = 'ens'
@@ -78,7 +74,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
           address={address}
           forceProfileSource={{
             profileSource: forceProfileSource,
-            name:
+            content:
               forceProfileSource === 'subsocial-profile'
                 ? inputtedName
                 : undefined,
@@ -111,10 +107,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
               id: 'custom',
               text: 'Custom',
               content: () => (
-                <SubsocialProfileForm
-                  onNameChange={setInputtedName}
-                  shouldSetAsProfileSource={hasPolkadotIdentity || hasEns}
-                />
+                <SubsocialProfileForm onNameChange={setInputtedName} />
               ),
             },
           ]}
@@ -129,7 +122,7 @@ function PolkadotProfileTabContent({
   setCurrentState,
   setSelectedSource,
 }: ContentProps & {
-  setSelectedSource: (source: SpaceContent['profileSource'] | undefined) => void
+  setSelectedSource: (source: ProfileSource | undefined) => void
 }) {
   const { data: profile } = getProfileQuery.useQuery(address)
   const { name } = useName(address)
@@ -143,44 +136,42 @@ function PolkadotProfileTabContent({
     }
   )
 
-  const identityOptionsMap = useMemo(
-    () =>
-      ({
-        polkadot: identities?.polkadot
-          ? {
-              id: 'polkadot-identity',
-              label: identities.polkadot,
-              icon: <PolkadotIcon className='text-text-muted' />,
-            }
-          : null,
-        kilt: identities?.kilt
-          ? {
-              id: 'kilt-w3n',
-              label: identities.kilt,
-              icon: <KiltIcon className='text-text-muted' />,
-            }
-          : null,
-      } satisfies Record<string, ListItem | null>),
-    [identities]
-  )
-
-  const [selected, setSelected] = useState<null | ListItem>(() => {
+  // TODO: fix when multiple ids and currently its not selected the default set profile in the dropdown
+  const identityOptionsMap = useMemo(() => {
+    const map: { [key in ProfileSource]?: ListItem } = {}
     if (identities?.polkadot) {
-      return identityOptionsMap.polkadot
-    } else if (identities?.kilt) {
-      return identityOptionsMap.kilt
+      map['polkadot-identity'] = {
+        id: 'polkadot-identity',
+        label: identities.polkadot,
+        icon: <PolkadotIcon className='text-text-muted' />,
+      }
     }
-    return null
+    if (identities?.kilt) {
+      map['kilt-w3n'] = {
+        id: 'kilt-w3n',
+        label: identities.kilt,
+        icon: <KiltIcon className='text-text-muted' />,
+      }
+    }
+    return map
+  }, [identities])
+
+  const [selected, setSelected] = useState<ListItem | undefined>(() => {
+    if (identities?.polkadot) {
+      return identityOptionsMap['polkadot-identity']
+    } else if (identities?.kilt) {
+      return identityOptionsMap['kilt-w3n']
+    }
   })
   useEffect(() => {
-    setSelectedSource(selected?.id as SpaceContent['profileSource'])
+    setSelectedSource(selected?.id as ProfileSource)
   }, [selected, setSelectedSource])
 
   useEffect(() => {
-    if (identities?.polkadot) {
-      setSelected(identityOptionsMap.polkadot)
-    } else if (identities?.kilt) {
-      setSelected(identityOptionsMap.kilt)
+    if (identities?.polkadot && identityOptionsMap['polkadot-identity']) {
+      setSelected(identityOptionsMap['polkadot-identity'])
+    } else if (identities?.kilt && identityOptionsMap['kilt-w3n']) {
+      setSelected(identityOptionsMap['kilt-w3n'])
     }
   }, [identities, identityOptionsMap])
 
@@ -235,7 +226,7 @@ function PolkadotProfileTabContent({
           mutateAsync({
             content: {
               ...profile?.profileSpace?.content,
-              profileSource: selectedId as SpaceContent['profileSource'],
+              profileSource: encodeProfileSource(selectedId as ProfileSource),
             },
           })
         }
@@ -244,7 +235,7 @@ function PolkadotProfileTabContent({
           <form onSubmit={onSubmit} className={cx('flex flex-col gap-4')}>
             <SelectInput
               items={Object.values(identityOptionsMap).filter(Boolean)}
-              selected={selected}
+              selected={selected ?? null}
               setSelected={setSelected}
               placeholder='Select identity provider'
             />
@@ -300,7 +291,7 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
             content: {
               ...profile?.profileSpace?.content,
               name: profile?.profileSpace?.content?.name ?? '',
-              profileSource: 'ens',
+              profileSource: encodeProfileSource('ens'),
             },
           })
         }

@@ -5,14 +5,14 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
+import { decodeProfileSource, ProfileSource } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
-import { SpaceContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import ChatModerateChip from './chats/ChatModerateChip'
 
 export type ForceProfileSource = {
-  profileSource?: SpaceContent['profileSource']
-  name?: string
+  profileSource?: ProfileSource
+  content?: string
 }
 
 export type NameProps = ComponentProps<'span'> & {
@@ -44,7 +44,8 @@ export function useName(
     enabled: !!address,
   })
 
-  function getNameFromSource(profileSource?: SpaceContent['profileSource']) {
+  function getNameFromSource(profileSource?: ProfileSource, content?: string) {
+    // TODO: use content for selecting names used
     switch (profileSource) {
       case 'ens':
         return ensName
@@ -53,23 +54,27 @@ export function useName(
       case 'kilt-w3n':
         return identities?.kilt
       case 'subsocial-profile':
-        return profile?.profileSpace?.content?.name
+        return content || profile?.profileSpace?.content?.name
     }
   }
 
   let profileSource = forceProfileSource?.profileSource
-  const forceName = getNameFromSource(profileSource)
+  const forceName = getNameFromSource(
+    profileSource,
+    forceProfileSource?.content
+  )
   if (forceName) name = forceName
   else {
-    const userProfileName = getNameFromSource(userProfileSource)
+    const { source, content } = decodeProfileSource(userProfileSource ?? '')
+    const userProfileName = getNameFromSource(source, content)
     if (userProfileName) {
       name = userProfileName
-      profileSource = userProfileSource
+      profileSource = source
     }
   }
 
   return {
-    name: forceProfileSource?.name || name,
+    name,
     profileSource,
     accountData,
     profile,

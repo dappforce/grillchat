@@ -74,13 +74,8 @@ declare module '@subsocial/api/types' {
     hostName?: string
   }
 
-  // TODO: change default profile to literal strings
   export interface SpaceContent extends SubsocialSpaceContent {
-    profileSource?:
-      | 'ens'
-      | 'polkadot-identity'
-      | 'subsocial-profile'
-      | 'kilt-w3n'
+    profileSource?: string
   }
   export interface PostContent extends SubsocialPostContent {
     linkMetadata?: LinkMetadata

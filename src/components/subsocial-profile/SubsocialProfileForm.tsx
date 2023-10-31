@@ -14,7 +14,6 @@ import { useName } from '../Name'
 export type SubsocialProfileFormProps = ComponentProps<'form'> & {
   onSuccess?: () => void
   onNameChange?: (name: string) => void
-  shouldSetAsProfileSource?: boolean
 }
 
 const formSchema = z.object({
@@ -25,7 +24,6 @@ type FormSchema = z.infer<typeof formSchema>
 export default function SubsocialProfileForm({
   onSuccess,
   onNameChange,
-  shouldSetAsProfileSource,
   ...props
 }: SubsocialProfileFormProps) {
   const myAddress = useMyMainAddress()
@@ -57,9 +55,7 @@ export default function SubsocialProfileForm({
             content: {
               ...profile?.profileSpace?.content,
               name: data.name,
-              profileSource: shouldSetAsProfileSource
-                ? 'subsocial-profile'
-                : profile?.profileSpace?.content?.profileSource,
+              profileSource: undefined,
             },
           })
           onSuccess?.()
