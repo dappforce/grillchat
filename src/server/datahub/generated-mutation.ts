@@ -34,6 +34,7 @@ export type CreatePostOffChainInput = {
   callData?: InputMaybe<SocialCallDataInput>
   content?: InputMaybe<Scalars['String']['input']>
   dataType: SocialEventDataType
+  protVersion?: InputMaybe<Scalars['String']['input']>
   providerAddr: Scalars['String']['input']
   sig: Scalars['String']['input']
 }

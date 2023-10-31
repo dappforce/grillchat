@@ -7,6 +7,7 @@ import {
   socialCallName,
   SocialEventDataApiInput,
   SocialEventDataType,
+  socialEventProtVersion,
   SynthCreatePostTxFailedCallParsedArgs,
   SynthCreatePostTxRetryCallParsedArgs,
   SynthUpdatePostTxFailedCallParsedArgs,
@@ -51,7 +52,9 @@ async function createPostData({
     ipfsSrc: cid,
   }
 
+  // TODO: refactor input to reduce duplication with other inputs
   const input: SocialEventDataApiInput = {
+    protVersion: socialEventProtVersion['0.1'],
     dataType: SocialEventDataType.optimistic,
     callData: {
       name: socialCallName.create_post,
@@ -91,6 +94,7 @@ async function updatePostData({
   }
 
   const input: SocialEventDataApiInput = {
+    protVersion: socialEventProtVersion['0.1'],
     dataType: SocialEventDataType.optimistic,
     callData: {
       name: socialCallName.update_post,
@@ -150,6 +154,7 @@ async function notifyCreatePostFailedOrRetryStatus({
   }
 
   const input: SocialEventDataApiInput = {
+    protVersion: socialEventProtVersion['0.1'],
     dataType: SocialEventDataType.offChain,
     callData: {
       name: event.name,
@@ -213,6 +218,7 @@ async function notifyUpdatePostFailedOrRetryStatus({
   }
 
   const input: SocialEventDataApiInput = {
+    protVersion: socialEventProtVersion['0.1'],
     dataType: SocialEventDataType.offChain,
     callData: {
       name: event.name,
