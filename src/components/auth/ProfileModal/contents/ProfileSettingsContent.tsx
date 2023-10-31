@@ -2,10 +2,9 @@ import EthIcon from '@/assets/icons/eth.svg'
 import KiltIcon from '@/assets/icons/kilt.svg'
 import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import Button from '@/components/Button'
-import Input from '@/components/inputs/Input'
 import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
 import LinkText from '@/components/LinkText'
-import { useName } from '@/components/Name'
+import { ForceProfileSource, useName } from '@/components/Name'
 import ProfilePreview from '@/components/ProfilePreview'
 import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
 import Tabs from '@/components/Tabs'
@@ -19,7 +18,7 @@ import {
   encodeProfileSource,
   ProfileSource,
 } from '@/utils/profile'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ContentProps } from '../types'
 
 export default function ProfileSettingsContent(props: ContentProps) {
@@ -27,7 +26,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
 
   const [selectedTab, setSelectedTab] = useState(2)
   const { data: accountData } = getAccountDataQuery.useQuery(address)
-  const hasEns = !!accountData?.ensName
+  const hasEns = !!accountData?.ensNames
 
   const { data: profile } = getProfileQuery.useQuery(address)
   const profileSource = profile?.profileSpace?.content?.profileSource
@@ -50,20 +49,26 @@ export default function ProfileSettingsContent(props: ContentProps) {
     }
   }, [profileSource, hasEns])
 
-  const [polkadotIdentitySelected, setPolkadotIdentitySelected] = useState<
+  const [selectedPolkadotIdentity, setSelectedPolkadotIdentity] = useState<
     ProfileSource | undefined
   >()
+  const [selectedEns, setSelectedEns] = useState('')
 
-  let forceProfileSource: ProfileSource | undefined = undefined
+  let forceProfileSource: ForceProfileSource | undefined = undefined
   switch (selectedTab) {
     case 0:
-      forceProfileSource = 'ens'
+      forceProfileSource = { content: selectedEns, profileSource: 'ens' }
       break
     case 1:
-      forceProfileSource = polkadotIdentitySelected
+      forceProfileSource = {
+        profileSource: selectedPolkadotIdentity,
+      }
       break
     case 2:
-      forceProfileSource = 'subsocial-profile'
+      forceProfileSource = {
+        profileSource: 'subsocial-profile',
+        content: inputtedName,
+      }
       break
   }
 
@@ -72,13 +77,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
       <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
         <ProfilePreview
           address={address}
-          forceProfileSource={{
-            profileSource: forceProfileSource,
-            content:
-              forceProfileSource === 'subsocial-profile'
-                ? inputtedName
-                : undefined,
-          }}
+          forceProfileSource={forceProfileSource}
         />
       </div>
       <div className='flex flex-col'>
@@ -91,14 +90,19 @@ export default function ProfileSettingsContent(props: ContentProps) {
             {
               id: 'evm',
               text: 'EVM',
-              content: () => <EvmProfileTabContent {...props} />,
+              content: () => (
+                <EvmProfileTabContent
+                  setSelectedEns={setSelectedEns}
+                  {...props}
+                />
+              ),
             },
             {
               id: 'polkadot',
               text: 'Polkadot',
               content: () => (
                 <PolkadotProfileTabContent
-                  setSelectedSource={setPolkadotIdentitySelected}
+                  setSelectedSource={setSelectedPolkadotIdentity}
                   {...props}
                 />
               ),
@@ -156,12 +160,7 @@ function PolkadotProfileTabContent({
     return options
   }, [identities])
 
-  const [selected, setSelected] = useState<ListItem | null>(null)
-  useEffect(() => {
-    setSelectedSource(selected?.id as ProfileSource)
-  }, [selected, setSelectedSource])
-
-  useEffect(() => {
+  const getShouldSelectedProfile = useCallback(() => {
     const { source, content } = decodeProfileSource(profileSource)
     let newSelected: ListItem | undefined
     if (source === 'polkadot-identity') {
@@ -175,8 +174,19 @@ function PolkadotProfileTabContent({
       )
       newSelected = selected
     }
-    setSelected(newSelected ?? identitiesOptions[0] ?? null)
-  }, [identities, identitiesOptions, profileSource])
+    return newSelected ?? identitiesOptions[0] ?? null
+  }, [identitiesOptions, profileSource])
+
+  const [selected, setSelected] = useState<ListItem | null>(
+    getShouldSelectedProfile
+  )
+  useEffect(() => {
+    setSelectedSource(selected?.id as ProfileSource)
+  }, [selected, setSelectedSource])
+
+  useEffect(() => {
+    setSelected(getShouldSelectedProfile())
+  }, [getShouldSelectedProfile])
 
   if (!hasConnectedPolkadot) {
     return (
@@ -269,12 +279,49 @@ function PolkadotProfileTabContent({
   )
 }
 
-function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
+function EvmProfileTabContent({
+  address,
+  setSelectedEns,
+  setCurrentState,
+}: ContentProps & { setSelectedEns: (ens: string) => void }) {
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { data: profile } = getProfileQuery.useQuery(address)
   const evmAddress = accountData?.evmAddress
-  const ensName = accountData?.ensName
+  const ensNames = accountData?.ensNames
   const { name } = useName(address)
+
+  const ensOptions = useMemo<ListItem[]>(() => {
+    console.log(ensNames)
+    return (
+      ensNames?.map((ens) => ({
+        id: ens,
+        label: ens,
+        icon: <EthIcon className='text-text-muted' />,
+      })) ?? []
+    )
+  }, [ensNames])
+
+  const profileSource = profile?.profileSpace?.content?.profileSource
+  const getShouldSelectedProfile = useCallback(() => {
+    const { source, content } = decodeProfileSource(profileSource)
+    let newSelected: ListItem | undefined
+    if (source === 'ens') {
+      const selected = ensOptions.find((item) => item.id === content)
+      newSelected = selected
+    }
+    return newSelected ?? ensOptions[0] ?? null
+  }, [ensOptions, profileSource])
+
+  const [selected, setSelected] = useState<ListItem | null>(
+    getShouldSelectedProfile
+  )
+  useEffect(() => {
+    setSelectedEns(selected?.id ?? '')
+  }, [selected, setSelectedEns])
+
+  useEffect(() => {
+    setSelected(getShouldSelectedProfile())
+  }, [getShouldSelectedProfile])
 
   if (!evmAddress) {
     return (
@@ -295,20 +342,21 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
     )
   }
 
-  const isCurrentProfile = name === ensName
+  const isCurrentProfile = name === selected?.id
 
   return (
     <UpsertProfileWrapper>
       {({ mutateAsync, isLoading }) => {
         const onSubmit = (e: any) => {
           e.preventDefault()
+          if (!selected?.id) return
           mutateAsync({
             content: {
               ...profile?.profileSpace?.content,
               name: profile?.profileSpace?.content?.name ?? '',
               profileSource: encodeProfileSource({
                 source: 'ens',
-                content: ensName ?? '',
+                content: selected.id,
               }),
             },
           })
@@ -316,15 +364,11 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
 
         return (
           <form onSubmit={onSubmit} className={cx('flex flex-col gap-4')}>
-            <Input
-              placeholder='Name (3-25 symbols)'
-              variant='fill-bg'
-              className='pl-12 !brightness-100'
-              value={ensName ?? 'You have no ENS'}
-              disabled
-              leftElement={(className) => (
-                <EthIcon className={cx(className, 'left-4 text-text-muted')} />
-              )}
+            <SelectInput
+              items={ensOptions}
+              selected={selected ?? null}
+              setSelected={setSelected}
+              placeholder='Select your ENS'
             />
             <Button
               type='submit'

@@ -33,11 +33,8 @@ export function useName(
   const { data: profile } = getProfileQuery.useQuery(address)
   const textColor = useRandomColor(address, { isAddress: true })
 
-  const { ensName, evmAddress } = accountData || {}
-  let name =
-    ensName ||
-    profile?.profileSpace?.content?.name ||
-    generateRandomName(address)
+  const { ensNames, evmAddress } = accountData || {}
+  let name = profile?.profileSpace?.content?.name || generateRandomName(address)
 
   const userProfileSource = profile?.profileSpace?.content?.profileSource
   const { data: identities } = getIdentityQuery.useQuery(address ?? '', {
@@ -45,10 +42,10 @@ export function useName(
   })
 
   function getNameFromSource(profileSource?: ProfileSource, content?: string) {
-    // TODO: use content for selecting names used
     switch (profileSource) {
       case 'ens':
-        return ensName
+        if (ensNames?.includes(content ?? '')) return content
+        return undefined
       case 'polkadot-identity':
         return identities?.polkadot
       case 'kilt-w3n':
@@ -81,7 +78,7 @@ export function useName(
     evmAddress,
     isLoading,
     textColor,
-    ensName,
+    ensNames,
   }
 }
 
