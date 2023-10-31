@@ -146,19 +146,21 @@ function PolkadotProfileTabContent({
   const identityOptionsMap = useMemo(
     () =>
       ({
-        polkadot: {
-          id: 'polkadot-identity',
-          label: identities?.polkadot ?? '- Polkadot Identity -',
-          disabledItem: !identities?.polkadot,
-          icon: <PolkadotIcon className='text-text-muted' />,
-        },
-        kilt: {
-          id: 'kilt-w3n',
-          label: identities?.kilt ?? '-Kilt Web3Name-',
-          disabledItem: !identities?.kilt,
-          icon: <KiltIcon className='text-text-muted' />,
-        },
-      } satisfies Record<string, ListItem>),
+        polkadot: identities?.polkadot
+          ? {
+              id: 'polkadot-identity',
+              label: identities.polkadot,
+              icon: <PolkadotIcon className='text-text-muted' />,
+            }
+          : null,
+        kilt: identities?.kilt
+          ? {
+              id: 'kilt-w3n',
+              label: identities.kilt,
+              icon: <KiltIcon className='text-text-muted' />,
+            }
+          : null,
+      } satisfies Record<string, ListItem | null>),
     [identities]
   )
 
@@ -241,7 +243,7 @@ function PolkadotProfileTabContent({
         return (
           <form onSubmit={onSubmit} className={cx('flex flex-col gap-4')}>
             <SelectInput
-              items={Object.values(identityOptionsMap)}
+              items={Object.values(identityOptionsMap).filter(Boolean)}
               selected={selected}
               setSelected={setSelected}
               placeholder='Select identity provider'
