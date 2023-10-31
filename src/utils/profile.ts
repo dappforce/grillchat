@@ -1,10 +1,11 @@
-export type ProfileSource =
-  | 'ens'
-  | 'polkadot-identity'
-  | 'kusama-identity'
-  | 'subsocial-username'
-  | 'subsocial-profile'
-  | 'kilt-w3n'
+type ProfileSourceData =
+  | { source: 'ens'; content: string }
+  | { source: 'polkadot-identity' }
+  | { source: 'kusama-identity' }
+  | { source: 'subsocial-username'; content: string }
+  | { source: 'subsocial-profile' }
+  | { source: 'kilt-w3n'; content: string }
+export type ProfileSource = ProfileSourceData['source']
 
 const prefixes: Record<ProfileSource, string> = {
   ens: 'chain://chainType:evm/chainName:ethereum/accountName:',
@@ -16,18 +17,18 @@ const prefixes: Record<ProfileSource, string> = {
   'subsocial-profile': '',
 }
 const prefixEntries = Object.entries(prefixes)
-export function encodeProfileSource(source: ProfileSource, content?: string) {
-  switch (source) {
+export function encodeProfileSource(data: ProfileSourceData) {
+  switch (data.source) {
     case 'ens':
-      return `${prefixes['ens']}${content}`
+      return `${prefixes['ens']}${data.content}`
     case 'polkadot-identity':
       return prefixes['polkadot-identity']
     case 'kusama-identity':
       return prefixes['kusama-identity']
     case 'kilt-w3n':
-      return `${prefixes['kilt-w3n']}${content}`
+      return `${prefixes['kilt-w3n']}${data.content}`
     case 'subsocial-username':
-      return `${prefixes['subsocial-username']}${content}`
+      return `${prefixes['subsocial-username']}${data.content}`
     default:
       return undefined
   }
@@ -37,6 +38,8 @@ export function decodeProfileSource(encoded: string | undefined): {
   source: ProfileSource
   content?: string
 } {
+  if (!encoded) return { source: 'subsocial-profile' }
+
   const data = prefixEntries.find(([, prefix]) => {
     return encoded.startsWith(prefix)
   }) as [ProfileSource, string] | undefined

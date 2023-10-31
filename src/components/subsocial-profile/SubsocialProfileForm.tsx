@@ -3,6 +3,7 @@ import { getProfileQuery } from '@/services/api/query'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { encodeProfileSource } from '@/utils/profile'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ComponentProps, useEffect } from 'react'
 import { useForm, UseFormWatch } from 'react-hook-form'
@@ -55,7 +56,9 @@ export default function SubsocialProfileForm({
             content: {
               ...profile?.profileSpace?.content,
               name: data.name,
-              profileSource: undefined,
+              profileSource: encodeProfileSource({
+                source: 'subsocial-profile',
+              }),
             },
           })
           onSuccess?.()

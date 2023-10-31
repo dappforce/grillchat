@@ -125,6 +125,7 @@ function PolkadotProfileTabContent({
   setSelectedSource: (source: ProfileSource | undefined) => void
 }) {
   const { data: profile } = getProfileQuery.useQuery(address)
+  const profileSource = profile?.profileSpace?.content?.profileSource
   const { name } = useName(address)
 
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
@@ -136,44 +137,46 @@ function PolkadotProfileTabContent({
     }
   )
 
-  // TODO: fix when multiple ids and currently its not selected the default set profile in the dropdown
-  const identityOptionsMap = useMemo(() => {
-    const map: { [key in ProfileSource]?: ListItem } = {}
+  const identitiesOptions = useMemo(() => {
+    const options: ListItem[] = []
     if (identities?.polkadot) {
-      map['polkadot-identity'] = {
+      options.push({
         id: 'polkadot-identity',
         label: identities.polkadot,
         icon: <PolkadotIcon className='text-text-muted' />,
-      }
+      })
     }
     if (identities?.kilt) {
-      map['kilt-w3n'] = {
+      options.push({
         id: 'kilt-w3n',
         label: identities.kilt,
         icon: <KiltIcon className='text-text-muted' />,
-      }
+      })
     }
-    return map
+    return options
   }, [identities])
 
-  const [selected, setSelected] = useState<ListItem | undefined>(() => {
-    if (identities?.polkadot) {
-      return identityOptionsMap['polkadot-identity']
-    } else if (identities?.kilt) {
-      return identityOptionsMap['kilt-w3n']
-    }
-  })
+  const [selected, setSelected] = useState<ListItem | null>(null)
   useEffect(() => {
     setSelectedSource(selected?.id as ProfileSource)
   }, [selected, setSelectedSource])
 
   useEffect(() => {
-    if (identities?.polkadot && identityOptionsMap['polkadot-identity']) {
-      setSelected(identityOptionsMap['polkadot-identity'])
-    } else if (identities?.kilt && identityOptionsMap['kilt-w3n']) {
-      setSelected(identityOptionsMap['kilt-w3n'])
+    const { source, content } = decodeProfileSource(profileSource)
+    let newSelected: ListItem | undefined
+    if (source === 'polkadot-identity') {
+      const selected = identitiesOptions.find(
+        (item) => item.id === 'polkadot-identity'
+      )
+      newSelected = selected
+    } else if (source === 'kilt-w3n') {
+      const selected = identitiesOptions.find(
+        (item) => item.label === content && item.id === 'kilt-w3n'
+      )
+      newSelected = selected
     }
-  }, [identities, identityOptionsMap])
+    setSelected(newSelected ?? identitiesOptions[0] ?? null)
+  }, [identities, identitiesOptions, profileSource])
 
   if (!hasConnectedPolkadot) {
     return (
@@ -221,12 +224,24 @@ function PolkadotProfileTabContent({
       {({ mutateAsync, isLoading }) => {
         const onSubmit = (e: any) => {
           e.preventDefault()
-          const selectedId = selected?.id
+          const selectedId = selected?.id as ProfileSource
           if (!selectedId) return
+
+          let newProfileSource: string | undefined
+          if (selectedId === 'polkadot-identity') {
+            newProfileSource = encodeProfileSource({
+              source: 'polkadot-identity',
+            })
+          } else if (selectedId === 'kilt-w3n') {
+            newProfileSource = encodeProfileSource({
+              source: 'kilt-w3n',
+              content: selected?.label ?? '',
+            })
+          }
           mutateAsync({
             content: {
               ...profile?.profileSpace?.content,
-              profileSource: encodeProfileSource(selectedId as ProfileSource),
+              profileSource: newProfileSource,
             },
           })
         }
@@ -234,7 +249,7 @@ function PolkadotProfileTabContent({
         return (
           <form onSubmit={onSubmit} className={cx('flex flex-col gap-4')}>
             <SelectInput
-              items={Object.values(identityOptionsMap).filter(Boolean)}
+              items={identitiesOptions}
               selected={selected ?? null}
               setSelected={setSelected}
               placeholder='Select identity provider'
@@ -291,7 +306,10 @@ function EvmProfileTabContent({ address, setCurrentState }: ContentProps) {
             content: {
               ...profile?.profileSpace?.content,
               name: profile?.profileSpace?.content?.name ?? '',
-              profileSource: encodeProfileSource('ens'),
+              profileSource: encodeProfileSource({
+                source: 'ens',
+                content: ensName ?? '',
+              }),
             },
           })
         }
