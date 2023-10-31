@@ -22,9 +22,15 @@ export default function ProfileSettingsContent(props: ContentProps) {
 
   const [selectedTab, setSelectedTab] = useState(2)
   const { data: accountData } = getAccountDataQuery.useQuery(address)
-  const hasEvmAddress = !!accountData?.ensName
+  const hasEns = !!accountData?.ensName
+
   const { data: profile } = getProfileQuery.useQuery(address)
   const profileSource = profile?.profileSpace?.content?.profileSource
+
+  const { data: identities } = getIdentityQuery.useQuery(address, {
+    enabled: !!address,
+  })
+  const hasPolkadotIdentity = !!(identities?.polkadot || identities?.kilt)
 
   const [inputtedName, setInputtedName] = useState('')
 
@@ -41,11 +47,11 @@ export default function ProfileSettingsContent(props: ContentProps) {
         setSelectedTab(2)
         break
       default:
-        if (hasEvmAddress) {
+        if (hasEns) {
           setSelectedTab(0)
         }
     }
-  }, [profileSource, hasEvmAddress])
+  }, [profileSource, hasEns])
 
   const [polkadotIdentitySelected, setPolkadotIdentitySelected] = useState<
     SpaceContent['profileSource'] | undefined
@@ -104,7 +110,10 @@ export default function ProfileSettingsContent(props: ContentProps) {
               id: 'custom',
               text: 'Custom',
               content: () => (
-                <SubsocialProfileForm onNameChange={setInputtedName} />
+                <SubsocialProfileForm
+                  onNameChange={setInputtedName}
+                  shouldSetAsProfileSource={hasPolkadotIdentity || hasEns}
+                />
               ),
             },
           ]}
