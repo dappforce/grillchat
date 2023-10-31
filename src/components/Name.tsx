@@ -1,4 +1,6 @@
 import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
+import KiltIcon from '@/assets/icons/kilt-dynamic-size.svg'
+import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -55,15 +57,20 @@ export function useName(
     }
   }
 
-  const forceName = getNameFromSource(forceProfileSource?.profileSource)
+  let profileSource = forceProfileSource?.profileSource
+  const forceName = getNameFromSource(profileSource)
   if (forceName) name = forceName
   else {
     const userProfileName = getNameFromSource(userProfileSource)
-    if (userProfileName) name = userProfileName
+    if (userProfileName) {
+      name = userProfileName
+      profileSource = userProfileSource
+    }
   }
 
   return {
     name: forceProfileSource?.name || name,
+    profileSource,
     accountData,
     profile,
     evmAddress,
@@ -77,13 +84,12 @@ const Name = ({
   address,
   className,
   additionalText,
-  showEthIcon = true,
   color,
   labelingData,
   forceProfileSource,
   ...props
 }: NameProps) => {
-  const { accountData, evmAddress, isLoading, name, textColor } = useName(
+  const { accountData, isLoading, name, textColor, profileSource } = useName(
     address,
     forceProfileSource
   )
@@ -108,10 +114,14 @@ const Name = ({
       className={cx(className, 'flex items-center')}
       style={{ color: color || textColor }}
     >
-      {evmAddress && showEthIcon && (
-        <EthIcon className='mr-1 flex-shrink-0 text-text-muted' />
-      )}
-      {additionalText} {name}{' '}
+      <div className='relative top-0.5 mr-1 flex-shrink-0 text-text-muted'>
+        {profileSource === 'ens' && <EthIcon />}
+        {profileSource === 'kilt-w3n' && <KiltIcon />}
+        {profileSource === 'polkadot-identity' && <PolkadotIcon />}
+      </div>
+      <span>
+        {additionalText} {name}{' '}
+      </span>
       <ChatModerateChip
         className='ml-1 flex items-center'
         chatId={labelingData?.chatId ?? ''}

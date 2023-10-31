@@ -57,7 +57,6 @@ const ProfilePreview = ({
         <div className='flex items-center'>
           <Name
             address={address}
-            showEthIcon={false}
             className={cx('text-lg', nameClassName)}
             forceProfileSource={forceProfileSource}
           />

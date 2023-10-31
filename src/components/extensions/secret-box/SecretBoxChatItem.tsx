@@ -73,7 +73,6 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
               <ProfilePreviewModalName
                 address={recipient || ''}
                 className='!inline font-semibold'
-                showEthIcon={false}
                 color={theme === 'dark' ? darkThemeTextColor : '#000'}
               />{' '}
               is able to read this secret message.
