@@ -164,6 +164,10 @@ export type SocialCallDataInput = {
   proxy?: InputMaybe<Scalars['String']['input']>
   /** Call signer address */
   signer: Scalars['String']['input']
+  /** Unix timestamp of the call */
+  timestamp?: InputMaybe<Scalars['BigInt']['input']>
+  /** UUID of the call */
+  uuid?: InputMaybe<Scalars['String']['input']>
 }
 
 export enum SocialCallName {
@@ -200,6 +204,7 @@ export type SocialEventRecoveryData = {
   queueJobId: Scalars['String']['output']
   signer: Scalars['String']['output']
   unixTimestamp: Scalars['BigInt']['output']
+  uuid?: Maybe<Scalars['String']['output']>
 }
 
 export type UpdatePostBlockchainSyncStatusInput = {
