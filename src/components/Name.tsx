@@ -19,7 +19,7 @@ export type NameProps = ComponentProps<'span'> & {
   address: string
   additionalText?: string
   className?: string
-  showEthIcon?: boolean
+  showProfileSourceIcon?: boolean
   color?: string
   labelingData?: { chatId: string }
   forceProfileSource?: ForceProfileSource
@@ -87,6 +87,7 @@ const Name = ({
   color,
   labelingData,
   forceProfileSource,
+  showProfileSourceIcon = true,
   ...props
 }: NameProps) => {
   const { accountData, isLoading, name, textColor, profileSource } = useName(
@@ -114,11 +115,15 @@ const Name = ({
       className={cx(className, 'flex items-center')}
       style={{ color: color || textColor }}
     >
-      <div className='relative top-0.5 mr-1 flex-shrink-0 text-text-muted'>
-        {profileSource === 'ens' && <EthIcon />}
-        {profileSource === 'kilt-w3n' && <KiltIcon />}
-        {profileSource === 'polkadot-identity' && <PolkadotIcon />}
-      </div>
+      {showProfileSourceIcon &&
+        profileSource &&
+        profileSource !== 'subsocial-profile' && (
+          <div className='relative top-0.5 mr-1 flex-shrink-0 text-text-muted'>
+            {profileSource === 'ens' && <EthIcon />}
+            {profileSource === 'kilt-w3n' && <KiltIcon />}
+            {profileSource === 'polkadot-identity' && <PolkadotIcon />}
+          </div>
+        )}
       <span>
         {additionalText} {name}{' '}
       </span>

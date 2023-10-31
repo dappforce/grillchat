@@ -56,6 +56,7 @@ const ProfilePreview = ({
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
         <div className='flex items-center'>
           <Name
+            showProfileSourceIcon={false}
             address={address}
             className={cx('text-lg', nameClassName)}
             forceProfileSource={forceProfileSource}
