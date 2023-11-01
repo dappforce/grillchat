@@ -37,7 +37,9 @@ const subscription = (
       if (typeof ids.toPrimitive === 'function') {
         parsedIds = ids.toPrimitive() as any
       }
-      const newIds = Array.from(parsedIds).map((id) => id + '')
+      const newIds = Array.from(parsedIds)
+        .map((id) => id?.toString())
+        .filter(Boolean)
       const lastId = newIds[newIds.length - 1] ?? ''
       const lastSubscribedId = lastIdInPreviousSub.get()
 
