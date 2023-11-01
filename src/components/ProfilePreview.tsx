@@ -9,6 +9,7 @@ import { HiPencil } from 'react-icons/hi2'
 import AddressAvatar from './AddressAvatar'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
+import PopOver from './floating/PopOver'
 import Name, { ForceProfileSource, useName } from './Name'
 
 export type ProfilePreviewProps = ComponentProps<'div'> & {
@@ -55,7 +56,7 @@ const ProfilePreview = ({
         forceProfileSource={forceProfileSource}
       />
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
-        <div className='flex items-center'>
+        <div className='flex items-center gap-2'>
           <Name
             showProfileSourceIcon={false}
             address={address}
@@ -63,14 +64,24 @@ const ProfilePreview = ({
             forceProfileSource={forceProfileSource}
           />
           {onEditClick && !isLoading && (
-            <Button
-              size='noPadding'
-              className='relative top-px ml-2 p-1 text-text-primary'
-              variant='transparent'
-              onClick={onEditClick}
+            <PopOver
+              panelSize='sm'
+              triggerOnHover
+              placement='top'
+              yOffset={6}
+              trigger={
+                <Button
+                  size='noPadding'
+                  className='relative top-px p-1 text-text-primary'
+                  variant='transparent'
+                  onClick={onEditClick}
+                >
+                  <HiPencil />
+                </Button>
+              }
             >
-              <HiPencil />
-            </Button>
+              <p>Edit my profile</p>
+            </PopOver>
           )}
         </div>
         {showingAnyAddress && (
