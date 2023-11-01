@@ -1,3 +1,4 @@
+import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { queryClient } from '@/services/provider'
 import { getAccountsData } from '@/services/subsocial/evmAddresses'
@@ -346,4 +347,8 @@ export function useMyMainAddress() {
   const address = useMyAccount((state) => state.address)
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   return parentProxyAddress || address
+}
+
+export function getHasEnoughEnergy(energy: number | undefined | null) {
+  return energy ?? 0 > ESTIMATED_ENERGY_FOR_ONE_TX
 }

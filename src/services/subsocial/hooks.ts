@@ -1,6 +1,5 @@
-import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { useRequestToken } from '@/services/api/mutation'
-import { useMyAccount } from '@/stores/my-account'
+import { getHasEnoughEnergy, useMyAccount } from '@/stores/my-account'
 import {
   SubsocialMutationConfig,
   WalletAccount,
@@ -39,11 +38,11 @@ export default function useCommonTxSteps<Data, ReturnValue>(
     ? connectedWallet?.address
     : grillAddress
 
-  const hasEnoughEnergyGrillAddress = useMyAccount(
-    (state) => (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
+  const hasEnoughEnergyGrillAddress = useMyAccount((state) =>
+    getHasEnoughEnergy(state.energy)
   )
   const hasEnoughEnergy = isUsingConnectedWallet
-    ? (connectedWallet?.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
+    ? getHasEnoughEnergy(connectedWallet?.energy)
     : hasEnoughEnergyGrillAddress
 
   const { mutateAsync } = useMutationHook(config)
