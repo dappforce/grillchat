@@ -6,8 +6,9 @@ import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeProfileSource, ProfileSource } from '@/utils/profile'
-import { useCallback, useEffect, useState } from 'react'
-import { ContentProps } from '../../types'
+import { useCallback, useState } from 'react'
+import { forceBackFlowStorage } from '../../ProfileModal'
+import { ContentProps, ProfileModalState } from '../../types'
 import EvmProfileTabContent from './EvmProfileTabContent'
 import PolkadotProfileTabContent from './PolkadotProfileTabContent'
 
@@ -17,6 +18,16 @@ export default function ProfileSettingsContent(props: ContentProps) {
   const { data: profile } = getProfileQuery.useQuery(address)
   const profileSource = profile?.profileSpace?.content?.profileSource
   const getShouldSelectedTab = useCallback(() => {
+    try {
+      const data = JSON.parse(forceBackFlowStorage.get() || '{}') as any
+      const { from, to } = data as {
+        from: ProfileModalState
+        to: ProfileModalState
+      }
+      if (from === 'polkadot-connect') return 1
+      if (from === 'link-evm-address') return 0
+    } catch {}
+
     const { source } = decodeProfileSource(profileSource)
     switch (source) {
       case 'ens':
@@ -35,10 +46,6 @@ export default function ProfileSettingsContent(props: ContentProps) {
   const [inputtedName, setInputtedName] = useState('')
 
   const identitiesCount = useIdentitiesCount(address)
-
-  useEffect(() => {
-    getShouldSelectedTab()
-  }, [getShouldSelectedTab])
 
   const [selectedPolkadotIdentity, setSelectedPolkadotIdentity] = useState<
     ProfileSource | undefined

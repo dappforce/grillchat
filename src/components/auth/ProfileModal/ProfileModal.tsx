@@ -67,7 +67,9 @@ const pushNotificationDesc: Record<
     'Push notifications allow you to receive direct updates from Grill in your browser.',
 }
 
-const forceBackFlowStorage = new SessionStorage(() => 'force-back-profile-flow')
+export const forceBackFlowStorage = new SessionStorage(
+  () => 'force-back-profile-flow'
+)
 
 export default function ProfileModal({
   notification,
@@ -90,6 +92,34 @@ export default function ProfileModal({
   const [currentState, setCurrentState] = useState<ProfileModalState>(
     step || 'account'
   )
+  const setCurrentStateAugmented = useCallback(
+    (
+      newData: Parameters<typeof setCurrentState>[0],
+      forceBackFlowTo?: ProfileModalState
+    ) => {
+      setCurrentState((prevState) => {
+        let data: ProfileModalState
+        if (typeof newData === 'function') {
+          data = newData(prevState)
+        } else {
+          data = newData
+        }
+
+        if (forceBackFlowTo)
+          forceBackFlowStorage.set(
+            JSON.stringify({ from: data, to: prevState })
+          )
+
+        if (data === 'account') {
+          forceBackFlowStorage.remove()
+        }
+
+        return data
+      })
+    },
+    []
+  )
+
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const sendEvent = useSendEvent()
 
@@ -98,7 +128,7 @@ export default function ProfileModal({
   useEffect(() => {
     if (props.isOpen) {
       sendEvent('open_profile_modal')
-      setCurrentState(step || 'account')
+      setCurrentStateAugmented(step || 'account')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
@@ -235,48 +265,20 @@ export default function ProfileModal({
       const data = JSON.parse(forceBackFlowStorage.get() || '{}') as any
       const { from, to } = data
       if (from === currentState) {
-        setCurrentState(to)
+        setCurrentStateAugmented(to)
         return
       }
     } catch {}
 
     if (props.onBackClick) props.onBackClick()
     else if (typeof withBackButton === 'function')
-      setCurrentState(withBackButton())
+      setCurrentStateAugmented(withBackButton())
     else
-      setCurrentState(
+      setCurrentStateAugmented(
         typeof withBackButton === 'string' ? withBackButton : 'account'
       )
   }
   const Content = modalContents[currentState]
-
-  const setCurrentStateAugmented = useCallback(
-    (
-      newData: Parameters<typeof setCurrentState>[0],
-      forceBackFlowTo?: ProfileModalState
-    ) => {
-      setCurrentState((prevState) => {
-        let data: ProfileModalState
-        if (typeof newData === 'function') {
-          data = newData(prevState)
-        } else {
-          data = newData
-        }
-
-        if (forceBackFlowTo)
-          forceBackFlowStorage.set(
-            JSON.stringify({ from: data, to: prevState })
-          )
-
-        if (data === 'account') {
-          forceBackFlowStorage.remove()
-        }
-
-        return data
-      })
-    },
-    []
-  )
 
   return (
     <Modal
@@ -286,7 +288,7 @@ export default function ProfileModal({
           currentState === 'polkadot-connect-success' &&
           hasPreviousIdentity
         ) {
-          setCurrentState('polkadot-connect-identity-removed')
+          setCurrentStateAugmented('polkadot-connect-identity-removed')
         } else props.closeModal()
       }}
       title={title}
