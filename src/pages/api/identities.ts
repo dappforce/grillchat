@@ -1,6 +1,7 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { getKiltApi, getPolkadotApi } from '@/server/external'
+import { getKiltApi } from '@/server/external'
+import axios from 'axios'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
 
@@ -38,15 +39,12 @@ export default handlerWrapper({
 })
 
 async function getIdentities(addresses: string[]): Promise<Identities[]> {
-  const [polkadotIdentitiesPromise, kiltIdentitiesPromise] =
-    await Promise.allSettled([
-      getPolkadotIdentities(addresses),
-      getKiltIdentities(addresses),
-    ] as const)
-  const polkadotIdentities =
-    polkadotIdentitiesPromise.status === 'fulfilled'
-      ? polkadotIdentitiesPromise.value
-      : {}
+  const [identitiesPromise, kiltIdentitiesPromise] = await Promise.allSettled([
+    getPolkadotAndKusamaIdentities(addresses),
+    getKiltIdentities(addresses),
+  ] as const)
+  const identities =
+    identitiesPromise.status === 'fulfilled' ? identitiesPromise.value : {}
   const kiltIdentities =
     kiltIdentitiesPromise.status === 'fulfilled'
       ? kiltIdentitiesPromise.value
@@ -54,7 +52,8 @@ async function getIdentities(addresses: string[]): Promise<Identities[]> {
 
   return addresses.map((address) => ({
     address,
-    polkadot: polkadotIdentities[address],
+    polkadot: identities[address]?.polkadot,
+    kusama: identities[address]?.kusama,
     kilt: kiltIdentities[address],
   }))
 }
@@ -63,9 +62,8 @@ const MAX_AGE = 60 * 60 // 1 hour
 const getIdentitiesRedisKey = (id: string, type: 'polkadot' | 'kilt') => {
   return `identities:${type}:${id}`
 }
-async function getPolkadotIdentities(addresses: string[]) {
-  const api = await getPolkadotApi()
-  const names: Record<string, string | undefined> = {}
+async function getPolkadotAndKusamaIdentities(addresses: string[]) {
+  const names: Record<string, { polkadot?: string; kusama?: string }> = {}
 
   const needToFetchAddresses: string[] = []
   const cachePromises = addresses.map(async (address) => {
@@ -74,8 +72,11 @@ async function getPolkadotIdentities(addresses: string[]) {
     )
     try {
       if (cached) {
-        const parsed = JSON.parse(cached) as { name?: string }
-        names[address] = parsed.name
+        const parsed = JSON.parse(cached) as {
+          polkadot?: string
+          kusama?: string
+        }
+        names[address] = parsed
         return
       }
     } catch {}
@@ -83,14 +84,32 @@ async function getPolkadotIdentities(addresses: string[]) {
   })
   await Promise.all(cachePromises)
 
-  const identities = await api.query.identity.identityOf.multi(
-    needToFetchAddresses
-  )
+  if (needToFetchAddresses.length === 0) return names
 
-  identities.forEach((identityCodec, i) => {
-    const identity = identityCodec.toPrimitive() as any
-    const name = identity?.info?.display?.raw
-    const address = needToFetchAddresses[i]
+  const usedAddressesToFetch = needToFetchAddresses
+  // subid api right now can't accept only 1 address
+  if (usedAddressesToFetch.length === 1) {
+    usedAddressesToFetch.push(usedAddressesToFetch[0])
+  }
+  const res = await axios.get(
+    'https://sub.id/api/v1/identities?' +
+      needToFetchAddresses.map((n) => `accounts=${n}`).join('&')
+  )
+  const identities = res.data
+  needToFetchAddresses.forEach((address) => {
+    if (!identities[address]) return
+
+    const identity = identities[address] as Record<
+      'polkadot' | 'kusama',
+      { info: { display: string } }
+    >
+    const savedIdentity: { polkadot?: string; kusama?: string } = {}
+    if (identity.polkadot.info.display) {
+      savedIdentity.polkadot = identity.polkadot.info.display
+    }
+    if (identity.kusama.info.display) {
+      savedIdentity.kusama = identity.kusama.info.display
+    }
     redisCallWrapper((redis) =>
       redis?.set(
         getIdentitiesRedisKey(address, 'polkadot'),
@@ -99,7 +118,7 @@ async function getPolkadotIdentities(addresses: string[]) {
         MAX_AGE
       )
     )
-    if (name) names[address] = name
+    names[address] = savedIdentity
   })
 
   return names
