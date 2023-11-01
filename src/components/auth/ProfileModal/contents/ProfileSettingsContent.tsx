@@ -309,7 +309,6 @@ function EvmProfileTabContent({
   const { name } = useName(address)
 
   const ensOptions = useMemo<ListItem[]>(() => {
-    console.log(ensNames)
     return (
       ensNames?.map((ens) => ({
         id: ens,
