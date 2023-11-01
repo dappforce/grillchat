@@ -16,7 +16,7 @@ import {
 import { wait } from '@/utils/promise'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
-import { getWallets, Wallet } from '@talismn/connect-wallets'
+import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
@@ -346,4 +346,41 @@ export function useMyMainAddress() {
 
 export function getHasEnoughEnergy(energy: number | undefined | null) {
   return energy ?? 0 > ESTIMATED_ENERGY_FOR_ONE_TX
+}
+
+export async function enableWallet({
+  listener,
+  onError,
+}: {
+  listener: (accounts: WalletAccount[]) => void
+  onError: (err: unknown) => void
+}) {
+  const preferredWallet = useMyAccount.getState().preferredWallet
+  if (!preferredWallet) return
+
+  try {
+    await preferredWallet.enable('grill.chat')
+    const unsub = preferredWallet.subscribeAccounts((accounts) => {
+      listener(accounts ?? [])
+    })
+    return () => {
+      if (typeof unsub === 'function') unsub()
+    }
+  } catch (err) {
+    onError(err)
+  }
+}
+
+export async function enableWalletOnce() {
+  return new Promise<WalletAccount[]>((resolve, reject) => {
+    const unsub = enableWallet({
+      listener: (accounts) => {
+        unsub.then((unsub) => unsub?.())
+        resolve(accounts)
+      },
+      onError: (err) => {
+        reject(err)
+      },
+    })
+  })
 }

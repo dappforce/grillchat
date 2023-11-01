@@ -162,7 +162,6 @@ function sendTransaction<Data>(
         useTransactions.getState().addPendingTransaction(txHashAndNonce)
       }
 
-      // TODO: if the proxy call failed because of unauthorized, the proxy account needs to be removed
       const unsub = await usedTx.signAndSend(
         account,
         { nonce, signer: signerOpt },
