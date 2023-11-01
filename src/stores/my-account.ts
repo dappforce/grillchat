@@ -70,21 +70,16 @@ const initialState: State = {
   _unsubscribeEnergy: () => undefined,
 }
 
-const ACCOUNT_ADDRESS_STORAGE_KEY = 'accountPublicKey'
-const ACCOUNT_STORAGE_KEY = 'account'
-const FOLLOWED_IDS_STORAGE_KEY = 'followedPostIds'
-const CONNECTED_WALLET_ADDRESS_STORAGE_KEY = 'connectedWalletAddress'
-
 export const accountAddressStorage = new LocalStorageAndForage(
-  () => ACCOUNT_ADDRESS_STORAGE_KEY
+  () => 'accountPublicKey'
 )
 export const followedIdsStorage = new LocalStorageAndForage(
-  (address: string) => `${FOLLOWED_IDS_STORAGE_KEY}:${address}`
+  (address: string) => `followedPostIds:${address}`
 )
 export const hasSentMessageStorage = new LocalStorage(() => 'has-sent-message')
-const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
+const accountStorage = new LocalStorage(() => 'account')
 const parentProxyAddressStorage = new LocalStorage(
-  () => CONNECTED_WALLET_ADDRESS_STORAGE_KEY
+  () => 'connectedWalletAddress'
 )
 const preferredWalletStorage = new LocalStorage(() => 'preferred-wallet')
 
