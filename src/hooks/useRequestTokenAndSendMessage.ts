@@ -27,8 +27,10 @@ export default function useRequestTokenAndSendMessage(
       usedAddress = address
     }
 
-    await requestToken({ address: usedAddress, captchaToken })
-    await sendMessage(sendMessageParams)
+    await Promise.all([
+      requestToken({ address: usedAddress, captchaToken }),
+      sendMessage(sendMessageParams),
+    ])
   }
 
   return useMutation(requestTokenAndSendMessage, options)
