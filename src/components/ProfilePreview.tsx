@@ -9,7 +9,7 @@ import { HiPencil } from 'react-icons/hi2'
 import AddressAvatar from './AddressAvatar'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
-import Name, { ForceProfileSource } from './Name'
+import Name, { ForceProfileSource, useName } from './Name'
 
 export type ProfilePreviewProps = ComponentProps<'div'> & {
   address: string
@@ -37,6 +37,7 @@ const ProfilePreview = ({
   withEvmAddress = true,
   ...props
 }: ProfilePreviewProps) => {
+  const { isLoading } = useName(address)
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { evmAddress } = accountData || {}
   const myAddress = useMyMainAddress()
@@ -61,7 +62,7 @@ const ProfilePreview = ({
             className={cx('text-lg', nameClassName)}
             forceProfileSource={forceProfileSource}
           />
-          {onEditClick && (
+          {onEditClick && !isLoading && (
             <Button
               size='noPadding'
               className='relative top-px ml-2 p-1 text-text-primary'

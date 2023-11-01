@@ -29,12 +29,15 @@ export function useName(
   address: string,
   forceProfileSource?: ForceProfileSource
 ) {
-  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(address)
-  const { data: profile } = getProfileQuery.useQuery(address)
+  const { data: accountData, isLoading: isLoadingEvm } =
+    getAccountDataQuery.useQuery(address)
+  const { data: profile, isLoading: isLoadingProfile } =
+    getProfileQuery.useQuery(address)
   const textColor = useRandomColor(address, { isAddress: true })
-  const { data: identities } = getIdentityQuery.useQuery(address ?? '', {
-    enabled: !!address,
-  })
+  const { data: identities, isLoading: isLoadingIdentities } =
+    getIdentityQuery.useQuery(address ?? '', {
+      enabled: !!address,
+    })
 
   const { ensNames, evmAddress } = accountData || {}
   const firstEnsName = ensNames?.[0]
@@ -90,7 +93,7 @@ export function useName(
     accountData,
     profile,
     evmAddress,
-    isLoading,
+    isLoading: isLoadingEvm || isLoadingProfile || isLoadingIdentities,
     textColor,
     ensNames,
   }
@@ -106,12 +109,12 @@ const Name = ({
   showProfileSourceIcon = true,
   ...props
 }: NameProps) => {
-  const { accountData, isLoading, name, textColor, profileSource } = useName(
+  const { isLoading, name, textColor, profileSource } = useName(
     address,
     forceProfileSource
   )
 
-  if (!accountData && isLoading) {
+  if (isLoading) {
     return (
       <span
         {...props}

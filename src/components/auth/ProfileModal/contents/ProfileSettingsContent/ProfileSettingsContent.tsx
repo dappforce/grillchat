@@ -6,7 +6,7 @@ import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeProfileSource, ProfileSource } from '@/utils/profile'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ContentProps } from '../../types'
 import EvmProfileTabContent from './EvmProfileTabContent'
 import PolkadotProfileTabContent from './PolkadotProfileTabContent'
@@ -14,34 +14,31 @@ import PolkadotProfileTabContent from './PolkadotProfileTabContent'
 export default function ProfileSettingsContent(props: ContentProps) {
   const { address } = props
 
-  const [selectedTab, setSelectedTab] = useState(2)
-  const { data: accountData } = getAccountDataQuery.useQuery(address)
-  const hasEns = !!accountData?.ensNames
-
   const { data: profile } = getProfileQuery.useQuery(address)
   const profileSource = profile?.profileSpace?.content?.profileSource
+  const getShouldSelectedTab = useCallback(() => {
+    const { source } = decodeProfileSource(profileSource)
+    switch (source) {
+      case 'ens':
+        return 0
+      case 'polkadot-identity':
+      case 'kusama-identity':
+      case 'kilt-w3n':
+      case 'subsocial-username':
+        return 1
+      default:
+        return 2
+    }
+  }, [profileSource])
 
+  const [selectedTab, setSelectedTab] = useState(getShouldSelectedTab)
   const [inputtedName, setInputtedName] = useState('')
 
   const identitiesCount = useIdentitiesCount(address)
 
   useEffect(() => {
-    const { source } = decodeProfileSource(profileSource)
-    switch (source) {
-      case 'ens':
-        setSelectedTab(0)
-        break
-      case 'polkadot-identity':
-      case 'kusama-identity':
-      case 'kilt-w3n':
-      case 'subsocial-username':
-        setSelectedTab(1)
-        break
-      default:
-        setSelectedTab(2)
-        break
-    }
-  }, [profileSource, hasEns])
+    getShouldSelectedTab()
+  }, [getShouldSelectedTab])
 
   const [selectedPolkadotIdentity, setSelectedPolkadotIdentity] = useState<
     ProfileSource | undefined
@@ -127,16 +124,15 @@ function TabTitle({ title, amount }: { title: string; amount: number }) {
 }
 
 function useIdentitiesCount(address: string) {
-  const { data: accountData } = getAccountDataQuery.useQuery(address)
+  const { data: accountData, isLoading: isLoadingEvm } =
+    getAccountDataQuery.useQuery(address)
   const ensNames = accountData?.ensNames
 
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
-  const { data: identities } = getIdentityQuery.useQuery(
-    parentProxyAddress ?? '',
-    {
+  const { data: identities, isLoading: isLoadingPolkadot } =
+    getIdentityQuery.useQuery(parentProxyAddress ?? '', {
       enabled: !!parentProxyAddress,
-    }
-  )
+    })
 
   let polkadotIdentitiesCount = 0
   if (identities?.kilt) polkadotIdentitiesCount++
@@ -148,5 +144,6 @@ function useIdentitiesCount(address: string) {
   return {
     evm: ensNames?.length ?? 0,
     polkadot: polkadotIdentitiesCount ?? 0,
+    isLoading: isLoadingEvm || isLoadingPolkadot,
   }
 }
