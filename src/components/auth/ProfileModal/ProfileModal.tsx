@@ -315,6 +315,6 @@ function useHasPreviousGrillIdentity() {
   )
   const { data: grillProfile } = getProfileQuery.useQuery(grillAddress ?? '')
   const hasPreviousIdentity =
-    grillAccountData?.evmAddress && grillProfile?.profileSpace?.content?.name
+    grillAccountData?.evmAddress || grillProfile?.profileSpace?.content?.name
   return !!hasPreviousIdentity
 }
