@@ -1,6 +1,7 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { getKiltApi } from '@/server/external'
+import { encodeAddress } from '@polkadot/keyring'
 import axios from 'axios'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
@@ -92,20 +93,25 @@ async function getPolkadotAndKusamaIdentities(addresses: string[]) {
 
   if (needToFetchAddresses.length === 0) return names
 
-  const usedAddressesToFetch = needToFetchAddresses
+  let usedAddressesToFetch = needToFetchAddresses
   // subid api right now can't accept only 1 address
   if (usedAddressesToFetch.length === 1) {
     usedAddressesToFetch.push(usedAddressesToFetch[0])
   }
+  // sub id uses address format with 42 prefix
+  usedAddressesToFetch = usedAddressesToFetch.map((address) =>
+    encodeAddress(address, 42)
+  )
   const res = await axios.get(
     'https://sub.id/api/v1/identities?' +
-      needToFetchAddresses.map((n) => `accounts=${n}`).join('&')
+      usedAddressesToFetch.map((n) => `accounts=${n}`).join('&')
   )
   const identities = res.data
   needToFetchAddresses.forEach((address) => {
-    if (!identities[address]) return
+    const convertedAddress = encodeAddress(address, 42)
+    if (!identities[convertedAddress]) return
 
-    const identity = identities[address] as Record<
+    const identity = identities[convertedAddress] as Record<
       'polkadot' | 'kusama',
       { info?: { display?: string } }
     >
@@ -149,13 +155,16 @@ async function getKiltIdentities(addresses: string[]) {
   })
   await Promise.all(cachePromises)
 
-  const identities = await Promise.all(
+  const identities = await Promise.allSettled(
     needToFetchAddresses.map((address) => {
       return queryAccountWeb3Name(address)
     })
   )
 
-  identities.forEach((name, i) => {
+  identities.forEach((namePromise, i) => {
+    if (namePromise.status === 'rejected') return
+
+    const name = namePromise.value
     const address = needToFetchAddresses[i]
     redisCallWrapper((redis) =>
       redis?.set(
@@ -165,6 +174,7 @@ async function getKiltIdentities(addresses: string[]) {
         MAX_AGE
       )
     )
+    console.log(name, address)
     if (name) w3names[address] = name
   })
 
