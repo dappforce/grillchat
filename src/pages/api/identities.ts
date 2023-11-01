@@ -50,6 +50,7 @@ async function getIdentities(addresses: string[]): Promise<Identities[]> {
       ? kiltIdentitiesPromise.value
       : {}
 
+  console.log(identitiesPromise)
   return addresses.map((address) => ({
     address,
     polkadot: identities[address]?.polkadot,
@@ -101,13 +102,13 @@ async function getPolkadotAndKusamaIdentities(addresses: string[]) {
 
     const identity = identities[address] as Record<
       'polkadot' | 'kusama',
-      { info: { display: string } }
+      { info?: { display?: string } }
     >
     const savedIdentity: { polkadot?: string; kusama?: string } = {}
-    if (identity.polkadot.info.display) {
+    if (identity?.polkadot?.info?.display) {
       savedIdentity.polkadot = identity.polkadot.info.display
     }
-    if (identity.kusama.info.display) {
+    if (identity?.kusama?.info?.display) {
       savedIdentity.kusama = identity.kusama.info.display
     }
     redisCallWrapper((redis) =>
