@@ -50,7 +50,6 @@ async function getIdentities(addresses: string[]): Promise<Identities[]> {
       ? kiltIdentitiesPromise.value
       : {}
 
-  console.log(identitiesPromise)
   return addresses.map((address) => ({
     address,
     polkadot: identities[address]?.polkadot,
