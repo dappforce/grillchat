@@ -38,7 +38,9 @@ export function useName(
 
   const { ensNames, evmAddress } = accountData || {}
   const firstEnsName = ensNames?.[0]
+  const firstSubsocialUsername = identities?.subsocial?.[0]
   let name =
+    firstSubsocialUsername ||
     identities?.polkadot ||
     identities?.kusama ||
     identities?.kilt ||
@@ -59,6 +61,9 @@ export function useName(
         return identities?.kusama
       case 'kilt-w3n':
         return identities?.kilt
+      case 'subsocial-username':
+        if (identities?.subsocial?.includes(content ?? '')) return content
+        return undefined
       case 'subsocial-profile':
         return content || profile?.profileSpace?.content?.name
     }
@@ -133,7 +138,8 @@ const Name = ({
             {profileSource === 'ens' && <EthIcon />}
             {profileSource === 'kilt-w3n' && <KiltIcon />}
             {profileSource === 'polkadot-identity' && <PolkadotIcon />}
-            {/** // TODO: add kusama identity icon */}
+            {/** // TODO: add kusama and subsocial identity icon */}
+            {profileSource === 'subsocial-username' && <PolkadotIcon />}
             {profileSource === 'kusama-identity' && <PolkadotIcon />}
           </div>
         )}

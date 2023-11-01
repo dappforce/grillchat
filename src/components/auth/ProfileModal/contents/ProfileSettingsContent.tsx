@@ -42,6 +42,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
       case 'polkadot-identity':
       case 'kusama-identity':
       case 'kilt-w3n':
+      case 'subsocial-username':
         setSelectedTab(1)
         break
       default:
@@ -151,6 +152,16 @@ function PolkadotProfileTabContent({
         icon: <PolkadotIcon className='text-text-muted' />,
       })
     }
+    if (identities?.subsocial) {
+      identities.subsocial.forEach((username) => {
+        options.push({
+          id: 'subsocial-username',
+          label: username,
+          // TODO: change subsocial icon
+          icon: <PolkadotIcon className='text-text-muted' />,
+        })
+      })
+    }
     if (identities?.kusama) {
       options.push({
         id: 'kusama-identity',
@@ -185,6 +196,11 @@ function PolkadotProfileTabContent({
     } else if (source === 'kilt-w3n') {
       const selected = identitiesOptions.find(
         (item) => item.label === content && item.id === 'kilt-w3n'
+      )
+      newSelected = selected
+    } else if (source === 'subsocial-username') {
+      const selected = identitiesOptions.find(
+        (item) => item.label === content && item.id === 'subsocial-username'
       )
       newSelected = selected
     }
@@ -263,6 +279,11 @@ function PolkadotProfileTabContent({
           } else if (selectedId === 'kilt-w3n') {
             newProfileSource = encodeProfileSource({
               source: 'kilt-w3n',
+              content: selected?.label ?? '',
+            })
+          } else if (selectedId === 'subsocial-username') {
+            newProfileSource = encodeProfileSource({
+              source: 'subsocial-username',
               content: selected?.label ?? '',
             })
           }

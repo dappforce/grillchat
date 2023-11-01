@@ -3,6 +3,7 @@ import '@kiltprotocol/augment-api'
 import { typesBundle } from '@kiltprotocol/type-definitions'
 import { ApiPromise, HttpProvider } from '@polkadot/api'
 import axios from 'axios'
+import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 
 export const covalentRequest = axios.create({
   baseURL: 'https://api.covalenthq.com/v1/',
@@ -10,18 +11,6 @@ export const covalentRequest = axios.create({
     Authorization: `Bearer ${getCovalentApiKey()}`,
   },
 })
-
-let polkadotApi: Promise<ApiPromise> | null = null
-const polkadotApiUrl = 'https://rpc.polkadot.io'
-export const getPolkadotApi = async () => {
-  if (polkadotApi) return polkadotApi
-
-  const provider = new HttpProvider(polkadotApiUrl)
-  const api = ApiPromise.create({ provider })
-  polkadotApi = api
-
-  return api
-}
 
 let kiltApi: Promise<ApiPromise> | null = null
 const kiltApiUrl = 'https://spiritnet.kilt.io'
@@ -33,4 +22,22 @@ export const getKiltApi = async () => {
   kiltApi = api
 
   return api
+}
+
+export function getSubIdRequest() {
+  return axios.create({ baseURL: 'https://sub.id/api/v1/' })
+}
+
+export function squidRequest<T, V extends Variables = Variables>(
+  config: RequestOptions<V, T>
+) {
+  const url = 'https://squid.subsquid.io/subsocial/graphql'
+
+  const SQUID_TIMEOUT = 3 * 1000 // 3 seconds
+  const client = new GraphQLClient(url, {
+    timeout: SQUID_TIMEOUT,
+    ...config,
+  })
+
+  return client.request({ url, ...config })
 }

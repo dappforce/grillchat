@@ -1,8 +1,8 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { getKiltApi } from '@/server/external'
+import { getKiltApi, getSubIdRequest, squidRequest } from '@/server/external'
 import { encodeAddress } from '@polkadot/keyring'
-import axios from 'axios'
+import { gql } from 'graphql-request'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
 
@@ -16,6 +16,7 @@ export type Identities = {
   polkadot?: string
   kusama?: string
   kilt?: string
+  subsocial?: string[]
 }
 type ResponseData = {
   data?: Identities[]
@@ -41,32 +42,41 @@ export default handlerWrapper({
 })
 
 async function getIdentities(addresses: string[]): Promise<Identities[]> {
-  const [identitiesPromise, kiltIdentitiesPromise] = await Promise.allSettled([
-    getPolkadotAndKusamaIdentities(addresses),
-    getKiltIdentities(addresses),
-  ] as const)
+  const [identitiesPromise, kiltIdentitiesPromise, subsocialPromise] =
+    await Promise.allSettled([
+      getPolkadotAndKusamaIdentities(addresses),
+      getKiltIdentities(addresses),
+      getSubsocialUsernames(addresses),
+    ] as const)
   const identities =
     identitiesPromise.status === 'fulfilled' ? identitiesPromise.value : {}
   const kiltIdentities =
     kiltIdentitiesPromise.status === 'fulfilled'
       ? kiltIdentitiesPromise.value
       : {}
+  const subsocialIdentities =
+    subsocialPromise.status === 'fulfilled' ? subsocialPromise.value : {}
 
   return addresses.map((address) => {
     const polkadot = identities[address]?.polkadot
     const kusama = identities[address]?.kusama
     const kilt = kiltIdentities[address]
+    const subsocialUsernames = subsocialIdentities[address]
     return {
       address,
       polkadot,
       kusama,
       kilt,
+      subsocial: subsocialUsernames,
     }
   })
 }
 
 const MAX_AGE = 60 * 60 // 1 hour
-const getIdentitiesRedisKey = (id: string, type: 'polkadot' | 'kilt') => {
+const getIdentitiesRedisKey = (
+  id: string,
+  type: 'polkadot' | 'kilt' | 'subsocial'
+) => {
   return `identities:${type}:${id}`
 }
 async function getPolkadotAndKusamaIdentities(addresses: string[]) {
@@ -89,7 +99,7 @@ async function getPolkadotAndKusamaIdentities(addresses: string[]) {
     } catch {}
     needToFetchAddresses.push(address)
   })
-  await Promise.all(cachePromises)
+  await Promise.allSettled(cachePromises)
 
   if (needToFetchAddresses.length === 0) return names
 
@@ -102,9 +112,8 @@ async function getPolkadotAndKusamaIdentities(addresses: string[]) {
   usedAddressesToFetch = usedAddressesToFetch.map((address) =>
     encodeAddress(address, 42)
   )
-  const res = await axios.get(
-    'https://sub.id/api/v1/identities?' +
-      usedAddressesToFetch.map((n) => `accounts=${n}`).join('&')
+  const res = await getSubIdRequest().get(
+    '/identities?' + usedAddressesToFetch.map((n) => `accounts=${n}`).join('&')
   )
   const identities = res.data
   needToFetchAddresses.forEach((address) => {
@@ -153,7 +162,7 @@ async function getKiltIdentities(addresses: string[]) {
     } catch {}
     needToFetchAddresses.push(address)
   })
-  await Promise.all(cachePromises)
+  await Promise.allSettled(cachePromises)
 
   const identities = await Promise.allSettled(
     needToFetchAddresses.map((address) => {
@@ -174,7 +183,6 @@ async function getKiltIdentities(addresses: string[]) {
         MAX_AGE
       )
     )
-    console.log(name, address)
     if (name) w3names[address] = name
   })
 
@@ -200,4 +208,51 @@ export async function queryAccountWeb3Name(
 
   const web3Name = w3n.unwrap().toHuman()
   return web3Name
+}
+
+async function getSubsocialUsernames(addresses: string[]) {
+  const usernamesMap: Record<string, string[]> = {}
+
+  const needToFetchAddresses: string[] = []
+  const cachePromises = addresses.map(async (address) => {
+    const cached = await redisCallWrapper((redis) =>
+      redis?.get(getIdentitiesRedisKey(address, 'subsocial'))
+    )
+    try {
+      if (cached) {
+        const parsed = JSON.parse(cached) as string[]
+        usernamesMap[address] = parsed
+        return
+      }
+    } catch {}
+    needToFetchAddresses.push(address)
+  })
+  await Promise.allSettled(cachePromises)
+
+  const res = (await squidRequest({
+    document: gql`
+      query GetAccountUsernames($addresses: [String!]!) {
+        accounts(where: { id_in: $addresses }) {
+          id
+          usernames
+        }
+      }
+    `,
+    variables: { addresses: needToFetchAddresses },
+  })) as { accounts: { id: string; usernames: string[] }[] }
+
+  res.accounts.forEach((accountData, i) => {
+    const { id, usernames } = accountData
+    redisCallWrapper((redis) =>
+      redis?.set(
+        getIdentitiesRedisKey(id, 'subsocial'),
+        JSON.stringify(usernames),
+        'EX',
+        MAX_AGE
+      )
+    )
+    if (usernames.length > 0) usernamesMap[id] = usernames
+  })
+
+  return usernamesMap
 }
