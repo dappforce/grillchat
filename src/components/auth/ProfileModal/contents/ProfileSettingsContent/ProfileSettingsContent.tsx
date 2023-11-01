@@ -1,0 +1,152 @@
+import { ForceProfileSource } from '@/components/Name'
+import ProfilePreview from '@/components/ProfilePreview'
+import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
+import Tabs from '@/components/Tabs'
+import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { useMyAccount } from '@/stores/my-account'
+import { decodeProfileSource, ProfileSource } from '@/utils/profile'
+import { useEffect, useState } from 'react'
+import { ContentProps } from '../../types'
+import EvmProfileTabContent from './EvmProfileTabContent'
+import PolkadotProfileTabContent from './PolkadotProfileTabContent'
+
+export default function ProfileSettingsContent(props: ContentProps) {
+  const { address } = props
+
+  const [selectedTab, setSelectedTab] = useState(2)
+  const { data: accountData } = getAccountDataQuery.useQuery(address)
+  const hasEns = !!accountData?.ensNames
+
+  const { data: profile } = getProfileQuery.useQuery(address)
+  const profileSource = profile?.profileSpace?.content?.profileSource
+
+  const [inputtedName, setInputtedName] = useState('')
+
+  const identitiesCount = useIdentitiesCount(address)
+
+  useEffect(() => {
+    const { source } = decodeProfileSource(profileSource)
+    switch (source) {
+      case 'ens':
+        setSelectedTab(0)
+        break
+      case 'polkadot-identity':
+      case 'kusama-identity':
+      case 'kilt-w3n':
+      case 'subsocial-username':
+        setSelectedTab(1)
+        break
+      default:
+        setSelectedTab(2)
+        break
+    }
+  }, [profileSource, hasEns])
+
+  const [selectedPolkadotIdentity, setSelectedPolkadotIdentity] = useState<
+    ProfileSource | undefined
+  >()
+  const [selectedEns, setSelectedEns] = useState('')
+
+  let forceProfileSource: ForceProfileSource | undefined = undefined
+  switch (selectedTab) {
+    case 0:
+      forceProfileSource = { content: selectedEns, profileSource: 'ens' }
+      break
+    case 1:
+      forceProfileSource = {
+        profileSource: selectedPolkadotIdentity,
+      }
+      break
+    case 2:
+      forceProfileSource = {
+        profileSource: 'subsocial-profile',
+        content: inputtedName,
+      }
+      break
+  }
+
+  return (
+    <div className='mt-2 flex flex-col gap-6'>
+      <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
+        <ProfilePreview
+          address={address}
+          forceProfileSource={forceProfileSource}
+        />
+      </div>
+      <div className='flex flex-col'>
+        <span className='mb-2 text-text-muted'>Identity provider</span>
+        <Tabs
+          manualTabControl={{ selectedTab, setSelectedTab }}
+          panelClassName='mt-4'
+          tabStyle='buttons'
+          tabs={[
+            {
+              id: 'evm',
+              text: <TabTitle title='EVM' amount={identitiesCount.evm} />,
+              content: () => (
+                <EvmProfileTabContent
+                  setSelectedEns={setSelectedEns}
+                  {...props}
+                />
+              ),
+            },
+            {
+              id: 'polkadot',
+              text: (
+                <TabTitle title='Polkadot' amount={identitiesCount.polkadot} />
+              ),
+              content: () => (
+                <PolkadotProfileTabContent
+                  setSelectedSource={setSelectedPolkadotIdentity}
+                  {...props}
+                />
+              ),
+            },
+            {
+              id: 'custom',
+              text: 'Custom',
+              content: () => (
+                <SubsocialProfileForm onNameChange={setInputtedName} />
+              ),
+            },
+          ]}
+        />
+      </div>
+    </div>
+  )
+}
+
+function TabTitle({ title, amount }: { title: string; amount: number }) {
+  return (
+    <span className='flex items-center gap-2'>
+      <span>{title}</span>
+      {!!amount && <span className='text-text-muted'>{amount}</span>}
+    </span>
+  )
+}
+
+function useIdentitiesCount(address: string) {
+  const { data: accountData } = getAccountDataQuery.useQuery(address)
+  const ensNames = accountData?.ensNames
+
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+  const { data: identities } = getIdentityQuery.useQuery(
+    parentProxyAddress ?? '',
+    {
+      enabled: !!parentProxyAddress,
+    }
+  )
+
+  let polkadotIdentitiesCount = 0
+  if (identities?.kilt) polkadotIdentitiesCount++
+  if (identities?.kusama) polkadotIdentitiesCount++
+  if (identities?.polkadot) polkadotIdentitiesCount++
+  if (identities?.subsocial)
+    polkadotIdentitiesCount += identities.subsocial.length
+
+  return {
+    evm: ensNames?.length ?? 0,
+    polkadot: polkadotIdentitiesCount ?? 0,
+  }
+}

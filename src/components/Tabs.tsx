@@ -6,7 +6,7 @@ import Container from './Container'
 
 type Tab = {
   id: string
-  text: string
+  text: string | ReactNode
   content: (changeTab: (selectedTab: number) => void) => JSX.Element
 }
 export type TabsProps = ComponentProps<'div'> & {
