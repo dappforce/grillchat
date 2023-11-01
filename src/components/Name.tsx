@@ -48,6 +48,8 @@ export function useName(
         return undefined
       case 'polkadot-identity':
         return identities?.polkadot
+      case 'kusama-identity':
+        return identities?.kusama
       case 'kilt-w3n':
         return identities?.kilt
       case 'subsocial-profile':
@@ -124,6 +126,8 @@ const Name = ({
             {profileSource === 'ens' && <EthIcon />}
             {profileSource === 'kilt-w3n' && <KiltIcon />}
             {profileSource === 'polkadot-identity' && <PolkadotIcon />}
+            {/** // TODO: add kusama identity icon */}
+            {profileSource === 'kusama-identity' && <PolkadotIcon />}
           </div>
         )}
       <span>

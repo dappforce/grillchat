@@ -12,9 +12,9 @@ export type ApiIdentitiesParams = z.infer<typeof querySchema>
 
 export type Identities = {
   address: string
-  polkadot?: string[]
-  kusama?: string[]
-  kilt?: string[]
+  polkadot?: string
+  kusama?: string
+  kilt?: string
 }
 type ResponseData = {
   data?: Identities[]
@@ -52,14 +52,14 @@ async function getIdentities(addresses: string[]): Promise<Identities[]> {
       : {}
 
   return addresses.map((address) => {
-    const polkadotName = identities[address]?.polkadot
-    const kusamaName = identities[address]?.kusama
-    const kiltName = kiltIdentities[address]
+    const polkadot = identities[address]?.polkadot
+    const kusama = identities[address]?.kusama
+    const kilt = kiltIdentities[address]
     return {
       address,
-      polkadot: polkadotName ? [polkadotName] : undefined,
-      kusama: kusamaName ? [kusamaName] : undefined,
-      kilt: kiltName ? [kiltName] : undefined,
+      polkadot,
+      kusama,
+      kilt,
     }
   })
 }
