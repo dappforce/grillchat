@@ -12,8 +12,9 @@ export type ApiIdentitiesParams = z.infer<typeof querySchema>
 
 export type Identities = {
   address: string
-  polkadot?: string
-  kilt?: string
+  polkadot?: string[]
+  kusama?: string[]
+  kilt?: string[]
 }
 type ResponseData = {
   data?: Identities[]
@@ -50,12 +51,17 @@ async function getIdentities(addresses: string[]): Promise<Identities[]> {
       ? kiltIdentitiesPromise.value
       : {}
 
-  return addresses.map((address) => ({
-    address,
-    polkadot: identities[address]?.polkadot,
-    kusama: identities[address]?.kusama,
-    kilt: kiltIdentities[address],
-  }))
+  return addresses.map((address) => {
+    const polkadotName = identities[address]?.polkadot
+    const kusamaName = identities[address]?.kusama
+    const kiltName = kiltIdentities[address]
+    return {
+      address,
+      polkadot: polkadotName ? [polkadotName] : undefined,
+      kusama: kusamaName ? [kusamaName] : undefined,
+      kilt: kiltName ? [kiltName] : undefined,
+    }
+  })
 }
 
 const MAX_AGE = 60 * 60 // 1 hour
@@ -113,7 +119,7 @@ async function getPolkadotAndKusamaIdentities(addresses: string[]) {
     redisCallWrapper((redis) =>
       redis?.set(
         getIdentitiesRedisKey(address, 'polkadot'),
-        JSON.stringify({ name }),
+        JSON.stringify(savedIdentity),
         'EX',
         MAX_AGE
       )
