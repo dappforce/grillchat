@@ -38,14 +38,12 @@ const useSignEvmLinkMessage = () => {
   ) => {
     setIsError(false)
 
-    console.log(evmAddress, substrateAddress)
     if (!evmAddress || !substrateAddress) return
 
     const message = await buildMsgParams(substrateAddress, signerAddress)
     try {
       setIsSigningMessage(true)
       const data = await signMessageAsync({ message })
-      console.log(data.toString())
 
       setIsSigningMessage(false)
       return data.toString()
