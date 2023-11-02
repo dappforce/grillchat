@@ -1,6 +1,8 @@
 import { ForceProfileSource } from '@/components/Name'
 import ProfilePreview from '@/components/ProfilePreview'
-import SubsocialProfileForm from '@/components/subsocial-profile/SubsocialProfileForm'
+import SubsocialProfileForm, {
+  validateNickname,
+} from '@/components/subsocial-profile/SubsocialProfileForm'
 import Tabs from '@/components/Tabs'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -96,7 +98,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
     case 2:
       forceProfileSource = {
         profileSource: 'subsocial-profile',
-        content: inputtedName,
+        content: validateNickname(inputtedName) ? inputtedName : '',
       }
       break
   }
