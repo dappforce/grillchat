@@ -2,6 +2,7 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import { decodeProfileSource } from '@/utils/profile'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
@@ -64,6 +65,8 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
             : undefined
         case 'subsocial-profile':
           return subsocialProfileImage
+            ? getIpfsContentUrl(subsocialProfileImage)
+            : undefined
       }
     }, [
       profileSource,

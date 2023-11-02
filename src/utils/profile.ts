@@ -43,7 +43,8 @@ export function decodeProfileSource(encoded: string | undefined): {
   const data = prefixEntries.find(([, prefix]) => {
     return encoded.startsWith(prefix)
   }) as [ProfileSource, string] | undefined
-  if (!data) return { source: 'subsocial-profile' }
+  if (!data || data[0] === 'subsocial-profile')
+    return { source: 'subsocial-profile' }
 
   const [source, prefix] = data
   const content = encoded.split(prefix)[1]

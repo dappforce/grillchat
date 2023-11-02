@@ -146,7 +146,11 @@ export default function PolkadotProfileTabContent({
     return (
       <p className='text-text-muted'>
         To use a Polkadot identity, you need to set it up first. We support{' '}
-        <LinkText href='https://polkaverse/dd' openInNewTab variant='primary'>
+        <LinkText
+          href='https://polkaverse.com/dd'
+          openInNewTab
+          variant='primary'
+        >
           Subsocial Usernames
         </LinkText>
         ,{' '}

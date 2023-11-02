@@ -1,4 +1,4 @@
-import MenuList from '@/components/MenuList'
+import MenuList, { MenuListProps } from '@/components/MenuList'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { Skeleton } from '@/components/SkeletonFallback'
 import { useMyAccount } from '@/stores/my-account'
@@ -20,6 +20,52 @@ export default function PolkadotConnectAccountContent({
   const { accounts, isLoading } = useAccountsFromPreferredWallet(() =>
     setCurrentState('polkadot-connect')
   )
+
+  const menus: MenuListProps['menus'] =
+    accounts
+      ?.map((account) => {
+        const avatar = (account as any).avatar
+        let address = ''
+        try {
+          address = toSubsocialAddress(account.address)!
+        } catch {}
+        if (!address) return null
+
+        return {
+          text: (
+            <span className='flex flex-1 items-center justify-between gap-4'>
+              <span>{account.name || account.address}</span>
+              <span className='whitespace-nowrap font-mono text-text-muted'>
+                {truncateAddress(toSubsocialAddress(account.address)!)}
+              </span>
+            </span>
+          ),
+          onClick: () => {
+            if (!account.signer) return
+
+            connectWallet(account.address, account.signer as Signer)
+            setCurrentState('polkadot-connect-confirmation')
+          },
+          icon: () =>
+            avatar ? (
+              <Image
+                alt='account'
+                src={avatar}
+                width={32}
+                height={32}
+                className='h-8 w-8'
+              />
+            ) : (
+              <Identicon
+                value={account.address}
+                theme='polkadot'
+                size={32}
+                className='h-8 w-8'
+              />
+            ),
+        }
+      })
+      .filter(Boolean) ?? []
 
   return (
     <div>
@@ -56,45 +102,7 @@ export default function PolkadotConnectAccountContent({
             as='div'
             className='mb-3 max-h-96 scrollbar-track-background-light'
           >
-            <MenuList
-              className='py-0'
-              menus={accounts.map((account) => {
-                const avatar = (account as any).avatar
-                return {
-                  text: (
-                    <span className='flex flex-1 items-center justify-between gap-4'>
-                      <span>{account.name || account.address}</span>
-                      <span className='whitespace-nowrap font-mono text-text-muted'>
-                        {truncateAddress(toSubsocialAddress(account.address)!)}
-                      </span>
-                    </span>
-                  ),
-                  onClick: () => {
-                    if (!account.signer) return
-
-                    connectWallet(account.address, account.signer as Signer)
-                    setCurrentState('polkadot-connect-confirmation')
-                  },
-                  icon: () =>
-                    avatar ? (
-                      <Image
-                        alt='account'
-                        src={avatar}
-                        width={32}
-                        height={32}
-                        className='h-8 w-8'
-                      />
-                    ) : (
-                      <Identicon
-                        value={account.address}
-                        theme='polkadot'
-                        size={32}
-                        className='h-8 w-8'
-                      />
-                    ),
-                }
-              })}
-            />
+            <MenuList className='py-0' menus={menus} />
           </ScrollableContainer>
         )
       })()}
