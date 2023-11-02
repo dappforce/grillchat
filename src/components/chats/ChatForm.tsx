@@ -280,40 +280,22 @@ export default function ChatForm({
           }
 
           const renderSendButton = (classNames: string) => (
-            <>
-              <Button
-                onTouchEnd={(e) => {
-                  // For mobile, to prevent keyboard from hiding
-                  if (shouldSendMessage) {
-                    submitForm(e)
-                  }
-                }}
-                tabIndex={-1}
-                onClick={submitForm}
-                size='circle'
-                variant={isDisabled ? 'mutedOutline' : 'primary'}
-                {...sendButtonProps}
-                className={cx(classNames, sendButtonProps?.className)}
-              >
-                <Send className='relative top-px h-4 w-4' />
-              </Button>
-              <Button
-                onTouchEnd={(e) => {
-                  // For mobile, to prevent keyboard from hiding
-                  if (shouldSendMessage) {
-                    submitForm(e, true)
-                  }
-                }}
-                tabIndex={-1}
-                onClick={(e) => submitForm(e, true)}
-                size='circle'
-                variant={isDisabled ? 'mutedOutline' : 'primary'}
-                {...sendButtonProps}
-                className={cx(classNames, sendButtonProps?.className)}
-              >
-                <Send className='relative top-px h-4 w-4' />
-              </Button>
-            </>
+            <Button
+              onTouchEnd={(e) => {
+                // For mobile, to prevent keyboard from hiding
+                if (shouldSendMessage) {
+                  submitForm(e)
+                }
+              }}
+              tabIndex={-1}
+              onClick={submitForm}
+              size='circle'
+              variant={isDisabled ? 'mutedOutline' : 'primary'}
+              {...sendButtonProps}
+              className={cx(classNames, sendButtonProps?.className)}
+            >
+              <Send className='relative top-px h-4 w-4' />
+            </Button>
           )
 
           return (
@@ -343,6 +325,23 @@ export default function ChatForm({
                 ref={textAreaRef}
                 rightElement={!sendButtonText ? renderSendButton : undefined}
               />
+
+              <Button
+                onTouchEnd={(e) => {
+                  // For mobile, to prevent keyboard from hiding
+                  if (shouldSendMessage) {
+                    submitForm(e, true)
+                  }
+                }}
+                tabIndex={-1}
+                onClick={(e) => submitForm(e, true)}
+                size='circle'
+                variant={isDisabled ? 'mutedOutline' : 'primary'}
+                {...sendButtonProps}
+                className={cx(sendButtonProps?.className)}
+              >
+                <Send className='relative top-px h-4 w-4' />
+              </Button>
               {sendButtonText && (
                 <Button
                   type='submit'
