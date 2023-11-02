@@ -94,7 +94,6 @@ export function deleteOptimisticData({
     }
   )
   getCommentIdsByPostIdFromChainQuery.setQueryData(client, chatId, (ids) => {
-    console.log(ids)
     return ids?.filter((id) => id !== tempId)
   })
 

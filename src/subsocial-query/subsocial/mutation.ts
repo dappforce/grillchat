@@ -134,27 +134,26 @@ async function createTxAndSend<Data, Context>(
     txCallbacks?.onError((err as any)?.message || 'Error generating tx', false)
     throw err
   }
-  return ''
-  // try {
-  //   return await sendTransaction(
-  //     {
-  //       tx,
-  //       wallet: txConfig.wallet,
-  //       data,
-  //       networkRpc: txConfig.networkRpc,
-  //       summary,
-  //     },
-  //     apis,
-  //     txCallbacks
-  //   )
-  // } catch (err) {
-  //   txCallbacks?.onError((err as any)?.message || 'Error generating tx', true)
-  //   if (txConfig.supressSendingTxError) {
-  //     console.warn('Error supressed:', err)
-  //     return ''
-  //   }
-  //   throw err
-  // }
+  try {
+    return await sendTransaction(
+      {
+        tx,
+        wallet: txConfig.wallet,
+        data,
+        networkRpc: txConfig.networkRpc,
+        summary,
+      },
+      apis,
+      txCallbacks
+    )
+  } catch (err) {
+    txCallbacks?.onError((err as any)?.message || 'Error generating tx', true)
+    if (txConfig.supressSendingTxError) {
+      console.warn('Error supressed:', err)
+      return ''
+    }
+    throw err
+  }
 }
 function sendTransaction<Data>(
   txInfo: {

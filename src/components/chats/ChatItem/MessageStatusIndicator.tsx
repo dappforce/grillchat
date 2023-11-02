@@ -103,7 +103,6 @@ export default function MessageStatusIndicator({
 
 export function getMessageStatusById(message: PostData): MessageStatus {
   const id = message.id
-  console.log(id, message.struct, message.content)
   if (!isMessageSent(id, message.struct.dataType)) {
     if (isClientGeneratedOptimisticId(id)) return 'sending'
     if (message.struct.dataType === 'offChain') return 'offChain'
