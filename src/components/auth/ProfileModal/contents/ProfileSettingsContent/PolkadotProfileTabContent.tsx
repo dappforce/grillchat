@@ -23,7 +23,9 @@ export default function PolkadotProfileTabContent({
   setCurrentState,
   setSelectedSource,
 }: ContentProps & {
-  setSelectedSource: (source: ProfileSource | undefined) => void
+  setSelectedSource: (
+    source: { source: ProfileSource; content?: string } | undefined
+  ) => void
 }) {
   const { data: profile } = getProfileQuery.useQuery(address)
   const profileSource = profile?.profileSpace?.content?.profileSource
@@ -104,7 +106,10 @@ export default function PolkadotProfileTabContent({
     getShouldSelectedProfile
   )
   useEffect(() => {
-    setSelectedSource(selected?.id as ProfileSource)
+    setSelectedSource({
+      source: selected?.id as ProfileSource,
+      content: selected?.label,
+    })
   }, [selected, setSelectedSource])
 
   useEffect(() => {

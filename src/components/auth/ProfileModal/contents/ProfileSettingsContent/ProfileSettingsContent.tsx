@@ -48,7 +48,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
   const identitiesCount = useIdentitiesCount(address)
 
   const [selectedPolkadotIdentity, setSelectedPolkadotIdentity] = useState<
-    ProfileSource | undefined
+    { source: ProfileSource; content?: string } | undefined
   >()
   const [selectedEns, setSelectedEns] = useState('')
 
@@ -59,7 +59,8 @@ export default function ProfileSettingsContent(props: ContentProps) {
       break
     case 1:
       forceProfileSource = {
-        profileSource: selectedPolkadotIdentity,
+        profileSource: selectedPolkadotIdentity?.source,
+        content: selectedPolkadotIdentity?.content,
       }
       break
     case 2:
