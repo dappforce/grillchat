@@ -20,7 +20,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
   const getShouldSelectedTab = useCallback(() => {
     try {
       const data = JSON.parse(forceBackFlowStorage.get() || '{}') as any
-      const { from, to } = data as {
+      const { from } = data as {
         from: ProfileModalState
         to: ProfileModalState
       }
@@ -82,7 +82,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
         <span className='mb-2 text-text-muted'>Identity provider</span>
         <Tabs
           manualTabControl={{ selectedTab, setSelectedTab }}
-          panelClassName='mt-4'
+          panelClassName='mt-4 flex flex-col justify-end'
           tabStyle='buttons'
           tabs={[
             {

@@ -50,7 +50,7 @@ export default function SelectInput<AdditionalData = {}>({
                     ? 'py-2'
                     : 'py-3',
                   'pl-4 pr-12 text-left',
-                  'appearance-none text-base leading-6 ring-1 ring-inset ring-border-gray',
+                  'appearance-none text-base ring-1 ring-border-gray',
                   'bg-background text-text',
                   interactionRingStyles()
                 )}
