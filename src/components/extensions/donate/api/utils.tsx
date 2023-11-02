@@ -95,7 +95,7 @@ export const openMobileWallet = async ({ connector }: OpenWalletProps) => {
   if (getUri) {
     const mobileUri = await getUri()
 
-    if (mobileUri.startsWith('http')) {
+    if (mobileUri && mobileUri.startsWith('http')) {
       const link = document.createElement('a')
       link.href = mobileUri
       link.target = '_blank'

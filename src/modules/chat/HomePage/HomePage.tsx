@@ -42,17 +42,23 @@ export const homePageAdditionalTabs: {
   //   text: 'AI Experts',
   //   hubId: '1031',
   // },
+  // {
+  //   id: 'ai-bots',
+  //   text: 'AI Bots',
+  //   hubId: '1031',
+  // },
   {
-    id: 'ai-bots',
-    text: 'AI Bots',
-    hubId: '1031',
+    id: 'creators',
+    text: 'Creators',
+    hubId: '1218',
   },
 ]
 
 const pathnameTabIdMapper: Record<string, number> = {
   '/my-chats': 0,
   '/hot-chats': 1,
-  '/ai-bots': 2,
+  '/creators': 2,
+  // '/ai-bots': 2,
   '/hubs': 3,
 }
 
@@ -74,7 +80,7 @@ export default function HubsPage(props: HubsPageProps) {
     },
     {
       id: 'hot-chats',
-      text: 'Hot Chats',
+      text: 'Recommended',
       content: () => <HotChatsContent hubId={hotChatsHubId} />,
     },
     ...homePageAdditionalTabs.map(({ id, text, hubId }) => ({
