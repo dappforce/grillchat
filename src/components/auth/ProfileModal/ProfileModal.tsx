@@ -50,7 +50,12 @@ const modalContents: {
   'evm-set-profile-suggestion': ({ closeModal, setCurrentState }) => (
     <CommonEvmSetProfileContent
       onSkipClick={closeModal}
-      onSetEvmIdentityClick={() => setCurrentState('profile-settings')}
+      onSetEvmIdentityClick={() => {
+        useProfileModal.getState().openModal({
+          defaultOpenState: 'profile-settings',
+          customInternalStepProps: { defaultTab: 'evm' },
+        })
+      }}
     />
   ),
   notifications: NotificationContent,

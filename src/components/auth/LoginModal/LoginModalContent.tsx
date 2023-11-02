@@ -359,9 +359,10 @@ export const loginModalContents: LoginModalContents = {
     <CommonEvmSetProfileContent
       onSkipClick={closeModal}
       onSetEvmIdentityClick={() => {
-        useProfileModal
-          .getState()
-          .openModal({ defaultOpenState: 'profile-settings' })
+        useProfileModal.getState().openModal({
+          defaultOpenState: 'profile-settings',
+          customInternalStepProps: { defaultTab: 'evm' },
+        })
         closeModal()
       }}
     />
