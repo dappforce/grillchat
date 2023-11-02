@@ -130,18 +130,35 @@ export default function PolkadotProfileTabContent({
     )
   }
 
-  if (!identities?.polkadot && !identities?.kilt) {
+  if (
+    !identities?.polkadot &&
+    !identities?.kilt &&
+    !identities?.kusama &&
+    !identities?.subsocial?.length
+  ) {
     return (
       <p className='text-text-muted'>
         To use a Polkadot identity, you need to set it up first. We support{' '}
+        <LinkText href='https://polkaverse/dd' openInNewTab variant='primary'>
+          Subsocial Usernames
+        </LinkText>
+        ,{' '}
         <LinkText
           href='https://support.polkadot.network/support/solutions/articles/65000181981-how-to-set-and-clear-an-identity#Setting-an-Identity'
           openInNewTab
           variant='primary'
         >
           Polkadot Identity
-        </LinkText>{' '}
-        and{' '}
+        </LinkText>
+        ,{' '}
+        <LinkText
+          href='https://support.polkadot.network/support/solutions/articles/65000181981-how-to-set-and-clear-an-identity#Setting-an-Identity'
+          openInNewTab
+          variant='primary'
+        >
+          Kusama Identity
+        </LinkText>
+        , and{' '}
         <LinkText href='https://w3n.id/' variant='primary' openInNewTab>
           KILT w3name
         </LinkText>
