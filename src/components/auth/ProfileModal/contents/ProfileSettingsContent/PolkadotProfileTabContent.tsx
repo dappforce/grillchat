@@ -1,5 +1,7 @@
 import KiltIcon from '@/assets/icons/kilt.svg'
+import KusamaIcon from '@/assets/icons/kusama.svg'
 import PolkadotIcon from '@/assets/icons/polkadot.svg'
+import SubsocialIcon from '@/assets/icons/subsocial.svg'
 import Button from '@/components/Button'
 import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
 import LinkText from '@/components/LinkText'
@@ -50,8 +52,7 @@ export default function PolkadotProfileTabContent({
         options.push({
           id: 'subsocial-username',
           label: username,
-          // TODO: change subsocial icon
-          icon: <PolkadotIcon className='text-text-muted' />,
+          icon: <SubsocialIcon className='text-text-muted' />,
         })
       })
     }
@@ -59,8 +60,7 @@ export default function PolkadotProfileTabContent({
       options.push({
         id: 'kusama-identity',
         label: identities.kusama,
-        // TODO: change to kusama icon
-        icon: <PolkadotIcon className='text-text-muted' />,
+        icon: <KusamaIcon className='text-text-muted' />,
       })
     }
     if (identities?.kilt) {

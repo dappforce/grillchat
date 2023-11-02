@@ -1,6 +1,8 @@
 import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
 import KiltIcon from '@/assets/icons/kilt-dynamic-size.svg'
+import KusamaIcon from '@/assets/icons/kusama-dynamic-size.svg'
 import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
+import SubsocialIcon from '@/assets/icons/subsocial-dynamic-size.svg'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -141,9 +143,8 @@ const Name = ({
             {profileSource === 'ens' && <EthIcon />}
             {profileSource === 'kilt-w3n' && <KiltIcon />}
             {profileSource === 'polkadot-identity' && <PolkadotIcon />}
-            {/** // TODO: add kusama and subsocial identity icon */}
-            {profileSource === 'subsocial-username' && <PolkadotIcon />}
-            {profileSource === 'kusama-identity' && <PolkadotIcon />}
+            {profileSource === 'subsocial-username' && <SubsocialIcon />}
+            {profileSource === 'kusama-identity' && <KusamaIcon />}
           </div>
         )}
       <span>
