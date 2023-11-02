@@ -13,6 +13,7 @@ import {
   SendMessageParams,
   useSendMessage,
 } from '@/services/subsocial/commentIds'
+import { useSendOffchainMessage } from '@/services/subsocial/datahub/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
@@ -142,6 +143,15 @@ export default function ChatForm({
       })
     },
   })
+  const { mutate } = useSendOffchainMessage({
+    onSuccess: () => unsentMessageStorage.remove(chatId),
+    onError: (error, variables) => {
+      showErrorSendingMessageToast(error, 'Failed to send message', variables, {
+        reloadUnsentMessage,
+        setIsDisabledInput,
+      })
+    },
+  })
 
   const { enableInputAutofocus } = useConfigContext()
   const { autofocus: runAutofocus } = useAutofocus()
@@ -174,7 +184,10 @@ export default function ChatForm({
     clearAction?.()
   }
 
-  const handleSubmit = async (captchaToken: string | null) => {
+  const handleSubmit = async (
+    captchaToken: string | null,
+    isOffchainPosting?: boolean
+  ) => {
     if (
       shouldSendMessage &&
       'virtualKeyboard' in navigator &&
@@ -211,13 +224,17 @@ export default function ChatForm({
     if (!hasSentMessageStorage.get()) {
       setTimeout(() => {
         setIsOpenCtaModal(true)
-      }, 1000)
+      }, 2000)
     }
 
     unsentMessageStorage.set(JSON.stringify(messageParams), chatId)
     hasSentMessageStorage.set('true')
 
-    if (shouldSendMessage) {
+    resetForm()
+    if (isOffchainPosting) {
+      resetForm()
+      mutate({ ...messageParams, optimisticId: crypto.randomUUID() })
+    } else if (shouldSendMessage) {
       resetForm()
       sendMessage(messageParams)
     } else {
@@ -249,33 +266,54 @@ export default function ChatForm({
     <>
       <CaptchaInvisible>
         {(runCaptcha) => {
-          const submitForm = async (e?: SyntheticEvent) => {
+          const submitForm = async (
+            e?: SyntheticEvent,
+            isOffchainPosting?: boolean
+          ) => {
             e?.preventDefault()
             if (shouldSendMessage) {
-              handleSubmit(null)
+              handleSubmit(null, isOffchainPosting)
               return
             }
             const token = await runCaptcha()
-            handleSubmit(token)
+            handleSubmit(token, isOffchainPosting)
           }
 
           const renderSendButton = (classNames: string) => (
-            <Button
-              onTouchEnd={(e) => {
-                // For mobile, to prevent keyboard from hiding
-                if (shouldSendMessage) {
-                  submitForm(e)
-                }
-              }}
-              tabIndex={-1}
-              onClick={submitForm}
-              size='circle'
-              variant={isDisabled ? 'mutedOutline' : 'primary'}
-              {...sendButtonProps}
-              className={cx(classNames, sendButtonProps?.className)}
-            >
-              <Send className='relative top-px h-4 w-4' />
-            </Button>
+            <>
+              <Button
+                onTouchEnd={(e) => {
+                  // For mobile, to prevent keyboard from hiding
+                  if (shouldSendMessage) {
+                    submitForm(e)
+                  }
+                }}
+                tabIndex={-1}
+                onClick={submitForm}
+                size='circle'
+                variant={isDisabled ? 'mutedOutline' : 'primary'}
+                {...sendButtonProps}
+                className={cx(classNames, sendButtonProps?.className)}
+              >
+                <Send className='relative top-px h-4 w-4' />
+              </Button>
+              <Button
+                onTouchEnd={(e) => {
+                  // For mobile, to prevent keyboard from hiding
+                  if (shouldSendMessage) {
+                    submitForm(e, true)
+                  }
+                }}
+                tabIndex={-1}
+                onClick={(e) => submitForm(e, true)}
+                size='circle'
+                variant={isDisabled ? 'mutedOutline' : 'primary'}
+                {...sendButtonProps}
+                className={cx(classNames, sendButtonProps?.className)}
+              >
+                <Send className='relative top-px h-4 w-4' />
+              </Button>
+            </>
           )
 
           return (

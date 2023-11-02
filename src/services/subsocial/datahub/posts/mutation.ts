@@ -1,5 +1,9 @@
+import { getMaxMessageLength } from '@/constants/chat'
 import { DatahubMutationInput } from '@/pages/api/datahub'
+import { useSaveFile } from '@/services/api/mutation'
 import { Signer } from '@/utils/account'
+import { ReplyWrapper } from '@/utils/ipfs'
+import { preventWindowUnload } from '@/utils/window'
 import { u8aToHex } from '@polkadot/util'
 import { PostContent } from '@subsocial/api/types'
 import {
@@ -14,8 +18,19 @@ import {
   SynthUpdatePostTxRetryCallParsedArgs,
   UpdatePostCallParsedArgs,
 } from '@subsocial/data-hub-sdk'
+import {
+  useMutation,
+  UseMutationOptions,
+  useQueryClient,
+} from '@tanstack/react-query'
 import axios from 'axios'
 import sortKeys from 'sort-keys-recursive'
+import { SendMessageParams } from '../../commentIds'
+import {
+  addOptimisticData,
+  deleteOptimisticData,
+} from '../../commentIds/optimistic'
+import { useWalletGetter } from '../../hooks'
 import { PostKind } from '../generated-query'
 
 type DatahubParams<T> = T & {
@@ -38,11 +53,13 @@ async function createPostData({
   spaceId,
   content,
   signer,
+  isOffchainMessage,
 }: DatahubParams<{
   rootPostId?: string
   spaceId: string
   cid: string
   content: PostContent
+  isOffchainMessage?: boolean
 }>) {
   const eventArgs: CreatePostCallParsedArgs = {
     forced: false,
@@ -55,7 +72,9 @@ async function createPostData({
   // TODO: refactor input to reduce duplication with other inputs
   const input: SocialEventDataApiInput = {
     protVersion: socialEventProtVersion['0.1'],
-    dataType: SocialEventDataType.optimistic,
+    dataType: isOffchainMessage
+      ? SocialEventDataType.offChain
+      : SocialEventDataType.optimistic,
     callData: {
       name: socialCallName.create_post,
       signer: address || '',
@@ -245,3 +264,68 @@ const datahubMutation = {
   notifyUpdatePostFailedOrRetryStatus,
 }
 export default datahubMutation
+
+type SendOffchainMessageParams = SendMessageParams & { optimisticId: string }
+export function useSendOffchainMessage(
+  config: UseMutationOptions<void, unknown, SendOffchainMessageParams, unknown>
+) {
+  const client = useQueryClient()
+  const { mutateAsync: saveFile } = useSaveFile()
+  const getWallet = useWalletGetter()
+
+  return useMutation({
+    ...config,
+    mutationFn: async (data) => {
+      const content = {
+        body: data.message,
+        inReplyTo: ReplyWrapper(data.replyTo),
+        extensions: data.extensions,
+        optimisticId: data.optimisticId,
+      } as PostContent
+
+      const maxLength = getMaxMessageLength(data.chatId)
+      if (data.message && data.message.length > maxLength)
+        throw new Error(
+          'Your message is too long, please split it up to multiple messages'
+        )
+
+      const res = await saveFile(content)
+      const cid = res.cid
+      if (!cid) throw new Error('Failed to save file')
+
+      await datahubMutation.createPostData({
+        ...getWallet(),
+        content: content,
+        cid: cid,
+        rootPostId: data.chatId,
+        spaceId: data.hubId,
+      })
+    },
+    onMutate: async (data) => {
+      preventWindowUnload()
+      const content = {
+        body: data.message,
+        inReplyTo: ReplyWrapper(data.replyTo),
+        extensions: data.extensions,
+        optimisticId: data.optimisticId,
+      } as PostContent
+
+      addOptimisticData({
+        address: getWallet().address,
+        params: data,
+        ipfsContent: content,
+        client,
+      })
+      config.onMutate?.(data)
+    },
+    onError: (err, data, context) => {
+      const { chatId, optimisticId } = data
+      deleteOptimisticData({
+        chatId,
+        client,
+        optimisticId,
+      })
+      config.onError?.(err, data, context)
+    },
+  })
+}
