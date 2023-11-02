@@ -130,7 +130,7 @@ const Name = ({
       {showProfileSourceIcon &&
         profileSource &&
         profileSource !== 'subsocial-profile' && (
-          <div className='relative top-0.5 mr-1 flex-shrink-0 text-text-muted'>
+          <div className='relative top-px mr-1 flex-shrink-0 text-text-muted'>
             {profileSource === 'ens' && <EthIcon />}
             {profileSource === 'kilt-w3n' && <KiltIcon />}
             {profileSource === 'polkadot-identity' && <PolkadotIcon />}
