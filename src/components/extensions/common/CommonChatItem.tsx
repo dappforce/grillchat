@@ -3,7 +3,7 @@ import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusInd
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
-import { isOptimisticId } from '@/services/subsocial/utils'
+import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
@@ -53,12 +53,12 @@ export default function CommonChatItem({
 }: CommonChatItemProps) {
   const myAddress = useMyAccount((state) => state.address)
   const { struct, content } = message
-  const { ownerId, createdAtTime } = struct
+  const { ownerId, createdAtTime, dataType } = struct
   const { inReplyTo, body } = content || {}
 
   const isMyMessage = _isMyMessage ?? ownerId === myAddress
   const relativeTime = getTimeRelativeToNow(createdAtTime)
-  const isSent = !isOptimisticId(message.id)
+  const isSent = isMessageSent(message.id, dataType)
 
   const childrenElement =
     typeof children === 'function'

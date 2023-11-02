@@ -5,7 +5,10 @@ import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
-import { commentIdsOptimisticEncoder } from '../../commentIds/optimistic'
+import {
+  commentIdsOptimisticEncoder,
+  isClientGeneratedOptimisticId,
+} from '../../commentIds/optimistic'
 import {
   GetCommentIdsInPostIdQuery,
   GetCommentIdsInPostIdQueryVariables,
@@ -86,7 +89,7 @@ async function getPaginatedPostsByRootPostId({
       postId
     )
     const oldOptimisticIds =
-      oldIds?.filter((id) => commentIdsOptimisticEncoder.checker(id)) || []
+      oldIds?.filter((id) => isClientGeneratedOptimisticId(id)) || []
     unincludedIds = oldOptimisticIds.filter(
       (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
     )

@@ -85,8 +85,34 @@ export function deleteOptimisticData({
   optimisticId: string
 }) {
   const tempId = commentIdsOptimisticEncoder.encode(optimisticId)
-  // getCommentIdsByPostIdQuery.setQueryData(client, chatId, (ids) => {
-  //   return ids?.filter((id) => id !== tempId)
-  // })
+
+  getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
+    client,
+    chatId,
+    (oldData) => {
+      return oldData?.filter((id) => id !== tempId)
+    }
+  )
+  getCommentIdsByPostIdFromChainQuery.setQueryData(client, chatId, (ids) => {
+    console.log(ids)
+    return ids?.filter((id) => id !== tempId)
+  })
+
   getPostMetadataQuery.invalidate(client, chatId)
+}
+
+export function isClientGeneratedOptimisticId(id?: string) {
+  return id && commentIdsOptimisticEncoder.checker(id)
+}
+
+export function isMessageSent(
+  id: string,
+  messageDataType: PostData['struct']['dataType']
+) {
+  if (isClientGeneratedOptimisticId(id)) return false
+  if (!messageDataType) return true
+  if (messageDataType === 'offChain' || messageDataType === 'persistent')
+    return true
+
+  return false
 }

@@ -250,10 +250,12 @@ export type Post = {
   space?: Maybe<Space>
   summary?: Maybe<Scalars['String']['output']>
   tagsOriginal?: Maybe<Scalars['String']['output']>
+  timestamp?: Maybe<Scalars['String']['output']>
   title?: Maybe<Scalars['String']['output']>
   tweetId?: Maybe<Scalars['String']['output']>
   updatedAtTime?: Maybe<Scalars['DateTime']['output']>
   upvotesCount?: Maybe<Scalars['Int']['output']>
+  uuid?: Maybe<Scalars['String']['output']>
 }
 
 export type PostFollowers = {
@@ -368,9 +370,11 @@ export type Space = {
   publicPostsCount?: Maybe<Scalars['Int']['output']>
   summary?: Maybe<Scalars['String']['output']>
   tagsOriginal?: Maybe<Scalars['String']['output']>
+  timestamp?: Maybe<Scalars['String']['output']>
   updatedAtBlock?: Maybe<Scalars['Int']['output']>
   updatedAtTime?: Maybe<Scalars['DateTime']['output']>
   username?: Maybe<Scalars['String']['output']>
+  uuid?: Maybe<Scalars['String']['output']>
 }
 
 export type SpaceFollowers = {
@@ -400,6 +404,7 @@ export type DatahubPostFragmentFragment = {
   __typename?: 'Post'
   id: string
   optimisticId?: string | null
+  dataType: DataType
   content?: string | null
   createdAtBlock?: number | null
   createdAtTime?: any | null
@@ -467,6 +472,7 @@ export type GetPostsQuery = {
       __typename?: 'Post'
       id: string
       optimisticId?: string | null
+      dataType: DataType
       content?: string | null
       createdAtBlock?: number | null
       createdAtTime?: any | null
@@ -539,6 +545,7 @@ export type GetOptimisticPostsQuery = {
       __typename?: 'Post'
       id: string
       optimisticId?: string | null
+      dataType: DataType
       content?: string | null
       createdAtBlock?: number | null
       createdAtTime?: any | null
@@ -611,6 +618,7 @@ export type GetCommentIdsInPostIdQuery = {
       id: string
       persistentId?: string | null
       optimisticId?: string | null
+      dataType: DataType
       content?: string | null
       createdAtBlock?: number | null
       createdAtTime?: any | null
@@ -711,6 +719,7 @@ export type SubscribePostSubscription = {
       id: string
       persistentId?: string | null
       optimisticId?: string | null
+      dataType: DataType
       rootPost?: { __typename?: 'Post'; persistentId?: string | null } | null
     }
   }
@@ -720,6 +729,7 @@ export const DatahubPostFragment = gql`
   fragment DatahubPostFragment on Post {
     id
     optimisticId
+    dataType
     content
     createdAtBlock
     createdAtTime
@@ -850,6 +860,7 @@ export const SubscribePost = gql`
         id
         persistentId
         optimisticId
+        dataType
         rootPost {
           persistentId
         }

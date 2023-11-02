@@ -5,7 +5,7 @@ import Spinner from '@/components/Spinner'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
-import { isOptimisticId } from '@/services/subsocial/utils'
+import { isClientGeneratedOptimisticId } from '@/services/subsocial/commentIds/optimistic'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
@@ -121,7 +121,7 @@ export default function ChatListSupportingContent({
       lastId = unreadMessage.lastId
     }
 
-    if (isOptimisticId(lastId)) return
+    if (isClientGeneratedOptimisticId(lastId)) return
     setLastReadMessageId(
       lastId,
       getPostQuery.getQueryData(queryClient, lastId)?.struct.createdAtTime

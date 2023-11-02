@@ -1,4 +1,3 @@
-import { isOptimisticId } from '@/services/subsocial/utils'
 import { PostData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
 import {
@@ -14,6 +13,7 @@ export const DATAHUB_POST_FRAGMENT = gql`
   fragment DatahubPostFragment on Post {
     id
     optimisticId
+    dataType
     content
     createdAtBlock
     createdAtTime
@@ -105,13 +105,17 @@ const GET_OPTIMISTIC_POSTS = gql`
   }
 `
 
+function isPersistentId(id: string) {
+  return !isNaN(+id)
+}
+
 export async function getPostsFromDatahub(postIds: string[]) {
   if (postIds.length === 0) return []
 
   const persistentIds: string[] = []
   const entityIds: string[] = []
   postIds.forEach((id) => {
-    if (isOptimisticId(id)) entityIds.push(id)
+    if (!isPersistentId(id)) entityIds.push(id)
     else persistentIds.push(id)
   })
 

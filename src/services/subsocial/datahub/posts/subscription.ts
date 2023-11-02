@@ -53,6 +53,7 @@ const SUBSCRIBE_POST = gql`
         id
         persistentId
         optimisticId
+        dataType
         rootPost {
           persistentId
         }
@@ -114,12 +115,16 @@ async function processMessage(
   const data = getPostQuery.getQueryData(queryClient, entity.id)
   if (data) {
     data.id = newestId
+    data.struct.dataType = eventData.entity.dataType
     // set initial data for immediate render but refetch it in background
-    getPostQuery.setQueryData(queryClient, newestId, { ...data })
+    getPostQuery.setQueryData(queryClient, newestId, {
+      ...data,
+      struct: { ...data.struct, dataType: eventData.entity.dataType },
+    })
+    getPostQuery.invalidate(queryClient, newestId)
   } else {
     await getPostQuery.fetchQuery(queryClient, newestId)
   }
-  getPostQuery.invalidate(queryClient, newestId)
 
   const rootPostId = entity.rootPost?.persistentId
   if (!rootPostId) return
@@ -142,11 +147,6 @@ async function processMessage(
           (id) => id === clientOptimisticId
         )
         newIds.splice(optimisticIdIndex, 1, newestId)
-
-        const data = getPostQuery.getQueryData(queryClient, clientOptimisticId)
-        if (data) data.id = newestId
-        getPostQuery.setQueryData(queryClient, newestId, data)
-
         return newIds
       }
 

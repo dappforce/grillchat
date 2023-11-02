@@ -1,6 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
-import { isOptimisticId } from '@/services/subsocial/utils'
+import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
@@ -36,11 +36,11 @@ export default function ChatItem({
   const setReplyTo = useMessageData((state) => state.setReplyTo)
 
   const messageId = message.id
-  const { ownerId } = message.struct
+  const { ownerId, dataType } = message.struct
   const { body, extensions, link } = message.content || {}
 
-  const setMessageAsReply = (messageId: string) => {
-    if (isOptimisticId(messageId)) return
+  const setMessageAsReply = () => {
+    if (!isMessageSent(messageId, dataType)) return
     setReplyTo(messageId)
   }
 
@@ -87,7 +87,7 @@ export default function ChatItem({
                   e.preventDefault()
                   toggleDisplay?.(e)
                 }}
-                onDoubleClick={() => setMessageAsReply(messageId)}
+                onDoubleClick={() => setMessageAsReply()}
                 {...referenceProps}
                 id={messageBubbleId}
               >

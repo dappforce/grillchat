@@ -95,6 +95,7 @@ export const mapDatahubPostFragment = (
     createdAtTime: new Date(post.createdAtTime).getTime(),
     createdByAccount: post.createdByAccount?.id ?? '',
     downvotesCount: 0,
+    dataType: post.dataType,
     hidden: post.hidden,
     id: post.persistentId || post.id,
     isComment: post.isComment,

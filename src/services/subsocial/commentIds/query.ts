@@ -14,7 +14,7 @@ import {
   useSubscribeCommentIdsByPostIds,
 } from './subscription'
 
-const commentIdsByPostIdKey = 'comments'
+const commentIdsByPostIdKey = 'comments-from-chain'
 export const getCommentIdsQueryKey = createQueryKeys<string>(
   commentIdsByPostIdKey
 )

@@ -1,8 +1,10 @@
 import Button from '@/components/Button'
 import Modal from '@/components/modals/Modal'
 import { ResendFailedMessageWrapper } from '@/services/subsocial/commentIds/mutation'
-import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
-import { isOptimisticId } from '@/services/subsocial/utils'
+import {
+  isClientGeneratedOptimisticId,
+  isMessageSent,
+} from '@/services/subsocial/commentIds/optimistic'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
@@ -13,11 +15,7 @@ import CheckMarkExplanationModal, {
   CheckMarkModalVariant,
 } from './CheckMarkExplanationModal'
 
-export type MessageStatus =
-  | 'sending'
-  | 'datahub'
-  | 'blockchain'
-  | 'blockchain-failed'
+export type MessageStatus = 'sending' | 'offChain' | 'optimistic' | 'blockchain'
 
 export type MessageStatusIndicatorProps = {
   message: PostData
@@ -42,7 +40,7 @@ export default function MessageStatusIndicator({
 }: MessageStatusIndicatorProps) {
   const sendEvent = useSendEvent()
 
-  const messageStatus = getMessageStatusById(message.id)
+  const messageStatus = getMessageStatusById(message)
   const [checkMarkModalState, dispatch] = useReducer(checkMarkModalReducer, {
     isOpen: false,
     variant: '',
@@ -68,15 +66,29 @@ export default function MessageStatusIndicator({
       interactive='brightness-only'
       onClick={onCheckMarkClick}
     >
-      {messageStatus === 'sending' ? (
-        <IoCheckmarkOutline
-          className={cx(
-            'text-sm text-text-muted dark:text-text-muted-on-primary'
-          )}
-        />
-      ) : (
-        <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
-      )}
+      {(() => {
+        if (messageStatus === 'sending') {
+          return (
+            <IoCheckmarkOutline
+              className={cx(
+                'text-sm text-text-muted dark:text-text-muted-on-primary'
+              )}
+            />
+          )
+        } else if (messageStatus === 'blockchain') {
+          return (
+            <IoCheckmarkDoneOutline className='text-sm text-blue-700 dark:text-blue-400' />
+          )
+        } else if (messageStatus === 'optimistic') {
+          return (
+            <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
+          )
+        } else if (messageStatus === 'offChain') {
+          return (
+            <IoCheckmarkDoneOutline className='text-sm text-red-600 dark:text-text-on-primary' />
+          )
+        }
+      })()}
 
       <CheckMarkExplanationModal
         isOpen={checkMarkModalState.isOpen}
@@ -89,10 +101,13 @@ export default function MessageStatusIndicator({
   )
 }
 
-export function getMessageStatusById(id: string): MessageStatus {
-  if (isOptimisticId(id)) {
-    if (commentIdsOptimisticEncoder.checker(id)) return 'sending'
-    return 'datahub'
+export function getMessageStatusById(message: PostData): MessageStatus {
+  const id = message.id
+  console.log(id, message.struct, message.content)
+  if (!isMessageSent(id, message.struct.dataType)) {
+    if (isClientGeneratedOptimisticId(id)) return 'sending'
+    if (message.struct.dataType === 'offChain') return 'offChain'
+    return 'optimistic'
   } else {
     return 'blockchain'
   }

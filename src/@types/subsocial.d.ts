@@ -93,6 +93,7 @@ declare module '@subsocial/api/types' {
       Pick<CommentStruct, 'rootPostId'> & {
         followersCount?: number
         blockchainSyncFailed?: boolean
+        dataType?: 'persistent' | 'optimistic' | 'offChain'
       },
     PostContent
   >

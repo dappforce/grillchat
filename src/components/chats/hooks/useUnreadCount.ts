@@ -13,7 +13,6 @@ export default function useUnreadCount(chatId: string, lastReadId: string) {
     }
   )
 
-  // need all, and only if no datahub
   const { data: messageIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
     chatId,
     {

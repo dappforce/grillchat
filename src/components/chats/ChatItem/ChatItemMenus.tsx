@@ -15,7 +15,6 @@ import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
-import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
@@ -83,13 +82,13 @@ export default function ChatItemMenus({
   const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
 
   const { isAuthorized } = useAuthorizedForModeration(chatId)
-  const { ownerId } = message?.struct || {}
+  const { ownerId, dataType } = message?.struct || {}
   const { data: messageOwnerAccountData } = getAccountDataQuery.useQuery(
     ownerId ?? ''
   )
   const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
 
-  const isSent = !isOptimisticId(messageId)
+  const isOptimisticMessage = dataType === 'optimistic'
 
   const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
@@ -124,7 +123,7 @@ export default function ChatItemMenus({
         onClick: () => setModalState('metadata'),
       },
     ]
-    if (!isSent) return menus
+    if (isOptimisticMessage) return menus
 
     if (address && canUsePromoExtensionAccounts.includes(address)) {
       menus.unshift({
@@ -191,7 +190,7 @@ export default function ChatItemMenus({
     <>
       <FloatingMenus
         beforeMenus={
-          !isSent && (
+          isOptimisticMessage && (
             <p className='border-b border-border-gray p-4 pb-3 text-sm text-text-muted'>
               To interact with this message, please wait until it is saved to
               the blockchain (≈ 15 sec).
