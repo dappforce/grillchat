@@ -1,4 +1,3 @@
-import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import React from 'react'
 import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 
@@ -7,9 +6,8 @@ type NotificationControl = {
   setNotifDone: () => void
 }
 
-export type ProfileModalProps = ModalFunctionalityProps & {
+export type ProfileModalProps = {
   notification?: NotificationControl
-  step?: ProfileModalState
 }
 
 export type ProfileModalState =
@@ -27,6 +25,7 @@ export type ProfileModalState =
   | 'evm-linking-error'
   | 'unlink-evm-confirmation'
   | 'evm-address-linked'
+  | 'evm-set-profile-suggestion'
   | 'notifications'
   | 'telegram-notifications'
   | 'push-notifications'
@@ -37,6 +36,7 @@ export type ContentProps = {
     state: React.SetStateAction<ProfileModalState>,
     forceFlowBackTo?: ProfileModalState
   ) => void
+  closeModal?: () => void
   notification?: NotificationControl
   evmAddress?: string | null
 }

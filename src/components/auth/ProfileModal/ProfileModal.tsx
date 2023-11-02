@@ -5,9 +5,11 @@ import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { SessionStorage } from '@/utils/storage'
 import React, { useCallback, useEffect, useState } from 'react'
+import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
 import PolkadotConnectSuccess from '../common/polkadot-connect/PolkadotConnectSuccess'
@@ -45,6 +47,12 @@ const modalContents: {
   'evm-linking-error': EvmLoginError,
   'unlink-evm-confirmation': UnlinkEvmConfirmationContent,
   'evm-address-linked': CommonEvmAddressLinked,
+  'evm-set-profile-suggestion': ({ closeModal, setCurrentState }) => (
+    <CommonEvmSetProfileContent
+      onSkipClick={closeModal}
+      onSetEvmIdentityClick={() => setCurrentState('profile-settings')}
+    />
+  ),
   notifications: NotificationContent,
   'telegram-notifications': TelegramNotificationContent,
   'push-notifications': PushNotificationContent,
@@ -71,17 +79,16 @@ export const forceBackFlowStorage = new SessionStorage(
   () => 'force-back-profile-flow'
 )
 
-export default function ProfileModal({
-  notification,
-  step,
-  ...props
-}: ProfileModalProps) {
+export default function ProfileModal({ notification }: ProfileModalProps) {
+  const { isOpen, defaultOpenState, closeModal, onBackClick } =
+    useProfileModal()
+
   const address = useMyMainAddress() ?? ''
   // Prefetch telegram linked account data
   getLinkedTelegramAccountsQuery.useQuery(
     { address },
     {
-      enabled: props.isOpen,
+      enabled: isOpen,
     }
   )
   const hasPreviousIdentity = useHasPreviousGrillIdentity()
@@ -90,7 +97,7 @@ export default function ProfileModal({
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
 
   const [currentState, setCurrentState] = useState<ProfileModalState>(
-    step || 'account'
+    defaultOpenState || 'account'
   )
   const setCurrentStateAugmented = useCallback(
     (
@@ -126,12 +133,12 @@ export default function ProfileModal({
   const { evmAddress: linkedEvmAddress } = accountData || {}
 
   useEffect(() => {
-    if (props.isOpen) {
+    if (isOpen) {
       sendEvent('open_profile_modal')
-      setCurrentStateAugmented(step || 'account')
+      setCurrentStateAugmented(defaultOpenState || 'account')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.isOpen])
+  }, [isOpen, defaultOpenState])
 
   const pushNotificationUsableStatus = getPushNotificationUsableStatus()
   const modalTitles: {
@@ -196,6 +203,10 @@ export default function ProfileModal({
       desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
       withBackButton: false,
     },
+    'evm-set-profile-suggestion': {
+      title: '🤔 Set as default identity?',
+      desc: 'Do you want to set your EVM as your default address?',
+    },
     notifications: {
       title: '🔔 Notifications',
       desc: 'Receive Grill.chat notifications in various locations',
@@ -255,12 +266,12 @@ export default function ProfileModal({
   }
 
   useEffect(() => {
-    if (!props.isOpen) forceBackFlowStorage.remove()
-  }, [props.isOpen])
+    if (!isOpen) forceBackFlowStorage.remove()
+  }, [isOpen])
 
   const { title, desc, withBackButton, withoutDefaultPadding, withFooter } =
     modalTitles[currentState] || {}
-  const onBackClick = () => {
+  const usedOnBackClick = () => {
     try {
       const data = JSON.parse(forceBackFlowStorage.get() || '{}') as any
       const { from, to } = data
@@ -270,7 +281,7 @@ export default function ProfileModal({
       }
     } catch {}
 
-    if (props.onBackClick) props.onBackClick()
+    if (onBackClick) onBackClick()
     else if (typeof withBackButton === 'function')
       setCurrentStateAugmented(withBackButton())
     else
@@ -282,14 +293,16 @@ export default function ProfileModal({
 
   return (
     <Modal
-      {...props}
+      isOpen={isOpen}
       closeModal={() => {
         if (
           currentState === 'polkadot-connect-success' &&
           hasPreviousIdentity
         ) {
           setCurrentStateAugmented('polkadot-connect-identity-removed')
-        } else props.closeModal()
+        } else if (currentState === 'evm-address-linked') {
+          setCurrentStateAugmented('evm-set-profile-suggestion')
+        } else closeModal()
       }}
       title={title}
       description={desc}
@@ -298,7 +311,7 @@ export default function ProfileModal({
       descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
       withFooter={withFooter}
       withCloseButton
-      onBackClick={withBackButton ? onBackClick : undefined}
+      onBackClick={withBackButton ? usedOnBackClick : undefined}
     >
       <Content
         address={address}

@@ -89,6 +89,10 @@ const modalHeader: ModalConfig = {
     withFooter: false,
     backToStep: 'connect-wallet',
   },
+  'evm-set-profile': {
+    title: '🤔 Set as default identity?',
+    desc: 'Do you want to set your EVM as your default address?',
+  },
   'polkadot-connect': {
     title: '🔗 Connect Polkadot',
     desc: 'Choose a wallet to connect to Grill.chat',
@@ -175,6 +179,10 @@ export default function LoginModal({
       titleClassName={cx(withoutDefaultPadding && 'px-6')}
       descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
       closeModal={() => {
+        if (currentState === 'evm-address-linked') {
+          setCurrentState('evm-set-profile')
+          return
+        }
         props.closeModal()
       }}
     >
