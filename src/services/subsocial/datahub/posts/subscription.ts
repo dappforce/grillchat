@@ -157,7 +157,7 @@ async function processMessage(
         return newIds
       }
 
-      newIds.push(newestId)
+      newIds.unshift(newestId)
       return newIds
     }
   )
