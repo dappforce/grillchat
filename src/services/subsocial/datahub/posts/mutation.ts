@@ -295,6 +295,7 @@ export function useSendOffchainMessage(
 
       await datahubMutation.createPostData({
         ...getWallet(),
+        isOffchainMessage: true,
         content: content,
         cid: cid,
         rootPostId: data.chatId,
