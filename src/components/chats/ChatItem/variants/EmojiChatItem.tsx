@@ -53,7 +53,7 @@ export default function EmojiChatItem({
       )}
     >
       {!isMyMessage && (
-        <div className='flex items-center pl-1'>
+        <div className='flex items-baseline pl-1'>
           <ProfilePreviewModalName
             labelingData={{ chatId }}
             messageId={messageId}
