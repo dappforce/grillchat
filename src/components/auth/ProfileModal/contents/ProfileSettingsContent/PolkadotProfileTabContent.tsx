@@ -8,6 +8,7 @@ import LinkText from '@/components/LinkText'
 import { useName } from '@/components/Name'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import {
@@ -30,6 +31,7 @@ export default function PolkadotProfileTabContent({
   const { data: profile } = getProfileQuery.useQuery(address)
   const profileSource = profile?.profileSpace?.content?.profileSource
   const { name } = useName(address)
+  const sendEvent = useSendEvent()
 
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const hasConnectedPolkadot = !!parentProxyAddress
@@ -208,6 +210,7 @@ export default function PolkadotProfileTabContent({
               profileSource: newProfileSource,
             },
           })
+          sendEvent('account_settings_changed', { profileSource: selectedId })
         }
 
         return (

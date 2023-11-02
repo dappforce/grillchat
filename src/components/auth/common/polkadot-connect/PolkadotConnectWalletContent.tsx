@@ -1,4 +1,5 @@
 import MenuList from '@/components/MenuList'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { getWallets, Wallet } from '@talismn/connect-wallets'
 import Image from 'next/image'
@@ -7,6 +8,7 @@ import { PolkadotConnectContentProps } from './types'
 export default function PolkadotConnectWalletContent({
   setCurrentState,
 }: PolkadotConnectContentProps) {
+  const sendEvent = useSendEvent()
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
   const supportedWallets: Wallet[] = getWallets()
 
@@ -29,6 +31,7 @@ export default function PolkadotConnectWalletContent({
           onClick: () => {
             setPreferredWallet(wallet)
             setCurrentState('polkadot-connect-account')
+            sendEvent('select_polkadot_wallet', { kind: wallet.title })
           },
         }))}
       />

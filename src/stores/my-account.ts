@@ -83,10 +83,14 @@ const parentProxyAddressStorage = new LocalStorage(
 )
 const preferredWalletStorage = new LocalStorage(() => 'preferred-wallet')
 
-const sendLaunchEvent = async (address?: string | false) => {
+const sendLaunchEvent = async (
+  address?: string | false,
+  parentProxyAddress?: string | null
+) => {
   let userProperties = {
     tgNotifsConnected: false,
     evmLinked: false,
+    polkadotLinked: !!parentProxyAddress,
     webNotifsEnabled: false,
     ownedChat: false,
   }
@@ -248,6 +252,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     set({ isInitialized: false })
 
     const encodedSecretKey = accountStorage.get()
+    const parentProxyAddress = parentProxyAddressStorage.get()
 
     if (encodedSecretKey) {
       const storageAddress = accountAddressStorage.get()
@@ -262,7 +267,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         set({ address: null })
       }
 
-      sendLaunchEvent(address)
+      sendLaunchEvent(address, parentProxyAddress)
     } else {
       sendLaunchEvent()
     }
@@ -278,7 +283,6 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       else preferredWalletStorage.remove()
     }
 
-    const parentProxyAddress = parentProxyAddressStorage.get()
     if (parentProxyAddress) {
       set({ parentProxyAddress })
       try {

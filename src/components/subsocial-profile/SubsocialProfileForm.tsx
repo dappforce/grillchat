@@ -1,6 +1,7 @@
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getProfileQuery } from '@/services/api/query'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { encodeProfileSource } from '@/utils/profile'
@@ -27,6 +28,7 @@ export default function SubsocialProfileForm({
   onNameChange,
   ...props
 }: SubsocialProfileFormProps) {
+  const sendEvent = useSendEvent()
   const myAddress = useMyMainAddress()
   const { data: profile } = getProfileQuery.useQuery(myAddress ?? '', {
     enabled: !!myAddress,
@@ -61,6 +63,7 @@ export default function SubsocialProfileForm({
               }),
             },
           })
+          sendEvent('account_settings_changed', { profileSource: 'custom' })
           onSuccess?.()
         })
 

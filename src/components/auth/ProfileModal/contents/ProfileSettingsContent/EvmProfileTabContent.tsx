@@ -5,6 +5,7 @@ import { useName } from '@/components/Name'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { decodeProfileSource, encodeProfileSource } from '@/utils/profile'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -20,6 +21,7 @@ export default function EvmProfileTabContent({
   const evmAddress = accountData?.evmAddress
   const ensNames = accountData?.ensNames
   const { name } = useName(address)
+  const sendEvent = useSendEvent()
 
   const ensOptions = useMemo<ListItem[]>(() => {
     return (
@@ -80,6 +82,7 @@ export default function EvmProfileTabContent({
         const onSubmit = (e: any) => {
           e.preventDefault()
           if (!selected?.id) return
+          sendEvent('account_settings_changed', { profileSource: 'ens' })
           mutateAsync({
             content: {
               ...profile?.profileSpace?.content,

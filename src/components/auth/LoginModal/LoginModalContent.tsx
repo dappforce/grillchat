@@ -69,6 +69,7 @@ export const LoginContent = ({
   termsAndService,
 }: ContentProps) => {
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
+  const sendEvent = useSendEvent()
 
   const {
     mutateAsync: loginAndRequestToken,
@@ -88,7 +89,13 @@ export const LoginContent = ({
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className='flex flex-col gap-4'>
-          <Button onClick={() => setCurrentState('connect-wallet')} size='lg'>
+          <Button
+            onClick={() => {
+              setCurrentState('connect-wallet')
+              sendEvent('connect_wallet_started')
+            }}
+            size='lg'
+          >
             <div className='flex items-center justify-center gap-2'>
               <WalletIcon />
               Connect Wallet
@@ -211,6 +218,8 @@ export const NextActionsContent = ({
   setCurrentState,
   closeModal,
 }: ContentProps) => {
+  const sendEvent = useSendEvent()
+
   return (
     <div className='flex flex-col'>
       <Image src={PotentialImage} alt='' className='mb-6 w-full' />
@@ -218,7 +227,14 @@ export const NextActionsContent = ({
         <Button size='lg' onClick={() => setCurrentState('connect-wallet')}>
           Connect Addresses
         </Button>
-        <Button size='lg' variant='primaryOutline' onClick={closeModal}>
+        <Button
+          size='lg'
+          variant='primaryOutline'
+          onClick={() => {
+            closeModal()
+            sendEvent('connect_addresses_skiped')
+          }}
+        >
           I&apos;ll do this later
         </Button>
       </div>
@@ -227,6 +243,8 @@ export const NextActionsContent = ({
 }
 
 export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
+  const sendEvent = useSendEvent()
+
   return (
     <MenuList
       className='pt-0'
@@ -234,12 +252,18 @@ export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
         {
           text: 'Connect EVM',
           icon: EthIcon,
-          onClick: () => setCurrentState('evm-address-link'),
+          onClick: () => {
+            setCurrentState('evm-address-link')
+            sendEvent('start_link_evm_address')
+          },
         },
         {
           text: 'Connect Polkadot',
           icon: PolkadotIcon,
-          onClick: () => setCurrentState('polkadot-connect'),
+          onClick: () => {
+            setCurrentState('polkadot-connect')
+            sendEvent('start_link_polkadot_address')
+          },
         },
       ]}
     />
