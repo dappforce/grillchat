@@ -56,7 +56,7 @@ const ProfilePreview = ({
         forceProfileSource={forceProfileSource}
       />
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
-        <div className='flex items-center gap-2'>
+        <div className='relative left-1 flex items-center gap-2'>
           <Name
             showProfileSourceIcon={false}
             address={address}
@@ -100,7 +100,7 @@ const ProfilePreview = ({
               )}
             {isShowingEvmAddress && (
               <div className='flex flex-row items-center gap-2'>
-                <EthIcon className='relative left-0.5 text-xl text-text-muted' />
+                <EthIcon className='relative left-1 text-xl text-text-muted' />
                 <CopyTextInline
                   text={truncateAddress(evmAddress)}
                   tooltip={`Copy${isMyAddressPart} EVM address`}
