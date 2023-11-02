@@ -332,6 +332,8 @@ export enum AccountOrderByInput {
   ProfileSpaceNameDesc = 'profileSpace_name_DESC',
   ProfileSpacePostsCountAsc = 'profileSpace_postsCount_ASC',
   ProfileSpacePostsCountDesc = 'profileSpace_postsCount_DESC',
+  ProfileSpaceProfileSourceAsc = 'profileSpace_profileSource_ASC',
+  ProfileSpaceProfileSourceDesc = 'profileSpace_profileSource_DESC',
   ProfileSpacePublicPostsCountAsc = 'profileSpace_publicPostsCount_ASC',
   ProfileSpacePublicPostsCountDesc = 'profileSpace_publicPostsCount_DESC',
   ProfileSpaceSummaryAsc = 'profileSpace_summary_ASC',
@@ -783,6 +785,8 @@ export enum ActivityOrderByInput {
   SpacePrevNameDesc = 'spacePrev_name_DESC',
   SpacePrevPostsCountAsc = 'spacePrev_postsCount_ASC',
   SpacePrevPostsCountDesc = 'spacePrev_postsCount_DESC',
+  SpacePrevProfileSourceAsc = 'spacePrev_profileSource_ASC',
+  SpacePrevProfileSourceDesc = 'spacePrev_profileSource_DESC',
   SpacePrevPublicPostsCountAsc = 'spacePrev_publicPostsCount_ASC',
   SpacePrevPublicPostsCountDesc = 'spacePrev_publicPostsCount_DESC',
   SpacePrevSummaryAsc = 'spacePrev_summary_ASC',
@@ -835,6 +839,8 @@ export enum ActivityOrderByInput {
   SpaceNameDesc = 'space_name_DESC',
   SpacePostsCountAsc = 'space_postsCount_ASC',
   SpacePostsCountDesc = 'space_postsCount_DESC',
+  SpaceProfileSourceAsc = 'space_profileSource_ASC',
+  SpaceProfileSourceDesc = 'space_profileSource_DESC',
   SpacePublicPostsCountAsc = 'space_publicPostsCount_ASC',
   SpacePublicPostsCountDesc = 'space_publicPostsCount_DESC',
   SpaceSummaryAsc = 'space_summary_ASC',
@@ -2006,6 +2012,8 @@ export enum ExtensionPinnedResourceOrderByInput {
   SpaceNameDesc = 'space_name_DESC',
   SpacePostsCountAsc = 'space_postsCount_ASC',
   SpacePostsCountDesc = 'space_postsCount_DESC',
+  SpaceProfileSourceAsc = 'space_profileSource_ASC',
+  SpaceProfileSourceDesc = 'space_profileSource_DESC',
   SpacePublicPostsCountAsc = 'space_publicPostsCount_ASC',
   SpacePublicPostsCountDesc = 'space_publicPostsCount_DESC',
   SpaceSummaryAsc = 'space_summary_ASC',
@@ -3108,6 +3116,8 @@ export enum PostOrderByInput {
   SpaceNameDesc = 'space_name_DESC',
   SpacePostsCountAsc = 'space_postsCount_ASC',
   SpacePostsCountDesc = 'space_postsCount_DESC',
+  SpaceProfileSourceAsc = 'space_profileSource_ASC',
+  SpaceProfileSourceDesc = 'space_profileSource_DESC',
   SpacePublicPostsCountAsc = 'space_publicPostsCount_ASC',
   SpacePublicPostsCountDesc = 'space_publicPostsCount_DESC',
   SpaceSummaryAsc = 'space_summary_ASC',
@@ -4414,6 +4424,8 @@ export type Space = {
   posts: Array<Post>;
   /** The total number of all Posts (public and hidden) in the current Space (post.length) */
   postsCount: Scalars['Int']['output'];
+  /** A source of profile data. */
+  profileSource?: Maybe<Scalars['String']['output']>;
   /** A One-To-One relationship with the Account which uses the current Space as its profile. */
   profileSpace?: Maybe<Account>;
   /** The total number of public (non-hidden) Posts in the current Space (post.length) */
@@ -4543,6 +4555,8 @@ export enum SpaceFollowersOrderByInput {
   FollowingSpaceNameDesc = 'followingSpace_name_DESC',
   FollowingSpacePostsCountAsc = 'followingSpace_postsCount_ASC',
   FollowingSpacePostsCountDesc = 'followingSpace_postsCount_DESC',
+  FollowingSpaceProfileSourceAsc = 'followingSpace_profileSource_ASC',
+  FollowingSpaceProfileSourceDesc = 'followingSpace_profileSource_DESC',
   FollowingSpacePublicPostsCountAsc = 'followingSpace_publicPostsCount_ASC',
   FollowingSpacePublicPostsCountDesc = 'followingSpace_publicPostsCount_DESC',
   FollowingSpaceSummaryAsc = 'followingSpace_summary_ASC',
@@ -4844,6 +4858,8 @@ export enum SpaceOrderByInput {
   OwnedByAccountUpdatedAtTimeDesc = 'ownedByAccount_updatedAtTime_DESC',
   PostsCountAsc = 'postsCount_ASC',
   PostsCountDesc = 'postsCount_DESC',
+  ProfileSourceAsc = 'profileSource_ASC',
+  ProfileSourceDesc = 'profileSource_DESC',
   ProfileSpaceFollowersCountAsc = 'profileSpace_followersCount_ASC',
   ProfileSpaceFollowersCountDesc = 'profileSpace_followersCount_DESC',
   ProfileSpaceFollowingAccountsCountAsc = 'profileSpace_followingAccountsCount_ASC',
@@ -5331,6 +5347,23 @@ export type SpaceWhereInput = {
   posts_every?: InputMaybe<PostWhereInput>;
   posts_none?: InputMaybe<PostWhereInput>;
   posts_some?: InputMaybe<PostWhereInput>;
+  profileSource_contains?: InputMaybe<Scalars['String']['input']>;
+  profileSource_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  profileSource_endsWith?: InputMaybe<Scalars['String']['input']>;
+  profileSource_eq?: InputMaybe<Scalars['String']['input']>;
+  profileSource_gt?: InputMaybe<Scalars['String']['input']>;
+  profileSource_gte?: InputMaybe<Scalars['String']['input']>;
+  profileSource_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  profileSource_isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  profileSource_lt?: InputMaybe<Scalars['String']['input']>;
+  profileSource_lte?: InputMaybe<Scalars['String']['input']>;
+  profileSource_not_contains?: InputMaybe<Scalars['String']['input']>;
+  profileSource_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
+  profileSource_not_endsWith?: InputMaybe<Scalars['String']['input']>;
+  profileSource_not_eq?: InputMaybe<Scalars['String']['input']>;
+  profileSource_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  profileSource_not_startsWith?: InputMaybe<Scalars['String']['input']>;
+  profileSource_startsWith?: InputMaybe<Scalars['String']['input']>;
   profileSpace?: InputMaybe<AccountWhereInput>;
   profileSpace_isNull?: InputMaybe<Scalars['Boolean']['input']>;
   publicPostsCount_eq?: InputMaybe<Scalars['Int']['input']>;
@@ -5872,7 +5905,7 @@ export type GetProfilesQueryVariables = Exact<{
 }>;
 
 
-export type GetProfilesQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, profileSpace?: { __typename?: 'Space', id: string, name?: string | null, image?: string | null } | null }> };
+export type GetProfilesQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, profileSpace?: { __typename?: 'Space', id: string, name?: string | null, image?: string | null, about?: string | null, email?: string | null, linksOriginal?: string | null, tagsOriginal?: string | null, profileSource?: string | null } | null }> };
 
 export type GetSpacesQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -6033,6 +6066,11 @@ export const GetProfiles = gql`
       id
       name
       image
+      about
+      email
+      linksOriginal
+      tagsOriginal
+      profileSource
     }
   }
 }

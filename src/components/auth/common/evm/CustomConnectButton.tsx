@@ -1,13 +1,17 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button, { ButtonProps } from '@/components/Button'
+import {
+  getConnector,
+  openMobileWallet,
+} from '@/components/extensions/donate/api/utils'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
-import { getConnector, openMobileWallet } from '../extensions/donate/api/utils'
 
 type CustomConnectButtonProps = ButtonProps & {
   className?: string
@@ -15,15 +19,18 @@ type CustomConnectButtonProps = ButtonProps & {
   secondLabel?: React.ReactNode
   withWalletActionImage?: boolean
   signAndLinkOnConnect?: boolean
+  beforeSignEvmAddress?: () => Promise<void>
   signAndLinkEvmAddress: (
     emvAddress?: string,
-    substrateAddress?: string | null
+    substrateAddress?: string | null,
+    signerAddress?: string
   ) => Promise<void>
   isLoading: boolean
 }
 
 export const CustomConnectButton = ({
   className,
+  beforeSignEvmAddress,
   signAndLinkEvmAddress,
   label = 'Connect EVM Wallet',
   withWalletActionImage = true,
@@ -34,19 +41,32 @@ export const CustomConnectButton = ({
 }: CustomConnectButtonProps) => {
   const [hasInteractedOnce, setHasInteractedOnce] = useState(false)
 
-  const mySubstrateAddress = useMyAccount((state) => state.address)
+  const mySubstrateAddress = useMyMainAddress()
+  const mySubstrateAddressRef = useWrapInRef(mySubstrateAddress)
+  const signerAddress = useMyAccount((state) => state.address ?? undefined)
+  const signerAddressRef = useWrapInRef(signerAddress)
+
   const { disconnect } = useDisconnect()
   const { data: accountData, isLoading: isAccountDataLoading } =
     getAccountDataQuery.useQuery(mySubstrateAddress || '')
 
   const { evmAddress: linkedEvmAddress } = accountData || {}
 
+  const linkEvmAddress = async (address: string) => {
+    await beforeSignEvmAddress?.()
+    signAndLinkEvmAddress(
+      address,
+      mySubstrateAddressRef.current,
+      signerAddressRef.current
+    )
+  }
+
   const { isConnected } = useAccount({
     onConnect: async ({ address }) => {
       !isConnected &&
         !isTouchDevice() &&
         signAndLinkOnConnect &&
-        signAndLinkEvmAddress(address, mySubstrateAddress)
+        linkEvmAddress(address ?? '')
     },
   })
 
@@ -120,7 +140,7 @@ export const CustomConnectButton = ({
               setHasInteractedOnce(true)
               const connector = getConnector()
               isTouchDevice() && (await openMobileWallet({ connector }))
-              signAndLinkEvmAddress(account.address, mySubstrateAddress)
+              linkEvmAddress(account.address)
             }}
           >
             {usedLabel}

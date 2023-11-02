@@ -9,12 +9,12 @@ import {
 } from '@/services/subsocial/prices/query'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { formatUnits, parseUnits } from 'ethers'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { isValidElement, useEffect, useState } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import CommonExtensionModal from '../../common/CommonExtensionModal'
 import { chainIdByChainName } from '../api/config'
@@ -47,7 +47,7 @@ function DonateForm({
   const { isConnected } = useAccount()
   const [inputError, setInputError] = useState<string | undefined>()
   const [amount, setAmount] = useState<string>('')
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
   const { chain } = useNetwork()
   const { address: myEvmAddress } = useAccount()
 
@@ -227,14 +227,17 @@ const TokenItemPreview = ({ item, chainName, open }: RokenItemPreviewProps) => {
   return (
     <div className='flex w-full items-center justify-between'>
       <div className='flex items-center gap-3'>
-        {item.icon && (
-          <Image
-            src={item.icon}
-            className={cx('w-[38px] rounded-full')}
-            alt=''
-            role='presentation'
-          />
-        )}
+        {item.icon &&
+          (isValidElement(item.icon) ? (
+            item.icon
+          ) : (
+            <Image
+              src={item.icon as string}
+              className={cx('w-[38px] rounded-full')}
+              alt=''
+              role='presentation'
+            />
+          ))}
         <span
           className={cx('mr-3 block truncate text-base', {
             ['text-gray-500']: item.disabledItem,

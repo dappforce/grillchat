@@ -2,7 +2,7 @@ import TextArea from '@/components/inputs/TextArea'
 import { getWhitelistedAddressesInChatId } from '@/constants/chat'
 import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import { ComponentProps } from 'react'
@@ -20,7 +20,7 @@ export default function ChatInputBar({
   hubId,
   ...props
 }: ChatInputBarProps) {
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const isBlocked = useIsAddressBlockedInChat(
     myAddress ?? '',
     formProps.chatId,

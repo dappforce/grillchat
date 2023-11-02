@@ -24,7 +24,7 @@ export const chainItems = [
     id: 'astar',
     icon: Astar,
     label: 'Astar',
-    disabledItem: true,
+    disabledItem: 'Soon',
   },
 ]
 

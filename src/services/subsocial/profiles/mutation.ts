@@ -5,15 +5,16 @@ import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
+import { SpaceContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 
 type CommonParams = {
   content: {
-    name: string
+    name?: string
     image?: string
-  }
+  } & Pick<SpaceContent, 'profileSource'>
 }
 export type UpsertProfileParams =
   | CommonParams
@@ -47,7 +48,9 @@ export function useUpsertProfile(
           'Please wait until we finalized your previous name change'
         )
 
-      const { success, cid } = await saveFile(content)
+      const { success, cid } = await saveFile({
+        ...content,
+      } as SpaceContent)
       if (!success || !cid) throw new Error('Failed to save file')
 
       if (action === 'update') {
@@ -71,12 +74,21 @@ export function useUpsertProfile(
       txCallbacks: {
         onStart: ({ data, address }) => {
           preventWindowUnload()
-          getProfileQuery.setQueryData(client, address, {
-            address,
-            profileSpace: {
-              id: OPTIMISTIC_PROFILE_ID,
-              ...data.content,
-            },
+          getProfileQuery.setQueryData(client, address, (oldData) => {
+            const oldProfileSpaceId = oldData?.profileSpace?.id
+            const oldProfileContent = oldData?.profileSpace?.content || {}
+            return {
+              address,
+              profileSpace: {
+                id: oldProfileSpaceId
+                  ? oldProfileSpaceId
+                  : OPTIMISTIC_PROFILE_ID,
+                content: {
+                  ...oldProfileContent,
+                  ...data.content,
+                } as SpaceContent,
+              },
+            }
           })
         },
         onSend: () => {
@@ -87,7 +99,8 @@ export function useUpsertProfile(
         },
         onSuccess: async ({ address }) => {
           await invalidateProfileServerCache(address)
-          getProfileQuery.invalidate(client, address)
+          // Remove invalidation because the data will be same, and sometimes IPFS errors out, making the profile gone
+          // getProfileQuery.invalidate(client, address)
         },
       },
     }

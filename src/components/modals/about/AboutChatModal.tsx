@@ -18,7 +18,7 @@ import {
   LeaveChatWrapper,
 } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
@@ -60,7 +60,7 @@ export default function AboutChatModal({
   ...props
 }: AboutChatModalProps) {
   const { isAuthorized } = useAuthorizedForModeration(chatId)
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
   const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },

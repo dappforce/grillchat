@@ -2,13 +2,13 @@ import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { AccountData } from '@/pages/api/accounts-data'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { useState } from 'react'
 import { useDisconnect } from 'wagmi'
+import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 
 type LinkEvmAddressMutationProps = {
@@ -29,16 +29,15 @@ export function useLinkEvmAddress({
   onError,
   linkedEvmAddress,
 }: LinkEvmAddressProps) {
-  const address = useMyAccount((state) => state.address ?? '')
-  const signer = useMyAccount((state) => state.signer)
   const sendEvent = useSendEvent()
   const client = useQueryClient()
   const [onCallbackLoading, setOnCallbackLoading] = useState(false)
 
   const waitHasBalance = useWaitHasEnergy()
+  const getWallet = useWalletGetter()
 
   const mutation = useSubsocialMutation<LinkEvmAddressMutationProps>(
-    async () => ({ address, signer }),
+    getWallet,
     async (params, { substrateApi }) => {
       await waitHasBalance()
 
@@ -92,8 +91,7 @@ type UnlinkEvmAddress = {
 }
 
 export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
-  const address = useMyAccount((state) => state.address ?? '')
-  const signer = useMyAccount((state) => state.signer)
+  const getWallet = useWalletGetter()
   const client = useQueryClient()
   const { disconnect } = useDisconnect()
   const [onCallbackLoading, setOnCallbackLoading] = useState(false)
@@ -101,7 +99,7 @@ export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
   const waitHasBalance = useWaitHasEnergy()
 
   const mutation = useSubsocialMutation<UnlinkEvmAddress>(
-    async () => ({ address, signer }),
+    getWallet,
     async (params, { substrateApi }) => {
       await waitHasBalance()
 
@@ -122,7 +120,7 @@ export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
             return {
               ...data,
               evmAddress: null,
-              ensName: null,
+              ensNames: null,
             }
           })
         },

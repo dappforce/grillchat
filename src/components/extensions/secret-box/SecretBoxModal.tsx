@@ -4,7 +4,7 @@ import ProfilePreview from '@/components/ProfilePreview'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import { ExtensionModalsProps } from '..'
@@ -15,7 +15,7 @@ export default function SecretBoxModal(props: ExtensionModalsProps) {
   const { closeModal, isOpen, initialData } = useExtensionModalState(
     'subsocial-decoded-promo'
   )
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
 
   const [secretMessage, setSecretMessage] = useState('')
   const { mutateAsync: encodeSecretBox } = useEncodeSecretBox()

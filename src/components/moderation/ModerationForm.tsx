@@ -3,7 +3,7 @@ import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getModerationReasonsQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ComponentProps, useEffect, useMemo } from 'react'
@@ -71,7 +71,7 @@ export default function ModerationForm({
   const ownerId = message?.struct.ownerId ?? ''
   const { name } = useName(ownerId)
 
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const { mutate, isLoading, error } = useCommitModerationAction({
     onSuccess: (_, variables) => {
       if (variables.action === 'block') {

@@ -1,22 +1,48 @@
+import { useTransactions } from '@/stores/transactions'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { ApiPromise } from '@polkadot/api'
 import { useCallback, useEffect, useState } from 'react'
+import useWrapInRef from './useWrapInRef'
 
 export default function useNetworkStatus() {
   const [status, setStatus] = useState<'connecting' | 'error' | 'connected'>(
     'connecting'
   )
   const [substrateApi, setSubstrateApi] = useState<ApiPromise | null>(null)
+
+  const [shouldDisconnect, setShouldDisconnect] = useState(false)
+  const pendingTransactions = useTransactions(
+    (state) => state.pendingTransactions
+  )
+  const pendingTransactionsRef = useWrapInRef(pendingTransactions)
+
+  useEffect(() => {
+    if (pendingTransactions.size === 0 && shouldDisconnect) {
+      substrateApi?.disconnect()
+      setShouldDisconnect(false)
+    }
+  }, [pendingTransactions, substrateApi, shouldDisconnect])
+
   const disconnect = useCallback(() => {
-    if (substrateApi) substrateApi.disconnect()
-  }, [substrateApi])
-  const connect = useCallback(() => {
-    if (substrateApi && !substrateApi.isConnected) substrateApi.connect()
-  }, [substrateApi])
-  const reconnect = useCallback(() => {
     if (substrateApi) {
-      substrateApi.disconnect()
+      if (pendingTransactionsRef.current.size > 0) {
+        setShouldDisconnect(true)
+      } else {
+        substrateApi.disconnect()
+      }
+    }
+  }, [substrateApi, pendingTransactionsRef])
+  const connect = useCallback(() => {
+    setShouldDisconnect(false)
+    if (substrateApi && !substrateApi.isConnected) {
       substrateApi.connect()
+    }
+  }, [substrateApi])
+  const reconnect = useCallback(async () => {
+    setShouldDisconnect(false)
+    if (substrateApi) {
+      await substrateApi.disconnect()
+      await substrateApi.connect()
     }
   }, [substrateApi])
 

@@ -17,6 +17,7 @@ const inputStyles = cva('', {
     size: {
       sm: 'px-4 py-2',
       md: 'py-3 px-4',
+      lg: 'py-3.5 px-4',
     },
     containsRightElement: {
       true: '',
@@ -104,7 +105,7 @@ export default function FieldWrapper({
     'top-1/2 -translate-y-1/2'
   )
   const leftElementClassNames = cx(
-    'absolute left-2',
+    'absolute left-2 z-10',
     'top-1/2 -translate-y-1/2'
   )
 

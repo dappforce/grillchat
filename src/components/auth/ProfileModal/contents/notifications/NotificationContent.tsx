@@ -1,5 +1,4 @@
 import BellIcon from '@/assets/icons/bell.svg'
-import MailIcon from '@/assets/icons/mail.svg'
 import Card from '@/components/Card'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList from '@/components/MenuList'
@@ -7,7 +6,8 @@ import Notice from '@/components/Notice'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { cx } from '@/utils/class-names'
-import { FaDiscord, FaTelegram } from 'react-icons/fa'
+import { HiOutlineMail } from 'react-icons/hi'
+import { LiaDiscord, LiaTelegram } from 'react-icons/lia'
 import { ContentProps } from '../../types'
 import { useIsPushNotificationEnabled } from './PushNotificationContent'
 
@@ -35,8 +35,8 @@ export default function NotificationContent({
               {telegram.showNotification && <DotBlinkingNotification />}
             </span>
           ),
-          iconClassName: cx('text-text-muted'),
-          icon: FaTelegram,
+          iconClassName: cx('text-text-muted text-[20px]'),
+          icon: LiaTelegram,
           onClick: () => {
             telegram.closeNotification()
             setCurrentState('telegram-notifications')
@@ -59,14 +59,14 @@ export default function NotificationContent({
         },
         {
           text: <SoonMenu text='Email Notifications' />,
-          iconClassName: cx('text-text-muted'),
-          icon: MailIcon,
+          iconClassName: cx('text-text-muted text-[20px]'),
+          icon: HiOutlineMail,
           disabled: true,
         },
         {
           text: <SoonMenu text='Discord notifications' />,
-          iconClassName: cx('text-text-muted'),
-          icon: FaDiscord,
+          iconClassName: cx('text-text-muted text-[20px]'),
+          icon: LiaDiscord,
           disabled: true,
         },
       ]}

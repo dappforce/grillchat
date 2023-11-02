@@ -9,7 +9,11 @@ import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
-import { accountAddressStorage, useMyAccount } from '@/stores/my-account'
+import {
+  accountAddressStorage,
+  useMyAccount,
+  useMyMainAddress,
+} from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
@@ -91,7 +95,7 @@ export default function HubsPage(props: HubsPageProps) {
     },
   ]
 
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const { data: followedPostIds } = getFollowedPostIdsByAddressQuery.useQuery(
     myAddress ?? addressFromStorage ?? ''
   )

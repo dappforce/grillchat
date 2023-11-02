@@ -30,7 +30,7 @@ const menuListItemStyles = cva<MenuListVariants>(
   {
     variants: {
       size: {
-        md: 'px-4 py-3 gap-6',
+        md: 'px-4 py-3 gap-5',
         sm: 'px-3 py-2 gap-4',
         xs: 'px-2 py-1.5 gap-2',
       },
@@ -48,6 +48,7 @@ type Menu = {
   onClick?: () => void
   href?: string
   disabled?: boolean
+  className?: string
 }
 export type MenuListProps = ComponentProps<'div'> &
   VariantProps<typeof menuListStyles> & {
@@ -58,7 +59,18 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
   return (
     <div {...props} className={cx(menuListStyles({ size }), props.className)}>
       {menus.map(
-        ({ icon: Icon, onClick, text, href, iconClassName, disabled }, idx) => (
+        (
+          {
+            icon: Icon,
+            onClick,
+            text,
+            href,
+            iconClassName,
+            className,
+            disabled,
+          },
+          idx
+        ) => (
           <Button
             key={idx}
             href={href}
@@ -68,7 +80,7 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
             size='noPadding'
             disabled={disabled}
             interactive='none'
-            className={cx(menuListItemStyles({ size }), 'text-left')}
+            className={cx(menuListItemStyles({ size }), 'text-left', className)}
             disabledStyle='subtle'
             onClick={onClick}
           >

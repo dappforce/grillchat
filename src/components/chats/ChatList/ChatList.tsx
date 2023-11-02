@@ -7,7 +7,7 @@ import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { sendMessageToParentWindow } from '@/utils/window'
@@ -167,7 +167,7 @@ function ChatListContent({
     }
   )
 
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const { data: chat } = getPostQuery.useQuery(chatId)
   const isMyChat = chat?.struct.ownerId === myAddress
 

@@ -118,7 +118,7 @@ export default function ChatListSupportingContent({
       lastId = rawMessageIds?.[rawMessageIds.length - 1] ?? ''
       if (!lastId) return
     } else {
-      lastId = unreadMessage.lastId
+      lastId = unreadMessage.lastId ?? ''
     }
 
     if (isOptimisticId(lastId)) return

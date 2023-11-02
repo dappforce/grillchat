@@ -1,16 +1,21 @@
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { getProfileQuery } from '@/services/api/query'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
-import { useMyAccount } from '@/stores/my-account'
+import { useSendEvent } from '@/stores/analytics'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { encodeProfileSource } from '@/utils/profile'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ComponentProps } from 'react'
-import { useForm } from 'react-hook-form'
+import { ComponentProps, useEffect } from 'react'
+import { useForm, UseFormWatch } from 'react-hook-form'
 import { z } from 'zod'
 import FormButton from '../FormButton'
 import Input from '../inputs/Input'
+import { useName } from '../Name'
 
 export type SubsocialProfileFormProps = ComponentProps<'form'> & {
   onSuccess?: () => void
+  onNameChange?: (name: string) => void
 }
 
 const formSchema = z.object({
@@ -20,10 +25,12 @@ type FormSchema = z.infer<typeof formSchema>
 
 export default function SubsocialProfileForm({
   onSuccess,
+  onNameChange,
   ...props
 }: SubsocialProfileFormProps) {
-  const myAddress = useMyAccount((state) => state.address)
-  const { data } = getProfileQuery.useQuery(myAddress ?? '', {
+  const sendEvent = useSendEvent()
+  const myAddress = useMyMainAddress()
+  const { data: profile } = getProfileQuery.useQuery(myAddress ?? '', {
     enabled: !!myAddress,
   })
   const {
@@ -32,16 +39,31 @@ export default function SubsocialProfileForm({
     watch,
     formState: { errors },
   } = useForm<FormSchema>({
-    defaultValues: { name: data?.profileSpace?.name ?? '' },
+    defaultValues: { name: profile?.profileSpace?.content?.name ?? '' },
     resolver: zodResolver(formSchema),
     mode: 'onChange',
   })
 
+  const { name } = watch()
+  const onNameChangeRef = useWrapInRef(onNameChange)
+  useEffect(() => {
+    onNameChangeRef.current?.(name)
+  }, [onNameChangeRef, name])
+
   return (
     <UpsertProfileWrapper>
-      {({ mutateAsync }) => {
+      {({ mutateAsync, isLoading }) => {
         const onSubmit = handleSubmit((data) => {
-          mutateAsync({ content: { name: data.name } })
+          mutateAsync({
+            content: {
+              ...profile?.profileSpace?.content,
+              name: data.name,
+              profileSource: encodeProfileSource({
+                source: 'subsocial-profile',
+              }),
+            },
+          })
+          sendEvent('account_settings_changed', { profileSource: 'custom' })
           onSuccess?.()
         })
 
@@ -57,12 +79,41 @@ export default function SubsocialProfileForm({
               variant='fill-bg'
               error={errors.name?.message}
             />
-            <FormButton schema={formSchema} watch={watch} size='lg'>
-              Save
-            </FormButton>
+            <ProfileFormButton
+              isLoading={isLoading}
+              address={myAddress || ''}
+              watch={watch}
+            />
           </form>
         )
       }}
     </UpsertProfileWrapper>
+  )
+}
+
+function ProfileFormButton({
+  address,
+  watch,
+  isLoading,
+}: {
+  address: string
+  watch: UseFormWatch<FormSchema>
+  isLoading: boolean
+}) {
+  const { name } = watch()
+  const currentName = useName(address)
+
+  const isNameNotChanged = currentName.name === name
+
+  return (
+    <FormButton
+      schema={formSchema}
+      disabled={isNameNotChanged}
+      watch={watch}
+      size='lg'
+      isLoading={isLoading}
+    >
+      {isNameNotChanged ? 'Your current profile' : 'Save changes'}
+    </FormButton>
   )
 }

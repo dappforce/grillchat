@@ -3,8 +3,9 @@ import { getMessaging, getToken } from 'firebase/messaging'
 import firebaseApp from './config'
 
 export const getMessageToken = async (): Promise<string | undefined> => {
-  const messaging = getMessaging(firebaseApp)
+  if (!firebaseApp) return
 
+  const messaging = getMessaging(firebaseApp)
   const permission = Notification.permission
 
   if (permission === 'granted') {

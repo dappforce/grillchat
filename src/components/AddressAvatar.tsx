@@ -2,7 +2,7 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
-import { getIpfsContentUrl } from '@/utils/ipfs'
+import { decodeProfileSource } from '@/utils/profile'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
@@ -10,19 +10,25 @@ import {
   ComponentProps,
   forwardRef,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react'
+import { ForceProfileSource } from './Name'
 
 export const resolveEnsAvatarSrc = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}`
 
 export type AddressAvatarProps = ComponentProps<'div'> & {
   address: string
+  forceProfileSource?: ForceProfileSource
 }
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
-  function AddressAvatar({ address, ...props }: AddressAvatarProps, ref) {
+  function AddressAvatar(
+    { address, forceProfileSource, ...props }: AddressAvatarProps,
+    ref
+  ) {
     const backgroundColor = useRandomColor(address, {
       isAddress: true,
       theme: 'dark',
@@ -35,8 +41,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       getAccountDataQuery.useQuery(address)
 
     const { data: profile } = getProfileQuery.useQuery(address)
-
-    const { ensName } = accountData || {}
+    const { ensNames } = accountData || {}
 
     const avatar = useMemo(() => {
       return createAvatar(bottts, {
@@ -44,6 +49,33 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         seed: address,
       }).toDataUriSync()
     }, [address])
+
+    const profileSource = profile?.profileSpace?.content?.profileSource
+    const subsocialProfileImage = profile?.profileSpace?.content?.image
+    const profileAvatar = useMemo(() => {
+      const { source, content } = decodeProfileSource(profileSource)
+      const usedProfileSource = forceProfileSource?.profileSource || source
+      const usedContent = forceProfileSource?.content || content
+      switch (usedProfileSource) {
+        case 'ens':
+          const hasSelectedEns = ensNames?.includes(usedContent ?? '')
+          return hasSelectedEns
+            ? resolveEnsAvatarSrc(usedContent ?? '')
+            : undefined
+        case 'subsocial-profile':
+          return subsocialProfileImage
+      }
+    }, [
+      profileSource,
+      forceProfileSource?.profileSource,
+      forceProfileSource?.content,
+      subsocialProfileImage,
+      ensNames,
+    ])
+
+    useEffect(() => {
+      setIsAvatarError(false)
+    }, [profileAvatar])
 
     if (isLoading) {
       return (
@@ -65,14 +97,6 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       )
     }
 
-    let usedAvatar = profile?.profileSpace?.image
-      ? getIpfsContentUrl(profile.profileSpace.image)
-      : undefined
-
-    if (ensName) {
-      usedAvatar = resolveEnsAvatarSrc(ensName)
-    }
-
     return (
       <div
         {...props}
@@ -83,7 +107,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
         style={{ backgroundColor }}
       >
-        {usedAvatar && (
+        {profileAvatar && (
           <div
             className={cx(
               'absolute inset-0 h-full w-full transition-opacity',
@@ -95,7 +119,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
                 sizes='5rem'
                 className='relative rounded-full'
                 fill
-                src={usedAvatar}
+                src={profileAvatar}
                 onError={onImageError}
                 alt='avatar'
               />

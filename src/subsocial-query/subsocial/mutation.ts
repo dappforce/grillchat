@@ -1,3 +1,4 @@
+import { useTransactions } from '@/stores/transactions'
 import { generatePromiseQueue } from '@/utils/promise'
 import type { ApiPromise } from '@polkadot/api'
 import type { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
@@ -36,7 +37,7 @@ export function useSubsocialMutation<Data, Context = undefined>(
 
     const txCallbacks = generateTxCallbacks(
       {
-        address: wallet.address,
+        address: wallet.proxyToAddress || wallet.address,
         data,
       },
       config?.txCallbacks,
@@ -130,7 +131,7 @@ function sendTransaction<Data>(
     data,
     summary,
     tx,
-    wallet: { address, signer },
+    wallet: { address, signer, proxyToAddress },
   } = txInfo
   const globalTxCallbacks = getGlobalTxCallbacks()
   return new Promise<string>(async (resolve, reject) => {
@@ -141,54 +142,91 @@ function sendTransaction<Data>(
         address
       )
       danglingNonceResolver = nonceResolver
-      const unsub = await tx.signAndSend(signer, { nonce }, async (result) => {
-        // the result is only tx hash if its using http connection
-        if (typeof result.toHuman() === 'string') {
-          return resolve(result.toString())
-        }
 
-        resolve(result?.txHash?.toString())
-        if (result.status.isInvalid) {
-          txCallbacks?.onError()
-          globalTxCallbacks.onError({
-            summary,
-            address,
-            data,
-          })
-        } else if (result.status.isBroadcast) {
-          txCallbacks?.onBroadcast()
-          globalTxCallbacks.onBroadcast({
-            summary,
-            data,
-            address,
-          })
-        } else if (result.status.isInBlock) {
-          const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
-          let explorerLink: string | undefined
-          if (networkRpc) {
-            explorerLink = getBlockExplorerBlockInfoLink(networkRpc, blockHash)
+      let usedTx = tx
+      if (proxyToAddress) {
+        usedTx = apis.substrateApi.tx.proxy.proxy(proxyToAddress, null, tx)
+      }
+
+      // signer from talisman and signer from keyring are different
+      // so they need to be handled differently, the one that have 'signPayload' are for talisman signer
+      let account = signer
+      let signerOpt = undefined
+      if ('signPayload' in signer) {
+        account = address
+        signerOpt = signer
+      }
+
+      const txHashAndNonce = tx.toHex() + nonce
+      if (!apis.useHttp) {
+        useTransactions.getState().addPendingTransaction(txHashAndNonce)
+      }
+
+      const unsub = await usedTx.signAndSend(
+        account,
+        { nonce, signer: signerOpt },
+        async (result) => {
+          // the result is only tx hash if its using http connection
+          if (typeof result.toHuman() === 'string') {
+            return resolve(result.toString())
           }
-          if (result.isError || result.dispatchError || result.internalError) {
+
+          resolve(result?.txHash?.toString())
+          if (result.status.isInvalid) {
             txCallbacks?.onError()
             globalTxCallbacks.onError({
-              error: result.dispatchError?.toString(),
-              summary,
-              address,
-              data,
-              explorerLink,
-            })
-          } else {
-            txCallbacks?.onSuccess(result)
-            globalTxCallbacks.onSuccess({
-              explorerLink,
               summary,
               address,
               data,
             })
+          } else if (result.status.isBroadcast) {
+            txCallbacks?.onBroadcast()
+            globalTxCallbacks.onBroadcast({
+              summary,
+              data,
+              address,
+            })
+          } else if (result.status.isInBlock) {
+            const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
+            let explorerLink: string | undefined
+            if (networkRpc) {
+              explorerLink = getBlockExplorerBlockInfoLink(
+                networkRpc,
+                blockHash
+              )
+            }
+            if (
+              result.isError ||
+              result.dispatchError ||
+              result.internalError
+            ) {
+              useTransactions
+                .getState()
+                .removePendingTransaction(txHashAndNonce)
+              txCallbacks?.onError()
+              globalTxCallbacks.onError({
+                error: result.dispatchError?.toString(),
+                summary,
+                address,
+                data,
+                explorerLink,
+              })
+            } else {
+              useTransactions
+                .getState()
+                .removePendingTransaction(txHashAndNonce)
+              txCallbacks?.onSuccess(result)
+              globalTxCallbacks.onSuccess({
+                explorerLink,
+                summary,
+                address,
+                data,
+              })
+            }
+            unsub()
           }
-          unsub()
         }
-      })
+      )
       nonceResolver()
       txCallbacks?.onSend()
     } catch (e) {

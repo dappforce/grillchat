@@ -2,7 +2,6 @@ import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
-import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
@@ -14,7 +13,11 @@ import {
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
-import { hasSentMessageStorage, useMyAccount } from '@/stores/my-account'
+import {
+  getHasEnoughEnergy,
+  hasSentMessageStorage,
+  useMyAccount,
+} from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
 import dynamic from 'next/dynamic'
@@ -92,8 +95,8 @@ export default function ChatForm({
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
-  const hasEnoughEnergy = useMyAccount(
-    (state) => (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
+  const hasEnoughEnergy = useMyAccount((state) =>
+    getHasEnoughEnergy(state.energy)
   )
   const [isRequestingEnergy, setIsRequestingEnergy] = useState(false)
 

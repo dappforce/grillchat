@@ -11,7 +11,6 @@ import LinkText from '@/components/LinkText'
 import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
-import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -22,7 +21,11 @@ import { getPostQuery } from '@/services/api/query'
 import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
-import { useMyAccount } from '@/stores/my-account'
+import {
+  getHasEnoughEnergy,
+  useMyAccount,
+  useMyMainAddress,
+} from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
@@ -103,7 +106,7 @@ export default function ChatPage({
     } catch {}
   }, [openExtensionModal])
 
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
@@ -203,7 +206,7 @@ function BottomPanel() {
     if (!state.isInitialized || isEnergyLoading) return true
 
     const isLoggedIn = !!state.address
-    const hasEnoughEnergy = (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
+    const hasEnoughEnergy = getHasEnoughEnergy(state.energy)
     return isLoggedIn && hasEnoughEnergy
   })
 

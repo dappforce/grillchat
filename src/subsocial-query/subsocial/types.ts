@@ -6,6 +6,7 @@ export type Transaction = ReturnType<ApiPromise['tx']['']['']>
 export interface WalletAccount {
   address: string
   signer?: any
+  proxyToAddress?: string
 }
 
 export type OptimisticData<Data> = { data: Data; address: string }

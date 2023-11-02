@@ -1,16 +1,20 @@
-import EthIcon from '@/assets/icons/eth-medium.svg'
+import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
+import { HiPencil } from 'react-icons/hi2'
 import AddressAvatar from './AddressAvatar'
+import Button from './Button'
 import { CopyTextInline } from './CopyText'
-import Name from './Name'
+import PopOver from './floating/PopOver'
+import Name, { ForceProfileSource, useName } from './Name'
 
 export type ProfilePreviewProps = ComponentProps<'div'> & {
   address: string
+  forceProfileSource?: ForceProfileSource
   className?: string
   avatarClassName?: string
   addressesContainerClassName?: string
@@ -18,22 +22,26 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   withGrillAddress?: boolean
   withEvmAddress?: boolean
   nameClassName?: string
+  onEditClick?: () => void
 }
 
 const ProfilePreview = ({
   address,
+  forceProfileSource,
   className,
   avatarClassName,
   nameClassName,
   addressesContainerClassName,
+  onEditClick,
   showMaxOneAddress = false,
   withGrillAddress = true,
   withEvmAddress = true,
   ...props
 }: ProfilePreviewProps) => {
+  const { isLoading } = useName(address)
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { evmAddress } = accountData || {}
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
@@ -45,13 +53,37 @@ const ProfilePreview = ({
       <AddressAvatar
         address={address}
         className={cx('h-20 w-20', avatarClassName)}
+        forceProfileSource={forceProfileSource}
       />
-      <div className={cx('flex flex-col gap-2', addressesContainerClassName)}>
-        <Name
-          address={address}
-          showEthIcon={false}
-          className={cx('text-lg leading-none', nameClassName)}
-        />
+      <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
+        <div className='relative left-1 flex items-center gap-2'>
+          <Name
+            showProfileSourceIcon={false}
+            address={address}
+            className={cx('text-lg', nameClassName)}
+            forceProfileSource={forceProfileSource}
+          />
+          {onEditClick && !isLoading && (
+            <PopOver
+              panelSize='sm'
+              triggerOnHover
+              placement='top'
+              yOffset={6}
+              trigger={
+                <Button
+                  size='noPadding'
+                  className='relative top-px p-1 text-text-primary'
+                  variant='transparent'
+                  onClick={onEditClick}
+                >
+                  <HiPencil />
+                </Button>
+              }
+            >
+              <p>Edit my profile</p>
+            </PopOver>
+          )}
+        </div>
         {showingAnyAddress && (
           <div className='flex flex-col gap-1'>
             {withGrillAddress &&

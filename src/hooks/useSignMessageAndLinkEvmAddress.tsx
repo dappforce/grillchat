@@ -1,11 +1,14 @@
 import { useLinkEvmAddress } from '@/services/subsocial/evmAddresses/mutation'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { decodeAddress } from '@polkadot/keyring'
-import { BN, u8aToHex } from '@polkadot/util'
+import { u8aToHex } from '@polkadot/util'
 import { useEffect, useState } from 'react'
 import { useDisconnect, useSignMessage } from 'wagmi'
 
-const buildMsgParams = async (substrateAddress: string) => {
+const buildMsgParams = async (
+  substrateAddress: string,
+  signerAddress?: string
+) => {
   const decodedAddress = u8aToHex(decodeAddress(substrateAddress))
   const subsocialApi = await getSubsocialApi()
 
@@ -13,7 +16,10 @@ const buildMsgParams = async (substrateAddress: string) => {
 
   const account = await api.query.system.account(substrateAddress)
 
-  const nonce = account.nonce.add(new BN(1)).toString()
+  let nonce: string
+  const isUsingProxy = signerAddress && signerAddress !== substrateAddress
+  if (isUsingProxy) nonce = account.nonce.toString()
+  else nonce = account.nonce.addn(1).toString()
 
   const decodedAddressHex = decodedAddress.replace('0x', '')
 
@@ -26,14 +32,15 @@ const useSignEvmLinkMessage = () => {
   const [isError, setIsError] = useState(false)
 
   const signEvmLinkMessage = async (
-    emvAddress?: string,
-    substrateAddress?: string | null
+    evmAddress?: string,
+    substrateAddress?: string | null,
+    signerAddress?: string
   ) => {
     setIsError(false)
 
-    if (!emvAddress || !substrateAddress) return
+    if (!evmAddress || !substrateAddress) return
 
-    const message = await buildMsgParams(substrateAddress)
+    const message = await buildMsgParams(substrateAddress, signerAddress)
     try {
       setIsSigningMessage(true)
       const data = await signMessageAsync({ message })
@@ -91,12 +98,20 @@ export default function useSignMessageAndLinkEvmAddress({
 
   const signAndLinkEvmAddress = async (
     evmAddress?: string,
-    substrateAddress?: string | null
+    substrateAddress?: string | null,
+    signerAddress?: string
   ) => {
     if (!evmAddress) return
 
-    const data = await signEvmLinkMessage(evmAddress, substrateAddress)
+    console.log('signing')
+    const data = await signEvmLinkMessage(
+      evmAddress,
+      substrateAddress,
+      signerAddress
+    )
+    console.log('done signing')
     if (data) {
+      console.log('linking')
       linkEvmAddress({
         evmAddress,
         evmSignature: data,
