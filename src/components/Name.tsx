@@ -42,16 +42,7 @@ export function useName(
     })
 
   const { ensNames, evmAddress } = accountData || {}
-  const firstEnsName = ensNames?.[0]
-  const firstSubsocialUsername = identities?.subsocial?.[0]
-  let name =
-    firstSubsocialUsername ||
-    identities?.polkadot ||
-    identities?.kusama ||
-    identities?.kilt ||
-    firstEnsName ||
-    profile?.profileSpace?.content?.name ||
-    generateRandomName(address)
+  let name = generateRandomName(address)
 
   const userProfileSource = profile?.profileSpace?.content?.profileSource
 

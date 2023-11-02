@@ -2,7 +2,6 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
-import { getIpfsContentUrl } from '@/utils/ipfs'
 import { decodeProfileSource } from '@/utils/profile'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
@@ -74,15 +73,9 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       ensNames,
     ])
 
-    let usedAvatar = profile?.profileSpace?.content?.image
-      ? getIpfsContentUrl(profile.profileSpace.content.image)
-      : undefined
-
-    usedAvatar = profileAvatar ?? usedAvatar
-
     useEffect(() => {
       setIsAvatarError(false)
-    }, [usedAvatar])
+    }, [profileAvatar])
 
     if (isLoading) {
       return (
@@ -114,7 +107,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
         style={{ backgroundColor }}
       >
-        {usedAvatar && (
+        {profileAvatar && (
           <div
             className={cx(
               'absolute inset-0 h-full w-full transition-opacity',
@@ -126,7 +119,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
                 sizes='5rem'
                 className='relative rounded-full'
                 fill
-                src={usedAvatar}
+                src={profileAvatar}
                 onError={onImageError}
                 alt='avatar'
               />
