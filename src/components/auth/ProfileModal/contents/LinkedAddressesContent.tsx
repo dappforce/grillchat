@@ -19,7 +19,7 @@ export default function LinkedAddressesContent({
     setCurrentState('link-evm-address')
   }
   const onPolkadotConnectClick = () => {
-    sendEvent('open_polkadot_connect', commonEventProps)
+    sendEvent('start_link_polkadot_address', commonEventProps)
     setCurrentState('polkadot-connect')
   }
 
