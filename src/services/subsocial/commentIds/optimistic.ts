@@ -30,16 +30,19 @@ type OptimisticGeneratorParams = {
   params: SendMessageParams
   ipfsContent: PostContent
   address: string
+  customId?: string
 }
 export function addOptimisticData({
   client,
   params,
   ipfsContent,
+  customId,
   address,
 }: OptimisticGeneratorParams) {
-  if (!ipfsContent.optimisticId) return
+  const id = customId || ipfsContent.optimisticId
+  if (!id) return
 
-  const tempId = commentIdsOptimisticEncoder.encode(ipfsContent.optimisticId)
+  const tempId = commentIdsOptimisticEncoder.encode(id)
   getPostQuery.setQueryData(client, tempId, {
     id: tempId,
     struct: {
@@ -78,13 +81,13 @@ export function addOptimisticData({
 export function deleteOptimisticData({
   client,
   chatId,
-  optimisticId,
+  idToDelete,
 }: {
   client: QueryClient
   chatId: string
-  optimisticId: string
+  idToDelete: string
 }) {
-  const tempId = commentIdsOptimisticEncoder.encode(optimisticId)
+  const tempId = commentIdsOptimisticEncoder.encode(idToDelete)
 
   getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
     client,

@@ -85,7 +85,7 @@ export default function MessageStatusIndicator({
           )
         } else if (messageStatus === 'offChain') {
           return (
-            <IoCheckmarkDoneOutline className='text-sm text-red-600 dark:text-text-on-primary' />
+            <IoCheckmarkDoneOutline className='text-sm text-red-600 dark:text-red-300' />
           )
         }
       })()}
@@ -105,9 +105,9 @@ export function getMessageStatusById(message: PostData): MessageStatus {
   const id = message.id
   if (!isMessageSent(id, message.struct.dataType)) {
     if (isClientGeneratedOptimisticId(id)) return 'sending'
-    if (message.struct.dataType === 'offChain') return 'offChain'
     return 'optimistic'
   } else {
+    if (message.struct.dataType === 'offChain') return 'offChain'
     return 'blockchain'
   }
 }

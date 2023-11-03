@@ -233,7 +233,11 @@ export default function ChatForm({
     resetForm()
     if (isOffchainPosting) {
       resetForm()
-      mutate({ ...messageParams, optimisticId: crypto.randomUUID() })
+      mutate({
+        ...messageParams,
+        uuid: crypto.randomUUID(),
+        timestamp: Date.now(),
+      })
     } else if (shouldSendMessage) {
       resetForm()
       sendMessage(messageParams)

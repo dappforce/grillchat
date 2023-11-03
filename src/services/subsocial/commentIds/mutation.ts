@@ -158,7 +158,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             if (isCreating) {
               deleteOptimisticData({
                 chatId: data.chatId,
-                optimisticId,
+                idToDelete: optimisticId,
                 client,
               })
             } else if (isUpdating) {

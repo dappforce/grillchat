@@ -18,6 +18,7 @@ import {
   SynthUpdatePostTxRetryCallParsedArgs,
   UpdatePostCallParsedArgs,
 } from '@subsocial/data-hub-sdk'
+import { getDeterministicId } from '@subsocial/data-hub-sdk/utils'
 import {
   useMutation,
   UseMutationOptions,
@@ -54,12 +55,16 @@ async function createPostData({
   content,
   signer,
   isOffchainMessage,
+  uuid,
+  timestamp,
 }: DatahubParams<{
   rootPostId?: string
   spaceId: string
   cid: string
   content: PostContent
   isOffchainMessage?: boolean
+  uuid?: string
+  timestamp?: number
 }>) {
   const eventArgs: CreatePostCallParsedArgs = {
     forced: false,
@@ -79,8 +84,8 @@ async function createPostData({
       name: socialCallName.create_post,
       signer: address || '',
       args: JSON.stringify(eventArgs),
-      timestamp: Date.now(),
-      uuid: crypto.randomUUID(),
+      timestamp: timestamp || Date.now(),
+      uuid: uuid || crypto.randomUUID(),
     },
     content: JSON.stringify(content),
     providerAddr: address,
@@ -265,7 +270,10 @@ const datahubMutation = {
 }
 export default datahubMutation
 
-type SendOffchainMessageParams = SendMessageParams & { optimisticId: string }
+type SendOffchainMessageParams = SendMessageParams & {
+  uuid: string
+  timestamp: number
+}
 export function useSendOffchainMessage(
   config: UseMutationOptions<void, unknown, SendOffchainMessageParams, unknown>
 ) {
@@ -280,7 +288,6 @@ export function useSendOffchainMessage(
         body: data.message,
         inReplyTo: ReplyWrapper(data.replyTo),
         extensions: data.extensions,
-        optimisticId: data.optimisticId,
       } as PostContent
 
       const maxLength = getMaxMessageLength(data.chatId)
@@ -295,6 +302,8 @@ export function useSendOffchainMessage(
 
       await datahubMutation.createPostData({
         ...getWallet(),
+        uuid: data.uuid,
+        timestamp: data.timestamp,
         isOffchainMessage: true,
         content: content,
         cid: cid,
@@ -308,23 +317,34 @@ export function useSendOffchainMessage(
         body: data.message,
         inReplyTo: ReplyWrapper(data.replyTo),
         extensions: data.extensions,
-        optimisticId: data.optimisticId,
       } as PostContent
+
+      const newId = getDeterministicId({
+        account: getWallet().address,
+        timestamp: data.timestamp.toString(),
+        uuid: data.uuid,
+      })
 
       addOptimisticData({
         address: getWallet().address,
         params: data,
         ipfsContent: content,
         client,
+        customId: newId,
       })
       config.onMutate?.(data)
     },
     onError: (err, data, context) => {
-      const { chatId, optimisticId } = data
+      const newId = getDeterministicId({
+        account: getWallet().address,
+        timestamp: data.timestamp.toString(),
+        uuid: data.uuid,
+      })
+      const { chatId } = data
       deleteOptimisticData({
         chatId,
         client,
-        optimisticId,
+        idToDelete: newId,
       })
       config.onError?.(err, data, context)
     },

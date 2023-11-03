@@ -139,8 +139,9 @@ async function processMessage(
 
       const newIds = [...oldData]
 
+      const usedAsClientOptimisticId = entity.optimisticId || entity.id
       const clientOptimisticId = commentIdsOptimisticEncoder.encode(
-        entity.optimisticId ?? ''
+        usedAsClientOptimisticId ?? ''
       )
       if (oldIdsSet.has(clientOptimisticId)) {
         const optimisticIdIndex = newIds.findIndex(
