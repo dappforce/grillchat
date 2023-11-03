@@ -1,3 +1,4 @@
+import SubwalletIcon from '@/assets/icons/subwallet.png'
 import Button from '@/components/Button'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import { useSendEvent } from '@/stores/analytics'
@@ -52,8 +53,12 @@ export default function PolkadotConnectWalletContent({
         <Image
           width={32}
           height={32}
-          className='h-10 w-10'
-          src={wallet.logo.src}
+          className='h-10 w-10 flex-shrink-0 object-contain'
+          src={
+            wallet.title.toLowerCase() === 'subwallet'
+              ? SubwalletIcon
+              : wallet.logo.src
+          }
           alt={wallet.logo.alt}
         />
       ),
