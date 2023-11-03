@@ -40,7 +40,7 @@ export async function loginWithSecretKey(secretKey: string): Promise<Signer> {
 }
 
 export function truncateAddress(address: string) {
-  return `${address.slice(0, 6)}…${address.slice(-6)}`
+  return `${address.slice(0, 6)}…${address.slice(-4)}`
 }
 
 export function encodeSecretKey(secretKey: string) {
