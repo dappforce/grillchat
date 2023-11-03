@@ -1,12 +1,17 @@
 import SubwalletIcon from '@/assets/icons/subwallet.png'
 import Button from '@/components/Button'
 import MenuList, { MenuListProps } from '@/components/MenuList'
+import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getCurrentUrlOrigin } from '@/utils/links'
+import { isInMobileOrTablet } from '@/utils/window'
 import { getWallets, Wallet } from '@talismn/connect-wallets'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { FiDownload } from 'react-icons/fi'
+import urlJoin from 'url-join'
 import { PolkadotConnectContentProps } from './types'
 
 export default function PolkadotConnectWalletContent({
@@ -19,8 +24,10 @@ export default function PolkadotConnectWalletContent({
   supportedWallets.sort((a, b) => {
     return !a.installed && b.installed ? 1 : -1
   })
-  const menus: MenuListProps['menus'] = supportedWallets.map(
-    (wallet: Wallet) => ({
+  let hasInstalledWallet = false
+  let menus: MenuListProps['menus'] = supportedWallets.map((wallet: Wallet) => {
+    if (wallet.installed) hasInstalledWallet = true
+    return {
       text: (
         <div className='flex w-full items-center justify-between gap-4'>
           <span
@@ -69,8 +76,36 @@ export default function PolkadotConnectWalletContent({
         setCurrentState('polkadot-connect-account')
         sendEvent('select_polkadot_wallet', { kind: wallet.title })
       },
-    })
-  )
+    }
+  })
+
+  const router = useRouter()
+  if (!hasInstalledWallet && isInMobileOrTablet()) {
+    const urlToGo = urlJoin(
+      getCurrentUrlOrigin(),
+      `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${
+        useMyAccount.getState().encodedSecretKey
+      }&returnUrl=${encodeURIComponent(router.asPath)}`
+    )
+    menus = [
+      {
+        icon: () => (
+          <Image
+            width={32}
+            height={32}
+            className='h-10 w-10 flex-shrink-0 object-contain'
+            src={SubwalletIcon}
+            alt='Subwallet'
+          />
+        ),
+        text: 'Subwallet',
+        className: cx('gap-4'),
+        href: `https://mobile.subwallet.app/browser?url=${encodeURIComponent(
+          urlToGo
+        )}`,
+      },
+    ]
+  }
 
   return (
     <div className='flex flex-col'>
