@@ -39,11 +39,11 @@ function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
     <div>
       {evmAddress ? (
         <div>
-          <EvmAddress evmAddress={evmAddress} />
+          <EvmAddress evmAddress={evmAddress} className='mb-2' />
           {isNotEqAddresses && connectionButton}
           <Button
             onClick={() => setCurrentState('unlink-evm-confirmation')}
-            className='mt-6 w-full border-red-500'
+            className='mt-4 w-full border-red-500'
             variant='primaryOutline'
             size='lg'
           >

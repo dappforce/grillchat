@@ -77,15 +77,17 @@ const subscription = (
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
 
-      const accountData = await getAccountsData(Array.from(addressesSet))
+      async function updateAccountData() {
+        const accountData = await getAccountsData(Array.from(addressesSet))
 
-      accountData.forEach((accountAddresses) => {
-        getAccountDataQuery.setQueryData(
-          queryClient,
-          accountAddresses.grillAddress,
-          accountAddresses
-        )
-      })
+        accountData.forEach((accountAddresses) => {
+          getAccountDataQuery.setQueryData(
+            queryClient,
+            accountAddresses.grillAddress,
+            accountAddresses
+          )
+        })
+      }
 
       queryClient.setQueryData<string[]>(
         getCommentIdsQueryKey(postId),
@@ -97,6 +99,7 @@ const subscription = (
           ]
         }
       )
+      updateAccountData()
     })
   })()
 

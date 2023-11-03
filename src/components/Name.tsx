@@ -11,6 +11,7 @@ import { decodeProfileSource, ProfileSource } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import ChatModerateChip from './chats/ChatModerateChip'
+import PopOver from './floating/PopOver'
 
 export type ForceProfileSource = {
   profileSource?: ProfileSource
@@ -92,6 +93,31 @@ export function useName(
   }
 }
 
+const profileSourceData: {
+  [key in ProfileSource]?: { icon: any; tooltip: string }
+} = {
+  'kilt-w3n': {
+    icon: KiltIcon,
+    tooltip: 'Kilt W3Name',
+  },
+  ens: {
+    icon: EthIcon,
+    tooltip: 'ENS',
+  },
+  'kusama-identity': {
+    icon: KusamaIcon,
+    tooltip: 'Kusama Identity',
+  },
+  'polkadot-identity': {
+    icon: PolkadotIcon,
+    tooltip: 'Polkadot Identity',
+  },
+  'subsocial-username': {
+    icon: SubsocialIcon,
+    tooltip: 'Subsocial Username',
+  },
+}
+
 const Name = ({
   address,
   className,
@@ -106,6 +132,9 @@ const Name = ({
     address,
     forceProfileSource
   )
+
+  const { icon: Icon, tooltip } =
+    profileSourceData[profileSource ?? ('' as ProfileSource)] || {}
 
   if (isLoading) {
     return (
@@ -130,17 +159,19 @@ const Name = ({
       <span>
         {additionalText} {name}{' '}
       </span>
-      {showProfileSourceIcon &&
-        profileSource &&
-        profileSource !== 'subsocial-profile' && (
-          <div className='relative top-px ml-1 flex-shrink-0 text-text-muted'>
-            {profileSource === 'ens' && <EthIcon />}
-            {profileSource === 'kilt-w3n' && <KiltIcon />}
-            {profileSource === 'polkadot-identity' && <PolkadotIcon />}
-            {profileSource === 'subsocial-username' && <SubsocialIcon />}
-            {profileSource === 'kusama-identity' && <KusamaIcon />}
-          </div>
-        )}
+      {showProfileSourceIcon && Icon && (
+        <div className='relative top-px ml-1 flex-shrink-0 text-text-muted'>
+          <PopOver
+            trigger={<Icon />}
+            panelSize='sm'
+            yOffset={4}
+            placement='top'
+            triggerOnHover
+          >
+            <p>{tooltip}</p>
+          </PopOver>
+        </div>
+      )}
       <ChatModerateChip
         className='ml-1 flex items-center'
         chatId={labelingData?.chatId ?? ''}
