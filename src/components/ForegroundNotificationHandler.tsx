@@ -11,7 +11,7 @@ import Toast from './Toast'
 
 export default function ForegroundNotificationHandler() {
   useEffect(() => {
-    if (!navigator?.serviceWorker) return
+    if (!navigator?.serviceWorker || !firebaseApp) return
 
     const messaging = firebaseMessaging.getMessaging(firebaseApp)
     const unsub = firebaseMessaging.onMessage(messaging, async (payload) => {

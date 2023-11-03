@@ -132,7 +132,7 @@ export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
             return {
               ...data,
               evmAddress: null,
-              ensName: null,
+              ensNames: null,
             }
           })
         },

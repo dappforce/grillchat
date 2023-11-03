@@ -1,5 +1,5 @@
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import { LuShield } from 'react-icons/lu'
@@ -17,7 +17,7 @@ export default function ChatModerateChip({
   popOverProps,
   ...props
 }: ChatModerateChipProps) {
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const usedAddress = address ?? myAddress ?? ''
   const isOwner = useIsOwnerOfPost(chatId, usedAddress)
   if (!isOwner) {

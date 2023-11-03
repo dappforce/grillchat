@@ -8,7 +8,7 @@ import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getUnreadCountQuery } from '@/services/subsocial/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getDatahubConfig } from '@/utils/env/client'
 import { getHubPageLink } from '@/utils/links'
@@ -48,12 +48,13 @@ export default function Navbar({
 }: NavbarProps) {
   const { enableLoginButton = true } = useConfigContext()
   const isInitialized = useMyAccount((state) => state.isInitialized)
+  const isTemporaryAccount = useMyAccount((state) => state.isTemporaryAccount)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
   )
   const router = useRouter()
 
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
   const prevAddress = usePrevious(address)
   const isLoggedIn = !!address
 
@@ -84,7 +85,7 @@ export default function Navbar({
   const renderAuthComponent = () => {
     if (!isInitialized) return <div className='w-20' />
 
-    if (isLoggedIn) {
+    if (isLoggedIn && !isTemporaryAccount) {
       return (
         <ProfileAvatar
           popOverControl={{

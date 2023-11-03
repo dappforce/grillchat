@@ -18,7 +18,7 @@ import {
   LeaveChatWrapper,
 } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
@@ -60,7 +60,7 @@ export default function AboutChatModal({
   ...props
 }: AboutChatModalProps) {
   const { isAuthorized } = useAuthorizedForModeration(chatId)
-  const address = useMyAccount((state) => state.address)
+  const address = useMyMainAddress()
   const router = useRouter()
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
@@ -101,7 +101,7 @@ export default function AboutChatModal({
             <ProfilePreview
               onClick={onClick}
               address={chatOwner}
-              className='relative -left-0.5 mt-1 cursor-pointer gap-2'
+              className='relative -left-0.5 mt-1 cursor-pointer gap-px'
               avatarClassName={cx('h-6 w-6')}
               withGrillAddress={false}
               withEvmAddress={false}

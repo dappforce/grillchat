@@ -34,13 +34,15 @@ function ChatItemContainer(
   const { content } = message
   const { body, extensions } = content || {}
   const address = useMyAccount((state) => state.address)
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
 
   if (isMessageBlocked || (!body && !extensions)) return null
 
   const ownerId = message.struct.ownerId
   const senderAddress = ownerId ?? ''
 
-  const isMyMessage = address === senderAddress
+  const isMyMessage =
+    address === senderAddress || senderAddress === parentProxyAddress
 
   return (
     <div

@@ -1,7 +1,7 @@
 import InfoPanel from '@/components/InfoPanel'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import useGetTheme from '@/hooks/useGetTheme'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import CommonChatItem from '../common/CommonChatItem'
@@ -11,7 +11,7 @@ import { useDecodeSecretBox } from './utils'
 
 export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
   const [decryptedMessage, setDecryptedMessage] = useState<string>()
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const theme = useGetTheme()
   const { mutateAsync: decodeSecretBox } = useDecodeSecretBox()
 
@@ -73,7 +73,7 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
               <ProfilePreviewModalName
                 address={recipient || ''}
                 className='!inline font-semibold'
-                showEthIcon={false}
+                showProfileSourceIcon={false}
                 color={theme === 'dark' ? darkThemeTextColor : '#000'}
               />{' '}
               is able to read this secret message.

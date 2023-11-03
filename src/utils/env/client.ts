@@ -63,6 +63,17 @@ export function getFirebaseConfig() {
     'NEXT_PUBLIC_FIREBASE_APP_ID'
   )
 
+  if (
+    !apiKey ||
+    !authDomain ||
+    !projectId ||
+    !storageBucket ||
+    !messagingSenderId ||
+    !appId
+  ) {
+    return null
+  }
+
   return {
     apiKey,
     authDomain,

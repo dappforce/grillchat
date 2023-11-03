@@ -118,6 +118,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     {
       // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
       supressSendingTxError: !!getDatahubConfig(),
+      retry: 2,
       txCallbacks: {
         onStart: ({ address, context, data }) => {
           preventWindowUnload()

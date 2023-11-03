@@ -1,7 +1,9 @@
+import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { queryClient } from '@/services/provider'
 import { getAccountsData } from '@/services/subsocial/evmAddresses'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
+import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useParentData } from '@/stores/parent'
 import {
   decodeSecretKey,
@@ -14,6 +16,7 @@ import {
 import { wait } from '@/utils/promise'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
+import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import { useAnalytics } from './analytics'
 import { create } from './utils'
@@ -21,6 +24,17 @@ import { create } from './utils'
 type State = {
   isInitialized?: boolean
   isInitializedAddress?: boolean
+  isTemporaryAccount: boolean
+
+  preferredWallet: Wallet | null
+  connectedWallet?: {
+    address: string
+    signer: Signer | null
+    energy?: number
+    _unsubscribeEnergy?: () => void
+  }
+  parentProxyAddress: string | undefined
+
   address: string | null
   signer: Signer | null
   energy: number | null
@@ -33,12 +47,22 @@ type Actions = {
     secretKey?: string,
     isInitialization?: boolean
   ) => Promise<string | false>
+  loginAsTemporaryAccount: () => Promise<string | false>
+  finalizeTemporaryAccount: () => void
   logout: () => void
-  _subscribeEnergy: (isRetrying?: boolean) => Promise<void>
+  setPreferredWallet: (wallet: Wallet | null) => void
+  connectWallet: (address: string, signer: Signer | null) => Promise<void>
+  saveProxyAddress: () => void
+  disconnectProxy: () => void
+  _subscribeEnergy: () => void
+  _subscribeConnectedWalletEnergy: () => void
 }
 
 const initialState: State = {
   isInitializedAddress: true,
+  isTemporaryAccount: false,
+  preferredWallet: null,
+  parentProxyAddress: undefined,
   address: null,
   signer: null,
   energy: null,
@@ -46,23 +70,27 @@ const initialState: State = {
   _unsubscribeEnergy: () => undefined,
 }
 
-const ACCOUNT_ADDRESS_STORAGE_KEY = 'accountPublicKey'
-const ACCOUNT_STORAGE_KEY = 'account'
-const FOLLOWED_IDS_STORAGE_KEY = 'followedPostIds'
-
 export const accountAddressStorage = new LocalStorageAndForage(
-  () => ACCOUNT_ADDRESS_STORAGE_KEY
+  () => 'accountPublicKey'
 )
 export const followedIdsStorage = new LocalStorageAndForage(
-  (address: string) => `${FOLLOWED_IDS_STORAGE_KEY}:${address}`
+  (address: string) => `followedPostIds:${address}`
 )
 export const hasSentMessageStorage = new LocalStorage(() => 'has-sent-message')
-const accountStorage = new LocalStorage(() => ACCOUNT_STORAGE_KEY)
+const accountStorage = new LocalStorage(() => 'account')
+const parentProxyAddressStorage = new LocalStorage(
+  () => 'connectedWalletAddress'
+)
+const preferredWalletStorage = new LocalStorage(() => 'preferred-wallet')
 
-const sendLaunchEvent = async (address?: string | false) => {
+const sendLaunchEvent = async (
+  address?: string | false,
+  parentProxyAddress?: string | null
+) => {
   let userProperties = {
     tgNotifsConnected: false,
     evmLinked: false,
+    polkadotLinked: !!parentProxyAddress,
     webNotifsEnabled: false,
     ownedChat: false,
   }
@@ -103,6 +131,46 @@ const sendLaunchEvent = async (address?: string | false) => {
 
 export const useMyAccount = create<State & Actions>()((set, get) => ({
   ...initialState,
+  setPreferredWallet: (wallet) => {
+    set({ preferredWallet: wallet })
+    if (!wallet) preferredWalletStorage.remove()
+    else preferredWalletStorage.set(wallet.title)
+  },
+  _subscribeConnectedWalletEnergy: () => {
+    const { connectedWallet } = get()
+    if (!connectedWallet) return
+
+    const { address } = connectedWallet
+    const unsub = subscribeEnergy(address, (energy) => {
+      const wallet = get().connectedWallet
+      if (!wallet) return
+      set({ connectedWallet: { ...wallet, energy } })
+    })
+    set({
+      connectedWallet: {
+        ...connectedWallet,
+        _unsubscribeEnergy: () => unsub.then((unsub) => unsub?.()),
+      },
+    })
+  },
+  connectWallet: async (address, signer) => {
+    const { toSubsocialAddress } = await import('@subsocial/utils')
+    const parsedAddress = toSubsocialAddress(address)!
+
+    set({ connectedWallet: { address: parsedAddress, signer } })
+    get()._subscribeConnectedWalletEnergy()
+  },
+  saveProxyAddress: () => {
+    const { connectedWallet } = get()
+    if (!connectedWallet) return
+    parentProxyAddressStorage.set(connectedWallet.address)
+    set({ parentProxyAddress: connectedWallet.address })
+  },
+  disconnectProxy: () => {
+    get().connectedWallet?._unsubscribeEnergy?.()
+    set({ connectedWallet: undefined, parentProxyAddress: undefined })
+    parentProxyAddressStorage.remove()
+  },
   login: async (secretKey, isInitialization) => {
     const { toSubsocialAddress } = await import('@subsocial/utils')
     const analytics = useAnalytics.getState()
@@ -148,41 +216,21 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
     return address
   },
-  _subscribeEnergy: async (isRetrying) => {
+  loginAsTemporaryAccount: () => {
+    set({ isTemporaryAccount: true })
+    return get().login()
+  },
+  finalizeTemporaryAccount: () => {
+    set({ isTemporaryAccount: false })
+  },
+  _subscribeEnergy: () => {
     const { address, _unsubscribeEnergy } = get()
     _unsubscribeEnergy()
-    if (!address) return
 
-    const { getSubsocialApi } = await import(
-      '@/subsocial-query/subsocial/connection'
-    )
-
-    const subsocialApi = await getSubsocialApi()
-    const substrateApi = await subsocialApi.substrateApi
-    if (!substrateApi.isConnected && !isRetrying) {
-      await substrateApi.disconnect()
-      await substrateApi.connect()
-    }
-
-    if (!substrateApi.isConnected) {
-      // If energy subscription is run when the api is not connected, even after some more ms it connect, the subscription won't work
-      // Here we wait for some delay because the api is not connected immediately even after awaiting the connect() method.
-      // And we retry it recursively after 500ms delay until it's connected (without reconnecting the api again)
-      await wait(500)
-      return get()._subscribeEnergy(true)
-    }
-
-    const unsub = substrateApi.query.energy.energyBalance(
-      address,
-      (energyAmount) => {
-        const parsedEnergy = parseFloat(energyAmount.toPrimitive().toString())
-        console.log('Current energy: ', parsedEnergy)
-        set({
-          energy: parsedEnergy,
-          _unsubscribeEnergy: () => unsub.then((unsub) => unsub()),
-        })
-      }
-    )
+    const unsub = subscribeEnergy(address, (energy) => {
+      set({ energy })
+    })
+    set({ _unsubscribeEnergy: () => unsub.then((unsub) => unsub?.()) })
   },
   logout: () => {
     const { _unsubscribeEnergy, address } = get()
@@ -191,6 +239,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     accountStorage.remove()
     accountAddressStorage.remove()
     hasSentMessageStorage.remove()
+    parentProxyAddressStorage.remove()
     if (address) followedIdsStorage.remove(address)
 
     set({ ...initialState })
@@ -203,6 +252,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     set({ isInitialized: false })
 
     const encodedSecretKey = accountStorage.get()
+    const parentProxyAddress = parentProxyAddressStorage.get()
 
     if (encodedSecretKey) {
       const storageAddress = accountAddressStorage.get()
@@ -217,11 +267,124 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         set({ address: null })
       }
 
-      sendLaunchEvent(address)
+      sendLaunchEvent(address, parentProxyAddress)
     } else {
       sendLaunchEvent()
     }
 
     set({ isInitialized: true })
+
+    const preferredWallet = preferredWalletStorage.get()
+    if (preferredWallet) {
+      const wallet = getWallets().find(
+        (wallet) => wallet.title === preferredWallet
+      )
+      if (wallet) set({ preferredWallet: wallet })
+      else preferredWalletStorage.remove()
+    }
+
+    if (parentProxyAddress) {
+      set({ parentProxyAddress })
+      try {
+        const proxy = await getProxiesQuery.fetchQuery(queryClient, {
+          address: parentProxyAddress,
+        })
+        const isProxyValid = proxy.includes(get().address ?? '')
+        if (!isProxyValid) {
+          parentProxyAddressStorage.remove()
+          set({ parentProxyAddress: undefined })
+        }
+      } catch (err) {
+        console.error('Failed to fetch proxies', err)
+      }
+    }
   },
 }))
+
+async function subscribeEnergy(
+  address: string | null,
+  onEnergyUpdate: (energy: number) => void,
+  isRetrying?: boolean
+): Promise<undefined | (() => void)> {
+  if (!address) return
+
+  const { getSubsocialApi } = await import(
+    '@/subsocial-query/subsocial/connection'
+  )
+
+  const subsocialApi = await getSubsocialApi()
+  const substrateApi = await subsocialApi.substrateApi
+  if (!substrateApi.isConnected && !isRetrying) {
+    await substrateApi.disconnect()
+    await substrateApi.connect()
+  }
+
+  if (!substrateApi.isConnected) {
+    // If energy subscription is run when the api is not connected, even after some more ms it connect, the subscription won't work
+    // Here we wait for some delay because the api is not connected immediately even after awaiting the connect() method.
+    // And we retry it recursively after 500ms delay until it's connected (without reconnecting the api again)
+    await wait(500)
+    return subscribeEnergy(address, onEnergyUpdate, true)
+  }
+
+  const unsub = substrateApi.query.energy.energyBalance(
+    address,
+    (energyAmount) => {
+      let parsedEnergy: unknown = energyAmount
+      if (typeof energyAmount.toPrimitive === 'function') {
+        parsedEnergy = energyAmount.toPrimitive()
+      }
+      const energy = parseFloat(parsedEnergy + '')
+      console.log('Current energy: ', address, energy)
+      onEnergyUpdate(energy)
+    }
+  )
+  return unsub
+}
+
+export function useMyMainAddress() {
+  const address = useMyAccount((state) => state.address)
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+  return parentProxyAddress || address
+}
+
+export function getHasEnoughEnergy(energy: number | undefined | null) {
+  return energy ?? 0 > ESTIMATED_ENERGY_FOR_ONE_TX
+}
+
+export async function enableWallet({
+  listener,
+  onError,
+}: {
+  listener: (accounts: WalletAccount[]) => void
+  onError: (err: unknown) => void
+}) {
+  const preferredWallet = useMyAccount.getState().preferredWallet
+  if (!preferredWallet) return
+
+  try {
+    await preferredWallet.enable('grill.chat')
+    const unsub = preferredWallet.subscribeAccounts((accounts) => {
+      listener(accounts ?? [])
+    })
+    return () => {
+      if (typeof unsub === 'function') unsub()
+    }
+  } catch (err) {
+    onError(err)
+  }
+}
+
+export async function enableWalletOnce() {
+  return new Promise<WalletAccount[]>((resolve, reject) => {
+    const unsub = enableWallet({
+      listener: (accounts) => {
+        unsub.then((unsub) => unsub?.())
+        resolve(accounts)
+      },
+      onError: (err) => {
+        reject(err)
+      },
+    })
+  })
+}

@@ -1,13 +1,12 @@
 import BellIcon from '@/assets/icons/bell.svg'
-import EthIcon from '@/assets/icons/eth.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
+import LinkedAddressesIcon from '@/assets/icons/linked-addresses.svg'
 import MoonIcon from '@/assets/icons/moon.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
-import Button from '@/components/Button'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
@@ -15,7 +14,6 @@ import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { installApp, isInstallAvailable } from '@/utils/install'
@@ -28,13 +26,13 @@ export default function AccountContent({
   address,
   setCurrentState,
   notification,
-  evmAddress,
 }: ContentProps) {
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
-
-  const { data: accountData } = getAccountDataQuery.useQuery(address)
-  const ensName = accountData?.ensName
+  const {
+    showNotification: showLinkedNotif,
+    closeNotification: closeLinkedNotif,
+  } = useFirstVisitNotification('linked-addresses-menu')
 
   const sendEvent = useSendEvent()
   const commonEventProps = { eventSource: 'profile_menu' }
@@ -42,9 +40,10 @@ export default function AccountContent({
 
   const colorModeOptions = useColorModeOptions()
 
-  const onLinkEvmAddressClick = () => {
-    sendEvent('start_link_evm_address', commonEventProps)
-    setCurrentState('link-evm-address')
+  const onLinkedAddressesClick = () => {
+    sendEvent('open_linked_addresses', commonEventProps)
+    setCurrentState('linked-addresses')
+    closeLinkedNotif()
   }
   const onShowPrivateKeyClick = () => {
     sendEvent('open_show_private_key_modal', commonEventProps)
@@ -79,12 +78,14 @@ export default function AccountContent({
       },
     },
     {
-      text: evmAddress ? 'My EVM Address' : 'Link EVM address',
-      icon: EthIcon,
-      onClick: () => {
-        notification?.setNotifDone()
-        onLinkEvmAddressClick()
-      },
+      text: (
+        <span className='flex items-center gap-2'>
+          <span>Linked Addresses</span>
+          {showLinkedNotif && <DotBlinkingNotification />}
+        </span>
+      ),
+      icon: LinkedAddressesIcon,
+      onClick: onLinkedAddressesClick,
     },
     {
       text: (
@@ -128,15 +129,10 @@ export default function AccountContent({
     <>
       <div className='mt-2 flex flex-col'>
         <div className='flex flex-col gap-4 border-b border-background-lightest px-6 pb-6'>
-          <ProfilePreview address={address} />
-          {!ensName && (
-            <Button
-              variant='primaryOutline'
-              onClick={() => setCurrentState('subsocial-profile')}
-            >
-              Change my name
-            </Button>
-          )}
+          <ProfilePreview
+            onEditClick={() => setCurrentState('profile-settings')}
+            address={address}
+          />
         </div>
         <MenuList menus={menus} />
       </div>

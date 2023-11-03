@@ -51,7 +51,7 @@ export function useSubsocialMutation<Data, Context = undefined>(
 
     const txCallbacks = generateTxCallbacks(
       {
-        address: wallet.address,
+        address: wallet.proxyToAddress || wallet.address,
         data,
         context,
       },
@@ -171,7 +171,7 @@ function sendTransaction<Data>(
     data,
     summary,
     tx,
-    wallet: { address, signer },
+    wallet: { address, signer, proxyToAddress },
   } = txInfo
   const globalTxCallbacks = getGlobalTxCallbacks()
   return new Promise<string>(async (resolve, reject) => {
@@ -183,62 +183,89 @@ function sendTransaction<Data>(
       )
       danglingNonceResolver = nonceResolver
 
-      const txHashAndNonce = tx.toHex() + nonce
+      let usedTx = tx
+      if (proxyToAddress) {
+        usedTx = apis.substrateApi.tx.proxy.proxy(proxyToAddress, null, tx)
+      }
+
+      // signer from talisman and signer from keyring are different
+      // so they need to be handled differently, the one that have 'signPayload' are for talisman signer
+      let account = signer
+      let usedSigner = undefined
+      if ('signPayload' in signer) {
+        account = address
+        usedSigner = signer
+      }
+
+      const txHashAndNonce = usedTx.toHex() + nonce
       if (!apis.useHttp) {
         useTransactions.getState().addPendingTransaction(txHashAndNonce)
       }
-      const unsub = await tx.signAndSend(signer, { nonce }, async (result) => {
-        // the result is only tx hash if its using http connection
-        if (typeof result.toHuman() === 'string') {
-          return resolve(result.toString())
-        }
 
-        resolve(result.txHash.toString())
-        if (result.status.isInvalid) {
-          txCallbacks?.onError('Transaction is invalid', true)
-          globalTxCallbacks.onError({
-            summary,
-            address,
-            data,
-          })
-        } else if (result.status.isBroadcast) {
-          txCallbacks?.onBroadcast()
-          globalTxCallbacks.onBroadcast({
-            summary,
-            data,
-            address,
-          })
-        } else if (result.status.isInBlock) {
-          const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
-          let explorerLink: string | undefined
-          if (networkRpc) {
-            explorerLink = getBlockExplorerBlockInfoLink(networkRpc, blockHash)
+      const unsub = await usedTx.signAndSend(
+        account,
+        { nonce, signer: usedSigner },
+        async (result) => {
+          // the result is only tx hash if its using http connection
+          if (typeof result.toHuman() === 'string') {
+            return resolve(result.toString())
           }
-          if (result.isError || result.dispatchError || result.internalError) {
-            const error = result.dispatchError?.toString()
-            txCallbacks?.onError(
-              error || 'Error when executing transaction',
-              true
-            )
+
+          resolve(result.txHash.toString())
+          if (result.status.isInvalid) {
+            txCallbacks?.onError('Transaction is invalid', true)
             globalTxCallbacks.onError({
-              error,
-              summary,
-              address,
-              data,
-              explorerLink,
-            })
-          } else {
-            txCallbacks?.onSuccess(result)
-            globalTxCallbacks.onSuccess({
-              explorerLink,
               summary,
               address,
               data,
             })
+          } else if (result.status.isBroadcast) {
+            txCallbacks?.onBroadcast()
+            globalTxCallbacks.onBroadcast({
+              summary,
+              data,
+              address,
+            })
+          } else if (result.status.isInBlock) {
+            const blockHash = (result.status.toJSON() ?? ({} as any)).inBlock
+            let explorerLink: string | undefined
+            if (networkRpc) {
+              explorerLink = getBlockExplorerBlockInfoLink(
+                networkRpc,
+                blockHash
+              )
+            }
+            useTransactions.getState().removePendingTransaction(txHashAndNonce)
+            if (
+              result.isError ||
+              result.dispatchError ||
+              result.internalError
+            ) {
+              const error = result.dispatchError?.toString()
+              txCallbacks?.onError(
+                error || 'Error when executing transaction',
+                true
+              )
+              globalTxCallbacks.onError({
+                error,
+                summary,
+                address,
+                data,
+                explorerLink,
+              })
+            } else {
+              txCallbacks?.onSuccess(result)
+              globalTxCallbacks.onSuccess({
+                explorerLink,
+                summary,
+                address,
+                data,
+              })
+            }
+            unsub()
           }
-          unsub()
         }
-      })
+      )
       nonceResolver()
       txCallbacks?.onSend()
       globalTxCallbacks.onSend({ summary, address, data })

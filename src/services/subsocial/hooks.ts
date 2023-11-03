@@ -1,13 +1,27 @@
-import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { useRequestToken } from '@/services/api/mutation'
-import { useMyAccount } from '@/stores/my-account'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
+import { getHasEnoughEnergy, useMyAccount } from '@/stores/my-account'
+import {
+  SubsocialMutationConfig,
+  WalletAccount,
+} from '@/subsocial-query/subsocial/types'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 
-export function useWalletGetter() {
+export function useWalletGetter(
+  isUsingConnectedWallet?: boolean
+): () => WalletAccount {
+  if (isUsingConnectedWallet) {
+    return () => {
+      const wallet = useMyAccount.getState().connectedWallet
+      return {
+        address: wallet?.address ?? '',
+        signer: wallet?.signer,
+      }
+    }
+  }
   return () => ({
     address: useMyAccount.getState().address ?? '',
     signer: useMyAccount.getState().signer,
+    proxyToAddress: useMyAccount.getState().parentProxyAddress,
   })
 }
 
@@ -15,16 +29,25 @@ export default function useCommonTxSteps<Data, ReturnValue>(
   useMutationHook: (
     config?: SubsocialMutationConfig<Data>
   ) => UseMutationResult<ReturnValue, Error, Data, unknown>,
-  config?: SubsocialMutationConfig<Data>
+  config?: SubsocialMutationConfig<Data>,
+  isUsingConnectedWallet?: boolean
 ) {
-  const address = useMyAccount((state) => state.address)
+  const connectedWallet = useMyAccount((state) => state.connectedWallet)
+  const grillAddress = useMyAccount((state) => state.address)
+  const address = isUsingConnectedWallet
+    ? connectedWallet?.address
+    : grillAddress
+
+  const hasEnoughEnergyGrillAddress = useMyAccount((state) =>
+    getHasEnoughEnergy(state.energy)
+  )
+  const hasEnoughEnergy = isUsingConnectedWallet
+    ? getHasEnoughEnergy(connectedWallet?.energy)
+    : hasEnoughEnergyGrillAddress
 
   const { mutateAsync } = useMutationHook(config)
   const { mutateAsync: requestToken } = useRequestToken()
   const login = useMyAccount((state) => state.login)
-  const hasEnoughEnergy = useMyAccount(
-    (state) => (state.energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
-  )
 
   const needToRunCaptcha = !address || !hasEnoughEnergy
 
@@ -38,7 +61,11 @@ export default function useCommonTxSteps<Data, ReturnValue>(
     }
 
     if (!hasEnoughEnergy && captchaToken) {
-      await requestToken({ address: usedAddress, captchaToken })
+      const [_, res] = await Promise.all([
+        requestToken({ address: usedAddress, captchaToken }),
+        mutateAsync(params),
+      ])
+      return res
     }
 
     return await mutateAsync(params)

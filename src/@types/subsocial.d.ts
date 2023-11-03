@@ -4,6 +4,8 @@ import { PostStruct } from '@subsocial/api/types'
 import {
   CommentStruct,
   PostContent as SubsocialPostContent,
+  SpaceContent as SubsocialSpaceContent,
+  SpaceStruct,
 } from '@subsocial/api/types/dto'
 
 declare module '@subsocial/api/types' {
@@ -71,6 +73,10 @@ declare module '@subsocial/api/types' {
     siteName?: string
     hostName?: string
   }
+
+  export interface SpaceContent extends SubsocialSpaceContent {
+    profileSource?: string
+  }
   export interface PostContent extends SubsocialPostContent {
     optimisticId?: string
     linkMetadata?: LinkMetadata
@@ -80,6 +86,7 @@ declare module '@subsocial/api/types' {
     }
     extensions?: PostContentExtension[]
   }
+
   export declare type EntityPostData<
     S extends HasId,
     C extends CommonContent
@@ -88,6 +95,8 @@ declare module '@subsocial/api/types' {
     struct: S
     content: C | null
   }
+
+  export declare type SpaceData = EntityPostData<SpaceStruct, SpaceContent>
   export declare type PostData = EntityPostData<
     PostStruct &
       Pick<CommentStruct, 'rootPostId'> & {

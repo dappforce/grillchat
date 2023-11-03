@@ -8,7 +8,7 @@ import {
   UpsertPostWrapper,
 } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink } from '@/utils/links'
@@ -49,7 +49,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
     props as UpsertChatFormProps &
       Partial<InsertAdditionalProps & UpdateAdditionalProps>
 
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
 
   const defaultValues = {
     image: chat?.content?.image ?? '',

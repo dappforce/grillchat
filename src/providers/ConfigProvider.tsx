@@ -1,6 +1,7 @@
 import { GrillConfig } from '@/../integration/index'
 import { Theme } from '@/@types/theme'
 import { getCurrentUrlOrigin, getUrlQuery } from '@/utils/links'
+import { sendMessageToParentWindow } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
@@ -32,7 +33,7 @@ export function ConfigProvider({ children }: { children: any }) {
   }, [])
 
   useEffect(() => {
-    const handler = (event: MessageEvent) => {
+    const handler = async (event: MessageEvent) => {
       const eventData = event.data
       if (eventData && eventData.type === 'grill:setConfig') {
         const payload = eventData.payload as string
@@ -44,8 +45,11 @@ export function ConfigProvider({ children }: { children: any }) {
           payload &&
           !payload.startsWith('http') &&
           payload !== currentPathnameAndQuery
-        )
-          push(payload)
+        ) {
+          sendMessageToParentWindow('isUpdatingConfig', 'true')
+          await push(payload)
+          sendMessageToParentWindow('isUpdatingConfig', 'false')
+        }
       }
     }
     window.addEventListener('message', handler)

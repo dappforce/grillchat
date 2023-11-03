@@ -1,6 +1,6 @@
 import { getPostQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { CommentData } from '@subsocial/api/types'
 import { useEffect, useRef, useState } from 'react'
@@ -29,7 +29,7 @@ export default function MessageModal({
   recipient,
   ...props
 }: MessageModalProps) {
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isDifferentRecipient = recipient !== myAddress
 

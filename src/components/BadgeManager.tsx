@@ -1,12 +1,12 @@
 import { lastReadTimeLocalForage } from '@/components/chats/hooks/useLastReadMessageId'
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { followedIdsStorage, useMyAccount } from '@/stores/my-account'
+import { followedIdsStorage, useMyMainAddress } from '@/stores/my-account'
 import { getSquidUrl } from '@/utils/env/client'
 import { gql, GraphQLClient } from 'graphql-request'
 import { useEffect } from 'react'
 
 export default function BadgeManager() {
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
   const myAddressRef = useWrapInRef(myAddress)
 
   useEffect(() => {

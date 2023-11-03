@@ -4,7 +4,7 @@ import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePre
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
@@ -51,12 +51,14 @@ export default function CommonChatItem({
   chatId,
   hubId,
 }: CommonChatItemProps) {
-  const myAddress = useMyAccount((state) => state.address)
+  const myAddress = useMyMainAddress()
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const { struct, content } = message
   const { ownerId, createdAtTime, dataType } = struct
   const { inReplyTo, body } = content || {}
 
-  const isMyMessage = _isMyMessage ?? ownerId === myAddress
+  const isMyMessage =
+    _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = isMessageSent(message.id, dataType)
 
@@ -95,7 +97,7 @@ export default function CommonChatItem({
         )}
       >
         {!isMyMessage && (
-          <div className='flex items-center px-2.5 first:pt-1.5'>
+          <div className='flex items-baseline px-2.5 first:pt-1.5'>
             <ProfilePreviewModalName
               labelingData={{ chatId }}
               messageId={message.id}

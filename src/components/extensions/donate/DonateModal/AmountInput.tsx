@@ -83,7 +83,7 @@ const AmountInput = ({
         )}
         variant='fill-bg'
         type='number'
-        className={cx('h-[54px] appearance-none pr-16 text-base leading-6')}
+        className={cx('h-[54px] appearance-none pr-16 text-base')}
       />
     </div>
   )

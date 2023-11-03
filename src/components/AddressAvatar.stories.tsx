@@ -18,13 +18,13 @@ const meta = {
             success: true,
             data: [
               {
-                ensName: null,
+                ensNames: null,
                 evmAddress: null,
                 grillAddress:
                   '3o3kUjz9s1WZ5AZPxn24ybW3orTmKkUEd83AXzV5WgzgwQ59',
               },
               {
-                ensName: 'vitalik.eth',
+                ensNames: ['vitalik.eth'],
                 evmAddress: '0x5f9f09D6484713FABBed04A188591B85958AbFF3',
                 grillAddress:
                   '3psECVdeegzi8HzDUSVQUKwZPkrdHsUGbrMdN8uK35hjxNEF',

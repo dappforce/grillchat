@@ -9,7 +9,7 @@ import { z } from 'zod'
 export type AccountData = {
   grillAddress: string
   evmAddress: string | null
-  ensName: string | null
+  ensNames: string[] | null
 }
 
 const querySchema = z.object({
@@ -91,7 +91,9 @@ type EnsDomainRequestResult = {
   domains: Domain[]
 }
 
-async function getEnsNames(evmAddresses: (string | null)[]) {
+async function getEnsNames(
+  evmAddresses: (string | null)[]
+): Promise<Record<string, string[]>> {
   const filteredAddresses = evmAddresses.filter((x) => !!x)
 
   const result = (await request({
@@ -100,10 +102,13 @@ async function getEnsNames(evmAddresses: (string | null)[]) {
     variables: { evmAddresses: filteredAddresses },
   })) as EnsDomainRequestResult
 
-  const domainsEntity: Record<string, string> = {}
+  const domainsEntity: Record<string, string[]> = {}
 
   result.domains.forEach(({ resolvedAddress: { id: evmAddress }, name }) => {
-    domainsEntity[evmAddress] = name
+    if (!domainsEntity[evmAddress]) {
+      domainsEntity[evmAddress] = []
+    }
+    domainsEntity[evmAddress].push(name)
   })
 
   return domainsEntity
@@ -136,12 +141,12 @@ async function fetchAccountsData(addresses: string[], method: 'POST' | 'GET') {
     const needToFetchIdsPromise = addresses.map(async (address, i) => {
       const evmAddress = evmAddressesHuman[i]
 
-      const ensName = evmAddress ? domains?.[evmAddress] || null : null
+      const ensNames = evmAddress ? domains?.[evmAddress] || null : null
 
       const accountData = {
         grillAddress: address,
         evmAddress: evmAddressesHuman[i],
-        ensName,
+        ensNames,
       }
 
       newlyFetchedData.push(accountData)
