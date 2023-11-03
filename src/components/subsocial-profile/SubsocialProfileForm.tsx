@@ -21,6 +21,9 @@ export type SubsocialProfileFormProps = ComponentProps<'form'> & {
 const formSchema = z.object({
   name: z.string().min(3, 'Name is too short').max(25, 'Name is too long'),
 })
+export function validateNickname(name: string) {
+  return formSchema.safeParse({ name }).success
+}
 type FormSchema = z.infer<typeof formSchema>
 
 export default function SubsocialProfileForm({
