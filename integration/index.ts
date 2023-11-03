@@ -143,7 +143,12 @@ function createUrl(
 }
 
 // to make the autocomplete still appears, but enables any string to be passed in
-type KnownEvents = 'ready' | 'unread' | 'totalMessage' | (string & {})
+type KnownEvents =
+  | 'ready'
+  | 'unread'
+  | 'totalMessage'
+  | 'configUpdate'
+  | (string & {})
 export type GrillEventListener = (eventName: KnownEvents, value: string) => void
 const grill = {
   instances: {} as Record<
@@ -267,10 +272,10 @@ const grill = {
     sendSetConfigMessage()
   },
 
-  addUnreadCountListener(listener: GrillEventListener) {
+  addMessageListener(listener: GrillEventListener) {
     this.eventListeners.push(listener)
   },
-  removeUnreadCountListener(listener: GrillEventListener) {
+  removeMessageListener(listener: GrillEventListener) {
     this.eventListeners = this.eventListeners.filter((l) => l !== listener)
   },
 }
