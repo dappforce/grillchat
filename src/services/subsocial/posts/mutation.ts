@@ -274,7 +274,7 @@ export function useUpsertPost(
             datahubMutation.notifyCreatePostFailedOrRetryStatus({
               address,
               optimisticId: context.content.optimisticId,
-              timestamp: Date.now().toString(),
+              timestamp: Date.now(),
               signer: getWallet().signer,
               reason: error,
             })
@@ -282,7 +282,7 @@ export function useUpsertPost(
             datahubMutation.notifyUpdatePostFailedOrRetryStatus({
               postId: payload.postId,
               address,
-              timestamp: Date.now().toString(),
+              timestamp: Date.now(),
               signer: getWallet().signer,
               reason: error,
             })

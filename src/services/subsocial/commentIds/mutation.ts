@@ -170,7 +170,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               datahubMutation.notifyCreatePostFailedOrRetryStatus({
                 address,
                 optimisticId,
-                timestamp: Date.now().toString(),
+                timestamp: Date.now(),
                 signer: getWallet().signer,
                 reason: error,
               })
@@ -178,7 +178,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               datahubMutation.notifyUpdatePostFailedOrRetryStatus({
                 postId: messageIdToEdit,
                 address,
-                timestamp: Date.now().toString(),
+                timestamp: Date.now(),
                 signer: getWallet().signer,
                 reason: error,
               })
@@ -263,7 +263,7 @@ function notifyRetryStatus(
   datahubMutation.notifyCreatePostFailedOrRetryStatus({
     address,
     optimisticId: content.optimisticId,
-    timestamp: Date.now().toString(),
+    timestamp: Date.now(),
     signer,
     reason,
     isRetrying: { success },

@@ -37,6 +37,12 @@ import { PostKind } from '../generated-query'
 type DatahubParams<T> = T & {
   address: string
   signer: Signer | null
+  proxyToAddress?: string
+
+  isOffchain?: boolean
+
+  uuid?: string
+  timestamp?: number
 }
 
 function augmentInputSig(signer: Signer | null, payload: { sig: string }) {
@@ -47,25 +53,50 @@ function augmentInputSig(signer: Signer | null, payload: { sig: string }) {
   payload.sig = hexSig
 }
 
-async function createPostData({
-  address,
-  cid,
-  rootPostId,
-  spaceId,
-  content,
-  signer,
-  isOffchainMessage,
-  uuid,
-  timestamp,
-}: DatahubParams<{
-  rootPostId?: string
-  spaceId: string
-  cid: string
-  content: PostContent
-  isOffchainMessage?: boolean
-  uuid?: string
-  timestamp?: number
-}>) {
+function createSocialDataEventInput(
+  {
+    isOffchain,
+    timestamp,
+    address,
+    uuid,
+    signer,
+    proxyToAddress,
+  }: DatahubParams<{}>,
+  eventArgs: any,
+  content?: string
+) {
+  const owner = proxyToAddress || address
+  const input: SocialEventDataApiInput = {
+    protVersion: socialEventProtVersion['0.1'],
+    dataType: isOffchain
+      ? SocialEventDataType.offChain
+      : SocialEventDataType.optimistic,
+    callData: {
+      name: socialCallName.create_post,
+      signer: owner || '',
+      args: JSON.stringify(eventArgs),
+      timestamp: timestamp || Date.now(),
+      uuid: uuid || crypto.randomUUID(),
+      proxy: proxyToAddress ? address : undefined,
+    },
+    content: JSON.stringify(content),
+    providerAddr: address,
+    sig: '',
+  }
+  augmentInputSig(signer, input)
+
+  return input
+}
+
+async function createPostData(
+  params: DatahubParams<{
+    rootPostId?: string
+    spaceId: string
+    cid: string
+    content: PostContent
+  }>
+) {
+  const { cid, rootPostId, spaceId, content } = params
   const eventArgs: CreatePostCallParsedArgs = {
     forced: false,
     postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
@@ -74,24 +105,11 @@ async function createPostData({
     ipfsSrc: cid,
   }
 
-  // TODO: refactor input to reduce duplication with other inputs
-  const input: SocialEventDataApiInput = {
-    protVersion: socialEventProtVersion['0.1'],
-    dataType: isOffchainMessage
-      ? SocialEventDataType.offChain
-      : SocialEventDataType.optimistic,
-    callData: {
-      name: socialCallName.create_post,
-      signer: address || '',
-      args: JSON.stringify(eventArgs),
-      timestamp: timestamp || Date.now(),
-      uuid: uuid || crypto.randomUUID(),
-    },
-    content: JSON.stringify(content),
-    providerAddr: address,
-    sig: '',
-  }
-  augmentInputSig(signer, input)
+  const input = createSocialDataEventInput(
+    params,
+    eventArgs,
+    JSON.stringify(content)
+  )
 
   await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
     action: 'create-post',
@@ -99,39 +117,25 @@ async function createPostData({
   })
 }
 
-async function updatePostData({
-  address,
-  postId,
-  content,
-  signer,
-  cid,
-}: DatahubParams<{
-  postId: string
-  content: PostContent
-  cid: string
-}>) {
+async function updatePostData(
+  params: DatahubParams<{
+    postId: string
+    content: PostContent
+    cid: string
+  }>
+) {
+  const { postId, content, cid } = params
   const eventArgs: UpdatePostCallParsedArgs = {
     spaceId: null,
     hidden: null,
     postId,
     ipfsSrc: cid,
   }
-
-  const input: SocialEventDataApiInput = {
-    protVersion: socialEventProtVersion['0.1'],
-    dataType: SocialEventDataType.optimistic,
-    callData: {
-      name: socialCallName.update_post,
-      signer: address || '',
-      args: JSON.stringify(eventArgs),
-      timestamp: Date.now(),
-      uuid: crypto.randomUUID(),
-    },
-    providerAddr: address,
-    content: JSON.stringify(content),
-    sig: '',
-  }
-  augmentInputSig(signer, input)
+  const input = createSocialDataEventInput(
+    params,
+    eventArgs,
+    JSON.stringify(content)
+  )
 
   await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
     action: 'update-post',
@@ -139,22 +143,21 @@ async function updatePostData({
   })
 }
 
-async function notifyCreatePostFailedOrRetryStatus({
-  address,
-  isRetrying,
-  signer,
-  ...args
-}: Omit<
-  DatahubParams<{
-    isRetrying?: {
-      success: boolean
-    }
-    reason?: string
-    optimisticId: string
-    timestamp: string
-  }>,
-  'txSig'
->) {
+async function notifyCreatePostFailedOrRetryStatus(
+  params: Omit<
+    DatahubParams<{
+      isRetrying?: {
+        success: boolean
+      }
+      timestamp: number
+      reason?: string
+      optimisticId: string
+    }>,
+    'txSig'
+  >
+) {
+  const { address, isRetrying, signer, timestamp, ...args } = params
+  const augmentedArgs = { ...args, timestamp: timestamp.toString() }
   let event:
     | {
         name: (typeof socialCallName)['synth_create_post_tx_failed']
@@ -165,32 +168,19 @@ async function notifyCreatePostFailedOrRetryStatus({
         args: SynthCreatePostTxRetryCallParsedArgs
       } = {
     name: socialCallName.synth_create_post_tx_failed,
-    args,
+    args: augmentedArgs,
   }
   if (isRetrying) {
     event = {
       name: socialCallName.synth_create_post_tx_retry,
       args: {
-        ...args,
+        ...augmentedArgs,
         success: isRetrying.success,
       },
     }
   }
 
-  const input: SocialEventDataApiInput = {
-    protVersion: socialEventProtVersion['0.1'],
-    dataType: SocialEventDataType.offChain,
-    callData: {
-      name: event.name,
-      signer: address || '',
-      args: JSON.stringify(event.args),
-      timestamp: Date.now(),
-      uuid: crypto.randomUUID(),
-    },
-    providerAddr: address,
-    sig: '',
-  }
-  augmentInputSig(signer, input)
+  const input = createSocialDataEventInput(params, event)
 
   await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
     action: 'notify-create-failed',
@@ -198,25 +188,23 @@ async function notifyCreatePostFailedOrRetryStatus({
   })
 }
 
-async function notifyUpdatePostFailedOrRetryStatus({
-  postId,
-  address,
-  isRetrying,
-  signer,
-  ...args
-}: Omit<
-  DatahubParams<{
-    postId: string
-    isRetrying?: {
-      success: boolean
-    }
-    reason?: string
-    timestamp: string
-  }>,
-  'txSig'
->) {
+async function notifyUpdatePostFailedOrRetryStatus(
+  params: Omit<
+    DatahubParams<{
+      postId: string
+      isRetrying?: {
+        success: boolean
+      }
+      reason?: string
+      timestamp: number
+    }>,
+    'txSig'
+  >
+) {
+  const { postId, address, isRetrying, signer, timestamp, ...args } = params
+  const augmentedArgs = { ...args, timestamp: timestamp.toString() }
   const eventArgs = {
-    ...args,
+    ...augmentedArgs,
     persistentId: postId,
   }
   let event:
@@ -241,20 +229,7 @@ async function notifyUpdatePostFailedOrRetryStatus({
     }
   }
 
-  const input: SocialEventDataApiInput = {
-    protVersion: socialEventProtVersion['0.1'],
-    dataType: SocialEventDataType.offChain,
-    callData: {
-      name: event.name,
-      signer: address || '',
-      args: JSON.stringify(event.args),
-      timestamp: Date.now(),
-      uuid: crypto.randomUUID(),
-    },
-    providerAddr: address,
-    sig: '',
-  }
-  augmentInputSig(signer, input)
+  const input = createSocialDataEventInput(params, event)
 
   await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
     action: 'notify-update-failed',
@@ -304,7 +279,7 @@ export function useSendOffchainMessage(
         ...getWallet(),
         uuid: data.uuid,
         timestamp: data.timestamp,
-        isOffchainMessage: true,
+        isOffchain: true,
         content: content,
         cid: cid,
         rootPostId: data.chatId,

@@ -5,7 +5,7 @@ export type Transaction = ReturnType<ApiPromise['tx']['']['']>
 
 export interface WalletAccount {
   address: string
-  signer?: any
+  signer: any | null
   proxyToAddress?: string
 }
 
