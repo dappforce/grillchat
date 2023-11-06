@@ -106,7 +106,7 @@ const GET_OPTIMISTIC_POSTS = gql`
 `
 
 function isPersistentId(id: string) {
-  return !isNaN(+id)
+  return !isNaN(+id) && !id.startsWith('0x')
 }
 
 export async function getPostsFromDatahub(postIds: string[]) {
