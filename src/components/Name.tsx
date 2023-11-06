@@ -160,7 +160,10 @@ const Name = ({
         {additionalText} {name}{' '}
       </span>
       {showProfileSourceIcon && Icon && (
-        <div className='relative top-px ml-1 flex-shrink-0 text-text-muted'>
+        <div
+          className='relative top-px ml-1 flex-shrink-0 text-text-muted'
+          onClick={(e) => e.stopPropagation()}
+        >
           <PopOver
             trigger={<Icon />}
             panelSize='sm'
