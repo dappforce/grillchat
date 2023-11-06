@@ -137,7 +137,7 @@ export const getPaginatedPostsByPostIdFromDatahubQuery = {
   ) => {
     client.setQueryData(getQueryKey(postId), (oldData: any) => {
       const firstPage = oldData?.pages?.[0] as PaginatedPostsData | undefined
-      const newPages = [...oldData.pages]
+      const newPages = [...(oldData?.pages ?? [])]
       const newFirstPageMessageIds = updater(firstPage?.data)
       newPages.splice(0, 1, {
         ...firstPage,
