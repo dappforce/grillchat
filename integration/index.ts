@@ -147,7 +147,7 @@ type KnownEvents =
   | 'ready'
   | 'unread'
   | 'totalMessage'
-  | 'configUpdate'
+  | 'isUpdatingConfig'
   | (string & {})
 export type GrillEventListener = (eventName: KnownEvents, value: string) => void
 const grill = {
