@@ -4,7 +4,9 @@ import { useSaveFile } from '@/services/api/mutation'
 import { Signer } from '@/utils/account'
 import { ReplyWrapper } from '@/utils/ipfs'
 import { preventWindowUnload } from '@/utils/window'
-import { u8aToHex } from '@polkadot/util'
+import { decodeAddress } from '@polkadot/keyring'
+import { stringToU8a, u8aToHex } from '@polkadot/util'
+import { blake2AsHex } from '@polkadot/util-crypto'
 import { PostContent } from '@subsocial/api/types'
 import {
   CreatePostCallParsedArgs,
@@ -18,7 +20,6 @@ import {
   SynthUpdatePostTxRetryCallParsedArgs,
   UpdatePostCallParsedArgs,
 } from '@subsocial/data-hub-sdk'
-import { getDeterministicId } from '@subsocial/data-hub-sdk/utils'
 import {
   useMutation,
   UseMutationOptions,
@@ -43,6 +44,22 @@ type DatahubParams<T> = T & {
 
   uuid?: string
   timestamp?: number
+}
+
+type GetDeterministicIdInput = {
+  uuid: string
+  timestamp: string
+  account: string
+}
+
+function getDeterministicId({
+  uuid,
+  timestamp,
+  account,
+}: GetDeterministicIdInput): string {
+  const pubKey = u8aToHex(decodeAddress(account), undefined, false)
+  const u8aKey = stringToU8a(pubKey + timestamp + uuid)
+  return blake2AsHex(u8aKey, 128, null, true)
 }
 
 function augmentInputSig(signer: Signer | null, payload: { sig: string }) {
