@@ -312,13 +312,13 @@ export function useSendOffchainMessage(
       } as PostContent
 
       const newId = getDeterministicId({
-        account: getWallet().address,
+        account: getWallet().proxyToAddress || getWallet().address,
         timestamp: data.timestamp.toString(),
         uuid: data.uuid,
       })
 
       addOptimisticData({
-        address: getWallet().address,
+        address: getWallet().proxyToAddress || getWallet().address,
         params: data,
         ipfsContent: content,
         client,
@@ -328,7 +328,7 @@ export function useSendOffchainMessage(
     },
     onError: (err, data, context) => {
       const newId = getDeterministicId({
-        account: getWallet().address,
+        account: getWallet().proxyToAddress || getWallet().address,
         timestamp: data.timestamp.toString(),
         uuid: data.uuid,
       })
