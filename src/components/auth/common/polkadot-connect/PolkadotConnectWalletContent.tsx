@@ -9,7 +9,6 @@ import { getCurrentUrlOrigin } from '@/utils/links'
 import { isInMobileOrTablet } from '@/utils/window'
 import { getWallets, Wallet } from '@talismn/connect-wallets'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import { FiDownload } from 'react-icons/fi'
 import urlJoin from 'url-join'
 import { PolkadotConnectContentProps } from './types'
@@ -79,13 +78,13 @@ export default function PolkadotConnectWalletContent({
     }
   })
 
-  const router = useRouter()
   if (!hasInstalledWallet && isInMobileOrTablet()) {
+    // Currently, if the url contains encoded / (%252F) inside the link, it will not open the link, instead open search engine
     const urlToGo = urlJoin(
       getCurrentUrlOrigin(),
       `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${
         useMyAccount.getState().encodedSecretKey
-      }&returnUrl=${encodeURIComponent(router.asPath)}`
+      }`
     )
     menus = [
       {
