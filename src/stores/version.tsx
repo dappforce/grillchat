@@ -67,8 +67,8 @@ function notifyDifferentVersion(onClick?: () => void) {
           </Button>
         }
         icon={() => <span className='mr-1'>🎉</span>}
-        title='We have new version!'
-        description='Please reload the page to get the latest version.'
+        title='Update available'
+        description='Please reload the page to update Grill.'
       />
     ),
     {
