@@ -103,15 +103,12 @@ export default function useSignMessageAndLinkEvmAddress({
   ) => {
     if (!evmAddress) return
 
-    console.log('signing')
     const data = await signEvmLinkMessage(
       evmAddress,
       substrateAddress,
       signerAddress
     )
-    console.log('done signing')
     if (data) {
-      console.log('linking')
       linkEvmAddress({
         evmAddress,
         evmSignature: data,
