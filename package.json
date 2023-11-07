@@ -104,6 +104,7 @@
     "sort-keys-recursive": "^2.1.9",
     "tailwind-merge": "^1.10.0",
     "typescript": "4.9.5",
+    "uniqolor": "^1.1.0",
     "unique-names-generator": "^4.7.1",
     "url-join": "^5.0.0",
     "use-breakpoint": "^3.0.7",
