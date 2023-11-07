@@ -145,7 +145,7 @@ export const getPaginatedPostsByPostIdFromDatahubQuery = {
         totalData: newFirstPageMessageIds?.length ?? 0,
       } as PaginatedPostsData)
       return {
-        pageParams: [...(oldData.pageParams ?? [])],
+        pageParams: [...(oldData?.pageParams ?? [])],
         pages: [...newPages],
       }
     })
