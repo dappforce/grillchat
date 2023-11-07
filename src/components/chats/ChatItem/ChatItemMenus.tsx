@@ -20,6 +20,7 @@ import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
+import { getDatahubConfig } from '@/utils/env/client'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
 import { useRouter } from 'next/router'
@@ -179,7 +180,8 @@ export default function ChatItemMenus({
 
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
-    if (canSendMessage && isMessageOwner) menus.unshift(editItem)
+    if (getDatahubConfig() && canSendMessage && isMessageOwner)
+      menus.unshift(editItem)
     if (canSendMessage) menus.unshift(replyItem)
 
     return menus
