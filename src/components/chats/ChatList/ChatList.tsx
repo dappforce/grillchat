@@ -1,7 +1,6 @@
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
-import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -95,33 +94,25 @@ function ChatListContent({
     isPausedLoadMore,
   })
 
-  const filteredCurrentPageIds = useFilterBlockedMessageIds(
-    hubId,
-    chatId,
-    currentPageMessageIds
-  )
-
   useEffect(() => {
     sendMessageToParentWindow('totalMessage', (totalDataCount ?? 0).toString())
   }, [totalDataCount])
 
   const [renderedMessageIds, setRenderedMessageIds] = useState<string[]>(
-    filteredCurrentPageIds
+    currentPageMessageIds
   )
   const renderedMessageQueries = getPostQuery.useQueries(renderedMessageIds)
   const lastBatchIds = useMemo(
     () =>
-      filteredCurrentPageIds.slice(
-        filteredCurrentPageIds.length - CHAT_PER_PAGE
-      ),
-    [filteredCurrentPageIds]
+      currentPageMessageIds.slice(currentPageMessageIds.length - CHAT_PER_PAGE),
+    [currentPageMessageIds]
   )
   const lastBatchQueries = getPostQuery.useQueries(lastBatchIds)
   const isLastBatchLoading = useIsAnyQueriesLoading(lastBatchQueries)
   useEffect(() => {
     if (isLastBatchLoading) return
     setRenderedMessageIds(() => {
-      let newRenderedMessageIds = [...filteredCurrentPageIds]
+      let newRenderedMessageIds = [...currentPageMessageIds]
       if (isLastBatchLoading) {
         newRenderedMessageIds = newRenderedMessageIds.slice(
           0,
@@ -131,7 +122,7 @@ function ChatListContent({
 
       return newRenderedMessageIds
     })
-  }, [isLastBatchLoading, filteredCurrentPageIds])
+  }, [isLastBatchLoading, currentPageMessageIds])
 
   useLoadMoreIfNoScroll(loadMore, renderedMessageIds?.length ?? 0, {
     scrollContainer: scrollContainerRef,
@@ -215,7 +206,7 @@ function ChatListContent({
               scrollableTarget={scrollableContainerId}
               loader={<ChatLoading className='pb-2 pt-4' />}
               endMessage={
-                filteredCurrentPageIds.length === 0 ? null : (
+                currentPageMessageIds.length === 0 ? null : (
                   <ChatTopNotice className='pb-2 pt-4' />
                 )
               }
