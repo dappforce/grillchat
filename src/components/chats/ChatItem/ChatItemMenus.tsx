@@ -194,7 +194,7 @@ export default function ChatItemMenus({
   return (
     <>
       <FloatingMenus
-        beforeMenus={<MintingMessageNotice />}
+        beforeMenus={isOptimisticMessage && <MintingMessageNotice />}
         menus={menus}
         allowedPlacements={[
           'right',
