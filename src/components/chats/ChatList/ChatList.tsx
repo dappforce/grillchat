@@ -88,6 +88,7 @@ function ChatListContent({
     loadMore,
     totalDataCount,
     currentPage,
+    isLoading,
   } = usePaginatedMessageIds({
     hubId,
     chatId,
@@ -234,10 +235,8 @@ function ChatListContent({
           chatId={chatId}
           hubId={hubId}
           renderedMessageLength={renderedMessageIds.length}
-          filteredMessageIds={[]}
-          rawMessageIds={[]}
-          // filteredMessageIds={filteredMessageIds}
-          // rawMessageIds={rawMessageIds}
+          isLoadingIds={isLoading}
+          messageIds={currentPageMessageIds}
           scrollContainerRef={scrollContainerRef}
           scrollToMessage={scrollToMessage}
           asContainer={asContainer}
