@@ -71,6 +71,7 @@ function augmentInputSig(signer: Signer | null, payload: { sig: string }) {
 }
 
 function createSocialDataEventInput(
+  callName: keyof typeof socialCallName,
   {
     isOffchain,
     timestamp,
@@ -80,7 +81,6 @@ function createSocialDataEventInput(
     proxyToAddress,
   }: DatahubParams<{}>,
   eventArgs: any,
-  callName: keyof typeof socialCallName,
   content?: string
 ) {
   const owner = proxyToAddress || address
@@ -124,9 +124,9 @@ async function createPostData(
   }
 
   const input = createSocialDataEventInput(
+    socialCallName.create_post,
     params,
     eventArgs,
-    socialCallName.create_post,
     JSON.stringify(content)
   )
 
@@ -151,9 +151,9 @@ async function updatePostData(
     ipfsSrc: cid,
   }
   const input = createSocialDataEventInput(
+    socialCallName.update_post,
     params,
     eventArgs,
-    socialCallName.update_post,
     JSON.stringify(content)
   )
 
@@ -200,11 +200,7 @@ async function notifyCreatePostFailedOrRetryStatus(
     }
   }
 
-  const input = createSocialDataEventInput(
-    params,
-    event,
-    socialCallName.create_post
-  )
+  const input = createSocialDataEventInput(event.name, params, event.args)
 
   await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
     action: 'notify-create-failed',
@@ -253,11 +249,7 @@ async function notifyUpdatePostFailedOrRetryStatus(
     }
   }
 
-  const input = createSocialDataEventInput(
-    params,
-    event,
-    socialCallName.update_post
-  )
+  const input = createSocialDataEventInput(event.name, params, event.args)
 
   await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
     action: 'notify-update-failed',
