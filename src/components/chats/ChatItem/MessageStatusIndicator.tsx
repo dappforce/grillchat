@@ -132,8 +132,8 @@ function ResendMessageIndicator({ message }: MessageStatusIndicatorProps) {
       <Modal
         isOpen={isResendOpen}
         closeModal={() => setIsResendOpen(false)}
-        title='Message failed to be sent to blockchain'
-        description="Don't worry, your message is still visible to everyone, but it's not censorship-resistant. You can try to resend it."
+        title='Blockchain backup failed'
+        description="Don't worry, your message sent, but it was not saved on the blockchain. You can try to save it again."
         withCloseButton
       >
         <ResendFailedMessageWrapper>
