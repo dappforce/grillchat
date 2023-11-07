@@ -43,6 +43,7 @@ export function useLastMessageIds(chatIds: string[]) {
   })
 
   let lastMessageIds: (string | undefined)[]
+  // TODO: refactor to add wrappers for datahub queries
   if (isDatahubEnabled) {
     lastMessageIds = postMetadatas.map(({ data }) => data?.lastCommentId)
   } else {
