@@ -1,4 +1,5 @@
 import LoginModal from '@/components/auth/LoginModal'
+import Button from '@/components/Button'
 import { useOpenDonateExtension } from '@/components/extensions/donate/hooks'
 import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
@@ -20,9 +21,11 @@ import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
 import { getDatahubConfig } from '@/utils/env/client'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
+import { Transition } from '@headlessui/react'
 import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -32,7 +35,7 @@ import {
   BsFillPinAngleFill,
   BsFillReplyFill,
 } from 'react-icons/bs'
-import { HiCircleStack, HiLink } from 'react-icons/hi2'
+import { HiChevronRight, HiCircleStack, HiLink } from 'react-icons/hi2'
 import { LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine } from 'react-icons/ri'
@@ -191,14 +194,7 @@ export default function ChatItemMenus({
   return (
     <>
       <FloatingMenus
-        beforeMenus={
-          isOptimisticMessage && (
-            <p className='border-b border-border-gray p-4 pb-3 text-sm text-text-muted'>
-              To interact with this message, please wait until it is saved to
-              the blockchain (≈ 15 sec).
-            </p>
-          )
-        }
+        beforeMenus={<MintingMessageNotice />}
         menus={menus}
         allowedPlacements={[
           'right',
@@ -271,4 +267,40 @@ function usePinUnpinMenuItem(chatId: string, messageId: string) {
   if (pinnedMessageId === messageId) return unpinMenuItem
   if (isChatOwner) return pinMenuItem
   return null
+}
+
+function MintingMessageNotice() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div className='overflow-hidden border-b border-border-gray p-4 pb-3 text-sm text-text-muted'>
+      <div className='flex items-center justify-between gap-2'>
+        <p>Message is being minted</p>
+        <Button
+          size='noPadding'
+          variant='transparent'
+          className={cx(
+            'flex-shrink-0 p-0.5 transition-transform',
+            isOpen && 'rotate-90'
+          )}
+          onClick={() => setIsOpen((prev) => !prev)}
+        >
+          <HiChevronRight />
+        </Button>
+      </div>
+      <Transition
+        show={isOpen}
+        className='transition'
+        enterFrom={cx('opacity-0 -translate-y-2')}
+        enterTo='opacity-100 translate-y-0'
+        leaveFrom='h-auto'
+        leaveTo='opacity-0 -top-4'
+      >
+        <p className='pt-2'>
+          To interact with this message please wait until it is saved to the
+          blockchain (≈ 15 sec).
+        </p>
+      </Transition>
+    </div>
+  )
 }
