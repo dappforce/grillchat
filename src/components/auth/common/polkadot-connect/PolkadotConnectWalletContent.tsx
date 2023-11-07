@@ -6,7 +6,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin } from '@/utils/links'
-import { isInMobileOrTablet } from '@/utils/window'
+import { getIsInIframe, isInMobileOrTablet } from '@/utils/window'
 import { getWallets, Wallet } from '@talismn/connect-wallets'
 import Image from 'next/image'
 import { FiDownload } from 'react-icons/fi'
@@ -20,12 +20,26 @@ export default function PolkadotConnectWalletContent({
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
   const supportedWallets: Wallet[] = getWallets()
 
-  supportedWallets.sort((a, b) => {
-    return !a.installed && b.installed ? 1 : -1
+  const installedWallets: Wallet[] = []
+  const otherWallets: Wallet[] = []
+  supportedWallets.forEach((wallet) => {
+    // polkadot js doesn't inject its web3 object inside iframe
+    // issue link: https://github.com/polkadot-js/extension/issues/1274
+    const isPolkadotJsNotInstalledAndInIframe =
+      wallet.title.toLowerCase() === 'polkadot.js' &&
+      !wallet.installed &&
+      getIsInIframe()
+    if (isPolkadotJsNotInstalledAndInIframe) return
+
+    if (wallet.installed) installedWallets.push(wallet)
+    else otherWallets.push(wallet)
   })
-  let hasInstalledWallet = false
-  let menus: MenuListProps['menus'] = supportedWallets.map((wallet: Wallet) => {
-    if (wallet.installed) hasInstalledWallet = true
+  let hasInstalledWallet = installedWallets.length
+
+  let menus: MenuListProps['menus'] = [
+    ...installedWallets,
+    ...otherWallets,
+  ].map((wallet: Wallet) => {
     return {
       text: (
         <div className='flex w-full items-center justify-between gap-4'>
