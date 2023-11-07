@@ -105,5 +105,5 @@ declare module '@subsocial/api/types' {
         dataType?: 'persistent' | 'optimistic' | 'offChain'
       },
     PostContent
-  >
+  > & { requestedId?: string }
 }

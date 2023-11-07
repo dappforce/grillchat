@@ -132,7 +132,7 @@ export async function getPostsFromDatahub(postIds: string[]) {
     })
     persistentPosts = res.findPosts.data.map((post) => {
       post.id = post.persistentId || post.id
-      return mapDatahubPostFragment(post)
+      return { ...mapDatahubPostFragment(post), requestedId: post.id }
     })
   }
 
@@ -145,7 +145,7 @@ export async function getPostsFromDatahub(postIds: string[]) {
       variables: { ids: entityIds },
     })
     optimisticPosts = res.findPosts.data.map((post) => {
-      return mapDatahubPostFragment(post as any)
+      return { ...mapDatahubPostFragment(post), requestedId: post.id }
     })
   }
 

@@ -14,7 +14,7 @@ const getPost = poolQuery<string, PostData>({
   },
   resultMapper: {
     paramToKey: (postId) => postId,
-    resultToKey: (result) => result?.id ?? '',
+    resultToKey: (result) => result.requestedId ?? result?.id ?? '',
   },
 })
 const rawGetPostQuery = createQuery({
