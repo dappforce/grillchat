@@ -8,12 +8,10 @@ import {
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
-import { SyntheticEvent, useReducer, useState } from 'react'
+import { SyntheticEvent, useState } from 'react'
 import { BsExclamationLg } from 'react-icons/bs'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
-import CheckMarkExplanationModal, {
-  CheckMarkModalVariant,
-} from './CheckMarkExplanationModal'
+import CheckMarkExplanationModal from './CheckMarkExplanationModal'
 
 export type MessageStatus = 'sending' | 'offChain' | 'optimistic' | 'blockchain'
 
@@ -21,30 +19,13 @@ export type MessageStatusIndicatorProps = {
   message: PostData
 }
 
-type CheckMarkModalReducerState = {
-  isOpen: boolean
-  variant: CheckMarkModalVariant | ''
-}
-const checkMarkModalReducer = (
-  state: CheckMarkModalReducerState,
-  action: CheckMarkModalVariant | ''
-): CheckMarkModalReducerState => {
-  if (action === '') {
-    return { ...state, isOpen: false }
-  }
-  return { isOpen: true, variant: action }
-}
-
 export default function MessageStatusIndicator({
   message,
 }: MessageStatusIndicatorProps) {
   const sendEvent = useSendEvent()
+  const [isOpenCheckmarkModal, setIsOpenCheckmarkModal] = useState(false)
 
   const messageStatus = getMessageStatusById(message)
-  const [checkMarkModalState, dispatch] = useReducer(checkMarkModalReducer, {
-    isOpen: false,
-    variant: '',
-  })
 
   if (message.struct.blockchainSyncFailed) {
     return <ResendMessageIndicator message={message} />
@@ -52,11 +33,8 @@ export default function MessageStatusIndicator({
 
   const onCheckMarkClick = (e: SyntheticEvent) => {
     e.stopPropagation()
-    const checkMarkType: CheckMarkModalVariant = checkMarkModalState
-      ? 'recorded'
-      : 'recording'
-    sendEvent('click check_mark_button', { type: checkMarkType })
-    dispatch(checkMarkType)
+    sendEvent('click check_mark_button', { type: messageStatus })
+    setIsOpenCheckmarkModal(true)
   }
 
   return (
@@ -91,9 +69,9 @@ export default function MessageStatusIndicator({
       })()}
 
       <CheckMarkExplanationModal
-        isOpen={checkMarkModalState.isOpen}
-        variant={checkMarkModalState.variant || 'recording'}
-        closeModal={() => dispatch('')}
+        isOpen={isOpenCheckmarkModal}
+        variant={messageStatus}
+        closeModal={() => setIsOpenCheckmarkModal(false)}
         blockNumber={message.struct.createdAtBlock}
         cid={message.struct.contentId}
       />
