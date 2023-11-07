@@ -36,7 +36,6 @@ const EMPTY_ARRAY: string[] = []
 export function usePaginatedMessageIdsFromDatahub({
   chatId,
   hubId,
-  isPausedLoadMore,
 }: PaginatedConfig): PaginatedData {
   const { data, fetchNextPage } =
     getPaginatedPostsByPostIdFromDatahubQuery.useInfiniteQuery(chatId)

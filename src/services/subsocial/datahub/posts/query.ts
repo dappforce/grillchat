@@ -1,7 +1,7 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getPostQuery } from '@/services/api/query'
 import { queryClient } from '@/services/provider'
-import { createQuery, poolQuery } from '@/subsocial-query'
+import { createQuery, poolQuery, QueryConfig } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
@@ -155,8 +155,9 @@ export const getPaginatedPostsByPostIdFromDatahubQuery = {
       refetchPage: (_, index) => index === 0,
     })
   },
-  useInfiniteQuery: (postId: string) => {
+  useInfiniteQuery: (postId: string, config?: QueryConfig) => {
     return useInfiniteQuery({
+      ...config,
       queryKey: getQueryKey(postId),
       queryFn: ({ pageParam = 1, queryKey: [_, postId] }) =>
         getPaginatedPostsByRootPostId({ postId, page: pageParam }),
