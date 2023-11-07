@@ -20,7 +20,11 @@ export function useLastMessageId(chatId: string) {
   })
   const lastIdFromDatahub = data?.lastCommentId
 
-  return isDatahubEnabled ? lastIdFromDatahub : lastMessageId
+  if (isDatahubEnabled) {
+    return lastIdFromDatahub
+  } else {
+    return lastMessageId
+  }
 }
 
 export function useLastMessageIds(chatIds: string[]) {
@@ -38,8 +42,13 @@ export function useLastMessageIds(chatIds: string[]) {
     enabled: isDatahubEnabled,
   })
 
-  const lastMessageIds = isDatahubEnabled
-    ? postMetadatas.map(({ data }) => data?.lastCommentId)
-    : commentIdsQueries.map(({ data }) => data?.[data?.length - 1])
+  let lastMessageIds: (string | undefined)[]
+  if (isDatahubEnabled) {
+    lastMessageIds = postMetadatas.map(({ data }) => data?.lastCommentId)
+  } else {
+    lastMessageIds = commentIdsQueries.map(
+      ({ data }) => data?.[data?.length - 1]
+    )
+  }
   return lastMessageIds
 }
