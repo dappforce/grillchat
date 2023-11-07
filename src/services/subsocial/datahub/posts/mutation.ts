@@ -80,6 +80,7 @@ function createSocialDataEventInput(
     proxyToAddress,
   }: DatahubParams<{}>,
   eventArgs: any,
+  callName: keyof typeof socialCallName,
   content?: string
 ) {
   const owner = proxyToAddress || address
@@ -89,7 +90,7 @@ function createSocialDataEventInput(
       ? SocialEventDataType.offChain
       : SocialEventDataType.optimistic,
     callData: {
-      name: socialCallName.create_post,
+      name: callName,
       signer: owner || '',
       args: JSON.stringify(eventArgs),
       timestamp: timestamp || Date.now(),
@@ -125,6 +126,7 @@ async function createPostData(
   const input = createSocialDataEventInput(
     params,
     eventArgs,
+    socialCallName.create_post,
     JSON.stringify(content)
   )
 
@@ -151,6 +153,7 @@ async function updatePostData(
   const input = createSocialDataEventInput(
     params,
     eventArgs,
+    socialCallName.update_post,
     JSON.stringify(content)
   )
 
@@ -197,7 +200,11 @@ async function notifyCreatePostFailedOrRetryStatus(
     }
   }
 
-  const input = createSocialDataEventInput(params, event)
+  const input = createSocialDataEventInput(
+    params,
+    event,
+    socialCallName.create_post
+  )
 
   await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
     action: 'notify-create-failed',
@@ -246,7 +253,11 @@ async function notifyUpdatePostFailedOrRetryStatus(
     }
   }
 
-  const input = createSocialDataEventInput(params, event)
+  const input = createSocialDataEventInput(
+    params,
+    event,
+    socialCallName.update_post
+  )
 
   await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
     action: 'notify-update-failed',
