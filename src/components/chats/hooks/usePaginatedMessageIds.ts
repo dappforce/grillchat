@@ -90,6 +90,7 @@ export function usePaginatedMessageIdsFromChain({
     hasMore,
   } = useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
 
+  // TODO: improve this when datahub is integrated with moderation
   const filteredMessageIds = useFilterBlockedMessageIds(
     hubId,
     chatId,
