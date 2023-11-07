@@ -1,8 +1,9 @@
 import { HeadConfigProps } from '@/components/HeadConfig'
-import MessageRedirectPage from '@/modules/chat/MessageRedirectPage'
+import MessageRedirectPage, {
+  MessageRedirectPageProps,
+} from '@/modules/chat/MessageRedirectPage'
 import { getNftDataServer } from '@/pages/api/nft'
 import { getPostsServer } from '@/pages/api/posts'
-import { AppCommonProps } from '@/pages/_app'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -34,10 +35,10 @@ async function getMessageDataFromExtension(
   return { image: null }
 }
 
-export const getStaticProps = getCommonStaticProps<AppCommonProps>(
+export const getStaticProps = getCommonStaticProps<MessageRedirectPageProps>(
   () => ({}),
   async (context) => {
-    const messageId = context.params?.messageId as string | undefined
+    let messageId = context.params?.messageId as string
     const slug = context.params?.slug as string
     const chatId = getIdFromSlug(slug)
     if (!messageId || !chatId) return undefined
@@ -51,6 +52,7 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
       const results = await getPostsServer([chatId, messageId])
       const chat = results.find((post) => post.id === chatId)
       const message = results.find((post) => post.id === messageId)
+      messageId = message?.id ?? messageId
 
       const extensionData = await getMessageDataFromExtension(
         message?.content?.extensions
@@ -77,6 +79,7 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
           image,
           cardFormat,
         },
+        messageId,
       },
       revalidate: 2,
     }
