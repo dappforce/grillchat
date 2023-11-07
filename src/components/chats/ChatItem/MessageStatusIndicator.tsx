@@ -77,7 +77,7 @@ export default function MessageStatusIndicator({
           )
         } else if (messageStatus === 'blockchain') {
           return (
-            <IoCheckmarkDoneOutline className='text-sm text-blue-700 dark:text-blue-400' />
+            <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
           )
         } else if (messageStatus === 'optimistic') {
           return (
