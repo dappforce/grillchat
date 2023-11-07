@@ -70,8 +70,6 @@ RUN yarn install
 
 COPY . .
 
-RUN yarn dh-sdk-i
-
 RUN set -x \
     && mv ci.env .env \
     && yarn build

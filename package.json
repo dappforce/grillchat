@@ -21,8 +21,7 @@
     "codegen:datahub-mutation": "graphql-codegen --require dotenv/config --config codegen-datahub-mutation.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "start-storybook": "node ./.storybook/index.js",
-    "dh-sdk-i": "scripts/data-hub-sdk-postinstall.sh"
+    "start-storybook": "node ./.storybook/index.js"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.2.2",
