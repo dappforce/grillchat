@@ -25,6 +25,7 @@ import { cx } from '@/utils/class-names'
 import { getDatahubConfig } from '@/utils/env/client'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
+import { Transition } from '@headlessui/react'
 import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -193,7 +194,7 @@ export default function ChatItemMenus({
   return (
     <>
       <FloatingMenus
-        beforeMenus={isOptimisticMessage && <MintingMessageNotice />}
+        beforeMenus={<MintingMessageNotice />}
         menus={menus}
         allowedPlacements={[
           'right',
@@ -272,28 +273,34 @@ function MintingMessageNotice() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className='border-b border-border-gray p-4 pb-1 text-sm text-text-muted'>
-      <div className='flex justify-between gap-2'>
+    <div className='overflow-hidden border-b border-border-gray p-4 pb-3 text-sm text-text-muted'>
+      <div className='flex items-center justify-between gap-2'>
         <p>Message is being minted</p>
         <Button
           size='noPadding'
           variant='transparent'
-          className={cx('transition-transform', isOpen && 'rotate-90')}
+          className={cx(
+            'flex-shrink-0 p-0.5 transition-transform',
+            isOpen && 'rotate-90'
+          )}
           onClick={() => setIsOpen((prev) => !prev)}
         >
           <HiChevronRight />
         </Button>
       </div>
-      <div className={cx()}>
-        <p>
+      <Transition
+        show={isOpen}
+        className='transition'
+        enterFrom={cx('opacity-0 -translate-y-2')}
+        enterTo='opacity-100 translate-y-0'
+        leaveFrom='h-auto'
+        leaveTo='opacity-0 -top-4'
+      >
+        <p className='pt-2'>
           To interact with this message please wait until it is saved to the
           blockchain (≈ 15 sec).
         </p>
-      </div>
-      <p>
-        To interact with this message, please wait until it is saved to the
-        blockchain (≈ 15 sec).
-      </p>
+      </Transition>
     </div>
   )
 }
