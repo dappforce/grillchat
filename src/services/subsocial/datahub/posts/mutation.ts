@@ -2,6 +2,7 @@ import { getMaxMessageLength } from '@/constants/chat'
 import { DatahubMutationInput } from '@/pages/api/datahub'
 import { useSaveFile } from '@/services/api/mutation'
 import { Signer } from '@/utils/account'
+import { getDatahubConfig } from '@/utils/env/client'
 import { ReplyWrapper } from '@/utils/ipfs'
 import { preventWindowUnload } from '@/utils/window'
 import { decodeAddress } from '@polkadot/keyring'
@@ -257,11 +258,21 @@ async function notifyUpdatePostFailedOrRetryStatus(
   })
 }
 
+function datahubWrapper<T extends (...args: any[]) => Promise<any>>(func: T) {
+  return (...args: Parameters<T>) => {
+    if (!getDatahubConfig()) return
+    return func(...args)
+  }
+}
 const datahubMutation = {
-  createPostData,
-  updatePostData,
-  notifyCreatePostFailedOrRetryStatus,
-  notifyUpdatePostFailedOrRetryStatus,
+  createPostData: datahubWrapper(createPostData),
+  updatePostData: datahubWrapper(updatePostData),
+  notifyCreatePostFailedOrRetryStatus: datahubWrapper(
+    notifyCreatePostFailedOrRetryStatus
+  ),
+  notifyUpdatePostFailedOrRetryStatus: datahubWrapper(
+    notifyUpdatePostFailedOrRetryStatus
+  ),
 }
 export default datahubMutation
 
