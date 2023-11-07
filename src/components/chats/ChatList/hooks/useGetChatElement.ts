@@ -5,13 +5,11 @@ import { getMessageElementId } from '../../utils'
 
 // TODO: refactor this hook to have better readability
 export default function useGetMessageElement({
-  messageIds,
   loadMore,
   isLoading,
   renderedMessageIds,
   hasMore,
 }: {
-  messageIds: string[]
   renderedMessageIds: string[]
   isLoading: boolean
   loadMore: () => void
@@ -20,7 +18,6 @@ export default function useGetMessageElement({
   const waitAllMessagesLoaded = useWaitMessagesLoading(isLoading)
 
   const waitAllMessagesLoadedRef = useWrapInRef(waitAllMessagesLoaded)
-  const messageIdsRef = useWrapInRef(messageIds)
   const renderedIdsRef = useWrapInRef(renderedMessageIds)
 
   const promiseRef = useRef<{
@@ -59,12 +56,10 @@ export default function useGetMessageElement({
 
   const loadMoreUntilMessageIdIsLoaded = useCallback(
     async (messageId: string) => {
-      if (checkIfMessageIdIsIncluded(messageId, messageIdsRef.current)) return
-
       await awaitableLoadMore()
       await loadMoreUntilMessageIdIsLoaded(messageId)
     },
-    [awaitableLoadMore, messageIdsRef]
+    [awaitableLoadMore]
   )
 
   const getMessageElement = useCallback(
