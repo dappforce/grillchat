@@ -56,7 +56,10 @@ export default function useGetMessageElement({
 
   const loadMoreUntilMessageIdIsLoaded = useCallback(
     async (messageId: string) => {
-      const isMessageIdIncluded = renderedIdsRef.current.includes(messageId)
+      const isMessageIdIncluded = checkIfMessageIdIsIncluded(
+        messageId,
+        renderedIdsRef.current
+      )
       if (isMessageIdIncluded) return
 
       await awaitableLoadMore()
@@ -147,7 +150,6 @@ function useWaitMessagesLoading(isLoading: boolean) {
 }
 
 function checkIfMessageIdIsIncluded(messageId: string, messageIds: string[]) {
-  console.log(messageId, messageIds)
   const parsedMessageId = Number(messageId)
   if (isNaN(parsedMessageId)) return true
 
