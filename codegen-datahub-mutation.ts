@@ -1,11 +1,11 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
 
-const queueUrl = process.env.DATAHUB_QUEUE_URL
-if (!queueUrl) throw new Error('Codegen error: Datahub Queue URL not set')
+const mutationUrl = process.env.DATAHUB_MUTATION_URL
+if (!mutationUrl) throw new Error('Codegen error: Datahub Mutation URL not set')
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: queueUrl,
+  schema: mutationUrl,
   documents: 'src/server/datahub/**/*.ts',
   generates: {
     'src/server/datahub/generated-mutation.ts': {
