@@ -12,8 +12,7 @@ export default function useFocusedLastMessageId(chatId: string) {
     chatId,
     hubId: '',
   })
-  const lastMessageId =
-    currentPageMessageIds?.[currentPageMessageIds?.length - 1]
+  const lastMessageId = currentPageMessageIds?.[0]
 
   // if the last message is client optimistic id, then it means the user just send a message, so it needs to remove any unreads
   const hasSentMessage = isClientGeneratedOptimisticId(lastMessageId)
