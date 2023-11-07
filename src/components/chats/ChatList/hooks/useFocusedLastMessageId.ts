@@ -8,7 +8,6 @@ export default function useFocusedLastMessageId(chatId: string) {
   const [lastReadId, setLastReadId] = useState(() => getLastReadMessageId())
   const shouldUpdateLastReadId = useRef(false)
 
-  // need last message only
   const { currentPageMessageIds } = usePaginatedMessageIds({
     chatId,
     hubId: '',

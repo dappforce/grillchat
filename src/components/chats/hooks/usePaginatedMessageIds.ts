@@ -15,6 +15,7 @@ type PaginatedData = {
   loadMore: () => void
   hasMore: boolean
   totalDataCount: number
+  isLoading: boolean
 }
 
 type PaginatedConfig = {
@@ -37,7 +38,7 @@ export function usePaginatedMessageIdsFromDatahub({
   chatId,
   hubId,
 }: PaginatedConfig): PaginatedData {
-  const { data, fetchNextPage } =
+  const { data, fetchNextPage, isLoading } =
     getPaginatedPostsByPostIdFromDatahubQuery.useInfiniteQuery(chatId)
 
   const page = data?.pages
@@ -67,6 +68,7 @@ export function usePaginatedMessageIdsFromDatahub({
     },
     totalDataCount: data?.pages?.[0].totalData || 0,
     hasMore: lastPage?.hasMore || true,
+    isLoading,
   }
 }
 
@@ -75,12 +77,10 @@ export function usePaginatedMessageIdsFromChain({
   hubId,
   isPausedLoadMore,
 }: PaginatedConfig): PaginatedData {
-  const { data: rawMessageIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
-    chatId,
-    {
+  const { data: rawMessageIds, isLoading } =
+    getCommentIdsByPostIdFromChainQuery.useQuery(chatId, {
       subscribe: true,
-    }
-  )
+    })
   const messageIds = rawMessageIds || EMPTY_ARRAY
 
   const {
@@ -108,5 +108,6 @@ export function usePaginatedMessageIdsFromChain({
     loadMore,
     hasMore,
     totalDataCount: filteredMessageIds.length,
+    isLoading,
   }
 }
