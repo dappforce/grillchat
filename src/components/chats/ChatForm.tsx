@@ -2,7 +2,7 @@ import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
-import { RATE_LIMIT_EXCEEDED } from '@/constants/error'
+import { ERRORS } from '@/constants/error'
 import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
@@ -419,7 +419,7 @@ function showErrorSendingMessageToast(
   unsentMessageStorage.set(JSON.stringify(message), message.chatId)
 
   const errorData = (error as any)?.response?.data?.errors
-  const isRateLimited = errorData?.name === RATE_LIMIT_EXCEEDED
+  const isRateLimited = errorData?.name === ERRORS.RATE_LIMIT_EXCEEDED
 
   let title = errorTitle
   if (isRateLimited) {

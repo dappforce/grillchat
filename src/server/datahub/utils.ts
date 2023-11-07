@@ -1,4 +1,4 @@
-import { RATE_LIMIT_EXCEEDED } from '@/constants/error'
+import { ERRORS } from '@/constants/error'
 import { getDatahubMutationConfig } from '@/utils/env/server'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 
@@ -53,6 +53,6 @@ export function datahubMutationWrapper<
 export class RateLimitError extends Error {
   constructor(message: string, public remainingSeconds: number) {
     super(message)
-    this.name = RATE_LIMIT_EXCEEDED
+    this.name = ERRORS.RATE_LIMIT_EXCEEDED
   }
 }
