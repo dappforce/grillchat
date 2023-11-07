@@ -1,3 +1,4 @@
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { useEffect } from 'react'
 
 export default function useLoadMoreIfNoScroll(
@@ -9,6 +10,7 @@ export default function useLoadMoreIfNoScroll(
   }
 ) {
   const { innerContainer, scrollContainer } = refs
+  const loadMoreRef = useWrapInRef(loadMore)
   useEffect(() => {
     const inner = innerContainer.current
     const scroll = scrollContainer.current
@@ -16,8 +18,8 @@ export default function useLoadMoreIfNoScroll(
       const innerHeight = inner.clientHeight
       const scrollContainerHeight = scroll.scrollHeight
       if (innerHeight < scrollContainerHeight) {
-        loadMore()
+        loadMoreRef.current()
       }
     }
-  }, [loadedItemLength, loadMore, scrollContainer, innerContainer])
+  }, [loadedItemLength, loadMoreRef, scrollContainer, innerContainer])
 }

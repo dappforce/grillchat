@@ -30,6 +30,7 @@ import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
+import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import useScrollToMessage from './hooks/useScrollToMessage'
 import PinnedMessage from './PinnedMessage'
 
@@ -132,10 +133,10 @@ function ChatListContent({
     })
   }, [isLastBatchLoading, filteredCurrentPageIds])
 
-  // useLoadMoreIfNoScroll(loadMore, renderedMessageIds?.length ?? 0, {
-  //   scrollContainer: scrollContainerRef,
-  //   innerContainer: innerRef,
-  // })
+  useLoadMoreIfNoScroll(loadMore, renderedMessageIds?.length ?? 0, {
+    scrollContainer: scrollContainerRef,
+    innerContainer: innerRef,
+  })
 
   const pinnedMessageId = usePinnedMessage(chatId)
   const scrollToMessage = useScrollToMessage(
