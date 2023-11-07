@@ -107,13 +107,13 @@ export default function ChatListSupportingContent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingIds, messageIdsRef, hasScrolledToMessageRef])
 
+  const lastMessageId = messageIds?.[0] ?? ''
   useEffect(() => {
     if (!isInitialized.current) return
 
     let lastId = ''
     if (unreadMessage.count === 0) {
-      const messageIds = messageIdsRef.current
-      lastId = messageIds?.[0] ?? ''
+      lastId = lastMessageId
       if (!lastId) return
     } else {
       lastId = unreadMessage.lastId ?? ''
@@ -124,7 +124,7 @@ export default function ChatListSupportingContent({
       lastId,
       getPostQuery.getQueryData(queryClient, lastId)?.struct.createdAtTime
     )
-  }, [setLastReadMessageId, messageIdsRef, unreadMessage, queryClient])
+  }, [setLastReadMessageId, lastMessageId, unreadMessage, queryClient])
 
   useEffect(() => {
     if (messageModalMsgId) {
