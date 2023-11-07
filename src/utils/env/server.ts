@@ -77,14 +77,11 @@ export function getModerationConfig() {
 }
 
 export function getDatahubMutationConfig() {
-  const mutationUrl = checkEnv(
-    process.env.DATAHUB_MUTATION_URL,
-    'DATAHUB_MUTATION_URL'
-  )
-  const mutationToken = checkEnv(
-    process.env.DATAHUB_MUTATION_TOKEN,
-    'DATAHUB_MUTATION_TOKEN'
+  const queueUrl = checkEnv(process.env.DATAHUB_QUEUE_URL, 'DATAHUB_QUEUE_URL')
+  const queueToken = checkEnv(
+    process.env.DATAHUB_QUEUE_TOKEN,
+    'DATAHUB_QUEUE_TOKEN'
   )
 
-  return { url: mutationUrl, token: mutationToken }
+  return { url: queueUrl, token: queueToken }
 }

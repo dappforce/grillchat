@@ -77,8 +77,8 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:581626459774:web:6b7098eb48c0b142f50a2f
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://proxy-signer-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://proxy-signer-data-hub.subsocial.network/graphql-ws
-            GH_DATAHUB_MUTATION_URL=https://proxy-signer-queue-data-hub.subsocial.network/graphql
-            GH_DATAHUB_MUTATION_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.jpXwkIJ4DpV4IvSI3eWVVXE6x89qr_GIq7IlbBv5YE0
+            GH_DATAHUB_QUEUE_URL=https://proxy-signer-queue-data-hub.subsocial.network/graphql
+            GH_DATAHUB_QUEUE_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.jpXwkIJ4DpV4IvSI3eWVVXE6x89qr_GIq7IlbBv5YE0
           target: runner
           tags: |
             ${{ env.image }}
