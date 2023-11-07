@@ -63,7 +63,6 @@ export function usePaginatedMessageIdsFromDatahub({
     currentPage: lastPage?.page ?? 1,
     currentPageMessageIds: filteredCurrentPageIds,
     loadMore: () => {
-      console.trace('masuk')
       fetchNextPage()
     },
     totalDataCount: data?.pages?.[0].totalData || 0,

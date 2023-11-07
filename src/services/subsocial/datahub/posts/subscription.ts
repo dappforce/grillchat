@@ -75,7 +75,6 @@ function subscription(queryClient: QueryClient) {
     {
       complete: () => undefined,
       next: async (data) => {
-        console.log('SUBSCRIPTION DATA', data)
         const eventData = data.data?.post
         if (!eventData) return
 
