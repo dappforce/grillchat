@@ -29,10 +29,6 @@ export default function AccountContent({
 }: ContentProps) {
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
-  const {
-    showNotification: showLinkedNotif,
-    closeNotification: closeLinkedNotif,
-  } = useFirstVisitNotification('linked-addresses-menu')
 
   const sendEvent = useSendEvent()
   const commonEventProps = { eventSource: 'profile_menu' }
@@ -43,7 +39,6 @@ export default function AccountContent({
   const onLinkedAddressesClick = () => {
     sendEvent('open_linked_addresses', commonEventProps)
     setCurrentState('linked-addresses')
-    closeLinkedNotif()
   }
   const onShowPrivateKeyClick = () => {
     sendEvent('open_show_private_key_modal', commonEventProps)
@@ -81,7 +76,7 @@ export default function AccountContent({
       text: (
         <span className='flex items-center gap-2'>
           <span>Linked Addresses</span>
-          {showLinkedNotif && <DotBlinkingNotification />}
+          {/* {showLinkedNotif && <DotBlinkingNotification />} */}
         </span>
       ),
       icon: LinkedAddressesIcon,
@@ -91,7 +86,7 @@ export default function AccountContent({
       text: (
         <span className='flex items-center gap-2'>
           <span>Show Grill secret key</span>
-          {notification?.showNotif && <DotBlinkingNotification />}
+          {/* {notification?.showNotif && <DotBlinkingNotification />} */}
         </span>
       ),
       icon: KeyIcon,

@@ -1,4 +1,5 @@
 import LoginModal from '@/components/auth/LoginModal'
+import Button from '@/components/Button'
 import { useOpenDonateExtension } from '@/components/extensions/donate/hooks'
 import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
@@ -20,6 +21,7 @@ import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
 import { getDatahubConfig } from '@/utils/env/client'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
@@ -32,7 +34,7 @@ import {
   BsFillPinAngleFill,
   BsFillReplyFill,
 } from 'react-icons/bs'
-import { HiCircleStack, HiLink } from 'react-icons/hi2'
+import { HiChevronRight, HiCircleStack, HiLink } from 'react-icons/hi2'
 import { LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine } from 'react-icons/ri'
@@ -191,14 +193,7 @@ export default function ChatItemMenus({
   return (
     <>
       <FloatingMenus
-        beforeMenus={
-          isOptimisticMessage && (
-            <p className='border-b border-border-gray p-4 pb-3 text-sm text-text-muted'>
-              To interact with this message, please wait until it is saved to
-              the blockchain (≈ 15 sec).
-            </p>
-          )
-        }
+        beforeMenus={isOptimisticMessage && <MintingMessageNotice />}
         menus={menus}
         allowedPlacements={[
           'right',
@@ -271,4 +266,34 @@ function usePinUnpinMenuItem(chatId: string, messageId: string) {
   if (pinnedMessageId === messageId) return unpinMenuItem
   if (isChatOwner) return pinMenuItem
   return null
+}
+
+function MintingMessageNotice() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div className='border-b border-border-gray p-4 pb-1 text-sm text-text-muted'>
+      <div className='flex justify-between gap-2'>
+        <p>Message is being minted</p>
+        <Button
+          size='noPadding'
+          variant='transparent'
+          className={cx('transition-transform', isOpen && 'rotate-90')}
+          onClick={() => setIsOpen((prev) => !prev)}
+        >
+          <HiChevronRight />
+        </Button>
+      </div>
+      <div className={cx()}>
+        <p>
+          To interact with this message please wait until it is saved to the
+          blockchain (≈ 15 sec).
+        </p>
+      </div>
+      <p>
+        To interact with this message, please wait until it is saved to the
+        blockchain (≈ 15 sec).
+      </p>
+    </div>
+  )
 }
