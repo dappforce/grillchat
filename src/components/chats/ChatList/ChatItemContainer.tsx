@@ -81,23 +81,28 @@ function UnreadMessageChecker({ messageId }: { messageId: string }) {
 
   const handleInView = (isAfterScroll?: boolean) => {
     if (!unreadMessage.lastId || !unreadMessage.count) return
-    const prevLastId = Number(unreadMessage.lastId)
-    const currentMessageId = Number(messageId)
-    if (isAfterScroll || prevLastId < currentMessageId) {
+    const prevLastId = unreadMessage.lastId.startsWith('0x')
+      ? undefined
+      : Number(unreadMessage.lastId)
+    const currentMessageId = messageId.startsWith('0x')
+      ? undefined
+      : Number(messageId)
+    if (
+      isAfterScroll ||
+      !prevLastId ||
+      !currentMessageId ||
+      prevLastId < currentMessageId
+    ) {
       setUnreadMessage((prev) => ({
-        count: prev.count - 1,
-        lastId: Math.max(prevLastId, currentMessageId).toString(),
+        count: Math.max(prev.count - 1, 0),
+        lastId: Math.max(prevLastId ?? 0, currentMessageId ?? 0).toString(),
       }))
     }
   }
 
   const isPrevCountZero = prevCount === 0
   useEffect(() => {
-    if (
-      inView &&
-      isPrevCountZero &&
-      Number(unreadMessage.lastId) < Number(messageId)
-    ) {
+    if (inView && isPrevCountZero) {
       handleInView(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

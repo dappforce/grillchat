@@ -79,10 +79,7 @@ export default function ChatListSupportingContent({
           const lastReadIdIndex = messageIdsRef.current.findIndex(
             (id) => id === lastReadId
           )
-          const newMessageCount =
-            lastReadIdIndex === -1
-              ? 0
-              : messageIdsRef.current.length - lastReadIdIndex - 1
+          const newMessageCount = lastReadIdIndex === -1 ? 0 : lastReadIdIndex
 
           sendMessageToParentWindow('unread', newMessageCount.toString())
           setUnreadMessage({ count: newMessageCount, lastId: lastReadId })
