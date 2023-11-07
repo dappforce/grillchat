@@ -89,16 +89,19 @@ export function deleteOptimisticData({
 }) {
   const tempId = commentIdsOptimisticEncoder.encode(idToDelete)
 
-  getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
-    client,
-    chatId,
-    (oldData) => {
-      return oldData?.filter((id) => id !== tempId)
-    }
-  )
-  getCommentIdsByPostIdFromChainQuery.setQueryData(client, chatId, (ids) => {
-    return ids?.filter((id) => id !== tempId)
-  })
+  if (getDatahubConfig()) {
+    getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
+      client,
+      chatId,
+      (oldData) => {
+        return oldData?.filter((id) => id !== tempId)
+      }
+    )
+  } else {
+    getCommentIdsByPostIdFromChainQuery.setQueryData(client, chatId, (ids) => {
+      return ids?.filter((id) => id !== tempId)
+    })
+  }
 
   getPostMetadataQuery.invalidate(client, chatId)
 }

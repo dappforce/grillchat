@@ -98,6 +98,14 @@ async function getMessageIdsFromChain(client: QueryClient, chatId: string) {
   return { messageIds: prefetchedMessageIds, messages }
 }
 
+async function prefetchPostMetadata(queryClient: QueryClient, chatId: string) {
+  if (getDatahubConfig()) {
+    await getPostMetadataQuery.fetchQuery(queryClient, chatId)
+  } else {
+    await getCommentIdsByPostIdFromChainQuery.fetchQuery(queryClient, chatId)
+  }
+}
+
 export const getStaticProps = getCommonStaticProps<
   ChatPageProps & AppCommonProps
 >(
@@ -128,7 +136,7 @@ export const getStaticProps = getCommonStaticProps<
       const [{ accountsAddresses, prices }, blockedData] = await Promise.all([
         getChatsData(queryClient, chatId),
         prefetchBlockedEntities(queryClient, hubIds, [chatId]),
-        getPostMetadataQuery.fetchQuery(queryClient, chatId),
+        prefetchPostMetadata(queryClient, chatId),
       ] as const)
 
       if (blockedData) {
