@@ -4,15 +4,18 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import urlJoin from 'url-join'
 
-export default function MessageRedirectPage() {
+export type MessageRedirectPageProps = {
+  messageId: string
+}
+export default function MessageRedirectPage({
+  messageId,
+}: MessageRedirectPageProps) {
   const router = useRouter()
 
   useEffect(() => {
     if (!router.isReady) return
-    router.replace(
-      urlJoin(getChatPageLink(router), `?messageId=${router.query.messageId}`)
-    )
-  }, [router])
+    router.replace(urlJoin(getChatPageLink(router), `?messageId=${messageId}`))
+  }, [router, messageId])
 
   return <DefaultLayout />
 }

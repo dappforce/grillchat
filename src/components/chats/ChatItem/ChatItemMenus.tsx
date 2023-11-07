@@ -15,19 +15,23 @@ import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
-import { isOptimisticId } from '@/services/subsocial/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
+import { getDatahubConfig } from '@/utils/env/client'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
 import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
-import { BsFillPinAngleFill, BsFillReplyFill } from 'react-icons/bs'
+import {
+  BsFillPencilFill,
+  BsFillPinAngleFill,
+  BsFillReplyFill,
+} from 'react-icons/bs'
 import { HiCircleStack, HiLink } from 'react-icons/hi2'
 import { LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
@@ -56,6 +60,7 @@ export default function ChatItemMenus({
 
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
+  const isMessageOwner = useIsOwnerOfPost(messageId)
 
   const router = useRouter()
   const isLoggingInWithKey = useRef(false)
@@ -75,48 +80,19 @@ export default function ChatItemMenus({
   )
 
   const setReplyTo = useMessageData((state) => state.setReplyTo)
-  const setMessageAsReply = (messageId: string) => {
-    if (isOptimisticId(messageId)) return
-    setReplyTo(messageId)
-  }
+  const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
 
   const { isAuthorized } = useAuthorizedForModeration(chatId)
-  const { ownerId } = message?.struct || {}
+  const { ownerId, dataType } = message?.struct || {}
   const { data: messageOwnerAccountData } = getAccountDataQuery.useQuery(
     ownerId ?? ''
   )
   const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
 
-  const isSent = !isOptimisticId(messageId)
+  const isOptimisticMessage = dataType === 'optimistic'
 
   const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
-    const donateMenuItem: FloatingMenusProps['menus'][number] = {
-      text: 'Donate',
-      icon: RiCopperCoinLine,
-      onClick: () => {
-        if (!messageOwnerEvmAddress) {
-          return
-        }
-
-        if (!address) {
-          setModalState('login')
-          return
-        }
-
-        sendEvent('open_donate_action_modal', { hubId, chatId })
-        openDonateExtension()
-      },
-    }
-
-    const replyItem: FloatingMenusProps['menus'][number] = {
-      text: 'Reply',
-      icon: BsFillReplyFill,
-      onClick: () => setMessageAsReply(messageId),
-    }
-
-    const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage
-
     const menus: FloatingMenusProps['menus'] = [
       {
         text: 'Copy Text',
@@ -148,6 +124,7 @@ export default function ChatItemMenus({
         onClick: () => setModalState('metadata'),
       },
     ]
+    if (isOptimisticMessage) return menus
 
     if (address && canUsePromoExtensionAccounts.includes(address)) {
       menus.unshift({
@@ -172,17 +149,56 @@ export default function ChatItemMenus({
       })
     }
 
+    const donateMenuItem: FloatingMenusProps['menus'][number] = {
+      text: 'Donate',
+      icon: RiCopperCoinLine,
+      onClick: () => {
+        if (!messageOwnerEvmAddress) {
+          return
+        }
+
+        if (!address) {
+          setModalState('login')
+          return
+        }
+
+        sendEvent('open_donate_action_modal', { hubId, chatId })
+        openDonateExtension()
+      },
+    }
+    const replyItem: FloatingMenusProps['menus'][number] = {
+      text: 'Reply',
+      icon: BsFillReplyFill,
+      onClick: () => setReplyTo(messageId),
+    }
+    const editItem: FloatingMenusProps['menus'][number] = {
+      text: 'Edit',
+      icon: BsFillPencilFill,
+      onClick: () => setMessageToEdit(messageId),
+    }
+    const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage
+
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
+    if (getDatahubConfig() && canSendMessage && isMessageOwner)
+      menus.unshift(editItem)
     if (canSendMessage) menus.unshift(replyItem)
 
     return menus
   }
-  const menus = enableChatMenu && isSent ? getChatMenus() : []
+  const menus = enableChatMenu ? getChatMenus() : []
 
   return (
     <>
       <FloatingMenus
+        beforeMenus={
+          isOptimisticMessage && (
+            <p className='border-b border-border-gray p-4 pb-3 text-sm text-text-muted'>
+              To interact with this message, please wait until it is saved to
+              the blockchain (≈ 15 sec).
+            </p>
+          )
+        }
         menus={menus}
         allowedPlacements={[
           'right',

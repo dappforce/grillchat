@@ -18,7 +18,8 @@ import { useConfigContext } from '@/providers/ConfigProvider'
 import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getModeratorQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
+import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import {
@@ -27,6 +28,7 @@ import {
   useMyMainAddress,
 } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getDatahubConfig } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
   getChatPageLink,
@@ -83,9 +85,15 @@ export default function ChatPage({
     if (!isOpenCreateSuccessModal) replaceUrl(getCurrentUrlWithoutQuery('new'))
   }, [isOpenCreateSuccessModal])
 
-  const { data: messageIds } = useCommentIdsByPostId(chatId, {
-    subscribe: true,
+  const { data: chatMetadata } = getPostMetadataQuery.useQuery(chatId, {
+    enabled: !!getDatahubConfig(),
   })
+  const { data: commentIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
+    chatId,
+    {
+      enabled: !getDatahubConfig(),
+    }
+  )
 
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal
@@ -153,6 +161,8 @@ export default function ChatPage({
   }
 
   const content = chat?.content ?? stubMetadata
+  const messageCount =
+    chatMetadata?.totalCommentsCount ?? commentIds?.length ?? 0
 
   return (
     <>
@@ -168,7 +178,7 @@ export default function ChatPage({
               <NavbarChatInfo
                 backButton={backButton}
                 image={content?.image ? getIpfsContentUrl(content.image) : ''}
-                messageCount={messageIds?.length ?? 0}
+                messageCount={messageCount}
                 chatMetadata={content}
                 chatId={chatId}
               />
@@ -279,7 +289,6 @@ function NavbarChatInfo({
   }, [router])
 
   const chatTitle = chatMetadata?.title
-  const membersCount = chat?.struct.followersCount
 
   return (
     <div className='flex flex-1 items-center overflow-hidden'>

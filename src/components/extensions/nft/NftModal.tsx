@@ -16,7 +16,11 @@ import CommonExtensionModal from '../common/CommonExtensionModal'
 import NftSupportedPlatformsModal from './NftSupportedPlatformsModal'
 import { parseNftMarketplaceLink } from './utils'
 
-export default function NftModal({ chatId, onSubmit }: ExtensionModalsProps) {
+export default function NftModal({
+  chatId,
+  onSubmit,
+  hubId,
+}: ExtensionModalsProps) {
   const { closeModal, initialData, isOpen } =
     useExtensionModalState('subsocial-evm-nft')
 
@@ -94,6 +98,7 @@ export default function NftModal({ chatId, onSubmit }: ExtensionModalsProps) {
   return (
     <>
       <CommonExtensionModal
+        hubId={hubId}
         onSubmit={onSubmit}
         closeModal={closeModal}
         isOpen={isOpen && !isOpenSupportedPlatformModal}

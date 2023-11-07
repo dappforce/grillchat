@@ -78,6 +78,7 @@ declare module '@subsocial/api/types' {
     profileSource?: string
   }
   export interface PostContent extends SubsocialPostContent {
+    optimisticId?: string
     linkMetadata?: LinkMetadata
     inReplyTo?: {
       kind: 'Post'
@@ -98,7 +99,11 @@ declare module '@subsocial/api/types' {
   export declare type SpaceData = EntityPostData<SpaceStruct, SpaceContent>
   export declare type PostData = EntityPostData<
     PostStruct &
-      Pick<CommentStruct, 'rootPostId'> & { followersCount?: number },
+      Pick<CommentStruct, 'rootPostId'> & {
+        followersCount?: number
+        blockchainSyncFailed?: boolean
+        dataType?: 'persistent' | 'optimistic' | 'offChain'
+      },
     PostContent
-  >
+  > & { requestedId?: string }
 }

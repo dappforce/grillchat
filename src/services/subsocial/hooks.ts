@@ -14,7 +14,7 @@ export function useWalletGetter(
       const wallet = useMyAccount.getState().connectedWallet
       return {
         address: wallet?.address ?? '',
-        signer: wallet?.signer,
+        signer: wallet?.signer ?? null,
       }
     }
   }

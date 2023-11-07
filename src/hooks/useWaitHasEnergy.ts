@@ -43,6 +43,7 @@ export default function useWaitHasEnergy(
   }, [address])
 
   return () => {
+    // need to use ref because if not it can have stale energy value
     return !energyRef.current ? generateNewPromise() : Promise.resolve()
   }
 }

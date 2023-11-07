@@ -1,13 +1,21 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import { invalidatePostServerCache, saveFile } from '@/services/api/mutation'
+import {
+  invalidatePostServerCache,
+  saveFile,
+  useRevalidateChatPage,
+} from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
+import { getDatahubConfig } from '@/utils/env/client'
 import { IpfsWrapper } from '@/utils/ipfs'
+import { getChatPageLink } from '@/utils/links'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/router'
+import datahubMutation from '../datahub/posts/mutation'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import {
@@ -26,15 +34,21 @@ export function useJoinChat(config?: SubsocialMutationConfig<JoinChatParams>) {
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<JoinChatParams>(
-    getWallet,
-    async ({ chatId }, { substrateApi }) => {
-      console.log('waiting energy...')
-      await waitHasEnergy()
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({
+        data: { chatId },
+        apis: { substrateApi },
+      }) => {
+        console.log('waiting energy...')
+        await waitHasEnergy()
 
-      return {
-        tx: substrateApi.tx.postFollows.followPost(chatId),
-        summary: 'Joining chat',
-      }
+        return {
+          tx: substrateApi.tx.postFollows.followPost(chatId),
+          summary: 'Joining chat',
+        }
+      },
     },
     config,
     {
@@ -73,15 +87,21 @@ export function useLeaveChat(
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<JoinChatParams>(
-    getWallet,
-    async ({ chatId }, { substrateApi }) => {
-      console.log('waiting energy...')
-      await waitHasEnergy()
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({
+        data: { chatId },
+        apis: { substrateApi },
+      }) => {
+        console.log('waiting energy...')
+        await waitHasEnergy()
 
-      return {
-        tx: substrateApi.tx.postFollows.unfollowPost(chatId),
-        summary: 'Leaving chat',
-      }
+        return {
+          tx: substrateApi.tx.postFollows.unfollowPost(chatId),
+          summary: 'Leaving chat',
+        }
+      },
     },
     config,
     {
@@ -115,6 +135,40 @@ type Content = {
 }
 export type UpsertPostParams = ({ postId: string } | { spaceId: string }) &
   Content
+
+async function generateMessageContent(
+  params: UpsertPostParams,
+  client: QueryClient
+) {
+  const { image, title, body } = params
+
+  if ('postId' in params) {
+    const post = await getPostQuery.fetchQuery(client, params.postId)
+    if (!post) throw new Error('Post not found')
+
+    const content = post?.content
+    const savedContent = {
+      ...content,
+      image,
+      title,
+      body,
+    } as PostContent
+
+    return { content: savedContent }
+  }
+
+  const content = {
+    image,
+    title,
+    body,
+    optimisticId: crypto.randomUUID(),
+  } as PostContent & { optimisticId: string }
+
+  return { content }
+}
+type GeneratedMessageContent = Awaited<
+  ReturnType<typeof generateMessageContent>
+>
 function checkAction(data: UpsertPostParams) {
   if ('spaceId' in data && data.spaceId) {
     return { payload: data, action: 'create' } as const
@@ -126,52 +180,76 @@ function checkAction(data: UpsertPostParams) {
   return { payload: data, action: 'invalid' } as const
 }
 export function useUpsertPost(
-  config?: SubsocialMutationConfig<UpsertPostParams>
+  config?: SubsocialMutationConfig<UpsertPostParams, GeneratedMessageContent>
 ) {
   const client = useQueryClient()
   const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
+  const { mutate: revalidateChatPage } = useRevalidateChatPage()
+  const router = useRouter()
 
-  return useSubsocialMutation<UpsertPostParams>(
-    getWallet,
-    async (params, { substrateApi }) => {
-      const { image, title, body } = params
-      console.log('waiting energy...')
-      await waitHasEnergy()
+  return useSubsocialMutation<UpsertPostParams, GeneratedMessageContent>(
+    {
+      getWallet,
+      generateContext: (params) => generateMessageContent(params, client),
+      transactionGenerator: async ({
+        data: params,
+        apis: { substrateApi },
+        context: { content },
+      }) => {
+        const { payload, action } = checkAction(params)
 
-      const { success, cid } = await saveFile({
-        title,
-        body,
-        image,
-      })
-      if (!success || !cid) throw new Error('Failed to save file')
+        console.log('waiting energy...')
+        await waitHasEnergy()
 
-      const { payload, action } = checkAction(params)
-      if (action === 'update') {
-        return {
-          tx: substrateApi.tx.posts.updatePost(payload.postId, {
-            content: IpfsWrapper(cid),
-          }),
-          summary: 'Updating post',
+        const res = await saveFile(content)
+        const cid = res.cid
+        if (!cid) throw new Error('Failed to save file')
+
+        if (action === 'update') {
+          await datahubMutation.updatePostData({
+            ...getWallet(),
+            cid,
+            content,
+            postId: payload.postId,
+          })
+          revalidateChatPage({ pathname: getChatPageLink(router) })
+
+          return {
+            tx: substrateApi.tx.posts.updatePost(payload.postId, {
+              content: IpfsWrapper(cid),
+            }),
+            summary: 'Updating post',
+          }
+        } else if (action === 'create') {
+          await datahubMutation.createPostData({
+            ...getWallet(),
+            content,
+            cid: cid,
+            spaceId: payload.spaceId,
+          })
+          return {
+            tx: substrateApi.tx.posts.createPost(
+              payload.spaceId,
+              { RegularPost: null },
+              IpfsWrapper(cid)
+            ),
+            summary: 'Creating post',
+          }
         }
-      } else if (action === 'create') {
-        return {
-          tx: substrateApi.tx.posts.createPost(
-            payload.spaceId,
-            { RegularPost: null },
-            IpfsWrapper(cid)
-          ),
-          summary: 'Creating post',
-        }
-      }
 
-      throw new Error('Invalid params')
+        throw new Error('Invalid params')
+      },
     },
     config,
     {
+      // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
+      supressSendingTxError: !!getDatahubConfig(),
       txCallbacks: {
         onSend: ({ data }) => {
+          if (getDatahubConfig()) return
+
           const { payload, action } = checkAction(data)
           if (action === 'update') {
             getPostQuery.setQueryData(client, payload.postId, (post) => {
@@ -188,13 +266,29 @@ export function useUpsertPost(
             })
           }
         },
-        onError: async ({ data }) => {
-          const { payload, action } = checkAction(data)
-          if (action === 'update') {
-            getPostQuery.invalidate(client, payload.postId)
+        onError: ({ data, address, context }, error, isAfterTxGenerated) => {
+          const { action, payload } = checkAction(data)
+          if (!isAfterTxGenerated) return
+
+          if (action === 'create' && context.content.optimisticId) {
+            datahubMutation.notifyCreatePostFailedOrRetryStatus({
+              address,
+              optimisticId: context.content.optimisticId,
+              timestamp: Date.now(),
+              signer: getWallet().signer,
+              reason: error,
+            })
+          } else if (action === 'update') {
+            datahubMutation.notifyUpdatePostFailedOrRetryStatus({
+              postId: payload.postId,
+              address,
+              timestamp: Date.now(),
+              signer: getWallet().signer,
+              reason: error,
+            })
           }
         },
-        onSuccess: async ({ data, address }, _, txResult) => {
+        onSuccess: async ({ data, address }, txResult) => {
           const { payload, action } = checkAction(data)
           if (action === 'create') {
             getPostIdsBySpaceIdQuery.invalidate(client, payload.spaceId)
@@ -227,17 +321,23 @@ export function useHideUnhidePost(
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<HideUnhidePostParams>(
-    getWallet,
-    async ({ action, postId }, { substrateApi }) => {
-      console.log('waiting energy...')
-      await waitHasEnergy()
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({
+        data: { action, postId },
+        apis: { substrateApi },
+      }) => {
+        console.log('waiting energy...')
+        await waitHasEnergy()
 
-      return {
-        tx: substrateApi.tx.posts.updatePost(postId, {
-          hidden: action === 'hide',
-        }),
-        summary: 'Hide/Unhide chat',
-      }
+        return {
+          tx: substrateApi.tx.posts.updatePost(postId, {
+            hidden: action === 'hide',
+          }),
+          summary: 'Hide/Unhide chat',
+        }
+      },
     },
     config,
     {
@@ -284,21 +384,27 @@ export function usePinMessage(
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<PinMessageParams>(
-    getWallet,
-    async (params, { substrateApi }) => {
-      console.log('waiting energy...')
-      await waitHasEnergy()
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({
+        data: params,
+        apis: { substrateApi },
+      }) => {
+        console.log('waiting energy...')
+        await waitHasEnergy()
 
-      const newContent = await getUpdatedPinPostContent(client, params)
-      const { success, cid } = await saveFile(newContent)
-      if (!success || !cid) throw new Error('Failed to save file')
+        const newContent = await getUpdatedPinPostContent(client, params)
+        const { success, cid } = await saveFile(newContent)
+        if (!success || !cid) throw new Error('Failed to save file')
 
-      return {
-        tx: substrateApi.tx.posts.updatePost(params.chatId, {
-          content: IpfsWrapper(cid),
-        }),
-        summary: 'Pinning message',
-      }
+        return {
+          tx: substrateApi.tx.posts.updatePost(params.chatId, {
+            content: IpfsWrapper(cid),
+          }),
+          summary: 'Pinning message',
+        }
+      },
     },
     config,
     {

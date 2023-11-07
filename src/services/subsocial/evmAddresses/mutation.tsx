@@ -33,32 +33,38 @@ export function useLinkEvmAddress({
   const client = useQueryClient()
   const [onCallbackLoading, setOnCallbackLoading] = useState(false)
 
-  const waitHasBalance = useWaitHasEnergy()
   const getWallet = useWalletGetter()
+  const waitHasBalance = useWaitHasEnergy()
 
   const mutation = useSubsocialMutation<LinkEvmAddressMutationProps>(
-    getWallet,
-    async (params, { substrateApi }) => {
-      await waitHasBalance()
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({
+        data: params,
+        apis: { substrateApi },
+      }) => {
+        await waitHasBalance()
 
-      const { evmAddress, evmSignature } = params
+        const { evmAddress, evmSignature } = params
 
-      const linkEvmAddressTx = substrateApi.tx.evmAccounts.linkEvmAddress(
-        evmAddress,
-        evmSignature
-      )
+        const linkEvmAddressTx = substrateApi.tx.evmAccounts.linkEvmAddress(
+          evmAddress,
+          evmSignature
+        )
 
-      const tx = linkedEvmAddress
-        ? substrateApi.tx.utility.batch([
-            substrateApi.tx.evmAccounts.unlinkEvmAddress(linkedEvmAddress),
-            linkEvmAddressTx,
-          ])
-        : linkEvmAddressTx
+        const tx = linkedEvmAddress
+          ? substrateApi.tx.utility.batch([
+              substrateApi.tx.evmAccounts.unlinkEvmAddress(linkedEvmAddress),
+              linkEvmAddressTx,
+            ])
+          : linkEvmAddressTx
 
-      return {
-        tx,
-        summary: 'Linking evm address',
-      }
+        return {
+          tx,
+          summary: 'Linking evm address',
+        }
+      },
     },
     config,
     {
@@ -99,16 +105,22 @@ export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
   const waitHasBalance = useWaitHasEnergy()
 
   const mutation = useSubsocialMutation<UnlinkEvmAddress>(
-    getWallet,
-    async (params, { substrateApi }) => {
-      await waitHasBalance()
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({
+        data: params,
+        apis: { substrateApi },
+      }) => {
+        await waitHasBalance()
 
-      const { evmAddress } = params
+        const { evmAddress } = params
 
-      return {
-        tx: substrateApi.tx.evmAccounts.unlinkEvmAddress(evmAddress),
-        summary: 'Unlinking evm address',
-      }
+        return {
+          tx: substrateApi.tx.evmAccounts.unlinkEvmAddress(evmAddress),
+          summary: 'Unlinking evm address',
+        }
+      },
     },
     config,
     {

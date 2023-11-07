@@ -12,7 +12,7 @@ export function getDiscussionCreatorMnemonic() {
 }
 
 export function getCaptchaSecret() {
-  return checkEnv(process.env.CAPTCHA_SECRET, 'CAPTCHA_SECRET', true)
+  return checkEnv(process.env.CAPTCHA_SECRET, 'CAPTCHA_SECRET')
 }
 
 export function getCrustIpfsAuth() {
@@ -74,4 +74,17 @@ export function getModerationConfig() {
   const url = checkEnv(process.env.MODERATION_URL, 'MODERATION_URL')
   const token = checkEnv(process.env.MODERATION_TOKEN, 'MODERATION_TOKEN')
   return { url, token }
+}
+
+export function getDatahubMutationConfig() {
+  const mutationUrl = checkEnv(
+    process.env.DATAHUB_MUTATION_URL,
+    'DATAHUB_MUTATION_URL'
+  )
+  const mutationToken = checkEnv(
+    process.env.DATAHUB_MUTATION_TOKEN,
+    'DATAHUB_MUTATION_TOKEN'
+  )
+
+  return { url: mutationUrl, token: mutationToken }
 }

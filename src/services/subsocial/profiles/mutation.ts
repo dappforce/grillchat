@@ -36,38 +36,42 @@ export function useUpsertProfile(
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<UpsertProfileParams>(
-    getWallet,
-    async (params, { substrateApi }) => {
-      const { content } = params
-      console.log('waiting energy...')
-      await waitHasEnergy()
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({
+        data: params,
+        apis: { substrateApi },
+      }) => {
+        const { content } = params
+        console.log('waiting energy...')
+        await waitHasEnergy()
 
-      const { payload, action } = checkAction(params)
-      if (action === 'update' && payload.spaceId === OPTIMISTIC_PROFILE_ID)
-        throw new Error(
-          'Please wait until we finalized your previous name change'
-        )
+        const { payload, action } = checkAction(params)
+        if (action === 'update' && payload.spaceId === OPTIMISTIC_PROFILE_ID)
+          throw new Error(
+            'Please wait until we finalized your previous name change'
+          )
 
-      const { success, cid } = await saveFile({
-        ...content,
-      } as SpaceContent)
-      if (!success || !cid) throw new Error('Failed to save file')
+        const { success, cid } = await saveFile(content)
+        if (!success || !cid) throw new Error('Failed to save file')
 
-      if (action === 'update') {
-        return {
-          tx: substrateApi.tx.spaces.updateSpace(payload.spaceId, {
-            content: IpfsWrapper(cid),
-          }),
-          summary: 'Updating profile',
+        if (action === 'update') {
+          return {
+            tx: substrateApi.tx.spaces.updateSpace(payload.spaceId, {
+              content: IpfsWrapper(cid),
+            }),
+            summary: 'Updating profile',
+          }
+        } else if (action === 'create') {
+          return {
+            tx: substrateApi.tx.profiles.createSpaceAsProfile(IpfsWrapper(cid)),
+            summary: 'Creating profile',
+          }
         }
-      } else if (action === 'create') {
-        return {
-          tx: substrateApi.tx.profiles.createSpaceAsProfile(IpfsWrapper(cid)),
-          summary: 'Creating profile',
-        }
-      }
 
-      throw new Error('Invalid params')
+        throw new Error('Invalid params')
+      },
     },
     config,
     {

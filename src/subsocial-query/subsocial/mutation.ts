@@ -7,7 +7,7 @@ import { makeCombinedCallback } from '../base'
 import { getConnectionConfig, getGlobalTxCallbacks } from './config'
 import { getSubstrateHttpApi } from './connection'
 import {
-  OptimisticData,
+  CallbackData,
   SubsocialMutationConfig,
   Transaction,
   WalletAccount,
@@ -21,12 +21,24 @@ type Apis = {
   useHttp: boolean
 }
 
+type TransactionGenerator<Data, Context> = (params: {
+  data: Data
+  context: Context
+  apis: Apis
+  wallet: WalletAccount
+}) => Promise<{ tx: Transaction; summary: string }>
 export function useSubsocialMutation<Data, Context = undefined>(
-  getWallet: () => Promise<WalletAccount> | WalletAccount,
-  transactionGenerator: (
-    data: Data,
-    apis: Apis
-  ) => Promise<{ tx: Transaction; summary: string }>,
+  {
+    getWallet,
+    generateContext,
+    transactionGenerator,
+  }: {
+    getWallet: () => Promise<WalletAccount> | WalletAccount
+    generateContext: Context extends undefined
+      ? undefined
+      : (data: Data, wallet: WalletAccount) => Promise<Context> | Context
+    transactionGenerator: TransactionGenerator<Data, Context>
+  },
   config?: SubsocialMutationConfig<Data, Context>,
   defaultConfig?: SubsocialMutationConfig<Data, Context>
 ): UseMutationResult<string, Error, Data, unknown> {
@@ -35,10 +47,13 @@ export function useSubsocialMutation<Data, Context = undefined>(
     if (!wallet.address || !wallet.signer)
       throw new Error('You need to connect your wallet first!')
 
+    const context = (await generateContext?.(data, wallet)) as Context
+
     const txCallbacks = generateTxCallbacks(
       {
         address: wallet.proxyToAddress || wallet.address,
         data,
+        context,
       },
       config?.txCallbacks,
       defaultConfig?.txCallbacks
@@ -46,8 +61,9 @@ export function useSubsocialMutation<Data, Context = undefined>(
     txCallbacks?.onStart()
 
     const { getSubsocialApi } = await import('./connection')
+
     const subsocialApi = await getSubsocialApi()
-    const useHttp = config?.useHttp ?? defaultConfig?.useHttp
+    const useHttp = config?.useHttp || defaultConfig?.useHttp
     let substrateApi: ApiPromise
     if (useHttp) {
       substrateApi = await getSubstrateHttpApi()
@@ -67,18 +83,20 @@ export function useSubsocialMutation<Data, Context = undefined>(
 
     const ipfsApi = subsocialApi.ipfs
 
-    try {
-      return await createTxAndSend(
-        transactionGenerator,
-        data,
-        { subsocialApi, substrateApi, ipfsApi, useHttp: !!useHttp },
-        { wallet, networkRpc: getConnectionConfig().substrateUrl },
-        txCallbacks
-      )
-    } catch (e) {
-      txCallbacks?.onError()
-      throw e
-    }
+    const supressSendingTxError =
+      config?.supressSendingTxError || defaultConfig?.supressSendingTxError
+    return createTxAndSend(
+      transactionGenerator,
+      data,
+      context,
+      { subsocialApi, substrateApi, ipfsApi, useHttp: !!useHttp },
+      {
+        wallet,
+        networkRpc: getConnectionConfig().substrateUrl,
+        supressSendingTxError,
+      },
+      txCallbacks
+    )
   }
 
   return useMutation(workerFunc, {
@@ -89,31 +107,53 @@ export function useSubsocialMutation<Data, Context = undefined>(
   })
 }
 
-async function createTxAndSend<Data>(
-  transactionGenerator: (
-    data: Data,
-    apis: Apis
-  ) => Promise<{ tx: Transaction; summary: string }>,
+async function createTxAndSend<Data, Context>(
+  transactionGenerator: TransactionGenerator<Data, Context>,
   data: Data,
+  context: Context,
   apis: Apis,
   txConfig: {
     wallet: WalletAccount
     networkRpc?: string
+    supressSendingTxError?: boolean
   },
-  optimisticCallbacks?: ReturnType<typeof generateTxCallbacks>
+  txCallbacks?: ReturnType<typeof generateTxCallbacks>
 ) {
-  const { tx, summary } = await transactionGenerator(data, apis)
-  return sendTransaction(
-    {
-      tx,
-      wallet: txConfig.wallet,
+  let tx: Transaction
+  let summary: string
+  try {
+    const txData = await transactionGenerator({
       data,
-      networkRpc: txConfig.networkRpc,
-      summary,
-    },
-    apis,
-    optimisticCallbacks
-  )
+      apis,
+      wallet: txConfig.wallet,
+      context,
+    })
+    tx = txData.tx
+    summary = txData.summary
+  } catch (err) {
+    txCallbacks?.onError((err as any)?.message || 'Error generating tx', false)
+    throw err
+  }
+  try {
+    return await sendTransaction(
+      {
+        tx,
+        wallet: txConfig.wallet,
+        data,
+        networkRpc: txConfig.networkRpc,
+        summary,
+      },
+      apis,
+      txCallbacks
+    )
+  } catch (err) {
+    txCallbacks?.onError((err as any)?.message || 'Error generating tx', true)
+    if (txConfig.supressSendingTxError) {
+      console.warn('Error supressed:', err)
+      return ''
+    }
+    throw err
+  }
 }
 function sendTransaction<Data>(
   txInfo: {
@@ -151,29 +191,29 @@ function sendTransaction<Data>(
       // signer from talisman and signer from keyring are different
       // so they need to be handled differently, the one that have 'signPayload' are for talisman signer
       let account = signer
-      let signerOpt = undefined
+      let usedSigner = undefined
       if ('signPayload' in signer) {
         account = address
-        signerOpt = signer
+        usedSigner = signer
       }
 
-      const txHashAndNonce = tx.toHex() + nonce
+      const txHashAndNonce = usedTx.toHex() + nonce
       if (!apis.useHttp) {
         useTransactions.getState().addPendingTransaction(txHashAndNonce)
       }
 
       const unsub = await usedTx.signAndSend(
         account,
-        { nonce, signer: signerOpt },
+        { nonce, signer: usedSigner },
         async (result) => {
           // the result is only tx hash if its using http connection
           if (typeof result.toHuman() === 'string') {
             return resolve(result.toString())
           }
 
-          resolve(result?.txHash?.toString())
+          resolve(result.txHash.toString())
           if (result.status.isInvalid) {
-            txCallbacks?.onError()
+            txCallbacks?.onError('Transaction is invalid', true)
             globalTxCallbacks.onError({
               summary,
               address,
@@ -195,26 +235,25 @@ function sendTransaction<Data>(
                 blockHash
               )
             }
+            useTransactions.getState().removePendingTransaction(txHashAndNonce)
             if (
               result.isError ||
               result.dispatchError ||
               result.internalError
             ) {
-              useTransactions
-                .getState()
-                .removePendingTransaction(txHashAndNonce)
-              txCallbacks?.onError()
+              const error = result.dispatchError?.toString()
+              txCallbacks?.onError(
+                error || 'Error when executing transaction',
+                true
+              )
               globalTxCallbacks.onError({
-                error: result.dispatchError?.toString(),
+                error,
                 summary,
                 address,
                 data,
                 explorerLink,
               })
             } else {
-              useTransactions
-                .getState()
-                .removePendingTransaction(txHashAndNonce)
               txCallbacks?.onSuccess(result)
               globalTxCallbacks.onSuccess({
                 explorerLink,
@@ -229,6 +268,7 @@ function sendTransaction<Data>(
       )
       nonceResolver()
       txCallbacks?.onSend()
+      globalTxCallbacks.onSend({ summary, address, data })
     } catch (e) {
       danglingNonceResolver?.()
       reject(e)
@@ -275,43 +315,29 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
 }
 
 function generateTxCallbacks<Data, Context>(
-  data: OptimisticData<Data>,
+  data: CallbackData<Data, Context>,
   callbacks: SubsocialMutationConfig<Data, Context>['txCallbacks'],
   defaultCallbacks: SubsocialMutationConfig<Data, Context>['txCallbacks']
 ) {
   if (!callbacks && !defaultCallbacks) return
-  const { getContext } = defaultCallbacks || {}
-  const context = getContext?.(data)
   return {
-    onError: () =>
-      makeCombinedCallback(
-        defaultCallbacks,
-        callbacks,
-        'onError'
-      )(data, context),
-    onBroadcast: () =>
-      makeCombinedCallback(
-        defaultCallbacks,
-        callbacks,
-        'onBroadcast'
-      )(data, context),
-    onSuccess: (txResult: any) =>
-      makeCombinedCallback(defaultCallbacks, callbacks, 'onSuccess')(
+    onError: (error: string, isAfterTxGenerated: boolean) =>
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onError')(
         data,
-        context,
-        txResult
+        error,
+        isAfterTxGenerated
       ),
+    onBroadcast: () =>
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onBroadcast')(data),
+    onSuccess: (txResult: any) =>
+      makeCombinedCallback(
+        defaultCallbacks,
+        callbacks,
+        'onSuccess'
+      )(data, txResult),
     onSend: () =>
-      makeCombinedCallback(
-        defaultCallbacks,
-        callbacks,
-        'onSend'
-      )(data, context),
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onSend')(data),
     onStart: () =>
-      makeCombinedCallback(
-        defaultCallbacks,
-        callbacks,
-        'onStart'
-      )(data, context),
+      makeCombinedCallback(defaultCallbacks, callbacks, 'onStart')(data),
   }
 }

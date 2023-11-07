@@ -1,3 +1,2 @@
 export * from './mutation'
-export * from './optimistic'
-export * from './squid'
+export * from './service-mapper'

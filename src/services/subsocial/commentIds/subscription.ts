@@ -1,15 +1,13 @@
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPosts } from '@/services/api/fetcher'
 import { getPostQuery } from '@/services/api/query'
+import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
-import jsonabc from 'jsonabc'
 import { useEffect, useRef } from 'react'
 import { getAccountDataQuery, getAccountsData } from '../evmAddresses'
-import { extractOptimisticIdData, isOptimisticId } from '../utils'
-import { getOptimisticContent } from './optimistic'
+import { commentIdsOptimisticEncoder } from './optimistic'
 import { getCommentIdsQueryKey } from './query'
-import { OptimisticMessageIdData } from './types'
 
 const subscribedPostIds = new Set<string>()
 const subscription = (
@@ -50,7 +48,9 @@ const subscription = (
         queryClient.setQueryData<string[]>(
           getCommentIdsQueryKey(postId),
           (oldIds) => {
-            const optimisticIds = oldIds?.filter((id) => isOptimisticId(id))
+            const optimisticIds = oldIds?.filter(
+              (id) => !isMessageSent(id, undefined)
+            )
             return [...newIds, ...(optimisticIds ?? [])]
           }
         )
@@ -92,7 +92,9 @@ const subscription = (
       queryClient.setQueryData<string[]>(
         getCommentIdsQueryKey(postId),
         (oldIds) => {
-          const optimisticIds = oldIds?.filter((id) => isOptimisticId(id))
+          const optimisticIds = oldIds?.filter(
+            (id) => !isMessageSent(id, undefined)
+          )
           return [
             ...newIds,
             ...(filterOptimisticIds(newPosts, optimisticIds) ?? []),
@@ -168,21 +170,10 @@ function filterOptimisticIds(
   // this is needed for case where same user sends multiple same messages
   const mutableNewPosts = [...newPosts]
   return optimisticIds.filter((id) => {
-    const idData = extractOptimisticIdData<OptimisticMessageIdData>(id)
-    if (!idData) return
-
     const foundData = mutableNewPosts.find((post) => {
-      function sortAndStringify(data: any) {
-        return JSON.stringify(jsonabc.sortObj(data ?? {}))
-      }
-
       if (!post.content) return false
-
-      const importantContents = getOptimisticContent(post.content)
       return (
-        sortAndStringify(importantContents) ===
-          sortAndStringify(idData.messageData) &&
-        post.struct.ownerId === idData.address
+        post.content.optimisticId === commentIdsOptimisticEncoder.decode(id)
       )
     })
     if (foundData) mutableNewPosts.splice(mutableNewPosts.indexOf(foundData), 1)

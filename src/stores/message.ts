@@ -15,19 +15,25 @@ type State = {
   messageCount: number
 
   messageBody: string
-  replyTo: string | undefined
+  replyTo: string
+  messageToEdit: string
 
   showEmptyPrimaryChatInput: boolean
 
   unreadMessage: UnreadMessage
 }
 
+let savedStateBeforeEditing: State | null = null
+
 type Actions = {
   reset: () => void
   incrementMessageCount: () => void
   setMessageBody: (message: string) => void
+
   setReplyTo: (replyTo: string) => void
-  clearReplyTo: () => void
+  setMessageToEdit: (messageToEdit: string) => void
+  clearAction: () => void
+
   setShowEmptyPrimaryChatInput: (show: boolean) => void
   setUnreadMessage: (
     unreadData: UnreadMessage | ((prev: UnreadMessage) => UnreadMessage)
@@ -38,6 +44,7 @@ const INITIAL_STATE: State = {
   messageCount: 0,
   messageBody: '',
   replyTo: '',
+  messageToEdit: '',
   showEmptyPrimaryChatInput: false,
   unreadMessage: {
     count: 0,
@@ -51,10 +58,19 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
     set({ messageBody: messageBody })
   },
   setReplyTo: (replyTo: string) => {
-    set({ replyTo })
+    set({ replyTo, messageToEdit: '' })
   },
-  clearReplyTo: () => {
-    set({ replyTo: undefined })
+  setMessageToEdit: async (messageToEdit: string) => {
+    savedStateBeforeEditing = get()
+    set({ messageToEdit, replyTo: '' })
+  },
+  clearAction: () => {
+    if (savedStateBeforeEditing) {
+      set(savedStateBeforeEditing)
+      savedStateBeforeEditing = null
+      return
+    }
+    set({ replyTo: '', messageToEdit: '' })
   },
   incrementMessageCount: () => {
     const { messageCount } = get()
@@ -76,6 +92,7 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
     set({ unreadMessage })
   },
   reset: () => {
+    savedStateBeforeEditing = null
     set(INITIAL_STATE)
   },
   init: () => {

@@ -1,17 +1,21 @@
-import useLastReadMessageIdFromStorage from '@/hooks/useLastReadMessageId'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
-import { isOptimisticId } from '@/services/subsocial/utils'
+import useLastReadMessageIdFromStorage from '@/components/chats/hooks/useLastReadMessageId'
+import { isClientGeneratedOptimisticId } from '@/services/subsocial/commentIds/optimistic'
 import { useEffect, useRef, useState } from 'react'
+import usePaginatedMessageIds from '../../hooks/usePaginatedMessageIds'
 
 export default function useFocusedLastMessageId(chatId: string) {
   const { getLastReadMessageId } = useLastReadMessageIdFromStorage(chatId)
   const [lastReadId, setLastReadId] = useState(() => getLastReadMessageId())
   const shouldUpdateLastReadId = useRef(false)
 
-  const { data: messageIds } = useCommentIdsByPostId(chatId)
-  const lastMessageId = messageIds?.[messageIds.length - 1]
+  const { currentPageMessageIds } = usePaginatedMessageIds({
+    chatId,
+    hubId: '',
+  })
+  const lastMessageId = currentPageMessageIds?.[0]
 
-  const hasSentMessage = isOptimisticId(lastMessageId ?? '')
+  // if the last message is client optimistic id, then it means the user just send a message, so it needs to remove any unreads
+  const hasSentMessage = isClientGeneratedOptimisticId(lastMessageId)
   const hasReadAll = lastReadId === lastMessageId
   if (hasSentMessage || hasReadAll) shouldUpdateLastReadId.current = true
 

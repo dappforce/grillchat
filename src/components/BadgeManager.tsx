@@ -1,4 +1,4 @@
-import { lastReadTimeLocalForage } from '@/hooks/useLastReadMessageId'
+import { lastReadTimeLocalForage } from '@/components/chats/hooks/useLastReadMessageId'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { followedIdsStorage, useMyMainAddress } from '@/stores/my-account'
 import { getSquidUrl } from '@/utils/env/client'

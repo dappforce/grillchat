@@ -2,14 +2,17 @@ import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
+import { ERRORS } from '@/constants/error'
 import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
+import { getPostQuery } from '@/services/api/query'
 import {
   SendMessageParams,
   useSendMessage,
 } from '@/services/subsocial/commentIds'
+import { useSendOffchainMessage } from '@/services/subsocial/datahub/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
@@ -24,6 +27,7 @@ import dynamic from 'next/dynamic'
 import {
   ComponentProps,
   SyntheticEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -44,8 +48,9 @@ const CaptchaInvisible = dynamic(
 )
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
+  hubId: string
   chatId: string
-  onSubmit?: () => void
+  onSubmit?: (isEditing?: boolean) => void
   disabled?: boolean
   mustHaveMessageBody?: boolean
   inputProps?: TextAreaProps
@@ -67,6 +72,7 @@ function processMessage(message: string) {
 
 export default function ChatForm({
   className,
+  hubId,
   chatId,
   onSubmit,
   disabled,
@@ -81,10 +87,21 @@ export default function ChatForm({
   ...props
 }: ChatFormProps) {
   const replyTo = useMessageData((state) => state.replyTo)
-  const clearReplyTo = useMessageData((state) => state.clearReplyTo)
+  const messageToEdit = useMessageData((state) => state.messageToEdit)
+  const clearAction = useMessageData((state) => state.clearAction)
   const setMessageBody = useMessageData((state) => state.setMessageBody)
 
-  useLoadUnsentMessage(chatId)
+  const { data: editedMessage } = getPostQuery.useQuery(messageToEdit, {
+    enabled: !!messageToEdit,
+  })
+  const editedMessageBody = editedMessage?.content?.body
+  useEffect(() => {
+    if (!editedMessageBody) return
+    setMessageBody(editedMessageBody)
+  }, [editedMessageBody, setMessageBody])
+
+  const [isDisabledInput, setIsDisabledInput] = useState(false)
+  const reloadUnsentMessage = useLoadUnsentMessage(chatId)
 
   const [isOpenCtaModal, setIsOpenCtaModal] = useState(false)
 
@@ -106,7 +123,8 @@ export default function ChatForm({
       showErrorSendingMessageToast(
         error,
         'Failed to register or send message',
-        variables
+        variables,
+        { reloadUnsentMessage, setIsDisabledInput }
       )
     },
   })
@@ -122,7 +140,19 @@ export default function ChatForm({
   const { mutate: sendMessage } = useSendMessage({
     onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
-      showErrorSendingMessageToast(error, 'Failed to send message', variables)
+      showErrorSendingMessageToast(error, 'Failed to send message', variables, {
+        reloadUnsentMessage,
+        setIsDisabledInput,
+      })
+    },
+  })
+  const { mutate } = useSendOffchainMessage({
+    onSuccess: () => unsentMessageStorage.remove(chatId),
+    onError: (error, variables) => {
+      showErrorSendingMessageToast(error, 'Failed to send message', variables, {
+        reloadUnsentMessage,
+        setIsDisabledInput,
+      })
     },
   })
 
@@ -137,26 +167,30 @@ export default function ChatForm({
   }, [runAutofocus, autofocus, enableInputAutofocus])
 
   useEffect(() => {
-    if (replyTo) textAreaRef.current?.focus()
-  }, [replyTo])
+    if (replyTo || messageToEdit) textAreaRef.current?.focus()
+  }, [replyTo, messageToEdit])
 
   useEffect(() => {
     setIsRequestingEnergy(false)
   }, [hasEnoughEnergy])
 
   const shouldSendMessage =
-    isRequestingEnergy || (isLoggedIn && hasEnoughEnergy)
+    isLoggedIn && (isRequestingEnergy || hasEnoughEnergy)
 
   const isDisabled =
     (mustHaveMessageBody && !processMessage(messageBody)) ||
-    sendButtonProps?.disabled
+    sendButtonProps?.disabled ||
+    isDisabledInput
 
   const resetForm = () => {
     setMessageBody('')
-    clearReplyTo?.()
+    clearAction?.()
   }
 
-  const handleSubmit = async (captchaToken: string | null) => {
+  const handleSubmit = async (
+    captchaToken: string | null,
+    isOffchainPosting?: boolean
+  ) => {
     if (
       shouldSendMessage &&
       'virtualKeyboard' in navigator &&
@@ -173,7 +207,9 @@ export default function ChatForm({
     const sendMessageParams = {
       message: processedMessage,
       chatId,
+      hubId,
       replyTo,
+      messageIdToEdit: messageToEdit,
       ...additionalTxParams,
     }
 
@@ -183,17 +219,29 @@ export default function ChatForm({
     if (txPrevented) return
 
     const messageParams = newMessageParams || sendMessageParams
+    if (editedMessage?.content?.body === messageParams.message) {
+      resetForm()
+      return
+    }
 
     if (!hasSentMessageStorage.get()) {
       setTimeout(() => {
         setIsOpenCtaModal(true)
-      }, 1000)
+      }, 2000)
     }
 
     unsentMessageStorage.set(JSON.stringify(messageParams), chatId)
     hasSentMessageStorage.set('true')
 
-    if (shouldSendMessage) {
+    resetForm()
+    if (isOffchainPosting) {
+      resetForm()
+      mutate({
+        ...messageParams,
+        uuid: crypto.randomUUID(),
+        timestamp: Date.now(),
+      })
+    } else if (shouldSendMessage) {
       resetForm()
       sendMessage(messageParams)
     } else {
@@ -217,7 +265,7 @@ export default function ChatForm({
     const firstExtension = sendMessageParams.extensions?.[0]
     sendEvent('send_message', { extensionType: firstExtension?.id })
 
-    onSubmit?.()
+    onSubmit?.(!!messageParams.messageIdToEdit)
     incrementMessageCount()
   }
 
@@ -225,14 +273,17 @@ export default function ChatForm({
     <>
       <CaptchaInvisible>
         {(runCaptcha) => {
-          const submitForm = async (e?: SyntheticEvent) => {
+          const submitForm = async (
+            e?: SyntheticEvent,
+            isOffchainPosting?: boolean
+          ) => {
             e?.preventDefault()
             if (shouldSendMessage) {
-              handleSubmit(null)
+              handleSubmit(null, isOffchainPosting)
               return
             }
             const token = await runCaptcha()
-            handleSubmit(token)
+            handleSubmit(token, isOffchainPosting)
           }
 
           const renderSendButton = (classNames: string) => (
@@ -281,6 +332,7 @@ export default function ChatForm({
                 ref={textAreaRef}
                 rightElement={!sendButtonText ? renderSendButton : undefined}
               />
+
               {sendButtonText && (
                 <Button
                   type='submit'
@@ -317,7 +369,7 @@ function useLoadUnsentMessage(chatId: string) {
     (state) => state.openExtensionModal
   )
 
-  useEffect(() => {
+  const loadUnsentMessage = useCallback(() => {
     const unsentMessageData = unsentMessageStorage.get(chatId)
     if (!unsentMessageData) return
     const unsentMessage = JSON.parse(unsentMessageData) as SendMessageParams
@@ -347,32 +399,63 @@ function useLoadUnsentMessage(chatId: string) {
         break
     }
   }, [chatId, setMessageBody, setReplyTo, openExtensionModal])
+
+  useEffect(() => {
+    loadUnsentMessage()
+  }, [loadUnsentMessage])
+
+  return loadUnsentMessage
 }
 
 function showErrorSendingMessageToast(
   error: unknown,
   errorTitle: string,
-  message: SendMessageParams
+  message: SendMessageParams,
+  additionalConfig?: {
+    reloadUnsentMessage?: () => void
+    setIsDisabledInput?: (disabled: boolean) => void
+  }
 ) {
   unsentMessageStorage.set(JSON.stringify(message), message.chatId)
 
-  showErrorToast(error, errorTitle, {
-    toastConfig: { duration: Infinity },
-    getDescription: message
-      ? () => 'Click refresh to recover your message and try again'
-      : undefined,
-    actionButton: (t) => (
-      <Button
-        size='circle'
-        variant='transparent'
-        className='text-lg'
-        onClick={() => {
-          toast.dismiss(t.id)
-          window.location.reload()
-        }}
-      >
-        <IoRefresh />
-      </Button>
-    ),
+  const errorData = (error as any)?.response?.data?.errors
+  const isRateLimited = errorData?.name === ERRORS.RATE_LIMIT_EXCEEDED
+
+  let title = errorTitle
+  if (isRateLimited) {
+    const { reloadUnsentMessage, setIsDisabledInput } = additionalConfig || {}
+    title = 'Please try again in a moment'
+    reloadUnsentMessage?.()
+
+    const remainingSeconds = errorData?.remainingSeconds
+    if (setIsDisabledInput && remainingSeconds) {
+      setIsDisabledInput?.(true)
+      setTimeout(() => {
+        setIsDisabledInput(false)
+      }, remainingSeconds * 1000)
+    }
+  }
+
+  showErrorToast(error, title, {
+    toastConfig: { duration: isRateLimited ? 5000 : Infinity },
+    getDescription:
+      message && !isRateLimited
+        ? () => 'Click refresh to recover your message and try again'
+        : undefined,
+    actionButton: isRateLimited
+      ? undefined
+      : (t) => (
+          <Button
+            size='circle'
+            variant='transparent'
+            className='text-lg'
+            onClick={() => {
+              toast.dismiss(t.id)
+              window.location.reload()
+            }}
+          >
+            <IoRefresh />
+          </Button>
+        ),
   })
 }

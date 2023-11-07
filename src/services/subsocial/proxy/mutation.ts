@@ -13,49 +13,52 @@ export function useAddProxy(config?: SubsocialMutationConfig<null>) {
   const waitHasEnergy = useWaitHasEnergy(true)
 
   return useSubsocialMutation(
-    getWallet,
-    async (_, { substrateApi }) => {
-      console.log('waiting energy...')
-      await waitHasEnergy()
-      const currentGrillAddress = useMyAccount.getState().address
-      if (!currentGrillAddress)
-        throw new Error('No address connected to use proxy')
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({ apis: { substrateApi } }) => {
+        console.log('waiting energy...')
+        await waitHasEnergy()
+        const currentGrillAddress = useMyAccount.getState().address
+        if (!currentGrillAddress)
+          throw new Error('No address connected to use proxy')
 
-      const addProxyTx = substrateApi.tx.freeProxy.addFreeProxy(
-        currentGrillAddress,
-        'Any',
-        0
-      )
+        const addProxyTx = substrateApi.tx.freeProxy.addFreeProxy(
+          currentGrillAddress,
+          'Any',
+          0
+        )
 
-      const currentConnectedAddress =
-        useMyAccount.getState().connectedWallet?.address
-      if (!currentConnectedAddress)
-        throw new Error('No address connected as the parent proxy')
+        const currentConnectedAddress =
+          useMyAccount.getState().connectedWallet?.address
+        if (!currentConnectedAddress)
+          throw new Error('No address connected as the parent proxy')
 
-      let userProxies = []
-      try {
-        userProxies = await getProxiesQuery.fetchQuery(client, {
-          address: currentConnectedAddress,
-        })
-      } catch (e) {
-        // if error getting proxy, assume that it has the current address as proxy so it will batch remove it first
-        userProxies = [currentGrillAddress]
-      }
-
-      if (userProxies.length > 0) {
-        return {
-          tx: substrateApi.tx.utility.batchAll([
-            substrateApi.tx.proxy.removeProxies(),
-            addProxyTx,
-          ]),
-          summary: 'Removing all proxies and adding proxy',
+        let userProxies = []
+        try {
+          userProxies = await getProxiesQuery.fetchQuery(client, {
+            address: currentConnectedAddress,
+          })
+        } catch (e) {
+          // if error getting proxy, assume that it has the current address as proxy so it will batch remove it first
+          userProxies = [currentGrillAddress]
         }
-      }
 
-      return {
-        tx: addProxyTx,
-        summary: 'Adding proxy',
-      }
+        if (userProxies.length > 0) {
+          return {
+            tx: substrateApi.tx.utility.batchAll([
+              substrateApi.tx.proxy.removeProxies(),
+              addProxyTx,
+            ]),
+            summary: 'Removing all proxies and adding proxy',
+          }
+        }
+
+        return {
+          tx: addProxyTx,
+          summary: 'Adding proxy',
+        }
+      },
     },
     config,
     {
@@ -79,16 +82,19 @@ export function useRemoveProxy(config?: SubsocialMutationConfig<null>) {
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation(
-    getWallet,
-    async (_, { substrateApi }) => {
-      console.log('waiting energy...')
-      await waitHasEnergy()
-      const removeProxyTx = substrateApi.tx.proxy.removeProxies()
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({ apis: { substrateApi } }) => {
+        console.log('waiting energy...')
+        await waitHasEnergy()
+        const removeProxyTx = substrateApi.tx.proxy.removeProxies()
 
-      return {
-        tx: removeProxyTx,
-        summary: 'Remove all proxy',
-      }
+        return {
+          tx: removeProxyTx,
+          summary: 'Remove all proxy',
+        }
+      },
     },
     config,
     {

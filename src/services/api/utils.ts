@@ -2,13 +2,13 @@ import { enableWalletOnce, useMyAccount } from '@/stores/my-account'
 import { Signer, signMessage } from '@/utils/account'
 import type { Signer as InjectedSigner } from '@polkadot/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
-import { sortObj } from 'jsonabc'
+import sortKeys from 'sort-keys-recursive'
 
 function parseMessageTpl(messageTpl: string) {
   const decodedMessage = decodeURIComponent(messageTpl)
 
   const parsedMessage = JSON.parse(decodedMessage) as any
-  const sortedPayload = sortObj(parsedMessage.payload)
+  const sortedPayload = sortKeys(parsedMessage.payload)
   return {
     payloadToSign: JSON.stringify(sortedPayload),
     messageData: parsedMessage,
@@ -60,7 +60,7 @@ export async function processMessageTpl(encodedMessage: string) {
   parsedMessage.messageData['signature'] = signedPayload
 
   const signedMessage = encodeURIComponent(
-    JSON.stringify(sortObj(parsedMessage.messageData))
+    JSON.stringify(sortKeys(parsedMessage.messageData))
   )
   return signedMessage
 }

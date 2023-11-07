@@ -1,18 +1,24 @@
-import { createQueryKeys, QueryConfig } from '@/subsocial-query'
+import {
+  createQuery,
+  createQueryInvalidation,
+  createQueryKeys,
+  QueryConfig,
+} from '@/subsocial-query'
 import {
   useSubsocialQueries,
   useSubsocialQuery,
 } from '@/subsocial-query/subsocial/query'
+import { QueryClient } from '@tanstack/react-query'
 import {
   useSubscribeCommentIdsByPostId,
   useSubscribeCommentIdsByPostIds,
 } from './subscription'
 
-const commentIdsByPostIdKey = 'comments'
+const commentIdsByPostIdKey = 'comments-from-chain'
 export const getCommentIdsQueryKey = createQueryKeys<string>(
   commentIdsByPostIdKey
 )
-export function useCommentIdsByPostId(
+function useCommentIdsByPostId(
   postId: string,
   config?: QueryConfig & { subscribe?: boolean }
 ) {
@@ -34,7 +40,7 @@ export function useCommentIdsByPostId(
   )
 }
 
-export function useCommentIdsByPostIds(
+function useCommentIdsByPostIds(
   postIds: string[],
   config?: QueryConfig & { subscribe?: boolean }
 ) {
@@ -55,3 +61,41 @@ export function useCommentIdsByPostIds(
     config
   )
 }
+
+async function fetchQuery(client: QueryClient | null, data: string) {
+  const cachedData = client?.getQueryData(getCommentIdsQueryKey(data))
+  if (cachedData) {
+    return cachedData as string[]
+  }
+
+  const { getSubsocialApi } = await import(
+    '@/subsocial-query/subsocial/connection'
+  )
+  const api = await getSubsocialApi()
+  const res = await api.blockchain.getReplyIdsByPostId(data)
+
+  if (client) {
+    client.setQueryData(getCommentIdsQueryKey(data), res ?? null)
+  }
+  return res
+}
+export const getCommentIdsByPostIdFromChainQuery = {
+  getQueryKey: getCommentIdsQueryKey,
+  useQuery: useCommentIdsByPostId,
+  useQueries: useCommentIdsByPostIds,
+  invalidate: createQueryInvalidation(commentIdsByPostIdKey),
+  setQueryData: (client, data, value) => {
+    client.setQueryData(getCommentIdsQueryKey(data), value ?? null)
+  },
+  setQueryInitialData: (client, data, value) => {
+    client.setQueryData(getCommentIdsQueryKey(data), value ?? null)
+    client.invalidateQueries(getCommentIdsQueryKey(data))
+  },
+  getQueryData: (client, data) => {
+    return client.getQueryData(getCommentIdsQueryKey(data)) as string[]
+  },
+  fetchQuery,
+  fetchQueries: async (client, data) => {
+    return Promise.all(data.map((singleData) => fetchQuery(client, singleData)))
+  },
+} satisfies ReturnType<typeof createQuery<string, string[]>>

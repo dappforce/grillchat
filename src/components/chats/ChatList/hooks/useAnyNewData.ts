@@ -9,14 +9,15 @@ export default function useAnyNewData(messageIds: string[]) {
 
   useEffect(() => {
     const previous = previousData ?? messageIds
-    const newDataLength = messageIds.length - previous.length
-    const lastMessageId = previous[previous.length - 1]
+    const prevLastId = previous[0]
+
+    const newDataLength = messageIds.findIndex((id) => id === prevLastId)
 
     if (newDataLength > 0)
       setUnreadMessage((prev) => {
         return {
           count: prev.count + newDataLength,
-          lastId: lastMessageId,
+          lastId: prevLastId,
         }
       })
   }, [previousData, messageIds, setUnreadMessage])

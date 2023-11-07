@@ -1,23 +1,50 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import { useSaveFile } from '@/services/api/mutation'
+import { useRevalidateChatPage, useSaveFile } from '@/services/api/mutation'
+import { getPostQuery } from '@/services/api/query'
+import datahubMutation from '@/services/subsocial/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
+import { getDatahubConfig } from '@/utils/env/client'
 import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
+import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
-import { useQueryClient } from '@tanstack/react-query'
+import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useWalletGetter } from '../hooks'
-import { generateOptimisticId } from '../utils'
+import { createMutationWrapper } from '../utils'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
-import { OptimisticMessageIdData, SendMessageParams } from './types'
+import { SendMessageParams } from './types'
 
-function generateMessageContent(params: SendMessageParams) {
-  return {
+async function generateMessageContent(
+  params: SendMessageParams,
+  client: QueryClient
+): Promise<{
+  content: PostContent
+}> {
+  if (params.messageIdToEdit) {
+    const originalPost = await getPostQuery.fetchQuery(
+      client,
+      params.messageIdToEdit
+    )
+    const content = originalPost?.content
+    const savedContent = {
+      body: params.message,
+      inReplyTo: ReplyWrapper(content?.inReplyTo?.id),
+      extensions: content?.extensions,
+    } as PostContent
+
+    return { content: savedContent }
+  }
+
+  const content = {
     body: params.message,
     inReplyTo: ReplyWrapper(params.replyTo),
     extensions: params.extensions,
+    optimisticId: crypto.randomUUID(),
   } as PostContent
+
+  return { content }
 }
 export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const client = useQueryClient()
@@ -25,53 +52,225 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
   const { mutateAsync: saveFile } = useSaveFile()
   const waitHasEnergy = useWaitHasEnergy()
+  const { mutate: revalidateChatPage } = useRevalidateChatPage()
 
-  return useSubsocialMutation<SendMessageParams, string>(
-    getWallet,
-    async (params, { substrateApi }) => {
-      const maxLength = getMaxMessageLength(params.chatId)
-      if (params.message && params.message.length > maxLength)
-        throw new Error(
-          'Your message is too long, please split it up to multiple messages'
-        )
+  return useSubsocialMutation<
+    SendMessageParams,
+    Awaited<ReturnType<typeof generateMessageContent>>
+  >(
+    {
+      getWallet,
+      generateContext: (data) => generateMessageContent(data, client),
+      transactionGenerator: async ({
+        apis: { substrateApi },
+        data,
+        context: { content },
+      }) => {
+        const maxLength = getMaxMessageLength(data.chatId)
+        if (data.message && data.message.length > maxLength)
+          throw new Error(
+            'Your message is too long, please split it up to multiple messages'
+          )
 
-      console.log('waiting energy...')
-      await waitHasEnergy()
-      const { cid, success } = await saveFile(generateMessageContent(params))
+        const res = await saveFile(content)
+        const cid = res.cid
+        if (!cid) throw new Error('Failed to save file')
+        console.log('waiting energy...')
+        await waitHasEnergy()
 
-      if (!success) throw new Error('Failed to save file to IPFS')
+        if (data.messageIdToEdit) {
+          await datahubMutation.updatePostData({
+            ...getWallet(),
+            cid,
+            content,
+            postId: data.messageIdToEdit,
+          })
+          revalidateChatPage({ chatId: data.chatId, hubId: data.hubId })
 
-      return {
-        tx: substrateApi.tx.posts.createPost(
-          null,
-          { Comment: { parentId: null, rootPostId: params.chatId } },
-          IpfsWrapper(cid)
-        ),
-        summary: 'Sending message',
-      }
+          return {
+            tx: substrateApi.tx.posts.updatePost(data.messageIdToEdit, {
+              content: IpfsWrapper(cid),
+            }),
+            summary: 'Updating message',
+          }
+        } else {
+          await datahubMutation.createPostData({
+            ...getWallet(),
+            content: content,
+            cid: cid,
+            rootPostId: data.chatId,
+            spaceId: data.hubId,
+          })
+          revalidateChatPage({ chatId: data.chatId, hubId: data.hubId })
+
+          return {
+            tx: substrateApi.tx.posts.createPost(
+              null,
+              { Comment: { parentId: null, rootPostId: data.chatId } },
+              IpfsWrapper(cid)
+            ),
+            summary: 'Sending message',
+          }
+        }
+      },
     },
     config,
     {
+      // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
+      supressSendingTxError: !!getDatahubConfig(),
       retry: 2,
       txCallbacks: {
-        // Removal of optimistic message generated is done by the subscription of messageIds
-        // this is done to prevent a bit of flickering because the optimistic message is done first, before the message data finished fetching
-        getContext: ({ data: params, address }) => {
-          return generateOptimisticId<OptimisticMessageIdData>({
-            address,
-            messageData: generateMessageContent(params),
-          })
-        },
-        onStart: ({ address, data: params }, tempId) => {
+        onStart: ({ address, context, data }) => {
           preventWindowUnload()
-          addOptimisticData({ address, params, tempId, client })
+          const content = context.content
+          if (data.messageIdToEdit) {
+            getPostQuery.setQueryData(client, data.messageIdToEdit, (old) => {
+              if (!old) return old
+              return {
+                ...old,
+                content: old.content
+                  ? {
+                      ...old.content,
+                      body: data.message ?? '',
+                      extensions: data.extensions,
+                    }
+                  : null,
+              }
+            })
+          } else if (!data.messageIdToEdit) {
+            addOptimisticData({
+              address,
+              params: data,
+              ipfsContent: content,
+              client,
+            })
+          }
         },
         onSend: allowWindowUnload,
-        onError: ({ address, data: params }, tempId) => {
+        onError: ({ data, context, address }, error, isAfterTxGenerated) => {
           allowWindowUnload()
-          deleteOptimisticData({ tempId, address, client, params })
+          const content = context.content
+          const optimisticId = content.optimisticId
+          const messageIdToEdit = data.messageIdToEdit
+          const isCreating = !messageIdToEdit && optimisticId
+          const isUpdating = messageIdToEdit
+
+          if (!isAfterTxGenerated || !getDatahubConfig()) {
+            if (isCreating) {
+              deleteOptimisticData({
+                chatId: data.chatId,
+                idToDelete: optimisticId,
+                client,
+              })
+            } else if (isUpdating) {
+              getPostQuery.invalidate(client, data.messageIdToEdit)
+            }
+          } else {
+            if (isCreating) {
+              datahubMutation.notifyCreatePostFailedOrRetryStatus({
+                address,
+                optimisticId,
+                timestamp: Date.now(),
+                signer: getWallet().signer,
+                reason: error,
+              })
+            } else if (isUpdating) {
+              datahubMutation.notifyUpdatePostFailedOrRetryStatus({
+                postId: messageIdToEdit,
+                address,
+                timestamp: Date.now(),
+                signer: getWallet().signer,
+                reason: error,
+              })
+            }
+          }
         },
       },
     }
   )
 }
+
+type ResendFailedMessageParams = {
+  chatId: string
+  content: PostContent
+}
+export function useResendFailedMessage(
+  config?: MutationConfig<ResendFailedMessageParams>
+) {
+  const getWallet = useWalletGetter()
+
+  const { mutateAsync: saveFile } = useSaveFile()
+  const waitHasEnergy = useWaitHasEnergy()
+
+  return useSubsocialMutation<ResendFailedMessageParams>(
+    {
+      getWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({ apis: { substrateApi }, data }) => {
+        const content = {
+          body: data.content.body,
+          inReplyTo: data.content.inReplyTo,
+          extensions: data.content.extensions,
+          optimisticId: data.content.optimisticId,
+        } as PostContent & { optimisticId: string }
+
+        const res = await saveFile(content)
+        const cid = res.cid
+        if (!cid) throw new Error('Failed to save file')
+
+        await waitHasEnergy()
+
+        return {
+          tx: substrateApi.tx.posts.createPost(
+            null,
+            { Comment: { parentId: null, rootPostId: data.chatId } },
+            IpfsWrapper(cid)
+          ),
+          summary: 'Retrying sending message',
+        }
+      },
+    },
+    config,
+    {
+      txCallbacks: {
+        onStart: () => preventWindowUnload(),
+        onSend: ({ address, data }) => {
+          allowWindowUnload()
+
+          const signer = getWallet().signer
+          notifyRetryStatus(address, data.content, signer, true)
+        },
+        onError: ({ data, address }, error, isAfterTxGenerated) => {
+          allowWindowUnload()
+          const signer = getWallet().signer
+
+          if (isAfterTxGenerated)
+            notifyRetryStatus(address, data.content, signer, false, error)
+        },
+      },
+    }
+  )
+}
+function notifyRetryStatus(
+  address: string,
+  content: PostContent,
+  signer: KeyringPair | null,
+  success: boolean,
+  reason?: string
+) {
+  if (!signer || !content.optimisticId) return
+
+  datahubMutation.notifyCreatePostFailedOrRetryStatus({
+    address,
+    optimisticId: content.optimisticId,
+    timestamp: Date.now(),
+    signer,
+    reason,
+    isRetrying: { success },
+  })
+}
+
+export const ResendFailedMessageWrapper = createMutationWrapper(
+  useResendFailedMessage,
+  'resend failed message'
+)

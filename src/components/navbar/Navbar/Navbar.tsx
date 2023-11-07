@@ -6,25 +6,18 @@ import { ANN_CHAT_ID } from '@/constants/chat'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
-import { useCommentIdsByPostId } from '@/services/subsocial/commentIds'
+import { getUnreadCountQuery } from '@/services/subsocial/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getDatahubConfig } from '@/utils/env/client'
 import { getHubPageLink } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import {
-  ComponentProps,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { ComponentProps, ReactNode, useEffect, useRef, useState } from 'react'
 import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
@@ -174,41 +167,27 @@ const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
 const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
 function NotificationBell() {
   const sendEvent = useSendEvent()
-  const { data: messageIds } = useCommentIdsByPostId(ANN_CHAT_ID)
-  const { data: blockedEntities } = getBlockedResourcesQuery.useQuery({
-    postId: ANN_CHAT_ID,
-  })
-  const blockedIds = blockedEntities?.blockedResources.postId
+  const [lastTimestamp, setLastTimestamp] = useState(() =>
+    parseInt(bellLastReadStorage.get() ?? '')
+  )
 
-  const filteredMessageIds = useMemo(() => {
-    if (!messageIds || !blockedIds) return null
-    return messageIds.filter((id) => !blockedIds.includes(id))
-  }, [messageIds, blockedIds])
-
-  const [unreadCount, setUnreadCount] = useState(0)
+  // enable unread count only from datahub data because we can't get unread count by timestamp from squid/chain
+  const { data: unreadCount } = getUnreadCountQuery.useQuery(
+    { chatId: ANN_CHAT_ID, lastRead: { timestamp: lastTimestamp } },
+    {
+      enabled: !!getDatahubConfig() && !!lastTimestamp,
+      staleTime: Infinity,
+    }
+  )
 
   const { query } = useRouter()
   useEffect(() => {
-    if (typeof query.slug !== 'string' || !filteredMessageIds) return
+    if (typeof query.slug !== 'string') return
     if (getIdFromSlug(query.slug) === ANN_CHAT_ID) {
-      const lastMessageId = filteredMessageIds[filteredMessageIds.length - 1]
-      bellLastReadStorage.set(lastMessageId)
-      setUnreadCount(0)
+      bellLastReadStorage.set(Date.now().toString())
+      setLastTimestamp(Date.now())
     }
-  }, [query, filteredMessageIds])
-
-  useEffect(() => {
-    const lastRead = bellLastReadStorage.get()
-    if (!filteredMessageIds) return
-
-    const lastReadIndex = filteredMessageIds?.findIndex((id) => id === lastRead)
-
-    let unreadCount
-    if (lastReadIndex === -1) unreadCount = filteredMessageIds?.length
-    else unreadCount = filteredMessageIds?.length - lastReadIndex - 1
-
-    setUnreadCount(unreadCount)
-  }, [filteredMessageIds])
+  }, [query])
 
   return (
     <Button
@@ -220,7 +199,7 @@ function NotificationBell() {
     >
       <div className='relative'>
         <HiOutlineBell className='text-xl' />
-        {unreadCount > 0 && (
+        {!!unreadCount && unreadCount > 0 && (
           <div className='absolute right-0.5 top-0 -translate-y-1/2 translate-x-1/2 rounded-full bg-text-red px-1.5 text-xs text-text-on-primary'>
             {unreadCount}
           </div>

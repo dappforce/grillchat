@@ -1,5 +1,6 @@
 import { SubsocialQueryData } from '@/subsocial-query/subsocial/query'
 import { gql } from 'graphql-request'
+import { getPostsFromDatahub } from '../datahub/posts/fetcher'
 import { POST_FRAGMENT } from '../squid/fragments'
 import { GetPostsQuery, GetPostsQueryVariables } from '../squid/generated'
 import { mapPostFragment } from '../squid/mappers'
@@ -35,4 +36,5 @@ async function getPostsFromSquid(postIds: string[]) {
 export const getPostsFromSubsocial = standaloneDynamicFetcherWrapper({
   blockchain: getPostsFromBlockchain,
   squid: getPostsFromSquid,
+  datahub: getPostsFromDatahub,
 })

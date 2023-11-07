@@ -1,14 +1,13 @@
-import Button from '@/components/Button'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
+import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
-import { isOptimisticId } from '@/services/subsocial/utils'
+import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
-import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
 import { ExtensionChatItemProps } from '../types'
 
 type DerivativesData = {
@@ -46,7 +45,6 @@ export default function CommonChatItem({
   message,
   children,
   scrollToMessage,
-  onCheckMarkClick,
   textColor,
   className,
   isMyMessage: _isMyMessage,
@@ -56,13 +54,13 @@ export default function CommonChatItem({
   const myAddress = useMyMainAddress()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const { struct, content } = message
-  const { ownerId, createdAtTime } = struct
+  const { ownerId, createdAtTime, dataType } = struct
   const { inReplyTo, body } = content || {}
 
   const isMyMessage =
     _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
   const relativeTime = getTimeRelativeToNow(createdAtTime)
-  const isSent = !isOptimisticId(message.id)
+  const isSent = isMessageSent(message.id, dataType)
 
   const childrenElement =
     typeof children === 'function'
@@ -83,20 +81,7 @@ export default function CommonChatItem({
           isMyMessage && 'dark:text-text-muted-on-primary'
         )}
       />
-      <Button
-        variant='transparent'
-        size='noPadding'
-        interactive='brightness-only'
-        onClick={onCheckMarkClick}
-      >
-        {isSent ? (
-          <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
-        ) : (
-          <IoCheckmarkOutline
-            className={cx('text-muted text-sm dark:text-text-muted-on-primary')}
-          />
-        )}
-      </Button>
+      <MessageStatusIndicator message={message} />
     </div>
   )
 

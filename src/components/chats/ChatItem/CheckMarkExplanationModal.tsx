@@ -3,17 +3,24 @@ import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { getExplorerUrl } from '@/utils/explorer'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
+import { MessageStatus } from './MessageStatusIndicator'
 
 type CheckMarkDescData = {
   blockNumber?: number
   cid?: string
 }
 export type CheckMarkExplanationModalProps = ModalFunctionalityProps & {
-  variant: CheckMarkModalVariant
+  variant: MessageStatus
 } & CheckMarkDescData
 
-const variants = {
-  recording: {
+const variants: {
+  [key in MessageStatus]: {
+    title: string
+    icon: JSX.Element
+    desc: (data: CheckMarkDescData) => JSX.Element
+  }
+} = {
+  sending: {
     title: 'Recording message',
     icon: <IoCheckmarkOutline />,
     desc: () => (
@@ -24,7 +31,34 @@ const variants = {
       </span>
     ),
   },
-  recorded: {
+  optimistic: {
+    title: 'Backup in progress',
+    icon: <IoCheckmarkDoneOutline />,
+    desc: () => (
+      <span>
+        Your message has been sent to the chat, and is currently being backed up
+        on the Subsocial blockchain.
+      </span>
+    ),
+  },
+  offChain: {
+    title: 'Message recorded on IPFS',
+    icon: <IoCheckmarkDoneOutline />,
+    desc: ({ blockNumber, cid }) => (
+      <span>
+        Your censorship-resistant message has been stored on{' '}
+        <LinkText
+          href={cid ? getIpfsContentUrl(cid) : 'https://ipfs.tech/'}
+          openInNewTab
+          variant='primary'
+        >
+          IPFS
+        </LinkText>
+        .
+      </span>
+    ),
+  },
+  blockchain: {
     title: 'Message recorded',
     icon: <IoCheckmarkDoneOutline />,
     desc: ({ blockNumber, cid }) => (
@@ -53,21 +87,14 @@ const variants = {
       </span>
     ),
   },
-} satisfies {
-  [key: string]: {
-    title: string
-    icon: JSX.Element
-    desc: (data: CheckMarkDescData) => JSX.Element
-  }
 }
-export type CheckMarkModalVariant = keyof typeof variants
 export default function CheckMarkExplanationModal({
   variant,
   blockNumber,
   cid,
   ...props
 }: CheckMarkExplanationModalProps) {
-  const { title, icon, desc } = variants[variant]
+  const { title, icon, desc } = variants[variant] ?? {}
 
   return (
     <Modal {...props} title={title} withCloseButton>

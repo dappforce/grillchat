@@ -1,0 +1,3 @@
+export const ERRORS = {
+  RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
+}

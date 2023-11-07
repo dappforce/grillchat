@@ -24,6 +24,7 @@ import { DonateProps, TokenListItem } from './types'
 import { chainItems, tokensItems } from './utils'
 
 function DonateForm({
+  hubId,
   chatId,
   setCurrentStep,
   chainState,
@@ -128,6 +129,7 @@ function DonateForm({
 
   return (
     <CommonExtensionModal
+      hubId={hubId}
       isOpen={isOpen}
       closeModal={closeModal}
       chatId={chatId}
