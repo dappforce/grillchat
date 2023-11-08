@@ -618,60 +618,6 @@ export type GetCommentIdsInPostIdQuery = {
       id: string
       persistentId?: string | null
       optimisticId?: string | null
-      dataType: DataType
-      content?: string | null
-      createdAtBlock?: number | null
-      createdAtTime?: any | null
-      title?: string | null
-      body?: string | null
-      summary?: string | null
-      isShowMore: boolean
-      image?: string | null
-      link?: string | null
-      hidden: boolean
-      blockchainSyncFailed: boolean
-      isComment: boolean
-      kind: PostKind
-      updatedAtTime?: any | null
-      canonical?: string | null
-      tagsOriginal?: string | null
-      followersCount?: number | null
-      inReplyToKind?: InReplyToKind | null
-      createdByAccount: { __typename?: 'Account'; id: string }
-      ownedByAccount: { __typename?: 'Account'; id: string }
-      space?: { __typename?: 'Space'; persistentId?: string | null } | null
-      rootPost?: {
-        __typename?: 'Post'
-        persistentId?: string | null
-        space?: { __typename?: 'Space'; persistentId?: string | null } | null
-      } | null
-      inReplyToPost?: {
-        __typename?: 'Post'
-        persistentId?: string | null
-      } | null
-      extensions: Array<{
-        __typename?: 'ContentExtension'
-        image?: string | null
-        amount?: string | null
-        chain?: string | null
-        collectionId?: string | null
-        decimals?: number | null
-        extensionSchemaId: ContentExtensionSchemaId
-        id: string
-        nftId?: string | null
-        token?: string | null
-        txHash?: string | null
-        message?: string | null
-        nonce?: string | null
-        url?: string | null
-        recipient?: { __typename?: 'Account'; id: string } | null
-        fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        toEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        pinnedResources?: Array<{
-          __typename?: 'ExtensionPinnedResource'
-          post?: { __typename?: 'Post'; id: string } | null
-        }> | null
-      }>
     }>
   }
 }
@@ -825,12 +771,10 @@ export const GetCommentIdsInPostId = gql`
         id
         persistentId
         optimisticId
-        ...DatahubPostFragment
       }
       total
     }
   }
-  ${DatahubPostFragment}
 `
 export const GetPostMetadata = gql`
   query GetPostMetadata($where: PostMetadataInput!) {
