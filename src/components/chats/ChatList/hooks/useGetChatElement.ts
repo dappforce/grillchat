@@ -39,7 +39,7 @@ export default function useGetMessageElement({
 
     waitingMessageDataLoadedIds.forEach((messageId) => {
       if (
-        checkIfMessageIdIsIncluded(messageId, renderedMessageIds) ||
+        checkIfMessageIdIsIncluded(client, messageId, renderedMessageIds) ||
         !hasMore
       ) {
         const resolvers = promiseRef.current.resolvers.get(messageId)
@@ -55,11 +55,12 @@ export default function useGetMessageElement({
         resolvers.forEach((resolve) => resolve())
       })
     }
-  }, [renderedMessageIds, hasMore])
+  }, [client, renderedMessageIds, hasMore])
 
   const loadMoreUntilMessageIdIsLoaded = useCallback(
     async (messageId: string) => {
       const isMessageIdIncluded = checkIfMessageIdIsIncluded(
+        client,
         messageId,
         renderedIdsRef.current
       )
@@ -68,7 +69,7 @@ export default function useGetMessageElement({
       await awaitableLoadMore()
       await loadMoreUntilMessageIdIsLoaded(messageId)
     },
-    [awaitableLoadMore, renderedIdsRef]
+    [client, awaitableLoadMore, renderedIdsRef]
   )
 
   const getMessageElementById = useCallback(
@@ -87,7 +88,9 @@ export default function useGetMessageElement({
       await loadMoreUntilMessageIdIsLoaded(messageId)
 
       // if its already rendered, get and return it
-      if (checkIfMessageIdIsIncluded(messageId, renderedIdsRef.current)) {
+      if (
+        checkIfMessageIdIsIncluded(client, messageId, renderedIdsRef.current)
+      ) {
         return document.getElementById(elementId)
       }
 
@@ -105,7 +108,12 @@ export default function useGetMessageElement({
 
       return document.getElementById(elementId)
     },
-    [loadMoreUntilMessageIdIsLoaded, renderedIdsRef, waitAllMessagesLoadedRef]
+    [
+      client,
+      loadMoreUntilMessageIdIsLoaded,
+      renderedIdsRef,
+      waitAllMessagesLoadedRef,
+    ]
   )
 
   const getMessageElementByTime = useCallback(
@@ -191,12 +199,18 @@ function useWaitMessagesLoading(isLoading: boolean) {
   }
 }
 
-function checkIfMessageIdIsIncluded(messageId: string, messageIds: string[]) {
-  const parsedMessageId = Number(messageId)
-  if (isNaN(parsedMessageId)) return true
+function checkIfMessageIdIsIncluded(
+  client: QueryClient,
+  messageId: string,
+  messageIds: string[]
+) {
+  const oldestRenderedId = messageIds[messageIds.length - 1]
+  const oldestMessage = getPostQuery.getQueryData(client, oldestRenderedId)
+  const oldestMessageTime = oldestMessage?.struct.createdAtTime
 
-  const smallestId = Number(messageIds[messageIds.length - 1])
-  return parsedMessageId >= smallestId
+  const messageTime = getPostQuery.getQueryData(client, messageId)?.struct
+    .createdAtTime
+  return oldestMessageTime && messageTime && oldestMessageTime <= messageTime
 }
 
 export function getNearestMessageIdToTimeFromRenderedIds(
