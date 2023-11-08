@@ -31,12 +31,13 @@ export default function useLastReadTimeFromStorage(chatId: string) {
     } else if (oldData) {
       // for backward compatible
       getPostQuery
-        .fetchQuery(client, chatId)
+        .fetchQuery(client, oldData)
         .then((post) => {
           if (post) {
             const createdAtTime = post.struct.createdAtTime
             setLastReadTime(createdAtTime)
           }
+          oldLastReadStorage.remove(chatId)
         })
         .catch()
     }
