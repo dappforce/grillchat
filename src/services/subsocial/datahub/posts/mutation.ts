@@ -88,7 +88,7 @@ function createSocialDataEventInput(
     proxyToAddress,
   }: DatahubParams<{}>,
   eventArgs: any,
-  content?: string
+  content?: PostContent
 ) {
   const owner = proxyToAddress || address
   const input: SocialEventDataApiInput = {
@@ -134,7 +134,7 @@ async function createPostData(
     socialCallName.create_post,
     params,
     eventArgs,
-    JSON.stringify(content)
+    content
   )
 
   await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
@@ -167,7 +167,7 @@ async function updatePostData(
     socialCallName.update_post,
     params,
     eventArgs,
-    content?.content ? JSON.stringify(content.content) : undefined
+    content?.content
   )
 
   await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
