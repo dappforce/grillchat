@@ -2,7 +2,6 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getPostQuery } from '@/services/api/query'
 import { queryClient } from '@/services/provider'
 import { createQuery, poolQuery, QueryConfig } from '@/subsocial-query'
-import { PostData } from '@subsocial/api/types'
 import { QueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import {
@@ -18,19 +17,15 @@ import {
   GetUnreadCountQueryVariables,
   QueryOrder,
 } from '../generated-query'
-import { mapDatahubPostFragment } from '../mappers'
 import { datahubQueryRequest } from '../utils'
-import { DATAHUB_POST_FRAGMENT } from './fetcher'
 
 const GET_COMMENT_IDS_IN_POST_ID = gql`
-  ${DATAHUB_POST_FRAGMENT}
   query GetCommentIdsInPostId($where: FindPostsArgs!) {
     findPosts(where: $where) {
       data {
         id
         persistentId
         optimisticId
-        ...DatahubPostFragment
       }
       total
     }
@@ -41,7 +36,6 @@ export type PaginatedPostsData = {
   page: number
   hasMore: boolean
   totalData: number
-  messages: PostData[]
 }
 async function getPaginatedPostsByRootPostId({
   page,
@@ -68,14 +62,10 @@ async function getPaginatedPostsByRootPostId({
     },
   })
   const optimisticIds = new Set<string>()
-  const messages: PostData[] = []
   const ids = res.findPosts.data.map((post) => {
     optimisticIds.add(post.optimisticId ?? '')
-    const message = mapDatahubPostFragment(post)
-    messages.push(message)
 
     const id = post.persistentId || post.id
-    getPostQuery.setQueryData(client, id, message)
     return id
   })
   const totalData = res.findPosts.total ?? 0
@@ -100,7 +90,6 @@ async function getPaginatedPostsByRootPostId({
     page,
     hasMore,
     totalData,
-    messages,
   }
 }
 const COMMENT_IDS_QUERY_KEY = 'comments'
