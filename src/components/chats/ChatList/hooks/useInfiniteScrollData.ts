@@ -1,6 +1,6 @@
 import usePrevious from '@/hooks/usePrevious'
-import { generateManuallyTriggeredPromise } from '@/utils/promise'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
+import usePauseableLoadMore from './usePausableLoadMore'
 
 export default function useInfiniteScrollData<Data>(
   data: Data[],
@@ -9,14 +9,6 @@ export default function useInfiniteScrollData<Data>(
 ) {
   const [currentPage, setCurrentPage] = useState(1)
   const previousDataLength = usePrevious(data.length)
-
-  const callResolvers = useRef<VoidFunction[]>([])
-  useEffect(() => {
-    if (!isPausedLoadMore) {
-      callResolvers.current.forEach((resolver) => resolver())
-      callResolvers.current = []
-    }
-  }, [isPausedLoadMore])
 
   const currentData = useMemo(() => {
     const newData = data.length - (previousDataLength ?? data.length)
@@ -32,17 +24,11 @@ export default function useInfiniteScrollData<Data>(
 
   const hasMore = currentPage * itemsPerPage < data.length
 
-  const loadMore = useCallback(async () => {
-    if (isPausedLoadMore) {
-      const { getPromise, getResolver } = generateManuallyTriggeredPromise()
-      callResolvers.current.push(getResolver())
-      await getPromise()
-    }
-
+  const loadMore = usePauseableLoadMore(() => {
     if (hasMore) {
       setCurrentPage((prev) => prev + 1)
     }
-  }, [hasMore, isPausedLoadMore])
+  }, isPausedLoadMore)
 
   return { currentData, hasMore, loadMore, currentPage }
 }
