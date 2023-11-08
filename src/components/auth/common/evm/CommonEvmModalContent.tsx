@@ -58,7 +58,7 @@ export const CommonEvmAddressLinked = () => {
         onClick={() => openNewWindow(twitterUrl)}
         className='w-full'
       >
-        Tweet about it!
+        Post about it on X!
       </Button>
     </div>
   )
