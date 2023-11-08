@@ -222,7 +222,7 @@ function ChatListContent({
 
                 const isBottomMessage = index === 0
                 const isMessageRead =
-                  lastFocusedTime > message.struct.createdAtTime
+                  lastFocusedTime >= message.struct.createdAtTime
                 // Only show the unread message notice for first message that is marked as read
                 const currentAlreadyRenderLastReadMessage =
                   alreadyRenderLastReadMessage
