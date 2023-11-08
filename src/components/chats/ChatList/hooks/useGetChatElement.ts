@@ -229,7 +229,6 @@ export function getNearestMessageIdToTimeFromRenderedIds(
     if (!currentMessage) continue
 
     const messageTime = currentMessage.struct.createdAtTime
-    console.log(messageTime >= time, messageTime, time, renderedIds[i])
     if (messageTime >= time) {
       nearestMessageId = renderedIds[i]
       nearestMessageIndex = i
