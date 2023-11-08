@@ -77,6 +77,9 @@ async function getMessageIdsFromDatahub(client: QueryClient, chatId: string) {
     )
   getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(client, chatId)
   const messages = await getPostsServer(res.data)
+  messages.forEach((message) => {
+    getPostQuery.setQueryData(client, message.id, message)
+  })
 
   return { messageIds: res.data, messages }
 }
