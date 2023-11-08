@@ -7,7 +7,7 @@ import useIsAtBottom from './hooks/useIsAtBottom'
 
 export type NewMessageNoticeProps = ButtonProps & {
   scrollContainerRef: RefObject<HTMLDivElement | null>
-  messageIds: string[]
+  currentPageMessageIds: string[]
   asContainer?: boolean
   isLoading?: boolean
 }
@@ -16,13 +16,13 @@ const IS_AT_BOTTOM_OFFSET = 50
 
 export function NewMessageNotice({
   scrollContainerRef,
-  messageIds,
+  currentPageMessageIds,
   asContainer,
   isLoading,
   ...props
 }: NewMessageNoticeProps) {
   const isAtBottom = useIsAtBottom(scrollContainerRef, IS_AT_BOTTOM_OFFSET)
-  const { anyNewData, clearAnyNewData } = useAnyNewData(messageIds)
+  const { anyNewData, clearAnyNewData } = useAnyNewData(currentPageMessageIds)
 
   useEffect(() => {
     if (isAtBottom) clearAnyNewData()

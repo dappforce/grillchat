@@ -16,8 +16,8 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
 import { ChatListProps } from './ChatList'
-import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
 import useIsAtBottom from './hooks/useIsAtBottom'
+import useLastFocusedMessageId from './hooks/useLastFocusedMessageId'
 import { ScrollToMessage } from './hooks/useScrollToMessage'
 import { NewMessageNotice } from './NewMessageNotice'
 
@@ -27,7 +27,7 @@ export type ChatListSupportingContentProps = Pick<
 > & {
   scrollToMessage: ScrollToMessage
   renderedMessageLength: number
-  messageIds: string[]
+  currentPageMessageIds: string[]
   scrollContainerRef: React.RefObject<HTMLDivElement>
   isLoadingIds: boolean
 }
@@ -39,7 +39,7 @@ export default function ChatListSupportingContent({
   newMessageNoticeClassName,
   scrollContainerRef,
   renderedMessageLength,
-  messageIds,
+  currentPageMessageIds,
   isLoadingIds,
 }: ChatListSupportingContentProps) {
   const queryClient = useQueryClient()
@@ -51,7 +51,9 @@ export default function ChatListSupportingContent({
   const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
   const { setLastReadMessageId } = useLastReadMessageIdFromStorage(chatId)
 
-  const lastReadId = useFocusedLastMessageId(chatId)
+  const lastMessageId = currentPageMessageIds?.[0] ?? ''
+  const lastReadId = useLastFocusedMessageId(chatId, lastMessageId)
+
   const [recipient, setRecipient] = useState('')
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
   const prevMessageModalMsgId = usePrevious(messageModalMsgId)
@@ -59,7 +61,7 @@ export default function ChatListSupportingContent({
   const Component = asContainer ? Container<'div'> : 'div'
 
   const hasScrolledToMessageRef = useRef(false)
-  const messageIdsRef = useWrapInRef(messageIds)
+  const messageIdsRef = useWrapInRef(currentPageMessageIds)
   useEffect(() => {
     if (hasScrolledToMessageRef.current) return
     hasScrolledToMessageRef.current = true
@@ -107,7 +109,6 @@ export default function ChatListSupportingContent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingIds, messageIdsRef, hasScrolledToMessageRef])
 
-  const lastMessageId = messageIds?.[0] ?? ''
   useEffect(() => {
     if (!isInitialized.current) return
 
@@ -153,7 +154,7 @@ export default function ChatListSupportingContent({
             <Spinner />
           ) : (
             <NewMessageNotice
-              messageIds={messageIds ?? []}
+              currentPageMessageIds={currentPageMessageIds ?? []}
               scrollContainerRef={scrollContainerRef}
             />
           )}

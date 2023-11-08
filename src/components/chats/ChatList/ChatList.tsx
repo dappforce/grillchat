@@ -28,7 +28,7 @@ import ChatListEventManager from './ChatListEventManager'
 import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
-import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
+import useLastFocusedMessageId from './hooks/useLastFocusedMessageId'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import useScrollToMessage from './hooks/useScrollToMessage'
 import PinnedMessage from './PinnedMessage'
@@ -72,7 +72,6 @@ function ChatListContent({
 }: ChatListProps) {
   const sendEvent = useSendEvent()
   const { enableBackButton } = useConfigContext()
-  const lastReadId = useFocusedLastMessageId(chatId)
 
   const scrollableContainerId = useId()
 
@@ -94,6 +93,10 @@ function ChatListContent({
     chatId,
     isPausedLoadMore,
   })
+  const lastReadId = useLastFocusedMessageId(
+    chatId,
+    currentPageMessageIds[0] ?? ''
+  )
 
   useEffect(() => {
     sendMessageToParentWindow('totalMessage', (totalDataCount ?? 0).toString())
@@ -236,7 +239,7 @@ function ChatListContent({
           hubId={hubId}
           renderedMessageLength={renderedMessageIds.length}
           isLoadingIds={isLoading}
-          messageIds={currentPageMessageIds}
+          currentPageMessageIds={currentPageMessageIds}
           scrollContainerRef={scrollContainerRef}
           scrollToMessage={scrollToMessage}
           asContainer={asContainer}
