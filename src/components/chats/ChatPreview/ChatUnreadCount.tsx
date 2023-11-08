@@ -1,4 +1,4 @@
-import useLastReadMessageIdFromStorage from '@/components/chats/hooks/useLastReadMessageId'
+import useLastReadTimeFromStorage from '@/components/chats/hooks/useLastReadMessageTimeFromStorage'
 import useUnreadCount from '@/components/chats/hooks/useUnreadCount'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
@@ -11,9 +11,9 @@ export default function ChatUnreadCount({
   chatId,
   ...props
 }: ChatUnreadCountProps) {
-  const { getLastReadMessageId } = useLastReadMessageIdFromStorage(chatId)
-  const lastReadId = getLastReadMessageId() ?? ''
-  const unreadCount = useUnreadCount(chatId, lastReadId)
+  const { getLastReadTime } = useLastReadTimeFromStorage(chatId)
+  const lastReadTime = getLastReadTime() ?? ''
+  const unreadCount = useUnreadCount(chatId, lastReadTime)
 
   if (unreadCount <= 0) return null
 

@@ -1,11 +1,10 @@
-import useLastReadMessageIdFromStorage from '@/components/chats/hooks/useLastReadMessageId'
+import useLastReadTimeFromStorage from '@/components/chats/hooks/useLastReadMessageTimeFromStorage'
 import Container from '@/components/Container'
 import MessageModal from '@/components/modals/MessageModal'
 import Spinner from '@/components/Spinner'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
-import { isClientGeneratedOptimisticId } from '@/services/subsocial/commentIds/optimistic'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
@@ -16,8 +15,9 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
 import { ChatListProps } from './ChatList'
+import { getNearestMessageIdToTimeFromRenderedIds } from './hooks/useGetChatElement'
 import useIsAtBottom from './hooks/useIsAtBottom'
-import useLastFocusedMessageId from './hooks/useLastFocusedMessageId'
+import useLastFocusedMessageTime from './hooks/useLastFocusedMessageId'
 import { ScrollToMessage } from './hooks/useScrollToMessage'
 import { NewMessageNotice } from './NewMessageNotice'
 
@@ -26,8 +26,7 @@ export type ChatListSupportingContentProps = Pick<
   'hubId' | 'chatId' | 'asContainer' | 'newMessageNoticeClassName'
 > & {
   scrollToMessage: ScrollToMessage
-  renderedMessageLength: number
-  currentPageMessageIds: string[]
+  renderedMessageIds: string[]
   scrollContainerRef: React.RefObject<HTMLDivElement>
   isLoadingIds: boolean
 }
@@ -38,8 +37,7 @@ export default function ChatListSupportingContent({
   asContainer,
   newMessageNoticeClassName,
   scrollContainerRef,
-  renderedMessageLength,
-  currentPageMessageIds,
+  renderedMessageIds,
   isLoadingIds,
 }: ChatListSupportingContentProps) {
   const queryClient = useQueryClient()
@@ -49,10 +47,13 @@ export default function ChatListSupportingContent({
 
   const unreadMessage = useMessageData((state) => state.unreadMessage)
   const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
-  const { setLastReadMessageId } = useLastReadMessageIdFromStorage(chatId)
+  const { setLastReadTime } = useLastReadTimeFromStorage(chatId)
 
-  const lastMessageId = currentPageMessageIds?.[0] ?? ''
-  const lastReadId = useLastFocusedMessageId(chatId, lastMessageId)
+  const lastMessageId = renderedMessageIds?.[0] ?? ''
+  const lastMessage = getPostQuery.getQueryData(queryClient, lastMessageId)
+  const lastMessageTime = lastMessage?.struct.createdAtTime
+
+  const lastReadTime = useLastFocusedMessageTime(chatId, lastMessageId)
 
   const [recipient, setRecipient] = useState('')
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
@@ -61,7 +62,7 @@ export default function ChatListSupportingContent({
   const Component = asContainer ? Container<'div'> : 'div'
 
   const hasScrolledToMessageRef = useRef(false)
-  const messageIdsRef = useWrapInRef(currentPageMessageIds)
+  const renderedMessageIdsRef = useWrapInRef(renderedMessageIds)
   useEffect(() => {
     if (hasScrolledToMessageRef.current) return
     hasScrolledToMessageRef.current = true
@@ -72,60 +73,60 @@ export default function ChatListSupportingContent({
 
     if (!isMessageIdsFetched) return
 
-    if (!messageId || !validateNumber(messageId)) {
-      if (lastReadId) {
-        const afterScroll = () => {
-          setLoadingToUnread(false)
-          isInitialized.current = true
-
-          const lastReadIdIndex = messageIdsRef.current.findIndex(
-            (id) => id === lastReadId
-          )
-          const newMessageCount = lastReadIdIndex === -1 ? 0 : lastReadIdIndex
-
-          sendMessageToParentWindow('unread', newMessageCount.toString())
-          setUnreadMessage({ count: newMessageCount, lastId: lastReadId })
-        }
-
-        setLoadingToUnread(true)
-
-        const ids = messageIdsRef.current
-        const lastMessageId = ids?.[0]
-        if (lastReadId === lastMessageId) afterScroll()
-        else
-          scrollToMessage(lastReadId ?? '', {
-            shouldHighlight: false,
-            smooth: false,
-          }).then(afterScroll)
-      } else {
-        isInitialized.current = true
-      }
-      return
+    if (messageId && validateNumber(messageId)) {
+      isInitialized.current = true
+      setMessageModalMsgId(messageId)
+      setRecipient(recipient)
     }
 
-    isInitialized.current = true
-    setMessageModalMsgId(messageId)
-    setRecipient(recipient)
+    if (lastReadTime) {
+      const afterScroll = () => {
+        setLoadingToUnread(false)
+        isInitialized.current = true
+
+        const { index: nearestMessageIndex } =
+          getNearestMessageIdToTimeFromRenderedIds(
+            queryClient,
+            renderedMessageIdsRef.current,
+            lastReadTime
+          )
+        const newMessageCount =
+          nearestMessageIndex === -1 ? 0 : nearestMessageIndex
+
+        sendMessageToParentWindow('unread', newMessageCount.toString())
+        setUnreadMessage({
+          count: newMessageCount,
+          lastMessageTime: lastReadTime,
+        })
+      }
+
+      setLoadingToUnread(true)
+
+      if (!lastMessageTime || lastReadTime >= lastMessageTime) afterScroll()
+      else
+        scrollToMessage(lastReadTime, {
+          shouldHighlight: false,
+          smooth: false,
+        }).then(afterScroll)
+    } else {
+      isInitialized.current = true
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoadingIds, messageIdsRef, hasScrolledToMessageRef])
+  }, [isLoadingIds, renderedMessageIdsRef, hasScrolledToMessageRef])
 
   useEffect(() => {
     if (!isInitialized.current) return
 
-    let lastId = ''
-    if (unreadMessage.count === 0) {
-      lastId = lastMessageId
-      if (!lastId) return
+    let newLastReadTime: number | null = null
+    if (unreadMessage.count === 0 && lastMessageTime) {
+      newLastReadTime = lastMessageTime
+      if (!newLastReadTime) return
     } else {
-      lastId = unreadMessage.lastId ?? ''
+      newLastReadTime = unreadMessage.lastMessageTime
     }
 
-    if (isClientGeneratedOptimisticId(lastId)) return
-    setLastReadMessageId(
-      lastId,
-      getPostQuery.getQueryData(queryClient, lastId)?.struct.createdAtTime
-    )
-  }, [setLastReadMessageId, lastMessageId, unreadMessage, queryClient])
+    setLastReadTime(newLastReadTime)
+  }, [setLastReadTime, lastMessageTime, unreadMessage, queryClient])
 
   useEffect(() => {
     if (messageModalMsgId) {
@@ -135,6 +136,8 @@ export default function ChatListSupportingContent({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prevMessageModalMsgId, messageModalMsgId])
+
+  const renderedMessageLength = renderedMessageIds.length
 
   return (
     <>
@@ -154,7 +157,7 @@ export default function ChatListSupportingContent({
             <Spinner />
           ) : (
             <NewMessageNotice
-              currentPageMessageIds={currentPageMessageIds ?? []}
+              renderedMessageIds={renderedMessageIds ?? []}
               scrollContainerRef={scrollContainerRef}
             />
           )}

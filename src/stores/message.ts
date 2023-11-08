@@ -8,7 +8,7 @@ const messageCountStorage = new LocalStorage(
 )
 
 type UnreadMessage = {
-  lastId: string
+  lastMessageTime: number
   count: number
 }
 type State = {
@@ -48,7 +48,7 @@ const INITIAL_STATE: State = {
   showEmptyPrimaryChatInput: false,
   unreadMessage: {
     count: 0,
-    lastId: '',
+    lastMessageTime: Date.now(),
   },
 }
 

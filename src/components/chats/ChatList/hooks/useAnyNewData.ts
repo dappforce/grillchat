@@ -2,16 +2,16 @@ import usePrevious from '@/hooks/usePrevious'
 import { useMessageData } from '@/stores/message'
 import { useCallback, useEffect } from 'react'
 
-export default function useAnyNewData(currentPageMessageIds: string[]) {
+export default function useAnyNewData(renderedMessageIds: string[]) {
   const unreadMessage = useMessageData((state) => state.unreadMessage)
   const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
-  const previousData = usePrevious(currentPageMessageIds)
+  const previousData = usePrevious(renderedMessageIds)
 
   useEffect(() => {
-    const previous = previousData ?? currentPageMessageIds
+    const previous = previousData ?? renderedMessageIds
     const prevLastId = previous[0]
 
-    const newDataLength = currentPageMessageIds.findIndex(
+    const newDataLength = renderedMessageIds.findIndex(
       (id) => id === prevLastId
     )
 
@@ -19,13 +19,13 @@ export default function useAnyNewData(currentPageMessageIds: string[]) {
       setUnreadMessage((prev) => {
         return {
           count: prev.count + newDataLength,
-          lastId: prevLastId,
+          lastMessageTime: prev.lastMessageTime,
         }
       })
-  }, [previousData, currentPageMessageIds, setUnreadMessage])
+  }, [previousData, renderedMessageIds, setUnreadMessage])
 
   const clearAnyNewData = useCallback(
-    () => setUnreadMessage({ count: 0, lastId: '' }),
+    () => setUnreadMessage({ count: 0, lastMessageTime: Date.now() }),
     [setUnreadMessage]
   )
 
