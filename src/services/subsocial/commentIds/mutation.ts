@@ -81,9 +81,13 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         if (data.messageIdToEdit) {
           await datahubMutation.updatePostData({
             ...getWallet(),
-            cid,
-            content,
             postId: data.messageIdToEdit,
+            changes: {
+              content: {
+                cid,
+                content,
+              },
+            },
           })
           revalidateChatPage({ chatId: data.chatId, hubId: data.hubId })
 

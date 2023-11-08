@@ -210,9 +210,13 @@ export function useUpsertPost(
         if (action === 'update') {
           await datahubMutation.updatePostData({
             ...getWallet(),
-            cid,
-            content,
             postId: payload.postId,
+            changes: {
+              content: {
+                cid,
+                content,
+              },
+            },
           })
           revalidateChatPage({ pathname: getChatPageLink(router) })
 
@@ -331,6 +335,14 @@ export function useHideUnhidePost(
         console.log('waiting energy...')
         await waitHasEnergy()
 
+        await datahubMutation.updatePostData({
+          ...getWallet(),
+          postId,
+          changes: {
+            hidden: action === 'hide',
+          },
+        })
+
         return {
           tx: substrateApi.tx.posts.updatePost(postId, {
             hidden: action === 'hide',
@@ -397,6 +409,17 @@ export function usePinMessage(
         const newContent = await getUpdatedPinPostContent(client, params)
         const { success, cid } = await saveFile(newContent)
         if (!success || !cid) throw new Error('Failed to save file')
+
+        await datahubMutation.updatePostData({
+          ...getWallet(),
+          postId: params.chatId,
+          changes: {
+            content: {
+              cid,
+              content: newContent as PostContent,
+            },
+          },
+        })
 
         return {
           tx: substrateApi.tx.posts.updatePost(params.chatId, {

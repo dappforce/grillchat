@@ -112,7 +112,10 @@ async function processMessage(
   const newestId = entity.persistentId || entity.id
 
   const data = getPostQuery.getQueryData(queryClient, entity.id)
-  if (data) {
+  const notHaveNewestData =
+    !entity.persistentId ||
+    getPostQuery.getQueryData(queryClient, entity.persistentId)
+  if (data && notHaveNewestData) {
     data.id = newestId
     data.struct.dataType = eventData.entity.dataType
     // set initial data for immediate render but refetch it in background
