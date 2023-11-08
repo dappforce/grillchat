@@ -80,7 +80,7 @@ export default function DefaultChatItem({
             {body}
           </Linkify>
         </p>
-        {link && (
+        {link && linkMetadata?.title && (
           <LinkPreview
             renderNullIfLinkEmbedable
             className={cx('my-1')}
