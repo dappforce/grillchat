@@ -103,11 +103,12 @@ export default function ChatListSupportingContent({
       setLoadingToUnread(true)
 
       if (!lastMessageTime || lastReadTime >= lastMessageTime) afterScroll()
-      else
+      else {
         scrollToMessage(lastReadTime, {
           shouldHighlight: false,
           smooth: false,
         }).then(afterScroll)
+      }
     } else {
       isInitialized.current = true
     }

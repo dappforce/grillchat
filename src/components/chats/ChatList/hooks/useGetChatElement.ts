@@ -117,17 +117,16 @@ export default function useGetMessageElement({
   )
 
   const getMessageElementByTime = useCallback(
-    async (time: number) => {
+    async (time: number): Promise<HTMLElement | null> => {
       const renderedIds = renderedIdsRef.current
       const oldestRenderedId = renderedIds[renderedIds.length - 1]
       const oldestMessage = getPostQuery.getQueryData(client, oldestRenderedId)
       const oldestMessageTime = oldestMessage?.struct.createdAtTime
-      if (!oldestMessageTime) return
+      if (!oldestMessageTime) return null
 
       if (time < oldestMessageTime) {
         await awaitableLoadMore()
-        getMessageElementByTime(time)
-        return
+        return await getMessageElementByTime(time)
       }
 
       const { id: nearestMessageId } = getNearestMessageIdToTimeFromRenderedIds(
@@ -135,13 +134,15 @@ export default function useGetMessageElement({
         renderedIds,
         time
       )
-      if (!nearestMessageId) return
+      if (!nearestMessageId) return null
 
       const elementId = getMessageElementId(nearestMessageId)
+      await waitAllMessagesLoadedRef.current()
+
       const element = document.getElementById(elementId)
       return element
     },
-    [client, renderedIdsRef, awaitableLoadMore]
+    [client, renderedIdsRef, awaitableLoadMore, waitAllMessagesLoadedRef]
   )
 
   const getMessageElement = useCallback(
@@ -228,6 +229,7 @@ export function getNearestMessageIdToTimeFromRenderedIds(
     if (!currentMessage) continue
 
     const messageTime = currentMessage.struct.createdAtTime
+    console.log(messageTime >= time, messageTime, time, renderedIds[i])
     if (messageTime >= time) {
       nearestMessageId = renderedIds[i]
       nearestMessageIndex = i
