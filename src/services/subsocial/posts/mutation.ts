@@ -414,8 +414,10 @@ export function usePinMessage(
           ...getWallet(),
           postId: params.chatId,
           changes: {
-            cid,
-            content: newContent as PostContent,
+            content: {
+              cid,
+              content: newContent as PostContent,
+            },
           },
         })
 
