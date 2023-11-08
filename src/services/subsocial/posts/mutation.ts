@@ -142,7 +142,7 @@ async function generateMessageContent(
 ) {
   const { image, title, body } = params
 
-  if ('postId' in params) {
+  if ('postId' in params && params.postId) {
     const post = await getPostQuery.fetchQuery(client, params.postId)
     if (!post) throw new Error('Post not found')
 
