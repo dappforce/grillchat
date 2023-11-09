@@ -29,7 +29,7 @@ const handler = handlerWrapper({
         originalHubId
       )
 
-      if (originalHubId !== data.hubId) {
+      if (data.hubId && originalHubId !== data.hubId) {
         const currentLink = getChatPageLink(
           { query: {} },
           createSlug(data.chatId, chat.content),
