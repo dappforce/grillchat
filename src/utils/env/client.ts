@@ -111,3 +111,11 @@ export function getDatahubConfig() {
 
   return { queryUrl, subscriptionUrl }
 }
+
+export function getOffchainPostingHubs() {
+  const offchainOffchainHubs = checkEnv(
+    process.env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS,
+    'NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS'
+  )
+  return offchainOffchainHubs.split(',')
+}
