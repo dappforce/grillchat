@@ -82,6 +82,7 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_MUTATION_URL=https://queue-data-hub.subsocial.network/graphql
             GH_DATAHUB_MUTATION_TOKEN=${{ secrets.DATAHUB_MUTATION_TOKEN }}
+            GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=1386
           target: runner
           tags: |
             ${{ env.image }}
@@ -119,6 +120,7 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_MUTATION_URL=https://queue-data-hub.subsocial.network/graphql
             GH_DATAHUB_MUTATION_TOKEN=${{ secrets.DATAHUB_MUTATION_TOKEN }}
+            GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=1386
           target: storybook
           tags: |
             ${{ env.image }}

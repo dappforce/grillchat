@@ -22,6 +22,7 @@ import {
   useMyAccount,
 } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getOffchainPostingHubs } from '@/utils/env/client'
 import { LocalStorage } from '@/utils/storage'
 import dynamic from 'next/dynamic'
 import {
@@ -146,7 +147,7 @@ export default function ChatForm({
       })
     },
   })
-  const { mutate } = useSendOffchainMessage({
+  const { mutate: sendOffchainMessage } = useSendOffchainMessage({
     onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
@@ -187,10 +188,7 @@ export default function ChatForm({
     clearAction?.()
   }
 
-  const handleSubmit = async (
-    captchaToken: string | null,
-    isOffchainPosting?: boolean
-  ) => {
+  const handleSubmit = async (captchaToken: string | null) => {
     if (
       shouldSendMessage &&
       'virtualKeyboard' in navigator &&
@@ -234,9 +232,10 @@ export default function ChatForm({
     hasSentMessageStorage.set('true')
 
     resetForm()
+    const isOffchainPosting = getOffchainPostingHubs().includes(hubId)
     if (isOffchainPosting) {
       resetForm()
-      mutate({
+      sendOffchainMessage({
         ...messageParams,
         uuid: crypto.randomUUID(),
         timestamp: Date.now(),
@@ -273,17 +272,14 @@ export default function ChatForm({
     <>
       <CaptchaInvisible>
         {(runCaptcha) => {
-          const submitForm = async (
-            e?: SyntheticEvent,
-            isOffchainPosting?: boolean
-          ) => {
+          const submitForm = async (e?: SyntheticEvent) => {
             e?.preventDefault()
             if (shouldSendMessage) {
-              handleSubmit(null, isOffchainPosting)
+              handleSubmit(null)
               return
             }
             const token = await runCaptcha()
-            handleSubmit(token, isOffchainPosting)
+            handleSubmit(token)
           }
 
           const renderSendButton = (classNames: string) => (

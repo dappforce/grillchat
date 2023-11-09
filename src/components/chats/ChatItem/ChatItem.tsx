@@ -8,6 +8,7 @@ import { ComponentProps } from 'react'
 import ChatItemMenus from './ChatItemMenus'
 import ChatItemWithExtension from './ChatItemWithExtension'
 import Embed, { useCanRenderEmbed } from './Embed'
+import { getMessageStatusById } from './MessageStatusIndicator'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
@@ -51,6 +52,8 @@ export default function ChatItem({
   const isEmojiOnly = shouldRenderEmojiChatItem(body ?? '')
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
 
+  const messageStatus = getMessageStatusById(message)
+
   return (
     <>
       <div
@@ -82,7 +85,7 @@ export default function ChatItem({
             const { toggleDisplay, referenceProps } = config || {}
             return (
               <div
-                className={cx('flex flex-col overflow-hidden')}
+                className={cx('relative flex flex-col')}
                 onContextMenu={(e) => {
                   e.preventDefault()
                   toggleDisplay?.(e)
@@ -91,6 +94,16 @@ export default function ChatItem({
                 {...referenceProps}
                 id={messageBubbleId}
               >
+                {messageStatus === 'offChain' && !isMyMessage && (
+                  <div
+                    className={cx(
+                      'absolute right-0 top-0 z-10 -translate-y-1/3 translate-x-1/2 rounded-full bg-background-primary px-2 py-0.5 text-[8px] text-text-on-primary',
+                      isMyMessage && 'left-0 right-auto -translate-x-1/2'
+                    )}
+                  >
+                    Web2
+                  </div>
+                )}
                 {extensions && extensions.length > 0 ? (
                   <ChatItemWithExtension
                     scrollToMessage={scrollToMessage}

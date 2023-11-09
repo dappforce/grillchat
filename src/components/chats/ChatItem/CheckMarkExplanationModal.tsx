@@ -46,7 +46,7 @@ const variants: {
     icon: <IoCheckmarkDoneOutline />,
     desc: ({ blockNumber, cid }) => (
       <span>
-        Your censorship-resistant message has been stored on{' '}
+        Your message has been stored on{' '}
         <LinkText
           href={cid ? getIpfsContentUrl(cid) : 'https://ipfs.tech/'}
           openInNewTab
