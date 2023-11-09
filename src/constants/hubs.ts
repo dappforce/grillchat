@@ -14,6 +14,7 @@ const ALIAS_TO_HUB_ID_MAP: Record<string, string> = {
   cc: '1030',
   ai: '1031',
   creators: '1218',
+  offchain: '1386',
 }
 
 const HUB_ID_TO_ALIAS_MAP = Object.entries(ALIAS_TO_HUB_ID_MAP).reduce(
