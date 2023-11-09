@@ -21,6 +21,7 @@ type EventProperties = {
 type UserProperties = {
   cameFrom?: string
   cohortDate?: Date
+  polkadotLinked?: boolean
   pwaInstalled?: boolean
   evmLinked?: boolean
   tgNotifsConnected?: boolean

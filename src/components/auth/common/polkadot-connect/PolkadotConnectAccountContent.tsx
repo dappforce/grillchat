@@ -1,6 +1,7 @@
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { Skeleton } from '@/components/SkeletonFallback'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { Signer, truncateAddress } from '@/utils/account'
 import { toSubsocialAddress } from '@subsocial/utils'
@@ -16,6 +17,7 @@ const Identicon = dynamic(() => import('@polkadot/react-identicon'), {
 export default function PolkadotConnectAccountContent({
   setCurrentState,
 }: PolkadotConnectContentProps) {
+  const sendEvent = useSendEvent()
   const connectWallet = useMyAccount((state) => state.connectWallet)
   const { accounts, isLoading } = useAccountsFromPreferredWallet(() =>
     setCurrentState('polkadot-connect')
@@ -44,6 +46,7 @@ export default function PolkadotConnectAccountContent({
             if (!account.signer) return
 
             connectWallet(account.address, account.signer as Signer)
+            sendEvent('select_polkadot_address')
             setCurrentState('polkadot-connect-confirmation')
           },
           icon: () =>
