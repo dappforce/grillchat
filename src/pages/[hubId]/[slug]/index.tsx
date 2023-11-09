@@ -170,13 +170,11 @@ export const getStaticProps = getCommonStaticProps<
       getPostQuery.setQueryData(queryClient, chatId, chatData)
 
       accountsAddresses.forEach((accountAddresses) => {
-        if (accountAddresses.evmAddress) {
-          getAccountDataQuery.setQueryData(
-            queryClient,
-            accountAddresses.grillAddress,
-            accountAddresses
-          )
-        }
+        getAccountDataQuery.setQueryData(
+          queryClient,
+          accountAddresses.grillAddress,
+          accountAddresses
+        )
       })
       prices.forEach((price) => {
         const { id, current_price } = price || {}
