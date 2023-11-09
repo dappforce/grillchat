@@ -131,10 +131,13 @@ async function getLinkMetadata(link: string): Promise<LinkMetadata | null> {
 
   try {
     const metadata = await parser(link, { timeout: 5_000 })
-    const allMetadata = {
-      ...metadata.meta,
-      ...metadata.og,
-    }
+    const allMetadata = JSON.parse(
+      JSON.stringify({
+        ...metadata.meta,
+        ...metadata.og,
+      })
+    ) as (typeof metadata)['meta'] & (typeof metadata)['og']
+
     const parsedMetadata: LinkMetadata = allMetadata
     if (allMetadata.site_name) {
       parsedMetadata.siteName = allMetadata.site_name

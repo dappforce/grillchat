@@ -63,7 +63,7 @@ export default function ChatCreateSuccessModal({
               )
             }
           >
-            Tweet about it!
+            Post about it on X!
           </Button>
         </div>
       </div>
