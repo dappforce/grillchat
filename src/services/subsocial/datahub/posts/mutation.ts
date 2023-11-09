@@ -4,7 +4,7 @@ import { useSaveFile } from '@/services/api/mutation'
 import { Signer } from '@/utils/account'
 import { getDatahubConfig } from '@/utils/env/client'
 import { ReplyWrapper } from '@/utils/ipfs'
-import { preventWindowUnload } from '@/utils/window'
+import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { stringToU8a, u8aToHex } from '@polkadot/util'
 import { blake2AsHex, decodeAddress } from '@polkadot/util-crypto'
 import { PostContent } from '@subsocial/api/types'
@@ -353,6 +353,7 @@ export function useSendOffchainMessage(
       config.onMutate?.(data)
     },
     onError: (err, data, context) => {
+      allowWindowUnload()
       const newId = getDeterministicId({
         account: getWallet().proxyToAddress || getWallet().address,
         timestamp: data.timestamp.toString(),
@@ -365,6 +366,9 @@ export function useSendOffchainMessage(
         idToDelete: newId,
       })
       config.onError?.(err, data, context)
+    },
+    onSuccess: () => {
+      allowWindowUnload()
     },
   })
 }

@@ -147,7 +147,7 @@ export default function ChatForm({
       })
     },
   })
-  const { mutate } = useSendOffchainMessage({
+  const { mutate: sendOffchainMessage } = useSendOffchainMessage({
     onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
@@ -235,7 +235,7 @@ export default function ChatForm({
     const isOffchainPosting = getOffchainPostingHubs().includes(hubId)
     if (isOffchainPosting) {
       resetForm()
-      mutate({
+      sendOffchainMessage({
         ...messageParams,
         uuid: crypto.randomUUID(),
         timestamp: Date.now(),
