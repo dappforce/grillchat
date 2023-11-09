@@ -87,6 +87,7 @@ async function getPolkadotAndKusamaIdentities(addresses: string[]) {
     const cached = await redisCallWrapper((redis) =>
       redis?.get(getIdentitiesRedisKey(address, 'polkadot'))
     )
+    console.log('POLKADOT: get cached data', cached, address)
     try {
       if (cached) {
         const parsed = JSON.parse(cached) as {
@@ -131,6 +132,11 @@ async function getPolkadotAndKusamaIdentities(addresses: string[]) {
     if (identity?.kusama?.info?.display) {
       savedIdentity.kusama = identity.kusama.info.display
     }
+    console.log(
+      'POLKADOT: setting cached data',
+      JSON.stringify(savedIdentity),
+      address
+    )
     redisCallWrapper((redis) =>
       redis?.set(
         getIdentitiesRedisKey(address, 'polkadot'),
@@ -142,6 +148,7 @@ async function getPolkadotAndKusamaIdentities(addresses: string[]) {
     names[address] = savedIdentity
   })
 
+  console.log('POLKADOT FINISHED')
   return names
 }
 
@@ -153,6 +160,7 @@ async function getKiltIdentities(addresses: string[]) {
     const cached = await redisCallWrapper((redis) =>
       redis?.get(getIdentitiesRedisKey(address, 'kilt'))
     )
+    console.log('KILT: get cached data', cached, address)
     try {
       if (cached) {
         const parsed = JSON.parse(cached) as { name?: string }
@@ -175,6 +183,7 @@ async function getKiltIdentities(addresses: string[]) {
 
     const name = namePromise.value
     const address = needToFetchAddresses[i]
+    console.log('KILT: setting cached data', JSON.stringify({ name }), address)
     redisCallWrapper((redis) =>
       redis?.set(
         getIdentitiesRedisKey(address, 'kilt'),
@@ -186,6 +195,7 @@ async function getKiltIdentities(addresses: string[]) {
     if (name) w3names[address] = name
   })
 
+  console.log('KILT FINISHED')
   return w3names
 }
 
@@ -218,6 +228,7 @@ async function getSubsocialUsernames(addresses: string[]) {
     const cached = await redisCallWrapper((redis) =>
       redis?.get(getIdentitiesRedisKey(address, 'subsocial'))
     )
+    console.log('SUBSOCIAL: get cached data', cached, address)
     try {
       if (cached) {
         const parsed = JSON.parse(cached) as string[]
@@ -241,8 +252,9 @@ async function getSubsocialUsernames(addresses: string[]) {
     variables: { addresses: needToFetchAddresses },
   })) as { accounts: { id: string; usernames: string[] }[] }
 
-  res.accounts.forEach((accountData, i) => {
+  res.accounts.forEach((accountData) => {
     const { id, usernames } = accountData
+    console.log('SUBSOCIAL: setting cached data', JSON.stringify(usernames), id)
     redisCallWrapper((redis) =>
       redis?.set(
         getIdentitiesRedisKey(id, 'subsocial'),
@@ -254,5 +266,6 @@ async function getSubsocialUsernames(addresses: string[]) {
     if (usernames.length > 0) usernamesMap[id] = usernames
   })
 
+  console.log('SUBSOCIAL FINISHED')
   return usernamesMap
 }
