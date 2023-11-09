@@ -1,6 +1,7 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Button from '@/components/Button'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { toSubsocialAddress } from '@subsocial/utils'
 import Image from 'next/image'
@@ -15,6 +16,7 @@ export default function PolkadotConnectConfirmationContent({
   onError?: () => void
   beforeAddProxy?: () => Promise<boolean>
 }) {
+  const sendEvent = useSendEvent()
   const [isProcessing, setIsProcessing] = useState(false)
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const isLoadingEnergy = useMyAccount(
@@ -37,6 +39,9 @@ export default function PolkadotConnectConfirmationContent({
             txCallbacks: {
               onSuccess: () => {
                 saveProxyAddress()
+                sendEvent('polkadot_address_linked', undefined, {
+                  polkadotLinked: true,
+                })
                 setCurrentState('polkadot-connect-success')
               },
               onError,

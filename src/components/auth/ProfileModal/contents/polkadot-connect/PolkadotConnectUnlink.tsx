@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import { RemoveProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { getProxiesQuery } from '@/services/subsocial/proxy/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { ContentProps } from '../../types'
 
@@ -8,6 +9,7 @@ export default function PolkadotConnectUnlink({
   setCurrentState,
   address,
 }: ContentProps) {
+  const sendEvent = useSendEvent()
   const { isStale } = getProxiesQuery.useQuery({ address })
   const disconnectProxy = useMyAccount((state) => state.disconnectProxy)
 
@@ -25,6 +27,9 @@ export default function PolkadotConnectUnlink({
         config={{
           txCallbacks: {
             onSuccess: () => {
+              sendEvent('polkadot_address_unlinked', undefined, {
+                polkadotLinked: false,
+              })
               setCurrentState('linked-addresses')
               disconnectProxy()
             },
