@@ -453,7 +453,11 @@ export type DatahubPostFragmentFragment = {
     toEvm?: { __typename?: 'EvmAccount'; id: string } | null
     pinnedResources?: Array<{
       __typename?: 'ExtensionPinnedResource'
-      post?: { __typename?: 'Post'; id: string } | null
+      post?: {
+        __typename?: 'Post'
+        id: string
+        persistentId?: string | null
+      } | null
     }> | null
   }>
 }
@@ -524,7 +528,11 @@ export type GetPostsQuery = {
         toEvm?: { __typename?: 'EvmAccount'; id: string } | null
         pinnedResources?: Array<{
           __typename?: 'ExtensionPinnedResource'
-          post?: { __typename?: 'Post'; id: string } | null
+          post?: {
+            __typename?: 'Post'
+            id: string
+            persistentId?: string | null
+          } | null
         }> | null
       }>
     }>
@@ -597,7 +605,11 @@ export type GetOptimisticPostsQuery = {
         toEvm?: { __typename?: 'EvmAccount'; id: string } | null
         pinnedResources?: Array<{
           __typename?: 'ExtensionPinnedResource'
-          post?: { __typename?: 'Post'; id: string } | null
+          post?: {
+            __typename?: 'Post'
+            id: string
+            persistentId?: string | null
+          } | null
         }> | null
       }>
     }>
@@ -739,6 +751,7 @@ export const DatahubPostFragment = gql`
       pinnedResources {
         post {
           id
+          persistentId
         }
       }
     }
