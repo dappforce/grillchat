@@ -79,7 +79,7 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://off-chain-messaging-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_MUTATION_URL=https://off-chain-messaging-queue-data-hub.subsocial.network/graphql
             GH_DATAHUB_MUTATION_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.jpXwkIJ4DpV4IvSI3eWVVXE6x89qr_GIq7IlbBv5YE0
-            GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=1001
+            GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=1001,1386
           target: runner
           tags: |
             ${{ env.image }}
