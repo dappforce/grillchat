@@ -16,7 +16,8 @@ export default function EvmProfileTabContent({
   setSelectedEns,
   setCurrentState,
 }: ContentProps & { setSelectedEns: (ens: string) => void }) {
-  const { data: accountData } = getAccountDataQuery.useQuery(address)
+  const { data: accountData, isLoading: isLoadingAccountData } =
+    getAccountDataQuery.useQuery(address)
   const { data: profile } = getProfileQuery.useQuery(address)
   const evmAddress = accountData?.evmAddress
   const ensNames = accountData?.ensNames
@@ -101,13 +102,15 @@ export default function EvmProfileTabContent({
               items={ensOptions}
               selected={selected ?? null}
               setSelected={setSelected}
-              placeholder='Select your ENS'
+              placeholder={
+                isLoadingAccountData ? 'Loading...' : 'Select your ENS'
+              }
             />
             <Button
               type='submit'
               isLoading={isLoading}
               size='lg'
-              disabled={isCurrentProfile}
+              disabled={isCurrentProfile || isLoadingAccountData}
             >
               {isCurrentProfile ? 'Your current profile' : 'Save changes'}
             </Button>

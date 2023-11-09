@@ -35,12 +35,10 @@ export default function PolkadotProfileTabContent({
 
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const hasConnectedPolkadot = !!parentProxyAddress
-  const { data: identities } = getIdentityQuery.useQuery(
-    parentProxyAddress ?? '',
-    {
+  const { data: identities, isLoading: isLoadingIdentity } =
+    getIdentityQuery.useQuery(parentProxyAddress ?? '', {
       enabled: !!parentProxyAddress,
-    }
-  )
+    })
 
   const identitiesOptions = useMemo(() => {
     const options: ListItem[] = []
@@ -223,11 +221,13 @@ export default function PolkadotProfileTabContent({
               items={identitiesOptions}
               selected={selected ?? null}
               setSelected={setSelected}
-              placeholder='Select identity provider'
+              placeholder={
+                isLoadingIdentity ? 'Loading...' : 'Select identity provider'
+              }
             />
             <Button
               type='submit'
-              isLoading={isLoading}
+              isLoading={isLoading || isLoadingIdentity}
               size='lg'
               disabled={!selected?.id || isCurrentProfile}
             >
