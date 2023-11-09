@@ -94,7 +94,7 @@ export default function ChatItem({
                 {...referenceProps}
                 id={messageBubbleId}
               >
-                {messageStatus === 'offChain' && (
+                {messageStatus === 'offChain' && !isMyMessage && (
                   <div
                     className={cx(
                       'absolute right-0 top-0 z-10 -translate-y-1/2 translate-x-1/2 rounded-full bg-background-primary px-2 py-1 text-xs text-text-on-primary',

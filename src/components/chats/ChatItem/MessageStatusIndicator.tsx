@@ -63,7 +63,7 @@ export default function MessageStatusIndicator({
           )
         } else if (messageStatus === 'offChain') {
           return (
-            <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
+            <IoCheckmarkDoneOutline className='text-sm text-blue-600 dark:text-blue-300' />
           )
         }
       })()}
