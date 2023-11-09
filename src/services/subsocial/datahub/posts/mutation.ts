@@ -330,6 +330,7 @@ export function useSendOffchainMessage(
       })
     },
     onMutate: async (data) => {
+      config.onMutate?.(data)
       preventWindowUnload()
       const content = {
         body: data.message,
@@ -353,6 +354,7 @@ export function useSendOffchainMessage(
       config.onMutate?.(data)
     },
     onError: (err, data, context) => {
+      config.onError?.(err, data, context)
       allowWindowUnload()
       const newId = getDeterministicId({
         account: getWallet().proxyToAddress || getWallet().address,
@@ -367,7 +369,8 @@ export function useSendOffchainMessage(
       })
       config.onError?.(err, data, context)
     },
-    onSuccess: () => {
+    onSuccess: (...params) => {
+      config.onSuccess?.(...params)
       allowWindowUnload()
     },
   })
