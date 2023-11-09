@@ -35,6 +35,7 @@ export default handlerWrapper({
       : [data.addresses]
 
     const identities = await getIdentities(addresses)
+    console.log('done finished')
     return res
       .status(200)
       .send({ success: true, message: 'OK', data: identities })
@@ -57,6 +58,7 @@ async function getIdentities(addresses: string[]): Promise<Identities[]> {
   const subsocialIdentities =
     subsocialPromise.status === 'fulfilled' ? subsocialPromise.value : {}
 
+  console.log('finished')
   return addresses.map((address) => {
     const polkadot = identities[address]?.polkadot
     const kusama = identities[address]?.kusama
@@ -179,11 +181,13 @@ async function getKiltIdentities(addresses: string[]) {
   )
 
   identities.forEach((namePromise, i) => {
-    if (namePromise.status === 'rejected') return
-
-    const name = namePromise.value
+    let name: string | undefined = undefined
     const address = needToFetchAddresses[i]
-    console.log('KILT: setting cached data', JSON.stringify({ name }), address)
+
+    if (namePromise.status === 'fulfilled') {
+      name = namePromise.value
+    }
+
     redisCallWrapper((redis) =>
       redis?.set(
         getIdentitiesRedisKey(address, 'kilt'),
@@ -240,6 +244,7 @@ async function getSubsocialUsernames(addresses: string[]) {
   })
   await Promise.allSettled(cachePromises)
 
+  type SubsocialAccount = { id: string; usernames: string[] }
   const res = (await squidRequest({
     document: gql`
       query GetAccountUsernames($addresses: [String!]!) {
@@ -250,10 +255,17 @@ async function getSubsocialUsernames(addresses: string[]) {
       }
     `,
     variables: { addresses: needToFetchAddresses },
-  })) as { accounts: { id: string; usernames: string[] }[] }
+  })) as { accounts: SubsocialAccount[] }
 
-  res.accounts.forEach((accountData) => {
-    const { id, usernames } = accountData
+  const accountsMap: Record<string, SubsocialAccount> = {}
+  res.accounts.forEach((account) => {
+    accountsMap[account.id] = account
+  })
+
+  needToFetchAddresses.forEach((address) => {
+    const account = accountsMap[address]
+    const { id, usernames = [] } = account || {}
+
     console.log('SUBSOCIAL: setting cached data', JSON.stringify(usernames), id)
     redisCallWrapper((redis) =>
       redis?.set(
