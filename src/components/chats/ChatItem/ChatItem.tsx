@@ -97,7 +97,7 @@ export default function ChatItem({
                 {messageStatus === 'offChain' && !isMyMessage && (
                   <div
                     className={cx(
-                      'absolute right-0 top-0 z-10 -translate-y-1/2 translate-x-1/2 rounded-full bg-background-primary px-2 py-1 text-xs text-text-on-primary',
+                      'absolute right-0 top-0 z-10 -translate-y-1/3 translate-x-1/2 rounded-full bg-background-primary px-2 py-0.5 text-[8px] text-text-on-primary',
                       isMyMessage && 'left-0 right-auto -translate-x-1/2'
                     )}
                   >
