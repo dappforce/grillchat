@@ -91,7 +91,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
       break
     case 1:
       forceProfileSource = {
-        profileSource: selectedPolkadotIdentity?.source,
+        profileSource: selectedPolkadotIdentity?.source ?? 'polkadot-identity',
         content: selectedPolkadotIdentity?.content,
       }
       break

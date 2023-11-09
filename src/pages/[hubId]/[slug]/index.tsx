@@ -4,9 +4,10 @@ import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { getAccountsDataFromCache } from '@/pages/api/accounts-data'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPricesFromCache } from '@/pages/api/prices'
+import { getProfilesServer } from '@/pages/api/profiles'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery, getProfileQuery } from '@/services/api/query'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
@@ -18,6 +19,7 @@ import {
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
 import { getDatahubConfig } from '@/utils/env/client'
+import { removeUndefinedValues } from '@/utils/general'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -50,15 +52,32 @@ async function getChatsData(client: QueryClient, chatId: string) {
 
   const prices = await getPricesFromCache(Object.values(coingeckoTokenIds))
 
-  const accountsAddresses = await getAccountsDataFromCache(
-    chatPageOwnerIds,
-    'GET'
-  )
+  const [accountsDataPromise, profilesPromise] = await Promise.allSettled([
+    getAccountsDataFromCache(chatPageOwnerIds, 'GET'),
+    getProfilesServer(chatPageOwnerIds),
+  ] as const)
+  if (accountsDataPromise.status === 'fulfilled') {
+    accountsDataPromise.value.forEach((accountAddresses) => {
+      getAccountDataQuery.setQueryData(
+        client,
+        accountAddresses.grillAddress,
+        accountAddresses
+      )
+    })
+  }
+  if (profilesPromise.status === 'fulfilled') {
+    profilesPromise.value.forEach((profile) => {
+      getProfileQuery.setQueryData(
+        client,
+        profile.address,
+        removeUndefinedValues(profile)
+      )
+    })
+  }
 
   return {
     messages,
     messageIds,
-    accountsAddresses,
     prices,
   }
 }
@@ -137,7 +156,7 @@ export const getStaticProps = getCommonStaticProps<
         hubIds.push(originalHubId)
       }
 
-      const [{ accountsAddresses, prices }, blockedData] = await Promise.all([
+      const [{ prices }, blockedData] = await Promise.all([
         getChatsData(queryClient, chatId),
         prefetchBlockedEntities(queryClient, hubIds, [chatId]),
         prefetchPostMetadata(queryClient, chatId),
@@ -169,15 +188,6 @@ export const getStaticProps = getCommonStaticProps<
 
       getPostQuery.setQueryData(queryClient, chatId, chatData)
 
-      accountsAddresses.forEach((accountAddresses) => {
-        if (accountAddresses.evmAddress) {
-          getAccountDataQuery.setQueryData(
-            queryClient,
-            accountAddresses.grillAddress,
-            accountAddresses
-          )
-        }
-      })
       prices.forEach((price) => {
         const { id, current_price } = price || {}
 

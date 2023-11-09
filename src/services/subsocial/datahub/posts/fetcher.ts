@@ -77,6 +77,7 @@ export const DATAHUB_POST_FRAGMENT = gql`
       pinnedResources {
         post {
           id
+          persistentId
         }
       }
     }

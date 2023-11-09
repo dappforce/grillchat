@@ -75,7 +75,7 @@ const mapPostExtensions = (
           properties: {
             ids:
               (ext.pinnedResources
-                ?.map((pinned) => pinned.post?.id)
+                ?.map((pinned) => pinned.post?.persistentId || pinned.post?.id)
                 .filter(Boolean) as [string]) ?? [],
           },
         }

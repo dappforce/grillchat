@@ -32,20 +32,32 @@ export function useName(
   address: string,
   forceProfileSource?: ForceProfileSource
 ) {
-  const { data: accountData, isLoading: isLoadingEvm } =
-    getAccountDataQuery.useQuery(address)
   const { data: profile, isLoading: isLoadingProfile } =
     getProfileQuery.useQuery(address)
+  const { data: accountData, isLoading: isLoadingEvm } =
+    getAccountDataQuery.useQuery(address)
   const textColor = useRandomColor(address, { isAddress: true })
-  const { data: identities, isLoading: isLoadingIdentities } =
+
+  const userProfileSource = profile?.profileSpace?.content?.profileSource
+
+  const { source } = decodeProfileSource(userProfileSource)
+  const identitiesNeededInSources: ProfileSource[] = [
+    'kilt-w3n',
+    'kusama-identity',
+    'polkadot-identity',
+    'subsocial-username',
+  ]
+  const isIdentitiesNeeded = identitiesNeededInSources.includes(
+    forceProfileSource?.profileSource || source
+  )
+  const { data: identities, isFetching: isFetchingIdentities } =
     getIdentityQuery.useQuery(address ?? '', {
-      enabled: !!address,
+      enabled: isIdentitiesNeeded,
     })
+  const isLoadingIdentities = isFetchingIdentities && isIdentitiesNeeded
 
   const { ensNames, evmAddress } = accountData || {}
   let name = generateRandomName(address)
-
-  const userProfileSource = profile?.profileSpace?.content?.profileSource
 
   function getNameFromSource(profileSource?: ProfileSource, content?: string) {
     switch (profileSource) {
