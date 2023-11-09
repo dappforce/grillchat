@@ -35,7 +35,7 @@ export default function PolkadotProfileTabContent({
 
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const hasConnectedPolkadot = !!parentProxyAddress
-  const { data: identities, isLoading: isLoadingIdentity } =
+  const { data: identities, isFetching: isFetchingIdentities } =
     getIdentityQuery.useQuery(parentProxyAddress ?? '', {
       enabled: !!parentProxyAddress,
     })
@@ -139,7 +139,8 @@ export default function PolkadotProfileTabContent({
     !identities?.polkadot &&
     !identities?.kilt &&
     !identities?.kusama &&
-    !identities?.subsocial?.length
+    !identities?.subsocial?.length &&
+    !isFetchingIdentities
   ) {
     return (
       <p className='text-text-muted'>
@@ -222,12 +223,12 @@ export default function PolkadotProfileTabContent({
               selected={selected ?? null}
               setSelected={setSelected}
               placeholder={
-                isLoadingIdentity ? 'Loading...' : 'Select identity provider'
+                isFetchingIdentities ? 'Loading...' : 'Select identity provider'
               }
             />
             <Button
               type='submit'
-              isLoading={isLoading || isLoadingIdentity}
+              isLoading={isLoading || isFetchingIdentities}
               size='lg'
               disabled={!selected?.id || isCurrentProfile}
             >

@@ -9,3 +9,7 @@ export function debounce(fn: Function, ms = 300) {
     timeoutId = setTimeout(() => fn.apply(this, args), ms)
   }
 }
+
+export function removeUndefinedValues<T>(data: T): T {
+  return JSON.parse(JSON.stringify(data)) as T
+}

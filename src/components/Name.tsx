@@ -47,12 +47,14 @@ export function useName(
     'polkadot-identity',
     'subsocial-username',
   ]
+  const isIdentitiesNeeded = identitiesNeededInSources.includes(
+    forceProfileSource?.profileSource || source
+  )
   const { data: identities, isFetching: isFetchingIdentities } =
     getIdentityQuery.useQuery(address ?? '', {
-      enabled: identitiesNeededInSources.includes(
-        forceProfileSource?.profileSource || source
-      ),
+      enabled: isIdentitiesNeeded,
     })
+  const isLoadingIdentities = isFetchingIdentities && isIdentitiesNeeded
 
   const { ensNames, evmAddress } = accountData || {}
   let name = generateRandomName(address)
@@ -97,7 +99,7 @@ export function useName(
     accountData,
     profile,
     evmAddress,
-    isLoading: isLoadingEvm || isLoadingProfile || isFetchingIdentities,
+    isLoading: isLoadingEvm || isLoadingProfile || isLoadingIdentities,
     textColor,
     ensNames,
   }

@@ -6,6 +6,7 @@ import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getDatahubConfig } from '@/utils/env/client'
+import { removeUndefinedValues } from '@/utils/general'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
 import { prefetchBlockedEntities } from './moderation/prefetch'
@@ -38,11 +39,7 @@ export async function prefetchChatPreviewsData(
     allChatIds
   )
   ;[...lastMessages, ...chats].forEach((post) => {
-    getPostQuery.setQueryData(
-      queryClient,
-      post.id,
-      JSON.parse(JSON.stringify(post)) as PostData
-    )
+    getPostQuery.setQueryData(queryClient, post.id, removeUndefinedValues(post))
   })
 }
 
