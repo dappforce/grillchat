@@ -43,28 +43,25 @@ export function datahubMutationWrapper<
         throw err
       }
 
-      if (foundError.code === errorCodesMap.TOO_MANY_REQUESTS_PER_TIME_RANGE) {
-        const rateLimitData = foundError?.payload
-        const range = Math.max(rateLimitData.msRange / 1000, 1)
-        const timeLeft = Math.max(rateLimitData.msBeforeNext / 1000, 1)
-        throw new RateLimitError(
-          `You can only send ${rateLimitData.maxPoints} messages per ${
-            range > 1 ? `${range} seconds` : 'second'
-          }${timeLeft > 1 ? ` (${timeLeft} seconds remaining)` : ''}`,
-          timeLeft
-        )
-      } else if (
-        foundError.code === errorCodesMap.CREATE_COMMENT_PERMISSIONS_DENIED
-      ) {
-        throw new CreateMessagePermissionDeniedError(
-          'You are not allowed to send a message in this chat'
-        )
-      } else if (
-        foundError.code === errorCodesMap.CREATE_POST_PERMISSIONS_DENIED
-      ) {
-        throw new CreateChatPermissionDeniedError(
-          'You are not allowed to create a chat in this hub'
-        )
+      switch (foundError.code) {
+        case errorCodesMap.TOO_MANY_REQUESTS_PER_TIME_RANGE:
+          const rateLimitData = foundError?.payload
+          const range = Math.max(rateLimitData.msRange / 1000, 1)
+          const timeLeft = Math.max(rateLimitData.msBeforeNext / 1000, 1)
+          throw new RateLimitError(
+            `You can only send ${rateLimitData.maxPoints} messages per ${
+              range > 1 ? `${range} seconds` : 'second'
+            }${timeLeft > 1 ? ` (${timeLeft} seconds remaining)` : ''}`,
+            timeLeft
+          )
+        case errorCodesMap.CREATE_COMMENT_PERMISSIONS_DENIED:
+          throw new CreateMessagePermissionDeniedError(
+            'You are not allowed to send a message in this chat'
+          )
+        case errorCodesMap.CREATE_POST_PERMISSIONS_DENIED:
+          throw new CreateChatPermissionDeniedError(
+            'You are not allowed to create a chat in this hub'
+          )
       }
     }
   }
