@@ -117,7 +117,7 @@ async function createPostData(
   params: DatahubParams<{
     rootPostId?: string
     spaceId: string
-    cid: string
+    cid?: string
     content: PostContent
   }>
 ) {
@@ -314,17 +314,12 @@ export function useSendOffchainMessage(
           'Your message is too long, please split it up to multiple messages'
         )
 
-      const res = await saveFile(content)
-      const cid = res.cid
-      if (!cid) throw new Error('Failed to save file')
-
       await datahubMutation.createPostData({
         ...getWallet(),
         uuid: data.uuid,
         timestamp: data.timestamp,
         isOffchain: true,
         content: content,
-        cid: cid,
         rootPostId: data.chatId,
         spaceId: data.hubId,
       })
