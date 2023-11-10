@@ -6,7 +6,9 @@ import {
 } from '@/pages/api/moderation/actions'
 import { ResourceTypes } from '@/server/moderation/utils'
 import { queryClient } from '@/services/provider'
+import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import mutationWrapper from '@/subsocial-query/base'
+import { getDatahubConfig } from '@/utils/env/client'
 import axios, { AxiosResponse } from 'axios'
 import { revalidateChatPage } from '../mutation'
 import { processMessageTpl } from '../utils'
@@ -108,6 +110,22 @@ export const useCommitModerationAction = mutationWrapper(
         try {
           await revalidateChatPage({ chatId: variables.ctxPostId })
         } catch {}
+
+        if (!getDatahubConfig()) {
+          getPostMetadataQuery.setQueryData(
+            queryClient,
+            variables.ctxPostId,
+            (oldData) => {
+              if (!oldData) return oldData
+              let change = 1
+              if (variables.action === 'block') change = -1
+              return {
+                ...oldData,
+                totalCommentsCount: oldData.totalCommentsCount + change,
+              }
+            }
+          )
+        }
       }
     },
   }
