@@ -111,7 +111,7 @@ export const useCommitModerationAction = mutationWrapper(
           await revalidateChatPage({ chatId: variables.ctxPostId })
         } catch {}
 
-        if (!getDatahubConfig()) {
+        if (getDatahubConfig()) {
           getPostMetadataQuery.setQueryData(
             queryClient,
             variables.ctxPostId,
