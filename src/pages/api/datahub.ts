@@ -117,29 +117,3 @@ function datahubActionMapping(data: DatahubMutationBody) {
       return notifyUpdatePostFailedOrRetryStatus(data.payload)
   }
 }
-
-// const GET_IS_USER_AUTHORIZED = gql`
-//   query GetIsUserAuthorized ($address: String!) {
-//     userBlocked (address: $address) {
-
-//     }
-//   }
-// `
-// async function getIsUserAuthorized(address: string) {
-//   const res = await datahubQueryRequest<
-//     GetIsUserAuthorizedQuery,
-//     GetIsUserAuthorizedQueryVariables
-//   >({
-//     document: GET_IS_USER_AUTHORIZED,
-//     variables: {
-//       where: {
-//         address,
-//       },
-//     },
-//   })
-//   return res.data
-// }
-// export const getIsUserAuthorizedQuery = createQuery({
-//   key: 'user-authorized',
-//   fetcher: getIsUserAuthorized,
-// })
