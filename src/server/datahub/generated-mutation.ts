@@ -30,6 +30,24 @@ export type Scalars = {
   JSON: { input: any; output: any }
 }
 
+export type CanAccountDoArgsInput = {
+  action: CanUserDoAction
+  address: Scalars['String']['input']
+  parentPostId?: InputMaybe<Scalars['String']['input']>
+  rootPostId?: InputMaybe<Scalars['String']['input']>
+  spaceId?: InputMaybe<Scalars['String']['input']>
+}
+
+export type CanAccountDoResponse = {
+  __typename?: 'CanAccountDoResponse'
+  isAllowed: Scalars['Boolean']['output']
+}
+
+export enum CanUserDoAction {
+  CreateComment = 'CREATE_COMMENT',
+  CreatePost = 'CREATE_POST',
+}
+
 export type CreatePostOffChainInput = {
   callData?: InputMaybe<SocialCallDataInput>
   content?: InputMaybe<Scalars['String']['input']>
@@ -43,6 +61,7 @@ export type CreatePostOptimisticInput = {
   callData?: InputMaybe<SocialCallDataInput>
   content?: InputMaybe<Scalars['String']['input']>
   dataType: SocialEventDataType
+  protVersion?: InputMaybe<Scalars['String']['input']>
   providerAddr: Scalars['String']['input']
   sig: Scalars['String']['input']
 }
@@ -132,9 +151,14 @@ export type PersistentDataItemFromSquid = {
 
 export type Query = {
   __typename?: 'Query'
+  canAccountDo: CanAccountDoResponse
   coldSocialEvents: FindSocialEventsResponseDto
   latestColdSocialEvent?: Maybe<SocialEventRecoveryData>
   pingPong: Scalars['String']['output']
+}
+
+export type QueryCanAccountDoArgs = {
+  args: CanAccountDoArgsInput
 }
 
 export type QueryColdSocialEventsArgs = {
@@ -202,6 +226,7 @@ export type SocialEventRecoveryData = {
   data: Scalars['JSON']['output']
   dataType: DataType
   id: Scalars['String']['output']
+  protVersion: Scalars['String']['output']
   queueJobId: Scalars['String']['output']
   signer: Scalars['String']['output']
   unixTimestamp: Scalars['BigInt']['output']
@@ -211,6 +236,7 @@ export type SocialEventRecoveryData = {
 export type UpdatePostBlockchainSyncStatusInput = {
   callData: SocialCallDataInput
   dataType: SocialEventDataType
+  protVersion?: InputMaybe<Scalars['String']['input']>
   providerAddr: Scalars['String']['input']
   sig: Scalars['String']['input']
 }
@@ -219,8 +245,18 @@ export type UpdatePostOptimisticInput = {
   callData?: InputMaybe<SocialCallDataInput>
   content?: InputMaybe<Scalars['String']['input']>
   dataType: SocialEventDataType
+  protVersion?: InputMaybe<Scalars['String']['input']>
   providerAddr: Scalars['String']['input']
   sig: Scalars['String']['input']
+}
+
+export type GetCanAccountDoQueryVariables = Exact<{
+  getAccountDo: CanAccountDoArgsInput
+}>
+
+export type GetCanAccountDoQuery = {
+  __typename?: 'Query'
+  canAccountDo: { __typename?: 'CanAccountDoResponse'; isAllowed: boolean }
 }
 
 export type CreatePostOptimisticMutationVariables = Exact<{
@@ -271,6 +307,13 @@ export type NotifyUpdatePostTxFailedOrRetryStatusMutation = {
   }
 }
 
+export const GetCanAccountDo = gql`
+  query GetCanAccountDo($getAccountDo: CanAccountDoArgsInput!) {
+    canAccountDo(args: $getAccountDo) {
+      isAllowed
+    }
+  }
+`
 export const CreatePostOptimistic = gql`
   mutation CreatePostOptimistic(
     $createPostOptimisticInput: CreatePostOptimisticInput!

@@ -2,7 +2,7 @@ import { ERRORS } from '@/constants/error'
 import { getDatahubMutationConfig } from '@/utils/env/server'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 
-export function datahubMutationRequest<T, V extends Variables = Variables>(
+export function datahubQueueRequest<T, V extends Variables = Variables>(
   config: RequestOptions<V, T>
 ) {
   const { url, token } = getDatahubMutationConfig() || {}
