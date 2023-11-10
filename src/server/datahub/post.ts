@@ -1,8 +1,11 @@
 import { gql } from 'graphql-request'
 import {
+  CanAccountDoArgsInput,
   CreatePostOptimisticInput,
   CreatePostOptimisticMutation,
   CreatePostOptimisticMutationVariables,
+  GetCanAccountDoQuery,
+  GetCanAccountDoQueryVariables,
   NotifyCreatePostTxFailedOrRetryStatusMutation,
   NotifyCreatePostTxFailedOrRetryStatusMutationVariables,
   NotifyUpdatePostTxFailedOrRetryStatusMutation,
@@ -11,8 +14,28 @@ import {
   UpdatePostOptimisticInput,
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
-} from './generated-mutation'
-import { datahubMutationRequest } from './utils'
+} from './generated'
+import { datahubQueueRequest } from './utils'
+
+const GET_CAN_ACCOUNT_DO = gql`
+  query GetCanAccountDo($getAccountDo: CanAccountDoArgsInput!) {
+    canAccountDo(args: $getAccountDo) {
+      isAllowed
+    }
+  }
+`
+export async function getCanAccountDo(input: CanAccountDoArgsInput) {
+  const { canAccountDo } = await datahubQueueRequest<
+    GetCanAccountDoQuery,
+    GetCanAccountDoQueryVariables
+  >({
+    document: GET_CAN_ACCOUNT_DO,
+    variables: {
+      getAccountDo: input,
+    },
+  })
+  return canAccountDo.isAllowed
+}
 
 const CREATE_POST_OPTIMISTIC_MUTATION = gql`
   mutation CreatePostOptimistic(
@@ -26,7 +49,7 @@ const CREATE_POST_OPTIMISTIC_MUTATION = gql`
   }
 `
 export async function createPostData(input: CreatePostOptimisticInput) {
-  await datahubMutationRequest<
+  await datahubQueueRequest<
     CreatePostOptimisticMutation,
     CreatePostOptimisticMutationVariables
   >({
@@ -49,7 +72,7 @@ const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
   }
 `
 export async function updatePostData(input: UpdatePostOptimisticInput) {
-  await datahubMutationRequest<
+  await datahubQueueRequest<
     UpdatePostOptimisticMutation,
     UpdatePostOptimisticMutationVariables
   >({
@@ -74,7 +97,7 @@ const NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
 export async function notifyCreatePostFailedOrRetryStatus(
   input: UpdatePostBlockchainSyncStatusInput
 ) {
-  await datahubMutationRequest<
+  await datahubQueueRequest<
     NotifyCreatePostTxFailedOrRetryStatusMutation,
     NotifyCreatePostTxFailedOrRetryStatusMutationVariables
   >({
@@ -99,7 +122,7 @@ const NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
 export async function notifyUpdatePostFailedOrRetryStatus(
   input: UpdatePostBlockchainSyncStatusInput
 ) {
-  await datahubMutationRequest<
+  await datahubQueueRequest<
     NotifyUpdatePostTxFailedOrRetryStatusMutation,
     NotifyUpdatePostTxFailedOrRetryStatusMutationVariables
   >({

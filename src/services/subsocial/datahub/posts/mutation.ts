@@ -1,5 +1,5 @@
 import { getMaxMessageLength } from '@/constants/chat'
-import { DatahubMutationInput } from '@/pages/api/datahub'
+import { DatahubMutationBody } from '@/pages/api/datahub'
 import { useSaveFile } from '@/services/api/mutation'
 import { Signer } from '@/utils/account'
 import { getDatahubConfig } from '@/utils/env/client'
@@ -137,7 +137,7 @@ async function createPostData(
     content
   )
 
-  await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
     action: 'create-post',
     payload: input as any,
   })
@@ -170,7 +170,7 @@ async function updatePostData(
     content?.content
   )
 
-  await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
     action: 'update-post',
     payload: input as any,
   })
@@ -215,7 +215,7 @@ async function notifyCreatePostFailedOrRetryStatus(
 
   const input = createSocialDataEventInput(event.name, params, event.args)
 
-  await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
     action: 'notify-create-failed',
     payload: input as any,
   })
@@ -264,7 +264,7 @@ async function notifyUpdatePostFailedOrRetryStatus(
 
   const input = createSocialDataEventInput(event.name, params, event.args)
 
-  await axios.post<any, any, DatahubMutationInput>('/api/datahub', {
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
     action: 'notify-update-failed',
     payload: input as any,
   })
