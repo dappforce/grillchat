@@ -250,7 +250,7 @@ export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
       className='pt-0'
       menus={[
         {
-          text: 'Connect EVM',
+          text: 'EVM',
           icon: EthIcon,
           onClick: () => {
             setCurrentState('evm-address-link')
@@ -258,7 +258,7 @@ export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
           },
         },
         {
-          text: 'Connect Polkadot',
+          text: 'Polkadot',
           icon: PolkadotIcon,
           onClick: () => {
             setCurrentState('polkadot-connect')

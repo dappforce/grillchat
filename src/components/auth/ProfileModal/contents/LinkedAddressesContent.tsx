@@ -32,7 +32,7 @@ export default function LinkedAddressesContent({
           {
             text: (
               <span className='flex items-center gap-2'>
-                <span>Connect EVM</span>
+                <span>EVM</span>
                 {evmAddress && (
                   <Notice size='sm'>{truncateAddress(evmAddress)}</Notice>
                 )}
@@ -44,7 +44,7 @@ export default function LinkedAddressesContent({
           {
             text: (
               <span className='flex items-center gap-2'>
-                <span>Connect Polkadot</span>
+                <span>Polkadot</span>
                 {parentProxyAddress && (
                   <Notice size='sm'>
                     {truncateAddress(parentProxyAddress)}
