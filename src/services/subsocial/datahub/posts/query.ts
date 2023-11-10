@@ -60,7 +60,7 @@ async function getPaginatedPostsByRootPostId({
   // - subscription
   // - invalidation
   // so the offset has to accommodate the length of the current first page
-  const offset = (page - 2) * CHAT_PER_PAGE + firstPageDataLength
+  const offset = Math.min((page - 2) * CHAT_PER_PAGE + firstPageDataLength, 0)
 
   const res = await datahubQueryRequest<
     GetCommentIdsInPostIdQuery,
