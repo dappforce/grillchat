@@ -4,7 +4,7 @@ import {
   CreatePostOptimisticInput,
   UpdatePostBlockchainSyncStatusInput,
   UpdatePostOptimisticInput,
-} from '@/server/datahub/generated-mutation'
+} from '@/server/datahub/generated'
 import {
   createPostData,
   getCanAccountDo,

@@ -14,7 +14,7 @@ import {
   UpdatePostOptimisticInput,
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
-} from './generated-mutation'
+} from './generated'
 import { datahubQueueRequest } from './utils'
 
 const GET_CAN_ACCOUNT_DO = gql`

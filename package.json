@@ -18,7 +18,7 @@
     "codegen:squid": "graphql-codegen --require dotenv/config --config codegen-squid.ts",
     "codegen:notifications": "graphql-codegen --require dotenv/config --config codegen-notifications.ts",
     "codegen:datahub-query": "graphql-codegen --require dotenv/config --config codegen-datahub-query.ts",
-    "codegen:datahub-mutation": "graphql-codegen --require dotenv/config --config codegen-datahub-mutation.ts",
+    "codegen:datahub-queue": "graphql-codegen --require dotenv/config --config codegen-datahub-queue.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "start-storybook": "node ./.storybook/index.js"
