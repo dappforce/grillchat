@@ -86,7 +86,7 @@ async function getPaginatedPostsByRootPostId({
   }
 
   return {
-    data: [...ids, ...unincludedIds],
+    data: [...unincludedIds, ...ids],
     page,
     hasMore,
     totalData,

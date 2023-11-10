@@ -140,7 +140,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
                   : null,
               }
             })
-          } else if (!data.messageIdToEdit) {
+          } else {
             addOptimisticData({
               address,
               params: data,
