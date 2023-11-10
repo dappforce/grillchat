@@ -2,7 +2,11 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getPostQuery } from '@/services/api/query'
 import { queryClient } from '@/services/provider'
 import { createQuery, poolQuery, QueryConfig } from '@/subsocial-query'
-import { QueryClient, useInfiniteQuery } from '@tanstack/react-query'
+import {
+  QueryClient,
+  useInfiniteQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import {
   commentIdsOptimisticEncoder,
@@ -46,6 +50,18 @@ async function getPaginatedPostsByRootPostId({
   page: number
   client?: QueryClient
 }): Promise<PaginatedPostsData> {
+  const oldIds = getPaginatedPostsByPostIdFromDatahubQuery.getFirstPageData(
+    client,
+    postId
+  )
+  const firstPageDataLength = oldIds?.length || CHAT_PER_PAGE
+
+  // only first page that has dynamic content, where its length can increase from:
+  // - subscription
+  // - invalidation
+  // so the offset has to accommodate the length of the current first page
+  const offset = (page - 2) * CHAT_PER_PAGE + firstPageDataLength
+
   const res = await datahubQueryRequest<
     GetCommentIdsInPostIdQuery,
     GetCommentIdsInPostIdQueryVariables
@@ -57,7 +73,7 @@ async function getPaginatedPostsByRootPostId({
         orderBy: 'createdAtTime',
         orderDirection: QueryOrder.Desc,
         pageSize: CHAT_PER_PAGE,
-        offset: (page - 1) * CHAT_PER_PAGE,
+        offset,
       },
     },
   })
@@ -71,22 +87,34 @@ async function getPaginatedPostsByRootPostId({
   const totalData = res.findPosts.total ?? 0
   const hasMore = totalData > page * CHAT_PER_PAGE + ids.length
 
-  let unincludedIds: string[] = []
-  // only adding the client optimistic ids if refetching first page
+  const idsSet = new Set<string>(ids)
+
+  // only adding the client optimistic ids, and unincluded ids if refetching first page
+  // for fetching first page, no ids that has been fetched will be removed
+  // ex: first fetch: id 1-50, and after invalidation, there is new data id 0
+  // the result should be id 0-50 instead of 0-49
+  let unincludedOptimisticIds: string[] = []
+  let unincludedFirstPageIds: string[] = []
   if (page === 1) {
-    const oldIds = getPaginatedPostsByPostIdFromDatahubQuery.getFirstPageData(
-      queryClient,
-      postId
-    )
-    const oldOptimisticIds =
-      oldIds?.filter((id) => isClientGeneratedOptimisticId(id)) || []
-    unincludedIds = oldOptimisticIds.filter(
-      (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
-    )
+    if (oldIds) {
+      const oldOptimisticIds = []
+      for (let i = 0; i < oldIds.length; i++) {
+        const id = oldIds[i]
+        if (isClientGeneratedOptimisticId(id)) {
+          oldOptimisticIds.push(id)
+        }
+        if (!idsSet.has(id)) {
+          unincludedFirstPageIds.push(id)
+        }
+      }
+      unincludedOptimisticIds = oldOptimisticIds.filter(
+        (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
+      )
+    }
   }
 
   return {
-    data: [...ids, ...unincludedIds],
+    data: [...unincludedOptimisticIds, ...ids, ...unincludedFirstPageIds],
     page,
     hasMore,
     totalData,
@@ -145,11 +173,41 @@ export const getPaginatedPostsByPostIdFromDatahubQuery = {
     })
   },
   useInfiniteQuery: (postId: string, config?: QueryConfig) => {
+    const client = useQueryClient()
     return useInfiniteQuery({
       ...config,
       queryKey: getQueryKey(postId),
-      queryFn: ({ pageParam = 1, queryKey: [_, postId] }) =>
-        getPaginatedPostsByRootPostId({ postId, page: pageParam }),
+      queryFn: async ({ pageParam = 1, queryKey }) => {
+        const [_, postId] = queryKey
+        const res = await getPaginatedPostsByRootPostId({
+          postId,
+          page: pageParam,
+        })
+
+        // hotfix because in offchain chat (/offchain/18634) its not updating cache when first invalidated from server
+        if (pageParam === 1) {
+          client.setQueryData<{
+            pageParams: number[]
+            pages: PaginatedPostsData[]
+          }>(getQueryKey(postId), (oldData) => {
+            if (
+              !oldData ||
+              !Array.isArray(oldData.pageParams) ||
+              !Array.isArray(oldData.pages)
+            )
+              return oldData
+            const pages = [...oldData.pages]
+            pages.splice(0, 1, res)
+            return {
+              ...oldData,
+              pageParams: [...oldData.pageParams],
+              pages,
+            }
+          })
+        }
+
+        return res
+      },
       getNextPageParam: (lastPage) =>
         lastPage.hasMore ? lastPage.page + 1 : undefined,
     })
