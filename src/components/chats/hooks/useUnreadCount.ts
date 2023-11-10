@@ -1,43 +1,32 @@
-import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
+import { getMessagesCountAfterTimeQuery } from '@/services/subsocial/commentIds'
 import { getUnreadCountQuery } from '@/services/subsocial/datahub/posts/query'
 import { getDatahubConfig } from '@/utils/env/client'
-import { useMemo } from 'react'
 
-export default function useUnreadCount(chatId: string, lastReadId: string) {
+export default function useUnreadCount(chatId: string, lastReadTime: number) {
   if (getDatahubConfig()) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useUnreadCountFromDatahub(chatId, lastReadId)
+    return useUnreadCountFromDatahub(chatId, lastReadTime)
   } else {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useUnreadCountFromBlockchain(chatId, lastReadId)
+    return useUnreadCountFromBlockchain(chatId, lastReadTime)
   }
 }
 
-function useUnreadCountFromDatahub(chatId: string, lastReadId: string) {
+function useUnreadCountFromDatahub(chatId: string, lastReadTime: number) {
   const { data: unreadCountFromDatahub } = getUnreadCountQuery.useQuery(
-    { chatId: chatId, lastRead: { postId: lastReadId } },
+    { chatId: chatId, lastRead: { timestamp: lastReadTime } },
     {
-      enabled: !!lastReadId,
+      enabled: !!lastReadTime,
     }
   )
   return unreadCountFromDatahub ?? 0
 }
 
-function useUnreadCountFromBlockchain(chatId: string, lastReadId: string) {
-  const { data: messageIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
+function useUnreadCountFromBlockchain(chatId: string, lastReadTime: number) {
+  const { data } = getMessagesCountAfterTimeQuery.useQuery({
     chatId,
-    {
-      enabled: true,
-    }
-  )
+    time: lastReadTime,
+  })
 
-  const unreadCount = useMemo(() => {
-    const messagesLength = messageIds?.length
-    if (!lastReadId || !messagesLength || messagesLength === 0) return 0
-    const lastReadIndex = messageIds?.findIndex((id) => id === lastReadId)
-    if (lastReadIndex === -1) return 0
-    return messagesLength - 1 - lastReadIndex
-  }, [messageIds, lastReadId])
-
-  return unreadCount ?? 0
+  return data?.totalCount ?? 0
 }

@@ -5870,6 +5870,14 @@ export type WhereIdInput = {
   id: Scalars['String']['input'];
 };
 
+export type GetMessagesCountAfterTimeQueryVariables = Exact<{
+  chatId: Scalars['String']['input'];
+  time: Scalars['DateTime']['input'];
+}>;
+
+
+export type GetMessagesCountAfterTimeQuery = { __typename?: 'Query', postsConnection: { __typename?: 'PostsConnection', totalCount: number } };
+
 export type GetEvmAddressesQueryVariables = Exact<{
   addresses?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
@@ -6018,6 +6026,16 @@ export const PostFragment = gql`
         id
       }
     }
+  }
+}
+    `;
+export const GetMessagesCountAfterTime = gql`
+    query GetMessagesCountAfterTime($chatId: String!, $time: DateTime!) {
+  postsConnection(
+    where: {createdAtTime_gt: $time, rootPost: {id_eq: $chatId}}
+    orderBy: id_ASC
+  ) {
+    totalCount
   }
 }
     `;

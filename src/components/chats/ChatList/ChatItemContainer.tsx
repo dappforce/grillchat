@@ -1,8 +1,10 @@
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import usePrevious from '@/hooks/usePrevious'
+import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { useQueryClient } from '@tanstack/react-query'
 import { ComponentProps, forwardRef, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import ChatItem, { ChatItemProps } from '../ChatItem'
@@ -69,6 +71,7 @@ function ChatItemContainer(
 }
 
 function UnreadMessageChecker({ messageId }: { messageId: string }) {
+  const client = useQueryClient()
   const { ref, inView } = useInView({
     onChange: (inView) => {
       if (inView) handleInView()
@@ -80,22 +83,15 @@ function UnreadMessageChecker({ messageId }: { messageId: string }) {
   const prevCount = usePrevious(unreadMessage.count)
 
   const handleInView = (isAfterScroll?: boolean) => {
-    if (!unreadMessage.lastId || !unreadMessage.count) return
-    const prevLastId = unreadMessage.lastId.startsWith('0x')
-      ? undefined
-      : Number(unreadMessage.lastId)
-    const currentMessageId = messageId.startsWith('0x')
-      ? undefined
-      : Number(messageId)
-    if (
-      isAfterScroll ||
-      !prevLastId ||
-      !currentMessageId ||
-      prevLastId < currentMessageId
-    ) {
+    if (!unreadMessage.count) return
+    const messageTime =
+      getPostQuery.getQueryData(client, messageId)?.struct.createdAtTime ??
+      Date.now()
+    const lastTime = unreadMessage.lastMessageTime
+    if (isAfterScroll || messageTime > lastTime) {
       setUnreadMessage((prev) => ({
-        count: Math.max(prev.count - 1, 0),
-        lastId: Math.max(prevLastId ?? 0, currentMessageId ?? 0).toString(),
+        count: prev.count - 1,
+        lastMessageTime: messageTime,
       }))
     }
   }

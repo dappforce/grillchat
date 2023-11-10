@@ -18,8 +18,11 @@ export default function useScrollToMessage(
   const defaultConfigRef = useWrapInRef(defaultScrollConfig)
   const loadMoreControllerRef = useWrapInRef(loadMoreController)
   return useCallback(
-    async (messageId: string, config?: ScrollToMessageElementConfig) => {
-      const element = await getElement(messageId)
+    async (
+      messageIdOrTime: string | number,
+      config?: ScrollToMessageElementConfig
+    ) => {
+      const element = await getElement(messageIdOrTime)
       if (!element) return
 
       loadMoreControllerRef.current.pause()

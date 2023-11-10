@@ -8,6 +8,7 @@ import {
 import { getDatahubConfig } from '@/utils/env/client'
 import { useMemo } from 'react'
 import useInfiniteScrollData from '../ChatList/hooks/useInfiniteScrollData'
+import usePauseableLoadMore from '../ChatList/hooks/usePausableLoadMore'
 
 type PaginatedData = {
   currentPageMessageIds: string[]
@@ -37,6 +38,7 @@ const EMPTY_ARRAY: string[] = []
 export function usePaginatedMessageIdsFromDatahub({
   chatId,
   hubId,
+  isPausedLoadMore,
 }: PaginatedConfig): PaginatedData {
   const { data, fetchNextPage, isLoading } =
     getPaginatedPostsByPostIdFromDatahubQuery.useInfiniteQuery(chatId)
@@ -60,12 +62,12 @@ export function usePaginatedMessageIdsFromDatahub({
     flattenedIds
   )
 
+  const loadMore = usePauseableLoadMore(fetchNextPage, isPausedLoadMore)
+
   return {
     currentPage: lastPage?.page ?? 1,
     currentPageMessageIds: filteredCurrentPageIds,
-    loadMore: () => {
-      fetchNextPage()
-    },
+    loadMore,
     totalDataCount: data?.pages?.[0].totalData || 0,
     hasMore: lastPage?.hasMore || true,
     isLoading,

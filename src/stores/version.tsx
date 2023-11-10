@@ -6,10 +6,12 @@ import { IoRefresh } from 'react-icons/io5'
 import { create } from './utils'
 
 type State = {
+  isToastVisible: boolean
   version: string | undefined
 }
 
 const initialState: State = {
+  isToastVisible: false,
   version: undefined,
 }
 
@@ -24,7 +26,13 @@ export const useVersion = create<State>()((set, get) => ({
       const { version, isSameVersion } = res
       set({ version })
 
-      if (!isSameVersion) notifyDifferentVersion()
+      if (!isSameVersion && !get().isToastVisible) {
+        set({ isToastVisible: true })
+        notifyDifferentVersion(() => {
+          window.location.reload()
+          set({ isToastVisible: false })
+        })
+      }
     }
 
     versionHandling()

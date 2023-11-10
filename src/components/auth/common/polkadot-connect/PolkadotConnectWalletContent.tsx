@@ -1,5 +1,6 @@
 import SubwalletIcon from '@/assets/icons/subwallet.png'
 import Button from '@/components/Button'
+import PopOver from '@/components/floating/PopOver'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
@@ -52,15 +53,25 @@ export default function PolkadotConnectWalletContent({
             {wallet.title}
           </span>
           {!wallet.installed && (
-            <Button
-              size='circle'
-              variant='primaryOutline'
-              href={wallet.installUrl}
-              target='_blank'
-              rel='noopener noreferrer'
+            <PopOver
+              panelSize='sm'
+              triggerOnHover
+              placement='top'
+              yOffset={8}
+              trigger={
+                <Button
+                  size='circle'
+                  variant='primaryOutline'
+                  href={wallet.installUrl}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <FiDownload />
+                </Button>
+              }
             >
-              <FiDownload />
-            </Button>
+              <p>Install this extension</p>
+            </PopOver>
           )}
         </div>
       ),

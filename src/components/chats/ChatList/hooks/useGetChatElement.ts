@@ -1,5 +1,7 @@
 import useWrapInRef from '@/hooks/useWrapInRef'
+import { getPostQuery } from '@/services/api/query'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
+import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef } from 'react'
 import { getMessageElementId } from '../../utils'
 
@@ -15,6 +17,7 @@ export default function useGetMessageElement({
   loadMore: () => void
   hasMore: boolean
 }) {
+  const client = useQueryClient()
   const waitAllMessagesLoaded = useWaitMessagesLoading(isLoading)
 
   const waitAllMessagesLoadedRef = useWrapInRef(waitAllMessagesLoaded)
@@ -36,7 +39,7 @@ export default function useGetMessageElement({
 
     waitingMessageDataLoadedIds.forEach((messageId) => {
       if (
-        checkIfMessageIdIsIncluded(messageId, renderedMessageIds) ||
+        checkIfMessageIdIsIncluded(client, messageId, renderedMessageIds) ||
         !hasMore
       ) {
         const resolvers = promiseRef.current.resolvers.get(messageId)
@@ -52,11 +55,12 @@ export default function useGetMessageElement({
         resolvers.forEach((resolve) => resolve())
       })
     }
-  }, [renderedMessageIds, hasMore])
+  }, [client, renderedMessageIds, hasMore])
 
   const loadMoreUntilMessageIdIsLoaded = useCallback(
     async (messageId: string) => {
       const isMessageIdIncluded = checkIfMessageIdIsIncluded(
+        client,
         messageId,
         renderedIdsRef.current
       )
@@ -65,10 +69,10 @@ export default function useGetMessageElement({
       await awaitableLoadMore()
       await loadMoreUntilMessageIdIsLoaded(messageId)
     },
-    [awaitableLoadMore, renderedIdsRef]
+    [client, awaitableLoadMore, renderedIdsRef]
   )
 
-  const getMessageElement = useCallback(
+  const getMessageElementById = useCallback(
     async (messageId: string) => {
       const {
         getPromise: getMessageDataLoadedPromise,
@@ -84,7 +88,9 @@ export default function useGetMessageElement({
       await loadMoreUntilMessageIdIsLoaded(messageId)
 
       // if its already rendered, get and return it
-      if (checkIfMessageIdIsIncluded(messageId, renderedIdsRef.current)) {
+      if (
+        checkIfMessageIdIsIncluded(client, messageId, renderedIdsRef.current)
+      ) {
         return document.getElementById(elementId)
       }
 
@@ -102,7 +108,52 @@ export default function useGetMessageElement({
 
       return document.getElementById(elementId)
     },
-    [loadMoreUntilMessageIdIsLoaded, renderedIdsRef, waitAllMessagesLoadedRef]
+    [
+      client,
+      loadMoreUntilMessageIdIsLoaded,
+      renderedIdsRef,
+      waitAllMessagesLoadedRef,
+    ]
+  )
+
+  const getMessageElementByTime = useCallback(
+    async (time: number): Promise<HTMLElement | null> => {
+      const renderedIds = renderedIdsRef.current
+      const oldestRenderedId = renderedIds[renderedIds.length - 1]
+      const oldestMessage = getPostQuery.getQueryData(client, oldestRenderedId)
+      const oldestMessageTime = oldestMessage?.struct.createdAtTime
+      if (!oldestMessageTime) return null
+
+      if (time < oldestMessageTime) {
+        await awaitableLoadMore()
+        return await getMessageElementByTime(time)
+      }
+
+      const { id: nearestMessageId } = getNearestMessageIdToTimeFromRenderedIds(
+        client,
+        renderedIds,
+        time
+      )
+      if (!nearestMessageId) return null
+
+      const elementId = getMessageElementId(nearestMessageId)
+      await waitAllMessagesLoadedRef.current()
+
+      const element = document.getElementById(elementId)
+      return element
+    },
+    [client, renderedIdsRef, awaitableLoadMore, waitAllMessagesLoadedRef]
+  )
+
+  const getMessageElement = useCallback(
+    (messageIdOrTime: string | number) => {
+      if (typeof messageIdOrTime === 'string') {
+        return getMessageElementById(messageIdOrTime)
+      } else {
+        return getMessageElementByTime(messageIdOrTime)
+      }
+    },
+    [getMessageElementById, getMessageElementByTime]
   )
 
   return getMessageElement
@@ -149,10 +200,40 @@ function useWaitMessagesLoading(isLoading: boolean) {
   }
 }
 
-function checkIfMessageIdIsIncluded(messageId: string, messageIds: string[]) {
-  const parsedMessageId = Number(messageId)
-  if (isNaN(parsedMessageId)) return true
+function checkIfMessageIdIsIncluded(
+  client: QueryClient,
+  messageId: string,
+  messageIds: string[]
+) {
+  const oldestRenderedId = messageIds[messageIds.length - 1]
+  const oldestMessage = getPostQuery.getQueryData(client, oldestRenderedId)
+  const oldestMessageTime = oldestMessage?.struct.createdAtTime
 
-  const smallestId = Number(messageIds[messageIds.length - 1])
-  return parsedMessageId >= smallestId
+  const messageTime = getPostQuery.getQueryData(client, messageId)?.struct
+    .createdAtTime
+  return oldestMessageTime && messageTime && oldestMessageTime <= messageTime
+}
+
+export function getNearestMessageIdToTimeFromRenderedIds(
+  queryClient: QueryClient,
+  renderedIds: string[],
+  time: number
+) {
+  let nearestMessageId: string | null = null
+  let nearestMessageIndex = -1
+  for (let i = renderedIds.length - 1; i >= 0; i--) {
+    const currentMessage = getPostQuery.getQueryData(
+      queryClient,
+      renderedIds[i]
+    )
+    if (!currentMessage) continue
+
+    const messageTime = currentMessage.struct.createdAtTime
+    if (messageTime >= time) {
+      nearestMessageId = renderedIds[i]
+      nearestMessageIndex = i
+      break
+    }
+  }
+  return { id: nearestMessageId, index: nearestMessageIndex }
 }

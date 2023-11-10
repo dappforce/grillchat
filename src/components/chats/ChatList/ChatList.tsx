@@ -11,6 +11,7 @@ import { sendMessageToParentWindow } from '@/utils/window'
 import {
   ComponentProps,
   createContext,
+  Fragment,
   RefObject,
   useContext,
   useEffect,
@@ -28,7 +29,7 @@ import ChatListEventManager from './ChatListEventManager'
 import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
-import useFocusedLastMessageId from './hooks/useFocusedLastMessageId'
+import useLastFocusedMessageTime from './hooks/useLastFocusedMessageId'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import useScrollToMessage from './hooks/useScrollToMessage'
 import PinnedMessage from './PinnedMessage'
@@ -72,7 +73,6 @@ function ChatListContent({
 }: ChatListProps) {
   const sendEvent = useSendEvent()
   const { enableBackButton } = useConfigContext()
-  const lastReadId = useFocusedLastMessageId(chatId)
 
   const scrollableContainerId = useId()
 
@@ -94,6 +94,10 @@ function ChatListContent({
     chatId,
     isPausedLoadMore,
   })
+  const lastFocusedTime = useLastFocusedMessageTime(
+    chatId,
+    currentPageMessageIds[0] ?? ''
+  )
 
   useEffect(() => {
     sendMessageToParentWindow('totalMessage', (totalDataCount ?? 0).toString())
@@ -155,6 +159,7 @@ function ChatListContent({
   const Component = asContainer ? Container<'div'> : 'div'
 
   const isAllMessagesLoaded = renderedMessageIds.length === totalDataCount
+  let alreadyRenderLastReadMessage = false
 
   return (
     <ChatListContext.Provider value={scrollContainerRef}>
@@ -213,18 +218,38 @@ function ChatListContent({
             >
               {renderedMessageQueries.map(({ data: message }, index) => {
                 // bottom message is the first element, because the flex direction is reversed
+                if (!message) return null
+
                 const isBottomMessage = index === 0
+                const isMessageRead =
+                  lastFocusedTime >= message.struct.createdAtTime
+                // Only show the unread message notice for first message that is marked as read
+                const currentAlreadyRenderLastReadMessage =
+                  alreadyRenderLastReadMessage
+                if (isMessageRead) {
+                  alreadyRenderLastReadMessage = true
+                }
+
+                const shouldRenderUnreadMessageNotice =
+                  !isBottomMessage &&
+                  !currentAlreadyRenderLastReadMessage &&
+                  isMessageRead
+
                 return (
-                  <MemoizedChatItemWithMenu
-                    key={message?.id ?? index}
-                    chatItemClassName='mt-2'
-                    chatId={chatId}
-                    hubId={hubId}
-                    isBottomMessage={isBottomMessage}
-                    message={message}
-                    scrollToMessage={scrollToMessage}
-                    lastReadId={lastReadId}
-                  />
+                  <Fragment key={message?.id ?? index}>
+                    {shouldRenderUnreadMessageNotice && (
+                      <div className='mb-2 mt-4 w-full rounded-md bg-background-light py-0.5 text-center text-sm'>
+                        Unread messages
+                      </div>
+                    )}
+                    <MemoizedChatItemWithMenu
+                      chatItemClassName='mt-2'
+                      chatId={chatId}
+                      hubId={hubId}
+                      message={message}
+                      scrollToMessage={scrollToMessage}
+                    />
+                  </Fragment>
                 )
               })}
             </InfiniteScroll>
@@ -234,9 +259,8 @@ function ChatListContent({
         <ChatListSupportingContent
           chatId={chatId}
           hubId={hubId}
-          renderedMessageLength={renderedMessageIds.length}
           isLoadingIds={isLoading}
-          messageIds={currentPageMessageIds}
+          renderedMessageIds={renderedMessageIds}
           scrollContainerRef={scrollContainerRef}
           scrollToMessage={scrollToMessage}
           asContainer={asContainer}

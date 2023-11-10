@@ -2,6 +2,7 @@ import {
   createQuery,
   createQueryInvalidation,
   createQueryKeys,
+  poolQuery,
   QueryConfig,
 } from '@/subsocial-query'
 import {
@@ -9,6 +10,8 @@ import {
   useSubsocialQuery,
 } from '@/subsocial-query/subsocial/query'
 import { QueryClient } from '@tanstack/react-query'
+import { gql } from 'graphql-request'
+import { squidRequest } from '../squid/utils'
 import {
   useSubscribeCommentIdsByPostId,
   useSubscribeCommentIdsByPostIds,
@@ -99,3 +102,51 @@ export const getCommentIdsByPostIdFromChainQuery = {
     return Promise.all(data.map((singleData) => fetchQuery(client, singleData)))
   },
 } satisfies ReturnType<typeof createQuery<string, string[]>>
+
+const getMessagesCountAfterTime = poolQuery<
+  { chatId: string; time: number },
+  { chatId: string; totalCount: number }
+>({
+  multiCall: async (params) => {
+    if (!params.length) return []
+    const queries: { query: string; chatId: string }[] = []
+    const promises = params.map(async ({ chatId, time }) => {
+      const isoDate = new Date(time).toISOString()
+      queries.push({
+        query: `
+          chat${chatId}: postsConnection (where: { createdAtTime_gt: "${isoDate}", rootPost: { id_eq: "${chatId}" } }, orderBy: id_ASC) {
+            totalCount
+          }
+        `,
+        chatId,
+      })
+    })
+    await Promise.all(promises)
+
+    if (queries.length === 0) {
+      return []
+    }
+
+    const data = (await squidRequest({
+      document: gql`
+        query {
+          ${queries.map(({ query }) => query).join('\n')}
+        }
+      `,
+    })) as { [key: string]: { totalCount: number } }
+
+    const res: { chatId: string; totalCount: number }[] = queries.map(
+      ({ chatId }) => {
+        return {
+          chatId,
+          totalCount: data[`chat${chatId}`].totalCount,
+        }
+      }
+    )
+    return res
+  },
+})
+export const getMessagesCountAfterTimeQuery = createQuery({
+  key: 'ownedPostIds',
+  fetcher: getMessagesCountAfterTime,
+})
