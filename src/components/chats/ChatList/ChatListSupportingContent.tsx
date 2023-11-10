@@ -118,12 +118,14 @@ export default function ChatListSupportingContent({
   useEffect(() => {
     if (!isInitialized.current) return
 
-    let newLastReadTime: number | null = null
-    if (unreadMessage.count === 0 && lastMessageTime) {
+    let newLastReadTime: number | null = unreadMessage.lastMessageTime
+    if (
+      unreadMessage.count === 0 &&
+      lastMessageTime &&
+      lastMessageTime > unreadMessage.lastMessageTime
+    ) {
       newLastReadTime = lastMessageTime
       if (!newLastReadTime) return
-    } else {
-      newLastReadTime = unreadMessage.lastMessageTime
     }
 
     setLastReadTime(newLastReadTime)
