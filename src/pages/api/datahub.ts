@@ -10,7 +10,12 @@ import {
   notifyUpdatePostFailedOrRetryStatus,
   updatePostData,
 } from '@/server/datahub/post'
-import { datahubMutationWrapper, RateLimitError } from '@/server/datahub/utils'
+import {
+  CreateChatPermissionDeniedError,
+  CreateMessagePermissionDeniedError,
+  datahubMutationWrapper,
+  RateLimitError,
+} from '@/server/datahub/utils'
 import { z } from 'zod'
 
 export type DatahubMutationInput =
@@ -45,6 +50,16 @@ export default handlerWrapper({
     } catch (err) {
       if (err instanceof RateLimitError) {
         return res.status(429).send({
+          success: false,
+          message: err.message,
+          errors: err,
+        } as ApiResponse)
+      }
+      if (
+        err instanceof CreateChatPermissionDeniedError ||
+        err instanceof CreateMessagePermissionDeniedError
+      ) {
+        return res.status(401).send({
           success: false,
           message: err.message,
           errors: err,

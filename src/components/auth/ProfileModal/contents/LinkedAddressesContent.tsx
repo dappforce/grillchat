@@ -4,6 +4,7 @@ import MenuList from '@/components/MenuList'
 import Notice from '@/components/Notice'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
+import { truncateAddress } from '@/utils/account'
 import { ContentProps } from '../types'
 
 export default function LinkedAddressesContent({
@@ -11,7 +12,7 @@ export default function LinkedAddressesContent({
   setCurrentState,
 }: ContentProps) {
   const sendEvent = useSendEvent()
-  const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
 
   const commonEventProps = { eventSource: 'account_settings_menu' }
   const onLinkEvmAddressClick = () => {
@@ -31,8 +32,10 @@ export default function LinkedAddressesContent({
           {
             text: (
               <span className='flex items-center gap-2'>
-                <span>Connect EVM</span>
-                {evmAddress && <Notice size='sm'>Linked</Notice>}
+                <span>EVM</span>
+                {evmAddress && (
+                  <Notice size='sm'>{truncateAddress(evmAddress)}</Notice>
+                )}
               </span>
             ),
             icon: EthIcon,
@@ -41,8 +44,12 @@ export default function LinkedAddressesContent({
           {
             text: (
               <span className='flex items-center gap-2'>
-                <span>Connect Polkadot</span>
-                {hasProxyAddress && <Notice size='sm'>Linked</Notice>}
+                <span>Polkadot</span>
+                {parentProxyAddress && (
+                  <Notice size='sm'>
+                    {truncateAddress(parentProxyAddress)}
+                  </Notice>
+                )}
               </span>
             ),
             icon: PolkadotIcon,

@@ -83,9 +83,13 @@ export default function ChatItem({
         >
           {(config) => {
             const { toggleDisplay, referenceProps } = config || {}
+            const showChip = messageStatus === 'offChain' && !isMyMessage
             return (
               <div
-                className={cx('relative flex flex-col')}
+                className={cx(
+                  'relative flex flex-col',
+                  !showChip && 'overflow-hidden'
+                )}
                 onContextMenu={(e) => {
                   e.preventDefault()
                   toggleDisplay?.(e)
@@ -94,7 +98,7 @@ export default function ChatItem({
                 {...referenceProps}
                 id={messageBubbleId}
               >
-                {messageStatus === 'offChain' && !isMyMessage && (
+                {showChip && (
                   <div
                     className={cx(
                       'absolute right-0 top-0 z-10 -translate-y-1/3 translate-x-1/2 rounded-full bg-background-primary px-2 py-0.5 text-[8px] text-text-on-primary',
