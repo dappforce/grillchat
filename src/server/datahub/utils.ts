@@ -29,23 +29,43 @@ export function datahubMutationWrapper<
       return await func(...args)
     } catch (err) {
       const errors = (err as any)?.response?.errors
-      if (Array.isArray(errors)) {
-        const rateLimitError = errors.find(
-          (e: any) => e?.code === 'TOO_MANY_REQUESTS_PER_TIME_RANGE'
-        ) as any
-        const rateLimitData = rateLimitError?.payload
-        if (rateLimitError) {
-          const range = Math.max(rateLimitData.msRange / 1000, 1)
-          const timeLeft = Math.max(rateLimitData.msBeforeNext / 1000, 1)
-          throw new RateLimitError(
-            `You can only send ${rateLimitData.maxPoints} messages per ${
-              range > 1 ? `${range} seconds` : 'second'
-            }${timeLeft > 1 ? ` (${timeLeft} seconds remaining)` : ''}`,
-            timeLeft
-          )
-        }
+      if (!Array.isArray(errors)) throw err
+
+      const errorCodesMap = {
+        TOO_MANY_REQUESTS_PER_TIME_RANGE: 'TOO_MANY_REQUESTS_PER_TIME_RANGE',
+        CREATE_POST_PERMISSIONS_DENIED: 'CREATE_POST_PERMISSIONS_DENIED',
+        CREATE_COMMENT_PERMISSIONS_DENIED: 'CREATE_COMMENT_PERMISSIONS_DENIED',
       }
-      throw err
+      const foundError = errors.find(
+        (e: any) => errorCodesMap[(e?.code ?? '') as keyof typeof errorCodesMap]
+      ) as any
+      if (!foundError) {
+        throw err
+      }
+
+      if (foundError.code === errorCodesMap.TOO_MANY_REQUESTS_PER_TIME_RANGE) {
+        const rateLimitData = foundError?.payload
+        const range = Math.max(rateLimitData.msRange / 1000, 1)
+        const timeLeft = Math.max(rateLimitData.msBeforeNext / 1000, 1)
+        throw new RateLimitError(
+          `You can only send ${rateLimitData.maxPoints} messages per ${
+            range > 1 ? `${range} seconds` : 'second'
+          }${timeLeft > 1 ? ` (${timeLeft} seconds remaining)` : ''}`,
+          timeLeft
+        )
+      } else if (
+        foundError.code === errorCodesMap.CREATE_COMMENT_PERMISSIONS_DENIED
+      ) {
+        throw new CreateMessagePermissionDeniedError(
+          'You are not allowed to send a message in this chat'
+        )
+      } else if (
+        foundError.code === errorCodesMap.CREATE_POST_PERMISSIONS_DENIED
+      ) {
+        throw new CreateChatPermissionDeniedError(
+          'You are not allowed to create a chat in this hub'
+        )
+      }
     }
   }
 }
@@ -54,5 +74,19 @@ export class RateLimitError extends Error {
   constructor(message: string, public remainingSeconds: number) {
     super(message)
     this.name = ERRORS.RATE_LIMIT_EXCEEDED
+  }
+}
+
+export class CreateMessagePermissionDeniedError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = ERRORS.CREATE_MESSAGE_PERMISSION_DENIED
+  }
+}
+
+export class CreateChatPermissionDeniedError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = ERRORS.CREATE_CHAT_PERMISSIONS_DENIED
   }
 }

@@ -416,6 +416,8 @@ function showErrorSendingMessageToast(
 
   const errorData = (error as any)?.response?.data?.errors
   const isRateLimited = errorData?.name === ERRORS.RATE_LIMIT_EXCEEDED
+  const isMessagePermissionDenied =
+    errorData?.name === ERRORS.CREATE_MESSAGE_PERMISSION_DENIED
 
   let title = errorTitle
   if (isRateLimited) {
@@ -435,23 +437,24 @@ function showErrorSendingMessageToast(
   showErrorToast(error, title, {
     toastConfig: { duration: isRateLimited ? 5000 : Infinity },
     getDescription:
-      message && !isRateLimited
+      message && !isRateLimited && !isMessagePermissionDenied
         ? () => 'Click refresh to recover your message and try again'
         : undefined,
-    actionButton: isRateLimited
-      ? undefined
-      : (t) => (
-          <Button
-            size='circle'
-            variant='transparent'
-            className='text-lg'
-            onClick={() => {
-              toast.dismiss(t.id)
-              window.location.reload()
-            }}
-          >
-            <IoRefresh />
-          </Button>
-        ),
+    actionButton:
+      isRateLimited || isMessagePermissionDenied
+        ? undefined
+        : (t) => (
+            <Button
+              size='circle'
+              variant='transparent'
+              className='text-lg'
+              onClick={() => {
+                toast.dismiss(t.id)
+                window.location.reload()
+              }}
+            >
+              <IoRefresh />
+            </Button>
+          ),
   })
 }
