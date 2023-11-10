@@ -98,15 +98,25 @@ async function getPaginatedPostsByRootPostId({
   if (page === 1) {
     if (oldIds) {
       const oldOptimisticIds = []
-      for (let i = 0; i < oldIds.length; i++) {
+
+      let unincludedIdsIndex = oldIds.length
+      let hasFoundIncludedId = false
+
+      for (let i = oldIds.length - 1; i >= 0; i--) {
         const id = oldIds[i]
+
         if (isClientGeneratedOptimisticId(id)) {
-          oldOptimisticIds.push(id)
+          oldOptimisticIds.unshift(id)
         }
-        if (!idsSet.has(id)) {
-          unincludedFirstPageIds.push(id)
+
+        if (!idsSet.has(id) && !hasFoundIncludedId) {
+          unincludedIdsIndex = i
+        } else {
+          hasFoundIncludedId = true
         }
       }
+
+      unincludedFirstPageIds = oldOptimisticIds.slice(unincludedIdsIndex)
       unincludedOptimisticIds = oldOptimisticIds.filter(
         (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
       )
