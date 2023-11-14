@@ -241,6 +241,8 @@ const getPostMetadata = poolQuery<
   { lastCommentId: string; totalCommentsCount: number; postId: string }
 >({
   multiCall: async (data) => {
+    if (!data.length) return []
+
     const res = await datahubQueryRequest<
       GetPostMetadataQuery,
       GetPostMetadataQueryVariables
