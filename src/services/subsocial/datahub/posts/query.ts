@@ -50,6 +50,8 @@ async function getPaginatedPostsByRootPostId({
   page: number
   client?: QueryClient
 }): Promise<PaginatedPostsData> {
+  if (!postId) return { data: [], page, hasMore: false, totalData: 0 }
+
   const oldIds = getPaginatedPostsByPostIdFromDatahubQuery.getFirstPageData(
     client,
     postId
