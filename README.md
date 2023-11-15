@@ -12,7 +12,6 @@
 </br>
 <p align="center"><img height=20 src="https://github.com/dappforce/grillchat/actions/workflows/build-deploy.yml/badge.svg" alt="production-build"/></p>
 ---
-
 ## How to integrate Grill.chat into your app 🤝
 
 It's now simpler than ever before to have an anonymous, on-chain chat right in your application 🎉.
