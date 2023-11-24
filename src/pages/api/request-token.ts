@@ -1,9 +1,7 @@
-import { ApiResponse, handlerWrapper } from '@/server/common'
+import { ApiResponse, getServerAccount, handlerWrapper } from '@/server/common'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { validateAddress } from '@/utils/account'
-import { getCaptchaSecret, getServerMnemonic } from '@/utils/env/server'
-import { Keyring } from '@polkadot/keyring'
-import { waitReady } from '@polkadot/wasm-crypto'
+import { getCaptchaSecret } from '@/utils/env/server'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -71,13 +69,6 @@ export default handlerWrapper({
     return res.status(200).send({ success: true, message: 'OK', data: hash })
   },
 })
-
-async function getServerAccount() {
-  const mnemonic = getServerMnemonic()
-  const keyring = new Keyring()
-  await waitReady()
-  return keyring.addFromMnemonic(mnemonic, {}, 'sr25519')
-}
 
 async function getPaymentFee() {
   const signer = await getServerAccount()

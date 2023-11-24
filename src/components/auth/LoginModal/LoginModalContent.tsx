@@ -4,6 +4,7 @@ import IncognitoIcon from '@/assets/icons/incognito.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
+import xLogoIcon from '@/assets/icons/x-logo.svg'
 import {
   CommonEvmAddressLinked,
   CommonEVMLoginErrorContent,
@@ -25,6 +26,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
+import { signIn } from 'next-auth/react'
 import Image from 'next/image'
 import {
   Dispatch,
@@ -263,6 +265,16 @@ export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
           onClick: () => {
             setCurrentState('polkadot-connect')
             sendEvent('start_link_polkadot_address')
+          },
+        },
+        {
+          text: 'X profile',
+          icon: xLogoIcon,
+          onClick: () => {
+            signIn('twitter', {
+              callbackUrl: `/social`,
+            })
+            sendEvent('start_link_twitter_identity')
           },
         },
       ]}

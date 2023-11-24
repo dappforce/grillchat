@@ -35,6 +35,14 @@ export enum CanUserDoAction {
   CreatePost = 'CREATE_POST'
 }
 
+export type CreateMutateLinkedIdentityInput = {
+  callData?: InputMaybe<SocialCallDataInput>;
+  dataType: SocialEventDataType;
+  protVersion?: InputMaybe<Scalars['String']['input']>;
+  providerAddr: Scalars['String']['input'];
+  sig: Scalars['String']['input'];
+};
+
 export type CreatePostOffChainInput = {
   callData?: InputMaybe<SocialCallDataInput>;
   content?: InputMaybe<Scalars['String']['input']>;
@@ -102,11 +110,18 @@ export type LatestColdSocialEventArgsDto = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createLinkedIdentity: IngestDataResponseDto;
   createPostOffChain: IngestDataResponseDto;
   createPostOptimistic: IngestDataResponseDto;
+  deleteLinkedIdentity: IngestDataResponseDto;
   ingestPersistentDataSquid: IngestPersistentDataFromSquidResponseDto;
   updatePostBlockchainSyncStatus: IngestDataResponseDto;
   updatePostOptimistic: IngestDataResponseDto;
+};
+
+
+export type MutationCreateLinkedIdentityArgs = {
+  createLinkedIdentityInput: CreateMutateLinkedIdentityInput;
 };
 
 
@@ -117,6 +132,11 @@ export type MutationCreatePostOffChainArgs = {
 
 export type MutationCreatePostOptimisticArgs = {
   createPostOptimisticInput: CreatePostOptimisticInput;
+};
+
+
+export type MutationDeleteLinkedIdentityArgs = {
+  deleteLinkedIdentityInput: CreateMutateLinkedIdentityInput;
 };
 
 
@@ -146,7 +166,6 @@ export type Query = {
   canAccountDo: CanAccountDoResponse;
   coldSocialEvents: FindSocialEventsResponseDto;
   latestColdSocialEvent?: Maybe<SocialEventRecoveryData>;
-  pingPong: Scalars['String']['output'];
 };
 
 
@@ -201,8 +220,10 @@ export enum SocialCallName {
   ForceCreateSpace = 'force_create_space',
   ForceDeletePostReaction = 'force_delete_post_reaction',
   MovePost = 'move_post',
+  SynthCreateLinkedIdentity = 'synth_create_linked_identity',
   SynthCreatePostTxFailed = 'synth_create_post_tx_failed',
   SynthCreatePostTxRetry = 'synth_create_post_tx_retry',
+  SynthDeleteLinkedIdentity = 'synth_delete_linked_identity',
   SynthUpdatePostTxFailed = 'synth_update_post_tx_failed',
   SynthUpdatePostTxRetry = 'synth_update_post_tx_retry',
   UpdatePost = 'update_post',
@@ -280,6 +301,13 @@ export type NotifyUpdatePostTxFailedOrRetryStatusMutationVariables = Exact<{
 
 export type NotifyUpdatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', message?: string | null } };
 
+export type LinkIdentityMutationVariables = Exact<{
+  createLinkedIdentityInput: CreateMutateLinkedIdentityInput;
+}>;
+
+
+export type LinkIdentityMutation = { __typename?: 'Mutation', createLinkedIdentity: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+
 
 export const GetCanAccountDo = gql`
     query GetCanAccountDo($getAccountDo: CanAccountDoArgsInput!) {
@@ -316,6 +344,14 @@ export const NotifyUpdatePostTxFailedOrRetryStatus = gql`
   updatePostBlockchainSyncStatus(
     updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
   ) {
+    message
+  }
+}
+    `;
+export const LinkIdentity = gql`
+    mutation LinkIdentity($createLinkedIdentityInput: CreateMutateLinkedIdentityInput!) {
+  createLinkedIdentity(createLinkedIdentityInput: $createLinkedIdentityInput) {
+    processed
     message
   }
 }

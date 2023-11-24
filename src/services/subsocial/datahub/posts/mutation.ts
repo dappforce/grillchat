@@ -4,16 +4,19 @@ import { useSaveFile } from '@/services/api/mutation'
 import { Signer } from '@/utils/account'
 import { getDatahubConfig } from '@/utils/env/client'
 import { ReplyWrapper } from '@/utils/ipfs'
+import { augmentInputSig } from '@/utils/sig'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { stringToU8a, u8aToHex } from '@polkadot/util'
 import { blake2AsHex, decodeAddress } from '@polkadot/util-crypto'
 import { PostContent } from '@subsocial/api/types'
 import {
   CreatePostCallParsedArgs,
+  IdentityProvider,
   socialCallName,
   SocialEventDataApiInput,
   SocialEventDataType,
   socialEventProtVersion,
+  SynthCreateLinkedIdentityCallParsedArgs,
   SynthCreatePostTxFailedCallParsedArgs,
   SynthCreatePostTxRetryCallParsedArgs,
   SynthUpdatePostTxFailedCallParsedArgs,
@@ -26,7 +29,6 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import axios from 'axios'
-import sortKeys from 'sort-keys-recursive'
 import { SendMessageParams } from '../../commentIds'
 import {
   addOptimisticData,
@@ -69,14 +71,6 @@ export function getDeterministicId({
   return blake2AsHex(u8aKey, 128, null, true)
 }
 
-function augmentInputSig(signer: Signer | null, payload: { sig: string }) {
-  if (!signer) throw new Error('Signer is not defined')
-  const sortedPayload = sortKeys(payload)
-  const sig = signer.sign(JSON.stringify(sortedPayload))
-  const hexSig = u8aToHex(sig)
-  payload.sig = hexSig
-}
-
 function createSocialDataEventInput(
   callName: keyof typeof socialCallName,
   {
@@ -88,7 +82,9 @@ function createSocialDataEventInput(
     proxyToAddress,
   }: DatahubParams<{}>,
   eventArgs: any,
-  content?: PostContent
+  content?: PostContent,
+  // TODO: use object for not required fields
+  sign = true
 ) {
   const owner = proxyToAddress || address
   const input: SocialEventDataApiInput = {
@@ -108,7 +104,7 @@ function createSocialDataEventInput(
     providerAddr: address,
     sig: '',
   }
-  augmentInputSig(signer, input)
+  sign && augmentInputSig(signer, input)
 
   return input
 }
@@ -270,6 +266,59 @@ async function notifyUpdatePostFailedOrRetryStatus(
   })
 }
 
+async function linkIdentity(
+  params: DatahubParams<{
+    id: string
+    provider: IdentityProvider
+  }>
+) {
+  const { id, provider } = params
+  const eventArgs: SynthCreateLinkedIdentityCallParsedArgs = {
+    id,
+    provider,
+  }
+
+  const input = createSocialDataEventInput(
+    socialCallName.synth_create_linked_identity,
+    params,
+    eventArgs,
+    undefined,
+    false
+  )
+
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
+    action: 'link-identity',
+    payload: input as any,
+  })
+}
+
+// TODO: copy-paste from linkIdentity, so maybe refactor
+async function unlinkIdentity(
+  params: DatahubParams<{
+    id: string
+    provider: IdentityProvider
+  }>
+) {
+  const { id, provider } = params
+  const eventArgs: SynthCreateLinkedIdentityCallParsedArgs = {
+    id,
+    provider,
+  }
+
+  const input = createSocialDataEventInput(
+    socialCallName.synth_delete_linked_identity,
+    params,
+    eventArgs,
+    undefined,
+    false
+  )
+
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
+    action: 'unlink-identity',
+    payload: input as any,
+  })
+}
+
 function datahubWrapper<T extends (...args: any[]) => Promise<any>>(func: T) {
   return (...args: Parameters<T>) => {
     if (!getDatahubConfig()) return
@@ -285,6 +334,8 @@ const datahubMutation = {
   notifyUpdatePostFailedOrRetryStatus: datahubWrapper(
     notifyUpdatePostFailedOrRetryStatus
   ),
+  createLinkedIdentity: datahubWrapper(linkIdentity),
+  deleteLinkedIdentity: datahubWrapper(unlinkIdentity),
 }
 export default datahubMutation
 
@@ -363,6 +414,37 @@ export function useSendOffchainMessage(
         idToDelete: newId,
       })
       config.onError?.(err, data, context)
+    },
+    onSuccess: (...params) => {
+      config.onSuccess?.(...params)
+      allowWindowUnload()
+    },
+  })
+}
+
+type LinkIdentityParams = {
+  external_id: string
+  provider: IdentityProvider
+}
+
+// TODO: not sure that it is enough to use only this implementation
+export function useLinkIdentity(
+  config: UseMutationOptions<void, unknown, LinkIdentityParams, unknown>
+) {
+  const getWallet = useWalletGetter()
+
+  return useMutation({
+    ...config,
+    mutationFn: async (data) => {
+      await datahubMutation.createLinkedIdentity({
+        ...getWallet(),
+        id: data.external_id,
+        provider: data.provider,
+      })
+    },
+    onError: (err, data, context) => {
+      config.onError?.(err, data, context)
+      allowWindowUnload()
     },
     onSuccess: (...params) => {
       config.onSuccess?.(...params)

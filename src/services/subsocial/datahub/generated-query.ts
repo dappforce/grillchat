@@ -45,7 +45,8 @@ export type Account = {
   followingSpaces: Array<SpaceFollowers>
   followingSpacesCount?: Maybe<Scalars['Int']['output']>
   id: Scalars['String']['output']
-  linkedAccountsAccounts: Array<EvmSubstrateAccountLink>
+  linkedEvmAccounts: Array<EvmSubstrateAccountLink>
+  linkedIdentities: Array<LinkedIdentity>
   ownedPostsCount?: Maybe<Scalars['Int']['output']>
   /** persistent data schema version from indexer */
   persistentDataVersion?: Maybe<Scalars['String']['output']>
@@ -113,23 +114,13 @@ export enum ContentExtensionSchemaId {
 
 export enum DataHubSubscriptionEventEnum {
   EvmAddressLinkedToAccount = 'EVM_ADDRESS_LINKED_TO_ACCOUNT',
-  EvmAddressLinkedToAccountOptimistic = 'EVM_ADDRESS_LINKED_TO_ACCOUNT_OPTIMISTIC',
-  EvmAddressLinkedToAccountPersistent = 'EVM_ADDRESS_LINKED_TO_ACCOUNT_PERSISTENT',
   EvmAddressLinkToAccountStateUpdated = 'EVM_ADDRESS_LINK_TO_ACCOUNT_STATE_UPDATED',
-  EvmAddressUnlinkedToAccountOptimistic = 'EVM_ADDRESS_UNLINKED_TO_ACCOUNT_OPTIMISTIC',
-  EvmAddressUnlinkedToAccountPersistent = 'EVM_ADDRESS_UNLINKED_TO_ACCOUNT_PERSISTENT',
+  LinkedIdentityCreated = 'LINKED_IDENTITY_CREATED',
+  LinkedIdentityStateUpdated = 'LINKED_IDENTITY_STATE_UPDATED',
   PostCreated = 'POST_CREATED',
-  PostCreatedOptimistic = 'POST_CREATED_OPTIMISTIC',
-  PostCreatedPersistent = 'POST_CREATED_PERSISTENT',
   PostFollowed = 'POST_FOLLOWED',
-  PostFollowedOptimistic = 'POST_FOLLOWED_OPTIMISTIC',
-  PostFollowedPersistent = 'POST_FOLLOWED_PERSISTENT',
   PostFollowStateUpdated = 'POST_FOLLOW_STATE_UPDATED',
   PostStateUpdated = 'POST_STATE_UPDATED',
-  PostUnfollowedOptimistic = 'POST_UNFOLLOWED_OPTIMISTIC',
-  PostUnfollowedPersistent = 'POST_UNFOLLOWED_PERSISTENT',
-  PostUpdatedOptimistic = 'POST_UPDATED_OPTIMISTIC',
-  PostUpdatedPersistent = 'POST_UPDATED_PERSISTENT',
 }
 
 export enum DataType {
@@ -193,8 +184,37 @@ export type IdTimestampPair = {
   timestamp_gt: Scalars['String']['input']
 }
 
+export enum IdentityProvider {
+  Email = 'EMAIL',
+  Twitter = 'TWITTER',
+}
+
 export enum InReplyToKind {
   Post = 'Post',
+}
+
+export type LinkedIdentitiesArgs = {
+  externalId?: InputMaybe<Scalars['String']['input']>
+  id?: InputMaybe<Scalars['String']['input']>
+  provider?: InputMaybe<IdentityProvider>
+  substrateAddress?: InputMaybe<Scalars['String']['input']>
+}
+
+export type LinkedIdentity = {
+  __typename?: 'LinkedIdentity'
+  createdAtTime: Scalars['DateTime']['output']
+  enabled: Scalars['Boolean']['output']
+  externalId: Scalars['String']['output']
+  id: Scalars['String']['output']
+  provider: IdentityProvider
+  substrateAccount: Account
+  updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+}
+
+export type LinkedIdentitySubscriptionPayload = {
+  __typename?: 'LinkedIdentitySubscriptionPayload'
+  entity: LinkedIdentity
+  event: DataHubSubscriptionEventEnum
 }
 
 export enum PinnedResourceType {
@@ -299,6 +319,7 @@ export type PostSubscriptionPayload = {
 export type Query = {
   __typename?: 'Query'
   findPosts: FindPostsResponseDto
+  linkedIdentities: Array<LinkedIdentity>
   postMetadata: Array<PostMetadataResponse>
   posts: Array<Post>
   unreadMessages: Array<UnreadPostsCountResponse>
@@ -306,6 +327,10 @@ export type Query = {
 
 export type QueryFindPostsArgs = {
   where: FindPostsArgs
+}
+
+export type QueryLinkedIdentitiesArgs = {
+  where: LinkedIdentitiesArgs
 }
 
 export type QueryPostMetadataArgs = {
@@ -387,6 +412,7 @@ export type SpaceFollowers = {
 
 export type Subscription = {
   __typename?: 'Subscription'
+  linkedIdentity: LinkedIdentitySubscriptionPayload
   post: PostSubscriptionPayload
 }
 

@@ -1,6 +1,7 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import {
   CanUserDoAction,
+  CreateMutateLinkedIdentityInput,
   CreatePostOptimisticInput,
   UpdatePostBlockchainSyncStatusInput,
   UpdatePostOptimisticInput,
@@ -8,6 +9,7 @@ import {
 import {
   createPostData,
   getCanAccountDo,
+  linkIdentity,
   notifyCreatePostFailedOrRetryStatus,
   notifyUpdatePostFailedOrRetryStatus,
   updatePostData,
@@ -70,6 +72,15 @@ export type DatahubMutationBody =
       action: 'notify-update-failed'
       payload: UpdatePostBlockchainSyncStatusInput
     }
+  | {
+      action: 'link-identity'
+      payload: CreateMutateLinkedIdentityInput
+    }
+  | {
+      action: 'unlink-identity'
+      payload: CreateMutateLinkedIdentityInput
+    }
+
 export type ApiDatahubPostResponse = ApiResponse
 const POST_handler = handlerWrapper({
   inputSchema: z.any(),
@@ -111,6 +122,11 @@ function datahubActionMapping(data: DatahubMutationBody) {
       return createPostData(data.payload)
     case 'update-post':
       return updatePostData(data.payload)
+    case 'link-identity':
+      return linkIdentity(data.payload)
+    case 'unlink-identity':
+      // TODO implement
+      return linkIdentity(data.payload)
     case 'notify-create-failed':
       return notifyCreatePostFailedOrRetryStatus(data.payload)
     case 'notify-update-failed':

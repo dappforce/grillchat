@@ -13,6 +13,7 @@ import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
 import { getIdFromSlug } from '@/utils/slug'
 import '@rainbow-me/rainbowkit/styles.css'
+import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
@@ -34,6 +35,7 @@ export type AppCommonProps = {
   alwaysShowScrollbarOffset?: boolean
   head?: HeadConfigProps
   dehydratedState?: any
+  session?: any
 }
 
 export default function App(props: AppProps<AppCommonProps>) {
@@ -49,25 +51,27 @@ export default function App(props: AppProps<AppCommonProps>) {
     : ''
 
   return (
-    <ConfigProvider>
-      <style jsx global>{`
-        ${isInIframe
-          ? // Fix issue with iframe height not calculated correctly in iframe
-            `
-          html,
-          body {
-            height: 100%;
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
-          }
-        `
-          : ''}
+    <SessionProvider session={props.pageProps.session}>
+      <ConfigProvider>
+        <style jsx global>{`
+          ${isInIframe
+            ? // Fix issue with iframe height not calculated correctly in iframe
+              `
+            html,
+            body {
+              height: 100%;
+              overflow: auto;
+              -webkit-overflow-scrolling: touch;
+            }
+          `
+            : ''}
 
-        ${scrollbarStyling}
-      `}</style>
-      <AppContent {...props} />
-      <PWAInstall />
-    </ConfigProvider>
+          ${scrollbarStyling}
+        `}</style>
+        <AppContent {...props} />
+        <PWAInstall />
+      </ConfigProvider>
+    </SessionProvider>
   )
 }
 

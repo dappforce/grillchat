@@ -1,5 +1,8 @@
 import { ERRORS } from '@/constants/error'
+import { getServerAccount } from '@/server/common'
+import { CreateMutateLinkedIdentityInput } from '@/server/datahub/generated'
 import { getDatahubQueueConfig } from '@/utils/env/server'
+import { augmentInputSig } from '@/utils/sig'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 
 export function datahubQueueRequest<T, V extends Variables = Variables>(
@@ -16,6 +19,8 @@ export function datahubQueueRequest<T, V extends Variables = Variables>(
     },
     ...config,
   })
+
+  console.log(config)
 
   return client.request({ url, ...config })
 }
@@ -86,4 +91,15 @@ export class CreateChatPermissionDeniedError extends Error {
     super(message)
     this.name = ERRORS.CREATE_CHAT_PERMISSIONS_DENIED
   }
+}
+
+export const backendSigWrapper = async (
+  input: CreateMutateLinkedIdentityInput
+) => {
+  const signer = await getServerAccount()
+  if (!signer) throw new Error('Invalid Mnemonic')
+
+  augmentInputSig(signer, input)
+
+  return input
 }
