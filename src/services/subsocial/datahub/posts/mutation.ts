@@ -43,6 +43,7 @@ type DatahubParams<T> = T & {
   proxyToAddress?: string
 
   isOffchain?: boolean
+  backendSigning?: boolean
 
   uuid?: string
   timestamp?: number
@@ -75,6 +76,7 @@ function createSocialDataEventInput(
   callName: keyof typeof socialCallName,
   {
     isOffchain,
+    backendSigning,
     timestamp,
     address,
     uuid,
@@ -82,9 +84,7 @@ function createSocialDataEventInput(
     proxyToAddress,
   }: DatahubParams<{}>,
   eventArgs: any,
-  content?: PostContent,
-  // TODO: use object for not required fields
-  sign = true
+  content?: PostContent
 ) {
   const owner = proxyToAddress || address
   const input: SocialEventDataApiInput = {
@@ -104,7 +104,11 @@ function createSocialDataEventInput(
     providerAddr: address,
     sig: '',
   }
-  sign && augmentInputSig(signer, input)
+
+  if (!backendSigning) {
+    input.providerAddr = address
+    augmentInputSig(signer, input)
+  }
 
   return input
 }
@@ -273,6 +277,9 @@ async function linkIdentity(
   }>
 ) {
   const { id, provider } = params
+  params.backendSigning = true
+  params.isOffchain = true
+
   const eventArgs: SynthCreateLinkedIdentityCallParsedArgs = {
     id,
     provider,
@@ -281,9 +288,7 @@ async function linkIdentity(
   const input = createSocialDataEventInput(
     socialCallName.synth_create_linked_identity,
     params,
-    eventArgs,
-    undefined,
-    false
+    eventArgs
   )
 
   await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
@@ -300,6 +305,8 @@ async function unlinkIdentity(
   }>
 ) {
   const { id, provider } = params
+  params.backendSigning = true
+  params.isOffchain = true
   const eventArgs: SynthCreateLinkedIdentityCallParsedArgs = {
     id,
     provider,
@@ -308,9 +315,7 @@ async function unlinkIdentity(
   const input = createSocialDataEventInput(
     socialCallName.synth_delete_linked_identity,
     params,
-    eventArgs,
-    undefined,
-    false
+    eventArgs
   )
 
   await axios.post<any, any, DatahubMutationBody>('/api/datahub', {

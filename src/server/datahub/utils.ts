@@ -20,8 +20,6 @@ export function datahubQueueRequest<T, V extends Variables = Variables>(
     ...config,
   })
 
-  console.log(config)
-
   return client.request({ url, ...config })
 }
 
@@ -99,6 +97,7 @@ export const backendSigWrapper = async (
   const signer = await getServerAccount()
   if (!signer) throw new Error('Invalid Mnemonic')
 
+  input.providerAddr = signer.address
   augmentInputSig(signer, input)
 
   return input
