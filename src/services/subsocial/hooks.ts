@@ -52,8 +52,7 @@ export default function useCommonTxSteps<Data, ReturnValue>(
 
   const { withoutAnonLoginOptions, promptUserForLogin } =
     useWithoutAnonLoginOptions()
-  const needToRunCaptcha =
-    (!address && !withoutAnonLoginOptions) || (address && !hasEnoughEnergy)
+  const needToRunCaptcha = !address || !hasEnoughEnergy
 
   const workerFunc = async (params: { captchaToken?: string } & Data) => {
     const { captchaToken } = params

@@ -190,7 +190,7 @@ export default function ChatForm({
     clearAction?.()
   }
 
-  const needCaptcha = !shouldSendMessage && !withoutAnonLoginOptions
+  const needCaptcha = !shouldSendMessage
   const handleSubmit = async (captchaToken: string | null) => {
     if (
       shouldSendMessage &&

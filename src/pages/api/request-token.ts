@@ -1,3 +1,4 @@
+import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { validateAddress } from '@/utils/account'
@@ -46,6 +47,12 @@ export default handlerWrapper({
       }
     }
 
+    try {
+      const isNeedEnergy = getIsAddressNeedEnergy(data.address)
+      if (!isNeedEnergy)
+        return res.status(200).send({ success: true, message: 'OK', data: '' })
+    } catch {}
+
     let hash: string
     try {
       hash = await sendToken(data.address)
@@ -71,6 +78,31 @@ export default handlerWrapper({
     return res.status(200).send({ success: true, message: 'OK', data: hash })
   },
 })
+
+async function getIsAddressNeedEnergy(address: string) {
+  const { getSubsocialApi } = await import(
+    '@/subsocial-query/subsocial/connection'
+  )
+
+  const subsocialApi = await getSubsocialApi()
+  const substrateApi = await subsocialApi.substrateApi
+
+  return new Promise((resolve) => {
+    const unsub = substrateApi.query.energy.energyBalance(
+      address,
+      (energyAmount) => {
+        let parsedEnergy: unknown = energyAmount
+        if (typeof energyAmount.toPrimitive === 'function') {
+          parsedEnergy = energyAmount.toPrimitive()
+        }
+        const energy = parseFloat(parsedEnergy + '')
+        const isAddressNeedEnergy = energy < ESTIMATED_ENERGY_FOR_ONE_TX
+        resolve(isAddressNeedEnergy)
+        unsub.then((unsub) => unsub())
+      }
+    )
+  })
+}
 
 async function getServerAccount() {
   const mnemonic = getServerMnemonic()
