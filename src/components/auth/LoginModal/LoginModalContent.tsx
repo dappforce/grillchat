@@ -71,7 +71,7 @@ export const LoginContent = ({
 }: ContentProps) => {
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
   const sendEvent = useSendEvent()
-  const withoutAnonLoginOptions = useWithoutAnonLoginOptions()
+  const { withoutAnonLoginOptions } = useWithoutAnonLoginOptions()
 
   const {
     mutateAsync: loginAndRequestToken,
