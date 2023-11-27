@@ -6,10 +6,6 @@ import { getIdFromSlug } from '@/utils/slug'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef } from 'react'
 
-const openLoginModal = () => {
-  useLoginModal.getState().setIsOpen(true)
-}
-
 export default function useWithoutAnonLoginOptions() {
   const { query } = useRouter()
   const chatId =
