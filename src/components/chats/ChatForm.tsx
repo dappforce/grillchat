@@ -6,6 +6,7 @@ import { ERRORS } from '@/constants/error'
 import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
+import useWithoutAnonLoginOptions from '@/hooks/useWithoutAnonLoginOptions'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import {
@@ -91,6 +92,7 @@ export default function ChatForm({
   const messageToEdit = useMessageData((state) => state.messageToEdit)
   const clearAction = useMessageData((state) => state.clearAction)
   const setMessageBody = useMessageData((state) => state.setMessageBody)
+  const { withoutAnonLoginOptions } = useWithoutAnonLoginOptions()
 
   const { data: editedMessage } = getPostQuery.useQuery(messageToEdit, {
     enabled: !!messageToEdit,
@@ -188,6 +190,7 @@ export default function ChatForm({
     clearAction?.()
   }
 
+  const needCaptcha = !shouldSendMessage && !withoutAnonLoginOptions
   const handleSubmit = async (captchaToken: string | null) => {
     if (
       shouldSendMessage &&
@@ -244,7 +247,6 @@ export default function ChatForm({
       resetForm()
       sendMessage(messageParams)
     } else {
-      if (!captchaToken) return
       resetForm()
       requestTokenAndSendMessage({
         captchaToken,
@@ -274,7 +276,7 @@ export default function ChatForm({
         {(runCaptcha) => {
           const submitForm = async (e?: SyntheticEvent) => {
             e?.preventDefault()
-            if (shouldSendMessage) {
+            if (!needCaptcha) {
               handleSubmit(null)
               return
             }

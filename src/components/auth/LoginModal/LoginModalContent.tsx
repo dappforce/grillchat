@@ -16,19 +16,17 @@ import MenuList from '@/components/MenuList'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import Toast from '@/components/Toast'
-import { getChatIdsWithoutAnonLoginOptions } from '@/constants/chat'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
+import useWithoutAnonLoginOptions from '@/hooks/useWithoutAnonLoginOptions'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useRequestToken } from '@/services/api/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
-import { getIdFromSlug } from '@/utils/slug'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import {
   Dispatch,
   SetStateAction,
@@ -73,9 +71,7 @@ export const LoginContent = ({
 }: ContentProps) => {
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
   const sendEvent = useSendEvent()
-  const { query } = useRouter()
-  const chatId =
-    typeof query.slug === 'string' ? getIdFromSlug(query.slug) : undefined
+  const withoutAnonLoginOptions = useWithoutAnonLoginOptions()
 
   const {
     mutateAsync: loginAndRequestToken,
@@ -89,9 +85,6 @@ export const LoginContent = ({
   )
 
   const isLoading = loadingRequestToken || hasStartCaptcha
-  const withoutAnonLoginOptions = getChatIdsWithoutAnonLoginOptions().includes(
-    chatId ?? ''
-  )
 
   return (
     <div>

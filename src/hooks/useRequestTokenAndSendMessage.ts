@@ -5,14 +5,17 @@ import {
 } from '@/services/subsocial/commentIds'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useMutation, UseMutationOptions } from '@tanstack/react-query'
+import useWithoutAnonLoginOptions from './useWithoutAnonLoginOptions'
 
 type Params = SendMessageParams & {
-  captchaToken: string
+  captchaToken: string | null
 }
 export default function useRequestTokenAndSendMessage(
   options?: UseMutationOptions<void, unknown, Params, unknown>
 ) {
   const address = useMyMainAddress()
+  const { withoutAnonLoginOptions, promptUserForLogin } =
+    useWithoutAnonLoginOptions()
 
   const { mutateAsync: requestToken } = useRequestToken()
   const { mutateAsync: sendMessage } = useSendMessage()
@@ -22,15 +25,23 @@ export default function useRequestTokenAndSendMessage(
     const { captchaToken, ...sendMessageParams } = params
     let usedAddress: string = address ?? ''
     if (!address) {
-      const address = await login()
-      if (!address) throw new Error('Failed to login')
-      usedAddress = address
+      if (withoutAnonLoginOptions) {
+        const loginAddress = await promptUserForLogin()
+        if (!loginAddress) return
+        usedAddress = loginAddress
+      } else {
+        const address = await login()
+        if (!address) throw new Error('Failed to login')
+        usedAddress = address
+      }
     }
 
-    await Promise.all([
-      requestToken({ address: usedAddress, captchaToken }),
-      sendMessage(sendMessageParams),
-    ])
+    const promises: Promise<any>[] = [sendMessage(sendMessageParams)]
+    if (captchaToken) {
+      promises.push(requestToken({ address: usedAddress, captchaToken }))
+    }
+
+    await Promise.all(promises)
   }
 
   return useMutation(requestTokenAndSendMessage, options)
