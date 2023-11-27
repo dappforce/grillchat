@@ -16,6 +16,7 @@ import MenuList from '@/components/MenuList'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import Toast from '@/components/Toast'
+import { getChatIdsWithoutAnonLoginOptions } from '@/constants/chat'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
@@ -25,7 +26,9 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
+import { getIdFromSlug } from '@/utils/slug'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import {
   Dispatch,
   SetStateAction,
@@ -70,6 +73,9 @@ export const LoginContent = ({
 }: ContentProps) => {
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
   const sendEvent = useSendEvent()
+  const { query } = useRouter()
+  const chatId =
+    typeof query.slug === 'string' ? getIdFromSlug(query.slug) : undefined
 
   const {
     mutateAsync: loginAndRequestToken,
@@ -83,12 +89,20 @@ export const LoginContent = ({
   )
 
   const isLoading = loadingRequestToken || hasStartCaptcha
+  const withoutAnonLoginOptions = getChatIdsWithoutAnonLoginOptions().includes(
+    chatId ?? ''
+  )
 
   return (
     <div>
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
-        <div className='flex flex-col gap-4'>
+        <div
+          className={cx(
+            'flex flex-col gap-4',
+            withoutAnonLoginOptions && 'pb-4'
+          )}
+        >
           <Button
             onClick={() => {
               setCurrentState('connect-wallet')
@@ -111,32 +125,35 @@ export const LoginContent = ({
               Enter Grill secret key
             </div>
           </Button>
-          <Button
-            type='button'
-            variant='primaryOutline'
-            size='lg'
-            className='w-full'
-            isLoading={isLoading}
-            onClick={async () => {
-              setHasStartCaptcha(true)
-              const token = await runCaptcha()
-              if (!token) return
-              setHasStartCaptcha(false)
-              const newAddress = await loginAndRequestToken({
-                captchaToken: token,
-              })
-              if (newAddress) {
-                setCurrentState('account-created')
-              }
-            }}
-          >
-            <div className='flex items-center justify-center gap-2'>
-              <IncognitoIcon className='text-text-muted' />
-              Continue anonymously
-            </div>
-          </Button>
-
-          {termsAndService('mt-4')}
+          {!withoutAnonLoginOptions && (
+            <>
+              <Button
+                type='button'
+                variant='primaryOutline'
+                size='lg'
+                className='w-full'
+                isLoading={isLoading}
+                onClick={async () => {
+                  setHasStartCaptcha(true)
+                  const token = await runCaptcha()
+                  if (!token) return
+                  setHasStartCaptcha(false)
+                  const newAddress = await loginAndRequestToken({
+                    captchaToken: token,
+                  })
+                  if (newAddress) {
+                    setCurrentState('account-created')
+                  }
+                }}
+              >
+                <div className='flex items-center justify-center gap-2'>
+                  <IncognitoIcon className='text-text-muted' />
+                  Continue anonymously
+                </div>
+              </Button>
+              {termsAndService('mt-4')}
+            </>
+          )}
         </div>
       </div>
     </div>
