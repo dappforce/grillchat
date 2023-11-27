@@ -2,7 +2,12 @@ import { SubsocialQueryData } from '@/subsocial-query/subsocial/query'
 import { gql } from 'graphql-request'
 import { getPostsFromDatahub } from '../datahub/posts/fetcher'
 import { POST_FRAGMENT } from '../squid/fragments'
-import { GetPostsQuery, GetPostsQueryVariables } from '../squid/generated'
+import {
+  GetPostsFollowersCountQuery,
+  GetPostsFollowersCountQueryVariables,
+  GetPostsQuery,
+  GetPostsQueryVariables,
+} from '../squid/generated'
 import { mapPostFragment } from '../squid/mappers'
 import { squidRequest } from '../squid/utils'
 import { standaloneDynamicFetcherWrapper } from '../utils'
@@ -38,3 +43,23 @@ export const getPostsFromSubsocial = standaloneDynamicFetcherWrapper({
   squid: getPostsFromSquid,
   datahub: getPostsFromDatahub,
 })
+
+const GET_POSTS_FOLLOWERS_COUNT = gql`
+  query GetPostsFollowersCount($ids: [String!]) {
+    posts(where: { id_in: $ids }) {
+      id
+      followersCount
+    }
+  }
+`
+export async function getPostsFollowersCountFromSquid(postIds: string[]) {
+  if (postIds.length === 0) return []
+  const res = await squidRequest<
+    GetPostsFollowersCountQuery,
+    GetPostsFollowersCountQueryVariables
+  >({
+    document: GET_POSTS_FOLLOWERS_COUNT,
+    variables: { ids: postIds },
+  })
+  return res.posts
+}

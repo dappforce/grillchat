@@ -466,6 +466,7 @@ export type GetPostsQueryVariables = Exact<{
   ids?: InputMaybe<
     Array<Scalars['String']['input']> | Scalars['String']['input']
   >
+  pageSize: Scalars['Int']['input']
 }>
 
 export type GetPostsQuery = {
@@ -758,7 +759,7 @@ export const DatahubPostFragment = gql`
   }
 `
 export const GetPosts = gql`
-  query GetPosts($ids: [String!]) {
+  query GetPosts($ids: [String!], $pageSize: Int!) {
     findPosts(where: { persistentIds: $ids }) {
       data {
         ...DatahubPostFragment

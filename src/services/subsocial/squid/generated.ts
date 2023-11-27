@@ -5870,14 +5870,6 @@ export type WhereIdInput = {
   id: Scalars['String']['input'];
 };
 
-export type GetMessagesCountAfterTimeQueryVariables = Exact<{
-  chatId: Scalars['String']['input'];
-  time: Scalars['DateTime']['input'];
-}>;
-
-
-export type GetMessagesCountAfterTimeQuery = { __typename?: 'Query', postsConnection: { __typename?: 'PostsConnection', totalCount: number } };
-
 export type GetEvmAddressesQueryVariables = Exact<{
   addresses?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
@@ -5891,6 +5883,13 @@ export type GetPostsQueryVariables = Exact<{
 
 
 export type GetPostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', content?: string | null, createdAtBlock?: any | null, createdAtTime?: any | null, title?: string | null, body?: string | null, summary?: string | null, isShowMore?: boolean | null, image?: string | null, link?: string | null, downvotesCount: number, hidden: boolean, id: string, isComment: boolean, kind?: PostKind | null, repliesCount: number, sharesCount: number, upvotesCount: number, updatedAtTime?: any | null, inReplyToKind?: InReplyToKind | null, followersCount: number, canonical?: string | null, tagsOriginal?: string | null, createdByAccount: { __typename?: 'Account', id: string }, inReplyToPost?: { __typename?: 'Post', id: string } | null, ownedByAccount: { __typename?: 'Account', id: string }, space?: { __typename?: 'Space', id: string } | null, rootPost?: { __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null } | null, sharedPost?: { __typename?: 'Post', id: string } | null, extensions: Array<{ __typename?: 'ContentExtension', image?: string | null, amount?: any | null, chain?: string | null, collectionId?: string | null, decimals?: number | null, extensionSchemaId: ContentExtensionSchemaId, id: string, nftId?: string | null, token?: string | null, txHash?: string | null, message?: string | null, nonce?: string | null, url?: string | null, recipient?: { __typename?: 'Account', id: string } | null, fromEvm?: { __typename?: 'EvmAccount', id: string } | null, toEvm?: { __typename?: 'EvmAccount', id: string } | null, pinnedResources: Array<{ __typename?: 'ExtensionPinnedResource', post?: { __typename?: 'Post', id: string } | null }> }> }> };
+
+export type GetPostsFollowersCountQueryVariables = Exact<{
+  ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
+
+
+export type GetPostsFollowersCountQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, followersCount: number }> };
 
 export type GetPostsByContentQueryVariables = Exact<{
   search: Scalars['String']['input'];
@@ -6029,16 +6028,6 @@ export const PostFragment = gql`
   }
 }
     `;
-export const GetMessagesCountAfterTime = gql`
-    query GetMessagesCountAfterTime($chatId: String!, $time: DateTime!) {
-  postsConnection(
-    where: {createdAtTime_gt: $time, rootPost: {id_eq: $chatId}}
-    orderBy: id_ASC
-  ) {
-    totalCount
-  }
-}
-    `;
 export const GetEvmAddresses = gql`
     query getEvmAddresses($addresses: [String!]) {
   evmSubstrateAccountLinks(
@@ -6060,6 +6049,14 @@ export const GetPosts = gql`
   }
 }
     ${PostFragment}`;
+export const GetPostsFollowersCount = gql`
+    query GetPostsFollowersCount($ids: [String!]) {
+  posts(where: {id_in: $ids}) {
+    id
+    followersCount
+  }
+}
+    `;
 export const GetPostsByContent = gql`
     query GetPostsByContent($search: String!, $spaceIds: [String!]!, $postIds: [String!]!) {
   posts(
