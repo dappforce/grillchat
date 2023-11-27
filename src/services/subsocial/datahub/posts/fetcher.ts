@@ -87,8 +87,8 @@ export const DATAHUB_POST_FRAGMENT = gql`
 
 const GET_POSTS = gql`
   ${DATAHUB_POST_FRAGMENT}
-  query GetPosts($ids: [String!]) {
-    findPosts(where: { persistentIds: $ids }) {
+  query GetPosts($ids: [String!], $pageSize: Int!) {
+    findPosts(where: { persistentIds: $ids, pageSize: $pageSize }) {
       data {
         ...DatahubPostFragment
       }
@@ -128,7 +128,7 @@ export async function getPostsFromDatahub(postIds: string[]) {
     const [datahubResPromise, squidResPromise] = await Promise.allSettled([
       datahubQueryRequest<GetPostsQuery, GetPostsQueryVariables>({
         document: GET_POSTS,
-        variables: { ids: persistentIds },
+        variables: { ids: persistentIds, pageSize: persistentIds.length },
       }),
       getPostsFollowersCountFromSquid(persistentIds),
     ] as const)
