@@ -226,7 +226,7 @@ export default function ChatForm({
     }
 
     const willOpenLoginModal = withoutAnonLoginOptions && !isLoggedIn
-    if (!hasSentMessageStorage.get() && willOpenLoginModal) {
+    if (!hasSentMessageStorage.get() && !willOpenLoginModal) {
       setTimeout(() => {
         setIsOpenCtaModal(true)
       }, 2000)
