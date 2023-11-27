@@ -1,5 +1,6 @@
 import { PostData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
+import { getPostsFollowersCountFromSquid } from '../../posts/fetcher'
 import {
   GetOptimisticPostsQuery,
   GetOptimisticPostsQueryVariables,
@@ -124,15 +125,25 @@ export async function getPostsFromDatahub(postIds: string[]) {
   let optimisticPosts: PostData[] = []
 
   if (persistentIds.length > 0) {
-    const res = await datahubQueryRequest<
-      GetPostsQuery,
-      GetPostsQueryVariables
-    >({
-      document: GET_POSTS,
-      variables: { ids: persistentIds },
-    })
-    persistentPosts = res.findPosts.data.map((post) => {
+    const [datahubResPromise, squidResPromise] = await Promise.allSettled([
+      datahubQueryRequest<GetPostsQuery, GetPostsQueryVariables>({
+        document: GET_POSTS,
+        variables: { ids: persistentIds },
+      }),
+      getPostsFollowersCountFromSquid(persistentIds),
+    ] as const)
+    const followersCountMap = new Map<string, number>()
+    if (squidResPromise.status === 'fulfilled') {
+      squidResPromise.value.forEach((post) => {
+        followersCountMap.set(post.id, post.followersCount)
+      })
+    }
+    if (datahubResPromise.status !== 'fulfilled') {
+      throw new Error(datahubResPromise.reason)
+    }
+    persistentPosts = datahubResPromise.value.findPosts.data.map((post) => {
       post.id = post.persistentId || post.id
+      post.followersCount = followersCountMap.get(post.id) || 0
       return { ...mapDatahubPostFragment(post), requestedId: post.id }
     })
   }
