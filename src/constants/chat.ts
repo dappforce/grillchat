@@ -42,7 +42,7 @@ export function getIncludedChatIdsForUnreadCount() {
   return INCLUDED_CHAT_IDS_FOR_UNREAD_COUNT
 }
 
-const CHAT_IDS_WITHOUT_ANON_LOGIN_OPTIONS: string[] = ['6946']
+const CHAT_IDS_WITHOUT_ANON_LOGIN_OPTIONS: string[] = ['19361']
 export function getChatIdsWithoutAnonLoginOptions() {
   return CHAT_IDS_WITHOUT_ANON_LOGIN_OPTIONS
 }
