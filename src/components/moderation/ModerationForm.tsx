@@ -1,7 +1,7 @@
 import useToastError from '@/hooks/useToastError'
-import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getModerationReasonsQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
+import { useModerationActions } from '@/services/subsocial/datahub/moderation/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -72,9 +72,9 @@ export default function ModerationForm({
   const { name } = useName(ownerId)
 
   const myAddress = useMyMainAddress()
-  const { mutate, isLoading, error } = useCommitModerationAction({
+  const { mutate, isLoading, error } = useModerationActions({
     onSuccess: (_, variables) => {
-      if (variables.action === 'block') {
+      if (variables.callName === 'synth_moderation_block_resource') {
         const isBlockingOwner = variables.resourceId === ownerId
         toast.custom((t) => (
           <Toast
@@ -132,11 +132,12 @@ export default function ModerationForm({
 
         const reasonId = reason.id
         mutate({
-          action: 'block',
-          address: myAddress,
-          ctxPostId: chatId,
-          reasonId,
-          resourceId,
+          callName: 'synth_moderation_block_resource',
+          args: {
+            organizationIds: '*',
+            reasonId,
+            resourceId,
+          },
         })
 
         sendEvent('client_moderation', {

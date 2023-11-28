@@ -4,20 +4,20 @@ import {
   CreatePostOptimisticInput,
   UpdatePostBlockchainSyncStatusInput,
   UpdatePostOptimisticInput,
-} from '@/server/datahub/generated'
+} from '@/server/datahub-queue/generated'
 import {
   createPostData,
   getCanAccountDo,
   notifyCreatePostFailedOrRetryStatus,
   notifyUpdatePostFailedOrRetryStatus,
   updatePostData,
-} from '@/server/datahub/post'
+} from '@/server/datahub-queue/post'
 import {
   CreateChatPermissionDeniedError,
   CreateMessagePermissionDeniedError,
   datahubMutationWrapper,
   RateLimitError,
-} from '@/server/datahub/utils'
+} from '@/server/datahub-queue/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 

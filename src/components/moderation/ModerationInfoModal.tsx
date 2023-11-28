@@ -1,6 +1,6 @@
 import BlockedImage from '@/assets/graphics/blocked.png'
-import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getBlockedInPostIdDetailedQuery } from '@/services/api/moderation/query'
+import { useModerationActions } from '@/services/subsocial/datahub/moderation/mutation'
 import { useMyMainAddress } from '@/stores/my-account'
 import Image from 'next/image'
 import { useReducer } from 'react'
@@ -67,7 +67,7 @@ export default function ModerationInfoModal({
   const blockedUsersCount = blockedUsers.length
 
   const { name } = useName(toBeUnblocked?.id ?? '')
-  const { mutate } = useCommitModerationAction({
+  const { mutate } = useModerationActions({
     onSuccess: (_, variables) => {
       if (variables.action === 'unblock') {
         toast.custom((t) => (
@@ -111,10 +111,11 @@ export default function ModerationInfoModal({
   const unblock = () => {
     if (!toBeUnblocked) return
     mutate({
-      action: 'unblock',
-      resourceId: toBeUnblocked.id,
-      address: myAddress,
-      ctxPostId: chatId,
+      callName: 'synth_moderation_unblock_resource',
+      args: {
+        resourceId: toBeUnblocked.id,
+        organizationIds: '*',
+      },
     })
   }
 

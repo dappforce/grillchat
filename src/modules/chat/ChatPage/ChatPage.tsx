@@ -15,10 +15,10 @@ import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { useCommitModerationAction } from '@/services/api/moderation/mutation'
 import { getModeratorQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
+import { useModerationActions } from '@/services/subsocial/datahub/moderation/mutation'
 import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
@@ -132,16 +132,18 @@ export default function ChatPage({
     enabled: !!myAddress,
   })
   const { isAuthorized, isOwner } = useAuthorizedForModeration(chatId)
-  const { mutateAsync: commitModerationAction } = useCommitModerationAction()
+  const { mutateAsync: commitModerationAction } = useModerationActions()
 
   useEffect(() => {
     if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
     if (!isAuthorized && moderator) {
+      // TODO: add ctx condition
       commitModerationAction({
-        action: 'init',
-        address: moderator.address,
-        postId: chatId,
-        spaceId: COMMUNITY_CHAT_HUB_ID,
+        callName: 'synth_moderation_init_moderator',
+        args: {
+          ctxPostIds: [chatId],
+          ctxSpaceIds: [COMMUNITY_CHAT_HUB_ID],
+        },
       })
     }
   }, [isAuthorized, commitModerationAction, moderator, chatId, isOwner])

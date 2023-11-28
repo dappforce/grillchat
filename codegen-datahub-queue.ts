@@ -6,9 +6,9 @@ if (!queueUrl) throw new Error('Codegen error: Datahub Queue URL not set')
 const config: CodegenConfig = {
   overwrite: true,
   schema: queueUrl,
-  documents: 'src/server/datahub/**/*.ts',
+  documents: 'src/server/datahub-queue/**/*.ts',
   generates: {
-    'src/server/datahub/generated.ts': {
+    'src/server/datahub-queue/generated.ts': {
       plugins: [
         'typescript',
         'typescript-operations',

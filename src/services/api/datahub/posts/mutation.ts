@@ -1,7 +1,11 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import { DatahubMutationBody } from '@/pages/api/datahub'
-import { useSaveFile } from '@/services/api/mutation'
-import { Signer } from '@/utils/account'
+import { SendMessageParams } from '@/services/subsocial/commentIds'
+import {
+  addOptimisticData,
+  deleteOptimisticData,
+} from '@/services/subsocial/commentIds/optimistic'
+import { useWalletGetter } from '@/services/subsocial/hooks'
 import { getDatahubConfig } from '@/utils/env/client'
 import { ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
@@ -10,10 +14,8 @@ import { blake2AsHex, decodeAddress } from '@polkadot/util-crypto'
 import { PostContent } from '@subsocial/api/types'
 import {
   CreatePostCallParsedArgs,
+  PostKind,
   socialCallName,
-  SocialEventDataApiInput,
-  SocialEventDataType,
-  socialEventProtVersion,
   SynthCreatePostTxFailedCallParsedArgs,
   SynthCreatePostTxRetryCallParsedArgs,
   SynthUpdatePostTxFailedCallParsedArgs,
@@ -26,25 +28,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import axios from 'axios'
-import sortKeys from 'sort-keys-recursive'
-import { SendMessageParams } from '../../commentIds'
-import {
-  addOptimisticData,
-  deleteOptimisticData,
-} from '../../commentIds/optimistic'
-import { useWalletGetter } from '../../hooks'
-import { PostKind } from '../generated-query'
-
-type DatahubParams<T> = T & {
-  address: string
-  signer: Signer | null
-  proxyToAddress?: string
-
-  isOffchain?: boolean
-
-  uuid?: string
-  timestamp?: number
-}
+import { createSocialDataEventInput, DatahubParams } from '../utils'
 
 export function isValidUUIDv4(maybeUuid: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -69,50 +53,6 @@ export function getDeterministicId({
   return blake2AsHex(u8aKey, 128, null, true)
 }
 
-function augmentInputSig(signer: Signer | null, payload: { sig: string }) {
-  if (!signer) throw new Error('Signer is not defined')
-  const sortedPayload = sortKeys(payload)
-  const sig = signer.sign(JSON.stringify(sortedPayload))
-  const hexSig = u8aToHex(sig)
-  payload.sig = hexSig
-}
-
-function createSocialDataEventInput(
-  callName: keyof typeof socialCallName,
-  {
-    isOffchain,
-    timestamp,
-    address,
-    uuid,
-    signer,
-    proxyToAddress,
-  }: DatahubParams<{}>,
-  eventArgs: any,
-  content?: PostContent
-) {
-  const owner = proxyToAddress || address
-  const input: SocialEventDataApiInput = {
-    protVersion: socialEventProtVersion['0.1'],
-    dataType: isOffchain
-      ? SocialEventDataType.offChain
-      : SocialEventDataType.optimistic,
-    callData: {
-      name: callName,
-      signer: owner || '',
-      args: JSON.stringify(eventArgs),
-      timestamp: timestamp || Date.now(),
-      uuid: uuid || crypto.randomUUID(),
-      proxy: proxyToAddress ? address : undefined,
-    },
-    content: JSON.stringify(content),
-    providerAddr: address,
-    sig: '',
-  }
-  augmentInputSig(signer, input)
-
-  return input
-}
-
 async function createPostData(
   params: DatahubParams<{
     rootPostId?: string
@@ -121,7 +61,8 @@ async function createPostData(
     content: PostContent
   }>
 ) {
-  const { cid, rootPostId, spaceId, content } = params
+  const { args } = params
+  const { content, spaceId, cid, rootPostId } = args
   const eventArgs: CreatePostCallParsedArgs = {
     forced: false,
     postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
@@ -155,7 +96,7 @@ async function updatePostData(
     }
   }>
 ) {
-  const { postId, changes } = params
+  const { postId, changes } = params.args
   const { content, hidden } = changes
   const eventArgs: UpdatePostCallParsedArgs = {
     spaceId: null,
@@ -182,15 +123,15 @@ async function notifyCreatePostFailedOrRetryStatus(
       isRetrying?: {
         success: boolean
       }
-      timestamp: number
       reason?: string
       optimisticId: string
-    }>,
+    }> & { timestamp: number },
     'txSig'
   >
 ) {
-  const { address, isRetrying, signer, timestamp, ...args } = params
-  const augmentedArgs = { ...args, timestamp: timestamp.toString() }
+  const { timestamp, args } = params
+  const { isRetrying, ...otherArgs } = args
+  const augmentedArgs = { ...otherArgs, timestamp: timestamp.toString() }
   let event:
     | {
         name: (typeof socialCallName)['synth_create_post_tx_failed']
@@ -229,13 +170,13 @@ async function notifyUpdatePostFailedOrRetryStatus(
         success: boolean
       }
       reason?: string
-      timestamp: number
-    }>,
+    }> & { timestamp: number },
     'txSig'
   >
 ) {
-  const { postId, address, isRetrying, signer, timestamp, ...args } = params
-  const augmentedArgs = { ...args, timestamp: timestamp.toString() }
+  const { timestamp, args } = params
+  const { postId, isRetrying, ...otherArgs } = args
+  const augmentedArgs = { ...otherArgs, timestamp: timestamp.toString() }
   const eventArgs = {
     ...augmentedArgs,
     persistentId: postId,
@@ -296,7 +237,6 @@ export function useSendOffchainMessage(
   config: UseMutationOptions<void, unknown, SendOffchainMessageParams, unknown>
 ) {
   const client = useQueryClient()
-  const { mutateAsync: saveFile } = useSaveFile()
   const getWallet = useWalletGetter()
 
   return useMutation({
@@ -319,9 +259,11 @@ export function useSendOffchainMessage(
         uuid: data.uuid,
         timestamp: data.timestamp,
         isOffchain: true,
-        content: content,
-        rootPostId: data.chatId,
-        spaceId: data.hubId,
+        args: {
+          content: content,
+          rootPostId: data.chatId,
+          spaceId: data.hubId,
+        },
       })
     },
     onMutate: async (data) => {
