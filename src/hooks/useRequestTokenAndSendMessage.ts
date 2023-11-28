@@ -5,7 +5,7 @@ import {
 } from '@/services/subsocial/commentIds'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useMutation, UseMutationOptions } from '@tanstack/react-query'
-import useWithoutAnonLoginOptions from './useWithoutAnonLoginOptions'
+import useLoginOptions from './useLoginOptions'
 
 type Params = SendMessageParams & {
   captchaToken: string | null
@@ -14,8 +14,7 @@ export default function useRequestTokenAndSendMessage(
   options?: UseMutationOptions<void, unknown, Params, unknown>
 ) {
   const address = useMyMainAddress()
-  const { withoutAnonLoginOptions, promptUserForLogin } =
-    useWithoutAnonLoginOptions()
+  const { isNonAnonLoginRequired, promptUserForLogin } = useLoginOptions()
 
   const { mutateAsync: requestToken } = useRequestToken()
   const { mutateAsync: sendMessage } = useSendMessage()
@@ -25,7 +24,7 @@ export default function useRequestTokenAndSendMessage(
     const { captchaToken, ...sendMessageParams } = params
     let usedAddress: string = address ?? ''
     if (!address) {
-      if (withoutAnonLoginOptions) {
+      if (isNonAnonLoginRequired) {
         const loginAddress = await promptUserForLogin()
         if (!loginAddress) return
         usedAddress = loginAddress

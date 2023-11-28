@@ -6,11 +6,11 @@ import { getIdFromSlug } from '@/utils/slug'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef } from 'react'
 
-export default function useWithoutAnonLoginOptions() {
+export default function useLoginOptions() {
   const { query } = useRouter()
   const chatId =
     typeof query.slug === 'string' ? getIdFromSlug(query.slug) : undefined
-  const withoutAnonLoginOptions = getChatIdsWithoutAnonLoginOptions().includes(
+  const isNonAnonLoginRequired = getChatIdsWithoutAnonLoginOptions().includes(
     chatId ?? ''
   )
 
@@ -33,5 +33,5 @@ export default function useWithoutAnonLoginOptions() {
     return useMyAccount.getState().address
   }, [setIsOpen])
 
-  return { withoutAnonLoginOptions, promptUserForLogin }
+  return { isNonAnonLoginRequired, promptUserForLogin }
 }
