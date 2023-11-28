@@ -17,9 +17,9 @@ import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import Toast from '@/components/Toast'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
+import useLoginOptions from '@/hooks/useLoginOptions'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
-import useWithoutAnonLoginOptions from '@/hooks/useWithoutAnonLoginOptions'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useRequestToken } from '@/services/api/mutation'
 import { useSendEvent } from '@/stores/analytics'
@@ -71,7 +71,7 @@ export const LoginContent = ({
 }: ContentProps) => {
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
   const sendEvent = useSendEvent()
-  const { withoutAnonLoginOptions } = useWithoutAnonLoginOptions()
+  const { isNonAnonLoginRequired } = useLoginOptions()
 
   const {
     mutateAsync: loginAndRequestToken,
@@ -93,7 +93,7 @@ export const LoginContent = ({
         <div
           className={cx(
             'flex flex-col gap-4',
-            withoutAnonLoginOptions && 'pb-4'
+            isNonAnonLoginRequired && 'pb-4'
           )}
         >
           <Button
@@ -118,7 +118,7 @@ export const LoginContent = ({
               Enter Grill secret key
             </div>
           </Button>
-          {!withoutAnonLoginOptions && (
+          {!isNonAnonLoginRequired && (
             <>
               <Button
                 type='button'

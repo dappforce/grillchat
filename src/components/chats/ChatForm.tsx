@@ -4,9 +4,9 @@ import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ERRORS } from '@/constants/error'
 import useAutofocus from '@/hooks/useAutofocus'
+import useLoginOptions from '@/hooks/useLoginOptions'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
-import useWithoutAnonLoginOptions from '@/hooks/useWithoutAnonLoginOptions'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import {
@@ -92,7 +92,7 @@ export default function ChatForm({
   const messageToEdit = useMessageData((state) => state.messageToEdit)
   const clearAction = useMessageData((state) => state.clearAction)
   const setMessageBody = useMessageData((state) => state.setMessageBody)
-  const { withoutAnonLoginOptions } = useWithoutAnonLoginOptions()
+  const { isNonAnonLoginRequired } = useLoginOptions()
 
   const { data: editedMessage } = getPostQuery.useQuery(messageToEdit, {
     enabled: !!messageToEdit,
@@ -225,7 +225,7 @@ export default function ChatForm({
       return
     }
 
-    const willOpenLoginModal = withoutAnonLoginOptions && !isLoggedIn
+    const willOpenLoginModal = isNonAnonLoginRequired && !isLoggedIn
     if (!hasSentMessageStorage.get() && !willOpenLoginModal) {
       setTimeout(() => {
         setIsOpenCtaModal(true)
