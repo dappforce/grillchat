@@ -8,6 +8,7 @@ import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getUnreadCountQuery } from '@/services/subsocial/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getDatahubConfig } from '@/utils/env/client'
@@ -58,7 +59,8 @@ export default function Navbar({
   const prevAddress = usePrevious(address)
   const isLoggedIn = !!address
 
-  const [openLoginModal, setOpenLoginModal] = useState(false)
+  const isOpen = useLoginModal((state) => state.isOpen)
+  const setIsOpen = useLoginModal((state) => state.setIsOpen)
   const [openPrivateKeyNotice, setOpenPrivateKeyNotice] = useState(false)
   const isLoggingInWithKey = useRef(false)
   const timeoutRef = useRef<any>()
@@ -79,7 +81,7 @@ export default function Navbar({
   }, [address, isInitializedAddress, prevAddress])
 
   const login = () => {
-    setOpenLoginModal(true)
+    setIsOpen(true)
   }
 
   const renderAuthComponent = () => {
@@ -154,8 +156,8 @@ export default function Navbar({
         </Container>
       </nav>
       <LoginModal
-        isOpen={openLoginModal}
-        closeModal={() => setOpenLoginModal(false)}
+        isOpen={isOpen}
+        closeModal={() => setIsOpen(false)}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}
       />

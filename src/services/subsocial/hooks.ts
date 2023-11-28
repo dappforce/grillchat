@@ -1,3 +1,4 @@
+import useLoginOptions from '@/hooks/useLoginOptions'
 import { useRequestToken } from '@/services/api/mutation'
 import { getHasEnoughEnergy, useMyAccount } from '@/stores/my-account'
 import {
@@ -49,15 +50,22 @@ export default function useCommonTxSteps<Data, ReturnValue>(
   const { mutateAsync: requestToken } = useRequestToken()
   const login = useMyAccount((state) => state.login)
 
+  const { isNonAnonLoginRequired, promptUserForLogin } = useLoginOptions()
   const needToRunCaptcha = !address || !hasEnoughEnergy
 
   const workerFunc = async (params: { captchaToken?: string } & Data) => {
     const { captchaToken } = params
     let usedAddress: string = address ?? ''
     if (!address) {
-      const address = await login()
-      if (!address) throw new Error('Failed to login')
-      usedAddress = address
+      if (isNonAnonLoginRequired) {
+        const address = await promptUserForLogin()
+        if (!address) return
+        usedAddress = address
+      } else {
+        const address = await login()
+        if (!address) throw new Error('Failed to login')
+        usedAddress = address
+      }
     }
 
     if (!hasEnoughEnergy && captchaToken) {
