@@ -156,9 +156,10 @@ export const getStaticProps = getCommonStaticProps<
         hubIds.push(originalHubId)
       }
 
+      const chatEntityId = chatData.entityId ?? ''
       const [{ prices }, blockedData] = await Promise.all([
         getChatsData(queryClient, chatId),
-        prefetchBlockedEntities(queryClient, hubIds, [chatId]),
+        prefetchBlockedEntities(queryClient, hubIds, [chatEntityId]),
         prefetchPostMetadata(queryClient, chatId),
       ] as const)
 

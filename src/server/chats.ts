@@ -26,6 +26,8 @@ export async function prefetchChatPreviewsData(
     getSpaceQuery.fetchQuery(queryClient, hubId),
   ] as const)
 
+  const chatEntityIds = chats.map((chat) => chat.entityId ?? '')
+
   const additionalHubIds: Set<string> = new Set()
   chats.forEach((chat) => {
     const originalHubId = chat.struct.spaceId
@@ -36,7 +38,7 @@ export async function prefetchChatPreviewsData(
   await prefetchBlockedEntities(
     queryClient,
     [hubId, ...Array.from(additionalHubIds)],
-    allChatIds
+    chatEntityIds
   )
   ;[...lastMessages, ...chats].forEach((post) => {
     getPostQuery.setQueryData(queryClient, post.id, removeUndefinedValues(post))

@@ -30,9 +30,12 @@ const GET_BLOCKED_RESOURCES = gql`
     }
   }
 `
-export async function getBlockedResources(
-  variables: GetBlockedResourcesQueryVariables
-) {
+export async function getBlockedResources(variables: {
+  postIds: string[]
+  spaceIds: string[]
+}) {
+  variables.postIds = variables.postIds.filter((id) => !!id)
+  variables.spaceIds = variables.spaceIds.filter((id) => !!id)
   const data = await datahubQueryRequest<
     GetBlockedResourcesQuery,
     GetBlockedResourcesQueryVariables

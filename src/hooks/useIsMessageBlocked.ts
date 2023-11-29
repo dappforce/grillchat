@@ -1,3 +1,4 @@
+import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { isMessageBlocked } from '@/utils/chat'
 import { PostData } from '@subsocial/api/types'
@@ -32,9 +33,11 @@ export default function useIsMessageBlocked(
       enabled: !!hubId,
     }
   )
+  const { data: chat } = getPostQuery.useQuery(chatId)
+  const entityId = chat?.entityId ?? ''
   const { data: chatModerationData } = getBlockedResourcesQuery.useQuery(
-    { postId: chatId },
-    { enabled: !!chatId }
+    { postId: entityId },
+    { enabled: !!entityId }
   )
   const blockedInHub = hubModerationData?.blockedResources
   const blockedInChat = chatModerationData?.blockedResources
