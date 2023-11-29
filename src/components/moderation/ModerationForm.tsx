@@ -124,7 +124,7 @@ export default function ModerationForm({
         let resourceId: string
         switch (blockingContent.id) {
           case 'message':
-            resourceId = messageId
+            resourceId = message?.entityId ?? ''
             break
           case 'owner':
             resourceId = ownerId

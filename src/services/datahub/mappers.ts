@@ -117,6 +117,7 @@ export const mapDatahubPostFragment = (
   const data = {
     id: post.persistentId || post.id,
     struct,
+    entityId: post.id,
     content: {
       summary: post.summary ?? '',
       image: post.image ?? '',
@@ -128,7 +129,7 @@ export const mapDatahubPostFragment = (
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
       optimisticId: post.optimisticId,
     } as PostContent,
-  }
+  } satisfies PostData
 
   const extensions = mapPostExtensions(post.extensions)
   if (extensions) {
