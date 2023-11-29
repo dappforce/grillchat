@@ -16,7 +16,7 @@ import {
 
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
 // the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
-export function useSubscribePostsInDatahub(subscribedPostId?: string) {
+export function useDatahubSubscriber(subscribedPostId?: string) {
   const queryClient = useQueryClient()
   const unsubRef = useRef<(() => void) | undefined>()
 
@@ -26,6 +26,7 @@ export function useSubscribePostsInDatahub(subscribedPostId?: string) {
     const listener = () => {
       if (document.visibilityState === 'visible') {
         unsubRef.current = subscription(queryClient)
+        // invalidate first page so it will refetch after the websocket connection is disconnected previously when the user is not in the tab
         if (subscribedPostId) {
           getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(
             queryClient,

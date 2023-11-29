@@ -5,7 +5,7 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
-import { useSubscribePostsInDatahub } from '@/services/datahub/posts/subscription'
+import { useDatahubSubscriber } from '@/services/datahub/posts/subscription'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
@@ -86,7 +86,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
-        <PostSubscriber />
+        <DatahubSubscriber />
         <BadgeManager />
         <SubsocialApiReconnect />
         <ToasterConfig />
@@ -110,11 +110,11 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   )
 }
 
-function PostSubscriber() {
+function DatahubSubscriber() {
   const { query } = useRouter()
   const slugParam = (query?.slug || '') as string
   const chatId = getIdFromSlug(slugParam)
-  useSubscribePostsInDatahub(chatId)
+  useDatahubSubscriber(chatId)
 
   return null
 }
