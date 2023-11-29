@@ -142,7 +142,6 @@ export async function getPostsFromDatahub(postIds: string[]) {
       throw new Error(datahubResPromise.reason)
     }
     persistentPosts = datahubResPromise.value.findPosts.data.map((post) => {
-      post.id = post.persistentId || post.id
       post.followersCount = followersCountMap.get(post.id) || 0
       return { ...mapDatahubPostFragment(post), requestedId: post.id }
     })

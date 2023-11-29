@@ -48,7 +48,7 @@ export type Account = {
   linkedEvmAccounts: Array<EvmSubstrateAccountLink>
   linkedIdentities: Array<LinkedIdentity>
   moderationProfile?: Maybe<Moderator>
-  ownedModerationOrganisations?: Maybe<Array<ModerationOrganisation>>
+  ownedModerationOrganizations?: Maybe<Array<ModerationOrganization>>
   ownedPostsCount?: Maybe<Scalars['Int']['output']>
   /** persistent data schema version from indexer */
   persistentDataVersion?: Maybe<Scalars['String']['output']>
@@ -131,6 +131,10 @@ export enum DataHubSubscriptionEventEnum {
   EvmAddressLinkToAccountStateUpdated = 'EVM_ADDRESS_LINK_TO_ACCOUNT_STATE_UPDATED',
   LinkedIdentityCreated = 'LINKED_IDENTITY_CREATED',
   LinkedIdentityStateUpdated = 'LINKED_IDENTITY_STATE_UPDATED',
+  ModerationBlockedResourceCreated = 'MODERATION_BLOCKED_RESOURCE_CREATED',
+  ModerationBlockedResourceStateUpdated = 'MODERATION_BLOCKED_RESOURCE_STATE_UPDATED',
+  ModerationModeratorCreated = 'MODERATION_MODERATOR_CREATED',
+  ModerationModeratorStateUpdated = 'MODERATION_MODERATOR_STATE_UPDATED',
   PostCreated = 'POST_CREATED',
   PostFollowed = 'POST_FOLLOWED',
   PostFollowStateUpdated = 'POST_FOLLOW_STATE_UPDATED',
@@ -258,7 +262,7 @@ export type ModerationBlockedResource = {
   ctxSpaceIds: Array<Scalars['String']['output']>
   id: Scalars['String']['output']
   moderator: Moderator
-  organisation: ModerationOrganisation
+  organization: ModerationOrganization
   parentPostId?: Maybe<Scalars['String']['output']>
   reason: ModerationBlockReason
   resourceId: Scalars['String']['output']
@@ -274,14 +278,14 @@ export type ModerationBlockedResourceSubscriptionPayload = {
   event: DataHubSubscriptionEventEnum
 }
 
-export type ModerationOrganisation = {
-  __typename?: 'ModerationOrganisation'
+export type ModerationOrganization = {
+  __typename?: 'ModerationOrganization'
   ctxPostIds?: Maybe<Array<Scalars['String']['output']>>
   ctxSpaceIds?: Maybe<Array<Scalars['String']['output']>>
   description?: Maybe<Scalars['String']['output']>
   id: Scalars['String']['output']
   name?: Maybe<Scalars['String']['output']>
-  organisationModerators?: Maybe<Array<ModerationOrganizationModerator>>
+  organizationModerators?: Maybe<Array<ModerationOrganizationModerator>>
   ownedByAccount: Account
   processedResources?: Maybe<Array<ModerationBlockedResource>>
 }
@@ -292,7 +296,7 @@ export type ModerationOrganizationModerator = {
   defaultCtxSpaceIds?: Maybe<Array<Scalars['String']['output']>>
   id: Scalars['String']['output']
   moderator: Moderator
-  organisation: ModerationOrganisation
+  organization: ModerationOrganization
   role: ModeratorRole
 }
 
@@ -315,6 +319,12 @@ export enum ModeratorRole {
   Editor = 'editor',
   Owner = 'owner',
   Reader = 'reader',
+}
+
+export type ModeratorSubscriptionPayload = {
+  __typename?: 'ModeratorSubscriptionPayload'
+  entity: Moderator
+  event: DataHubSubscriptionEventEnum
 }
 
 export type ModeratorsArgsInput = {
@@ -592,6 +602,7 @@ export type Subscription = {
   __typename?: 'Subscription'
   linkedIdentity: LinkedIdentitySubscriptionPayload
   moderationBlockedResource: ModerationBlockedResourceSubscriptionPayload
+  moderationModerator: ModeratorSubscriptionPayload
   post: PostSubscriptionPayload
 }
 
@@ -667,8 +678,8 @@ export type GetModeratorDataQuery = {
       __typename?: 'Moderator'
       moderatorOrganizations?: Array<{
         __typename?: 'ModerationOrganizationModerator'
-        organisation: {
-          __typename?: 'ModerationOrganisation'
+        organization: {
+          __typename?: 'ModerationOrganization'
           ctxPostIds?: Array<string> | null
         }
       }> | null
@@ -1075,7 +1086,7 @@ export const GetModeratorData = gql`
     moderators(args: { where: { substrateAddress: $address } }) {
       data {
         moderatorOrganizations {
-          organisation {
+          organization {
             ctxPostIds
           }
         }

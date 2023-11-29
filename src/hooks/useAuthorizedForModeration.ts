@@ -18,7 +18,11 @@ export default function useAuthorizedForModeration(chatId: string) {
   if (!COMMUNITY_CHAT_HUB_ID || !isOwner)
     return { isAuthorized: false, isOwner }
   return {
-    isAuthorized: !!(moderator?.address && moderator.postIds?.includes(chatId)),
+    isAuthorized: !!(
+      moderator?.address &&
+      (moderator.postIds?.includes(chatId) ||
+        moderator.postIds.includes(chat.entityId ?? ''))
+    ),
     isOwner,
     isLoading,
     isModeratorExist: !!moderator?.exist,

@@ -170,7 +170,7 @@ export const GET_MODERATOR_DATA = gql`
     moderators(args: { where: { substrateAddress: $address } }) {
       data {
         moderatorOrganizations {
-          organisation {
+          organization {
             ctxPostIds
           }
         }
@@ -191,7 +191,7 @@ export async function getModeratorData(
   const moderator = res.moderators?.data?.[0]
   const postIds: string[] = []
   moderator?.moderatorOrganizations?.forEach((org) => {
-    postIds.push(...(org.organisation.ctxPostIds ?? []))
+    postIds.push(...(org.organization.ctxPostIds ?? []))
   })
   return { postIds, exist: !!moderator }
 }
