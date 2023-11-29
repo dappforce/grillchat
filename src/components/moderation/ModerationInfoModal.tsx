@@ -114,7 +114,7 @@ export default function ModerationInfoModal({
       callName: 'synth_moderation_unblock_resource',
       args: {
         resourceId: toBeUnblocked.id,
-        organizationIds: '*',
+        ctxPostIds: ['*'],
       },
     })
   }

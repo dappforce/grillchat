@@ -7294,8 +7294,8 @@
   integrity sha512-jHMVmIAjkhSzswZEid2xhWtQb7yyux/8Am/i5xBQfDw6azwSPdr1nfXCKaIYs5R/NRcqi543V9roDQQQogTaKQ==
 
 "@subsocial/data-hub-sdk@dappforce/subsocial-data-hub-sdk#staging":
-  version "0.0.8"
-  resolved "https://codeload.github.com/dappforce/subsocial-data-hub-sdk/tar.gz/781de6ee12fdc581ccbfbc23495c4b14524308ca"
+  version "0.0.10"
+  resolved "https://codeload.github.com/dappforce/subsocial-data-hub-sdk/tar.gz/17845357a0e19ea5f01a2ef6407483207b181c34"
   dependencies:
     "@subsocial/api" "^0.8.13"
     "@swc/core" "^1.3.55"

@@ -137,9 +137,9 @@ export default function ModerationForm({
         mutate({
           callName: 'synth_moderation_block_resource',
           args: {
-            organizationIds: '*',
             reasonId,
             resourceId,
+            ctxPostIds: ['*'],
           },
         })
 
