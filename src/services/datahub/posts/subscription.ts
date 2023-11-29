@@ -16,7 +16,7 @@ import {
 
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
 // the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
-export function useDatahubSubscriber(subscribedPostId?: string) {
+export function useDatahubPostSubscriber(subscribedPostId?: string) {
   const queryClient = useQueryClient()
   const unsubRef = useRef<(() => void) | undefined>()
 

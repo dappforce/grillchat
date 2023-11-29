@@ -687,6 +687,61 @@ export type GetModeratorDataQuery = {
   } | null
 }
 
+export type SubscribeModeratorSubscriptionVariables = Exact<{
+  [key: string]: never
+}>
+
+export type SubscribeModeratorSubscription = {
+  __typename?: 'Subscription'
+  moderationModerator: {
+    __typename?: 'ModeratorSubscriptionPayload'
+    event: DataHubSubscriptionEventEnum
+    entity: {
+      __typename?: 'Moderator'
+      substrateAccount: { __typename?: 'Account'; id: string }
+      moderatorOrganizations?: Array<{
+        __typename?: 'ModerationOrganizationModerator'
+        organization: {
+          __typename?: 'ModerationOrganization'
+          ctxPostIds?: Array<string> | null
+        }
+      }> | null
+    }
+  }
+}
+
+export type SubscribeBlockedResourcesSubscriptionVariables = Exact<{
+  [key: string]: never
+}>
+
+export type SubscribeBlockedResourcesSubscription = {
+  __typename?: 'Subscription'
+  moderationBlockedResource: {
+    __typename?: 'ModerationBlockedResourceSubscriptionPayload'
+    event: DataHubSubscriptionEventEnum
+    entity: {
+      __typename?: 'LinkedIdentity'
+      id: string
+      enabled: boolean
+      substrateAccount: {
+        __typename?: 'Account'
+        id: string
+        moderationProfile?: {
+          __typename?: 'Moderator'
+          moderatorOrganizations?: Array<{
+            __typename?: 'ModerationOrganizationModerator'
+            organization: {
+              __typename?: 'ModerationOrganization'
+              ctxPostIds?: Array<string> | null
+              ctxSpaceIds?: Array<string> | null
+            }
+          }> | null
+        } | null
+      }
+    }
+  }
+}
+
 export type DatahubPostFragmentFragment = {
   __typename?: 'Post'
   id: string
@@ -1088,6 +1143,45 @@ export const GetModeratorData = gql`
         moderatorOrganizations {
           organization {
             ctxPostIds
+          }
+        }
+      }
+    }
+  }
+`
+export const SubscribeModerator = gql`
+  subscription SubscribeModerator {
+    moderationModerator {
+      event
+      entity {
+        substrateAccount {
+          id
+        }
+        moderatorOrganizations {
+          organization {
+            ctxPostIds
+          }
+        }
+      }
+    }
+  }
+`
+export const SubscribeBlockedResources = gql`
+  subscription SubscribeBlockedResources {
+    moderationBlockedResource {
+      event
+      entity {
+        id
+        enabled
+        substrateAccount {
+          id
+          moderationProfile {
+            moderatorOrganizations {
+              organization {
+                ctxPostIds
+                ctxSpaceIds
+              }
+            }
           }
         }
       }
