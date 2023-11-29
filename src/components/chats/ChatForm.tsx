@@ -8,12 +8,12 @@ import useLoginOptions from '@/hooks/useLoginOptions'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
+import { useSendOffchainMessage } from '@/services/api/datahub/posts/mutation'
 import { getPostQuery } from '@/services/api/query'
 import {
   SendMessageParams,
   useSendMessage,
 } from '@/services/subsocial/commentIds'
-import { useSendOffchainMessage } from '@/services/subsocial/datahub/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'

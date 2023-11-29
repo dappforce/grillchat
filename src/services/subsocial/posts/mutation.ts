@@ -1,4 +1,5 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
+import datahubMutation from '@/services/api/datahub/posts/mutation'
 import {
   invalidatePostServerCache,
   saveFile,
@@ -15,7 +16,6 @@ import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import datahubMutation from '../datahub/posts/mutation'
 import { useWalletGetter } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import {
@@ -210,11 +210,13 @@ export function useUpsertPost(
         if (action === 'update') {
           await datahubMutation.updatePostData({
             ...getWallet(),
-            postId: payload.postId,
-            changes: {
-              content: {
-                cid,
-                content,
+            args: {
+              postId: payload.postId,
+              changes: {
+                content: {
+                  cid,
+                  content,
+                },
               },
             },
           })
@@ -229,9 +231,11 @@ export function useUpsertPost(
         } else if (action === 'create') {
           await datahubMutation.createPostData({
             ...getWallet(),
-            content,
-            cid: cid,
-            spaceId: payload.spaceId,
+            args: {
+              content,
+              cid: cid,
+              spaceId: payload.spaceId,
+            },
           })
           return {
             tx: substrateApi.tx.posts.createPost(
@@ -277,18 +281,22 @@ export function useUpsertPost(
           if (action === 'create' && context.content.optimisticId) {
             datahubMutation.notifyCreatePostFailedOrRetryStatus({
               address,
-              optimisticId: context.content.optimisticId,
-              timestamp: Date.now(),
               signer: getWallet().signer,
-              reason: error,
+              timestamp: Date.now(),
+              args: {
+                optimisticId: context.content.optimisticId,
+                reason: error,
+              },
             })
           } else if (action === 'update') {
             datahubMutation.notifyUpdatePostFailedOrRetryStatus({
-              postId: payload.postId,
+              args: {
+                postId: payload.postId,
+                reason: error,
+              },
               address,
               timestamp: Date.now(),
               signer: getWallet().signer,
-              reason: error,
             })
           }
         },
@@ -337,9 +345,11 @@ export function useHideUnhidePost(
 
         await datahubMutation.updatePostData({
           ...getWallet(),
-          postId,
-          changes: {
-            hidden: action === 'hide',
+          args: {
+            postId,
+            changes: {
+              hidden: action === 'hide',
+            },
           },
         })
 
@@ -412,11 +422,13 @@ export function usePinMessage(
 
         await datahubMutation.updatePostData({
           ...getWallet(),
-          postId: params.chatId,
-          changes: {
-            content: {
-              cid,
-              content: newContent as PostContent,
+          args: {
+            postId: params.chatId,
+            changes: {
+              content: {
+                cid,
+                content: newContent as PostContent,
+              },
             },
           },
         })

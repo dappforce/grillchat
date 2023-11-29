@@ -1,6 +1,8 @@
-import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
+import {
+  getBlockedResources,
+  getBlockedResourcesQuery,
+} from '@/services/subsocial/datahub/moderation/query'
 import { QueryClient } from '@tanstack/react-query'
-import { getBlockedResources } from '.'
 
 export async function prefetchBlockedEntities(
   queryClient: QueryClient,

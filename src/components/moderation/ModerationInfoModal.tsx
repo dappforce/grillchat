@@ -1,6 +1,6 @@
 import BlockedImage from '@/assets/graphics/blocked.png'
-import { getBlockedInPostIdDetailedQuery } from '@/services/api/moderation/query'
-import { useModerationActions } from '@/services/subsocial/datahub/moderation/mutation'
+import { useModerationActions } from '@/services/api/datahub/moderation/mutation'
+import { getBlockedInPostIdDetailedQuery } from '@/services/subsocial/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import Image from 'next/image'
 import { useReducer } from 'react'
@@ -69,7 +69,7 @@ export default function ModerationInfoModal({
   const { name } = useName(toBeUnblocked?.id ?? '')
   const { mutate } = useModerationActions({
     onSuccess: (_, variables) => {
-      if (variables.action === 'unblock') {
+      if (variables.callName === 'synth_moderation_unblock_resource') {
         toast.custom((t) => (
           <Toast
             icon={(classNames) => (

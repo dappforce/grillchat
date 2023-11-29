@@ -1,11 +1,12 @@
 import useToastError from '@/hooks/useToastError'
-import { getModerationReasonsQuery } from '@/services/api/moderation/query'
+import { useModerationActions } from '@/services/api/datahub/moderation/mutation'
 import { getPostQuery } from '@/services/api/query'
-import { useModerationActions } from '@/services/subsocial/datahub/moderation/mutation'
+import { getModerationReasonsQuery } from '@/services/subsocial/datahub/moderation/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
 import { ComponentProps, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
@@ -75,7 +76,9 @@ export default function ModerationForm({
   const { mutate, isLoading, error } = useModerationActions({
     onSuccess: (_, variables) => {
       if (variables.callName === 'synth_moderation_block_resource') {
-        const isBlockingOwner = variables.resourceId === ownerId
+        const args =
+          variables.args as SocialCallDataArgs<'synth_moderation_block_resource'>
+        const isBlockingOwner = args.resourceId === ownerId
         toast.custom((t) => (
           <Toast
             t={t}

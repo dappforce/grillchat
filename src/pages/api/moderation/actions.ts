@@ -6,7 +6,6 @@ import {
   initModerationOrg,
   unblockResource,
 } from '@/server/datahub-queue/moderation'
-import { socialCallName } from '@subsocial/data-hub-sdk'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -28,15 +27,13 @@ const POST_handler = handlerWrapper({
   errorLabel: 'moderation-action',
   handler: async (data: ApiModerationActionsBody, _req, res) => {
     const callName = data.callData?.name
-    if (callName === socialCallName.synth_moderation_block_resource) {
+    if (callName === 'synth_moderation_block_resource') {
       await blockResource(data)
-    } else if (callName === socialCallName.synth_moderation_unblock_resource) {
+    } else if (callName === 'synth_moderation_unblock_resource') {
       await unblockResource(data)
-    } else if (callName === socialCallName.synth_moderation_init_moderator) {
+    } else if (callName === 'synth_moderation_init_moderator') {
       await initModerationOrg(data)
-    } else if (
-      callName === socialCallName.synth_moderation_add_ctx_to_organization
-    ) {
+    } else if (callName === 'synth_moderation_add_ctx_to_organization') {
       await addPostIdToOrg(data)
     } else {
       throw Error('Unknown moderation action')

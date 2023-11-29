@@ -15,10 +15,9 @@ import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { getModeratorQuery } from '@/services/api/moderation/query'
+import { useModerationActions } from '@/services/api/datahub/moderation/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
-import { useModerationActions } from '@/services/subsocial/datahub/moderation/mutation'
 import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
@@ -128,25 +127,32 @@ export default function ChatPage({
     }
   }, [isInitialized, myAddress, chat])
 
-  const { data: moderator } = getModeratorQuery.useQuery(myAddress ?? '', {
-    enabled: !!myAddress,
-  })
-  const { isAuthorized, isOwner } = useAuthorizedForModeration(chatId)
+  const { isAuthorized, isOwner, isLoading, isModeratorExist } =
+    useAuthorizedForModeration(chatId)
   const { mutateAsync: commitModerationAction } = useModerationActions()
 
   useEffect(() => {
     if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
-    if (!isAuthorized && moderator) {
-      // TODO: add ctx condition
+    if (!isAuthorized && !isLoading) {
       commitModerationAction({
-        callName: 'synth_moderation_init_moderator',
+        callName: isModeratorExist
+          ? 'synth_moderation_add_ctx_to_organization'
+          : 'synth_moderation_init_moderator',
         args: {
           ctxPostIds: [chatId],
           ctxSpaceIds: [COMMUNITY_CHAT_HUB_ID],
+          withOrganization: true,
         },
       })
     }
-  }, [isAuthorized, commitModerationAction, moderator, chatId, isOwner])
+  }, [
+    isAuthorized,
+    commitModerationAction,
+    isModeratorExist,
+    isLoading,
+    chatId,
+    isOwner,
+  ])
 
   if (chat?.struct.hidden) {
     const isNotAuthorized = myAddress !== chat.struct.ownerId

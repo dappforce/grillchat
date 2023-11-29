@@ -4,6 +4,11 @@ import {
 } from '@/pages/api/moderation/actions'
 import { revalidateChatPage } from '@/services/api/mutation'
 import { queryClient } from '@/services/provider'
+import {
+  getBlockedInPostIdDetailedQuery,
+  getBlockedResourcesQuery,
+  getModeratorQuery,
+} from '@/services/subsocial/datahub/moderation/query'
 import { ResourceTypes } from '@/services/subsocial/datahub/moderation/utils'
 import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { useMyAccount } from '@/stores/my-account'
@@ -12,11 +17,6 @@ import { getDatahubConfig } from '@/utils/env/client'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
 import axios, { AxiosResponse } from 'axios'
 import { createSocialDataEventInput, DatahubParams } from '../utils'
-import {
-  getBlockedInPostIdDetailedQuery,
-  getBlockedResourcesQuery,
-  getModeratorQuery,
-} from './query'
 
 type ModerationCallNames =
   | (typeof socialCallName)['synth_moderation_init_moderator']
@@ -82,22 +82,28 @@ const optimisticUnblocking = <T>(
   return newData
 }
 
+type SimplifiedModerationActionParams<T extends ModerationCallNames> = Omit<
+  ModerationActionsParams<T>,
+  'signer' | 'isOffchain' | 'proxyToAddress' | 'address'
+>
+function augmentModerationActionParams<T extends ModerationCallNames>(
+  simplifiedParams: SimplifiedModerationActionParams<T>
+) {
+  const { signer, address, parentProxyAddress } = useMyAccount.getState()
+  if (!address) throw new Error('You have to connect wallet first')
+  return {
+    ...simplifiedParams,
+    signer,
+    isOffchain: true,
+    address,
+    proxyToAddress: parentProxyAddress,
+  }
+}
 export const useModerationActions = mutationWrapper(
   <T extends ModerationCallNames>(
-    data: Omit<
-      ModerationActionsParams<T>,
-      'signer' | 'isOffchain' | 'proxyToAddress' | 'address'
-    >
+    data: SimplifiedModerationActionParams<T>
   ) => {
-    const { signer, address, parentProxyAddress } = useMyAccount.getState()
-    if (!address) throw new Error('You have to connect wallet first')
-    return moderationActions({
-      ...data,
-      signer,
-      isOffchain: true,
-      address,
-      proxyToAddress: parentProxyAddress,
-    })
+    return moderationActions(augmentModerationActionParams(data))
   },
   {
     onMutate: async (variables) => {
@@ -136,10 +142,10 @@ export const useModerationActions = mutationWrapper(
       }
     },
     onError: (_, variables) => {
-      onErrorOrSuccess(variables)
+      onErrorOrSuccess(augmentModerationActionParams(variables))
     },
     onSuccess: async (_, variables) => {
-      onErrorOrSuccess(variables)
+      onErrorOrSuccess(augmentModerationActionParams(variables))
       if (
         variables.callName === 'synth_moderation_block_resource' ||
         variables.callName === 'synth_moderation_unblock_resource'
