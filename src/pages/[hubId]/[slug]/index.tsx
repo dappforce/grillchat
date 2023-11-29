@@ -8,11 +8,11 @@ import { getProfilesServer } from '@/pages/api/profiles'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery, getProfileQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   getPostMetadataQuery,
-} from '@/services/subsocial/datahub/posts/query'
+} from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import {
   coingeckoTokenIds,

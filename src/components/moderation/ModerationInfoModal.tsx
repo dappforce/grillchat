@@ -1,6 +1,6 @@
 import BlockedImage from '@/assets/graphics/blocked.png'
-import { useModerationActions } from '@/services/api/datahub/moderation/mutation'
-import { getBlockedInPostIdDetailedQuery } from '@/services/subsocial/datahub/moderation/query'
+import { useModerationActions } from '@/services/datahub/moderation/mutation'
+import { getBlockedInPostIdDetailedQuery } from '@/services/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import Image from 'next/image'
 import { useReducer } from 'react'

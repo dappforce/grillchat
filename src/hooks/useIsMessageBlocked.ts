@@ -1,4 +1,4 @@
-import { getBlockedResourcesQuery } from '@/services/subsocial/datahub/moderation/query'
+import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { isMessageBlocked } from '@/utils/chat'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'

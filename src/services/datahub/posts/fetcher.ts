@@ -1,6 +1,6 @@
 import { PostData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
-import { getPostsFollowersCountFromSquid } from '../../posts/fetcher'
+import { getPostsFollowersCountFromSquid } from '../../subsocial/posts/fetcher'
 import {
   GetOptimisticPostsQuery,
   GetOptimisticPostsQueryVariables,

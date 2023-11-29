@@ -1,10 +1,10 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
-import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   PaginatedPostsData,
-} from '@/services/subsocial/datahub/posts/query'
+} from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { getDatahubConfig } from '@/utils/env/client'
 import { useMemo } from 'react'
 import useInfiniteScrollData from '../ChatList/hooks/useInfiniteScrollData'

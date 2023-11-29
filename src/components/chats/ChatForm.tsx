@@ -8,8 +8,8 @@ import useLoginOptions from '@/hooks/useLoginOptions'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { useSendOffchainMessage } from '@/services/api/datahub/posts/mutation'
 import { getPostQuery } from '@/services/api/query'
+import { useSendOffchainMessage } from '@/services/datahub/posts/mutation'
 import {
   SendMessageParams,
   useSendMessage,

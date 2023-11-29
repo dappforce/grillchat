@@ -1,5 +1,5 @@
+import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
-import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { getDatahubConfig } from '@/utils/env/client'
 
 export function useMessagesCount(chatId: string) {

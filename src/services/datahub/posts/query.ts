@@ -11,7 +11,7 @@ import { gql } from 'graphql-request'
 import {
   commentIdsOptimisticEncoder,
   isClientGeneratedOptimisticId,
-} from '../../commentIds/optimistic'
+} from '../../subsocial/commentIds/optimistic'
 import {
   GetCommentIdsInPostIdQuery,
   GetCommentIdsInPostIdQueryVariables,

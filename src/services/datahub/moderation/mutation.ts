@@ -3,20 +3,20 @@ import {
   ApiModerationActionsResponse,
 } from '@/pages/api/moderation/actions'
 import { revalidateChatPage } from '@/services/api/mutation'
+import { ResourceTypes } from '@/services/datahub/moderation/utils'
+import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { queryClient } from '@/services/provider'
-import {
-  getBlockedInPostIdDetailedQuery,
-  getBlockedResourcesQuery,
-  getModeratorQuery,
-} from '@/services/subsocial/datahub/moderation/query'
-import { ResourceTypes } from '@/services/subsocial/datahub/moderation/utils'
-import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { useMyAccount } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { getDatahubConfig } from '@/utils/env/client'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
 import axios, { AxiosResponse } from 'axios'
 import { createSocialDataEventInput, DatahubParams } from '../utils'
+import {
+  getBlockedInPostIdDetailedQuery,
+  getBlockedResourcesQuery,
+  getModeratorQuery,
+} from './query'
 
 type ModerationCallNames =
   | (typeof socialCallName)['synth_moderation_init_moderator']

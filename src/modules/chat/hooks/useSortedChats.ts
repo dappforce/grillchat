@@ -1,7 +1,7 @@
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
-import { getBlockedResourcesQuery } from '@/services/subsocial/datahub/moderation/query'
+import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { useMemo } from 'react'
 import useSortChatIdsByConfig from './useSortChatIdsByConfig'

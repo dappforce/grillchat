@@ -1,6 +1,6 @@
 import { SubsocialQueryData } from '@/subsocial-query/subsocial/query'
 import { gql } from 'graphql-request'
-import { getPostsFromDatahub } from '../datahub/posts/fetcher'
+import { getPostsFromDatahub } from '../../datahub/posts/fetcher'
 import { POST_FRAGMENT } from '../squid/fragments'
 import {
   GetPostsFollowersCountQuery,

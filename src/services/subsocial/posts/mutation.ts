@@ -1,11 +1,11 @@
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
-import datahubMutation from '@/services/api/datahub/posts/mutation'
 import {
   invalidatePostServerCache,
   saveFile,
   useRevalidateChatPage,
 } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
+import datahubMutation from '@/services/datahub/posts/mutation'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'

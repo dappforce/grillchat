@@ -5,7 +5,7 @@ import { QueryClient } from '@tanstack/react-query'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   getPostMetadataQuery,
-} from '../datahub/posts/query'
+} from '../../datahub/posts/query'
 import { getCommentIdsByPostIdFromChainQuery } from './query'
 import { SendMessageParams } from './types'
 

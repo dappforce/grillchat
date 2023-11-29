@@ -1,5 +1,5 @@
 import { getPostQuery } from '@/services/api/query'
-import { getBlockedResourcesQuery } from '@/services/subsocial/datahub/moderation/query'
+import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { useMemo } from 'react'
 
 export default function useIsAddressBlockedInChat(
