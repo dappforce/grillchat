@@ -1,4 +1,5 @@
 import BlockedImage from '@/assets/graphics/blocked.png'
+import { getPostQuery } from '@/services/api/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getBlockedInPostIdDetailedQuery } from '@/services/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -12,6 +13,7 @@ import DataCard, { DataCardProps } from '../DataCard'
 import ConfirmationModal from '../modals/ConfirmationModal'
 import Modal, { ModalFunctionalityProps } from '../modals/Modal'
 import Name, { useName } from '../Name'
+import { Skeleton } from '../SkeletonFallback'
 import Toast from '../Toast'
 
 export type ModerationInfoModalProps = ModalFunctionalityProps & {
@@ -60,14 +62,20 @@ export default function ModerationInfoModal({
     }
   )
 
-  const { data } = getBlockedInPostIdDetailedQuery.useQuery(chatId, {
-    enabled: props.isOpen,
-  })
+  const { data: chat } = getPostQuery.useQuery(chatId)
+  const chatEntityId = chat?.entityId ?? ''
+
+  const { data, isLoading } = getBlockedInPostIdDetailedQuery.useQuery(
+    chatEntityId,
+    {
+      enabled: props.isOpen,
+    }
+  )
   const blockedUsers = data?.address ?? []
   const blockedUsersCount = blockedUsers.length
 
   const { name } = useName(toBeUnblocked?.id ?? '')
-  const { mutate } = useModerationActions({
+  const { mutateAsync } = useModerationActions({
     onSuccess: (_, variables) => {
       if (variables.callName === 'synth_moderation_unblock_resource') {
         toast.custom((t) => (
@@ -108,9 +116,9 @@ export default function ModerationInfoModal({
     }
   })
 
-  const unblock = () => {
+  const unblock = async () => {
     if (!toBeUnblocked) return
-    mutate({
+    await mutateAsync({
       callName: 'synth_moderation_unblock_resource',
       args: {
         resourceId: toBeUnblocked.id,
@@ -131,21 +139,25 @@ export default function ModerationInfoModal({
           <span className='text-sm text-text-muted'>
             Blocked users ({blockedUsersCount})
           </span>
-          <div className='overflow-hidden rounded-2xl bg-background-lighter px-4 pr-1'>
-            {blockedUsersCount ? (
-              <DataCard
-                className='max-h-96 overflow-y-scroll rounded-none p-0 py-4 pr-1 scrollbar-track-background-lighter scrollbar-thumb-background-lightest/70'
-                data={cardData}
-              />
-            ) : (
-              <div className='flex flex-col items-center gap-4 py-4 text-center'>
-                <Image src={BlockedImage} alt='' />
-                <span className='text-text-muted'>
-                  There&apos;re no blocked users yet.
-                </span>
-              </div>
-            )}
-          </div>
+          {isLoading ? (
+            <Skeleton className='h-40 w-full rounded-2xl' />
+          ) : (
+            <div className='overflow-hidden rounded-2xl bg-background-lighter px-4 pr-1'>
+              {blockedUsersCount ? (
+                <DataCard
+                  className='max-h-96 overflow-y-scroll rounded-none p-0 py-4 pr-1 scrollbar-track-background-lighter scrollbar-thumb-background-lightest/70'
+                  data={cardData}
+                />
+              ) : (
+                <div className='flex flex-col items-center gap-4 py-4 text-center'>
+                  <Image src={BlockedImage} alt='' />
+                  <span className='text-text-muted'>
+                    There&apos;re no blocked users yet.
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </Modal>
       <ConfirmationModal

@@ -211,13 +211,6 @@ export enum InReplyToKind {
   Post = 'Post',
 }
 
-export type InitModeratorInputDto = {
-  ctxPostIds: Array<Scalars['String']['input']>
-  ctxSpaceIds: Array<Scalars['String']['input']>
-  substrateAddress: Scalars['String']['input']
-  withOrganization?: InputMaybe<Scalars['Boolean']['input']>
-}
-
 export type LinkedIdentitiesArgs = {
   externalId?: InputMaybe<Scalars['String']['input']>
   id?: InputMaybe<Scalars['String']['input']>
@@ -248,16 +241,12 @@ export type ModerationBlockReason = {
   reasonText: Scalars['String']['output']
 }
 
-export type ModerationBlockReasonInput = {
-  id: Scalars['String']['input']
-  reasonText: Scalars['String']['input']
-}
-
 export type ModerationBlockedResource = {
   __typename?: 'ModerationBlockedResource'
   blocked: Scalars['Boolean']['output']
   comment?: Maybe<Scalars['String']['output']>
   createdAt: Scalars['DateTime']['output']
+  ctxAppIds: Array<Scalars['String']['output']>
   ctxPostIds: Array<Scalars['String']['output']>
   ctxSpaceIds: Array<Scalars['String']['output']>
   id: Scalars['String']['output']
@@ -280,6 +269,7 @@ export type ModerationBlockedResourceSubscriptionPayload = {
 
 export type ModerationOrganization = {
   __typename?: 'ModerationOrganization'
+  ctxAppIds?: Maybe<Array<Scalars['String']['output']>>
   ctxPostIds?: Maybe<Array<Scalars['String']['output']>>
   ctxSpaceIds?: Maybe<Array<Scalars['String']['output']>>
   description?: Maybe<Scalars['String']['output']>
@@ -292,6 +282,7 @@ export type ModerationOrganization = {
 
 export type ModerationOrganizationModerator = {
   __typename?: 'ModerationOrganizationModerator'
+  defaultCtxAppIds?: Maybe<Array<Scalars['String']['output']>>
   defaultCtxPostIds?: Maybe<Array<Scalars['String']['output']>>
   defaultCtxSpaceIds?: Maybe<Array<Scalars['String']['output']>>
   id: Scalars['String']['output']
@@ -344,20 +335,6 @@ export type ModeratorsResponse = {
 export type ModeratorsWhereArgs = {
   id?: InputMaybe<Scalars['String']['input']>
   substrateAddress?: InputMaybe<Scalars['String']['input']>
-}
-
-export type Mutation = {
-  __typename?: 'Mutation'
-  moderationCreateBlockReason: ModerationBlockReason
-  moderationInitModerator: Moderator
-}
-
-export type MutationModerationCreateBlockReasonArgs = {
-  createReasonInput: ModerationBlockReasonInput
-}
-
-export type MutationModerationInitModeratorArgs = {
-  args: InitModeratorInputDto
 }
 
 export enum PinnedResourceType {
@@ -463,9 +440,9 @@ export type Query = {
   __typename?: 'Query'
   findPosts: FindPostsResponseDto
   linkedIdentities: Array<LinkedIdentity>
-  moderationBlockedResourceDetailed: Array<ModerationBlockedResource>
   moderationBlockedResourceIds: Array<Scalars['String']['output']>
   moderationBlockedResourceIdsBatch: BlockedResourceIdsBatchResponse
+  moderationBlockedResourcesDetailed: Array<ModerationBlockedResource>
   moderationReason: ModerationBlockReason
   moderationReasonsAll: Array<ModerationBlockReason>
   moderators?: Maybe<ModeratorsResponse>
@@ -482,23 +459,11 @@ export type QueryLinkedIdentitiesArgs = {
   where: LinkedIdentitiesArgs
 }
 
-export type QueryModerationBlockedResourceDetailedArgs = {
-  blocked?: InputMaybe<Scalars['Boolean']['input']>
-  ctxPostId?: InputMaybe<Scalars['String']['input']>
-  ctxSpaceId?: InputMaybe<Scalars['String']['input']>
-  moderatorId?: InputMaybe<Scalars['String']['input']>
-  parentPostId?: InputMaybe<Scalars['String']['input']>
-  reasonId?: InputMaybe<Scalars['String']['input']>
-  resourceId?: InputMaybe<Scalars['String']['input']>
-  resourceType?: InputMaybe<ModerationResourceType>
-  rootPostId?: InputMaybe<Scalars['String']['input']>
-  spaceId?: InputMaybe<Scalars['String']['input']>
-}
-
 export type QueryModerationBlockedResourceIdsArgs = {
   blocked?: InputMaybe<Scalars['Boolean']['input']>
-  ctxPostId?: InputMaybe<Scalars['String']['input']>
-  ctxSpaceId?: InputMaybe<Scalars['String']['input']>
+  ctxAppId?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
   moderatorId?: InputMaybe<Scalars['String']['input']>
   parentPostId?: InputMaybe<Scalars['String']['input']>
   reasonId?: InputMaybe<Scalars['String']['input']>
@@ -511,6 +476,20 @@ export type QueryModerationBlockedResourceIdsArgs = {
 export type QueryModerationBlockedResourceIdsBatchArgs = {
   ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
   ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type QueryModerationBlockedResourcesDetailedArgs = {
+  blocked?: InputMaybe<Scalars['Boolean']['input']>
+  ctxAppId?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
+  moderatorId?: InputMaybe<Scalars['String']['input']>
+  parentPostId?: InputMaybe<Scalars['String']['input']>
+  reasonId?: InputMaybe<Scalars['String']['input']>
+  resourceId?: InputMaybe<Scalars['String']['input']>
+  resourceType?: InputMaybe<ModerationResourceType>
+  rootPostId?: InputMaybe<Scalars['String']['input']>
+  spaceId?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryModerationReasonArgs = {
@@ -644,7 +623,7 @@ export type GetBlockedInPostIdDetailedQueryVariables = Exact<{
 
 export type GetBlockedInPostIdDetailedQuery = {
   __typename?: 'Query'
-  moderationBlockedResourceDetailed: Array<{
+  moderationBlockedResourcesDetailed: Array<{
     __typename?: 'ModerationBlockedResource'
     resourceId: string
     reason: {
@@ -728,6 +707,11 @@ export type SubscribeBlockedResourcesSubscription = {
       organization: {
         __typename?: 'ModerationOrganization'
         ctxPostIds?: Array<string> | null
+      }
+      reason: {
+        __typename?: 'ModerationBlockReason'
+        id: string
+        reasonText: string
       }
     }
   }
@@ -1110,7 +1094,7 @@ export const GetBlockedResources = gql`
 `
 export const GetBlockedInPostIdDetailed = gql`
   query GetBlockedInPostIdDetailed($postId: String!) {
-    moderationBlockedResourceDetailed(ctxPostId: $postId, blocked: true) {
+    moderationBlockedResourcesDetailed(ctxPostIds: [$postId], blocked: true) {
       resourceId
       reason {
         id
@@ -1168,6 +1152,10 @@ export const SubscribeBlockedResources = gql`
         ctxPostIds
         organization {
           ctxPostIds
+        }
+        reason {
+          id
+          reasonText
         }
       }
     }

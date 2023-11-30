@@ -113,7 +113,7 @@ export const getBlockedResourcesQuery = createQuery({
 
 const GET_BLOCKED_IN_POST_ID_DETAILED = gql`
   query GetBlockedInPostIdDetailed($postId: String!) {
-    moderationBlockedResourceDetailed(ctxPostId: $postId, blocked: true) {
+    moderationBlockedResourcesDetailed(ctxPostIds: [$postId], blocked: true) {
       resourceId
       reason {
         id
@@ -131,7 +131,7 @@ export async function getBlockedInPostIdDetailed(postId: string) {
     variables: { postId },
   })
   return mapBlockedResources(
-    data.moderationBlockedResourceDetailed,
+    data.moderationBlockedResourcesDetailed,
     (res) => res.resourceId
   )
 }

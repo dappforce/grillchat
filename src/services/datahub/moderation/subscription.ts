@@ -4,6 +4,7 @@ import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
 import {
   DataHubSubscriptionEventEnum,
+  GetBlockedInPostIdDetailedQuery,
   SubscribeBlockedResourcesSubscription,
 } from '../generated-query'
 import { datahubSubscription } from '../utils'
@@ -67,6 +68,10 @@ const SUBSCRIBE_BLOCKED_RESOURCES = gql`
         organization {
           ctxPostIds
         }
+        reason {
+          id
+          reasonText
+        }
       }
     }
   }
@@ -129,7 +134,32 @@ async function processBlockedResources(
   if (!resourceType) return
 
   ctxPostIds?.forEach((id) => {
-    // TODO: update detailed query also
+    getBlockedInPostIdDetailedQuery.setQueryData(queryClient, id, (oldData) => {
+      const resources: Record<
+        ResourceTypes,
+        GetBlockedInPostIdDetailedQuery['moderationBlockedResourcesDetailed'][number][]
+      > = oldData || { address: [], cid: [], postId: [] }
+
+      const newResource = [...resources[resourceType]]
+      if (isNowBlocked) {
+        newResource.push({
+          resourceId,
+          reason: entity.reason,
+        })
+      } else {
+        const resourceIndex = newResource.findIndex(
+          (res) => res.resourceId === resourceId
+        )
+        if (resourceIndex !== -1) {
+          newResource.splice(resourceIndex, 1)
+        }
+      }
+      return {
+        ...resources,
+        [resourceType]: newResource,
+      }
+    })
+
     getBlockedResourcesQuery.setQueryData(
       queryClient,
       { postId: id },
