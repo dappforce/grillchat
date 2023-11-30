@@ -3,6 +3,7 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
+import { CaptchaProvider } from '@/providers/CaptchaProvider'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { QueryProvider } from '@/services/provider'
@@ -86,25 +87,27 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
-        <PostSubscriber />
-        <BadgeManager />
-        <SubsocialApiReconnect />
-        <ToasterConfig />
-        <ForegroundNotificationHandler />
-        <NextNProgress
-          color='#4d46dc'
-          options={{ showSpinner: false }}
-          showOnShallow={false}
-        />
-        <HeadConfig {...head} />
-        <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
-        <div className={cx('font-sans')}>
-          <ErrorBoundary>
-            <EvmProvider>
-              <Component {...props} />
-            </EvmProvider>
-          </ErrorBoundary>
-        </div>
+        <CaptchaProvider>
+          <PostSubscriber />
+          <BadgeManager />
+          <SubsocialApiReconnect />
+          <ToasterConfig />
+          <ForegroundNotificationHandler />
+          <NextNProgress
+            color='#4d46dc'
+            options={{ showSpinner: false }}
+            showOnShallow={false}
+          />
+          <HeadConfig {...head} />
+          <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
+          <div className={cx('font-sans')}>
+            <ErrorBoundary>
+              <EvmProvider>
+                <Component {...props} />
+              </EvmProvider>
+            </ErrorBoundary>
+          </div>
+        </CaptchaProvider>
       </QueryProvider>
     </ThemeProvider>
   )

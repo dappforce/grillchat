@@ -1,8 +1,5 @@
-import { getCaptchaSiteKey } from '@/utils/env/client'
-import React, { useRef } from 'react'
-import ReCAPTCHA from 'react-google-recaptcha'
-import { toast } from 'react-hot-toast'
-import Toast from '../Toast'
+import { useCaptchaContext } from '@/providers/CaptchaProvider'
+import React from 'react'
 import CaptchaTermsAndService from './CaptchaTermsAndService'
 
 export type CaptchaInvisibleProps = {
@@ -13,52 +10,9 @@ export type CaptchaInvisibleProps = {
 }
 
 export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
-  const captchaRef = useRef<ReCAPTCHA>(null)
+  const { runCaptcha } = useCaptchaContext()
 
-  const captchaSiteKey = getCaptchaSiteKey()
-
-  const runCaptcha = async () => {
-    if (!captchaSiteKey) return 'dummy-captcha'
-
-    let token: string | null = null
-    try {
-      console.log('waiting captcha...')
-      token = (await captchaRef.current?.executeAsync()) ?? null
-      console.log('done captcha')
-    } catch (e) {
-      console.error('Captcha Error: ', e)
-    }
-    if (!token) {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          type='error'
-          title='Captcha Failed'
-          description='Please try again'
-        />
-      ))
-      return null
-    }
-
-    captchaRef.current?.reset()
-    return token
-  }
-  return (
-    <>
-      {children(runCaptcha, (className) => (
-        <CaptchaTermsAndService className={className} />
-      ))}
-      {captchaSiteKey && (
-        <div className='hidden'>
-          <ReCAPTCHA
-            sitekey={getCaptchaSiteKey()}
-            theme='dark'
-            ref={captchaRef}
-            size='invisible'
-            badge='inline'
-          />
-        </div>
-      )}
-    </>
-  )
+  return children(runCaptcha, (className) => (
+    <CaptchaTermsAndService className={className} />
+  ))
 }
