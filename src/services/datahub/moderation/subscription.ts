@@ -2,12 +2,16 @@ import { getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
-import { SubscribeBlockedResourcesSubscription } from '../generated-query'
+import {
+  DataHubSubscriptionEventEnum,
+  SubscribeBlockedResourcesSubscription,
+} from '../generated-query'
 import { datahubSubscription } from '../utils'
 import {
   getBlockedInPostIdDetailedQuery,
   getBlockedResourcesQuery,
 } from './query'
+import { getBlockedResourceType, ResourceTypes } from './utils'
 
 export function useDatahubModerationSubscriber() {
   const queryClient = useQueryClient()
@@ -57,17 +61,11 @@ const SUBSCRIBE_BLOCKED_RESOURCES = gql`
       event
       entity {
         id
-        enabled
-        substrateAccount {
-          id
-          moderationProfile {
-            moderatorOrganizations {
-              organization {
-                ctxPostIds
-                ctxSpaceIds
-              }
-            }
-          }
+        blocked
+        resourceId
+        ctxPostIds
+        organization {
+          ctxPostIds
         }
       }
     }
@@ -80,7 +78,6 @@ function subscription(queryClient: QueryClient) {
   isSubscribed = true
 
   const client = datahubSubscription()
-  console.log('subscribing')
   let unsub = client.subscribe<SubscribeBlockedResourcesSubscription, null>(
     {
       query: SUBSCRIBE_BLOCKED_RESOURCES,
@@ -89,13 +86,12 @@ function subscription(queryClient: QueryClient) {
       complete: () => undefined,
       next: async (data) => {
         const eventData = data.data?.moderationBlockedResource
-        console.log('BLOCKED', eventData)
         if (!eventData) return
 
-        // await processSubscriptionEvent(queryClient, eventData)
+        await processSubscriptionEvent(queryClient, eventData)
       },
-      error: () => {
-        console.log('error subscription')
+      error: (err) => {
+        console.log('error subscription', err)
       },
     }
   )
@@ -106,78 +102,56 @@ function subscription(queryClient: QueryClient) {
   }
 }
 
-// async function processSubscriptionEvent(
-//   queryClient: QueryClient,
-//   eventData: SubscribePostSubscription['post']
-// ) {
-//   if (
-//     eventData.event === DataHubSubscriptionEventEnum.PostCreated ||
-//     eventData.event === DataHubSubscriptionEventEnum.PostStateUpdated
-//   ) {
-//     await processMessage(queryClient, eventData)
-//   }
-// }
+async function processSubscriptionEvent(
+  queryClient: QueryClient,
+  eventData: SubscribeBlockedResourcesSubscription['moderationBlockedResource']
+) {
+  if (
+    eventData.event ===
+      DataHubSubscriptionEventEnum.ModerationBlockedResourceCreated ||
+    eventData.event ===
+      DataHubSubscriptionEventEnum.ModerationBlockedResourceStateUpdated
+  ) {
+    await processBlockedResources(queryClient, eventData)
+  }
+}
 
-// async function processMessage(
-//   queryClient: QueryClient,
-//   eventData: SubscribePostSubscription['post']
-// ) {
-//   const entity = eventData.entity
-//   const newestId = entity.persistentId || entity.id
+async function processBlockedResources(
+  queryClient: QueryClient,
+  eventData: SubscribeBlockedResourcesSubscription['moderationBlockedResource']
+) {
+  const entity = eventData.entity
+  const isNowBlocked = entity.blocked
+  const ctxPostIds = entity.organization.ctxPostIds
+  const resourceId = entity.resourceId
+  const resourceType = getBlockedResourceType(resourceId)
 
-//   const data = getPostQuery.getQueryData(queryClient, entity.id)
-//   const notHaveNewestData =
-//     !entity.persistentId ||
-//     getPostQuery.getQueryData(queryClient, entity.persistentId)
-//   if (data && notHaveNewestData) {
-//     data.id = newestId
-//     data.struct.dataType = eventData.entity.dataType
-//     // set initial data for immediate render but refetch it in background
-//     getPostQuery.setQueryData(queryClient, newestId, {
-//       ...data,
-//       struct: { ...data.struct, dataType: eventData.entity.dataType },
-//     })
-//     getPostQuery.invalidate(queryClient, newestId)
-//   } else {
-//     await getPostQuery.fetchQuery(queryClient, newestId)
-//   }
+  if (!resourceType) return
 
-//   const rootPostId = entity.rootPost?.persistentId
-//   if (!rootPostId) return
+  ctxPostIds?.forEach((id) => {
+    // TODO: update detailed query also
+    getBlockedResourcesQuery.setQueryData(
+      queryClient,
+      { postId: id },
+      (oldData) => {
+        const resources: Record<ResourceTypes, string[]> =
+          oldData?.blockedResources || { address: [], cid: [], postId: [] }
 
-//   getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
-//     queryClient,
-//     rootPostId,
-//     (oldData) => {
-//       if (!oldData) return oldData
-//       const oldIdsSet = new Set(oldData)
-//       if (oldIdsSet.has(newestId)) return oldData
-
-//       const newIds = [...oldData]
-
-//       const usedAsClientOptimisticId = entity.optimisticId || entity.id
-//       const clientOptimisticId = commentIdsOptimisticEncoder.encode(
-//         usedAsClientOptimisticId ?? ''
-//       )
-//       if (oldIdsSet.has(clientOptimisticId)) {
-//         const optimisticIdIndex = newIds.findIndex(
-//           (id) => id === clientOptimisticId
-//         )
-//         newIds.splice(optimisticIdIndex, 1, newestId)
-//         return newIds
-//       }
-
-//       if (entity.persistentId && oldIdsSet.has(entity.id)) {
-//         const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
-//         newIds.splice(optimisticIdIndex, 1, newestId)
-
-//         return newIds
-//       }
-
-//       newIds.unshift(newestId)
-//       return newIds
-//     }
-//   )
-
-//   getPostMetadataQuery.invalidate(queryClient, rootPostId)
-// }
+        const newResource = [...resources[resourceType]]
+        if (isNowBlocked) {
+          newResource.push(resourceId)
+        } else {
+          newResource.splice(newResource.indexOf(resourceId), 1)
+        }
+        return {
+          id,
+          type: 'postId',
+          blockedResources: {
+            ...resources,
+            [resourceType]: newResource,
+          },
+        }
+      }
+    )
+  })
+}

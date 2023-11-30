@@ -274,7 +274,7 @@ export type ModerationBlockedResource = {
 
 export type ModerationBlockedResourceSubscriptionPayload = {
   __typename?: 'ModerationBlockedResourceSubscriptionPayload'
-  entity: LinkedIdentity
+  entity: ModerationBlockedResource
   event: DataHubSubscriptionEventEnum
 }
 
@@ -720,23 +720,14 @@ export type SubscribeBlockedResourcesSubscription = {
     __typename?: 'ModerationBlockedResourceSubscriptionPayload'
     event: DataHubSubscriptionEventEnum
     entity: {
-      __typename?: 'LinkedIdentity'
+      __typename?: 'ModerationBlockedResource'
       id: string
-      enabled: boolean
-      substrateAccount: {
-        __typename?: 'Account'
-        id: string
-        moderationProfile?: {
-          __typename?: 'Moderator'
-          moderatorOrganizations?: Array<{
-            __typename?: 'ModerationOrganizationModerator'
-            organization: {
-              __typename?: 'ModerationOrganization'
-              ctxPostIds?: Array<string> | null
-              ctxSpaceIds?: Array<string> | null
-            }
-          }> | null
-        } | null
+      blocked: boolean
+      resourceId: string
+      ctxPostIds: Array<string>
+      organization: {
+        __typename?: 'ModerationOrganization'
+        ctxPostIds?: Array<string> | null
       }
     }
   }
@@ -1172,17 +1163,11 @@ export const SubscribeBlockedResources = gql`
       event
       entity {
         id
-        enabled
-        substrateAccount {
-          id
-          moderationProfile {
-            moderatorOrganizations {
-              organization {
-                ctxPostIds
-                ctxSpaceIds
-              }
-            }
-          }
+        blocked
+        resourceId
+        ctxPostIds
+        organization {
+          ctxPostIds
         }
       }
     }

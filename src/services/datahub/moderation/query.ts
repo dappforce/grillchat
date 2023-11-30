@@ -138,7 +138,7 @@ export async function getBlockedInPostIdDetailed(postId: string) {
 export const getBlockedInPostIdDetailedQuery = createQuery({
   key: 'getBlockedInPostIdDetailed',
   fetcher: async (postId: string) => {
-    const response = getBlockedInPostIdDetailed(postId)
+    const response = await getBlockedInPostIdDetailed(postId)
     return response
   },
 })

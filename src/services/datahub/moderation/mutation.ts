@@ -2,21 +2,11 @@ import {
   ApiModerationActionsBody,
   ApiModerationActionsResponse,
 } from '@/pages/api/moderation/actions'
-import { revalidateChatPage } from '@/services/api/mutation'
-import { ResourceTypes } from '@/services/datahub/moderation/utils'
-import { getPostMetadataQuery } from '@/services/datahub/posts/query'
-import { queryClient } from '@/services/provider'
 import { useMyAccount } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
-import { getDatahubConfig } from '@/utils/env/client'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
 import axios, { AxiosResponse } from 'axios'
 import { createSocialDataEventInput, DatahubParams } from '../utils'
-import {
-  getBlockedInPostIdDetailedQuery,
-  getBlockedResourcesQuery,
-  getModeratorQuery,
-} from './query'
 
 type ModerationCallNames =
   | (typeof socialCallName)['synth_moderation_init_moderator']
@@ -44,44 +34,6 @@ async function moderationActions<T extends ModerationCallNames>(
   return actionRes
 }
 
-const onErrorOrSuccess = <T extends ModerationCallNames>(
-  variables: ModerationActionsParams<T>
-) => {
-  if (variables.callName === 'synth_moderation_init_moderator')
-    getModeratorQuery.invalidate(queryClient, variables.address)
-  else if (
-    variables.callName === 'synth_moderation_block_resource' ||
-    variables.callName === 'synth_moderation_unblock_resource'
-  ) {
-    const args = variables.args as SocialCallDataArgs<
-      'synth_moderation_block_resource' | 'synth_moderation_unblock_resource'
-    >
-    args.ctxPostIds?.forEach((id) => {
-      getBlockedResourcesQuery.invalidate(queryClient, {
-        postId: id,
-      })
-      getBlockedInPostIdDetailedQuery.invalidate(queryClient, id)
-    })
-  }
-}
-const optimisticUnblocking = <T>(
-  data: Record<ResourceTypes, T[]>,
-  resourceIdToUnblock: string,
-  getId: (data: T) => string
-) => {
-  const newData = { ...data }
-  newData.address = newData.address.filter(
-    (resource) => getId(resource) !== resourceIdToUnblock
-  )
-  newData.cid = newData.cid.filter(
-    (resource) => getId(resource) !== resourceIdToUnblock
-  )
-  newData.postId = newData.postId.filter(
-    (resource) => getId(resource) !== resourceIdToUnblock
-  )
-  return newData
-}
-
 type SimplifiedModerationActionParams<T extends ModerationCallNames> = Omit<
   ModerationActionsParams<T>,
   'signer' | 'isOffchain' | 'proxyToAddress' | 'address'
@@ -104,75 +56,5 @@ export const useModerationActions = mutationWrapper(
     data: SimplifiedModerationActionParams<T>
   ) => {
     return moderationActions(augmentModerationActionParams(data))
-  },
-  {
-    onMutate: async (variables) => {
-      if (variables.callName === 'synth_moderation_unblock_resource') {
-        const args =
-          variables.args as SocialCallDataArgs<'synth_moderation_unblock_resource'>
-        args.ctxPostIds?.forEach((id) => {
-          getBlockedResourcesQuery.setQueryData(
-            queryClient,
-            { postId: id },
-            (oldData) => {
-              if (!oldData) return null
-              return {
-                ...oldData,
-                blockedResources: optimisticUnblocking(
-                  oldData.blockedResources,
-                  args.resourceId,
-                  (id) => id
-                ),
-              }
-            }
-          )
-          getBlockedInPostIdDetailedQuery.setQueryData(
-            queryClient,
-            id,
-            (oldData) => {
-              if (!oldData) return null
-              return optimisticUnblocking(
-                oldData,
-                args.resourceId,
-                (data) => data.resourceId
-              )
-            }
-          )
-        })
-      }
-    },
-    onError: (_, variables) => {
-      onErrorOrSuccess(augmentModerationActionParams(variables))
-    },
-    onSuccess: async (_, variables) => {
-      onErrorOrSuccess(augmentModerationActionParams(variables))
-      if (
-        variables.callName === 'synth_moderation_block_resource' ||
-        variables.callName === 'synth_moderation_unblock_resource'
-      ) {
-        const args = variables.args as SocialCallDataArgs<
-          | 'synth_moderation_block_resource'
-          | 'synth_moderation_unblock_resource'
-        >
-        args.ctxPostIds?.forEach((id) => {
-          try {
-            revalidateChatPage({ chatId: id })
-          } catch {}
-
-          if (getDatahubConfig()) {
-            getPostMetadataQuery.setQueryData(queryClient, id, (oldData) => {
-              if (!oldData) return oldData
-              let change = 1
-              if (variables.callName === 'synth_moderation_block_resource')
-                change = -1
-              return {
-                ...oldData,
-                totalCommentsCount: oldData.totalCommentsCount + change,
-              }
-            })
-          }
-        })
-      }
-    },
   }
 )
