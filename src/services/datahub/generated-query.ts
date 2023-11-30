@@ -702,7 +702,10 @@ export type SubscribeOrganizationSubscription = {
       ctxPostIds?: Array<string> | null
       organizationModerators?: Array<{
         __typename?: 'ModerationOrganizationModerator'
-        id: string
+        moderator: {
+          __typename?: 'Moderator'
+          substrateAccount: { __typename?: 'Account'; id: string }
+        }
       }> | null
     }
   }
@@ -1151,7 +1154,11 @@ export const SubscribeOrganization = gql`
       event
       entity {
         organizationModerators {
-          id
+          moderator {
+            substrateAccount {
+              id
+            }
+          }
         }
         ctxPostIds
       }

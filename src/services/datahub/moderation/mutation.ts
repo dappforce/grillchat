@@ -2,11 +2,13 @@ import {
   ApiModerationActionsBody,
   ApiModerationActionsResponse,
 } from '@/pages/api/moderation/actions'
+import { queryClient } from '@/services/provider'
 import { useMyAccount } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
 import axios, { AxiosResponse } from 'axios'
 import { createSocialDataEventInput, DatahubParams } from '../utils'
+import { getModeratorQuery } from './query'
 
 type ModerationCallNames =
   | (typeof socialCallName)['synth_moderation_init_moderator']
@@ -56,5 +58,16 @@ export const useModerationActions = mutationWrapper(
     data: SimplifiedModerationActionParams<T>
   ) => {
     return moderationActions(augmentModerationActionParams(data))
+  },
+  {
+    onSuccess: (_, variables) => {
+      // HOTFIX: there is no event from subscription when the new moderator and org is linked, so we invalidate the query manually
+      const completeArgs = augmentModerationActionParams(variables)
+      if (completeArgs.callName === 'synth_moderation_init_moderator') {
+        setTimeout(() => {
+          getModeratorQuery.invalidate(queryClient, completeArgs.address)
+        }, 1_000)
+      }
+    },
   }
 )
