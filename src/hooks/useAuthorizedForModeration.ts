@@ -2,6 +2,7 @@ import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import { getPostQuery } from '@/services/api/query'
 import { getModeratorQuery } from '@/services/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
+import { getAppId } from '@/utils/env/client'
 
 export default function useAuthorizedForModeration(
   chatId: string,
@@ -29,5 +30,6 @@ export default function useAuthorizedForModeration(
     isOwner,
     isLoading,
     moderatorData: moderator,
+    isAdmin: moderator?.appIds.includes(getAppId()),
   }
 }

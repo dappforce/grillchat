@@ -1,3 +1,4 @@
+import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
@@ -111,6 +112,8 @@ export default function ModerationForm({
     }
   }, [reasonsMapped, setValue])
 
+  const { isAdmin } = useAuthorizedForModeration(chatId)
+
   if (!myAddress) return null
 
   const isOwner = ownerId === myAddress
@@ -134,13 +137,19 @@ export default function ModerationForm({
         }
 
         const reasonId = reason.id
+
+        const args: SocialCallDataArgs<'synth_moderation_block_resource'> = {
+          reasonId,
+          resourceId,
+        }
+        if (isAdmin) {
+          args.ctxAppIds = ['*']
+        } else {
+          args.ctxPostIds = ['*']
+        }
         mutate({
           callName: 'synth_moderation_block_resource',
-          args: {
-            reasonId,
-            resourceId,
-            ctxPostIds: ['*'],
-          },
+          args,
         })
 
         sendEvent('client_moderation', {

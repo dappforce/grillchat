@@ -7,6 +7,10 @@ export function getCaptchaSiteKey() {
   )
 }
 
+export function getAppId() {
+  return checkEnv(process.env.NEXT_PUBLIC_APP_ID, 'NEXT_PUBLIC_APP_ID')
+}
+
 export function getMainHubId() {
   const hubIds = checkEnv(
     process.env.NEXT_PUBLIC_SPACE_IDS,
