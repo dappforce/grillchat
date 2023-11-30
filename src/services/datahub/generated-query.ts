@@ -688,11 +688,11 @@ export type GetModeratorDataQuery = {
   } | null
 }
 
-export type SubscribeModeratorSubscriptionVariables = Exact<{
+export type SubscribeOrganizationSubscriptionVariables = Exact<{
   [key: string]: never
 }>
 
-export type SubscribeModeratorSubscription = {
+export type SubscribeOrganizationSubscription = {
   __typename?: 'Subscription'
   moderationOrganization: {
     __typename?: 'ModerationOrganizationSubscriptionPayload'
@@ -1145,8 +1145,8 @@ export const GetModeratorData = gql`
     }
   }
 `
-export const SubscribeModerator = gql`
-  subscription SubscribeModerator {
+export const SubscribeOrganization = gql`
+  subscription SubscribeOrganization {
     moderationOrganization {
       event
       entity {

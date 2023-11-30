@@ -7,7 +7,7 @@ import {
   DataHubSubscriptionEventEnum,
   GetBlockedInPostIdDetailedQuery,
   SubscribeBlockedResourcesSubscription,
-  SubscribeModeratorSubscription,
+  SubscribeOrganizationSubscription,
 } from '../generated-query'
 import { datahubSubscription } from '../utils'
 import {
@@ -42,22 +42,18 @@ export function useDatahubModerationSubscriber() {
       document.removeEventListener('visibilitychange', listener)
       unsubRef.current?.()
     }
-  }, [queryClient])
+  }, [queryClient, myAddress])
 }
 
-const SUBSCRIBE_MODERATOR = gql`
-  subscription SubscribeModerator {
-    moderationModerator {
+const SUBSCRIBE_ORGANIZATION = gql`
+  subscription SubscribeOrganization {
+    moderationOrganization {
       event
       entity {
-        substrateAccount {
+        organizationModerators {
           id
         }
-        moderatorOrganizations {
-          organization {
-            ctxPostIds
-          }
-        }
+        ctxPostIds
       }
     }
   }
@@ -111,18 +107,21 @@ function moderationSubscription(queryClient: QueryClient) {
   )
 
   console.log('subscribing moderator')
-  let unsubModerator = client.subscribe<SubscribeModeratorSubscription, null>(
+  let unsubModerator = client.subscribe<
+    SubscribeOrganizationSubscription,
+    null
+  >(
     {
-      query: SUBSCRIBE_MODERATOR,
+      query: SUBSCRIBE_ORGANIZATION,
     },
     {
       complete: () => undefined,
       next: async (data) => {
-        const eventData = data.data?.moderationModerator
+        const eventData = data.data?.moderationOrganization
         if (!eventData) return
         console.log('SUB MODERATOR', eventData)
 
-        await processModeratorEvent(queryClient, eventData)
+        await processOrganizationEvent(queryClient, eventData)
       },
       error: (err) => {
         console.log('error moderator subscription', err)
@@ -137,17 +136,17 @@ function moderationSubscription(queryClient: QueryClient) {
   }
 }
 
-async function processModeratorEvent(
+async function processOrganizationEvent(
   queryClient: QueryClient,
-  eventData: SubscribeModeratorSubscription['moderationModerator']
+  eventData: SubscribeOrganizationSubscription['moderationOrganization']
 ) {
   if (
     eventData.event ===
-      DataHubSubscriptionEventEnum.ModerationModeratorCreated ||
+      DataHubSubscriptionEventEnum.ModerationOrganizationCreated ||
     eventData.event ===
-      DataHubSubscriptionEventEnum.ModerationModeratorStateUpdated
+      DataHubSubscriptionEventEnum.ModerationOrganizationStateUpdated
   ) {
-    await processModerator(queryClient, eventData)
+    await processOrganization(queryClient, eventData)
   }
 }
 
@@ -165,22 +164,24 @@ async function processBlockedResourcesEvent(
   }
 }
 
-async function processModerator(
+async function processOrganization(
   queryClient: QueryClient,
-  eventData: SubscribeModeratorSubscription['moderationModerator']
+  eventData: SubscribeOrganizationSubscription['moderationOrganization']
 ) {
   const entity = eventData.entity
-  const substrateAccountId = entity.substrateAccount.id
-  const newCtxPostIds = entity.moderatorOrganizations
-    ?.map((org) => org.organization.ctxPostIds)
-    .flat()
-    .filter(Boolean)
-  getModeratorQuery.setQueryData(queryClient, substrateAccountId, (oldData) => {
-    return {
-      address: substrateAccountId,
-      exist: true,
-      postIds: newCtxPostIds ?? [],
-    }
+  const moderators = entity.organizationModerators
+
+  moderators?.forEach((moderator) => {
+    const address = moderator.id
+    getModeratorQuery.setQueryData(queryClient, address, (oldData) => {
+      if (!oldData) return null
+      const postIdsSet = new Set(oldData.postIds)
+      entity.ctxPostIds?.forEach((id) => postIdsSet.add(id))
+      return {
+        ...oldData,
+        postIds: Array.from(postIdsSet),
+      }
+    })
   })
 }
 
