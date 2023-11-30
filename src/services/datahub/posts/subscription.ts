@@ -115,7 +115,7 @@ async function processMessage(
   const data = getPostQuery.getQueryData(queryClient, entity.id)
   const notHaveNewestData =
     !entity.persistentId ||
-    getPostQuery.getQueryData(queryClient, entity.persistentId)
+    !getPostQuery.getQueryData(queryClient, entity.persistentId)
   if (data && notHaveNewestData) {
     data.id = newestId
     data.struct.dataType = eventData.entity.dataType

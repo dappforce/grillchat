@@ -143,7 +143,10 @@ export async function getPostsFromDatahub(postIds: string[]) {
     }
     persistentPosts = datahubResPromise.value.findPosts.data.map((post) => {
       post.followersCount = followersCountMap.get(post.persistentId ?? '') || 0
-      return { ...mapDatahubPostFragment(post), requestedId: post.id }
+      return {
+        ...mapDatahubPostFragment(post),
+        requestedId: post.persistentId ?? undefined,
+      }
     })
   }
 
