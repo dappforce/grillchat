@@ -25,7 +25,7 @@ export function CaptchaProvider({ children }: { children: any }) {
     try {
       console.log('waiting captcha...')
       token = (await captchaRef?.current.executeAsync?.()) ?? null
-      console.log('done captcha', token)
+      console.log('done captcha')
     } catch (e) {
       console.error('Captcha Error: ', e)
     }
