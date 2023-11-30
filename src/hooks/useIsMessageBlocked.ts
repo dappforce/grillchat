@@ -36,7 +36,7 @@ export default function useIsMessageBlocked(
   const { data: chat } = getPostQuery.useQuery(chatId)
   const entityId = chat?.entityId ?? ''
   const { data: chatModerationData } = getBlockedResourcesQuery.useQuery(
-    { postId: entityId },
+    { postEntityId: entityId },
     { enabled: !!entityId }
   )
   const blockedInHub = hubModerationData?.blockedResources

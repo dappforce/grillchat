@@ -31,17 +31,20 @@ const GET_BLOCKED_RESOURCES = gql`
   }
 `
 export async function getBlockedResources(variables: {
-  postIds: string[]
+  postEntityIds: string[]
   spaceIds: string[]
 }) {
-  variables.postIds = variables.postIds.filter((id) => !!id)
+  variables.postEntityIds = variables.postEntityIds.filter((id) => !!id)
   variables.spaceIds = variables.spaceIds.filter((id) => !!id)
   const data = await datahubQueryRequest<
     GetBlockedResourcesQuery,
     GetBlockedResourcesQueryVariables
   >({
     document: GET_BLOCKED_RESOURCES,
-    variables,
+    variables: {
+      postIds: variables.postEntityIds,
+      spaceIds: variables.spaceIds,
+    },
   })
 
   const blockedInSpaceIds =
@@ -62,32 +65,33 @@ export async function getBlockedResources(variables: {
   return { blockedInSpaceIds, blockedInPostIds }
 }
 const pooledGetBlockedResource = poolQuery<
-  { postId: string } | { spaceId: string },
+  { postEntityId: string } | { spaceId: string },
   {
     id: string
     blockedResources: Record<ResourceTypes, string[]>
-    type: 'spaceId' | 'postId'
+    type: 'spaceId' | 'postEntityId'
   }
 >({
   multiCall: async (params) => {
     if (!params.length) return []
     const spaceIds: string[] = []
-    const postIds: string[] = []
+    const postEntityIds: string[] = []
     params.forEach((param) => {
-      if ('postId' in param && param.postId) postIds.push(param.postId)
+      if ('postEntityId' in param && param.postEntityId)
+        postEntityIds.push(param.postEntityId)
       else if ('spaceId' in param && param.spaceId) spaceIds.push(param.spaceId)
     })
 
-    if (!postIds.length && !spaceIds.length) return []
+    if (!postEntityIds.length && !spaceIds.length) return []
 
     const response = await getBlockedResources({
-      postIds,
+      postEntityIds,
       spaceIds,
     })
     return [
       ...response.blockedInPostIds.map((data) => ({
         ...data,
-        type: 'postId' as const,
+        type: 'postEntityId' as const,
       })),
       ...response.blockedInSpaceIds.map((data) => ({
         ...data,
@@ -97,11 +101,11 @@ const pooledGetBlockedResource = poolQuery<
   },
   resultMapper: {
     paramToKey: (param) => {
-      if ('postId' in param) return `postId:${param.postId}`
+      if ('postEntityId' in param) return `postEntityId:${param.postEntityId}`
       else return `spaceId:${param.spaceId}`
     },
     resultToKey: ({ type, id }) => {
-      if (type === 'postId') return `postId:${id}`
+      if (type === 'postEntityId') return `postEntityId:${id}`
       else return `spaceId:${id}`
     },
   },
@@ -137,8 +141,8 @@ export async function getBlockedInPostIdDetailed(postId: string) {
 }
 export const getBlockedInPostIdDetailedQuery = createQuery({
   key: 'getBlockedInPostIdDetailed',
-  fetcher: async (postId: string) => {
-    const response = await getBlockedInPostIdDetailed(postId)
+  fetcher: async (postEntityId: string) => {
+    const response = await getBlockedInPostIdDetailed(postEntityId)
     return response
   },
 })

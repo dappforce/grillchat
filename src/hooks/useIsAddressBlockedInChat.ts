@@ -9,6 +9,7 @@ export default function useIsAddressBlockedInChat(
 ) {
   const { data: chat } = getPostQuery.useQuery(chatId)
   const originalHubId = chat?.struct.spaceId
+  const entityId = chat?.entityId
 
   const { data: originalHubModeration } = getBlockedResourcesQuery.useQuery(
     { spaceId: originalHubId ?? '' },
@@ -21,9 +22,14 @@ export default function useIsAddressBlockedInChat(
   const blockedInOriginalHub = originalHubModeration?.blockedResources.address
   const blockedInHub = hubModeration?.blockedResources.address
 
-  const { data: chatModerationData } = getBlockedResourcesQuery.useQuery({
-    postId: chatId,
-  })
+  const { data: chatModerationData } = getBlockedResourcesQuery.useQuery(
+    {
+      postEntityId: entityId || '',
+    },
+    {
+      enabled: !!entityId,
+    }
+  )
   const blockedInChat = chatModerationData?.blockedResources.address
 
   const blockedAddressesSet = useMemo(

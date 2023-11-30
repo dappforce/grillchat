@@ -225,7 +225,7 @@ async function processBlockedResources(
 
     getBlockedResourcesQuery.setQueryData(
       queryClient,
-      { postId: id },
+      { postEntityId: id },
       (oldData) => {
         const resources: Record<ResourceTypes, string[]> =
           oldData?.blockedResources || { address: [], cid: [], postId: [] }
@@ -238,7 +238,7 @@ async function processBlockedResources(
         }
         return {
           id,
-          type: 'postId',
+          type: 'postEntityId',
           blockedResources: {
             ...resources,
             [resourceType]: newResource,

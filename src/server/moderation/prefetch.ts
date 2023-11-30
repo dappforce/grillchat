@@ -12,7 +12,7 @@ export async function prefetchBlockedEntities(
   try {
     const { blockedInPostIds, blockedInSpaceIds } = await getBlockedResources({
       spaceIds,
-      postIds,
+      postEntityIds: postIds,
     })
     blockedInSpaceIds.forEach((data) => {
       getBlockedResourcesQuery.setQueryData(
@@ -24,8 +24,8 @@ export async function prefetchBlockedEntities(
     blockedInPostIds.forEach((data) => {
       getBlockedResourcesQuery.setQueryData(
         queryClient,
-        { postId: data.id },
-        { ...data, type: 'postId' }
+        { postEntityId: data.id },
+        { ...data, type: 'postEntityId' }
       )
     })
 
