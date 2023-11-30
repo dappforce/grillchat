@@ -114,6 +114,7 @@ export default function ChatPage({
   }, [openExtensionModal])
 
   const myAddress = useMyMainAddress()
+  const isSignerReady = useMyAccount((state) => !!state.signer)
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
@@ -134,7 +135,7 @@ export default function ChatPage({
   const chatEntityId = chat?.entityId
   useEffect(() => {
     if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
-    if (!isAuthorized && !isLoading && chatEntityId) {
+    if (!isAuthorized && !isLoading && chatEntityId && isSignerReady) {
       commitModerationAction({
         callName: isModeratorExist
           ? 'synth_moderation_add_ctx_to_organization'
@@ -146,6 +147,7 @@ export default function ChatPage({
       })
     }
   }, [
+    isSignerReady,
     isAuthorized,
     commitModerationAction,
     isModeratorExist,
