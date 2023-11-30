@@ -1,16 +1,9 @@
+import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import useToastError from '@/hooks/useToastError'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { UseMutationResult } from '@tanstack/react-query'
-import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import useCommonTxSteps from '../hooks'
-
-const CaptchaInvisible = dynamic(
-  () => import('@/components/captcha/CaptchaInvisible'),
-  {
-    ssr: false,
-  }
-)
 
 type Status =
   | 'idle'

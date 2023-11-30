@@ -12,7 +12,11 @@ export type CaptchaInvisibleProps = {
 export default function CaptchaInvisible({ children }: CaptchaInvisibleProps) {
   const { runCaptcha } = useCaptchaContext()
 
-  return children(runCaptcha, (className) => (
-    <CaptchaTermsAndService className={className} />
-  ))
+  return (
+    <>
+      {children(runCaptcha, (className) => (
+        <CaptchaTermsAndService className={className} />
+      ))}
+    </>
+  )
 }

@@ -1,5 +1,6 @@
 import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
+import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ERRORS } from '@/constants/error'
@@ -42,12 +43,6 @@ import { interceptPastedData } from '../extensions/config'
 const StayUpdatedModal = dynamic(() => import('./StayUpdatedModal'), {
   ssr: false,
 })
-const CaptchaInvisible = dynamic(
-  () => import('@/components/captcha/CaptchaInvisible'),
-  {
-    ssr: false,
-  }
-)
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   hubId: string
