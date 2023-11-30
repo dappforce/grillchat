@@ -75,6 +75,7 @@ export type BlockedResourceIdsBatchItem = {
 
 export type BlockedResourceIdsBatchResponse = {
   __typename?: 'BlockedResourceIdsBatchResponse'
+  byCtxAppIds: Array<BlockedResourceIdsBatchItem>
   byCtxPostIds: Array<BlockedResourceIdsBatchItem>
   byCtxSpaceIds: Array<BlockedResourceIdsBatchItem>
 }
@@ -135,6 +136,8 @@ export enum DataHubSubscriptionEventEnum {
   ModerationBlockedResourceStateUpdated = 'MODERATION_BLOCKED_RESOURCE_STATE_UPDATED',
   ModerationModeratorCreated = 'MODERATION_MODERATOR_CREATED',
   ModerationModeratorStateUpdated = 'MODERATION_MODERATOR_STATE_UPDATED',
+  ModerationOrganizationCreated = 'MODERATION_ORGANIZATION_CREATED',
+  ModerationOrganizationStateUpdated = 'MODERATION_ORGANIZATION_STATE_UPDATED',
   PostCreated = 'POST_CREATED',
   PostFollowed = 'POST_FOLLOWED',
   PostFollowStateUpdated = 'POST_FOLLOW_STATE_UPDATED',
@@ -253,6 +256,7 @@ export type ModerationBlockedResource = {
   moderator: Moderator
   organization: ModerationOrganization
   parentPostId?: Maybe<Scalars['String']['output']>
+  postModerationStatus?: Maybe<ModerationPostModerationStatus>
   reason: ModerationBlockReason
   resourceId: Scalars['String']['output']
   resourceType: ModerationResourceType
@@ -289,6 +293,19 @@ export type ModerationOrganizationModerator = {
   moderator: Moderator
   organization: ModerationOrganization
   role: ModeratorRole
+}
+
+export type ModerationOrganizationSubscriptionPayload = {
+  __typename?: 'ModerationOrganizationSubscriptionPayload'
+  entity: ModerationOrganization
+  event: DataHubSubscriptionEventEnum
+}
+
+export type ModerationPostModerationStatus = {
+  __typename?: 'ModerationPostModerationStatus'
+  blockerResource: ModerationBlockedResource
+  id: Scalars['String']['output']
+  post: Post
 }
 
 export enum ModerationResourceType {
@@ -381,6 +398,7 @@ export type Post = {
   persistentId?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   postFollowers?: Maybe<Array<PostFollowers>>
+  postModerationStatuses?: Maybe<Array<ModerationPostModerationStatus>>
   publicRepliesCount?: Maybe<Scalars['Int']['output']>
   reactionsCount?: Maybe<Scalars['Int']['output']>
   rootPost?: Maybe<Post>
@@ -461,7 +479,7 @@ export type QueryLinkedIdentitiesArgs = {
 
 export type QueryModerationBlockedResourceIdsArgs = {
   blocked?: InputMaybe<Scalars['Boolean']['input']>
-  ctxAppId?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
   ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
   ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
   moderatorId?: InputMaybe<Scalars['String']['input']>
@@ -474,13 +492,14 @@ export type QueryModerationBlockedResourceIdsArgs = {
 }
 
 export type QueryModerationBlockedResourceIdsBatchArgs = {
+  ctxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
   ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
   ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
 }
 
 export type QueryModerationBlockedResourcesDetailedArgs = {
   blocked?: InputMaybe<Scalars['Boolean']['input']>
-  ctxAppId?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
   ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
   ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
   moderatorId?: InputMaybe<Scalars['String']['input']>
@@ -582,6 +601,7 @@ export type Subscription = {
   linkedIdentity: LinkedIdentitySubscriptionPayload
   moderationBlockedResource: ModerationBlockedResourceSubscriptionPayload
   moderationModerator: ModeratorSubscriptionPayload
+  moderationOrganization: ModerationOrganizationSubscriptionPayload
   post: PostSubscriptionPayload
 }
 
