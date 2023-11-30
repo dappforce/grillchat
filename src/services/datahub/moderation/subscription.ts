@@ -6,11 +6,13 @@ import {
   DataHubSubscriptionEventEnum,
   GetBlockedInPostIdDetailedQuery,
   SubscribeBlockedResourcesSubscription,
+  SubscribeModeratorSubscription,
 } from '../generated-query'
 import { datahubSubscription } from '../utils'
 import {
   getBlockedInPostIdDetailedQuery,
   getBlockedResourcesQuery,
+  getModeratorQuery,
 } from './query'
 import { getBlockedResourceType, ResourceTypes } from './utils'
 
@@ -23,7 +25,7 @@ export function useDatahubModerationSubscriber() {
 
     const listener = () => {
       if (document.visibilityState === 'visible') {
-        unsubRef.current = subscription(queryClient)
+        unsubRef.current = moderationSubscription(queryClient)
         getBlockedResourcesQuery.invalidate(queryClient)
         getBlockedInPostIdDetailedQuery.invalidate(queryClient)
       } else {
@@ -78,12 +80,15 @@ const SUBSCRIBE_BLOCKED_RESOURCES = gql`
 `
 
 let isSubscribed = false
-function subscription(queryClient: QueryClient) {
+function moderationSubscription(queryClient: QueryClient) {
   if (isSubscribed) return
   isSubscribed = true
 
   const client = datahubSubscription()
-  let unsub = client.subscribe<SubscribeBlockedResourcesSubscription, null>(
+  let unsubBlockedResources = client.subscribe<
+    SubscribeBlockedResourcesSubscription,
+    null
+  >(
     {
       query: SUBSCRIBE_BLOCKED_RESOURCES,
     },
@@ -93,21 +98,56 @@ function subscription(queryClient: QueryClient) {
         const eventData = data.data?.moderationBlockedResource
         if (!eventData) return
 
-        await processSubscriptionEvent(queryClient, eventData)
+        await processBlockedResourcesEvent(queryClient, eventData)
       },
       error: (err) => {
-        console.log('error subscription', err)
+        console.log('error blocked resources subscription', err)
+      },
+    }
+  )
+
+  console.log('subscribing moderator')
+  let unsubModerator = client.subscribe<SubscribeModeratorSubscription, null>(
+    {
+      query: SUBSCRIBE_MODERATOR,
+    },
+    {
+      complete: () => undefined,
+      next: async (data) => {
+        const eventData = data.data?.moderationModerator
+        if (!eventData) return
+        console.log('SUB MODERATOR', eventData)
+
+        await processModeratorEvent(queryClient, eventData)
+      },
+      error: (err) => {
+        console.log('error moderator subscription', err)
       },
     }
   )
 
   return () => {
-    unsub()
+    unsubBlockedResources()
+    unsubModerator()
     isSubscribed = false
   }
 }
 
-async function processSubscriptionEvent(
+async function processModeratorEvent(
+  queryClient: QueryClient,
+  eventData: SubscribeModeratorSubscription['moderationModerator']
+) {
+  if (
+    eventData.event ===
+      DataHubSubscriptionEventEnum.ModerationModeratorCreated ||
+    eventData.event ===
+      DataHubSubscriptionEventEnum.ModerationModeratorStateUpdated
+  ) {
+    await processModerator(queryClient, eventData)
+  }
+}
+
+async function processBlockedResourcesEvent(
   queryClient: QueryClient,
   eventData: SubscribeBlockedResourcesSubscription['moderationBlockedResource']
 ) {
@@ -119,6 +159,25 @@ async function processSubscriptionEvent(
   ) {
     await processBlockedResources(queryClient, eventData)
   }
+}
+
+async function processModerator(
+  queryClient: QueryClient,
+  eventData: SubscribeModeratorSubscription['moderationModerator']
+) {
+  const entity = eventData.entity
+  const substrateAccountId = entity.substrateAccount.id
+  const newCtxPostIds = entity.moderatorOrganizations
+    ?.map((org) => org.organization.ctxPostIds)
+    .flat()
+    .filter(Boolean)
+  getModeratorQuery.setQueryData(queryClient, substrateAccountId, (oldData) => {
+    return {
+      address: substrateAccountId,
+      exist: true,
+      postIds: newCtxPostIds ?? [],
+    }
+  })
 }
 
 async function processBlockedResources(
