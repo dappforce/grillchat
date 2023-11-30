@@ -681,6 +681,7 @@ export type GetModeratorDataQuery = {
           __typename?: 'ModerationOrganization'
           id: string
           ctxPostIds?: Array<string> | null
+          ctxAppIds?: Array<string> | null
         }
       }> | null
     }>
@@ -1137,6 +1138,7 @@ export const GetModeratorData = gql`
           organization {
             id
             ctxPostIds
+            ctxAppIds
           }
         }
       }

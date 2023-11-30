@@ -180,6 +180,7 @@ export const GET_MODERATOR_DATA = gql`
           organization {
             id
             ctxPostIds
+            ctxAppIds
           }
         }
       }
@@ -198,12 +199,15 @@ export async function getModeratorData(
   })
   const moderator = res.moderators?.data?.[0]
   const postIds: string[] = []
+  const appIds: string[] = []
   moderator?.moderatorOrganizations?.forEach((org) => {
     postIds.push(...(org.organization.ctxPostIds ?? []))
+    appIds.push(...(org.organization.ctxAppIds ?? []))
   })
   const firstOrg = moderator?.moderatorOrganizations?.[0]
   return {
     postIds,
+    appIds,
     exist: !!moderator,
     organizationId: firstOrg?.organization.id,
   }
@@ -211,9 +215,9 @@ export async function getModeratorData(
 export const getModeratorQuery = createQuery({
   key: 'getModerator',
   fetcher: async (address: string) => {
-    const { exist, postIds, organizationId } = await getModeratorData({
+    const moderatorData = await getModeratorData({
       address,
     })
-    return { address, postIds, exist, organizationId }
+    return { address, ...moderatorData }
   },
 })

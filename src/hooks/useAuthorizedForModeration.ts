@@ -28,7 +28,6 @@ export default function useAuthorizedForModeration(
     ),
     isOwner,
     isLoading,
-    isModeratorExist: !!moderator?.exist,
-    organizationId: moderator?.organizationId,
+    moderatorData: moderator,
   }
 }
