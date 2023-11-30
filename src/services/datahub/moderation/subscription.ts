@@ -1,3 +1,4 @@
+import { useMyMainAddress } from '@/stores/my-account'
 import { getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
@@ -19,6 +20,7 @@ import { getBlockedResourceType, ResourceTypes } from './utils'
 export function useDatahubModerationSubscriber() {
   const queryClient = useQueryClient()
   const unsubRef = useRef<(() => void) | undefined>()
+  const myAddress = useMyMainAddress()
 
   useEffect(() => {
     if (!getDatahubConfig()) return
@@ -26,8 +28,10 @@ export function useDatahubModerationSubscriber() {
     const listener = () => {
       if (document.visibilityState === 'visible') {
         unsubRef.current = moderationSubscription(queryClient)
+
         getBlockedResourcesQuery.invalidate(queryClient)
         getBlockedInPostIdDetailedQuery.invalidate(queryClient)
+        getModeratorQuery.invalidate(queryClient, myAddress)
       } else {
         unsubRef.current?.()
       }
