@@ -679,6 +679,7 @@ export type GetModeratorDataQuery = {
         __typename?: 'ModerationOrganizationModerator'
         organization: {
           __typename?: 'ModerationOrganization'
+          id: string
           ctxPostIds?: Array<string> | null
         }
       }> | null
@@ -692,18 +693,15 @@ export type SubscribeModeratorSubscriptionVariables = Exact<{
 
 export type SubscribeModeratorSubscription = {
   __typename?: 'Subscription'
-  moderationModerator: {
-    __typename?: 'ModeratorSubscriptionPayload'
+  moderationOrganization: {
+    __typename?: 'ModerationOrganizationSubscriptionPayload'
     event: DataHubSubscriptionEventEnum
     entity: {
-      __typename?: 'Moderator'
-      substrateAccount: { __typename?: 'Account'; id: string }
-      moderatorOrganizations?: Array<{
+      __typename?: 'ModerationOrganization'
+      ctxPostIds?: Array<string> | null
+      organizationModerators?: Array<{
         __typename?: 'ModerationOrganizationModerator'
-        organization: {
-          __typename?: 'ModerationOrganization'
-          ctxPostIds?: Array<string> | null
-        }
+        id: string
       }> | null
     }
   }
@@ -1137,6 +1135,7 @@ export const GetModeratorData = gql`
       data {
         moderatorOrganizations {
           organization {
+            id
             ctxPostIds
           }
         }
@@ -1146,17 +1145,13 @@ export const GetModeratorData = gql`
 `
 export const SubscribeModerator = gql`
   subscription SubscribeModerator {
-    moderationModerator {
+    moderationOrganization {
       event
       entity {
-        substrateAccount {
+        organizationModerators {
           id
         }
-        moderatorOrganizations {
-          organization {
-            ctxPostIds
-          }
-        }
+        ctxPostIds
       }
     }
   }

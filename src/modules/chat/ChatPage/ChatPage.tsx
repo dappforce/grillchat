@@ -128,7 +128,7 @@ export default function ChatPage({
     }
   }, [isInitialized, myAddress, chat])
 
-  const { isAuthorized, isOwner, isLoading, isModeratorExist } =
+  const { isAuthorized, isOwner, isLoading, isModeratorExist, organizationId } =
     useAuthorizedForModeration(chatId)
   const { mutateAsync: commitModerationAction } = useModerationActions()
 
@@ -136,17 +136,26 @@ export default function ChatPage({
   useEffect(() => {
     if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
     if (!isAuthorized && !isLoading && chatEntityId && isSignerReady) {
-      commitModerationAction({
-        callName: isModeratorExist
-          ? 'synth_moderation_add_ctx_to_organization'
-          : 'synth_moderation_init_moderator',
-        args: {
-          ctxPostIds: [chatEntityId],
-          withOrganization: true,
-        },
-      })
+      if (!isModeratorExist) {
+        commitModerationAction({
+          callName: 'synth_moderation_init_moderator',
+          args: {
+            ctxPostIds: [chatEntityId],
+            withOrganization: true,
+          },
+        })
+      } else {
+        commitModerationAction({
+          callName: 'synth_moderation_add_ctx_to_organization',
+          args: {
+            ctxPostIds: [chatEntityId],
+            organizationId: organizationId ?? '',
+          },
+        })
+      }
     }
   }, [
+    organizationId,
     isSignerReady,
     isAuthorized,
     commitModerationAction,
