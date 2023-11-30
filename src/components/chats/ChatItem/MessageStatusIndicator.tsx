@@ -115,7 +115,7 @@ function ResendMessageIndicator({ message }: MessageStatusIndicatorProps) {
         withCloseButton
       >
         <ResendFailedMessageWrapper>
-          {({ isLoading, mutateAsync }) => {
+          {({ isLoading, mutateAsync: resendMessage }) => {
             return (
               <Button
                 size='lg'
@@ -123,7 +123,7 @@ function ResendMessageIndicator({ message }: MessageStatusIndicatorProps) {
                 onClick={async () => {
                   if (!message.content) return
                   sendEvent('click resend_message_button')
-                  await mutateAsync({
+                  await resendMessage({
                     chatId: message.struct.rootPostId,
                     content: message.content,
                   })

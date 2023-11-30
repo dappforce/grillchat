@@ -77,7 +77,11 @@ declare module '@subsocial/api/types' {
   export interface SpaceContent extends SubsocialSpaceContent {
     profileSource?: string
   }
-  export interface PostContent extends SubsocialPostContent {
+  export interface PostContent
+    extends Omit<
+      SubsocialPostContent,
+      'summary' | 'canonical' | 'isShowMore' | 'tags'
+    > {
     optimisticId?: string
     linkMetadata?: LinkMetadata
     inReplyTo?: {
@@ -98,7 +102,19 @@ declare module '@subsocial/api/types' {
 
   export declare type SpaceData = EntityPostData<SpaceStruct, SpaceContent>
   export declare type PostData = EntityPostData<
-    PostStruct &
+    Omit<
+      PostStruct,
+      | 'createdByAccount'
+      | 'downvotesCount'
+      | 'isComment'
+      | 'isRegularPost'
+      | 'isSharedPost'
+      | 'upvotesCount'
+      | 'repliesCount'
+      | 'sharesCount'
+      | 'isUpdated'
+      | ''
+    > &
       Pick<CommentStruct, 'rootPostId'> & {
         followersCount?: number
         blockchainSyncFailed?: boolean

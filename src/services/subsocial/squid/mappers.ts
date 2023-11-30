@@ -120,22 +120,13 @@ const mapPostExtensions = (
 
 export const mapPostFragment = (post: PostFragmentFragment): PostData => {
   const struct: PostData['struct'] = {
-    createdAtBlock: parseInt(post.createdAtBlock?.toString() ?? '0'),
+    createdAtBlock: post.createdAtBlock,
     createdAtTime: new Date(post.createdAtTime).getTime(),
-    createdByAccount: post.createdByAccount?.id ?? '',
-    downvotesCount: post.downvotesCount ?? 0,
     hidden: post.hidden,
     id: post.id,
-    isComment: post.isComment,
-    isRegularPost: post.kind === 'RegularPost',
-    isSharedPost: post.kind === 'SharedPost',
     ownerId: post.ownedByAccount.id,
-    upvotesCount: post.upvotesCount ?? 0,
     contentId: post.content ?? '',
-    repliesCount: post.repliesCount ?? 0,
-    sharesCount: post.sharesCount ?? 0,
     spaceId: post.space?.id ?? post.rootPost?.space?.id ?? '',
-    isUpdated: !!post.updatedAtTime,
     rootPostId: post.rootPost?.id ?? '',
     followersCount: post.followersCount ?? 0,
   }
@@ -144,16 +135,12 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
     id: post.id,
     struct,
     content: {
-      summary: post.summary ?? '',
       image: post.image ?? '',
       title: post.title ?? '',
       link: post.link ?? '',
       body: post.body || '',
-      canonical: post.canonical ?? '',
-      isShowMore: post.isShowMore ?? false,
-      tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
     } as PostContent,
-  }
+  } satisfies PostData
 
   const extensions = mapPostExtensions(post.extensions)
   if (extensions) {
