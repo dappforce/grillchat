@@ -138,18 +138,14 @@ export default function ModerationForm({
 
         const reasonId = reason.id
 
-        const args: SocialCallDataArgs<'synth_moderation_block_resource'> = {
-          reasonId,
-          resourceId,
-        }
-        if (isAdmin) {
-          args.ctxAppIds = ['*']
-        } else {
-          args.ctxPostIds = ['*']
-        }
         mutate({
           callName: 'synth_moderation_block_resource',
-          args,
+          args: {
+            reasonId,
+            resourceId,
+            ctxPostIds: ['*'],
+            ctxAppIds: ['*'],
+          },
         })
 
         sendEvent('client_moderation', {

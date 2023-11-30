@@ -123,6 +123,7 @@ export default function ModerationInfoModal({
       args: {
         resourceId: toBeUnblocked.id,
         ctxPostIds: ['*'],
+        ctxAppIds: ['*'],
       },
     })
   }
