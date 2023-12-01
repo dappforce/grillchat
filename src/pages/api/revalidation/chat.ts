@@ -13,34 +13,38 @@ const bodySchema = z
 export type RevalidateChatInput = z.infer<typeof bodySchema>
 
 const handler = handlerWrapper({
-  inputSchema: z.object({ chatId: z.string(), hubId: z.string().optional() }),
+  inputSchema: bodySchema,
   dataGetter: (req) => req.body,
 })({
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     try {
-      const [chat] = await getPostsServer([data.chatId])
-      if (!chat) throw new Error('Chat not found')
+      if ('pathname' in data) {
+        await res.revalidate(data.pathname)
+      } else {
+        const [chat] = await getPostsServer([data.chatId])
+        if (!chat) throw new Error('Chat not found')
 
-      const originalHubId = chat.struct.spaceId
-      const originalLink = getChatPageLink(
-        { query: {} },
-        createSlug(data.chatId, chat.content),
-        originalHubId
-      )
-
-      if (data.hubId && originalHubId !== data.hubId) {
-        const currentLink = getChatPageLink(
+        const originalHubId = chat.struct.spaceId
+        const originalLink = getChatPageLink(
           { query: {} },
           createSlug(data.chatId, chat.content),
-          data.hubId
+          originalHubId
         )
-        await Promise.all([
-          res.revalidate(currentLink),
-          res.revalidate(originalLink),
-        ])
-      } else {
-        await res.revalidate(originalLink)
+
+        if (data.hubId && originalHubId !== data.hubId) {
+          const currentLink = getChatPageLink(
+            { query: {} },
+            createSlug(data.chatId, chat.content),
+            data.hubId
+          )
+          await Promise.all([
+            res.revalidate(currentLink),
+            res.revalidate(originalLink),
+          ])
+        } else {
+          await res.revalidate(originalLink)
+        }
       }
 
       res.json({ success: true, message: 'revalidated' })
