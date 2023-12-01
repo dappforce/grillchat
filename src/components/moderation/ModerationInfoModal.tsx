@@ -1,5 +1,7 @@
 import BlockedImage from '@/assets/graphics/blocked.png'
+import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { getPostQuery } from '@/services/api/query'
+import { GetBlockedInAppDetailedQuery } from '@/services/datahub/generated-query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import {
   getBlockedInAppDetailedQuery,
@@ -65,6 +67,8 @@ export default function ModerationInfoModal({
     }
   )
 
+  const { isAdmin } = useAuthorizedForModeration(chatId)
+
   const { data: chat } = getPostQuery.useQuery(chatId)
   const chatEntityId = chat?.entityId ?? ''
 
@@ -73,11 +77,9 @@ export default function ModerationInfoModal({
       enabled: props.isOpen,
     })
   const { data: blockedInApp } = getBlockedInAppDetailedQuery.useQuery(null)
-  const blockedUsers = [
-    ...(blockedInPost?.address ?? []),
-    ...(blockedInApp?.address ?? []),
-  ]
-  const blockedUsersCount = blockedUsers.length
+
+  const blockedUsersCount =
+    (blockedInPost?.address.length ?? 0) + (blockedInApp?.address.length ?? 0)
 
   const { name } = useName(toBeUnblocked?.id ?? '')
   const { mutateAsync } = useModerationActions({
@@ -98,7 +100,10 @@ export default function ModerationInfoModal({
 
   if (!myAddress) return null
 
-  const cardData: DataCardProps['data'] = blockedUsers.map((blockedData) => {
+  const cardMapper = (
+    blockedData: GetBlockedInAppDetailedQuery['moderationBlockedResourcesDetailed'][number],
+    isAppBlockedData?: boolean
+  ) => {
     const address = blockedData.resourceId
     const reasonText = blockedData.reason.reasonText
     return {
@@ -107,19 +112,36 @@ export default function ModerationInfoModal({
         <DataCardContent
           address={address}
           reasonText={reasonText}
-          onUnblock={() =>
-            dispatch({
-              type: 'open',
-              payload: {
-                id: address,
-                reasonText,
-              },
-            })
+          onUnblock={
+            isAppBlockedData && isAdmin
+              ? () =>
+                  dispatch({
+                    type: 'open',
+                    payload: {
+                      id: address,
+                      reasonText,
+                    },
+                  })
+              : undefined
           }
         />
       ),
     }
-  })
+  }
+
+  const blockedInPostCard: DataCardProps['data'] = (
+    blockedInPost?.address ?? []
+  ).map((data) => cardMapper(data))
+  const blockedInAppCard: DataCardProps['data'] = (
+    blockedInApp?.address ?? []
+  ).map((data) => cardMapper(data, true))
+
+  const allCardData = blockedInPostCard
+  if (isAdmin) {
+    allCardData.unshift(...blockedInAppCard)
+  } else {
+    allCardData.push(...blockedInAppCard)
+  }
 
   const unblock = async () => {
     if (!toBeUnblocked) return
@@ -152,7 +174,7 @@ export default function ModerationInfoModal({
               {blockedUsersCount ? (
                 <DataCard
                   className='max-h-96 overflow-y-scroll rounded-none p-0 py-4 pr-1 scrollbar-track-background-lighter scrollbar-thumb-background-lightest/70'
-                  data={cardData}
+                  data={allCardData}
                 />
               ) : (
                 <div className='flex flex-col items-center gap-4 py-4 text-center'>
