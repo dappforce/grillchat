@@ -55,6 +55,7 @@ export type DatahubParams<T> = {
   address: string
   signer: Signer | null
   proxyToAddress?: string
+  backendSigning?: boolean
 
   isOffchain?: boolean
 

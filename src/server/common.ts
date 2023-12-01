@@ -1,3 +1,6 @@
+import { getServerMnemonic } from '@/utils/env/server'
+import { Keyring } from '@polkadot/keyring'
+import { waitReady } from '@polkadot/wasm-crypto'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -80,4 +83,11 @@ export function convertNonce(nonce: number) {
   newNonce[0] = nonce
 
   return newNonce
+}
+
+export async function getServerAccount() {
+  const mnemonic = getServerMnemonic()
+  const keyring = new Keyring()
+  await waitReady()
+  return keyring.addFromMnemonic(mnemonic, {}, 'sr25519')
 }

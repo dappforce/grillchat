@@ -371,6 +371,13 @@ export type NotifyUpdatePostTxFailedOrRetryStatusMutationVariables = Exact<{
 
 export type NotifyUpdatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', message?: string | null } };
 
+export type LinkIdentityMutationVariables = Exact<{
+  createLinkedIdentityInput: CreateMutateLinkedIdentityInput;
+}>;
+
+
+export type LinkIdentityMutation = { __typename?: 'Mutation', createLinkedIdentity: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+
 
 export const InitModerationOrg = gql`
     mutation InitModerationOrg($input: ModerationCallInput!) {
@@ -435,6 +442,14 @@ export const NotifyUpdatePostTxFailedOrRetryStatus = gql`
   updatePostBlockchainSyncStatus(
     updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
   ) {
+    message
+  }
+}
+    `;
+export const LinkIdentity = gql`
+    mutation LinkIdentity($createLinkedIdentityInput: CreateMutateLinkedIdentityInput!) {
+  createLinkedIdentity(createLinkedIdentityInput: $createLinkedIdentityInput) {
+    processed
     message
   }
 }
