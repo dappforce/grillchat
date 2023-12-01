@@ -72,14 +72,12 @@ export default function ModerationInfoModal({
   const { data: chat } = getPostQuery.useQuery(chatId)
   const chatEntityId = chat?.entityId ?? ''
 
-  const { data: blockedInPost, isLoading } =
+  const { data: blockedInPost, isLoading: isLoadingBlockedInPost } =
     getBlockedInPostIdDetailedQuery.useQuery(chatEntityId, {
       enabled: props.isOpen,
     })
-  const { data: blockedInApp } = getBlockedInAppDetailedQuery.useQuery(null)
-
-  const blockedUsersCount =
-    (blockedInPost?.address.length ?? 0) + (blockedInApp?.address.length ?? 0)
+  const { data: blockedInApp, isLoading: isLoadingBlockedInApp } =
+    getBlockedInAppDetailedQuery.useQuery(null)
 
   const { name } = useName(toBeUnblocked?.id ?? '')
   const { mutateAsync } = useModerationActions({
@@ -106,6 +104,14 @@ export default function ModerationInfoModal({
   ) => {
     const address = blockedData.resourceId
     const reasonText = blockedData.reason.reasonText
+    const unblockFunc = () =>
+      dispatch({
+        type: 'open',
+        payload: {
+          id: address,
+          reasonText,
+        },
+      })
     return {
       title: address,
       customContent: (
@@ -113,15 +119,8 @@ export default function ModerationInfoModal({
           address={address}
           reasonText={reasonText}
           onUnblock={
-            !isAppBlockedData || isAdmin
-              ? () =>
-                  dispatch({
-                    type: 'open',
-                    payload: {
-                      id: address,
-                      reasonText,
-                    },
-                  })
+            (isAppBlockedData && isAdmin) || (!isAppBlockedData && !isAdmin)
+              ? unblockFunc
               : undefined
           }
         />
@@ -129,19 +128,12 @@ export default function ModerationInfoModal({
     }
   }
 
-  const blockedInPostCard: DataCardProps['data'] = (
+  const blockedInPostCardData: DataCardProps['data'] = (
     blockedInPost?.address ?? []
   ).map((data) => cardMapper(data))
-  const blockedInAppCard: DataCardProps['data'] = (
+  const blockedInAppCardData: DataCardProps['data'] = (
     blockedInApp?.address ?? []
   ).map((data) => cardMapper(data, true))
-
-  const allCardData = blockedInPostCard
-  if (isAdmin) {
-    allCardData.unshift(...blockedInAppCard)
-  } else {
-    allCardData.push(...blockedInAppCard)
-  }
 
   const unblock = async () => {
     if (!toBeUnblocked) return
@@ -163,29 +155,19 @@ export default function ModerationInfoModal({
         title='🛡 Moderation'
         description='Moderated content will not be deleted from the blockchain but be hidden from the other users in Grill.chat.'
       >
-        <div className='flex flex-col gap-2'>
-          <span className='text-sm text-text-muted'>
-            Blocked users ({blockedUsersCount})
-          </span>
-          {isLoading ? (
-            <Skeleton className='h-40 w-full rounded-2xl' />
-          ) : (
-            <div className='overflow-hidden rounded-2xl bg-background-lighter px-4 pr-1'>
-              {blockedUsersCount ? (
-                <DataCard
-                  className='max-h-96 overflow-y-scroll rounded-none p-0 py-4 pr-1 scrollbar-track-background-lighter scrollbar-thumb-background-lightest/70'
-                  data={allCardData}
-                />
-              ) : (
-                <div className='flex flex-col items-center gap-4 py-4 text-center'>
-                  <Image src={BlockedImage} alt='' />
-                  <span className='text-text-muted'>
-                    There&apos;re no blocked users yet.
-                  </span>
-                </div>
-              )}
-            </div>
+        <div className='flex flex-col gap-4'>
+          {isAdmin && blockedInAppCardData.length && (
+            <BlockedUsersList
+              data={blockedInAppCardData}
+              isLoading={isLoadingBlockedInApp}
+              title='Blocked users in whole Grill.chat'
+            />
           )}
+          <BlockedUsersList
+            data={blockedInPostCardData}
+            isLoading={isLoadingBlockedInPost}
+            title='Blocked users'
+          />
         </div>
       </Modal>
       <ConfirmationModal
@@ -214,6 +196,43 @@ export default function ModerationInfoModal({
         }}
       />
     </>
+  )
+}
+
+function BlockedUsersList({
+  data,
+  isLoading,
+  title,
+}: {
+  title: string
+  data: DataCardProps['data']
+  isLoading: boolean
+}) {
+  return (
+    <div className='flex flex-col gap-2'>
+      <span className='text-sm text-text-muted'>
+        {title} ({data.length})
+      </span>
+      {isLoading ? (
+        <Skeleton className='h-40 w-full rounded-2xl' />
+      ) : (
+        <div className='overflow-hidden rounded-2xl bg-background-lighter px-4 pr-1'>
+          {data.length ? (
+            <DataCard
+              className='max-h-96 overflow-y-scroll rounded-none p-0 py-4 pr-1 scrollbar-track-background-lighter scrollbar-thumb-background-lightest/70'
+              data={data}
+            />
+          ) : (
+            <div className='flex flex-col items-center gap-4 py-4 text-center'>
+              <Image src={BlockedImage} alt='' />
+              <span className='text-text-muted'>
+                There&apos;re no blocked users yet.
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
