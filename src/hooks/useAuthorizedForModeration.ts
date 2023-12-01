@@ -20,16 +20,20 @@ export default function useAuthorizedForModeration(
     }
   )
 
-  if (!COMMUNITY_CHAT_HUB_ID) return { isAuthorized: false, isOwner }
+  const isAdmin = moderator?.appIds.includes(getAppId())
+  if (!COMMUNITY_CHAT_HUB_ID && !isAdmin)
+    return { isAuthorized: false, isOwner }
+
   return {
     isAuthorized: !!(
       moderator?.address &&
       (moderator.postIds?.includes(chatId) ||
-        moderator.postIds.includes(chat?.entityId ?? ''))
+        moderator.postIds.includes(chat?.entityId ?? '') ||
+        isAdmin)
     ),
     isOwner,
     isLoading,
     moderatorData: moderator,
-    isAdmin: moderator?.appIds.includes(getAppId()),
+    isAdmin,
   }
 }
