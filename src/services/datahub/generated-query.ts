@@ -824,9 +824,11 @@ export type SubscribeBlockedResourcesSubscription = {
       blocked: boolean
       resourceId: string
       ctxPostIds: Array<string>
+      ctxAppIds: Array<string>
       organization: {
         __typename?: 'ModerationOrganization'
         ctxPostIds?: Array<string> | null
+        ctxAppIds?: Array<string> | null
       }
       reason: {
         __typename?: 'ModerationBlockReason'
@@ -1281,8 +1283,10 @@ export const SubscribeBlockedResources = gql`
         blocked
         resourceId
         ctxPostIds
+        ctxAppIds
         organization {
           ctxPostIds
+          ctxAppIds
         }
         reason {
           id

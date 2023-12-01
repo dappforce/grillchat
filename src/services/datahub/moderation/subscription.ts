@@ -1,5 +1,5 @@
 import { useMyMainAddress } from '@/stores/my-account'
-import { getDatahubConfig } from '@/utils/env/client'
+import { getAppId, getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
@@ -71,8 +71,10 @@ const SUBSCRIBE_BLOCKED_RESOURCES = gql`
         blocked
         resourceId
         ctxPostIds
+        ctxAppIds
         organization {
           ctxPostIds
+          ctxAppIds
         }
         reason {
           id
@@ -99,6 +101,7 @@ function moderationSubscription(queryClient: QueryClient) {
     {
       complete: () => undefined,
       next: async (data) => {
+        console.log('sub', data)
         const eventData = data.data?.moderationBlockedResource
         if (!eventData) return
 
@@ -193,11 +196,42 @@ async function processBlockedResources(
 ) {
   const entity = eventData.entity
   const isNowBlocked = entity.blocked
-  const ctxPostIds = entity.organization.ctxPostIds
   const resourceId = entity.resourceId
   const resourceType = getBlockedResourceType(resourceId)
 
+  const ctxPostIds = entity.organization.ctxPostIds
+
   if (!resourceType) return
+
+  const ctxAppIds = entity.organization.ctxAppIds
+  const entityAppId = entity.ctxAppIds
+  const appId = getAppId()
+  if (
+    appId &&
+    ctxAppIds?.includes(appId) &&
+    entityAppId.some((id) => id === appId || id === '*')
+  ) {
+    getBlockedResourcesQuery.setQueryData(queryClient, { appId }, (oldData) => {
+      const resources: Record<ResourceTypes, string[]> =
+        oldData?.blockedResources || { address: [], cid: [], postId: [] }
+
+      const newResource = [...resources[resourceType]]
+      if (isNowBlocked) {
+        newResource.push(resourceId)
+      } else {
+        newResource.splice(newResource.indexOf(resourceId), 1)
+      }
+      return {
+        id: appId,
+        type: 'appId',
+        blockedResources: {
+          ...resources,
+          [resourceType]: newResource,
+        },
+      }
+    })
+    return
+  }
 
   ctxPostIds?.forEach((id) => {
     getBlockedInPostIdDetailedQuery.setQueryData(queryClient, id, (oldData) => {
