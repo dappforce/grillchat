@@ -1,7 +1,10 @@
 import BlockedImage from '@/assets/graphics/blocked.png'
 import { getPostQuery } from '@/services/api/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
-import { getBlockedInPostIdDetailedQuery } from '@/services/datahub/moderation/query'
+import {
+  getBlockedInAppDetailedQuery,
+  getBlockedInPostIdDetailedQuery,
+} from '@/services/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import Image from 'next/image'
 import { useReducer } from 'react'
@@ -65,13 +68,15 @@ export default function ModerationInfoModal({
   const { data: chat } = getPostQuery.useQuery(chatId)
   const chatEntityId = chat?.entityId ?? ''
 
-  const { data, isLoading } = getBlockedInPostIdDetailedQuery.useQuery(
-    chatEntityId,
-    {
+  const { data: blockedInPost, isLoading } =
+    getBlockedInPostIdDetailedQuery.useQuery(chatEntityId, {
       enabled: props.isOpen,
-    }
-  )
-  const blockedUsers = data?.address ?? []
+    })
+  const { data: blockedInApp } = getBlockedInAppDetailedQuery.useQuery(null)
+  const blockedUsers = [
+    ...(blockedInPost?.address ?? []),
+    ...(blockedInApp?.address ?? []),
+  ]
   const blockedUsersCount = blockedUsers.length
 
   const { name } = useName(toBeUnblocked?.id ?? '')

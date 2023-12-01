@@ -11,6 +11,7 @@ import {
 } from '../generated-query'
 import { datahubSubscription } from '../utils'
 import {
+  getBlockedInAppDetailedQuery,
   getBlockedInPostIdDetailedQuery,
   getBlockedResourcesQuery,
   getModeratorQuery,
@@ -206,82 +207,140 @@ async function processBlockedResources(
   const ctxAppIds = entity.organization.ctxAppIds
   const entityAppId = entity.ctxAppIds
   const appId = getAppId()
-  if (
+  const isBlockedUsingAppContext =
     appId &&
     ctxAppIds?.includes(appId) &&
     entityAppId.some((id) => id === appId || id === '*')
-  ) {
-    getBlockedResourcesQuery.setQueryData(queryClient, { appId }, (oldData) => {
-      const resources: Record<ResourceTypes, string[]> =
-        oldData?.blockedResources || { address: [], cid: [], postId: [] }
 
-      const newResource = [...resources[resourceType]]
-      if (isNowBlocked) {
-        newResource.push(resourceId)
-      } else {
-        newResource.splice(newResource.indexOf(resourceId), 1)
-      }
+  if (isBlockedUsingAppContext) {
+    getBlockedResourcesQuery.setQueryData(queryClient, { appId }, (oldData) => {
+      if (oldData === undefined) return undefined
+      const newResources = updateBlockedResourceData(oldData, {
+        isNowBlocked,
+        resourceId,
+        resourceType,
+      })
       return {
         id: appId,
         type: 'appId',
-        blockedResources: {
-          ...resources,
-          [resourceType]: newResource,
-        },
+        blockedResources: newResources,
       }
     })
-    return
-  }
+    getBlockedInAppDetailedQuery.setQueryData(queryClient, null, (oldData) => {
+      if (oldData === undefined) return undefined
+      return updateBlockedResourceDetailedData(oldData, {
+        isNowBlocked,
+        reason: entity.reason,
+        resourceId,
+        resourceType,
+      })
+    })
+  } else {
+    ctxPostIds?.forEach((id) => {
+      getBlockedResourcesQuery.setQueryData(
+        queryClient,
+        { postEntityId: id },
+        (oldData) => {
+          if (oldData === undefined) return undefined
+          const newResources = updateBlockedResourceData(oldData, {
+            isNowBlocked,
+            resourceId,
+            resourceType,
+          })
+          return {
+            id,
+            type: 'postEntityId',
+            blockedResources: newResources,
+          }
+        }
+      )
 
-  ctxPostIds?.forEach((id) => {
-    getBlockedInPostIdDetailedQuery.setQueryData(queryClient, id, (oldData) => {
-      const resources: Record<
+      getBlockedInPostIdDetailedQuery.setQueryData(
+        queryClient,
+        id,
+        (oldData) => {
+          if (oldData === undefined) return undefined
+          return updateBlockedResourceDetailedData(oldData, {
+            isNowBlocked,
+            reason: entity.reason,
+            resourceId,
+            resourceType,
+          })
+        }
+      )
+    })
+  }
+}
+
+function updateBlockedResourceData(
+  oldData:
+    | {
+        id: string
+        blockedResources: Record<ResourceTypes, string[]>
+        type: 'spaceId' | 'postEntityId' | 'appId'
+      }
+    | null
+    | undefined,
+  newData: {
+    resourceType: ResourceTypes
+    resourceId: string
+    isNowBlocked: boolean
+  }
+) {
+  const { isNowBlocked, resourceId, resourceType } = newData
+
+  const resources: Record<ResourceTypes, string[]> =
+    oldData?.blockedResources || { address: [], cid: [], postId: [] }
+
+  const newResource = [...resources[resourceType]]
+  if (isNowBlocked) {
+    newResource.push(resourceId)
+  } else {
+    newResource.splice(newResource.indexOf(resourceId), 1)
+  }
+  return {
+    ...resources,
+    [resourceType]: newResource,
+  }
+}
+
+function updateBlockedResourceDetailedData(
+  oldData:
+    | Record<
         ResourceTypes,
         GetBlockedInPostIdDetailedQuery['moderationBlockedResourcesDetailed'][number][]
-      > = oldData || { address: [], cid: [], postId: [] }
+      >
+    | null
+    | undefined,
+  newData: {
+    resourceType: ResourceTypes
+    resourceId: string
+    isNowBlocked: boolean
+    reason: GetBlockedInPostIdDetailedQuery['moderationBlockedResourcesDetailed'][number]['reason']
+  }
+) {
+  const { isNowBlocked, resourceId, resourceType, reason } = newData
+  const resources: Record<
+    ResourceTypes,
+    GetBlockedInPostIdDetailedQuery['moderationBlockedResourcesDetailed'][number][]
+  > = oldData || { address: [], cid: [], postId: [] }
 
-      const newResource = [...resources[resourceType]]
-      if (isNowBlocked) {
-        newResource.push({
-          resourceId,
-          reason: entity.reason,
-        })
-      } else {
-        const resourceIndex = newResource.findIndex(
-          (res) => res.resourceId === resourceId
-        )
-        if (resourceIndex !== -1) {
-          newResource.splice(resourceIndex, 1)
-        }
-      }
-      return {
-        ...resources,
-        [resourceType]: newResource,
-      }
+  const newResource = [...resources[resourceType]]
+  if (isNowBlocked) {
+    newResource.push({
+      resourceId,
+      reason,
     })
-
-    getBlockedResourcesQuery.setQueryData(
-      queryClient,
-      { postEntityId: id },
-      (oldData) => {
-        const resources: Record<ResourceTypes, string[]> =
-          oldData?.blockedResources || { address: [], cid: [], postId: [] }
-
-        const newResource = [...resources[resourceType]]
-        if (isNowBlocked) {
-          newResource.push(resourceId)
-        } else {
-          newResource.splice(newResource.indexOf(resourceId), 1)
-        }
-        return {
-          id,
-          type: 'postEntityId',
-          blockedResources: {
-            ...resources,
-            [resourceType]: newResource,
-          },
-        }
-      }
+  } else {
+    const resourceIndex = newResource.findIndex(
+      (res) => res.resourceId === resourceId
     )
-  })
+    if (resourceIndex !== -1) {
+      newResource.splice(resourceIndex, 1)
+    }
+  }
+  return {
+    ...resources,
+    [resourceType]: newResource,
+  }
 }

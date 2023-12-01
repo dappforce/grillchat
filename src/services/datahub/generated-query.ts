@@ -752,6 +752,23 @@ export type GetBlockedInPostIdDetailedQuery = {
   }>
 }
 
+export type GetBlockedInAppDetailedQueryVariables = Exact<{
+  appId: Scalars['String']['input']
+}>
+
+export type GetBlockedInAppDetailedQuery = {
+  __typename?: 'Query'
+  moderationBlockedResourcesDetailed: Array<{
+    __typename?: 'ModerationBlockedResource'
+    resourceId: string
+    reason: {
+      __typename?: 'ModerationBlockReason'
+      id: string
+      reasonText: string
+    }
+  }>
+}
+
 export type GetModerationReasonsQueryVariables = Exact<{ [key: string]: never }>
 
 export type GetModerationReasonsQuery = {
@@ -1226,6 +1243,17 @@ export const GetBlockedResources = gql`
 export const GetBlockedInPostIdDetailed = gql`
   query GetBlockedInPostIdDetailed($postId: String!) {
     moderationBlockedResourcesDetailed(ctxPostIds: [$postId], blocked: true) {
+      resourceId
+      reason {
+        id
+        reasonText
+      }
+    }
+  }
+`
+export const GetBlockedInAppDetailed = gql`
+  query GetBlockedInAppDetailed($appId: String!) {
+    moderationBlockedResourcesDetailed(ctxAppIds: [$appId], blocked: true) {
       resourceId
       reason {
         id
