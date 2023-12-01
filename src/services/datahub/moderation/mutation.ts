@@ -2,11 +2,13 @@ import {
   ApiModerationActionsBody,
   ApiModerationActionsResponse,
 } from '@/pages/api/moderation/actions'
+import { revalidateChatPage } from '@/services/api/mutation'
 import { queryClient } from '@/services/provider'
 import { useMyAccount } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
 import axios, { AxiosResponse } from 'axios'
+import Router from 'next/router'
 import { createSocialDataEventInput, DatahubParams } from '../utils'
 import { getModeratorQuery } from './query'
 
@@ -67,6 +69,11 @@ export const useModerationActions = mutationWrapper(
         setTimeout(() => {
           getModeratorQuery.invalidate(queryClient, completeArgs.address)
         }, 1_000)
+      } else if (
+        completeArgs.callName === 'synth_moderation_block_resource' ||
+        completeArgs.callName === 'synth_moderation_unblock_resource'
+      ) {
+        revalidateChatPage({ pathname: Router.asPath })
       }
     },
   }
