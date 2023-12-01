@@ -113,7 +113,7 @@ export default function ModerationInfoModal({
           address={address}
           reasonText={reasonText}
           onUnblock={
-            isAppBlockedData && isAdmin
+            !isAppBlockedData || isAdmin
               ? () =>
                   dispatch({
                     type: 'open',
