@@ -110,7 +110,6 @@ function moderationSubscription(queryClient: QueryClient) {
     }
   )
 
-  console.log('subscribing moderator')
   let unsubModerator = client.subscribe<
     SubscribeOrganizationSubscription,
     null
@@ -123,7 +122,6 @@ function moderationSubscription(queryClient: QueryClient) {
       next: async (data) => {
         const eventData = data.data?.moderationOrganization
         if (!eventData) return
-        console.log('SUB MODERATOR', eventData)
 
         await processOrganizationEvent(queryClient, eventData)
       },
