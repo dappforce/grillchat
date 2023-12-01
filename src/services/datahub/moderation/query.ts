@@ -14,10 +14,15 @@ import { datahubQueryRequest } from '../utils'
 import { mapBlockedResources, ResourceTypes } from './utils'
 
 const GET_BLOCKED_RESOURCES = gql`
-  query GetBlockedResources($spaceIds: [String!]!, $postIds: [String!]!) {
+  query GetBlockedResources(
+    $spaceIds: [String!]!
+    $postIds: [String!]!
+    $appIds: [String!]!
+  ) {
     moderationBlockedResourceIdsBatch(
       ctxSpaceIds: $spaceIds
       ctxPostIds: $postIds
+      ctxAppIds: $appIds
     ) {
       byCtxSpaceIds {
         id
@@ -27,12 +32,17 @@ const GET_BLOCKED_RESOURCES = gql`
         id
         blockedResourceIds
       }
+      byCtxAppIds {
+        id
+        blockedResourceIds
+      }
     }
   }
 `
 export async function getBlockedResources(variables: {
   postEntityIds: string[]
   spaceIds: string[]
+  appIds: string[]
 }) {
   variables.postEntityIds = variables.postEntityIds.filter((id) => !!id)
   variables.spaceIds = variables.spaceIds.filter((id) => !!id)
@@ -44,6 +54,7 @@ export async function getBlockedResources(variables: {
     variables: {
       postIds: variables.postEntityIds,
       spaceIds: variables.spaceIds,
+      appIds: variables.appIds,
     },
   })
 
@@ -61,32 +72,42 @@ export async function getBlockedResources(variables: {
         blockedResources: mapBlockedResources(blockedResourceIds, (id) => id),
       })
     )
+  const blockedInAppIds =
+    data.moderationBlockedResourceIdsBatch.byCtxAppIds.map(
+      ({ blockedResourceIds, id }) => ({
+        id,
+        blockedResources: mapBlockedResources(blockedResourceIds, (id) => id),
+      })
+    )
 
-  return { blockedInSpaceIds, blockedInPostIds }
+  return { blockedInSpaceIds, blockedInPostIds, blockedInAppIds }
 }
 const pooledGetBlockedResource = poolQuery<
-  { postEntityId: string } | { spaceId: string },
+  { postEntityId: string } | { spaceId: string } | { appId: string },
   {
     id: string
     blockedResources: Record<ResourceTypes, string[]>
-    type: 'spaceId' | 'postEntityId'
+    type: 'spaceId' | 'postEntityId' | 'appId'
   }
 >({
   multiCall: async (params) => {
     if (!params.length) return []
     const spaceIds: string[] = []
     const postEntityIds: string[] = []
+    const appIds: string[] = []
     params.forEach((param) => {
       if ('postEntityId' in param && param.postEntityId)
         postEntityIds.push(param.postEntityId)
       else if ('spaceId' in param && param.spaceId) spaceIds.push(param.spaceId)
+      else if ('appId' in param && param.appId) appIds.push(param.appId)
     })
 
-    if (!postEntityIds.length && !spaceIds.length) return []
+    if (!postEntityIds.length && !spaceIds.length && !appIds.length) return []
 
     const response = await getBlockedResources({
       postEntityIds,
       spaceIds,
+      appIds,
     })
     return [
       ...response.blockedInPostIds.map((data) => ({
@@ -97,16 +118,22 @@ const pooledGetBlockedResource = poolQuery<
         ...data,
         type: 'spaceId' as const,
       })),
+      ...response.blockedInAppIds.map((data) => ({
+        ...data,
+        type: 'appId' as const,
+      })),
     ]
   },
   resultMapper: {
     paramToKey: (param) => {
       if ('postEntityId' in param) return `postEntityId:${param.postEntityId}`
-      else return `spaceId:${param.spaceId}`
+      else if ('spaceId' in param) return `spaceId:${param.spaceId}`
+      else return `appId:${param.appId}`
     },
     resultToKey: ({ type, id }) => {
       if (type === 'postEntityId') return `postEntityId:${id}`
-      else return `spaceId:${id}`
+      else if (type === 'spaceId') return `spaceId:${id}`
+      else return `appId:${id}`
     },
   },
 })

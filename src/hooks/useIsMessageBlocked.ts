@@ -1,6 +1,7 @@
 import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { isMessageBlocked } from '@/utils/chat'
+import { getAppId } from '@/utils/env/client'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'
 
@@ -27,6 +28,9 @@ export default function useIsMessageBlocked(
   message: PostData | null | undefined,
   chatId: string
 ) {
+  const { data: appModerationData } = getBlockedResourcesQuery.useQuery({
+    appId: getAppId(),
+  })
   const { data: hubModerationData } = getBlockedResourcesQuery.useQuery(
     { spaceId: hubId },
     {
@@ -39,6 +43,8 @@ export default function useIsMessageBlocked(
     { postEntityId: entityId },
     { enabled: !!entityId }
   )
+  // TODO: use blocked in app
+  const blockedInApp = appModerationData?.blockedResources
   const blockedInHub = hubModerationData?.blockedResources
   const blockedInChat = chatModerationData?.blockedResources
 

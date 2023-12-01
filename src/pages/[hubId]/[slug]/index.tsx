@@ -165,7 +165,10 @@ export const getStaticProps = getCommonStaticProps<
 
       if (blockedData) {
         let isChatModerated = false
-        blockedData.blockedInSpaceIds.forEach(({ blockedResources }) => {
+        ;[
+          ...blockedData.blockedInSpaceIds,
+          ...blockedData.blockedInAppIds,
+        ].forEach(({ blockedResources }) => {
           if (blockedResources.postId.includes(chatId)) {
             isChatModerated = true
           }
