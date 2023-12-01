@@ -5,20 +5,25 @@ import { getAppId } from '@/utils/env/client'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'
 
-const cachedBlockedMap = new Map<any, Map<any, Set<string>>>()
-function getBlockedSet(ids1: string[] | undefined, ids2: string[] | undefined) {
-  if (cachedBlockedMap.has(ids1)) {
-    const cachedMap = cachedBlockedMap.get(ids1)!
-    if (cachedMap.has(ids2)) {
-      return cachedMap.get(ids2)!
-    }
+const cachedBlockedMap = new Map<any, Map<any, Map<any, Set<string>>>>()
+function getBlockedSet(
+  ids1: string[] | undefined,
+  ids2: string[] | undefined,
+  ids3: string[] | undefined
+) {
+  const cachedData = cachedBlockedMap.get(ids1)?.get(ids2)?.get(ids3)
+  if (cachedData) {
+    return cachedData
   }
 
-  const set = new Set([...(ids1 ?? []), ...(ids2 ?? [])])
+  const set = new Set([...(ids1 ?? []), ...(ids2 ?? []), ...(ids3 ?? [])])
   if (!cachedBlockedMap.has(ids1)) {
     cachedBlockedMap.set(ids1, new Map())
   }
-  cachedBlockedMap.get(ids1)!.set(ids2, set)
+  if (!cachedBlockedMap.get(ids1)!.has(ids2)) {
+    cachedBlockedMap.get(ids1)!.set(ids2, new Map())
+  }
+  cachedBlockedMap.get(ids1)!.get(ids2)!.set(ids3, set)
 
   return set
 }
@@ -43,22 +48,33 @@ export default function useIsMessageBlocked(
     { postEntityId: entityId },
     { enabled: !!entityId }
   )
-  // TODO: use blocked in app
   const blockedInApp = appModerationData?.blockedResources
   const blockedInHub = hubModerationData?.blockedResources
   const blockedInChat = chatModerationData?.blockedResources
 
   const blockedIdsSet = useMemo(() => {
-    return getBlockedSet(blockedInHub?.postId, blockedInChat?.postId)
-  }, [blockedInHub, blockedInChat])
+    return getBlockedSet(
+      blockedInHub?.postId,
+      blockedInChat?.postId,
+      blockedInApp?.postId
+    )
+  }, [blockedInHub, blockedInChat, blockedInApp])
 
   const blockedCidsSet = useMemo(() => {
-    return getBlockedSet(blockedInHub?.cid, blockedInChat?.cid)
-  }, [blockedInHub, blockedInChat])
+    return getBlockedSet(
+      blockedInHub?.cid,
+      blockedInChat?.cid,
+      blockedInApp?.cid
+    )
+  }, [blockedInHub, blockedInChat, blockedInApp])
 
   const blockedAddressesSet = useMemo(() => {
-    return getBlockedSet(blockedInHub?.address, blockedInChat?.address)
-  }, [blockedInHub, blockedInChat])
+    return getBlockedSet(
+      blockedInHub?.address,
+      blockedInChat?.address,
+      blockedInApp?.address
+    )
+  }, [blockedInHub, blockedInChat, blockedInApp])
 
   return isMessageBlocked(message, {
     postIds: blockedIdsSet,
