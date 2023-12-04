@@ -1,4 +1,5 @@
 import PotentialImage from '@/assets/graphics/potential.png'
+import LoadingHamster from '@/assets/graphics/processing-humster.png'
 import EthIcon from '@/assets/icons/eth.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import PolkadotIcon from '@/assets/icons/polkadot.svg'
@@ -20,10 +21,12 @@ import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { useRequestToken } from '@/services/api/mutation'
+import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
+import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { signIn } from 'next-auth/react'
 import Image from 'next/image'
 import {
@@ -46,6 +49,7 @@ export type LoginModalStep =
   | PolkadotConnectSteps
   | 'login'
   | 'enter-secret-key'
+  | 'x-login-loading'
   | 'account-created'
   | 'next-actions'
   | 'connect-wallet'
@@ -73,7 +77,9 @@ export const LoginContent = ({ setCurrentState }: ContentProps) => {
         <div className={cx('flex flex-col gap-4 pb-4')}>
           <Button
             onClick={() => {
-              signIn('twitter')
+              signIn('twitter', {
+                callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
+              })
             }}
             size='lg'
           >
@@ -334,13 +340,33 @@ const PolkadotConnectConfirmation = ({ setCurrentState }: ContentProps) => {
   )
 }
 
+const XLoginLoading = () => {
+  const loginAsTemporaryAccount = useMyAccount(
+    (state) => state.loginAsTemporaryAccount
+  )
+  const { mutate: link } = useLinkIdentity({
+    onSuccess: () => window.alert('Successfully linked'),
+    onError: (error) => window.alert(error),
+  })
+
+  return (
+    <div className='flex flex-col items-center'>
+      <Image
+        src={LoadingHamster}
+        className='w-64 max-w-xs rounded-full'
+        alt='loading'
+      />
+    </div>
+  )
+}
+
 type LoginModalContents = {
   [key in LoginModalStep]: (props: ContentProps) => JSX.Element
 }
-
 export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'enter-secret-key': EnterSecretKeyContent,
+  'x-login-loading': XLoginLoading,
   'account-created': AccountCreatedContent,
   'next-actions': NextActionsContent,
   'connect-wallet': ConnectWalletContent,

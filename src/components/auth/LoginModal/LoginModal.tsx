@@ -56,6 +56,10 @@ const modalHeader: ModalConfig = {
     withBackButton: true,
     withFooter: true,
   },
+  'x-login-loading': {
+    title: '🕔 Connecting to X',
+    desc: '',
+  },
   'account-created': {
     title: '🎉 Account created',
     desc: 'We have created an anonymous account for you. You can now use Grill.chat!',

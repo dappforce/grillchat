@@ -61,6 +61,8 @@ export default function Navbar({
 
   const isOpen = useLoginModal((state) => state.isOpen)
   const setIsOpen = useLoginModal((state) => state.setIsOpen)
+  const initialOpenState = useLoginModal((state) => state.initialOpenState)
+
   const [openPrivateKeyNotice, setOpenPrivateKeyNotice] = useState(false)
   const isLoggingInWithKey = useRef(false)
   const timeoutRef = useRef<any>()
@@ -158,6 +160,7 @@ export default function Navbar({
       <LoginModal
         isOpen={isOpen}
         closeModal={() => setIsOpen(false)}
+        initialOpenState={initialOpenState}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}
       />

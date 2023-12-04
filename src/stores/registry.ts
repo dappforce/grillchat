@@ -1,5 +1,6 @@
 import { useAnalytics } from './analytics'
 import { useLocation } from './location'
+import { useLoginModal } from './login-modal'
 import { useMessageData } from './message'
 import { useMyAccount } from './my-account'
 import { useParentData } from './parent'
@@ -13,6 +14,7 @@ const storesRegistry = [
   useMyAccount,
   useMessageData,
   useVersion,
+  useLoginModal,
 ]
 
 export const initAllStores = () => {

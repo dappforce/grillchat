@@ -82,6 +82,7 @@ export function createSocialDataEventInput(
     uuid,
     signer,
     proxyToAddress,
+    backendSigning,
   }: DatahubParams<{}>,
   eventArgs: any,
   content?: PostContent
@@ -106,5 +107,5 @@ export function createSocialDataEventInput(
   }
   augmentInputSig(signer, input)
 
-  return input
+  return { ...input, backendSigning }
 }
