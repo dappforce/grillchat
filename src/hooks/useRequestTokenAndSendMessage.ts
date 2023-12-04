@@ -14,7 +14,7 @@ export default function useRequestTokenAndSendMessage(
   options?: UseMutationOptions<void, unknown, Params, unknown>
 ) {
   const address = useMyMainAddress()
-  const { isNonAnonLoginRequired, promptUserForLogin } = useLoginOptions()
+  const { promptUserForLogin } = useLoginOptions()
 
   const { mutateAsync: requestToken } = useRequestToken()
   const { mutateAsync: sendMessage } = useSendMessage()
@@ -24,15 +24,9 @@ export default function useRequestTokenAndSendMessage(
     const { captchaToken, ...sendMessageParams } = params
     let usedAddress: string = address ?? ''
     if (!address) {
-      if (isNonAnonLoginRequired) {
-        const loginAddress = await promptUserForLogin()
-        if (!loginAddress) return
-        usedAddress = loginAddress
-      } else {
-        const address = await login()
-        if (!address) throw new Error('Failed to login')
-        usedAddress = address
-      }
+      const loginAddress = await promptUserForLogin()
+      if (!loginAddress) return
+      usedAddress = loginAddress
     }
 
     const promises: Promise<any>[] = [sendMessage(sendMessageParams)]

@@ -1,6 +1,5 @@
 import PotentialImage from '@/assets/graphics/potential.png'
 import EthIcon from '@/assets/icons/eth.svg'
-import IncognitoIcon from '@/assets/icons/incognito.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
@@ -18,7 +17,6 @@ import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import Toast from '@/components/Toast'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
-import useLoginOptions from '@/hooks/useLoginOptions'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { ApiRequestTokenResponse } from '@/pages/api/request-token'
@@ -73,7 +71,6 @@ export const LoginContent = ({
 }: ContentProps) => {
   const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
   const sendEvent = useSendEvent()
-  const { isNonAnonLoginRequired } = useLoginOptions()
 
   const {
     mutateAsync: loginAndRequestToken,
@@ -92,12 +89,7 @@ export const LoginContent = ({
     <div>
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
-        <div
-          className={cx(
-            'flex flex-col gap-4',
-            isNonAnonLoginRequired && 'pb-4'
-          )}
-        >
+        <div className={cx('flex flex-col gap-4 pb-4')}>
           <Button
             onClick={() => {
               setCurrentState('connect-wallet')
@@ -120,35 +112,6 @@ export const LoginContent = ({
               Enter Grill secret key
             </div>
           </Button>
-          {!isNonAnonLoginRequired && (
-            <>
-              <Button
-                type='button'
-                variant='primaryOutline'
-                size='lg'
-                className='w-full'
-                isLoading={isLoading}
-                onClick={async () => {
-                  setHasStartCaptcha(true)
-                  const token = await runCaptcha()
-                  if (!token) return
-                  setHasStartCaptcha(false)
-                  const newAddress = await loginAndRequestToken({
-                    captchaToken: token,
-                  })
-                  if (newAddress) {
-                    setCurrentState('account-created')
-                  }
-                }}
-              >
-                <div className='flex items-center justify-center gap-2'>
-                  <IncognitoIcon className='text-text-muted' />
-                  Continue anonymously
-                </div>
-              </Button>
-              {termsAndService('mt-4')}
-            </>
-          )}
         </div>
       </div>
     </div>
