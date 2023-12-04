@@ -32,13 +32,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 type GetResponseRes = { isAllowed: boolean }
-export type ApiDatahubGetResponse = ApiResponse<GetResponseRes>
+export type ApiDatahubPostGetResponse = ApiResponse<GetResponseRes>
 
 const querySchema = z.object({
   address: z.string(),
   rootPostId: z.string(),
 })
-export type DatahubQueryInput = z.infer<typeof querySchema>
+export type DatahubPostQueryInput = z.infer<typeof querySchema>
 const GET_handler = handlerWrapper({
   inputSchema: querySchema,
   dataGetter: (req) => req.query,
@@ -55,7 +55,7 @@ const GET_handler = handlerWrapper({
   },
 })
 
-export type DatahubMutationBody =
+export type DatahubPostMutationBody =
   | {
       action: 'create-post'
       payload: CreatePostOptimisticInput
@@ -88,7 +88,7 @@ const POST_handler = handlerWrapper({
 })<ApiDatahubPostResponse>({
   allowedMethods: ['POST'],
   errorLabel: 'datahub-mutation',
-  handler: async (data: DatahubMutationBody, _, res) => {
+  handler: async (data: DatahubPostMutationBody, _, res) => {
     const mapper = datahubMutationWrapper(datahubActionMapping)
     try {
       await mapper(data)
@@ -116,7 +116,7 @@ const POST_handler = handlerWrapper({
   },
 })
 
-function datahubActionMapping(data: DatahubMutationBody) {
+function datahubActionMapping(data: DatahubPostMutationBody) {
   switch (data.action) {
     case 'create-post':
       return createPostData(data.payload)

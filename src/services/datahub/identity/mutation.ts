@@ -1,4 +1,4 @@
-import { DatahubMutationBody } from '@/pages/api/datahub/post'
+import { DatahubPostMutationBody } from '@/pages/api/datahub/post'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import {
@@ -33,7 +33,7 @@ async function linkIdentity(
     eventArgs
   )
 
-  await axios.post<any, any, DatahubMutationBody>('/api/datahub/post', {
+  await axios.post<any, any, DatahubPostMutationBody>('/api/datahub/post', {
     action: 'link-identity',
     payload: input as any,
   })
@@ -60,7 +60,7 @@ async function unlinkIdentity(
     eventArgs
   )
 
-  await axios.post<any, any, DatahubMutationBody>('/api/datahub/post', {
+  await axios.post<any, any, DatahubPostMutationBody>('/api/datahub/post', {
     action: 'unlink-identity',
     payload: input as any,
   })

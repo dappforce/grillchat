@@ -1,6 +1,6 @@
 import {
-  ApiModerationActionsBody,
-  ApiModerationActionsResponse,
+  ApiDatahubModerationBody,
+  ApiDatahubModerationResponse,
 } from '@/pages/api/datahub/moderation'
 import { revalidateChatPage } from '@/services/api/mutation'
 import { queryClient } from '@/services/provider'
@@ -28,8 +28,8 @@ async function moderationActions<T extends ModerationCallNames>(
   const input = createSignedSocialDataEvent(data.callName, data, data.args)
   const actionRes = await axios.post<
     any,
-    AxiosResponse<ApiModerationActionsResponse>,
-    ApiModerationActionsBody
+    AxiosResponse<ApiDatahubModerationResponse>,
+    ApiDatahubModerationBody
   >('/api/moderation/actions', input as any)
 
   if (!actionRes.data.success) {

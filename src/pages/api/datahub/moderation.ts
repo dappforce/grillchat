@@ -17,15 +17,15 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   return res.status(405).send('Method Not Allowed')
 }
 
-export type ApiModerationActionsBody = ModerationCallInput
-export type ApiModerationActionsResponse = ApiResponse
+export type ApiDatahubModerationBody = ModerationCallInput
+export type ApiDatahubModerationResponse = ApiResponse
 const POST_handler = handlerWrapper({
   inputSchema: z.any(),
   dataGetter: (req) => req.body,
 })({
   allowedMethods: ['POST'],
   errorLabel: 'moderation-action',
-  handler: async (data: ApiModerationActionsBody, _req, res) => {
+  handler: async (data: ApiDatahubModerationBody, _req, res) => {
     const callName = data.callData?.name
     if (callName === 'synth_moderation_block_resource') {
       await blockResource(data)
