@@ -102,7 +102,7 @@ export const LoginContent = ({ setCurrentState }: ContentProps) => {
           >
             <div className='flex items-center justify-center gap-2'>
               <KeyIcon className='text-text-muted-on-primary' />
-              Enter Grill secret key
+              Enter Grill key
             </div>
           </Button>
         </div>
@@ -136,7 +136,7 @@ export const EnterSecretKeyContent = ({
           t={t}
           type='error'
           title='Login Failed'
-          description='The Grill secret key you provided is not valid'
+          description='The Grill key you provided is not valid'
         />
       ))
     }
@@ -152,7 +152,7 @@ export const EnterSecretKeyContent = ({
         autoFocus
         variant='fill-bg'
         onChange={(e) => setPrivateKey((e.target as HTMLTextAreaElement).value)}
-        placeholder='Enter your Grill secret key'
+        placeholder='Enter your Grill key'
       />
       <Button disabled={!privateKey} type='submit' size='lg'>
         Login

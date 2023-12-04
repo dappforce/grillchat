@@ -26,8 +26,8 @@ function PrivateKeyContent() {
   return (
     <div className='flex flex-col items-center gap-4'>
       <p className='mb-2 text-text-muted'>
-        Grill secret key is like a long password. We recommend keeping it in a
-        safe place, so you can recover your account.
+        Grill key is like a long password. We recommend keeping it in a safe
+        place, so you can recover your account.
       </p>
       <CopyText
         onCopyClick={onCopyClick}

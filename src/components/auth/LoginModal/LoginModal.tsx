@@ -40,12 +40,12 @@ const modalHeader: ModalConfig = {
     withFooter: true,
   },
   'enter-secret-key': {
-    title: '🔑 Grill secret key',
+    title: '🔑 Grill key',
     desc: (
       <span className='flex flex-col'>
         <span>
-          To access GrillChat, you need a Grill secret key. If you do not have
-          one, just write your first chat message, and you will be given one.
+          To access GrillChat, you need a Grill key. If you do not have one,
+          just write your first chat message, and you will be given one.
         </span>
         <InfoPanel className='mt-4'>
           DO NOT enter the private key of an account that holds any funds,

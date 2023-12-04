@@ -171,11 +171,11 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       withBackButton: true,
     },
     logout: {
-      title: '🤔 Did you back up your Grill secret key?',
+      title: '🤔 Did you back up your Grill key?',
       withBackButton: true,
     },
     'private-key': {
-      title: '🔑 Grill secret key',
+      title: '🔑 Grill key',
       withBackButton: true,
     },
     'share-session': {
