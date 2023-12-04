@@ -3,6 +3,7 @@ import NextAuth from 'next-auth'
 import TwitterProvider from 'next-auth/providers/twitter'
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET ?? '',
   providers: [
     TwitterProvider({
       clientId: process.env.TWITTER_CLIENT_ID ?? '',
@@ -23,7 +24,7 @@ export const authOptions: NextAuthOptions = {
         // return '/unauthorized'
       }
     },
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       return { ...session, user: { ...session.user, id: token.sub! } }
     },
   },

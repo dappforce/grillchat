@@ -3,7 +3,7 @@ import EthIcon from '@/assets/icons/eth.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
-import xLogoIcon from '@/assets/icons/x-logo.svg'
+import XLogoIcon from '@/assets/icons/x-logo.svg'
 import {
   CommonEvmAddressLinked,
   CommonEVMLoginErrorContent,
@@ -19,7 +19,6 @@ import Toast from '@/components/Toast'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
-import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useRequestToken } from '@/services/api/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -64,26 +63,8 @@ type ContentProps = ModalFunctionalityProps & {
   beforeLogin?: () => void
 }
 
-export const LoginContent = ({
-  setCurrentState,
-  runCaptcha,
-  termsAndService,
-}: ContentProps) => {
-  const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
+export const LoginContent = ({ setCurrentState }: ContentProps) => {
   const sendEvent = useSendEvent()
-
-  const {
-    mutateAsync: loginAndRequestToken,
-    isLoading: loadingRequestToken,
-    error,
-  } = useLoginAndRequestToken()
-  useToastError<ApiRequestTokenResponse>(
-    error,
-    'Create account failed',
-    (e) => e.message
-  )
-
-  const isLoading = loadingRequestToken || hasStartCaptcha
 
   return (
     <div>
@@ -91,6 +72,18 @@ export const LoginContent = ({
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className={cx('flex flex-col gap-4 pb-4')}>
           <Button
+            onClick={() => {
+              signIn('twitter')
+            }}
+            size='lg'
+          >
+            <div className='flex items-center justify-center gap-2'>
+              <XLogoIcon />
+              Continue with X
+            </div>
+          </Button>
+          <Button
+            variant='primaryOutline'
             onClick={() => {
               setCurrentState('connect-wallet')
               sendEvent('connect_wallet_started')
@@ -238,16 +231,6 @@ export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
           onClick: () => {
             setCurrentState('polkadot-connect')
             sendEvent('start_link_polkadot_address')
-          },
-        },
-        {
-          text: 'X profile',
-          icon: xLogoIcon,
-          onClick: () => {
-            signIn('twitter', {
-              callbackUrl: `/social`,
-            })
-            sendEvent('start_link_twitter_identity')
           },
         },
       ]}

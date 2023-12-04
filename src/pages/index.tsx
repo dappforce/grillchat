@@ -10,15 +10,12 @@ import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getHubIds, getMainHubId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
-import { getServerSession } from 'next-auth/next'
 
 export const getStaticProps = getCommonStaticProps<
   HubsPageProps & AppCommonProps
 >(
   () => ({ alwaysShowScrollbarOffset: true }),
   async () => {
-    const session = getServerSession()
-    console.log('>>>>>>>>>>>>>>>>> session', session)
     const hubsChatCount: HubsPageProps['hubsChatCount'] = {}
     const hubIds = getHubIds()
 
