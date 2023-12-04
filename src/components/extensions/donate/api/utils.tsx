@@ -1,4 +1,5 @@
 import { walletConnectProjectId } from '@/constants/evm'
+import { subWalletWallet } from '@/providers/evm/wallets/subwallet'
 import { talismanWallet } from '@/providers/evm/wallets/talisman'
 import { getConfiguredChains } from '@/providers/utils'
 import { LocalStorage } from '@/utils/storage'
@@ -66,7 +67,7 @@ const getWallet = (chains: Chain[]) => {
     coinbase: coinbaseWallet(walletOptions),
     ledger: ledgerWallet(walletOptions),
     walletConnect: walletConnectWallet(walletOptions),
-    // subwallet: subWalletWallet({ chains }),
+    subwallet: subWalletWallet(walletOptions),
   }
 
   const currentWalletId = getWalletFromStorage()
