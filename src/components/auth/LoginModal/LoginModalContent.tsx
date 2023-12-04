@@ -21,7 +21,6 @@ import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { useRequestToken } from '@/services/api/mutation'
-import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
@@ -341,14 +340,6 @@ const PolkadotConnectConfirmation = ({ setCurrentState }: ContentProps) => {
 }
 
 const XLoginLoading = () => {
-  const loginAsTemporaryAccount = useMyAccount(
-    (state) => state.loginAsTemporaryAccount
-  )
-  const { mutate: link } = useLinkIdentity({
-    onSuccess: () => window.alert('Successfully linked'),
-    onError: (error) => window.alert(error),
-  })
-
   return (
     <div className='flex flex-col items-center'>
       <Image
