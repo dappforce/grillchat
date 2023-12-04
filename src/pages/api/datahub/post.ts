@@ -9,7 +9,6 @@ import {
 import {
   createPostData,
   getCanAccountDo,
-  linkIdentity,
   notifyCreatePostFailedOrRetryStatus,
   notifyUpdatePostFailedOrRetryStatus,
   updatePostData,
@@ -89,7 +88,7 @@ const POST_handler = handlerWrapper({
   allowedMethods: ['POST'],
   errorLabel: 'datahub-mutation',
   handler: async (data: DatahubPostMutationBody, _, res) => {
-    const mapper = datahubMutationWrapper(datahubActionMapping)
+    const mapper = datahubMutationWrapper(datahubPostActionMapping)
     try {
       await mapper(data)
     } catch (err) {
@@ -116,20 +115,17 @@ const POST_handler = handlerWrapper({
   },
 })
 
-function datahubActionMapping(data: DatahubPostMutationBody) {
+function datahubPostActionMapping(data: DatahubPostMutationBody) {
   switch (data.action) {
     case 'create-post':
       return createPostData(data.payload)
     case 'update-post':
       return updatePostData(data.payload)
-    case 'link-identity':
-      return linkIdentity(data.payload)
-    case 'unlink-identity':
-      // TODO implement
-      return linkIdentity(data.payload)
     case 'notify-create-failed':
       return notifyCreatePostFailedOrRetryStatus(data.payload)
     case 'notify-update-failed':
       return notifyUpdatePostFailedOrRetryStatus(data.payload)
+    default:
+      throw new Error('Unknown action')
   }
 }

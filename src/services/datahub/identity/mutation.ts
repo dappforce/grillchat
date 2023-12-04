@@ -1,4 +1,4 @@
-import { DatahubPostMutationBody } from '@/pages/api/datahub/post'
+import { ApiDatahubIdentityBody } from '@/pages/api/datahub/identity'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
@@ -26,10 +26,10 @@ async function linkIdentity(
     eventArgs
   )
 
-  await axios.post<any, any, DatahubPostMutationBody>('/api/datahub/post', {
-    action: 'link-identity',
-    payload: input as any,
-  })
+  await axios.post<any, any, ApiDatahubIdentityBody>(
+    '/api/datahub/identity',
+    input
+  )
 }
 
 export const useLinkIdentity = mutationWrapper(

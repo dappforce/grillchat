@@ -27,7 +27,6 @@ export const useLoginModal = create<State & Actions>()((set) => ({
   },
   init: () => {
     const loginQuery = getUrlQuery('login')
-    console.log(loginQuery)
     if (loginQuery === 'x') {
       set({ isOpen: true, initialOpenState: 'x-login-loading' })
     }

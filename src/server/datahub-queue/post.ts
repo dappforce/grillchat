@@ -1,14 +1,11 @@
 import { gql } from 'graphql-request'
 import {
   CanAccountDoArgsInput,
-  CreateMutateLinkedIdentityInput,
   CreatePostOptimisticInput,
   CreatePostOptimisticMutation,
   CreatePostOptimisticMutationVariables,
   GetCanAccountDoQuery,
   GetCanAccountDoQueryVariables,
-  LinkIdentityMutation,
-  LinkIdentityMutationVariables,
   NotifyCreatePostTxFailedOrRetryStatusMutation,
   NotifyCreatePostTxFailedOrRetryStatusMutationVariables,
   NotifyUpdatePostTxFailedOrRetryStatusMutation,
@@ -18,7 +15,7 @@ import {
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
 } from './generated'
-import { backendSigWrapper, datahubQueueRequest } from './utils'
+import { datahubQueueRequest } from './utils'
 
 const GET_CAN_ACCOUNT_DO = gql`
   query GetCanAccountDo($getAccountDo: CanAccountDoArgsInput!) {
@@ -135,56 +132,3 @@ export async function notifyUpdatePostFailedOrRetryStatus(
     },
   })
 }
-
-const LINK_IDENTITY_MUTATION = gql`
-  mutation LinkIdentity(
-    $createLinkedIdentityInput: CreateMutateLinkedIdentityInput!
-  ) {
-    createLinkedIdentity(
-      createLinkedIdentityInput: $createLinkedIdentityInput
-    ) {
-      processed
-      message
-    }
-  }
-`
-
-export async function linkIdentity(input: CreateMutateLinkedIdentityInput) {
-  // TODO: remove this when we have a better way to sign
-  await backendSigWrapper(input)
-  await datahubQueueRequest<
-    LinkIdentityMutation,
-    LinkIdentityMutationVariables
-  >({
-    document: LINK_IDENTITY_MUTATION,
-    variables: {
-      createLinkedIdentityInput: input,
-    },
-  })
-}
-
-// const UNLINK_IDENTITY_MUTATION = gql`
-//   mutation UnlinkIdentity(
-//     $createLinkedIdentityInput: CreateMutateLinkedIdentityInput!
-//   ) {
-//     deleteLinkedIdentity(
-//       createLinkedIdentityInput: $createLinkedIdentityInput
-//     ) {
-//       processed
-//       message
-//     }
-//   }
-// `
-// export async function unlinkIdentity(input: CreateMutateLinkedIdentityInput) {
-//   // TODO: remove this when we have a better way to sign
-//   await backendSigWrapper(input)
-//   await datahubQueueRequest<
-//     Mutation['deleteLinkedIdentity'],
-//     MutationDeleteLinkedIdentityArgs
-//   >({
-//     document: UNLINK_IDENTITY_MUTATION,
-//     variables: {
-//       deleteLinkedIdentityInput: input,
-//     },
-//   })
-// }

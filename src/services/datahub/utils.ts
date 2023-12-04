@@ -65,7 +65,7 @@ export type DatahubParams<T> = {
   args: T
 }
 
-export function augmentInputSig(
+export function signDatahubPayload(
   signer: Signer | null,
   payload: { sig: string }
 ) {
@@ -119,7 +119,7 @@ export function createSignedSocialDataEvent<
     eventArgs,
     content
   )
-  augmentInputSig(params.signer, payload)
+  signDatahubPayload(params.signer, payload)
 
   return payload
 }

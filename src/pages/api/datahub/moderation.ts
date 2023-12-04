@@ -6,6 +6,7 @@ import {
   initModerationOrg,
   unblockResource,
 } from '@/server/datahub-queue/moderation'
+import { datahubMutationWrapper } from '@/server/datahub-queue/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -26,18 +27,8 @@ const POST_handler = handlerWrapper({
   allowedMethods: ['POST'],
   errorLabel: 'moderation-action',
   handler: async (data: ApiDatahubModerationBody, _req, res) => {
-    const callName = data.callData?.name
-    if (callName === 'synth_moderation_block_resource') {
-      await blockResource(data)
-    } else if (callName === 'synth_moderation_unblock_resource') {
-      await unblockResource(data)
-    } else if (callName === 'synth_moderation_init_moderator') {
-      await initModerationOrg(data)
-    } else if (callName === 'synth_moderation_add_ctx_to_organization') {
-      await addPostIdToOrg(data)
-    } else {
-      throw Error('Unknown moderation action')
-    }
+    const mapper = datahubMutationWrapper(datahubModerationActionMapping)
+    await mapper(data)
 
     res.json({
       message: 'OK',
@@ -45,3 +36,18 @@ const POST_handler = handlerWrapper({
     })
   },
 })
+
+async function datahubModerationActionMapping(data: ModerationCallInput) {
+  const callName = data.callData?.name
+  if (callName === 'synth_moderation_block_resource') {
+    await blockResource(data)
+  } else if (callName === 'synth_moderation_unblock_resource') {
+    await unblockResource(data)
+  } else if (callName === 'synth_moderation_init_moderator') {
+    await initModerationOrg(data)
+  } else if (callName === 'synth_moderation_add_ctx_to_organization') {
+    await addPostIdToOrg(data)
+  } else {
+    throw Error('Unknown moderation action')
+  }
+}
