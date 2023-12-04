@@ -1,20 +1,22 @@
-import { DatahubMutationBody } from '@/pages/api/datahub'
+import { DatahubMutationBody } from '@/pages/api/datahub/post'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import {
   IdentityProvider,
+  SocialCallDataArgs,
   socialCallName,
   SynthCreateLinkedIdentityCallParsedArgs,
 } from '@subsocial/data-hub-sdk'
 import { useMutation, UseMutationOptions } from '@tanstack/react-query'
 import axios from 'axios'
-import { createSocialDataEventInput, DatahubParams } from '../utils'
+import {
+  createSignedSocialDataEvent,
+  createSocialDataEventPayload,
+  DatahubParams,
+} from '../utils'
 
-export async function linkIdentity(
-  params: DatahubParams<{
-    id: string
-    provider: IdentityProvider
-  }>
+async function linkIdentity(
+  params: DatahubParams<SocialCallDataArgs<'synth_create_linked_identity'>>
 ) {
   const { id, provider } = params.args
   params.backendSigning = true
@@ -25,13 +27,13 @@ export async function linkIdentity(
     provider,
   }
 
-  const input = createSocialDataEventInput(
+  const input = createSocialDataEventPayload(
     socialCallName.synth_create_linked_identity,
     params,
     eventArgs
   )
 
-  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub/post', {
     action: 'link-identity',
     payload: input as any,
   })
@@ -52,13 +54,13 @@ async function unlinkIdentity(
     provider,
   }
 
-  const input = createSocialDataEventInput(
+  const input = createSignedSocialDataEvent(
     socialCallName.synth_delete_linked_identity,
     params,
     eventArgs
   )
 
-  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub/post', {
     action: 'unlink-identity',
     payload: input as any,
   })
@@ -76,7 +78,6 @@ export function useLinkIdentity(
   return useMutation({
     ...config,
     mutationFn: async (data) => {
-      preventWindowUnload()
       await linkIdentity({
         ...getCurrentWallet(),
         args: {
@@ -85,6 +86,7 @@ export function useLinkIdentity(
         },
       })
     },
+    onMutate: () => preventWindowUnload(),
     onError: (err, data, context) => {
       config.onError?.(err, data, context)
       allowWindowUnload()

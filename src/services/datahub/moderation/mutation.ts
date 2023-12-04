@@ -1,7 +1,7 @@
 import {
   ApiModerationActionsBody,
   ApiModerationActionsResponse,
-} from '@/pages/api/moderation/actions'
+} from '@/pages/api/datahub/moderation'
 import { revalidateChatPage } from '@/services/api/mutation'
 import { queryClient } from '@/services/provider'
 import { useMyAccount } from '@/stores/my-account'
@@ -9,7 +9,7 @@ import mutationWrapper from '@/subsocial-query/base'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
 import axios, { AxiosResponse } from 'axios'
 import Router from 'next/router'
-import { createSocialDataEventInput, DatahubParams } from '../utils'
+import { createSignedSocialDataEvent, DatahubParams } from '../utils'
 import { getModeratorQuery } from './query'
 
 type ModerationCallNames =
@@ -25,7 +25,7 @@ async function moderationActions<T extends ModerationCallNames>(
 ) {
   if (!data) return null
 
-  const input = createSocialDataEventInput(data.callName, data, data.args)
+  const input = createSignedSocialDataEvent(data.callName, data, data.args)
   const actionRes = await axios.post<
     any,
     AxiosResponse<ApiModerationActionsResponse>,

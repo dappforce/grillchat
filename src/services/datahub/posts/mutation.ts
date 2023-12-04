@@ -1,5 +1,5 @@
 import { getMaxMessageLength } from '@/constants/chat'
-import { DatahubMutationBody } from '@/pages/api/datahub'
+import { DatahubMutationBody } from '@/pages/api/datahub/post'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import {
   addOptimisticData,
@@ -28,7 +28,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import axios from 'axios'
-import { createSocialDataEventInput, DatahubParams } from '../utils'
+import { createSignedSocialDataEvent, DatahubParams } from '../utils'
 
 export function isValidUUIDv4(maybeUuid: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -71,14 +71,14 @@ async function createPostData(
     ipfsSrc: cid,
   }
 
-  const input = createSocialDataEventInput(
+  const input = createSignedSocialDataEvent(
     socialCallName.create_post,
     params,
     eventArgs,
     content
   )
 
-  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub/post', {
     action: 'create-post',
     payload: input as any,
   })
@@ -104,14 +104,14 @@ async function updatePostData(
     postId,
     ipfsSrc: content?.cid ?? null,
   }
-  const input = createSocialDataEventInput(
+  const input = createSignedSocialDataEvent(
     socialCallName.update_post,
     params,
     eventArgs,
     content?.content
   )
 
-  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub/post', {
     action: 'update-post',
     payload: input as any,
   })
@@ -154,9 +154,9 @@ async function notifyCreatePostFailedOrRetryStatus(
     }
   }
 
-  const input = createSocialDataEventInput(event.name, params, event.args)
+  const input = createSignedSocialDataEvent(event.name, params, event.args)
 
-  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub/post', {
     action: 'notify-create-failed',
     payload: input as any,
   })
@@ -203,9 +203,9 @@ async function notifyUpdatePostFailedOrRetryStatus(
     }
   }
 
-  const input = createSocialDataEventInput(event.name, params, event.args)
+  const input = createSignedSocialDataEvent(event.name, params, event.args)
 
-  await axios.post<any, any, DatahubMutationBody>('/api/datahub', {
+  await axios.post<any, any, DatahubMutationBody>('/api/datahub/post', {
     action: 'notify-update-failed',
     payload: input as any,
   })
@@ -237,7 +237,6 @@ export function useSendOffchainMessage(
   config: UseMutationOptions<void, unknown, SendOffchainMessageParams, unknown>
 ) {
   const client = useQueryClient()
-  const getWallet = getCurrentWallet()
 
   return useMutation({
     ...config,
@@ -255,7 +254,7 @@ export function useSendOffchainMessage(
         )
 
       await datahubMutation.createPostData({
-        ...getWallet(),
+        ...getCurrentWallet(),
         uuid: data.uuid,
         timestamp: data.timestamp,
         isOffchain: true,
@@ -276,13 +275,15 @@ export function useSendOffchainMessage(
       } as PostContent
 
       const newId = getDeterministicId({
-        account: getWallet().proxyToAddress || getWallet().address,
+        account:
+          getCurrentWallet().proxyToAddress || getCurrentWallet().address,
         timestamp: data.timestamp.toString(),
         uuid: data.uuid,
       })
 
       addOptimisticData({
-        address: getWallet().proxyToAddress || getWallet().address,
+        address:
+          getCurrentWallet().proxyToAddress || getCurrentWallet().address,
         params: data,
         ipfsContent: content,
         client,
@@ -294,7 +295,8 @@ export function useSendOffchainMessage(
       config.onError?.(err, data, context)
       allowWindowUnload()
       const newId = getDeterministicId({
-        account: getWallet().proxyToAddress || getWallet().address,
+        account:
+          getCurrentWallet().proxyToAddress || getCurrentWallet().address,
         timestamp: data.timestamp.toString(),
         uuid: data.uuid,
       })

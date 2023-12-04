@@ -1,4 +1,7 @@
-import { ApiDatahubGetResponse, DatahubQueryInput } from '@/pages/api/datahub'
+import {
+  ApiDatahubGetResponse,
+  DatahubQueryInput,
+} from '@/pages/api/datahub/post'
 import { Identities } from '@/pages/api/identities'
 import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { createQuery, poolQuery } from '@/subsocial-query'
@@ -132,7 +135,7 @@ export const getIdentityQuery = createQuery({
 
 async function getCanUserDoDatahubAction(input: DatahubQueryInput) {
   const urlParams = new URLSearchParams(input)
-  const res = await axios.get('/api/datahub?' + urlParams.toString())
+  const res = await axios.get('/api/datahub/post?' + urlParams.toString())
   return (res.data as ApiDatahubGetResponse).isAllowed
 }
 export const getCanUserDoDatahubActionQuery = createQuery({

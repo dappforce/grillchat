@@ -44,6 +44,7 @@ import { Signer } from '@/utils/account'
 import { u8aToHex } from '@polkadot/util'
 import { PostContent } from '@subsocial/api/types'
 import {
+  SocialCallDataArgs,
   socialCallName,
   SocialEventDataApiInput,
   SocialEventDataType,
@@ -65,7 +66,10 @@ export type DatahubParams<T> = {
   args: T
 }
 
-function augmentInputSig(signer: Signer | null, payload: { sig: string }) {
+export function augmentInputSig(
+  signer: Signer | null,
+  payload: { sig: string }
+) {
   if (!signer) throw new Error('Signer is not defined')
   const sortedPayload = sortKeysRecursive(payload)
   const sig = signer.sign(JSON.stringify(sortedPayload))
@@ -73,22 +77,16 @@ function augmentInputSig(signer: Signer | null, payload: { sig: string }) {
   payload.sig = hexSig
 }
 
-export function createSocialDataEventInput(
-  callName: keyof typeof socialCallName,
-  {
-    isOffchain,
-    timestamp,
-    address,
-    uuid,
-    signer,
-    proxyToAddress,
-    backendSigning,
-  }: DatahubParams<{}>,
-  eventArgs: any,
+export function createSocialDataEventPayload<
+  T extends keyof typeof socialCallName
+>(
+  callName: T,
+  { isOffchain, timestamp, address, uuid, proxyToAddress }: DatahubParams<{}>,
+  eventArgs: SocialCallDataArgs<T>,
   content?: PostContent
 ) {
   const owner = proxyToAddress || address
-  const input: SocialEventDataApiInput = {
+  const payload: SocialEventDataApiInput = {
     protVersion: socialEventProtVersion['0.1'],
     dataType: isOffchain
       ? SocialEventDataType.offChain
@@ -105,7 +103,24 @@ export function createSocialDataEventInput(
     providerAddr: address,
     sig: '',
   }
-  augmentInputSig(signer, input)
+  return payload
+}
 
-  return { ...input, backendSigning }
+export function createSignedSocialDataEvent<
+  T extends keyof typeof socialCallName
+>(
+  callName: T,
+  params: DatahubParams<{}>,
+  eventArgs: SocialCallDataArgs<T>,
+  content?: PostContent
+) {
+  const payload = createSocialDataEventPayload(
+    callName,
+    params,
+    eventArgs,
+    content
+  )
+  augmentInputSig(params.signer, payload)
+
+  return { ...payload, backendSigning: params.backendSigning }
 }
