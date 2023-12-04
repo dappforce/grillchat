@@ -21,17 +21,20 @@ import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { useRequestToken } from '@/services/api/mutation'
+import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery } from '@/utils/links'
-import { signIn } from 'next-auth/react'
+import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import { signIn, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import {
   Dispatch,
   SetStateAction,
   SyntheticEvent,
+  useEffect,
   useRef,
   useState,
 } from 'react'
@@ -339,7 +342,36 @@ const PolkadotConnectConfirmation = ({ setCurrentState }: ContentProps) => {
   )
 }
 
-const XLoginLoading = () => {
+const XLoginLoading = ({ closeModal }: ContentProps) => {
+  const { data, status } = useSession()
+  const loginAsTemporaryAccount = useMyAccount(
+    (state) => state.loginAsTemporaryAccount
+  )
+  const { mutate: linkIdentity } = useLinkIdentity({
+    onSuccess: () => window.alert('Successfully linked'),
+    onError: (error) => window.alert(error),
+  })
+
+  const isAlreadyCalled = useRef(false)
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      closeModal()
+      return
+    }
+    if (isAlreadyCalled.current || !data) return
+
+    isAlreadyCalled.current = true
+    ;(async () => {
+      const address = await loginAsTemporaryAccount()
+      if (!address) return
+      linkIdentity({
+        id: data.user?.id,
+        provider: IdentityProvider.TWITTER,
+      })
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, status])
+
   return (
     <div className='flex flex-col items-center'>
       <Image
