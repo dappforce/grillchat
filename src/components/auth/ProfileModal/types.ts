@@ -36,7 +36,7 @@ export type ContentProps = {
     state: React.SetStateAction<ProfileModalState>,
     forceFlowBackTo?: ProfileModalState
   ) => void
-  closeModal?: () => void
+  closeModal: () => void
   notification?: NotificationControl
   evmAddress?: string | null
 }
