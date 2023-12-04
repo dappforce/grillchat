@@ -3,18 +3,17 @@ import { useMyAccount } from '@/stores/my-account'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useQueryClient } from '@tanstack/react-query'
-import { useWalletGetter } from '../hooks'
+import { getCurrentWallet } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import { getProxiesQuery } from './query'
 
 export function useAddProxy(config?: SubsocialMutationConfig<null>) {
   const client = useQueryClient()
-  const getWallet = useWalletGetter(true)
   const waitHasEnergy = useWaitHasEnergy(true)
 
   return useSubsocialMutation(
     {
-      getWallet,
+      getWallet: () => getCurrentWallet('injected'),
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi } }) => {
         console.log('waiting energy...')
@@ -78,12 +77,11 @@ export const AddProxyWrapper = createMutationWrapper(
 
 export function useRemoveProxy(config?: SubsocialMutationConfig<null>) {
   const client = useQueryClient()
-  const getWallet = useWalletGetter()
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation(
     {
-      getWallet,
+      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi } }) => {
         console.log('waiting energy...')

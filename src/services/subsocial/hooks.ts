@@ -7,23 +7,21 @@ import {
 } from '@/subsocial-query/subsocial/types'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 
-export function useWalletGetter(
-  isUsingConnectedWallet?: boolean
-): () => WalletAccount {
-  if (isUsingConnectedWallet) {
-    return () => {
-      const wallet = useMyAccount.getState().connectedWallet
-      return {
-        address: wallet?.address ?? '',
-        signer: wallet?.signer ?? null,
-      }
+export function getCurrentWallet(
+  walletType: 'injected' | 'grill' = 'grill'
+): WalletAccount {
+  if (walletType === 'injected') {
+    const wallet = useMyAccount.getState().connectedWallet
+    return {
+      address: wallet?.address ?? '',
+      signer: wallet?.signer ?? null,
     }
   }
-  return () => ({
+  return {
     address: useMyAccount.getState().address ?? '',
     signer: useMyAccount.getState().signer,
     proxyToAddress: useMyAccount.getState().parentProxyAddress,
-  })
+  }
 }
 
 export default function useCommonTxSteps<Data, ReturnValue>(

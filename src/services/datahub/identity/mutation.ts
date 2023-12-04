@@ -1,5 +1,5 @@
 import { DatahubMutationBody } from '@/pages/api/datahub'
-import { useWalletGetter } from '@/services/subsocial/hooks'
+import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import {
   IdentityProvider,
@@ -10,7 +10,7 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query'
 import axios from 'axios'
 import { createSocialDataEventInput, DatahubParams } from '../utils'
 
-async function linkIdentity(
+export async function linkIdentity(
   params: DatahubParams<{
     id: string
     provider: IdentityProvider
@@ -73,14 +73,12 @@ type LinkIdentityParams = {
 export function useLinkIdentity(
   config: UseMutationOptions<void, unknown, LinkIdentityParams, unknown>
 ) {
-  const getWallet = useWalletGetter()
-
   return useMutation({
     ...config,
     mutationFn: async (data) => {
       preventWindowUnload()
       await linkIdentity({
-        ...getWallet(),
+        ...getCurrentWallet(),
         args: {
           id: data.external_id,
           provider: data.provider,

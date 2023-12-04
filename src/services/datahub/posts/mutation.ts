@@ -5,7 +5,7 @@ import {
   addOptimisticData,
   deleteOptimisticData,
 } from '@/services/subsocial/commentIds/optimistic'
-import { useWalletGetter } from '@/services/subsocial/hooks'
+import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getDatahubConfig } from '@/utils/env/client'
 import { ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
@@ -237,7 +237,7 @@ export function useSendOffchainMessage(
   config: UseMutationOptions<void, unknown, SendOffchainMessageParams, unknown>
 ) {
   const client = useQueryClient()
-  const getWallet = useWalletGetter()
+  const getWallet = getCurrentWallet()
 
   return useMutation({
     ...config,
