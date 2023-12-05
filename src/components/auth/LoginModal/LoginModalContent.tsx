@@ -10,7 +10,6 @@ import {
   CommonEVMLoginErrorContent,
 } from '@/components/auth/common/evm/CommonEvmModalContent'
 import Button from '@/components/Button'
-import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
 import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
 import MenuList from '@/components/MenuList'
@@ -22,11 +21,14 @@ import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAdd
 import useToastError from '@/hooks/useToastError'
 import { useRequestToken } from '@/services/api/mutation'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
+import { getLinkedIdentitiesQuery } from '@/services/datahub/identity/query'
+import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery } from '@/utils/links'
+import { encodeProfileSource } from '@/utils/profile'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { signIn, useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -63,8 +65,6 @@ export type LoginModalStep =
 type ContentProps = ModalFunctionalityProps & {
   setCurrentState: Dispatch<SetStateAction<LoginModalStep>>
   currentStep: LoginModalStep
-  runCaptcha: () => Promise<string | null>
-  termsAndService: (className?: string) => JSX.Element
   afterLogin?: () => void
   beforeLogin?: () => void
 }
@@ -256,16 +256,14 @@ function useLoginBeforeSignEvm() {
   useToastError(error, 'Retry linking EVM address failed')
 
   return {
-    mutate: async (runCaptcha: () => Promise<string | null>) => {
+    mutate: async () => {
       if (myAddress) return
 
       setIsCreatingAcc(true)
       try {
-        const captchaToken = await runCaptcha()
-        if (!captchaToken) throw new Error('Captcha failed')
         const address = await loginAsTemporaryAccount()
         if (!address) throw new Error('Login failed')
-        requestToken({ captchaToken, address })
+        requestToken({ address })
       } finally {
         setIsCreatingAcc(false)
       }
@@ -278,16 +276,12 @@ export const EvmLoginError = ({ setCurrentState }: ContentProps) => {
   const { mutate, isLoading } = useLoginBeforeSignEvm()
 
   return (
-    <CaptchaInvisible>
-      {(runCaptcha) => (
-        <CommonEVMLoginErrorContent
-          isLoading={isLoading}
-          beforeSignEvmAddress={() => mutate(runCaptcha)}
-          setModalStep={() => setCurrentState('evm-address-linked')}
-          signAndLinkOnConnect={true}
-        />
-      )}
-    </CaptchaInvisible>
+    <CommonEVMLoginErrorContent
+      isLoading={isLoading}
+      beforeSignEvmAddress={() => mutate()}
+      setModalStep={() => setCurrentState('evm-address-linked')}
+      signAndLinkOnConnect={true}
+    />
   )
 }
 
@@ -305,17 +299,13 @@ export const LinkEvmContent = ({ setCurrentState }: ContentProps) => {
   const isLoading = isLoggingIn || isLinking
 
   return (
-    <CaptchaInvisible>
-      {(runCaptcha) => (
-        <CustomConnectButton
-          className={cx('w-full')}
-          beforeSignEvmAddress={() => mutate(runCaptcha)}
-          signAndLinkEvmAddress={signAndLinkEvmAddress}
-          isLoading={isLoading}
-          secondLabel='Sign Message'
-        />
-      )}
-    </CaptchaInvisible>
+    <CustomConnectButton
+      className={cx('w-full')}
+      beforeSignEvmAddress={() => mutate()}
+      signAndLinkEvmAddress={signAndLinkEvmAddress}
+      isLoading={isLoading}
+      secondLabel='Sign Message'
+    />
   )
 }
 
@@ -326,31 +316,52 @@ const PolkadotConnectConfirmation = ({ setCurrentState }: ContentProps) => {
   useToastError(error, 'Create account for polkadot connection failed')
 
   return (
-    <CaptchaInvisible>
-      {(runCaptcha) => (
-        <PolkadotConnectConfirmationContent
-          setCurrentState={setCurrentState}
-          beforeAddProxy={async () => {
-            const captchaToken = await runCaptcha()
-            if (!captchaToken) return false
-            await mutateAsync({ captchaToken })
-            return true
-          }}
-        />
-      )}
-    </CaptchaInvisible>
+    <PolkadotConnectConfirmationContent
+      setCurrentState={setCurrentState}
+      beforeAddProxy={async () => {
+        await mutateAsync(null)
+        return true
+      }}
+    />
   )
 }
 
-const XLoginLoading = ({ closeModal }: ContentProps) => {
-  const { data, status } = useSession()
+const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
+  const { data: session, status } = useSession()
   const loginAsTemporaryAccount = useMyAccount(
     (state) => state.loginAsTemporaryAccount
   )
-  const { mutate: linkIdentity } = useLinkIdentity({
-    onSuccess: () => window.alert('Successfully linked'),
-    onError: (error) => window.alert(error),
+
+  const myAddress = useMyMainAddress()
+  const { data: linkedIdentities } = getLinkedIdentitiesQuery.useQuery(
+    myAddress ?? '',
+    { enabled: !!myAddress }
+  )
+  const { mutate: linkIdentity } = useLinkIdentity()
+  const { mutate: upsertProfile } = useUpsertProfile({
+    onSuccess: () => {
+      setCurrentState('account-created')
+    },
   })
+
+  const upsertedProfile = useRef(false)
+  useEffect(() => {
+    const foundIdentity = linkedIdentities?.find(
+      (identity) => identity.externalId === session?.user?.id
+    )
+    if (foundIdentity && !upsertedProfile.current) {
+      upsertedProfile.current = true
+      upsertProfile({
+        content: {
+          image: session?.user?.image ?? '',
+          name: session?.user.name ?? '',
+          profileSource: encodeProfileSource({
+            source: 'subsocial-profile',
+          }),
+        },
+      })
+    }
+  }, [linkedIdentities, session, setCurrentState, upsertProfile])
 
   const isAlreadyCalled = useRef(false)
   useEffect(() => {
@@ -358,19 +369,19 @@ const XLoginLoading = ({ closeModal }: ContentProps) => {
       closeModal()
       return
     }
-    if (isAlreadyCalled.current || !data) return
+    if (isAlreadyCalled.current || !session) return
 
     isAlreadyCalled.current = true
     ;(async () => {
       const address = await loginAsTemporaryAccount()
       if (!address) return
       linkIdentity({
-        id: data.user?.id,
+        id: session.user?.id,
         provider: IdentityProvider.TWITTER,
       })
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, status])
+  }, [session, status])
 
   return (
     <div className='flex flex-col items-center'>

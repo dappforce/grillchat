@@ -11,10 +11,6 @@ export function getDiscussionCreatorMnemonic() {
   )
 }
 
-export function getCaptchaSecret() {
-  return checkEnv(process.env.CAPTCHA_SECRET, 'CAPTCHA_SECRET')
-}
-
 export function getCrustIpfsAuth() {
   return checkEnv(process.env.CRUST_IPFS_AUTH, 'CRUST_IPFS_AUTH', true)
 }

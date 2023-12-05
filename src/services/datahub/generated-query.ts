@@ -701,6 +701,41 @@ export type UpdateOrganizationInput = {
   name?: InputMaybe<Scalars['String']['input']>
 }
 
+export type GetLinkedIdentitiesQueryVariables = Exact<{
+  substrateAddress: Scalars['String']['input']
+}>
+
+export type GetLinkedIdentitiesQuery = {
+  __typename?: 'Query'
+  linkedIdentities: Array<{
+    __typename?: 'LinkedIdentity'
+    id: string
+    externalId: string
+    provider: IdentityProvider
+    enabled: boolean
+    substrateAccount: { __typename?: 'Account'; id: string }
+  }>
+}
+
+export type SubscribeIdentitySubscriptionVariables = Exact<{
+  [key: string]: never
+}>
+
+export type SubscribeIdentitySubscription = {
+  __typename?: 'Subscription'
+  linkedIdentity: {
+    __typename?: 'LinkedIdentitySubscriptionPayload'
+    event: DataHubSubscriptionEventEnum
+    entity: {
+      __typename?: 'LinkedIdentity'
+      externalId: string
+      provider: IdentityProvider
+      enabled: boolean
+      substrateAccount: { __typename?: 'Account'; id: string }
+    }
+  }
+}
+
 export type GetBlockedResourcesQueryVariables = Exact<{
   spaceIds: Array<Scalars['String']['input']> | Scalars['String']['input']
   postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
@@ -1204,6 +1239,34 @@ export const DatahubPostFragment = gql`
         post {
           id
           persistentId
+        }
+      }
+    }
+  }
+`
+export const GetLinkedIdentities = gql`
+  query GetLinkedIdentities($substrateAddress: String!) {
+    linkedIdentities(where: { substrateAddress: $substrateAddress }) {
+      id
+      externalId
+      provider
+      enabled
+      substrateAccount {
+        id
+      }
+    }
+  }
+`
+export const SubscribeIdentity = gql`
+  subscription SubscribeIdentity {
+    linkedIdentity {
+      event
+      entity {
+        externalId
+        provider
+        enabled
+        substrateAccount {
+          id
         }
       }
     }

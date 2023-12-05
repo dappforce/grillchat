@@ -5,6 +5,7 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
+import { useDatahubIdentitySubscriber } from '@/services/datahub/identity/subscription'
 import { useDatahubModerationSubscriber } from '@/services/datahub/moderation/subscription'
 import { useDatahubPostSubscriber } from '@/services/datahub/posts/subscription'
 import { QueryProvider } from '@/services/provider'
@@ -121,6 +122,7 @@ function DatahubSubscriber() {
   const chatId = getIdFromSlug(slugParam)
   useDatahubPostSubscriber(chatId)
   useDatahubModerationSubscriber()
+  useDatahubIdentitySubscriber()
 
   return null
 }

@@ -3,16 +3,8 @@ import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 import { loginModalContents, LoginModalStep } from './LoginModalContent'
-
-const CaptchaInvisible = dynamic(
-  () => import('@/components/captcha/CaptchaInvisible'),
-  {
-    ssr: false,
-  }
-)
 
 export type LoginModalProps = ModalFunctionalityProps & {
   initialOpenState?: LoginModalStep
@@ -190,19 +182,11 @@ export default function LoginModal({
         props.closeModal()
       }}
     >
-      <CaptchaInvisible>
-        {(runCaptcha, termsAndService) => {
-          return (
-            <ModalContent
-              setCurrentState={setCurrentState}
-              currentStep={currentState}
-              runCaptcha={runCaptcha}
-              termsAndService={termsAndService}
-              {...props}
-            />
-          )
-        }}
-      </CaptchaInvisible>
+      <ModalContent
+        setCurrentState={setCurrentState}
+        currentStep={currentState}
+        {...props}
+      />
     </Modal>
   )
 }

@@ -73,11 +73,6 @@ body {
   z-index: 9999;
 }
 
-.grecaptcha-badge {
-  visibility: hidden;
-  display: none;
-}
-
 .highlighted {
   @apply relative after:pointer-events-none after:absolute after:left-0 after:top-0 after:h-full after:w-full after:rounded-2xl after:bg-background-primary/20;
 }

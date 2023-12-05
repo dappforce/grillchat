@@ -40,8 +40,14 @@ export const useLinkIdentity = mutationWrapper(
     })
   },
   {
-    onMutate: () => preventWindowUnload(),
-    onError: () => allowWindowUnload(),
-    onSuccess: () => allowWindowUnload(),
+    onMutate: () => {
+      preventWindowUnload()
+    },
+    onError: () => {
+      allowWindowUnload()
+    },
+    onSuccess: () => {
+      allowWindowUnload()
+    },
   }
 )

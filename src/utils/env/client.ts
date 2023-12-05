@@ -1,12 +1,5 @@
 import { checkEnv } from './common'
 
-export function getCaptchaSiteKey() {
-  return checkEnv(
-    process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY,
-    'NEXT_PUBLIC_CAPTCHA_SITE_KEY'
-  )
-}
-
 export function getAppId() {
   return checkEnv(process.env.NEXT_PUBLIC_APP_ID, 'NEXT_PUBLIC_APP_ID')
 }

@@ -46,13 +46,10 @@ export default function useCommonTxSteps<Data, ReturnValue>(
 
   const { mutateAsync } = useMutationHook(config)
   const { mutateAsync: requestToken } = useRequestToken()
-  const login = useMyAccount((state) => state.login)
 
   const { promptUserForLogin } = useLoginOptions()
-  const needToRunCaptcha = !address || !hasEnoughEnergy
 
-  const workerFunc = async (params: { captchaToken?: string } & Data) => {
-    const { captchaToken } = params
+  const workerFunc = async (params: Data) => {
     let usedAddress: string = address ?? ''
     if (!address) {
       const address = await promptUserForLogin()
@@ -60,9 +57,9 @@ export default function useCommonTxSteps<Data, ReturnValue>(
       usedAddress = address
     }
 
-    if (!hasEnoughEnergy && captchaToken) {
+    if (!hasEnoughEnergy) {
       const [_, res] = await Promise.all([
-        requestToken({ address: usedAddress, captchaToken }),
+        requestToken({ address: usedAddress }),
         mutateAsync(params),
       ])
       return res
@@ -73,6 +70,5 @@ export default function useCommonTxSteps<Data, ReturnValue>(
 
   return {
     mutation: useMutation(workerFunc),
-    needToRunCaptcha,
   }
 }

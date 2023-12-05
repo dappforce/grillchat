@@ -1,16 +1,8 @@
 import useToastError from '@/hooks/useToastError'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { UseMutationResult } from '@tanstack/react-query'
-import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import useCommonTxSteps from '../hooks'
-
-const CaptchaInvisible = dynamic(
-  () => import('@/components/captcha/CaptchaInvisible'),
-  {
-    ssr: false,
-  }
-)
 
 type Status =
   | 'idle'
@@ -44,7 +36,6 @@ export function createMutationWrapper<Data, ReturnValue>(
 
     const {
       mutation: { mutateAsync, isLoading, error },
-      needToRunCaptcha,
     } = useCommonTxSteps(
       useMutationHook,
       {
@@ -88,26 +79,15 @@ export function createMutationWrapper<Data, ReturnValue>(
 
     const loadingStatuses: Status[] = ['starting', 'sending', 'broadcasting']
 
-    return (
-      <CaptchaInvisible>
-        {(runCaptcha) =>
-          children({
-            mutateAsync: async (data) => {
-              let captchaToken
-              if (needToRunCaptcha) {
-                captchaToken = await runCaptcha()
-                if (!captchaToken) return
-              }
-              return mutateAsync({ captchaToken, ...data })
-            },
-            isLoading: loadingUntilTxSuccess
-              ? loadingStatuses.includes(status)
-              : isLoading,
-            status,
-            loadingText,
-          })
-        }
-      </CaptchaInvisible>
-    )
+    return children({
+      mutateAsync: async (data) => {
+        return mutateAsync(data)
+      },
+      isLoading: loadingUntilTxSuccess
+        ? loadingStatuses.includes(status)
+        : isLoading,
+      status,
+      loadingText,
+    })
   }
 }

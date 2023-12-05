@@ -2,11 +2,9 @@ import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { ApiResponse, getServerAccount, handlerWrapper } from '@/server/common'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { validateAddress } from '@/utils/account'
-import { getCaptchaSecret } from '@/utils/env/server'
 import { z } from 'zod'
 
 const bodySchema = z.object({
-  captchaToken: z.string(),
   address: z.string(),
 })
 export type ApiRequestTokenBody = z.infer<typeof bodySchema>
@@ -17,7 +15,6 @@ type ResponseData = {
 }
 export type ApiRequestTokenResponse = ApiResponse<ResponseData>
 
-const VERIFIER = 'https://www.google.com/recaptcha/api/siteverify'
 const BURN_AMOUNT = 0.5 * 10 ** 10
 
 export default handlerWrapper({
@@ -32,18 +29,6 @@ export default handlerWrapper({
         success: false,
         message: 'Invalid address format',
       })
-
-    if (getCaptchaSecret()) {
-      try {
-        await verifyCaptcha(data.captchaToken)
-      } catch (e: any) {
-        return res.status(400).send({
-          success: false,
-          message: 'Captcha failed',
-          errors: e.message,
-        })
-      }
-    }
 
     try {
       const isNeedEnergy = getIsAddressNeedEnergy(data.address)
@@ -119,20 +104,6 @@ async function isEnoughBalance() {
   const balance = await substrateApi.query.system.account(signer.address)
   const paymentFee = await getPaymentFee()
   return balance.data.free.toNumber() > paymentFee
-}
-
-async function verifyCaptcha(captchaToken: string) {
-  const formData = new URLSearchParams()
-  formData.append('secret', getCaptchaSecret())
-  formData.append('response', captchaToken)
-  const res = await fetch(VERIFIER, {
-    method: 'POST',
-    body: formData,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  })
-  const jsonRes = (await res.json()) as any
-  if (!jsonRes.success) throw new Error('Invalid Token')
-  return true
 }
 
 async function sendToken(address: string) {
