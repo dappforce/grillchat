@@ -51,8 +51,8 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
     props as UpsertChatFormProps &
       Partial<InsertAdditionalProps & UpdateAdditionalProps>
 
-  const setPostSubscriptionState = useSubscriptionState(
-    (state) => state.setPostSubscriptionState
+  const setSubscriptionState = useSubscriptionState(
+    (state) => state.setSubscriptionState
   )
 
   const [newChatId, setNewChatId] = useState('')
@@ -70,7 +70,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
         onTxSuccess?.()
       }
       onSuccessChatCreation()
-      setPostSubscriptionState('dynamic')
+      setSubscriptionState('post', 'dynamic')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newChat, hubId, router])
@@ -107,7 +107,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
               onSuccess: async (_data, txResult) => {
                 if (isUpdating || !myAddress) return
 
-                setPostSubscriptionState('always-sub')
+                setSubscriptionState('post', 'always-sub')
                 setIsProcessingData(true)
                 const chatId = await getNewIdFromTxResult(txResult)
                 mutateAsync({ chatId })
