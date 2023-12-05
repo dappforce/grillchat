@@ -107,7 +107,7 @@ const GET_OPTIMISTIC_POSTS = gql`
   }
 `
 
-function isPersistentId(id: string) {
+export function isPersistentId(id: string) {
   return !isNaN(+id) && !id.startsWith('0x')
 }
 

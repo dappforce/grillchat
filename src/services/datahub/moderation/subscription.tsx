@@ -1,14 +1,20 @@
-import { useMyMainAddress } from '@/stores/my-account'
+import LinkText from '@/components/LinkText'
+import Toast from '@/components/Toast'
+import { getPostQuery } from '@/services/api/query'
+import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { getAppId, getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
+import { toast } from 'react-hot-toast'
+import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import {
   DataHubSubscriptionEventEnum,
   GetBlockedInPostIdDetailedQuery,
   SubscribeBlockedResourcesSubscription,
   SubscribeOrganizationSubscription,
 } from '../generated-query'
+import { isPersistentId } from '../posts/fetcher'
 import { datahubSubscription } from '../utils'
 import {
   getBlockedInAppDetailedQuery,
@@ -73,6 +79,7 @@ const SUBSCRIBE_BLOCKED_RESOURCES = gql`
         resourceId
         ctxPostIds
         ctxAppIds
+        rootPostId
         organization {
           ctxPostIds
           ctxAppIds
@@ -155,16 +162,37 @@ async function processOrganizationEvent(
   }
 }
 
+const processedJustNowIds = new Set<string>()
 async function processBlockedResourcesEvent(
   queryClient: QueryClient,
   eventData: SubscribeBlockedResourcesSubscription['moderationBlockedResource']
 ) {
+  console.log(eventData.event, processedJustNowIds.has(eventData.entity.id))
   if (
     eventData.event ===
       DataHubSubscriptionEventEnum.ModerationBlockedResourceCreated ||
     eventData.event ===
       DataHubSubscriptionEventEnum.ModerationBlockedResourceStateUpdated
   ) {
+    // prevent double processing of the same event
+    // because now if we block resource we get 2 events simultaneously
+    if (
+      eventData.event ===
+        DataHubSubscriptionEventEnum.ModerationBlockedResourceCreated &&
+      eventData.entity.blocked
+    ) {
+      processedJustNowIds.add(eventData.entity.id)
+      setTimeout(() => {
+        processedJustNowIds.delete(eventData.entity.id)
+      }, 1000)
+    } else if (
+      processedJustNowIds.has(eventData.entity.id) &&
+      eventData.event ===
+        DataHubSubscriptionEventEnum.ModerationBlockedResourceStateUpdated &&
+      eventData.entity.blocked
+    ) {
+      return
+    }
     await processBlockedResources(queryClient, eventData)
   }
 }
@@ -269,6 +297,45 @@ async function processBlockedResources(
       )
     })
   }
+
+  async function notifyUserIfModerated() {
+    const myAddress = getMyMainAddress()
+    if (!myAddress) return
+
+    if (resourceType === 'postId' && entity.rootPostId) {
+      const [message, chat] = await Promise.all([
+        getPostQuery.fetchQuery(queryClient, resourceId),
+        getPostQuery.fetchQuery(queryClient, entity.rootPostId),
+      ] as const)
+
+      if (message?.struct.ownerId === myAddress) {
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            icon={(classNames) => (
+              <HiOutlineInformationCircle className={classNames} />
+            )}
+            title={`Your message is moderated with reason ${entity.reason.reasonText} in the chat ${chat?.content?.title}`}
+            subtitle={
+              isPersistentId(message.id) && (
+                <p>
+                  You can still see your message{' '}
+                  <LinkText
+                    variant='primary'
+                    href={`https://x.gazer.app/comments/${message.id}`}
+                    openInNewTab
+                  >
+                    here
+                  </LinkText>
+                </p>
+              )
+            }
+          />
+        ))
+      }
+    }
+  }
+  notifyUserIfModerated()
 }
 
 function updateBlockedResourceData(

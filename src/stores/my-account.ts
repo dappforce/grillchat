@@ -342,6 +342,11 @@ async function subscribeEnergy(
   return unsub
 }
 
+export function getMyMainAddress() {
+  const { address, parentProxyAddress } = useMyAccount.getState()
+  return parentProxyAddress || address
+}
+
 export function useMyMainAddress() {
   const address = useMyAccount((state) => state.address)
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)

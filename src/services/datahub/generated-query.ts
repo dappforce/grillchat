@@ -836,6 +836,7 @@ export type SubscribeBlockedResourcesSubscription = {
       resourceId: string
       ctxPostIds: Array<string>
       ctxAppIds: Array<string>
+      rootPostId?: string | null
       organization: {
         __typename?: 'ModerationOrganization'
         ctxPostIds?: Array<string> | null
@@ -1306,6 +1307,7 @@ export const SubscribeBlockedResources = gql`
         resourceId
         ctxPostIds
         ctxAppIds
+        rootPostId
         organization {
           ctxPostIds
           ctxAppIds
