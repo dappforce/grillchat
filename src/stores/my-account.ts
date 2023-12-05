@@ -45,7 +45,7 @@ type State = {
 type Actions = {
   login: (
     secretKey?: string,
-    isInitialization?: boolean
+    config?: { isInitialization?: boolean; asTemporaryAccount?: boolean }
   ) => Promise<string | false>
   loginAsTemporaryAccount: () => Promise<string | false>
   finalizeTemporaryAccount: () => void
@@ -171,7 +171,8 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     set({ connectedWallet: undefined, parentProxyAddress: undefined })
     parentProxyAddressStorage.remove()
   },
-  login: async (secretKey, isInitialization) => {
+  login: async (secretKey, config) => {
+    const { asTemporaryAccount, isInitialization } = config || {}
     const { toSubsocialAddress } = await import('@subsocial/utils')
     const analytics = useAnalytics.getState()
     let address: string = ''
@@ -205,11 +206,8 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         isInitializedAddress: !!isInitialization,
       })
 
-      accountStorage.set(encodedSecretKey)
-      accountAddressStorage.set(address)
       get()._subscribeEnergy()
-
-      analytics.setUserId(signer.address)
+      if (!asTemporaryAccount) saveLoginInfoToStorage()
     } catch (e) {
       console.log('Failed to login', e)
       return false
@@ -218,9 +216,10 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   },
   loginAsTemporaryAccount: () => {
     set({ isTemporaryAccount: true })
-    return get().login()
+    return get().login(undefined, { asTemporaryAccount: true })
   },
   finalizeTemporaryAccount: () => {
+    saveLoginInfoToStorage()
     set({ isTemporaryAccount: false })
   },
   _subscribeEnergy: () => {
@@ -259,7 +258,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       set({ address: storageAddress || undefined })
 
       const secretKey = decodeSecretKey(encodedSecretKey)
-      const address = await login(secretKey, true)
+      const address = await login(secretKey, { isInitialization: true })
 
       if (!address) {
         accountStorage.remove()
@@ -340,6 +339,15 @@ async function subscribeEnergy(
     }
   )
   return unsub
+}
+
+function saveLoginInfoToStorage() {
+  const { address, encodedSecretKey, signer } = useMyAccount.getState()
+  if (!address || !encodedSecretKey || !signer) return
+  accountStorage.set(encodedSecretKey)
+  accountAddressStorage.set(address)
+
+  useAnalytics.getState().setUserId(signer.address)
 }
 
 export function getMyMainAddress() {
