@@ -105,19 +105,17 @@ export default function ModerationForm({
                 user {name}
               </span>
             }
-            subtitle={
-              <p>
-                <LinkText
-                  className='flex items-center gap-2'
-                  onClick={() => {
-                    undo()
-                    toast.dismiss(t.id)
-                  }}
-                  variant='primary'
-                >
-                  <HiMiniArrowUturnLeft /> Undo
-                </LinkText>
-              </p>
+            action={
+              <LinkText
+                onClick={() => {
+                  undo()
+                  toast.dismiss(t.id)
+                }}
+                variant='primary'
+                className='flex items-center gap-1 text-sm'
+              >
+                <HiMiniArrowUturnLeft /> Undo
+              </LinkText>
             }
           />
         ))
