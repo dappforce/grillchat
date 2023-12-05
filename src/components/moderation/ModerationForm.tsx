@@ -1,4 +1,3 @@
-import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
@@ -11,10 +10,14 @@ import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
 import { ComponentProps, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
-import { HiOutlineInformationCircle } from 'react-icons/hi2'
+import {
+  HiMiniArrowUturnLeft,
+  HiOutlineInformationCircle,
+} from 'react-icons/hi2'
 import { z } from 'zod'
 import FormButton from '../FormButton'
 import SelectInput, { ListItem } from '../inputs/SelectInput'
+import LinkText from '../LinkText'
 import { useName } from '../Name'
 import ProfilePreview from '../ProfilePreview'
 import Toast from '../Toast'
@@ -80,15 +83,43 @@ export default function ModerationForm({
         const args =
           variables.args as SocialCallDataArgs<'synth_moderation_block_resource'>
         const isBlockingOwner = args.resourceId === ownerId
+        const undo = () =>
+          mutate({
+            callName: 'synth_moderation_unblock_resource',
+            args: {
+              resourceId: args.resourceId,
+              ctxPostIds: ['*'],
+              ctxAppIds: ['*'],
+            },
+          })
+
         toast.custom((t) => (
           <Toast
             t={t}
             icon={(classNames) => (
               <HiOutlineInformationCircle className={classNames} />
             )}
-            title={`You have blocked the ${
-              !isBlockingOwner ? 'message from ' : ''
-            }user ${name}`}
+            title={
+              <p>
+                <span>
+                  You have blocked the {!isBlockingOwner ? 'message from ' : ''}
+                  user {name}
+                </span>
+                <LinkText className='ml-2' onClick={undo} variant='primary'>
+                  <HiMiniArrowUturnLeft /> Undo
+                </LinkText>
+              </p>
+            }
+          />
+        ))
+      } else if (variables.callName === 'synth_moderation_unblock_resource') {
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            icon={(classNames) => (
+              <HiOutlineInformationCircle className={classNames} />
+            )}
+            title='Undo moderation success'
           />
         ))
       }
@@ -111,8 +142,6 @@ export default function ModerationForm({
       setValue('reason', reasonsMapped[0])
     }
   }, [reasonsMapped, setValue])
-
-  const { isAdmin } = useAuthorizedForModeration(chatId)
 
   if (!myAddress) return null
 
