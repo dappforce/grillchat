@@ -106,8 +106,7 @@ export const mapDatahubPostFragment = (
     contentId: post.content ?? '',
     repliesCount: 0,
     sharesCount: 0,
-    spaceId:
-      post.space?.persistentId ?? post.rootPost?.space?.persistentId ?? '',
+    spaceId: post.space?.id ?? post.rootPost?.space?.id ?? '',
     isUpdated: !!post.updatedAtTime,
     rootPostId: post.rootPost?.persistentId ?? '',
     followersCount: post.followersCount ?? 0,

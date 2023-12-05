@@ -40,12 +40,12 @@ export const DATAHUB_POST_FRAGMENT = gql`
       id
     }
     space {
-      persistentId
+      id
     }
     rootPost {
       persistentId
       space {
-        persistentId
+        id
       }
     }
     inReplyToKind
@@ -107,7 +107,7 @@ const GET_OPTIMISTIC_POSTS = gql`
   }
 `
 
-function isPersistentId(id: string) {
+export function isPersistentId(id: string) {
   return !isNaN(+id) && !id.startsWith('0x')
 }
 

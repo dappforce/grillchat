@@ -3,19 +3,21 @@ import FormButton from '@/components/FormButton'
 import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import TextArea from '@/components/inputs/TextArea'
+import { getPostQuery } from '@/services/api/query'
 import {
   JoinChatWrapper,
   UpsertPostWrapper,
 } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
+import { useSubscriptionState } from '@/stores/subscription'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink } from '@/utils/links'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
-import { ComponentProps, useState } from 'react'
+import { ComponentProps, useEffect, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import urlJoin from 'url-join'
 import { z } from 'zod'
@@ -49,6 +51,30 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
     props as UpsertChatFormProps &
       Partial<InsertAdditionalProps & UpdateAdditionalProps>
 
+  const setPostSubscriptionState = useSubscriptionState(
+    (state) => state.setPostSubscriptionState
+  )
+
+  const [newChatId, setNewChatId] = useState('')
+  const { data: newChat } = getPostQuery.useQuery(newChatId, {
+    enabled: !!newChatId,
+  })
+  useEffect(() => {
+    if (newChat) {
+      const chatId = newChat.id
+      async function onSuccessChatCreation() {
+        await router.push(
+          urlJoin(getChatPageLink({ query: {} }, chatId, hubId), '?new=true')
+        )
+        setIsProcessingData(false)
+        onTxSuccess?.()
+      }
+      onSuccessChatCreation()
+      setPostSubscriptionState('dynamic')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newChat, hubId, router])
+
   const myAddress = useMyMainAddress()
 
   const defaultValues = {
@@ -81,6 +107,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
               onSuccess: async (_data, txResult) => {
                 if (isUpdating || !myAddress) return
 
+                setPostSubscriptionState('always-sub')
                 setIsProcessingData(true)
                 const chatId = await getNewIdFromTxResult(txResult)
                 mutateAsync({ chatId })
@@ -91,15 +118,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                   { ownedChat: true }
                 )
 
-                await router.push(
-                  urlJoin(
-                    getChatPageLink({ query: {} }, chatId, hubId),
-                    '?new=true'
-                  )
-                )
-                setIsProcessingData(false)
-
-                onTxSuccess?.()
+                setNewChatId(chatId)
               },
             },
           }}
@@ -120,6 +139,15 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
             }
 
             const isLoading = isMutating || isProcessingData
+
+            let loadingText = 'Saving...'
+            if (!isUpdating) {
+              if (!isProcessingData) {
+                loadingText = 'Creating...'
+              } else {
+                loadingText = 'Finalizing group chat...'
+              }
+            }
 
             return (
               <form
@@ -174,7 +202,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                   watch={watch}
                   isLoading={isLoading}
                   disabled={isImageLoading}
-                  loadingText={isUpdating ? 'Saving...' : 'Creating...'}
+                  loadingText={loadingText}
                   size='lg'
                 >
                   {actionText}

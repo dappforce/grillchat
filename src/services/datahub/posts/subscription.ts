@@ -1,5 +1,6 @@
 import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
+import { useSubscriptionState } from '@/stores/subscription'
 import { getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
@@ -34,7 +35,8 @@ export function useDatahubPostSubscriber(subscribedPostId?: string) {
           )
         }
       } else {
-        unsubRef.current?.()
+        if (useSubscriptionState.getState().postSubscriptionState === 'dynamic')
+          unsubRef.current?.()
       }
     }
     listener()

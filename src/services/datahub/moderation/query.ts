@@ -1,6 +1,9 @@
 import { createQuery, poolQuery } from '@/subsocial-query'
+import { getAppId } from '@/utils/env/client'
 import { gql } from 'graphql-request'
 import {
+  GetBlockedInAppDetailedQuery,
+  GetBlockedInAppDetailedQueryVariables,
   GetBlockedInPostIdDetailedQuery,
   GetBlockedInPostIdDetailedQueryVariables,
   GetBlockedResourcesQuery,
@@ -172,6 +175,35 @@ export const getBlockedInPostIdDetailedQuery = createQuery({
     const response = await getBlockedInPostIdDetailed(postEntityId)
     return response
   },
+})
+
+const GET_BLOCKED_IN_APP_DETAILED = gql`
+  query GetBlockedInAppDetailed($appId: String!) {
+    moderationBlockedResourcesDetailed(ctxAppIds: [$appId], blocked: true) {
+      resourceId
+      reason {
+        id
+        reasonText
+      }
+    }
+  }
+`
+export async function getBlockedInAppDetailed() {
+  const data = await datahubQueryRequest<
+    GetBlockedInAppDetailedQuery,
+    GetBlockedInAppDetailedQueryVariables
+  >({
+    document: GET_BLOCKED_IN_APP_DETAILED,
+    variables: { appId: getAppId() },
+  })
+  return mapBlockedResources(
+    data.moderationBlockedResourcesDetailed,
+    (res) => res.resourceId
+  )
+}
+export const getBlockedInAppDetailedQuery = createQuery({
+  key: 'getBlockedInAppDetailed',
+  fetcher: getBlockedInAppDetailed,
 })
 
 export const GET_MODERATION_REASONS = gql`

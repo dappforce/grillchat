@@ -173,9 +173,9 @@ export default function AboutChatModal({
           },
         })
       }
-
-      actionMenu.unshift(...additionalMenus)
     }
+
+    actionMenu.unshift(...additionalMenus)
 
     if (isLoading || isInIframe) return actionMenu
 

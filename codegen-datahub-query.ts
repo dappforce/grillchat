@@ -6,7 +6,7 @@ if (!queryUrl) throw new Error('Codegen error: Datahub Query URL not set')
 const config: CodegenConfig = {
   overwrite: true,
   schema: queryUrl,
-  documents: 'src/services/datahub/**/*.ts',
+  documents: 'src/services/datahub/**/*.{ts,tsx}',
   generates: {
     'src/services/datahub/generated-query.ts': {
       plugins: [
