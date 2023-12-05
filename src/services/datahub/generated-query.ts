@@ -366,10 +366,10 @@ export type Moderator = {
 }
 
 export enum ModeratorRole {
-  Admin = 'admin',
-  Moderator = 'moderator',
-  Owner = 'owner',
-  Spectator = 'spectator',
+  Admin = 'ADMIN',
+  Moderator = 'MODERATOR',
+  Owner = 'OWNER',
+  Spectator = 'SPECTATOR',
 }
 
 export type ModeratorSubscriptionPayload = {
@@ -629,14 +629,11 @@ export type Space = {
   __typename?: 'Space'
   /** space body */
   about?: Maybe<Scalars['String']['output']>
-  /** is off-chain data CID backed up in blockchain */
-  backupInBlockchain?: Maybe<Scalars['Boolean']['output']>
   /** content CID */
   content?: Maybe<Scalars['String']['output']>
   createdAtBlock?: Maybe<Scalars['Int']['output']>
   createdAtTime?: Maybe<Scalars['DateTime']['output']>
   createdByAccount: Account
-  dataType: DataType
   email?: Maybe<Scalars['String']['output']>
   experimental?: Maybe<Scalars['JSON']['output']>
   followers: Array<SpaceFollowers>
@@ -650,12 +647,9 @@ export type Space = {
   isShowMore: Scalars['Boolean']['output']
   linksOriginal?: Maybe<Scalars['String']['output']>
   name?: Maybe<Scalars['String']['output']>
-  offChainId?: Maybe<Scalars['String']['output']>
-  optimisticId?: Maybe<Scalars['String']['output']>
   ownedByAccount: Account
   /** persistent data schema version from indexer */
   persistentDataVersion?: Maybe<Scalars['String']['output']>
-  persistentId?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   posts?: Maybe<Post>
   postsCount?: Maybe<Scalars['Int']['output']>
@@ -882,11 +876,11 @@ export type DatahubPostFragmentFragment = {
   inReplyToKind?: InReplyToKind | null
   createdByAccount: { __typename?: 'Account'; id: string }
   ownedByAccount: { __typename?: 'Account'; id: string }
-  space?: { __typename?: 'Space'; persistentId?: string | null } | null
+  space?: { __typename?: 'Space'; id: string } | null
   rootPost?: {
     __typename?: 'Post'
     persistentId?: string | null
-    space?: { __typename?: 'Space'; persistentId?: string | null } | null
+    space?: { __typename?: 'Space'; id: string } | null
   } | null
   inReplyToPost?: { __typename?: 'Post'; persistentId?: string | null } | null
   extensions: Array<{
@@ -955,11 +949,11 @@ export type GetPostsQuery = {
       inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
       ownedByAccount: { __typename?: 'Account'; id: string }
-      space?: { __typename?: 'Space'; persistentId?: string | null } | null
+      space?: { __typename?: 'Space'; id: string } | null
       rootPost?: {
         __typename?: 'Post'
         persistentId?: string | null
-        space?: { __typename?: 'Space'; persistentId?: string | null } | null
+        space?: { __typename?: 'Space'; id: string } | null
       } | null
       inReplyToPost?: {
         __typename?: 'Post'
@@ -1032,11 +1026,11 @@ export type GetOptimisticPostsQuery = {
       inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
       ownedByAccount: { __typename?: 'Account'; id: string }
-      space?: { __typename?: 'Space'; persistentId?: string | null } | null
+      space?: { __typename?: 'Space'; id: string } | null
       rootPost?: {
         __typename?: 'Post'
         persistentId?: string | null
-        space?: { __typename?: 'Space'; persistentId?: string | null } | null
+        space?: { __typename?: 'Space'; id: string } | null
       } | null
       inReplyToPost?: {
         __typename?: 'Post'
@@ -1170,12 +1164,12 @@ export const DatahubPostFragment = gql`
       id
     }
     space {
-      persistentId
+      id
     }
     rootPost {
       persistentId
       space {
-        persistentId
+        id
       }
     }
     inReplyToKind

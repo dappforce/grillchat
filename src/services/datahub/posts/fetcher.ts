@@ -40,12 +40,12 @@ export const DATAHUB_POST_FRAGMENT = gql`
       id
     }
     space {
-      persistentId
+      id
     }
     rootPost {
       persistentId
       space {
-        persistentId
+        id
       }
     }
     inReplyToKind
