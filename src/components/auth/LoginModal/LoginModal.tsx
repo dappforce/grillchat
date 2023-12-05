@@ -22,6 +22,7 @@ type ModalConfig = {
     withBackButton?: boolean | ((address: string | null) => boolean)
     withFooter?: boolean
     finalizeTemporaryAccount?: boolean
+    withCloseButton?: boolean
   }
 }
 
@@ -51,6 +52,7 @@ const modalHeader: ModalConfig = {
   'x-login-loading': {
     title: '🕔 Connecting to X',
     desc: '',
+    withCloseButton: false,
   },
   'account-created': {
     title: '🎉 Account created',
@@ -136,6 +138,7 @@ export default function LoginModal({
     withFooter,
     backToStep,
     withoutDefaultPadding,
+    withCloseButton = true,
   } = header
   const usedOnBackClick =
     onBackClick || (() => setCurrentState(backToStep || 'login'))
@@ -168,7 +171,7 @@ export default function LoginModal({
       withFooter={withFooter}
       initialFocus={isTouchDevice() ? undefined : inputRef}
       title={title}
-      withCloseButton
+      withCloseButton={withCloseButton}
       description={desc}
       onBackClick={showBackButton ? usedOnBackClick : undefined}
       contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
@@ -177,6 +180,8 @@ export default function LoginModal({
       closeModal={() => {
         if (currentState === 'evm-address-linked') {
           setCurrentState('evm-set-profile')
+          return
+        } else if (currentState === 'x-login-loading') {
           return
         }
         props.closeModal()
