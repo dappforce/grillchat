@@ -328,9 +328,9 @@ const PolkadotConnectConfirmation = ({ setCurrentState }: ContentProps) => {
 
 const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
   const { data: session, status } = useSession()
-  const loginAsTemporaryAccount = useMyAccount(
-    (state) => state.loginAsTemporaryAccount
-  )
+  const { mutateAsync: loginAsTemporaryAccount } = useLoginAndRequestToken({
+    asTemporaryAccount: true,
+  })
 
   const myAddress = useMyMainAddress()
   const { data: linkedIdentities } = getLinkedIdentitiesQuery.useQuery(
@@ -373,7 +373,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
 
     isAlreadyCalled.current = true
     ;(async () => {
-      const address = await loginAsTemporaryAccount()
+      const address = await loginAsTemporaryAccount(null)
       if (!address) return
       linkIdentity({
         id: session.user?.id,
