@@ -100,12 +100,21 @@ export default function ModerationForm({
               <HiOutlineInformationCircle className={classNames} />
             )}
             title={
+              <span>
+                You have blocked the {!isBlockingOwner ? 'message from ' : ''}
+                user {name}
+              </span>
+            }
+            subtitle={
               <p>
-                <span>
-                  You have blocked the {!isBlockingOwner ? 'message from ' : ''}
-                  user {name}
-                </span>
-                <LinkText className='ml-2' onClick={undo} variant='primary'>
+                <LinkText
+                  className='flex items-center gap-2'
+                  onClick={() => {
+                    undo()
+                    toast.dismiss(t.id)
+                  }}
+                  variant='primary'
+                >
                   <HiMiniArrowUturnLeft /> Undo
                 </LinkText>
               </p>
