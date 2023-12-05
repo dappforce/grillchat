@@ -29,6 +29,7 @@ import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { encodeProfileSource } from '@/utils/profile'
+import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { signIn, useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -340,6 +341,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
   const { mutate: linkIdentity } = useLinkIdentity()
   const { mutate: upsertProfile } = useUpsertProfile({
     onSuccess: () => {
+      replaceUrl(getCurrentUrlWithoutQuery('login'))
       setCurrentState('account-created')
     },
   })

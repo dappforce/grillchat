@@ -3,8 +3,6 @@ import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import { getCurrentUrlWithoutQuery } from '@/utils/links'
-import { replaceUrl } from '@/utils/window'
 import { useEffect, useRef, useState } from 'react'
 import { loginModalContents, LoginModalStep } from './LoginModalContent'
 
@@ -187,7 +185,6 @@ export default function LoginModal({
           return
         }
 
-        replaceUrl(getCurrentUrlWithoutQuery('login'))
         props.closeModal()
       }}
     >
