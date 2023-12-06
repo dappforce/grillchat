@@ -1,5 +1,6 @@
 import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
+import { getAppId } from '@/utils/env/client'
 import { useMemo } from 'react'
 
 export default function useIsAddressBlockedInChat(
@@ -25,14 +26,20 @@ export default function useIsAddressBlockedInChat(
   })
   const blockedInChat = chatModerationData?.blockedResources.address
 
+  const { data: appModeration } = getBlockedResourcesQuery.useQuery({
+    appId: getAppId(),
+  })
+  const blockedInApp = appModeration?.blockedResources.address
+
   const blockedAddressesSet = useMemo(
     () =>
       new Set([
         ...(blockedInOriginalHub ?? []),
         ...(blockedInHub ?? []),
         ...(blockedInChat ?? []),
+        ...(blockedInApp ?? []),
       ]),
-    [blockedInOriginalHub, blockedInHub, blockedInChat]
+    [blockedInOriginalHub, blockedInHub, blockedInChat, blockedInApp]
   )
 
   return address && blockedAddressesSet.has(address)
