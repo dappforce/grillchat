@@ -1,5 +1,8 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { ModerationCallInput } from '@/server/datahub-queue/generated'
+import {
+  ModerationCallInput,
+  SocialCallName,
+} from '@/server/datahub-queue/generated'
 import {
   addPostIdToOrg,
   blockResource,
@@ -17,6 +20,15 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   return res.status(405).send('Method Not Allowed')
 }
 
+const actionsMapper: {
+  [key in SocialCallName]?: (data: ModerationCallInput) => Promise<any>
+} = {
+  synth_moderation_block_resource: blockResource,
+  synth_moderation_unblock_resource: unblockResource,
+  synth_moderation_init_moderator: initModerationOrg,
+  synth_moderation_add_ctx_to_organization: addPostIdToOrg,
+}
+
 export type ApiModerationActionsBody = ModerationCallInput
 export type ApiModerationActionsResponse = ApiResponse
 const POST_handler = handlerWrapper({
@@ -27,17 +39,11 @@ const POST_handler = handlerWrapper({
   errorLabel: 'moderation-action',
   handler: async (data: ApiModerationActionsBody, _req, res) => {
     const callName = data.callData?.name
-    if (callName === 'synth_moderation_block_resource') {
-      await blockResource(data)
-    } else if (callName === 'synth_moderation_unblock_resource') {
-      await unblockResource(data)
-    } else if (callName === 'synth_moderation_init_moderator') {
-      await initModerationOrg(data)
-    } else if (callName === 'synth_moderation_add_ctx_to_organization') {
-      await addPostIdToOrg(data)
-    } else {
+    const action = actionsMapper[callName as SocialCallName]
+    if (!action) {
       throw Error('Unknown moderation action')
     }
+    await action(data)
 
     res.json({
       message: 'OK',
