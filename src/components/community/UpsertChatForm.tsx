@@ -55,6 +55,9 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
     (state) => state.setSubscriptionState
   )
 
+  // even after the tx succeed, datahub needs some time to process the data from squid, so there is some kind of delay before the post is ready to be fetched
+  // if we don't use this hack, the user will be redirected to chat page with empty data
+  // so we need to wait for the post to be ready and then redirect the user
   const [newChatId, setNewChatId] = useState('')
   const { data: newChat } = getPostQuery.useQuery(newChatId, {
     enabled: !!newChatId,

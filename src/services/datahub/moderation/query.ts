@@ -143,6 +143,13 @@ const pooledGetBlockedResource = poolQuery<
 export const getBlockedResourcesQuery = createQuery({
   key: 'getBlockedResources',
   fetcher: pooledGetBlockedResource,
+  defaultConfigGenerator: (params) => ({
+    enabled:
+      !!params &&
+      (('postEntityId' in params && !!params?.postEntityId) ||
+        ('spaceId' in params && !!params?.spaceId) ||
+        ('appId' in params && !!params?.appId)),
+  }),
 })
 
 const GET_BLOCKED_IN_POST_ID_DETAILED = gql`

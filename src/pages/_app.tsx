@@ -5,21 +5,17 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
-import { useDatahubIdentitySubscriber } from '@/services/datahub/identity/subscription'
-import { useDatahubModerationSubscriber } from '@/services/datahub/moderation/subscription'
-import { useDatahubPostSubscriber } from '@/services/datahub/posts/subscription'
+import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
-import { getIdFromSlug } from '@/utils/slug'
 import '@rainbow-me/rainbowkit/styles.css'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/router'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
@@ -117,13 +113,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
 }
 
 function DatahubSubscriber() {
-  const { query } = useRouter()
-  const slugParam = (query?.slug || '') as string
-  const chatId = getIdFromSlug(slugParam)
-  useDatahubPostSubscriber(chatId)
-  useDatahubModerationSubscriber()
-  useDatahubIdentitySubscriber()
-
+  useDatahubSubscription()
   return null
 }
 

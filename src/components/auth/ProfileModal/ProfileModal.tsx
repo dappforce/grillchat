@@ -47,7 +47,7 @@ const modalContents: {
   'evm-linking-error': EvmLoginError,
   'unlink-evm-confirmation': UnlinkEvmConfirmationContent,
   'evm-address-linked': CommonEvmAddressLinked,
-  'evm-set-profile-suggestion': ({ closeModal, setCurrentState }) => (
+  'evm-set-profile-suggestion': ({ closeModal }) => (
     <CommonEvmSetProfileContent
       onSkipClick={closeModal}
       onSetEvmIdentityClick={() => {
@@ -294,21 +294,20 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
         typeof withBackButton === 'string' ? withBackButton : 'account'
       )
   }
+
+  const augmentedCloseModal = () => {
+    if (currentState === 'polkadot-connect-success' && hasPreviousIdentity) {
+      setCurrentStateAugmented('polkadot-connect-identity-removed')
+    } else if (currentState === 'evm-address-linked') {
+      setCurrentStateAugmented('evm-set-profile-suggestion')
+    } else closeModal()
+  }
   const Content = modalContents[currentState]
 
   return (
     <Modal
       isOpen={isOpen}
-      closeModal={() => {
-        if (
-          currentState === 'polkadot-connect-success' &&
-          hasPreviousIdentity
-        ) {
-          setCurrentStateAugmented('polkadot-connect-identity-removed')
-        } else if (currentState === 'evm-address-linked') {
-          setCurrentStateAugmented('evm-set-profile-suggestion')
-        } else closeModal()
-      }}
+      closeModal={augmentedCloseModal}
       title={title}
       description={desc}
       contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
@@ -323,6 +322,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
         setCurrentState={setCurrentStateAugmented}
         notification={notification}
         evmAddress={linkedEvmAddress}
+        closeModal={augmentedCloseModal}
       />
     </Modal>
   )

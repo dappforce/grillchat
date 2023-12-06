@@ -13,17 +13,11 @@ export default function useFilterBlockedMessageIds(
     spaceId: hubId,
   })
   const { data: chat } = getPostQuery.useQuery(chatId)
-  const { data: blockedInChat } = getBlockedResourcesQuery.useQuery(
-    {
-      postEntityId: chat?.entityId ?? '',
-    },
-    { enabled: !!chat?.entityId }
-  )
+  const { data: blockedInChat } = getBlockedResourcesQuery.useQuery({
+    postEntityId: chat?.entityId ?? '',
+  })
   const appId = getAppId()
-  const { data: blockedInApp } = getBlockedResourcesQuery.useQuery(
-    { appId },
-    { enabled: !!appId }
-  )
+  const { data: blockedInApp } = getBlockedResourcesQuery.useQuery({ appId })
 
   return useMemo(() => {
     const blockedInChatMessageIds = blockedInChat?.blockedResources.postId ?? []
