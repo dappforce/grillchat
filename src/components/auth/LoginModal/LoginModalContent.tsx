@@ -167,7 +167,8 @@ export const EnterSecretKeyContent = ({
     e.preventDefault()
     beforeLogin?.()
 
-    if (await login(privateKey)) {
+    const trimmedPk = privateKey.trim()
+    if (await login(trimmedPk)) {
       afterLogin?.()
       sendEvent('login', { eventSource: 'login_modal' })
       setPrivateKey('')
