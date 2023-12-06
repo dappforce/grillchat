@@ -22,12 +22,9 @@ export default function useSortedChats(
     spaceId: hubId,
   })
   const appId = getAppId()
-  const { data: moderationDataInApp } = getBlockedResourcesQuery.useQuery(
-    {
-      appId,
-    },
-    { enabled: !!appId }
-  )
+  const { data: moderationDataInApp } = getBlockedResourcesQuery.useQuery({
+    appId,
+  })
   const blockedChatIdsInHub = moderationDataInHub?.blockedResources.postId
   const blockedChatIdsInApp = moderationDataInApp?.blockedResources.postId
 
