@@ -4,13 +4,20 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
+import { ProfileSource } from '@/utils/profile'
+import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import { HiPencil } from 'react-icons/hi2'
 import AddressAvatar from './AddressAvatar'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
 import PopOver from './floating/PopOver'
-import Name, { ForceProfileSource, useName } from './Name'
+import Name, { useName } from './Name'
+
+export type ForceProfileSource = {
+  profileSource?: ProfileSource
+  content?: ProfileContent
+}
 
 export type ProfilePreviewProps = ComponentProps<'div'> & {
   address: string

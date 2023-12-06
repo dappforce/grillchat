@@ -12,11 +12,7 @@ import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import ChatModerateChip from './chats/ChatModerateChip'
 import PopOver from './floating/PopOver'
-
-export type ForceProfileSource = {
-  profileSource?: ProfileSource
-  content?: string
-}
+import { ForceProfileSource } from './ProfilePreview'
 
 export type NameProps = ComponentProps<'span'> & {
   address: string
@@ -81,7 +77,7 @@ export function useName(
   let profileSource = forceProfileSource?.profileSource
   const forceName = getNameFromSource(
     profileSource,
-    forceProfileSource?.content
+    forceProfileSource?.content?.name
   )
   if (forceName) name = forceName
   else {

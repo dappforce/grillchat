@@ -15,7 +15,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { ForceProfileSource } from './Name'
+import { ForceProfileSource } from './ProfilePreview'
 
 export const resolveEnsAvatarSrc = (ensName: string) =>
   `https://metadata.ens.domains/mainnet/avatar/${ensName}`
@@ -54,14 +54,17 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     const profileSource = profile?.profileSpace?.content?.profileSource
     const subsocialProfileImage = profile?.profileSpace?.content?.image
     const profileAvatar = useMemo(() => {
+      if (forceProfileSource?.content?.image)
+        return getIpfsContentUrl(forceProfileSource.content.image)
+
       const { source, content } = decodeProfileSource(profileSource)
       const usedProfileSource = forceProfileSource?.profileSource || source
-      const usedContent = forceProfileSource?.content || content
+      const usedName = forceProfileSource?.content?.name || content
       switch (usedProfileSource) {
         case 'ens':
-          const hasSelectedEns = ensNames?.includes(usedContent ?? '')
+          const hasSelectedEns = ensNames?.includes(usedName ?? '')
           return hasSelectedEns
-            ? resolveEnsAvatarSrc(usedContent ?? '')
+            ? resolveEnsAvatarSrc(usedName ?? '')
             : undefined
         case 'subsocial-profile':
           return subsocialProfileImage
