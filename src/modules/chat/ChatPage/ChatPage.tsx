@@ -9,7 +9,6 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LinkText from '@/components/LinkText'
 import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
-import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -129,7 +128,7 @@ export default function ChatPage({
 
   const chatEntityId = chat?.entityId
   useEffect(() => {
-    if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
+    if (!isOwner) return
     if (!isAuthorized && !isLoading && chatEntityId && isSignerReady) {
       if (!moderatorData?.exist) {
         commitModerationAction({

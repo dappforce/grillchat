@@ -54,7 +54,7 @@ export default function CommonChatItem({
   const myAddress = useMyMainAddress()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const { struct, content } = message
-  const { ownerId, createdAtTime, dataType } = struct
+  const { ownerId, createdAtTime, dataType, isUpdated } = struct
   const { inReplyTo, body } = content || {}
 
   const isMyMessage =
@@ -75,6 +75,7 @@ export default function CommonChatItem({
       )}
     >
       <ChatRelativeTime
+        isUpdated={isUpdated}
         createdAtTime={createdAtTime}
         className={cx(
           'text-xs text-text-muted',
@@ -106,6 +107,7 @@ export default function CommonChatItem({
               className={cx('mr-2 text-sm font-medium text-text-secondary')}
             />
             <ChatRelativeTime
+              isUpdated={isUpdated}
               createdAtTime={createdAtTime}
               className='text-xs text-text-muted'
               style={{ color: textColor }}

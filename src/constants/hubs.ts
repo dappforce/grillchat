@@ -49,7 +49,11 @@ export function getPinnedChatsInHubId(hubId: string) {
   return PINNED_CHATS_IN_HUB_ID[hubId] ?? []
 }
 
-export const COMMUNITY_CHAT_HUB_ID: string | null = getCommunityHubId() || null
+export const PRIMARY_COMMUNITY_HUB_ID = getCommunityHubId()
+const COMMUNITY_CHAT_HUB_ID: string[] = [PRIMARY_COMMUNITY_HUB_ID, '1025']
+export const isCommunityHubId = (hubId: string | undefined) =>
+  COMMUNITY_CHAT_HUB_ID.includes(hubId ?? '')
+
 export const PINNED_HUB_IDS = [COMMUNITY_CHAT_HUB_ID, '1031'].filter(
   Boolean
 ) as string[]

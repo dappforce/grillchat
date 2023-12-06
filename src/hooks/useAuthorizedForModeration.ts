@@ -1,4 +1,3 @@
-import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import { getPostQuery } from '@/services/api/query'
 import { getModeratorQuery } from '@/services/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -21,8 +20,6 @@ export default function useAuthorizedForModeration(
   )
 
   const isAdmin = moderator?.appIds.includes(getAppId())
-  if (!COMMUNITY_CHAT_HUB_ID && !isAdmin)
-    return { isAuthorized: false, isOwner }
 
   return {
     isAuthorized: !!(

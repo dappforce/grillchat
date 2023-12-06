@@ -6,7 +6,7 @@ import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
-import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
+import { isCommunityHubId } from '@/constants/hubs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
@@ -75,9 +75,10 @@ export default function AboutChatModal({
   const content = chat?.content
   if (!content) return null
 
+  const hubId = chat.struct.spaceId
   const chatUrl = urlJoin(getCurrentUrlOrigin(), getChatPageLink(router))
   const chatOwner = chat.struct.ownerId
-  const isChatInsideCommunityHub = chat.struct.spaceId === COMMUNITY_CHAT_HUB_ID
+  const isChatInsideCommunityHub = isCommunityHubId(hubId)
 
   const contentList: AboutModalProps['contentList'] = [
     {
@@ -302,9 +303,9 @@ export default function AboutChatModal({
         onBackClick={closeModal}
         formProps={{ chat }}
       />
-      {COMMUNITY_CHAT_HUB_ID && (
+      {hubId && (
         <ModerationInfoModal
-          hubId={COMMUNITY_CHAT_HUB_ID}
+          hubId={hubId}
           isOpen={openedModalType === 'moderation'}
           closeModal={closeModal}
           onBackClick={closeModal}

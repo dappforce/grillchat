@@ -11,6 +11,11 @@ export type ChatImageProps = ComponentProps<'div'> & {
   rounding?: 'circle' | 'xl' | '2xl'
 }
 
+function hashChatId(chatId: string | undefined) {
+  if (!chatId) return
+  return (parseInt(chatId ?? '') * 895437) % 16777215
+}
+
 export default function ChatImage({
   chatId,
   chatTitle,
@@ -26,7 +31,12 @@ export default function ChatImage({
     }
   }
 
-  const bgColor = useRandomColor(chatId || chatTitle, { theme: 'light' })
+  const bgColor = useRandomColor(
+    (hashChatId(chatId) || chatTitle || '').toString(),
+    {
+      theme: 'light',
+    }
+  )
 
   const roundingMap = {
     circle: 'rounded-full',

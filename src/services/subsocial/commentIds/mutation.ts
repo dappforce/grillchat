@@ -141,6 +141,10 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
                       extensions: data.extensions,
                     }
                   : null,
+                struct: {
+                  ...old.struct,
+                  isUpdated: true,
+                },
               }
             })
           } else {
