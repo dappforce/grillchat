@@ -18,6 +18,7 @@ import {
 } from '@rainbow-me/rainbowkit/wallets'
 import { createConfig, createStorage, WagmiConfig } from 'wagmi'
 import { getConfiguredChains } from '../utils'
+import { subWalletWallet } from './wallets/subwallet'
 import { talismanWallet } from './wallets/talisman'
 
 const { chains, publicClient, webSocketPublicClient } = getConfiguredChains()
@@ -34,7 +35,7 @@ const desktopWallets = [
   argentWallet(walletOptions),
   coinbaseWallet(walletOptions),
   ledgerWallet(walletOptions),
-  // subWalletWallet({ chains }),
+  subWalletWallet(walletOptions),
 ]
 
 const mobileWallets = [
