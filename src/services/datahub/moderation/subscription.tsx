@@ -167,7 +167,6 @@ async function processBlockedResourcesEvent(
   queryClient: QueryClient,
   eventData: SubscribeBlockedResourcesSubscription['moderationBlockedResource']
 ) {
-  console.log(eventData.event, processedJustNowIds.has(eventData.entity.id))
   if (
     eventData.event ===
       DataHubSubscriptionEventEnum.ModerationBlockedResourceCreated ||
