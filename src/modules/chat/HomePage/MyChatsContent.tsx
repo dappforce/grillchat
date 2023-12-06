@@ -4,7 +4,7 @@ import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import Container from '@/components/Container'
-import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
+import { PRIMARY_COMMUNITY_HUB_ID } from '@/constants/hubs'
 import { getPostQuery } from '@/services/api/query'
 import {
   getFollowedPostIdsByAddressQuery,
@@ -180,7 +180,7 @@ function NoChats({ changeTab }: NoChatsProps) {
         <p className='text-text-muted'>
           Here will be all the chats you joined or created
         </p>
-        {COMMUNITY_CHAT_HUB_ID ? (
+        {PRIMARY_COMMUNITY_HUB_ID ? (
           <>
             <Button
               className='mt-4 w-full'
@@ -219,11 +219,11 @@ function NoChats({ changeTab }: NoChatsProps) {
         )}
       </Container>
 
-      {COMMUNITY_CHAT_HUB_ID && (
+      {PRIMARY_COMMUNITY_HUB_ID && (
         <NewCommunityModal
           isOpen={isOpenNewCommunity}
           closeModal={() => setIsOpenNewCommunity(false)}
-          hubId={COMMUNITY_CHAT_HUB_ID}
+          hubId={PRIMARY_COMMUNITY_HUB_ID}
         />
       )}
     </>

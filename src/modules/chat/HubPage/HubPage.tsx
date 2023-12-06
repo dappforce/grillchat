@@ -5,7 +5,7 @@ import NewCommunityModal from '@/components/community/NewCommunityModal'
 import Container from '@/components/Container'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
+import { isCommunityHubId } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
@@ -30,7 +30,7 @@ export type HubPageProps = {
   hubId: string
 }
 export default function HubPage({ hubId }: HubPageProps) {
-  const isCommunityHub = hubId === COMMUNITY_CHAT_HUB_ID
+  const isCommunityHub = isCommunityHubId(hubId)
 
   const [sortBy, setSortBy] = useState<SortChatOption | null>(null)
   useEffect(() => {

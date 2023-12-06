@@ -7,10 +7,12 @@ import { useChatListContext } from '../ChatList'
 
 export type ChatRelativeTimeProps = ComponentProps<'span'> & {
   createdAtTime: string | number
+  isUpdated?: boolean
 }
 
 export default function ChatRelativeTime({
   createdAtTime,
+  isUpdated,
   ...props
 }: ChatRelativeTimeProps) {
   const rerender = useRerender()
@@ -64,6 +66,7 @@ export default function ChatRelativeTime({
           }}
           className={cx('text-xs', props.className)}
         >
+          {isUpdated && 'edited '}
           {relativeTime}
         </span>
       )}
