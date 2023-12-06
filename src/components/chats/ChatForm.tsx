@@ -9,11 +9,11 @@ import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
+import { useSendOffchainMessage } from '@/services/datahub/posts/mutation'
 import {
   SendMessageParams,
   useSendMessage,
 } from '@/services/subsocial/commentIds'
-import { useSendOffchainMessage } from '@/services/subsocial/datahub/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'

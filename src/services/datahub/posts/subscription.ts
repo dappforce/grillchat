@@ -1,5 +1,6 @@
 import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
+import { useSubscriptionState } from '@/stores/subscription'
 import { getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
@@ -16,7 +17,7 @@ import {
 
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
 // the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
-export function useSubscribePostsInDatahub(subscribedPostId?: string) {
+export function useDatahubPostSubscriber(subscribedPostId?: string) {
   const queryClient = useQueryClient()
   const unsubRef = useRef<(() => void) | undefined>()
 
@@ -26,6 +27,7 @@ export function useSubscribePostsInDatahub(subscribedPostId?: string) {
     const listener = () => {
       if (document.visibilityState === 'visible') {
         unsubRef.current = subscription(queryClient)
+        // invalidate first page so it will refetch after the websocket connection is disconnected previously when the user is not in the tab
         if (subscribedPostId) {
           getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(
             queryClient,
@@ -33,7 +35,8 @@ export function useSubscribePostsInDatahub(subscribedPostId?: string) {
           )
         }
       } else {
-        unsubRef.current?.()
+        if (useSubscriptionState.getState().postSubscriptionState === 'dynamic')
+          unsubRef.current?.()
       }
     }
     listener()
@@ -114,7 +117,7 @@ async function processMessage(
   const data = getPostQuery.getQueryData(queryClient, entity.id)
   const notHaveNewestData =
     !entity.persistentId ||
-    getPostQuery.getQueryData(queryClient, entity.persistentId)
+    !getPostQuery.getQueryData(queryClient, entity.persistentId)
   if (data && notHaveNewestData) {
     data.id = newestId
     data.struct.dataType = eventData.entity.dataType

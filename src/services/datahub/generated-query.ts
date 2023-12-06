@@ -45,7 +45,10 @@ export type Account = {
   followingSpaces: Array<SpaceFollowers>
   followingSpacesCount?: Maybe<Scalars['Int']['output']>
   id: Scalars['String']['output']
-  linkedAccountsAccounts: Array<EvmSubstrateAccountLink>
+  linkedEvmAccounts: Array<EvmSubstrateAccountLink>
+  linkedIdentities: Array<LinkedIdentity>
+  moderationProfile?: Maybe<Moderator>
+  ownedModerationOrganizations?: Maybe<Array<ModerationOrganization>>
   ownedPostsCount?: Maybe<Scalars['Int']['output']>
   /** persistent data schema version from indexer */
   persistentDataVersion?: Maybe<Scalars['String']['output']>
@@ -62,6 +65,19 @@ export type AccountFollowers = {
   followerAccount: Account
   followingAccount: Account
   id: Scalars['String']['output']
+}
+
+export type BlockedResourceIdsBatchItem = {
+  __typename?: 'BlockedResourceIdsBatchItem'
+  blockedResourceIds: Array<Scalars['String']['output']>
+  id: Scalars['String']['output']
+}
+
+export type BlockedResourceIdsBatchResponse = {
+  __typename?: 'BlockedResourceIdsBatchResponse'
+  byCtxAppIds: Array<BlockedResourceIdsBatchItem>
+  byCtxPostIds: Array<BlockedResourceIdsBatchItem>
+  byCtxSpaceIds: Array<BlockedResourceIdsBatchItem>
 }
 
 export type CommentDataShort = {
@@ -111,25 +127,30 @@ export enum ContentExtensionSchemaId {
   SubsocialSecretBox = 'subsocial_secret_box',
 }
 
+export type CreateOrganizationInput = {
+  ctxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
+  description?: InputMaybe<Scalars['String']['input']>
+  name?: InputMaybe<Scalars['String']['input']>
+  ownedByAccountAddress: Scalars['String']['input']
+}
+
 export enum DataHubSubscriptionEventEnum {
   EvmAddressLinkedToAccount = 'EVM_ADDRESS_LINKED_TO_ACCOUNT',
-  EvmAddressLinkedToAccountOptimistic = 'EVM_ADDRESS_LINKED_TO_ACCOUNT_OPTIMISTIC',
-  EvmAddressLinkedToAccountPersistent = 'EVM_ADDRESS_LINKED_TO_ACCOUNT_PERSISTENT',
   EvmAddressLinkToAccountStateUpdated = 'EVM_ADDRESS_LINK_TO_ACCOUNT_STATE_UPDATED',
-  EvmAddressUnlinkedToAccountOptimistic = 'EVM_ADDRESS_UNLINKED_TO_ACCOUNT_OPTIMISTIC',
-  EvmAddressUnlinkedToAccountPersistent = 'EVM_ADDRESS_UNLINKED_TO_ACCOUNT_PERSISTENT',
+  LinkedIdentityCreated = 'LINKED_IDENTITY_CREATED',
+  LinkedIdentityStateUpdated = 'LINKED_IDENTITY_STATE_UPDATED',
+  ModerationBlockedResourceCreated = 'MODERATION_BLOCKED_RESOURCE_CREATED',
+  ModerationBlockedResourceStateUpdated = 'MODERATION_BLOCKED_RESOURCE_STATE_UPDATED',
+  ModerationModeratorCreated = 'MODERATION_MODERATOR_CREATED',
+  ModerationModeratorStateUpdated = 'MODERATION_MODERATOR_STATE_UPDATED',
+  ModerationOrganizationCreated = 'MODERATION_ORGANIZATION_CREATED',
+  ModerationOrganizationStateUpdated = 'MODERATION_ORGANIZATION_STATE_UPDATED',
   PostCreated = 'POST_CREATED',
-  PostCreatedOptimistic = 'POST_CREATED_OPTIMISTIC',
-  PostCreatedPersistent = 'POST_CREATED_PERSISTENT',
   PostFollowed = 'POST_FOLLOWED',
-  PostFollowedOptimistic = 'POST_FOLLOWED_OPTIMISTIC',
-  PostFollowedPersistent = 'POST_FOLLOWED_PERSISTENT',
   PostFollowStateUpdated = 'POST_FOLLOW_STATE_UPDATED',
   PostStateUpdated = 'POST_STATE_UPDATED',
-  PostUnfollowedOptimistic = 'POST_UNFOLLOWED_OPTIMISTIC',
-  PostUnfollowedPersistent = 'POST_UNFOLLOWED_PERSISTENT',
-  PostUpdatedOptimistic = 'POST_UPDATED_OPTIMISTIC',
-  PostUpdatedPersistent = 'POST_UPDATED_PERSISTENT',
 }
 
 export enum DataType {
@@ -188,13 +209,221 @@ export type FindPostsResponseDto = {
   total?: Maybe<Scalars['Int']['output']>
 }
 
+export type GetModeratorByInput = {
+  substrateAccountAddress: Scalars['String']['input']
+}
+
+export type GetOrganizationWhere = {
+  id: Scalars['String']['input']
+}
+
 export type IdTimestampPair = {
   id: Scalars['String']['input']
   timestamp_gt: Scalars['String']['input']
 }
 
+export enum IdentityProvider {
+  Email = 'EMAIL',
+  Twitter = 'TWITTER',
+}
+
 export enum InReplyToKind {
   Post = 'Post',
+}
+
+export type InitModeratorInputDto = {
+  ctxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
+  substrateAddress: Scalars['String']['input']
+  withOrganization?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type LinkedIdentitiesArgs = {
+  externalId?: InputMaybe<Scalars['String']['input']>
+  id?: InputMaybe<Scalars['String']['input']>
+  provider?: InputMaybe<IdentityProvider>
+  substrateAddress?: InputMaybe<Scalars['String']['input']>
+}
+
+export type LinkedIdentity = {
+  __typename?: 'LinkedIdentity'
+  createdAtTime: Scalars['DateTime']['output']
+  enabled: Scalars['Boolean']['output']
+  externalId: Scalars['String']['output']
+  id: Scalars['String']['output']
+  provider: IdentityProvider
+  substrateAccount: Account
+  updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+}
+
+export type LinkedIdentitySubscriptionPayload = {
+  __typename?: 'LinkedIdentitySubscriptionPayload'
+  entity: LinkedIdentity
+  event: DataHubSubscriptionEventEnum
+}
+
+export type ModerationBlockReason = {
+  __typename?: 'ModerationBlockReason'
+  id: Scalars['String']['output']
+  reasonText: Scalars['String']['output']
+}
+
+export type ModerationBlockedResource = {
+  __typename?: 'ModerationBlockedResource'
+  blocked: Scalars['Boolean']['output']
+  comment?: Maybe<Scalars['String']['output']>
+  createdAt: Scalars['DateTime']['output']
+  ctxAppIds: Array<Scalars['String']['output']>
+  ctxPostIds: Array<Scalars['String']['output']>
+  ctxSpaceIds: Array<Scalars['String']['output']>
+  id: Scalars['String']['output']
+  moderator: Moderator
+  organization: ModerationOrganization
+  parentPostId?: Maybe<Scalars['String']['output']>
+  postModerationStatus?: Maybe<ModerationPostModerationStatus>
+  reason: ModerationBlockReason
+  resourceId: Scalars['String']['output']
+  resourceType: ModerationResourceType
+  rootPostId?: Maybe<Scalars['String']['output']>
+  spaceId?: Maybe<Scalars['String']['output']>
+  updatedAt?: Maybe<Scalars['DateTime']['output']>
+}
+
+export type ModerationBlockedResourceSubscriptionPayload = {
+  __typename?: 'ModerationBlockedResourceSubscriptionPayload'
+  entity: ModerationBlockedResource
+  event: DataHubSubscriptionEventEnum
+}
+
+export type ModerationCreateOrganizationModeratorInput = {
+  defaultCtxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
+  defaultCtxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
+  defaultCtxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
+  moderatorId: Scalars['String']['input']
+  organizationId: Scalars['String']['input']
+  role: ModeratorRole
+}
+
+export type ModerationOrganization = {
+  __typename?: 'ModerationOrganization'
+  ctxAppIds?: Maybe<Array<Scalars['String']['output']>>
+  ctxPostIds?: Maybe<Array<Scalars['String']['output']>>
+  ctxSpaceIds?: Maybe<Array<Scalars['String']['output']>>
+  description?: Maybe<Scalars['String']['output']>
+  id: Scalars['String']['output']
+  name?: Maybe<Scalars['String']['output']>
+  organizationModerators?: Maybe<Array<ModerationOrganizationModerator>>
+  ownedByAccount: Account
+  processedResources?: Maybe<Array<ModerationBlockedResource>>
+}
+
+export type ModerationOrganizationModerator = {
+  __typename?: 'ModerationOrganizationModerator'
+  defaultCtxAppIds?: Maybe<Array<Scalars['String']['output']>>
+  defaultCtxPostIds?: Maybe<Array<Scalars['String']['output']>>
+  defaultCtxSpaceIds?: Maybe<Array<Scalars['String']['output']>>
+  id: Scalars['String']['output']
+  moderator: Moderator
+  organization: ModerationOrganization
+  role: ModeratorRole
+}
+
+export type ModerationOrganizationSubscriptionPayload = {
+  __typename?: 'ModerationOrganizationSubscriptionPayload'
+  entity: ModerationOrganization
+  event: DataHubSubscriptionEventEnum
+}
+
+export type ModerationPostModerationStatus = {
+  __typename?: 'ModerationPostModerationStatus'
+  blockerResource: ModerationBlockedResource
+  id: Scalars['String']['output']
+  post: Post
+}
+
+export enum ModerationResourceType {
+  Address = 'ADDRESS',
+  Cid = 'CID',
+  Post = 'POST',
+}
+
+export type ModerationUpdateOrganizationModeratorInput = {
+  defaultCtxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
+  defaultCtxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
+  defaultCtxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
+  moderatorId: Scalars['String']['input']
+  organizationId: Scalars['String']['input']
+  role?: InputMaybe<ModeratorRole>
+}
+
+export type Moderator = {
+  __typename?: 'Moderator'
+  id: Scalars['String']['output']
+  moderatorOrganizations?: Maybe<Array<ModerationOrganizationModerator>>
+  processedResources?: Maybe<Array<ModerationBlockedResource>>
+  substrateAccount: Account
+}
+
+export enum ModeratorRole {
+  Admin = 'ADMIN',
+  Moderator = 'MODERATOR',
+  Owner = 'OWNER',
+  Spectator = 'SPECTATOR',
+}
+
+export type ModeratorSubscriptionPayload = {
+  __typename?: 'ModeratorSubscriptionPayload'
+  entity: Moderator
+  event: DataHubSubscriptionEventEnum
+}
+
+export type ModeratorsArgsInput = {
+  offset?: InputMaybe<Scalars['Int']['input']>
+  pageSize?: InputMaybe<Scalars['Int']['input']>
+  where: ModeratorsWhereArgs
+}
+
+export type ModeratorsResponse = {
+  __typename?: 'ModeratorsResponse'
+  data: Array<Moderator>
+  offset?: Maybe<Scalars['Int']['output']>
+  pageSize?: Maybe<Scalars['Int']['output']>
+  total?: Maybe<Scalars['Int']['output']>
+}
+
+export type ModeratorsWhereArgs = {
+  id?: InputMaybe<Scalars['String']['input']>
+  substrateAddress?: InputMaybe<Scalars['String']['input']>
+}
+
+export type Mutation = {
+  __typename?: 'Mutation'
+  moderationCreateOrganization: ModerationOrganization
+  moderationCreateOrganizationModerator?: Maybe<ModerationOrganizationModerator>
+  moderationInitModerator?: Maybe<Moderator>
+  moderationUpdateOrganization: ModerationOrganization
+  moderationUpdateOrganizationModerator?: Maybe<ModerationOrganizationModerator>
+}
+
+export type MutationModerationCreateOrganizationArgs = {
+  args: CreateOrganizationInput
+}
+
+export type MutationModerationCreateOrganizationModeratorArgs = {
+  args: ModerationCreateOrganizationModeratorInput
+}
+
+export type MutationModerationInitModeratorArgs = {
+  args: InitModeratorInputDto
+}
+
+export type MutationModerationUpdateOrganizationArgs = {
+  args: UpdateOrganizationInput
+}
+
+export type MutationModerationUpdateOrganizationModeratorArgs = {
+  args: ModerationUpdateOrganizationModeratorInput
 }
 
 export enum PinnedResourceType {
@@ -241,6 +470,7 @@ export type Post = {
   persistentId?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   postFollowers?: Maybe<Array<PostFollowers>>
+  postModerationStatuses?: Maybe<Array<ModerationPostModerationStatus>>
   publicRepliesCount?: Maybe<Scalars['Int']['output']>
   reactionsCount?: Maybe<Scalars['Int']['output']>
   rootPost?: Maybe<Post>
@@ -299,6 +529,16 @@ export type PostSubscriptionPayload = {
 export type Query = {
   __typename?: 'Query'
   findPosts: FindPostsResponseDto
+  linkedIdentities: Array<LinkedIdentity>
+  moderationBlockedResourceIds: Array<Scalars['String']['output']>
+  moderationBlockedResourceIdsBatch: BlockedResourceIdsBatchResponse
+  moderationBlockedResourcesDetailed: Array<ModerationBlockedResource>
+  moderationModerator?: Maybe<Moderator>
+  moderationOrganization?: Maybe<ModerationOrganization>
+  moderationOrganizations?: Maybe<Array<ModerationOrganization>>
+  moderationReason: ModerationBlockReason
+  moderationReasonsAll: Array<ModerationBlockReason>
+  moderators?: Maybe<ModeratorsResponse>
   postMetadata: Array<PostMetadataResponse>
   posts: Array<Post>
   unreadMessages: Array<UnreadPostsCountResponse>
@@ -306,6 +546,60 @@ export type Query = {
 
 export type QueryFindPostsArgs = {
   where: FindPostsArgs
+}
+
+export type QueryLinkedIdentitiesArgs = {
+  where: LinkedIdentitiesArgs
+}
+
+export type QueryModerationBlockedResourceIdsArgs = {
+  blocked?: InputMaybe<Scalars['Boolean']['input']>
+  ctxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
+  moderatorId?: InputMaybe<Scalars['String']['input']>
+  parentPostId?: InputMaybe<Scalars['String']['input']>
+  reasonId?: InputMaybe<Scalars['String']['input']>
+  resourceId?: InputMaybe<Scalars['String']['input']>
+  resourceType?: InputMaybe<ModerationResourceType>
+  rootPostId?: InputMaybe<Scalars['String']['input']>
+  spaceId?: InputMaybe<Scalars['String']['input']>
+}
+
+export type QueryModerationBlockedResourceIdsBatchArgs = {
+  ctxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type QueryModerationBlockedResourcesDetailedArgs = {
+  blocked?: InputMaybe<Scalars['Boolean']['input']>
+  ctxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
+  moderatorId?: InputMaybe<Scalars['String']['input']>
+  parentPostId?: InputMaybe<Scalars['String']['input']>
+  reasonId?: InputMaybe<Scalars['String']['input']>
+  resourceId?: InputMaybe<Scalars['String']['input']>
+  resourceType?: InputMaybe<ModerationResourceType>
+  rootPostId?: InputMaybe<Scalars['String']['input']>
+  spaceId?: InputMaybe<Scalars['String']['input']>
+}
+
+export type QueryModerationModeratorArgs = {
+  where: GetModeratorByInput
+}
+
+export type QueryModerationOrganizationArgs = {
+  where: GetOrganizationWhere
+}
+
+export type QueryModerationReasonArgs = {
+  id: Scalars['String']['input']
+}
+
+export type QueryModeratorsArgs = {
+  args: ModeratorsArgsInput
 }
 
 export type QueryPostMetadataArgs = {
@@ -335,14 +629,11 @@ export type Space = {
   __typename?: 'Space'
   /** space body */
   about?: Maybe<Scalars['String']['output']>
-  /** is off-chain data CID backed up in blockchain */
-  backupInBlockchain?: Maybe<Scalars['Boolean']['output']>
   /** content CID */
   content?: Maybe<Scalars['String']['output']>
   createdAtBlock?: Maybe<Scalars['Int']['output']>
   createdAtTime?: Maybe<Scalars['DateTime']['output']>
   createdByAccount: Account
-  dataType: DataType
   email?: Maybe<Scalars['String']['output']>
   experimental?: Maybe<Scalars['JSON']['output']>
   followers: Array<SpaceFollowers>
@@ -356,12 +647,9 @@ export type Space = {
   isShowMore: Scalars['Boolean']['output']
   linksOriginal?: Maybe<Scalars['String']['output']>
   name?: Maybe<Scalars['String']['output']>
-  offChainId?: Maybe<Scalars['String']['output']>
-  optimisticId?: Maybe<Scalars['String']['output']>
   ownedByAccount: Account
   /** persistent data schema version from indexer */
   persistentDataVersion?: Maybe<Scalars['String']['output']>
-  persistentId?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   posts?: Maybe<Post>
   postsCount?: Maybe<Scalars['Int']['output']>
@@ -387,6 +675,10 @@ export type SpaceFollowers = {
 
 export type Subscription = {
   __typename?: 'Subscription'
+  linkedIdentity: LinkedIdentitySubscriptionPayload
+  moderationBlockedResource: ModerationBlockedResourceSubscriptionPayload
+  moderationModerator: ModeratorSubscriptionPayload
+  moderationOrganization: ModerationOrganizationSubscriptionPayload
   post: PostSubscriptionPayload
 }
 
@@ -398,6 +690,165 @@ export type UnreadPostsCountResponse = {
   __typename?: 'UnreadPostsCountResponse'
   id: Scalars['String']['output']
   unreadCount: Scalars['Int']['output']
+}
+
+export type UpdateOrganizationInput = {
+  ctxAppIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxPostIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
+  description?: InputMaybe<Scalars['String']['input']>
+  id: Scalars['String']['input']
+  name?: InputMaybe<Scalars['String']['input']>
+}
+
+export type GetBlockedResourcesQueryVariables = Exact<{
+  spaceIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+  appIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetBlockedResourcesQuery = {
+  __typename?: 'Query'
+  moderationBlockedResourceIdsBatch: {
+    __typename?: 'BlockedResourceIdsBatchResponse'
+    byCtxSpaceIds: Array<{
+      __typename?: 'BlockedResourceIdsBatchItem'
+      id: string
+      blockedResourceIds: Array<string>
+    }>
+    byCtxPostIds: Array<{
+      __typename?: 'BlockedResourceIdsBatchItem'
+      id: string
+      blockedResourceIds: Array<string>
+    }>
+    byCtxAppIds: Array<{
+      __typename?: 'BlockedResourceIdsBatchItem'
+      id: string
+      blockedResourceIds: Array<string>
+    }>
+  }
+}
+
+export type GetBlockedInPostIdDetailedQueryVariables = Exact<{
+  postId: Scalars['String']['input']
+}>
+
+export type GetBlockedInPostIdDetailedQuery = {
+  __typename?: 'Query'
+  moderationBlockedResourcesDetailed: Array<{
+    __typename?: 'ModerationBlockedResource'
+    resourceId: string
+    reason: {
+      __typename?: 'ModerationBlockReason'
+      id: string
+      reasonText: string
+    }
+  }>
+}
+
+export type GetBlockedInAppDetailedQueryVariables = Exact<{
+  appId: Scalars['String']['input']
+}>
+
+export type GetBlockedInAppDetailedQuery = {
+  __typename?: 'Query'
+  moderationBlockedResourcesDetailed: Array<{
+    __typename?: 'ModerationBlockedResource'
+    resourceId: string
+    reason: {
+      __typename?: 'ModerationBlockReason'
+      id: string
+      reasonText: string
+    }
+  }>
+}
+
+export type GetModerationReasonsQueryVariables = Exact<{ [key: string]: never }>
+
+export type GetModerationReasonsQuery = {
+  __typename?: 'Query'
+  moderationReasonsAll: Array<{
+    __typename?: 'ModerationBlockReason'
+    id: string
+    reasonText: string
+  }>
+}
+
+export type GetModeratorDataQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetModeratorDataQuery = {
+  __typename?: 'Query'
+  moderators?: {
+    __typename?: 'ModeratorsResponse'
+    data: Array<{
+      __typename?: 'Moderator'
+      moderatorOrganizations?: Array<{
+        __typename?: 'ModerationOrganizationModerator'
+        organization: {
+          __typename?: 'ModerationOrganization'
+          id: string
+          ctxPostIds?: Array<string> | null
+          ctxAppIds?: Array<string> | null
+        }
+      }> | null
+    }>
+  } | null
+}
+
+export type SubscribeOrganizationSubscriptionVariables = Exact<{
+  [key: string]: never
+}>
+
+export type SubscribeOrganizationSubscription = {
+  __typename?: 'Subscription'
+  moderationOrganization: {
+    __typename?: 'ModerationOrganizationSubscriptionPayload'
+    event: DataHubSubscriptionEventEnum
+    entity: {
+      __typename?: 'ModerationOrganization'
+      ctxPostIds?: Array<string> | null
+      organizationModerators?: Array<{
+        __typename?: 'ModerationOrganizationModerator'
+        moderator: {
+          __typename?: 'Moderator'
+          substrateAccount: { __typename?: 'Account'; id: string }
+        }
+      }> | null
+    }
+  }
+}
+
+export type SubscribeBlockedResourcesSubscriptionVariables = Exact<{
+  [key: string]: never
+}>
+
+export type SubscribeBlockedResourcesSubscription = {
+  __typename?: 'Subscription'
+  moderationBlockedResource: {
+    __typename?: 'ModerationBlockedResourceSubscriptionPayload'
+    event: DataHubSubscriptionEventEnum
+    entity: {
+      __typename?: 'ModerationBlockedResource'
+      id: string
+      blocked: boolean
+      resourceId: string
+      ctxPostIds: Array<string>
+      ctxAppIds: Array<string>
+      rootPostId?: string | null
+      organization: {
+        __typename?: 'ModerationOrganization'
+        ctxPostIds?: Array<string> | null
+        ctxAppIds?: Array<string> | null
+      }
+      reason: {
+        __typename?: 'ModerationBlockReason'
+        id: string
+        reasonText: string
+      }
+    }
+  }
 }
 
 export type DatahubPostFragmentFragment = {
@@ -426,11 +877,11 @@ export type DatahubPostFragmentFragment = {
   inReplyToKind?: InReplyToKind | null
   createdByAccount: { __typename?: 'Account'; id: string }
   ownedByAccount: { __typename?: 'Account'; id: string }
-  space?: { __typename?: 'Space'; persistentId?: string | null } | null
+  space?: { __typename?: 'Space'; id: string } | null
   rootPost?: {
     __typename?: 'Post'
     persistentId?: string | null
-    space?: { __typename?: 'Space'; persistentId?: string | null } | null
+    space?: { __typename?: 'Space'; id: string } | null
   } | null
   inReplyToPost?: { __typename?: 'Post'; persistentId?: string | null } | null
   extensions: Array<{
@@ -499,11 +950,11 @@ export type GetPostsQuery = {
       inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
       ownedByAccount: { __typename?: 'Account'; id: string }
-      space?: { __typename?: 'Space'; persistentId?: string | null } | null
+      space?: { __typename?: 'Space'; id: string } | null
       rootPost?: {
         __typename?: 'Post'
         persistentId?: string | null
-        space?: { __typename?: 'Space'; persistentId?: string | null } | null
+        space?: { __typename?: 'Space'; id: string } | null
       } | null
       inReplyToPost?: {
         __typename?: 'Post'
@@ -576,11 +1027,11 @@ export type GetOptimisticPostsQuery = {
       inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
       ownedByAccount: { __typename?: 'Account'; id: string }
-      space?: { __typename?: 'Space'; persistentId?: string | null } | null
+      space?: { __typename?: 'Space'; id: string } | null
       rootPost?: {
         __typename?: 'Post'
         persistentId?: string | null
-        space?: { __typename?: 'Space'; persistentId?: string | null } | null
+        space?: { __typename?: 'Space'; id: string } | null
       } | null
       inReplyToPost?: {
         __typename?: 'Post'
@@ -714,12 +1165,12 @@ export const DatahubPostFragment = gql`
       id
     }
     space {
-      persistentId
+      id
     }
     rootPost {
       persistentId
       space {
-        persistentId
+        id
       }
     }
     inReplyToKind
@@ -758,9 +1209,120 @@ export const DatahubPostFragment = gql`
     }
   }
 `
+export const GetBlockedResources = gql`
+  query GetBlockedResources(
+    $spaceIds: [String!]!
+    $postIds: [String!]!
+    $appIds: [String!]!
+  ) {
+    moderationBlockedResourceIdsBatch(
+      ctxSpaceIds: $spaceIds
+      ctxPostIds: $postIds
+      ctxAppIds: $appIds
+    ) {
+      byCtxSpaceIds {
+        id
+        blockedResourceIds
+      }
+      byCtxPostIds {
+        id
+        blockedResourceIds
+      }
+      byCtxAppIds {
+        id
+        blockedResourceIds
+      }
+    }
+  }
+`
+export const GetBlockedInPostIdDetailed = gql`
+  query GetBlockedInPostIdDetailed($postId: String!) {
+    moderationBlockedResourcesDetailed(ctxPostIds: [$postId], blocked: true) {
+      resourceId
+      reason {
+        id
+        reasonText
+      }
+    }
+  }
+`
+export const GetBlockedInAppDetailed = gql`
+  query GetBlockedInAppDetailed($appId: String!) {
+    moderationBlockedResourcesDetailed(ctxAppIds: [$appId], blocked: true) {
+      resourceId
+      reason {
+        id
+        reasonText
+      }
+    }
+  }
+`
+export const GetModerationReasons = gql`
+  query GetModerationReasons {
+    moderationReasonsAll {
+      id
+      reasonText
+    }
+  }
+`
+export const GetModeratorData = gql`
+  query GetModeratorData($address: String!) {
+    moderators(args: { where: { substrateAddress: $address } }) {
+      data {
+        moderatorOrganizations {
+          organization {
+            id
+            ctxPostIds
+            ctxAppIds
+          }
+        }
+      }
+    }
+  }
+`
+export const SubscribeOrganization = gql`
+  subscription SubscribeOrganization {
+    moderationOrganization {
+      event
+      entity {
+        organizationModerators {
+          moderator {
+            substrateAccount {
+              id
+            }
+          }
+        }
+        ctxPostIds
+      }
+    }
+  }
+`
+export const SubscribeBlockedResources = gql`
+  subscription SubscribeBlockedResources {
+    moderationBlockedResource {
+      event
+      entity {
+        id
+        blocked
+        resourceId
+        ctxPostIds
+        ctxAppIds
+        rootPostId
+        organization {
+          ctxPostIds
+          ctxAppIds
+        }
+        reason {
+          id
+          reasonText
+        }
+      }
+    }
+  }
+`
 export const GetPosts = gql`
   query GetPosts($ids: [String!], $pageSize: Int!) {
-    findPosts(where: { persistentIds: $ids }) {
+    findPosts(where: { persistentIds: $ids, pageSize: $pageSize }) {
       data {
         ...DatahubPostFragment
       }

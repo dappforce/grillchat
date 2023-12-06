@@ -1,5 +1,5 @@
-import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
+import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { useMemo } from 'react'
 
 export default function useIsAddressBlockedInChat(
@@ -9,20 +9,19 @@ export default function useIsAddressBlockedInChat(
 ) {
   const { data: chat } = getPostQuery.useQuery(chatId)
   const originalHubId = chat?.struct.spaceId
+  const entityId = chat?.entityId
 
-  const { data: originalHubModeration } = getBlockedResourcesQuery.useQuery(
-    { spaceId: originalHubId ?? '' },
-    { enabled: !!originalHubId }
-  )
-  const { data: hubModeration } = getBlockedResourcesQuery.useQuery(
-    { spaceId: currentHubId ?? '' },
-    { enabled: !!currentHubId }
-  )
+  const { data: originalHubModeration } = getBlockedResourcesQuery.useQuery({
+    spaceId: originalHubId ?? '',
+  })
+  const { data: hubModeration } = getBlockedResourcesQuery.useQuery({
+    spaceId: currentHubId ?? '',
+  })
   const blockedInOriginalHub = originalHubModeration?.blockedResources.address
   const blockedInHub = hubModeration?.blockedResources.address
 
   const { data: chatModerationData } = getBlockedResourcesQuery.useQuery({
-    postId: chatId,
+    postEntityId: entityId || '',
   })
   const blockedInChat = chatModerationData?.blockedResources.address
 

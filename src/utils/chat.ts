@@ -11,14 +11,15 @@ export function isMessageBlocked(
   if (!message) return false
 
   const { addresses, contentIds, postIds } = blockedData
-  const { id, struct } = message
+  const { id, struct, entityId } = message
   const contentId = struct.contentId
   const owner = struct.ownerId
 
   return (
     addresses?.has(owner) ||
     contentIds?.has(contentId ?? '') ||
-    postIds?.has(id)
+    postIds?.has(id) ||
+    postIds?.has(entityId ?? '')
   )
 }
 

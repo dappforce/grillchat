@@ -23,7 +23,7 @@ export const linkTextStyles = cva(
 
 export type LinkTextProps = Omit<ComponentProps<'a'>, 'href'> &
   VariantProps<typeof linkTextStyles> & {
-    href: LinkProps['href']
+    href?: LinkProps['href']
     openInNewTab?: boolean
     withArrow?: boolean
     arrowClassName?: string
@@ -33,6 +33,26 @@ const LinkText = forwardRef<any, LinkTextProps>(function LinkText(
   { href, variant, openInNewTab, withArrow, arrowClassName, ...props },
   ref
 ) {
+  if (!href) {
+    return (
+      <span
+        {...props}
+        ref={ref}
+        className={cx(linkTextStyles({ variant }), props.className)}
+      >
+        {props.children}
+        {withArrow && (
+          <HiArrowUpRight
+            className={cx(
+              'relative -top-px ml-1 inline text-sm',
+              arrowClassName
+            )}
+          />
+        )}
+      </span>
+    )
+  }
+
   let anchorProps = {}
   if (openInNewTab) {
     anchorProps = {

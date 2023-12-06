@@ -1,6 +1,6 @@
 import { PostData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
-import { getPostsFollowersCountFromSquid } from '../../posts/fetcher'
+import { getPostsFollowersCountFromSquid } from '../../subsocial/posts/fetcher'
 import {
   GetOptimisticPostsQuery,
   GetOptimisticPostsQueryVariables,
@@ -40,12 +40,12 @@ export const DATAHUB_POST_FRAGMENT = gql`
       id
     }
     space {
-      persistentId
+      id
     }
     rootPost {
       persistentId
       space {
-        persistentId
+        id
       }
     }
     inReplyToKind
@@ -107,7 +107,7 @@ const GET_OPTIMISTIC_POSTS = gql`
   }
 `
 
-function isPersistentId(id: string) {
+export function isPersistentId(id: string) {
   return !isNaN(+id) && !id.startsWith('0x')
 }
 
@@ -142,9 +142,11 @@ export async function getPostsFromDatahub(postIds: string[]) {
       throw new Error(datahubResPromise.reason)
     }
     persistentPosts = datahubResPromise.value.findPosts.data.map((post) => {
-      post.id = post.persistentId || post.id
-      post.followersCount = followersCountMap.get(post.id) || 0
-      return { ...mapDatahubPostFragment(post), requestedId: post.id }
+      post.followersCount = followersCountMap.get(post.persistentId ?? '') || 0
+      return {
+        ...mapDatahubPostFragment(post),
+        requestedId: post.persistentId ?? undefined,
+      }
     })
   }
 

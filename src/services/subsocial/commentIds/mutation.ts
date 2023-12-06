@@ -2,7 +2,7 @@ import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useRevalidateChatPage, useSaveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
-import datahubMutation from '@/services/subsocial/datahub/posts/mutation'
+import datahubMutation from '@/services/datahub/posts/mutation'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { getDatahubConfig } from '@/utils/env/client'
@@ -81,11 +81,13 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         if (data.messageIdToEdit) {
           await datahubMutation.updatePostData({
             ...getWallet(),
-            postId: data.messageIdToEdit,
-            changes: {
-              content: {
-                cid,
-                content,
+            args: {
+              postId: data.messageIdToEdit,
+              changes: {
+                content: {
+                  cid,
+                  content,
+                },
               },
             },
           })
@@ -100,10 +102,12 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         } else {
           await datahubMutation.createPostData({
             ...getWallet(),
-            content: content,
-            cid: cid,
-            rootPostId: data.chatId,
-            spaceId: data.hubId,
+            args: {
+              content: content,
+              cid: cid,
+              rootPostId: data.chatId,
+              spaceId: data.hubId,
+            },
           })
           revalidateChatPage({ chatId: data.chatId, hubId: data.hubId })
 
@@ -172,18 +176,22 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             if (isCreating) {
               datahubMutation.notifyCreatePostFailedOrRetryStatus({
                 address,
-                optimisticId,
+                args: {
+                  optimisticId,
+                  reason: error,
+                },
                 timestamp: Date.now(),
                 signer: getWallet().signer,
-                reason: error,
               })
             } else if (isUpdating) {
               datahubMutation.notifyUpdatePostFailedOrRetryStatus({
-                postId: messageIdToEdit,
-                address,
+                args: {
+                  postId: messageIdToEdit,
+                  reason: error,
+                },
                 timestamp: Date.now(),
+                address,
                 signer: getWallet().signer,
-                reason: error,
               })
             }
           }
@@ -265,11 +273,13 @@ function notifyRetryStatus(
 
   datahubMutation.notifyCreatePostFailedOrRetryStatus({
     address,
-    optimisticId: content.optimisticId,
+    args: {
+      optimisticId: content.optimisticId,
+      reason,
+      isRetrying: { success },
+    },
     timestamp: Date.now(),
     signer,
-    reason,
-    isRetrying: { success },
   })
 }
 

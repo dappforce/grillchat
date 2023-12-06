@@ -35,6 +35,14 @@ export enum CanUserDoAction {
   CreatePost = 'CREATE_POST'
 }
 
+export type CreateMutateLinkedIdentityInput = {
+  callData?: InputMaybe<SocialCallDataInput>;
+  dataType: SocialEventDataType;
+  protVersion?: InputMaybe<Scalars['String']['input']>;
+  providerAddr: Scalars['String']['input'];
+  sig: Scalars['String']['input'];
+};
+
 export type CreatePostOffChainInput = {
   callData?: InputMaybe<SocialCallDataInput>;
   content?: InputMaybe<Scalars['String']['input']>;
@@ -100,13 +108,32 @@ export type LatestColdSocialEventArgsDto = {
   queueStatus?: InputMaybe<QueueJobStatus>;
 };
 
+export type ModerationCallInput = {
+  callData?: InputMaybe<SocialCallDataInput>;
+  dataType: SocialEventDataType;
+  protVersion?: InputMaybe<Scalars['String']['input']>;
+  providerAddr: Scalars['String']['input'];
+  sig: Scalars['String']['input'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  createLinkedIdentity: IngestDataResponseDto;
   createPostOffChain: IngestDataResponseDto;
   createPostOptimistic: IngestDataResponseDto;
+  deleteLinkedIdentity: IngestDataResponseDto;
   ingestPersistentDataSquid: IngestPersistentDataFromSquidResponseDto;
+  moderationAddContextToOrganization: IngestDataResponseDto;
+  moderationBlockResource: IngestDataResponseDto;
+  moderationInitModerator: IngestDataResponseDto;
+  moderationUnblockResource: IngestDataResponseDto;
   updatePostBlockchainSyncStatus: IngestDataResponseDto;
   updatePostOptimistic: IngestDataResponseDto;
+};
+
+
+export type MutationCreateLinkedIdentityArgs = {
+  createLinkedIdentityInput: CreateMutateLinkedIdentityInput;
 };
 
 
@@ -120,8 +147,33 @@ export type MutationCreatePostOptimisticArgs = {
 };
 
 
+export type MutationDeleteLinkedIdentityArgs = {
+  deleteLinkedIdentityInput: CreateMutateLinkedIdentityInput;
+};
+
+
 export type MutationIngestPersistentDataSquidArgs = {
   ingestPersistentDataSquidInput: IngestPersistentDataFromSquidInputDto;
+};
+
+
+export type MutationModerationAddContextToOrganizationArgs = {
+  addContextInput: ModerationCallInput;
+};
+
+
+export type MutationModerationBlockResourceArgs = {
+  blockResourceInput: ModerationCallInput;
+};
+
+
+export type MutationModerationInitModeratorArgs = {
+  initModeratorInput: ModerationCallInput;
+};
+
+
+export type MutationModerationUnblockResourceArgs = {
+  unblockResourceInput: ModerationCallInput;
 };
 
 
@@ -146,7 +198,6 @@ export type Query = {
   canAccountDo: CanAccountDoResponse;
   coldSocialEvents: FindSocialEventsResponseDto;
   latestColdSocialEvent?: Maybe<SocialEventRecoveryData>;
-  pingPong: Scalars['String']['output'];
 };
 
 
@@ -201,8 +252,20 @@ export enum SocialCallName {
   ForceCreateSpace = 'force_create_space',
   ForceDeletePostReaction = 'force_delete_post_reaction',
   MovePost = 'move_post',
+  SynthCreateLinkedIdentity = 'synth_create_linked_identity',
   SynthCreatePostTxFailed = 'synth_create_post_tx_failed',
   SynthCreatePostTxRetry = 'synth_create_post_tx_retry',
+  SynthDeleteLinkedIdentity = 'synth_delete_linked_identity',
+  SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
+  SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
+  SynthModerationBlockResource = 'synth_moderation_block_resource',
+  SynthModerationForceAddCtxToOrganization = 'synth_moderation_force_add_ctx_to_organization',
+  SynthModerationForceAddDefaultCtxToModerator = 'synth_moderation_force_add_default_ctx_to_moderator',
+  SynthModerationForceBlockResource = 'synth_moderation_force_block_resource',
+  SynthModerationForceInitModerator = 'synth_moderation_force_init_moderator',
+  SynthModerationForceUnblockResource = 'synth_moderation_force_unblock_resource',
+  SynthModerationInitModerator = 'synth_moderation_init_moderator',
+  SynthModerationUnblockResource = 'synth_moderation_unblock_resource',
   SynthUpdatePostTxFailed = 'synth_update_post_tx_failed',
   SynthUpdatePostTxRetry = 'synth_update_post_tx_retry',
   UpdatePost = 'update_post',
@@ -245,6 +308,34 @@ export type UpdatePostOptimisticInput = {
   sig: Scalars['String']['input'];
 };
 
+export type InitModerationOrgMutationVariables = Exact<{
+  input: ModerationCallInput;
+}>;
+
+
+export type InitModerationOrgMutation = { __typename?: 'Mutation', moderationInitModerator: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+
+export type AddPostIdToOrgMutationVariables = Exact<{
+  input: ModerationCallInput;
+}>;
+
+
+export type AddPostIdToOrgMutation = { __typename?: 'Mutation', moderationAddContextToOrganization: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+
+export type BlockResourceMutationVariables = Exact<{
+  input: ModerationCallInput;
+}>;
+
+
+export type BlockResourceMutation = { __typename?: 'Mutation', moderationBlockResource: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+
+export type UnblockResourceMutationVariables = Exact<{
+  input: ModerationCallInput;
+}>;
+
+
+export type UnblockResourceMutation = { __typename?: 'Mutation', moderationUnblockResource: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+
 export type GetCanAccountDoQueryVariables = Exact<{
   getAccountDo: CanAccountDoArgsInput;
 }>;
@@ -281,6 +372,34 @@ export type NotifyUpdatePostTxFailedOrRetryStatusMutationVariables = Exact<{
 export type NotifyUpdatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', message?: string | null } };
 
 
+export const InitModerationOrg = gql`
+    mutation InitModerationOrg($input: ModerationCallInput!) {
+  moderationInitModerator(initModeratorInput: $input) {
+    message
+  }
+}
+    `;
+export const AddPostIdToOrg = gql`
+    mutation AddPostIdToOrg($input: ModerationCallInput!) {
+  moderationAddContextToOrganization(addContextInput: $input) {
+    message
+  }
+}
+    `;
+export const BlockResource = gql`
+    mutation BlockResource($input: ModerationCallInput!) {
+  moderationBlockResource(blockResourceInput: $input) {
+    message
+  }
+}
+    `;
+export const UnblockResource = gql`
+    mutation UnblockResource($input: ModerationCallInput!) {
+  moderationUnblockResource(unblockResourceInput: $input) {
+    message
+  }
+}
+    `;
 export const GetCanAccountDo = gql`
     query GetCanAccountDo($getAccountDo: CanAccountDoArgsInput!) {
   canAccountDo(args: $getAccountDo) {

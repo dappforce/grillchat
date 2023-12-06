@@ -1,18 +1,23 @@
 import useToastError from '@/hooks/useToastError'
-import { useCommitModerationAction } from '@/services/api/moderation/mutation'
-import { getModerationReasonsQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
+import { useModerationActions } from '@/services/datahub/moderation/mutation'
+import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
 import { ComponentProps, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
-import { HiOutlineInformationCircle } from 'react-icons/hi2'
+import {
+  HiMiniArrowUturnLeft,
+  HiOutlineInformationCircle,
+} from 'react-icons/hi2'
 import { z } from 'zod'
 import FormButton from '../FormButton'
 import SelectInput, { ListItem } from '../inputs/SelectInput'
+import LinkText from '../LinkText'
 import { useName } from '../Name'
 import ProfilePreview from '../ProfilePreview'
 import Toast from '../Toast'
@@ -72,19 +77,56 @@ export default function ModerationForm({
   const { name } = useName(ownerId)
 
   const myAddress = useMyMainAddress()
-  const { mutate, isLoading, error } = useCommitModerationAction({
+  const { mutate, isLoading, error } = useModerationActions({
     onSuccess: (_, variables) => {
-      if (variables.action === 'block') {
-        const isBlockingOwner = variables.resourceId === ownerId
+      if (variables.callName === 'synth_moderation_block_resource') {
+        const args =
+          variables.args as SocialCallDataArgs<'synth_moderation_block_resource'>
+        const isBlockingOwner = args.resourceId === ownerId
+        const undo = () =>
+          mutate({
+            callName: 'synth_moderation_unblock_resource',
+            args: {
+              resourceId: args.resourceId,
+              ctxPostIds: ['*'],
+              ctxAppIds: ['*'],
+            },
+          })
+
         toast.custom((t) => (
           <Toast
             t={t}
             icon={(classNames) => (
               <HiOutlineInformationCircle className={classNames} />
             )}
-            title={`You have blocked the ${
-              !isBlockingOwner ? 'message from ' : ''
-            }user ${name}`}
+            title={
+              <span>
+                You have blocked the {!isBlockingOwner ? 'message from ' : ''}
+                user {name}
+              </span>
+            }
+            action={
+              <LinkText
+                onClick={() => {
+                  undo()
+                  toast.dismiss(t.id)
+                }}
+                variant='primary'
+                className='flex items-center gap-1 text-sm'
+              >
+                <HiMiniArrowUturnLeft /> Undo
+              </LinkText>
+            }
+          />
+        ))
+      } else if (variables.callName === 'synth_moderation_unblock_resource') {
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            icon={(classNames) => (
+              <HiOutlineInformationCircle className={classNames} />
+            )}
+            title='Undo moderation success'
           />
         ))
       }
@@ -121,7 +163,7 @@ export default function ModerationForm({
         let resourceId: string
         switch (blockingContent.id) {
           case 'message':
-            resourceId = messageId
+            resourceId = message?.entityId ?? ''
             break
           case 'owner':
             resourceId = ownerId
@@ -131,12 +173,15 @@ export default function ModerationForm({
         }
 
         const reasonId = reason.id
+
         mutate({
-          action: 'block',
-          address: myAddress,
-          ctxPostId: chatId,
-          reasonId,
-          resourceId,
+          callName: 'synth_moderation_block_resource',
+          args: {
+            reasonId,
+            resourceId,
+            ctxPostIds: ['*'],
+            ctxAppIds: ['*'],
+          },
         })
 
         sendEvent('client_moderation', {

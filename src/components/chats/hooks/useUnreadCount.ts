@@ -1,5 +1,5 @@
+import { getUnreadCountQuery } from '@/services/datahub/posts/query'
 import { getMessagesCountAfterTimeQuery } from '@/services/subsocial/commentIds'
-import { getUnreadCountQuery } from '@/services/subsocial/datahub/posts/query'
 import { getDatahubConfig } from '@/utils/env/client'
 
 export default function useUnreadCount(chatId: string, lastReadTime: number) {

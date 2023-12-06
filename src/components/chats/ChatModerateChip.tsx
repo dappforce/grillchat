@@ -1,4 +1,4 @@
-import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
+import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
@@ -19,8 +19,8 @@ export default function ChatModerateChip({
 }: ChatModerateChipProps) {
   const myAddress = useMyMainAddress()
   const usedAddress = address ?? myAddress ?? ''
-  const isOwner = useIsOwnerOfPost(chatId, usedAddress)
-  if (!isOwner) {
+  const { isAuthorized } = useAuthorizedForModeration(chatId, usedAddress)
+  if (!isAuthorized) {
     return null
   }
 

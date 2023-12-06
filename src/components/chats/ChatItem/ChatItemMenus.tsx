@@ -127,6 +127,18 @@ export default function ChatItemMenus({
         onClick: () => setModalState('metadata'),
       },
     ]
+
+    if (isAuthorized) {
+      menus.unshift({
+        icon: LuShield,
+        text: 'Moderate',
+        onClick: () => {
+          sendEvent('open_moderate_action_modal', { hubId, chatId })
+          setModalState('moderate')
+        },
+      })
+    }
+
     if (isOptimisticMessage) return menus
 
     if (address && canUsePromoExtensionAccounts.includes(address)) {
@@ -138,16 +150,6 @@ export default function ChatItemMenus({
             recipient: ownerId ?? '',
             messageId,
           })
-        },
-      })
-    }
-    if (isAuthorized) {
-      menus.unshift({
-        icon: LuShield,
-        text: 'Moderate',
-        onClick: () => {
-          sendEvent('open_moderate_action_modal', { hubId, chatId })
-          setModalState('moderate')
         },
       })
     }

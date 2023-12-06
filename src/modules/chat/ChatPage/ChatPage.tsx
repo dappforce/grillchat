@@ -15,11 +15,10 @@ import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/ConfigProvider'
-import { useCommitModerationAction } from '@/services/api/moderation/mutation'
-import { getModeratorQuery } from '@/services/api/moderation/query'
 import { getPostQuery } from '@/services/api/query'
+import { useModerationActions } from '@/services/datahub/moderation/mutation'
+import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
-import { getPostMetadataQuery } from '@/services/subsocial/datahub/posts/query'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import {
@@ -115,6 +114,7 @@ export default function ChatPage({
   }, [openExtensionModal])
 
   const myAddress = useMyMainAddress()
+  const isSignerReady = useMyAccount((state) => !!state.signer)
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
@@ -128,23 +128,41 @@ export default function ChatPage({
     }
   }, [isInitialized, myAddress, chat])
 
-  const { data: moderator } = getModeratorQuery.useQuery(myAddress ?? '', {
-    enabled: !!myAddress,
-  })
-  const { isAuthorized, isOwner } = useAuthorizedForModeration(chatId)
-  const { mutateAsync: commitModerationAction } = useCommitModerationAction()
+  const { isAuthorized, isOwner, isLoading, moderatorData } =
+    useAuthorizedForModeration(chatId)
+  const { mutateAsync: commitModerationAction } = useModerationActions()
 
+  const chatEntityId = chat?.entityId
   useEffect(() => {
     if (!COMMUNITY_CHAT_HUB_ID || !isOwner) return
-    if (!isAuthorized && moderator) {
-      commitModerationAction({
-        action: 'init',
-        address: moderator.address,
-        postId: chatId,
-        spaceId: COMMUNITY_CHAT_HUB_ID,
-      })
+    if (!isAuthorized && !isLoading && chatEntityId && isSignerReady) {
+      if (!moderatorData?.exist) {
+        commitModerationAction({
+          callName: 'synth_moderation_init_moderator',
+          args: {
+            ctxPostIds: [chatEntityId],
+            withOrganization: true,
+          },
+        })
+      } else {
+        commitModerationAction({
+          callName: 'synth_moderation_add_ctx_to_organization',
+          args: {
+            ctxPostIds: [chatEntityId],
+            organizationId: moderatorData?.organizationId ?? '',
+          },
+        })
+      }
     }
-  }, [isAuthorized, commitModerationAction, moderator, chatId, isOwner])
+  }, [
+    moderatorData,
+    isSignerReady,
+    isAuthorized,
+    commitModerationAction,
+    isLoading,
+    chatEntityId,
+    isOwner,
+  ])
 
   if (chat?.struct.hidden) {
     const isNotAuthorized = myAddress !== chat.struct.ownerId

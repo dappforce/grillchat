@@ -1,6 +1,9 @@
-import { getBlockedResourcesQuery } from '@/services/api/moderation/query'
+import {
+  getBlockedResources,
+  getBlockedResourcesQuery,
+} from '@/services/datahub/moderation/query'
+import { getAppId } from '@/utils/env/client'
 import { QueryClient } from '@tanstack/react-query'
-import { getBlockedResources } from '.'
 
 export async function prefetchBlockedEntities(
   queryClient: QueryClient,
@@ -8,10 +11,12 @@ export async function prefetchBlockedEntities(
   postIds: string[]
 ) {
   try {
-    const { blockedInPostIds, blockedInSpaceIds } = await getBlockedResources({
-      spaceIds,
-      postIds,
-    })
+    const { blockedInPostIds, blockedInSpaceIds, blockedInAppIds } =
+      await getBlockedResources({
+        spaceIds,
+        postEntityIds: postIds,
+        appIds: [getAppId()],
+      })
     blockedInSpaceIds.forEach((data) => {
       getBlockedResourcesQuery.setQueryData(
         queryClient,
@@ -22,12 +27,19 @@ export async function prefetchBlockedEntities(
     blockedInPostIds.forEach((data) => {
       getBlockedResourcesQuery.setQueryData(
         queryClient,
-        { postId: data.id },
-        { ...data, type: 'postId' }
+        { postEntityId: data.id },
+        { ...data, type: 'postEntityId' }
+      )
+    })
+    blockedInAppIds.forEach((data) => {
+      getBlockedResourcesQuery.setQueryData(
+        queryClient,
+        { appId: data.id },
+        { ...data, type: 'appId' }
       )
     })
 
-    return { blockedInSpaceIds, blockedInPostIds }
+    return { blockedInSpaceIds, blockedInPostIds, blockedInAppIds }
   } catch (err) {
     console.log('Error prefetching blocked entities', err)
   }

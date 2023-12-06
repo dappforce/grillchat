@@ -92,6 +92,7 @@ declare module '@subsocial/api/types' {
     C extends CommonContent
   > = {
     id: EntityId
+    entityId?: string
     struct: S
     content: C | null
   }

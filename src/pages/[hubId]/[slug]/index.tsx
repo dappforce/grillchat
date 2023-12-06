@@ -8,11 +8,11 @@ import { getProfilesServer } from '@/pages/api/profiles'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery, getProfileQuery } from '@/services/api/query'
-import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   getPostMetadataQuery,
-} from '@/services/subsocial/datahub/posts/query'
+} from '@/services/datahub/posts/query'
+import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import {
   coingeckoTokenIds,
@@ -156,15 +156,19 @@ export const getStaticProps = getCommonStaticProps<
         hubIds.push(originalHubId)
       }
 
+      const chatEntityId = chatData.entityId ?? ''
       const [{ prices }, blockedData] = await Promise.all([
         getChatsData(queryClient, chatId),
-        prefetchBlockedEntities(queryClient, hubIds, [chatId]),
+        prefetchBlockedEntities(queryClient, hubIds, [chatEntityId]),
         prefetchPostMetadata(queryClient, chatId),
       ] as const)
 
       if (blockedData) {
         let isChatModerated = false
-        blockedData.blockedInSpaceIds.forEach(({ blockedResources }) => {
+        ;[
+          ...blockedData.blockedInSpaceIds,
+          ...blockedData.blockedInAppIds,
+        ].forEach(({ blockedResources }) => {
           if (blockedResources.postId.includes(chatId)) {
             isChatModerated = true
           }

@@ -51,8 +51,10 @@ export function createQueryInvalidation<Data>(key: string) {
     data: Data | null = null,
     exact = false
   ) => {
+    const queryKey: any[] = [key]
+    if (data) queryKey.push(data)
     return client.invalidateQueries({
-      queryKey: [key, data],
+      queryKey,
       exact,
     })
   }

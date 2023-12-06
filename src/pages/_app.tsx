@@ -5,18 +5,16 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
+import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/services/provider'
-import { useSubscribePostsInDatahub } from '@/services/subsocial/datahub/posts/subscription'
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
-import { getIdFromSlug } from '@/utils/slug'
 import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/router'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
@@ -86,7 +84,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   return (
     <ThemeProvider attribute='class' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
-        <PostSubscriber />
+        <DatahubSubscriber />
         <BadgeManager />
         <SubsocialApiReconnect />
         <ToasterConfig />
@@ -110,12 +108,8 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   )
 }
 
-function PostSubscriber() {
-  const { query } = useRouter()
-  const slugParam = (query?.slug || '') as string
-  const chatId = getIdFromSlug(slugParam)
-  useSubscribePostsInDatahub(chatId)
-
+function DatahubSubscriber() {
+  useDatahubSubscription()
   return null
 }
 

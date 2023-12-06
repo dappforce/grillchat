@@ -1,24 +1,5 @@
-import { getModerationConfig } from '@/utils/env/server'
 import { isAddress } from '@polkadot/util-crypto'
-import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 import { CID } from 'ipfs-http-client'
-
-export function moderationRequest<T, V extends Variables = Variables>(
-  config: RequestOptions<V, T>
-) {
-  const { url, token } = getModerationConfig()
-  if (!url || !token) throw new Error('Moderation config not found')
-
-  const TIMEOUT = 3 * 1000 // 3 seconds
-  const client = new GraphQLClient(url, {
-    timeout: TIMEOUT,
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-    ...config,
-  })
-  return client.request({ url, ...config })
-}
 
 export type ResourceTypes = 'cid' | 'address' | 'postId'
 export function mapBlockedResources<T>(
@@ -39,10 +20,12 @@ export function mapBlockedResources<T>(
   })
   return data
 }
-function getBlockedResourceType(resourceId: string): ResourceTypes | null {
+export function getBlockedResourceType(
+  resourceId: string
+): ResourceTypes | null {
+  if (isPostId(resourceId) || resourceId.startsWith('0x')) return 'postId'
   if (isValidSubstrateAddress(resourceId)) return 'address'
   if (isValidCID(resourceId)) return 'cid'
-  if (isPostId(resourceId)) return 'postId'
 
   return null
 }
