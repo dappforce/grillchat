@@ -233,12 +233,15 @@ async function processBlockedResources(
   const ctxAppIds = entity.organization.ctxAppIds
   const entityAppId = entity.ctxAppIds
   const appId = getAppId()
-  const isBlockedUsingAppContext =
+
+  const isBlockedInAppContext =
+    isNowBlocked && entityAppId.some((id) => id === appId || id === '*')
+  const isAppContextRelated =
     appId &&
     ctxAppIds?.includes(appId) &&
-    entityAppId.some((id) => id === appId || id === '*')
+    (isBlockedInAppContext || !isNowBlocked)
 
-  if (isBlockedUsingAppContext) {
+  if (isAppContextRelated) {
     getBlockedResourcesQuery.setQueryData(queryClient, { appId }, (oldData) => {
       if (oldData === undefined) return undefined
       const newResources = updateBlockedResourceData(oldData, {
