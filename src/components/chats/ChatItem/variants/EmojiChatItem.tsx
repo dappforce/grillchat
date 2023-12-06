@@ -31,7 +31,7 @@ export default function EmojiChatItem({
 }: EmojiChatItemProps) {
   const messageId = message.id
 
-  const { createdAtTime, ownerId } = message.struct
+  const { createdAtTime, ownerId, isUpdated } = message.struct
   const { inReplyTo, body } = message.content || {}
 
   const emojiCount = getEmojiAmount(body ?? '')
@@ -58,6 +58,7 @@ export default function EmojiChatItem({
             className={cx('mr-2 text-sm font-medium text-text-secondary')}
           />
           <ChatRelativeTime
+            isUpdated={isUpdated}
             createdAtTime={createdAtTime}
             className='text-xs text-text-muted'
           />
@@ -99,6 +100,7 @@ export default function EmojiChatItem({
       {isMyMessage && (
         <div className='mt-auto flex items-center gap-1 rounded-2xl px-2.5 pb-1.5'>
           <ChatRelativeTime
+            isUpdated={isUpdated}
             className='text-xs text-text-muted'
             createdAtTime={createdAtTime}
           />

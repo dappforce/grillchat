@@ -20,7 +20,7 @@ export default function DefaultChatItem({
 }: DefaultChatItemProps) {
   const messageId = message.id
 
-  const { createdAtTime, ownerId } = message.struct
+  const { createdAtTime, ownerId, isUpdated } = message.struct
   const { inReplyTo, body, link, linkMetadata } = message.content || {}
 
   return (
@@ -44,6 +44,7 @@ export default function DefaultChatItem({
             <ChatRelativeTime
               createdAtTime={createdAtTime}
               className='text-xs text-text-muted'
+              isUpdated={isUpdated}
             />
           </div>
         )}
@@ -95,6 +96,7 @@ export default function DefaultChatItem({
           >
             <ChatRelativeTime
               createdAtTime={createdAtTime}
+              isUpdated={isUpdated}
               className='text-xs text-text-muted dark:text-text-muted-on-primary'
             />
             <MessageStatusIndicator message={message} />
