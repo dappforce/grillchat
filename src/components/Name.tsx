@@ -6,7 +6,7 @@ import SubsocialIcon from '@/assets/icons/subsocial-dynamic-size.svg'
 import XLogoIcon from '@/assets/icons/x-logo-dynamic-size.svg'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
-import { getLinkedIdentitiesQuery } from '@/services/datahub/identity/query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { decodeProfileSource, ProfileSource } from '@/utils/profile'
@@ -69,7 +69,7 @@ export default function Name({
     address,
     forceProfileSource
   )
-  const { data: linkedIdentities } = getLinkedIdentitiesQuery.useQuery(
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
     address ?? ''
   )
 
@@ -80,7 +80,7 @@ export default function Name({
     Icon = undefined
     tooltip = ''
   }
-  if (linkedIdentities?.length && profileSource === 'subsocial-profile') {
+  if (linkedIdentity && profileSource === 'subsocial-profile') {
     Icon = XLogoIcon
     tooltip = 'X Profile'
   }

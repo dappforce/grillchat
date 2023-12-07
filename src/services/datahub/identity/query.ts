@@ -6,6 +6,7 @@ import {
 } from '../generated-query'
 import { datahubQueryRequest } from '../utils'
 
+// TODO: need batch call pool query to improve performance
 const GET_LINKED_IDENTITIES = gql`
   query GetLinkedIdentities($substrateAddress: String!) {
     linkedIdentities(where: { substrateAddress: $substrateAddress }) {
@@ -19,7 +20,7 @@ const GET_LINKED_IDENTITIES = gql`
     }
   }
 `
-async function getLinkedIdentities(address: string) {
+async function getLinkedIdentity(address: string) {
   const data = await datahubQueryRequest<
     GetLinkedIdentitiesQuery,
     GetLinkedIdentitiesQueryVariables
@@ -30,11 +31,11 @@ async function getLinkedIdentities(address: string) {
     },
   })
 
-  return data.linkedIdentities.filter((identity) => identity.enabled)
+  return data.linkedIdentities.filter((identity) => identity.enabled)?.[0]
 }
-export const getLinkedIdentitiesQuery = createQuery({
-  key: 'getLinkedIdentities',
-  fetcher: getLinkedIdentities,
+export const getLinkedIdentityQuery = createQuery({
+  key: 'getLinkedIdentity',
+  fetcher: getLinkedIdentity,
   defaultConfigGenerator: (data) => ({
     enabled: !!data,
   }),

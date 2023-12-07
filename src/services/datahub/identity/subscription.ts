@@ -8,7 +8,7 @@ import {
   SubscribeIdentitySubscription,
 } from '../generated-query'
 import { datahubSubscription } from '../utils'
-import { getLinkedIdentitiesQuery } from './query'
+import { getLinkedIdentityQuery } from './query'
 
 export function useDatahubIdentitySubscriber() {
   const queryClient = useQueryClient()
@@ -96,7 +96,7 @@ async function processIdentity(
   queryClient: QueryClient,
   eventData: SubscribeIdentitySubscription['linkedIdentity']
 ) {
-  getLinkedIdentitiesQuery.invalidate(
+  getLinkedIdentityQuery.invalidate(
     queryClient,
     eventData.entity.substrateAccount.id
   )

@@ -238,6 +238,7 @@ export const getModerationReasonsQuery = createQuery({
   },
 })
 
+// TODO: need batch call pool query to improve performance
 export const GET_MODERATOR_DATA = gql`
   query GetModeratorData($address: String!) {
     moderators(args: { where: { substrateAddress: $address } }) {

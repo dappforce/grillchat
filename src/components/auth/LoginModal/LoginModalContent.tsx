@@ -21,7 +21,7 @@ import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAdd
 import useToastError from '@/hooks/useToastError'
 import { useRequestToken } from '@/services/api/mutation'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
-import { getLinkedIdentitiesQuery } from '@/services/datahub/identity/query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -339,7 +339,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
   })
 
   const myAddress = useMyMainAddress()
-  const { data: linkedIdentities } = getLinkedIdentitiesQuery.useQuery(
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
     myAddress ?? ''
   )
   const { mutate: linkIdentity } = useLinkIdentity()
@@ -362,9 +362,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
 
   const upsertedProfile = useRef(false)
   useEffect(() => {
-    const foundIdentity = linkedIdentities?.find(
-      (identity) => identity.externalId === session?.user?.id
-    )
+    const foundIdentity = linkedIdentity?.externalId === session?.user?.id
     if (foundIdentity && !upsertedProfile.current) {
       upsertedProfile.current = true
       upsertProfile({
@@ -377,7 +375,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
         },
       })
     }
-  }, [linkedIdentities, session, setCurrentState, upsertProfile])
+  }, [linkedIdentity, session, setCurrentState, upsertProfile])
 
   const isAlreadyCalled = useRef(false)
   useEffect(() => {
