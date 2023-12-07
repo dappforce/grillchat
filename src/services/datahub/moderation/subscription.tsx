@@ -225,6 +225,7 @@ async function processBlockedResources(
   const isNowBlocked = entity.blocked
   const resourceId = entity.resourceId
   const resourceType = getBlockedResourceType(resourceId)
+  console.log('sub', eventData)
 
   const ctxPostIds = entity.organization.ctxPostIds
 
@@ -358,7 +359,12 @@ function updateBlockedResourceData(
   const { isNowBlocked, resourceId, resourceType } = newData
 
   const resources: Record<ResourceTypes, string[]> =
-    oldData?.blockedResources || { address: [], cid: [], postId: [] }
+    oldData?.blockedResources || {
+      address: [],
+      cid: [],
+      postId: [],
+      identity: [],
+    }
 
   const newResource = [...resources[resourceType]]
   if (isNowBlocked) {
@@ -391,7 +397,7 @@ function updateBlockedResourceDetailedData(
   const resources: Record<
     ResourceTypes,
     GetBlockedInPostIdDetailedQuery['moderationBlockedResourcesDetailed'][number][]
-  > = oldData || { address: [], cid: [], postId: [] }
+  > = oldData || { address: [], cid: [], postId: [], identity: [] }
 
   const newResource = [...resources[resourceType]]
   if (isNowBlocked) {
