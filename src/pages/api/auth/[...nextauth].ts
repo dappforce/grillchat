@@ -18,7 +18,9 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      // TODO: check if user is moderated and return false if so
+      // TODO: filter blocked users
+      // const {blockedInAppIds} = await getBlockedResources({ appIds: [getAppId()], postEntityIds: [], spaceIds: [] })
+      // const isAllowedToSignIn = blockedInAppIds?.[0]?.blockedResources.address.find((address) => address)
       const isAllowedToSignIn = true
       if (isAllowedToSignIn) {
         return true

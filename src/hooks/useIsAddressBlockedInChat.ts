@@ -1,4 +1,6 @@
 import { getPostQuery } from '@/services/api/query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { identityModerationEncoder } from '@/services/datahub/identity/utils'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { getAppId } from '@/utils/env/client'
 import { useMemo } from 'react'
@@ -8,6 +10,8 @@ export default function useIsAddressBlockedInChat(
   chatId: string,
   currentHubId: string
 ) {
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(address)
+
   const { data: chat } = getPostQuery.useQuery(chatId)
   const originalHubId = chat?.struct.spaceId
   const entityId = chat?.entityId
@@ -18,29 +22,60 @@ export default function useIsAddressBlockedInChat(
   const { data: hubModeration } = getBlockedResourcesQuery.useQuery({
     spaceId: currentHubId ?? '',
   })
-  const blockedInOriginalHub = originalHubModeration?.blockedResources.address
-  const blockedInHub = hubModeration?.blockedResources.address
-
   const { data: chatModerationData } = getBlockedResourcesQuery.useQuery({
     postEntityId: entityId || '',
   })
-  const blockedInChat = chatModerationData?.blockedResources.address
-
   const { data: appModeration } = getBlockedResourcesQuery.useQuery({
     appId: getAppId(),
   })
-  const blockedInApp = appModeration?.blockedResources.address
+  const blockedAddressesInOriginalHub =
+    originalHubModeration?.blockedResources.address
+  const blockedAddressesInHub = hubModeration?.blockedResources.address
+  const blockedAddressesInChat = chatModerationData?.blockedResources.address
+  const blockedAddressesInApp = appModeration?.blockedResources.address
+
+  const blockedIdentitiesInOriginalHub =
+    originalHubModeration?.blockedResources.identity
+  const blockedIdentitiesInHub = hubModeration?.blockedResources.identity
+  const blockedIdentitiesInChat = chatModerationData?.blockedResources.identity
+  const blockedIdentitiesInApp = appModeration?.blockedResources.identity
 
   const blockedAddressesSet = useMemo(
     () =>
       new Set([
-        ...(blockedInOriginalHub ?? []),
-        ...(blockedInHub ?? []),
-        ...(blockedInChat ?? []),
-        ...(blockedInApp ?? []),
+        ...(blockedAddressesInOriginalHub ?? []),
+        ...(blockedAddressesInHub ?? []),
+        ...(blockedAddressesInChat ?? []),
+        ...(blockedAddressesInApp ?? []),
       ]),
-    [blockedInOriginalHub, blockedInHub, blockedInChat, blockedInApp]
+    [
+      blockedAddressesInOriginalHub,
+      blockedAddressesInHub,
+      blockedAddressesInChat,
+      blockedAddressesInApp,
+    ]
+  )
+  const blockedIdentitiesSet = useMemo(
+    () =>
+      new Set([
+        ...(blockedIdentitiesInOriginalHub ?? []),
+        ...(blockedIdentitiesInHub ?? []),
+        ...(blockedIdentitiesInChat ?? []),
+        ...(blockedIdentitiesInApp ?? []),
+      ]),
+    [
+      blockedIdentitiesInOriginalHub,
+      blockedIdentitiesInHub,
+      blockedIdentitiesInChat,
+      blockedIdentitiesInApp,
+    ]
   )
 
-  return address && blockedAddressesSet.has(address)
+  return (
+    address &&
+    (blockedAddressesSet.has(address) ||
+      blockedIdentitiesSet.has(
+        identityModerationEncoder.encode(linkedIdentity?.externalId) ?? ''
+      ))
+  )
 }

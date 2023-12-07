@@ -8,6 +8,7 @@ import { getPostsServer } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { ResourceTypes } from '@/services/datahub/moderation/utils'
 import { isMessageBlocked } from '@/utils/chat'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -66,6 +67,8 @@ export const getStaticProps = getCommonStaticProps<
       const results = await getPostsServer([chatId, messageId])
       const chat = results.find((post) => post.id === chatId)
       const message = results.find((post) => post.id === messageId)
+
+      const ownerId = message?.struct.ownerId
       messageId = message?.id ?? messageId
 
       const extensionData = await getMessageDataFromExtension(
@@ -92,7 +95,12 @@ export const getStaticProps = getCommonStaticProps<
       const chatBlockedEntities = getFlatModeratedResource(
         blockedEntities?.blockedInPostIds
       )
-      const isBlocked = isMessageBlocked(message, {
+
+      const ownerIdentity = await getLinkedIdentityQuery.fetchQuery(
+        null,
+        ownerId ?? ''
+      )
+      const isBlocked = isMessageBlocked(message, ownerIdentity, {
         addresses: new Set([
           ...appBlockedEntities.address,
           ...hubBlockedEntities.address,
@@ -107,6 +115,11 @@ export const getStaticProps = getCommonStaticProps<
           ...appBlockedEntities.postId,
           ...hubBlockedEntities.postId,
           ...chatBlockedEntities.postId,
+        ]),
+        identities: new Set([
+          ...appBlockedEntities.identity,
+          ...hubBlockedEntities.identity,
+          ...chatBlockedEntities.identity,
         ]),
       })
 
@@ -151,13 +164,16 @@ function getFlatModeratedResource(
     blockedResources: Record<ResourceTypes, string[]>
   }[]
 ): Record<ResourceTypes, string[]> {
-  if (!data) return { address: [], postId: [], cid: [] }
+  if (!data) return { address: [], postId: [], cid: [], identity: [] }
   return {
     address: data
       .map(({ blockedResources }) => blockedResources.address)
       .flat(),
     postId: data.map(({ blockedResources }) => blockedResources.postId).flat(),
     cid: data.map(({ blockedResources }) => blockedResources.cid).flat(),
+    identity: data
+      .map(({ blockedResources }) => blockedResources.identity)
+      .flat(),
   }
 }
 

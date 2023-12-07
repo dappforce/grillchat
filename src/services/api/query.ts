@@ -131,6 +131,9 @@ const getIdentity = poolQuery<string, Identities>({
 export const getIdentityQuery = createQuery({
   key: 'identities',
   fetcher: getIdentity,
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data,
+  }),
 })
 
 async function getCanUserDoDatahubAction(input: DatahubPostQueryInput) {

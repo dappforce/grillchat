@@ -20,7 +20,13 @@ const GET_LINKED_IDENTITIES = gql`
     }
   }
 `
-async function getLinkedIdentity(address: string) {
+export type Identity = {
+  id: string
+  externalId: string
+  provider: string
+  substrateAccount: string
+}
+async function getLinkedIdentity(address: string): Promise<Identity | null> {
   const data = await datahubQueryRequest<
     GetLinkedIdentitiesQuery,
     GetLinkedIdentitiesQueryVariables
@@ -31,7 +37,16 @@ async function getLinkedIdentity(address: string) {
     },
   })
 
-  return data.linkedIdentities.filter((identity) => identity.enabled)?.[0]
+  const identity = data.linkedIdentities.filter(
+    (identity) => identity.enabled
+  )?.[0]
+  if (!identity) return null
+  return {
+    externalId: identity.externalId,
+    id: identity.id,
+    provider: identity.provider,
+    substrateAccount: identity.substrateAccount.id,
+  }
 }
 export const getLinkedIdentityQuery = createQuery({
   key: 'getLinkedIdentity',
