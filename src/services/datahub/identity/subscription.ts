@@ -63,7 +63,6 @@ function subscription(queryClient: QueryClient) {
     {
       complete: () => undefined,
       next: async (data) => {
-        console.log('sub', data)
         const eventData = data.data?.linkedIdentity
         if (!eventData) return
 

@@ -26,6 +26,7 @@ import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
+import { useSubscriptionState } from '@/stores/subscription'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { encodeProfileSource } from '@/utils/profile'
@@ -348,6 +349,16 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
       setCurrentState('account-created')
     },
   })
+
+  const setSubscriptionState = useSubscriptionState(
+    (state) => state.setSubscriptionState
+  )
+  useEffect(() => {
+    setSubscriptionState('identity', 'always-sub')
+    return () => {
+      setSubscriptionState('identity', 'dynamic')
+    }
+  }, [setSubscriptionState])
 
   const upsertedProfile = useRef(false)
   useEffect(() => {
