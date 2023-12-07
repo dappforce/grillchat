@@ -19,7 +19,10 @@ export default function CommonEvmSetProfileContent({
       <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
         <ProfilePreview
           address={myAddress}
-          forceProfileSource={{ profileSource: 'ens', content: firstEnsName }}
+          forceProfileSource={{
+            profileSource: 'ens',
+            content: { name: firstEnsName },
+          }}
         />
       </div>
       <div className='flex flex-col gap-4'>
