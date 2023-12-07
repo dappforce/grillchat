@@ -35,4 +35,7 @@ async function getLinkedIdentities(address: string) {
 export const getLinkedIdentitiesQuery = createQuery({
   key: 'getLinkedIdentities',
   fetcher: getLinkedIdentities,
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data,
+  }),
 })

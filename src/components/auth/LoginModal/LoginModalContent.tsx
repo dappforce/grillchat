@@ -336,8 +336,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
 
   const myAddress = useMyMainAddress()
   const { data: linkedIdentities } = getLinkedIdentitiesQuery.useQuery(
-    myAddress ?? '',
-    { enabled: !!myAddress }
+    myAddress ?? ''
   )
   const { mutate: linkIdentity } = useLinkIdentity()
   const { mutate: upsertProfile } = useUpsertProfile({
