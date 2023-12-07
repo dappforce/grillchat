@@ -65,11 +65,11 @@ const ProfilePreview = ({
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
         <div className='relative left-1 flex items-center gap-2'>
           <Name
-            profileSourceIconClassName='text-xl'
+            profileSourceIconClassName='text-base'
             profileSourceIconPosition='left'
             showOnlyCustomIdentityIcon
             address={address}
-            className={cx('gap-1 text-lg', nameClassName)}
+            className={cx('gap-2 text-lg', nameClassName)}
             forceProfileSource={forceProfileSource}
           />
           {onEditClick && !isLoading && (
