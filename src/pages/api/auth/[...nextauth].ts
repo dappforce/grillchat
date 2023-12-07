@@ -1,5 +1,10 @@
+import type {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from 'next'
 import type { NextAuthOptions } from 'next-auth'
-import NextAuth from 'next-auth'
+import NextAuth, { getServerSession } from 'next-auth'
 import TwitterProvider from 'next-auth/providers/twitter'
 
 export const authOptions: NextAuthOptions = {
@@ -25,9 +30,21 @@ export const authOptions: NextAuthOptions = {
       }
     },
     async session({ session, token }) {
-      return { ...session, user: { ...session.user, id: token.sub! } }
+      let image = session.user.image ?? ''
+      image = image.replace('_normal', '')
+      return { ...session, user: { ...session.user, image, id: token.sub! } }
     },
   },
+}
+
+// Use it in server contexts
+export function auth(
+  ...args:
+    | [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']]
+    | [NextApiRequest, NextApiResponse]
+    | []
+) {
+  return getServerSession(...args, authOptions)
 }
 
 export default NextAuth(authOptions)

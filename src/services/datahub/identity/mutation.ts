@@ -26,10 +26,11 @@ async function linkIdentity(
     eventArgs
   )
 
-  await axios.post<any, any, ApiDatahubIdentityBody>(
-    '/api/datahub/identity',
-    input
-  )
+  await axios.post<any, any, ApiDatahubIdentityBody>('/api/datahub/identity', {
+    payload: input,
+    id,
+    provider,
+  })
 }
 
 export const useLinkIdentity = mutationWrapper(
