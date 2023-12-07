@@ -30,7 +30,7 @@ async function moderationActions<T extends ModerationCallNames>(
     any,
     AxiosResponse<ApiDatahubModerationResponse>,
     ApiDatahubModerationBody
-  >('/api/moderation/actions', input as any)
+  >('/api/datahub/moderation', input as any)
 
   if (!actionRes.data.success) {
     throw new Error(actionRes.data.message)
