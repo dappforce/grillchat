@@ -3,8 +3,10 @@ import KiltIcon from '@/assets/icons/kilt-dynamic-size.svg'
 import KusamaIcon from '@/assets/icons/kusama-dynamic-size.svg'
 import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
 import SubsocialIcon from '@/assets/icons/subsocial-dynamic-size.svg'
+import XLogoIcon from '@/assets/icons/x-logo-dynamic-size.svg'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
+import { getLinkedIdentitiesQuery } from '@/services/datahub/identity/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { decodeProfileSource, ProfileSource } from '@/utils/profile'
@@ -18,10 +20,123 @@ export type NameProps = ComponentProps<'span'> & {
   address: string
   additionalText?: string
   className?: string
-  showProfileSourceIcon?: boolean
+  showOnlyCustomIdentityIcon?: boolean
+  profileSourceIconClassName?: string
+  profileSourceIconPosition?: 'none' | 'left' | 'right'
   color?: string
   labelingData?: { chatId: string }
   forceProfileSource?: ForceProfileSource
+}
+
+const profileSourceData: {
+  [key in ProfileSource]?: { icon: any; tooltip: string }
+} = {
+  'kilt-w3n': {
+    icon: KiltIcon,
+    tooltip: 'Kilt W3Name',
+  },
+  ens: {
+    icon: EthIcon,
+    tooltip: 'ENS',
+  },
+  'kusama-identity': {
+    icon: KusamaIcon,
+    tooltip: 'Kusama Identity',
+  },
+  'polkadot-identity': {
+    icon: PolkadotIcon,
+    tooltip: 'Polkadot Identity',
+  },
+  'subsocial-username': {
+    icon: SubsocialIcon,
+    tooltip: 'Subsocial Username',
+  },
+}
+
+export default function Name({
+  address,
+  className,
+  additionalText,
+  showOnlyCustomIdentityIcon,
+  profileSourceIconClassName,
+  color,
+  labelingData,
+  forceProfileSource,
+  profileSourceIconPosition = 'right',
+  ...props
+}: NameProps) {
+  const { isLoading, name, textColor, profileSource } = useName(
+    address,
+    forceProfileSource
+  )
+  const { data: linkedIdentities } = getLinkedIdentitiesQuery.useQuery(
+    address ?? ''
+  )
+
+  let { icon: Icon, tooltip } =
+    profileSourceData[profileSource ?? ('' as ProfileSource)] || {}
+
+  if (showOnlyCustomIdentityIcon && profileSource !== 'subsocial-profile') {
+    Icon = undefined
+    tooltip = ''
+  }
+  if (linkedIdentities?.length && profileSource === 'subsocial-profile') {
+    Icon = XLogoIcon
+    tooltip = 'X Profile'
+  }
+
+  if (isLoading) {
+    return (
+      <span
+        {...props}
+        className={cx(
+          'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none',
+          className
+        )}
+      >
+        <span className='my-1 mr-4 h-3 w-20 rounded-full bg-background-lighter font-medium' />
+      </span>
+    )
+  }
+
+  const iconElement = Icon && (
+    <div
+      className={cx(
+        'relative top-px flex-shrink-0 text-text-muted',
+        profileSourceIconClassName
+      )}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <PopOver
+        trigger={<Icon />}
+        panelSize='sm'
+        yOffset={4}
+        placement='top'
+        triggerOnHover
+      >
+        <p>{tooltip}</p>
+      </PopOver>
+    </div>
+  )
+
+  return (
+    <span
+      {...props}
+      className={cx('flex items-center gap-1', className)}
+      style={{ color: color || textColor }}
+    >
+      {profileSourceIconPosition === 'left' && iconElement}
+      <span>
+        {additionalText} {name}{' '}
+      </span>
+      {profileSourceIconPosition === 'right' && iconElement}
+      <ChatModerateChip
+        className='relative top-px flex items-center'
+        chatId={labelingData?.chatId ?? ''}
+        address={address}
+      />
+    </span>
+  )
 }
 
 export function useName(
@@ -100,96 +215,3 @@ export function useName(
     ensNames,
   }
 }
-
-const profileSourceData: {
-  [key in ProfileSource]?: { icon: any; tooltip: string }
-} = {
-  'kilt-w3n': {
-    icon: KiltIcon,
-    tooltip: 'Kilt W3Name',
-  },
-  ens: {
-    icon: EthIcon,
-    tooltip: 'ENS',
-  },
-  'kusama-identity': {
-    icon: KusamaIcon,
-    tooltip: 'Kusama Identity',
-  },
-  'polkadot-identity': {
-    icon: PolkadotIcon,
-    tooltip: 'Polkadot Identity',
-  },
-  'subsocial-username': {
-    icon: SubsocialIcon,
-    tooltip: 'Subsocial Username',
-  },
-}
-
-const Name = ({
-  address,
-  className,
-  additionalText,
-  color,
-  labelingData,
-  forceProfileSource,
-  showProfileSourceIcon = true,
-  ...props
-}: NameProps) => {
-  const { isLoading, name, textColor, profileSource } = useName(
-    address,
-    forceProfileSource
-  )
-
-  const { icon: Icon, tooltip } =
-    profileSourceData[profileSource ?? ('' as ProfileSource)] || {}
-
-  if (isLoading) {
-    return (
-      <span
-        {...props}
-        className={cx(
-          'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none',
-          className
-        )}
-      >
-        <span className='my-1 mr-4 h-3 w-20 rounded-full bg-background-lighter font-medium' />
-      </span>
-    )
-  }
-
-  return (
-    <span
-      {...props}
-      className={cx(className, 'flex items-center')}
-      style={{ color: color || textColor }}
-    >
-      <span>
-        {additionalText} {name}{' '}
-      </span>
-      {showProfileSourceIcon && Icon && (
-        <div
-          className='relative top-px ml-1 flex-shrink-0 text-text-muted'
-          onClick={(e) => e.stopPropagation()}
-        >
-          <PopOver
-            trigger={<Icon />}
-            panelSize='sm'
-            yOffset={4}
-            placement='top'
-            triggerOnHover
-          >
-            <p>{tooltip}</p>
-          </PopOver>
-        </div>
-      )}
-      <ChatModerateChip
-        className='ml-1 flex items-center'
-        chatId={labelingData?.chatId ?? ''}
-        address={address}
-      />
-    </span>
-  )
-}
-
-export default Name
