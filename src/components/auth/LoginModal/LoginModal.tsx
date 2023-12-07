@@ -145,10 +145,6 @@ export default function LoginModal({
 
   useEffect(() => {
     if (props.isOpen) setCurrentState(initialOpenState)
-    else {
-      const { isTemporaryAccount, logout } = useMyAccount.getState()
-      if (isTemporaryAccount) logout()
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
 
