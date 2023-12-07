@@ -102,7 +102,7 @@ export default function Name({
   const iconElement = Icon && (
     <div
       className={cx(
-        'relative top-px flex-shrink-0 text-text-muted',
+        'relative top-px flex-shrink-0 text-[0.9em] text-text-muted',
         profileSourceIconClassName
       )}
       onClick={(e) => e.stopPropagation()}
