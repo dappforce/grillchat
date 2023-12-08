@@ -82,6 +82,17 @@ export default function AccountContent({
       icon: LinkedAddressesIcon,
       onClick: onLinkedAddressesClick,
     },
+    ...colorModeOptions,
+    ...(isInstallAvailable()
+      ? [
+          {
+            text: 'Install app',
+            icon: FiDownload,
+            onClick: installApp,
+            iconClassName: 'text-text-muted text-xl',
+          },
+        ]
+      : []),
     {
       text: (
         <span className='flex items-center gap-2'>
@@ -96,22 +107,11 @@ export default function AccountContent({
       },
     },
     { text: 'Share session', icon: ShareIcon, onClick: onShareSessionClick },
-    ...colorModeOptions,
     {
       text: 'Suggest feature',
       icon: SuggestFeatureIcon,
       href: SUGGEST_FEATURE_LINK,
     },
-    ...(isInstallAvailable()
-      ? [
-          {
-            text: 'Install app',
-            icon: FiDownload,
-            onClick: installApp,
-            iconClassName: 'text-text-muted text-xl',
-          },
-        ]
-      : []),
     {
       text: 'About app',
       icon: InfoIcon,
