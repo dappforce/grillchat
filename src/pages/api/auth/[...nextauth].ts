@@ -36,6 +36,14 @@ export const authOptions: NextAuthOptions = {
       image = image.replace('_normal', '')
       return { ...session, user: { ...session.user, image, id: token.sub! } }
     },
+    // async redirect({ url, baseUrl }) {
+    //   console.log(baseUrl, url)
+    //   // Allows relative callback URLs
+    //   if (url.startsWith('/')) return `${baseUrl}${url}`
+    //   // Allows callback URLs on the same origin
+    //   else if (new URL(url).origin === baseUrl) return url
+    //   return baseUrl
+    // },
   },
 }
 

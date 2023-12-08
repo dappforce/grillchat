@@ -81,8 +81,12 @@ export const LoginContent = ({ setCurrentState }: ContentProps) => {
         <div className={cx('flex flex-col gap-4 pb-4')}>
           <Button
             onClick={() => {
+              console.log(`${getCurrentUrlWithoutQuery()}?login=x`)
               signIn('twitter', {
-                callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
+                callbackUrl: `${getCurrentUrlWithoutQuery().replace(
+                  'http://localhost:3000',
+                  ''
+                )}?login=x`,
               })
             }}
             size='lg'

@@ -84,6 +84,7 @@ jobs:
             GH_TWITTER_CLIENT_ID=TEhDUEpGNEdEdlVPT1ZWdTcxbFA6MTpjaQ
             GH_TWITTER_CLIENT_SECRET=feApUrjC8rpvkzhQUaPnRpfedabJe0uOTNWdFBv9YTMkFCMczN
             GH_NEXTAUTH_SECRET=secret
+            GH_NEXTAUTH_URL=https://${{ env.name }}-grillchat.subsocial.network
           target: runner
           tags: |
             ${{ env.image }}
