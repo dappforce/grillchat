@@ -105,7 +105,7 @@ export const LoginContent = ({
           >
             <div className='flex items-center justify-center gap-2'>
               <WalletIcon className='text-text-muted-on-primary' />
-              Connect Wallet
+              Connect wallet
             </div>
           </Button>
           <Button
