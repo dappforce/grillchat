@@ -19,7 +19,6 @@ import FormButton from '../FormButton'
 import SelectInput, { ListItem } from '../inputs/SelectInput'
 import LinkText from '../LinkText'
 import { useName } from '../Name'
-import ProfilePreview from '../ProfilePreview'
 import Toast from '../Toast'
 
 export type ModerationFormProps = ComponentProps<'form'> & {
@@ -192,7 +191,7 @@ export default function ModerationForm({
         })
       })}
     >
-      <div className='flex flex-col gap-2'>
+      {/* <div className='flex flex-col gap-2'>
         <span className='text-sm text-text-muted'>Message Owner</span>
         <div
           className={cx(
@@ -212,7 +211,7 @@ export default function ModerationForm({
             )}
           </div>
         </div>
-      </div>
+      </div> */}
       <Controller
         control={control}
         name='blockingContent'
