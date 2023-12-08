@@ -81,12 +81,8 @@ export const LoginContent = ({ setCurrentState }: ContentProps) => {
         <div className={cx('flex flex-col gap-4 pb-4')}>
           <Button
             onClick={() => {
-              console.log(`${getCurrentUrlWithoutQuery()}?login=x`)
               signIn('twitter', {
-                callbackUrl: `${getCurrentUrlWithoutQuery().replace(
-                  'http://localhost:3000',
-                  ''
-                )}?login=x`,
+                callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
               })
             }}
             size='lg'
@@ -366,15 +362,11 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
 
   const upsertedProfile = useRef(false)
   useEffect(() => {
-    const foundIdentity = linkedIdentity?.externalId === session?.user?.id
-    console.log(
-      linkedIdentity,
-      session?.user,
-      foundIdentity,
-      upsertedProfile.current
-    )
+    const foundIdentity =
+      linkedIdentity &&
+      session &&
+      linkedIdentity?.externalId === session?.user?.id
     if (foundIdentity && !upsertedProfile.current) {
-      console.log('CALLING UPSERTING')
       upsertedProfile.current = true
       upsertProfile({
         content: {

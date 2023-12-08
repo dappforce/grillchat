@@ -19,14 +19,12 @@ export function useDatahubIdentitySubscriber() {
 
     const listener = () => {
       if (document.visibilityState === 'visible') {
-        console.log('subscription')
         unsubRef.current = subscription(queryClient)
       } else {
         if (
           useSubscriptionState.getState().subscriptionState['identity'] ===
           'dynamic'
         ) {
-          console.log('unsub')
           unsubRef.current?.()
         }
       }
@@ -66,7 +64,6 @@ function subscription(queryClient: QueryClient) {
     {
       complete: () => undefined,
       next: async (data) => {
-        console.log('SUB DATA', data)
         const eventData = data.data?.linkedIdentity
         if (!eventData) return
 
