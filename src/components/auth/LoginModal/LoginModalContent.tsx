@@ -367,7 +367,14 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
   const upsertedProfile = useRef(false)
   useEffect(() => {
     const foundIdentity = linkedIdentity?.externalId === session?.user?.id
+    console.log(
+      linkedIdentity,
+      session?.user,
+      foundIdentity,
+      upsertedProfile.current
+    )
     if (foundIdentity && !upsertedProfile.current) {
+      console.log('CALLING UPSERTING')
       upsertedProfile.current = true
       upsertProfile({
         content: {
