@@ -104,8 +104,8 @@ export const LoginContent = ({
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <WalletIcon />
-              Connect Wallet
+              <WalletIcon className='text-text-muted-on-primary' />
+              Connect wallet
             </div>
           </Button>
           <Button
@@ -114,7 +114,7 @@ export const LoginContent = ({
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <KeyIcon className='text-text-muted-on-primary' />
+              <KeyIcon className='text-text-muted' />
               Enter Grill secret key
             </div>
           </Button>
