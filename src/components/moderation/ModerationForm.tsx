@@ -43,12 +43,12 @@ const blockingContentOptions = (isOwner?: boolean) => {
     id: FormSchema['blockingContent']['id']
     label: string
     disabledItem?: boolean | string
-  }[] = [{ id: 'message', label: 'Message' }]
+  }[] = [{ id: 'message', label: 'Moderate message' }]
 
   if (!isOwner) {
     options.push({
       id: 'owner',
-      label: 'Owner',
+      label: 'Moderate all messages from sender',
     })
   }
   return options
@@ -193,7 +193,7 @@ export default function ModerationForm({
       })}
     >
       <div className='flex flex-col gap-2'>
-        <span className='text-sm text-text-muted'>User</span>
+        <span className='text-sm text-text-muted'>Message Owner</span>
         <div
           className={cx(
             'rounded-xl border border-border-gray bg-background px-4 py-2'
@@ -219,7 +219,7 @@ export default function ModerationForm({
         render={({ field }) => {
           return (
             <SelectInput
-              fieldLabel='Blocking content'
+              fieldLabel='Action'
               disabled={isLoading}
               items={blockingContentOptions(isOwner)}
               selected={field.value}
