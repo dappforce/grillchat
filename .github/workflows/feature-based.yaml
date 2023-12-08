@@ -81,6 +81,9 @@ jobs:
             GH_DATAHUB_QUEUE_URL=https://refactored-moderation-queue-data-hub.subsocial.network/graphql
             GH_DATAHUB_QUEUE_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.jpXwkIJ4DpV4IvSI3eWVVXE6x89qr_GIq7IlbBv5YE0
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=1001,1386,1399
+            GH_TWITTER_CLIENT_ID=TEhDUEpGNEdEdlVPT1ZWdTcxbFA6MTpjaQ
+            GH_TWITTER_CLIENT_SECRET=feApUrjC8rpvkzhQUaPnRpfedabJe0uOTNWdFBv9YTMkFCMczN
+            GH_NEXTAUTH_SECRET=secret
           target: runner
           tags: |
             ${{ env.image }}
