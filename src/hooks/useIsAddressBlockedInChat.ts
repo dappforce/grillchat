@@ -1,6 +1,5 @@
 import { getPostQuery } from '@/services/api/query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { identityModerationEncoder } from '@/services/datahub/identity/utils'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { getAppId } from '@/utils/env/client'
 import { useMemo } from 'react'
@@ -34,12 +33,6 @@ export default function useIsAddressBlockedInChat(
   const blockedAddressesInChat = chatModerationData?.blockedResources.address
   const blockedAddressesInApp = appModeration?.blockedResources.address
 
-  const blockedIdentitiesInOriginalHub =
-    originalHubModeration?.blockedResources.identity
-  const blockedIdentitiesInHub = hubModeration?.blockedResources.identity
-  const blockedIdentitiesInChat = chatModerationData?.blockedResources.identity
-  const blockedIdentitiesInApp = appModeration?.blockedResources.identity
-
   const blockedAddressesSet = useMemo(
     () =>
       new Set([
@@ -55,27 +48,6 @@ export default function useIsAddressBlockedInChat(
       blockedAddressesInApp,
     ]
   )
-  const blockedIdentitiesSet = useMemo(
-    () =>
-      new Set([
-        ...(blockedIdentitiesInOriginalHub ?? []),
-        ...(blockedIdentitiesInHub ?? []),
-        ...(blockedIdentitiesInChat ?? []),
-        ...(blockedIdentitiesInApp ?? []),
-      ]),
-    [
-      blockedIdentitiesInOriginalHub,
-      blockedIdentitiesInHub,
-      blockedIdentitiesInChat,
-      blockedIdentitiesInApp,
-    ]
-  )
 
-  return (
-    address &&
-    (blockedAddressesSet.has(address) ||
-      blockedIdentitiesSet.has(
-        identityModerationEncoder.encode(linkedIdentity?.externalId) ?? ''
-      ))
-  )
+  return address && blockedAddressesSet.has(address)
 }

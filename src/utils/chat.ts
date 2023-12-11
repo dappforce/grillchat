@@ -1,5 +1,4 @@
 import { Identity } from '@/services/datahub/identity/query'
-import { identityModerationEncoder } from '@/services/datahub/identity/utils'
 import { PostData } from '@subsocial/api/types'
 
 export function isMessageBlocked(
@@ -9,12 +8,11 @@ export function isMessageBlocked(
     addresses: Set<string> | undefined
     contentIds: Set<string> | undefined
     postIds: Set<string> | undefined
-    identities: Set<string> | undefined
   }
 ) {
   if (!message) return false
 
-  const { addresses, contentIds, postIds, identities } = blockedData
+  const { addresses, contentIds, postIds } = blockedData
   const { id, struct, entityId } = message
   const contentId = struct.contentId
   const owner = struct.ownerId
@@ -23,8 +21,7 @@ export function isMessageBlocked(
     addresses?.has(owner) ||
     contentIds?.has(contentId ?? '') ||
     postIds?.has(id) ||
-    postIds?.has(entityId ?? '') ||
-    identities?.has(identityModerationEncoder.encode(ownerIdentity?.id) ?? '')
+    postIds?.has(entityId ?? '')
   )
 }
 

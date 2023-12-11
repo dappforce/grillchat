@@ -116,11 +116,6 @@ export const getStaticProps = getCommonStaticProps<
           ...hubBlockedEntities.postId,
           ...chatBlockedEntities.postId,
         ]),
-        identities: new Set([
-          ...appBlockedEntities.identity,
-          ...hubBlockedEntities.identity,
-          ...chatBlockedEntities.identity,
-        ]),
       })
 
       if (!chat?.struct.hidden && !isBlocked) {
@@ -164,16 +159,13 @@ function getFlatModeratedResource(
     blockedResources: Record<ResourceTypes, string[]>
   }[]
 ): Record<ResourceTypes, string[]> {
-  if (!data) return { address: [], postId: [], cid: [], identity: [] }
+  if (!data) return { address: [], postId: [], cid: [] }
   return {
     address: data
       .map(({ blockedResources }) => blockedResources.address)
       .flat(),
     postId: data.map(({ blockedResources }) => blockedResources.postId).flat(),
     cid: data.map(({ blockedResources }) => blockedResources.cid).flat(),
-    identity: data
-      .map(({ blockedResources }) => blockedResources.identity)
-      .flat(),
   }
 }
 

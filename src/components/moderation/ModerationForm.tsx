@@ -1,7 +1,6 @@
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { identityModerationEncoder } from '@/services/datahub/identity/utils'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -170,9 +169,7 @@ export default function ModerationForm({
             resourceId = message?.entityId ?? ''
             break
           case 'owner':
-            resourceId =
-              identityModerationEncoder.encode(linkedIdentity?.externalId) ??
-              ownerId
+            resourceId = ownerId
             break
           default:
             throw new Error('Invalid blocking content')

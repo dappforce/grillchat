@@ -363,7 +363,6 @@ function updateBlockedResourceData(
       address: [],
       cid: [],
       postId: [],
-      identity: [],
     }
 
   const newResource = [...resources[resourceType]]
@@ -397,7 +396,7 @@ function updateBlockedResourceDetailedData(
   const resources: Record<
     ResourceTypes,
     GetBlockedInPostIdDetailedQuery['moderationBlockedResourcesDetailed'][number][]
-  > = oldData || { address: [], cid: [], postId: [], identity: [] }
+  > = oldData || { address: [], cid: [], postId: [] }
 
   const newResource = [...resources[resourceType]]
   if (isNowBlocked) {

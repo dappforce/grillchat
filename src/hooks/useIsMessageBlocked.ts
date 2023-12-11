@@ -76,18 +76,9 @@ export default function useIsMessageBlocked(
     )
   }, [blockedInHub, blockedInChat, blockedInApp])
 
-  const blockedIdentitiesSet = useMemo(() => {
-    return getBlockedSet(
-      blockedInHub?.identity,
-      blockedInChat?.identity,
-      blockedInApp?.identity
-    )
-  }, [blockedInHub, blockedInChat, blockedInApp])
-
   return isMessageBlocked(message, identity, {
     postIds: blockedIdsSet,
     contentIds: blockedCidsSet,
     addresses: blockedAddressesSet,
-    identities: blockedIdentitiesSet,
   })
 }

@@ -1,8 +1,7 @@
 import { isAddress } from '@polkadot/util-crypto'
 import { CID } from 'ipfs-http-client'
-import { identityModerationEncoder } from '../identity/utils'
 
-export type ResourceTypes = 'cid' | 'address' | 'postId' | 'identity'
+export type ResourceTypes = 'cid' | 'address' | 'postId'
 export function mapBlockedResources<T>(
   resources: T[],
   getId: (t: T) => string
@@ -11,7 +10,6 @@ export function mapBlockedResources<T>(
     cid: [],
     address: [],
     postId: [],
-    identity: [],
   }
   resources.forEach((resource) => {
     const resourceId = getId(resource)
@@ -25,7 +23,6 @@ export function mapBlockedResources<T>(
 export function getBlockedResourceType(
   resourceId: string
 ): ResourceTypes | null {
-  if (identityModerationEncoder.checker(resourceId)) return 'identity'
   if (isPostId(resourceId) || resourceId.startsWith('0x')) return 'postId'
   if (isValidSubstrateAddress(resourceId)) return 'address'
   if (isValidCID(resourceId)) return 'cid'
