@@ -88,7 +88,7 @@ export const LoginContent = ({ setCurrentState }: ContentProps) => {
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <XLogoIcon />
+              <XLogoIcon className='text-text-muted-on-primary' />
               Continue with X
             </div>
           </Button>
@@ -101,8 +101,8 @@ export const LoginContent = ({ setCurrentState }: ContentProps) => {
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <WalletIcon />
-              Connect Wallet
+              <WalletIcon className='text-text-muted' />
+              Connect wallet
             </div>
           </Button>
           <Button
@@ -111,7 +111,7 @@ export const LoginContent = ({ setCurrentState }: ContentProps) => {
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <KeyIcon className='text-text-muted-on-primary' />
+              <KeyIcon className='text-text-muted' />
               Enter Grill key
             </div>
           </Button>

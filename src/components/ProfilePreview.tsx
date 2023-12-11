@@ -105,7 +105,7 @@ const ProfilePreview = ({
                   tooltip={`Copy${isMyAddressPart} Grill public address`}
                   textToCopy={address}
                   textClassName={cx(
-                    'font-mono text-[15px] leading-[14px] whitespace-nowrap overflow-hidden overflow-ellipsis'
+                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
                   )}
                 />
               </div>
@@ -118,7 +118,7 @@ const ProfilePreview = ({
                   tooltip={`Copy${isMyAddressPart} Polkadot address`}
                   textToCopy={address}
                   textClassName={cx(
-                    'font-mono text-[15px] leading-[14px] whitespace-nowrap overflow-hidden overflow-ellipsis'
+                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
                   )}
                 />
               </div>
@@ -131,7 +131,7 @@ const ProfilePreview = ({
                   tooltip={`Copy${isMyAddressPart} EVM address`}
                   textToCopy={evmAddress}
                   textClassName={cx(
-                    'font-mono text-[15px] leading-[14px] whitespace-nowrap overflow-hidden overflow-ellipsis'
+                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
                   )}
                 />
               </div>
