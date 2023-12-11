@@ -249,7 +249,7 @@ function DataCardContent({
     <div className='flex items-center gap-2'>
       <AddressAvatar address={address} />
       <div className='flex flex-1 flex-col gap-0.5'>
-        <Name address={address} profileSourceIconPosition='none' />
+        <Name address={address} profileSourceIconPosition='right' />
         <span className='text-sm text-text-muted'>{reasonText}</span>
       </div>
       {onUnblock && (
