@@ -8,7 +8,6 @@ import { getPostsServer } from '@/pages/api/posts'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { ResourceTypes } from '@/services/datahub/moderation/utils'
 import { isMessageBlocked } from '@/utils/chat'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -96,11 +95,7 @@ export const getStaticProps = getCommonStaticProps<
         blockedEntities?.blockedInPostIds
       )
 
-      const ownerIdentity = await getLinkedIdentityQuery.fetchQuery(
-        null,
-        ownerId ?? ''
-      )
-      const isBlocked = isMessageBlocked(message, ownerIdentity, {
+      const isBlocked = isMessageBlocked(message, {
         addresses: new Set([
           ...appBlockedEntities.address,
           ...hubBlockedEntities.address,

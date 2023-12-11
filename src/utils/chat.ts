@@ -1,9 +1,7 @@
-import { Identity } from '@/services/datahub/identity/query'
 import { PostData } from '@subsocial/api/types'
 
 export function isMessageBlocked(
   message: PostData | undefined | null,
-  ownerIdentity: Identity | undefined | null,
   blockedData: {
     addresses: Set<string> | undefined
     contentIds: Set<string> | undefined

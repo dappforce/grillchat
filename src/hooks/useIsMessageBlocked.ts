@@ -76,7 +76,7 @@ export default function useIsMessageBlocked(
     )
   }, [blockedInHub, blockedInChat, blockedInApp])
 
-  return isMessageBlocked(message, identity, {
+  return isMessageBlocked(message, {
     postIds: blockedIdsSet,
     contentIds: blockedCidsSet,
     addresses: blockedAddressesSet,
