@@ -12,7 +12,7 @@ import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getDatahubConfig } from '@/utils/env/client'
-import { getHubPageLink } from '@/utils/links'
+import { getHubPageLink, getUrlQuery } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
 import dynamic from 'next/dynamic'
@@ -62,6 +62,11 @@ export default function Navbar({
   const isOpen = useLoginModal((state) => state.isOpen)
   const setIsOpen = useLoginModal((state) => state.setIsOpen)
   const initialOpenState = useLoginModal((state) => state.initialOpenState)
+
+  useEffect(() => {
+    const auth = getUrlQuery('auth') === 'true'
+    if (auth) setIsOpen(true)
+  }, [setIsOpen])
 
   const [openPrivateKeyNotice, setOpenPrivateKeyNotice] = useState(false)
   const isLoggingInWithKey = useRef(false)
