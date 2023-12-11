@@ -1,3 +1,6 @@
+import { getLinkedIdentityFromTwitterId } from '@/services/datahub/identity/fetcher'
+import { getBlockedResources } from '@/services/datahub/moderation/query'
+import { getAppId } from '@/utils/env/client'
 import type {
   GetServerSidePropsContext,
   NextApiRequest,
@@ -20,19 +23,23 @@ export const authOptions: NextAuthOptions = {
     signIn: '/?auth=true',
   },
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      // TODO: filter blocked users
-      // const {blockedInAppIds} = await getBlockedResources({ appIds: [getAppId()], postEntityIds: [], spaceIds: [] })
-      // const isAllowedToSignIn = blockedInAppIds?.[0]?.blockedResources.address.find((address) => address)
-      const isAllowedToSignIn = true
-      if (isAllowedToSignIn) {
-        return true
-      } else {
-        // Return false to display a default error message
-        return false
-        // Or you can return a URL to redirect to:
-        // return '/unauthorized'
-      }
+    async signIn({ user }) {
+      const [{ blockedInAppIds }, linkedAddresses] = await Promise.all([
+        getBlockedResources({
+          appIds: [getAppId()],
+          postEntityIds: [],
+          spaceIds: [],
+        }),
+        getLinkedIdentityFromTwitterId(user.id),
+      ])
+      const blockedAddressesSet = new Set(
+        blockedInAppIds.map((data) => data.blockedResources.address).flat()
+      )
+      const isAllowedToSignIn = linkedAddresses.every(
+        (address) => !blockedAddressesSet.has(address)
+      )
+
+      return isAllowedToSignIn
     },
     async session({ session, token }) {
       let image = session.user.image ?? ''

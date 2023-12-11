@@ -50,8 +50,6 @@ export type Account = {
   moderationProfile?: Maybe<Moderator>
   ownedModerationOrganizations?: Maybe<Array<ModerationOrganization>>
   ownedPostsCount?: Maybe<Scalars['Int']['output']>
-  /** persistent data schema version from indexer */
-  persistentDataVersion?: Maybe<Scalars['String']['output']>
   postsCreated: Array<Post>
   postsOwned: Array<Post>
   profileSpace?: Maybe<Space>
@@ -465,12 +463,12 @@ export type Post = {
   optimisticId?: Maybe<Scalars['String']['output']>
   ownedByAccount: Account
   parentPost?: Maybe<Post>
-  /** persistent data schema version from indexer */
-  persistentDataVersion?: Maybe<Scalars['String']['output']>
   persistentId?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   postFollowers?: Maybe<Array<PostFollowers>>
   postModerationStatuses?: Maybe<Array<ModerationPostModerationStatus>>
+  /** Data protocol version */
+  protVersion?: Maybe<Scalars['String']['output']>
   publicRepliesCount?: Maybe<Scalars['Int']['output']>
   reactionsCount?: Maybe<Scalars['Int']['output']>
   rootPost?: Maybe<Post>
@@ -648,13 +646,13 @@ export type Space = {
   linksOriginal?: Maybe<Scalars['String']['output']>
   name?: Maybe<Scalars['String']['output']>
   ownedByAccount: Account
-  /** persistent data schema version from indexer */
-  persistentDataVersion?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   posts?: Maybe<Post>
   postsCount?: Maybe<Scalars['Int']['output']>
   profileSource?: Maybe<Scalars['String']['output']>
   profileSpace?: Maybe<Account>
+  /** Data protocol version */
+  protVersion?: Maybe<Scalars['String']['output']>
   publicPostsCount?: Maybe<Scalars['Int']['output']>
   summary?: Maybe<Scalars['String']['output']>
   tagsOriginal?: Maybe<Scalars['String']['output']>
@@ -717,6 +715,22 @@ export type GetLinkedIdentitiesQuery = {
   }>
 }
 
+export type GetLinkedIdentitiesFromTwitterIdQueryVariables = Exact<{
+  twitterId: Scalars['String']['input']
+}>
+
+export type GetLinkedIdentitiesFromTwitterIdQuery = {
+  __typename?: 'Query'
+  linkedIdentities: Array<{
+    __typename?: 'LinkedIdentity'
+    id: string
+    externalId: string
+    provider: IdentityProvider
+    enabled: boolean
+    substrateAccount: { __typename?: 'Account'; id: string }
+  }>
+}
+
 export type SubscribeIdentitySubscriptionVariables = Exact<{
   [key: string]: never
 }>
@@ -728,9 +742,6 @@ export type SubscribeIdentitySubscription = {
     event: DataHubSubscriptionEventEnum
     entity: {
       __typename?: 'LinkedIdentity'
-      externalId: string
-      provider: IdentityProvider
-      enabled: boolean
       substrateAccount: { __typename?: 'Account'; id: string }
     }
   }
@@ -1257,14 +1268,24 @@ export const GetLinkedIdentities = gql`
     }
   }
 `
+export const GetLinkedIdentitiesFromTwitterId = gql`
+  query GetLinkedIdentitiesFromTwitterId($twitterId: String!) {
+    linkedIdentities(where: { externalId: $twitterId, provider: TWITTER }) {
+      id
+      externalId
+      provider
+      enabled
+      substrateAccount {
+        id
+      }
+    }
+  }
+`
 export const SubscribeIdentity = gql`
   subscription SubscribeIdentity {
     linkedIdentity {
       event
       entity {
-        externalId
-        provider
-        enabled
         substrateAccount {
           id
         }
