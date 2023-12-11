@@ -287,4 +287,7 @@ export const getModeratorQuery = createQuery({
     })
     return { address, ...moderatorData }
   },
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
 })
