@@ -20,6 +20,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ComponentProps, ReactNode, useEffect, useRef, useState } from 'react'
 import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
+import AuthErrorModal from './AuthErrorModal'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
@@ -59,14 +60,16 @@ export default function Navbar({
   const prevAddress = usePrevious(address)
   const isLoggedIn = !!address
 
-  const isOpen = useLoginModal((state) => state.isOpen)
-  const setIsOpen = useLoginModal((state) => state.setIsOpen)
-  const initialOpenState = useLoginModal((state) => state.initialOpenState)
+  const isLoginModalOpen = useLoginModal((state) => state.isOpen)
+  const setIsLoginModalOpen = useLoginModal((state) => state.setIsOpen)
+  const initialLoginModalOpenState = useLoginModal(
+    (state) => state.initialOpenState
+  )
 
   useEffect(() => {
     const auth = getUrlQuery('auth') === 'true'
-    if (auth) setIsOpen(true)
-  }, [setIsOpen])
+    if (auth) setIsLoginModalOpen(true)
+  }, [setIsLoginModalOpen])
 
   const [openPrivateKeyNotice, setOpenPrivateKeyNotice] = useState(false)
   const isLoggingInWithKey = useRef(false)
@@ -88,7 +91,7 @@ export default function Navbar({
   }, [address, isInitializedAddress, prevAddress])
 
   const login = () => {
-    setIsOpen(true)
+    setIsLoginModalOpen(true)
   }
 
   const renderAuthComponent = () => {
@@ -163,12 +166,13 @@ export default function Navbar({
         </Container>
       </nav>
       <LoginModal
-        isOpen={isOpen}
-        closeModal={() => setIsOpen(false)}
-        initialOpenState={initialOpenState}
+        isOpen={isLoginModalOpen}
+        closeModal={() => setIsLoginModalOpen(false)}
+        initialOpenState={initialLoginModalOpenState}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}
       />
+      <AuthErrorModal />
     </>
   )
 }

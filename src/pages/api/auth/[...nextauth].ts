@@ -35,11 +35,12 @@ export const authOptions: NextAuthOptions = {
       const blockedAddressesSet = new Set(
         blockedInAppIds.map((data) => data.blockedResources.address).flat()
       )
-      const isAllowedToSignIn = linkedAddresses.every(
-        (address) => !blockedAddressesSet.has(address)
+      const blockedAddress = linkedAddresses.find((address) =>
+        blockedAddressesSet.has(address)
       )
 
-      return isAllowedToSignIn
+      if (!blockedAddress) return true
+      return `/?auth-blocked=${blockedAddress}`
     },
     async session({ session, token }) {
       let image = session.user.image ?? ''
