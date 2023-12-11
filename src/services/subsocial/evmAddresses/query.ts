@@ -27,4 +27,7 @@ const getAccountData = poolQuery<string, AccountData>({
 export const getAccountDataQuery = createQuery({
   key: 'account',
   fetcher: getAccountData,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
 })

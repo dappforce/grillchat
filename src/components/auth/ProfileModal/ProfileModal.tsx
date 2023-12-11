@@ -135,7 +135,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const sendEvent = useSendEvent()
 
-  const { evmAddress: linkedEvmAddress } = accountData || {}
+  const { evmAddress: linkedEvmAddress, ensNames } = accountData || {}
 
   useEffect(() => {
     if (isOpen) {
@@ -298,7 +298,10 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
   const augmentedCloseModal = () => {
     if (currentState === 'polkadot-connect-success' && hasPreviousIdentity) {
       setCurrentStateAugmented('polkadot-connect-identity-removed')
-    } else if (currentState === 'evm-address-linked') {
+    } else if (
+      currentState === 'evm-address-linked' &&
+      (ensNames?.length ?? 0) > 0
+    ) {
       setCurrentStateAugmented('evm-set-profile-suggestion')
     } else closeModal()
   }

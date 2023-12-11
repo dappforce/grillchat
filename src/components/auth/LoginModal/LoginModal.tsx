@@ -1,5 +1,6 @@
 import InfoPanel from '@/components/InfoPanel'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
@@ -156,6 +157,7 @@ export default function LoginModal({
   }, [header])
 
   const address = useMyMainAddress()
+  const { data: accountData } = getAccountDataQuery.useQuery(address ?? '')
   const showBackButton =
     typeof withBackButton === 'function'
       ? withBackButton(address)
@@ -174,7 +176,10 @@ export default function LoginModal({
       titleClassName={cx(withoutDefaultPadding && 'px-6')}
       descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
       closeModal={() => {
-        if (currentState === 'evm-address-linked') {
+        if (
+          currentState === 'evm-address-linked' &&
+          (accountData?.ensNames?.length ?? 0) > 0
+        ) {
           setCurrentState('evm-set-profile')
           return
         } else if (currentState === 'x-login-loading') {
