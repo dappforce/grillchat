@@ -207,8 +207,7 @@ export default function ModerationForm({
               address={ownerId}
               avatarClassName={cx('h-8 w-8')}
               nameClassName={cx('text-base')}
-              withGrillAddress={false}
-              withEvmAddress={false}
+              showAddress={false}
             />
             {isOwner && (
               <span className='text-xs text-text-muted'>Chat owner</span>

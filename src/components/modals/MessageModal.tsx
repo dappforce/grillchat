@@ -131,7 +131,6 @@ export default function MessageModal({
               address={recipient}
               addressesContainerClassName='gap-1'
               avatarClassName='h-9 w-9'
-              showMaxOneAddress
             />
             <Button
               size='lg'

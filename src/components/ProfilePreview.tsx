@@ -1,7 +1,8 @@
 import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
+import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { ProfileSource } from '@/utils/profile'
@@ -25,9 +26,7 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   className?: string
   avatarClassName?: string
   addressesContainerClassName?: string
-  showMaxOneAddress?: boolean
-  withGrillAddress?: boolean
-  withEvmAddress?: boolean
+  showAddress?: boolean
   nameClassName?: string
   onEditClick?: () => void
 }
@@ -40,20 +39,23 @@ const ProfilePreview = ({
   nameClassName,
   addressesContainerClassName,
   onEditClick,
-  showMaxOneAddress = false,
-  withGrillAddress = true,
-  withEvmAddress = true,
+  showAddress = true,
   ...props
 }: ProfilePreviewProps) => {
   const { isLoading } = useName(address)
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { evmAddress } = accountData || {}
+
+  const isMyProxyAddress = !!useMyAccount(
+    (state) => state.parentProxyAddress === address
+  )
   const myAddress = useMyMainAddress()
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
-  const isShowingEvmAddress = withEvmAddress && evmAddress
-  const showingAnyAddress = withGrillAddress || isShowingEvmAddress
+  const showGrillAddress = !isMyProxyAddress && !evmAddress
+  const showEvmAddress = !!evmAddress
+  const showPolkadotAddress = !!isMyProxyAddress
 
   return (
     <div {...props} className={cx('flex items-center gap-4', className)}>
@@ -93,23 +95,35 @@ const ProfilePreview = ({
             </PopOver>
           )}
         </div>
-        {showingAnyAddress && (
+        {showAddress && (
           <div className='flex flex-col gap-1'>
-            {withGrillAddress &&
-              (!isShowingEvmAddress || !showMaxOneAddress) && (
-                <div className='flex flex-row items-center gap-2'>
-                  <GrillIcon className='text-xl text-text-muted' />
-                  <CopyTextInline
-                    text={truncateAddress(address)}
-                    tooltip={`Copy${isMyAddressPart} Grill public address`}
-                    textToCopy={address}
-                    textClassName={cx(
-                      'font-mono text-[15px] leading-[14px] whitespace-nowrap overflow-hidden overflow-ellipsis'
-                    )}
-                  />
-                </div>
-              )}
-            {isShowingEvmAddress && (
+            {showGrillAddress && (
+              <div className='flex flex-row items-center gap-2'>
+                <GrillIcon className='text-xl text-text-muted' />
+                <CopyTextInline
+                  text={truncateAddress(address)}
+                  tooltip={`Copy${isMyAddressPart} Grill public address`}
+                  textToCopy={address}
+                  textClassName={cx(
+                    'font-mono text-[15px] leading-[14px] whitespace-nowrap overflow-hidden overflow-ellipsis'
+                  )}
+                />
+              </div>
+            )}
+            {showPolkadotAddress && (
+              <div className='flex flex-row items-center gap-2'>
+                <PolkadotIcon className='relative left-1 text-xl text-text-muted' />
+                <CopyTextInline
+                  text={truncateAddress(address)}
+                  tooltip={`Copy${isMyAddressPart} Polkadot address`}
+                  textToCopy={address}
+                  textClassName={cx(
+                    'font-mono text-[15px] leading-[14px] whitespace-nowrap overflow-hidden overflow-ellipsis'
+                  )}
+                />
+              </div>
+            )}
+            {showEvmAddress && (
               <div className='flex flex-row items-center gap-2'>
                 <EthIcon className='relative left-1 text-xl text-text-muted' />
                 <CopyTextInline
