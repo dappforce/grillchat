@@ -4,7 +4,7 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { loginModalContents, LoginModalStep } from './LoginModalContent'
 
 export type LoginModalProps = ModalFunctionalityProps & {
@@ -149,7 +149,9 @@ export default function LoginModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
 
-  useEffect(() => {
+  // need to use useLayoutEffect to make finalize account works first before rendering any data inside the step
+  // because this won't be called the step component calls closeModal inside the useEffect, e.g. 'polkadot-connect-success' step
+  useLayoutEffect(() => {
     if (header.finalizeTemporaryAccount) {
       const { finalizeTemporaryAccount } = useMyAccount.getState()
       finalizeTemporaryAccount()
