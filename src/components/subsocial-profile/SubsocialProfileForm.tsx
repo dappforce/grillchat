@@ -70,6 +70,8 @@ export default function SubsocialProfileForm({
     onProfileChangeRef.current?.({ name, image })
   }, [onProfileChangeRef, name, image])
 
+  const showXIcon = hasLinkedIdentity && !profile?.isUpdated
+
   return (
     <UpsertProfileWrapper>
       {({ mutateAsync, isLoading }) => {
@@ -116,7 +118,7 @@ export default function SubsocialProfileForm({
               placeholder='Name (3-25 symbols)'
               {...register('name')}
               leftElement={
-                hasLinkedIdentity
+                showXIcon
                   ? (className) => (
                       <XLogoIcon
                         className={cx(
@@ -127,7 +129,7 @@ export default function SubsocialProfileForm({
                     )
                   : undefined
               }
-              className={hasLinkedIdentity ? 'pl-12' : ''}
+              className={showXIcon ? 'pl-12' : ''}
               variant='fill-bg'
               error={errors.name?.message}
             />

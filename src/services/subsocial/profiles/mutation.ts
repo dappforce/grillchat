@@ -82,6 +82,7 @@ export function useUpsertProfile(
             const oldProfileContent = oldData?.profileSpace?.content || {}
             return {
               address,
+              isUpdated: true,
               profileSpace: {
                 id: oldProfileSpaceId
                   ? oldProfileSpaceId

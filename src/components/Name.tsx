@@ -69,7 +69,7 @@ export default function Name({
 }: NameProps) {
   const { inView, ref } = useInView()
 
-  const { isLoading, name, textColor, profileSource } = useName(
+  const { isLoading, name, textColor, profileSource, profile } = useName(
     address,
     forceProfileSource
   )
@@ -85,7 +85,11 @@ export default function Name({
     Icon = undefined
     tooltip = ''
   }
-  if (linkedIdentity && profileSource === 'subsocial-profile') {
+  if (
+    linkedIdentity &&
+    !profile?.isUpdated &&
+    profileSource === 'subsocial-profile'
+  ) {
     Icon = XLogoIcon
     tooltip = 'X Profile'
   }
