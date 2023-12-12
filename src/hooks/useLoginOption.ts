@@ -3,7 +3,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
 import { useCallback, useEffect, useRef } from 'react'
 
-export default function useLoginOptions() {
+export default function useLoginOption() {
   const isOpen = useLoginModal((state) => state.isOpen)
   const waitingLoginResolvers = useRef<VoidFunction[]>([])
   useEffect(() => {

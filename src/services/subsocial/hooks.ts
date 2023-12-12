@@ -1,4 +1,4 @@
-import useLoginOptions from '@/hooks/useLoginOptions'
+import useLoginOption from '@/hooks/useLoginOption'
 import { useRequestToken } from '@/services/api/mutation'
 import { getHasEnoughEnergy, useMyAccount } from '@/stores/my-account'
 import {
@@ -47,7 +47,7 @@ export default function useCommonTxSteps<Data, ReturnValue>(
   const { mutateAsync } = useMutationHook(config)
   const { mutateAsync: requestToken } = useRequestToken()
 
-  const { promptUserForLogin } = useLoginOptions()
+  const { promptUserForLogin } = useLoginOption()
 
   const workerFunc = async (params: Data) => {
     let usedAddress: string = address ?? ''

@@ -5,14 +5,14 @@ import {
 } from '@/services/subsocial/commentIds'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useMutation, UseMutationOptions } from '@tanstack/react-query'
-import useLoginOptions from './useLoginOptions'
+import useLoginOption from './useLoginOption'
 
 type Params = SendMessageParams
 export default function useRequestTokenAndSendMessage(
   options?: UseMutationOptions<void, unknown, Params, unknown>
 ) {
   const address = useMyMainAddress()
-  const { promptUserForLogin } = useLoginOptions()
+  const { promptUserForLogin } = useLoginOption()
 
   const { mutateAsync: requestToken } = useRequestToken()
   const { mutateAsync: sendMessage } = useSendMessage()
