@@ -22,7 +22,8 @@ export default function PolkadotConnectSuccess({
     setTimeout(() => {
       hasLinkedPolkadotStorage.set('true')
     }, 1_000)
-  }, [closeModal])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const twitterUrl = twitterShareUrl(
     'https://grill.chat',
