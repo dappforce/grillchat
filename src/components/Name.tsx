@@ -13,9 +13,11 @@ import { cx } from '@/utils/class-names'
 import { decodeProfileSource, ProfileSource } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
+import { HiArrowUpRight } from 'react-icons/hi2'
 import { useInView } from 'react-intersection-observer'
 import ChatModerateChip from './chats/ChatModerateChip'
 import PopOver from './floating/PopOver'
+import LinkText from './LinkText'
 import { ForceProfileSource } from './ProfilePreview'
 
 export type NameProps = ComponentProps<'span'> & {
@@ -31,27 +33,36 @@ export type NameProps = ComponentProps<'span'> & {
 }
 
 const profileSourceData: {
-  [key in ProfileSource]?: { icon: any; tooltip: string }
+  [key in ProfileSource]?: {
+    icon: any
+    tooltip: string
+    link: (name: string, address: string) => string
+  }
 } = {
   'kilt-w3n': {
     icon: KiltIcon,
     tooltip: 'Kilt W3Name',
+    link: () => '',
   },
   ens: {
     icon: EthIcon,
     tooltip: 'ENS',
+    link: (name) => `https://app.ens.domains/${name}`,
   },
   'kusama-identity': {
     icon: KusamaIcon,
     tooltip: 'Kusama Identity',
+    link: (_, address) => `https://sub.id/${address}`,
   },
   'polkadot-identity': {
     icon: PolkadotIcon,
     tooltip: 'Polkadot Identity',
+    link: (_, address) => `https://sub.id/${address}`,
   },
   'subsocial-username': {
     icon: SubsocialIcon,
     tooltip: 'Subsocial Username',
+    link: (name) => `https://sub.id/${name}`,
   },
 }
 
@@ -78,8 +89,11 @@ export default function Name({
     { enabled: inView && profileSource === 'subsocial-profile' }
   )
 
-  let { icon: Icon, tooltip } =
-    profileSourceData[profileSource ?? ('' as ProfileSource)] || {}
+  let {
+    icon: Icon,
+    tooltip,
+    link,
+  } = profileSourceData[profileSource ?? ('' as ProfileSource)] || {}
 
   if (showOnlyCustomIdentityIcon && profileSource !== 'subsocial-profile') {
     Icon = undefined
@@ -88,6 +102,8 @@ export default function Name({
   if (linkedIdentity && profileSource === 'subsocial-profile') {
     Icon = XLogoIcon
     tooltip = 'X Profile'
+    link = () =>
+      `https://twitter.com/intent/user?user_id=${linkedIdentity.externalId}`
   }
 
   if (isLoading) {
@@ -119,7 +135,15 @@ export default function Name({
         placement='top'
         triggerOnHover
       >
-        <p>{tooltip}</p>
+        <LinkText
+          href={link?.(name, address)}
+          openInNewTab
+          variant='primary'
+          className='flex items-center font-semibold'
+        >
+          <span>{tooltip}</span>
+          <HiArrowUpRight />
+        </LinkText>
       </PopOver>
     </div>
   )

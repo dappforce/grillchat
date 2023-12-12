@@ -7,6 +7,7 @@ import {
   FloatingFocusManager,
   offset,
   Placement,
+  safePolygon,
   useClick,
   useDismiss,
   useFloating,
@@ -106,7 +107,10 @@ export default function PopOver({
     ],
   })
 
-  const hover = useHover(context, { enabled: !!triggerOnHover })
+  const hover = useHover(context, {
+    enabled: !!triggerOnHover,
+    handleClose: safePolygon(),
+  })
   const click = useClick(context, { enabled: !triggerOnHover })
   const dismiss = useDismiss(context)
   const role = useRole(context)
