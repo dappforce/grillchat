@@ -81,8 +81,7 @@ export default function EvmProfileTabContent({
   if (!ensNames?.length) {
     return (
       <p className='text-text-muted'>
-        To use EVM identities as your profile, you need to set it up first. We
-        currently support{' '}
+        Use an EVM identity (such as{' '}
         <LinkText
           className='https://app.ens.domains/'
           openInNewTab
@@ -90,7 +89,7 @@ export default function EvmProfileTabContent({
         >
           ENS
         </LinkText>
-        .
+        ) on your profile. You currently have no EVM identities .
       </p>
     )
   }
