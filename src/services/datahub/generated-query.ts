@@ -784,6 +784,7 @@ export type GetBlockedInPostIdDetailedQuery = {
   moderationBlockedResourcesDetailed: Array<{
     __typename?: 'ModerationBlockedResource'
     resourceId: string
+    createdAt: any
     reason: {
       __typename?: 'ModerationBlockReason'
       id: string
@@ -801,6 +802,7 @@ export type GetBlockedInAppDetailedQuery = {
   moderationBlockedResourcesDetailed: Array<{
     __typename?: 'ModerationBlockedResource'
     resourceId: string
+    createdAt: any
     reason: {
       __typename?: 'ModerationBlockReason'
       id: string
@@ -1323,6 +1325,7 @@ export const GetBlockedInPostIdDetailed = gql`
   query GetBlockedInPostIdDetailed($postId: String!) {
     moderationBlockedResourcesDetailed(ctxPostIds: [$postId], blocked: true) {
       resourceId
+      createdAt
       reason {
         id
         reasonText
@@ -1334,6 +1337,7 @@ export const GetBlockedInAppDetailed = gql`
   query GetBlockedInAppDetailed($appId: String!) {
     moderationBlockedResourcesDetailed(ctxAppIds: [$appId], blocked: true) {
       resourceId
+      createdAt
       reason {
         id
         reasonText
