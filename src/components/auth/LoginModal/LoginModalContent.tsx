@@ -10,6 +10,7 @@ import {
   CommonEVMLoginErrorContent,
 } from '@/components/auth/common/evm/CommonEvmModalContent'
 import Button from '@/components/Button'
+import InfoPanel from '@/components/InfoPanel'
 import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
 import MenuList from '@/components/MenuList'
@@ -28,7 +29,7 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { useSubscriptionState } from '@/stores/subscription'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlWithoutQuery } from '@/utils/links'
+import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
@@ -73,12 +74,25 @@ type ContentProps = ModalFunctionalityProps & {
 
 export const LoginContent = ({ setCurrentState }: ContentProps) => {
   const sendEvent = useSendEvent()
+  const [showErrorPanel, setShowErrorPanel] = useState(false)
+  useEffect(() => {
+    const auth = getUrlQuery('auth') === 'true'
+    const error = getUrlQuery('error')
+    // if user denied access to twitter (has suspended account)
+    if (auth && error.toLowerCase() === 'oauthcallback') setShowErrorPanel(true)
+  }, [])
 
   return (
     <div>
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className={cx('flex flex-col gap-4 pb-4')}>
+          {showErrorPanel && (
+            <InfoPanel variant='error'>
+              😕 Sorry there is some issue with logging you in, please try again
+              or try different account
+            </InfoPanel>
+          )}
           <Button
             onClick={() => {
               signIn('twitter', {
