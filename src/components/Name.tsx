@@ -9,6 +9,7 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { decodeProfileSource, ProfileSource } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
@@ -78,6 +79,7 @@ export default function Name({
   profileSourceIconPosition = 'right',
   ...props
 }: NameProps) {
+  const sendEvent = useSendEvent()
   const { inView, ref } = useInView()
 
   const { isLoading, name, textColor, profileSource } = useName(
@@ -138,6 +140,7 @@ export default function Name({
         <LinkText
           href={link?.(name, address)}
           openInNewTab
+          onClick={() => sendEvent('click_name_link')}
           variant='primary'
           className='flex items-center font-semibold outline-none'
         >

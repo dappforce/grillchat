@@ -95,6 +95,7 @@ export const LoginContent = ({ setCurrentState }: ContentProps) => {
           )}
           <Button
             onClick={() => {
+              sendEvent('x_signin_started')
               signIn('twitter', {
                 callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
               })
@@ -347,6 +348,8 @@ const PolkadotConnectConfirmation = ({ setCurrentState }: ContentProps) => {
 }
 
 const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
+  const sendEvent = useSendEvent()
+
   const { data: session, status } = useSession()
   const { mutateAsync: loginAsTemporaryAccount } = useLoginAndRequestToken({
     asTemporaryAccount: true,
@@ -361,6 +364,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
     onSuccess: () => {
       replaceUrl(getCurrentUrlWithoutQuery('login'))
       setCurrentState('account-created')
+      sendEvent('x_login_done')
     },
   })
 
@@ -381,6 +385,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
       session &&
       linkedIdentity?.externalId === session?.user?.id
     if (foundIdentity && !upsertedProfile.current) {
+      sendEvent('x_login_creating_profile')
       upsertedProfile.current = true
       upsertProfile({
         content: {
@@ -403,6 +408,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
     if (isAlreadyCalled.current || !session) return
 
     isAlreadyCalled.current = true
+    sendEvent('x_login_linking')
     ;(async () => {
       const address = await loginAsTemporaryAccount(null)
       if (!address) return
