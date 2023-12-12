@@ -80,6 +80,7 @@ const SUBSCRIBE_BLOCKED_RESOURCES = gql`
         ctxPostIds
         ctxAppIds
         rootPostId
+        createdAt
         organization {
           ctxPostIds
           ctxAppIds
@@ -222,10 +223,8 @@ async function processBlockedResources(
   eventData: SubscribeBlockedResourcesSubscription['moderationBlockedResource']
 ) {
   const entity = eventData.entity
-  const isNowBlocked = entity.blocked
-  const resourceId = entity.resourceId
+  const { blocked: isNowBlocked, createdAt, resourceId } = entity
   const resourceType = getBlockedResourceType(resourceId)
-  console.log('sub', eventData)
 
   const ctxPostIds = entity.organization.ctxPostIds
 
@@ -263,6 +262,7 @@ async function processBlockedResources(
         reason: entity.reason,
         resourceId,
         resourceType,
+        createdAt,
       })
     })
   } else {
@@ -295,6 +295,7 @@ async function processBlockedResources(
             reason: entity.reason,
             resourceId,
             resourceType,
+            createdAt,
           })
         }
       )
@@ -390,9 +391,10 @@ function updateBlockedResourceDetailedData(
     resourceId: string
     isNowBlocked: boolean
     reason: GetBlockedInPostIdDetailedQuery['moderationBlockedResourcesDetailed'][number]['reason']
+    createdAt: string
   }
 ) {
-  const { isNowBlocked, resourceId, resourceType, reason } = newData
+  const { isNowBlocked, resourceId, resourceType, reason, createdAt } = newData
   const resources: Record<
     ResourceTypes,
     GetBlockedInPostIdDetailedQuery['moderationBlockedResourcesDetailed'][number][]
@@ -401,6 +403,7 @@ function updateBlockedResourceDetailedData(
   const newResource = [...resources[resourceType]]
   if (isNowBlocked) {
     newResource.push({
+      createdAt,
       resourceId,
       reason,
     })
