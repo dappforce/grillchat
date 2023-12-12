@@ -16,7 +16,7 @@ export type ProfileModalState =
   | 'linked-addresses'
   | 'profile-settings'
   | 'polkadot-connect-unlink'
-  | 'polkadot-connect-set-profile'
+  | 'polkadot-connect-identity-removed'
   | 'private-key'
   | 'logout'
   | 'share-session'

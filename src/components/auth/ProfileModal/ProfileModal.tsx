@@ -1,6 +1,7 @@
 import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
 import Modal from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -25,9 +26,7 @@ import PushNotificationContent, {
 } from './contents/notifications/PushNotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
 import PolkadotConnectContent from './contents/polkadot-connect/PolkadotConnectContent'
-import PolkadotConnectIdentityRemovedContent, {
-  useHasPreviousGrillIdentity,
-} from './contents/polkadot-connect/PolkadotConnectIdentityRemovedContent'
+import PolkadotConnectIdentityRemovedContent from './contents/polkadot-connect/PolkadotConnectIdentityRemovedContent'
 import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUnlink'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ProfileSettingsContent from './contents/ProfileSettingsContent'
@@ -67,7 +66,7 @@ const modalContents: {
   'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
   'polkadot-connect-success': PolkadotConnectSuccess,
   'polkadot-connect-unlink': PolkadotConnectUnlink,
-  'polkadot-connect-set-profile': PolkadotConnectIdentityRemovedContent,
+  'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
 }
 
 const pushNotificationDesc: Record<
@@ -264,9 +263,9 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       desc: undefined,
       withBackButton: false,
     },
-    'polkadot-connect-set-profile': {
-      title: '😕 Go to Profile Settings?',
-      desc: 'You can manage which identities to use as your name.',
+    'polkadot-connect-identity-removed': {
+      title: '😕 Your previous identity was removed',
+      desc: 'You will need to reset your nickname or reconnect your EVM address to continue using them.',
       withBackButton: false,
     },
   }
@@ -298,7 +297,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
 
   const augmentedCloseModal = () => {
     if (currentState === 'polkadot-connect-success' && hasPreviousIdentity) {
-      setCurrentStateAugmented('polkadot-connect-set-profile')
+      setCurrentStateAugmented('polkadot-connect-identity-removed')
     } else if (
       currentState === 'evm-address-linked' &&
       (ensNames?.length ?? 0) > 0
@@ -330,4 +329,15 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       />
     </Modal>
   )
+}
+
+function useHasPreviousGrillIdentity() {
+  const grillAddress = useMyAccount((state) => state.address)
+  const { data: grillAccountData } = getAccountDataQuery.useQuery(
+    grillAddress ?? ''
+  )
+  const { data: grillProfile } = getProfileQuery.useQuery(grillAddress ?? '')
+  const hasPreviousIdentity =
+    grillAccountData?.evmAddress || grillProfile?.profileSpace?.content?.name
+  return !!hasPreviousIdentity
 }
