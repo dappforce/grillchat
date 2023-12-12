@@ -6,14 +6,14 @@ import { getIdFromSlug } from '@/utils/slug'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef } from 'react'
 
-type LoginOption = 'polkadot'
+type LoginOption = 'polkadot' | 'all'
 
 export default function useLoginOption() {
   const { query } = useRouter()
   const chatId =
     typeof query.slug === 'string' ? getIdFromSlug(query.slug) : undefined
 
-  let loginOption: LoginOption | undefined
+  let loginOption: LoginOption = 'all'
   if (getChatsForStakers().includes(chatId ?? '')) {
     loginOption = 'polkadot'
   }
