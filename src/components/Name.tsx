@@ -139,7 +139,7 @@ export default function Name({
           href={link?.(name, address)}
           openInNewTab
           variant='primary'
-          className='flex items-center font-semibold'
+          className='flex items-center font-semibold outline-none'
         >
           <span>{tooltip}</span>
           <HiArrowUpRight />
@@ -161,13 +161,11 @@ export default function Name({
       </span>
       {profileSourceIconPosition === 'right' && iconElement}
       {inView && (
-        <>
-          <ChatModerateChip
-            className='relative top-px flex items-center'
-            chatId={labelingData?.chatId ?? ''}
-            address={address}
-          />
-        </>
+        <ChatModerateChip
+          className='relative top-px flex items-center'
+          chatId={labelingData?.chatId ?? ''}
+          address={address}
+        />
       )}
     </span>
   )
