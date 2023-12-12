@@ -397,7 +397,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
         },
       })
     }
-  }, [linkedIdentity, session, setCurrentState, upsertProfile])
+  }, [linkedIdentity, sendEvent, session, setCurrentState, upsertProfile])
 
   const isAlreadyCalled = useRef(false)
   useEffect(() => {
