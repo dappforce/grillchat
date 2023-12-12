@@ -2,10 +2,12 @@ import Button from '@/components/Button'
 import Container from '@/components/Container'
 import ExtensionModals from '@/components/extensions'
 import TextArea from '@/components/inputs/TextArea'
+import LinkText from '@/components/LinkText'
+import { Skeleton } from '@/components/SkeletonFallback'
 import { getIsHubWithoutJoinButton } from '@/constants/hubs'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import useLoginOption from '@/hooks/useLoginOption'
-import { getPostQuery } from '@/services/api/query'
+import { getHasUserStakedQuery, getPostQuery } from '@/services/api/query'
 import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
@@ -15,6 +17,7 @@ import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import { ComponentProps, ReactNode, RefObject, useEffect, useRef } from 'react'
+import { HiArrowUpRight } from 'react-icons/hi2'
 import ChatInputBar from './ChatInputBar'
 
 const ChatList = dynamic(() => import('../ChatList/ChatList'), {
@@ -84,8 +87,13 @@ function ChatInputWrapper({
   const openProfileModal = useProfileModal((state) => state.openModal)
   const openLoginModal = useLoginModal((state) => state.setIsOpen)
   const isLoggedIn = useMyAccount((state) => !!state.address)
-  const parentProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const { loginOption } = useLoginOption()
+
+  const { data: hasUserStaked, isLoading: isLoadingStakedInfo } =
+    getHasUserStakedQuery.useQuery({
+      address: parentProxyAddress ?? '',
+    })
 
   useEffect(() => {
     return () => clearAction()
@@ -122,20 +130,40 @@ function ChatInputWrapper({
         {(() => {
           if (customAction) return customAction
 
-          if (loginOption === 'polkadot' && !parentProxyAddress) {
-            return (
-              <Button
-                variant='primary'
-                size='lg'
-                onClick={() => {
-                  if (isLoggedIn)
-                    openProfileModal({ defaultOpenState: 'polkadot-connect' })
-                  else openLoginModal(true, 'polkadot-connect')
-                }}
-              >
-                Connect polkadot wallet
-              </Button>
-            )
+          if (loginOption === 'polkadot') {
+            if (!parentProxyAddress) {
+              return (
+                <Button
+                  variant='primary'
+                  size='lg'
+                  onClick={() => {
+                    if (isLoggedIn)
+                      openProfileModal({ defaultOpenState: 'polkadot-connect' })
+                    else openLoginModal(true, 'polkadot-connect')
+                  }}
+                >
+                  Connect polkadot wallet
+                </Button>
+              )
+            } else if (isLoadingStakedInfo) {
+              return <Skeleton className='h-12 w-full' />
+            } else if (!hasUserStaked) {
+              return (
+                <span className='flex h-12 items-center justify-center rounded-full bg-background-light/50 text-center text-text-muted'>
+                  <span>
+                    You have to stake SUB to send messages in this chat
+                  </span>
+                  <LinkText
+                    className='ml-2 font-semibold'
+                    variant='primary'
+                    href='https://sub.id/stakers'
+                  >
+                    Stake SUB Now
+                    <HiArrowUpRight className='inline' />
+                  </LinkText>
+                </span>
+              )
+            }
           }
 
           if (isHidden)

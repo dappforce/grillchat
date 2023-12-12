@@ -4,6 +4,7 @@ import {
 } from '@/pages/api/datahub/post'
 import { Identities } from '@/pages/api/identities'
 import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
+import { ApiStakedParams, ApiStakedResponse } from '@/pages/api/staked'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import axios from 'axios'
@@ -144,4 +145,17 @@ async function getCanUserDoDatahubAction(input: DatahubPostQueryInput) {
 export const getCanUserDoDatahubActionQuery = createQuery({
   key: 'datahub-can-do',
   fetcher: getCanUserDoDatahubAction,
+})
+
+async function getHasUserStaked(input: ApiStakedParams) {
+  const urlParams = new URLSearchParams(input)
+  const res = await axios.get('/api/staked?' + urlParams.toString())
+  return (res.data as ApiStakedResponse).data
+}
+export const getHasUserStakedQuery = createQuery({
+  key: 'has-user-staked',
+  fetcher: getHasUserStaked,
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data?.address,
+  }),
 })
