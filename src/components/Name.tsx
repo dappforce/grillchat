@@ -13,6 +13,7 @@ import { cx } from '@/utils/class-names'
 import { decodeProfileSource, ProfileSource } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
+import { useInView } from 'react-intersection-observer'
 import ChatModerateChip from './chats/ChatModerateChip'
 import PopOver from './floating/PopOver'
 import { ForceProfileSource } from './ProfilePreview'
@@ -66,12 +67,15 @@ export default function Name({
   profileSourceIconPosition = 'right',
   ...props
 }: NameProps) {
+  const { inView, ref } = useInView()
+
   const { isLoading, name, textColor, profileSource } = useName(
     address,
     forceProfileSource
   )
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
-    address ?? ''
+    address ?? '',
+    { enabled: inView }
   )
 
   let { icon: Icon, tooltip } =
@@ -123,6 +127,7 @@ export default function Name({
   return (
     <span
       {...props}
+      ref={ref}
       className={cx('flex items-center gap-1', className)}
       style={{ color: color || textColor }}
     >
@@ -131,11 +136,15 @@ export default function Name({
         {additionalText} {name}{' '}
       </span>
       {profileSourceIconPosition === 'right' && iconElement}
-      <ChatModerateChip
-        className='relative top-px flex items-center'
-        chatId={labelingData?.chatId ?? ''}
-        address={address}
-      />
+      {inView && (
+        <>
+          <ChatModerateChip
+            className='relative top-px flex items-center'
+            chatId={labelingData?.chatId ?? ''}
+            address={address}
+          />
+        </>
+      )}
     </span>
   )
 }
