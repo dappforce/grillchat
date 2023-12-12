@@ -1,7 +1,5 @@
-import XLogoIcon from '@/assets/icons/x-logo-dynamic-size.svg'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getProfileQuery } from '@/services/api/query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -41,10 +39,6 @@ export default function SubsocialProfileForm({
   const { data: profile } = getProfileQuery.useQuery(myAddress ?? '', {
     enabled: !!myAddress,
   })
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
-    myAddress ?? ''
-  )
-  const hasLinkedIdentity = !!linkedIdentity
 
   const profileContent = profile?.profileSpace?.content
   const [isImageLoading, setIsImageLoading] = useState(false)
@@ -69,8 +63,6 @@ export default function SubsocialProfileForm({
   useEffect(() => {
     onProfileChangeRef.current?.({ name, image })
   }, [onProfileChangeRef, name, image])
-
-  const showXIcon = hasLinkedIdentity && !profile?.isUpdated
 
   return (
     <UpsertProfileWrapper>
@@ -117,19 +109,6 @@ export default function SubsocialProfileForm({
             <Input
               placeholder='Name (3-25 symbols)'
               {...register('name')}
-              leftElement={
-                showXIcon
-                  ? (className) => (
-                      <XLogoIcon
-                        className={cx(
-                          className,
-                          'z-10 ml-2 text-xl text-text-muted'
-                        )}
-                      />
-                    )
-                  : undefined
-              }
-              className={showXIcon ? 'pl-12' : ''}
               variant='fill-bg'
               error={errors.name?.message}
             />
