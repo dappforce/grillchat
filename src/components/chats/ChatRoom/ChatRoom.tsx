@@ -4,10 +4,14 @@ import ExtensionModals from '@/components/extensions'
 import TextArea from '@/components/inputs/TextArea'
 import { getIsHubWithoutJoinButton } from '@/constants/hubs'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
+import useLoginOption from '@/hooks/useLoginOption'
 import { getPostQuery } from '@/services/api/query'
 import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
+import { useMyAccount } from '@/stores/my-account'
+import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import { ComponentProps, ReactNode, RefObject, useEffect, useRef } from 'react'
@@ -77,6 +81,12 @@ function ChatInputWrapper({
   const clearAction = useMessageData((state) => state.clearAction)
   const sendEvent = useSendEvent()
 
+  const openProfileModal = useProfileModal((state) => state.openModal)
+  const openLoginModal = useLoginModal((state) => state.setIsOpen)
+  const isLoggedIn = useMyAccount((state) => !!state.address)
+  const parentProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
+  const { loginOption } = useLoginOption()
+
   useEffect(() => {
     return () => clearAction()
   }, [clearAction])
@@ -111,6 +121,22 @@ function ChatInputWrapper({
         />
         {(() => {
           if (customAction) return customAction
+
+          if (loginOption === 'polkadot' && !parentProxyAddress) {
+            return (
+              <Button
+                variant='primary'
+                size='lg'
+                onClick={() => {
+                  if (isLoggedIn)
+                    openProfileModal({ defaultOpenState: 'polkadot-connect' })
+                  else openLoginModal(true, 'polkadot-connect')
+                }}
+              >
+                Connect polkadot wallet
+              </Button>
+            )
+          }
 
           if (isHidden)
             return (
