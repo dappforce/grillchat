@@ -1,6 +1,10 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { getKiltApi, getSubIdRequest, squidRequest } from '@/server/external'
+import {
+  getKiltApi,
+  getSubIdRequest,
+  subsocialSquidRequest,
+} from '@/server/external'
 import { encodeAddress } from '@polkadot/keyring'
 import { gql } from 'graphql-request'
 import { NextApiRequest } from 'next'
@@ -233,7 +237,7 @@ async function getSubsocialUsernames(addresses: string[]) {
   await Promise.allSettled(cachePromises)
 
   type SubsocialAccount = { id: string; usernames: string[] }
-  const res = (await squidRequest({
+  const res = (await subsocialSquidRequest({
     document: gql`
       query GetAccountUsernames($addresses: [String!]!) {
         accounts(where: { id_in: $addresses }) {
