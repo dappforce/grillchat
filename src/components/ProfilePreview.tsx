@@ -140,7 +140,9 @@ const ProfilePreview = ({
             )}
           </div>
         )}
-        {showAllIdentity && <AllIdentityIcons address={address} />}
+        {showAllIdentity && (
+          <AllIdentityIcons className='mt-1' address={address} />
+        )}
       </div>
     </div>
   )

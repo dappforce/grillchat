@@ -1,6 +1,8 @@
 import { getIdentityQuery } from '@/services/api/query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { useSendEvent } from '@/stores/analytics'
+import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
 import {
   profileSourceData,
@@ -83,12 +85,17 @@ function IdentityIcon({
   id?: string
   address: string
 }) {
+  const sendEvent = useSendEvent()
   const { icon: Icon, link, tooltip } = profileSourceData[identityType] || {}
   if (!id) return null
 
   return (
     <PopOver
-      trigger={<Icon />}
+      trigger={
+        <div className='rounded-full border border-background-lightest p-1.5'>
+          <Icon className='block text-xs' />
+        </div>
+      }
       panelSize='sm'
       yOffset={4}
       placement='top'
@@ -97,16 +104,15 @@ function IdentityIcon({
       <LinkText
         href={link?.(id, address)}
         openInNewTab
-        onClick={
-          () => {}
-          // sendEvent('idenity_link_clicked', {
-          //   eventSource: getCurrentPageChatId(),
-          // })
-        }
+        onClick={() => {
+          sendEvent('idenity_link_clicked', {
+            eventSource: getCurrentPageChatId(),
+          })
+        }}
         variant='primary'
         className='flex items-center font-semibold outline-none'
       >
-        <span>{tooltip}</span>
+        <span>{identityType === 'x' ? tooltip : id}</span>
         <HiArrowUpRight />
       </LinkText>
     </PopOver>
