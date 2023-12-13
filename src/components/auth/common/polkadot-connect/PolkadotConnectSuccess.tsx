@@ -19,8 +19,7 @@ export default function PolkadotConnectSuccess() {
     `I just joined the Active Stakers chat on Grill Chat to prepare for the next upgrade to @SubsocialChain's Creator Staking system!
 
 Stake some #SUB, connect to Grill.chat with your staker account, enable notifications, and join the chat!
-`,
-    { tags: ['Polkadot', 'Grillchat', 'Subsocial'] }
+`
   )
 
   const twitterUrl =
