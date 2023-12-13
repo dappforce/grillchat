@@ -5,6 +5,7 @@ import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import { ANN_CHAT_ID } from '@/constants/chat'
 import useIsInIframe from '@/hooks/useIsInIframe'
+import useLoginOption from '@/hooks/useLoginOption'
 import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getUnreadCountQuery } from '@/services/datahub/posts/query'
@@ -92,6 +93,7 @@ export default function Navbar({
     }, 10_000)
   }, [address, isInitializedAddress, prevAddress])
 
+  const { loginOption } = useLoginOption()
   const [initialOpenFromLoginClick, setInitialOpenFromLoginClick] = useState<
     LoginModalStep | undefined
   >()
@@ -110,6 +112,10 @@ export default function Navbar({
     }
   }, [defaultWallet, setPreferredWallet])
   const login = () => {
+    if (loginOption === 'polkadot') {
+      setIsLoginModalOpen(true, 'polkadot-connect')
+      return
+    }
     setIsLoginModalOpen(true, initialOpenFromLoginClick)
     setInitialOpenFromLoginClick(undefined)
   }
