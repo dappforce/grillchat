@@ -1,6 +1,6 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
 
-const queueUrl = 'https://moderation-queue-data-hub.subsocial.network/graphql'
+const queueUrl = process.env.DATAHUB_QUEUE_URL
 if (!queueUrl) throw new Error('Codegen error: Datahub Queue URL not set')
 
 const config: CodegenConfig = {
