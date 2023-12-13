@@ -150,7 +150,7 @@ export default function LoginModal({
   }, [props.isOpen])
 
   // need to use useLayoutEffect to make finalize account works first before rendering any data inside the step
-  // because this won't be called the step component calls closeModal inside the useEffect, e.g. 'polkadot-connect-success' step
+  // because this won't be called the step component calls closeModal inside the useEffect
   useLayoutEffect(() => {
     if (header.finalizeTemporaryAccount) {
       const { finalizeTemporaryAccount } = useMyAccount.getState()

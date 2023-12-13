@@ -2,28 +2,10 @@ import LinkedPolkadotAddressImage from '@/assets/graphics/linked-polkadot-addres
 import Button from '@/components/Button'
 import { useSendEvent } from '@/stores/analytics'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
-import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
-import { useEffect } from 'react'
 
-const hasLinkedPolkadotStorage = new LocalStorage(() => 'has_linked_polkadot')
-
-export default function PolkadotConnectSuccess({
-  closeModal,
-}: {
-  closeModal: () => void
-}) {
+export default function PolkadotConnectSuccess() {
   const sendEvent = useSendEvent()
-
-  useEffect(() => {
-    if (hasLinkedPolkadotStorage.get() === 'true') {
-      closeModal()
-    }
-    setTimeout(() => {
-      hasLinkedPolkadotStorage.set('true')
-    }, 1_000)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const twitterUrl = twitterShareUrl(
     'https://grill.chat',
