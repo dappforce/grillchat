@@ -36,6 +36,7 @@ export default function DefaultChatItem({
         {!isMyMessage && (
           <div className='flex items-baseline'>
             <ProfilePreviewModalName
+              showModeratorChip
               labelingData={{ chatId }}
               messageId={messageId}
               address={ownerId}

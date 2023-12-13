@@ -28,6 +28,7 @@ export type NameProps = ComponentProps<'span'> & {
   className?: string
   showOnlyCustomIdentityIcon?: boolean
   profileSourceIconClassName?: string
+  showModeratorChip?: boolean
   profileSourceIconPosition?: 'none' | 'left' | 'right'
   color?: string
   labelingData?: { chatId: string }
@@ -76,6 +77,7 @@ export default function Name({
   profileSourceIconClassName,
   color,
   labelingData,
+  showModeratorChip,
   forceProfileSource,
   profileSourceIconPosition = 'right',
   ...props
@@ -168,7 +170,7 @@ export default function Name({
         {additionalText} {name}{' '}
       </span>
       {profileSourceIconPosition === 'right' && iconElement}
-      {inView && (
+      {inView && showModeratorChip && (
         <ChatModerateChip
           className='relative top-px flex items-center'
           chatId={labelingData?.chatId ?? ''}

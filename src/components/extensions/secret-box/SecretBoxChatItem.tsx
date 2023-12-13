@@ -71,6 +71,7 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
             <span>
               📦 Only{' '}
               <ProfilePreviewModalName
+                showModeratorChip
                 address={recipient || ''}
                 className='!inline font-semibold'
                 profileSourceIconPosition='none'

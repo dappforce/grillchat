@@ -68,8 +68,7 @@ const ProfilePreview = ({
         <div className='relative left-1 flex items-center gap-2'>
           <Name
             profileSourceIconClassName='text-base'
-            profileSourceIconPosition='left'
-            showOnlyCustomIdentityIcon
+            profileSourceIconPosition='right'
             address={address}
             className={cx('gap-2 text-lg', nameClassName)}
             forceProfileSource={forceProfileSource}

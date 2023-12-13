@@ -100,6 +100,7 @@ export default function CommonChatItem({
         {!isMyMessage && (
           <div className='flex items-baseline px-2.5 first:pt-1.5'>
             <ProfilePreviewModalName
+              showModeratorChip
               labelingData={{ chatId }}
               messageId={message.id}
               address={ownerId}
