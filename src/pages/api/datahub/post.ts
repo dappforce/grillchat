@@ -1,7 +1,6 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import {
   CanUserDoAction,
-  CreateMutateLinkedIdentityInput,
   CreatePostOptimisticInput,
   UpdatePostBlockchainSyncStatusInput,
   UpdatePostOptimisticInput,
@@ -70,14 +69,6 @@ export type DatahubPostMutationBody =
   | {
       action: 'notify-update-failed'
       payload: UpdatePostBlockchainSyncStatusInput
-    }
-  | {
-      action: 'link-identity'
-      payload: CreateMutateLinkedIdentityInput
-    }
-  | {
-      action: 'unlink-identity'
-      payload: CreateMutateLinkedIdentityInput
     }
 
 export type ApiDatahubPostResponse = ApiResponse
