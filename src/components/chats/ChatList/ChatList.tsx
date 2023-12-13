@@ -3,7 +3,6 @@ import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
@@ -117,17 +116,8 @@ function ChatListContent({
   const lastBatchQueries = getPostQuery.useQueries(lastBatchIds)
   const isLastBatchLoading = useIsAnyQueriesLoading(lastBatchQueries)
 
-  const lastBatchOwnerIds = lastBatchQueries
-    .map((query) => query.data?.struct.ownerId)
-    .filter(Boolean)
-  const lastBatchIdentitiesQuery =
-    getLinkedIdentityQuery.useQueries(lastBatchOwnerIds)
-  const isLastBatchIdentitiesLoading = useIsAnyQueriesLoading(
-    lastBatchIdentitiesQuery
-  )
-
   useEffect(() => {
-    if (isLastBatchLoading || isLastBatchIdentitiesLoading) return
+    if (isLastBatchLoading) return
     setRenderedMessageIds(() => {
       let newRenderedMessageIds = [...currentPageMessageIds]
       if (isLastBatchLoading) {
@@ -139,7 +129,7 @@ function ChatListContent({
 
       return newRenderedMessageIds
     })
-  }, [isLastBatchLoading, isLastBatchIdentitiesLoading, currentPageMessageIds])
+  }, [isLastBatchLoading, currentPageMessageIds])
 
   useLoadMoreIfNoScroll(loadMore, renderedMessageIds?.length ?? 0, {
     scrollContainer: scrollContainerRef,
