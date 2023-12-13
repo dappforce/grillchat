@@ -32,6 +32,7 @@ type ConfirmationModalState = {
   toBeUnblocked: {
     id: string
     reasonText: string
+    blockedTime: string
   } | null
 }
 type ConfirmationModalAction =
@@ -111,6 +112,7 @@ export default function ModerationInfoModal({
         payload: {
           id: address,
           reasonText,
+          blockedTime: blockedData.createdAt,
         },
       })
     return {
@@ -191,6 +193,7 @@ export default function ModerationInfoModal({
                     <DataCardContent
                       address={toBeUnblocked.id}
                       reasonText={toBeUnblocked.reasonText}
+                      blockedTime={toBeUnblocked.blockedTime}
                     />
                   ),
                 },
@@ -257,7 +260,7 @@ function DataCardContent({
     <div className='flex items-center gap-2'>
       <AddressAvatar address={address} />
       <div className='flex w-full flex-1 flex-col gap-0.5'>
-        <Name address={address} profileSourceIconPosition='right' />
+        <Name showModeratorChip address={address} />
         <div className='flex items-end gap-2'>
           <span className='text-sm text-text-muted'>
             {reasonText}, blocked {getTimeRelativeToNow(blockedTime as string)}
