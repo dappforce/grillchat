@@ -52,7 +52,7 @@ const modalHeader: ModalConfig = {
   },
   'x-login-loading': {
     title: '🕔 Connecting to X',
-    desc: '',
+    desc: 'We are connecting your X account to Grill.chat. Please wait for a few seconds.',
     withCloseButton: false,
   },
   'account-created': {
