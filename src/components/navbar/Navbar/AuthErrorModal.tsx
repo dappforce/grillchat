@@ -1,12 +1,21 @@
 import Button from '@/components/Button'
 import Modal from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
+import { getBlockedInAppDetailedQuery } from '@/services/datahub/moderation/query'
 import { getUrlQuery } from '@/utils/links'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export default function AuthErrorModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [blockedAddress, setBlockedAddress] = useState('')
+  const { data: blockedInApp, isLoading: isLoadingBlockedInApp } =
+    getBlockedInAppDetailedQuery.useQuery(null)
+
+  const blockedData = useMemo(() => {
+    return blockedInApp?.address.find(
+      (data) => data.resourceId === blockedAddress
+    )
+  }, [blockedInApp, blockedAddress])
 
   useEffect(() => {
     const blockedAddress = getUrlQuery('auth-blocked')
@@ -29,7 +38,7 @@ export default function AuthErrorModal() {
         </div>
         <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
           <span className='mb-1 text-sm text-text-muted'>Reason for ban</span>
-          <span>You are stupid</span>
+          <span>{blockedData?.reason.reasonText}</span>
           {/* TODO: add href to google forms */}
           <Button className='mt-4' variant='primaryOutline' size='lg'>
             Contact support
