@@ -1,3 +1,10 @@
+import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
+import KiltIcon from '@/assets/icons/kilt-dynamic-size.svg'
+import KusamaIcon from '@/assets/icons/kusama-dynamic-size.svg'
+import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
+import SubsocialIcon from '@/assets/icons/subsocial-dynamic-size.svg'
+import XLogoIcon from '@/assets/icons/x-logo-dynamic-size.svg'
+
 type ProfileSourceData =
   | { source: 'ens'; content: string }
   | { source: 'polkadot-identity' }
@@ -49,4 +56,44 @@ export function decodeProfileSource(encoded: string | undefined): {
   const [source, prefix] = data
   const content = encoded.split(prefix)[1]
   return { source, content }
+}
+
+export type ProfileSourceIncludingOffchain = ProfileSource | 'x'
+export const profileSourceData: {
+  [key in ProfileSourceIncludingOffchain]?: {
+    icon: any
+    tooltip: string
+    link: (id: string, address: string) => string
+  }
+} = {
+  'kilt-w3n': {
+    icon: KiltIcon,
+    tooltip: 'Kilt W3Name',
+    link: () => '',
+  },
+  ens: {
+    icon: EthIcon,
+    tooltip: 'ENS',
+    link: (id) => `https://app.ens.domains/${id}`,
+  },
+  'kusama-identity': {
+    icon: KusamaIcon,
+    tooltip: 'Kusama Identity',
+    link: (_, address) => `https://sub.id/${address}`,
+  },
+  'polkadot-identity': {
+    icon: PolkadotIcon,
+    tooltip: 'Polkadot Identity',
+    link: (_, address) => `https://sub.id/${address}`,
+  },
+  'subsocial-username': {
+    icon: SubsocialIcon,
+    tooltip: 'Subsocial Username',
+    link: (id) => `https://sub.id/${id}`,
+  },
+  x: {
+    icon: XLogoIcon,
+    tooltip: 'X Profile',
+    link: (id) => `https://twitter.com/intent/user?user_id=${id}`,
+  },
 }

@@ -125,6 +125,7 @@ export default function AccountContent({
       <div className='mt-2 flex flex-col'>
         <div className='flex flex-col gap-4 border-b border-background-lightest px-6 pb-6'>
           <ProfilePreview
+            showAllIdentity
             onEditClick={() => setCurrentState('profile-settings')}
             address={address}
           />

@@ -1,9 +1,3 @@
-import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
-import KiltIcon from '@/assets/icons/kilt-dynamic-size.svg'
-import KusamaIcon from '@/assets/icons/kusama-dynamic-size.svg'
-import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
-import SubsocialIcon from '@/assets/icons/subsocial-dynamic-size.svg'
-import XLogoIcon from '@/assets/icons/x-logo-dynamic-size.svg'
 import useAddressIdentityId from '@/hooks/useAddressIdentityId'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
@@ -12,7 +6,12 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
-import { decodeProfileSource, ProfileSource } from '@/utils/profile'
+import {
+  decodeProfileSource,
+  ProfileSource,
+  profileSourceData,
+  ProfileSourceIncludingOffchain,
+} from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import { HiArrowUpRight } from 'react-icons/hi2'
@@ -33,40 +32,6 @@ export type NameProps = ComponentProps<'span'> & {
   color?: string
   labelingData?: { chatId: string }
   forceProfileSource?: ForceProfileSource
-}
-
-const profileSourceData: {
-  [key in ProfileSource]?: {
-    icon: any
-    tooltip: string
-    link: (name: string, address: string) => string
-  }
-} = {
-  'kilt-w3n': {
-    icon: KiltIcon,
-    tooltip: 'Kilt W3Name',
-    link: () => '',
-  },
-  ens: {
-    icon: EthIcon,
-    tooltip: 'ENS',
-    link: (name) => `https://app.ens.domains/${name}`,
-  },
-  'kusama-identity': {
-    icon: KusamaIcon,
-    tooltip: 'Kusama Identity',
-    link: (_, address) => `https://sub.id/${address}`,
-  },
-  'polkadot-identity': {
-    icon: PolkadotIcon,
-    tooltip: 'Polkadot Identity',
-    link: (_, address) => `https://sub.id/${address}`,
-  },
-  'subsocial-username': {
-    icon: SubsocialIcon,
-    tooltip: 'Subsocial Username',
-    link: (name) => `https://sub.id/${name}`,
-  },
 }
 
 export default function Name({
@@ -94,21 +59,21 @@ export default function Name({
     { enabled: inView && profileSource === 'subsocial-profile' }
   )
 
+  let usedProfileSource: ProfileSourceIncludingOffchain | undefined =
+    profileSource
+  if (linkedIdentity && profileSource === 'subsocial-profile') {
+    usedProfileSource = 'x'
+  }
+
   let {
     icon: Icon,
     tooltip,
     link,
-  } = profileSourceData[profileSource ?? ('' as ProfileSource)] || {}
+  } = profileSourceData[usedProfileSource || ('' as ProfileSource)] || {}
 
   if (showOnlyCustomIdentityIcon && profileSource !== 'subsocial-profile') {
     Icon = undefined
     tooltip = ''
-  }
-  if (linkedIdentity && profileSource === 'subsocial-profile') {
-    Icon = XLogoIcon
-    tooltip = 'X Profile'
-    link = () =>
-      `https://twitter.com/intent/user?user_id=${linkedIdentity.externalId}`
   }
 
   if (isLoading) {

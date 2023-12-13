@@ -10,6 +10,7 @@ import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import { HiPencil } from 'react-icons/hi2'
 import AddressAvatar from './AddressAvatar'
+import AllIdentityIcons from './AllIdentityIcons'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
 import PopOver from './floating/PopOver'
@@ -29,6 +30,7 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   showAddress?: boolean
   nameClassName?: string
   onEditClick?: () => void
+  showAllIdentity?: boolean
 }
 
 const ProfilePreview = ({
@@ -40,6 +42,7 @@ const ProfilePreview = ({
   addressesContainerClassName,
   onEditClick,
   showAddress = true,
+  showAllIdentity,
   ...props
 }: ProfilePreviewProps) => {
   const { isLoading } = useName(address)
@@ -137,6 +140,7 @@ const ProfilePreview = ({
             )}
           </div>
         )}
+        {showAllIdentity && <AllIdentityIcons address={address} />}
       </div>
     </div>
   )
