@@ -25,6 +25,11 @@ export const useLoginModal = create<State & Actions>()((set) => ({
       if (isTemporaryAccount) logout()
       set({ isOpen: false })
       return
+    } else if (
+      initialOpenState === 'polkadot-connect' &&
+      useMyAccount.getState().preferredWallet
+    ) {
+      initialOpenState = 'polkadot-connect-account'
     }
     set({ isOpen, initialOpenState })
   },
