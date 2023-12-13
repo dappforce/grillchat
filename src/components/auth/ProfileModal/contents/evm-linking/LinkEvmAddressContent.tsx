@@ -2,14 +2,12 @@ import { CustomConnectButton } from '@/components/auth/common/evm/CustomConnectB
 import { ContentProps } from '@/components/auth/ProfileModal/types'
 import Button from '@/components/Button'
 import EvmAddress from '@/components/EvmAddress'
-import PopOver from '@/components/floating/PopOver'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import { cx } from '@/utils/class-names'
 import { useAccount } from 'wagmi'
-import useCanUnlinkAddress from '../../hooks/useCanUnlinkAddress'
+import UnlinkAddressWrapper from '../common/UnlinkAddressWrapper'
 
 function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
-  const canUnlinkAddress = useCanUnlinkAddress()
   const { address: addressFromExt } = useAccount()
 
   const addressFromExtLowercased = addressFromExt?.toLowerCase()
@@ -38,35 +36,25 @@ function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
     />
   )
 
-  const unlinkButton = (
-    <Button
-      onClick={() => setCurrentState('unlink-evm-confirmation')}
-      disabled={!canUnlinkAddress}
-      className='mt-4 w-full border-red-500'
-      variant='primaryOutline'
-      size='lg'
-    >
-      Unlink EVM address
-    </Button>
-  )
-
   return (
     <div>
       {evmAddress ? (
         <div>
           <EvmAddress evmAddress={evmAddress} className='mb-2' />
           {isNotEqAddresses && connectionButton}
-          {!canUnlinkAddress ? (
-            <PopOver
-              yOffset={8}
-              trigger={<div className='w-full'>{unlinkButton}</div>}
-              triggerOnHover
-            >
-              <p>You need at least 1 identity/account linked to your account</p>
-            </PopOver>
-          ) : (
-            unlinkButton
-          )}
+          <UnlinkAddressWrapper>
+            {(canUnlinkAddress) => (
+              <Button
+                onClick={() => setCurrentState('unlink-evm-confirmation')}
+                disabled={!canUnlinkAddress}
+                className='mt-4 w-full border-red-500'
+                variant='primaryOutline'
+                size='lg'
+              >
+                Unlink EVM address
+              </Button>
+            )}
+          </UnlinkAddressWrapper>
         </div>
       ) : (
         connectionButton
