@@ -1,5 +1,5 @@
 import BellIcon from '@/assets/icons/bell.svg'
-import { getChatsForStakers } from '@/constants/chat'
+import useLoginOption from '@/hooks/useLoginOption'
 import { useSendEvent } from '@/stores/analytics'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
@@ -13,14 +13,10 @@ import EmailSubscriptionModal, {
 } from '../modals/EmailSubscriptionModal'
 import Modal, { ModalFunctionalityProps } from '../modals/Modal'
 
-export type StayUpdatedModalProps = ModalFunctionalityProps & {
-  chatId: string
-}
+export type StayUpdatedModalProps = ModalFunctionalityProps
 
-export default function StayUpdatedModal({
-  chatId,
-  ...props
-}: StayUpdatedModalProps) {
+export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
+  const { loginOption } = useLoginOption()
   const sendEvent = useSendEvent()
 
   const [isOpenEmailModal, setIsOpenEmailModal] = useState(false)
@@ -80,10 +76,7 @@ export default function StayUpdatedModal({
     })
   }
 
-  if (
-    getChatsForStakers().includes(chatId) &&
-    emailSubscribedStorage.get() !== 'true'
-  ) {
+  if (loginOption === 'polkadot' && emailSubscribedStorage.get() !== 'true') {
     menus.unshift({
       text: 'Subscribe Email',
       icon: HiOutlineMail,

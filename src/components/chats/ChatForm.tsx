@@ -323,7 +323,6 @@ export default function ChatForm({
       </form>
 
       <StayUpdatedModal
-        chatId={chatId}
         isOpen={isOpenCtaModal}
         closeModal={() => setIsOpenCtaModal(false)}
       />

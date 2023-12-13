@@ -1,11 +1,18 @@
 import InfoPanel from '@/components/InfoPanel'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import useLoginOption from '@/hooks/useLoginOption'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
+import dynamic from 'next/dynamic'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { loginModalContents, LoginModalStep } from './LoginModalContent'
+
+const StayUpdatedModal = dynamic(
+  () => import('@/components/chats/StayUpdatedModal'),
+  { ssr: false }
+)
 
 export type LoginModalProps = ModalFunctionalityProps & {
   initialOpenState?: LoginModalStep
@@ -126,6 +133,9 @@ export default function LoginModal({
   onBackClick,
   ...props
 }: LoginModalProps) {
+  const [isOpenStayUpdatedModal, setIsOpenStayUpdatedModal] = useState(false)
+  const { loginOption } = useLoginOption()
+
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [currentState, setCurrentState] =
     useState<LoginModalStep>(initialOpenState)
@@ -166,36 +176,52 @@ export default function LoginModal({
       : withBackButton
 
   return (
-    <Modal
-      {...props}
-      withFooter={withFooter}
-      initialFocus={isTouchDevice() ? undefined : inputRef}
-      title={title}
-      withCloseButton={withCloseButton}
-      description={desc}
-      onBackClick={showBackButton ? usedOnBackClick : undefined}
-      contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
-      titleClassName={cx(withoutDefaultPadding && 'px-6')}
-      descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
-      closeModal={() => {
-        if (
-          currentState === 'evm-address-linked' &&
-          (accountData?.ensNames?.length ?? 0) > 0
-        ) {
-          setCurrentState('evm-set-profile')
-          return
-        } else if (currentState === 'x-login-loading') {
-          return
-        }
-
-        props.closeModal()
-      }}
-    >
-      <ModalContent
-        setCurrentState={setCurrentState}
-        currentStep={currentState}
+    <>
+      <Modal
         {...props}
-      />
-    </Modal>
+        withFooter={withFooter}
+        initialFocus={isTouchDevice() ? undefined : inputRef}
+        title={title}
+        withCloseButton={withCloseButton}
+        description={desc}
+        onBackClick={showBackButton ? usedOnBackClick : undefined}
+        contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
+        titleClassName={cx(withoutDefaultPadding && 'px-6')}
+        descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
+        closeModal={() => {
+          if (
+            loginOption === 'polkadot' &&
+            currentState === 'polkadot-connect-success'
+          ) {
+            props.closeModal()
+            setIsOpenStayUpdatedModal(true)
+            return
+          }
+          if (
+            currentState === 'evm-address-linked' &&
+            (accountData?.ensNames?.length ?? 0) > 0
+          ) {
+            setCurrentState('evm-set-profile')
+            return
+          } else if (currentState === 'x-login-loading') {
+            return
+          }
+
+          props.closeModal()
+        }}
+      >
+        <ModalContent
+          setCurrentState={setCurrentState}
+          currentStep={currentState}
+          {...props}
+        />
+      </Modal>
+      {loginOption === 'polkadot' && (
+        <StayUpdatedModal
+          isOpen={isOpenStayUpdatedModal}
+          closeModal={() => setIsOpenStayUpdatedModal(false)}
+        />
+      )}
+    </>
   )
 }
