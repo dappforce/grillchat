@@ -95,7 +95,7 @@ export const LoginContent = ({ setCurrentState }: ContentProps) => {
           )}
           <Button
             onClick={() => {
-              sendEvent('x_signin_started')
+              sendEvent('x_login_started')
               signIn('twitter', {
                 callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
               })
@@ -385,7 +385,7 @@ const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
       session &&
       linkedIdentity?.externalId === session?.user?.id
     if (foundIdentity && !upsertedProfile.current) {
-      sendEvent('x_login_creating_profile')
+      sendEvent('x_login_creating_profile', undefined, { twitterLinked: true })
       upsertedProfile.current = true
       upsertProfile({
         content: {

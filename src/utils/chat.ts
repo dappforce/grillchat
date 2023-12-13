@@ -1,4 +1,6 @@
 import { PostData } from '@subsocial/api/types'
+import Router from 'next/router'
+import { getIdFromSlug } from './slug'
 
 export function isMessageBlocked(
   message: PostData | undefined | null,
@@ -30,4 +32,10 @@ export function filterBlockedMessageIds(
   if (!blockedIds) return messageIds
   const blockedIdsSet = new Set(blockedIds)
   return messageIds.filter((id) => !blockedIdsSet?.has(id))
+}
+
+export function getCurrentPageChatId() {
+  const { query } = Router
+  const slug = query?.slug as string
+  return getIdFromSlug(slug)
 }

@@ -10,6 +10,7 @@ import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
+import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
 import { decodeProfileSource, ProfileSource } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
@@ -140,7 +141,11 @@ export default function Name({
         <LinkText
           href={link?.(name, address)}
           openInNewTab
-          onClick={() => sendEvent('click_name_link')}
+          onClick={() =>
+            sendEvent('idenity_link_clicked', {
+              eventSource: getCurrentPageChatId(),
+            })
+          }
           variant='primary'
           className='flex items-center font-semibold outline-none'
         >

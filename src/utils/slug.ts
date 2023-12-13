@@ -3,6 +3,7 @@ import slugify from 'slugify'
 const SLUG_SEPARATOR = '-'
 
 export function getIdFromSlug(slug: string) {
+  if (!slug) return undefined
   return slug.split(SLUG_SEPARATOR).pop()?.trim()
 }
 
