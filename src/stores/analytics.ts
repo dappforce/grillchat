@@ -18,10 +18,11 @@ type EventProperties = {
   [key: string]: any
 }
 
-type UserProperties = {
+export type UserProperties = {
   cameFrom?: string
   cohortDate?: Date
   polkadotLinked?: boolean
+  twitterLinked?: boolean
   pwaInstalled?: boolean
   evmLinked?: boolean
   tgNotifsConnected?: boolean

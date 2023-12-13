@@ -1,7 +1,9 @@
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { IdentityProvider } from '@/services/datahub/generated-query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { queryClient } from '@/services/provider'
-import { getAccountsData } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
 import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useParentData } from '@/stores/parent'
@@ -18,7 +20,7 @@ import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
 import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
-import { useAnalytics } from './analytics'
+import { useAnalytics, UserProperties } from './analytics'
 import { create } from './utils'
 
 type State = {
@@ -87,7 +89,7 @@ const sendLaunchEvent = async (
   address?: string | false,
   parentProxyAddress?: string | null
 ) => {
-  let userProperties = {
+  let userProperties: UserProperties = {
     tgNotifsConnected: false,
     evmLinked: false,
     polkadotLinked: !!parentProxyAddress,
@@ -100,28 +102,26 @@ const sendLaunchEvent = async (
   if (!address) {
     sendEvent('launch_app')
   } else {
-    try {
-      const linkedTgAccData = await getLinkedTelegramAccountsQuery.fetchQuery(
-        queryClient,
-        {
+    const [linkedTgAccData, evmLinkedAddress, ownedPostIds, linkedIdentity] =
+      await Promise.allSettled([
+        getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
           address,
-        }
-      )
-      userProperties.tgNotifsConnected = (linkedTgAccData?.length || 0) > 0
-    } catch {}
+        }),
+        getAccountDataQuery.fetchQuery(queryClient, address),
+        getOwnedPostIdsQuery.fetchQuery(queryClient, address),
+        getLinkedIdentityQuery.fetchQuery(queryClient, address),
+      ] as const)
 
-    try {
-      const [evmLinkedAddress] = await getAccountsData([address])
-      userProperties.evmLinked = !!evmLinkedAddress
-    } catch {}
-
-    try {
-      const ownedPostIds = await getOwnedPostIdsQuery.fetchQuery(
-        queryClient,
-        address
-      )
-      userProperties.ownedChat = (ownedPostIds?.length || 0) > 0
-    } catch {}
+    if (linkedTgAccData.status === 'fulfilled')
+      userProperties.tgNotifsConnected =
+        (linkedTgAccData.value?.length || 0) > 0
+    if (evmLinkedAddress.status === 'fulfilled')
+      userProperties.evmLinked = !!evmLinkedAddress.value
+    if (ownedPostIds.status === 'fulfilled')
+      userProperties.ownedChat = (ownedPostIds.value?.length || 0) > 0
+    if (linkedIdentity.status === 'fulfilled')
+      userProperties.twitterLinked =
+        linkedIdentity.value?.provider === IdentityProvider.Twitter
 
     userProperties.webNotifsEnabled = isWebNotificationsEnabled()
 
