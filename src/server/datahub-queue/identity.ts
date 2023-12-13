@@ -31,29 +31,3 @@ export async function linkIdentity(input: SocialEventDataApiInput) {
     },
   })
 }
-
-// const UNLINK_IDENTITY_MUTATION = gql`
-//   mutation UnlinkIdentity(
-//     $createLinkedIdentityInput: CreateMutateLinkedIdentityInput!
-//   ) {
-//     deleteLinkedIdentity(
-//       createLinkedIdentityInput: $createLinkedIdentityInput
-//     ) {
-//       processed
-//       message
-//     }
-//   }
-// `
-// export async function unlinkIdentity(input: CreateMutateLinkedIdentityInput) {
-//   // TODO: remove this when we have a better way to sign
-//   await backendSigWrapper(input)
-//   await datahubQueueRequest<
-//     Mutation['deleteLinkedIdentity'],
-//     MutationDeleteLinkedIdentityArgs
-//   >({
-//     document: UNLINK_IDENTITY_MUTATION,
-//     variables: {
-//       deleteLinkedIdentityInput: input,
-//     },
-//   })
-// }

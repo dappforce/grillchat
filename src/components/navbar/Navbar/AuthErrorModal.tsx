@@ -39,8 +39,12 @@ export default function AuthErrorModal() {
         <div className='flex flex-col rounded-2xl bg-background-lighter p-4'>
           <span className='mb-1 text-sm text-text-muted'>Reason for ban</span>
           <span>{blockedData?.reason.reasonText}</span>
-          {/* TODO: add href to google forms */}
-          <Button className='mt-4' variant='primaryOutline' size='lg'>
+          <Button
+            className='mt-4'
+            variant='primaryOutline'
+            size='lg'
+            href='https://forms.gle/ahD8j8we4L8asSVEA'
+          >
             Contact support
           </Button>
         </div>
