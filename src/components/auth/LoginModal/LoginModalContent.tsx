@@ -258,6 +258,8 @@ export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
   const sendEvent = useSendEvent()
   const { loginOption } = useLoginOption()
 
+  const preferredWallet = useMyAccount((state) => state.preferredWallet)
+
   return (
     <MenuList
       className='pt-0'
@@ -278,7 +280,9 @@ export const ConnectWalletContent = ({ setCurrentState }: ContentProps) => {
           text: 'Polkadot',
           icon: PolkadotIcon,
           onClick: () => {
-            setCurrentState('polkadot-connect')
+            if (preferredWallet) setCurrentState('polkadot-connect-account')
+            else setCurrentState('polkadot-connect')
+
             sendEvent('start_link_polkadot_address')
           },
         },
