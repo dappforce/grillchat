@@ -4,7 +4,7 @@ import KusamaIcon from '@/assets/icons/kusama-dynamic-size.svg'
 import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
 import SubsocialIcon from '@/assets/icons/subsocial-dynamic-size.svg'
 import XLogoIcon from '@/assets/icons/x-logo-dynamic-size.svg'
-import useAddressRandomSeed from '@/hooks/useAddressRandomSeed'
+import useAddressIdentityId from '@/hooks/useAddressIdentityId'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
@@ -203,7 +203,7 @@ export function useName(
   const isLoadingIdentities = isFetchingIdentities && isIdentitiesNeeded
 
   const { ensNames, evmAddress } = accountData || {}
-  const randomSeed = useAddressRandomSeed(address)
+  const randomSeed = useAddressIdentityId(address)
   let name = generateRandomName(randomSeed)
 
   function getNameFromSource(profileSource?: ProfileSource, content?: string) {

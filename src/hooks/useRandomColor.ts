@@ -1,7 +1,7 @@
 import { Theme } from '@/@types/theme'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { generateRandomColor } from '@/utils/random-colors'
-import useAddressRandomSeed from './useAddressRandomSeed'
+import useAddressIdentityId from './useAddressIdentityId'
 import useGetTheme from './useGetTheme'
 
 export default function useRandomColor(
@@ -15,7 +15,7 @@ export default function useRandomColor(
 
   const { theme: configTheme } = useConfigContext()
   const currentTheme = useGetTheme()
-  const addressSeed = useAddressRandomSeed(seed ?? '', {
+  const addressSeed = useAddressIdentityId(seed ?? '', {
     enabled: !!isAddress && !!seed,
   })
 

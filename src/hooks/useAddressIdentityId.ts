@@ -1,7 +1,7 @@
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 
-export default function useAddressRandomSeed(
+export default function useAddressIdentityId(
   address: string,
   { enabled } = { enabled: true }
 ) {
