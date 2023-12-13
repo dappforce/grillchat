@@ -31,7 +31,7 @@ export default handlerWrapper({
       `/staking/creator/backer/ledger?account=${data.address}`
     )
     const stakingData = response.data as { totalLocked: string }
-    const isStaked = new BN(stakingData.totalLocked).isZero()
+    const isStaked = !new BN(stakingData.totalLocked).isZero()
 
     return res.json({
       message: 'OK',
