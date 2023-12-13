@@ -17,7 +17,6 @@ import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import { ComponentProps, ReactNode, RefObject, useEffect, useRef } from 'react'
-import { HiArrowUpRight } from 'react-icons/hi2'
 import ChatInputBar from './ChatInputBar'
 
 const ChatList = dynamic(() => import('../ChatList/ChatList'), {
@@ -149,18 +148,19 @@ function ChatInputWrapper({
               return <Skeleton className='h-12 w-full' />
             } else if (!hasUserStaked) {
               return (
-                <span className='flex h-12 items-center justify-center rounded-full bg-background-light/50 text-center text-text-muted'>
+                <span className='flex h-12 items-center justify-center rounded-full bg-background-light/50 px-8 text-center text-sm text-text-muted'>
                   <span>
-                    You have to stake SUB to send messages in this chat
+                    In order to participate in this chat, you must{' '}
+                    <LinkText
+                      className='font-semibold'
+                      variant='primary'
+                      href='https://sub.id/stakers'
+                    >
+                      stake SUB
+                    </LinkText>
+                    , enable Grill.chat notifications, and sign in to Grill with
+                    that account, or link it to your existing account.
                   </span>
-                  <LinkText
-                    className='ml-2 font-semibold'
-                    variant='primary'
-                    href='https://sub.id/stakers'
-                  >
-                    Stake SUB Now
-                    <HiArrowUpRight className='inline' />
-                  </LinkText>
                 </span>
               )
             }
