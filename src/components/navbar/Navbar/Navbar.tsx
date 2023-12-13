@@ -1,3 +1,4 @@
+import { LoginModalStep } from '@/components/auth/LoginModal/LoginModalContent'
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
@@ -15,6 +16,7 @@ import { getDatahubConfig } from '@/utils/env/client'
 import { getHubPageLink, getUrlQuery } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
+import { getWallets, Wallet } from '@talismn/connect-wallets'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -90,8 +92,26 @@ export default function Navbar({
     }, 10_000)
   }, [address, isInitializedAddress, prevAddress])
 
+  const [initialOpenFromLoginClick, setInitialOpenFromLoginClick] = useState<
+    LoginModalStep | undefined
+  >()
+  const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
+  const { defaultWallet } = useConfigContext()
+  useEffect(() => {
+    if (defaultWallet) {
+      const supportedWallets: Wallet[] = getWallets()
+      const wallet = supportedWallets.find(
+        (wallet) => wallet.title === defaultWallet.walletName
+      )
+      if (wallet) {
+        setPreferredWallet(wallet)
+        setInitialOpenFromLoginClick('polkadot-connect-account')
+      }
+    }
+  }, [defaultWallet, setPreferredWallet])
   const login = () => {
-    setIsLoginModalOpen(true)
+    setIsLoginModalOpen(true, initialOpenFromLoginClick)
+    setInitialOpenFromLoginClick(undefined)
   }
 
   const renderAuthComponent = () => {

@@ -8,6 +8,10 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 type State = {
   theme?: Theme
   order?: string[]
+  defaultWallet?: {
+    walletName: string
+    address?: string
+  }
   channels?: Set<string>
   rootFontSize?: string
   enableBackButton?: boolean
@@ -107,6 +111,9 @@ const schemaGetter = {
     const enableLoginButton = getUrlQuery('enableLoginButton')
     const enableInputAutofocus = getUrlQuery('enableInputAutofocus')
 
+    const wallet = getUrlQuery('wallet')
+    const address = getUrlQuery('address')
+
     const customTextsString = getUrlQuery('customTexts')
     let customTexts: GrillConfig['customTexts']
     if (customTextsString) {
@@ -129,6 +136,12 @@ const schemaGetter = {
       channels: usedChannels.size > 0 ? usedChannels : undefined,
       theme: validateStringConfig(theme, ['dark', 'light']),
       rootFontSize,
+      defaultWallet: wallet
+        ? {
+            walletName: wallet,
+            address,
+          }
+        : undefined,
       enableBackButton: validateStringConfig(
         enableBackButton,
         ['true', 'false'],
