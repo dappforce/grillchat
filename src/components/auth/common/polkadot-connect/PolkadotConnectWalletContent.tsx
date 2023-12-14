@@ -28,7 +28,10 @@ export default function PolkadotConnectWalletContent({
   supportedWallets.forEach((wallet) => {
     // polkadot js doesn't inject its web3 object inside iframe
     // issue link: https://github.com/polkadot-js/extension/issues/1274
-    if (wallet.installed) installedWallets.push(wallet)
+    const isPolkadotJsAndInIframe =
+      wallet.title.toLowerCase() === 'polkadot.js' && isInIframe
+    if (wallet.installed || isPolkadotJsAndInIframe)
+      installedWallets.push(wallet)
     else otherWallets.push(wallet)
   })
   let hasInstalledWallet = installedWallets.length
@@ -46,6 +49,7 @@ export default function PolkadotConnectWalletContent({
           <span
             className={cx(
               !wallet.installed &&
+                !isPolkadotJsAndInIframe &&
                 'opacity-30 dark:opacity-100 dark:brightness-50'
             )}
           >
