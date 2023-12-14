@@ -1,4 +1,3 @@
-import { LoginModalStep } from '@/components/auth/LoginModal/LoginModalContent'
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
@@ -65,6 +64,9 @@ export default function Navbar({
 
   const isLoginModalOpen = useLoginModal((state) => state.isOpen)
   const setIsLoginModalOpen = useLoginModal((state) => state.setIsOpen)
+  const setLoginModalDefaultOpenState = useLoginModal(
+    (state) => state.setDefaultOpenState
+  )
   const initialLoginModalOpenState = useLoginModal(
     (state) => state.initialOpenState
   )
@@ -94,9 +96,6 @@ export default function Navbar({
   }, [address, isInitializedAddress, prevAddress])
 
   const { loginOption } = useLoginOption()
-  const [initialOpenFromLoginClick, setInitialOpenFromLoginClick] = useState<
-    LoginModalStep | undefined
-  >()
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
   const { defaultWallet } = useConfigContext()
   useEffect(() => {
@@ -108,17 +107,16 @@ export default function Navbar({
       )
       if (wallet) {
         setPreferredWallet(wallet)
-        setInitialOpenFromLoginClick('polkadot-connect-account')
+        setLoginModalDefaultOpenState('polkadot-connect-account')
       }
     }
-  }, [defaultWallet, setPreferredWallet])
+  }, [defaultWallet, setPreferredWallet, setLoginModalDefaultOpenState])
   const login = () => {
     if (loginOption === 'polkadot') {
       setIsLoginModalOpen(true, 'polkadot-connect')
       return
     }
-    setIsLoginModalOpen(true, initialOpenFromLoginClick)
-    setInitialOpenFromLoginClick(undefined)
+    setIsLoginModalOpen(true)
   }
 
   const renderAuthComponent = () => {

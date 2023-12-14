@@ -6,20 +6,27 @@ import { create } from './utils'
 type State = {
   isOpen: boolean
   initialOpenState?: LoginModalStep
+  defaultOpenState?: LoginModalStep
 }
 
 type Actions = {
   setIsOpen: (isOpen: boolean, initialOpenState?: LoginModalStep) => void
+  setDefaultOpenState: (defaultOpenState: LoginModalStep) => void
 }
 
 const initialState: State = {
   isOpen: false,
   initialOpenState: undefined,
+  defaultOpenState: undefined,
 }
 
-export const useLoginModal = create<State & Actions>()((set) => ({
+export const useLoginModal = create<State & Actions>()((set, get) => ({
   ...initialState,
   setIsOpen: (isOpen, initialOpenState) => {
+    if (!initialOpenState) {
+      initialOpenState = get().defaultOpenState
+    }
+
     if (!isOpen) {
       const { isTemporaryAccount, logout } = useMyAccount.getState()
       if (isTemporaryAccount) logout()
@@ -32,6 +39,9 @@ export const useLoginModal = create<State & Actions>()((set) => ({
       initialOpenState = 'polkadot-connect-account'
     }
     set({ isOpen, initialOpenState })
+  },
+  setDefaultOpenState: (defaultOpenState) => {
+    set({ defaultOpenState })
   },
   init: () => {
     const loginQuery = getUrlQuery('login')
