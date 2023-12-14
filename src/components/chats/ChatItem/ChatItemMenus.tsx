@@ -11,6 +11,7 @@ import Toast from '@/components/Toast'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useCanSendMessage } from '@/hooks/useCanSendMessage'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
+import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -25,8 +26,9 @@ import { getDatahubConfig } from '@/utils/env/client'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
+import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
 import {
@@ -195,7 +197,10 @@ export default function ChatItemMenus({
   return (
     <>
       <FloatingMenus
-        beforeMenus={isOptimisticMessage && <MintingMessageNotice />}
+        beforeMenus={
+          isOptimisticMessage &&
+          message && <MintingMessageNotice message={message} />
+        }
         menus={menus}
         allowedPlacements={[
           'right',
@@ -268,13 +273,30 @@ function usePinUnpinMenuItem(chatId: string, messageId: string) {
   return null
 }
 
-function MintingMessageNotice() {
+function MintingMessageNotice({ message }: { message: PostData }) {
+  const rerender = useRerender()
+  const createdAt = message.struct.createdAtTime
   const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    const REFRESH_INTERVAL = 60 * 1000 * 5 // 5 minutes
+    const intervalId = setInterval(() => {
+      rerender()
+    }, REFRESH_INTERVAL)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [rerender])
+
+  const tenMins = 1000 * 60 * 10
+  const isMoreThan10Mins =
+    new Date().getTime() - new Date(createdAt).getTime() > tenMins
 
   return (
     <div className='overflow-hidden border-b border-border-gray p-4 pb-3 text-sm text-text-muted'>
       <div className='flex items-center justify-between gap-2'>
-        <p>Message is being minted</p>
+        <p>{isMoreThan10Mins ? 'Not minted yet' : 'Message is being minted'}</p>
         <Button
           size='noPadding'
           variant='transparent'
@@ -296,8 +318,9 @@ function MintingMessageNotice() {
         leaveTo='opacity-0 -top-4'
       >
         <p className='pt-2'>
-          To interact with this message please wait until it is saved to the
-          blockchain (≈ 15 sec).
+          {isMoreThan10Mins
+            ? 'It will be available as an off-chain message in 1 hour, and can then be replied to.'
+            : 'To interact with this message please wait until it is saved to the blockchain (≈ 15 sec).'}
         </p>
       </Transition>
     </div>

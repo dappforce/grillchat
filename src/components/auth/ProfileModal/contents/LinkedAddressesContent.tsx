@@ -5,12 +5,12 @@ import Notice from '@/components/Notice'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
-import { ContentProps } from '../types'
+import { ProfileModalContentProps } from '../types'
 
 export default function LinkedAddressesContent({
   evmAddress,
   setCurrentState,
-}: ContentProps) {
+}: ProfileModalContentProps) {
   const sendEvent = useSendEvent()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const preferredWallet = useMyAccount((state) => state.preferredWallet)

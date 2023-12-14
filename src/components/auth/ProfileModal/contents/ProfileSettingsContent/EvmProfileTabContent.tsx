@@ -10,13 +10,13 @@ import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { decodeProfileSource, encodeProfileSource } from '@/utils/profile'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ContentProps } from '../../types'
+import { ProfileModalContentProps } from '../../types'
 
 export default function EvmProfileTabContent({
   address,
   setSelectedEns,
   setCurrentState,
-}: ContentProps & { setSelectedEns: (ens: string) => void }) {
+}: ProfileModalContentProps & { setSelectedEns: (ens: string) => void }) {
   const { data: accountData, isLoading: isLoadingAccountData } =
     getAccountDataQuery.useQuery(address)
   const { data: profile } = getProfileQuery.useQuery(address)

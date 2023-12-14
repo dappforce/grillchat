@@ -32,10 +32,14 @@ import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUn
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ProfileSettingsContent from './contents/ProfileSettingsContent'
 import ShareSessionContent from './contents/ShareSessionContent'
-import { ContentProps, ProfileModalProps, ProfileModalState } from './types'
+import {
+  ProfileModalContentProps,
+  ProfileModalProps,
+  ProfileModalState,
+} from './types'
 
 const modalContents: {
-  [key in ProfileModalState]: (props: ContentProps) => JSX.Element
+  [key in ProfileModalState]: (props: ProfileModalContentProps) => JSX.Element
 } = {
   account: AccountContent,
   'linked-addresses': LinkedAddressesContent,

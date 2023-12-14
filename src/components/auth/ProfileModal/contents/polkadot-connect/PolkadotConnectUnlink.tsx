@@ -3,12 +3,12 @@ import { RemoveProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import { ContentProps } from '../../types'
+import { ProfileModalContentProps } from '../../types'
 
 export default function PolkadotConnectUnlink({
   setCurrentState,
   address,
-}: ContentProps) {
+}: ProfileModalContentProps) {
   const sendEvent = useSendEvent()
   const { isStale } = getProxiesQuery.useQuery({ address })
   const disconnectProxy = useMyAccount((state) => state.disconnectProxy)

@@ -1,7 +1,10 @@
 import { CommonEVMLoginErrorContent } from '@/components/auth/common/evm/CommonEvmModalContent'
-import { ContentProps } from '@/components/auth/ProfileModal/types'
+import { ProfileModalContentProps } from '@/components/auth/ProfileModal/types'
 
-function EvmLoginError({ setCurrentState, evmAddress }: ContentProps) {
+function EvmLoginError({
+  setCurrentState,
+  evmAddress,
+}: ProfileModalContentProps) {
   return (
     <CommonEVMLoginErrorContent
       setModalStep={() => setCurrentState('link-evm-address')}

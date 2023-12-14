@@ -11,7 +11,7 @@ import { LocalStorage } from '@/utils/storage'
 import { getIsInIos } from '@/utils/window'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { ContentProps } from '../../types'
+import { ProfileModalContentProps } from '../../types'
 
 const FCM_PUSH_NOTIFICATION_STORAGE_KEY = 'push-notification-fcm-token'
 export const fcmPushNotificationStorage = new LocalStorage(
@@ -29,7 +29,9 @@ export function getPushNotificationUsableStatus(): NotificationUsableStatus {
   return 'usable'
 }
 
-export default function PushNotificationContent(props: ContentProps) {
+export default function PushNotificationContent(
+  props: ProfileModalContentProps
+) {
   const myAddress = useMyAccount((state) => state.address)
   const [isRegistered, setIsRegistered] = useState(false)
 
@@ -73,7 +75,7 @@ export default function PushNotificationContent(props: ContentProps) {
   )
 }
 
-type NotificationButtonProps = ContentProps & {
+type NotificationButtonProps = ProfileModalContentProps & {
   setIsRegistered: (v: boolean) => void
 }
 

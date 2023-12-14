@@ -3,10 +3,10 @@ import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
-import { ContentProps } from '../types'
+import { ProfileModalContentProps } from '../types'
 import { fcmPushNotificationStorage } from './notifications/PushNotificationContent'
 
-function LogoutContent({ setCurrentState }: ContentProps) {
+function LogoutContent({ setCurrentState }: ProfileModalContentProps) {
   const closeModal = useProfileModal((state) => state.closeModal)
   const address = useMyAccount((state) => state.address)
   const logout = useMyAccount((state) => state.logout)

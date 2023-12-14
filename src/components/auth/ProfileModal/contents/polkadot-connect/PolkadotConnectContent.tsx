@@ -7,12 +7,12 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
-import { ContentProps } from '../../types'
+import { ProfileModalContentProps } from '../../types'
 import UnlinkAddressWrapper from '../common/UnlinkAddressWrapper'
 
 export default function PolkadotConnectContent({
   setCurrentState,
-}: ContentProps) {
+}: ProfileModalContentProps) {
   const sendEvent = useSendEvent()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
 
