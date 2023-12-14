@@ -7,6 +7,7 @@ import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
+import { useTransactions } from '@/stores/transactions'
 import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
@@ -50,15 +51,20 @@ export default function XLoginLoading({
     () => 'Please refresh the page to relink your account'
   )
 
+  const setBlockchainSubscriptionState = useTransactions(
+    (state) => state.setSubscriptionState
+  )
   const setSubscriptionState = useSubscriptionState(
     (state) => state.setSubscriptionState
   )
   useEffect(() => {
+    setBlockchainSubscriptionState('always-sub')
     setSubscriptionState('identity', 'always-sub')
     return () => {
+      setBlockchainSubscriptionState('dynamic')
       setSubscriptionState('identity', 'dynamic')
     }
-  }, [setSubscriptionState])
+  }, [setSubscriptionState, setBlockchainSubscriptionState])
 
   const upsertedProfile = useRef(false)
   useEffect(() => {
