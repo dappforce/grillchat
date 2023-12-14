@@ -5,6 +5,7 @@ import ASTR from '@/assets/graphics/tokens/astr.webp'
 import DOT from '@/assets/graphics/tokens/dot.webp'
 import ETH from '@/assets/graphics/tokens/eth.png'
 import GLMR from '@/assets/graphics/tokens/glmr.webp'
+import SUB from '@/assets/graphics/tokens/sub.png'
 import USDC from '@/assets/graphics/tokens/usdc.png'
 import USDT from '@/assets/graphics/tokens/usdt.png'
 import { StaticImageData } from 'next/image'
@@ -67,6 +68,11 @@ export const tokensItems: TokenItemsByChainName = {
       icon: GLMR,
       label: 'GLMR',
       isNativeToken: true,
+    },
+    {
+      id: 'sub',
+      icon: SUB,
+      label: 'SUB',
     },
     {
       id: 'dot',
