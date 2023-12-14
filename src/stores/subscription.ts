@@ -1,7 +1,7 @@
 import { create } from './utils'
 
 type SubscriptionType = 'post' | 'identity'
-type SubscriptionState = 'dynamic' | 'always-sub'
+export type SubscriptionState = 'dynamic' | 'always-sub'
 type State = {
   subscriptionState: Record<SubscriptionType, SubscriptionState>
 }
