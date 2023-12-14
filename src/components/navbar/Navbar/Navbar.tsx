@@ -103,7 +103,8 @@ export default function Navbar({
     if (defaultWallet) {
       const supportedWallets: Wallet[] = getWallets()
       const wallet = supportedWallets.find(
-        (wallet) => wallet.title === defaultWallet.walletName
+        (wallet) =>
+          wallet.title.toLowerCase() === defaultWallet.walletName.toLowerCase()
       )
       if (wallet) {
         setPreferredWallet(wallet)
