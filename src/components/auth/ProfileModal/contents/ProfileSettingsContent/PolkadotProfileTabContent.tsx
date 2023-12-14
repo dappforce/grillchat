@@ -17,13 +17,13 @@ import {
   ProfileSource,
 } from '@/utils/profile'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ContentProps } from '../../types'
+import { ProfileModalContentProps } from '../../types'
 
 export default function PolkadotProfileTabContent({
   address,
   setCurrentState,
   setSelectedSource,
-}: ContentProps & {
+}: ProfileModalContentProps & {
   setSelectedSource: (
     source: { source: ProfileSource; content?: string } | undefined
   ) => void

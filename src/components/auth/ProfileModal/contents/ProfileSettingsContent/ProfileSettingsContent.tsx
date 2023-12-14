@@ -11,11 +11,13 @@ import { decodeProfileSource, ProfileSource } from '@/utils/profile'
 import { ProfileContent } from '@subsocial/api/types'
 import { useCallback, useEffect, useState } from 'react'
 import { forceBackFlowStorage } from '../../ProfileModal'
-import { ContentProps, ProfileModalState } from '../../types'
+import { ProfileModalContentProps, ProfileModalState } from '../../types'
 import EvmProfileTabContent from './EvmProfileTabContent'
 import PolkadotProfileTabContent from './PolkadotProfileTabContent'
 
-export default function ProfileSettingsContent(props: ContentProps) {
+export default function ProfileSettingsContent(
+  props: ProfileModalContentProps
+) {
   const customProps = useProfileModal(
     (state) =>
       state.customInternalStepProps as

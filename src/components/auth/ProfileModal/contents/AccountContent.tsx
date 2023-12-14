@@ -20,13 +20,13 @@ import { installApp, isInstallAvailable } from '@/utils/install'
 import { useTheme } from 'next-themes'
 import { FiDownload } from 'react-icons/fi'
 import { useDisconnect } from 'wagmi'
-import { ContentProps } from '../types'
+import { ProfileModalContentProps } from '../types'
 
 export default function AccountContent({
   address,
   setCurrentState,
   notification,
-}: ContentProps) {
+}: ProfileModalContentProps) {
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
 

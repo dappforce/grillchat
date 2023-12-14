@@ -30,7 +30,7 @@ export type ProfileModalState =
   | 'telegram-notifications'
   | 'push-notifications'
 
-export type ContentProps = {
+export type ProfileModalContentProps = {
   address: string
   setCurrentState: (
     state: React.SetStateAction<ProfileModalState>,

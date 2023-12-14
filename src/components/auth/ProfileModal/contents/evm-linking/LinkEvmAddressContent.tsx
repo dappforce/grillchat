@@ -1,5 +1,5 @@
 import { CustomConnectButton } from '@/components/auth/common/evm/CustomConnectButton'
-import { ContentProps } from '@/components/auth/ProfileModal/types'
+import { ProfileModalContentProps } from '@/components/auth/ProfileModal/types'
 import Button from '@/components/Button'
 import EvmAddress from '@/components/EvmAddress'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
@@ -7,7 +7,10 @@ import { cx } from '@/utils/class-names'
 import { useAccount } from 'wagmi'
 import UnlinkAddressWrapper from '../common/UnlinkAddressWrapper'
 
-function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
+function LinkEvmAddressContent({
+  evmAddress,
+  setCurrentState,
+}: ProfileModalContentProps) {
   const { address: addressFromExt } = useAccount()
 
   const addressFromExtLowercased = addressFromExt?.toLowerCase()
