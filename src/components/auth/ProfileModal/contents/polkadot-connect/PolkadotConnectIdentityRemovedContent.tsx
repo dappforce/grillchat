@@ -1,10 +1,10 @@
 import Button from '@/components/Button'
 import { useSendEvent } from '@/stores/analytics'
-import { ContentProps } from '../../types'
+import { ProfileModalContentProps } from '../../types'
 
 export default function PolkadotConnectIdentityRemovedContent({
   setCurrentState,
-}: ContentProps) {
+}: ProfileModalContentProps) {
   const sendEvent = useSendEvent()
   return (
     <Button

@@ -8,13 +8,13 @@ import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/que
 import { cx } from '@/utils/class-names'
 import { HiOutlineMail } from 'react-icons/hi'
 import { LiaDiscord, LiaTelegram } from 'react-icons/lia'
-import { ContentProps } from '../../types'
+import { ProfileModalContentProps } from '../../types'
 import { useIsPushNotificationEnabled } from './PushNotificationContent'
 
 export default function NotificationContent({
   address,
   setCurrentState,
-}: ContentProps) {
+}: ProfileModalContentProps) {
   const pwa = useFirstVisitNotification('pwa-notification')
   const telegram = useFirstVisitNotification('telegram-notification')
   const { data: linkedAccounts } = getLinkedTelegramAccountsQuery.useQuery({

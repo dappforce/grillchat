@@ -12,9 +12,11 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { HiArrowUpRight } from 'react-icons/hi2'
-import { ContentProps } from '../../types'
+import { ProfileModalContentProps } from '../../types'
 
-export default function TelegramNotificationContent(props: ContentProps) {
+export default function TelegramNotificationContent(
+  props: ProfileModalContentProps
+) {
   const { address } = props
   const [isAfterDisconnect, setIsAfterDisconnect] = useState(false)
 
@@ -85,7 +87,7 @@ export default function TelegramNotificationContent(props: ContentProps) {
 function DisconnectButton({
   address,
   afterDisconnect,
-}: ContentProps & { afterDisconnect?: () => void }) {
+}: ProfileModalContentProps & { afterDisconnect?: () => void }) {
   const { mutate: getLinkingMessage, isLoading } = useLinkTelegramAccount({
     onSuccess: () => {
       afterDisconnect?.()
@@ -109,7 +111,7 @@ function DisconnectButton({
   )
 }
 
-function ConnectTelegramButton({ address }: ContentProps) {
+function ConnectTelegramButton({ address }: ProfileModalContentProps) {
   const queryClient = useQueryClient()
   const { isFetching: isFetchingAccount } =
     getLinkedTelegramAccountsQuery.useQuery({

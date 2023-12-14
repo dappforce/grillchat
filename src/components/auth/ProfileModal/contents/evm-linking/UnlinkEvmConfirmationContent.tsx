@@ -1,4 +1,4 @@
-import { ContentProps } from '@/components/auth/ProfileModal/types'
+import { ProfileModalContentProps } from '@/components/auth/ProfileModal/types'
 import Button from '@/components/Button'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { UnlinkEvmAddressWrapper } from '@/services/subsocial/evmAddresses/mutation'
@@ -7,7 +7,7 @@ function UnlinkEvmConfirmationContent({
   setCurrentState,
   address,
   evmAddress,
-}: ContentProps) {
+}: ProfileModalContentProps) {
   const { isStale } = getAccountDataQuery.useQuery(address)
   const onButtonClick = () => {
     setCurrentState('link-evm-address')
