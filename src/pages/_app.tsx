@@ -8,6 +8,7 @@ import EvmProvider from '@/providers/evm/EvmProvider'
 import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/registry'
+import { useTransactions } from '@/stores/transactions'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
@@ -122,6 +123,7 @@ function ToasterConfig() {
 }
 
 function SubsocialApiReconnect() {
+  const subscriptionState = useTransactions((state) => state.subscriptionState)
   const { status, reconnect, disconnect, connect } = useNetworkStatus()
   const isConnected = status === 'connected'
 
@@ -130,6 +132,12 @@ function SubsocialApiReconnect() {
       reconnect()
     }
   }, [isConnected, reconnect])
+
+  useEffect(() => {
+    if (subscriptionState === 'always-sub') {
+      connect()
+    }
+  }, [subscriptionState, connect])
 
   useEffect(() => {
     const listener = () => {
