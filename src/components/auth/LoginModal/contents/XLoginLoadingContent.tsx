@@ -11,12 +11,9 @@ import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { useSession } from 'next-auth/react'
-import dynamic from 'next/dynamic'
 import { useEffect, useRef } from 'react'
-import { LottieProps } from 'react-lottie'
+import Lottie, { LottieProps } from 'react-lottie'
 import { LoginModalContentProps } from '../LoginModalContent'
-
-const Lottie = dynamic(() => import('react-lottie'), { ssr: false })
 
 export default function XLoginLoading({
   closeModal,
