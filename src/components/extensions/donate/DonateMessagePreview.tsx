@@ -51,7 +51,7 @@ const DonatePreview = ({
     <div
       className={cx(
         'rounded-[4px] px-5 py-5',
-        { 'mt-1': inReplyTo },
+        { 'mt-1': body || inReplyTo },
         getCommonClassNames('donateMessagePreviewBg')
       )}
     >
