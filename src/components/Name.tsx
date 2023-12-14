@@ -61,8 +61,10 @@ export default function Name({
 
   let usedProfileSource: ProfileSourceIncludingOffchain | undefined =
     profileSource
+  let usedTooltipLinkId = name
   if (linkedIdentity && profileSource === 'subsocial-profile') {
     usedProfileSource = 'x'
+    usedTooltipLinkId = linkedIdentity.externalId
   }
 
   let {
@@ -106,7 +108,7 @@ export default function Name({
         triggerOnHover
       >
         <LinkText
-          href={link?.(name, address)}
+          href={link?.(usedTooltipLinkId, address)}
           openInNewTab
           onClick={() =>
             sendEvent('idenity_link_clicked', {
