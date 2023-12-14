@@ -8,6 +8,7 @@ import {
   getBlockedInPostIdDetailedQuery,
 } from '@/services/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
+import { getTimeRelativeToNow } from '@/utils/date'
 import Image from 'next/image'
 import { useReducer } from 'react'
 import { toast } from 'react-hot-toast'
@@ -31,6 +32,7 @@ type ConfirmationModalState = {
   toBeUnblocked: {
     id: string
     reasonText: string
+    blockedTime: string
   } | null
 }
 type ConfirmationModalAction =
@@ -110,6 +112,7 @@ export default function ModerationInfoModal({
         payload: {
           id: address,
           reasonText,
+          blockedTime: blockedData.createdAt,
         },
       })
     return {
@@ -118,6 +121,7 @@ export default function ModerationInfoModal({
         <DataCardContent
           address={address}
           reasonText={reasonText}
+          blockedTime={blockedData.createdAt}
           onUnblock={
             (isAppBlockedData && isAdmin) || (!isAppBlockedData && !isAdmin)
               ? unblockFunc
@@ -146,6 +150,7 @@ export default function ModerationInfoModal({
       },
     })
   }
+  const hasAnyBlockedInApp = isAdmin && blockedInAppCardData.length
 
   return (
     <>
@@ -156,7 +161,7 @@ export default function ModerationInfoModal({
         description='Moderated content will not be deleted from the blockchain but be hidden from the other users in Grill.chat.'
       >
         <div className='flex flex-col gap-4'>
-          {isAdmin && blockedInAppCardData.length && (
+          {hasAnyBlockedInApp && (
             <BlockedUsersList
               data={blockedInAppCardData}
               isLoading={isLoadingBlockedInApp}
@@ -164,6 +169,7 @@ export default function ModerationInfoModal({
             />
           )}
           <BlockedUsersList
+            showNoDataImage={!hasAnyBlockedInApp}
             data={blockedInPostCardData}
             isLoading={isLoadingBlockedInPost}
             title='Blocked users'
@@ -187,6 +193,7 @@ export default function ModerationInfoModal({
                     <DataCardContent
                       address={toBeUnblocked.id}
                       reasonText={toBeUnblocked.reasonText}
+                      blockedTime={toBeUnblocked.blockedTime}
                     />
                   ),
                 },
@@ -203,10 +210,12 @@ function BlockedUsersList({
   data,
   isLoading,
   title,
+  showNoDataImage,
 }: {
   title: string
   data: DataCardProps['data']
   isLoading: boolean
+  showNoDataImage?: boolean
 }) {
   return (
     <div className='flex flex-col gap-2'>
@@ -224,7 +233,7 @@ function BlockedUsersList({
             />
           ) : (
             <div className='flex flex-col items-center gap-4 py-4 text-center'>
-              <Image src={BlockedImage} alt='' />
+              {showNoDataImage && <Image src={BlockedImage} alt='' />}
               <span className='text-text-muted'>
                 There&apos;re no blocked users yet.
               </span>
@@ -240,17 +249,23 @@ function DataCardContent({
   address,
   reasonText,
   onUnblock,
+  blockedTime,
 }: {
   address: string
   reasonText: string
+  blockedTime?: string
   onUnblock?: () => void
 }) {
   return (
     <div className='flex items-center gap-2'>
       <AddressAvatar address={address} />
-      <div className='flex flex-1 flex-col gap-0.5'>
-        <Name address={address} showProfileSourceIcon={false} />
-        <span className='text-sm text-text-muted'>{reasonText}</span>
+      <div className='flex w-full flex-1 flex-col gap-0.5'>
+        <Name showModeratorChip address={address} />
+        <div className='flex items-end gap-2'>
+          <span className='text-sm text-text-muted'>
+            {reasonText}, blocked {getTimeRelativeToNow(blockedTime as string)}
+          </span>
+        </div>
       </div>
       {onUnblock && (
         <Button

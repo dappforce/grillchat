@@ -112,8 +112,10 @@ function ChatListContent({
       currentPageMessageIds.slice(currentPageMessageIds.length - CHAT_PER_PAGE),
     [currentPageMessageIds]
   )
+
   const lastBatchQueries = getPostQuery.useQueries(lastBatchIds)
   const isLastBatchLoading = useIsAnyQueriesLoading(lastBatchQueries)
+
   useEffect(() => {
     if (isLastBatchLoading) return
     setRenderedMessageIds(() => {

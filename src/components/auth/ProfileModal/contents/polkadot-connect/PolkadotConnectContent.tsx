@@ -8,6 +8,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { ContentProps } from '../../types'
+import UnlinkAddressWrapper from '../common/UnlinkAddressWrapper'
 
 export default function PolkadotConnectContent({
   setCurrentState,
@@ -38,17 +39,22 @@ export default function PolkadotConnectContent({
             Sub ID
           </LinkText>
         </Card>
-        <Button
-          onClick={() => {
-            setCurrentState('polkadot-connect-unlink')
-            sendEvent('polkadot_address_unlinked')
-          }}
-          className='mt-6 w-full border-red-500'
-          variant='primaryOutline'
-          size='lg'
-        >
-          Unlink Polkadot address
-        </Button>
+        <UnlinkAddressWrapper>
+          {(canUnlinkAddress) => (
+            <Button
+              onClick={() => {
+                setCurrentState('polkadot-connect-unlink')
+                sendEvent('polkadot_address_unlinked')
+              }}
+              disabled={!canUnlinkAddress}
+              className='mt-6 w-full border-red-500'
+              variant='primaryOutline'
+              size='lg'
+            >
+              Unlink Polkadot address
+            </Button>
+          )}
+        </UnlinkAddressWrapper>
       </div>
     </div>
   )

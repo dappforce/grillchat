@@ -4,7 +4,6 @@ import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ERRORS } from '@/constants/error'
 import useAutofocus from '@/hooks/useAutofocus'
-import useLoginOptions from '@/hooks/useLoginOptions'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
@@ -42,12 +41,6 @@ import { interceptPastedData } from '../extensions/config'
 const StayUpdatedModal = dynamic(() => import('./StayUpdatedModal'), {
   ssr: false,
 })
-const CaptchaInvisible = dynamic(
-  () => import('@/components/captcha/CaptchaInvisible'),
-  {
-    ssr: false,
-  }
-)
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   hubId: string
@@ -92,7 +85,6 @@ export default function ChatForm({
   const messageToEdit = useMessageData((state) => state.messageToEdit)
   const clearAction = useMessageData((state) => state.clearAction)
   const setMessageBody = useMessageData((state) => state.setMessageBody)
-  const { isNonAnonLoginRequired } = useLoginOptions()
 
   const { data: editedMessage } = getPostQuery.useQuery(messageToEdit, {
     enabled: !!messageToEdit,
@@ -190,8 +182,7 @@ export default function ChatForm({
     clearAction?.()
   }
 
-  const needCaptcha = !shouldSendMessage
-  const handleSubmit = async (captchaToken: string | null) => {
+  const handleSubmit = async () => {
     if (
       shouldSendMessage &&
       'virtualKeyboard' in navigator &&
@@ -225,7 +216,7 @@ export default function ChatForm({
       return
     }
 
-    const willOpenLoginModal = isNonAnonLoginRequired && !isLoggedIn
+    const willOpenLoginModal = !isLoggedIn
     if (!hasSentMessageStorage.get() && !willOpenLoginModal) {
       setTimeout(() => {
         setIsOpenCtaModal(true)
@@ -249,10 +240,7 @@ export default function ChatForm({
       sendMessage(messageParams)
     } else {
       resetForm()
-      requestTokenAndSendMessage({
-        captchaToken,
-        ...messageParams,
-      })
+      requestTokenAndSendMessage(messageParams)
       setIsRequestingEnergy(true)
     }
 
@@ -271,82 +259,69 @@ export default function ChatForm({
     incrementMessageCount()
   }
 
+  const submitForm = async (e?: SyntheticEvent) => {
+    e?.preventDefault()
+    handleSubmit()
+  }
+  const renderSendButton = (classNames: string) => (
+    <Button
+      onTouchEnd={(e) => {
+        // For mobile, to prevent keyboard from hiding
+        if (shouldSendMessage) {
+          submitForm(e)
+        }
+      }}
+      tabIndex={-1}
+      onClick={submitForm}
+      size='circle'
+      variant={isDisabled ? 'mutedOutline' : 'primary'}
+      {...sendButtonProps}
+      className={cx(classNames, sendButtonProps?.className)}
+    >
+      <Send className='relative top-px h-4 w-4' />
+    </Button>
+  )
   return (
     <>
-      <CaptchaInvisible>
-        {(runCaptcha) => {
-          const submitForm = async (e?: SyntheticEvent) => {
-            e?.preventDefault()
-            if (!needCaptcha) {
-              handleSubmit(null)
-              return
-            }
-            const token = await runCaptcha()
-            handleSubmit(token)
-          }
+      <form
+        onSubmit={submitForm}
+        {...props}
+        className={cx('flex w-full flex-col gap-2', className)}
+      >
+        <TextArea
+          onPaste={(e) => {
+            const clipboardData = e.clipboardData
+            interceptPastedData(clipboardData, e)
+          }}
+          placeholder='Message...'
+          rows={1}
+          autoComplete='off'
+          autoCapitalize='sentences'
+          autoCorrect='off'
+          spellCheck='false'
+          variant='fill'
+          pill
+          {...inputProps}
+          onChange={(e) => setMessageBody((e.target as any).value)}
+          onEnterToSubmitForm={submitForm}
+          disabled={!chatId || disabled}
+          value={messageBody}
+          ref={textAreaRef}
+          rightElement={!sendButtonText ? renderSendButton : undefined}
+        />
 
-          const renderSendButton = (classNames: string) => (
-            <Button
-              onTouchEnd={(e) => {
-                // For mobile, to prevent keyboard from hiding
-                if (shouldSendMessage) {
-                  submitForm(e)
-                }
-              }}
-              tabIndex={-1}
-              onClick={submitForm}
-              size='circle'
-              variant={isDisabled ? 'mutedOutline' : 'primary'}
-              {...sendButtonProps}
-              className={cx(classNames, sendButtonProps?.className)}
-            >
-              <Send className='relative top-px h-4 w-4' />
-            </Button>
-          )
-
-          return (
-            <form
-              onSubmit={submitForm}
-              {...props}
-              className={cx('flex w-full flex-col gap-2', className)}
-            >
-              <TextArea
-                onPaste={(e) => {
-                  const clipboardData = e.clipboardData
-                  interceptPastedData(clipboardData, e)
-                }}
-                placeholder='Message...'
-                rows={1}
-                autoComplete='off'
-                autoCapitalize='sentences'
-                autoCorrect='off'
-                spellCheck='false'
-                variant='fill'
-                pill
-                {...inputProps}
-                onChange={(e) => setMessageBody((e.target as any).value)}
-                onEnterToSubmitForm={submitForm}
-                disabled={!chatId || disabled}
-                value={messageBody}
-                ref={textAreaRef}
-                rightElement={!sendButtonText ? renderSendButton : undefined}
-              />
-
-              {sendButtonText && (
-                <Button
-                  type='submit'
-                  disabled={isDisabled}
-                  size='lg'
-                  onClick={submitForm}
-                  {...sendButtonProps}
-                >
-                  {sendButtonText}
-                </Button>
-              )}
-            </form>
-          )
-        }}
-      </CaptchaInvisible>
+        {sendButtonText && (
+          <Button
+            type='submit'
+            disabled={isDisabled}
+            size='lg'
+            onClick={submitForm}
+            {...sendButtonProps}
+          >
+            {sendButtonText}
+          </Button>
+        )}
+      </form>
 
       <EmailSubscribeModal chatId={chatId} />
       <StayUpdatedModal

@@ -152,7 +152,6 @@ function DonateForm({
           <ProfilePreview
             address={initialData.recipient}
             avatarClassName='h-12 w-12'
-            withGrillAddress={false}
           />
         </div>
         <div className='flex flex-col gap-6'>

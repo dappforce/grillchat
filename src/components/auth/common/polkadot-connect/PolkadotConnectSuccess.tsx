@@ -6,6 +6,7 @@ import Image from 'next/image'
 
 export default function PolkadotConnectSuccess() {
   const sendEvent = useSendEvent()
+
   const twitterUrl = twitterShareUrl(
     'https://grill.chat',
     `I just linked my #Polkadot wallet to Grill.chat! Now, I can have a consistent identity 🥳`,

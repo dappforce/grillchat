@@ -66,6 +66,8 @@ export const getStaticProps = getCommonStaticProps<
       const results = await getPostsServer([chatId, messageId])
       const chat = results.find((post) => post.id === chatId)
       const message = results.find((post) => post.id === messageId)
+
+      const ownerId = message?.struct.ownerId
       messageId = message?.id ?? messageId
 
       const extensionData = await getMessageDataFromExtension(
@@ -92,6 +94,7 @@ export const getStaticProps = getCommonStaticProps<
       const chatBlockedEntities = getFlatModeratedResource(
         blockedEntities?.blockedInPostIds
       )
+
       const isBlocked = isMessageBlocked(message, {
         addresses: new Set([
           ...appBlockedEntities.address,

@@ -16,7 +16,7 @@ import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { useWalletGetter } from '../hooks'
+import { getCurrentWallet } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import {
   getFollowedPostIdsByAddressQuery,
@@ -29,13 +29,11 @@ export type JoinChatParams = {
 }
 export function useJoinChat(config?: SubsocialMutationConfig<JoinChatParams>) {
   const client = useQueryClient()
-  const getWallet = useWalletGetter()
-
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<JoinChatParams>(
     {
-      getWallet,
+      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: { chatId },
@@ -82,13 +80,12 @@ export function useLeaveChat(
   config?: SubsocialMutationConfig<LeaveChatParams>
 ) {
   const client = useQueryClient()
-  const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<JoinChatParams>(
     {
-      getWallet,
+      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: { chatId },
@@ -183,7 +180,6 @@ export function useUpsertPost(
   config?: SubsocialMutationConfig<UpsertPostParams, GeneratedMessageContent>
 ) {
   const client = useQueryClient()
-  const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
   const { mutate: revalidateChatPage } = useRevalidateChatPage()
@@ -191,7 +187,7 @@ export function useUpsertPost(
 
   return useSubsocialMutation<UpsertPostParams, GeneratedMessageContent>(
     {
-      getWallet,
+      getWallet: getCurrentWallet,
       generateContext: (params) => generateMessageContent(params, client),
       transactionGenerator: async ({
         data: params,
@@ -209,7 +205,7 @@ export function useUpsertPost(
 
         if (action === 'update') {
           await datahubMutation.updatePostData({
-            ...getWallet(),
+            ...getCurrentWallet(),
             args: {
               postId: payload.postId,
               changes: {
@@ -230,7 +226,7 @@ export function useUpsertPost(
           }
         } else if (action === 'create') {
           await datahubMutation.createPostData({
-            ...getWallet(),
+            ...getCurrentWallet(),
             args: {
               content,
               cid: cid,
@@ -281,7 +277,7 @@ export function useUpsertPost(
           if (action === 'create' && context.content.optimisticId) {
             datahubMutation.notifyCreatePostFailedOrRetryStatus({
               address,
-              signer: getWallet().signer,
+              signer: getCurrentWallet().signer,
               timestamp: Date.now(),
               args: {
                 optimisticId: context.content.optimisticId,
@@ -296,7 +292,7 @@ export function useUpsertPost(
               },
               address,
               timestamp: Date.now(),
-              signer: getWallet().signer,
+              signer: getCurrentWallet().signer,
             })
           }
         },
@@ -328,13 +324,12 @@ export function useHideUnhidePost(
   config?: SubsocialMutationConfig<HideUnhidePostParams>
 ) {
   const client = useQueryClient()
-  const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<HideUnhidePostParams>(
     {
-      getWallet,
+      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: { action, postId },
@@ -344,7 +339,7 @@ export function useHideUnhidePost(
         await waitHasEnergy()
 
         await datahubMutation.updatePostData({
-          ...getWallet(),
+          ...getCurrentWallet(),
           args: {
             postId,
             changes: {
@@ -401,13 +396,12 @@ export function usePinMessage(
   config?: SubsocialMutationConfig<PinMessageParams>
 ) {
   const client = useQueryClient()
-  const getWallet = useWalletGetter()
 
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<PinMessageParams>(
     {
-      getWallet,
+      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,
@@ -421,7 +415,7 @@ export function usePinMessage(
         if (!success || !cid) throw new Error('Failed to save file')
 
         await datahubMutation.updatePostData({
-          ...getWallet(),
+          ...getCurrentWallet(),
           args: {
             postId: params.chatId,
             changes: {

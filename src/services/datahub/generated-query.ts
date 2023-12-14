@@ -50,8 +50,6 @@ export type Account = {
   moderationProfile?: Maybe<Moderator>
   ownedModerationOrganizations?: Maybe<Array<ModerationOrganization>>
   ownedPostsCount?: Maybe<Scalars['Int']['output']>
-  /** persistent data schema version from indexer */
-  persistentDataVersion?: Maybe<Scalars['String']['output']>
   postsCreated: Array<Post>
   postsOwned: Array<Post>
   profileSpace?: Maybe<Space>
@@ -465,12 +463,12 @@ export type Post = {
   optimisticId?: Maybe<Scalars['String']['output']>
   ownedByAccount: Account
   parentPost?: Maybe<Post>
-  /** persistent data schema version from indexer */
-  persistentDataVersion?: Maybe<Scalars['String']['output']>
   persistentId?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   postFollowers?: Maybe<Array<PostFollowers>>
   postModerationStatuses?: Maybe<Array<ModerationPostModerationStatus>>
+  /** Data protocol version */
+  protVersion?: Maybe<Scalars['String']['output']>
   publicRepliesCount?: Maybe<Scalars['Int']['output']>
   reactionsCount?: Maybe<Scalars['Int']['output']>
   rootPost?: Maybe<Post>
@@ -648,13 +646,13 @@ export type Space = {
   linksOriginal?: Maybe<Scalars['String']['output']>
   name?: Maybe<Scalars['String']['output']>
   ownedByAccount: Account
-  /** persistent data schema version from indexer */
-  persistentDataVersion?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   posts?: Maybe<Post>
   postsCount?: Maybe<Scalars['Int']['output']>
   profileSource?: Maybe<Scalars['String']['output']>
   profileSpace?: Maybe<Account>
+  /** Data protocol version */
+  protVersion?: Maybe<Scalars['String']['output']>
   publicPostsCount?: Maybe<Scalars['Int']['output']>
   summary?: Maybe<Scalars['String']['output']>
   tagsOriginal?: Maybe<Scalars['String']['output']>
@@ -701,6 +699,54 @@ export type UpdateOrganizationInput = {
   name?: InputMaybe<Scalars['String']['input']>
 }
 
+export type GetLinkedIdentitiesQueryVariables = Exact<{
+  substrateAddress: Scalars['String']['input']
+}>
+
+export type GetLinkedIdentitiesQuery = {
+  __typename?: 'Query'
+  linkedIdentities: Array<{
+    __typename?: 'LinkedIdentity'
+    id: string
+    externalId: string
+    provider: IdentityProvider
+    enabled: boolean
+    substrateAccount: { __typename?: 'Account'; id: string }
+  }>
+}
+
+export type GetLinkedIdentitiesFromTwitterIdQueryVariables = Exact<{
+  twitterId: Scalars['String']['input']
+}>
+
+export type GetLinkedIdentitiesFromTwitterIdQuery = {
+  __typename?: 'Query'
+  linkedIdentities: Array<{
+    __typename?: 'LinkedIdentity'
+    id: string
+    externalId: string
+    provider: IdentityProvider
+    enabled: boolean
+    substrateAccount: { __typename?: 'Account'; id: string }
+  }>
+}
+
+export type SubscribeIdentitySubscriptionVariables = Exact<{
+  [key: string]: never
+}>
+
+export type SubscribeIdentitySubscription = {
+  __typename?: 'Subscription'
+  linkedIdentity: {
+    __typename?: 'LinkedIdentitySubscriptionPayload'
+    event: DataHubSubscriptionEventEnum
+    entity: {
+      __typename?: 'LinkedIdentity'
+      substrateAccount: { __typename?: 'Account'; id: string }
+    }
+  }
+}
+
 export type GetBlockedResourcesQueryVariables = Exact<{
   spaceIds: Array<Scalars['String']['input']> | Scalars['String']['input']
   postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
@@ -738,6 +784,7 @@ export type GetBlockedInPostIdDetailedQuery = {
   moderationBlockedResourcesDetailed: Array<{
     __typename?: 'ModerationBlockedResource'
     resourceId: string
+    createdAt: any
     reason: {
       __typename?: 'ModerationBlockReason'
       id: string
@@ -755,6 +802,7 @@ export type GetBlockedInAppDetailedQuery = {
   moderationBlockedResourcesDetailed: Array<{
     __typename?: 'ModerationBlockedResource'
     resourceId: string
+    createdAt: any
     reason: {
       __typename?: 'ModerationBlockReason'
       id: string
@@ -837,6 +885,7 @@ export type SubscribeBlockedResourcesSubscription = {
       ctxPostIds: Array<string>
       ctxAppIds: Array<string>
       rootPostId?: string | null
+      createdAt: any
       organization: {
         __typename?: 'ModerationOrganization'
         ctxPostIds?: Array<string> | null
@@ -1209,6 +1258,44 @@ export const DatahubPostFragment = gql`
     }
   }
 `
+export const GetLinkedIdentities = gql`
+  query GetLinkedIdentities($substrateAddress: String!) {
+    linkedIdentities(where: { substrateAddress: $substrateAddress }) {
+      id
+      externalId
+      provider
+      enabled
+      substrateAccount {
+        id
+      }
+    }
+  }
+`
+export const GetLinkedIdentitiesFromTwitterId = gql`
+  query GetLinkedIdentitiesFromTwitterId($twitterId: String!) {
+    linkedIdentities(where: { externalId: $twitterId, provider: TWITTER }) {
+      id
+      externalId
+      provider
+      enabled
+      substrateAccount {
+        id
+      }
+    }
+  }
+`
+export const SubscribeIdentity = gql`
+  subscription SubscribeIdentity {
+    linkedIdentity {
+      event
+      entity {
+        substrateAccount {
+          id
+        }
+      }
+    }
+  }
+`
 export const GetBlockedResources = gql`
   query GetBlockedResources(
     $spaceIds: [String!]!
@@ -1239,6 +1326,7 @@ export const GetBlockedInPostIdDetailed = gql`
   query GetBlockedInPostIdDetailed($postId: String!) {
     moderationBlockedResourcesDetailed(ctxPostIds: [$postId], blocked: true) {
       resourceId
+      createdAt
       reason {
         id
         reasonText
@@ -1250,6 +1338,7 @@ export const GetBlockedInAppDetailed = gql`
   query GetBlockedInAppDetailed($appId: String!) {
     moderationBlockedResourcesDetailed(ctxAppIds: [$appId], blocked: true) {
       resourceId
+      createdAt
       reason {
         id
         reasonText
@@ -1308,6 +1397,7 @@ export const SubscribeBlockedResources = gql`
         ctxPostIds
         ctxAppIds
         rootPostId
+        createdAt
         organization {
           ctxPostIds
           ctxAppIds

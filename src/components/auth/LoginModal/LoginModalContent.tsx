@@ -1,15 +1,16 @@
 import PotentialImage from '@/assets/graphics/potential.png'
+import LoadingHamster from '@/assets/graphics/processing-humster.png'
 import EthIcon from '@/assets/icons/eth.svg'
-import IncognitoIcon from '@/assets/icons/incognito.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
+import XLogoIcon from '@/assets/icons/x-logo.svg'
 import {
   CommonEvmAddressLinked,
   CommonEVMLoginErrorContent,
 } from '@/components/auth/common/evm/CommonEvmModalContent'
 import Button from '@/components/Button'
-import CaptchaInvisible from '@/components/captcha/CaptchaInvisible'
+import InfoPanel from '@/components/InfoPanel'
 import TextArea from '@/components/inputs/TextArea'
 import Logo from '@/components/Logo'
 import MenuList from '@/components/MenuList'
@@ -17,20 +18,28 @@ import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
 import Toast from '@/components/Toast'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
-import useLoginOptions from '@/hooks/useLoginOptions'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
-import { ApiRequestTokenResponse } from '@/pages/api/request-token'
 import { useRequestToken } from '@/services/api/mutation'
+import { useLinkIdentity } from '@/services/datahub/identity/mutation'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
+import { useSubscriptionState } from '@/stores/subscription'
 import { cx } from '@/utils/class-names'
+import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
+import { encodeProfileSource } from '@/utils/profile'
+import { replaceUrl } from '@/utils/window'
+import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import { signIn, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import {
   Dispatch,
   SetStateAction,
   SyntheticEvent,
+  useEffect,
   useRef,
   useState,
 } from 'react'
@@ -47,6 +56,7 @@ export type LoginModalStep =
   | PolkadotConnectSteps
   | 'login'
   | 'enter-secret-key'
+  | 'x-login-loading'
   | 'account-created'
   | 'next-actions'
   | 'connect-wallet'
@@ -58,45 +68,47 @@ export type LoginModalStep =
 type ContentProps = ModalFunctionalityProps & {
   setCurrentState: Dispatch<SetStateAction<LoginModalStep>>
   currentStep: LoginModalStep
-  runCaptcha: () => Promise<string | null>
-  termsAndService: (className?: string) => JSX.Element
   afterLogin?: () => void
   beforeLogin?: () => void
 }
 
-export const LoginContent = ({
-  setCurrentState,
-  runCaptcha,
-  termsAndService,
-}: ContentProps) => {
-  const [hasStartCaptcha, setHasStartCaptcha] = useState(false)
+export const LoginContent = ({ setCurrentState }: ContentProps) => {
   const sendEvent = useSendEvent()
-  const { isNonAnonLoginRequired } = useLoginOptions()
-
-  const {
-    mutateAsync: loginAndRequestToken,
-    isLoading: loadingRequestToken,
-    error,
-  } = useLoginAndRequestToken()
-  useToastError<ApiRequestTokenResponse>(
-    error,
-    'Create account failed',
-    (e) => e.message
-  )
-
-  const isLoading = loadingRequestToken || hasStartCaptcha
+  const [showErrorPanel, setShowErrorPanel] = useState(false)
+  useEffect(() => {
+    const auth = getUrlQuery('auth') === 'true'
+    const error = getUrlQuery('error')
+    // if user denied access to twitter (has suspended account)
+    if (auth && error.toLowerCase() === 'oauthcallback') setShowErrorPanel(true)
+  }, [])
 
   return (
     <div>
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
-        <div
-          className={cx(
-            'flex flex-col gap-4',
-            isNonAnonLoginRequired && 'pb-4'
+        <div className={cx('flex flex-col gap-4 pb-4')}>
+          {showErrorPanel && (
+            <InfoPanel variant='error'>
+              😕 Sorry there is some issue with logging you in, please try again
+              or try different account
+            </InfoPanel>
           )}
-        >
           <Button
+            onClick={() => {
+              sendEvent('x_login_started')
+              signIn('twitter', {
+                callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
+              })
+            }}
+            size='lg'
+          >
+            <div className='flex items-center justify-center gap-2'>
+              <XLogoIcon className='text-text-muted-on-primary' />
+              Continue with X
+            </div>
+          </Button>
+          <Button
+            variant='primaryOutline'
             onClick={() => {
               setCurrentState('connect-wallet')
               sendEvent('connect_wallet_started')
@@ -104,7 +116,7 @@ export const LoginContent = ({
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <WalletIcon className='text-text-muted-on-primary' />
+              <WalletIcon className='text-text-muted' />
               Connect wallet
             </div>
           </Button>
@@ -115,38 +127,9 @@ export const LoginContent = ({
           >
             <div className='flex items-center justify-center gap-2'>
               <KeyIcon className='text-text-muted' />
-              Enter Grill secret key
+              Enter Grill key
             </div>
           </Button>
-          {!isNonAnonLoginRequired && (
-            <>
-              <Button
-                type='button'
-                variant='primaryOutline'
-                size='lg'
-                className='w-full'
-                isLoading={isLoading}
-                onClick={async () => {
-                  setHasStartCaptcha(true)
-                  const token = await runCaptcha()
-                  if (!token) return
-                  setHasStartCaptcha(false)
-                  const newAddress = await loginAndRequestToken({
-                    captchaToken: token,
-                  })
-                  if (newAddress) {
-                    setCurrentState('account-created')
-                  }
-                }}
-              >
-                <div className='flex items-center justify-center gap-2'>
-                  <IncognitoIcon className='text-text-muted' />
-                  Continue anonymously
-                </div>
-              </Button>
-              {termsAndService('mt-4')}
-            </>
-          )}
         </div>
       </div>
     </div>
@@ -179,7 +162,7 @@ export const EnterSecretKeyContent = ({
           t={t}
           type='error'
           title='Login Failed'
-          description='The Grill secret key you provided is not valid'
+          description='The Grill key you provided is not valid'
         />
       ))
     }
@@ -195,7 +178,7 @@ export const EnterSecretKeyContent = ({
         autoFocus
         variant='fill-bg'
         onChange={(e) => setPrivateKey((e.target as HTMLTextAreaElement).value)}
-        placeholder='Enter your Grill secret key'
+        placeholder='Enter your Grill key'
       />
       <Button disabled={!privateKey} type='submit' size='lg'>
         Login
@@ -205,17 +188,20 @@ export const EnterSecretKeyContent = ({
 }
 
 export const AccountCreatedContent = ({ setCurrentState }: ContentProps) => {
-  const address = useMyMainAddress()
+  const myAddress = useMyMainAddress()
 
   return (
     <div className='flex flex-col'>
-      {address && (
+      {myAddress && (
         <div
           className={cx(
             'mb-6 mt-2 flex flex-col rounded-2xl bg-background-lighter p-4'
           )}
         >
-          <ProfilePreview address={address} avatarClassName={cx('h-16 w-16')} />
+          <ProfilePreview
+            address={myAddress}
+            avatarClassName={cx('h-16 w-16')}
+          />
         </div>
       )}
       <Button size='lg' onClick={() => setCurrentState('next-actions')}>
@@ -291,16 +277,14 @@ function useLoginBeforeSignEvm() {
   useToastError(error, 'Retry linking EVM address failed')
 
   return {
-    mutate: async (runCaptcha: () => Promise<string | null>) => {
+    mutate: async () => {
       if (myAddress) return
 
       setIsCreatingAcc(true)
       try {
-        const captchaToken = await runCaptcha()
-        if (!captchaToken) throw new Error('Captcha failed')
         const address = await loginAsTemporaryAccount()
         if (!address) throw new Error('Login failed')
-        requestToken({ captchaToken, address })
+        requestToken({ address })
       } finally {
         setIsCreatingAcc(false)
       }
@@ -313,16 +297,12 @@ export const EvmLoginError = ({ setCurrentState }: ContentProps) => {
   const { mutate, isLoading } = useLoginBeforeSignEvm()
 
   return (
-    <CaptchaInvisible>
-      {(runCaptcha) => (
-        <CommonEVMLoginErrorContent
-          isLoading={isLoading}
-          beforeSignEvmAddress={() => mutate(runCaptcha)}
-          setModalStep={() => setCurrentState('evm-address-linked')}
-          signAndLinkOnConnect={true}
-        />
-      )}
-    </CaptchaInvisible>
+    <CommonEVMLoginErrorContent
+      isLoading={isLoading}
+      beforeSignEvmAddress={() => mutate()}
+      setModalStep={() => setCurrentState('evm-address-linked')}
+      signAndLinkOnConnect={true}
+    />
   )
 }
 
@@ -340,17 +320,13 @@ export const LinkEvmContent = ({ setCurrentState }: ContentProps) => {
   const isLoading = isLoggingIn || isLinking
 
   return (
-    <CaptchaInvisible>
-      {(runCaptcha) => (
-        <CustomConnectButton
-          className={cx('w-full')}
-          beforeSignEvmAddress={() => mutate(runCaptcha)}
-          signAndLinkEvmAddress={signAndLinkEvmAddress}
-          isLoading={isLoading}
-          secondLabel='Sign Message'
-        />
-      )}
-    </CaptchaInvisible>
+    <CustomConnectButton
+      className={cx('w-full')}
+      beforeSignEvmAddress={() => mutate()}
+      signAndLinkEvmAddress={signAndLinkEvmAddress}
+      isLoading={isLoading}
+      secondLabel='Sign Message'
+    />
   )
 }
 
@@ -361,29 +337,107 @@ const PolkadotConnectConfirmation = ({ setCurrentState }: ContentProps) => {
   useToastError(error, 'Create account for polkadot connection failed')
 
   return (
-    <CaptchaInvisible>
-      {(runCaptcha) => (
-        <PolkadotConnectConfirmationContent
-          setCurrentState={setCurrentState}
-          beforeAddProxy={async () => {
-            const captchaToken = await runCaptcha()
-            if (!captchaToken) return false
-            await mutateAsync({ captchaToken })
-            return true
-          }}
-        />
-      )}
-    </CaptchaInvisible>
+    <PolkadotConnectConfirmationContent
+      setCurrentState={setCurrentState}
+      beforeAddProxy={async () => {
+        await mutateAsync(null)
+        return true
+      }}
+    />
+  )
+}
+
+const XLoginLoading = ({ closeModal, setCurrentState }: ContentProps) => {
+  const sendEvent = useSendEvent()
+
+  const { data: session, status } = useSession()
+  const { mutateAsync: loginAsTemporaryAccount } = useLoginAndRequestToken({
+    asTemporaryAccount: true,
+  })
+
+  const myAddress = useMyMainAddress()
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+    myAddress ?? ''
+  )
+  const { mutate: linkIdentity } = useLinkIdentity()
+  const { mutate: upsertProfile } = useUpsertProfile({
+    onSuccess: () => {
+      replaceUrl(getCurrentUrlWithoutQuery('login'))
+      setCurrentState('account-created')
+      sendEvent('x_login_done')
+    },
+  })
+
+  const setSubscriptionState = useSubscriptionState(
+    (state) => state.setSubscriptionState
+  )
+  useEffect(() => {
+    setSubscriptionState('identity', 'always-sub')
+    return () => {
+      setSubscriptionState('identity', 'dynamic')
+    }
+  }, [setSubscriptionState])
+
+  const upsertedProfile = useRef(false)
+  useEffect(() => {
+    const foundIdentity =
+      linkedIdentity &&
+      session &&
+      linkedIdentity?.externalId === session?.user?.id
+    if (foundIdentity && !upsertedProfile.current) {
+      sendEvent('x_login_creating_profile', undefined, { twitterLinked: true })
+      upsertedProfile.current = true
+      upsertProfile({
+        content: {
+          image: session?.user?.image ?? '',
+          name: session?.user.name ?? '',
+          profileSource: encodeProfileSource({
+            source: 'subsocial-profile',
+          }),
+        },
+      })
+    }
+  }, [linkedIdentity, sendEvent, session, setCurrentState, upsertProfile])
+
+  const isAlreadyCalled = useRef(false)
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      closeModal()
+      return
+    }
+    if (isAlreadyCalled.current || !session) return
+
+    isAlreadyCalled.current = true
+    sendEvent('x_login_linking')
+    ;(async () => {
+      const address = await loginAsTemporaryAccount(null)
+      if (!address) return
+      linkIdentity({
+        id: session.user?.id,
+        provider: IdentityProvider.TWITTER,
+      })
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, status])
+
+  return (
+    <div className='flex flex-col items-center'>
+      <Image
+        src={LoadingHamster}
+        className='w-64 max-w-xs rounded-full'
+        alt='loading'
+      />
+    </div>
   )
 }
 
 type LoginModalContents = {
   [key in LoginModalStep]: (props: ContentProps) => JSX.Element
 }
-
 export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'enter-secret-key': EnterSecretKeyContent,
+  'x-login-loading': XLoginLoading,
   'account-created': AccountCreatedContent,
   'next-actions': NextActionsContent,
   'connect-wallet': ConnectWalletContent,

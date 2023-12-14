@@ -107,4 +107,9 @@ declare module '@subsocial/api/types' {
       },
     PostContent
   > & { requestedId?: string }
+
+  export declare type ProfileContent = {
+    name?: string
+    image?: string
+  }
 }

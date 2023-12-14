@@ -8,6 +8,7 @@ import { getProfilesServer } from '@/pages/api/profiles'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery, getProfileQuery } from '@/services/api/query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   getPostMetadataQuery,
@@ -55,6 +56,9 @@ async function getChatsData(client: QueryClient, chatId: string) {
   const [accountsDataPromise, profilesPromise] = await Promise.allSettled([
     getAccountsDataFromCache(chatPageOwnerIds, 'GET'),
     getProfilesServer(chatPageOwnerIds),
+    ...chatPageOwnerIds.map((ownerId) =>
+      getLinkedIdentityQuery.fetchQuery(client, ownerId)
+    ),
   ] as const)
   if (accountsDataPromise.status === 'fulfilled') {
     accountsDataPromise.value.forEach((accountAddresses) => {

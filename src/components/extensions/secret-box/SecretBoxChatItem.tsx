@@ -71,9 +71,10 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
             <span>
               📦 Only{' '}
               <ProfilePreviewModalName
+                showModeratorChip
                 address={recipient || ''}
                 className='!inline font-semibold'
-                showProfileSourceIcon={false}
+                profileSourceIconPosition='none'
                 color={theme === 'dark' ? darkThemeTextColor : '#000'}
               />{' '}
               is able to read this secret message.

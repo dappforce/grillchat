@@ -115,6 +115,7 @@ export default function RepliedMessagePreview({
           <span className='font-medium text-text-secondary'>Edit message</span>
         ) : (
           <Name
+            showModeratorChip
             address={message?.struct.ownerId}
             className='font-medium'
             color={textColor}

@@ -156,6 +156,7 @@ const GET_BLOCKED_IN_POST_ID_DETAILED = gql`
   query GetBlockedInPostIdDetailed($postId: String!) {
     moderationBlockedResourcesDetailed(ctxPostIds: [$postId], blocked: true) {
       resourceId
+      createdAt
       reason {
         id
         reasonText
@@ -188,6 +189,7 @@ const GET_BLOCKED_IN_APP_DETAILED = gql`
   query GetBlockedInAppDetailed($appId: String!) {
     moderationBlockedResourcesDetailed(ctxAppIds: [$appId], blocked: true) {
       resourceId
+      createdAt
       reason {
         id
         reasonText
@@ -238,6 +240,7 @@ export const getModerationReasonsQuery = createQuery({
   },
 })
 
+// TODO: need batch call pool query to improve performance
 export const GET_MODERATOR_DATA = gql`
   query GetModeratorData($address: String!) {
     moderators(args: { where: { substrateAddress: $address } }) {
@@ -286,4 +289,7 @@ export const getModeratorQuery = createQuery({
     })
     return { address, ...moderatorData }
   },
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
 })

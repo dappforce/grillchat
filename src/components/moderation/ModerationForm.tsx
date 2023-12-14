@@ -1,5 +1,6 @@
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -73,6 +74,8 @@ export default function ModerationForm({
 
   const { data: message } = getPostQuery.useQuery(messageId)
   const ownerId = message?.struct.ownerId ?? ''
+
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(ownerId)
   const { name } = useName(ownerId)
 
   const myAddress = useMyMainAddress()
@@ -203,8 +206,7 @@ export default function ModerationForm({
               address={ownerId}
               avatarClassName={cx('h-8 w-8')}
               nameClassName={cx('text-base')}
-              withGrillAddress={false}
-              withEvmAddress={false}
+              showAddress={false}
             />
             {isOwner && (
               <span className='text-xs text-text-muted'>Chat owner</span>

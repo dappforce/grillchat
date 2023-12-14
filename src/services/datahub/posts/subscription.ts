@@ -35,7 +35,10 @@ export function useDatahubPostSubscriber(subscribedPostId?: string) {
           )
         }
       } else {
-        if (useSubscriptionState.getState().postSubscriptionState === 'dynamic')
+        if (
+          useSubscriptionState.getState().subscriptionState['post'] ===
+          'dynamic'
+        )
           unsubRef.current?.()
       }
     }

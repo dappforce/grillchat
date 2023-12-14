@@ -30,13 +30,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 type GetResponseRes = { isAllowed: boolean }
-export type ApiDatahubGetResponse = ApiResponse<GetResponseRes>
+export type ApiDatahubPostGetResponse = ApiResponse<GetResponseRes>
 
 const querySchema = z.object({
   address: z.string(),
   rootPostId: z.string(),
 })
-export type DatahubQueryInput = z.infer<typeof querySchema>
+export type DatahubPostQueryInput = z.infer<typeof querySchema>
 const GET_handler = handlerWrapper({
   inputSchema: querySchema,
   dataGetter: (req) => req.query,
@@ -53,7 +53,7 @@ const GET_handler = handlerWrapper({
   },
 })
 
-export type DatahubMutationBody =
+export type DatahubPostMutationBody =
   | {
       action: 'create-post'
       payload: CreatePostOptimisticInput
@@ -70,6 +70,7 @@ export type DatahubMutationBody =
       action: 'notify-update-failed'
       payload: UpdatePostBlockchainSyncStatusInput
     }
+
 export type ApiDatahubPostResponse = ApiResponse
 const POST_handler = handlerWrapper({
   inputSchema: z.any(),
@@ -77,8 +78,8 @@ const POST_handler = handlerWrapper({
 })<ApiDatahubPostResponse>({
   allowedMethods: ['POST'],
   errorLabel: 'datahub-mutation',
-  handler: async (data: DatahubMutationBody, _, res) => {
-    const mapper = datahubMutationWrapper(datahubActionMapping)
+  handler: async (data: DatahubPostMutationBody, _, res) => {
+    const mapper = datahubMutationWrapper(datahubPostActionMapping)
     try {
       await mapper(data)
     } catch (err) {
@@ -105,7 +106,7 @@ const POST_handler = handlerWrapper({
   },
 })
 
-function datahubActionMapping(data: DatahubMutationBody) {
+function datahubPostActionMapping(data: DatahubPostMutationBody) {
   switch (data.action) {
     case 'create-post':
       return createPostData(data.payload)
@@ -115,5 +116,7 @@ function datahubActionMapping(data: DatahubMutationBody) {
       return notifyCreatePostFailedOrRetryStatus(data.payload)
     case 'notify-update-failed':
       return notifyUpdatePostFailedOrRetryStatus(data.payload)
+    default:
+      throw new Error('Unknown action')
   }
 }

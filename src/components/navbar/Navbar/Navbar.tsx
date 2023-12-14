@@ -12,7 +12,7 @@ import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getDatahubConfig } from '@/utils/env/client'
-import { getHubPageLink } from '@/utils/links'
+import { getHubPageLink, getUrlQuery } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
 import dynamic from 'next/dynamic'
@@ -20,6 +20,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ComponentProps, ReactNode, useEffect, useRef, useState } from 'react'
 import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
+import AuthErrorModal from './AuthErrorModal'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
@@ -59,8 +60,17 @@ export default function Navbar({
   const prevAddress = usePrevious(address)
   const isLoggedIn = !!address
 
-  const isOpen = useLoginModal((state) => state.isOpen)
-  const setIsOpen = useLoginModal((state) => state.setIsOpen)
+  const isLoginModalOpen = useLoginModal((state) => state.isOpen)
+  const setIsLoginModalOpen = useLoginModal((state) => state.setIsOpen)
+  const initialLoginModalOpenState = useLoginModal(
+    (state) => state.initialOpenState
+  )
+
+  useEffect(() => {
+    const auth = getUrlQuery('auth') === 'true'
+    if (auth) setIsLoginModalOpen(true)
+  }, [setIsLoginModalOpen])
+
   const [openPrivateKeyNotice, setOpenPrivateKeyNotice] = useState(false)
   const isLoggingInWithKey = useRef(false)
   const timeoutRef = useRef<any>()
@@ -81,7 +91,7 @@ export default function Navbar({
   }, [address, isInitializedAddress, prevAddress])
 
   const login = () => {
-    setIsOpen(true)
+    setIsLoginModalOpen(true)
   }
 
   const renderAuthComponent = () => {
@@ -156,11 +166,13 @@ export default function Navbar({
         </Container>
       </nav>
       <LoginModal
-        isOpen={isOpen}
-        closeModal={() => setIsOpen(false)}
+        isOpen={isLoginModalOpen}
+        closeModal={() => setIsLoginModalOpen(false)}
+        initialOpenState={initialLoginModalOpenState}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}
       />
+      <AuthErrorModal />
     </>
   )
 }

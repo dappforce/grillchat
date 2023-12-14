@@ -1,31 +1,149 @@
-import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
-import KiltIcon from '@/assets/icons/kilt-dynamic-size.svg'
-import KusamaIcon from '@/assets/icons/kusama-dynamic-size.svg'
-import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
-import SubsocialIcon from '@/assets/icons/subsocial-dynamic-size.svg'
+import useAddressIdentityId from '@/hooks/useAddressIdentityId'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { useSendEvent } from '@/stores/analytics'
+import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
-import { decodeProfileSource, ProfileSource } from '@/utils/profile'
+import {
+  decodeProfileSource,
+  ProfileSource,
+  profileSourceData,
+  ProfileSourceIncludingOffchain,
+} from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
+import { HiArrowUpRight } from 'react-icons/hi2'
+import { useInView } from 'react-intersection-observer'
 import ChatModerateChip from './chats/ChatModerateChip'
 import PopOver from './floating/PopOver'
-
-export type ForceProfileSource = {
-  profileSource?: ProfileSource
-  content?: string
-}
+import LinkText from './LinkText'
+import { ForceProfileSource } from './ProfilePreview'
 
 export type NameProps = ComponentProps<'span'> & {
   address: string
   additionalText?: string
   className?: string
-  showProfileSourceIcon?: boolean
+  showOnlyCustomIdentityIcon?: boolean
+  profileSourceIconClassName?: string
+  showModeratorChip?: boolean
+  profileSourceIconPosition?: 'none' | 'left' | 'right'
   color?: string
   labelingData?: { chatId: string }
   forceProfileSource?: ForceProfileSource
+}
+
+export default function Name({
+  address,
+  className,
+  additionalText,
+  showOnlyCustomIdentityIcon,
+  profileSourceIconClassName,
+  color,
+  labelingData,
+  showModeratorChip,
+  forceProfileSource,
+  profileSourceIconPosition = 'right',
+  ...props
+}: NameProps) {
+  const sendEvent = useSendEvent()
+  const { inView, ref } = useInView()
+
+  const { isLoading, name, textColor, profileSource } = useName(
+    address,
+    forceProfileSource
+  )
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+    address ?? '',
+    { enabled: inView && profileSource === 'subsocial-profile' }
+  )
+
+  let usedProfileSource: ProfileSourceIncludingOffchain | undefined =
+    profileSource
+  if (linkedIdentity && profileSource === 'subsocial-profile') {
+    usedProfileSource = 'x'
+  }
+
+  let {
+    icon: Icon,
+    tooltip,
+    link,
+  } = profileSourceData[usedProfileSource || ('' as ProfileSource)] || {}
+
+  if (showOnlyCustomIdentityIcon && profileSource !== 'subsocial-profile') {
+    Icon = undefined
+    tooltip = ''
+  }
+
+  if (isLoading) {
+    return (
+      <span
+        {...props}
+        className={cx(
+          'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none',
+          className
+        )}
+      >
+        <span className='my-1 mr-4 h-3 w-20 rounded-full bg-background-lighter font-medium' />
+      </span>
+    )
+  }
+
+  const iconElement = Icon && (
+    <div
+      className={cx(
+        'relative top-px flex-shrink-0 text-[0.9em] text-text-muted',
+        profileSourceIconClassName
+      )}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <PopOver
+        trigger={<Icon />}
+        panelSize='sm'
+        yOffset={4}
+        placement='top'
+        triggerOnHover
+      >
+        <LinkText
+          href={link?.(name, address)}
+          openInNewTab
+          onClick={() =>
+            sendEvent('idenity_link_clicked', {
+              eventSource: getCurrentPageChatId(),
+            })
+          }
+          variant='primary'
+          className='flex items-center font-semibold outline-none'
+        >
+          <span>{tooltip}</span>
+          <HiArrowUpRight />
+        </LinkText>
+      </PopOver>
+    </div>
+  )
+
+  return (
+    <span
+      {...props}
+      ref={ref}
+      className={cx('flex items-center gap-1', className)}
+      style={{ color: color || textColor }}
+    >
+      {profileSourceIconPosition === 'left' && iconElement}
+      <span>
+        {additionalText} {name}{' '}
+      </span>
+      {profileSourceIconPosition === 'right' && iconElement}
+      {inView && showModeratorChip && (
+        <ChatModerateChip
+          className='relative top-px flex items-center'
+          chatId={labelingData?.chatId ?? ''}
+          address={address}
+        />
+      )}
+    </span>
+  )
 }
 
 export function useName(
@@ -57,7 +175,8 @@ export function useName(
   const isLoadingIdentities = isFetchingIdentities && isIdentitiesNeeded
 
   const { ensNames, evmAddress } = accountData || {}
-  let name = generateRandomName(address)
+  const randomSeed = useAddressIdentityId(address)
+  let name = generateRandomName(randomSeed)
 
   function getNameFromSource(profileSource?: ProfileSource, content?: string) {
     switch (profileSource) {
@@ -81,7 +200,7 @@ export function useName(
   let profileSource = forceProfileSource?.profileSource
   const forceName = getNameFromSource(
     profileSource,
-    forceProfileSource?.content
+    forceProfileSource?.content?.name
   )
   if (forceName) name = forceName
   else {
@@ -104,96 +223,3 @@ export function useName(
     ensNames,
   }
 }
-
-const profileSourceData: {
-  [key in ProfileSource]?: { icon: any; tooltip: string }
-} = {
-  'kilt-w3n': {
-    icon: KiltIcon,
-    tooltip: 'Kilt W3Name',
-  },
-  ens: {
-    icon: EthIcon,
-    tooltip: 'ENS',
-  },
-  'kusama-identity': {
-    icon: KusamaIcon,
-    tooltip: 'Kusama Identity',
-  },
-  'polkadot-identity': {
-    icon: PolkadotIcon,
-    tooltip: 'Polkadot Identity',
-  },
-  'subsocial-username': {
-    icon: SubsocialIcon,
-    tooltip: 'Subsocial Username',
-  },
-}
-
-const Name = ({
-  address,
-  className,
-  additionalText,
-  color,
-  labelingData,
-  forceProfileSource,
-  showProfileSourceIcon = true,
-  ...props
-}: NameProps) => {
-  const { isLoading, name, textColor, profileSource } = useName(
-    address,
-    forceProfileSource
-  )
-
-  const { icon: Icon, tooltip } =
-    profileSourceData[profileSource ?? ('' as ProfileSource)] || {}
-
-  if (isLoading) {
-    return (
-      <span
-        {...props}
-        className={cx(
-          'relative flex animate-pulse items-stretch gap-2.5 overflow-hidden outline-none',
-          className
-        )}
-      >
-        <span className='my-1 mr-4 h-3 w-20 rounded-full bg-background-lighter font-medium' />
-      </span>
-    )
-  }
-
-  return (
-    <span
-      {...props}
-      className={cx(className, 'flex items-center')}
-      style={{ color: color || textColor }}
-    >
-      <span>
-        {additionalText} {name}{' '}
-      </span>
-      {showProfileSourceIcon && Icon && (
-        <div
-          className='relative top-px ml-1 flex-shrink-0 text-text-muted'
-          onClick={(e) => e.stopPropagation()}
-        >
-          <PopOver
-            trigger={<Icon />}
-            panelSize='sm'
-            yOffset={4}
-            placement='top'
-            triggerOnHover
-          >
-            <p>{tooltip}</p>
-          </PopOver>
-        </div>
-      )}
-      <ChatModerateChip
-        className='ml-1 flex items-center'
-        chatId={labelingData?.chatId ?? ''}
-        address={address}
-      />
-    </span>
-  )
-}
-
-export default Name

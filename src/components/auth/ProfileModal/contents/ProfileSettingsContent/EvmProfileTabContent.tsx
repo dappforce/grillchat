@@ -1,6 +1,7 @@
 import EthIcon from '@/assets/icons/eth.svg'
 import Button from '@/components/Button'
 import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
+import LinkText from '@/components/LinkText'
 import { useName } from '@/components/Name'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -77,6 +78,22 @@ export default function EvmProfileTabContent({
 
   const isCurrentProfile = name === selected?.id
 
+  if (!ensNames?.length) {
+    return (
+      <p className='text-text-muted'>
+        Use an EVM identity (such as{' '}
+        <LinkText
+          className='https://app.ens.domains/'
+          openInNewTab
+          variant='primary'
+        >
+          ENS
+        </LinkText>
+        ) on your profile. You currently have no EVM identities .
+      </p>
+    )
+  }
+
   return (
     <UpsertProfileWrapper>
       {({ mutateAsync, isLoading }) => {
@@ -110,7 +127,9 @@ export default function EvmProfileTabContent({
               type='submit'
               isLoading={isLoading}
               size='lg'
-              disabled={isCurrentProfile || isLoadingAccountData}
+              disabled={
+                !selected?.id || isCurrentProfile || isLoadingAccountData
+              }
             >
               {isCurrentProfile ? 'Your current profile' : 'Save changes'}
             </Button>

@@ -29,15 +29,15 @@ const actionsMapper: {
   synth_moderation_add_ctx_to_organization: addPostIdToOrg,
 }
 
-export type ApiModerationActionsBody = ModerationCallInput
-export type ApiModerationActionsResponse = ApiResponse
+export type ApiDatahubModerationBody = ModerationCallInput
+export type ApiDatahubModerationResponse = ApiResponse
 const POST_handler = handlerWrapper({
   inputSchema: z.any(),
   dataGetter: (req) => req.body,
 })({
   allowedMethods: ['POST'],
   errorLabel: 'moderation-action',
-  handler: async (data: ApiModerationActionsBody, _req, res) => {
+  handler: async (data: ApiDatahubModerationBody, _req, res) => {
     const callName = data.callData?.name
     const action = actionsMapper[callName as SocialCallName]
     if (!action) {

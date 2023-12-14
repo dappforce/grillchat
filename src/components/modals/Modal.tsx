@@ -130,6 +130,7 @@ export default function Modal({
                       className={cx(
                         'mb-2 text-2xl',
                         withCloseButton && 'pr-8',
+                        !description && 'mb-4',
                         titleClassName
                       )}
                     >

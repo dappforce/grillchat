@@ -1,4 +1,4 @@
-import useLoginOptions from '@/hooks/useLoginOptions'
+import useLoginOption from '@/hooks/useLoginOption'
 import { useRequestToken } from '@/services/api/mutation'
 import { getHasEnoughEnergy, useMyAccount } from '@/stores/my-account'
 import {
@@ -7,23 +7,21 @@ import {
 } from '@/subsocial-query/subsocial/types'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 
-export function useWalletGetter(
-  isUsingConnectedWallet?: boolean
-): () => WalletAccount {
-  if (isUsingConnectedWallet) {
-    return () => {
-      const wallet = useMyAccount.getState().connectedWallet
-      return {
-        address: wallet?.address ?? '',
-        signer: wallet?.signer ?? null,
-      }
+export function getCurrentWallet(
+  walletType: 'injected' | 'grill' = 'grill'
+): WalletAccount {
+  if (walletType === 'injected') {
+    const wallet = useMyAccount.getState().connectedWallet
+    return {
+      address: wallet?.address ?? '',
+      signer: wallet?.signer ?? null,
     }
   }
-  return () => ({
+  return {
     address: useMyAccount.getState().address ?? '',
     signer: useMyAccount.getState().signer,
     proxyToAddress: useMyAccount.getState().parentProxyAddress,
-  })
+  }
 }
 
 export default function useCommonTxSteps<Data, ReturnValue>(
@@ -48,29 +46,20 @@ export default function useCommonTxSteps<Data, ReturnValue>(
 
   const { mutateAsync } = useMutationHook(config)
   const { mutateAsync: requestToken } = useRequestToken()
-  const login = useMyAccount((state) => state.login)
 
-  const { isNonAnonLoginRequired, promptUserForLogin } = useLoginOptions()
-  const needToRunCaptcha = !address || !hasEnoughEnergy
+  const { promptUserForLogin } = useLoginOption()
 
-  const workerFunc = async (params: { captchaToken?: string } & Data) => {
-    const { captchaToken } = params
+  const workerFunc = async (params: Data) => {
     let usedAddress: string = address ?? ''
     if (!address) {
-      if (isNonAnonLoginRequired) {
-        const address = await promptUserForLogin()
-        if (!address) return
-        usedAddress = address
-      } else {
-        const address = await login()
-        if (!address) throw new Error('Failed to login')
-        usedAddress = address
-      }
+      const address = await promptUserForLogin()
+      if (!address) return
+      usedAddress = address
     }
 
-    if (!hasEnoughEnergy && captchaToken) {
+    if (!hasEnoughEnergy) {
       const [_, res] = await Promise.all([
-        requestToken({ address: usedAddress, captchaToken }),
+        requestToken({ address: usedAddress }),
         mutateAsync(params),
       ])
       return res
@@ -81,6 +70,5 @@ export default function useCommonTxSteps<Data, ReturnValue>(
 
   return {
     mutation: useMutation(workerFunc),
-    needToRunCaptcha,
   }
 }

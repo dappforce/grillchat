@@ -5,6 +5,7 @@ import EvmAddress from '@/components/EvmAddress'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import { cx } from '@/utils/class-names'
 import { useAccount } from 'wagmi'
+import UnlinkAddressWrapper from '../common/UnlinkAddressWrapper'
 
 function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
   const { address: addressFromExt } = useAccount()
@@ -41,14 +42,19 @@ function LinkEvmAddressContent({ evmAddress, setCurrentState }: ContentProps) {
         <div>
           <EvmAddress evmAddress={evmAddress} className='mb-2' />
           {isNotEqAddresses && connectionButton}
-          <Button
-            onClick={() => setCurrentState('unlink-evm-confirmation')}
-            className='mt-4 w-full border-red-500'
-            variant='primaryOutline'
-            size='lg'
-          >
-            Unlink EVM address
-          </Button>
+          <UnlinkAddressWrapper>
+            {(canUnlinkAddress) => (
+              <Button
+                onClick={() => setCurrentState('unlink-evm-confirmation')}
+                disabled={!canUnlinkAddress}
+                className='mt-4 w-full border-red-500'
+                variant='primaryOutline'
+                size='lg'
+              >
+                Unlink EVM address
+              </Button>
+            )}
+          </UnlinkAddressWrapper>
         </div>
       ) : (
         connectionButton

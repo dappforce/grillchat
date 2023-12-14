@@ -1,16 +1,25 @@
 import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
+import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
+import { ProfileSource } from '@/utils/profile'
+import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import { HiPencil } from 'react-icons/hi2'
 import AddressAvatar from './AddressAvatar'
+import AllIdentityIcons from './AllIdentityIcons'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
 import PopOver from './floating/PopOver'
-import Name, { ForceProfileSource, useName } from './Name'
+import Name, { useName } from './Name'
+
+export type ForceProfileSource = {
+  profileSource?: ProfileSource
+  content?: ProfileContent
+}
 
 export type ProfilePreviewProps = ComponentProps<'div'> & {
   address: string
@@ -18,11 +27,10 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   className?: string
   avatarClassName?: string
   addressesContainerClassName?: string
-  showMaxOneAddress?: boolean
-  withGrillAddress?: boolean
-  withEvmAddress?: boolean
+  showAddress?: boolean
   nameClassName?: string
   onEditClick?: () => void
+  showAllIdentity?: boolean
 }
 
 const ProfilePreview = ({
@@ -33,20 +41,24 @@ const ProfilePreview = ({
   nameClassName,
   addressesContainerClassName,
   onEditClick,
-  showMaxOneAddress = false,
-  withGrillAddress = true,
-  withEvmAddress = true,
+  showAddress = true,
+  showAllIdentity,
   ...props
 }: ProfilePreviewProps) => {
   const { isLoading } = useName(address)
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { evmAddress } = accountData || {}
+
+  const isMyProxyAddress = !!useMyAccount(
+    (state) => state.parentProxyAddress === address
+  )
   const myAddress = useMyMainAddress()
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
-  const isShowingEvmAddress = withEvmAddress && evmAddress
-  const showingAnyAddress = withGrillAddress || isShowingEvmAddress
+  const showGrillAddress = !isMyProxyAddress && !evmAddress
+  const showEvmAddress = !!evmAddress
+  const showPolkadotAddress = !!isMyProxyAddress
 
   return (
     <div {...props} className={cx('flex items-center gap-4', className)}>
@@ -58,9 +70,10 @@ const ProfilePreview = ({
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
         <div className='relative left-1 flex items-center gap-2'>
           <Name
-            showProfileSourceIcon={false}
+            profileSourceIconClassName='text-base'
+            profileSourceIconPosition='right'
             address={address}
-            className={cx('text-lg', nameClassName)}
+            className={cx('gap-2 text-lg', nameClassName)}
             forceProfileSource={forceProfileSource}
           />
           {onEditClick && !isLoading && (
@@ -84,23 +97,35 @@ const ProfilePreview = ({
             </PopOver>
           )}
         </div>
-        {showingAnyAddress && (
+        {showAddress && (
           <div className='flex flex-col gap-1'>
-            {withGrillAddress &&
-              (!isShowingEvmAddress || !showMaxOneAddress) && (
-                <div className='flex flex-row items-center gap-2'>
-                  <GrillIcon className='text-xl text-text-muted' />
-                  <CopyTextInline
-                    text={truncateAddress(address)}
-                    tooltip={`Copy${isMyAddressPart} Grill public address`}
-                    textToCopy={address}
-                    textClassName={cx(
-                      'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
-                    )}
-                  />
-                </div>
-              )}
-            {isShowingEvmAddress && (
+            {showGrillAddress && (
+              <div className='flex flex-row items-center gap-2'>
+                <GrillIcon className='text-xl text-text-muted' />
+                <CopyTextInline
+                  text={truncateAddress(address)}
+                  tooltip={`Copy${isMyAddressPart} Grill public address`}
+                  textToCopy={address}
+                  textClassName={cx(
+                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
+                  )}
+                />
+              </div>
+            )}
+            {showPolkadotAddress && (
+              <div className='flex flex-row items-center gap-2'>
+                <PolkadotIcon className='relative left-1 text-xl text-text-muted' />
+                <CopyTextInline
+                  text={truncateAddress(address)}
+                  tooltip={`Copy${isMyAddressPart} Polkadot address`}
+                  textToCopy={address}
+                  textClassName={cx(
+                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
+                  )}
+                />
+              </div>
+            )}
+            {showEvmAddress && (
               <div className='flex flex-row items-center gap-2'>
                 <EthIcon className='relative left-1 text-xl text-text-muted' />
                 <CopyTextInline
@@ -114,6 +139,9 @@ const ProfilePreview = ({
               </div>
             )}
           </div>
+        )}
+        {showAllIdentity && (
+          <AllIdentityIcons className='mt-1' address={address} />
         )}
       </div>
     </div>

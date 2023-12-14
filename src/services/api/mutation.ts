@@ -15,10 +15,7 @@ import { useTransactions } from '@/stores/transactions'
 import mutationWrapper from '@/subsocial-query/base'
 import axios from 'axios'
 
-export async function requestToken({
-  address,
-  captchaToken,
-}: ApiRequestTokenBody) {
+export async function requestToken({ address }: ApiRequestTokenBody) {
   // make request token as pending transaction so websocket won't disconnect for 10 secs after request token
   // this is to make energy subscription work
   const requestTokenId = `request-token-${Date.now()}`
@@ -28,7 +25,6 @@ export async function requestToken({
   }, 10_000)
 
   const res = await axios.post('/api/request-token', {
-    captchaToken,
     address,
   })
   const data = res.data as ApiRequestTokenResponse

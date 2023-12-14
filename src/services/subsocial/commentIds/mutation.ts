@@ -11,7 +11,7 @@ import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
-import { useWalletGetter } from '../hooks'
+import { getCurrentWallet } from '../hooks'
 import { createMutationWrapper } from '../utils'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
 import { SendMessageParams } from './types'
@@ -48,7 +48,6 @@ async function generateMessageContent(
 }
 export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const client = useQueryClient()
-  const getWallet = useWalletGetter()
 
   const { mutateAsync: saveFile } = useSaveFile()
   const waitHasEnergy = useWaitHasEnergy()
@@ -59,7 +58,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     Awaited<ReturnType<typeof generateMessageContent>>
   >(
     {
-      getWallet,
+      getWallet: getCurrentWallet,
       generateContext: (data) => generateMessageContent(data, client),
       transactionGenerator: async ({
         apis: { substrateApi },
@@ -80,7 +79,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
         if (data.messageIdToEdit) {
           await datahubMutation.updatePostData({
-            ...getWallet(),
+            ...getCurrentWallet(),
             args: {
               postId: data.messageIdToEdit,
               changes: {
@@ -101,7 +100,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           }
         } else {
           await datahubMutation.createPostData({
-            ...getWallet(),
+            ...getCurrentWallet(),
             args: {
               content: content,
               cid: cid,
@@ -185,7 +184,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
                   reason: error,
                 },
                 timestamp: Date.now(),
-                signer: getWallet().signer,
+                signer: getCurrentWallet().signer,
               })
             } else if (isUpdating) {
               datahubMutation.notifyUpdatePostFailedOrRetryStatus({
@@ -195,7 +194,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
                 },
                 timestamp: Date.now(),
                 address,
-                signer: getWallet().signer,
+                signer: getCurrentWallet().signer,
               })
             }
           }
@@ -212,14 +211,12 @@ type ResendFailedMessageParams = {
 export function useResendFailedMessage(
   config?: MutationConfig<ResendFailedMessageParams>
 ) {
-  const getWallet = useWalletGetter()
-
   const { mutateAsync: saveFile } = useSaveFile()
   const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<ResendFailedMessageParams>(
     {
-      getWallet,
+      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi }, data }) => {
         const content = {
@@ -252,12 +249,12 @@ export function useResendFailedMessage(
         onSend: ({ address, data }) => {
           allowWindowUnload()
 
-          const signer = getWallet().signer
+          const signer = getCurrentWallet().signer
           notifyRetryStatus(address, data.content, signer, true)
         },
         onError: ({ data, address }, error, isAfterTxGenerated) => {
           allowWindowUnload()
-          const signer = getWallet().signer
+          const signer = getCurrentWallet().signer
 
           if (isAfterTxGenerated)
             notifyRetryStatus(address, data.content, signer, false, error)

@@ -1,7 +1,9 @@
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { IdentityProvider } from '@/services/datahub/generated-query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { queryClient } from '@/services/provider'
-import { getAccountsData } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
 import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useParentData } from '@/stores/parent'
@@ -18,7 +20,7 @@ import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
 import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
-import { useAnalytics } from './analytics'
+import { useAnalytics, UserProperties } from './analytics'
 import { create } from './utils'
 
 type State = {
@@ -45,7 +47,7 @@ type State = {
 type Actions = {
   login: (
     secretKey?: string,
-    isInitialization?: boolean
+    config?: { isInitialization?: boolean; asTemporaryAccount?: boolean }
   ) => Promise<string | false>
   loginAsTemporaryAccount: () => Promise<string | false>
   finalizeTemporaryAccount: () => void
@@ -87,7 +89,7 @@ const sendLaunchEvent = async (
   address?: string | false,
   parentProxyAddress?: string | null
 ) => {
-  let userProperties = {
+  let userProperties: UserProperties = {
     tgNotifsConnected: false,
     evmLinked: false,
     polkadotLinked: !!parentProxyAddress,
@@ -100,28 +102,26 @@ const sendLaunchEvent = async (
   if (!address) {
     sendEvent('launch_app')
   } else {
-    try {
-      const linkedTgAccData = await getLinkedTelegramAccountsQuery.fetchQuery(
-        queryClient,
-        {
+    const [linkedTgAccData, evmLinkedAddress, ownedPostIds, linkedIdentity] =
+      await Promise.allSettled([
+        getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
           address,
-        }
-      )
-      userProperties.tgNotifsConnected = (linkedTgAccData?.length || 0) > 0
-    } catch {}
+        }),
+        getAccountDataQuery.fetchQuery(queryClient, address),
+        getOwnedPostIdsQuery.fetchQuery(queryClient, address),
+        getLinkedIdentityQuery.fetchQuery(queryClient, address),
+      ] as const)
 
-    try {
-      const [evmLinkedAddress] = await getAccountsData([address])
-      userProperties.evmLinked = !!evmLinkedAddress
-    } catch {}
-
-    try {
-      const ownedPostIds = await getOwnedPostIdsQuery.fetchQuery(
-        queryClient,
-        address
-      )
-      userProperties.ownedChat = (ownedPostIds?.length || 0) > 0
-    } catch {}
+    if (linkedTgAccData.status === 'fulfilled')
+      userProperties.tgNotifsConnected =
+        (linkedTgAccData.value?.length || 0) > 0
+    if (evmLinkedAddress.status === 'fulfilled')
+      userProperties.evmLinked = !!evmLinkedAddress.value
+    if (ownedPostIds.status === 'fulfilled')
+      userProperties.ownedChat = (ownedPostIds.value?.length || 0) > 0
+    if (linkedIdentity.status === 'fulfilled')
+      userProperties.twitterLinked =
+        linkedIdentity.value?.provider === IdentityProvider.Twitter
 
     userProperties.webNotifsEnabled = isWebNotificationsEnabled()
 
@@ -171,7 +171,8 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     set({ connectedWallet: undefined, parentProxyAddress: undefined })
     parentProxyAddressStorage.remove()
   },
-  login: async (secretKey, isInitialization) => {
+  login: async (secretKey, config) => {
+    const { asTemporaryAccount, isInitialization } = config || {}
     const { toSubsocialAddress } = await import('@subsocial/utils')
     const analytics = useAnalytics.getState()
     let address: string = ''
@@ -205,11 +206,8 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
         isInitializedAddress: !!isInitialization,
       })
 
-      accountStorage.set(encodedSecretKey)
-      accountAddressStorage.set(address)
       get()._subscribeEnergy()
-
-      analytics.setUserId(signer.address)
+      if (!asTemporaryAccount) saveLoginInfoToStorage()
     } catch (e) {
       console.log('Failed to login', e)
       return false
@@ -218,9 +216,10 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
   },
   loginAsTemporaryAccount: () => {
     set({ isTemporaryAccount: true })
-    return get().login()
+    return get().login(undefined, { asTemporaryAccount: true })
   },
   finalizeTemporaryAccount: () => {
+    saveLoginInfoToStorage()
     set({ isTemporaryAccount: false })
   },
   _subscribeEnergy: () => {
@@ -259,7 +258,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       set({ address: storageAddress || undefined })
 
       const secretKey = decodeSecretKey(encodedSecretKey)
-      const address = await login(secretKey, true)
+      const address = await login(secretKey, { isInitialization: true })
 
       if (!address) {
         accountStorage.remove()
@@ -340,6 +339,15 @@ async function subscribeEnergy(
     }
   )
   return unsub
+}
+
+function saveLoginInfoToStorage() {
+  const { address, encodedSecretKey, signer } = useMyAccount.getState()
+  if (!address || !encodedSecretKey || !signer) return
+  accountStorage.set(encodedSecretKey)
+  accountAddressStorage.set(address)
+
+  useAnalytics.getState().setUserId(signer.address)
 }
 
 export function getMyMainAddress() {

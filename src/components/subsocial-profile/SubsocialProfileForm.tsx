@@ -6,19 +6,22 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { encodeProfileSource } from '@/utils/profile'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ComponentProps, useEffect } from 'react'
-import { useForm, UseFormWatch } from 'react-hook-form'
+import { ProfileContent } from '@subsocial/api/types'
+import { ComponentProps, useEffect, useState } from 'react'
+import { Controller, useForm, UseFormWatch } from 'react-hook-form'
 import { z } from 'zod'
 import FormButton from '../FormButton'
+import ImageInput from '../inputs/ImageInput'
 import Input from '../inputs/Input'
 import { useName } from '../Name'
 
 export type SubsocialProfileFormProps = ComponentProps<'form'> & {
   onSuccess?: () => void
-  onNameChange?: (name: string) => void
+  onProfileChange?: (profile: ProfileContent) => void
 }
 
 const formSchema = z.object({
+  image: z.string(),
   name: z.string().min(3, 'Name is too short').max(25, 'Name is too long'),
 })
 export function validateNickname(name: string) {
@@ -28,7 +31,7 @@ type FormSchema = z.infer<typeof formSchema>
 
 export default function SubsocialProfileForm({
   onSuccess,
-  onNameChange,
+  onProfileChange,
   ...props
 }: SubsocialProfileFormProps) {
   const sendEvent = useSendEvent()
@@ -36,22 +39,30 @@ export default function SubsocialProfileForm({
   const { data: profile } = getProfileQuery.useQuery(myAddress ?? '', {
     enabled: !!myAddress,
   })
+
+  const profileContent = profile?.profileSpace?.content
+  const [isImageLoading, setIsImageLoading] = useState(false)
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
+    control,
     formState: { errors },
   } = useForm<FormSchema>({
-    defaultValues: { name: profile?.profileSpace?.content?.name ?? '' },
+    defaultValues: {
+      name: profileContent?.name ?? '',
+      image: profileContent?.image ?? '',
+    },
     resolver: zodResolver(formSchema),
     mode: 'onChange',
   })
 
-  const { name } = watch()
-  const onNameChangeRef = useWrapInRef(onNameChange)
+  const { name, image } = watch()
+  const onProfileChangeRef = useWrapInRef(onProfileChange)
   useEffect(() => {
-    onNameChangeRef.current?.(name)
-  }, [onNameChangeRef, name])
+    onProfileChangeRef.current?.({ name, image })
+  }, [onProfileChangeRef, name, image])
 
   return (
     <UpsertProfileWrapper>
@@ -61,6 +72,7 @@ export default function SubsocialProfileForm({
             content: {
               ...profile?.profileSpace?.content,
               name: data.name,
+              image: data.image,
               profileSource: encodeProfileSource({
                 source: 'subsocial-profile',
               }),
@@ -76,6 +88,24 @@ export default function SubsocialProfileForm({
             onSubmit={onSubmit}
             className={cx('flex flex-col gap-4', props.className)}
           >
+            <div className='self-center'>
+              <Controller
+                control={control}
+                name='image'
+                render={({ field, fieldState }) => {
+                  return (
+                    <ImageInput
+                      disabled={isLoading}
+                      image={field.value}
+                      setImageUrl={(value) => setValue('image', value)}
+                      containerProps={{ className: 'my-2' }}
+                      setIsLoading={setIsImageLoading}
+                      error={fieldState.error?.message}
+                    />
+                  )
+                }}
+              />
+            </div>
             <Input
               placeholder='Name (3-25 symbols)'
               {...register('name')}
@@ -83,7 +113,8 @@ export default function SubsocialProfileForm({
               error={errors.name?.message}
             />
             <ProfileFormButton
-              isLoading={isLoading}
+              originalImage={profileContent?.image}
+              isLoading={isLoading || isImageLoading}
               address={myAddress || ''}
               watch={watch}
             />
@@ -98,25 +129,27 @@ function ProfileFormButton({
   address,
   watch,
   isLoading,
+  originalImage,
 }: {
   address: string
   watch: UseFormWatch<FormSchema>
   isLoading: boolean
+  originalImage?: string
 }) {
-  const { name } = watch()
+  const { name, image } = watch()
   const currentName = useName(address)
 
-  const isNameNotChanged = currentName.name === name
+  const isNotChanged = currentName.name === name && image === originalImage
 
   return (
     <FormButton
       schema={formSchema}
-      disabled={isNameNotChanged}
+      disabled={isNotChanged}
       watch={watch}
       size='lg'
       isLoading={isLoading}
     >
-      {isNameNotChanged ? 'Your current profile' : 'Save changes'}
+      {isNotChanged ? 'Your current profile' : 'Save changes'}
     </FormButton>
   )
 }

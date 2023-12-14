@@ -7,6 +7,7 @@ import { standaloneDynamicFetcherWrapper } from '../utils'
 
 export type SubsocialProfile = {
   profileSpace: { id: string; content: SpaceContent | null } | null
+  isUpdated: boolean
   address: string
 }
 
@@ -16,11 +17,12 @@ async function getProfilesFromBlockchain({
 }: SubsocialQueryData<string[]>): Promise<SubsocialProfile[]> {
   if (addresses.length === 0) return []
   const res = await api.findProfileSpaces(addresses)
-  return res.map(({ content, id, struct: { ownerId } }) => ({
+  return res.map(({ content, id, struct: { ownerId, isUpdated } }) => ({
     profileSpace: {
       id,
       content,
     },
+    isUpdated: !!isUpdated,
     address: ownerId,
   }))
 }
@@ -38,6 +40,7 @@ const GET_PROFILES = gql`
         linksOriginal
         tagsOriginal
         profileSource
+        updatedAtTime
       }
     }
   }
@@ -65,6 +68,7 @@ async function getProfilesFromSquid(
           } as SpaceContent,
         }
       : null,
+    isUpdated: !!profileSpace?.updatedAtTime,
     address: id,
   }))
 }

@@ -1,4 +1,5 @@
 import { getPostQuery } from '@/services/api/query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { getAppId } from '@/utils/env/client'
 import { useMemo } from 'react'
@@ -8,6 +9,8 @@ export default function useIsAddressBlockedInChat(
   chatId: string,
   currentHubId: string
 ) {
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(address)
+
   const { data: chat } = getPostQuery.useQuery(chatId)
   const originalHubId = chat?.struct.spaceId
   const entityId = chat?.entityId
@@ -18,28 +21,32 @@ export default function useIsAddressBlockedInChat(
   const { data: hubModeration } = getBlockedResourcesQuery.useQuery({
     spaceId: currentHubId ?? '',
   })
-  const blockedInOriginalHub = originalHubModeration?.blockedResources.address
-  const blockedInHub = hubModeration?.blockedResources.address
-
   const { data: chatModerationData } = getBlockedResourcesQuery.useQuery({
     postEntityId: entityId || '',
   })
-  const blockedInChat = chatModerationData?.blockedResources.address
-
   const { data: appModeration } = getBlockedResourcesQuery.useQuery({
     appId: getAppId(),
   })
-  const blockedInApp = appModeration?.blockedResources.address
+  const blockedAddressesInOriginalHub =
+    originalHubModeration?.blockedResources.address
+  const blockedAddressesInHub = hubModeration?.blockedResources.address
+  const blockedAddressesInChat = chatModerationData?.blockedResources.address
+  const blockedAddressesInApp = appModeration?.blockedResources.address
 
   const blockedAddressesSet = useMemo(
     () =>
       new Set([
-        ...(blockedInOriginalHub ?? []),
-        ...(blockedInHub ?? []),
-        ...(blockedInChat ?? []),
-        ...(blockedInApp ?? []),
+        ...(blockedAddressesInOriginalHub ?? []),
+        ...(blockedAddressesInHub ?? []),
+        ...(blockedAddressesInChat ?? []),
+        ...(blockedAddressesInApp ?? []),
       ]),
-    [blockedInOriginalHub, blockedInHub, blockedInChat, blockedInApp]
+    [
+      blockedAddressesInOriginalHub,
+      blockedAddressesInHub,
+      blockedAddressesInChat,
+      blockedAddressesInApp,
+    ]
   )
 
   return address && blockedAddressesSet.has(address)

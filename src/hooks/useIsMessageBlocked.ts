@@ -1,4 +1,5 @@
 import { getPostQuery } from '@/services/api/query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { isMessageBlocked } from '@/utils/chat'
 import { getAppId } from '@/utils/env/client'
@@ -40,6 +41,9 @@ export default function useIsMessageBlocked(
     spaceId: hubId,
   })
   const { data: chat } = getPostQuery.useQuery(chatId)
+  const ownerId = chat?.struct.ownerId
+  const { data: identity } = getLinkedIdentityQuery.useQuery(ownerId ?? '')
+
   const entityId = chat?.entityId ?? ''
   const { data: chatModerationData } = getBlockedResourcesQuery.useQuery({
     postEntityId: entityId,

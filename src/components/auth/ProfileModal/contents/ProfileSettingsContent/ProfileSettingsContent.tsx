@@ -1,5 +1,4 @@
-import { ForceProfileSource } from '@/components/Name'
-import ProfilePreview from '@/components/ProfilePreview'
+import ProfilePreview, { ForceProfileSource } from '@/components/ProfilePreview'
 import SubsocialProfileForm, {
   validateNickname,
 } from '@/components/subsocial-profile/SubsocialProfileForm'
@@ -9,6 +8,7 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { decodeProfileSource, ProfileSource } from '@/utils/profile'
+import { ProfileContent } from '@subsocial/api/types'
 import { useCallback, useEffect, useState } from 'react'
 import { forceBackFlowStorage } from '../../ProfileModal'
 import { ContentProps, ProfileModalState } from '../../types'
@@ -75,7 +75,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
   }, [profileSource, customProps])
 
   const [selectedTab, setSelectedTab] = useState(getShouldSelectedTab)
-  const [inputtedName, setInputtedName] = useState('')
+  const [inputtedProfile, setInputtedProfile] = useState<ProfileContent>({})
 
   const identitiesCount = useIdentitiesCount(address)
 
@@ -87,18 +87,26 @@ export default function ProfileSettingsContent(props: ContentProps) {
   let forceProfileSource: ForceProfileSource | undefined = undefined
   switch (selectedTab) {
     case 0:
-      forceProfileSource = { content: selectedEns, profileSource: 'ens' }
+      forceProfileSource = {
+        content: { name: selectedEns },
+        profileSource: 'ens',
+      }
       break
     case 1:
       forceProfileSource = {
         profileSource: selectedPolkadotIdentity?.source ?? 'polkadot-identity',
-        content: selectedPolkadotIdentity?.content,
+        content: { name: selectedPolkadotIdentity?.content },
       }
       break
     case 2:
       forceProfileSource = {
         profileSource: 'subsocial-profile',
-        content: validateNickname(inputtedName) ? inputtedName : '',
+        content: {
+          name: validateNickname(inputtedProfile.name ?? '')
+            ? inputtedProfile.name
+            : '',
+          image: inputtedProfile.image ?? '',
+        },
       }
       break
   }
@@ -144,7 +152,7 @@ export default function ProfileSettingsContent(props: ContentProps) {
               id: 'custom',
               text: 'Custom',
               content: () => (
-                <SubsocialProfileForm onNameChange={setInputtedName} />
+                <SubsocialProfileForm onProfileChange={setInputtedProfile} />
               ),
             },
           ]}

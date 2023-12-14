@@ -1,18 +1,11 @@
 import InfoPanel from '@/components/InfoPanel'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import dynamic from 'next/dynamic'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { loginModalContents, LoginModalStep } from './LoginModalContent'
-
-const CaptchaInvisible = dynamic(
-  () => import('@/components/captcha/CaptchaInvisible'),
-  {
-    ssr: false,
-  }
-)
 
 export type LoginModalProps = ModalFunctionalityProps & {
   initialOpenState?: LoginModalStep
@@ -30,6 +23,7 @@ type ModalConfig = {
     withBackButton?: boolean | ((address: string | null) => boolean)
     withFooter?: boolean
     finalizeTemporaryAccount?: boolean
+    withCloseButton?: boolean
   }
 }
 
@@ -40,12 +34,12 @@ const modalHeader: ModalConfig = {
     withFooter: true,
   },
   'enter-secret-key': {
-    title: '🔑 Grill secret key',
+    title: '🔑 Grill key',
     desc: (
       <span className='flex flex-col'>
         <span>
-          To access GrillChat, you need a Grill secret key. If you do not have
-          one, just write your first chat message, and you will be given one.
+          To access GrillChat, you need a Grill key. If you do not have one,
+          just write your first chat message, and you will be given one.
         </span>
         <InfoPanel className='mt-4'>
           DO NOT enter the private key of an account that holds any funds,
@@ -55,6 +49,11 @@ const modalHeader: ModalConfig = {
     ),
     withBackButton: true,
     withFooter: true,
+  },
+  'x-login-loading': {
+    title: '🕔 Connecting to X',
+    desc: 'We are connecting your X account to Grill.chat. Please wait for a few seconds.',
+    withCloseButton: false,
   },
   'account-created': {
     title: '🎉 Account created',
@@ -140,20 +139,19 @@ export default function LoginModal({
     withFooter,
     backToStep,
     withoutDefaultPadding,
+    withCloseButton = true,
   } = header
   const usedOnBackClick =
     onBackClick || (() => setCurrentState(backToStep || 'login'))
 
   useEffect(() => {
     if (props.isOpen) setCurrentState(initialOpenState)
-    else {
-      const { isTemporaryAccount, logout } = useMyAccount.getState()
-      if (isTemporaryAccount) logout()
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
 
-  useEffect(() => {
+  // need to use useLayoutEffect to make finalize account works first before rendering any data inside the step
+  // because this won't be called the step component calls closeModal inside the useEffect
+  useLayoutEffect(() => {
     if (header.finalizeTemporaryAccount) {
       const { finalizeTemporaryAccount } = useMyAccount.getState()
       finalizeTemporaryAccount()
@@ -161,6 +159,7 @@ export default function LoginModal({
   }, [header])
 
   const address = useMyMainAddress()
+  const { data: accountData } = getAccountDataQuery.useQuery(address ?? '')
   const showBackButton =
     typeof withBackButton === 'function'
       ? withBackButton(address)
@@ -172,33 +171,31 @@ export default function LoginModal({
       withFooter={withFooter}
       initialFocus={isTouchDevice() ? undefined : inputRef}
       title={title}
-      withCloseButton
+      withCloseButton={withCloseButton}
       description={desc}
       onBackClick={showBackButton ? usedOnBackClick : undefined}
       contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
       titleClassName={cx(withoutDefaultPadding && 'px-6')}
       descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
       closeModal={() => {
-        if (currentState === 'evm-address-linked') {
+        if (
+          currentState === 'evm-address-linked' &&
+          (accountData?.ensNames?.length ?? 0) > 0
+        ) {
           setCurrentState('evm-set-profile')
           return
+        } else if (currentState === 'x-login-loading') {
+          return
         }
+
         props.closeModal()
       }}
     >
-      <CaptchaInvisible>
-        {(runCaptcha, termsAndService) => {
-          return (
-            <ModalContent
-              setCurrentState={setCurrentState}
-              currentStep={currentState}
-              runCaptcha={runCaptcha}
-              termsAndService={termsAndService}
-              {...props}
-            />
-          )
-        }}
-      </CaptchaInvisible>
+      <ModalContent
+        setCurrentState={setCurrentState}
+        currentStep={currentState}
+        {...props}
+      />
     </Modal>
   )
 }

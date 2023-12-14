@@ -1,5 +1,4 @@
 import Button from '@/components/Button'
-import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import ChatImage from '@/components/chats/ChatImage'
 import ChatModerateChip from '@/components/chats/ChatModerateChip'
@@ -20,11 +19,7 @@ import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
-import {
-  getHasEnoughEnergy,
-  useMyAccount,
-  useMyMainAddress,
-} from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getDatahubConfig } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -228,31 +223,18 @@ export default function ChatPage({
 }
 
 function BottomPanel() {
-  const shouldSendMessageWithoutCaptcha = useMyAccount((state) => {
-    const isEnergyLoading = state.address && state.energy === null
-    if (!state.isInitialized || isEnergyLoading) return true
-
-    const isLoggedIn = !!state.address
-    const hasEnoughEnergy = getHasEnoughEnergy(state.energy)
-    return isLoggedIn && hasEnoughEnergy
-  })
-
   return (
     <Container as='div' className='pb-2 text-center text-sm text-text-muted'>
-      {shouldSendMessageWithoutCaptcha ? (
-        <p className='inline'>
-          Powered by{' '}
-          <LinkText
-            variant='primary'
-            href='https://subsocial.network/'
-            openInNewTab
-          >
-            Subsocial
-          </LinkText>
-        </p>
-      ) : (
-        <CaptchaTermsAndService className='inline' />
-      )}
+      <p className='inline'>
+        Powered by{' '}
+        <LinkText
+          variant='primary'
+          href='https://subsocial.network/'
+          openInNewTab
+        >
+          Subsocial
+        </LinkText>
+      </p>
       <NetworkStatus className='ml-2 inline-block' />
     </Container>
   )

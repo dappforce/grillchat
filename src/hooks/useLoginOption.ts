@@ -1,19 +1,9 @@
-import { getChatIdsWithoutAnonLoginOptions } from '@/constants/chat'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount } from '@/stores/my-account'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
-import { getIdFromSlug } from '@/utils/slug'
-import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef } from 'react'
 
-export default function useLoginOptions() {
-  const { query } = useRouter()
-  const chatId =
-    typeof query.slug === 'string' ? getIdFromSlug(query.slug) : undefined
-  const isNonAnonLoginRequired = getChatIdsWithoutAnonLoginOptions().includes(
-    chatId ?? ''
-  )
-
+export default function useLoginOption() {
   const isOpen = useLoginModal((state) => state.isOpen)
   const waitingLoginResolvers = useRef<VoidFunction[]>([])
   useEffect(() => {
@@ -33,5 +23,5 @@ export default function useLoginOptions() {
     return useMyAccount.getState().address
   }, [setIsOpen])
 
-  return { isNonAnonLoginRequired, promptUserForLogin }
+  return { promptUserForLogin }
 }
