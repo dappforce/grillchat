@@ -1,4 +1,5 @@
 import { ProfileModalState } from '@/components/auth/ProfileModal/types'
+import { useMyAccount } from './my-account'
 import { create } from './utils'
 
 type State = {
@@ -26,6 +27,12 @@ const initialState: State = {
 export const useProfileModal = create<State & Actions>()((set) => ({
   ...initialState,
   openModal: (config) => {
+    if (
+      config?.defaultOpenState === 'polkadot-connect' &&
+      useMyAccount.getState().preferredWallet
+    ) {
+      config.defaultOpenState = 'polkadot-connect-account'
+    }
     set({ isOpen: true, ...config })
   },
   clearInternalProps: () => {

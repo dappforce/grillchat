@@ -2,17 +2,17 @@ import mutationWrapper from '@/subsocial-query/base'
 import { subsocialOffchainApi } from './common'
 
 type SubscribeWithEmailBody = {
+  address: string
   email: string
-  chatId: string
 }
 
 export async function subscribeWithEmail({
-  chatId,
+  address,
   email,
 }: SubscribeWithEmailBody) {
-  const res = await subsocialOffchainApi.post('/mail/add_email/807277', {
+  const res = await subsocialOffchainApi.post('/mail/add_email/830087', {
     email,
-    channelId: chatId,
+    address,
   })
   return res.data
 }

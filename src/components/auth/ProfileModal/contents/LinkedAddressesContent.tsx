@@ -13,6 +13,7 @@ export default function LinkedAddressesContent({
 }: ProfileModalContentProps) {
   const sendEvent = useSendEvent()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+  const preferredWallet = useMyAccount((state) => state.preferredWallet)
 
   const commonEventProps = { eventSource: 'account_settings_menu' }
   const onLinkEvmAddressClick = () => {
@@ -21,7 +22,8 @@ export default function LinkedAddressesContent({
   }
   const onPolkadotConnectClick = () => {
     sendEvent('start_link_polkadot_address', commonEventProps)
-    setCurrentState('polkadot-connect')
+    if (preferredWallet) setCurrentState('polkadot-connect-account')
+    else setCurrentState('polkadot-connect')
   }
 
   return (

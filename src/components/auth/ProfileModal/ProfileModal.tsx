@@ -1,5 +1,6 @@
 import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
 import Modal from '@/components/modals/Modal'
+import useLoginOption from '@/hooks/useLoginOption'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -89,6 +90,8 @@ export const forceBackFlowStorage = new SessionStorage(
 )
 
 export default function ProfileModal({ notification }: ProfileModalProps) {
+  const { loginOption } = useLoginOption()
+
   const { isOpen, defaultOpenState, closeModal, onBackClick } =
     useProfileModal()
 
@@ -258,8 +261,14 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       withBackButton: 'polkadot-connect-account',
     },
     'polkadot-connect-success': {
-      title: '🎉 Polkadot account linked',
-      desc: "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
+      title:
+        loginOption === 'polkadot'
+          ? '🎉 Chat joined!'
+          : '🎉 Polkadot account linked',
+      desc:
+        loginOption === 'polkadot'
+          ? 'Here, you can talk about the Active Staking system with others, and share which promising authors you are following.'
+          : "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
       withBackButton: false,
     },
     'polkadot-connect-unlink': {

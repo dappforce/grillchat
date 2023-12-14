@@ -1,7 +1,6 @@
 import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
-import EmailSubscribeModal from '@/components/modals/EmailSubscribeModal'
 import { ERRORS } from '@/constants/error'
 import useAutofocus from '@/hooks/useAutofocus'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
@@ -323,7 +322,6 @@ export default function ChatForm({
         )}
       </form>
 
-      <EmailSubscribeModal chatId={chatId} />
       <StayUpdatedModal
         isOpen={isOpenCtaModal}
         closeModal={() => setIsOpenCtaModal(false)}

@@ -4,6 +4,7 @@ import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import { ANN_CHAT_ID } from '@/constants/chat'
 import useIsInIframe from '@/hooks/useIsInIframe'
+import useLoginOption from '@/hooks/useLoginOption'
 import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getUnreadCountQuery } from '@/services/datahub/posts/query'
@@ -15,6 +16,7 @@ import { getDatahubConfig } from '@/utils/env/client'
 import { getHubPageLink, getUrlQuery } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
+import { getWallets, Wallet } from '@talismn/connect-wallets'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -62,6 +64,9 @@ export default function Navbar({
 
   const isLoginModalOpen = useLoginModal((state) => state.isOpen)
   const setIsLoginModalOpen = useLoginModal((state) => state.setIsOpen)
+  const setLoginModalDefaultOpenState = useLoginModal(
+    (state) => state.setDefaultOpenState
+  )
   const initialLoginModalOpenState = useLoginModal(
     (state) => state.initialOpenState
   )
@@ -90,7 +95,27 @@ export default function Navbar({
     }, 10_000)
   }, [address, isInitializedAddress, prevAddress])
 
+  const { loginOption } = useLoginOption()
+  const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
+  const { defaultWallet } = useConfigContext()
+  useEffect(() => {
+    if (defaultWallet) {
+      const supportedWallets: Wallet[] = getWallets()
+      const wallet = supportedWallets.find(
+        (wallet) =>
+          wallet.title.toLowerCase() === defaultWallet.walletName.toLowerCase()
+      )
+      if (wallet) {
+        setPreferredWallet(wallet)
+        setLoginModalDefaultOpenState('polkadot-connect-account')
+      }
+    }
+  }, [defaultWallet, setPreferredWallet, setLoginModalDefaultOpenState])
   const login = () => {
+    if (loginOption === 'polkadot') {
+      setIsLoginModalOpen(true, 'polkadot-connect')
+      return
+    }
     setIsLoginModalOpen(true)
   }
 

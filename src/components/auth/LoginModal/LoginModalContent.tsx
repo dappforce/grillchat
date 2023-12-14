@@ -10,6 +10,7 @@ import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
+import useLoginOption from '@/hooks/useLoginOption'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { useRequestToken } from '@/services/api/mutation'
@@ -58,7 +59,9 @@ export type LoginModalContentProps = ModalFunctionalityProps & {
 }
 
 export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
+  const { loginOption } = useLoginOption()
   const sendEvent = useSendEvent()
+
   const [showErrorPanel, setShowErrorPanel] = useState(false)
   useEffect(() => {
     const auth = getUrlQuery('auth') === 'true'
@@ -72,28 +75,32 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className={cx('flex flex-col gap-4 pb-4')}>
-          {showErrorPanel && (
-            <InfoPanel variant='error'>
-              😕 Sorry there is some issue with logging you in, please try again
-              or try different account
-            </InfoPanel>
+          {loginOption === 'all' && (
+            <>
+              {showErrorPanel && (
+                <InfoPanel variant='error'>
+                  😕 Sorry there is some issue with logging you in, please try
+                  again or try different account
+                </InfoPanel>
+              )}
+              <Button
+                onClick={() => {
+                  sendEvent('x_login_started')
+                  signIn('twitter', {
+                    callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
+                  })
+                }}
+                size='lg'
+              >
+                <div className='flex items-center justify-center gap-2'>
+                  <XLogoIcon className='text-text-muted-on-primary' />
+                  Continue with X
+                </div>
+              </Button>
+            </>
           )}
           <Button
-            onClick={() => {
-              sendEvent('x_login_started')
-              signIn('twitter', {
-                callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
-              })
-            }}
-            size='lg'
-          >
-            <div className='flex items-center justify-center gap-2'>
-              <XLogoIcon className='text-text-muted-on-primary' />
-              Continue with X
-            </div>
-          </Button>
-          <Button
-            variant='primaryOutline'
+            variant={loginOption === 'polkadot' ? 'primary' : 'primaryOutline'}
             onClick={() => {
               setCurrentState('connect-wallet')
               sendEvent('connect_wallet_started')
@@ -101,20 +108,28 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <WalletIcon className='text-text-muted' />
+              <WalletIcon
+                className={cx(
+                  loginOption === 'polkadot'
+                    ? 'text-text-muted-on-primary'
+                    : 'text-text-muted'
+                )}
+              />
               Connect wallet
             </div>
           </Button>
-          <Button
-            variant='primaryOutline'
-            onClick={() => setCurrentState('enter-secret-key')}
-            size='lg'
-          >
-            <div className='flex items-center justify-center gap-2'>
-              <KeyIcon className='text-text-muted' />
-              Enter Grill key
-            </div>
-          </Button>
+          {loginOption === 'all' && (
+            <Button
+              variant='primaryOutline'
+              onClick={() => setCurrentState('enter-secret-key')}
+              size='lg'
+            >
+              <div className='flex items-center justify-center gap-2'>
+                <KeyIcon className='text-text-muted' />
+                Enter Grill key
+              </div>
+            </Button>
+          )}
         </div>
       </div>
     </div>

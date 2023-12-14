@@ -46,3 +46,8 @@ const CHAT_IDS_WITHOUT_ANON_LOGIN_OPTIONS: string[] = ['19361']
 export function getChatIdsWithoutAnonLoginOptions() {
   return CHAT_IDS_WITHOUT_ANON_LOGIN_OPTIONS
 }
+
+const CHATS_FOR_STAKERS: string[] = ['20132', '6946']
+export function getChatsForStakers() {
+  return CHATS_FOR_STAKERS
+}
