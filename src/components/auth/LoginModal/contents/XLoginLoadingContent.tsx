@@ -1,5 +1,6 @@
 import LoadingAnimation from '@/assets/animations/loading.json'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
+import useToastError from '@/hooks/useToastError'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
@@ -30,14 +31,24 @@ export default function XLoginLoading({
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
     myAddress ?? ''
   )
-  const { mutate: linkIdentity } = useLinkIdentity()
-  const { mutate: upsertProfile } = useUpsertProfile({
+  const { mutate: linkIdentity, error: errorLinking } = useLinkIdentity()
+  useToastError(
+    errorLinking,
+    'Failed to link X profile',
+    () => 'Please refresh the page to relink your account'
+  )
+  const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
     onSuccess: () => {
       replaceUrl(getCurrentUrlWithoutQuery('login'))
       setCurrentState('account-created')
       sendEvent('x_login_done')
     },
   })
+  useToastError(
+    errorUpsert,
+    'Failed to create profile',
+    () => 'Please refresh the page to relink your account'
+  )
 
   const setSubscriptionState = useSubscriptionState(
     (state) => state.setSubscriptionState
