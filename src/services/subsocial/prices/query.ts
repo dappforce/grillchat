@@ -9,6 +9,7 @@ export const coingeckoTokenIds: Record<string, string> = {
   glmr: 'moonbeam',
   dot: 'polkadot',
   astr: 'astar',
+  sub: 'subsocial',
 }
 
 export type Price = {

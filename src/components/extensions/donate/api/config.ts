@@ -5,6 +5,7 @@ import usdtAbi from './abi/polygon/usdtAbi'
 
 import astrAbi from './abi/moonbeam/astrAbi'
 import dotAbi from './abi/moonbeam/dotAbi'
+import subAbi from './abi/moonbeam/subAbi'
 import moonbeamUsdcAbi from './abi/moonbeam/usdcAbi'
 import moonbeamUsdtAbi from './abi/moonbeam/usdtAbi'
 
@@ -46,6 +47,10 @@ export const contractsByChainName: ContractConfigByToken = {
     astr: {
       address: '0xFfFFFfffA893AD19e540E172C10d78D4d479B5Cf',
       abi: astrAbi,
+    },
+    sub: {
+      address: '0xffffffff43b4560bc0c451a3386e082bff50ac90',
+      abi: subAbi,
     },
   },
 }

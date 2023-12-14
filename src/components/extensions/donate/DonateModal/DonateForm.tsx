@@ -214,6 +214,7 @@ const TokenItemPreview = ({ item, chainName, open }: RokenItemPreviewProps) => {
   const tokenId = coingeckoTokenIds[(item.id as string).toLowerCase()]
 
   const { data } = getPriceQuery.useQuery(tokenId)
+  console.log('test', tokenId, data)
 
   const price = data?.current_price
 
