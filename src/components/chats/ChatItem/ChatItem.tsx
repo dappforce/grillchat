@@ -3,6 +3,7 @@ import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
+import { getOffchainPostingHubs } from '@/utils/env/client'
 import { PostData } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import ChatItemMenus from './ChatItemMenus'
@@ -83,7 +84,11 @@ export default function ChatItem({
         >
           {(config) => {
             const { toggleDisplay, referenceProps } = config || {}
-            const showChip = messageStatus === 'offChain' && !isMyMessage
+            const showChip =
+              messageStatus === 'offChain' &&
+              !isMyMessage &&
+              getOffchainPostingHubs().includes(hubId)
+
             return (
               <div
                 className={cx(
