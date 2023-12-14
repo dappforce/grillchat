@@ -2,12 +2,13 @@ import SubwalletIcon from '@/assets/icons/subwallet.png'
 import Button from '@/components/Button'
 import PopOver from '@/components/floating/PopOver'
 import MenuList, { MenuListProps } from '@/components/MenuList'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin } from '@/utils/links'
-import { getIsInIframe, isInMobileOrTablet } from '@/utils/window'
+import { isInMobileOrTablet } from '@/utils/window'
 import { getWallets, Wallet } from '@talismn/connect-wallets'
 import Image from 'next/image'
 import { FiDownload } from 'react-icons/fi'
@@ -17,6 +18,7 @@ import { PolkadotConnectContentProps } from './types'
 export default function PolkadotConnectWalletContent({
   setCurrentState,
 }: PolkadotConnectContentProps) {
+  const isInIframe = useIsInIframe()
   const sendEvent = useSendEvent()
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
   const supportedWallets: Wallet[] = getWallets()
@@ -26,12 +28,6 @@ export default function PolkadotConnectWalletContent({
   supportedWallets.forEach((wallet) => {
     // polkadot js doesn't inject its web3 object inside iframe
     // issue link: https://github.com/polkadot-js/extension/issues/1274
-    const isPolkadotJsNotInstalledAndInIframe =
-      wallet.title.toLowerCase() === 'polkadot.js' &&
-      !wallet.installed &&
-      getIsInIframe()
-    if (isPolkadotJsNotInstalledAndInIframe) return
-
     if (wallet.installed) installedWallets.push(wallet)
     else otherWallets.push(wallet)
   })
@@ -41,6 +37,9 @@ export default function PolkadotConnectWalletContent({
     ...installedWallets,
     ...otherWallets,
   ].map((wallet: Wallet) => {
+    const isPolkadotJsAndInIframe =
+      wallet.title.toLowerCase() === 'polkadot.js' && isInIframe
+
     return {
       text: (
         <div className='flex w-full items-center justify-between gap-4'>
@@ -52,7 +51,8 @@ export default function PolkadotConnectWalletContent({
           >
             {wallet.title}
           </span>
-          {!wallet.installed && (
+          {/* Polkadot js in iframe is detected as not installed even if it does already */}
+          {!isPolkadotJsAndInIframe && !wallet.installed && (
             <PopOver
               panelSize='sm'
               triggerOnHover
@@ -94,6 +94,10 @@ export default function PolkadotConnectWalletContent({
         />
       ),
       onClick: () => {
+        if (isPolkadotJsAndInIframe) {
+          setCurrentState('polkadot-js-limited-support')
+          return
+        }
         if (!wallet.installed) return
 
         setPreferredWallet(wallet)

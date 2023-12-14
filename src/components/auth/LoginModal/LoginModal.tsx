@@ -7,6 +7,7 @@ import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import dynamic from 'next/dynamic'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import { loginModalContents, LoginModalStep } from './LoginModalContent'
 
 const StayUpdatedModal = dynamic(
@@ -121,6 +122,16 @@ export default function LoginModal({
       withBackButton: true,
       backToStep: 'connect-wallet',
       withoutDefaultPadding: true,
+    },
+    'polkadot-js-limited-support': {
+      title: '🔗 Limited Polkadot.js Support',
+      desc: (
+        <LimitedPolkadotJsSupportExplanation
+          goToWalletSelection={() => setCurrentState('polkadot-connect')}
+        />
+      ),
+      backToStep: 'polkadot-connect',
+      withBackButton: true,
     },
     'polkadot-connect-account': {
       title: '🔗 Select an account',

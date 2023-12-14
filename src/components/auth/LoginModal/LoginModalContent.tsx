@@ -24,6 +24,7 @@ import dynamic from 'next/dynamic'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
 import { CustomConnectButton } from '../common/evm/CustomConnectButton'
+import LimitedPolkadotJsSupportContent from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
 import PolkadotConnectSuccess from '../common/polkadot-connect/PolkadotConnectSuccess'
@@ -162,6 +163,7 @@ export const loginModalContents: LoginModalContents = {
     />
   ),
   'polkadot-connect': PolkadotConnectWalletContent,
+  'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmation,
   'polkadot-connect-success': PolkadotConnectSuccess,

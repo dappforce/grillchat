@@ -11,27 +11,31 @@ export default function useNetworkStatus() {
   const [substrateApi, setSubstrateApi] = useState<ApiPromise | null>(null)
 
   const [shouldDisconnect, setShouldDisconnect] = useState(false)
+  const subscriptionState = useTransactions((state) => state.subscriptionState)
   const pendingTransactions = useTransactions(
     (state) => state.pendingTransactions
   )
-  const pendingTransactionsRef = useWrapInRef(pendingTransactions)
+
+  const canUnsub =
+    pendingTransactions.size === 0 && subscriptionState === 'dynamic'
+  const canUnsubRef = useWrapInRef(canUnsub)
 
   useEffect(() => {
-    if (pendingTransactions.size === 0 && shouldDisconnect) {
+    if (canUnsub && shouldDisconnect) {
       substrateApi?.disconnect()
       setShouldDisconnect(false)
     }
-  }, [pendingTransactions, substrateApi, shouldDisconnect])
+  }, [canUnsub, substrateApi, shouldDisconnect])
 
   const disconnect = useCallback(() => {
     if (substrateApi) {
-      if (pendingTransactionsRef.current.size > 0) {
+      if (!canUnsubRef.current) {
         setShouldDisconnect(true)
       } else {
         substrateApi.disconnect()
       }
     }
-  }, [substrateApi, pendingTransactionsRef])
+  }, [substrateApi, canUnsubRef])
   const connect = useCallback(() => {
     setShouldDisconnect(false)
     if (substrateApi && !substrateApi.isConnected) {

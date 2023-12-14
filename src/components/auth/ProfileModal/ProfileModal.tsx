@@ -11,6 +11,9 @@ import { cx } from '@/utils/class-names'
 import { SessionStorage } from '@/utils/storage'
 import React, { useCallback, useEffect, useState } from 'react'
 import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
+import LimitedPolkadotJsSupportContent, {
+  LimitedPolkadotJsSupportExplanation,
+} from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
 import PolkadotConnectSuccess from '../common/polkadot-connect/PolkadotConnectSuccess'
@@ -67,6 +70,7 @@ const modalContents: {
   'telegram-notifications': TelegramNotificationContent,
   'push-notifications': PushNotificationContent,
   'polkadot-connect': PolkadotConnectContent,
+  'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
   'polkadot-connect-success': PolkadotConnectSuccess,
@@ -245,6 +249,15 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
         return 'linked-addresses'
       },
       withoutDefaultPadding: true,
+    },
+    'polkadot-js-limited-support': {
+      title: '🔗 Limited Polkadot.js Support',
+      desc: (
+        <LimitedPolkadotJsSupportExplanation
+          goToWalletSelection={() => setCurrentState('polkadot-connect')}
+        />
+      ),
+      withBackButton: 'polkadot-connect',
     },
     'polkadot-connect-account': {
       title: '🔗 Select an account',
