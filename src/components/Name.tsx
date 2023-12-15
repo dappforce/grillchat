@@ -14,7 +14,6 @@ import {
 } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
-import { HiArrowUpRight } from 'react-icons/hi2'
 import { useInView } from 'react-intersection-observer'
 import ChatModerateChip from './chats/ChatModerateChip'
 import PopOver from './floating/PopOver'
@@ -101,26 +100,25 @@ export default function Name({
       onClick={(e) => e.stopPropagation()}
     >
       <PopOver
-        trigger={<Icon />}
+        trigger={
+          <LinkText
+            href={link?.(usedTooltipLinkId, address)}
+            openInNewTab
+            onClick={() =>
+              sendEvent('idenity_link_clicked', {
+                eventSource: getCurrentPageChatId(),
+              })
+            }
+          >
+            <Icon />
+          </LinkText>
+        }
         panelSize='sm'
-        yOffset={4}
+        yOffset={6}
         placement='top'
         triggerOnHover
       >
-        <LinkText
-          href={link?.(usedTooltipLinkId, address)}
-          openInNewTab
-          onClick={() =>
-            sendEvent('idenity_link_clicked', {
-              eventSource: getCurrentPageChatId(),
-            })
-          }
-          variant='primary'
-          className='flex items-center font-semibold outline-none'
-        >
-          <span>{tooltip}</span>
-          <HiArrowUpRight />
-        </LinkText>
+        <span>{tooltip}</span>
       </PopOver>
     </div>
   )
