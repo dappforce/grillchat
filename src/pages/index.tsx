@@ -34,10 +34,10 @@ export const getStaticProps = getCommonStaticProps<
         ...hubsData.map(async (hub) => {
           if (!hub) return
 
-          const res = await getPostIdsBySpaceIdQuery.fetchQuery(null, hub.id)
+          const result = await getPostIdsBySpaceIdQuery.fetchQuery(null, hub.id)
           const linkedChats = getLinkedChatIdsForHubId(hub.id)
           hubsChatCount[hub.id] =
-            (res?.postIds.length ?? 0) + linkedChats.length
+            (result?.postIds.length ?? 0) + linkedChats.length
         }),
       ])
     } catch (err) {
