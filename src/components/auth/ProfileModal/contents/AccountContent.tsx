@@ -9,18 +9,23 @@ import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import MenuList, { MenuListProps } from '@/components/MenuList'
+import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useConfigContext } from '@/providers/ConfigProvider'
+import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { installApp, isInstallAvailable } from '@/utils/install'
 import { useTheme } from 'next-themes'
 import { FiDownload } from 'react-icons/fi'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
+import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
 
 export default function AccountContent({
   address,
@@ -35,6 +40,11 @@ export default function AccountContent({
   const { disconnect } = useDisconnect()
 
   const colorModeOptions = useColorModeOptions()
+
+  const { count: linkedAddressesCount, maxCount: maxLinkedCount } =
+    useLinkedAccountCount()
+  const { count: activatedNotificationCount, maxCount: maxNotificationCount } =
+    useActivatedNotificationCount()
 
   const onLinkedAddressesClick = () => {
     sendEvent('open_linked_addresses', commonEventProps)
@@ -63,6 +73,11 @@ export default function AccountContent({
       text: (
         <span className='flex items-center gap-2'>
           <span>Notifications</span>
+          {!!activatedNotificationCount && (
+            <Notice size='sm' noticeType='grey'>
+              {activatedNotificationCount}/{maxNotificationCount} connected
+            </Notice>
+          )}
           {showNotification && <DotBlinkingNotification />}
         </span>
       ),
@@ -76,7 +91,11 @@ export default function AccountContent({
       text: (
         <span className='flex items-center gap-2'>
           <span>Linked Addresses</span>
-          {/* {showLinkedNotif && <DotBlinkingNotification />} */}
+          {!!linkedAddressesCount && (
+            <Notice size='sm' noticeType='grey'>
+              {linkedAddressesCount}/{maxLinkedCount} connected
+            </Notice>
+          )}
         </span>
       ),
       icon: LinkedAddressesIcon,
@@ -159,4 +178,31 @@ function useColorModeOptions(): MenuListProps['menus'] {
   if (theme === 'dark') return [lightModeOption]
 
   return []
+}
+
+function useLinkedAccountCount() {
+  const myAddress = useMyMainAddress()
+  const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
+  const { data: accountData } = getAccountDataQuery.useQuery(myAddress ?? '')
+
+  let count = 0
+  if (hasProxy) count++
+  if (accountData?.evmAddress) count++
+
+  return { count, maxCount: 2 }
+}
+
+function useActivatedNotificationCount() {
+  const myAddress = useMyMainAddress()
+  const { data: linkedAccounts } = getLinkedTelegramAccountsQuery.useQuery({
+    address: myAddress ?? '',
+  })
+  const isTelegramLinked = !!linkedAccounts?.length
+  const isPushNotificationEnabled = useIsPushNotificationEnabled()
+
+  let count = 0
+  if (isTelegramLinked) count++
+  if (isPushNotificationEnabled) count++
+
+  return { count, maxCount: 2 }
 }
