@@ -19,4 +19,7 @@ async function getLinkedTelegramAccounts(
 export const getLinkedTelegramAccountsQuery = createQuery({
   key: 'getLinkedTelegramAccounts',
   fetcher: getLinkedTelegramAccounts,
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data?.address,
+  }),
 })
