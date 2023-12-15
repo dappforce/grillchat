@@ -47,7 +47,7 @@ export function NewMessageNotice({
       {...props}
       className={cx('relative bg-background-light p-2.5', props.className)}
     >
-      {anyNewData ? (
+      {anyNewData > 0 ? (
         <span className='absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-background-primary px-2 py-0.5 text-sm text-text-on-primary'>
           {anyNewData}
         </span>
