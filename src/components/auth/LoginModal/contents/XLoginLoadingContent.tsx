@@ -13,11 +13,8 @@ import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { useSession } from 'next-auth/react'
-import dynamic from 'next/dynamic'
 import { useEffect, useRef } from 'react'
 import { LoginModalContentProps } from '../LoginModalContent'
-
-const HamsterLoading = dynamic
 
 export default function XLoginLoading({
   closeModal,
