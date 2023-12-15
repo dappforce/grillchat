@@ -62,6 +62,37 @@ const ProfilePreview = ({
   const showEvmAddress = !!evmAddress
   const showPolkadotAddress = !!isMyProxyAddress
 
+  const editButton = mdUp ? (
+    <Button
+      size='noPadding'
+      className='relative flex items-center gap-1 border-border-gray px-2 py-0.5 text-sm text-text-primary'
+      variant='primaryOutline'
+      onClick={onEditClick}
+    >
+      <span>Edit</span>
+      <HiPencil />
+    </Button>
+  ) : (
+    <PopOver
+      panelSize='sm'
+      triggerOnHover
+      placement='top'
+      yOffset={6}
+      trigger={
+        <Button
+          size='noPadding'
+          className='relative top-px p-1 text-text-primary'
+          variant='transparent'
+          onClick={onEditClick}
+        >
+          <HiPencil />
+        </Button>
+      }
+    >
+      <p>Edit my profile</p>
+    </PopOver>
+  )
+
   return (
     <div
       {...props}
@@ -85,38 +116,7 @@ const ProfilePreview = ({
             className={cx('gap-2 text-lg', nameClassName)}
             forceProfileSource={forceProfileSource}
           />
-          {onEditClick &&
-            !isLoading &&
-            (mdUp ? (
-              <Button
-                size='noPadding'
-                className='relative flex items-center gap-1 border-border-gray px-2 py-0.5 text-sm text-text-primary'
-                variant='primaryOutline'
-                onClick={onEditClick}
-              >
-                <span>Edit</span>
-                <HiPencil />
-              </Button>
-            ) : (
-              <PopOver
-                panelSize='sm'
-                triggerOnHover
-                placement='top'
-                yOffset={6}
-                trigger={
-                  <Button
-                    size='noPadding'
-                    className='relative top-px p-1 text-text-primary'
-                    variant='transparent'
-                    onClick={onEditClick}
-                  >
-                    <HiPencil />
-                  </Button>
-                }
-              >
-                <p>Edit my profile</p>
-              </PopOver>
-            ))}
+          {onEditClick && !isLoading && editButton}
         </div>
         {showAddress && (
           <div className='flex flex-col gap-1'>
