@@ -154,7 +154,7 @@ function ChatInputWrapper({
                     <LinkText
                       className='font-semibold'
                       variant='primary'
-                      href='https://sub.id/stakers'
+                      href='https://sub.id/creators'
                     >
                       stake SUB
                     </LinkText>
