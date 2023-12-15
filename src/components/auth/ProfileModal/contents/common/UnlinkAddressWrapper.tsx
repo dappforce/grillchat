@@ -18,7 +18,10 @@ export default function UnlinkAddressWrapper({
       trigger={<div className='w-full'>{children(canUnlinkAddress)}</div>}
       triggerOnHover
     >
-      <p>You need at least 1 identity/account linked to your account</p>
+      <p>
+        You always need to have at least one account linked, please link another
+        account first
+      </p>
     </PopOver>
   ) : (
     children(canUnlinkAddress)

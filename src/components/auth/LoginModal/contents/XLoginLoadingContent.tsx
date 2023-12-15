@@ -1,4 +1,4 @@
-import LoadingAnimation from '@/assets/animations/loading.json'
+import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
@@ -14,7 +14,6 @@ import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { useSession } from 'next-auth/react'
 import { useEffect, useRef } from 'react'
-import Lottie, { LottieProps } from 'react-lottie'
 import { LoginModalContentProps } from '../LoginModalContent'
 
 export default function XLoginLoading({
@@ -108,20 +107,9 @@ export default function XLoginLoading({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, status])
 
-  const defaultOptions: LottieProps = {
-    options: {
-      loop: true,
-      autoplay: true,
-      animationData: LoadingAnimation,
-      rendererSettings: {
-        preserveAspectRatio: 'xMidYMid slice',
-      },
-    },
-  }
-
   return (
     <div className='flex flex-col items-center gap-4'>
-      <Lottie {...defaultOptions} height={250} width={250} />
+      <DynamicLoadedHamsterLoading />
       <span className='text-sm text-text-muted'>
         It may take up to 15 seconds
       </span>

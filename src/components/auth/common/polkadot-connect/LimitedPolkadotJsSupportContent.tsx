@@ -7,7 +7,7 @@ import Image from 'next/image'
 export default function LimitedPolkadotJsSupportContent() {
   return (
     <div className='flex flex-col items-center gap-6'>
-      <Image src={SadHamster} alt='' />
+      <Image src={SadHamster} className='w-64' alt='' />
       <Button
         size='lg'
         className='w-full'

@@ -15,6 +15,15 @@ import { FiDownload } from 'react-icons/fi'
 import urlJoin from 'url-join'
 import { PolkadotConnectContentProps } from './types'
 
+function getShouldWalletDisabled(wallet: Wallet, isInIframe: boolean) {
+  const isPolkadotJsAndInIframe =
+    wallet.title.toLowerCase() === 'polkadot.js' && isInIframe
+  return {
+    disabled: !isPolkadotJsAndInIframe && !wallet.installed,
+    isPolkadotJsAndInIframe,
+  }
+}
+
 export default function PolkadotConnectWalletContent({
   setCurrentState,
 }: PolkadotConnectContentProps) {
@@ -28,9 +37,7 @@ export default function PolkadotConnectWalletContent({
   supportedWallets.forEach((wallet) => {
     // polkadot js doesn't inject its web3 object inside iframe
     // issue link: https://github.com/polkadot-js/extension/issues/1274
-    const isPolkadotJsAndInIframe =
-      wallet.title.toLowerCase() === 'polkadot.js' && isInIframe
-    if (wallet.installed || isPolkadotJsAndInIframe)
+    if (!getShouldWalletDisabled(wallet, isInIframe).disabled)
       installedWallets.push(wallet)
     else otherWallets.push(wallet)
   })
@@ -40,23 +47,19 @@ export default function PolkadotConnectWalletContent({
     ...installedWallets,
     ...otherWallets,
   ].map((wallet: Wallet) => {
-    const isPolkadotJsAndInIframe =
-      wallet.title.toLowerCase() === 'polkadot.js' && isInIframe
-
     return {
       text: (
         <div className='flex w-full items-center justify-between gap-4'>
           <span
             className={cx(
-              !wallet.installed &&
-                !isPolkadotJsAndInIframe &&
+              getShouldWalletDisabled(wallet, isInIframe).disabled &&
                 'opacity-30 dark:opacity-100 dark:brightness-50'
             )}
           >
             {wallet.title}
           </span>
           {/* Polkadot js in iframe is detected as not installed even if it does already */}
-          {!isPolkadotJsAndInIframe && !wallet.installed && (
+          {getShouldWalletDisabled(wallet, isInIframe).disabled && (
             <PopOver
               panelSize='sm'
               triggerOnHover
@@ -81,7 +84,7 @@ export default function PolkadotConnectWalletContent({
       ),
       className: cx(
         'gap-4',
-        !wallet.installed &&
+        getShouldWalletDisabled(wallet, isInIframe).disabled &&
           'focus:bg-transparent hover:bg-transparent cursor-default'
       ),
       icon: () => (
@@ -98,7 +101,9 @@ export default function PolkadotConnectWalletContent({
         />
       ),
       onClick: () => {
-        if (isPolkadotJsAndInIframe) {
+        if (
+          getShouldWalletDisabled(wallet, isInIframe).isPolkadotJsAndInIframe
+        ) {
           setCurrentState('polkadot-js-limited-support')
           return
         }

@@ -141,7 +141,7 @@ function ChatInputWrapper({
                     else openLoginModal(true, 'polkadot-connect')
                   }}
                 >
-                  Connect polkadot wallet
+                  Connect Polkadot wallet
                 </Button>
               )
             } else if (isLoadingStakedInfo) {

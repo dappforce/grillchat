@@ -1,6 +1,7 @@
 import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
 import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
+import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
@@ -45,6 +46,7 @@ const ProfilePreview = ({
   showAllIdentity,
   ...props
 }: ProfilePreviewProps) => {
+  const mdUp = useBreakpointThreshold('md')
   const { isLoading } = useName(address)
   const { data: accountData } = getAccountDataQuery.useQuery(address)
   const { evmAddress } = accountData || {}
@@ -59,6 +61,37 @@ const ProfilePreview = ({
   const showGrillAddress = !isMyProxyAddress && !evmAddress
   const showEvmAddress = !!evmAddress
   const showPolkadotAddress = !!isMyProxyAddress
+
+  const editButton = mdUp ? (
+    <Button
+      size='noPadding'
+      className='relative flex items-center gap-1 border-border-gray px-2 py-0.5 text-sm text-text-primary'
+      variant='primaryOutline'
+      onClick={onEditClick}
+    >
+      <span>Edit</span>
+      <HiPencil />
+    </Button>
+  ) : (
+    <PopOver
+      panelSize='sm'
+      triggerOnHover
+      placement='top'
+      yOffset={6}
+      trigger={
+        <Button
+          size='noPadding'
+          className='relative top-px p-1 text-text-primary'
+          variant='transparent'
+          onClick={onEditClick}
+        >
+          <HiPencil />
+        </Button>
+      }
+    >
+      <p>Edit my profile</p>
+    </PopOver>
+  )
 
   return (
     <div
@@ -83,26 +116,7 @@ const ProfilePreview = ({
             className={cx('gap-2 text-lg', nameClassName)}
             forceProfileSource={forceProfileSource}
           />
-          {onEditClick && !isLoading && (
-            <PopOver
-              panelSize='sm'
-              triggerOnHover
-              placement='top'
-              yOffset={6}
-              trigger={
-                <Button
-                  size='noPadding'
-                  className='relative top-px p-1 text-text-primary'
-                  variant='transparent'
-                  onClick={onEditClick}
-                >
-                  <HiPencil />
-                </Button>
-              }
-            >
-              <p>Edit my profile</p>
-            </PopOver>
-          )}
+          {onEditClick && !isLoading && editButton}
         </div>
         {showAddress && (
           <div className='flex flex-col gap-1'>
