@@ -20,7 +20,6 @@ import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { signIn } from 'next-auth/react'
-import dynamic from 'next/dynamic'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
 import { CustomConnectButton } from '../common/evm/CustomConnectButton'
@@ -34,10 +33,7 @@ import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { ConnectWalletContent } from './contents/ConnectWalletContent'
 import { EnterSecretKeyContent } from './contents/EnterSecretKeyContent'
 import { NextActionsContent } from './contents/NextActionsContent'
-
-const XLoginLoading = dynamic(() => import('./contents/XLoginLoadingContent'), {
-  ssr: false,
-})
+import XLoginLoading from './contents/XLoginLoadingContent'
 
 export type LoginModalStep =
   | PolkadotConnectSteps
@@ -143,7 +139,7 @@ type LoginModalContents = {
 export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'enter-secret-key': EnterSecretKeyContent,
-  'x-login-loading': (props) => <XLoginLoading {...props} />,
+  'x-login-loading': XLoginLoading,
   'account-created': AccountCreatedContent,
   'next-actions': NextActionsContent,
   'connect-wallet': ConnectWalletContent,
