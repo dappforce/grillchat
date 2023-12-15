@@ -90,7 +90,7 @@ const ProfilePreview = ({
             (mdUp ? (
               <Button
                 size='noPadding'
-                className='relative flex items-center gap-1 border-border-gray px-2 py-0.5 text-text-primary'
+                className='relative flex items-center gap-1 border-border-gray px-2 py-0.5 text-sm text-text-primary'
                 variant='primaryOutline'
                 onClick={onEditClick}
               >
