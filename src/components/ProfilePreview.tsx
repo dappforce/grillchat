@@ -61,10 +61,17 @@ const ProfilePreview = ({
   const showPolkadotAddress = !!isMyProxyAddress
 
   return (
-    <div {...props} className={cx('flex items-center gap-4', className)}>
+    <div
+      {...props}
+      className={cx('flex items-center gap-3 md:gap-4', className)}
+    >
       <AddressAvatar
         address={address}
-        className={cx('h-20 w-20', avatarClassName)}
+        className={cx(
+          // if avatarClassName is provided, use it, otherwise use default size
+          avatarClassName ? 'h-20 w-20' : 'h-16 w-16 md:h-20 md:w-20',
+          avatarClassName
+        )}
         forceProfileSource={forceProfileSource}
       />
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>

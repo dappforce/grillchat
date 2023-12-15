@@ -81,7 +81,7 @@ export default function LoginModal({
     },
     'account-created': {
       title: '🎉 Account created',
-      desc: 'We have created an anonymous account for you. You can now use Grill.chat!',
+      desc: 'We have created an account linked to your X for you. You can now use Grill.chat!',
       finalizeTemporaryAccount: true,
     },
     'next-actions': {
