@@ -54,7 +54,7 @@ const COMMUNITY_CHAT_HUB_ID: string[] = [PRIMARY_COMMUNITY_HUB_ID, '1025']
 export const isCommunityHubId = (hubId: string | undefined) =>
   COMMUNITY_CHAT_HUB_ID.includes(hubId ?? '')
 
-export const PINNED_HUB_IDS = [COMMUNITY_CHAT_HUB_ID, '1031'].filter(
+export const PINNED_HUB_IDS = [...COMMUNITY_CHAT_HUB_ID, '1031'].filter(
   Boolean
 ) as string[]
 
