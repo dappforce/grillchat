@@ -63,7 +63,7 @@ jobs:
             GH_NOTIFICATIONS_URL=https://staging-grill-notifications.subsocial.network/graphql
             GH_NOTIFICATIONS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.ff24KWuoI8DJD1npesUMB6cVYTlOkwQYQBUOBcOpJxc
             GH_NEXT_PUBLIC_AMP_ID=19b9413e325bc2321fae1ea80cfb2915
-            GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/xsocial/graphql
+            GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=1025
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
             GH_IPFS_WRITE_URL=https://gw-seattle.crustcloud.io
