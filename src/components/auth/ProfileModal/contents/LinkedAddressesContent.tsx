@@ -22,7 +22,8 @@ export default function LinkedAddressesContent({
   }
   const onPolkadotConnectClick = () => {
     sendEvent('start_link_polkadot_address', commonEventProps)
-    if (preferredWallet) setCurrentState('polkadot-connect-account')
+    if (preferredWallet && !parentProxyAddress)
+      setCurrentState('polkadot-connect-account')
     else setCurrentState('polkadot-connect')
   }
 
