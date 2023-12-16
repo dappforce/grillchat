@@ -27,7 +27,7 @@ export default function ChatCreateSuccessModal({
   )
 
   return (
-    <Modal {...props} title='🎉 Chat Created' withCloseButton>
+    <Modal {...props} title='🎉 Video Created' withCloseButton>
       <div className='flex flex-col items-center gap-6'>
         <ChatImage
           chatId={chatId}

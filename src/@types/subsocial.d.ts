@@ -72,6 +72,7 @@ declare module '@subsocial/api/types' {
     image?: string
     siteName?: string
     hostName?: string
+    video?: string
   }
 
   export interface SpaceContent extends SubsocialSpaceContent {

@@ -15,7 +15,9 @@ export default function NewCommunityModal({
   hubId,
   ...props
 }: NewCommunityModalProps) {
-  const [openedModalState, setOpenedModalState] = useState<null | 'chat'>(null)
+  const [openedModalState, setOpenedModalState] = useState<null | 'channel'>(
+    null
+  )
   const sendEvent = useSendEvent()
 
   const menus: ActionCardProps['actions'] = [

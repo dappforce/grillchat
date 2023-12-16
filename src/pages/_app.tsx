@@ -1,6 +1,9 @@
 import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import Layout from '@/components/Layout'
+import { SelectedMediaProvider } from '@/context/MediaFormContext'
+import { client } from '@/graphql/apolloClient'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
@@ -12,6 +15,7 @@ import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { getGaId } from '@/utils/env/client'
 import { getIdFromSlug } from '@/utils/slug'
+import { ApolloProvider } from '@apollo/client'
 import '@rainbow-me/rainbowkit/styles.css'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
@@ -21,7 +25,6 @@ import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
-
 const PWAInstall = dynamic(() => import('@/components/PWAInstall'), {
   ssr: false,
 })
@@ -101,7 +104,13 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <div className={cx('font-sans')}>
           <ErrorBoundary>
             <EvmProvider>
-              <Component {...props} />
+              <ApolloProvider client={client}>
+                <Layout>
+                  <SelectedMediaProvider>
+                    <Component {...props} />
+                  </SelectedMediaProvider>
+                </Layout>
+              </ApolloProvider>
             </EvmProvider>
           </ErrorBoundary>
         </div>

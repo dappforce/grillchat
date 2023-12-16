@@ -1,3 +1,5 @@
+import { useSelectedMediaContext } from '@/context/MediaFormContext'
+import { usePinToIpfs } from '@/hooks/usePinToIpfs'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import {
   invalidatePostServerCache,
@@ -132,6 +134,7 @@ type Content = {
   image: string
   title: string
   body?: string
+  video?: string
 }
 export type UpsertPostParams = ({ postId: string } | { spaceId: string }) &
   Content
@@ -140,7 +143,7 @@ async function generateMessageContent(
   params: UpsertPostParams,
   client: QueryClient
 ) {
-  const { image, title, body } = params
+  const { image, title, body, video } = params
 
   if ('postId' in params && params.postId) {
     const post = await getPostQuery.fetchQuery(client, params.postId)
@@ -184,7 +187,15 @@ export function useUpsertPost(
 ) {
   const client = useQueryClient()
   const getWallet = useWalletGetter()
-
+  const {
+    selectedVideo,
+    setSelectedVideo,
+    selectedImage,
+    setSelectedImage,
+    selectedVideoCID,
+    setselectedVideoCID,
+  } = useSelectedMediaContext()
+  const { uploadToIpfs, isUploading, isUploadingError } = usePinToIpfs()
   const waitHasEnergy = useWaitHasEnergy()
   const { mutate: revalidateChatPage } = useRevalidateChatPage()
   const router = useRouter()
@@ -202,8 +213,13 @@ export function useUpsertPost(
 
         console.log('waiting energy...')
         await waitHasEnergy()
-
-        const res = await saveFile(content)
+        const videoCID = await uploadToIpfs(selectedVideo)
+        setselectedVideoCID(videoCID)
+        const res = await saveFile({
+          ...content,
+          videoUrl: videoCID?.path,
+          videoCover: selectedImage,
+        })
         const cid = res.cid
         if (!cid) throw new Error('Failed to save file')
 

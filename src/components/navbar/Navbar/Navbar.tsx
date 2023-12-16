@@ -1,7 +1,7 @@
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
+import NewCommunityModal from '@/components/community/NewCommunityModal'
 import Container from '@/components/Container'
-import Logo from '@/components/Logo'
 import { ANN_CHAT_ID } from '@/constants/chat'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import usePrevious from '@/hooks/usePrevious'
@@ -15,11 +15,11 @@ import { getHubPageLink } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ComponentProps, ReactNode, useEffect, useRef, useState } from 'react'
 import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
-
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
   loading: () => <div className='w-20' />,
@@ -39,15 +39,21 @@ export type NavbarProps = ComponentProps<'div'> & {
     notificationBell: ReactNode
     backButton: ReactNode
   }) => JSX.Element
+
+  isShowFull?: boolean
+  toggleSidebar?: any
 }
 
 export default function Navbar({
   customContent,
   backButtonProps,
+  isShowFull,
+  toggleSidebar,
   ...props
 }: NavbarProps) {
   const { enableLoginButton = true } = useConfigContext()
   const isInitialized = useMyAccount((state) => state.isInitialized)
+  const [isShowNew, setisShowNew] = useState(false)
   const isTemporaryAccount = useMyAccount((state) => state.isTemporaryAccount)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
@@ -109,7 +115,13 @@ export default function Navbar({
   const logoLink = (
     <div className='flex items-center'>
       <Link href={getHubPageLink(router)} aria-label='Back'>
-        <Logo className='text-2xl' />
+        <Image
+          src={`/img/logo.jpg`}
+          width={300}
+          height={300}
+          alt='logo'
+          className='h-9 w-9 rounded-full object-cover'
+        />
       </Link>
     </div>
   )
@@ -130,11 +142,13 @@ export default function Navbar({
       <nav
         {...props}
         className={cx(
-          'sticky top-0 z-20 flex h-14 items-center border-b border-border-gray bg-background-light',
+          'sticky top-0 z-20 flex h-14 items-center  border-b border-border-gray ',
           props.className
         )}
       >
-        <Container className={cx('flex h-14 w-full', props.className)}>
+        <Container
+          className={cx('flex h-14 w-full justify-between  ', props.className)}
+        >
           {customContent ? (
             customContent({
               logoLink,
@@ -143,9 +157,69 @@ export default function Navbar({
               backButton,
             })
           ) : (
-            <div className='flex w-full items-center justify-between'>
-              {logoLink}
+            <div className='flex w-full items-center justify-between '>
               <div className='flex items-center gap-2'>
+                <div
+                  className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800'
+                  onClick={toggleSidebar}
+                >
+                  {isShowFull ? (
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='h-8 w-8'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M6 18L18 6M6 6l12 12'
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='h-8 w-8'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'
+                      />
+                    </svg>
+                  )}
+                </div>
+                {logoLink}
+              </div>
+
+              <div className='flex items-center gap-2'>
+                <Button onClick={() => setisShowNew(true)}>new space</Button>
+
+                <Link href={`/upload`}>
+                  <div className='flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-black px-3 py-2 text-white dark:bg-white dark:text-black'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='h-4 w-4'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5'
+                      />
+                    </svg>
+                    <p>Create</p>
+                  </div>
+                </Link>
                 {notificationBell}
                 {authComponent}
               </div>
@@ -158,6 +232,12 @@ export default function Navbar({
         closeModal={() => setOpenLoginModal(false)}
         beforeLogin={() => (isLoggingInWithKey.current = true)}
         afterLogin={() => (isLoggingInWithKey.current = false)}
+      />
+
+      <NewCommunityModal
+        isOpen={isShowNew}
+        closeModal={() => setisShowNew(false)}
+        hubId='1001'
       />
     </>
   )

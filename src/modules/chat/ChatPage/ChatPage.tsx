@@ -3,14 +3,15 @@ import CaptchaTermsAndService from '@/components/captcha/CaptchaTermsAndService'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import ChatImage from '@/components/chats/ChatImage'
 import ChatModerateChip from '@/components/chats/ChatModerateChip'
-import ChatRoom from '@/components/chats/ChatRoom'
 import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LinkText from '@/components/LinkText'
 import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
+import VideoPage from '@/components/watch/VideoPage'
 import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
+import { GET_POST_BY_ID } from '@/graphql/fragments/getPostById'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -29,14 +30,13 @@ import {
 } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getDatahubConfig } from '@/utils/env/client'
-import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
   getChatPageLink,
   getCurrentUrlWithoutQuery,
-  getHubPageLink,
   getUrlQuery,
 } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
+import { useQuery } from '@apollo/client'
 import dynamic from 'next/dynamic'
 import { ImageProps } from 'next/image'
 import Router, { useRouter } from 'next/router'
@@ -68,6 +68,18 @@ export default function ChatPage({
   stubMetadata,
 }: ChatPageProps) {
   const resetMessageData = useMessageData((state) => state.reset)
+
+  const {
+    data: videoInfo,
+    loading,
+    error,
+  } = useQuery(GET_POST_BY_ID, {
+    variables: {
+      where: {
+        id_eq: '20257',
+      },
+    },
+  })
   useEffect(() => {
     return () => resetMessageData()
   }, [resetMessageData])
@@ -161,11 +173,17 @@ export default function ChatPage({
   }
 
   const content = chat?.content ?? stubMetadata
+  const videoContents = videoInfo?.posts[0]
+
+  console.log('this  is data contents  fromm watch page ', content)
+  console.log('this  is data contents  from custom query ', videoContents)
+
   const messageCount =
     chatMetadata?.totalCommentsCount ?? commentIds?.length ?? 0
 
   return (
     <>
+      {/*
       <DefaultLayout
         withFixedHeight
         navbarProps={{
@@ -199,7 +217,18 @@ export default function ChatPage({
         />
         <BottomPanel />
       </DefaultLayout>
-
+      */}
+      <VideoPage
+        videoUri={videoContents?.experimental?.videoUrl}
+        videoCover={videoContents?.experimental?.videoCover}
+        videoTitle={videoContents?.title}
+        createdAt={videoContents?.createdAtTime}
+        channelId={videoContents?.space?.id}
+        //vidStats={activeVideo?.stat}
+        //channelInfo={activeVideo.character}
+        videoId={videoContents?.id}
+        loading={loading}
+      />
       <ChatCreateSuccessModal
         chatId={chatId}
         hubId={hubId}
