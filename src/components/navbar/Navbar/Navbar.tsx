@@ -157,7 +157,7 @@ export default function Navbar({
               backButton,
             })
           ) : (
-            <div className='flex w-full items-center justify-between '>
+            <div className='z-20 flex w-full items-center justify-between '>
               <div className='flex items-center gap-2'>
                 <div
                   className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800'

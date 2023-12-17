@@ -41,7 +41,7 @@ export default function Layout({ children }: layoutProps) {
     <html lang='en'>
       <LivepeerConfig client={client} theme={livepeerTheme}>
         <body>
-          <div className='sticky top-0'>
+          <div className='sticky top-0 z-30'>
             <Navbar isShowFull={isShowFull} toggleSidebar={toggleShowModal} />
           </div>
 

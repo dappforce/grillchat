@@ -26,8 +26,6 @@ export default function FullVideoStats({
   const diffInMilliseconds = currentDate - videoCreatedAt
   const diffInHours = diffInMilliseconds / (60 * 60 * 1000)
   const duration = moment.duration(diffInHours, 'hours')
-  console.log('the trusted note info', note)
-  console.log('the minted status', status)
 
   const [testTruth, settestTruth] = useState(true)
   return (
