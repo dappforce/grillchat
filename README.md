@@ -3,7 +3,7 @@
 </a>
 <p align="center">
   <strong>
-    A chat application built on top of the Subsocial blockchain 🔗.
+    A chat application built on top of the Subsocial blockchain 🔗. 
   </strong>
 </p>
 <p align="center">
