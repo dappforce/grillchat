@@ -13,6 +13,13 @@ import { getLinkedIdentityQuery } from './query'
 export function useDatahubIdentitySubscriber() {
   const queryClient = useQueryClient()
   const unsubRef = useRef<(() => void) | undefined>()
+  const subState = useSubscriptionState(
+    (state) => state.subscriptionState['identity']
+  )
+
+  useEffect(() => {
+    if (subState === 'always-sub') unsubRef.current = subscription(queryClient)
+  }, [subState, queryClient])
 
   useEffect(() => {
     if (!getDatahubConfig()) return

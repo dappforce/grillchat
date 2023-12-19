@@ -31,13 +31,9 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
-import {
-  BsFillPencilFill,
-  BsFillPinAngleFill,
-  BsFillReplyFill,
-} from 'react-icons/bs'
+import { BsFillPinAngleFill, BsFillReplyFill } from 'react-icons/bs'
 import { HiChevronRight, HiCircleStack, HiLink } from 'react-icons/hi2'
-import { LuShield } from 'react-icons/lu'
+import { LuPencil, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine } from 'react-icons/ri'
 import urlJoin from 'url-join'
@@ -179,7 +175,7 @@ export default function ChatItemMenus({
     }
     const editItem: FloatingMenusProps['menus'][number] = {
       text: 'Edit',
-      icon: BsFillPencilFill,
+      icon: LuPencil,
       onClick: () => setMessageToEdit(messageId),
     }
     const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage

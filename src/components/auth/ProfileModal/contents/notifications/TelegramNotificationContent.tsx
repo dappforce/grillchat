@@ -127,32 +127,33 @@ function ConnectTelegramButton({ address }: ProfileModalContentProps) {
         window.open(url, '_blank')
         setOpenedTelegramBotLink(true)
         sendEvent('open_tg_notifs_bot_link')
-      } else {
-        toast.custom(
-          (t) => (
-            <Toast
-              t={t}
-              title='Use this link to connect your Telegram'
-              description='You will be taken to the Grill bot.'
-              action={
-                <Button
-                  size='circle'
-                  className='text-lg'
-                  href={url}
-                  target='_blank'
-                  onClick={() => {
-                    toast.dismiss(t.id)
-                    setOpenedTelegramBotLink(true)
-                  }}
-                >
-                  <HiArrowUpRight />
-                </Button>
-              }
-            />
-          ),
-          { duration: Infinity }
-        )
       }
+
+      toast.custom(
+        (t) => (
+          <Toast
+            t={t}
+            title='Use this link to connect your Telegram'
+            description='You will be taken to the Grill bot.'
+            action={
+              <Button
+                size='circle'
+                className='text-lg'
+                href={url}
+                target='_blank'
+                onClick={() => {
+                  toast.dismiss(t.id)
+                  setOpenedTelegramBotLink(true)
+                  sendEvent('open_tg_notifs_bot_link')
+                }}
+              >
+                <HiArrowUpRight />
+              </Button>
+            }
+          />
+        ),
+        { duration: Infinity }
+      )
     },
   })
 

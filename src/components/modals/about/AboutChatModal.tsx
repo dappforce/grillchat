@@ -27,10 +27,9 @@ import {
   HiCircleStack,
   HiOutlineEye,
   HiOutlineEyeSlash,
-  HiPencilSquare,
   HiQrCode,
 } from 'react-icons/hi2'
-import { LuShield } from 'react-icons/lu'
+import { LuPencil, LuShield } from 'react-icons/lu'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import ConfirmationModal from '../ConfirmationModal'
@@ -144,7 +143,7 @@ export default function AboutChatModal({
     if (chatOwner === address) {
       additionalMenus.push({
         text: 'Edit',
-        icon: HiPencilSquare,
+        icon: LuPencil,
         iconClassName: cx('text-text-muted'),
         onClick: () => {
           setOpenedModalType('edit')

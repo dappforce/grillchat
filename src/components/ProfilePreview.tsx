@@ -9,7 +9,7 @@ import { cx } from '@/utils/class-names'
 import { ProfileSource } from '@/utils/profile'
 import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
-import { HiPencil } from 'react-icons/hi2'
+import { LuPencil } from 'react-icons/lu'
 import AddressAvatar from './AddressAvatar'
 import AllIdentityIcons from './AllIdentityIcons'
 import Button from './Button'
@@ -70,7 +70,7 @@ const ProfilePreview = ({
       onClick={onEditClick}
     >
       <span>Edit</span>
-      <HiPencil />
+      <LuPencil />
     </Button>
   ) : (
     <PopOver
@@ -85,7 +85,7 @@ const ProfilePreview = ({
           variant='transparent'
           onClick={onEditClick}
         >
-          <HiPencil />
+          <LuPencil />
         </Button>
       }
     >
