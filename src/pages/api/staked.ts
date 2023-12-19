@@ -1,6 +1,5 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { getSubIdRequest } from '@/server/external'
-import { BN } from 'bn.js'
 
 import { z } from 'zod'
 
@@ -31,7 +30,7 @@ export default handlerWrapper({
       `/staking/creator/backer/ledger?account=${data.address}`
     )
     const stakingData = response.data as { totalLocked: string }
-    const isStaked = !new BN(stakingData.totalLocked).isZero()
+    const isStaked = BigInt(stakingData.totalLocked) > 0
 
     return res.json({
       message: 'OK',
