@@ -3,15 +3,12 @@ import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
-import Toast from '@/components/Toast'
 import { useLinkTelegramAccount } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { useSendEvent } from '@/stores/analytics'
 import { getIsInIos } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { toast } from 'react-hot-toast'
-import { HiArrowUpRight } from 'react-icons/hi2'
 import { ProfileModalContentProps } from '../../types'
 
 export default function TelegramNotificationContent(
@@ -117,43 +114,19 @@ function ConnectTelegramButton({ address }: ProfileModalContentProps) {
     getLinkedTelegramAccountsQuery.useQuery({
       address,
     })
-  const [openedTelegramBotLink, setOpenedTelegramBotLink] = useState(false)
   const sendEvent = useSendEvent()
 
-  const { mutate: getLinkingMessage, isLoading } = useLinkTelegramAccount({
+  const {
+    data: url,
+    mutate: getLinkingMessage,
+    isLoading,
+  } = useLinkTelegramAccount({
     onSuccess: async (url) => {
       if (!url) throw new Error('Error generating url')
       if (!getIsInIos()) {
         window.open(url, '_blank')
-        setOpenedTelegramBotLink(true)
         sendEvent('open_tg_notifs_bot_link')
       }
-
-      toast.custom(
-        (t) => (
-          <Toast
-            t={t}
-            title='Use this link to connect your Telegram'
-            description='You will be taken to the Grill bot.'
-            action={
-              <Button
-                size='circle'
-                className='text-lg'
-                href={url}
-                target='_blank'
-                onClick={() => {
-                  toast.dismiss(t.id)
-                  setOpenedTelegramBotLink(true)
-                  sendEvent('open_tg_notifs_bot_link')
-                }}
-              >
-                <HiArrowUpRight />
-              </Button>
-            }
-          />
-        ),
-        { duration: Infinity }
-      )
     },
   })
 
@@ -167,15 +140,25 @@ function ConnectTelegramButton({ address }: ProfileModalContentProps) {
     getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
   }
 
-  return openedTelegramBotLink ? (
-    <Button
-      size='lg'
-      variant='primaryOutline'
-      onClick={handleClickReload}
-      isLoading={isFetchingAccount}
-    >
-      I have connected the bot
-    </Button>
+  return url ? (
+    <div className='flex flex-col gap-4'>
+      <Card className='flex flex-col justify-between overflow-hidden'>
+        <span className='text-sm text-text-muted'>
+          Open the link below to connect to telegram bot
+        </span>
+        <LinkText openInNewTab variant='primary'>
+          {url}
+        </LinkText>
+      </Card>
+      <Button
+        size='lg'
+        variant='primaryOutline'
+        onClick={handleClickReload}
+        isLoading={isFetchingAccount}
+      >
+        I have connected the bot
+      </Button>
+    </div>
   ) : (
     <Button size='lg' onClick={handleClickLinking} isLoading={isLoading}>
       Connect Telegram
