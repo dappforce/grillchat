@@ -2,8 +2,9 @@ import Button from '@/components/Button'
 import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { ComponentProps } from 'react'
-import { BsFillPencilFill, BsFillReplyFill } from 'react-icons/bs'
+import { BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
+import { LuPencil } from 'react-icons/lu'
 import RepliedMessagePreview from '../ChatItem/RepliedMessagePreview'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 import { getMessageElementId, scrollToMessageElement } from '../utils'
@@ -44,12 +45,12 @@ export default function ActionDetailBar({
       onClick={() => onMessageClick(replyTo)}
     >
       {replyTo ? (
-        <div className='flex-shrink-0 pl-2 pr-3 text-text-muted'>
-          <BsFillReplyFill className='text-2xl' />
+        <div className='flex-shrink-0 pl-2 pr-4 text-text-muted'>
+          <BsFillReplyFill className='text-lg' />
         </div>
       ) : (
-        <div className='flex-shrink-0 pl-2 pr-3 text-text-muted'>
-          <BsFillPencilFill className='text-2xl' />
+        <div className='flex-shrink-0 pl-2 pr-4 text-text-muted'>
+          <LuPencil className='text-lg' />
         </div>
       )}
       <RepliedMessagePreview
