@@ -8,6 +8,7 @@ export default function useLoginAndRequestToken(
 ) {
   const { mutateAsync: requestToken } = useRequestToken()
   const login = useMyAccount((state) => state.login)
+  const currentAddress = useMyAccount((state) => state.address)
   const loginAsTemporaryAccount = useMyAccount(
     (state) => state.loginAsTemporaryAccount
   )
@@ -16,8 +17,11 @@ export default function useLoginAndRequestToken(
     const loginFunc = config?.asTemporaryAccount
       ? loginAsTemporaryAccount
       : login
-    const address = await loginFunc()
-    if (!address) throw new Error('Failed to login')
+    let address: string | false | null = currentAddress
+    if (!address) {
+      address = await loginFunc()
+      if (!address) throw new Error('Failed to login')
+    }
 
     await requestToken({ address })
 
