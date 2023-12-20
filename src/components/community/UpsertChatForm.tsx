@@ -1,6 +1,5 @@
 import AutofocusWrapper from '@/components/AutofocusWrapper'
 import FormButton from '@/components/FormButton'
-import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import TextArea from '@/components/inputs/TextArea'
 import { useSelectedMediaContext } from '@/context/MediaFormContext'
@@ -18,7 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { ComponentProps, useState } from 'react'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import urlJoin from 'url-join'
 import { z } from 'zod'
 type InsertAdditionalProps = {
@@ -172,22 +171,6 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                   className={cx('flex flex-col gap-4', otherProps.className)}
                 >
                   <div className='flex flex-col items-center gap-4'>
-                    <Controller
-                      control={control}
-                      name='image'
-                      render={({ field, fieldState }) => {
-                        return (
-                          <ImageInput
-                            disabled={isLoading}
-                            image={field.value}
-                            setImageUrl={(value) => setValue('image', value)}
-                            containerProps={{ className: 'my-2' }}
-                            setIsLoading={setIsImageLoading}
-                            error={fieldState.error?.message}
-                          />
-                        )
-                      }}
-                    />
                     <AutofocusWrapper>
                       {({ ref }) => (
                         <Input
@@ -197,7 +180,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                             ref.current = e
                           }}
                           disabled={isLoading}
-                          placeholder='Chat Name'
+                          placeholder='Video title'
                           error={errors.title?.message}
                           variant='fill-bg'
                         />
@@ -208,16 +191,16 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                       disabled={isLoading}
                       placeholder='Description (optional)'
                       error={errors.body?.message}
-                      rows={1}
+                      rows={10}
                       variant='fill-bg'
                     />
 
                     <TextArea
                       {...register('video')}
                       disabled={isLoading}
-                      placeholder='The video (optional)'
+                      placeholder='Video tags (optional)'
                       error={errors.body?.message}
-                      rows={3}
+                      rows={4}
                       variant='fill-bg'
                     />
                   </div>

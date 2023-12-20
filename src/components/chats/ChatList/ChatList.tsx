@@ -186,7 +186,7 @@ function ChatListContent({
           id={scrollableContainerId}
           ref={scrollContainerRef}
           className={cx(
-            'flex flex-col-reverse overflow-x-hidden overflow-y-scroll pl-2',
+            'flex flex-col-reverse items-start justify-start overflow-x-hidden overflow-y-scroll bg-purple-500 pl-2',
             scrollableContainerClassName
           )}
         >
@@ -203,7 +203,7 @@ function ChatListContent({
               className={cx(
                 'relative flex flex-col-reverse !overflow-hidden pb-2',
                 // need to have enough room to open message menu
-                'min-h-[400px]'
+                'min-h-[100px]'
               )}
               hasMore={!isAllMessagesLoaded}
               inverse
@@ -239,7 +239,7 @@ function ChatListContent({
                   <Fragment key={message?.id ?? index}>
                     {shouldRenderUnreadMessageNotice && (
                       <div className='mb-2 mt-4 w-full rounded-md bg-background-light py-0.5 text-center text-sm'>
-                        Unread messages
+                        Unread comments
                       </div>
                     )}
                     <MemoizedChatItemWithMenu

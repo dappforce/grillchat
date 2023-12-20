@@ -76,7 +76,7 @@ export default function ChatPage({
   } = useQuery(GET_POST_BY_ID, {
     variables: {
       where: {
-        id_eq: '20257',
+        id_eq: chatId,
       },
     },
   })
@@ -181,6 +181,7 @@ export default function ChatPage({
   const messageCount =
     chatMetadata?.totalCommentsCount ?? commentIds?.length ?? 0
 
+  console.log('video comments count', messageCount)
   return (
     <>
       {/*
@@ -228,6 +229,10 @@ export default function ChatPage({
         //channelInfo={activeVideo.character}
         videoId={videoContents?.id}
         loading={loading}
+        hubId={hubId}
+        chatId={chatId}
+        commentsCount={messageCount}
+        creatorId={videoContents?.createdByAccount?.id}
       />
       <ChatCreateSuccessModal
         chatId={chatId}

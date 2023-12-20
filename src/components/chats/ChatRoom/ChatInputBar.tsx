@@ -42,15 +42,16 @@ export default function ChatInputBar({
 
   const whitelistedAddresses = getWhitelistedAddressesInChatId(chatId)
 
-  const isWhitelisted =
+  /*const isWhitelisted =
     whitelistedAddresses?.includes(myAddress ?? '') ||
     whitelistedAddresses?.includes(myEvmAddress?.toLowerCase() ?? '')
 
   if (whitelistedAddresses && (!myAddress || !isWhitelisted)) {
     return null
-  }
+  }*/
 
-  if (isAuthorized === false) {
+  // DEISABLING  THE  AUTHORIZATION CHECKS
+  /*if (isAuthorized === false) {
     return (
       <TextArea
         rows={1}
@@ -61,7 +62,7 @@ export default function ChatInputBar({
         pill
       />
     )
-  }
+  }*/
 
   if (isBlocked) {
     return (

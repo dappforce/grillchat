@@ -42,19 +42,19 @@ export default function ChatRoom({
 
   return (
     <div {...props} className={cx('flex flex-col', className)}>
+      <ChatInputWrapper
+        customAction={customAction}
+        chatId={chatId}
+        hubId={hubId}
+        asContainer={asContainer}
+        scrollContainerRef={scrollContainerRef}
+      />
       <ChatList
         hubId={hubId}
         newMessageNoticeClassName={cx(replyTo && 'bottom-2')}
         chatId={chatId}
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}
-        scrollContainerRef={scrollContainerRef}
-      />
-      <ChatInputWrapper
-        customAction={customAction}
-        chatId={chatId}
-        hubId={hubId}
-        asContainer={asContainer}
         scrollContainerRef={scrollContainerRef}
       />
     </div>
@@ -104,11 +104,6 @@ function ChatInputWrapper({
   return (
     <>
       <Component className={cx('mt-auto flex flex-col py-2 pt-0')}>
-        <ActionDetailBar
-          chatId={chatId}
-          hubId={hubId}
-          scrollContainer={scrollContainerRef}
-        />
         {(() => {
           if (customAction) return customAction
 

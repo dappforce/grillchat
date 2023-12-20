@@ -3,9 +3,8 @@ import { IPFS_GATEWAY2 } from '@/assets/constant'
 import { Player } from '@livepeer/react'
 import Image from 'next/image'
 //import RelatedVideos from '../relatedVids/RelatedVideos'
-import Comments from './Comments'
+import ChatRoom from '../chats/ChatRoom'
 import FullVideoStats from './FullVideoStats'
-
 type videoPageProps = {
   videoUri?: any
   videoTitle?: any
@@ -18,6 +17,10 @@ type videoPageProps = {
   Stats?: any
   vidStats?: any
   loading?: any
+  hubId?: any
+  chatId?: any
+  commentsCount?: any
+  creatorId?: any
 }
 export default function VideoPage({
   vidStats,
@@ -30,6 +33,10 @@ export default function VideoPage({
   totalTips,
   loading,
   createdAt,
+  hubId,
+  chatId,
+  commentsCount,
+  creatorId,
 }: videoPageProps) {
   const fakeComments = 0
 
@@ -85,6 +92,8 @@ export default function VideoPage({
                 likes={20}
                 isLiked={true}
                 note={{ characterId: channelId, noteId: videoId }}
+                creatorId={creatorId}
+                chatId={chatId}
               />
             </div>
             <div>
@@ -94,11 +103,13 @@ export default function VideoPage({
             </div>
 
             <div>
-              <Comments
-                videoId={videoId}
-                profileId={channelId}
-                comments={fakeComments}
-                loading={false}
+              <h1 className='my-3'>Comments {commentsCount}</h1>
+              <ChatRoom
+                hubId={hubId}
+                chatId={chatId}
+                asContainer
+                className='flex-1 overflow-hidden'
+                //customAction={customAction}
               />
             </div>
           </div>

@@ -1,6 +1,10 @@
-import { useState } from 'react'
-
+import { getPostQuery } from '@/services/api/query'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { useMyMainAddress } from '@/stores/my-account'
 import moment from 'moment'
+import { useState } from 'react'
+import { useOpenDonateExtension } from '../extensions/donate/hooks'
+import MetadataModal from '../modals/MetadataModal'
 type statsProps = {
   stats?: any
   createdAt?: any
@@ -10,6 +14,8 @@ type statsProps = {
   tips?: any
   isLiked?: any
   note?: any
+  creatorId?: any
+  chatId?: any
 }
 export default function FullVideoStats({
   stats,
@@ -19,14 +25,28 @@ export default function FullVideoStats({
   likes,
   isLiked,
   note,
+  creatorId,
+  chatId,
 }: statsProps) {
+  const [isOpneMetadta, setisOpnMetadta] = useState(false)
   const currentDate = new Date()
   const videoCreatedAt = new Date(createdAt)
   //@ts-ignore
   const diffInMilliseconds = currentDate - videoCreatedAt
   const diffInHours = diffInMilliseconds / (60 * 60 * 1000)
   const duration = moment.duration(diffInHours, 'hours')
+  const { data: messageOwnerAccountData } = getAccountDataQuery.useQuery(
+    creatorId ?? ''
+  )
+  const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
 
+  const address = useMyMainAddress()
+
+  const { data: message } = getPostQuery.useQuery(chatId)
+  console.log('the user evm address', messageOwnerAccountData)
+  console.log('the message data from vid stats', message)
+
+  const openDonateExtension = useOpenDonateExtension(chatId, creatorId)
   const [testTruth, settestTruth] = useState(true)
   return (
     <div
@@ -93,10 +113,7 @@ export default function FullVideoStats({
               <p className=' text-sm md:font-semibold'>{likes || '0'}</p>
             </div>
           ) : (
-            <div
-              className='flex cursor-pointer items-center gap-2 hover:text-rose-500'
-              onClick={() => toggleLikeNote.mutate(note)}
-            >
+            <div className='flex cursor-pointer items-center gap-2 hover:text-rose-500'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
@@ -119,7 +136,18 @@ export default function FullVideoStats({
 
         <div
           className='flex cursor-pointer items-center gap-2 hover:text-rose-500'
-          onClick={() => show(note)}
+          onClick={() => {
+            if (!messageOwnerEvmAddress) {
+              return
+            }
+
+            if (!address) {
+              alert('no wallet address')
+            }
+
+            //sendEvent('open_donate_action_modal', { hubId, chatId })
+            openDonateExtension()
+          }}
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -142,7 +170,7 @@ export default function FullVideoStats({
           {
             <div
               className=' hidden cursor-pointer items-center gap-2  hover:text-rose-500 md:flex'
-              onClick={() => mintNote.mutate(note)}
+              onClick={() => setisOpnMetadta(true)}
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -159,10 +187,18 @@ export default function FullVideoStats({
                 />
               </svg>
 
-              <p className='text-sm font-semibold'>Mint 10</p>
+              <p className='text-sm font-semibold'>Metadata</p>
             </div>
           }
         </>
+
+        {message && (
+          <MetadataModal
+            isOpen={isOpneMetadta}
+            closeModal={() => setisOpnMetadta(false)}
+            entity={message}
+          />
+        )}
       </div>
     </div>
   )

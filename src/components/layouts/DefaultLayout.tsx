@@ -22,7 +22,7 @@ export default function DefaultLayout({
   return (
     <div
       className={cx(
-        'flex flex-col bg-background text-text',
+        'flex flex-col bg-background text-text ',
         withFixedHeight && 'h-screen'
       )}
       style={withFixedHeight ? { height: '100dvh' } : { minHeight: '100svh' }}

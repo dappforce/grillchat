@@ -199,26 +199,8 @@ export default function Navbar({
               </div>
 
               <div className='flex items-center gap-2'>
-                <Button onClick={() => setisShowNew(true)}>new space</Button>
-
                 <Link href={`/upload`}>
-                  <div className='flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-black px-3 py-2 text-white dark:bg-white dark:text-black'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='h-4 w-4'
-                    >
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        d='M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5'
-                      />
-                    </svg>
-                    <p>Create</p>
-                  </div>
+                  <Button>create</Button>
                 </Link>
                 {notificationBell}
                 {authComponent}

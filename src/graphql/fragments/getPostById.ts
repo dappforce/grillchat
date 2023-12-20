@@ -15,6 +15,9 @@ export const GET_POST_BY_ID = gql`
         id
       }
       id
+      createdByAccount {
+        id
+      }
     }
   }
 `

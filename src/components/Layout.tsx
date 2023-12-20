@@ -6,8 +6,8 @@ import {
   ThemeConfig,
 } from '@livepeer/react'
 import React, { useState } from 'react'
+import Sidebar from '../../../../../DotForums/src/dotforums/src/components/sidebar/Sidebar'
 import Navbar from './navbar/Navbar'
-import Sidebar from './sidebar/Sidebar'
 type layoutProps = {
   children: React.ReactNode
 }
@@ -27,6 +27,7 @@ const livepeerTheme: ThemeConfig = {
 }
 //LIVEPEER_CONFIGURATIONS
 const client = createReactClient({
+  //@ts-ignore
   provider: studioProvider({ apiKey: LIVEPEER_KEY }),
 })
 
