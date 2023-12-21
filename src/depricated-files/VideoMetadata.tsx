@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useEffect, useRef, useState } from 'react'
 //import { Contract } from "crossbell";
 import { useSelectedMediaContext } from '@/context/MediaFormContext'

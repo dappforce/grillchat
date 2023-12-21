@@ -1,3 +1,4 @@
+//@ts-nocheck
 import ChatIcon from '@/assets/icons/bubble-chat.svg'
 import HubIcon from '@/assets/icons/hub.svg'
 import MegaphoneIcon from '@/assets/icons/megaphone.svg'

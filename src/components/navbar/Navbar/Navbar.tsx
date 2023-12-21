@@ -3,8 +3,14 @@ import Button from '@/components/Button'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import Container from '@/components/Container'
 import { ANN_CHAT_ID } from '@/constants/chat'
+import { COMMUNITY_CHAT_HUB_ID } from '@/constants/hubs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import usePrevious from '@/hooks/usePrevious'
+import useSearch from '@/hooks/useSearch'
+import useSortedChats, {
+  SortChatOption,
+  sortChatOptions,
+} from '@/modules/chat/hooks/useSortedChats'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { getUnreadCountQuery } from '@/services/subsocial/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -19,7 +25,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ComponentProps, ReactNode, useEffect, useRef, useState } from 'react'
+import { BsPlus } from 'react-icons/bs'
 import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
+
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
   loading: () => <div className='w-20' />,
@@ -54,11 +62,32 @@ export default function Navbar({
   const { enableLoginButton = true } = useConfigContext()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const [isShowNew, setisShowNew] = useState(false)
+  const [hubId, sethubId] = useState('1508')
   const isTemporaryAccount = useMyAccount((state) => state.isTemporaryAccount)
   const isInitializedAddress = useMyAccount(
     (state) => state.isInitializedAddress
   )
   const router = useRouter()
+  const [sortBy, setSortBy] = useState<SortChatOption | null>(null)
+  const sortByStorage = new LocalStorage(() => 'hub-sort-by')
+  const isCommunityHub = hubId === COMMUNITY_CHAT_HUB_ID
+  useEffect(() => {
+    const savedSortBy =
+      isCommunityHub && (sortByStorage.get() as SortChatOption)
+    if (savedSortBy && sortChatOptions.includes(savedSortBy)) {
+      setSortBy(savedSortBy)
+    } else {
+      setSortBy('activity')
+    }
+  }, [isCommunityHub])
+  const changeSortBy = (sortBy: SortChatOption) => {
+    setSortBy(sortBy)
+    sortByStorage.set(sortBy)
+  }
+
+  const { chats, allChatIds } = useSortedChats(hubId, sortBy ?? 'activity')
+  const { search, getFocusedElementIndex, setSearch, focusController } =
+    useSearch()
 
   const address = useMyMainAddress()
   const prevAddress = usePrevious(address)
@@ -157,7 +186,7 @@ export default function Navbar({
               backButton,
             })
           ) : (
-            <div className='z-20 flex w-full items-center justify-between '>
+            <div className='z-20 flex w-full items-center justify-between bg-background '>
               <div className='flex items-center gap-2'>
                 <div
                   className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800'
@@ -200,7 +229,10 @@ export default function Navbar({
 
               <div className='flex items-center gap-2'>
                 <Link href={`/upload`}>
-                  <Button>create</Button>
+                  <Button className='flex items-center gap-2'>
+                    <BsPlus size={20} />
+                    <span>Create</span>
+                  </Button>
                 </Link>
                 {notificationBell}
                 {authComponent}

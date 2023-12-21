@@ -5,6 +5,7 @@ import Image from 'next/image'
 //import RelatedVideos from '../relatedVids/RelatedVideos'
 import ChatRoom from '../chats/ChatRoom'
 import FullVideoStats from './FullVideoStats'
+import RelatedVideos from './RelatedVideos'
 type videoPageProps = {
   videoUri?: any
   videoTitle?: any
@@ -71,7 +72,7 @@ export default function VideoPage({
 
   return (
     <div>
-      <div className='flex gap-2'>
+      <div className='flex gap-4'>
         <div className='mx-auto w-[95%] rounded-3xl xl:mx-1  xl:w-[73%] '>
           <Player
             playbackId={videoUri}
@@ -117,10 +118,8 @@ export default function VideoPage({
             </div>
           </div>
         </div>
-        {/*}
-    <RelatedVideos   />
-*/}
-        <p>Related videos</p>
+
+        <RelatedVideos />
       </div>
     </div>
   )

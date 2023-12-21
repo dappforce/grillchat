@@ -1,7 +1,7 @@
 {
-  "name": "Grill.chat",
-  "short_name": "Grill.chat",
-  "description": "Talk with others from around the world and create your own communities about any topic, utilizing our censorship-resistant blockchain and app with anonymous logins.",
+  "name": "Frentube",
+  "short_name": "Frentube",
+  "description": "Frentube is the  Decentralized video sharing platform Built on subsocial network, in frentube  you own your social graph, your contents  ",
   "theme_color": "#111729",
   "background_color": "#111729",
   "start_url": "/",

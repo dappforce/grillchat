@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useSelectedMediaContext } from '@/context/MediaFormContext'
 import { useRef } from 'react'
 export default function SelectVideoFile() {

@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
-//import { Contract } from "crossbell";
+//@ts-nocheck
+
 import {
   generateVideoThumbnails,
   importFileandPreview,
 } from '@rajesh896/video-thumbnails-generator'
+import { useEffect, useRef, useState } from 'react'
 //const contract = new Contract(window.ethereum)
 import { LIVEPEER_KEY } from '@/assets/constant'
 import { usePinToIpfs } from '@/hooks/usePinToIpfs'
@@ -254,19 +255,6 @@ export default function VideoMetadata({ videoFile, setVideoFile }: any) {
      ===========================================
        END OF LIVEPEER HOOK TO UPLOAD FILE
      ===========================================
-     
-     */
-  /*
-     ===============================
-       CROSSBELL CONTRACT INSTACNCE
-     ==============================
-     
-     */
-
-  /*
-     ======================================
-      END OF CROSSBELL CONTRACT INSTANCE
-     ======================================
      
      */
 

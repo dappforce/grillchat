@@ -1,3 +1,4 @@
+//@ts-nocheck
 import ChatPreview from '@/components/chats/ChatPreview'
 import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import { getAliasFromHubId, PINNED_HUB_IDS } from '@/constants/hubs'

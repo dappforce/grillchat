@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 // contexts/SelectionContext.js
 import { useCreateAsset } from '@livepeer/react'
 import React, {

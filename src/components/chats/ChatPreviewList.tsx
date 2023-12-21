@@ -24,6 +24,7 @@ export default function ChatPreviewList({
 }: ChatPreviewListProps) {
   return (
     <div className='flex flex-col'>
+      <h2>hello world</h2>
       {chats.map((chat, idx) => {
         if (!chat) return null
         return (

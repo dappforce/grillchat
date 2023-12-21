@@ -1,11 +1,9 @@
-import Button from '@/components/Button'
 import Container from '@/components/Container'
 import ExtensionModals from '@/components/extensions'
 import TextArea from '@/components/inputs/TextArea'
 import { getIsHubWithoutJoinButton } from '@/constants/hubs'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
-import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
@@ -134,31 +132,18 @@ function ChatInputWrapper({
             )
 
           return (
-            <JoinChatWrapper>
-              {({ isLoading, mutateAsync }) => {
-                const isButtonLoading = isLoading || isLoadingJoinedChat
-                return (
-                  <Button
-                    size='lg'
-                    className={cx(
-                      isButtonLoading && 'bg-background-light text-text-muted'
-                    )}
-                    disabledStyle='subtle'
-                    isLoading={isButtonLoading}
-                    onClick={async () => {
-                      await mutateAsync({ chatId })
-                      sendEvent(
-                        'join_chat',
-                        { chatId, hubId, eventSource: 'chat_required_btn' },
-                        { hasJoinedChats: true }
-                      )
-                    }}
-                  >
-                    Join
-                  </Button>
-                )
-              }}
-            </JoinChatWrapper>
+            <>
+              <ChatInputBar
+                formProps={{
+                  hubId,
+                  chatId,
+                  onSubmit: (isEditing) => {
+                    if (!isEditing) scrollToBottom()
+                  },
+                  isPrimary: true,
+                }}
+              />
+            </>
           )
         })()}
       </Component>

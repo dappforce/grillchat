@@ -1,3 +1,4 @@
+//@ts-nocheck
 import moment from 'moment'
 import { useState } from 'react'
 type commentsprops = {

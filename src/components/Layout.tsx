@@ -6,7 +6,8 @@ import {
   ThemeConfig,
 } from '@livepeer/react'
 import React, { useState } from 'react'
-import Sidebar from '../../../../../DotForums/src/dotforums/src/components/sidebar/Sidebar'
+import Sidebar from './sidebar/Sidebar'
+
 import Navbar from './navbar/Navbar'
 type layoutProps = {
   children: React.ReactNode
@@ -46,7 +47,7 @@ export default function Layout({ children }: layoutProps) {
             <Navbar isShowFull={isShowFull} toggleSidebar={toggleShowModal} />
           </div>
 
-          <div className='flex gap-2'>
+          <div className='flex gap-2  '>
             <div>
               <Sidebar
                 isShowFull={isShowFull}

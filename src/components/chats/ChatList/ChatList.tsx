@@ -186,7 +186,7 @@ function ChatListContent({
           id={scrollableContainerId}
           ref={scrollContainerRef}
           className={cx(
-            'flex flex-col-reverse items-start justify-start overflow-x-hidden overflow-y-scroll bg-purple-500 pl-2',
+            'flex flex-col-reverse items-start justify-start overflow-x-hidden overflow-y-scroll  pl-2',
             scrollableContainerClassName
           )}
         >
@@ -203,7 +203,7 @@ function ChatListContent({
               className={cx(
                 'relative flex flex-col-reverse !overflow-hidden pb-2',
                 // need to have enough room to open message menu
-                'min-h-[100px]'
+                'min-h-[300px]'
               )}
               hasMore={!isAllMessagesLoaded}
               inverse

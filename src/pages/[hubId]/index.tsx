@@ -43,7 +43,7 @@ export const getStaticProps = getCommonStaticProps<
     try {
       await prefetchChatPreviewsData(queryClient, hubId)
     } catch (e) {
-      console.error('Error fetching for hub page: ', e)
+      console.error('Error fetching channel page: ', e)
     }
 
     return {

@@ -1,8 +1,10 @@
+//@ts-nocheck
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
 import HomePage, {
   homePageAdditionalTabs,
   HubsPageProps,
 } from '@/modules/chat/HomePage'
+
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'

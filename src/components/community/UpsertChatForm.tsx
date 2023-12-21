@@ -154,7 +154,10 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                 <form
                   {...otherProps}
                   onSubmit={handleSubmit(onSubmit)}
-                  className={cx('flex flex-col gap-4', otherProps.className)}
+                  className={cx(
+                    'flex w-full flex-col gap-4',
+                    otherProps.className
+                  )}
                 >
                   <div className='flex flex-col items-center gap-4'>
                     <AutofocusWrapper>

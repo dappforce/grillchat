@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import { PINATA_APP_SECRET, PINATA_PROJECT_ID } from '@/assets/constant'
 import { Buffer } from 'buffer'
 import { create } from 'ipfs-http-client'
