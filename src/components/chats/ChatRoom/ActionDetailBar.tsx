@@ -2,9 +2,8 @@ import Button from '@/components/Button'
 import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { ComponentProps } from 'react'
-import { BsFillReplyFill } from 'react-icons/bs'
 import { HiXMark } from 'react-icons/hi2'
-import { LuPencil } from 'react-icons/lu'
+import { LuPencil, LuReply } from 'react-icons/lu'
 import RepliedMessagePreview from '../ChatItem/RepliedMessagePreview'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 import { getMessageElementId, scrollToMessageElement } from '../utils'
@@ -46,7 +45,7 @@ export default function ActionDetailBar({
     >
       {replyTo ? (
         <div className='flex-shrink-0 pl-2 pr-4 text-text-muted'>
-          <BsFillReplyFill className='text-lg' />
+          <LuReply className='text-lg' />
         </div>
       ) : (
         <div className='flex-shrink-0 pl-2 pr-4 text-text-muted'>

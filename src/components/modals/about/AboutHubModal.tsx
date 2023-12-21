@@ -4,7 +4,8 @@ import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin, getHubPageLink } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { HiCircleStack, HiQrCode } from 'react-icons/hi2'
+import { HiQrCode } from 'react-icons/hi2'
+import { RiDatabase2Line } from 'react-icons/ri'
 import urlJoin from 'url-join'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'
@@ -55,7 +56,7 @@ export default function AboutHubModal({
     {
       text: 'Show Metadata',
       iconClassName: cx('text-text-muted'),
-      icon: HiCircleStack,
+      icon: RiDatabase2Line,
       onClick: () => setOpenedModalType('metadata'),
     },
   ]
