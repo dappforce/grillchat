@@ -31,11 +31,12 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
-import { BsFillPinAngleFill, BsFillReplyFill } from 'react-icons/bs'
-import { HiChevronRight, HiCircleStack, HiLink } from 'react-icons/hi2'
-import { LuPencil, LuShield } from 'react-icons/lu'
+import { BsFillPinAngleFill } from 'react-icons/bs'
+import { FiLink } from 'react-icons/fi'
+import { HiChevronRight } from 'react-icons/hi2'
+import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
-import { RiCopperCoinLine } from 'react-icons/ri'
+import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
 import urlJoin from 'url-join'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 
@@ -106,7 +107,7 @@ export default function ChatItemMenus({
       },
       {
         text: 'Copy Message Link',
-        icon: HiLink,
+        icon: FiLink,
         onClick: () => {
           const chatPageLink = urlJoin(
             getCurrentUrlOrigin(),
@@ -120,7 +121,7 @@ export default function ChatItemMenus({
       },
       {
         text: 'Show Metadata',
-        icon: HiCircleStack,
+        icon: RiDatabase2Line,
         onClick: () => setModalState('metadata'),
       },
     ]
@@ -170,7 +171,7 @@ export default function ChatItemMenus({
     }
     const replyItem: FloatingMenusProps['menus'][number] = {
       text: 'Reply',
-      icon: BsFillReplyFill,
+      icon: LuReply,
       onClick: () => setReplyTo(messageId),
     }
     const editItem: FloatingMenusProps['menus'][number] = {

@@ -23,13 +23,9 @@ import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import {
-  HiCircleStack,
-  HiOutlineEye,
-  HiOutlineEyeSlash,
-  HiQrCode,
-} from 'react-icons/hi2'
+import { HiOutlineEye, HiOutlineEyeSlash, HiQrCode } from 'react-icons/hi2'
 import { LuPencil, LuShield } from 'react-icons/lu'
+import { RiDatabase2Line } from 'react-icons/ri'
 import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import ConfirmationModal from '../ConfirmationModal'
@@ -126,7 +122,7 @@ export default function AboutChatModal({
       {
         text: 'Show Metadata',
         iconClassName: cx('text-text-muted'),
-        icon: HiCircleStack,
+        icon: RiDatabase2Line,
         onClick: () => setOpenedModalType('metadata'),
       },
     ]

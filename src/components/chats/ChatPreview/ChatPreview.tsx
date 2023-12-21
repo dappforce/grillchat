@@ -1,11 +1,11 @@
-import PinIcon from '@/assets/icons/pin.png'
 import Container from '@/components/Container'
 import { SortChatOption } from '@/modules/chat/hooks/useSortedChats'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
-import Image, { ImageProps } from 'next/image'
+import { ImageProps } from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
+import { RiPushpinLine } from 'react-icons/ri'
 import ChatImage, { ChatImageProps } from '../ChatImage'
 import ChatModerateChip from '../ChatModerateChip'
 import ChatLastMessage from './ChatLastMessage'
@@ -71,13 +71,7 @@ export default function ChatPreview({
             />
           )}
           {isPinned && (
-            <Image
-              src={PinIcon}
-              alt='pin'
-              width={16}
-              height={16}
-              className='ml-2 h-4 w-4 flex-shrink-0'
-            />
+            <RiPushpinLine className='ml-2 flex-shrink-0 text-base' />
           )}
         </div>
       )

@@ -1,7 +1,6 @@
-import PinIcon from '@/assets/icons/pin.png'
 import Container from '@/components/Container'
 import { getPostQuery } from '@/services/api/query'
-import Image from 'next/image'
+import { RiPushpinLine } from 'react-icons/ri'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 import useScrollToMessage from './hooks/useScrollToMessage'
 
@@ -29,13 +28,7 @@ export default function PinnedMessage({
         onClick={() => scrollToMessage(message.id)}
       >
         <div className='mr-0.5 flex-shrink-0'>
-          <Image
-            src={PinIcon}
-            alt='pin'
-            width={16}
-            height={16}
-            className='ml-3 h-4 w-4'
-          />
+          <RiPushpinLine className='ml-2 text-lg' />
         </div>
         <div className='flex flex-col overflow-hidden'>
           <span className='font-medium text-text-primary'>Pinned Message</span>
