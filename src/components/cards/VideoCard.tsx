@@ -10,6 +10,8 @@ type videoCardProps = {
   channelId?: any
   noteId?: any
   createdAt?: any
+  hubId?: any
+  videoId?: any
 }
 export default function VideoCard({
   cover,
@@ -18,6 +20,8 @@ export default function VideoCard({
   noteId,
   createdAt,
   title,
+  hubId,
+  videoId,
 }: videoCardProps) {
   const [currentTime, setCurrentTime] = useState(new Date())
   const currentDate = new Date()
@@ -31,7 +35,7 @@ export default function VideoCard({
       className={` mx-auto flex max-w-sm shrink grow flex-col  gap-2.5 overflow-hidden  rounded-xl  px-2 xs:h-80 xs:w-11/12 sm:h-96 md:mb-1 md:h-[16.75rem] md:w-64  md:px-0`}
     >
       <div className='hover:text-rose-400/90'>
-        <Link href={`/watch/${channelId}-${noteId}`}>
+        <Link href={`/${hubId}/${videoId}`}>
           <div className=' cursor-pointer overflow-hidden rounded-xl border-rose-500 hover:border'>
             <motion.img
               src={`https://ipfs.subsocial.network/ipfs/${cover}`}

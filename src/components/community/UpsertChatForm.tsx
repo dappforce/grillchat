@@ -43,10 +43,7 @@ type FormSchema = z.infer<typeof formSchema>
 export default function UpsertChatForm(props: UpsertChatFormProps) {
   const [isImageLoading, setIsImageLoading] = useState(false)
   const [isProcessingData, setIsProcessingData] = useState(false)
-  const [vidImae, setvidImae] = useState(' this is video  title')
-  const [vidtitle, setvidtitle] = useState('this  is video image')
-  const [videoCid, setvideoCid] = useState('this  is video cid')
-  const [isUploadingVideo, setisUploadingVideo] = useState(false)
+  //const [isUploadingVideo, setisUploadingVideo] = useState(false)
   const sendEvent = useSendEvent()
   const {
     selectedVideo,
@@ -55,20 +52,12 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
     setSelectedImage,
     selectedVideoCID,
     setselectedVideoCID,
+    progressFormatted,
+    isUploadingVideo,
   } = useSelectedMediaContext()
   const { uploadToIpfs, isUploading, isUploadingError } = usePinToIpfs()
 
-  const handleVideoChange = (event) => {
-    //const video = event.target.files[0];
-    setSelectedVideo('hello  world')
-  }
-
   console.log('the selected video', selectedVideo)
-  const theData = {
-    image: vidImae,
-    title: vidtitle,
-    body: videoCid,
-  }
 
   const router = useRouter()
   const { chat, hubId, onSuccess, onTxSuccess, ...otherProps } =
@@ -96,10 +85,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
   })
 
   const isUpdating = !!chat
-  const actionText = isUpdating ? 'Save changes' : 'Create'
-
-  console.log('selected video cid', selectedVideoCID)
-  console.log('the selected image cid', selectedImage)
+  const actionText = isUploadingVideo ? progressFormatted : 'Post video'
 
   return (
     <JoinChatWrapper>
@@ -209,11 +195,11 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                     schema={formSchema}
                     watch={watch}
                     isLoading={isLoading}
-                    disabled={isImageLoading}
+                    disabled={isImageLoading || isUploadingVideo}
                     loadingText={isUpdating ? 'Saving...' : 'Creating...'}
                     size='lg'
                   >
-                    {isUploadingVideo ? 'Uploading video' : actionText}
+                    {actionText}
                   </FormButton>
                 </form>
               </>

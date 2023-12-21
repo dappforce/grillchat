@@ -7,7 +7,6 @@ import {
 //const contract = new Contract(window.ethereum)
 import { LIVEPEER_KEY } from '@/assets/constant'
 import { usePinToIpfs } from '@/hooks/usePinToIpfs'
-import { useCreateAsset } from '@livepeer/react'
 //import { ClipLoader } from "react-spinners";
 import { useSelectedMediaContext } from '@/context/MediaFormContext'
 import useWindowSize from 'react-use/lib/useWindowSize'
@@ -32,6 +31,7 @@ export default function VideoMetadata({ videoFile, setVideoFile }: any) {
   const [isCreatingNote, setisCreatingNote] = useState(false)
   const [trueTest, settrueTest] = useState(true)
   const [isNotCreated, setisNotCreated] = useState(false)
+  const [isVideoUploaded, setisVideoUploaded] = useState()
   const [coverCID, setcoverCID] = useState()
   const [hubId, sethubId] = useState('1508')
   const { uploadToIpfs, isUploading, isUploadingError } = usePinToIpfs()
@@ -42,6 +42,7 @@ export default function VideoMetadata({ videoFile, setVideoFile }: any) {
     setSelectedImage,
     selectedVideoCID,
     setselectedVideoCID,
+    progressFormatted,
   } = useSelectedMediaContext()
 
   const { width, height } = useWindowSize()
@@ -67,8 +68,6 @@ export default function VideoMetadata({ videoFile, setVideoFile }: any) {
       setvideoTag('')
     }
   }
-
-  console.log('uploading error', isUploadingError)
 
   //Remove  tag
   const removeTag = (index: any) => {
@@ -191,7 +190,7 @@ export default function VideoMetadata({ videoFile, setVideoFile }: any) {
      ====================================
      
      */
-  const {
+  /*const {
     mutate: createAsset,
     data: assets,
     status,
@@ -203,8 +202,8 @@ export default function VideoMetadata({ videoFile, setVideoFile }: any) {
       ? {
           sources: [
             {
-              name: videoFile.name,
-              file: videoFile,
+              name: selectedVideo.name,
+              file: selectedVideo,
               storage: {
                 ipfs: true,
                 metadata: {
@@ -217,9 +216,39 @@ export default function VideoMetadata({ videoFile, setVideoFile }: any) {
         }
       : null
   )
-  console.log('the progress of video', progress)
+
+  const progressFormatted = useMemo(
+    () =>
+      progress?.[0].phase === "failed"
+        ? "Failed to process video."
+        : progress?.[0].phase === "waiting"
+        ? "Waiting"
+        : progress?.[0].phase === "uploading"
+        ? `Uploading: ${Math.round(progress?.[0]?.progress * 100)}%`
+        : progress?.[0].phase === "processing"
+        ? `Processing: ${Math.round(progress?.[0].progress * 100)}%`
+        : null,
+    [progress]
+  );
+
+  setvideoProgress(progressFormatted)
+  console.log('the progress of video', progressFormatted)
   console.log('the assets itsell', assets)
-  console.log('the error when posting', error)
+  console.log('is video uploading', selectedVideoCID)
+  console.log('the uploading status', status)
+  console.log('the error when posting', error) */
+
+  /*  const handleUploadVideoFile = () =>  {
+       if(! assets && ! selectedVideoCID && ! isLoading && selectedVideo){
+        setisUploadingVideo(isLoading)
+           createAsset?.()
+           setselectedVideoCID(assets)
+       }
+    }
+
+    useEffect(() => {
+      handleUploadVideoFile()
+    }, [selectedVideo, assets, isLoading])*/
 
   /*
      ===========================================
@@ -246,12 +275,7 @@ export default function VideoMetadata({ videoFile, setVideoFile }: any) {
        UPLOAD VIDEO FUNCTION
      ==============================
      */
-  const postVideo = async () => {
-    //UPLOAD_VIDEO_TO_LIVEPEER
-    setisVideoUploading(true)
-    await createAsset()
-    setisVideoUploading(false)
-  }
+
   /*
      ===============================
        END UPLOAD VIDEO FUNCTION

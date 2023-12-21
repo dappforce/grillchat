@@ -16,7 +16,9 @@ export default function HomePage() {
           video={note}
           title={note?.title}
           createdAt={note?.createdAtTime}
-          cover={note?.image}
+          cover={note?.experimental?.videoCover}
+          hubId={note?.space?.id}
+          videoId={note?.id}
         />
       ))}
     </div>

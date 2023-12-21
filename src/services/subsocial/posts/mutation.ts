@@ -194,6 +194,7 @@ export function useUpsertPost(
     setSelectedImage,
     selectedVideoCID,
     setselectedVideoCID,
+    assets,
   } = useSelectedMediaContext()
   const { uploadToIpfs, isUploading, isUploadingError } = usePinToIpfs()
   const waitHasEnergy = useWaitHasEnergy()
@@ -213,11 +214,11 @@ export function useUpsertPost(
 
         console.log('waiting energy...')
         await waitHasEnergy()
-        const videoCID = await uploadToIpfs(selectedVideo)
-        setselectedVideoCID(videoCID)
+        //  const videoCID = await uploadToIpfs(selectedVideo)
+        //setselectedVideoCID(videoCID)
         const res = await saveFile({
           ...content,
-          videoUrl: videoCID?.path,
+          videoUrl: assets[0]?.playbackId,
           videoCover: selectedImage,
         })
         const cid = res.cid

@@ -10,7 +10,7 @@ const useDiscoverVideosBySpace = () => {
     variables: {
       where: {
         space: {
-          id_eq: '11414',
+          id_eq: '1508',
         },
       },
     },

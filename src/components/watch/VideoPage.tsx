@@ -74,11 +74,14 @@ export default function VideoPage({
       <div className='flex gap-2'>
         <div className='mx-auto w-[95%] rounded-3xl xl:mx-1  xl:w-[73%] '>
           <Player
-            playbackId={`${IPFS_GATEWAY2}${videoUri}`}
+            playbackId={videoUri}
             poster={<PosterImage />}
             showPipButton
             objectFit='cover'
             priority
+            controls={{
+              autohide: 3000,
+            }}
           />
           <div className='mt-4'>
             <h1 className=' text-2xl'>{videoTitle}</h1>
