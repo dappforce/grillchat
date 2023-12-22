@@ -34,6 +34,7 @@ export default function PushNotificationContent(
 ) {
   const myAddress = useMyAccount((state) => state.address)
   const [isRegistered, setIsRegistered] = useState(false)
+  const [isAfterRegister, setIsAfterRegister] = useState(false)
 
   useEffect(() => {
     if (!myAddress) return
@@ -62,16 +63,32 @@ export default function PushNotificationContent(
     return (
       <div className='flex flex-col gap-6'>
         <Notice leftIcon='✅'>Push Notifications Enabled</Notice>
-        <DisableNotificationButton
-          setIsRegistered={setIsRegistered}
-          {...props}
-        />
+        {isAfterRegister ? (
+          <Button
+            variant='primary'
+            onClick={() => props.setCurrentState('notifications')}
+            size='lg'
+          >
+            Got it
+          </Button>
+        ) : (
+          <DisableNotificationButton
+            setIsRegistered={setIsRegistered}
+            {...props}
+          />
+        )}
       </div>
     )
   }
 
   return (
-    <EnableNotificationButton setIsRegistered={setIsRegistered} {...props} />
+    <EnableNotificationButton
+      setIsRegistered={(v) => {
+        setIsAfterRegister(true)
+        setIsRegistered(v)
+      }}
+      {...props}
+    />
   )
 }
 
