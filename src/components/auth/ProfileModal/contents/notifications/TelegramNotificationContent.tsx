@@ -16,6 +16,7 @@ export default function TelegramNotificationContent(
 ) {
   const { address } = props
   const [isAfterDisconnect, setIsAfterDisconnect] = useState(false)
+  const [isAfterConnect, setIsAfterConnect] = useState(false)
 
   const {
     data: linkedAccounts,
@@ -26,9 +27,9 @@ export default function TelegramNotificationContent(
   })
   const isLoadingAccount = isLoading || isFetching
   const { IntegratedSkeleton } = useIntegratedSkeleton(isLoadingAccount)
-  const firstLinkedAccount = !isLoadingAccount ? linkedAccounts?.[0] : null
+  const hasLinkedAccount = !isLoadingAccount ? linkedAccounts?.[0] : null
 
-  if (!isLoadingAccount && !firstLinkedAccount) {
+  if (!isLoadingAccount && !hasLinkedAccount) {
     return (
       <>
         {isAfterDisconnect && (
@@ -36,7 +37,10 @@ export default function TelegramNotificationContent(
             You have disconnected your account from Grill&apos;s telegram bot.
           </Notice>
         )}
-        <ConnectTelegramButton {...props} />
+        <ConnectTelegramButton
+          {...props}
+          afterConnect={() => setIsAfterConnect(true)}
+        />
       </>
     )
   }
@@ -45,7 +49,7 @@ export default function TelegramNotificationContent(
     <div className='flex flex-col gap-6'>
       <Card className='flex justify-between gap-4 overflow-hidden'>
         <IntegratedSkeleton
-          content={firstLinkedAccount?.userName}
+          content={hasLinkedAccount?.userName}
           className='bg-black/20'
         >
           {(userName) => (
@@ -55,7 +59,7 @@ export default function TelegramNotificationContent(
           )}
         </IntegratedSkeleton>
         <IntegratedSkeleton
-          content={firstLinkedAccount?.userName}
+          content={hasLinkedAccount?.userName}
           className='w-24 bg-black/20'
         >
           {() => (
@@ -71,12 +75,21 @@ export default function TelegramNotificationContent(
           )}
         </IntegratedSkeleton>
       </Card>
-      {firstLinkedAccount && (
-        <DisconnectButton
-          {...props}
-          afterDisconnect={() => setIsAfterDisconnect(true)}
-        />
-      )}
+      {hasLinkedAccount &&
+        (isAfterConnect ? (
+          <Button
+            variant='primary'
+            size='lg'
+            onClick={() => props.setCurrentState('notifications')}
+          >
+            Got it
+          </Button>
+        ) : (
+          <DisconnectButton
+            {...props}
+            afterDisconnect={() => setIsAfterDisconnect(true)}
+          />
+        ))}
     </div>
   )
 }
@@ -108,7 +121,10 @@ function DisconnectButton({
   )
 }
 
-function ConnectTelegramButton({ address }: ProfileModalContentProps) {
+function ConnectTelegramButton({
+  address,
+  afterConnect,
+}: ProfileModalContentProps & { afterConnect?: () => void }) {
   const queryClient = useQueryClient()
   const { isFetching: isFetchingAccount } =
     getLinkedTelegramAccountsQuery.useQuery({
@@ -138,6 +154,7 @@ function ConnectTelegramButton({ address }: ProfileModalContentProps) {
 
   const handleClickReload = () => {
     getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
+    afterConnect?.()
   }
 
   return url ? (

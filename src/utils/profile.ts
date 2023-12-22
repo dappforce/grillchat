@@ -1,4 +1,4 @@
-import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
+import EnsIcon from '@/assets/icons/ens-dynamic-size.svg'
 import KiltIcon from '@/assets/icons/kilt-dynamic-size.svg'
 import KusamaIcon from '@/assets/icons/kusama-dynamic-size.svg'
 import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
@@ -72,7 +72,7 @@ export const profileSourceData: {
     link: () => '',
   },
   ens: {
-    icon: EthIcon,
+    icon: EnsIcon,
     tooltip: 'ENS',
     link: (id) => `https://app.ens.domains/${id}`,
   },
