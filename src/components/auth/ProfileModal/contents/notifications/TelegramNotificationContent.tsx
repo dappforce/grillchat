@@ -163,7 +163,7 @@ function ConnectTelegramButton({
         <span className='text-sm text-text-muted'>
           Open the link below to connect to telegram bot
         </span>
-        <LinkText openInNewTab variant='primary'>
+        <LinkText openInNewTab href={url} variant='primary'>
           {url}
         </LinkText>
       </Card>
