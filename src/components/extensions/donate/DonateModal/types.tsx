@@ -8,10 +8,15 @@ export type DonateModalStep =
   | 'add-network'
 
 export type TokenListItem = ListItem<{ isNativeToken?: boolean }>
+
+type ChainKind = 'evm' | 'substrate'
+
+export type ChainListItem = ListItem<{ chainKind: ChainKind }>
+
 export type DonateProps = DonateModalProps & {
   setCurrentStep: (currentStep: DonateModalStep) => void
   currentStep: DonateModalStep
-  chainState: [TokenListItem, Dispatch<SetStateAction<TokenListItem>>]
+  chainState: [ChainListItem, Dispatch<SetStateAction<ChainListItem>>]
   tokenState: [TokenListItem, Dispatch<SetStateAction<TokenListItem>>]
   onSwitchButtonClick: () => void
   onSubmit: () => void

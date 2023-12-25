@@ -3,24 +3,20 @@ import SelectInput from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import {
-  coingeckoTokenIds,
-  getPriceQuery,
-} from '@/services/subsocial/prices/query'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
-import { formatUnits, parseUnits } from 'ethers'
-import Image from 'next/image'
-import { isValidElement, useEffect, useState } from 'react'
+import { parseUnits } from 'ethers'
+import { useEffect, useState } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import CommonExtensionModal from '../../common/CommonExtensionModal'
 import { chainIdByChainName } from '../api/config'
 import { useDonate, useGetBalance } from '../api/hooks'
 import AmountInput from './AmountInput'
-import { DonateProps, TokenListItem } from './types'
+import TokenItemPreview from './donateForm/TokenItemPreview'
+import { DonateProps } from './types'
 import { chainItems, tokensItems } from './utils'
 
 function DonateForm({
@@ -199,59 +195,6 @@ function DonateForm({
         </div>
       </div>
     </CommonExtensionModal>
-  )
-}
-
-type RokenItemPreviewProps = {
-  item: TokenListItem
-  chainName: string
-  open: boolean
-}
-
-const TokenItemPreview = ({ item, chainName, open }: RokenItemPreviewProps) => {
-  const { balance, decimals } = useGetBalance(item.id, chainName, open)
-
-  const tokenId = coingeckoTokenIds[(item.id as string).toLowerCase()]
-
-  const { data } = getPriceQuery.useQuery(tokenId)
-
-  const price = data?.current_price
-
-  const balanceValue =
-    decimals && balance ? formatUnits(balance, decimals) : '0'
-
-  const amountInDollars =
-    price && balance
-      ? new BigNumber(price).multipliedBy(balanceValue).toFixed(4)
-      : '0'
-
-  return (
-    <div className='flex w-full items-center justify-between'>
-      <div className='flex items-center gap-3'>
-        {item.icon &&
-          (isValidElement(item.icon) ? (
-            item.icon
-          ) : (
-            <Image
-              src={item.icon as string}
-              className={cx('w-[38px] rounded-full')}
-              alt=''
-              role='presentation'
-            />
-          ))}
-        <span
-          className={cx('mr-3 block truncate text-base', {
-            ['text-gray-500']: item.disabledItem,
-          })}
-        >
-          {item.label}
-        </span>
-      </div>
-      <div className='flex flex-col text-right'>
-        <span className='font-bold'>{balanceValue.slice(0, 6)}</span>
-        <span className='text-text-muted'>${amountInDollars}</span>
-      </div>
-    </div>
   )
 }
 
