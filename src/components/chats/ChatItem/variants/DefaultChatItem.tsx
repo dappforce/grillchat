@@ -34,8 +34,9 @@ export default function DefaultChatItem({
         )}
       >
         {!isMyMessage && (
-          <div className='flex items-baseline'>
+          <div className='flex items-baseline overflow-hidden'>
             <ProfilePreviewModalName
+              clipText
               showModeratorChip
               labelingData={{ chatId }}
               messageId={messageId}
@@ -44,7 +45,7 @@ export default function DefaultChatItem({
             />
             <ChatRelativeTime
               createdAtTime={createdAtTime}
-              className='text-xs text-text-muted'
+              className='flex-shrink-0 text-xs text-text-muted'
               isUpdated={isUpdated}
             />
           </div>

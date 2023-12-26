@@ -110,7 +110,7 @@ export default function CommonChatItem({
             <ChatRelativeTime
               isUpdated={isUpdated}
               createdAtTime={createdAtTime}
-              className='text-xs text-text-muted'
+              className='flex-shrink-0 text-xs text-text-muted'
               style={{ color: textColor }}
             />
           </div>
