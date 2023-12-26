@@ -98,8 +98,9 @@ export default function CommonChatItem({
         )}
       >
         {!isMyMessage && (
-          <div className='flex items-baseline px-2.5 first:pt-1.5'>
+          <div className='flex items-baseline overflow-hidden px-2.5 first:pt-1.5'>
             <ProfilePreviewModalName
+              clipText
               showModeratorChip
               labelingData={{ chatId }}
               messageId={message.id}
