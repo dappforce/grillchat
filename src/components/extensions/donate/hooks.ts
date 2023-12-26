@@ -1,4 +1,5 @@
 import { useMetamaskDeepLink } from '@/components/MetamaskDeepLink'
+import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useExtensionData, useExtensionModalState } from '@/stores/extension'
@@ -9,6 +10,7 @@ import urlJoin from 'url-join'
 import { useAccount } from 'wagmi'
 import { BeforeMessageResult } from '../common/CommonExtensionModal'
 import { useDonate, useGetBalance } from './api/hooks'
+import { useSubstrateDonatoin } from './DonateModal/donateForm/mutation'
 import {
   ChainListItem,
   DonateModalStep,
@@ -100,6 +102,66 @@ export const useBuildEvmBeforeSend = ({
               to: evmRecipientAddress,
               token: selectedToken.label,
               decimals,
+              amount: amountValue.toString(),
+              txHash: hash,
+            },
+          },
+        ],
+      }
+
+      closeModal()
+      setCurrentStep('donate-form')
+      return { newMessageParams, txPrevented: false }
+    }
+
+    return { txPrevented: true }
+  }
+}
+
+export const useBuildSubtrateBeforeSend = ({
+  setCurrentStep,
+  selectedToken,
+  selectedChain,
+}: BuildBeforeSendParams) => {
+  const { closeModal, initialData } = useExtensionModalState(
+    'subsocial-donations'
+  )
+  const address = useMyMainAddress()
+  const { mutateAsync: sendDonation } = useSubstrateDonatoin()
+
+  const chainData = useGetChainDataByNetwork(selectedChain.id)
+
+  const { decimal } = chainData || {}
+
+  const recipient = initialData.recipient
+
+  return async ({
+    amount,
+    messageParams,
+  }: BeforeSendProps): Promise<BeforeMessageResult> => {
+    if (!recipient || !address || !amount) {
+      return { txPrevented: true }
+    }
+
+    const amountValue = parseUnits(amount, decimal)
+
+    const hash = await sendDonation({
+      recipient,
+      amount: amountValue.toString(),
+    })
+
+    if (hash && address && decimal) {
+      const newMessageParams: SendMessageParams = {
+        ...messageParams,
+        extensions: [
+          {
+            id: 'subsocial-donations',
+            properties: {
+              chain: selectedChain.id,
+              from: address,
+              to: recipient,
+              token: selectedToken.label,
+              decimals: decimal,
               amount: amountValue.toString(),
               txHash: hash,
             },

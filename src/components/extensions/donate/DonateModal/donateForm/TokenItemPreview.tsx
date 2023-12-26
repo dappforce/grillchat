@@ -1,7 +1,10 @@
+import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import {
   coingeckoTokenIds,
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
+import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
@@ -10,20 +13,79 @@ import { isValidElement } from 'react'
 import { useGetBalance } from '../../api/hooks'
 import { TokenListItem } from '../types'
 
-type TokenItemPreviewProps = {
+type CommonProps = {
   item: TokenListItem
   chainName: string
   open: boolean
 }
 
-const TokenItemPreview = ({ item, chainName, open }: TokenItemPreviewProps) => {
-  const { balance, decimals } = useGetBalance(item.id, chainName, open)
+type TokenItemPreviewTemplateProps = {
+  item: TokenListItem
+  balanceValue: string
+  amountInDollars: string
+}
 
-  const tokenId = coingeckoTokenIds[(item.id as string).toLowerCase()]
+type TokenItemsPreviewProps = CommonProps & {
+  chainKind: 'substrate' | 'evm'
+}
+
+const TokenItemPreview = ({ chainKind, ...props }: TokenItemsPreviewProps) => {
+  const tokenId = coingeckoTokenIds[(props.item.id as string).toLowerCase()]
 
   const { data } = getPriceQuery.useQuery(tokenId)
 
   const price = data?.current_price
+
+  return chainKind === 'substrate' ? (
+    <SubstrateTokenItemPreview {...props} price={price} />
+  ) : (
+    <EvmTokenItemPreview {...props} price={price} />
+  )
+}
+
+type TokenItemPreviewByKindProps = CommonProps & {
+  price?: string | null
+}
+
+const SubstrateTokenItemPreview = ({
+  item,
+  chainName,
+  price,
+}: TokenItemPreviewByKindProps) => {
+  const address = useMyMainAddress()
+  const chainInfo = useGetChainDataByNetwork(chainName)
+  const { data: balances } = getBalancesQuery.useQuery(
+    `${address}|${chainName}`
+  )
+
+  const { decimal, tokenSymbol } = chainInfo || {}
+
+  const { freeBalance } = balances?.balances[tokenSymbol || ''] || {}
+
+  const balanceValue =
+    decimal && freeBalance ? formatUnits(freeBalance, decimal) : '0'
+
+  const amountInDollars =
+    price && balanceValue
+      ? new BigNumber(price).multipliedBy(balanceValue).toFixed(4)
+      : '0'
+
+  return (
+    <TokenItemPreviewTemplate
+      item={item}
+      balanceValue={balanceValue}
+      amountInDollars={amountInDollars}
+    />
+  )
+}
+
+const EvmTokenItemPreview = ({
+  item,
+  chainName,
+  open,
+  price,
+}: TokenItemPreviewByKindProps) => {
+  const { balance, decimals } = useGetBalance(item.id, chainName, open)
 
   const balanceValue =
     decimals && balance ? formatUnits(balance, decimals) : '0'
@@ -33,6 +95,20 @@ const TokenItemPreview = ({ item, chainName, open }: TokenItemPreviewProps) => {
       ? new BigNumber(price).multipliedBy(balanceValue).toFixed(4)
       : '0'
 
+  return (
+    <TokenItemPreviewTemplate
+      item={item}
+      balanceValue={balanceValue}
+      amountInDollars={amountInDollars}
+    />
+  )
+}
+
+const TokenItemPreviewTemplate = ({
+  item,
+  balanceValue,
+  amountInDollars,
+}: TokenItemPreviewTemplateProps) => {
   return (
     <div className='flex w-full items-center justify-between'>
       <div className='flex items-center gap-3'>

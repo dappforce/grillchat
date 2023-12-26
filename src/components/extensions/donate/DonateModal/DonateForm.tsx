@@ -177,6 +177,7 @@ function DonateForm({
                       item={item}
                       chainName={selectedChain.id}
                       open={open}
+                      chainKind='evm'
                     />
                   )}
                 />

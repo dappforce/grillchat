@@ -1,18 +1,17 @@
 import CommonExtensionModal from '@/components/extensions/common/CommonExtensionModal'
 import SelectInput from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
-import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { useEffect, useState } from 'react'
 import { useDonateModalContext } from '../../DonateModalContext'
-import { useBuildEvmBeforeSend } from '../../hooks'
+import { useBuildEvmBeforeSend, useBuildSubtrateBeforeSend } from '../../hooks'
 import { DonateProps } from '../types'
 import { chainItems, tokensItems } from '../utils'
 import EvmDonateForm from './EvmDonateFormPart'
-import SubstrateDonateForm from './SubstrateDonateForm'
+import SubstrateDonateFormPart from './SubstrateDonateForm'
 
 const DonateForm = ({
   chainState,
@@ -26,7 +25,6 @@ const DonateForm = ({
   const { closeModal, isOpen, initialData } = useExtensionModalState(
     'subsocial-donations'
   )
-
   const { showSwitchButton } = useDonateModalContext()
 
   const { messageId } = initialData
@@ -52,23 +50,20 @@ const DonateForm = ({
     setCurrentStep,
   })
 
+  const substrateBeforeMessageSend = useBuildSubtrateBeforeSend({
+    selectedChain,
+    selectedToken,
+    setCurrentStep,
+  })
+
   useEffect(() => {
     setSelectedToken(tokensItems[selectedChain.id][0])
   }, [selectedChain.id, setSelectedToken])
 
-  const onButtonClick = async ({
-    messageParams,
-  }: {
-    messageParams: SendMessageParams
-    amount: string
-  }) => {
-    return { newMessageParams: messageParams, txPrevented: false }
-  }
-
   const chainKind = selectedChain.chainKind
 
   const beforeMessageSend =
-    chainKind === 'evm' ? evmBeforeMessageSend : onButtonClick
+    chainKind === 'evm' ? evmBeforeMessageSend : substrateBeforeMessageSend
 
   return (
     <CommonExtensionModal
@@ -122,9 +117,22 @@ const DonateForm = ({
               onSwitchButtonClick={onSwitchButtonClick}
               setSelectedToken={setSelectedToken}
               setCurrentStep={setCurrentStep}
+              chainKind={chainKind}
             />
           ) : (
-            <SubstrateDonateForm />
+            <SubstrateDonateFormPart
+              selectedChain={selectedChain}
+              selectedToken={selectedToken}
+              isOpen={isOpen}
+              amount={amount}
+              setAmount={setAmount}
+              inputError={inputError}
+              setInputError={setInputError}
+              onSwitchButtonClick={onSwitchButtonClick}
+              setSelectedToken={setSelectedToken}
+              setCurrentStep={setCurrentStep}
+              chainKind={chainKind}
+            />
           )}
         </div>
       </div>
