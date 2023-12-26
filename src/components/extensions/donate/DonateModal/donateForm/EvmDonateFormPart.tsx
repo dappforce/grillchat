@@ -47,8 +47,6 @@ const EvmDonateFormPart = ({
     <CommonFields
       selectedToken={selectedToken}
       selectedChain={selectedChain}
-      balance={balance}
-      decimals={decimals}
       {...otherProps}
     />
   )

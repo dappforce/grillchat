@@ -11,17 +11,20 @@ import { ChangeEventHandler, useEffect } from 'react'
 import { useGetBalance } from '../api/hooks'
 import { useDonateModalContext } from '../DonateModalContext'
 
-type AmountInputTemplateProps = {
+type CommonProps = {
   setAmount: (amount: string) => void
   inputError?: string
   setInputError: (error?: string) => void
   amount: string
   tokenSymbol: string
+}
+
+type AmountInputTemplateProps = CommonProps & {
   balance?: string
   decimals?: number
 }
 
-type AmountInputByKindProps = AmountInputTemplateProps & {
+type AmountInputByKindProps = CommonProps & {
   chainName: string
   tokenId: string
 }
@@ -67,7 +70,7 @@ const EvmAmountInput = ({
   )
 }
 
-type AmountInputProps = AmountInputTemplateProps & {
+type AmountInputProps = CommonProps & {
   chainKind: 'substrate' | 'evm'
   chainName: string
   tokenId: string

@@ -29,8 +29,6 @@ const SubstrateDonateFormPart = ({
     <CommonFields
       selectedToken={selectedToken}
       selectedChain={selectedChain}
-      balance={'100'}
-      decimals={0}
       {...otherProps}
     />
   )

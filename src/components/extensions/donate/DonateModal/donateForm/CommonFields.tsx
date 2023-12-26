@@ -12,8 +12,6 @@ export type CommonFieldsProps = {
   setAmount: (amount: string) => void
   inputError?: string
   setInputError: (error?: string) => void
-  balance?: string
-  decimals?: number
   chainKind: 'substrate' | 'evm'
 }
 
@@ -25,8 +23,6 @@ export const CommonFields = ({
   setAmount,
   inputError,
   setInputError,
-  balance,
-  decimals,
   chainKind,
 }: CommonFieldsProps) => {
   return (
@@ -52,8 +48,6 @@ export const CommonFields = ({
         inputError={inputError}
         setInputError={setInputError}
         tokenSymbol={selectedToken.label}
-        balance={balance}
-        decimals={decimals}
         chainKind={chainKind}
         chainName={selectedChain.id}
         tokenId={selectedToken.id}

@@ -127,7 +127,7 @@ export const useBuildSubtrateBeforeSend = ({
     'subsocial-donations'
   )
   const address = useMyMainAddress()
-  const { mutateAsync: sendDonation } = useSubstrateDonatoin()
+  const { mutateAsync: sendDonation } = useSubstrateDonatoin(selectedChain.id)
 
   const chainData = useGetChainDataByNetwork(selectedChain.id)
 
