@@ -20,9 +20,9 @@ const EvmDonateFormPart = ({
   onSwitchButtonClick,
   ...otherProps
 }: EvmDonateFormProps) => {
-  const { address: myEvmAddress, isConnected } = useAccount()
+  const { isConnected } = useAccount()
   const { chain } = useNetwork()
-  const { setShowSwitchButton } = useDonateModalContext()
+  const { setShowChatForm } = useDonateModalContext()
 
   const { balance, decimals } = useGetBalance(
     selectedToken.id,
@@ -36,7 +36,7 @@ const EvmDonateFormPart = ({
   const showSwitchButton = !isConnected || currentChainId !== destChainId
 
   useEffect(() => {
-    setShowSwitchButton(showSwitchButton)
+    setShowChatForm(!showSwitchButton)
   }, [showSwitchButton])
 
   return showSwitchButton ? (

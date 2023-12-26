@@ -11,7 +11,7 @@ import { useBuildEvmBeforeSend, useBuildSubtrateBeforeSend } from '../../hooks'
 import { DonateProps } from '../types'
 import { chainItems, tokensItems } from '../utils'
 import EvmDonateForm from './EvmDonateFormPart'
-import SubstrateDonateFormPart from './SubstrateDonateForm'
+import SubstrateDonateFormPart from './SubstrateDonateFormPart'
 
 const DonateForm = ({
   chainState,
@@ -25,7 +25,7 @@ const DonateForm = ({
   const { closeModal, isOpen, initialData } = useExtensionModalState(
     'subsocial-donations'
   )
-  const { showSwitchButton, disableButton } = useDonateModalContext()
+  const { showChatForm, disableButton } = useDonateModalContext()
 
   const { messageId } = initialData
   const setReplyTo = useMessageData((state) => state.setReplyTo)
@@ -75,8 +75,8 @@ const DonateForm = ({
       isOpen={isOpen}
       closeModal={closeModal}
       chatId={chatId}
-      showChatForm={!showSwitchButton}
-      withDivider={!showSwitchButton}
+      showChatForm={showChatForm}
+      withDivider={showChatForm}
       disableSendButton={disableButton || !!inputError}
       sendButtonText={`Send${amountPreview}`}
       beforeMesageSend={(messageParams) =>
