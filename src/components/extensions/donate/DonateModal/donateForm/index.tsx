@@ -25,7 +25,7 @@ const DonateForm = ({
   const { closeModal, isOpen, initialData } = useExtensionModalState(
     'subsocial-donations'
   )
-  const { showSwitchButton } = useDonateModalContext()
+  const { showSwitchButton, disableButton } = useDonateModalContext()
 
   const { messageId } = initialData
   const setReplyTo = useMessageData((state) => state.setReplyTo)
@@ -60,6 +60,10 @@ const DonateForm = ({
     setSelectedToken(tokensItems[selectedChain.id][0])
   }, [selectedChain.id, setSelectedToken])
 
+  useEffect(() => {
+    setAmount('')
+  }, [selectedChain.id, selectedToken.id])
+
   const chainKind = selectedChain.chainKind
 
   const beforeMessageSend =
@@ -73,7 +77,7 @@ const DonateForm = ({
       chatId={chatId}
       showChatForm={!showSwitchButton}
       withDivider={!showSwitchButton}
-      disableSendButton={!!inputError}
+      disableSendButton={disableButton || !!inputError}
       sendButtonText={`Send${amountPreview}`}
       beforeMesageSend={(messageParams) =>
         beforeMessageSend({

@@ -54,6 +54,9 @@ export const CommonFields = ({
         tokenSymbol={selectedToken.label}
         balance={balance}
         decimals={decimals}
+        chainKind={chainKind}
+        chainName={selectedChain.id}
+        tokenId={selectedToken.id}
       />
     </>
   )

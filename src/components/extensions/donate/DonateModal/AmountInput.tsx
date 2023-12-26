@@ -1,12 +1,17 @@
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
 import useGetTheme from '@/hooks/useGetTheme'
+import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
+import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import BN from 'bignumber.js'
+import BN, { BigNumber } from 'bignumber.js'
 import { formatUnits, parseUnits } from 'ethers'
-import { ChangeEventHandler } from 'react'
+import { ChangeEventHandler, useEffect } from 'react'
+import { useGetBalance } from '../api/hooks'
+import { useDonateModalContext } from '../DonateModalContext'
 
-type AmountInputProps = {
+type AmountInputTemplateProps = {
   setAmount: (amount: string) => void
   inputError?: string
   setInputError: (error?: string) => void
@@ -16,7 +21,67 @@ type AmountInputProps = {
   decimals?: number
 }
 
-const AmountInput = ({
+type AmountInputByKindProps = AmountInputTemplateProps & {
+  chainName: string
+  tokenId: string
+}
+
+const SubstrateAmountInput = ({
+  chainName,
+  ...props
+}: AmountInputByKindProps) => {
+  const address = useMyMainAddress()
+  const chainInfo = useGetChainDataByNetwork(chainName)
+  const { data: balances } = getBalancesQuery.useQuery(
+    `${address}|${chainName}`
+  )
+
+  const { decimal, tokenSymbol } = chainInfo || {}
+
+  const { freeBalance } = balances?.balances[tokenSymbol || ''] || {}
+
+  return (
+    <AmountInputTemplate
+      {...props}
+      tokenSymbol={tokenSymbol || ''}
+      balance={freeBalance}
+      decimals={decimal}
+    />
+  )
+}
+
+const EvmAmountInput = ({
+  chainName,
+  tokenId,
+  ...props
+}: AmountInputByKindProps) => {
+  const { balance, decimals } = useGetBalance(tokenId, chainName, true)
+
+  return (
+    <AmountInputTemplate
+      {...props}
+      balance={balance}
+      tokenSymbol={tokenId.toUpperCase()}
+      decimals={decimals}
+    />
+  )
+}
+
+type AmountInputProps = AmountInputTemplateProps & {
+  chainKind: 'substrate' | 'evm'
+  chainName: string
+  tokenId: string
+}
+
+const AmountInput = ({ chainKind, ...props }: AmountInputProps) => {
+  return chainKind === 'evm' ? (
+    <EvmAmountInput {...props} />
+  ) : (
+    <SubstrateAmountInput {...props} />
+  )
+}
+
+const AmountInputTemplate = ({
   amount,
   setAmount,
   setInputError,
@@ -24,8 +89,9 @@ const AmountInput = ({
   tokenSymbol,
   balance,
   decimals,
-}: AmountInputProps) => {
+}: AmountInputTemplateProps) => {
   const theme = useGetTheme()
+  const { setDisableButton } = useDonateModalContext()
   const balanceValue =
     decimals && balance ? formatUnits(balance, decimals) : '0'
 
@@ -43,6 +109,16 @@ const AmountInput = ({
       }
     }
   }
+
+  useEffect(() => {
+    const disable =
+      !amount ||
+      !balance ||
+      new BigNumber(amount || '0').lte(0) ||
+      new BigNumber(balance || '0').eq(0)
+
+    setDisableButton(disable)
+  }, [balance, amount])
 
   return (
     <div>

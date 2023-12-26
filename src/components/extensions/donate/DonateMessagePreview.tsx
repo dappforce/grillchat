@@ -11,7 +11,7 @@ import { HiArrowUpRight } from 'react-icons/hi2'
 import CommonChatItem from '../common/CommonChatItem'
 import { ExtensionChatItemProps } from '../types'
 import { getPostExtensionProperties } from '../utils'
-import { explorerByChainName } from './api/config'
+import { getExplorerByChainName } from './api/config'
 
 type DonatePreviewProps = {
   extensionProps?: DonateProperies
@@ -62,7 +62,7 @@ const DonatePreview = ({
           </div>
           <LinkText
             openInNewTab
-            href={`${explorerByChainName[chain]}${txHash}`}
+            href={getExplorerByChainName(txHash, chain)}
             variant='primary'
             className='text-white'
           >

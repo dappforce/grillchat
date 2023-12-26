@@ -61,7 +61,12 @@ export const chainIdByChainName: Record<string, number> = {
   'ethereum-mainnet': 1,
 }
 
-export const explorerByChainName: Record<string, string> = {
-  polygon: 'https://polygonscan.com/tx/',
-  moonbeam: 'https://moonscan.io/tx/',
+export const getExplorerByChainName = (hash: string, chainName: string) => {
+  const exlorerLinkByChainName: Record<string, string> = {
+    polygon: `https://polygonscan.com/tx/${hash}`,
+    moonbeam: `https://moonscan.io/tx/${hash}`,
+    subsocial: `https://calamar.app/search?query=${hash}&network=subsocial`,
+  }
+
+  return exlorerLinkByChainName[chainName]
 }
