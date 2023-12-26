@@ -50,8 +50,9 @@ export default function EmojiChatItem({
       )}
     >
       {!isMyMessage && (
-        <div className='flex items-baseline pl-1'>
+        <div className='flex items-baseline overflow-hidden pl-1'>
           <ProfilePreviewModalName
+            clipText
             showModeratorChip
             labelingData={{ chatId }}
             messageId={messageId}
@@ -61,7 +62,7 @@ export default function EmojiChatItem({
           <ChatRelativeTime
             isUpdated={isUpdated}
             createdAtTime={createdAtTime}
-            className='text-xs text-text-muted'
+            className='flex-shrink-0 text-xs text-text-muted'
           />
         </div>
       )}

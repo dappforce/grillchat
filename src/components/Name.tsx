@@ -31,6 +31,7 @@ export type NameProps = ComponentProps<'span'> & {
   color?: string
   labelingData?: { chatId: string }
   forceProfileSource?: ForceProfileSource
+  clipText?: boolean
 }
 
 export default function Name({
@@ -43,6 +44,7 @@ export default function Name({
   labelingData,
   showModeratorChip,
   forceProfileSource,
+  clipText,
   profileSourceIconPosition = 'right',
   ...props
 }: NameProps) {
@@ -95,6 +97,7 @@ export default function Name({
     <div
       className={cx(
         'relative top-px flex-shrink-0 text-[0.9em] text-text-muted',
+        clipText && 'overflow-hidden',
         profileSourceIconClassName
       )}
       onClick={(e) => e.stopPropagation()}
@@ -127,11 +130,19 @@ export default function Name({
     <span
       {...props}
       ref={ref}
-      className={cx('flex items-center gap-1', className)}
+      className={cx(
+        'flex items-center gap-1',
+        clipText && 'overflow-hidden',
+        className
+      )}
       style={{ color: color || textColor }}
     >
       {profileSourceIconPosition === 'left' && iconElement}
-      <span>
+      <span
+        className={cx(
+          clipText && 'overflow-hidden text-ellipsis whitespace-nowrap'
+        )}
+      >
         {additionalText} {name}{' '}
       </span>
       {profileSourceIconPosition === 'right' && iconElement}

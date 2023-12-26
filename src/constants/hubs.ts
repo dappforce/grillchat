@@ -50,7 +50,11 @@ export function getPinnedChatsInHubId(hubId: string) {
 }
 
 export const PRIMARY_COMMUNITY_HUB_ID = getCommunityHubId()
-const COMMUNITY_CHAT_HUB_ID: string[] = [PRIMARY_COMMUNITY_HUB_ID, '1025']
+const COMMUNITY_CHAT_HUB_ID: string[] = [PRIMARY_COMMUNITY_HUB_ID]
+if (process.env.NODE_ENV === 'development') {
+  COMMUNITY_CHAT_HUB_ID.push('1025')
+}
+
 export const isCommunityHubId = (hubId: string | undefined) =>
   COMMUNITY_CHAT_HUB_ID.includes(hubId ?? '')
 
