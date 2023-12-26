@@ -1,11 +1,13 @@
 import CommonExtensionModal from '@/components/extensions/common/CommonExtensionModal'
 import SelectInput from '@/components/inputs/SelectInput'
 import ProfilePreview from '@/components/ProfilePreview'
+import { getPostQuery } from '@/services/api/query'
+import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDonateModalContext } from '../../DonateModalContext'
 import { useBuildEvmBeforeSend, useBuildSubtrateBeforeSend } from '../../hooks'
 import { DonateProps } from '../types'
@@ -66,8 +68,44 @@ const DonateForm = ({
 
   const chainKind = selectedChain.chainKind
 
+  const { data: message } = getPostQuery.useQuery(messageId)
+
+  const { ownerId } = message?.struct || {}
+
+  const { data: messageOwnerAccountData } = getAccountDataQuery.useQuery(
+    ownerId ?? ''
+  )
+  const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
+
   const beforeMessageSend =
     chainKind === 'evm' ? evmBeforeMessageSend : substrateBeforeMessageSend
+
+  const commonProps = {
+    selectedChain: selectedChain,
+    selectedToken: selectedToken,
+    isOpen: isOpen,
+    amount: amount,
+    inputError: inputError,
+    chainKind: chainKind,
+    setAmount: setAmount,
+    setInputError: setInputError,
+    onSwitchButtonClick: onSwitchButtonClick,
+    setSelectedToken: setSelectedToken,
+    setCurrentStep: setCurrentStep,
+  }
+
+  const chainsItemsArray = useMemo(
+    () =>
+      !messageOwnerEvmAddress
+        ? chainItems.map((item) => {
+            return {
+              disabledItem: item.chainKind === 'evm',
+              ...item,
+            }
+          })
+        : chainItems,
+    [messageOwnerEvmAddress]
+  )
 
   return (
     <CommonExtensionModal
@@ -106,37 +144,13 @@ const DonateForm = ({
             selected={selectedChain}
             setSelected={setSelectedChain}
             fieldLabel='Chain'
-            items={chainItems}
+            items={chainsItemsArray}
             imgClassName='w-[38px]'
           />
           {chainKind === 'evm' ? (
-            <EvmDonateForm
-              selectedChain={selectedChain}
-              selectedToken={selectedToken}
-              isOpen={isOpen}
-              amount={amount}
-              setAmount={setAmount}
-              inputError={inputError}
-              setInputError={setInputError}
-              onSwitchButtonClick={onSwitchButtonClick}
-              setSelectedToken={setSelectedToken}
-              setCurrentStep={setCurrentStep}
-              chainKind={chainKind}
-            />
+            <EvmDonateForm {...commonProps} />
           ) : (
-            <SubstrateDonateFormPart
-              selectedChain={selectedChain}
-              selectedToken={selectedToken}
-              isOpen={isOpen}
-              amount={amount}
-              setAmount={setAmount}
-              inputError={inputError}
-              setInputError={setInputError}
-              onSwitchButtonClick={onSwitchButtonClick}
-              setSelectedToken={setSelectedToken}
-              setCurrentStep={setCurrentStep}
-              chainKind={chainKind}
-            />
+            <SubstrateDonateFormPart {...commonProps} />
           )}
         </div>
       </div>

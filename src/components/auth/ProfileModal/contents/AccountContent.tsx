@@ -151,9 +151,9 @@ export default function AccountContent({
               )}
             >
               <div className='flex items-center gap-2'>
-                <div>Balance:</div>
+                <div className='text-slate-400'>Balance:</div>
                 <div>
-                  {balanceValue} {tokenSymbol}
+                  {new BigNumber(balanceValue).toFixed(4)} {tokenSymbol}
                 </div>
               </div>
               <div></div>

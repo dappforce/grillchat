@@ -14,7 +14,6 @@ import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
@@ -85,10 +84,6 @@ export default function ChatItemMenus({
 
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { ownerId, dataType } = message?.struct || {}
-  const { data: messageOwnerAccountData } = getAccountDataQuery.useQuery(
-    ownerId ?? ''
-  )
-  const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
 
   const isOptimisticMessage = dataType === 'optimistic'
 
@@ -156,10 +151,6 @@ export default function ChatItemMenus({
       text: 'Donate',
       icon: RiCopperCoinLine,
       onClick: () => {
-        if (!messageOwnerEvmAddress) {
-          return
-        }
-
         if (!address) {
           setModalState('login')
           return
@@ -179,7 +170,7 @@ export default function ChatItemMenus({
       icon: LuPencil,
       onClick: () => setMessageToEdit(messageId),
     }
-    const showDonateMenuItem = messageOwnerEvmAddress && canSendMessage
+    const showDonateMenuItem = canSendMessage && !isMessageOwner
 
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)

@@ -135,7 +135,7 @@ const AmountInputTemplate = ({
               theme === 'light' ? 'text-black' : 'text-white'
             )}
           >
-            {balanceValue.slice(0, 6)} {tokenSymbol}
+            {new BigNumber(balanceValue).toFixed(4)} {tokenSymbol}
           </span>
         </div>
       </div>
