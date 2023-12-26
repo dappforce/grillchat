@@ -1,8 +1,9 @@
 import useAccountsFromPreferredWallet from '@/components/auth/common/polkadot-connect/hooks/useAccountsFromPreferredWallet'
+import { getChainsInfoQuery } from '@/services/chainsInfo/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
-import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
+import { useLazeSubstrateMutation } from '@/subsocial-query/subsocial/lazyMutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { Signer } from '@/utils/account'
 import { GenericAccountId } from '@polkadot/types'
@@ -20,10 +21,13 @@ export function useSubstrateDonatoin(
   config?: SubsocialMutationConfig<SubstrateDonationProps>
 ) {
   const client = useQueryClient()
+  const { data: chainInfo } = getChainsInfoQuery.useQuery(chainName)
   const { accounts, isLoading } = useAccountsFromPreferredWallet()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const connectWallet = useMyAccount((state) => state.connectWallet)
   const address = useMyMainAddress()
+
+  const { wsNode, node } = chainInfo || {}
 
   useEffect(() => {
     if (parentProxyAddress && accounts) {
@@ -39,10 +43,11 @@ export function useSubstrateDonatoin(
     }
   }, [parentProxyAddress, isLoading])
 
-  return useSubsocialMutation<SubstrateDonationProps>(
+  return useLazeSubstrateMutation<SubstrateDonationProps>(
     {
       getWallet: () =>
         getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),
+      chainEndpoint: wsNode || node || '',
       generateContext: undefined,
       transactionGenerator: async ({
         data: { amount, recipient },
