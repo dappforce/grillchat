@@ -69,7 +69,7 @@ export function usePaginatedMessageIdsFromDatahub({
     currentPageMessageIds: filteredCurrentPageIds,
     loadMore,
     totalDataCount: data?.pages?.[0].totalData || 0,
-    hasMore: lastPage?.hasMore || true,
+    hasMore: lastPage?.hasMore ?? true,
     isLoading,
   }
 }
