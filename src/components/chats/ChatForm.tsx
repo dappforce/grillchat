@@ -114,12 +114,10 @@ export default function ChatForm({
   const { mutate: requestTokenAndSendMessage } = useRequestTokenAndSendMessage({
     onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
-      showErrorSendingMessageToast(
-        error,
-        'Failed to register or send message',
-        variables,
-        { reloadUnsentMessage, setIsDisabledInput }
-      )
+      showErrorSendingMessageToast(error, 'Failed to send message', variables, {
+        reloadUnsentMessage,
+        setIsDisabledInput,
+      })
     },
   })
 
