@@ -59,10 +59,16 @@ export default function AccountContent({
 
   const colorModeOptions = useColorModeOptions()
 
-  const { count: linkedAddressesCount, maxCount: maxLinkedCount } =
-    useLinkedAccountCount()
-  const { count: activatedNotificationCount, maxCount: maxNotificationCount } =
-    useActivatedNotificationCount()
+  const {
+    count: linkedAddressesCount,
+    maxCount: maxLinkedCount,
+    isLoading: isLoadingLinkedAcccountCount,
+  } = useLinkedAccountCount()
+  const {
+    count: activatedNotificationCount,
+    maxCount: maxNotificationCount,
+    isLoading: isLoadingActivatedNotificationCount,
+  } = useActivatedNotificationCount()
 
   const onLinkedAddressesClick = () => {
     sendEvent('open_linked_addresses', commonEventProps)
@@ -91,9 +97,9 @@ export default function AccountContent({
       text: (
         <span className='flex items-center gap-2'>
           <span>Notifications</span>
-          {!!activatedNotificationCount && (
+          {!isLoadingLinkedAcccountCount && (
             <Notice size='sm' noticeType='grey'>
-              {activatedNotificationCount}/{maxNotificationCount} connected
+              {activatedNotificationCount} / {maxNotificationCount}
             </Notice>
           )}
           {showNotification && <DotBlinkingNotification />}
@@ -109,9 +115,9 @@ export default function AccountContent({
       text: (
         <span className='flex items-center gap-2'>
           <span>Linked Addresses</span>
-          {!!linkedAddressesCount && (
+          {!isLoadingLinkedAcccountCount && (
             <Notice size='sm' noticeType='grey'>
-              {linkedAddressesCount}/{maxLinkedCount} connected
+              {linkedAddressesCount} / {maxLinkedCount}
             </Notice>
           )}
         </span>
@@ -217,20 +223,23 @@ function useColorModeOptions(): MenuListProps['menus'] {
 function useLinkedAccountCount() {
   const myAddress = useMyMainAddress()
   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
-  const { data: accountData } = getAccountDataQuery.useQuery(myAddress ?? '')
+  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(
+    myAddress ?? ''
+  )
 
   let count = 0
   if (hasProxy) count++
   if (accountData?.evmAddress) count++
 
-  return { count, maxCount: 2 }
+  return { count, maxCount: 2, isLoading }
 }
 
 function useActivatedNotificationCount() {
   const myAddress = useMyMainAddress()
-  const { data: linkedAccounts } = getLinkedTelegramAccountsQuery.useQuery({
-    address: myAddress ?? '',
-  })
+  const { data: linkedAccounts, isLoading } =
+    getLinkedTelegramAccountsQuery.useQuery({
+      address: myAddress ?? '',
+    })
   const isTelegramLinked = !!linkedAccounts?.length
   const isPushNotificationEnabled = useIsPushNotificationEnabled()
 
@@ -238,5 +247,5 @@ function useActivatedNotificationCount() {
   if (isTelegramLinked) count++
   if (isPushNotificationEnabled) count++
 
-  return { count, maxCount: 2 }
+  return { count, maxCount: 2, isLoading }
 }
