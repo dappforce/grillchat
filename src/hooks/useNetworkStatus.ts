@@ -11,6 +11,8 @@ export default function useNetworkStatus() {
   const [substrateApi, setSubstrateApi] = useState<ApiPromise | null>(null)
 
   const [shouldDisconnect, setShouldDisconnect] = useState(false)
+  const shouldDisconnectRef = useWrapInRef(shouldDisconnect)
+
   const subscriptionState = useTransactions((state) => state.subscriptionState)
   const pendingTransactions = useTransactions(
     (state) => state.pendingTransactions
@@ -20,22 +22,26 @@ export default function useNetworkStatus() {
     pendingTransactions.size === 0 && subscriptionState === 'dynamic'
   const canUnsubRef = useWrapInRef(canUnsub)
 
-  useEffect(() => {
-    if (canUnsub && shouldDisconnect) {
+  const disconnectAfter1Min = useCallback(() => {
+    setTimeout(() => {
+      if (!shouldDisconnectRef.current || !canUnsubRef.current) return
+
       substrateApi?.disconnect()
       setShouldDisconnect(false)
+    }, 60_000)
+  }, [canUnsubRef, shouldDisconnectRef, substrateApi])
+
+  useEffect(() => {
+    if (canUnsub && shouldDisconnect) {
+      disconnectAfter1Min()
     }
-  }, [canUnsub, substrateApi, shouldDisconnect])
+  }, [canUnsub, shouldDisconnect, disconnectAfter1Min])
 
   const disconnect = useCallback(() => {
     if (substrateApi) {
-      if (!canUnsubRef.current) {
-        setShouldDisconnect(true)
-      } else {
-        substrateApi.disconnect()
-      }
+      setShouldDisconnect(true)
     }
-  }, [substrateApi, canUnsubRef])
+  }, [substrateApi])
   const connect = useCallback(() => {
     setShouldDisconnect(false)
     if (substrateApi && !substrateApi.isConnected) {
