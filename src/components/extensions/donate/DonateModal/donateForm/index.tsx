@@ -69,6 +69,13 @@ const DonateForm = ({
     setAmount('')
   }, [selectedChain.id, selectedToken.id])
 
+  useEffect(() => {
+    if (!isOpen) {
+      setAmount('')
+      setSelectedChain(chainItems[0])
+    }
+  }, [isOpen])
+
   const chainKind = selectedChain.chainKind
 
   const { data: message } = getPostQuery.useQuery(messageId)

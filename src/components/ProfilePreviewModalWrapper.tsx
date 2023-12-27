@@ -1,4 +1,3 @@
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import { RiCopperCoinLine } from 'react-icons/ri'
@@ -23,8 +22,6 @@ export default function ProfilePreviewModalWrapper({
 }: ProfilePreviewModalWrapperProps) {
   const openDonateExtension = useOpenDonateExtension(messageId ?? '', address)
   const [isOpenAccountModal, setIsOpenAccountModal] = useState(false)
-  const { data: accountData } = getAccountDataQuery.useQuery(address)
-  const { evmAddress } = accountData || {}
 
   return (
     <>
@@ -39,7 +36,7 @@ export default function ProfilePreviewModalWrapper({
         closeModal={() => setIsOpenAccountModal(false)}
       >
         <ProfilePreview address={address} className='mb-2' />
-        {evmAddress && messageId && (
+        {messageId && (
           <ActionCard
             className='mt-2'
             actions={[
