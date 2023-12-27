@@ -14,9 +14,15 @@ import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useConfigContext } from '@/providers/ConfigProvider'
+import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
+import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { installApp, isInstallAvailable } from '@/utils/install'
+import BigNumber from 'bignumber.js'
+import clsx from 'clsx'
+import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
 import { FiDownload } from 'react-icons/fi'
 import { useDisconnect } from 'wagmi'
@@ -29,6 +35,18 @@ export default function AccountContent({
 }: ProfileModalContentProps) {
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
+  const theme = useGetTheme()
+
+  const { data: balance } = getBalancesQuery.useQuery(
+    buildBalancesKey(address, 'subsocial')
+  )
+  const chainData = useGetChainDataByNetwork('subsocial')
+  const { freeBalance } = balance?.balances['SUB'] || {}
+
+  const { decimal, tokenSymbol } = chainData || {}
+
+  const balanceValue =
+    decimal && freeBalance ? formatUnits(freeBalance, decimal) : '0'
 
   const sendEvent = useSendEvent()
   const commonEventProps = { eventSource: 'profile_menu' }
@@ -119,15 +137,31 @@ export default function AccountContent({
     },
     { text: 'Log out', icon: ExitIcon, onClick: onLogoutClick },
   ]
-
+  // e9eff4
   return (
     <>
       <div className='mt-2 flex flex-col'>
-        <div className='flex flex-col gap-4 border-b border-background-lightest px-6 pb-6'>
+        <div className='flex flex-col gap-6 border-b border-background-lightest px-6 pb-6'>
           <ProfilePreview
             onEditClick={() => setCurrentState('profile-settings')}
             address={address}
           />
+          {!new BigNumber(balanceValue).isZero() && (
+            <div
+              className={clsx(
+                'flex items-center justify-between gap-4 rounded-2xl p-4',
+                theme === 'dark' ? 'bg-[#2C384F]' : 'bg-[#e9eff4]'
+              )}
+            >
+              <div className='flex items-center gap-2'>
+                <div className='text-slate-400'>Balance:</div>
+                <div>
+                  {new BigNumber(balanceValue).toFixed(4)} {tokenSymbol}
+                </div>
+              </div>
+              <div></div>
+            </div>
+          )}
         </div>
         <MenuList menus={menus} />
       </div>

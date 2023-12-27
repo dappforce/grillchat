@@ -1,8 +1,11 @@
 import { useExtensionModalState } from '@/stores/extension'
 import { useEffect, useState } from 'react'
 import { useConnectOrSwitchNetwork } from '../api/hooks'
-import DonateForm from './DonateForm'
+// import DonateForm from './DonateForm'
+import { DonateModalContextWrapper } from '../DonateModalContext'
+import DonateForm from './donateForm/index'
 import {
+  ChainListItem,
   DonateModalContent,
   DonateModalProps,
   DonateModalStep,
@@ -11,20 +14,29 @@ import {
 import { chainItems, tokensItems } from './utils'
 import WalletActionRequiredModal from './WalletActionRequiredModal'
 
+const DonateModal = (props: DonateModalProps) => {
+  return (
+    <DonateModalContextWrapper>
+      <DonateModalInner {...props} />
+    </DonateModalContextWrapper>
+  )
+}
+
 export const modalByStep: DonateModalContent = {
   'donate-form': DonateForm,
   'wallet-action-required': WalletActionRequiredModal,
   'add-network': WalletActionRequiredModal,
 }
 
-export default function DonateModal(props: DonateModalProps) {
+function DonateModalInner(props: DonateModalProps) {
   const { isOpen } = useExtensionModalState('subsocial-donations')
 
   const [currentStep, setCurrentStep] = useState<DonateModalStep>('donate-form')
-  const chainState = useState<TokenListItem>(chainItems[0])
+  const chainState = useState<ChainListItem>(chainItems[0])
   const chain = chainState[0]
 
   const tokenState = useState<TokenListItem>(tokensItems[chain.id][0])
+
   const { connectOrSwitch } = useConnectOrSwitchNetwork(
     setCurrentStep,
     chainState[0].id
@@ -57,3 +69,5 @@ export default function DonateModal(props: DonateModalProps) {
     />
   )
 }
+
+export default DonateModal

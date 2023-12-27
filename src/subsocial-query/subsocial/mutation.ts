@@ -143,8 +143,9 @@ async function createTxAndSend<Data, Context>(
         networkRpc: txConfig.networkRpc,
         summary,
       },
-      apis,
-      txCallbacks
+      apis.substrateApi,
+      txCallbacks,
+      apis.useHttp
     )
   } catch (err) {
     txCallbacks?.onError((err as any)?.message || 'Error generating tx', true)
@@ -155,7 +156,7 @@ async function createTxAndSend<Data, Context>(
     throw err
   }
 }
-function sendTransaction<Data>(
+export function sendTransaction<Data>(
   txInfo: {
     tx: Transaction
     summary: string
@@ -163,8 +164,9 @@ function sendTransaction<Data>(
     data: Data
     networkRpc: string | undefined
   },
-  apis: Apis,
-  txCallbacks?: ReturnType<typeof generateTxCallbacks>
+  substrateApi: ApiPromise,
+  txCallbacks?: ReturnType<typeof generateTxCallbacks>,
+  useHttp?: boolean
 ) {
   const {
     networkRpc,
@@ -177,15 +179,12 @@ function sendTransaction<Data>(
   return new Promise<string>(async (resolve, reject) => {
     let danglingNonceResolver: undefined | (() => void)
     try {
-      const { nonce, nonceResolver } = await getNonce(
-        apis.substrateApi,
-        address
-      )
+      const { nonce, nonceResolver } = await getNonce(substrateApi, address)
       danglingNonceResolver = nonceResolver
 
       let usedTx = tx
       if (proxyToAddress) {
-        usedTx = apis.substrateApi.tx.proxy.proxy(proxyToAddress, null, tx)
+        usedTx = substrateApi.tx.proxy.proxy(proxyToAddress, null, tx)
       }
 
       // signer from talisman and signer from keyring are different
@@ -198,7 +197,7 @@ function sendTransaction<Data>(
       }
 
       const txHashAndNonce = usedTx.toHex() + nonce
-      if (!apis.useHttp) {
+      if (!useHttp) {
         useTransactions.getState().addPendingTransaction(txHashAndNonce)
       }
 
@@ -314,7 +313,7 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
   )
 }
 
-function generateTxCallbacks<Data, Context>(
+export function generateTxCallbacks<Data, Context>(
   data: CallbackData<Data, Context>,
   callbacks: SubsocialMutationConfig<Data, Context>['txCallbacks'],
   defaultCallbacks: SubsocialMutationConfig<Data, Context>['txCallbacks']

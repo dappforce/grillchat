@@ -42,3 +42,12 @@ export const getSubstrateHttpApi = async () => {
 
   return substrateApi
 }
+
+export const getSubstrateChainApi = async (endpoint: string) => {
+  const { WsProvider, ApiPromise } = await import('@polkadot/api')
+
+  const provider = new WsProvider(endpoint, 15_000, {})
+  const substrateApi = await ApiPromise.create({ provider })
+
+  return substrateApi
+}

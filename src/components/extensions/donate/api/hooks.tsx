@@ -99,7 +99,7 @@ export const useDonate = (token: string, chainName: string) => {
 
   const contracts = contractsByChainName[chainName]
 
-  const { abi, address } = contracts[token] || {}
+  const { abi, address } = contracts?.[token] || {}
 
   const chainId = chainIdByChainName[chainName]
 
@@ -201,7 +201,7 @@ const useGetContractTokenBalance = ({
   const chainId = chainIdByChainName[chainName]
 
   const contracts = contractsByChainName[chainName]
-  const { address, abi } = contracts[token] || {}
+  const { address, abi } = contracts?.[token] || {}
 
   const commonParams = {
     address,

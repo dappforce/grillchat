@@ -9,23 +9,33 @@ import SUB from '@/assets/graphics/tokens/sub.png'
 import USDC from '@/assets/graphics/tokens/usdc.png'
 import USDT from '@/assets/graphics/tokens/usdt.png'
 import { StaticImageData } from 'next/image'
+import { ChainListItem } from './types'
 
-export const chainItems = [
+export const chainItems: ChainListItem[] = [
+  {
+    id: 'subsocial',
+    icon: SUB,
+    label: 'Subsocial',
+    chainKind: 'substrate',
+  },
   {
     id: 'polygon',
     icon: Polygon,
     label: 'Polygon',
+    chainKind: 'evm',
   },
   {
     id: 'moonbeam',
     icon: Moonbeam,
     label: 'Moonbeam',
+    chainKind: 'evm',
   },
   {
     id: 'astar',
     icon: Astar,
     label: 'Astar',
     disabledItem: 'Soon',
+    chainKind: 'substrate',
   },
 ]
 
@@ -93,6 +103,14 @@ export const tokensItems: TokenItemsByChainName = {
       id: 'astr',
       icon: ASTR,
       label: 'ASTR',
+    },
+  ],
+  subsocial: [
+    {
+      id: 'sub',
+      icon: SUB,
+      label: 'SUB',
+      isNativeToken: true,
     },
   ],
 }
