@@ -2,8 +2,9 @@ import useAccountsFromPreferredWallet from '@/components/auth/common/polkadot-co
 import { getChainsInfoQuery } from '@/services/chainsInfo/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
-import { useLazeSubstrateMutation } from '@/subsocial-query/subsocial/lazyMutation'
+import { useLazySubstrateMutation } from '@/subsocial-query/subsocial/lazyMutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { Signer } from '@/utils/account'
 import { GenericAccountId } from '@polkadot/types'
@@ -43,7 +44,7 @@ export function useSubstrateDonatoin(
     }
   }, [parentProxyAddress, isLoading])
 
-  return useLazeSubstrateMutation<SubstrateDonationProps>(
+  return useLazySubstrateMutation<SubstrateDonationProps>(
     {
       getWallet: () =>
         getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),
@@ -63,7 +64,10 @@ export function useSubstrateDonatoin(
     {
       txCallbacks: {
         onSuccess: () => {
-          getBalancesQuery.invalidate(client, `${address}|${chainName}`)
+          getBalancesQuery.invalidate(
+            client,
+            buildBalancesKey(address || '', chainName)
+          )
         },
       },
     }

@@ -16,7 +16,7 @@ type TransactionGenerator<Data, Context> = (params: {
   apis: LazyApis
   wallet: WalletAccount
 }) => Promise<{ tx: Transaction; summary: string }>
-export function useLazeSubstrateMutation<Data, Context = undefined>(
+export function useLazySubstrateMutation<Data, Context = undefined>(
   {
     getWallet,
     chainEndpoint,

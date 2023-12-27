@@ -1,6 +1,6 @@
 import LoginModal from '@/components/auth/LoginModal'
 import Button from '@/components/Button'
-import { useOpenDonateExtension } from '@/components/extensions/donate/hooks'
+import { useOpenDonateExtension } from '@/components/extensions/donate/hooks/useOpenDonateExtension'
 import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
   FloatingMenusProps,

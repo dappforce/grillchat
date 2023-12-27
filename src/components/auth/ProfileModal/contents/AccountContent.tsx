@@ -16,6 +16,7 @@ import useGetTheme from '@/hooks/useGetTheme'
 import { useConfigContext } from '@/providers/ConfigProvider'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { installApp, isInstallAvailable } from '@/utils/install'
@@ -36,7 +37,9 @@ export default function AccountContent({
     useFirstVisitNotification('notification-menu')
   const theme = useGetTheme()
 
-  const { data: balance } = getBalancesQuery.useQuery(`${address}|subsocial`)
+  const { data: balance } = getBalancesQuery.useQuery(
+    buildBalancesKey(address, 'subsocial')
+  )
   const chainData = useGetChainDataByNetwork('subsocial')
   const { freeBalance } = balance?.balances['SUB'] || {}
 

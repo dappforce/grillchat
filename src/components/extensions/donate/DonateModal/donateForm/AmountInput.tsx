@@ -3,13 +3,14 @@ import Input from '@/components/inputs/Input'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BN, { BigNumber } from 'bignumber.js'
 import { formatUnits, parseUnits } from 'ethers'
 import { ChangeEventHandler, useEffect } from 'react'
-import { useGetBalance } from '../api/hooks'
-import { useDonateModalContext } from '../DonateModalContext'
+import { useGetBalance } from '../../api/hooks'
+import { useDonateModalContext } from '../../DonateModalContext'
 
 type CommonProps = {
   setAmount: (amount: string) => void
@@ -19,9 +20,18 @@ type CommonProps = {
   tokenSymbol: string
 }
 
-type AmountInputTemplateProps = CommonProps & {
-  balance?: string
-  decimals?: number
+type AmountInputProps = CommonProps & {
+  chainKind: 'substrate' | 'evm'
+  chainName: string
+  tokenId: string
+}
+
+const AmountInput = ({ chainKind, ...props }: AmountInputProps) => {
+  return chainKind === 'evm' ? (
+    <EvmAmountInput {...props} />
+  ) : (
+    <SubstrateAmountInput {...props} />
+  )
 }
 
 type AmountInputByKindProps = CommonProps & {
@@ -36,7 +46,7 @@ const SubstrateAmountInput = ({
   const address = useMyMainAddress()
   const chainInfo = useGetChainDataByNetwork(chainName)
   const { data: balances } = getBalancesQuery.useQuery(
-    `${address}|${chainName}`
+    buildBalancesKey(address || '', chainName)
   )
 
   const { decimal, tokenSymbol } = chainInfo || {}
@@ -70,18 +80,9 @@ const EvmAmountInput = ({
   )
 }
 
-type AmountInputProps = CommonProps & {
-  chainKind: 'substrate' | 'evm'
-  chainName: string
-  tokenId: string
-}
-
-const AmountInput = ({ chainKind, ...props }: AmountInputProps) => {
-  return chainKind === 'evm' ? (
-    <EvmAmountInput {...props} />
-  ) : (
-    <SubstrateAmountInput {...props} />
-  )
+type AmountInputTemplateProps = CommonProps & {
+  balance?: string
+  decimals?: number
 }
 
 const AmountInputTemplate = ({

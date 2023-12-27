@@ -4,6 +4,7 @@ import {
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
@@ -55,7 +56,7 @@ const SubstrateTokenItemPreview = ({
   const address = useMyMainAddress()
   const chainInfo = useGetChainDataByNetwork(chainName)
   const { data: balances } = getBalancesQuery.useQuery(
-    `${address}|${chainName}`
+    buildBalancesKey(address || '', chainName)
   )
 
   const { decimal, tokenSymbol } = chainInfo || {}

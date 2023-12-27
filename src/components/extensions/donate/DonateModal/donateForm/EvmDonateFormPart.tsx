@@ -2,7 +2,6 @@ import Button from '@/components/Button'
 import { useEffect } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import { chainIdByChainName } from '../../api/config'
-import { useGetBalance } from '../../api/hooks'
 import { useDonateModalContext } from '../../DonateModalContext'
 import { DonateModalStep } from '../types'
 import { CommonFields, CommonFieldsProps } from './CommonFields'
@@ -23,12 +22,6 @@ const EvmDonateFormPart = ({
   const { isConnected } = useAccount()
   const { chain } = useNetwork()
   const { setShowChatForm } = useDonateModalContext()
-
-  const { balance, decimals } = useGetBalance(
-    selectedToken.id,
-    selectedChain.id,
-    isOpen
-  )
 
   const currentChainId = chain?.id
   const destChainId = chainIdByChainName[selectedChain.id]

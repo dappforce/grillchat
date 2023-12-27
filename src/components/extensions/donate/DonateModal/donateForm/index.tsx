@@ -9,7 +9,10 @@ import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
 import { useEffect, useMemo, useState } from 'react'
 import { useDonateModalContext } from '../../DonateModalContext'
-import { useBuildEvmBeforeSend, useBuildSubtrateBeforeSend } from '../../hooks'
+import {
+  useBuildEvmBeforeSend,
+  useBuildSubtrateBeforeSend,
+} from '../../hooks/useBuildBeforeMessegeSend'
 import { DonateProps } from '../types'
 import { chainItems, tokensItems } from '../utils'
 import EvmDonateForm from './EvmDonateFormPart'

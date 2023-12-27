@@ -1,7 +1,7 @@
 import SelectInput from '@/components/inputs/SelectInput'
-import AmountInput from '../AmountInput'
 import { ChainListItem, TokenListItem } from '../types'
 import { tokensItems } from '../utils'
+import AmountInput from './AmountInput'
 import TokenItemPreview from './TokenItemPreview'
 
 export type CommonFieldsProps = {
