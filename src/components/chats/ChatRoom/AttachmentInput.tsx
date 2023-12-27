@@ -48,7 +48,7 @@ export default function AttachmentInput({
             onClick={toggleDisplay}
             className={cx(
               'text-lg text-text-muted',
-              'hover:text-background-primary focus:text-background-primary',
+              'hover:text-background-primary focus-visible:text-background-primary',
               props.className
             )}
           >

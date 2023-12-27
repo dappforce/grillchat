@@ -25,7 +25,7 @@ const menuListStyles = cva<MenuListVariants>('flex w-full flex-col', {
 const menuListItemStyles = cva<MenuListVariants>(
   cx(
     'relative flex items-center rounded-lg outline-none transition-colors',
-    'focus:bg-background-lighter hover:bg-background-lighter'
+    'focus-visible:bg-background-lighter hover:bg-background-lighter'
   ),
   {
     variants: {
