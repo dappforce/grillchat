@@ -62,7 +62,8 @@ async function getPaginatedPostsByRootPostId({
   // - subscription
   // - invalidation
   // so the offset has to accommodate the length of the current first page
-  const offset = Math.max((page - 2) * CHAT_PER_PAGE + firstPageDataLength, 0)
+  let offset = Math.max((page - 2) * CHAT_PER_PAGE + firstPageDataLength, 0)
+  if (page === 1) offset = 0
 
   const res = await datahubQueryRequest<
     GetCommentIdsInPostIdQuery,
@@ -97,32 +98,36 @@ async function getPaginatedPostsByRootPostId({
   // the result should be id 0-50 instead of 0-49
   let unincludedOptimisticIds: string[] = []
   let unincludedFirstPageIds: string[] = []
-  if (page === 1) {
-    if (oldIds) {
-      const oldOptimisticIds = []
+  if (page === 1 && oldIds) {
+    const oldOptimisticIds = []
 
-      let unincludedIdsIndex = oldIds.length
-      let hasFoundIncludedId = false
+    let unincludedIdsIndex = oldIds.length
 
-      for (let i = oldIds.length - 1; i >= 0; i--) {
-        const id = oldIds[i]
+    // for example, if the page size is 3, and there is 1 new id
+    // ids: [new, old1, old2], and oldIds: [old1, old2, old3]
+    // so we need to get the unincludedOldIds from the end of the array (old3)
+    let hasFoundIncludedId = false
 
-        if (isClientGeneratedOptimisticId(id)) {
-          oldOptimisticIds.unshift(id)
-        }
+    for (let i = oldIds.length - 1; i >= 0; i--) {
+      const id = oldIds[i]
 
-        if (!idsSet.has(id) && !hasFoundIncludedId) {
-          unincludedIdsIndex = i
-        } else {
-          hasFoundIncludedId = true
-        }
+      if (isClientGeneratedOptimisticId(id)) {
+        oldOptimisticIds.unshift(id)
       }
 
-      unincludedFirstPageIds = oldOptimisticIds.slice(unincludedIdsIndex)
-      unincludedOptimisticIds = oldOptimisticIds.filter(
-        (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
-      )
+      if (hasFoundIncludedId) continue
+
+      if (!idsSet.has(id)) {
+        unincludedIdsIndex = i
+      } else {
+        hasFoundIncludedId = true
+      }
     }
+
+    unincludedFirstPageIds = oldIds.slice(unincludedIdsIndex)
+    unincludedOptimisticIds = oldOptimisticIds.filter(
+      (id) => !optimisticIds.has(commentIdsOptimisticEncoder.decode(id))
+    )
   }
 
   return {
