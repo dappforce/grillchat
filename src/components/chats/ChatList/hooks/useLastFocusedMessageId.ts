@@ -41,7 +41,5 @@ export default function useLastFocusedMessageTime(
     if (lastMessageTime) setLastFocusedTime(lastMessageTime)
   }, [lastMessageTime, shouldUpdateLastReadId])
 
-  return shouldUpdateLastReadId.current
-    ? lastMessageTime ?? Date.now()
-    : lastFocusedTime
+  return shouldUpdateLastReadId.current ? Date.now() : lastFocusedTime
 }

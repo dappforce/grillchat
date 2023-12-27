@@ -91,7 +91,7 @@ export default function SelectInput<AdditionalData = {}>({
                     'rounded-lg bg-background-light shadow-[0_5px_50px_-12px_rgb(0,0,0,.25)] dark:shadow-[0_5px_50px_-12px_rgb(0,0,0)]',
                     'absolute z-10 mt-1 max-h-56 w-full overflow-auto',
                     'p-1.5 text-base shadow-lg',
-                    'ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'
+                    'ring-1 ring-black ring-opacity-5 focus-visible:outline-none sm:text-sm'
                   )}
                 >
                   {items.map((item, i) => {
@@ -133,7 +133,7 @@ function SelectListItem<AdditionalData>({
       className={() =>
         cx(
           'relative flex items-center rounded-lg outline-none transition-colors',
-          'gap-4 px-3 py-2 text-text hover:bg-background-lighter focus:bg-background-lighter',
+          'gap-4 px-3 py-2 text-text hover:bg-background-lighter focus-visible:bg-background-lighter',
           { ['hover:bg-background-light']: item.disabledItem }
         )
       }

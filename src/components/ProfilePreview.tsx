@@ -94,10 +94,7 @@ const ProfilePreview = ({
   )
 
   return (
-    <div
-      {...props}
-      className={cx('flex items-center gap-3 md:gap-4', className)}
-    >
+    <div {...props} className={cx('flex items-center gap-3', className)}>
       <AddressAvatar
         address={address}
         className={cx(

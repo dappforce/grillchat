@@ -85,7 +85,7 @@ export default function PolkadotConnectWalletContent({
       className: cx(
         'gap-4',
         getShouldWalletDisabled(wallet, isInIframe).disabled &&
-          'focus:bg-transparent hover:bg-transparent cursor-default'
+          'focus-visible:bg-transparent hover:bg-transparent cursor-default'
       ),
       icon: () => (
         <Image

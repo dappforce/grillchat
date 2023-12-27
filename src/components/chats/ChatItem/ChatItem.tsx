@@ -6,6 +6,7 @@ import { cx } from '@/utils/class-names'
 import { getOffchainPostingHubs } from '@/utils/env/client'
 import { PostData } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
+import { ScrollToMessage } from '../ChatList/hooks/useScrollToMessage'
 import ChatItemMenus from './ChatItemMenus'
 import ChatItemWithExtension from './ChatItemWithExtension'
 import Embed, { useCanRenderEmbed } from './Embed'
@@ -19,7 +20,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   message: PostData
   isMyMessage: boolean
   messageBubbleId?: string
-  scrollToMessage?: (chatId: string) => Promise<void>
+  scrollToMessage?: ScrollToMessage
   enableChatMenu?: boolean
   chatId: string
   hubId: string

@@ -1,5 +1,7 @@
+import GrillNotificationImage from '@/assets/graphics/grill-notification-bot.jpg'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
+import DataCard from '@/components/DataCard'
 import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
@@ -8,6 +10,7 @@ import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/que
 import { useSendEvent } from '@/stores/analytics'
 import { getIsInIos } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
+import Image from 'next/image'
 import { useState } from 'react'
 import { ProfileModalContentProps } from '../../types'
 
@@ -34,7 +37,7 @@ export default function TelegramNotificationContent(
       <>
         {isAfterDisconnect && (
           <Notice className='mb-6' leftIcon='✅'>
-            You have disconnected your account from Grill&apos;s telegram bot.
+            You have disconnected your account from Grill&apos;s Telegram bot.
           </Notice>
         )}
         <ConnectTelegramButton
@@ -47,34 +50,51 @@ export default function TelegramNotificationContent(
 
   return (
     <div className='flex flex-col gap-6'>
-      <Card className='flex justify-between gap-4 overflow-hidden'>
-        <IntegratedSkeleton
-          content={hasLinkedAccount?.userName}
-          className='bg-black/20'
-        >
-          {(userName) => (
-            <span className='overflow-hidden text-ellipsis font-medium'>
-              @{userName}
-            </span>
-          )}
-        </IntegratedSkeleton>
-        <IntegratedSkeleton
-          content={hasLinkedAccount?.userName}
-          className='w-24 bg-black/20'
-        >
-          {() => (
-            <LinkText
-              className='flex-shrink-0'
-              withArrow
-              href='https://t.me/grill_notifications_bot'
-              openInNewTab
-              variant='primary'
-            >
-              Open bot
-            </LinkText>
-          )}
-        </IntegratedSkeleton>
-      </Card>
+      <Notice leftIcon='✅'>Telegram Notifications Enabled</Notice>
+      <DataCard
+        data={[
+          {
+            title: 'Your Telegram Username',
+            content: (
+              <IntegratedSkeleton
+                content={hasLinkedAccount?.userName}
+                className='bg-black/20'
+              >
+                {(userName) => (
+                  <LinkText
+                    openInNewTab
+                    href={`https://t.me/${userName}`}
+                    variant='primary'
+                    className='overflow-hidden text-ellipsis'
+                  >
+                    @{userName}
+                  </LinkText>
+                )}
+              </IntegratedSkeleton>
+            ),
+          },
+          {
+            title: 'Grill Telegram Bot',
+            content: (
+              <LinkText
+                href='https://t.me/grill_notifications_bot'
+                variant='primary'
+                className='mt-1 flex items-center gap-2'
+                openInNewTab
+              >
+                <Image
+                  src={GrillNotificationImage}
+                  alt=''
+                  width={32}
+                  height={32}
+                  className='h-6 w-6 rounded-full'
+                />
+                <span>Grill Notification</span>
+              </LinkText>
+            ),
+          },
+        ]}
+      />
       {hasLinkedAccount &&
         (isAfterConnect ? (
           <Button
@@ -116,7 +136,7 @@ function DisconnectButton({
       onClick={handleClick}
       isLoading={isLoading}
     >
-      Disconnect
+      Disconnect Telegram
     </Button>
   )
 }
@@ -161,7 +181,7 @@ function ConnectTelegramButton({
     <div className='flex flex-col gap-4'>
       <Card className='flex flex-col justify-between overflow-hidden'>
         <span className='text-sm text-text-muted'>
-          Open the link below to connect to telegram bot
+          Open the link below to connect to Telegram bot
         </span>
         <LinkText openInNewTab href={url} variant='primary'>
           {url}

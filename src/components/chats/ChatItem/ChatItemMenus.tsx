@@ -282,21 +282,27 @@ function MintingMessageNotice({ message }: { message: PostData }) {
     new Date().getTime() - new Date(createdAt).getTime() > tenMins
 
   return (
-    <div className='overflow-hidden border-b border-border-gray p-4 pb-3 text-sm text-text-muted'>
-      <div className='flex items-center justify-between gap-2'>
+    <div className='flex flex-col overflow-hidden border-b border-border-gray p-4 pb-3 text-sm text-text-muted'>
+      <Button
+        size='noPadding'
+        className='-mx-2 -my-1 flex cursor-pointer items-center justify-between gap-2 rounded-md px-2 py-1 hover:bg-background-lighter'
+        variant='transparent'
+        interactive='brightness-only'
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
         <p>{isMoreThan10Mins ? 'Not minted yet' : 'Message is being minted'}</p>
         <Button
           size='noPadding'
           variant='transparent'
+          interactive='none'
           className={cx(
             'flex-shrink-0 p-0.5 transition-transform',
             isOpen && 'rotate-90'
           )}
-          onClick={() => setIsOpen((prev) => !prev)}
         >
           <HiChevronRight />
         </Button>
-      </div>
+      </Button>
       <Transition
         show={isOpen}
         className='transition'

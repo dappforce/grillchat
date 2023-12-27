@@ -6,11 +6,13 @@ import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { getMessageToken } from '@/services/firebase/messaging'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import { installApp } from '@/utils/install'
+import { installApp, isInstallAvailable } from '@/utils/install'
 import { LocalStorage } from '@/utils/storage'
 import { getIsInIos } from '@/utils/window'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
+import { FiPlusSquare } from 'react-icons/fi'
+import { MdIosShare } from 'react-icons/md'
 import { ProfileModalContentProps } from '../../types'
 
 const FCM_PUSH_NOTIFICATION_STORAGE_KEY = 'push-notification-fcm-token'
@@ -45,9 +47,21 @@ export default function PushNotificationContent(
   const usableStatus = getPushNotificationUsableStatus()
   if (usableStatus === 'need-install') {
     return (
-      <Button variant='primaryOutline' size='lg' onClick={installApp}>
-        Install app
-      </Button>
+      <>
+        {isInstallAvailable() ? (
+          <Button variant='primaryOutline' size='lg' onClick={installApp}>
+            Install app
+          </Button>
+        ) : (
+          <Notice noticeType='grey'>
+            If you are on an iPhone, you can install the app by clicking{' '}
+            <span className='text-white'>Share</span>{' '}
+            <MdIosShare className='inline text-white' /> &gt;{' '}
+            <span className='text-white'>Add to Home Screen</span>{' '}
+            <FiPlusSquare className='inline text-white' />.
+          </Notice>
+        )}
+      </>
     )
   }
   if (usableStatus === 'unsupported') {

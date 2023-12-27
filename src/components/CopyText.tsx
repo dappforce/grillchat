@@ -131,21 +131,11 @@ export function CopyTextInline({
   const [openTooltipClickTrigger, setOpenTooltipClickTrigger] = useState(false)
   const [openTooltipHoverTrigger, setOpenTooltipHoverTrigger] = useState(false)
 
-  const [openTooltipClickTriggerButton, setOpenTooltipClickTriggerButton] =
-    useState(false)
-  const [openTooltipHoverTriggerButton, setOpenTooltipHoverTriggerButton] =
-    useState(false)
-
-  useEffect(() => {
-    if (!openTooltipClickTriggerButton) return
-    setTimeout(() => {
-      setOpenTooltipClickTriggerButton(false)
-    }, 2000)
-  }, [openTooltipClickTriggerButton])
   useEffect(() => {
     if (!openTooltipClickTrigger) return
     setTimeout(() => {
       setOpenTooltipClickTrigger(false)
+      setOpenTooltipHoverTrigger(false)
     }, 2000)
   }, [openTooltipClickTrigger])
 
@@ -155,22 +145,25 @@ export function CopyTextInline({
   }
 
   const fontClassName = codeText && spaceMono.className
+
   let trigger = (
-    <div
-      className={cx('w-full cursor-pointer', fontClassName, textClassName)}
-      onClick={handleClick}
-    >
-      {text}
+    <div {...props} className={cx('flex items-center gap-2', props.className)}>
+      {text && (
+        <div
+          className={cx('w-full cursor-pointer', fontClassName, textClassName)}
+          onClick={handleClick}
+        >
+          {text}
+        </div>
+      )}
+      <Button
+        variant='transparent'
+        className='p-1 text-text-primary'
+        onClick={handleClick}
+      >
+        <MdOutlineContentCopy />
+      </Button>
     </div>
-  )
-  let copyButton = (
-    <Button
-      variant='transparent'
-      className='p-1 text-text-primary'
-      onClick={handleClick}
-    >
-      <MdOutlineContentCopy />
-    </Button>
   )
 
   const commonPopOverProps = {
@@ -200,47 +193,16 @@ export function CopyTextInline({
         trigger={trigger}
       />
     )
-    copyButton = (
-      <PopOver
-        {...commonHoverPopOverProps}
-        manualTrigger={{
-          isOpen:
-            openTooltipClickTriggerButton || isTouchDevice()
-              ? false
-              : openTooltipHoverTriggerButton,
-          setIsOpen: setOpenTooltipHoverTriggerButton,
-        }}
-        trigger={copyButton}
-      />
-    )
   }
 
   return (
-    <div {...props} className={cx('flex items-center gap-2', props.className)}>
-      {text && (
-        <div className={cx(textContainerClassName)}>
-          <PopOver
-            {...commonPopOverProps}
-            manualTrigger={{
-              isOpen: openTooltipClickTrigger,
-              setIsOpen: setOpenTooltipClickTrigger,
-            }}
-            trigger={trigger}
-          />
-        </div>
-      )}
-      <div>
-        {withButton && (
-          <PopOver
-            {...commonPopOverProps}
-            manualTrigger={{
-              isOpen: openTooltipClickTriggerButton,
-              setIsOpen: setOpenTooltipClickTriggerButton,
-            }}
-            trigger={copyButton}
-          />
-        )}
-      </div>
-    </div>
+    <PopOver
+      {...commonPopOverProps}
+      manualTrigger={{
+        isOpen: openTooltipClickTrigger,
+        setIsOpen: setOpenTooltipClickTrigger,
+      }}
+      trigger={trigger}
+    />
   )
 }

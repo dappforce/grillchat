@@ -1,7 +1,12 @@
+import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
+import MessageModal from '@/components/modals/MessageModal'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
+import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import Linkify from 'linkify-react'
+import { useState } from 'react'
+import { ScrollToMessage } from '../../ChatList/hooks/useScrollToMessage'
 import ChatRelativeTime from '../ChatRelativeTime'
 import LinkPreview from '../LinkPreview'
 import MessageStatusIndicator from '../MessageStatusIndicator'
@@ -63,21 +68,38 @@ export default function DefaultChatItem({
         <p className='whitespace-pre-wrap break-words text-base'>
           <Linkify
             options={{
-              render: ({ content, attributes }) => (
-                <LinkText
-                  {...attributes}
-                  href={attributes.href}
-                  variant={isMyMessage ? 'secondary-light' : 'secondary'}
-                  className={cx('underline')}
-                  openInNewTab
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    attributes.onClick?.(e)
-                  }}
-                >
-                  {content}
-                </LinkText>
-              ),
+              render: ({ content, attributes }) => {
+                const href = attributes.href || ''
+                if (href.startsWith('https://grill.chat')) {
+                  content = content.replace(/(https?:\/\/)?(www\.)?/, '')
+                }
+
+                const messageLinkRegex =
+                  /^(https?:\/\/)?(www\.)?grill\.chat\/([^\/?#]+)\/([^\/?#]+)\/([^\/?#]+)\/?$/i
+                const match = href.match(messageLinkRegex)
+                const messageId = match?.[5]
+                if (messageId) {
+                  return (
+                    <MessageLink
+                      attributes={attributes as any}
+                      isMyMessage={isMyMessage}
+                      content={content}
+                      chatId={chatId}
+                      messageId={messageId}
+                      hubId={hubId}
+                      scrollToMessage={scrollToMessage}
+                    />
+                  )
+                }
+
+                return (
+                  <LinkRedirect
+                    attributes={attributes as any}
+                    content={content}
+                    isMyMessage={isMyMessage}
+                  />
+                )
+              },
             }}
           >
             {body}
@@ -106,5 +128,86 @@ export default function DefaultChatItem({
         )}
       </div>
     </div>
+  )
+}
+
+type LinkRedirectProps = {
+  attributes: { href: string; onClick?: (e: any) => void }
+  content: string
+  isMyMessage: boolean
+}
+function LinkRedirect({ attributes, isMyMessage, content }: LinkRedirectProps) {
+  return (
+    <LinkText
+      {...attributes}
+      href={attributes.href}
+      variant={isMyMessage ? 'secondary-light' : 'secondary'}
+      className={cx('underline')}
+      openInNewTab
+      onClick={(e) => {
+        e.stopPropagation()
+        attributes.onClick?.(e)
+      }}
+    >
+      {content}
+    </LinkText>
+  )
+}
+
+function MessageLink({
+  attributes,
+  content,
+  isMyMessage,
+  messageId,
+  hubId,
+  scrollToMessage,
+  chatId,
+}: LinkRedirectProps & {
+  messageId: string
+  hubId: string
+  scrollToMessage?: ScrollToMessage
+  chatId: string
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const { data: message } = getPostQuery.useQuery(messageId)
+
+  const isSameChat = message?.struct.rootPostId === chatId
+
+  if (!message) {
+    return (
+      <LinkRedirect
+        attributes={attributes}
+        content={content}
+        isMyMessage={isMyMessage}
+      />
+    )
+  }
+
+  return (
+    <>
+      <Button
+        size='noPadding'
+        onClick={() => setIsOpen(true)}
+        className={cx(
+          isMyMessage
+            ? 'bg-background-lighter/80 text-text-secondary-light dark:bg-background-lighter/50'
+            : 'bg-background-lighter text-text-secondary',
+          'inline rounded-lg px-2 py-0.5 underline',
+          'whitespace-normal hover:brightness-105 focus-visible:brightness-105 dark:hover:brightness-90 dark:focus-visible:brightness-90'
+        )}
+        interactive='none'
+        variant='transparent'
+      >
+        {content}
+      </Button>
+      <MessageModal
+        isOpen={isOpen}
+        closeModal={() => setIsOpen(false)}
+        hubId={hubId}
+        messageId={messageId}
+        scrollToMessage={isSameChat ? scrollToMessage : undefined}
+        redirectTo={isSameChat ? undefined : attributes.href}
+      />
+    </>
   )
 }

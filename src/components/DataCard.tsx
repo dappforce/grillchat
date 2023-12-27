@@ -25,12 +25,7 @@ export default function DataCard({ data, ...props }: DataCardProps) {
       )}
     >
       {data.map((currentData) => {
-        const {
-          content,
-          title,
-          textToCopy: withCopyButton,
-          customContent,
-        } = currentData
+        const { content, title, textToCopy, customContent } = currentData
 
         const containerClassName = cx(
           'border-b border-background-lightest pb-3 last:border-none last:pb-0'
@@ -56,7 +51,7 @@ export default function DataCard({ data, ...props }: DataCardProps) {
             key={title}
             className={cx('flex w-full items-center', containerClassName)}
           >
-            {withCopyButton ? (
+            {textToCopy ? (
               <div className={cx('flex w-full items-center')}>
                 {element}
                 <div className='ml-2'>
@@ -65,7 +60,7 @@ export default function DataCard({ data, ...props }: DataCardProps) {
                     className='w-full'
                     textContainerClassName='w-full'
                     text={''}
-                    textToCopy={withCopyButton}
+                    textToCopy={textToCopy}
                   />
                 </div>
               </div>
