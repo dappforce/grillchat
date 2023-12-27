@@ -1,4 +1,5 @@
 import useAccountsFromPreferredWallet from '@/components/auth/common/polkadot-connect/hooks/useAccountsFromPreferredWallet'
+import Toast from '@/components/Toast'
 import { getChainsInfoQuery } from '@/services/chainsInfo/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
@@ -11,6 +12,8 @@ import { GenericAccountId } from '@polkadot/types'
 import registry from '@subsocial/api/utils/registry'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
+import toast from 'react-hot-toast'
+import { DonateModalStep } from '../types'
 
 type SubstrateDonationProps = {
   amount: string
@@ -19,6 +22,7 @@ type SubstrateDonationProps = {
 
 export function useSubstrateDonatoin(
   chainName: string,
+  setCurrentStep: (step: DonateModalStep) => void,
   config?: SubsocialMutationConfig<SubstrateDonationProps>
 ) {
   const client = useQueryClient()
@@ -68,6 +72,13 @@ export function useSubstrateDonatoin(
             client,
             buildBalancesKey(address || '', chainName)
           )
+        },
+        onStart: () => {
+          setCurrentStep('wallet-action-required')
+        },
+        onError: (_data, error) => {
+          setCurrentStep('donate-form')
+          toast.custom((t) => <Toast t={t} title={error} type='error' />)
         },
       },
     }
