@@ -13,14 +13,15 @@ export function showErrorToast<ErrorType>(
   }
 ) {
   const { actionButton, getMessage, toastConfig } = config ?? {}
-  let message: string | undefined = (error as any)?.message
+  // TODO: this error message should be sent to logger for debugging purposes, but not shown to user
+  // let message: string | undefined = (error as any)?.message
 
-  const response = (error as any)?.response?.data
-  message = response?.message ?? message
-  if (getMessage) {
-    const responseMessage = getMessage(response)
-    if (responseMessage) message = responseMessage
-  }
+  // const response = (error as any)?.response?.data
+  // message = response?.message ?? message
+  // if (getMessage) {
+  //   const responseMessage = getMessage(response)
+  //   if (responseMessage) message = responseMessage
+  // }
 
   toast.custom(
     (t) => (
@@ -28,7 +29,7 @@ export function showErrorToast<ErrorType>(
         t={t}
         type='error'
         title={errorTitle}
-        subtitle={message}
+        // subtitle={message}
         description={config?.getDescription?.(t)}
         action={actionButton?.(t)}
       />
