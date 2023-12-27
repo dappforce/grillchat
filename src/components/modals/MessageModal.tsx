@@ -4,7 +4,7 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { CommentData } from '@subsocial/api/types'
 import { useEffect, useRef, useState } from 'react'
-import { HiOutlineInformationCircle } from 'react-icons/hi2'
+import { HiArrowUpRight, HiOutlineInformationCircle } from 'react-icons/hi2'
 import LoginModal from '../auth/LoginModal'
 import Button from '../Button'
 import Card from '../Card'
@@ -20,6 +20,7 @@ export type MessageModalProps = ModalFunctionalityProps & {
   scrollToMessage?: ScrollToMessage
   hubId: string
   recipient?: string
+  redirectTo?: string
 }
 
 export default function MessageModal({
@@ -27,6 +28,7 @@ export default function MessageModal({
   scrollToMessage,
   hubId,
   recipient,
+  redirectTo,
   ...props
 }: MessageModalProps) {
   const myAddress = useMyMainAddress()
@@ -97,17 +99,25 @@ export default function MessageModal({
           ) : (
             <Skeleton />
           )}
-          {scrollToMessage && (
+          {(scrollToMessage || redirectTo) && (
             <div className='sticky -bottom-px left-0 bg-background pb-4 pt-2'>
               <Button
                 ref={buttonRef}
                 isLoading={isScrolling}
-                onClick={handleScrollToMessage}
+                onClick={scrollToMessage ? handleScrollToMessage : undefined}
+                href={scrollToMessage ? undefined : redirectTo}
+                target='_blank'
                 size='lg'
                 variant='primaryOutline'
                 className='w-full'
               >
-                Scroll to message
+                {scrollToMessage ? (
+                  'Scroll to message'
+                ) : (
+                  <span>
+                    Go to message <HiArrowUpRight className='inline' />
+                  </span>
+                )}
               </Button>
             </div>
           )}
