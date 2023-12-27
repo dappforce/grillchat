@@ -17,6 +17,7 @@ export default function useGetMessageElement({
   loadMore: () => void
   hasMore: boolean
 }) {
+  const hasMoreRef = useWrapInRef(hasMore)
   const client = useQueryClient()
   const waitAllMessagesLoaded = useWaitMessagesLoading(isLoading)
 
@@ -64,12 +65,12 @@ export default function useGetMessageElement({
         messageId,
         renderedIdsRef.current
       )
-      if (isMessageIdIncluded) return
+      if (isMessageIdIncluded || !hasMoreRef.current) return
 
       await awaitableLoadMore()
       await loadMoreUntilMessageIdIsLoaded(messageId)
     },
-    [client, awaitableLoadMore, renderedIdsRef]
+    [client, awaitableLoadMore, renderedIdsRef, hasMoreRef]
   )
 
   const getMessageElementById = useCallback(
@@ -124,7 +125,7 @@ export default function useGetMessageElement({
       const oldestMessageTime = oldestMessage?.struct.createdAtTime
       if (!oldestMessageTime) return null
 
-      if (time < oldestMessageTime) {
+      if (time < oldestMessageTime && hasMoreRef.current) {
         await awaitableLoadMore()
         return await getMessageElementByTime(time)
       }
@@ -142,7 +143,13 @@ export default function useGetMessageElement({
       const element = document.getElementById(elementId)
       return element
     },
-    [client, renderedIdsRef, awaitableLoadMore, waitAllMessagesLoadedRef]
+    [
+      client,
+      renderedIdsRef,
+      awaitableLoadMore,
+      waitAllMessagesLoadedRef,
+      hasMoreRef,
+    ]
   )
 
   const getMessageElement = useCallback(
