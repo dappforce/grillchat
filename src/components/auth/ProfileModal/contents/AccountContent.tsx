@@ -97,7 +97,7 @@ export default function AccountContent({
       text: (
         <span className='flex items-center gap-2'>
           <span>Notifications</span>
-          {!isLoadingLinkedAcccountCount && (
+          {!isLoadingActivatedNotificationCount && (
             <Notice size='sm' noticeType='grey'>
               {activatedNotificationCount} / {maxNotificationCount}
             </Notice>
