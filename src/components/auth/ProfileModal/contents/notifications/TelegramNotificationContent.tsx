@@ -136,7 +136,7 @@ function DisconnectButton({
       onClick={handleClick}
       isLoading={isLoading}
     >
-      Disconnect
+      Disconnect Telegram
     </Button>
   )
 }
