@@ -1,6 +1,5 @@
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -75,7 +74,6 @@ export default function ModerationForm({
   const { data: message } = getPostQuery.useQuery(messageId)
   const ownerId = message?.struct.ownerId ?? ''
 
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(ownerId)
   const { name } = useName(ownerId)
 
   const myAddress = useMyMainAddress()

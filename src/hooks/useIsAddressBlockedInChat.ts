@@ -1,5 +1,4 @@
 import { getPostQuery } from '@/services/api/query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { getAppId } from '@/utils/env/client'
 import { useMemo } from 'react'
@@ -9,8 +8,6 @@ export default function useIsAddressBlockedInChat(
   chatId: string,
   currentHubId: string
 ) {
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(address)
-
   const { data: chat } = getPostQuery.useQuery(chatId)
   const originalHubId = chat?.struct.spaceId
   const entityId = chat?.entityId
