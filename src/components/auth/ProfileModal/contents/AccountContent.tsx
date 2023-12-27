@@ -139,7 +139,7 @@ export default function AccountContent({
     {
       text: (
         <span className='flex items-center gap-2'>
-          <span>Show Grill key</span>
+          <span>Show Grill Key</span>
           {/* {notification?.showNotif && <DotBlinkingNotification />} */}
         </span>
       ),
@@ -149,18 +149,18 @@ export default function AccountContent({
         onShowPrivateKeyClick()
       },
     },
-    { text: 'Share session', icon: ShareIcon, onClick: onShareSessionClick },
+    { text: 'Share Session', icon: ShareIcon, onClick: onShareSessionClick },
     {
-      text: 'Suggest feature',
+      text: 'Suggest Feature',
       icon: SuggestFeatureIcon,
       href: SUGGEST_FEATURE_LINK,
     },
     {
-      text: 'About app',
+      text: 'About App',
       icon: InfoIcon,
       onClick: onAboutClick,
     },
-    { text: 'Log out', icon: ExitIcon, onClick: onLogoutClick },
+    { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
   ]
   // e9eff4
   return (
@@ -202,7 +202,7 @@ function useColorModeOptions(): MenuListProps['menus'] {
   if (configTheme) return []
 
   const lightModeOption: MenuListProps['menus'][number] = {
-    text: 'Light mode',
+    text: 'Light Mode',
     onClick: () => setTheme('light'),
     icon: SunIcon,
     iconClassName: cx('text-text-muted'),
