@@ -87,7 +87,7 @@ async function getPaginatedPostsByRootPostId({
     return id
   })
   const totalData = res.findPosts.total ?? 0
-  const hasMore = totalData > page * CHAT_PER_PAGE + ids.length
+  const hasMore = res.findPosts.data.length > 0
 
   const idsSet = new Set<string>(ids)
 
