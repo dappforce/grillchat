@@ -24,7 +24,7 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import usePaginatedMessageIds from '../hooks/usePaginatedMessageIds'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 import CenterChatNotice from './CenterChatNotice'
-import MemoizedChatItemWithMenu from './ChatItemWithMenu'
+import ChatItemWithMenu from './ChatItemWithMenu'
 import ChatListEventManager from './ChatListEventManager'
 import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatLoading from './ChatLoading'
@@ -244,7 +244,7 @@ function ChatListContent({
                         Unread messages
                       </div>
                     )}
-                    <MemoizedChatItemWithMenu
+                    <ChatItemWithMenu
                       chatItemClassName='mt-2'
                       chatId={chatId}
                       hubId={hubId}

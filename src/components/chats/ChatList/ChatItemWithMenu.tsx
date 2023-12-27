@@ -14,7 +14,7 @@ export type ChatItemWithMenuProps = {
   hubId: string
   scrollToMessage: ScrollToMessage
 }
-export function ChatItemWithMenu({
+function InnerChatItemWithMenu({
   message,
   chatItemClassName,
   chatId,
@@ -54,5 +54,5 @@ export function ChatItemWithMenu({
     </ChatItemMenus>
   ) : null
 }
-const MemoizedChatItemWithMenu = memo(ChatItemWithMenu)
-export default MemoizedChatItemWithMenu
+const ChatItemWithMenu = memo(InnerChatItemWithMenu)
+export default ChatItemWithMenu
