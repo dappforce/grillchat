@@ -3,6 +3,7 @@ import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import { ERRORS } from '@/constants/error'
 import useAutofocus from '@/hooks/useAutofocus'
+import useLoginOption from '@/hooks/useLoginOption'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/ConfigProvider'
@@ -19,6 +20,7 @@ import {
   getHasEnoughEnergy,
   hasSentMessageStorage,
   useMyAccount,
+  useMyMainAddress,
 } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getOffchainPostingHubs } from '@/utils/env/client'
@@ -80,6 +82,7 @@ export default function ChatForm({
   beforeMesageSend,
   ...props
 }: ChatFormProps) {
+  const myAddress = useMyMainAddress()
   const replyTo = useMessageData((state) => state.replyTo)
   const messageToEdit = useMessageData((state) => state.messageToEdit)
   const clearAction = useMessageData((state) => state.clearAction)
@@ -226,17 +229,14 @@ export default function ChatForm({
     resetForm()
     const isOffchainPosting = getOffchainPostingHubs().includes(hubId)
     if (isOffchainPosting) {
-      resetForm()
       sendOffchainMessage({
         ...messageParams,
         uuid: crypto.randomUUID(),
         timestamp: Date.now(),
       })
     } else if (shouldSendMessage) {
-      resetForm()
       sendMessage(messageParams)
     } else {
-      resetForm()
       requestTokenAndSendMessage(messageParams)
       setIsRequestingEnergy(true)
     }
@@ -256,8 +256,14 @@ export default function ChatForm({
     incrementMessageCount()
   }
 
+  const { promptUserForLogin } = useLoginOption()
   const submitForm = async (e?: SyntheticEvent) => {
     e?.preventDefault()
+    if (!myAddress) {
+      promptUserForLogin()
+      return
+    }
+
     handleSubmit()
   }
   const renderSendButton = (classNames: string) => (
