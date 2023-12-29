@@ -74,7 +74,7 @@ export default function TelegramNotificationContent(
             ),
           },
           {
-            title: 'Grill Telegram Bot',
+            title: 'Telegram Bot for Grill',
             content: (
               <LinkText
                 href='https://t.me/grill_notifications_bot'
@@ -89,7 +89,7 @@ export default function TelegramNotificationContent(
                   height={32}
                   className='h-6 w-6 rounded-full'
                 />
-                <span>Grill Notification</span>
+                <span>Grill Notifications</span>
               </LinkText>
             ),
           },
