@@ -16,14 +16,12 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { GenericAccountId } from '@polkadot/types'
 import registry from '@subsocial/api/utils/registry'
 import { isEmptyArray } from '@subsocial/utils'
-import BigNumber from 'bignumber.js'
+import BN from 'bignumber.js'
 import { useEffect, useMemo, useState } from 'react'
 import { ProfileModalContentProps } from '../../types'
 import SubstrateWithdrawButton from './SubstrateWithdrawButton'
 
-export default function WithdrawContent({
-  setCurrentState,
-}: ProfileModalContentProps) {
+const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
   const firstChainItem = chainItems[0]
   const { accounts, isLoading } = useAccountsFromPreferredWallet()
   const myAddress = useMyMainAddress()
@@ -67,7 +65,7 @@ export default function WithdrawContent({
   const [amount, setAmount] = useState<string>('')
 
   const amountPreview = amount
-    ? ` ${new BigNumber(amount).toFormat()} ${selectedToken.label}`
+    ? ` ${new BN(amount).toFormat()} ${selectedToken.label}`
     : ''
 
   const chainKind = selectedChain.chainKind
@@ -98,6 +96,12 @@ export default function WithdrawContent({
     )
   }, [recipient, accounts?.length, myAddress])
 
+  const disabledButton =
+    !recipient ||
+    new BN(amount || '0').isZero() ||
+    !selectedToken ||
+    !!inputError
+
   return (
     <div className='flex flex-col gap-6'>
       <AutocompleteInput
@@ -105,6 +109,7 @@ export default function WithdrawContent({
         setValue={setRecipient}
         items={filteredAccountItems}
         label='Recipient'
+        filterItems={filterItems}
       />
 
       <SelectInput
@@ -124,7 +129,38 @@ export default function WithdrawContent({
         amountPreview={amountPreview}
         selectedChain={selectedChain}
         recipient={recipient?.id || ''}
+        disabled={disabledButton}
       />
     </div>
   )
 }
+
+const isSubstrateAddress = (account: string) => {
+  try {
+    new GenericAccountId(registry, account)
+    return true
+  } catch {
+    return false
+  }
+}
+
+const filterItems = (items: InputItem[], query: string) => {
+  if (!query) return items
+
+  const filteredItems = items.filter((item) =>
+    item.label
+      .toLowerCase()
+      .replace(/\s+/g, '')
+      .includes(query.toLowerCase().replace(/\s+/g, ''))
+  )
+
+  if (isSubstrateAddress(query)) {
+    return isEmptyArray(filteredItems)
+      ? ([{ id: query, label: query }] as InputItem[])
+      : filteredItems
+  }
+
+  return filteredItems
+}
+
+export default WithdrawContent

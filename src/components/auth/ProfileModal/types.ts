@@ -30,6 +30,7 @@ export type ProfileModalState =
   | 'telegram-notifications'
   | 'push-notifications'
   | 'withdraw-tokens'
+  | 'wallet-action-required'
 
 export type ProfileModalContentProps = {
   address: string

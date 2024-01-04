@@ -35,6 +35,7 @@ import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUn
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ProfileSettingsContent from './contents/ProfileSettingsContent'
 import ShareSessionContent from './contents/ShareSessionContent'
+import WalletActionRequired from './contents/withdraw/WalletActionRequired'
 import WithdrawContent from './contents/withdraw/WithdrawContent'
 import {
   ProfileModalContentProps,
@@ -78,6 +79,7 @@ const modalContents: {
   'polkadot-connect-unlink': PolkadotConnectUnlink,
   'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
   'withdraw-tokens': WithdrawContent,
+  'wallet-action-required': WalletActionRequired,
 }
 
 const pushNotificationDesc: Record<
@@ -298,6 +300,11 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
     },
     'withdraw-tokens': {
       title: '💰 Withdraw',
+      withBackButton: false,
+    },
+    'wallet-action-required': {
+      title: '🔐 Wallet Action Required',
+      desc: 'Please open your wallet to continue',
       withBackButton: false,
     },
   }

@@ -11,6 +11,7 @@ type SubstrateWithdrawButtonProps = {
   amountPreview: string
   selectedChain: ChainListItem
   recipient: string
+  disabled: boolean
 }
 
 const SubstrateWithdrawButton = ({
@@ -19,6 +20,7 @@ const SubstrateWithdrawButton = ({
   amountPreview,
   selectedChain,
   recipient,
+  disabled,
 }: SubstrateWithdrawButtonProps) => {
   const chainData = useGetChainDataByNetwork(selectedChain.id)
 
@@ -32,7 +34,7 @@ const SubstrateWithdrawButton = ({
       otherProps={{
         chainName: selectedChain.id,
         toDonateForm: () => setCurrentState('withdraw-tokens'),
-        toWalletActionRequired: () => setCurrentState('withdraw-tokens'),
+        toWalletActionRequired: () => setCurrentState('wallet-action-required'),
       }}
     >
       {({ isLoading, mutateAsync: donateTx }) => {
@@ -53,8 +55,9 @@ const SubstrateWithdrawButton = ({
             onClick={onButtonClick}
             variant={'primary'}
             size={'lg'}
+            disabled={disabled}
           >
-            Withdraw {amountPreview}
+            Withdraw {!disabled && amountPreview}
           </Button>
         )
       }}

@@ -1,10 +1,7 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
 import { Combobox, Transition } from '@headlessui/react'
-import { GenericAccountId } from '@polkadot/types'
-import registry from '@subsocial/api/utils/registry'
-import { isEmptyArray } from '@subsocial/utils'
 import clsx from 'clsx'
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { IoIosArrowDown } from 'react-icons/io'
 
 export type InputItem = {
@@ -17,34 +14,7 @@ type AutocompleteInputProps = {
   value?: InputItem
   setValue: (item?: InputItem) => void
   label: string
-}
-
-const isSubstrateAddress = (account: string) => {
-  try {
-    new GenericAccountId(registry, account)
-    return true
-  } catch {
-    return false
-  }
-}
-
-const filterItems = (items: InputItem[], query: string) => {
-  if (!query) return items
-
-  const filteredItems = items.filter((item) =>
-    item.label
-      .toLowerCase()
-      .replace(/\s+/g, '')
-      .includes(query.toLowerCase().replace(/\s+/g, ''))
-  )
-
-  if (isSubstrateAddress(query)) {
-    return isEmptyArray(filteredItems)
-      ? ([{ id: query, label: query }] as InputItem[])
-      : filteredItems
-  }
-
-  return filteredItems
+  filterItems: (items: InputItem[], query: string) => InputItem[]
 }
 
 const AutocompleteInput = ({
@@ -52,14 +22,14 @@ const AutocompleteInput = ({
   value,
   setValue,
   label,
+  filterItems,
 }: AutocompleteInputProps) => {
   const [query, setQuery] = useState('')
 
-  useEffect(() => {
-    setQuery(value?.label || '')
-  }, [value])
-
-  const filteredOptions = useMemo(() => filterItems(items, query), [query])
+  const filteredOptions = useMemo(
+    () => filterItems(items, query),
+    [query, items.length]
+  )
 
   return (
     <div className=''>
@@ -107,7 +77,7 @@ const AutocompleteInput = ({
               )}
             >
               {filteredOptions.length === 0 && query !== '' ? (
-                <div className='relative cursor-default select-none px-4 py-2 text-gray-700'>
+                <div className='relative cursor-default select-none px-4 py-2 text-white'>
                   Nothing found.
                 </div>
               ) : (
@@ -139,7 +109,7 @@ const AutocompleteItem = ({ item }: AutocompleteItemProps) => {
       }
       value={item}
     >
-      {({ selected, active }) => (
+      {({ selected }) => (
         <>
           <span
             className={`block truncate ${
@@ -148,15 +118,6 @@ const AutocompleteItem = ({ item }: AutocompleteItemProps) => {
           >
             {item.label}
           </span>
-          {selected ? (
-            <span
-              className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                active ? 'text-white' : 'text-teal-600'
-              }`}
-            >
-              any
-            </span>
-          ) : null}
         </>
       )}
     </Combobox.Option>

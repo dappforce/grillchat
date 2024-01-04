@@ -99,18 +99,30 @@ const AmountInputTemplate = ({
   const balanceValue =
     decimals && balance ? formatUnits(balance, decimals) : '0'
 
-  const onInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const amountInputValue = e.target.value
-
-    setAmount(amountInputValue)
-
-    if (amountInputValue && decimals && balanceValue && balance) {
-      const amountValue = parseUnits(amountInputValue, decimals)
+  const validateField = (value: string) => {
+    if (value && decimals && balanceValue && balance) {
+      const amountValue = parseUnits(value, decimals)
       if (new BN(amountValue.toString()).gt(new BN(balance))) {
         setInputError('Amount exceeds available balance')
       } else {
         setInputError(undefined)
       }
+    }
+  }
+
+  const onInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const amountInputValue = e.target.value
+
+    setAmount(amountInputValue)
+
+    validateField(amountInputValue)
+  }
+
+  const onMaxButtonClick = () => {
+    if (balance) {
+      setAmount(balanceValue)
+
+      validateField(balanceValue)
     }
   }
 
@@ -155,7 +167,7 @@ const AmountInputTemplate = ({
                 'absolute bottom-0 right-4 top-0 my-auto p-1 text-indigo-400',
                 'hover:text-indigo-500 hover:ring-0'
               )}
-              onClick={() => balance && setAmount(balanceValue)}
+              onClick={onMaxButtonClick}
             >
               Max
             </Button>

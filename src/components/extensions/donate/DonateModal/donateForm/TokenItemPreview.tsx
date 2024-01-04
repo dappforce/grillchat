@@ -110,6 +110,8 @@ const TokenItemPreviewTemplate = ({
   balanceValue,
   amountInDollars,
 }: TokenItemPreviewTemplateProps) => {
+  const balanceBN = new BigNumber(balanceValue || '0')
+
   return (
     <div className='flex w-full items-center justify-between'>
       <div className='flex items-center gap-3'>
@@ -133,8 +135,12 @@ const TokenItemPreviewTemplate = ({
         </span>
       </div>
       <div className='flex flex-col text-right'>
-        <span className='font-bold'>{balanceValue.slice(0, 6)}</span>
-        <span className='text-text-muted'>${amountInDollars}</span>
+        <span className='font-bold'>
+          {!balanceBN.isZero() ? balanceBN.toFixed(4) : '-'}
+        </span>
+        {!balanceBN.isZero() && (
+          <span className='text-text-muted'>${amountInDollars}</span>
+        )}
       </div>
     </div>
   )

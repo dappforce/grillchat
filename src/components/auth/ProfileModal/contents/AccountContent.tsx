@@ -163,7 +163,7 @@ export default function AccountContent({
     },
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
   ]
-  // e9eff4
+
   return (
     <>
       <div className='mt-2 flex flex-col'>
@@ -172,29 +172,40 @@ export default function AccountContent({
             onEditClick={() => setCurrentState('profile-settings')}
             address={address}
           />
-          {!new BigNumber(balanceValue).isZero() && (
-            <div
-              className={clsx(
-                'flex items-center justify-between gap-4 rounded-2xl p-4',
-                theme === 'dark' ? 'bg-[#2C384F]' : 'bg-[#e9eff4]'
-              )}
-            >
-              <div className='flex items-center gap-2'>
-                <div className='text-slate-400'>Balance:</div>
-                <div>
-                  {new BigNumber(balanceValue).toFixed(4)} {tokenSymbol}
-                </div>
-              </div>
+
+          <div
+            className={clsx(
+              'flex items-center justify-between gap-4 rounded-2xl p-4',
+              theme === 'dark' ? 'bg-[#2C384F]' : 'bg-[#e9eff4]'
+            )}
+          >
+            <div className='flex items-center gap-2'>
+              <div className='text-slate-400'>Balance:</div>
               <div>
+                {new BigNumber(balanceValue).toFixed(4)} {tokenSymbol}
+              </div>
+            </div>
+            <div>
+              {new BigNumber(balanceValue).isZero() ? (
+                <LinkText
+                  variant={'primary'}
+                  href={
+                    'https://docs.subsocial.network/docs/tutorials/GetSUB/get-sub'
+                  }
+                  target='_blank'
+                >
+                  Get SUB
+                </LinkText>
+              ) : (
                 <LinkText
                   variant={'primary'}
                   onClick={() => setCurrentState('withdraw-tokens')}
                 >
                   Withdraw
                 </LinkText>
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
         <MenuList menus={menus} />
       </div>
