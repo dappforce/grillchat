@@ -7,7 +7,6 @@ import clsx from 'clsx'
 import { useEffect } from 'react'
 import { MdArrowOutward } from 'react-icons/md'
 import { useDonateModalContext } from '../../DonateModalContext'
-import { DonateModalStep } from '../types'
 import { CommonFields, CommonFieldsProps } from './CommonFields'
 
 type SubstrateDonateFormProps = Omit<
@@ -15,13 +14,12 @@ type SubstrateDonateFormProps = Omit<
   'balance' | 'decimals'
 > & {
   isOpen: boolean
-  onSwitchButtonClick: () => void
-  setCurrentStep: (step: DonateModalStep) => void
+  onSwitchButtonClick?: () => void
+  disabledSelectInput?: boolean
 }
 
 const SubstrateDonateFormPart = ({
   isOpen,
-  setCurrentStep,
   selectedChain,
   selectedToken,
   ...otherProps
@@ -35,11 +33,11 @@ const SubstrateDonateFormPart = ({
   const { freeBalance } = balance?.balances['SUB'] || {}
 
   useEffect(() => {
-    setShowChatForm(true)
+    setShowChatForm?.(true)
   }, [])
 
   useEffect(() => {
-    setShowChatForm(!new BigNumber(freeBalance || '').isZero())
+    setShowChatForm?.(!new BigNumber(freeBalance || '').isZero())
   }, [freeBalance])
 
   return !new BigNumber(freeBalance || '').isZero() ? (

@@ -35,6 +35,7 @@ import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUn
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ProfileSettingsContent from './contents/ProfileSettingsContent'
 import ShareSessionContent from './contents/ShareSessionContent'
+import WithdrawContent from './contents/withdraw/WithdrawContent'
 import {
   ProfileModalContentProps,
   ProfileModalProps,
@@ -76,6 +77,7 @@ const modalContents: {
   'polkadot-connect-success': PolkadotConnectSuccess,
   'polkadot-connect-unlink': PolkadotConnectUnlink,
   'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
+  'withdraw-tokens': WithdrawContent,
 }
 
 const pushNotificationDesc: Record<
@@ -292,6 +294,10 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
     'polkadot-connect-identity-removed': {
       title: '😕 Your previous identity was removed',
       desc: 'You will need to reset your nickname or reconnect your EVM address to continue using them.',
+      withBackButton: false,
+    },
+    'withdraw-tokens': {
+      title: '💰 Withdraw',
       withBackButton: false,
     },
   }

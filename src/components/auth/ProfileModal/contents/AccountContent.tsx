@@ -8,6 +8,7 @@ import ShareIcon from '@/assets/icons/share.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
+import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
@@ -184,7 +185,14 @@ export default function AccountContent({
                   {new BigNumber(balanceValue).toFixed(4)} {tokenSymbol}
                 </div>
               </div>
-              <div></div>
+              <div>
+                <LinkText
+                  variant={'primary'}
+                  onClick={() => setCurrentState('withdraw-tokens')}
+                >
+                  Withdraw
+                </LinkText>
+              </div>
             </div>
           )}
         </div>

@@ -13,6 +13,7 @@ export type CommonFieldsProps = {
   inputError?: string
   setInputError: (error?: string) => void
   chainKind: 'substrate' | 'evm'
+  disabledSelectInput?: boolean
 }
 
 export const CommonFields = ({
@@ -24,6 +25,7 @@ export const CommonFields = ({
   inputError,
   setInputError,
   chainKind,
+  disabledSelectInput = false,
 }: CommonFieldsProps) => {
   return (
     <>
@@ -33,6 +35,7 @@ export const CommonFields = ({
         fieldLabel='Token'
         items={tokensItems[selectedChain.id]}
         imgClassName='w-[38px]'
+        disabled={disabledSelectInput}
         renderItem={(item, open) => (
           <TokenItemPreview
             item={item}

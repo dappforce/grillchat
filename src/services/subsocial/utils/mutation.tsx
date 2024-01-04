@@ -11,9 +11,10 @@ type Status =
   | 'broadcasting'
   | 'success'
   | 'error'
-export function createMutationWrapper<Data, ReturnValue>(
+export function createMutationWrapper<Data, ReturnValue, OtherProps>(
   useMutationHook: (
-    config?: SubsocialMutationConfig<Data, any>
+    config?: SubsocialMutationConfig<Data, any>,
+    otherProps?: OtherProps
   ) => UseMutationResult<ReturnValue, Error, Data, unknown>,
   errorMessage: string,
   isUsingConnectedWallet?: boolean
@@ -22,6 +23,7 @@ export function createMutationWrapper<Data, ReturnValue>(
     children,
     config,
     loadingUntilTxSuccess,
+    otherProps,
   }: {
     children: (params: {
       mutateAsync: (variables: Data) => Promise<ReturnValue | undefined>
@@ -31,6 +33,7 @@ export function createMutationWrapper<Data, ReturnValue>(
     }) => JSX.Element
     config?: SubsocialMutationConfig<Data>
     loadingUntilTxSuccess?: boolean
+    otherProps?: OtherProps
   }) {
     const [status, setStatus] = useState<Status>('idle')
 
@@ -63,7 +66,8 @@ export function createMutationWrapper<Data, ReturnValue>(
           },
         },
       },
-      isUsingConnectedWallet
+      isUsingConnectedWallet,
+      otherProps
     )
     useToastError(error, errorMessage)
 

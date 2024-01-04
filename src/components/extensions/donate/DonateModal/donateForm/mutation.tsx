@@ -2,6 +2,7 @@ import useAccountsFromPreferredWallet from '@/components/auth/common/polkadot-co
 import Toast from '@/components/Toast'
 import { getChainsInfoQuery } from '@/services/chainsInfo/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
+import { createMutationWrapper } from '@/services/subsocial/utils'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -13,20 +14,25 @@ import registry from '@subsocial/api/utils/registry'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { DonateModalStep } from '../types'
 
 type SubstrateDonationProps = {
   amount: string
   recipient: string
 }
 
-export function useSubstrateDonatoin(
-  chainName: string,
-  setCurrentStep: (step: DonateModalStep) => void,
-  config?: SubsocialMutationConfig<SubstrateDonationProps>
+type OtherProps = {
+  chainName: string
+  toWalletActionRequired: () => void
+  toDonateForm: () => void
+}
+
+export function useSubstrateDonation(
+  config?: SubsocialMutationConfig<SubstrateDonationProps>,
+  otherProps?: OtherProps
 ) {
+  const { chainName, toWalletActionRequired, toDonateForm } = otherProps || {}
   const client = useQueryClient()
-  const { data: chainInfo } = getChainsInfoQuery.useQuery(chainName)
+  const { data: chainInfo } = getChainsInfoQuery.useQuery(chainName || '')
   const { accounts, isLoading } = useAccountsFromPreferredWallet()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const connectWallet = useMyAccount((state) => state.connectWallet)
@@ -70,17 +76,23 @@ export function useSubstrateDonatoin(
         onSuccess: () => {
           getBalancesQuery.invalidate(
             client,
-            buildBalancesKey(address || '', chainName)
+            buildBalancesKey(address || '', chainName || '')
           )
         },
         onStart: () => {
-          setCurrentStep('wallet-action-required')
+          toWalletActionRequired?.()
         },
         onError: (_data, error) => {
-          setCurrentStep('donate-form')
+          toDonateForm?.()
           toast.custom((t) => <Toast t={t} title={error} type='error' />)
         },
       },
     }
   )
 }
+
+export const SubstrateDonationWrapper = createMutationWrapper(
+  useSubstrateDonation,
+  'Failed to donate',
+  true
+)

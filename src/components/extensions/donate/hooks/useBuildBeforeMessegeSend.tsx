@@ -8,7 +8,7 @@ import { parseUnits } from 'ethers'
 import { useAccount } from 'wagmi'
 import { BeforeMessageResult } from '../../common/CommonExtensionModal'
 import { useDonate, useGetBalance } from '../api/hooks'
-import { useSubstrateDonatoin } from '../DonateModal/donateForm/mutation'
+import { useSubstrateDonation } from '../DonateModal/donateForm/mutation'
 import {
   ChainListItem,
   DonateModalStep,
@@ -35,7 +35,6 @@ export const useBuildEvmBeforeSend = ({
   const { closeModal, initialData } = useExtensionModalState(
     'subsocial-donations'
   )
-  const address = useMyMainAddress()
   const { address: myEvmAddress } = useAccount()
   const { data: recipientAccountData } = getAccountDataQuery.useQuery(
     initialData.recipient
@@ -81,10 +80,11 @@ export const useBuildSubtrateBeforeSend = ({
     'subsocial-donations'
   )
   const address = useMyMainAddress()
-  const { mutateAsync: sendDonation } = useSubstrateDonatoin(
-    selectedChain.id,
-    setCurrentStep
-  )
+  const { mutateAsync: sendDonation } = useSubstrateDonation(undefined, {
+    chainName: selectedChain.id,
+    toWalletActionRequired: () => setCurrentStep('wallet-action-required'),
+    toDonateForm: () => setCurrentStep('donate-form'),
+  })
 
   const chainData = useGetChainDataByNetwork(selectedChain.id)
 

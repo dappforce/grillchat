@@ -121,7 +121,7 @@ const AmountInputTemplate = ({
       new BigNumber(amount || '0').lte(0) ||
       new BigNumber(balance || '0').eq(0)
 
-    setDisableButton(disable)
+    setDisableButton?.(disable)
   }, [balance, amount])
 
   return (

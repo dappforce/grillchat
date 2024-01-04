@@ -24,12 +24,14 @@ export function getCurrentWallet(
   }
 }
 
-export default function useCommonTxSteps<Data, ReturnValue>(
+export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
   useMutationHook: (
-    config?: SubsocialMutationConfig<Data>
+    config?: SubsocialMutationConfig<Data>,
+    otherProps?: OtherProps
   ) => UseMutationResult<ReturnValue, Error, Data, unknown>,
   config?: SubsocialMutationConfig<Data>,
-  isUsingConnectedWallet?: boolean
+  isUsingConnectedWallet?: boolean,
+  otherProps?: OtherProps
 ) {
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const grillAddress = useMyAccount((state) => state.address)
@@ -44,7 +46,7 @@ export default function useCommonTxSteps<Data, ReturnValue>(
     ? getHasEnoughEnergy(connectedWallet?.energy)
     : hasEnoughEnergyGrillAddress
 
-  const { mutateAsync } = useMutationHook(config)
+  const { mutateAsync } = useMutationHook(config, otherProps)
   const { mutateAsync: requestToken } = useRequestToken()
 
   const { promptUserForLogin } = useLoginOption()

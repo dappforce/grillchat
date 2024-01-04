@@ -2,9 +2,9 @@ import { createContext, useContext, useState } from 'react'
 
 export type DonateModalContextState = {
   disableButton: boolean
-  setDisableButton: (disable: boolean) => void
+  setDisableButton?: (disable: boolean) => void
   showChatForm: boolean
-  setShowChatForm: (show: boolean) => void
+  setShowChatForm?: (show: boolean) => void
 }
 
 const DonateModalContext = createContext<DonateModalContextState>({} as any)

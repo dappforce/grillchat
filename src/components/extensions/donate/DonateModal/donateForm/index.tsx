@@ -101,7 +101,6 @@ const DonateForm = ({
     setInputError: setInputError,
     onSwitchButtonClick: onSwitchButtonClick,
     setSelectedToken: setSelectedToken,
-    setCurrentStep: setCurrentStep,
   }
 
   const chainsItemsArray = useMemo(

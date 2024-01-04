@@ -37,10 +37,12 @@ function DonateModalInner(props: DonateModalProps) {
 
   const tokenState = useState<TokenListItem>(tokensItems[chain.id][0])
 
-  const { connectOrSwitch } = useConnectOrSwitchNetwork(
-    setCurrentStep,
-    chainState[0].id
-  )
+  const { connectOrSwitch } = useConnectOrSwitchNetwork({
+    toWalletActionRequired: () => setCurrentStep('wallet-action-required'),
+    toAddNetwork: () => setCurrentStep('add-network'),
+    toDonateForm: () => setCurrentStep('donate-form'),
+    chainName: chainState[0].id,
+  })
 
   useEffect(() => {
     setCurrentStep('donate-form')
