@@ -20,13 +20,11 @@ import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/que
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { installApp, isInstallAvailable } from '@/utils/install'
 import BigNumber from 'bignumber.js'
-import clsx from 'clsx'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
 import { FiDownload } from 'react-icons/fi'
@@ -41,11 +39,11 @@ export default function AccountContent({
 }: ProfileModalContentProps) {
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
-  const theme = useGetTheme()
 
-  const { data: balance } = getBalancesQuery.useQuery(
-    buildBalancesKey(address, 'subsocial')
-  )
+  const { data: balance } = getBalancesQuery.useQuery({
+    address,
+    chainName: 'subsocial',
+  })
   const chainData = useGetChainDataByNetwork('subsocial')
   const { freeBalance } = balance?.balances['SUB'] || {}
 
@@ -174,13 +172,12 @@ export default function AccountContent({
           />
 
           <div
-            className={clsx(
-              'flex items-center justify-between gap-4 rounded-2xl p-4',
-              theme === 'dark' ? 'bg-[#2C384F]' : 'bg-[#e9eff4]'
-            )}
+            className={
+              'flex items-center justify-between gap-4 rounded-2xl bg-background-lighter p-4'
+            }
           >
             <div className='flex items-center gap-2'>
-              <div className='text-slate-400'>Balance:</div>
+              <div className='text-text-muted'>Balance:</div>
               <div>
                 {new BigNumber(balanceValue).toFixed(4)} {tokenSymbol}
               </div>

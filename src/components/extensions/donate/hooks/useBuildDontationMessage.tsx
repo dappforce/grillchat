@@ -26,7 +26,7 @@ type BeforeSendProps = {
   messageParams: SendMessageParams
 }
 
-export const useBuildEvmBeforeSend = ({
+export const useBuildEvmDontationMessage = ({
   setCurrentStep,
   selectedToken,
   selectedChain,
@@ -71,7 +71,7 @@ export const useBuildEvmBeforeSend = ({
     })
 }
 
-export const useBuildSubtrateBeforeSend = ({
+export const useBuildSubstrateDontationMessage = ({
   setCurrentStep,
   selectedToken,
   selectedChain,

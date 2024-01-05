@@ -2,6 +2,7 @@ import { getSubIdRequest } from '@/server/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { isDef } from '@subsocial/utils'
 import { AccountInfoByChain } from './types'
+import { buildBalancesKey } from './utils'
 
 const getBalancesByNetwork = async (
   account: string,
@@ -14,17 +15,23 @@ const getBalancesByNetwork = async (
   return balances.data
 }
 
+type BalanceKey = {
+  address: string
+  chainName: string
+}
+
 const getBalancesCall = poolQuery<
-  string,
+  BalanceKey,
   { key: string; balances: Record<string, AccountInfoByChain> }
 >({
   multiCall: async (keys) => {
-    const promises = keys.map(async (key) => {
-      const [account, network] = key.split('|')
+    const promises = keys.map(async ({ address, chainName }) => {
+      const result = await getBalancesByNetwork(address, chainName)
 
-      const result = await getBalancesByNetwork(account, network)
-
-      return { key, balances: result || {} }
+      return {
+        key: buildBalancesKey(address, chainName),
+        balances: result || {},
+      }
     })
 
     const balancesRes = await Promise.allSettled(promises)
@@ -36,7 +43,8 @@ const getBalancesCall = poolQuery<
       .filter(isDef)
   },
   resultMapper: {
-    paramToKey: (key) => key,
+    paramToKey: ({ address, chainName }) =>
+      buildBalancesKey(address, chainName),
     resultToKey: (result) => result.key,
   },
 })

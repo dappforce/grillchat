@@ -3,7 +3,6 @@ import Input from '@/components/inputs/Input'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import BN, { BigNumber } from 'bignumber.js'
@@ -45,9 +44,10 @@ const SubstrateAmountInput = ({
 }: AmountInputByKindProps) => {
   const address = useMyMainAddress()
   const chainInfo = useGetChainDataByNetwork(chainName)
-  const { data: balances } = getBalancesQuery.useQuery(
-    buildBalancesKey(address || '', chainName)
-  )
+  const { data: balances } = getBalancesQuery.useQuery({
+    address: address || '',
+    chainName,
+  })
 
   const { decimal, tokenSymbol } = chainInfo || {}
 

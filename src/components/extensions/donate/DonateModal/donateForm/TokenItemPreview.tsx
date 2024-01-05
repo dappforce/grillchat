@@ -4,9 +4,9 @@ import {
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getBalanceInDollars } from '@/utils/formatBalance'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import Image from 'next/image'
@@ -55,9 +55,10 @@ const SubstrateTokenItemPreview = ({
 }: TokenItemPreviewByKindProps) => {
   const address = useMyMainAddress()
   const chainInfo = useGetChainDataByNetwork(chainName)
-  const { data: balances } = getBalancesQuery.useQuery(
-    buildBalancesKey(address || '', chainName)
-  )
+  const { data: balances } = getBalancesQuery.useQuery({
+    address: address || '',
+    chainName,
+  })
 
   const { decimal, tokenSymbol } = chainInfo || {}
 
@@ -66,10 +67,7 @@ const SubstrateTokenItemPreview = ({
   const balanceValue =
     decimal && freeBalance ? formatUnits(freeBalance, decimal) : '0'
 
-  const amountInDollars =
-    price && balanceValue
-      ? new BigNumber(price).multipliedBy(balanceValue).toFixed(4)
-      : '0'
+  const amountInDollars = getBalanceInDollars(balanceValue, price)
 
   return (
     <TokenItemPreviewTemplate
@@ -91,10 +89,7 @@ const EvmTokenItemPreview = ({
   const balanceValue =
     decimals && balance ? formatUnits(balance, decimals) : '0'
 
-  const amountInDollars =
-    price && balance
-      ? new BigNumber(price).multipliedBy(balanceValue).toFixed(4)
-      : '0'
+  const amountInDollars = getBalanceInDollars(balanceValue, price)
 
   return (
     <TokenItemPreviewTemplate

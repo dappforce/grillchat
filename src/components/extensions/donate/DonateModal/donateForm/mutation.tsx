@@ -4,7 +4,6 @@ import { getChainsInfoQuery } from '@/services/chainsInfo/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { createMutationWrapper } from '@/services/subsocial/utils'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useLazySubstrateMutation } from '@/subsocial-query/subsocial/lazyMutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
@@ -25,14 +24,22 @@ type OtherProps = {
   toWalletActionRequired?: () => void
   toLoading?: () => void
   toDonateForm: () => void
+  successTitle?: string
+  successDescription?: string
 }
 
 export function useSubstrateDonation(
   config?: SubsocialMutationConfig<SubstrateDonationProps>,
   otherProps?: OtherProps
 ) {
-  const { chainName, toWalletActionRequired, toDonateForm, toLoading } =
-    otherProps || {}
+  const {
+    chainName,
+    toWalletActionRequired,
+    toDonateForm,
+    toLoading,
+    successTitle = 'Donation',
+    successDescription = 'Your tokens have been successfully donated.',
+  } = otherProps || {}
   const client = useQueryClient()
   const { data: chainInfo } = getChainsInfoQuery.useQuery(chainName || '')
   const { accounts, isLoading } = useAccountsFromPreferredWallet()
@@ -76,17 +83,17 @@ export function useSubstrateDonation(
     {
       txCallbacks: {
         onSuccess: () => {
-          getBalancesQuery.invalidate(
-            client,
-            buildBalancesKey(address || '', chainName || '')
-          )
+          getBalancesQuery.invalidate(client, {
+            address: address || '',
+            chainName: chainName || '',
+          })
           toDonateForm?.()
 
           toast.custom((t) => (
             <Toast
               t={t}
-              title='Transfer'
-              description='You have successfully transferred your tokens.'
+              title={successTitle}
+              description={successDescription}
               type='default'
             />
           ))

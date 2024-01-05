@@ -36,6 +36,8 @@ const SubstrateWithdrawButton = ({
         toDonateForm: () => setCurrentState('withdraw-tokens'),
         toWalletActionRequired: () => setCurrentState('wallet-action-required'),
         toLoading: () => setCurrentState('loading-tx'),
+        successTitle: 'Withdraw',
+        successDescription: 'You have successfully withdrawn your tokens.',
       }}
     >
       {({ isLoading, mutateAsync: donateTx }) => {

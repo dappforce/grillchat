@@ -1,6 +1,5 @@
 import Button from '@/components/Button'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyMainAddress } from '@/stores/my-account'
 import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
@@ -27,9 +26,11 @@ const SubstrateDonateFormPart = ({
   const { setShowChatForm } = useDonateModalContext()
   const address = useMyMainAddress()
 
-  const { data: balance } = getBalancesQuery.useQuery(
-    buildBalancesKey(address || '', selectedChain.id)
-  )
+  const { data: balance } = getBalancesQuery.useQuery({
+    address: address || '',
+    chainName: selectedChain.id,
+  })
+
   const { freeBalance } = balance?.balances['SUB'] || {}
 
   useEffect(() => {
