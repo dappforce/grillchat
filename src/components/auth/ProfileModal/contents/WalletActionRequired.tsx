@@ -1,8 +1,8 @@
 import ProcessingHumster from '@/assets/graphics/processing-humster.png'
 import Image from 'next/image'
-import { ProfileModalContentProps } from '../../types'
+import { ProfileModalContentProps } from '../types'
 
-const WalletActionRequired = (_props: ProfileModalContentProps) => (
+export const WalletActionRequiredBody = () => (
   <div className='flex w-full flex-col items-center gap-4'>
     <Image
       className='w-64 max-w-xs rounded-full'
@@ -13,4 +13,8 @@ const WalletActionRequired = (_props: ProfileModalContentProps) => (
   </div>
 )
 
-export default WalletActionRequired
+const ActionRequierdContent = (_props: ProfileModalContentProps) => (
+  <WalletActionRequiredBody />
+)
+
+export default ActionRequierdContent

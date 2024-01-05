@@ -1,8 +1,7 @@
-import ProcessingHumster from '@/assets/graphics/processing-humster.png'
+import { WalletActionRequiredBody } from '@/components/auth/ProfileModal/contents/WalletActionRequired'
 import LinkText from '@/components/LinkText'
 import Modal from '@/components/modals/Modal'
 import { useExtensionModalState } from '@/stores/extension'
-import Image from 'next/image'
 import { DonateProps, TokenListItem } from './types'
 
 type WalletActionRequiredModalStep = 'wallet-action-required' | 'add-network'
@@ -66,14 +65,7 @@ function WalletActionRequiredModal({ currentStep, chainState }: DonateProps) {
       title={title}
       description={desc}
     >
-      <div className='flex w-full flex-col items-center gap-4'>
-        <Image
-          className='w-64 max-w-xs rounded-full'
-          priority
-          src={ProcessingHumster}
-          alt=''
-        />
-      </div>
+      <WalletActionRequiredBody />
     </Modal>
   )
 }
