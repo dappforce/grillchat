@@ -1,4 +1,5 @@
 import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
+import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
 import Modal from '@/components/modals/Modal'
 import useLoginOption from '@/hooks/useLoginOption'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
@@ -80,6 +81,11 @@ const modalContents: {
   'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
   'withdraw-tokens': WithdrawContent,
   'wallet-action-required': WalletActionRequired,
+  'loading-tx': () => (
+    <div className='py-8'>
+      <DynamicLoadedHamsterLoading />
+    </div>
+  ),
 }
 
 const pushNotificationDesc: Record<
@@ -305,6 +311,11 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
     'wallet-action-required': {
       title: '🔐 Wallet Action Required',
       desc: 'Please open your wallet to continue',
+      withBackButton: false,
+    },
+    'loading-tx': {
+      title: 'Transfer',
+      desc: 'It may take up to 30 seconds',
       withBackButton: false,
     },
   }

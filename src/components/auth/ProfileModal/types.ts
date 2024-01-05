@@ -31,6 +31,7 @@ export type ProfileModalState =
   | 'push-notifications'
   | 'withdraw-tokens'
   | 'wallet-action-required'
+  | 'loading-tx'
 
 export type ProfileModalContentProps = {
   address: string

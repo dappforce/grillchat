@@ -35,6 +35,7 @@ const SubstrateWithdrawButton = ({
         chainName: selectedChain.id,
         toDonateForm: () => setCurrentState('withdraw-tokens'),
         toWalletActionRequired: () => setCurrentState('wallet-action-required'),
+        toLoading: () => setCurrentState('loading-tx'),
       }}
     >
       {({ isLoading, mutateAsync: donateTx }) => {
@@ -44,7 +45,9 @@ const SubstrateWithdrawButton = ({
               amount: amountValue.toString(),
               recipient: recipient,
             })
+            setCurrentState('withdraw-tokens')
           } catch {
+            setCurrentState('withdraw-tokens')
             return
           }
         }

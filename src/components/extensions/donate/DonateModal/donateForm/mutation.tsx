@@ -22,7 +22,8 @@ type SubstrateDonationProps = {
 
 type OtherProps = {
   chainName: string
-  toWalletActionRequired: () => void
+  toWalletActionRequired?: () => void
+  toLoading?: () => void
   toDonateForm: () => void
 }
 
@@ -30,7 +31,8 @@ export function useSubstrateDonation(
   config?: SubsocialMutationConfig<SubstrateDonationProps>,
   otherProps?: OtherProps
 ) {
-  const { chainName, toWalletActionRequired, toDonateForm } = otherProps || {}
+  const { chainName, toWalletActionRequired, toDonateForm, toLoading } =
+    otherProps || {}
   const client = useQueryClient()
   const { data: chainInfo } = getChainsInfoQuery.useQuery(chainName || '')
   const { accounts, isLoading } = useAccountsFromPreferredWallet()
@@ -78,6 +80,19 @@ export function useSubstrateDonation(
             client,
             buildBalancesKey(address || '', chainName || '')
           )
+          toDonateForm?.()
+
+          toast.custom((t) => (
+            <Toast
+              t={t}
+              title='Transfer'
+              description='You have successfully transferred your tokens.'
+              type='default'
+            />
+          ))
+        },
+        onBroadcast: () => {
+          toLoading?.()
         },
         onStart: () => {
           toWalletActionRequired?.()
