@@ -192,7 +192,7 @@ function MessageLink({
           isMyMessage
             ? 'bg-background-lighter/80 text-text-secondary-light dark:bg-background-lighter/50'
             : 'bg-background-lighter text-text-secondary',
-          'inline rounded-lg px-2 py-0.5 underline',
+          'inline break-all rounded-lg px-2 py-0.5 text-left underline',
           'whitespace-normal hover:brightness-105 focus-visible:brightness-105 dark:hover:brightness-90 dark:focus-visible:brightness-90'
         )}
         interactive='none'
