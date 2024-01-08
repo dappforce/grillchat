@@ -14,6 +14,7 @@ type State = {
   }
   channels?: Set<string>
   rootFontSize?: string
+  loginRequired?: boolean
   enableBackButton?: boolean
   enableLoginButton?: boolean
   enableInputAutofocus?: boolean
@@ -106,6 +107,7 @@ const schemaGetter = {
     const order = getUrlQuery('order')
     const channels = getUrlQuery('channels')
     const rootFontSize = getUrlQuery('rootFontSize')
+    const loginRequired = getUrlQuery('loginRequired')
 
     const enableBackButton = getUrlQuery('enableBackButton')
     const enableLoginButton = getUrlQuery('enableLoginButton')
@@ -142,6 +144,11 @@ const schemaGetter = {
             address,
           }
         : undefined,
+      loginRequired: validateStringConfig(
+        loginRequired,
+        ['true', 'false'],
+        (value) => value === 'true'
+      ),
       enableBackButton: validateStringConfig(
         enableBackButton,
         ['true', 'false'],
