@@ -1,3 +1,4 @@
+import IncognitoIcon from '@/assets/icons/incognito.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
 import XLogoIcon from '@/assets/icons/x-logo.svg'
@@ -9,10 +10,12 @@ import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useLoginOption from '@/hooks/useLoginOption'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
+import { useConfigContext } from '@/providers/ConfigProvider'
 import { useRequestToken } from '@/services/api/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -59,6 +62,16 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
   const { loginOption } = useLoginOption()
   const sendEvent = useSendEvent()
 
+  const {
+    mutateAsync: loginAndRequestToken,
+    isLoading,
+    error,
+  } = useLoginAndRequestToken()
+  useToastError(error, 'Login failed')
+
+  const { loginRequired } = useConfigContext()
+  const isInIframe = useIsInIframe()
+
   const [showErrorPanel, setShowErrorPanel] = useState(false)
   useEffect(() => {
     const auth = getUrlQuery('auth') === 'true'
@@ -67,37 +80,69 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
     if (auth && error.toLowerCase() === 'oauthcallback') setShowErrorPanel(true)
   }, [])
 
+  const canUseAnonLogin = !loginRequired
+  const isConnectWalletPrimaryButton =
+    loginOption === 'polkadot' || (isInIframe && !canUseAnonLogin)
+
   return (
     <div>
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className={cx('flex flex-col gap-4 pb-4')}>
-          {loginOption === 'all' && (
-            <>
-              {showErrorPanel && (
-                <InfoPanel variant='error'>
-                  😕 Sorry there is some issue with logging you in, please try
-                  again or try different account
-                </InfoPanel>
-              )}
+          {(() => {
+            if (loginOption !== 'all') return null
+            if (!isInIframe)
+              return (
+                <>
+                  {showErrorPanel && (
+                    <InfoPanel variant='error'>
+                      😕 Sorry there is some issue with logging you in, please
+                      try again or try different account
+                    </InfoPanel>
+                  )}
+                  <Button
+                    onClick={() => {
+                      sendEvent('x_login_started')
+                      signIn('twitter', {
+                        callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
+                      })
+                    }}
+                    size='lg'
+                  >
+                    <div className='flex items-center justify-center gap-2'>
+                      <XLogoIcon className='text-text-muted-on-primary' />
+                      Continue with X
+                    </div>
+                  </Button>
+                </>
+              )
+
+            if (!canUseAnonLogin) return null
+            return (
               <Button
-                onClick={() => {
-                  sendEvent('x_login_started')
-                  signIn('twitter', {
-                    callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
-                  })
-                }}
+                type='button'
                 size='lg'
+                className='w-full'
+                isLoading={isLoading}
+                onClick={async () => {
+                  sendEvent('login_anonymously')
+                  const newAddress = await loginAndRequestToken(null)
+                  if (newAddress) {
+                    setCurrentState('account-created')
+                  }
+                }}
               >
                 <div className='flex items-center justify-center gap-2'>
-                  <XLogoIcon className='text-text-muted-on-primary' />
-                  Continue with X
+                  <IncognitoIcon className='text-text-muted-on-primary' />
+                  Continue anonymously
                 </div>
               </Button>
-            </>
-          )}
+            )
+          })()}
           <Button
-            variant={loginOption === 'polkadot' ? 'primary' : 'primaryOutline'}
+            variant={
+              isConnectWalletPrimaryButton ? 'primary' : 'primaryOutline'
+            }
             onClick={() => {
               setCurrentState('connect-wallet')
               sendEvent('connect_wallet_started')
@@ -107,7 +152,7 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
             <div className='flex items-center justify-center gap-2'>
               <WalletIcon
                 className={cx(
-                  loginOption === 'polkadot'
+                  isConnectWalletPrimaryButton
                     ? 'text-text-muted-on-primary'
                     : 'text-text-muted'
                 )}
