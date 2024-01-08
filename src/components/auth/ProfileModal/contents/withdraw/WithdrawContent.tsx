@@ -6,6 +6,7 @@ import {
 } from '@/components/extensions/donate/DonateModal/types'
 import {
   chainItems,
+  getAmountPreview,
   tokensItems,
 } from '@/components/extensions/donate/DonateModal/utils'
 import AutocompleteInput, {
@@ -13,7 +14,9 @@ import AutocompleteInput, {
 } from '@/components/inputs/AutocompleteInput'
 import SelectInput from '@/components/inputs/SelectInput'
 import { useMyMainAddress } from '@/stores/my-account'
+import { encodeAddress } from '@polkadot/keyring'
 import { GenericAccountId } from '@polkadot/types'
+import { isAddress } from '@polkadot/util-crypto'
 import registry from '@subsocial/api/utils/registry'
 import { isEmptyArray } from '@subsocial/utils'
 import BN from 'bignumber.js'
@@ -64,9 +67,7 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
   const [inputError, setInputError] = useState<string | undefined>()
   const [amount, setAmount] = useState<string>('')
 
-  const amountPreview = amount
-    ? ` ${new BN(amount).toFormat()} ${selectedToken.label}`
-    : ''
+  const amountPreview = getAmountPreview(amount, selectedToken.label)
 
   const chainKind = selectedChain.chainKind
 
@@ -90,28 +91,20 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
     return (
       accountItems?.filter(
         (item) =>
-          item.id !== new GenericAccountId(registry, myAddress).toString() &&
+          encodeAddress(item.id) !== encodeAddress(myAddress).toString() &&
           item.id !== recipient?.id
       ) || []
     )
   }, [recipient, accounts?.length, myAddress])
 
   const disabledButton =
-    !recipient ||
     new BN(amount || '0').isZero() ||
     !selectedToken ||
-    !!inputError
+    !!inputError ||
+    !isAddress(recipient?.id || '')
 
   return (
     <div className='flex flex-col gap-6'>
-      <AutocompleteInput
-        value={recipient}
-        setValue={setRecipient}
-        items={filteredAccountItems}
-        label='Recipient'
-        filterItems={filterItems}
-      />
-
       <SelectInput
         selected={selectedChain}
         setSelected={setSelectedChain}
@@ -121,7 +114,18 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
         imgClassName='w-[38px]'
       />
 
-      <SubstrateDonateFormPart {...commonProps} />
+      <SubstrateDonateFormPart
+        {...commonProps}
+        middlePart={
+          <AutocompleteInput
+            value={recipient}
+            setValue={setRecipient}
+            items={filteredAccountItems}
+            label='Recipient'
+            filterItems={filterItems}
+          />
+        }
+      />
 
       <SubstrateWithdrawButton
         setCurrentState={setCurrentState}
@@ -134,27 +138,17 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
     </div>
   )
 }
-
-const isSubstrateAddress = (account: string) => {
-  try {
-    new GenericAccountId(registry, account)
-    return true
-  } catch {
-    return false
-  }
-}
+const parseQueryValue = (query: string) =>
+  query.toLowerCase().replaceAll(' ', '')
 
 const filterItems = (items: InputItem[], query: string) => {
   if (!query) return items
 
   const filteredItems = items.filter((item) =>
-    item.label
-      .toLowerCase()
-      .replace(/\s+/g, '')
-      .includes(query.toLowerCase().replace(/\s+/g, ''))
+    parseQueryValue(item.label).includes(parseQueryValue(query))
   )
 
-  if (isSubstrateAddress(query)) {
+  if (isAddress(query)) {
     return isEmptyArray(filteredItems)
       ? ([{ id: query, label: query }] as InputItem[])
       : filteredItems

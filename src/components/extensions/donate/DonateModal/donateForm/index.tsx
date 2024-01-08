@@ -6,7 +6,6 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
-import BigNumber from 'bignumber.js'
 import { useEffect, useMemo, useState } from 'react'
 import { useDonateModalContext } from '../../DonateModalContext'
 import {
@@ -14,7 +13,7 @@ import {
   useBuildSubstrateDontationMessage,
 } from '../../hooks/useBuildDontationMessage'
 import { DonateProps } from '../types'
-import { chainItems, tokensItems } from '../utils'
+import { chainItems, getAmountPreview, tokensItems } from '../utils'
 import EvmDonateForm from './EvmDonateFormPart'
 import SubstrateDonateFormPart from './SubstrateDonateFormPart'
 
@@ -82,9 +81,7 @@ const DonateForm = ({
   )
   const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
 
-  const amountPreview = amount
-    ? ` ${new BigNumber(amount).toFormat()} ${selectedToken.label}`
-    : ''
+  const amountPreview = getAmountPreview(amount, selectedToken.label)
 
   const commonProps = {
     selectedChain: selectedChain,

@@ -14,6 +14,7 @@ export type CommonFieldsProps = {
   setInputError: (error?: string) => void
   chainKind: 'substrate' | 'evm'
   disabledSelectInput?: boolean
+  middlePart?: React.ReactNode
 }
 
 export const CommonFields = ({
@@ -24,6 +25,7 @@ export const CommonFields = ({
   setAmount,
   inputError,
   setInputError,
+  middlePart,
   chainKind,
   disabledSelectInput = false,
 }: CommonFieldsProps) => {
@@ -45,6 +47,7 @@ export const CommonFields = ({
           />
         )}
       />
+      {middlePart}
       <AmountInput
         amount={amount}
         setAmount={setAmount}

@@ -15,6 +15,7 @@ type SubstrateDonateFormProps = Omit<
   isOpen: boolean
   onSwitchButtonClick?: () => void
   disabledSelectInput?: boolean
+  middlePart?: React.ReactNode
 }
 
 const SubstrateDonateFormPart = ({

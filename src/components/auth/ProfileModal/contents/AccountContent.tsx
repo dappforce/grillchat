@@ -162,6 +162,8 @@ export default function AccountContent({
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
   ]
 
+  const balanceValueBN = new BigNumber(balanceValue)
+
   return (
     <>
       <div className='mt-2 flex flex-col'>
@@ -179,11 +181,11 @@ export default function AccountContent({
             <div className='flex items-center gap-2'>
               <div className='text-text-muted'>Balance:</div>
               <div>
-                {new BigNumber(balanceValue).toFixed(4)} {tokenSymbol}
+                {balanceValueBN.toFixed(4)} {tokenSymbol}
               </div>
             </div>
             <div>
-              {new BigNumber(balanceValue).isZero() ? (
+              {balanceValueBN.isZero() ? (
                 <LinkText
                   variant={'primary'}
                   href={

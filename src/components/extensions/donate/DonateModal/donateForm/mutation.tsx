@@ -24,6 +24,7 @@ type OtherProps = {
   toWalletActionRequired?: () => void
   toLoading?: () => void
   toDonateForm: () => void
+  onSuccessAction?: () => void
   successTitle?: string
   successDescription?: string
 }
@@ -37,6 +38,7 @@ export function useSubstrateDonation(
     toWalletActionRequired,
     toDonateForm,
     toLoading,
+    onSuccessAction,
     successTitle = 'Donation',
     successDescription = 'Your tokens have been successfully donated.',
   } = otherProps || {}
@@ -87,7 +89,7 @@ export function useSubstrateDonation(
             address: address || '',
             chainName: chainName || '',
           })
-          toDonateForm?.()
+          onSuccessAction?.()
 
           toast.custom((t) => (
             <Toast

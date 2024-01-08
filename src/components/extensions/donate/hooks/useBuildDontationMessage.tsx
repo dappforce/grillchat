@@ -80,10 +80,13 @@ export const useBuildSubstrateDontationMessage = ({
     'subsocial-donations'
   )
   const address = useMyMainAddress()
+
+  const toDonateForm = () => setCurrentStep('donate-form')
   const { mutateAsync: sendDonation } = useSubstrateDonation(undefined, {
     chainName: selectedChain.id,
     toWalletActionRequired: () => setCurrentStep('wallet-action-required'),
-    toDonateForm: () => setCurrentStep('donate-form'),
+    toDonateForm: toDonateForm,
+    onSuccessAction: toDonateForm,
   })
 
   const chainData = useGetChainDataByNetwork(selectedChain.id)

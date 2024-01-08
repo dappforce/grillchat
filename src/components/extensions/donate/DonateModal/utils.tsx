@@ -8,6 +8,7 @@ import GLMR from '@/assets/graphics/tokens/glmr.webp'
 import SUB from '@/assets/graphics/tokens/sub.png'
 import USDC from '@/assets/graphics/tokens/usdc.png'
 import USDT from '@/assets/graphics/tokens/usdt.png'
+import BigNumber from 'bignumber.js'
 import { StaticImageData } from 'next/image'
 import { ChainListItem } from './types'
 
@@ -114,3 +115,6 @@ export const tokensItems: TokenItemsByChainName = {
     },
   ],
 }
+
+export const getAmountPreview = (amount?: string, symbol?: string) =>
+  amount ? ` ${new BigNumber(amount).toFormat()} ${symbol}` : ''
