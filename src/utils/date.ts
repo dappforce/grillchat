@@ -7,7 +7,11 @@ export function getTimeRelativeToNow(date: Date | string | number) {
   const dateObj = new Date(date)
   const now = new Date()
 
-  if (now.getDay() === dateObj.getDay()) {
+  if (
+    now.getDate() === dateObj.getDate() &&
+    now.getMonth() === dateObj.getMonth() &&
+    now.getFullYear() === dateObj.getFullYear()
+  ) {
     return dayjs(date).format('HH:mm')
   }
 
