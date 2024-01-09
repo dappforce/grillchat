@@ -36,11 +36,25 @@ export function useSubstrateDonatoin(
 
   useEffect(() => {
     if (parentProxyAddress && accounts) {
-      const signer = accounts.find(
-        (account) =>
-          new GenericAccountId(registry, account.address).toString() ===
-          new GenericAccountId(registry, parentProxyAddress).toString()
-      )?.signer
+      const signer = accounts.find((account) => {
+        let genericAccountAddress = ''
+        try {
+          genericAccountAddress = new GenericAccountId(
+            registry,
+            account.address
+          ).toString()
+        } catch {}
+
+        let genericProxyAddress = ''
+        try {
+          genericProxyAddress = new GenericAccountId(
+            registry,
+            parentProxyAddress
+          ).toString()
+        } catch {}
+
+        return genericAccountAddress === parentProxyAddress
+      })?.signer
 
       if (signer) {
         connectWallet(parentProxyAddress, signer as Signer)
