@@ -156,13 +156,15 @@ export function CopyTextInline({
           {text}
         </div>
       )}
-      <Button
-        variant='transparent'
-        className='p-1 text-text-primary'
-        onClick={handleClick}
-      >
-        <MdOutlineContentCopy />
-      </Button>
+      {withButton && (
+        <Button
+          variant='transparent'
+          className='p-1 text-text-primary'
+          onClick={handleClick}
+        >
+          <MdOutlineContentCopy />
+        </Button>
+      )}
     </div>
   )
 
