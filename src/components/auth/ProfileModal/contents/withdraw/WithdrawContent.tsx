@@ -14,10 +14,9 @@ import AutocompleteInput, {
 } from '@/components/inputs/AutocompleteInput'
 import SelectInput from '@/components/inputs/SelectInput'
 import { useMyMainAddress } from '@/stores/my-account'
+import { convertAddressToGenericAddress } from '@/utils/account'
 import { encodeAddress } from '@polkadot/keyring'
-import { GenericAccountId } from '@polkadot/types'
 import { isAddress } from '@polkadot/util-crypto'
-import registry from '@subsocial/api/utils/registry'
 import { isEmptyArray } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useEffect, useMemo, useState } from 'react'
@@ -42,8 +41,7 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
 
     return (
       items?.filter(
-        (item) =>
-          item.id !== new GenericAccountId(registry, myAddress).toString()
+        (item) => item.id !== convertAddressToGenericAddress(myAddress)
       ) || []
     )
   }, [accounts?.length, isLoading, myAddress])

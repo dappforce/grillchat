@@ -1,5 +1,7 @@
 import { useMyAccount } from '@/stores/my-account'
 import type { Keyring } from '@polkadot/keyring'
+import { GenericAccountId } from '@polkadot/types'
+import registry from '@subsocial/api/utils/registry'
 
 export type Signer = ReturnType<Keyring['addFromSeed']>
 
@@ -84,4 +86,12 @@ export async function signMessage(message: string) {
   }
 
   return u8aToHex(signer.sign(message))
+}
+
+export function convertAddressToGenericAddress(address?: string) {
+  let genericAccountAddress = ''
+  try {
+    genericAccountAddress = new GenericAccountId(registry, address).toString()
+  } catch {}
+  return genericAccountAddress
 }
