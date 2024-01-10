@@ -41,7 +41,9 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
 
     return (
       items?.filter(
-        (item) => item.id !== convertAddressToGenericAddress(myAddress)
+        (item) =>
+          convertAddressToGenericAddress(item.id) !==
+          convertAddressToGenericAddress(myAddress)
       ) || []
     )
   }, [accounts?.length, isLoading, myAddress])
