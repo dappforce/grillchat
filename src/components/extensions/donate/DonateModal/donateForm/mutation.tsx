@@ -7,9 +7,7 @@ import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useLazySubstrateMutation } from '@/subsocial-query/subsocial/lazyMutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
-import { Signer } from '@/utils/account'
-import { GenericAccountId } from '@polkadot/types'
-import registry from '@subsocial/api/utils/registry'
+import { convertAddressToGenericAddress, Signer } from '@/utils/account'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -54,23 +52,13 @@ export function useSubstrateDonation(
   useEffect(() => {
     if (parentProxyAddress && accounts) {
       const signer = accounts.find((account) => {
-        let genericAccountAddress = ''
-        try {
-          genericAccountAddress = new GenericAccountId(
-            registry,
-            account.address
-          ).toString()
-        } catch {}
+        const genericAccountAddress = convertAddressToGenericAddress(
+          account.address
+        )
+        const genericProxyAddress =
+          convertAddressToGenericAddress(parentProxyAddress)
 
-        let genericProxyAddress = ''
-        try {
-          genericProxyAddress = new GenericAccountId(
-            registry,
-            parentProxyAddress
-          ).toString()
-        } catch {}
-
-        return genericAccountAddress === parentProxyAddress
+        return genericAccountAddress === genericProxyAddress
       })?.signer
 
       if (signer) {
