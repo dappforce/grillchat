@@ -32,7 +32,7 @@ import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
 import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FiLink } from 'react-icons/fi'
-import { HiChevronRight } from 'react-icons/hi2'
+import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
@@ -47,7 +47,7 @@ export type ChatItemMenusProps = {
   enableChatMenu?: boolean
 }
 
-type ModalState = 'login' | 'metadata' | 'moderate' | null
+type ModalState = 'login' | 'metadata' | 'moderate' | 'hide' | null
 
 export default function ChatItemMenus({
   messageId,
@@ -120,6 +120,13 @@ export default function ChatItemMenus({
         onClick: () => setModalState('metadata'),
       },
     ]
+
+    const hideMenu: FloatingMenusProps['menus'][number] = {
+      text: 'Hide',
+      icon: HiOutlineEyeSlash,
+      onClick: () => setModalState('hide'),
+    }
+    if (isMessageOwner && !isOptimisticMessage) menus.unshift(hideMenu)
 
     if (isAuthorized) {
       menus.unshift({

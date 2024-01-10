@@ -89,6 +89,7 @@ function subscription(queryClient: QueryClient) {
       complete: () => undefined,
       next: async (data) => {
         const eventData = data.data?.post
+        console.log('EVENT', data.data)
         if (!eventData) return
 
         await processSubscriptionEvent(queryClient, eventData)
@@ -128,7 +129,9 @@ async function processMessage(
   const notHaveNewestData =
     !entity.persistentId ||
     !getPostQuery.getQueryData(queryClient, entity.persistentId)
+  console.log('in processing...', eventData)
   if (data && notHaveNewestData) {
+    console.log('in processing iff...', eventData)
     data.id = newestId
     data.struct.dataType = eventData.entity.dataType
     // set initial data for immediate render but refetch it in background
@@ -138,6 +141,7 @@ async function processMessage(
     })
     getPostQuery.invalidate(queryClient, newestId)
   } else {
+    console.log('in processing fetching...', eventData)
     await getPostQuery.fetchQuery(queryClient, newestId)
   }
 
