@@ -3,10 +3,11 @@ import Input from '@/components/inputs/Input'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyMainAddress } from '@/stores/my-account'
+import { getSubstrateChainApi } from '@/subsocial-query/subsocial/connection'
 import { cx } from '@/utils/class-names'
-import BN, { BigNumber } from 'bignumber.js'
+import { ApiPromise } from '@polkadot/api'
+import { BigNumber } from 'bignumber.js'
 import { formatUnits, parseUnits } from 'ethers'
 import { ChangeEventHandler, useEffect } from 'react'
 import { useGetBalance } from '../../api/hooks'
@@ -45,13 +46,39 @@ const SubstrateAmountInput = ({
 }: AmountInputByKindProps) => {
   const address = useMyMainAddress()
   const chainInfo = useGetChainDataByNetwork(chainName)
-  const { data: balances } = getBalancesQuery.useQuery(
-    buildBalancesKey(address || '', chainName)
-  )
+  const { data: balances } = getBalancesQuery.useQuery({
+    address: address || '',
+    chainName,
+  })
 
-  const { decimal, tokenSymbol } = chainInfo || {}
+  const { decimal, tokenSymbol, node } = chainInfo || {}
 
   const { freeBalance } = balances?.balances[tokenSymbol || ''] || {}
+
+  const onMaxClick = async (balanceValue: string) => {
+    if (node && address && decimal) {
+      let substrateApi: ApiPromise = await getSubstrateChainApi(node)
+
+      const tx = substrateApi.tx.balances.transfer(
+        { Id: address },
+        freeBalance || '0'
+      )
+
+      const { partialFee } = await tx.paymentInfo(address)
+
+      const maxAmount = new BigNumber(freeBalance || '0').minus(
+        partialFee.toNumber()
+      )
+
+      props.setAmount(
+        maxAmount.gt(0)
+          ? formatUnits(maxAmount.toString(), decimal).toString()
+          : balanceValue
+      )
+    } else {
+      props.setAmount(balanceValue)
+    }
+  }
 
   return (
     <AmountInputTemplate
@@ -59,6 +86,7 @@ const SubstrateAmountInput = ({
       tokenSymbol={tokenSymbol || ''}
       balance={freeBalance}
       decimals={decimal}
+      onMaxClick={onMaxClick}
     />
   )
 }
@@ -83,6 +111,7 @@ const EvmAmountInput = ({
 type AmountInputTemplateProps = CommonProps & {
   balance?: string
   decimals?: number
+  onMaxClick?: (balanceValue: string) => Promise<void>
 }
 
 const AmountInputTemplate = ({
@@ -93,24 +122,37 @@ const AmountInputTemplate = ({
   tokenSymbol,
   balance,
   decimals,
+  onMaxClick,
 }: AmountInputTemplateProps) => {
   const theme = useGetTheme()
   const { setDisableButton } = useDonateModalContext()
   const balanceValue =
     decimals && balance ? formatUnits(balance, decimals) : '0'
 
+  const validateField = (value: string) => {
+    if (value && decimals && balanceValue && balance) {
+      const amountValue = parseUnits(value, decimals)
+      if (new BigNumber(amountValue.toString()).gt(new BigNumber(balance))) {
+        setInputError('Amount exceeds available balance')
+      } else {
+        setInputError(undefined)
+      }
+    }
+  }
+
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const amountInputValue = e.target.value
 
     setAmount(amountInputValue)
 
-    if (amountInputValue && decimals && balanceValue && balance) {
-      const amountValue = parseUnits(amountInputValue, decimals)
-      if (new BN(amountValue.toString()).gt(new BN(balance))) {
-        setInputError('Amount exceeds available balance')
-      } else {
-        setInputError(undefined)
-      }
+    validateField(amountInputValue)
+  }
+
+  const onMaxButtonClick = () => {
+    if (balance) {
+      onMaxClick?.(balanceValue)
+
+      validateField(balanceValue)
     }
   }
 
@@ -121,7 +163,7 @@ const AmountInputTemplate = ({
       new BigNumber(amount || '0').lte(0) ||
       new BigNumber(balance || '0').eq(0)
 
-    setDisableButton(disable)
+    setDisableButton?.(disable)
   }, [balance, amount])
 
   return (
@@ -155,7 +197,7 @@ const AmountInputTemplate = ({
                 'absolute bottom-0 right-4 top-0 my-auto p-1 text-indigo-400',
                 'hover:text-indigo-500 hover:ring-0'
               )}
-              onClick={() => balance && setAmount(balanceValue)}
+              onClick={onMaxButtonClick}
             >
               Max
             </Button>

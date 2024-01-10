@@ -19,12 +19,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "graphql.config.js",
-    "src/services/subsocial/chainsInfo/query.tx"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "graphql.config.js"],
   "exclude": ["node_modules", "integration/**.ts"]
 }

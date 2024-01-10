@@ -6,15 +6,14 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
-import BigNumber from 'bignumber.js'
 import { useEffect, useMemo, useState } from 'react'
 import { useDonateModalContext } from '../../DonateModalContext'
 import {
-  useBuildEvmBeforeSend,
-  useBuildSubtrateBeforeSend,
-} from '../../hooks/useBuildBeforeMessegeSend'
+  useBuildEvmDontationMessage,
+  useBuildSubstrateDontationMessage,
+} from '../../hooks/useBuildDontationMessage'
 import { DonateProps } from '../types'
-import { chainItems, tokensItems } from '../utils'
+import { chainItems, getAmountPreview, tokensItems } from '../utils'
 import EvmDonateForm from './EvmDonateFormPart'
 import SubstrateDonateFormPart from './SubstrateDonateFormPart'
 
@@ -45,17 +44,14 @@ const DonateForm = ({
   const [inputError, setInputError] = useState<string | undefined>()
   const [amount, setAmount] = useState<string>('')
 
-  const amountPreview = amount
-    ? ` ${new BigNumber(amount).toFormat()} ${selectedToken.label}`
-    : ''
+  const chainKind = selectedChain.chainKind
+  const isEvmChain = chainKind === 'evm'
 
-  const evmBeforeMessageSend = useBuildEvmBeforeSend({
-    selectedChain,
-    selectedToken,
-    setCurrentStep,
-  })
+  const useBuildBeforeMessageSend = isEvmChain
+    ? useBuildEvmDontationMessage
+    : useBuildSubstrateDontationMessage
 
-  const substrateBeforeMessageSend = useBuildSubtrateBeforeSend({
+  const beforeMessageSend = useBuildBeforeMessageSend({
     selectedChain,
     selectedToken,
     setCurrentStep,
@@ -76,8 +72,6 @@ const DonateForm = ({
     }
   }, [isOpen])
 
-  const chainKind = selectedChain.chainKind
-
   const { data: message } = getPostQuery.useQuery(messageId)
 
   const { ownerId } = message?.struct || {}
@@ -87,8 +81,7 @@ const DonateForm = ({
   )
   const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
 
-  const beforeMessageSend =
-    chainKind === 'evm' ? evmBeforeMessageSend : substrateBeforeMessageSend
+  const amountPreview = getAmountPreview(amount, selectedToken.label)
 
   const commonProps = {
     selectedChain: selectedChain,
@@ -101,7 +94,6 @@ const DonateForm = ({
     setInputError: setInputError,
     onSwitchButtonClick: onSwitchButtonClick,
     setSelectedToken: setSelectedToken,
-    setCurrentStep: setCurrentStep,
   }
 
   const chainsItemsArray = useMemo(
@@ -157,7 +149,7 @@ const DonateForm = ({
             items={chainsItemsArray}
             imgClassName='w-[38px]'
           />
-          {chainKind === 'evm' ? (
+          {isEvmChain ? (
             <EvmDonateForm {...commonProps} />
           ) : (
             <SubstrateDonateFormPart {...commonProps} />

@@ -24,10 +24,19 @@ import {
   tryParseDecimals,
 } from './utils'
 
-export const useConnectOrSwitchNetwork = (
-  setCurrentStep: (currentStep: DonateModalStep) => void,
+type ConnectOrSwitchNetworkProps = {
   chainName: string
-) => {
+  toWalletActionRequired: () => void
+  toAddNetwork: () => void
+  toDonateForm: () => void
+}
+
+export const useConnectOrSwitchNetwork = ({
+  toAddNetwork,
+  toDonateForm,
+  toWalletActionRequired,
+  chainName,
+}: ConnectOrSwitchNetworkProps) => {
   const { openConnectModal } = useConnectModal()
   const { isConnected } = useAccount()
 
@@ -63,7 +72,7 @@ export const useConnectOrSwitchNetwork = (
     switchNetworkError,
     'Network change failed',
     () => {
-      setCurrentStep('add-network')
+      toAddNetwork()
       return `Make sure you have added ${chainName} to Metamask`
     }
   )
@@ -71,9 +80,9 @@ export const useConnectOrSwitchNetwork = (
   useEffect(() => {
     if (!switchNetworkError) {
       if (isSwitchNetworkLoading || (isConnectLoading && !isConnected)) {
-        setCurrentStep('wallet-action-required')
+        toWalletActionRequired()
       } else {
-        setCurrentStep('donate-form')
+        toDonateForm()
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

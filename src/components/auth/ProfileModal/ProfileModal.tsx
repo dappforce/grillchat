@@ -1,4 +1,5 @@
 import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
+import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
 import Modal from '@/components/modals/Modal'
 import useLoginOption from '@/hooks/useLoginOption'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
@@ -35,6 +36,8 @@ import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUn
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import ProfileSettingsContent from './contents/ProfileSettingsContent'
 import ShareSessionContent from './contents/ShareSessionContent'
+import WalletActionRequiredContent from './contents/WalletActionRequired'
+import WithdrawContent from './contents/withdraw/WithdrawContent'
 import {
   ProfileModalContentProps,
   ProfileModalProps,
@@ -76,6 +79,13 @@ const modalContents: {
   'polkadot-connect-success': PolkadotConnectSuccess,
   'polkadot-connect-unlink': PolkadotConnectUnlink,
   'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
+  'withdraw-tokens': WithdrawContent,
+  'wallet-action-required': WalletActionRequiredContent,
+  'loading-tx': () => (
+    <div className='py-8'>
+      <DynamicLoadedHamsterLoading />
+    </div>
+  ),
 }
 
 const pushNotificationDesc: Record<
@@ -292,6 +302,20 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
     'polkadot-connect-identity-removed': {
       title: '😕 Your previous identity was removed',
       desc: 'You will need to reset your nickname or reconnect your EVM address to continue using them.',
+      withBackButton: false,
+    },
+    'withdraw-tokens': {
+      title: '💰 Withdraw',
+      withBackButton: false,
+    },
+    'wallet-action-required': {
+      title: '🔐 Wallet Action Required',
+      desc: 'Please open your wallet to continue',
+      withBackButton: false,
+    },
+    'loading-tx': {
+      title: 'Transfer',
+      desc: 'It may take up to 30 seconds',
       withBackButton: false,
     },
   }

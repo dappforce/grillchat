@@ -29,6 +29,9 @@ export type ProfileModalState =
   | 'notifications'
   | 'telegram-notifications'
   | 'push-notifications'
+  | 'withdraw-tokens'
+  | 'wallet-action-required'
+  | 'loading-tx'
 
 export type ProfileModalContentProps = {
   address: string

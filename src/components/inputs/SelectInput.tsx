@@ -71,12 +71,14 @@ export default function SelectInput<AdditionalData = {}>({
                     {selected?.label ?? placeholder ?? ''}
                   </span>
                 </span>
-                <span className='pointer-events-none absolute inset-y-0 right-0 ml-2 flex items-center pr-4'>
-                  <IoIosArrowDown
-                    className='h-5 w-5 text-text-muted'
-                    aria-hidden='true'
-                  />
-                </span>
+                {!disabled && (
+                  <span className='pointer-events-none absolute inset-y-0 right-0 ml-2 flex items-center pr-4'>
+                    <IoIosArrowDown
+                      className='h-5 w-5 text-text-muted'
+                      aria-hidden='true'
+                    />
+                  </span>
+                )}
               </Listbox.Button>
 
               <Transition

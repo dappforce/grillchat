@@ -4,8 +4,8 @@ import {
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
 import { cx, getCommonClassNames } from '@/utils/class-names'
+import { getBalanceInDollars } from '@/utils/formatBalance'
 import { DonateProperies } from '@subsocial/api/types'
-import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { HiArrowUpRight } from 'react-icons/hi2'
 import CommonChatItem from '../common/CommonChatItem'
@@ -42,10 +42,7 @@ const DonatePreview = ({
 
   const price = data?.current_price
 
-  const amountInDollars =
-    price && amount
-      ? new BigNumber(price).multipliedBy(amountValue).toFixed(4)
-      : '0'
+  const amountInDollars = getBalanceInDollars(amountValue, price)
 
   return (
     <div

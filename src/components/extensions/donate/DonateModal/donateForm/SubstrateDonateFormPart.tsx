@@ -1,13 +1,11 @@
 import Button from '@/components/Button'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyMainAddress } from '@/stores/my-account'
 import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
 import { useEffect } from 'react'
 import { MdArrowOutward } from 'react-icons/md'
 import { useDonateModalContext } from '../../DonateModalContext'
-import { DonateModalStep } from '../types'
 import { CommonFields, CommonFieldsProps } from './CommonFields'
 
 type SubstrateDonateFormProps = Omit<
@@ -15,13 +13,13 @@ type SubstrateDonateFormProps = Omit<
   'balance' | 'decimals'
 > & {
   isOpen: boolean
-  onSwitchButtonClick: () => void
-  setCurrentStep: (step: DonateModalStep) => void
+  onSwitchButtonClick?: () => void
+  disabledSelectInput?: boolean
+  middlePart?: React.ReactNode
 }
 
 const SubstrateDonateFormPart = ({
   isOpen,
-  setCurrentStep,
   selectedChain,
   selectedToken,
   ...otherProps
@@ -29,17 +27,19 @@ const SubstrateDonateFormPart = ({
   const { setShowChatForm } = useDonateModalContext()
   const address = useMyMainAddress()
 
-  const { data: balance } = getBalancesQuery.useQuery(
-    buildBalancesKey(address || '', selectedChain.id)
-  )
+  const { data: balance } = getBalancesQuery.useQuery({
+    address: address || '',
+    chainName: selectedChain.id,
+  })
+
   const { freeBalance } = balance?.balances['SUB'] || {}
 
   useEffect(() => {
-    setShowChatForm(true)
+    setShowChatForm?.(true)
   }, [])
 
   useEffect(() => {
-    setShowChatForm(!new BigNumber(freeBalance || '').isZero())
+    setShowChatForm?.(!new BigNumber(freeBalance || '').isZero())
   }, [freeBalance])
 
   return !new BigNumber(freeBalance || '').isZero() ? (

@@ -2,8 +2,8 @@ import useAccountsFromPreferredWallet from '@/components/auth/common/polkadot-co
 import Toast from '@/components/Toast'
 import { getChainsInfoQuery } from '@/services/chainsInfo/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
+import { createMutationWrapper } from '@/services/subsocial/utils'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { buildBalancesKey } from '@/services/substrateBalances/utils'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useLazySubstrateMutation } from '@/subsocial-query/subsocial/lazyMutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
@@ -13,20 +13,37 @@ import registry from '@subsocial/api/utils/registry'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { DonateModalStep } from '../types'
 
 type SubstrateDonationProps = {
   amount: string
   recipient: string
 }
 
-export function useSubstrateDonatoin(
-  chainName: string,
-  setCurrentStep: (step: DonateModalStep) => void,
-  config?: SubsocialMutationConfig<SubstrateDonationProps>
+type OtherProps = {
+  chainName: string
+  toWalletActionRequired?: () => void
+  toLoading?: () => void
+  toDonateForm: () => void
+  onSuccessAction?: () => void
+  successTitle?: string
+  successDescription?: string
+}
+
+export function useSubstrateDonation(
+  config?: SubsocialMutationConfig<SubstrateDonationProps>,
+  otherProps?: OtherProps
 ) {
+  const {
+    chainName,
+    toWalletActionRequired,
+    toDonateForm,
+    toLoading,
+    onSuccessAction,
+    successTitle = 'Donation',
+    successDescription = 'Your tokens have been successfully donated.',
+  } = otherProps || {}
   const client = useQueryClient()
-  const { data: chainInfo } = getChainsInfoQuery.useQuery(chainName)
+  const { data: chainInfo } = getChainsInfoQuery.useQuery(chainName || '')
   const { accounts, isLoading } = useAccountsFromPreferredWallet()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const connectWallet = useMyAccount((state) => state.connectWallet)
@@ -82,19 +99,38 @@ export function useSubstrateDonatoin(
     {
       txCallbacks: {
         onSuccess: () => {
-          getBalancesQuery.invalidate(
-            client,
-            buildBalancesKey(address || '', chainName)
-          )
+          getBalancesQuery.invalidate(client, {
+            address: address || '',
+            chainName: chainName || '',
+          })
+          onSuccessAction?.()
+
+          toast.custom((t) => (
+            <Toast
+              t={t}
+              title={successTitle}
+              description={successDescription}
+              type='default'
+            />
+          ))
+        },
+        onBroadcast: () => {
+          toLoading?.()
         },
         onStart: () => {
-          setCurrentStep('wallet-action-required')
+          toWalletActionRequired?.()
         },
         onError: (_data, error) => {
-          setCurrentStep('donate-form')
+          toDonateForm?.()
           toast.custom((t) => <Toast t={t} title={error} type='error' />)
         },
       },
     }
   )
 }
+
+export const SubstrateDonationWrapper = createMutationWrapper(
+  useSubstrateDonation,
+  'Failed to donate',
+  true
+)

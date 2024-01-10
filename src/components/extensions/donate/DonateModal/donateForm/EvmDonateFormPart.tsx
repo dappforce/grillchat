@@ -3,13 +3,11 @@ import { useEffect } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import { chainIdByChainName } from '../../api/config'
 import { useDonateModalContext } from '../../DonateModalContext'
-import { DonateModalStep } from '../types'
 import { CommonFields, CommonFieldsProps } from './CommonFields'
 
 type EvmDonateFormProps = Omit<CommonFieldsProps, 'balance' | 'decimals'> & {
   isOpen: boolean
   onSwitchButtonClick: () => void
-  setCurrentStep: (step: DonateModalStep) => void
 }
 
 const EvmDonateFormPart = ({
@@ -29,7 +27,7 @@ const EvmDonateFormPart = ({
   const showSwitchButton = !isConnected || currentChainId !== destChainId
 
   useEffect(() => {
-    setShowChatForm(!showSwitchButton)
+    setShowChatForm?.(!showSwitchButton)
   }, [showSwitchButton])
 
   return showSwitchButton ? (

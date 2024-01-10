@@ -13,6 +13,8 @@ export type CommonFieldsProps = {
   inputError?: string
   setInputError: (error?: string) => void
   chainKind: 'substrate' | 'evm'
+  disabledSelectInput?: boolean
+  middlePart?: React.ReactNode
 }
 
 export const CommonFields = ({
@@ -23,7 +25,9 @@ export const CommonFields = ({
   setAmount,
   inputError,
   setInputError,
+  middlePart,
   chainKind,
+  disabledSelectInput = false,
 }: CommonFieldsProps) => {
   return (
     <>
@@ -33,6 +37,7 @@ export const CommonFields = ({
         fieldLabel='Token'
         items={tokensItems[selectedChain.id]}
         imgClassName='w-[38px]'
+        disabled={disabledSelectInput}
         renderItem={(item, open) => (
           <TokenItemPreview
             item={item}
@@ -42,6 +47,7 @@ export const CommonFields = ({
           />
         )}
       />
+      {middlePart}
       <AmountInput
         amount={amount}
         setAmount={setAmount}
