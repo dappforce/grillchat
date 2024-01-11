@@ -5,6 +5,7 @@ import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
+import HideMessageModal from '@/components/modals/HideMessageModal'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
 import Toast from '@/components/Toast'
@@ -230,6 +231,13 @@ export default function ChatItemMenus({
       />
       <ModerationModal
         isOpen={modalState === 'moderate'}
+        closeModal={() => setModalState(null)}
+        messageId={messageId}
+        chatId={chatId}
+        hubId={hubId}
+      />
+      <HideMessageModal
+        isOpen={modalState === 'hide'}
         closeModal={() => setModalState(null)}
         messageId={messageId}
         chatId={chatId}
