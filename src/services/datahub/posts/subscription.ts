@@ -125,24 +125,30 @@ async function processMessage(
   const entity = eventData.entity
   const newestId = entity.persistentId || entity.id
 
-  const data = getPostQuery.getQueryData(queryClient, entity.id)
-  const notHaveNewestData =
-    !entity.persistentId ||
-    !getPostQuery.getQueryData(queryClient, entity.persistentId)
-  console.log('in processing...', eventData)
-  if (data && notHaveNewestData) {
-    console.log('in processing iff...', eventData)
-    data.id = newestId
-    data.struct.dataType = eventData.entity.dataType
+  const dataFromEntityId = getPostQuery.getQueryData(queryClient, entity.id)
+  const dataFromPersistentId =
+    entity.persistentId &&
+    getPostQuery.getQueryData(queryClient, entity.persistentId)
+  const notHaveNewestData = !dataFromPersistentId
+
+  if (dataFromEntityId && notHaveNewestData) {
+    dataFromEntityId.id = newestId
+    dataFromEntityId.struct.dataType = eventData.entity.dataType
     // set initial data for immediate render but refetch it in background
     getPostQuery.setQueryData(queryClient, newestId, {
-      ...data,
-      struct: { ...data.struct, dataType: eventData.entity.dataType },
+      ...dataFromEntityId,
+      struct: {
+        ...dataFromEntityId.struct,
+        dataType: eventData.entity.dataType,
+      },
     })
     getPostQuery.invalidate(queryClient, newestId)
   } else {
-    console.log('in processing fetching...', eventData)
-    await getPostQuery.fetchQuery(queryClient, newestId)
+    if (dataFromPersistentId) {
+      await getPostQuery.invalidate(queryClient, newestId)
+    } else {
+      await getPostQuery.fetchQuery(queryClient, newestId)
+    }
   }
 
   const rootPostId = entity.rootPost?.persistentId
