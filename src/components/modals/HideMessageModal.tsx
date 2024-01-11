@@ -22,19 +22,7 @@ export default function HideMessageModal({
   ...props
 }: HideMessageModalProps) {
   const { data: message } = getPostQuery.useQuery(messageId)
-  const { mutate: hideMessage, error } = useHideMessage({
-    onSuccess: () => {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          title='Message hidden'
-          icon={(className) => (
-            <HiOutlineEyeSlash className={cx(className, 'text-base')} />
-          )}
-        />
-      ))
-    },
-  })
+  const { mutate: hideMessage, error } = useHideMessage()
   useToastError(error, 'Failed to hide message')
 
   if (!message) return null
@@ -46,7 +34,18 @@ export default function HideMessageModal({
       primaryButtonProps={{ children: 'No, keep it public' }}
       secondaryButtonProps={{
         children: 'Yes, hide this message',
-        onClick: () => hideMessage({ messageId }),
+        onClick: () => {
+          hideMessage({ messageId })
+          toast.custom((t) => (
+            <Toast
+              t={t}
+              title='Message hidden'
+              icon={(className) => (
+                <HiOutlineEyeSlash className={cx(className, 'text-base')} />
+              )}
+            />
+          ))
+        },
       }}
       content={() => (
         <div
