@@ -2,6 +2,7 @@ import { GrillConfig } from '@/../integration/index'
 import { Theme } from '@/@types/theme'
 import { getCurrentUrlOrigin, getUrlQuery } from '@/utils/links'
 import { sendMessageToParentWindow } from '@/utils/window'
+import { isServer } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
@@ -15,6 +16,7 @@ type State = {
   channels?: Set<string>
   rootFontSize?: string
   loginRequired?: boolean
+  analytics?: false | { ga: string; amp: string }
   enableBackButton?: boolean
   enableLoginButton?: boolean
   enableInputAutofocus?: boolean
@@ -116,6 +118,16 @@ const schemaGetter = {
     const wallet = getUrlQuery('wallet')
     const address = getUrlQuery('address')
 
+    const analyticsString = getUrlQuery('analytics')
+    let analytics: State['analytics']
+    if (analyticsString === 'false') {
+      analytics = false
+    } else {
+      try {
+        analytics = JSON.parse(decodeURIComponent(analyticsString)) as any
+      } catch {}
+    }
+
     const customTextsString = getUrlQuery('customTexts')
     let customTexts: GrillConfig['customTexts']
     if (customTextsString) {
@@ -138,6 +150,7 @@ const schemaGetter = {
       channels: usedChannels.size > 0 ? usedChannels : undefined,
       theme: validateStringConfig(theme, ['dark', 'light']),
       rootFontSize,
+      analytics,
       defaultWallet: wallet
         ? {
             walletName: wallet,
@@ -178,7 +191,9 @@ const schemaGetter = {
   },
 } satisfies SchemaGetter
 
-function getConfig() {
+export function getConfig(): State {
+  if (isServer) return {}
+
   const version = getUrlQuery('version')
   let getter = schemaGetter[version as keyof typeof schemaGetter]
   if (!getter) getter = schemaGetter[latestVersion]
