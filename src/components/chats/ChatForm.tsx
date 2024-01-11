@@ -6,7 +6,7 @@ import useAutofocus from '@/hooks/useAutofocus'
 import useLoginOption from '@/hooks/useLoginOption'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
-import { useConfigContext } from '@/providers/ConfigProvider'
+import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useSendOffchainMessage } from '@/services/datahub/posts/mutation'
 import {

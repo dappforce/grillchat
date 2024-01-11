@@ -1,4 +1,3 @@
-import { getConfig } from '@/providers/ConfigProvider'
 import { checkEnv } from './common'
 
 export function getAppId() {
@@ -24,23 +23,11 @@ export function getHubIds() {
 }
 
 export function getAmpId() {
-  const { analytics } = getConfig()
-  if (analytics === false) return undefined
-
-  return (
-    analytics?.amp ||
-    checkEnv(process.env.NEXT_PUBLIC_AMP_ID, 'NEXT_PUBLIC_AMP_ID')
-  )
+  return checkEnv(process.env.NEXT_PUBLIC_AMP_ID, 'NEXT_PUBLIC_AMP_ID')
 }
 
 export function getGaId() {
-  const { analytics } = getConfig()
-  if (analytics === false) return undefined
-
-  return (
-    analytics?.ga ||
-    checkEnv(process.env.NEXT_PUBLIC_GA_ID, 'NEXT_PUBLIC_GA_ID')
-  )
+  return checkEnv(process.env.NEXT_PUBLIC_GA_ID, 'NEXT_PUBLIC_GA_ID')
 }
 
 export function getSquidUrl() {

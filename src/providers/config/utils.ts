@@ -1,12 +1,24 @@
 import { GrillConfig } from '@/../integration/index'
 import { Theme } from '@/@types/theme'
-import { getCurrentUrlOrigin, getUrlQuery } from '@/utils/links'
-import { sendMessageToParentWindow } from '@/utils/window'
+import { getAmpId, getGaId } from '@/utils/env/client'
+import { getUrlQuery } from '@/utils/links'
 import { isServer } from '@tanstack/react-query'
-import { useRouter } from 'next/router'
-import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
-type State = {
+export function getAugmentedGaId() {
+  const { analytics } = getConfig()
+  if (analytics === false) return undefined
+
+  return analytics?.ga || getGaId()
+}
+
+export function getAugmentedAmpId() {
+  const { analytics } = getConfig()
+  if (analytics === false) return undefined
+
+  return analytics?.amp || getAmpId()
+}
+
+export type ConfigContextState = {
   theme?: Theme
   order?: string[]
   defaultWallet?: {
@@ -23,86 +35,9 @@ type State = {
   subscribeMessageCountThreshold?: number
   customTexts?: GrillConfig['customTexts']
 }
-const ConfigContext = createContext<State>({ theme: undefined, order: [] })
-
-export function ConfigProvider({ children }: { children: any }) {
-  const [state, setState] = useState<State>({
-    theme: undefined,
-    order: [],
-  })
-  const { push } = useRouter()
-
-  const configRef = useRef<State | null>(null)
-  useEffect(() => {
-    const config = getConfig()
-    setState(config)
-    configRef.current = config
-  }, [])
-
-  useEffect(() => {
-    const handler = async (event: MessageEvent) => {
-      const eventData = event.data
-      if (eventData && eventData.type === 'grill:setConfig') {
-        const payload = eventData.payload as string
-        const currentPathnameAndQuery = window.location.href.replace(
-          getCurrentUrlOrigin(),
-          ''
-        )
-        if (
-          payload &&
-          !payload.startsWith('http') &&
-          payload !== currentPathnameAndQuery
-        ) {
-          sendMessageToParentWindow('isUpdatingConfig', 'true')
-          await push(payload)
-          sendMessageToParentWindow('isUpdatingConfig', 'false')
-        }
-      }
-    }
-    window.addEventListener('message', handler)
-
-    return () => {
-      window.removeEventListener('message', handler)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    // check if current state is updated to the read config
-    if (configRef.current === state) {
-      window.parent?.postMessage('grill:ready', '*')
-    }
-  }, [state])
-
-  return (
-    <>
-      <ConfigContext.Provider value={state}>{children}</ConfigContext.Provider>
-      {state.rootFontSize && (
-        <style jsx global>{`
-          :root {
-            font-size: ${state.rootFontSize};
-          }
-        `}</style>
-      )}
-    </>
-  )
-}
-
-export function useConfigContext() {
-  return useContext(ConfigContext)
-}
-
-function validateStringConfig<T = string>(
-  value: string,
-  validValues: string[] | null,
-  transformer: (value: string) => T = (value) => value as T
-) {
-  if (validValues && !validValues.includes(value)) return undefined
-  return transformer(value)
-}
 
 const latestVersion = '0.1'
-type SchemaGetter = { [key: string]: () => State }
+type SchemaGetter = { [key: string]: () => ConfigContextState }
 const schemaGetter = {
   '0.1': () => {
     const theme = getUrlQuery('theme')
@@ -119,7 +54,7 @@ const schemaGetter = {
     const address = getUrlQuery('address')
 
     const analyticsString = getUrlQuery('analytics')
-    let analytics: State['analytics']
+    let analytics: ConfigContextState['analytics']
     if (analyticsString === 'false') {
       analytics = false
     } else {
@@ -191,7 +126,7 @@ const schemaGetter = {
   },
 } satisfies SchemaGetter
 
-export function getConfig(): State {
+export function getConfig(): ConfigContextState {
   if (isServer) return {}
 
   const version = getUrlQuery('version')
@@ -199,4 +134,13 @@ export function getConfig(): State {
   if (!getter) getter = schemaGetter[latestVersion]
 
   return getter()
+}
+
+function validateStringConfig<T = string>(
+  value: string,
+  validValues: string[] | null,
+  transformer: (value: string) => T = (value) => value as T
+) {
+  if (validValues && !validValues.includes(value)) return undefined
+  return transformer(value)
 }

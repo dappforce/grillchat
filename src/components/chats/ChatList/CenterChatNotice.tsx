@@ -1,5 +1,5 @@
 import LinkText from '@/components/LinkText'
-import { useConfigContext } from '@/providers/ConfigProvider'
+import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 
