@@ -8,7 +8,7 @@ export async function createAmplitudeInstance() {
 
   try {
     const amp = createInstance()
-    await amp.init(getAmpId(), undefined, { identityStorage: 'localStorage' })
+    await amp.init(ampId, undefined, { identityStorage: 'localStorage' })
       .promise
     return amp
   } catch (e) {
