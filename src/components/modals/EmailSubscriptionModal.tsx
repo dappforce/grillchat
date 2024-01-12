@@ -60,7 +60,6 @@ export default function EmailSubscriptionModal({
       {...props}
       title='✉️ Subscribe to Our Newsletter'
       description='Receive up to date info regarding grill.chat'
-      withCloseButton
     >
       <form
         onSubmit={handleSubmit((data) => {
