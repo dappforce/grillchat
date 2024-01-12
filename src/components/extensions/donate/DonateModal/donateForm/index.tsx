@@ -8,13 +8,10 @@ import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { useEffect, useMemo, useState } from 'react'
 import { useDonateModalContext } from '../../DonateModalContext'
-import {
-  useBuildEvmDontationMessage,
-  useBuildSubstrateDontationMessage,
-} from '../../hooks/useBuildDontationMessage'
+import { useBuildDonationMessage } from '../../hooks/useBuildDonationMessage'
 import { DonateProps } from '../types'
 import { chainItems, getAmountPreview, tokensItems } from '../utils'
-import EvmDonateForm from './EvmDonateFormPart'
+import EvmDonateFormPart from './EvmDonateFormPart'
 import SubstrateDonateFormPart from './SubstrateDonateFormPart'
 
 const DonateForm = ({
@@ -47,15 +44,14 @@ const DonateForm = ({
   const chainKind = selectedChain.chainKind
   const isEvmChain = chainKind === 'evm'
 
-  const useBuildBeforeMessageSend = isEvmChain
-    ? useBuildEvmDontationMessage
-    : useBuildSubstrateDontationMessage
-
-  const beforeMessageSend = useBuildBeforeMessageSend({
-    selectedChain,
-    selectedToken,
-    setCurrentStep,
-  })
+  const beforeMessageSend = useBuildDonationMessage(
+    {
+      setCurrentStep,
+      selectedToken,
+      selectedChain,
+    },
+    isEvmChain
+  )
 
   useEffect(() => {
     setSelectedToken(tokensItems[selectedChain.id][0])
@@ -150,7 +146,7 @@ const DonateForm = ({
             imgClassName='w-[38px]'
           />
           {isEvmChain ? (
-            <EvmDonateForm {...commonProps} />
+            <EvmDonateFormPart {...commonProps} />
           ) : (
             <SubstrateDonateFormPart {...commonProps} />
           )}
