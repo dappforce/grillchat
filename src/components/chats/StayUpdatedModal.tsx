@@ -68,10 +68,6 @@ export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
           eventSource: 'install_app',
         })
         installApp()
-        openModal({
-          defaultOpenState: 'telegram-notifications',
-          onBackClick: closeModal,
-        })
       },
     })
   }
