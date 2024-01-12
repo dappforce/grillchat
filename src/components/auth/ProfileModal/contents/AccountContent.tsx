@@ -12,6 +12,7 @@ import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
+import SkeletonFallback from '@/components/SkeletonFallback'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import useGetTheme from '@/hooks/useGetTheme'
@@ -40,7 +41,7 @@ export default function AccountContent({
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
 
-  const { data: balance } = getBalancesQuery.useQuery({
+  const { data: balance, isLoading } = getBalancesQuery.useQuery({
     address,
     chainName: 'subsocial',
   })
@@ -181,28 +182,38 @@ export default function AccountContent({
             <div className='flex items-center gap-2'>
               <div className='text-text-muted'>Balance:</div>
               <div>
-                {balanceValueBN.toFixed(4)} {tokenSymbol}
+                <SkeletonFallback
+                  className='my-0 w-20 bg-background-lightest'
+                  isLoading={isLoading}
+                >
+                  {balanceValueBN.toFixed(4)} {tokenSymbol}
+                </SkeletonFallback>
               </div>
             </div>
             <div>
-              {balanceValueBN.isZero() ? (
-                <LinkText
-                  variant={'primary'}
-                  href={
-                    'https://docs.subsocial.network/docs/tutorials/GetSUB/get-sub'
-                  }
-                  target='_blank'
-                >
-                  Get SUB
-                </LinkText>
-              ) : (
-                <LinkText
-                  variant={'primary'}
-                  onClick={() => setCurrentState('withdraw-tokens')}
-                >
-                  Withdraw
-                </LinkText>
-              )}
+              <SkeletonFallback
+                isLoading={isLoading}
+                className='my-0 w-20 bg-background-lightest'
+              >
+                {balanceValueBN.isZero() ? (
+                  <LinkText
+                    variant={'primary'}
+                    href={
+                      'https://docs.subsocial.network/docs/tutorials/GetSUB/get-sub'
+                    }
+                    target='_blank'
+                  >
+                    Get SUB
+                  </LinkText>
+                ) : (
+                  <LinkText
+                    variant={'primary'}
+                    onClick={() => setCurrentState('withdraw-tokens')}
+                  >
+                    Withdraw
+                  </LinkText>
+                )}
+              </SkeletonFallback>
             </div>
           </div>
         </div>
