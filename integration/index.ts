@@ -9,6 +9,10 @@ type QueryParams = {
   enableLoginButton?: string
   enableInputAutofocus?: string
   customTexts?: string
+  analytics?: string
+  loginRequired?: string
+  wallet?: string
+  address?: string
 }
 
 type ResourceLike = { toResourceId: () => string }
@@ -82,10 +86,17 @@ export type GrillConfig = {
   /** Option to make the iframe open chat room (a channel) directly */
   channel?: Channel
   order?: string[]
-  /** The root font size of the . You can change it if you want all font sizes to be smaller/bigger. Default root font size is 1rem (16px). For example, you can change it to 0.875rem to make it 14px, or just straight up use 14px. */
+  /** The root font size of the whole page. You can change it if you want all font sizes to be smaller/bigger. Default root font size is 1rem (16px). For example, you can change it to 0.875rem to make it 14px, or just straight up use 14px. */
   rootFontSize?: string
   /** The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat> */
   theme?: Theme
+  /** You can set this to `true` if you want user who uses the iframe must login via wallet or their own grill key (no anon login) */
+  loginRequired?: boolean
+  /** You can turn off the analytics of grill by providing the value to `false`, or change it to use your own analytics id. We use google analytics (ga) and amplitude (amp). This option is only used in the `init` process */
+  analytics?: false | { ga?: string; amp?: string }
+  /** This option is for enabling user to directly selecting the given wallet choice, instead of clicking through multiple options.
+   * This is useful for crypto projects where user can login with their wallet, so you can provide the user's wallet option and make the login process faster for the user */
+  defaultWallet?: { wallet?: string; address?: string }
   /** A function that will be called when the iframe is created. You can use this to customize the iframe attributes. */
   onWidgetCreated?: (iframe: HTMLIFrameElement) => HTMLIFrameElement
 }
@@ -185,6 +196,19 @@ const grill = {
     if (mergedConfig.theme) query.set('theme', mergedConfig.theme)
     if (mergedConfig.rootFontSize)
       query.set('rootFontSize', mergedConfig.rootFontSize)
+    if (mergedConfig.analytics !== undefined)
+      query.set(
+        'analytics',
+        mergedConfig.analytics === false
+          ? 'false'
+          : JSON.stringify(mergedConfig.analytics)
+      )
+    if (mergedConfig.loginRequired !== undefined)
+      query.set('loginRequired', mergedConfig.loginRequired + '')
+    if (mergedConfig.defaultWallet) {
+      query.set('wallet', mergedConfig.defaultWallet.wallet ?? '')
+      query.set('address', mergedConfig.defaultWallet?.address ?? '')
+    }
 
     if (channelConfig) {
       const channelSettings = {

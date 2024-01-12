@@ -1,14 +1,14 @@
-import { getAmpId } from '@/utils/env/client'
+import { getAugmentedAmpId } from '@/providers/config/utils'
 import { createInstance } from '@amplitude/analytics-browser'
 
 export async function createAmplitudeInstance() {
   if (typeof window === 'undefined') return null
-  const ampId = getAmpId()
+  const ampId = getAugmentedAmpId()
   if (!ampId) return null
 
   try {
     const amp = createInstance()
-    await amp.init(getAmpId(), undefined, { identityStorage: 'localStorage' })
+    await amp.init(ampId, undefined, { identityStorage: 'localStorage' })
       .promise
     return amp
   } catch (e) {

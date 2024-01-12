@@ -1,5 +1,5 @@
 import { getLinkedChatIdsForHubId } from '@/constants/hubs'
-import { useConfigContext } from '@/providers/ConfigProvider'
+import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'

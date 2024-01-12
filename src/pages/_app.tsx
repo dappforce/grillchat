@@ -3,7 +3,11 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
-import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
+import {
+  ConfigProvider,
+  useConfigContext,
+} from '@/providers/config/ConfigProvider'
+import { getAugmentedGaId } from '@/providers/config/utils'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/services/provider'
@@ -11,7 +15,6 @@ import { initAllStores } from '@/stores/registry'
 import { useTransactions } from '@/stores/transactions'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
-import { getGaId } from '@/utils/env/client'
 import '@rainbow-me/rainbowkit/styles.css'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
@@ -100,7 +103,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
           showOnShallow={false}
         />
         <HeadConfig {...head} />
-        <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
+        <GoogleAnalytics trackPageViews gaMeasurementId={getAugmentedGaId()} />
         <div className={cx('font-sans')}>
           <ErrorBoundary>
             <EvmProvider>
