@@ -95,6 +95,20 @@ export function getCommunityHubId() {
   )
 }
 
+export function getSubstrateUrl() {
+  const https = checkEnv(
+    process.env.NEXT_PUBLIC_SUBSTRATE_URL,
+    'NEXT_PUBLIC_SUBSTRATE_URL',
+    true
+  )
+  const wss = checkEnv(
+    process.env.NEXT_PUBLIC_SUBSTRATE_WSS,
+    'NEXT_PUBLIC_SUBSTRATE_URL',
+    true
+  )
+  return { https, wss }
+}
+
 export function getDatahubConfig() {
   const queryUrl = checkEnv(
     process.env.NEXT_PUBLIC_DATAHUB_QUERY_URL,
