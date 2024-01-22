@@ -1,4 +1,4 @@
-import { SUBSTRATE_HTTP_URL, SUBSTRATE_URL } from '@/constants/subsocial'
+import { getSubstrateUrl } from '@/utils/env/client'
 import type { SubsocialApi } from '@subsocial/api'
 
 export interface SubsocialConnectionConfig {
@@ -10,9 +10,10 @@ export interface SubsocialConnectionConfig {
 }
 
 // TODO: research better way to have this config set outside of this subsocial-query folder
+const { https, wss } = getSubstrateUrl()
 let config: SubsocialConnectionConfig = {
-  substrateUrl: SUBSTRATE_URL,
-  substrateHttpUrl: SUBSTRATE_HTTP_URL,
+  substrateUrl: wss,
+  substrateHttpUrl: https,
   ipfsNodeUrl: 'https://ipfs.subsocial.network',
   ipfsAdminNodeUrl: 'https://gw.crustfiles.app',
 }

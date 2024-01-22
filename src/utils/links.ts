@@ -1,7 +1,7 @@
 import { getAliasFromHubId } from '@/constants/hubs'
-import { SUBSTRATE_URL } from '@/constants/subsocial'
 import { ParsedUrlQuery } from 'querystring'
 import urlJoin from 'url-join'
+import { getSubstrateUrl } from './env/client'
 
 export function getUrlQuery(queryName: string) {
   const query = window.location.search
@@ -61,7 +61,7 @@ export function validateVideoUrl(url: string) {
 
 export function getPolkadotJsUrl(pathname?: string) {
   return urlJoin(
-    `https://polkadot.js.org/apps/?rpc=${SUBSTRATE_URL}/#/`,
+    `https://polkadot.js.org/apps/?rpc=${getSubstrateUrl().wss}/#/`,
     pathname ?? ''
   )
 }
