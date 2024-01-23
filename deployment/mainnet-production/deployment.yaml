@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: grillchat
-  name: grillchat
+    app: mainnet-grillchat
+  name: mainnet-grillchat
   namespace: sub-back
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: grillchat
+      app: mainnet-grillchat
   template:
     metadata:
       labels:
-        app: grillchat
-      name: grillchat
+        app: mainnet-grillchat
+      name: mainnet-grillchat
     spec:
       affinity:
         podAntiAffinity:
@@ -24,23 +24,23 @@ spec:
                   - key: app
                     operator: In
                     values:
-                      - grillchat
+                      - mainnet-grillchat
               topologyKey: kubernetes.io/hostname
       containers:
         - image: <IMAGE>
           imagePullPolicy: IfNotPresent
-          name: grillchat
+          name: mainnet-grillchat
           ports:
             - containerPort: 3000
           envFrom:
             - configMapRef:
-                name: grillchat-env
+                name: mainnet-grillchat-env
             - secretRef:
-                name: grillchat-secret
+                name: mainnet-grillchat-secret
           resources:
             requests:
-              memory: "750Mi"
-              cpu: "100m"
+              memory: "450Mi"
+              cpu: "10m"
             limits:
               memory: "1600Mi"
               cpu: "1"
