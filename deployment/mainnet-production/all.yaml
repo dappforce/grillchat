@@ -3,8 +3,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: grillchat-<BRANCH>
-  name: grillchat-<BRANCH>
+    app: mainnet-grillchat
+  name: mainnet-grillchat
   namespace: sub-back
 spec:
   ports:
@@ -12,14 +12,14 @@ spec:
       protocol: TCP
       targetPort: 3000
   selector:
-    app: grillchat-<BRANCH>
+    app: mainnet-grillchat
   type: ClusterIP
 
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: grillchat-<BRANCH>
+  name: mainnet-grillchat
   namespace: sub-back
   annotations:
     ingress.kubernetes.io/from-to-www-redirect: "true"
@@ -31,12 +31,12 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: <BRANCH>-grillchat.subsocial.network
+    - host: grill.so
       http:
         paths:
           - backend:
               service:
-                name: grillchat-<BRANCH>
+                name: mainnet-grillchat
                 port:
                   number: 3000
             path: "/"
@@ -44,15 +44,15 @@ spec:
 
   tls:
     - hosts:
-        - <BRANCH>-grillchat.subsocial.network
-      secretName: subsocial-ssl
+        - grill.so
+      secretName: mainnet-grill-ssl
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: grillchat-<BRANCH>-env
+  name: mainnet-grillchat-env
   namespace: sub-back
 data:
-  REDIS_HOST: "redis-master.default"
+  REDIS_HOST: "mainnet-grill-redis-master.default"
   REDIS_PORT: "6379"
