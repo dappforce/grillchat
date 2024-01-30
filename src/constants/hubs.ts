@@ -59,7 +59,7 @@ if (process.env.NODE_ENV === 'development') {
 export const isCommunityHubId = (hubId: string | undefined) =>
   COMMUNITY_CHAT_HUB_ID.includes(hubId ?? '')
 
-export const PINNED_HUB_IDS = [...COMMUNITY_CHAT_HUB_ID, '1031'].filter(Boolean)
+export const PINNED_HUB_IDS = ['1772', ...COMMUNITY_CHAT_HUB_ID].filter(Boolean)
 
 const HUB_ID_WITHOUT_JOIN_BUTTON = [
   '1023',
