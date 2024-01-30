@@ -46,7 +46,7 @@ export default async function handler(
       .flatten({ background: '#ffffff' })
       .resize({
         fit: 'inside',
-        width: 1024,
+        width: 1600,
         height: 1024,
         withoutEnlargement: true,
       })
