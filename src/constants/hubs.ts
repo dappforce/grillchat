@@ -1,6 +1,6 @@
-import { getCommunityHubId, getSubstrateUrl } from '@/utils/env/client'
+import { getCommunityHubId } from '@/utils/env/client'
+import { getNetwork, Network } from '@/utils/network'
 
-type Network = 'xsocial' | 'subsocial'
 const ALIAS_TO_HUB_ID_MAP: Record<Network, Record<string, string>> = {
   xsocial: {
     x: '1002',
@@ -32,11 +32,6 @@ const HUB_ID_TO_ALIAS_MAP = Object.entries(ALIAS_TO_HUB_ID_MAP).reduce(
   },
   {} as Record<Network, Record<string, string>>
 )
-
-function getNetwork(): Network {
-  if (getSubstrateUrl().wss.includes('xsocial')) return 'xsocial'
-  return 'subsocial'
-}
 
 export function getAliasFromHubId(hubId: string) {
   return HUB_ID_TO_ALIAS_MAP[getNetwork()][hubId] ?? ''

@@ -1,4 +1,5 @@
 import { SubsocialQueryData } from '@/subsocial-query/subsocial/query'
+import { getNetwork } from '@/utils/network'
 import { gql } from 'graphql-request'
 import {
   GetEvmAddressesQuery,
@@ -12,10 +13,17 @@ async function getEvmAddressesFromBlockchain({
   data: addresses,
 }: SubsocialQueryData<string[]>) {
   const blockchainApi = await api.blockchain.api
-  const evmAddressses =
-    await blockchainApi.query.evmAccounts.evmAddressByAccount.multi(addresses)
-
-  return evmAddressses.map((x) => x.toHuman() as string)
+  if (getNetwork() === 'xsocial') {
+    const evmAddresses =
+      await blockchainApi.query.evmAccounts.evmAddressByAccount.multi(addresses)
+    return evmAddresses.map((x) => x.toHuman() as string)
+  } else {
+    const evmAddresses =
+      await blockchainApi.query.evmAddresses.evmAddressByAccount.multi(
+        addresses
+      )
+    return evmAddresses.map((x) => x.toHuman() as string)
+  }
 }
 
 const GET_EVM_ADDRESSES = gql`
