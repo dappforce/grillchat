@@ -87,7 +87,7 @@ export function convertNonce(nonce: number) {
 
 export async function getServerAccount() {
   const mnemonic = getServerMnemonic()
-  console.log('MNEMONIC', mnemonic, JSON.stringify(process.env))
+  console.log('MNEMONIC', `"${mnemonic}"`, JSON.stringify(process.env))
   const keyring = new Keyring()
   await waitReady()
   return keyring.addFromMnemonic(mnemonic, {}, 'sr25519')
