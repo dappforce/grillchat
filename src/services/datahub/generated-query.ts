@@ -26,12 +26,14 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean }
   Int: { input: number; output: number }
   Float: { input: number; output: number }
+  BigInt: { input: any; output: any }
   DateTime: { input: any; output: any }
   JSON: { input: any; output: any }
 }
 
 export type Account = {
   __typename?: 'Account'
+  activeStakingSuperLikes?: Maybe<Array<ActiveStakingSuperLike>>
   /** is off-chain data CID backed up in blockchain */
   backupInBlockchain?: Maybe<Scalars['Boolean']['output']>
   dataType: DataType
@@ -57,12 +59,132 @@ export type Account = {
   spacesOwned: Array<Space>
 }
 
+export type AccountActivityMetricsForFixedPeriodInput = {
+  address: Scalars['String']['input']
+  creator?: InputMaybe<CreatorActivityMetricsForFixedPeriodInput>
+  period?: InputMaybe<ActiveStakingPeriod>
+  periodValue?: InputMaybe<Scalars['String']['input']>
+  staker?: InputMaybe<StakerActivityMetricsForFixedPeriodInput>
+}
+
+export type AccountActivityMetricsForFixedPeriodResponseDto = {
+  __typename?: 'AccountActivityMetricsForFixedPeriodResponseDto'
+  creator?: Maybe<CreatorActivityMetrics>
+  staker?: Maybe<StakerActivityMetrics>
+}
+
 export type AccountFollowers = {
   __typename?: 'AccountFollowers'
   dataType: DataType
   followerAccount: Account
   followingAccount: Account
   id: Scalars['String']['output']
+}
+
+export enum ActiveStakingAccountRole {
+  Creator = 'CREATOR',
+  Staker = 'STAKER',
+}
+
+export enum ActiveStakingListOrder {
+  Asc = 'ASC',
+  Desc = 'DESC',
+}
+
+export enum ActiveStakingPeriod {
+  AllTime = 'ALL_TIME',
+  Day = 'DAY',
+  Month = 'MONTH',
+  Week = 'WEEK',
+}
+
+export type ActiveStakingRewardsReport = {
+  __typename?: 'ActiveStakingRewardsReport'
+  aggregationPeriod: Scalars['String']['output']
+  createdAtTime: Scalars['DateTime']['output']
+  id: Scalars['String']['output']
+  reportData: Array<RewardsReportItem>
+  week?: Maybe<Scalars['Int']['output']>
+}
+
+export type ActiveStakingSuperLike = {
+  __typename?: 'ActiveStakingSuperLike'
+  aggregatedDaily: Scalars['Boolean']['output']
+  blockHash?: Maybe<Scalars['String']['output']>
+  createdAtTime: Scalars['DateTime']['output']
+  creatorAddress?: Maybe<Scalars['String']['output']>
+  date: Scalars['BigInt']['output']
+  era: Scalars['Int']['output']
+  id: Scalars['String']['output']
+  kind: Scalars['String']['output']
+  likedPostId?: Maybe<Scalars['String']['output']>
+  likedPostPersistentId?: Maybe<Scalars['String']['output']>
+  multiplier: Scalars['Int']['output']
+  post: Post
+  staker: Account
+  stakerAddress?: Maybe<Scalars['String']['output']>
+  updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+  week: Scalars['Int']['output']
+}
+
+export type AddressRankByRewardsCompetitorResponseDto = {
+  __typename?: 'AddressRankByRewardsCompetitorResponseDto'
+  address: Scalars['String']['output']
+  rankIndex: Scalars['Int']['output']
+  reward?: Maybe<Scalars['String']['output']>
+}
+
+export type AddressRankByRewardsForPeriodInput = {
+  aboveCompetitorsNumber?: InputMaybe<Scalars['Int']['input']>
+  address: Scalars['String']['input']
+  belowCompetitorsNumber?: InputMaybe<Scalars['Int']['input']>
+  period: ActiveStakingPeriod
+  role: ActiveStakingAccountRole
+  timestamp?: InputMaybe<Scalars['String']['input']>
+  withReward?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type AddressRankByRewardsForPeriodResponseDto = {
+  __typename?: 'AddressRankByRewardsForPeriodResponseDto'
+  aboveCompetitors?: Maybe<Array<AddressRankByRewardsCompetitorResponseDto>>
+  belowCompetitors?: Maybe<Array<AddressRankByRewardsCompetitorResponseDto>>
+  maxIndex: Scalars['Int']['output']
+  rankIndex: Scalars['Int']['output']
+  reward?: Maybe<Scalars['String']['output']>
+}
+
+export type AddressRankedBySuperLikesForPeriodResponseDto = {
+  __typename?: 'AddressRankedBySuperLikesForPeriodResponseDto'
+  address: Scalars['String']['output']
+  count: Scalars['Int']['output']
+}
+
+export type AddressesRankedByRewardsForPeriodFilter = {
+  period: ActiveStakingPeriod
+  role: ActiveStakingAccountRole
+  timestamp?: InputMaybe<Scalars['String']['input']>
+}
+
+export type AddressesRankedByRewardsForPeriodInput = {
+  filter: AddressesRankedByRewardsForPeriodFilter
+  limit?: InputMaybe<Scalars['Int']['input']>
+  offset?: InputMaybe<Scalars['Int']['input']>
+  order?: InputMaybe<ActiveStakingListOrder>
+}
+
+export type AddressesRankedByRewardsForPeriodResponseDto = {
+  __typename?: 'AddressesRankedByRewardsForPeriodResponseDto'
+  data: Array<RankedAddressWithDetails>
+  limit: Scalars['Int']['output']
+  offset: Scalars['Int']['output']
+  total: Scalars['Int']['output']
+}
+
+export type AddressesRankedBySuperLikesForPeriodInput = {
+  fromTime: Scalars['String']['input']
+  limit?: InputMaybe<Scalars['Int']['input']>
+  order?: InputMaybe<ActiveStakingListOrder>
+  toTime?: InputMaybe<Scalars['String']['input']>
 }
 
 export type BlockedResourceIdsBatchItem = {
@@ -76,6 +198,21 @@ export type BlockedResourceIdsBatchResponse = {
   byCtxAppIds: Array<BlockedResourceIdsBatchItem>
   byCtxPostIds: Array<BlockedResourceIdsBatchItem>
   byCtxSpaceIds: Array<BlockedResourceIdsBatchItem>
+}
+
+export type CanDoSuperLikeByPostInput = {
+  postIds?: InputMaybe<Array<Scalars['String']['input']>>
+  postPersistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type CanDoSuperLikeByPostsResponseDto = {
+  __typename?: 'CanDoSuperLikeByPostsResponseDto'
+  persistentPostId: Scalars['String']['output']
+  possible: Scalars['Boolean']['output']
+  postId: Scalars['String']['output']
+  validByCreationDate: Scalars['Boolean']['output']
+  validByCreatorMinStake: Scalars['Boolean']['output']
+  validByLowValue: Scalars['Boolean']['output']
 }
 
 export type CommentDataShort = {
@@ -134,7 +271,43 @@ export type CreateOrganizationInput = {
   ownedByAccountAddress: Scalars['String']['input']
 }
 
+export type CreatorActivityMetrics = {
+  __typename?: 'CreatorActivityMetrics'
+  earnedByPeriod?: Maybe<Scalars['String']['output']>
+  earnedTotal?: Maybe<Scalars['String']['output']>
+  likesCountByPeriod?: Maybe<Scalars['Int']['output']>
+  stakersWhoLiked?: Maybe<Scalars['Int']['output']>
+}
+
+export type CreatorActivityMetricsForFixedPeriodInput = {
+  earnedByPeriod?: InputMaybe<Scalars['Boolean']['input']>
+  earnedByPeriodRankPosition?: InputMaybe<Scalars['Boolean']['input']>
+  earnedTotal?: InputMaybe<Scalars['Boolean']['input']>
+  earnedTotalRankPosition?: InputMaybe<Scalars['Boolean']['input']>
+  likesCountByPeriod?: InputMaybe<Scalars['Boolean']['input']>
+  stakersWhoLiked?: InputMaybe<Scalars['Boolean']['input']>
+  stakersWhoLikedRankPosition?: InputMaybe<Scalars['Boolean']['input']>
+  totalLikesCountRankPosition?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type DailyStatsByStakerInput = {
+  address: Scalars['String']['input']
+  dayTimestamp: Scalars['Int']['input']
+  range?: InputMaybe<ActiveStakingPeriod>
+}
+
+export type DailyStatsByStakerResponse = {
+  __typename?: 'DailyStatsByStakerResponse'
+  currentRewardAmount: Scalars['String']['output']
+  initialPoints: Scalars['Int']['output']
+  stakerRewordDistribution: Scalars['Int']['output']
+  superLikesCount: Scalars['Int']['output']
+  totalLazyRewardAmount: Scalars['String']['output']
+}
+
 export enum DataHubSubscriptionEventEnum {
+  ActiveStakingSuperLikeCreated = 'ACTIVE_STAKING_SUPER_LIKE_CREATED',
+  ActiveStakingSuperLikeStateUpdated = 'ACTIVE_STAKING_SUPER_LIKE_STATE_UPDATED',
   EvmAddressLinkedToAccount = 'EVM_ADDRESS_LINKED_TO_ACCOUNT',
   EvmAddressLinkToAccountStateUpdated = 'EVM_ADDRESS_LINK_TO_ACCOUNT_STATE_UPDATED',
   LinkedIdentityCreated = 'LINKED_IDENTITY_CREATED',
@@ -149,12 +322,21 @@ export enum DataHubSubscriptionEventEnum {
   PostFollowed = 'POST_FOLLOWED',
   PostFollowStateUpdated = 'POST_FOLLOW_STATE_UPDATED',
   PostStateUpdated = 'POST_STATE_UPDATED',
+  ServiceAccountErrorEvent = 'SERVICE_ACCOUNT_ERROR_EVENT',
 }
 
 export enum DataType {
   OffChain = 'offChain',
   Optimistic = 'optimistic',
   Persistent = 'persistent',
+}
+
+export type DateTimeDetailsResponseDto = {
+  __typename?: 'DateTimeDetailsResponseDto'
+  day?: Maybe<Scalars['Int']['output']>
+  dayWithoutTime: Scalars['Int']['output']
+  timestamp?: Maybe<Scalars['String']['output']>
+  week?: Maybe<Scalars['Int']['output']>
 }
 
 export type EvmAccount = {
@@ -184,8 +366,10 @@ export type ExtensionPinnedResource = {
 }
 
 export type FindPostsArgs = {
+  activeStaking?: InputMaybe<Scalars['Boolean']['input']>
   dataType?: InputMaybe<SocialEventDataType>
   ids?: InputMaybe<Array<Scalars['String']['input']>>
+  lowValue?: InputMaybe<Scalars['Boolean']['input']>
   offset?: InputMaybe<Scalars['Int']['input']>
   optimisticIds?: InputMaybe<Array<Scalars['String']['input']>>
   orderBy?: InputMaybe<Scalars['String']['input']>
@@ -235,6 +419,12 @@ export type InitModeratorInputDto = {
   ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
   substrateAddress: Scalars['String']['input']
   withOrganization?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type LikedPostsCountByDayItem = {
+  __typename?: 'LikedPostsCountByDayItem'
+  count: Scalars['Int']['output']
+  dayUnixTimestamp: Scalars['String']['output']
 }
 
 export type LinkedIdentitiesArgs = {
@@ -431,6 +621,9 @@ export enum PinnedResourceType {
 
 export type Post = {
   __typename?: 'Post'
+  activeStaking: Scalars['Boolean']['output']
+  activeStakingSuperLikes?: Maybe<Array<ActiveStakingSuperLike>>
+  activeStakingSuperLikesCount?: Maybe<Scalars['Int']['output']>
   /** is off-chain data CID backed up in blockchain */
   backupInBlockchain?: Maybe<Scalars['Boolean']['output']>
   blockchainSyncFailed: Scalars['Boolean']['output']
@@ -459,6 +652,7 @@ export type Post = {
   isShowMore: Scalars['Boolean']['output']
   kind: PostKind
   link?: Maybe<Scalars['String']['output']>
+  lowValue: Scalars['Boolean']['output']
   offChainId?: Maybe<Scalars['String']['output']>
   optimisticId?: Maybe<Scalars['String']['output']>
   ownedByAccount: Account
@@ -526,6 +720,25 @@ export type PostSubscriptionPayload = {
 
 export type Query = {
   __typename?: 'Query'
+  activeStakingAccountActivityMetricsForFixedPeriod: AccountActivityMetricsForFixedPeriodResponseDto
+  activeStakingAddressRankByRewardsForPeriod?: Maybe<AddressRankByRewardsForPeriodResponseDto>
+  activeStakingAddressesRankedByRewardsForPeriod: AddressesRankedByRewardsForPeriodResponseDto
+  activeStakingCanDoSuperLikeByPost: Array<CanDoSuperLikeByPostsResponseDto>
+  activeStakingCreatorsRankedBySuperLikesForPeriod: Array<AddressRankedBySuperLikesForPeriodResponseDto>
+  activeStakingDailyStatsByStaker: DailyStatsByStakerResponse
+  activeStakingDateDetails: DateTimeDetailsResponseDto
+  activeStakingIsActiveStaker: Scalars['Boolean']['output']
+  activeStakingRankedPostIdsByActiveStakingActivity: RankedPostIdsByActiveStakingActivityResponse
+  activeStakingRewardsByPosts: Array<RewardsByPostsResponseDto>
+  activeStakingRewardsByWeek: Array<TotalRewardsByWeekResponse>
+  activeStakingRewardsReportByWeek: Array<ActiveStakingRewardsReport>
+  activeStakingStakersRankedBySuperLikesForPeriod: Array<AddressRankedBySuperLikesForPeriodResponseDto>
+  activeStakingSuperLikeCountsByDate: SuperLikeCountsByDateWithTotalResponseDto
+  activeStakingSuperLikeCountsByPost: Array<SuperLikeCountsByPostResponse>
+  activeStakingSuperLikeCountsByStaker: Array<SuperLikeCountsByStakerResponse>
+  activeStakingSuperLikes: SuperLikesResponseDto
+  activeStakingSuperLikesNumberGoal: Scalars['Int']['output']
+  activeStakingTotalActivityMetricsForFixedPeriod: TotalActivityMetricsForFixedPeriodResponseDto
   findPosts: FindPostsResponseDto
   linkedIdentities: Array<LinkedIdentity>
   moderationBlockedResourceIds: Array<Scalars['String']['output']>
@@ -538,8 +751,76 @@ export type Query = {
   moderationReasonsAll: Array<ModerationBlockReason>
   moderators?: Maybe<ModeratorsResponse>
   postMetadata: Array<PostMetadataResponse>
-  posts: Array<Post>
+  posts: FindPostsResponseDto
   unreadMessages: Array<UnreadPostsCountResponse>
+}
+
+export type QueryActiveStakingAccountActivityMetricsForFixedPeriodArgs = {
+  args: AccountActivityMetricsForFixedPeriodInput
+}
+
+export type QueryActiveStakingAddressRankByRewardsForPeriodArgs = {
+  args: AddressRankByRewardsForPeriodInput
+}
+
+export type QueryActiveStakingAddressesRankedByRewardsForPeriodArgs = {
+  args: AddressesRankedByRewardsForPeriodInput
+}
+
+export type QueryActiveStakingCanDoSuperLikeByPostArgs = {
+  args: CanDoSuperLikeByPostInput
+}
+
+export type QueryActiveStakingCreatorsRankedBySuperLikesForPeriodArgs = {
+  args: AddressesRankedBySuperLikesForPeriodInput
+}
+
+export type QueryActiveStakingDailyStatsByStakerArgs = {
+  args: DailyStatsByStakerInput
+}
+
+export type QueryActiveStakingIsActiveStakerArgs = {
+  address: Scalars['String']['input']
+}
+
+export type QueryActiveStakingRankedPostIdsByActiveStakingActivityArgs = {
+  args: RankedPostIdsByActiveStakingActivityInput
+}
+
+export type QueryActiveStakingRewardsByPostsArgs = {
+  args: RewardsByPostsInput
+}
+
+export type QueryActiveStakingRewardsByWeekArgs = {
+  args: RewardsByWeekInput
+}
+
+export type QueryActiveStakingRewardsReportByWeekArgs = {
+  week: Scalars['Int']['input']
+}
+
+export type QueryActiveStakingStakersRankedBySuperLikesForPeriodArgs = {
+  args: AddressesRankedBySuperLikesForPeriodInput
+}
+
+export type QueryActiveStakingSuperLikeCountsByDateArgs = {
+  args: SuperLikeCountsByDateInput
+}
+
+export type QueryActiveStakingSuperLikeCountsByPostArgs = {
+  args: SuperLikeCountsByPostInput
+}
+
+export type QueryActiveStakingSuperLikeCountsByStakerArgs = {
+  args: SuperLikeCountsByStakerInput
+}
+
+export type QueryActiveStakingSuperLikesArgs = {
+  where: SuperLikesWhereInput
+}
+
+export type QueryActiveStakingTotalActivityMetricsForFixedPeriodArgs = {
+  args: TotalActivityMetricsForFixedPeriodInput
 }
 
 export type QueryFindPostsArgs = {
@@ -617,6 +898,74 @@ export enum QueryOrder {
   Desc = 'DESC',
 }
 
+export type RankedAddressWithDetails = {
+  __typename?: 'RankedAddressWithDetails'
+  address: Scalars['String']['output']
+  rank: Scalars['Int']['output']
+  reward: Scalars['String']['output']
+}
+
+export type RankedPostIdWithDetails = {
+  __typename?: 'RankedPostIdWithDetails'
+  persistentPostId?: Maybe<Scalars['String']['output']>
+  postId: Scalars['String']['output']
+  rank: Scalars['Int']['output']
+  score: Scalars['Float']['output']
+}
+
+export type RankedPostIdsByActiveStakingActivityInput = {
+  limit?: InputMaybe<Scalars['Int']['input']>
+  offset?: InputMaybe<Scalars['Int']['input']>
+  order?: InputMaybe<ActiveStakingListOrder>
+}
+
+export type RankedPostIdsByActiveStakingActivityResponse = {
+  __typename?: 'RankedPostIdsByActiveStakingActivityResponse'
+  data: Array<RankedPostIdWithDetails>
+  limit: Scalars['Int']['output']
+  offset: Scalars['Int']['output']
+  total: Scalars['Int']['output']
+}
+
+export type RewardByPostItemDto = {
+  __typename?: 'RewardByPostItemDto'
+  amount: Scalars['String']['output']
+  postId: Scalars['String']['output']
+  postPerstentId: Scalars['String']['output']
+  superLikeId: Scalars['String']['output']
+}
+
+export type RewardsByPostsInput = {
+  postIds?: InputMaybe<Array<Scalars['String']['input']>>
+  postPersistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type RewardsByPostsResponseDto = {
+  __typename?: 'RewardsByPostsResponseDto'
+  amount: Scalars['String']['output']
+  draftReward: Scalars['String']['output']
+  persistentPostId?: Maybe<Scalars['String']['output']>
+  postId?: Maybe<Scalars['String']['output']>
+  reward: Scalars['String']['output']
+}
+
+export type RewardsByWeekFilter = {
+  account: Scalars['String']['input']
+}
+
+export type RewardsByWeekInput = {
+  filter: RewardsByWeekFilter
+  weeks?: InputMaybe<Array<Scalars['Int']['input']>>
+}
+
+export type RewardsReportItem = {
+  __typename?: 'RewardsReportItem'
+  address: Scalars['String']['output']
+  amount: Scalars['String']['output']
+  decimals: Scalars['Int']['output']
+  roles: Array<Scalars['String']['output']>
+}
+
 export enum SocialEventDataType {
   OffChain = 'offChain',
   Optimistic = 'optimistic',
@@ -671,13 +1020,139 @@ export type SpaceFollowers = {
   id: Scalars['String']['output']
 }
 
+export type StakerActivityMetrics = {
+  __typename?: 'StakerActivityMetrics'
+  earnedByPeriod?: Maybe<Scalars['String']['output']>
+  earnedTotal?: Maybe<Scalars['String']['output']>
+  likedCreators?: Maybe<Scalars['Int']['output']>
+  likedPosts?: Maybe<Scalars['Int']['output']>
+  likedPostsByDay?: Maybe<Array<LikedPostsCountByDayItem>>
+}
+
+export type StakerActivityMetricsForFixedPeriodInput = {
+  earnedByPeriod?: InputMaybe<Scalars['Boolean']['input']>
+  earnedByPeriodRankPosition?: InputMaybe<Scalars['Boolean']['input']>
+  earnedTotal?: InputMaybe<Scalars['Boolean']['input']>
+  earnedTotalRankPosition?: InputMaybe<Scalars['Boolean']['input']>
+  likedCreators?: InputMaybe<Scalars['Boolean']['input']>
+  likedCreatorsRankPosition?: InputMaybe<Scalars['Boolean']['input']>
+  likedPosts?: InputMaybe<Scalars['Boolean']['input']>
+  likedPostsByDay?: InputMaybe<Scalars['Boolean']['input']>
+  likedPostsRankPosition?: InputMaybe<Scalars['Boolean']['input']>
+}
+
 export type Subscription = {
   __typename?: 'Subscription'
+  activeStakingSuperLike: SuperLikeSubscriptionPayload
   linkedIdentity: LinkedIdentitySubscriptionPayload
   moderationBlockedResource: ModerationBlockedResourceSubscriptionPayload
   moderationModerator: ModeratorSubscriptionPayload
   moderationOrganization: ModerationOrganizationSubscriptionPayload
   post: PostSubscriptionPayload
+}
+
+export type SuperLikeCountByDateResponseDto = {
+  __typename?: 'SuperLikeCountByDateResponseDto'
+  count: Scalars['Int']['output']
+  dayUnixTimestamp: Scalars['Int']['output']
+}
+
+export type SuperLikeCountsByDateInput = {
+  fromDate: Scalars['String']['input']
+  toDate: Scalars['String']['input']
+  total?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type SuperLikeCountsByDateWithTotalResponseDto = {
+  __typename?: 'SuperLikeCountsByDateWithTotalResponseDto'
+  byDate: Array<SuperLikeCountByDateResponseDto>
+  total?: Maybe<Scalars['Int']['output']>
+}
+
+export type SuperLikeCountsByPostInput = {
+  postIds?: InputMaybe<Array<Scalars['String']['input']>>
+  postPersistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type SuperLikeCountsByPostResponse = {
+  __typename?: 'SuperLikeCountsByPostResponse'
+  count: Scalars['Int']['output']
+  persistentPostId?: Maybe<Scalars['String']['output']>
+  postId?: Maybe<Scalars['String']['output']>
+}
+
+export type SuperLikeCountsByStakerInput = {
+  address: Scalars['String']['input']
+  postIds?: InputMaybe<Array<Scalars['String']['input']>>
+  postPersistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type SuperLikeCountsByStakerResponse = {
+  __typename?: 'SuperLikeCountsByStakerResponse'
+  count: Scalars['Int']['output']
+  persistentPostId?: Maybe<Scalars['String']['output']>
+  postId?: Maybe<Scalars['String']['output']>
+}
+
+export type SuperLikeSubscriptionPayload = {
+  __typename?: 'SuperLikeSubscriptionPayload'
+  entity: ActiveStakingSuperLike
+  event: DataHubSubscriptionEventEnum
+}
+
+export type SuperLikesCreatorRewards = {
+  __typename?: 'SuperLikesCreatorRewards'
+  posts: Array<SuperLikesCreatorRewardsByPost>
+  total: Scalars['String']['output']
+}
+
+export type SuperLikesCreatorRewardsByPost = {
+  __typename?: 'SuperLikesCreatorRewardsByPost'
+  amount: Scalars['String']['output']
+  postId: Scalars['String']['output']
+  postPersistentId: Scalars['String']['output']
+  superLikesCount: Scalars['Int']['output']
+}
+
+export type SuperLikesResponseDto = {
+  __typename?: 'SuperLikesResponseDto'
+  data: Array<ActiveStakingSuperLike>
+  offset?: Maybe<Scalars['Int']['output']>
+  pageSize?: Maybe<Scalars['Int']['output']>
+  total?: Maybe<Scalars['Int']['output']>
+}
+
+export type SuperLikesWhereInput = {
+  offset?: InputMaybe<Scalars['Int']['input']>
+  pageSize?: InputMaybe<Scalars['Int']['input']>
+  postIds?: InputMaybe<Array<Scalars['String']['input']>>
+  postPersistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type TotalActivityMetricsForFixedPeriodInput = {
+  creatorEarnedTotal?: InputMaybe<Scalars['Boolean']['input']>
+  likedCreatorsCount?: InputMaybe<Scalars['Boolean']['input']>
+  likedPostsCount?: InputMaybe<Scalars['Boolean']['input']>
+  period?: InputMaybe<ActiveStakingPeriod>
+  periodValue?: InputMaybe<Scalars['String']['input']>
+  stakersEarnedTotal?: InputMaybe<Scalars['Boolean']['input']>
+  superLikesTotalCountTotal?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type TotalActivityMetricsForFixedPeriodResponseDto = {
+  __typename?: 'TotalActivityMetricsForFixedPeriodResponseDto'
+  creatorEarnedTotal?: Maybe<Scalars['String']['output']>
+  likedCreatorsCount?: Maybe<Scalars['Int']['output']>
+  likedPostsCount?: Maybe<Scalars['Int']['output']>
+  stakersEarnedTotal?: Maybe<Scalars['String']['output']>
+  superLikesTotalCountTotal?: Maybe<Scalars['Int']['output']>
+}
+
+export type TotalRewardsByWeekResponse = {
+  __typename?: 'TotalRewardsByWeekResponse'
+  creator: SuperLikesCreatorRewards
+  staker: Scalars['String']['output']
+  week: Scalars['Int']['output']
 }
 
 export type UnreadMessagesInput = {
@@ -951,6 +1426,8 @@ export type DatahubPostFragmentFragment = {
     recipient?: { __typename?: 'Account'; id: string } | null
     fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
     toEvm?: { __typename?: 'EvmAccount'; id: string } | null
+    fromSubstrate?: { __typename?: 'Account'; id: string } | null
+    toSubstrate?: { __typename?: 'Account'; id: string } | null
     pinnedResources?: Array<{
       __typename?: 'ExtensionPinnedResource'
       post?: {
@@ -1027,6 +1504,8 @@ export type GetPostsQuery = {
         recipient?: { __typename?: 'Account'; id: string } | null
         fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
         toEvm?: { __typename?: 'EvmAccount'; id: string } | null
+        fromSubstrate?: { __typename?: 'Account'; id: string } | null
+        toSubstrate?: { __typename?: 'Account'; id: string } | null
         pinnedResources?: Array<{
           __typename?: 'ExtensionPinnedResource'
           post?: {
@@ -1104,6 +1583,8 @@ export type GetOptimisticPostsQuery = {
         recipient?: { __typename?: 'Account'; id: string } | null
         fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
         toEvm?: { __typename?: 'EvmAccount'; id: string } | null
+        fromSubstrate?: { __typename?: 'Account'; id: string } | null
+        toSubstrate?: { __typename?: 'Account'; id: string } | null
         pinnedResources?: Array<{
           __typename?: 'ExtensionPinnedResource'
           post?: {
@@ -1247,6 +1728,12 @@ export const DatahubPostFragment = gql`
         id
       }
       toEvm {
+        id
+      }
+      fromSubstrate {
+        id
+      }
+      toSubstrate {
         id
       }
       pinnedResources {

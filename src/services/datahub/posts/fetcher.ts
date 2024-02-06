@@ -75,6 +75,12 @@ export const DATAHUB_POST_FRAGMENT = gql`
       toEvm {
         id
       }
+      fromSubstrate {
+        id
+      }
+      toSubstrate {
+        id
+      }
       pinnedResources {
         post {
           id

@@ -70,8 +70,8 @@ const mapPostExtensions = (
           id: 'subsocial-donations',
           properties: {
             chain: ext?.chain ?? '',
-            from: ext?.fromEvm?.id ?? '',
-            to: ext?.toEvm?.id ?? '',
+            from: ext?.fromEvm?.id ?? ext.fromSubstrate?.id ?? '',
+            to: ext?.toEvm?.id ?? ext.toSubstrate?.id ?? '',
             token: ext?.token ?? '',
             decimals: ext?.decimals ?? 0,
             amount: ext?.amount ?? '',
