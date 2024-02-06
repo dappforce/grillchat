@@ -7,6 +7,7 @@ import MoonIcon from '@/assets/icons/moon.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
+import Button from '@/components/Button'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
@@ -29,6 +30,7 @@ import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
 import { FiDownload } from 'react-icons/fi'
+import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
 import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
@@ -41,7 +43,12 @@ export default function AccountContent({
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
 
-  const { data: balance, isLoading } = getBalancesQuery.useQuery({
+  const {
+    data: balance,
+    isLoading,
+    isRefetching,
+    refetch,
+  } = getBalancesQuery.useQuery({
     address,
     chainName: 'subsocial',
   })
@@ -184,11 +191,19 @@ export default function AccountContent({
               <div>
                 <SkeletonFallback
                   className='my-0 w-20 bg-background-lightest'
-                  isLoading={isLoading}
+                  isLoading={isLoading || isRefetching}
                 >
                   {balanceValueBN.toFixed(4)} {tokenSymbol}
                 </SkeletonFallback>
               </div>
+              <Button
+                className='text-text-muted'
+                size='noPadding'
+                variant='transparent'
+                onClick={() => refetch()}
+              >
+                <LuRefreshCcw />
+              </Button>
             </div>
             <div>
               <SkeletonFallback

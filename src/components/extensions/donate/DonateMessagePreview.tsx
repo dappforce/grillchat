@@ -4,6 +4,7 @@ import {
   coingeckoTokenIds,
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
+import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx, getCommonClassNames } from '@/utils/class-names'
@@ -30,6 +31,10 @@ const DonatePreview = ({
 }: DonatePreviewProps) => {
   const { openModal } = useProfileModal()
   const myAddress = useMyMainAddress()
+  const { refetch } = getBalancesQuery.useQuery(
+    { address: myAddress ?? '', chainName: 'subsocial' },
+    { enabled: false }
+  )
 
   if (!extensionProps) return null
 
@@ -79,7 +84,10 @@ const DonatePreview = ({
             variant='whiteOutline'
             size='sm'
             className='bg-white text-[#DA612B] hover:bg-transparent hover:text-white focus-visible:bg-transparent focus-visible:text-white'
-            onClick={() => openModal({ defaultOpenState: 'withdraw-tokens' })}
+            onClick={() => {
+              refetch()
+              openModal({ defaultOpenState: 'withdraw-tokens' })
+            }}
           >
             Withdraw
           </Button>
