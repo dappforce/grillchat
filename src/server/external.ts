@@ -25,7 +25,7 @@ export const getKiltApi = async () => {
 }
 
 export function getSubIdRequest() {
-  return axios.create({ baseURL: 'https://sub.id/api/v1/' })
+  return axios.create({ baseURL: 'http://localhost:3001/api/v1/' })
 }
 
 export function subsocialSquidRequest<T, V extends Variables = Variables>(
