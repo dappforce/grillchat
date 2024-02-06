@@ -35,6 +35,14 @@ export enum CanUserDoAction {
   CreatePost = 'CREATE_POST'
 }
 
+export type CreateMutateActiveStakingSuperLikeInput = {
+  callData?: InputMaybe<SocialCallDataInput>;
+  dataType: SocialEventDataType;
+  protVersion?: InputMaybe<Scalars['String']['input']>;
+  providerAddr: Scalars['String']['input'];
+  sig: Scalars['String']['input'];
+};
+
 export type CreateMutateLinkedIdentityInput = {
   callData?: InputMaybe<SocialCallDataInput>;
   dataType: SocialEventDataType;
@@ -118,6 +126,7 @@ export type ModerationCallInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  activeStakingCreateSuperLike: IngestDataResponseDto;
   createLinkedIdentity: IngestDataResponseDto;
   createPostOffChain: IngestDataResponseDto;
   createPostOptimistic: IngestDataResponseDto;
@@ -125,10 +134,16 @@ export type Mutation = {
   ingestPersistentDataSquid: IngestPersistentDataFromSquidResponseDto;
   moderationAddContextToOrganization: IngestDataResponseDto;
   moderationBlockResource: IngestDataResponseDto;
+  moderationExecuteForceCall: IngestDataResponseDto;
   moderationInitModerator: IngestDataResponseDto;
   moderationUnblockResource: IngestDataResponseDto;
   updatePostBlockchainSyncStatus: IngestDataResponseDto;
   updatePostOptimistic: IngestDataResponseDto;
+};
+
+
+export type MutationActiveStakingCreateSuperLikeArgs = {
+  args: CreateMutateActiveStakingSuperLikeInput;
 };
 
 
@@ -164,6 +179,11 @@ export type MutationModerationAddContextToOrganizationArgs = {
 
 export type MutationModerationBlockResourceArgs = {
   blockResourceInput: ModerationCallInput;
+};
+
+
+export type MutationModerationExecuteForceCallArgs = {
+  args: ModerationCallInput;
 };
 
 
@@ -252,6 +272,8 @@ export enum SocialCallName {
   ForceCreateSpace = 'force_create_space',
   ForceDeletePostReaction = 'force_delete_post_reaction',
   MovePost = 'move_post',
+  SynthActiveStakingCreateSuperLike = 'synth_active_staking_create_super_like',
+  SynthActiveStakingDeleteSuperLike = 'synth_active_staking_delete_super_like',
   SynthCreateLinkedIdentity = 'synth_create_linked_identity',
   SynthCreatePostTxFailed = 'synth_create_post_tx_failed',
   SynthCreatePostTxRetry = 'synth_create_post_tx_retry',
@@ -261,8 +283,10 @@ export enum SocialCallName {
   SynthModerationBlockResource = 'synth_moderation_block_resource',
   SynthModerationForceAddCtxToOrganization = 'synth_moderation_force_add_ctx_to_organization',
   SynthModerationForceAddDefaultCtxToModerator = 'synth_moderation_force_add_default_ctx_to_moderator',
+  SynthModerationForceAddOrganizationModerator = 'synth_moderation_force_add_organization_moderator',
   SynthModerationForceBlockResource = 'synth_moderation_force_block_resource',
   SynthModerationForceInitModerator = 'synth_moderation_force_init_moderator',
+  SynthModerationForceInitOrganization = 'synth_moderation_force_init_organization',
   SynthModerationForceUnblockResource = 'synth_moderation_force_unblock_resource',
   SynthModerationInitModerator = 'synth_moderation_init_moderator',
   SynthModerationUnblockResource = 'synth_moderation_unblock_resource',
@@ -308,33 +332,40 @@ export type UpdatePostOptimisticInput = {
   sig: Scalars['String']['input'];
 };
 
+export type LinkIdentityMutationVariables = Exact<{
+  createLinkedIdentityInput: CreateMutateLinkedIdentityInput;
+}>;
+
+
+export type LinkIdentityMutation = { __typename?: 'Mutation', createLinkedIdentity: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+
 export type InitModerationOrgMutationVariables = Exact<{
   input: ModerationCallInput;
 }>;
 
 
-export type InitModerationOrgMutation = { __typename?: 'Mutation', moderationInitModerator: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+export type InitModerationOrgMutation = { __typename?: 'Mutation', moderationInitModerator: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 export type AddPostIdToOrgMutationVariables = Exact<{
   input: ModerationCallInput;
 }>;
 
 
-export type AddPostIdToOrgMutation = { __typename?: 'Mutation', moderationAddContextToOrganization: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+export type AddPostIdToOrgMutation = { __typename?: 'Mutation', moderationAddContextToOrganization: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 export type BlockResourceMutationVariables = Exact<{
   input: ModerationCallInput;
 }>;
 
 
-export type BlockResourceMutation = { __typename?: 'Mutation', moderationBlockResource: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+export type BlockResourceMutation = { __typename?: 'Mutation', moderationBlockResource: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 export type UnblockResourceMutationVariables = Exact<{
   input: ModerationCallInput;
 }>;
 
 
-export type UnblockResourceMutation = { __typename?: 'Mutation', moderationUnblockResource: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+export type UnblockResourceMutation = { __typename?: 'Mutation', moderationUnblockResource: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 export type GetCanAccountDoQueryVariables = Exact<{
   getAccountDo: CanAccountDoArgsInput;
@@ -348,40 +379,42 @@ export type CreatePostOptimisticMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostOptimisticMutation = { __typename?: 'Mutation', createPostOptimistic: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+export type CreatePostOptimisticMutation = { __typename?: 'Mutation', createPostOptimistic: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 export type UpdatePostOptimisticMutationVariables = Exact<{
   updatePostOptimisticInput: UpdatePostOptimisticInput;
 }>;
 
 
-export type UpdatePostOptimisticMutation = { __typename?: 'Mutation', updatePostOptimistic: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+export type UpdatePostOptimisticMutation = { __typename?: 'Mutation', updatePostOptimistic: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 export type NotifyCreatePostTxFailedOrRetryStatusMutationVariables = Exact<{
   updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput;
 }>;
 
 
-export type NotifyCreatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', message?: string | null } };
+export type NotifyCreatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 export type NotifyUpdatePostTxFailedOrRetryStatusMutationVariables = Exact<{
   updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput;
 }>;
 
 
-export type NotifyUpdatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', message?: string | null } };
-
-export type LinkIdentityMutationVariables = Exact<{
-  createLinkedIdentityInput: CreateMutateLinkedIdentityInput;
-}>;
+export type NotifyUpdatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 
-export type LinkIdentityMutation = { __typename?: 'Mutation', createLinkedIdentity: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
-
-
+export const LinkIdentity = gql`
+    mutation LinkIdentity($createLinkedIdentityInput: CreateMutateLinkedIdentityInput!) {
+  createLinkedIdentity(createLinkedIdentityInput: $createLinkedIdentityInput) {
+    processed
+    message
+  }
+}
+    `;
 export const InitModerationOrg = gql`
     mutation InitModerationOrg($input: ModerationCallInput!) {
   moderationInitModerator(initModeratorInput: $input) {
+    processed
     message
   }
 }
@@ -389,6 +422,7 @@ export const InitModerationOrg = gql`
 export const AddPostIdToOrg = gql`
     mutation AddPostIdToOrg($input: ModerationCallInput!) {
   moderationAddContextToOrganization(addContextInput: $input) {
+    processed
     message
   }
 }
@@ -396,6 +430,7 @@ export const AddPostIdToOrg = gql`
 export const BlockResource = gql`
     mutation BlockResource($input: ModerationCallInput!) {
   moderationBlockResource(blockResourceInput: $input) {
+    processed
     message
   }
 }
@@ -403,6 +438,7 @@ export const BlockResource = gql`
 export const UnblockResource = gql`
     mutation UnblockResource($input: ModerationCallInput!) {
   moderationUnblockResource(unblockResourceInput: $input) {
+    processed
     message
   }
 }
@@ -417,6 +453,7 @@ export const GetCanAccountDo = gql`
 export const CreatePostOptimistic = gql`
     mutation CreatePostOptimistic($createPostOptimisticInput: CreatePostOptimisticInput!) {
   createPostOptimistic(createPostOptimisticInput: $createPostOptimisticInput) {
+    processed
     message
   }
 }
@@ -424,6 +461,7 @@ export const CreatePostOptimistic = gql`
 export const UpdatePostOptimistic = gql`
     mutation UpdatePostOptimistic($updatePostOptimisticInput: UpdatePostOptimisticInput!) {
   updatePostOptimistic(updatePostOptimisticInput: $updatePostOptimisticInput) {
+    processed
     message
   }
 }
@@ -433,6 +471,7 @@ export const NotifyCreatePostTxFailedOrRetryStatus = gql`
   updatePostBlockchainSyncStatus(
     updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
   ) {
+    processed
     message
   }
 }
@@ -442,13 +481,6 @@ export const NotifyUpdatePostTxFailedOrRetryStatus = gql`
   updatePostBlockchainSyncStatus(
     updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
   ) {
-    message
-  }
-}
-    `;
-export const LinkIdentity = gql`
-    mutation LinkIdentity($createLinkedIdentityInput: CreateMutateLinkedIdentityInput!) {
-  createLinkedIdentity(createLinkedIdentityInput: $createLinkedIdentityInput) {
     processed
     message
   }

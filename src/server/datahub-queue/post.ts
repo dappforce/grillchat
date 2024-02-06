@@ -15,7 +15,7 @@ import {
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
 } from './generated'
-import { datahubQueueRequest } from './utils'
+import { datahubQueueRequest, throwErrorIfNotProcessed } from './utils'
 
 const GET_CAN_ACCOUNT_DO = gql`
   query GetCanAccountDo($getAccountDo: CanAccountDoArgsInput!) {
@@ -44,12 +44,13 @@ const CREATE_POST_OPTIMISTIC_MUTATION = gql`
     createPostOptimistic(
       createPostOptimisticInput: $createPostOptimisticInput
     ) {
+      processed
       message
     }
   }
 `
 export async function createPostData(input: CreatePostOptimisticInput) {
-  await datahubQueueRequest<
+  const res = await datahubQueueRequest<
     CreatePostOptimisticMutation,
     CreatePostOptimisticMutationVariables
   >({
@@ -58,6 +59,7 @@ export async function createPostData(input: CreatePostOptimisticInput) {
       createPostOptimisticInput: input,
     },
   })
+  throwErrorIfNotProcessed(res.createPostOptimistic, 'Failed to create post')
 }
 
 const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
@@ -67,12 +69,13 @@ const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
     updatePostOptimistic(
       updatePostOptimisticInput: $updatePostOptimisticInput
     ) {
+      processed
       message
     }
   }
 `
 export async function updatePostData(input: UpdatePostOptimisticInput) {
-  await datahubQueueRequest<
+  const res = await datahubQueueRequest<
     UpdatePostOptimisticMutation,
     UpdatePostOptimisticMutationVariables
   >({
@@ -81,6 +84,7 @@ export async function updatePostData(input: UpdatePostOptimisticInput) {
       updatePostOptimisticInput: input,
     },
   })
+  throwErrorIfNotProcessed(res.updatePostOptimistic, 'Failed to update post')
 }
 
 const NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
@@ -90,6 +94,7 @@ const NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
     updatePostBlockchainSyncStatus(
       updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
     ) {
+      processed
       message
     }
   }
@@ -97,7 +102,7 @@ const NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
 export async function notifyCreatePostFailedOrRetryStatus(
   input: UpdatePostBlockchainSyncStatusInput
 ) {
-  await datahubQueueRequest<
+  const res = await datahubQueueRequest<
     NotifyCreatePostTxFailedOrRetryStatusMutation,
     NotifyCreatePostTxFailedOrRetryStatusMutationVariables
   >({
@@ -106,6 +111,10 @@ export async function notifyCreatePostFailedOrRetryStatus(
       updatePostBlockchainSyncStatusInput: input,
     },
   })
+  throwErrorIfNotProcessed(
+    res.updatePostBlockchainSyncStatus,
+    'Failed to notify create post'
+  )
 }
 
 const NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
@@ -115,6 +124,7 @@ const NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
     updatePostBlockchainSyncStatus(
       updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
     ) {
+      processed
       message
     }
   }
@@ -122,7 +132,7 @@ const NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
 export async function notifyUpdatePostFailedOrRetryStatus(
   input: UpdatePostBlockchainSyncStatusInput
 ) {
-  await datahubQueueRequest<
+  const res = await datahubQueueRequest<
     NotifyUpdatePostTxFailedOrRetryStatusMutation,
     NotifyUpdatePostTxFailedOrRetryStatusMutationVariables
   >({
@@ -131,4 +141,8 @@ export async function notifyUpdatePostFailedOrRetryStatus(
       updatePostBlockchainSyncStatusInput: input,
     },
   })
+  throwErrorIfNotProcessed(
+    res.updatePostBlockchainSyncStatus,
+    'Failed to notify update post'
+  )
 }

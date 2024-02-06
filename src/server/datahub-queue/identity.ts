@@ -4,7 +4,11 @@ import {
   LinkIdentityMutation,
   LinkIdentityMutationVariables,
 } from './generated'
-import { backendSigWrapper, datahubQueueRequest } from './utils'
+import {
+  backendSigWrapper,
+  datahubQueueRequest,
+  throwErrorIfNotProcessed,
+} from './utils'
 
 const LINK_IDENTITY_MUTATION = gql`
   mutation LinkIdentity(
@@ -30,9 +34,5 @@ export async function linkIdentity(input: SocialEventDataApiInput) {
       createLinkedIdentityInput: input as any,
     },
   })
-  if (!res.createLinkedIdentity.processed) {
-    throw new Error(
-      res.createLinkedIdentity.message ?? 'Failed to link identity'
-    )
-  }
+  throwErrorIfNotProcessed(res.createLinkedIdentity, 'Failed to link identity')
 }
