@@ -1,5 +1,5 @@
 import { getPostExtension } from '@/components/extensions/utils'
-import { config } from '@/constants/config'
+import { constantsConfig } from '@/constants/config'
 import { getPostQuery } from '@/services/api/query'
 
 export default function usePinnedMessage(chatId: string) {
@@ -9,6 +9,7 @@ export default function usePinnedMessage(chatId: string) {
     'subsocial-pinned-posts'
   )
   const pinnedMessageId =
-    config.pinnedMessageInChatId[chatId] || pinExtension?.properties.ids[0]
+    constantsConfig.pinnedMessageInChatId[chatId] ||
+    pinExtension?.properties.ids[0]
   return pinnedMessageId
 }

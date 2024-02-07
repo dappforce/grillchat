@@ -19,10 +19,10 @@ export type ConstantsConfig = {
   chatsForStakers: string[]
 }
 
-export const config =
+export const constantsConfig =
   getNetwork() === 'subsocial' ? subsocialConfig : xsocialConfig
 
-const hubIdToAliasMap = Object.entries(config.aliases).reduce(
+const hubIdToAliasMap = Object.entries(constantsConfig.aliases).reduce(
   (acc, [alias, hubId]) => {
     if (!hubId) return acc
     return { ...acc, [hubId]: alias }
@@ -33,19 +33,19 @@ export function getAliasFromHubId(hubId: string) {
   return hubIdToAliasMap[hubId] ?? ''
 }
 export function getHubIdFromAlias(alias: string) {
-  return config.aliases[alias] ?? ''
+  return constantsConfig.aliases[alias] ?? ''
 }
 
 export const isCommunityHubId = (hubId: string | undefined) =>
-  config.communityHubIds.includes(hubId ?? '')
+  constantsConfig.communityHubIds.includes(hubId ?? '')
 
 export function getPinnedHubIds() {
-  return [...config.communityHubIds, ...config.pinnedHubIds]
+  return [...constantsConfig.communityHubIds, ...constantsConfig.pinnedHubIds]
 }
 
 export function getIsHubWithoutJoinButton(hubId: string, chatId: string) {
   return (
-    config.hubsWithoutJoinButton.includes(hubId) &&
-    !config.chatsWithJoinButton.includes(chatId)
+    constantsConfig.hubsWithoutJoinButton.includes(hubId) &&
+    !constantsConfig.chatsWithJoinButton.includes(chatId)
   )
 }

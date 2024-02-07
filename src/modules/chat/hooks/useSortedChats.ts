@@ -1,4 +1,4 @@
-import { config } from '@/constants/config'
+import { constantsConfig } from '@/constants/config'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
@@ -32,7 +32,7 @@ export default function useSortedChats(
   const allChatIds = useMemo(() => {
     return [
       ...(data?.postIds ?? []),
-      ...(config.linkedChatsForHubId[hubId] ?? []),
+      ...(constantsConfig.linkedChatsForHubId[hubId] ?? []),
     ]
   }, [data, hubId])
 

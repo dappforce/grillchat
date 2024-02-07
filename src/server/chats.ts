@@ -1,4 +1,4 @@
-import { config } from '@/constants/config'
+import { constantsConfig } from '@/constants/config'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
@@ -18,7 +18,7 @@ export async function prefetchChatPreviewsData(
   const res = await getPostIdsBySpaceIdQuery.fetchQuery(queryClient, hubId)
   const allChatIds = [
     ...(res?.postIds ?? []),
-    ...(config.linkedChatsForHubId[hubId] ?? []),
+    ...(constantsConfig.linkedChatsForHubId[hubId] ?? []),
   ]
 
   const [{ lastMessages, chats }] = await Promise.all([

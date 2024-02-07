@@ -2,7 +2,7 @@ import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
-import { config } from '@/constants/config'
+import { constantsConfig } from '@/constants/config'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginOption from '@/hooks/useLoginOption'
 import usePrevious from '@/hooks/usePrevious'
@@ -212,7 +212,10 @@ function NotificationBell() {
 
   // enable unread count only from datahub data because we can't get unread count by timestamp from squid/chain
   const { data: unreadCount } = getUnreadCountQuery.useQuery(
-    { chatId: config.annChatId, lastRead: { timestamp: lastTimestamp } },
+    {
+      chatId: constantsConfig.annChatId,
+      lastRead: { timestamp: lastTimestamp },
+    },
     {
       enabled: !!getDatahubConfig() && !!lastTimestamp,
       staleTime: Infinity,
@@ -222,7 +225,7 @@ function NotificationBell() {
   const { query } = useRouter()
   useEffect(() => {
     if (typeof query.slug !== 'string') return
-    if (getIdFromSlug(query.slug) === config.annChatId) {
+    if (getIdFromSlug(query.slug) === constantsConfig.annChatId) {
       bellLastReadStorage.set(Date.now().toString())
       setLastTimestamp(Date.now())
     }
@@ -233,7 +236,7 @@ function NotificationBell() {
       size='circle'
       variant='transparent'
       className='text-text-muted dark:text-text'
-      href={`/x/grill-announcements-${config.annChatId}`}
+      href={`/x/grill-announcements-${constantsConfig.annChatId}`}
       onClick={() => sendEvent('open_ann_chat', { eventSource: 'notifs_bell' })}
     >
       <div className='relative'>

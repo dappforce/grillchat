@@ -1,4 +1,4 @@
-import { config } from '@/constants/config'
+import { constantsConfig } from '@/constants/config'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount } from '@/stores/my-account'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
@@ -14,7 +14,7 @@ export default function useLoginOption() {
     typeof query.slug === 'string' ? getIdFromSlug(query.slug) : undefined
 
   let loginOption: LoginOption = 'all'
-  if (config.chatsForStakers.includes(chatId ?? '')) {
+  if (constantsConfig.chatsForStakers.includes(chatId ?? '')) {
     loginOption = 'polkadot'
   }
 
