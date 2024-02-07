@@ -1,6 +1,6 @@
 import { CopyText } from '@/components/CopyText'
 import QrCode from '@/components/QrCode'
-import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
+import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/widget/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { getCurrentUrlOrigin } from '@/utils/links'

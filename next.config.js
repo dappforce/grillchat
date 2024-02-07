@@ -30,11 +30,11 @@ const nextConfig = {
   },
   async rewrites() {
     return [
-      { source: '/hubs', destination: '/' },
-      { source: '/my-chats', destination: '/' },
-      { source: '/hot-chats', destination: '/' },
+      { source: '/widget/hubs', destination: '/' },
+      { source: '/widget/my-chats', destination: '/' },
+      { source: '/widget/hot-chats', destination: '/' },
       // { source: '/ai-bots', destination: '/' },
-      { source: '/creators', destination: '/' },
+      { source: '/widget/creators', destination: '/' },
     ]
   },
   async redirects() {

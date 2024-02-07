@@ -36,7 +36,7 @@ function getHubIdFromUrl(currentPath: CurrentPath) {
 
 export function getHubPageLink(currentPath: CurrentPath) {
   const hubId = getHubIdFromUrl(currentPath)
-  return `/${hubId ?? ''}`
+  return `/widget/${hubId ?? ''}`
 }
 
 export function getChatPageLink(
@@ -51,7 +51,7 @@ export function getChatPageLink(
   if (!chatSlug && typeof currentSlug === 'string') {
     chatSlug = currentSlug
   }
-  return `/${hubAliasOrId}/${chatSlug}`
+  return `/widget/${hubAliasOrId}/${chatSlug}`
 }
 
 export function validateVideoUrl(url: string) {

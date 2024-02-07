@@ -1,4 +1,4 @@
-import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
+import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/widget/account'
 import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { getCurrentUrlOrigin } from '@/utils/links'
