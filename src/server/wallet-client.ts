@@ -1,7 +1,7 @@
-import { getDiscussionCreatorMnemonic } from '@/utils/env/server'
 import { Keyring } from '@polkadot/api'
 import { cryptoWaitReady } from '@polkadot/util-crypto'
 
+import { env } from '@/env.mjs'
 import { KeyringPair } from '@polkadot/keyring/types'
 
 export type WalletClientAccounts = {
@@ -61,7 +61,7 @@ export class WalletManager {
   public async init(): Promise<WalletManager> {
     if (this.clientValid()) return this
     this.accs.discussionCreator = await WalletManager.createKeyringPairFromMnem(
-      getDiscussionCreatorMnemonic()
+      env.SERVER_DISCUSSION_CREATOR_MNEMONIC
     )
     return this
   }

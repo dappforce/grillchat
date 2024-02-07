@@ -1,4 +1,4 @@
-import { getCovalentApiKey } from '@/utils/env/server'
+import { env } from '@/env.mjs'
 import '@kiltprotocol/augment-api'
 import { typesBundle } from '@kiltprotocol/type-definitions'
 import { ApiPromise, HttpProvider } from '@polkadot/api'
@@ -8,7 +8,7 @@ import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 export const covalentRequest = axios.create({
   baseURL: 'https://api.covalenthq.com/v1/',
   headers: {
-    Authorization: `Bearer ${getCovalentApiKey()}`,
+    Authorization: `Bearer ${env.COVALENT_API_KEY}`,
   },
 })
 
