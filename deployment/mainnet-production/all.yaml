@@ -56,13 +56,3 @@ metadata:
 data:
   REDIS_HOST: 'mainnet-grill-redis-master.default'
   REDIS_PORT: '6379'
-  NEXT_PUBLIC_SPACE_IDS: '12659,12660,12455,12662'
-  NEXT_PUBLIC_SQUID_URL: 'https://squid.subsquid.io/subsocial/graphql'
-  NEXT_PUBLIC_APP_ID: '1'
-  NEXT_PUBLIC_SUBSTRATE_URL: 'https://para.subsocial.network'
-  NEXT_PUBLIC_SUBSTRATE_WSS: 'wss://para.subsocial.network'
-  NEXT_PUBLIC_DATAHUB_QUERY_URL: 'https://sub-data-hub.subsocial.network/graphql'
-  NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL: 'wss://sub-data-hub.subsocial.network/graphql-ws'
-  DATAHUB_QUEUE_URL: 'https://sub-queue-data-hub.subsocial.network/graphql'
-  NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS: '12662'
-  NEXTAUTH_URL: 'https://grill.so'
