@@ -92,7 +92,7 @@ jobs:
           file: docker/storybook-Dockerfile
           push: true
           build-args: |
-            GH_NEXT_PUBLIC_SPACE_IDS=1002,1005,1010,1011,1023,1030
+            GH_NEXT_PUBLIC_SPACE_IDS=1002,1005,1010,1011,1023,1030,1772
             GH_NEXT_PUBLIC_MODERATION_URL=https://moderation.subsocial.network/graphql
             GH_NOTIFICATIONS_URL=https://grill-notifications.subsocial.network/graphql
             GH_NOTIFICATIONS_TOKEN=${{ secrets.NOTIFICATIONS_AUTH_TOKEN }}

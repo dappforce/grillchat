@@ -25,6 +25,8 @@ const subsocialConfig: ConstantsConfig = {
       '3rJPTPXHEq6sXeXK4CCgSnWhmakfpG4DknH62P616Zyr9XLz',
       '3q5o5HibyHXYrwVMinjcL4j95SDVNmLE46pu9Z5C8RTiWzwh',
       '3tATRYq6yiws8B8WhLxEuNPFtpLFh8xxe2K2Lnt8NTrjXk8N',
+      // Vanessa
+      '3rraq9sYfdrxjGrVDJgG7uzRgVP2BhKZxG1mCwP2pjUpKCCF',
 
       // EVM addresses need to be lower cased, because the casing might be different in different circumstances
       '0x8f7131da7c374566ad3084049d4e1806ed183a27',

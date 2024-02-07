@@ -40,7 +40,7 @@ export const isCommunityHubId = (hubId: string | undefined) =>
   constantsConfig.communityHubIds.includes(hubId ?? '')
 
 export function getPinnedHubIds() {
-  return [...constantsConfig.communityHubIds, ...constantsConfig.pinnedHubIds]
+  return [...constantsConfig.pinnedHubIds, ...constantsConfig.communityHubIds]
 }
 
 export function getIsHubWithoutJoinButton(hubId: string, chatId: string) {
