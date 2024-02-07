@@ -1,4 +1,4 @@
-FROM node:18-slim as builder
+FROM node:20-slim as builder
 
 ARG GH_NEXTAUTH_URL
 ARG GH_NEXT_PUBLIC_SUBSTRATE_URL

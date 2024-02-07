@@ -1,4 +1,4 @@
-FROM node:18-slim as builder
+FROM node:20-slim as builder
 
 ARG GH_SERVER_MNEMONIC
 ARG GH_SERVER_DISCUSSION_CREATOR_MNEMONIC
