@@ -113,7 +113,6 @@ type NotificationButtonProps = ProfileModalContentProps & {
 async function getMessageTokenWithCatch() {
   try {
     const fcmToken = await getMessageToken()
-    console.log('FCM Token', fcmToken)
     if (!fcmToken) {
       toast.custom((t) => (
         <Toast

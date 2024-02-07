@@ -21,7 +21,7 @@ export const getMessageToken = async (): Promise<string | undefined> => {
     return token
   } else if (permission === 'denied') {
     // The user has denied permission.
-    console.log('Permission denied by the user.')
+    console.warn('Permission denied by the user.')
   } else {
     // The user has not yet been asked for permission.
     await Notification.requestPermission()

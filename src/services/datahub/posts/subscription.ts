@@ -94,7 +94,7 @@ function subscription(queryClient: QueryClient) {
         await processSubscriptionEvent(queryClient, eventData)
       },
       error: () => {
-        console.log('error subscription')
+        console.error('error subscription')
       },
     }
   )

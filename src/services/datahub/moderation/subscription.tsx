@@ -116,7 +116,7 @@ function moderationSubscription(queryClient: QueryClient) {
         await processBlockedResourcesEvent(queryClient, eventData)
       },
       error: (err) => {
-        console.log('error blocked resources subscription', err)
+        console.error('error blocked resources subscription', err)
       },
     }
   )
@@ -137,7 +137,7 @@ function moderationSubscription(queryClient: QueryClient) {
         await processOrganizationEvent(queryClient, eventData)
       },
       error: (err) => {
-        console.log('error moderator subscription', err)
+        console.error('error moderator subscription', err)
       },
     }
   )

@@ -9,9 +9,6 @@ export function getIpfsApi() {
   const pinUrl = getIpfsPinUrl()
   const writeUrl = getIpfsWriteUrl()
 
-  console.log('pinUrl', pinUrl)
-  console.log('writeUrl', writeUrl)
-
   const props = pinUrl.includes('crust')
     ? { asLink: false, 'meta.gatewayId': 1 }
     : { asLink: true }

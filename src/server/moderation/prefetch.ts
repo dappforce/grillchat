@@ -41,6 +41,6 @@ export async function prefetchBlockedEntities(
 
     return { blockedInSpaceIds, blockedInPostIds, blockedInAppIds }
   } catch (err) {
-    console.log('Error prefetching blocked entities', err)
+    console.error('Error prefetching blocked entities', err)
   }
 }

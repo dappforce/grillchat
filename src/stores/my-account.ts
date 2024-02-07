@@ -209,7 +209,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
       get()._subscribeEnergy()
       if (!asTemporaryAccount) saveLoginInfoToStorage()
     } catch (e) {
-      console.log('Failed to login', e)
+      console.error('Failed to login', e)
       return false
     }
     return address
