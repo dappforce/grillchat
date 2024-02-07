@@ -1,7 +1,7 @@
+import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { isMessageBlocked } from '@/utils/chat'
-import { getAppId } from '@/utils/env/client'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'
 
@@ -34,7 +34,7 @@ export default function useIsMessageBlocked(
   chatId: string
 ) {
   const { data: appModerationData } = getBlockedResourcesQuery.useQuery({
-    appId: getAppId(),
+    appId: env.NEXT_PUBLIC_APP_ID,
   })
   const { data: hubModerationData } = getBlockedResourcesQuery.useQuery({
     spaceId: hubId,

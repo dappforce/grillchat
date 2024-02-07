@@ -27,10 +27,15 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_APP_ID: z.string(),
-    NEXT_PUBLIC_SPACE_IDS: z.string().transform((val) => val.split(',')),
+    NEXT_PUBLIC_MAIN_SPACE_ID: z
+      .string()
+      .transform((val) => val.split(',').filter(Boolean)[0]),
+    NEXT_PUBLIC_SPACE_IDS: z
+      .string()
+      .transform((val) => val.split(',').filter(Boolean)),
     NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS: z
       .string()
-      .transform((val) => val.split(',')),
+      .transform((val) => val.split(',').filter(Boolean)),
 
     NEXT_PUBLIC_AMP_ID: z.string(),
     NEXT_PUBLIC_GA_ID: z.string(),
@@ -55,6 +60,7 @@ export const env = createEnv({
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_ID: process.env.NEXT_PUBLIC_APP_ID,
+    NEXT_PUBLIC_MAIN_SPACE_ID: process.env.NEXT_PUBLIC_SPACE_IDS,
     NEXT_PUBLIC_SPACE_IDS: process.env.NEXT_PUBLIC_SPACE_IDS,
     NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS:
       process.env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS,

@@ -1,8 +1,8 @@
 import { getHubIdFromAlias } from '@/constants/config'
+import { env } from '@/env.mjs'
 import HubPage, { HubPageProps } from '@/modules/chat/HubPage'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
-import { getMainHubId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { validateNumber } from '@/utils/strings'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
@@ -16,7 +16,7 @@ export const getStaticPaths = async () => {
 }
 
 function getHubIdFromParam(paramSpaceId: string) {
-  const hubIdOrAlias = paramSpaceId ?? getMainHubId()
+  const hubIdOrAlias = paramSpaceId ?? env.NEXT_PUBLIC_MAIN_SPACE_ID
   let hubId = hubIdOrAlias
   if (!validateNumber(hubIdOrAlias)) {
     const hubIdFromAlias = getHubIdFromAlias(hubIdOrAlias)

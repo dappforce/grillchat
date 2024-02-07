@@ -4,8 +4,8 @@ import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   PaginatedPostsData,
 } from '@/services/datahub/posts/query'
+import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
-import { getDatahubConfig } from '@/utils/env/client'
 import { useMemo } from 'react'
 import useInfiniteScrollData from '../ChatList/hooks/useInfiniteScrollData'
 import usePauseableLoadMore from '../ChatList/hooks/usePausableLoadMore'
@@ -26,7 +26,7 @@ type PaginatedConfig = {
 }
 
 export default function usePaginatedMessageIds(config: PaginatedConfig) {
-  return getDatahubConfig()
+  return isDatahubAvailable
     ? // eslint-disable-next-line react-hooks/rules-of-hooks
       usePaginatedMessageIdsFromDatahub(config)
     : // eslint-disable-next-line react-hooks/rules-of-hooks

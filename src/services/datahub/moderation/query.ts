@@ -1,5 +1,5 @@
+import { env } from '@/env.mjs'
 import { createQuery, poolQuery } from '@/subsocial-query'
-import { getAppId } from '@/utils/env/client'
 import { gql } from 'graphql-request'
 import {
   GetBlockedInAppDetailedQuery,
@@ -14,7 +14,7 @@ import {
   GetModeratorDataQueryVariables,
 } from '../generated-query'
 import { datahubQueryRequest } from '../utils'
-import { mapBlockedResources, ResourceTypes } from './utils'
+import { ResourceTypes, mapBlockedResources } from './utils'
 
 const GET_BLOCKED_RESOURCES = gql`
   query GetBlockedResources(
@@ -203,7 +203,7 @@ export async function getBlockedInAppDetailed() {
     GetBlockedInAppDetailedQueryVariables
   >({
     document: GET_BLOCKED_IN_APP_DETAILED,
-    variables: { appId: getAppId() },
+    variables: { appId: env.NEXT_PUBLIC_APP_ID },
   })
   return mapBlockedResources(
     data.moderationBlockedResourcesDetailed,

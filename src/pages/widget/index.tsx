@@ -1,4 +1,5 @@
 import { constantsConfig } from '@/constants/config'
+import { env } from '@/env.mjs'
 import HomePage, {
   homePageAdditionalTabs,
   HubsPageProps,
@@ -7,7 +8,6 @@ import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
-import { getHubIds, getMainHubId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 
@@ -17,7 +17,7 @@ export const getStaticProps = getCommonStaticProps<
   () => ({ alwaysShowScrollbarOffset: true }),
   async () => {
     const hubsChatCount: HubsPageProps['hubsChatCount'] = {}
-    const hubIds = getHubIds()
+    const hubIds = env.NEXT_PUBLIC_SPACE_IDS
 
     const queryClient = new QueryClient()
 
@@ -27,7 +27,7 @@ export const getStaticProps = getCommonStaticProps<
       const additionalHubIds = homePageAdditionalTabs.map(({ hubId }) => hubId)
 
       await Promise.all([
-        prefetchChatPreviewsData(queryClient, getMainHubId()),
+        prefetchChatPreviewsData(queryClient, env.NEXT_PUBLIC_MAIN_SPACE_ID),
         ...additionalHubIds.map((hubId) =>
           prefetchChatPreviewsData(queryClient, hubId)
         ),

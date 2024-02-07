@@ -1,4 +1,4 @@
-import { getFirebaseNotificationAppId } from '@/utils/env/client'
+import { env } from '@/env.mjs'
 import { getMessaging, getToken } from 'firebase/messaging'
 import firebaseApp from './config'
 
@@ -14,7 +14,7 @@ export const getMessageToken = async (): Promise<string | undefined> => {
     if (!registration) throw new Error('Registration not found')
 
     const token = await getToken(messaging, {
-      vapidKey: getFirebaseNotificationAppId(),
+      vapidKey: env.NEXT_PUBLIC_NOTIFICATION_APP_ID,
       serviceWorkerRegistration: registration,
     })
 

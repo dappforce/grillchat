@@ -1,9 +1,9 @@
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
+import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
-import { getDatahubConfig } from '@/utils/env/client'
 
 export function useLastMessageId(chatId: string) {
-  if (getDatahubConfig()) {
+  if (isDatahubAvailable) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useLastMessageIdFromDatahub(chatId)
   } else {
@@ -28,7 +28,7 @@ function useLastMessageIdFromBlockchain(chatId: string) {
 }
 
 export function useLastMessageIds(chatIds: string[]) {
-  if (getDatahubConfig()) {
+  if (isDatahubAvailable) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useLastMessageIdsFromDatahub(chatIds)
   } else {

@@ -1,6 +1,7 @@
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import NoChatsFound from '@/components/chats/NoChatsFound'
+import { env } from '@/env.mjs'
 import useDebounce from '@/hooks/useDebounce'
 import useSearch from '@/hooks/useSearch'
 import { getPostQuery } from '@/services/api/query'
@@ -8,7 +9,7 @@ import {
   getPostIdsBySpaceIdQuery,
   getPostsBySpaceContentQuery,
 } from '@/services/subsocial/posts'
-import { getMainHubId, getSquidUrl } from '@/utils/env/client'
+import { isSquidAvailable } from '@/services/subsocial/squid/utils'
 import { removeDoubleSpaces } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { matchSorter } from 'match-sorter'
@@ -31,7 +32,6 @@ export default function SearchChannelsWrapper({
 }: SearchChannelsWrapperProps) {
   const cleanedSearch = removeDoubleSpaces(search)
 
-  const isSquidAvailable = !!getSquidUrl()
   const shouldUseGlobalSearch = !localSearch && isSquidAvailable
 
   const debouncedSearch = useDebounce(cleanedSearch)
@@ -41,7 +41,7 @@ export default function SearchChannelsWrapper({
     })
 
   const { data: mainPostIds } = getPostIdsBySpaceIdQuery.useQuery(
-    getMainHubId(),
+    env.NEXT_PUBLIC_MAIN_SPACE_ID,
     { enabled: !isSquidAvailable }
   )
   const mainPostsQueries = getPostQuery.useQueries(mainPostIds?.postIds ?? [], {

@@ -1,11 +1,11 @@
 import TextArea from '@/components/inputs/TextArea'
 import { constantsConfig } from '@/constants/config'
+import { env } from '@/env.mjs'
 import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
 import { getCanUserDoDatahubActionQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getOffchainPostingHubs } from '@/utils/env/client'
 import dynamic from 'next/dynamic'
 import { ComponentProps } from 'react'
 import ChatForm, { ChatFormProps } from '../ChatForm'
@@ -33,7 +33,7 @@ export default function ChatInputBar({
       rootPostId: chatId,
     },
     {
-      enabled: getOffchainPostingHubs().includes(hubId),
+      enabled: env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(hubId),
     }
   )
 

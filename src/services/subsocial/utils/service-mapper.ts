@@ -1,10 +1,11 @@
+import { isDatahubAvailable } from '@/services/datahub/utils'
 import { createQuery } from '@/subsocial-query'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import {
   createSubsocialQuery,
   SubsocialQueryData,
 } from '@/subsocial-query/subsocial/query'
-import { getDatahubConfig, getSquidUrl } from '@/utils/env/client'
+import { isSquidAvailable } from '../squid/utils'
 
 type DynamicSubsocialQueryFetcher<Data, ReturnValue> = {
   blockchain: (data: SubsocialQueryData<Data>) => Promise<ReturnValue>
@@ -15,17 +16,14 @@ export function createDynamicSubsocialQuery<Data, ReturnValue>(
   key: string,
   fetcher: DynamicSubsocialQueryFetcher<Data, ReturnValue>
 ) {
-  const isExistSquidUrl = !!getSquidUrl()
-  const isExistDatahubUrl = !!getDatahubConfig()
-
-  if (isExistDatahubUrl && fetcher.datahub) {
+  if (isDatahubAvailable && fetcher.datahub) {
     return createQuery({
       key,
       fetcher: fetcher.datahub,
     })
   }
 
-  if (isExistSquidUrl) {
+  if (isSquidAvailable) {
     return createQuery({
       key,
       fetcher: fetcher.squid,
@@ -43,15 +41,12 @@ export function standaloneDynamicFetcherWrapper<Data, ReturnValue>(
   fetcher: DynamicSubsocialQueryFetcher<Data, ReturnValue>
 ) {
   return async (data: Data, dataSource: DataSource = 'squid') => {
-    const isExistSquidUrl = !!getSquidUrl()
-    const isExistDatahubUrl = !!getDatahubConfig()
-
     // datahub is the default data source
-    if (isExistDatahubUrl && fetcher.datahub) {
+    if (isDatahubAvailable && fetcher.datahub) {
       return fetcher.datahub(data)
     }
 
-    if (isExistSquidUrl && dataSource === 'squid') {
+    if (isSquidAvailable && dataSource === 'squid') {
       return fetcher.squid(data)
     }
 
