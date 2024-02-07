@@ -3,7 +3,7 @@ import { ConstantsConfig } from '.'
 
 const subsocialConfig: ConstantsConfig = {
   aliases: {
-    x: '12659',
+    featured: '12659',
     subsocial: '12660',
     cc: '12455',
     offchain: '12662',
@@ -11,7 +11,9 @@ const subsocialConfig: ConstantsConfig = {
   linkedChatsForHubId: {
     '12659': ['54469', '54464'],
   },
-  pinnedChatsInHubId: {},
+  pinnedChatsInHubId: {
+    '12659': ['6914'],
+  },
   communityHubIds: [getCommunityHubId()].filter(Boolean),
   pinnedHubIds: ['12660'],
   hubsWithoutJoinButton: ['12659', '12660'],
