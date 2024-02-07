@@ -1,11 +1,11 @@
 import { getHubIdFromAlias } from '@/constants/config'
 import HubPage, { HubPageProps } from '@/modules/chat/HubPage'
+import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
 import { getMainHubId } from '@/utils/env/client'
 import { getCommonStaticProps } from '@/utils/page'
 import { validateNumber } from '@/utils/strings'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
-import { AppCommonProps } from '../_app'
 
 export const getStaticPaths = async () => {
   // Skip pre-rendering, because it will cause slow build time
