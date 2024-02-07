@@ -1,4 +1,4 @@
-import { getWhitelistedAddressesInChatId } from '@/constants/chat'
+import { config } from '@/constants/config'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyMainAddress } from '@/stores/my-account'
 
@@ -8,7 +8,7 @@ export default function useIsWhitelisted(chatId: string) {
   const { data: accountData } = getAccountDataQuery.useQuery(myAddress ?? '')
   const myEvmAddress = accountData?.evmAddress
 
-  const whitelistedAddresses = getWhitelistedAddressesInChatId(chatId)
+  const whitelistedAddresses = config.whitelistedAddressesInChatId[chatId]
 
   const isWhitelisted =
     whitelistedAddresses?.includes(myAddress ?? '') ||

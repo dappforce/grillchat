@@ -4,7 +4,6 @@ import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import Container from '@/components/Container'
-import { PRIMARY_COMMUNITY_HUB_ID } from '@/constants/hubs'
 import { getPostQuery } from '@/services/api/query'
 import {
   getFollowedPostIdsByAddressQuery,
@@ -12,6 +11,7 @@ import {
 } from '@/services/subsocial/posts'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getCommunityHubId } from '@/utils/env/client'
 import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
@@ -180,7 +180,7 @@ function NoChats({ changeTab }: NoChatsProps) {
         <p className='text-text-muted'>
           Here will be all the chats you joined or created
         </p>
-        {PRIMARY_COMMUNITY_HUB_ID ? (
+        {getCommunityHubId() ? (
           <>
             <Button
               className='mt-4 w-full'
@@ -219,11 +219,11 @@ function NoChats({ changeTab }: NoChatsProps) {
         )}
       </Container>
 
-      {PRIMARY_COMMUNITY_HUB_ID && (
+      {getCommunityHubId() && (
         <NewCommunityModal
           isOpen={isOpenNewCommunity}
           closeModal={() => setIsOpenNewCommunity(false)}
-          hubId={PRIMARY_COMMUNITY_HUB_ID}
+          hubId={getCommunityHubId()}
         />
       )}
     </>

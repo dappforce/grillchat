@@ -1,7 +1,7 @@
 import NoResultImage from '@/assets/graphics/no-result.png'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
-import { getHubIdFromAlias } from '@/constants/hubs'
+import { getHubIdFromAlias } from '@/constants/config'
 import { getSuggestNewChatRoomLink } from '@/constants/links'
 import Image from 'next/image'
 import { useRouter } from 'next/router'

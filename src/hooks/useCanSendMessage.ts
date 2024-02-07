@@ -1,4 +1,4 @@
-import { getIsHubWithoutJoinButton } from '@/constants/hubs'
+import { getIsHubWithoutJoinButton } from '@/constants/config'
 import { useMyMainAddress } from '@/stores/my-account'
 import useIsAddressBlockedInChat from './useIsAddressBlockedInChat'
 import useIsJoinedToChat from './useIsJoinedToChat'

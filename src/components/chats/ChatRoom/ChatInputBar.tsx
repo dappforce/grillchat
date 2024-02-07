@@ -1,5 +1,5 @@
 import TextArea from '@/components/inputs/TextArea'
-import { getWhitelistedAddressesInChatId } from '@/constants/chat'
+import { config } from '@/constants/config'
 import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
 import { getCanUserDoDatahubActionQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -40,7 +40,7 @@ export default function ChatInputBar({
   const { data: accountData } = getAccountDataQuery.useQuery(myAddress ?? '')
   const myEvmAddress = accountData?.evmAddress
 
-  const whitelistedAddresses = getWhitelistedAddressesInChatId(chatId)
+  const whitelistedAddresses = config.whitelistedAddressesInChatId[chatId]
 
   const isWhitelisted =
     whitelistedAddresses?.includes(myAddress ?? '') ||

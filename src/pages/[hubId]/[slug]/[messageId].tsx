@@ -1,5 +1,5 @@
 import { HeadConfigProps } from '@/components/HeadConfig'
-import { getHubIdFromAlias } from '@/constants/hubs'
+import { getHubIdFromAlias } from '@/constants/config'
 import MessageRedirectPage, {
   MessageRedirectPageProps,
 } from '@/modules/chat/MessageRedirectPage'

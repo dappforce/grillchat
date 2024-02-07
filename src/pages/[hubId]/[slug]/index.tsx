@@ -1,5 +1,5 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
-import { getHubIdFromAlias } from '@/constants/hubs'
+import { getHubIdFromAlias } from '@/constants/config'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { getAccountsDataFromCache } from '@/pages/api/accounts-data'
 import { getPostsServer } from '@/pages/api/posts'

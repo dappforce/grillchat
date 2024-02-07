@@ -4,7 +4,6 @@ import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import Tabs, { TabsProps } from '@/components/Tabs'
-import { PRIMARY_COMMUNITY_HUB_ID } from '@/constants/hubs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
@@ -15,7 +14,7 @@ import {
   useMyMainAddress,
 } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getMainHubId } from '@/utils/env/client'
+import { getCommunityHubId, getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -179,7 +178,7 @@ export default function HubsPage(props: HubsPageProps) {
           withHashIntegration={false}
           tabsRightElement={
             isLoggedIn &&
-            PRIMARY_COMMUNITY_HUB_ID && (
+            getCommunityHubId() && (
               <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
                 <Button
                   size='xs'
@@ -206,11 +205,11 @@ export default function HubsPage(props: HubsPageProps) {
         />
       </SearchChannelsWrapper>
 
-      {PRIMARY_COMMUNITY_HUB_ID && (
+      {getCommunityHubId() && (
         <NewCommunityModal
           isOpen={isOpenNewCommunity}
           closeModal={() => setIsOpenNewCommunity(false)}
-          hubId={PRIMARY_COMMUNITY_HUB_ID}
+          hubId={getCommunityHubId()}
         />
       )}
     </DefaultLayout>
