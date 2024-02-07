@@ -1,0 +1,58 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mainnet-grillchat
+  name: mainnet-grillchat
+  namespace: sub-back
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: mainnet-grillchat
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mainnet-grillchat
+  namespace: sub-back
+  annotations:
+    ingress.kubernetes.io/from-to-www-redirect: 'true'
+    nginx.ingress.kubernetes.io/from-to-www-redirect: 'true'
+    nginx.org/client-max-body-size: '10m'
+    nginx.ingress.kubernetes.io/proxy-body-size: '10m'
+    nginx.ingress.kubernetes.io/client-max-body-size: '10m'
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: grill.so
+      http:
+        paths:
+          - backend:
+              service:
+                name: mainnet-grillchat
+                port:
+                  number: 3000
+            path: '/'
+            pathType: Prefix
+
+  tls:
+    - hosts:
+        - grill.so
+      secretName: mainnet-grill-ssl
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mainnet-grillchat-env
+  namespace: sub-back
+data:
+  REDIS_HOST: 'mainnet-grill-redis-master.default'
+  REDIS_PORT: '6379'

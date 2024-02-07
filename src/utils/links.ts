@@ -1,4 +1,4 @@
-import { getAliasFromHubId } from '@/constants/hubs'
+import { getAliasFromHubId } from '@/constants/config'
 import { ParsedUrlQuery } from 'querystring'
 import urlJoin from 'url-join'
 import { getSubstrateUrl } from './env/client'

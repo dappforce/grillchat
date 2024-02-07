@@ -1,4 +1,4 @@
-import { getLinkedChatIdsForHubId } from '@/constants/hubs'
+import { constantsConfig } from '@/constants/config'
 import { followedIdsStorage } from '@/stores/my-account'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import {
@@ -114,7 +114,7 @@ async function getPostsByContent(search: string) {
   const linkedPostIds = new Set<string>()
   const hubIds = getHubIds()
   hubIds.forEach((hubId) => {
-    const linkedChatIds = getLinkedChatIdsForHubId(hubId)
+    const linkedChatIds = constantsConfig.linkedChatsForHubId[hubId] ?? []
     linkedChatIds.forEach((chatId) => linkedPostIds.add(chatId))
   })
 

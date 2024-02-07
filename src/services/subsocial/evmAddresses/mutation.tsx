@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { useDisconnect } from 'wagmi'
 import { getCurrentWallet } from '../hooks'
 import { createMutationWrapper } from '../utils'
+import { getEvmPalletName } from './utils'
 
 type LinkEvmAddressMutationProps = {
   evmAddress: string
@@ -47,14 +48,15 @@ export function useLinkEvmAddress({
 
         const { evmAddress, evmSignature } = params
 
-        const linkEvmAddressTx = substrateApi.tx.evmAccounts.linkEvmAddress(
-          evmAddress,
-          evmSignature
-        )
+        const linkEvmAddressTx = substrateApi.tx[
+          getEvmPalletName()
+        ].linkEvmAddress(evmAddress, evmSignature)
 
         const tx = linkedEvmAddress
           ? substrateApi.tx.utility.batch([
-              substrateApi.tx.evmAccounts.unlinkEvmAddress(linkedEvmAddress),
+              substrateApi.tx[getEvmPalletName()].unlinkEvmAddress(
+                linkedEvmAddress
+              ),
               linkEvmAddressTx,
             ])
           : linkEvmAddressTx
@@ -115,7 +117,7 @@ export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
         const { evmAddress } = params
 
         return {
-          tx: substrateApi.tx.evmAccounts.unlinkEvmAddress(evmAddress),
+          tx: substrateApi.tx[getEvmPalletName()].unlinkEvmAddress(evmAddress),
           summary: 'Unlinking evm address',
         }
       },

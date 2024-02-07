@@ -1,6 +1,6 @@
 import ChatPreview from '@/components/chats/ChatPreview'
 import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
-import { getAliasFromHubId, PINNED_HUB_IDS } from '@/constants/hubs'
+import { getAliasFromHubId, getPinnedHubIds } from '@/constants/config'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
@@ -18,7 +18,7 @@ export default function HubsContent({
   const hubIds = getHubIds()
 
   const sortedHubIds = useMemo(() => {
-    return Array.from(new Set([...PINNED_HUB_IDS, ...hubIds]))
+    return Array.from(new Set([...getPinnedHubIds(), ...hubIds]))
   }, [hubIds])
 
   const hubQueries = getSpaceQuery.useQueries(sortedHubIds)
@@ -94,7 +94,7 @@ function ChatPreviewContainer({
         href: linkTo,
       }}
       additionalDesc={chatCount ? `${chatCount} chats` : undefined}
-      isPinned={PINNED_HUB_IDS.includes(hub.id)}
+      isPinned={getPinnedHubIds().includes(hub.id)}
       image={content?.image}
       title={content?.name}
       description={content?.about}

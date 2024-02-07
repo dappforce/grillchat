@@ -1,5 +1,5 @@
 import Button from '@/components/Button'
-import { getHubIdFromAlias } from '@/constants/hubs'
+import { getHubIdFromAlias } from '@/constants/config'
 import useToastError from '@/hooks/useToastError'
 import { ApiDiscussionResponse } from '@/pages/api/discussion'
 import { useConfigContext } from '@/providers/config/ConfigProvider'

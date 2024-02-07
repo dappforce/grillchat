@@ -1,4 +1,4 @@
-import { getHubIdFromAlias } from '@/constants/hubs'
+import { getHubIdFromAlias } from '@/constants/config'
 import HubPage, { HubPageProps } from '@/modules/chat/HubPage'
 import { prefetchChatPreviewsData } from '@/server/chats'
 import { getMainHubId } from '@/utils/env/client'

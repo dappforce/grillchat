@@ -148,7 +148,7 @@ async function createDiscussionAndGetPostId({
             unsub()
             return
           } else {
-            console.log(`Status of sending: ${status.type}`)
+            console.error(`Status of sending: ${status.type}`)
           }
 
           if (isCompleted) {

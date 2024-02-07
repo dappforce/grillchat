@@ -1,4 +1,4 @@
-import { getLinkedChatIdsForHubId } from '@/constants/hubs'
+import { constantsConfig } from '@/constants/config'
 import HomePage, {
   homePageAdditionalTabs,
   HubsPageProps,
@@ -35,7 +35,7 @@ export const getStaticProps = getCommonStaticProps<
           if (!hub) return
 
           const res = await getPostIdsBySpaceIdQuery.fetchQuery(null, hub.id)
-          const linkedChats = getLinkedChatIdsForHubId(hub.id)
+          const linkedChats = constantsConfig.linkedChatsForHubId[hub.id] ?? []
           hubsChatCount[hub.id] =
             (res?.postIds.length ?? 0) + linkedChats.length
         }),

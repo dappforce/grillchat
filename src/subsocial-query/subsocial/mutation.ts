@@ -304,7 +304,7 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
 
           clearTimeout(timeoutId)
         } catch (err) {
-          console.log('Error getting nonce', err)
+          console.error('Error getting nonce', err)
           reject(new Error('Failed to get nonce'))
         }
       }

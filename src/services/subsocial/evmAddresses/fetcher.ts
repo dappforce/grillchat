@@ -6,16 +6,17 @@ import {
 } from '../squid/generated'
 import { squidRequest } from '../squid/utils'
 import { standaloneDynamicFetcherWrapper } from '../utils'
+import { getEvmPalletName } from './utils'
 
 async function getEvmAddressesFromBlockchain({
   api,
   data: addresses,
 }: SubsocialQueryData<string[]>) {
   const blockchainApi = await api.blockchain.api
-  const evmAddressses =
-    await blockchainApi.query.evmAccounts.evmAddressByAccount.multi(addresses)
-
-  return evmAddressses.map((x) => x.toHuman() as string)
+  const evmAddresses = await blockchainApi.query[
+    getEvmPalletName()
+  ].evmAddressByAccount.multi(addresses)
+  return evmAddresses.map((x) => x.toHuman() as string)
 }
 
 const GET_EVM_ADDRESSES = gql`

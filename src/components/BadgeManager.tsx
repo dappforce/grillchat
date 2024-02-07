@@ -78,7 +78,7 @@ async function getUnreadCount(address: string | null) {
 
     return totalUnread
   } catch (e) {
-    console.log('Error fetching unreads in badge manager', e)
+    console.warn('Error fetching unreads in badge manager', e)
     return undefined
   }
 }

@@ -22,12 +22,9 @@ spec:
           name: grillchat-<BRANCH>
           ports:
             - containerPort: 3000
-          env:
-            - name: REDIS_HOST
-              value: redis-master.default
-            - name: REDIS_PORT
-              value: '6379'
           envFrom:
+            - configMapRef:
+                name: grillchat-<BRANCH>-env
             - secretRef:
                 name: grillchat-secret
       imagePullSecrets:
