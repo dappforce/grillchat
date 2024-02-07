@@ -1,8 +1,8 @@
+import grill from '@/../integration/index'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin } from '@/utils/links'
 import { useEffect } from 'react'
-import grill from '../../integration/index'
 
 export default function IframePage() {
   useEffect(() => {
