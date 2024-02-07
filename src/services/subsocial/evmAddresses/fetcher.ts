@@ -1,5 +1,4 @@
 import { SubsocialQueryData } from '@/subsocial-query/subsocial/query'
-import { getNetwork } from '@/utils/network'
 import { gql } from 'graphql-request'
 import {
   GetEvmAddressesQuery,
@@ -7,23 +6,17 @@ import {
 } from '../squid/generated'
 import { squidRequest } from '../squid/utils'
 import { standaloneDynamicFetcherWrapper } from '../utils'
+import { getEvmPalletName } from './utils'
 
 async function getEvmAddressesFromBlockchain({
   api,
   data: addresses,
 }: SubsocialQueryData<string[]>) {
   const blockchainApi = await api.blockchain.api
-  if (getNetwork() === 'xsocial') {
-    const evmAddresses =
-      await blockchainApi.query.evmAccounts.evmAddressByAccount.multi(addresses)
-    return evmAddresses.map((x) => x.toHuman() as string)
-  } else {
-    const evmAddresses =
-      await blockchainApi.query.evmAddresses.evmAddressByAccount.multi(
-        addresses
-      )
-    return evmAddresses.map((x) => x.toHuman() as string)
-  }
+  const evmAddresses = await blockchainApi.query[
+    getEvmPalletName()
+  ].evmAddressByAccount.multi(addresses)
+  return evmAddresses.map((x) => x.toHuman() as string)
 }
 
 const GET_EVM_ADDRESSES = gql`
