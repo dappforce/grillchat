@@ -92,10 +92,7 @@ export default function ChatItem({
 
             return (
               <div
-                className={cx(
-                  'relative flex flex-col',
-                  !showChip && 'overflow-hidden'
-                )}
+                className={cx('relative flex flex-col')}
                 onContextMenu={(e) => {
                   e.preventDefault()
                   toggleDisplay?.(e)

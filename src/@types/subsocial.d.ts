@@ -3,9 +3,9 @@ import * as types from '@subsocial/api/types'
 import { PostStruct } from '@subsocial/api/types'
 import {
   CommentStruct,
+  SpaceStruct,
   PostContent as SubsocialPostContent,
   SpaceContent as SubsocialSpaceContent,
-  SpaceStruct,
 } from '@subsocial/api/types/dto'
 
 declare module '@subsocial/api/types' {
@@ -104,6 +104,8 @@ declare module '@subsocial/api/types' {
         followersCount?: number
         blockchainSyncFailed?: boolean
         dataType?: 'persistent' | 'optimistic' | 'offChain'
+      } & {
+        superLikesCount?: number
       },
     PostContent
   > & { requestedId?: string }

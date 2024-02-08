@@ -121,6 +121,8 @@ export type ActiveStakingSuperLike = {
   likedPostPersistentId?: Maybe<Scalars['String']['output']>
   multiplier: Scalars['Int']['output']
   post: Post
+  postKind: PostKind
+  sharedPost?: Maybe<Post>
   staker: Account
   stakerAddress?: Maybe<Scalars['String']['output']>
   updatedAtTime?: Maybe<Scalars['DateTime']['output']>
@@ -705,6 +707,13 @@ export type PostMetadataResponse = {
   totalCommentsCount: Scalars['String']['output']
 }
 
+export type PostRewardsBySourceResponseDto = {
+  __typename?: 'PostRewardsBySourceResponseDto'
+  fromCommentSuperLikes?: Maybe<Scalars['String']['output']>
+  fromDirectSuperLikes?: Maybe<Scalars['String']['output']>
+  fromShareSuperLikes?: Maybe<Scalars['String']['output']>
+}
+
 export type PostSubscriptionPayload = {
   __typename?: 'PostSubscriptionPayload'
   body?: Maybe<Scalars['String']['output']>
@@ -942,11 +951,18 @@ export type RewardsByPostsInput = {
 
 export type RewardsByPostsResponseDto = {
   __typename?: 'RewardsByPostsResponseDto'
+  /** @deprecated rewardTotal field must be used */
   amount: Scalars['String']['output']
+  /** @deprecated draftRewardTotal field must be used */
   draftReward: Scalars['String']['output']
+  draftRewardTotal: Scalars['String']['output']
+  draftRewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
   persistentPostId?: Maybe<Scalars['String']['output']>
   postId?: Maybe<Scalars['String']['output']>
+  /** @deprecated rewardTotal field must be used */
   reward: Scalars['String']['output']
+  rewardTotal: Scalars['String']['output']
+  rewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
 }
 
 export type RewardsByWeekFilter = {
@@ -1109,8 +1125,12 @@ export type SuperLikesCreatorRewards = {
 export type SuperLikesCreatorRewardsByPost = {
   __typename?: 'SuperLikesCreatorRewardsByPost'
   amount: Scalars['String']['output']
+  directRewardAmount: Scalars['String']['output']
+  directSuperLikesCount: Scalars['Int']['output']
   postId: Scalars['String']['output']
   postPersistentId: Scalars['String']['output']
+  sharedRewardAmount: Scalars['String']['output']
+  sharedSuperLikesCount: Scalars['Int']['output']
   superLikesCount: Scalars['Int']['output']
 }
 
@@ -1398,6 +1418,7 @@ export type DatahubPostFragmentFragment = {
   canonical?: string | null
   tagsOriginal?: string | null
   followersCount?: number | null
+  activeStakingSuperLikesCount?: number | null
   inReplyToKind?: InReplyToKind | null
   createdByAccount: { __typename?: 'Account'; id: string }
   ownedByAccount: { __typename?: 'Account'; id: string }
@@ -1473,6 +1494,7 @@ export type GetPostsQuery = {
       canonical?: string | null
       tagsOriginal?: string | null
       followersCount?: number | null
+      activeStakingSuperLikesCount?: number | null
       inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -1552,6 +1574,7 @@ export type GetOptimisticPostsQuery = {
       canonical?: string | null
       tagsOriginal?: string | null
       followersCount?: number | null
+      activeStakingSuperLikesCount?: number | null
       inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -1691,6 +1714,7 @@ export const DatahubPostFragment = gql`
     canonical
     tagsOriginal
     followersCount
+    activeStakingSuperLikesCount
     ownedByAccount {
       id
     }
