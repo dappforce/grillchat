@@ -294,7 +294,7 @@ jobs:
             ./update.sh
 
   storybook_deploy:
-    name: prod-deploy
+    name: storybook-prod-deploy
     needs: front_build
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/storybook' }}
