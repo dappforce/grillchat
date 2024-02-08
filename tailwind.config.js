@@ -8,6 +8,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+        unbounded: 'Unbounded, sans-serif',
       },
       fontSize: {
         base: ['1rem', '1.35'],
