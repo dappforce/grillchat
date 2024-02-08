@@ -1,10 +1,7 @@
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import {
-  getKiltApi,
-  getSubIdRequest,
-  subsocialSquidRequest,
-} from '@/server/external'
+import { getKiltApi } from '@/server/external'
+import { getSubIdRequest, subsocialSquidRequest } from '@/services/external'
 import { encodeAddress } from '@polkadot/keyring'
 import { gql } from 'graphql-request'
 import { NextApiRequest } from 'next'

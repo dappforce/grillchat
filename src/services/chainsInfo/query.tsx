@@ -1,6 +1,6 @@
-import { getSubIdRequest } from '@/server/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { useMemo } from 'react'
+import { getSubIdRequest } from '../external'
 import { ChainInfo } from './types'
 
 export async function getChainsInfo() {
