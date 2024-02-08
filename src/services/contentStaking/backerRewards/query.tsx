@@ -1,6 +1,5 @@
-import { useGetMyCreatorsIds } from '@/components/creatorsStaking/hooks/useGetMyCreators'
+import { useGetMyCreatorsIds } from '@/components/content-staking/hooks/useGetMyCreatorsIds'
 import { getSubIdRequest } from '@/server/external'
-import { useMyMainAddress } from '@/stores/my-account'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { useMemo } from 'react'
 import { getCreatorsListData } from '../creatorsList/query'
@@ -24,7 +23,6 @@ export const useGetBackerRewards = (account: string) => {
   })
 
   return backerRewards
-
 }
 
 export async function getBackerRewardsRequest(
