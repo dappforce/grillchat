@@ -1395,6 +1395,48 @@ export type SubscribeBlockedResourcesSubscription = {
   }
 }
 
+export type GetSuperLikeCountsQueryVariables = Exact<{
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetSuperLikeCountsQuery = {
+  __typename?: 'Query'
+  activeStakingSuperLikeCountsByPost: Array<{
+    __typename?: 'SuperLikeCountsByPostResponse'
+    persistentPostId?: string | null
+    count: number
+  }>
+}
+
+export type GetAddressLikeCountToPostsQueryVariables = Exact<{
+  address: Scalars['String']['input']
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetAddressLikeCountToPostsQuery = {
+  __typename?: 'Query'
+  activeStakingSuperLikeCountsByStaker: Array<{
+    __typename?: 'SuperLikeCountsByStakerResponse'
+    persistentPostId?: string | null
+    count: number
+  }>
+}
+
+export type GetCanPostsSuperLikedQueryVariables = Exact<{
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetCanPostsSuperLikedQuery = {
+  __typename?: 'Query'
+  activeStakingCanDoSuperLikeByPost: Array<{
+    __typename?: 'CanDoSuperLikeByPostsResponseDto'
+    persistentPostId: string
+    validByCreationDate: boolean
+    validByCreatorMinStake: boolean
+    validByLowValue: boolean
+  }>
+}
+
 export type DatahubPostFragmentFragment = {
   __typename?: 'Post'
   id: string
@@ -1918,6 +1960,34 @@ export const SubscribeBlockedResources = gql`
           reasonText
         }
       }
+    }
+  }
+`
+export const GetSuperLikeCounts = gql`
+  query GetSuperLikeCounts($postIds: [String!]!) {
+    activeStakingSuperLikeCountsByPost(args: { postPersistentIds: $postIds }) {
+      persistentPostId
+      count
+    }
+  }
+`
+export const GetAddressLikeCountToPosts = gql`
+  query GetAddressLikeCountToPosts($address: String!, $postIds: [String!]!) {
+    activeStakingSuperLikeCountsByStaker(
+      args: { postPersistentIds: $postIds, address: $address }
+    ) {
+      persistentPostId
+      count
+    }
+  }
+`
+export const GetCanPostsSuperLiked = gql`
+  query GetCanPostsSuperLiked($postIds: [String!]!) {
+    activeStakingCanDoSuperLikeByPost(args: { postPersistentIds: $postIds }) {
+      persistentPostId
+      validByCreationDate
+      validByCreatorMinStake
+      validByLowValue
     }
   }
 `
