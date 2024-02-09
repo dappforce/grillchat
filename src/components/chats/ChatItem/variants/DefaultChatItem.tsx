@@ -3,6 +3,7 @@ import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import MessageModal from '@/components/modals/MessageModal'
 import { getPostQuery } from '@/services/api/query'
+import { useCreateSuperlike } from '@/services/datahub/content-staking/mutation'
 import {
   getAddressLikeCountToPostQuery,
   getSuperLikeCountQuery,
@@ -31,6 +32,7 @@ export default function DefaultChatItem({
 }: DefaultChatItemProps) {
   const messageId = message.id
 
+  const { mutate: createSuperlike } = useCreateSuperlike()
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(messageId)
   const myAddress = useMyMainAddress()
   const { data: myLike, isLoading } = getAddressLikeCountToPostQuery.useQuery({
@@ -145,6 +147,7 @@ export default function DefaultChatItem({
         {showSuperLikeCount && (
           <div className={cx('mt-1 flex items-center')}>
             <button
+              onClick={() => createSuperlike({ postId: messageId })}
               disabled={isLoading}
               className={cx(
                 'flex items-center gap-2 rounded-full bg-background-lighter px-2 py-0.5 text-text-primary',

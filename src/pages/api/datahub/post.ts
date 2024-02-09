@@ -7,6 +7,7 @@ import {
 } from '@/server/datahub-queue/generated'
 import {
   createPostData,
+  createSuperlike,
   getCanAccountDo,
   notifyCreatePostFailedOrRetryStatus,
   notifyUpdatePostFailedOrRetryStatus,
@@ -53,7 +54,7 @@ const GET_handler = handlerWrapper({
   },
 })
 
-export type DatahubPostMutationBody =
+export type ApiDatahubPostMutationBody =
   | {
       action: 'create-post'
       payload: CreatePostOptimisticInput
@@ -82,7 +83,7 @@ const POST_handler = handlerWrapper({
 })<ApiDatahubPostResponse>({
   allowedMethods: ['POST'],
   errorLabel: 'datahub-mutation',
-  handler: async (data: DatahubPostMutationBody, _, res) => {
+  handler: async (data: ApiDatahubPostMutationBody, _, res) => {
     const mapper = datahubMutationWrapper(datahubPostActionMapping)
     try {
       await mapper(data)
@@ -110,7 +111,7 @@ const POST_handler = handlerWrapper({
   },
 })
 
-function datahubPostActionMapping(data: DatahubPostMutationBody) {
+function datahubPostActionMapping(data: ApiDatahubPostMutationBody) {
   switch (data.action) {
     case 'create-post':
       return createPostData(data.payload)
@@ -120,6 +121,8 @@ function datahubPostActionMapping(data: DatahubPostMutationBody) {
       return notifyCreatePostFailedOrRetryStatus(data.payload)
     case 'notify-update-failed':
       return notifyUpdatePostFailedOrRetryStatus(data.payload)
+    case 'create-superlike':
+      return createSuperlike(data.payload)
     default:
       throw new Error('Unknown action')
   }

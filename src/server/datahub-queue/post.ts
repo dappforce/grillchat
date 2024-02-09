@@ -160,7 +160,7 @@ const CREATE_SUPERlIKE = gql`
     }
   }
 `
-export async function createSuperLikeServer(
+export async function createSuperlike(
   input: CreateMutateActiveStakingSuperLikeInput
 ) {
   const res = await datahubQueueRequest<
