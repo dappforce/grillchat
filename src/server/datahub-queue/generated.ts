@@ -402,6 +402,13 @@ export type NotifyUpdatePostTxFailedOrRetryStatusMutationVariables = Exact<{
 
 export type NotifyUpdatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
+export type CreateSuperlikeMutationVariables = Exact<{
+  createSuperLikeInput: CreateMutateActiveStakingSuperLikeInput;
+}>;
+
+
+export type CreateSuperlikeMutation = { __typename?: 'Mutation', activeStakingCreateSuperLike: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+
 
 export const LinkIdentity = gql`
     mutation LinkIdentity($createLinkedIdentityInput: CreateMutateLinkedIdentityInput!) {
@@ -481,6 +488,14 @@ export const NotifyUpdatePostTxFailedOrRetryStatus = gql`
   updatePostBlockchainSyncStatus(
     updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
   ) {
+    processed
+    message
+  }
+}
+    `;
+export const CreateSuperlike = gql`
+    mutation CreateSuperlike($createSuperLikeInput: CreateMutateActiveStakingSuperLikeInput!) {
+  activeStakingCreateSuperLike(args: $createSuperLikeInput) {
     processed
     message
   }

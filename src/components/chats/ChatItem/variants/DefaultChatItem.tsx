@@ -11,7 +11,7 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import Linkify from 'linkify-react'
 import { useState } from 'react'
-import { IoDiamondOutline } from 'react-icons/io5'
+import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
 import { ScrollToMessage } from '../../ChatList/hooks/useScrollToMessage'
 import ChatRelativeTime from '../ChatRelativeTime'
 import LinkPreview from '../LinkPreview'
@@ -152,7 +152,11 @@ export default function DefaultChatItem({
                 hasILiked && 'bg-background-primary text-text'
               )}
             >
-              <IoDiamondOutline className='relative top-px' />
+              {hasILiked ? (
+                <IoDiamond className='relative top-px' />
+              ) : (
+                <IoDiamondOutline className='relative top-px' />
+              )}
               <span>{superLikeCount?.count}</span>
             </button>
             <span className='ml-4 select-none opacity-0'>{relativeTime}</span>

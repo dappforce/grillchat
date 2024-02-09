@@ -1,9 +1,12 @@
 import { gql } from 'graphql-request'
 import {
   CanAccountDoArgsInput,
+  CreateMutateActiveStakingSuperLikeInput,
   CreatePostOptimisticInput,
   CreatePostOptimisticMutation,
   CreatePostOptimisticMutationVariables,
+  CreateSuperlikeMutation,
+  CreateSuperlikeMutationVariables,
   GetCanAccountDoQuery,
   GetCanAccountDoQueryVariables,
   NotifyCreatePostTxFailedOrRetryStatusMutation,
@@ -144,5 +147,33 @@ export async function notifyUpdatePostFailedOrRetryStatus(
   throwErrorIfNotProcessed(
     res.updatePostBlockchainSyncStatus,
     'Failed to notify update post'
+  )
+}
+
+const CREATE_SUPERlIKE = gql`
+  mutation CreateSuperlike(
+    $createSuperLikeInput: CreateMutateActiveStakingSuperLikeInput!
+  ) {
+    activeStakingCreateSuperLike(args: $createSuperLikeInput) {
+      processed
+      message
+    }
+  }
+`
+export async function createSuperLikeServer(
+  input: CreateMutateActiveStakingSuperLikeInput
+) {
+  const res = await datahubQueueRequest<
+    CreateSuperlikeMutation,
+    CreateSuperlikeMutationVariables
+  >({
+    document: CREATE_SUPERlIKE,
+    variables: {
+      createSuperLikeInput: input,
+    },
+  })
+  throwErrorIfNotProcessed(
+    res.activeStakingCreateSuperLike,
+    'Failed to create super like'
   )
 }

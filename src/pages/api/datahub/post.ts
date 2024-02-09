@@ -15,8 +15,8 @@ import {
 import {
   CreateChatPermissionDeniedError,
   CreateMessagePermissionDeniedError,
-  datahubMutationWrapper,
   RateLimitError,
+  datahubMutationWrapper,
 } from '@/server/datahub-queue/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -68,6 +68,10 @@ export type DatahubPostMutationBody =
     }
   | {
       action: 'notify-update-failed'
+      payload: UpdatePostBlockchainSyncStatusInput
+    }
+  | {
+      action: 'create-superlike'
       payload: UpdatePostBlockchainSyncStatusInput
     }
 
