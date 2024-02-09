@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
-import MessageModal from '@/components/modals/MessageModal'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
+import MessageModal from '@/components/modals/MessageModal'
 import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import Linkify from 'linkify-react'
@@ -28,6 +28,20 @@ export default function DefaultChatItem({
   const { createdAtTime, ownerId, isUpdated } = message.struct
   const { inReplyTo, body, link, linkMetadata } = message.content || {}
 
+  const relativeTime = (
+    <>
+      <ChatRelativeTime
+        createdAtTime={createdAtTime}
+        isUpdated={isUpdated}
+        className={cx(
+          'text-xs text-text-muted',
+          isMyMessage && 'dark:text-text-muted-on-primary'
+        )}
+      />
+      {isMyMessage && <MessageStatusIndicator message={message} />}
+    </>
+  )
+
   return (
     <div className={cx('flex flex-col', props.className)}>
       <div
@@ -46,12 +60,7 @@ export default function DefaultChatItem({
               labelingData={{ chatId }}
               messageId={messageId}
               address={ownerId}
-              className={cx('mr-2 text-sm font-medium text-text-secondary')}
-            />
-            <ChatRelativeTime
-              createdAtTime={createdAtTime}
-              className='flex-shrink-0 text-xs text-text-muted'
-              isUpdated={isUpdated}
+              className={cx('text-sm font-medium text-text-secondary')}
             />
           </div>
         )}
@@ -104,6 +113,7 @@ export default function DefaultChatItem({
           >
             {body}
           </Linkify>
+          <span className='ml-3 select-none opacity-0'>{relativeTime}</span>
         </p>
         {link && linkMetadata?.title && (
           <LinkPreview
@@ -114,18 +124,13 @@ export default function DefaultChatItem({
             isMyMessage={isMyMessage}
           />
         )}
-        {isMyMessage && (
-          <div
-            className={cx('flex items-center gap-1', isMyMessage && 'self-end')}
-          >
-            <ChatRelativeTime
-              createdAtTime={createdAtTime}
-              isUpdated={isUpdated}
-              className='text-xs text-text-muted dark:text-text-muted-on-primary'
-            />
-            <MessageStatusIndicator message={message} />
-          </div>
-        )}
+        <div
+          className={cx(
+            'absolute bottom-1 right-3 flex items-center gap-1 self-end'
+          )}
+        >
+          {relativeTime}
+        </div>
       </div>
     </div>
   )
