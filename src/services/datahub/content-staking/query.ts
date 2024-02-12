@@ -1,3 +1,5 @@
+import { MINIMUM_LOCK } from '@/constants/subsocial'
+import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
 import {
@@ -183,5 +185,25 @@ export const getCanPostSuperLikedQuery = createQuery({
   fetcher: getCanPostsSuperLiked,
   defaultConfigGenerator: (param) => ({
     enabled: !!param,
+  }),
+})
+
+const getTotalStake = async (address: string) => {
+  const res = await getSubIdRequest().get(
+    `/staking/creator/backer/ledger?account=${address}`
+  )
+  const totalStake = (res?.data?.totalLocked as string) || ''
+  const stakeAmount = BigInt(totalStake)
+
+  return {
+    amount: stakeAmount.toString(),
+    hasStakedEnough: stakeAmount > MINIMUM_LOCK,
+  }
+}
+export const getTotalStakeQuery = createQuery({
+  key: 'getTotalStake',
+  fetcher: getTotalStake,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
   }),
 })
