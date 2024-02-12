@@ -126,6 +126,8 @@ export function createQuery<Data, ReturnValue>({
     },
     useQueries: (data: Data[], config?: QueryConfig<Data, ReturnValue>) => {
       const defaultConfig = defaultConfigGenerator?.(null)
+      if (defaultConfig) defaultConfig.enabled = data.length > 0
+
       const mergedConfig = mergeQueryConfig(config, defaultConfig)
       return useQueries({
         queries: data.map((singleData) => {
