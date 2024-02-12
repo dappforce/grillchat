@@ -88,7 +88,7 @@ export type GrillConfig = {
   order?: string[]
   /** The root font size of the whole page. You can change it if you want all font sizes to be smaller/bigger. Default root font size is 1rem (16px). For example, you can change it to 0.875rem to make it 14px, or just straight up use 14px. */
   rootFontSize?: string
-  /** The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.chat> */
+  /** The theme of the chat. If omitted, it will use the system preferences or user's last theme used in <https://grill.so> */
   theme?: Theme
   /** You can set this to `true` if you want user who uses the iframe must login via wallet or their own grill key (no anon login) */
   loginRequired?: boolean
@@ -104,7 +104,7 @@ export type GrillConfig = {
 const DEFAULT_WIDGET_ELEMENT_ID = 'grill'
 const DEFAULT_CONFIG = {
   widgetElementId: DEFAULT_WIDGET_ELEMENT_ID,
-  hub: { id: 'x' },
+  hub: { id: 'featured' },
 } satisfies GrillConfig
 
 const DEFAULT_CHANNEL_SETTINGS: Channel['settings'] = {
@@ -116,7 +116,7 @@ function createUrl(
   config: Pick<GrillConfig, 'hub' | 'channel'>,
   query?: QueryParamsBuilder
 ) {
-  let url = `https://grill.chat/${config.hub.id}`
+  let url = `https://grill.so/widget/${config.hub.id}`
   const channelConfig = config.channel
   let resourceId: string | null = null
   let resourceMetadata: ResourceMetadata | null = null
