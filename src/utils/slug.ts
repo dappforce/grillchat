@@ -11,7 +11,7 @@ type Content = {
   body?: string
   title?: string
 }
-const MAX_SLUG_LENGTH = 60
+const MAX_SLUG_LENGTH = 30
 export function createSlug(id: string, content: Content | undefined | null) {
   let slug = id
   const { body, title } = content || {}
