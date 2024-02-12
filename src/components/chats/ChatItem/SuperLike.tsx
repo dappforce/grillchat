@@ -13,6 +13,7 @@ export type SuperLikeProps = ButtonProps & {
 }
 
 export default function SuperLike({ messageId, ...props }: SuperLikeProps) {
+  // TODO: check and handle case where user total stake is less than required
   const { mutate: createSuperlike } = useCreateSuperlike()
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(messageId)
   const myAddress = useMyMainAddress()
