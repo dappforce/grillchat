@@ -4,6 +4,7 @@ import { getEmojiAmount, validateTextContainsOnlyEmoji } from '@/utils/strings'
 import ChatRelativeTime from '../ChatRelativeTime'
 import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
+import SuperLike from '../SuperLike'
 import { ChatItemContentProps } from './types'
 
 export type EmojiChatItemProps = ChatItemContentProps
@@ -41,10 +42,18 @@ export default function EmojiChatItem({
   const emojiFontSize =
     EMOJI_FONT_SIZE.min + emojiFontIncrement * (MAX_EMOJI_AMOUNT - emojiCount)
 
+  const relativeTimeElement = (
+    <ChatRelativeTime
+      isUpdated={isUpdated}
+      createdAtTime={createdAtTime}
+      className='flex-shrink-0 text-xs text-text-muted'
+    />
+  )
+
   return (
     <div
       className={cx(
-        'flex flex-col gap-1 overflow-hidden',
+        'flex flex-col gap-1',
         isMyMessage ? 'items-end' : 'items-start',
         props.className
       )}
@@ -59,16 +68,11 @@ export default function EmojiChatItem({
             address={ownerId}
             className={cx('mr-2 text-sm font-medium text-text-secondary')}
           />
-          <ChatRelativeTime
-            isUpdated={isUpdated}
-            createdAtTime={createdAtTime}
-            className='flex-shrink-0 text-xs text-text-muted'
-          />
         </div>
       )}
       <div
         className={cx(
-          'flex w-full gap-2 overflow-hidden',
+          'relative flex w-full gap-2',
           isMyMessage ? 'flex-row-reverse' : 'flex-row'
         )}
       >
@@ -98,17 +102,22 @@ export default function EmojiChatItem({
             </div>
           )}
         </div>
+        {!isMyMessage && (
+          <div className='absolute bottom-0 right-0 translate-x-full'>
+            {relativeTimeElement}
+          </div>
+        )}
       </div>
       {isMyMessage && (
         <div className='mt-auto flex items-center gap-1 rounded-2xl px-2.5 pb-1.5'>
-          <ChatRelativeTime
-            isUpdated={isUpdated}
-            className='text-xs text-text-muted'
-            createdAtTime={createdAtTime}
-          />
+          {relativeTimeElement}
           <MessageStatusIndicator message={message} />
         </div>
       )}
+      <SuperLike
+        className={cx(!isMyMessage && 'mt-1.5')}
+        messageId={messageId}
+      />
     </div>
   )
 }

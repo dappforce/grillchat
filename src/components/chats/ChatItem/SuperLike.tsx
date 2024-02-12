@@ -80,26 +80,29 @@ export function SuperLikeWrapper({
 export default function SuperLike({ messageId, ...props }: SuperLikeProps) {
   return (
     <SuperLikeWrapper messageId={messageId}>
-      {({ handleClick, disabled, hasILiked, superLikeCount }) => (
-        <button
-          {...props}
-          onClick={handleClick}
-          disabled={disabled}
-          className={cx(
-            'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
-            'hover:border-background-primary hover:text-text focus-visible:border-background-primary',
-            'disabled:bg-border-gray/50 disabled:text-text-muted',
-            hasILiked && 'bg-background-primary text-text'
-          )}
-        >
-          {hasILiked ? (
-            <IoDiamond className='relative top-px' />
-          ) : (
-            <IoDiamondOutline className='relative top-px' />
-          )}
-          <span>{superLikeCount}</span>
-        </button>
-      )}
+      {({ handleClick, disabled, hasILiked, superLikeCount }) =>
+        superLikeCount > 0 && (
+          <button
+            {...props}
+            onClick={handleClick}
+            disabled={disabled}
+            className={cx(
+              'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
+              'hover:border-background-primary hover:text-text focus-visible:border-background-primary',
+              'disabled:bg-border-gray/50 disabled:text-text-muted',
+              hasILiked && 'bg-background-primary text-text',
+              props.className
+            )}
+          >
+            {hasILiked ? (
+              <IoDiamond className='relative top-px' />
+            ) : (
+              <IoDiamondOutline className='relative top-px' />
+            )}
+            <span>{superLikeCount}</span>
+          </button>
+        )
+      }
     </SuperLikeWrapper>
   )
 }
