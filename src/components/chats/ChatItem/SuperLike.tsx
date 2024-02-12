@@ -8,26 +8,39 @@ import {
   getSuperLikeCountQuery,
   getTotalStakeQuery,
 } from '@/services/datahub/content-staking/query'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
 
 export type SuperLikeProps = ButtonProps & {
   messageId: string
 }
 
-export default function SuperLike({ messageId, ...props }: SuperLikeProps) {
+export function SuperLikeWrapper({
+  messageId,
+  children,
+}: {
+  messageId: string
+  children: (props: {
+    hasILiked: boolean
+    disabled: boolean
+    superLikeCount: number
+    handleClick: () => void
+  }) => ReactNode
+}) {
   const [isOpenModal, setIsOpenModal] = useState(false)
+  const { setIsOpen } = useLoginModal()
 
   const { mutate: createSuperLike } = useCreateSuperLike()
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(messageId)
 
   const myAddress = useMyMainAddress()
-  const { data: totalStake, isLoading: loadingTotalStake } =
+  const { data: totalStake, isFetching: loadingTotalStake } =
     getTotalStakeQuery.useQuery(myAddress ?? '')
-  const { data: myLike, isLoading: loadingMyLike } =
+  const { data: myLike, isFetching: loadingMyLike } =
     getAddressLikeCountToPostQuery.useQuery({
       address: myAddress ?? '',
       postId: messageId,
@@ -37,6 +50,10 @@ export default function SuperLike({ messageId, ...props }: SuperLikeProps) {
   const disabled = loadingMyLike || loadingTotalStake
 
   const handleClick = () => {
+    if (!myAddress) {
+      setIsOpen(true)
+      return
+    }
     if (!totalStake?.hasStakedEnough) {
       setIsOpenModal(true)
       return
@@ -46,29 +63,44 @@ export default function SuperLike({ messageId, ...props }: SuperLikeProps) {
 
   return (
     <>
-      <button
-        {...props}
-        onClick={handleClick}
-        disabled={disabled}
-        className={cx(
-          'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
-          'hover:border-background-primary hover:text-text focus-visible:border-background-primary',
-          'disabled:bg-border-gray/50 disabled:text-text-muted',
-          hasILiked && 'bg-background-primary text-text'
-        )}
-      >
-        {hasILiked ? (
-          <IoDiamond className='relative top-px' />
-        ) : (
-          <IoDiamondOutline className='relative top-px' />
-        )}
-        <span>{superLikeCount?.count}</span>
-      </button>
+      {children({
+        disabled,
+        handleClick,
+        hasILiked,
+        superLikeCount: superLikeCount?.count ?? 0,
+      })}
       <ShouldStakeModal
         closeModal={() => setIsOpenModal(false)}
         isOpen={isOpenModal}
       />
     </>
+  )
+}
+
+export default function SuperLike({ messageId, ...props }: SuperLikeProps) {
+  return (
+    <SuperLikeWrapper messageId={messageId}>
+      {({ handleClick, disabled, hasILiked, superLikeCount }) => (
+        <button
+          {...props}
+          onClick={handleClick}
+          disabled={disabled}
+          className={cx(
+            'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
+            'hover:border-background-primary hover:text-text focus-visible:border-background-primary',
+            'disabled:bg-border-gray/50 disabled:text-text-muted',
+            hasILiked && 'bg-background-primary text-text'
+          )}
+        >
+          {hasILiked ? (
+            <IoDiamond className='relative top-px' />
+          ) : (
+            <IoDiamondOutline className='relative top-px' />
+          )}
+          <span>{superLikeCount}</span>
+        </button>
+      )}
+    </SuperLikeWrapper>
   )
 }
 

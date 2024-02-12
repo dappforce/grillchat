@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import MenuList from '@/components/MenuList'
 import Toast from '@/components/Toast'
 import LoginModal from '@/components/auth/LoginModal'
 import { useOpenDonateExtension } from '@/components/extensions/donate/hooks/useOpenDonateExtension'
@@ -40,6 +41,7 @@ import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
 import urlJoin from 'url-join'
 import usePinnedMessage from '../hooks/usePinnedMessage'
+import { SuperLikeWrapper } from './SuperLike'
 
 export type ChatItemMenusProps = {
   messageId: string
@@ -174,18 +176,6 @@ export default function ChatItemMenus({
       icon: LuPencil,
       onClick: () => setMessageToEdit(messageId),
     }
-    const likeMenu: FloatingMenusProps['menus'][number] = {
-      text: 'Like Message',
-      icon: IoDiamondOutline,
-      onClick: () => {
-        if (!address) {
-          setModalState('login')
-          return
-        }
-        // TODO: check and handle case where user total stake is less than required
-        createSuperLike({ postId: messageId })
-      },
-    }
     const showDonateMenuItem = canSendMessage && !isMessageOwner
 
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
@@ -193,7 +183,6 @@ export default function ChatItemMenus({
     if (isDatahubAvailable && canSendMessage && isMessageOwner)
       menus.unshift(editItem)
     if (canSendMessage) menus.unshift(replyItem)
-    menus.unshift(likeMenu)
 
     return menus
   }
@@ -203,8 +192,32 @@ export default function ChatItemMenus({
     <>
       <FloatingMenus
         beforeMenus={
-          isOptimisticMessage &&
-          message && <MintingMessageNotice message={message} />
+          isOptimisticMessage ? (
+            message && <MintingMessageNotice message={message} />
+          ) : (
+            <SuperLikeWrapper messageId={messageId}>
+              {({ disabled, handleClick, hasILiked }) =>
+                !hasILiked && (
+                  <div className='relative'>
+                    <MenuList
+                      size='sm'
+                      menus={[
+                        {
+                          icon: IoDiamondOutline,
+                          text: 'Like Message',
+                          disabled,
+                          onClick: handleClick,
+                        },
+                      ]}
+                    />
+                    <div className='absolute bottom-0 flex w-full flex-col'>
+                      <div className='mx-4 h-px bg-border-gray' />
+                    </div>
+                  </div>
+                )
+              }
+            </SuperLikeWrapper>
+          )
         }
         menus={menus}
         allowedPlacements={[
