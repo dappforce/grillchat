@@ -33,7 +33,6 @@ import { BiGift } from 'react-icons/bi'
 import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FiLink } from 'react-icons/fi'
 import { HiChevronRight } from 'react-icons/hi2'
-import { IoDiamondOutline } from 'react-icons/io5'
 import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
@@ -171,16 +170,6 @@ export default function ChatItemMenus({
       icon: LuPencil,
       onClick: () => setMessageToEdit(messageId),
     }
-    const likeMenu: FloatingMenusProps['menus'][number] = {
-      text: 'Like Message',
-      icon: IoDiamondOutline,
-      onClick: () => {
-        copyToClipboard(message?.content?.body ?? '')
-        toast.custom((t) => (
-          <Toast t={t} title='Message copied to clipboard!' />
-        ))
-      },
-    }
     const showDonateMenuItem = canSendMessage && !isMessageOwner
 
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
@@ -188,7 +177,6 @@ export default function ChatItemMenus({
     if (isDatahubAvailable && canSendMessage && isMessageOwner)
       menus.unshift(editItem)
     if (canSendMessage) menus.unshift(replyItem)
-    menus.unshift(likeMenu)
 
     return menus
   }
