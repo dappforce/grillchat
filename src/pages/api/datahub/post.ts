@@ -19,6 +19,7 @@ import {
   RateLimitError,
   datahubMutationWrapper,
 } from '@/server/datahub-queue/utils'
+import { SocialEventDataApiInput } from '@subsocial/data-hub-sdk'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -73,7 +74,7 @@ export type ApiDatahubPostMutationBody =
     }
   | {
       action: 'create-superlike'
-      payload: UpdatePostBlockchainSyncStatusInput
+      payload: SocialEventDataApiInput
     }
 
 export type ApiDatahubPostResponse = ApiResponse

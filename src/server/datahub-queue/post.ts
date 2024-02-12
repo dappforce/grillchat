@@ -1,7 +1,11 @@
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
+import {
+  SocialCallDataArgs,
+  SocialEventDataApiInput,
+} from '@subsocial/data-hub-sdk'
 import { gql } from 'graphql-request'
 import {
   CanAccountDoArgsInput,
-  CreateMutateActiveStakingSuperLikeInput,
   CreatePostOptimisticInput,
   CreatePostOptimisticMutation,
   CreatePostOptimisticMutationVariables,
@@ -18,7 +22,11 @@ import {
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
 } from './generated'
-import { datahubQueueRequest, throwErrorIfNotProcessed } from './utils'
+import {
+  backendSigWrapper,
+  datahubQueueRequest,
+  throwErrorIfNotProcessed,
+} from './utils'
 
 const GET_CAN_ACCOUNT_DO = gql`
   query GetCanAccountDo($getAccountDo: CanAccountDoArgsInput!) {
@@ -160,16 +168,25 @@ const CREATE_SUPERlIKE = gql`
     }
   }
 `
-export async function createSuperlike(
-  input: CreateMutateActiveStakingSuperLikeInput
-) {
+export async function createSuperlike(input: SocialEventDataApiInput) {
+  const args: SocialCallDataArgs<'synth_active_staking_create_super_like'> =
+    JSON.parse(input.callData?.args || '{}') as any
+  const substrateApi = await (await getSubsocialApi()).substrateApi
+  const blockHash = await substrateApi.rpc.chain.getBlockHash()
+
+  args.blockHash = blockHash.toString()
+  input.callData.args = JSON.stringify(args)
+
+  input.callData.timestamp = Date.now()
+
+  const signedPayload = await backendSigWrapper(input)
   const res = await datahubQueueRequest<
     CreateSuperlikeMutation,
     CreateSuperlikeMutationVariables
   >({
     document: CREATE_SUPERlIKE,
     variables: {
-      createSuperLikeInput: input,
+      createSuperLikeInput: signedPayload as any,
     },
   })
   throwErrorIfNotProcessed(
