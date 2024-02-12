@@ -111,7 +111,6 @@ export const mapDatahubPostFragment = (
     rootPostId: post.rootPost?.persistentId ?? '',
     followersCount: post.followersCount ?? 0,
     blockchainSyncFailed: post.blockchainSyncFailed,
-    superLikesCount: post.activeStakingSuperLikesCount ?? 0,
   }
 
   const data = {
