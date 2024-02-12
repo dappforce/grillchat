@@ -77,7 +77,7 @@ export type GrillConfig = {
   /** The `id` of the div that you want to render the chat to. Default to `grill` */
   widgetElementId?: string
   /** Info of the space you want to use */
-  hub: {
+  hub?: {
     /** The `space id` or `domain name` of your space. */
     id: string
   }
@@ -113,7 +113,7 @@ const DEFAULT_CHANNEL_SETTINGS: Channel['settings'] = {
 }
 
 function createUrl(
-  config: Pick<GrillConfig, 'hub' | 'channel'>,
+  config: Required<Pick<GrillConfig, 'hub'>> & Pick<GrillConfig, 'channel'>,
   query?: QueryParamsBuilder
 ) {
   let url = `https://grill.so/widget/${config.hub.id}`
@@ -270,12 +270,13 @@ const grill = {
   },
 
   setConfig(config: Pick<GrillConfig, 'widgetElementId' | 'hub' | 'channel'>) {
+    const mergedConfig = { ...DEFAULT_CONFIG, ...config }
     const currentInstance =
-      this.instances[config.widgetElementId || DEFAULT_WIDGET_ELEMENT_ID]
+      this.instances[mergedConfig.widgetElementId || DEFAULT_WIDGET_ELEMENT_ID]
     if (!currentInstance)
       throw new GrillError('Instance not found', 'setConfig')
 
-    const { fullUrl } = createUrl(config)
+    const { fullUrl } = createUrl(mergedConfig)
     const url = new URL(fullUrl)
     const pathnameWithQuery = url.pathname + url.search
 
