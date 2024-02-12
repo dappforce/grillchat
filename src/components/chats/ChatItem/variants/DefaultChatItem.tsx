@@ -134,7 +134,9 @@ export default function DefaultChatItem({
         {showSuperLikeCount && (
           <div className={cx('mt-1 flex items-center')}>
             <SuperLike messageId={message.id} />
-            <span className='ml-4 select-none opacity-0'>{relativeTime}</span>
+            <span className='pointer-events-none ml-4 select-none opacity-0'>
+              {relativeTime}
+            </span>
           </div>
         )}
         <div
