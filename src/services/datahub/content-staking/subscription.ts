@@ -103,7 +103,6 @@ async function processSubscriptionEvent(
   },
   myAddress: string | undefined
 ) {
-  console.log(eventData, myAddress)
   if (
     eventData.event !==
       DataHubSubscriptionEventEnum.ACTIVE_STAKING_SUPER_LIKE_CREATED &&
