@@ -1,10 +1,13 @@
 import { ApiDatahubPostMutationBody } from '@/pages/api/datahub/post'
+import { queryClient } from '@/services/provider'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
+import { getMyMainAddress } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
 import axios from 'axios'
 import { DatahubParams, createSocialDataEventPayload } from '../utils'
+import { getAddressLikeCountToPostQuery, getSuperLikeCountQuery } from './query'
 
 type CreateSuperLikeArgs =
   SocialCallDataArgs<'synth_active_staking_create_super_like'>
@@ -29,10 +32,40 @@ export const useCreateSuperlike = mutationWrapper(
     })
   },
   {
-    onMutate: () => {
+    onMutate: ({ postId }) => {
       preventWindowUnload()
+      const mainAddress = getMyMainAddress()
+      if (!mainAddress) return
+      getSuperLikeCountQuery.setQueryData(queryClient, postId, (oldData) => {
+        if (!oldData)
+          return {
+            count: 1,
+            postId,
+          }
+        return {
+          ...oldData,
+          count: oldData.count + 1,
+        }
+      })
+      getAddressLikeCountToPostQuery.setQueryData(
+        queryClient,
+        { address: mainAddress, postId },
+        () => {
+          return {
+            address: mainAddress,
+            count: 1,
+            postId,
+          }
+        }
+      )
     },
-    onError: () => {
+    onError: (_, { postId }) => {
+      const mainAddress = getMyMainAddress()
+      if (!mainAddress) return
+      getAddressLikeCountToPostQuery.invalidate(queryClient, {
+        postId,
+        address: mainAddress,
+      })
       allowWindowUnload()
     },
     onSuccess: () => {

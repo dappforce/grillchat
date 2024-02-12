@@ -29,7 +29,7 @@ export default function SuperLike({ messageId, ...props }: SuperLikeProps) {
       onClick={() => createSuperlike({ postId: messageId })}
       disabled={isLoading}
       className={cx(
-        'flex items-center gap-2 rounded-full bg-background-lighter px-2 py-0.5 text-text-primary',
+        'flex items-center gap-2 rounded-full bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
         'disabled:bg-border-gray/50 disabled:text-text-muted',
         hasILiked && 'bg-background-primary text-text'
       )}
