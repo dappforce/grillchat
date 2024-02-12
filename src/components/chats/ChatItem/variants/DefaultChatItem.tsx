@@ -3,21 +3,16 @@ import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import MessageModal from '@/components/modals/MessageModal'
 import { getPostQuery } from '@/services/api/query'
-import { useCreateSuperlike } from '@/services/datahub/content-staking/mutation'
-import {
-  getAddressLikeCountToPostQuery,
-  getSuperLikeCountQuery,
-} from '@/services/datahub/content-staking/query'
-import { useMyMainAddress } from '@/stores/my-account'
+import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { cx } from '@/utils/class-names'
 import Linkify from 'linkify-react'
 import { useState } from 'react'
-import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
 import { ScrollToMessage } from '../../ChatList/hooks/useScrollToMessage'
 import ChatRelativeTime from '../ChatRelativeTime'
 import LinkPreview from '../LinkPreview'
 import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
+import SuperLike from '../SuperLike'
 import { ChatItemContentProps } from './types'
 
 export type DefaultChatItemProps = ChatItemContentProps
@@ -32,16 +27,8 @@ export default function DefaultChatItem({
 }: DefaultChatItemProps) {
   const messageId = message.id
 
-  const { mutate: createSuperlike } = useCreateSuperlike()
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(messageId)
-  const myAddress = useMyMainAddress()
-  const { data: myLike, isLoading } = getAddressLikeCountToPostQuery.useQuery({
-    address: myAddress ?? '',
-    postId: messageId,
-  })
-
   const showSuperLikeCount = (superLikeCount?.count ?? 0) > 0
-  const hasILiked = (myLike?.count ?? 0) > 0
 
   const { createdAtTime, ownerId, isUpdated } = message.struct
   const { inReplyTo, body, link, linkMetadata } = message.content || {}
@@ -146,22 +133,7 @@ export default function DefaultChatItem({
         )}
         {showSuperLikeCount && (
           <div className={cx('mt-1 flex items-center')}>
-            <button
-              onClick={() => createSuperlike({ postId: messageId })}
-              disabled={isLoading}
-              className={cx(
-                'flex items-center gap-2 rounded-full bg-background-lighter px-2 py-0.5 text-text-primary',
-                'disabled:bg-border-gray/50 disabled:text-text-muted',
-                hasILiked && 'bg-background-primary text-text'
-              )}
-            >
-              {hasILiked ? (
-                <IoDiamond className='relative top-px' />
-              ) : (
-                <IoDiamondOutline className='relative top-px' />
-              )}
-              <span>{superLikeCount?.count}</span>
-            </button>
+            <SuperLike messageId={message.id} />
             <span className='ml-4 select-none opacity-0'>{relativeTime}</span>
           </div>
         )}
