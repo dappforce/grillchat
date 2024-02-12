@@ -3,6 +3,7 @@ import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
+import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
@@ -10,9 +11,9 @@ import { cx } from '@/utils/class-names'
 import { sendMessageToParentWindow } from '@/utils/window'
 import {
   ComponentProps,
-  createContext,
   Fragment,
   RefObject,
+  createContext,
   useContext,
   useEffect,
   useId,
@@ -29,10 +30,10 @@ import ChatListEventManager from './ChatListEventManager'
 import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
+import PinnedMessage from './PinnedMessage'
 import useLastFocusedMessageTime from './hooks/useLastFocusedMessageId'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import useScrollToMessage from './hooks/useScrollToMessage'
-import PinnedMessage from './PinnedMessage'
 
 const ChatListContext = createContext<RefObject<HTMLDivElement> | null>(null)
 export function useChatListContext() {
@@ -114,7 +115,12 @@ function ChatListContent({
   )
 
   const lastBatchQueries = getPostQuery.useQueries(lastBatchIds)
-  const isLastBatchLoading = useIsAnyQueriesLoading(lastBatchQueries)
+  const superLikeCountQueries = getSuperLikeCountQuery.useQueries(lastBatchIds)
+
+  const isLastBatchLoading = useIsAnyQueriesLoading([
+    ...lastBatchQueries,
+    ...superLikeCountQueries,
+  ])
 
   useEffect(() => {
     if (isLastBatchLoading) return
