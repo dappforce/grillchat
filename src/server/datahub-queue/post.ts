@@ -9,8 +9,8 @@ import {
   CreatePostOptimisticInput,
   CreatePostOptimisticMutation,
   CreatePostOptimisticMutationVariables,
-  CreateSuperlikeMutation,
-  CreateSuperlikeMutationVariables,
+  CreateSuperLikeMutation,
+  CreateSuperLikeMutationVariables,
   GetCanAccountDoQuery,
   GetCanAccountDoQueryVariables,
   NotifyCreatePostTxFailedOrRetryStatusMutation,
@@ -158,8 +158,8 @@ export async function notifyUpdatePostFailedOrRetryStatus(
   )
 }
 
-const CREATE_SUPERlIKE = gql`
-  mutation CreateSuperlike(
+const CREATE_SUPER_LIKE = gql`
+  mutation CreateSuperLike(
     $createSuperLikeInput: CreateMutateActiveStakingSuperLikeInput!
   ) {
     activeStakingCreateSuperLike(args: $createSuperLikeInput) {
@@ -168,7 +168,7 @@ const CREATE_SUPERlIKE = gql`
     }
   }
 `
-export async function createSuperlike(input: SocialEventDataApiInput) {
+export async function createSuperLike(input: SocialEventDataApiInput) {
   const args: SocialCallDataArgs<'synth_active_staking_create_super_like'> =
     JSON.parse(input.callData?.args || '{}') as any
   const substrateApi = await (await getSubsocialApi()).substrateApi
@@ -181,10 +181,10 @@ export async function createSuperlike(input: SocialEventDataApiInput) {
 
   const signedPayload = await backendSigWrapper(input)
   const res = await datahubQueueRequest<
-    CreateSuperlikeMutation,
-    CreateSuperlikeMutationVariables
+    CreateSuperLikeMutation,
+    CreateSuperLikeMutationVariables
   >({
-    document: CREATE_SUPERlIKE,
+    document: CREATE_SUPER_LIKE,
     variables: {
       createSuperLikeInput: signedPayload as any,
     },

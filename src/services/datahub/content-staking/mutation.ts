@@ -11,7 +11,7 @@ import { getAddressLikeCountToPostQuery, getSuperLikeCountQuery } from './query'
 
 type CreateSuperLikeArgs =
   SocialCallDataArgs<'synth_active_staking_create_super_like'>
-async function createSuperlike(params: DatahubParams<CreateSuperLikeArgs>) {
+async function createSuperLike(params: DatahubParams<CreateSuperLikeArgs>) {
   const input = createSocialDataEventPayload(
     socialCallName.synth_active_staking_create_super_like,
     params,
@@ -24,9 +24,9 @@ async function createSuperlike(params: DatahubParams<CreateSuperLikeArgs>) {
   })
 }
 
-export const useCreateSuperlike = mutationWrapper(
+export const useCreateSuperLike = mutationWrapper(
   async (data: CreateSuperLikeArgs) => {
-    await createSuperlike({
+    await createSuperLike({
       ...getCurrentWallet(),
       args: data,
     })

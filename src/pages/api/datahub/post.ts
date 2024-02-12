@@ -7,7 +7,7 @@ import {
 } from '@/server/datahub-queue/generated'
 import {
   createPostData,
-  createSuperlike,
+  createSuperLike,
   getCanAccountDo,
   notifyCreatePostFailedOrRetryStatus,
   notifyUpdatePostFailedOrRetryStatus,
@@ -123,7 +123,7 @@ function datahubPostActionMapping(data: ApiDatahubPostMutationBody) {
     case 'notify-update-failed':
       return notifyUpdatePostFailedOrRetryStatus(data.payload)
     case 'create-superlike':
-      return createSuperlike(data.payload)
+      return createSuperLike(data.payload)
     default:
       throw new Error('Unknown action')
   }

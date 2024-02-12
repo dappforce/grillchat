@@ -1,5 +1,5 @@
 import { ButtonProps } from '@/components/Button'
-import { useCreateSuperlike } from '@/services/datahub/content-staking/mutation'
+import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
 import {
   getAddressLikeCountToPostQuery,
   getSuperLikeCountQuery,
@@ -14,7 +14,7 @@ export type SuperLikeProps = ButtonProps & {
 
 export default function SuperLike({ messageId, ...props }: SuperLikeProps) {
   // TODO: check and handle case where user total stake is less than required
-  const { mutate: createSuperlike } = useCreateSuperlike()
+  const { mutate: createSuperLike } = useCreateSuperLike()
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(messageId)
   const myAddress = useMyMainAddress()
   const { data: myLike, isLoading } = getAddressLikeCountToPostQuery.useQuery({
@@ -27,7 +27,7 @@ export default function SuperLike({ messageId, ...props }: SuperLikeProps) {
   return (
     <button
       {...props}
-      onClick={() => createSuperlike({ postId: messageId })}
+      onClick={() => createSuperLike({ postId: messageId })}
       disabled={isLoading}
       className={cx(
         'flex items-center gap-2 rounded-full bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',

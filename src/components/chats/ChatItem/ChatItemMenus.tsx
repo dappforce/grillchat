@@ -14,7 +14,7 @@ import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
-import { useCreateSuperlike } from '@/services/datahub/content-staking/mutation'
+import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
@@ -84,7 +84,7 @@ export default function ChatItemMenus({
   const setReplyTo = useMessageData((state) => state.setReplyTo)
   const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
 
-  const { mutate: createSuperlike } = useCreateSuperlike()
+  const { mutate: createSuperLike } = useCreateSuperLike()
 
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { ownerId, dataType } = message?.struct || {}
@@ -183,7 +183,7 @@ export default function ChatItemMenus({
           return
         }
         // TODO: check and handle case where user total stake is less than required
-        createSuperlike({ postId: messageId })
+        createSuperLike({ postId: messageId })
       },
     }
     const showDonateMenuItem = canSendMessage && !isMessageOwner
