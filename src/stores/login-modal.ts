@@ -6,6 +6,7 @@ import { create, createSelectors } from './utils'
 type State = {
   isOpen: boolean
   initialOpenState: LoginModalStep | undefined
+  /** The difference between this and initialOpenState is with defaultOpenState, you can set the state that you want login modal to open, the next time user opens, without directly opening it */
   defaultOpenState: LoginModalStep | undefined
 }
 

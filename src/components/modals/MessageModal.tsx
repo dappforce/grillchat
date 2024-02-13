@@ -5,14 +5,14 @@ import { cx } from '@/utils/class-names'
 import { CommentData } from '@subsocial/api/types'
 import { useEffect, useRef, useState } from 'react'
 import { HiArrowUpRight, HiOutlineInformationCircle } from 'react-icons/hi2'
-import LoginModal from '../auth/LoginModal'
 import Button from '../Button'
 import Card from '../Card'
+import ProfilePreview from '../ProfilePreview'
+import { Skeleton } from '../SkeletonFallback'
+import LoginModal from '../auth/LoginModal'
 import ChatItem from '../chats/ChatItem'
 import { ScrollToMessage } from '../chats/ChatList/hooks/useScrollToMessage'
 import PopOver from '../floating/PopOver'
-import ProfilePreview from '../ProfilePreview'
-import { Skeleton } from '../SkeletonFallback'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
 export type MessageModalProps = ModalFunctionalityProps & {
@@ -139,7 +139,7 @@ export default function MessageModal({
             <ProfilePreview
               className='mt-3 gap-3'
               address={recipient}
-              addressesContainerClassName='gap-1'
+              nameContainerClassName='gap-1'
               avatarClassName='h-9 w-9'
             />
             <Button

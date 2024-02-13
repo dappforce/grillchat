@@ -7,6 +7,7 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { ProfileSource } from '@/utils/profile'
+import { Placement } from '@floating-ui/react'
 import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import { LuPencil } from 'react-icons/lu'
@@ -14,8 +15,8 @@ import AddressAvatar from './AddressAvatar'
 import AllIdentityIcons from './AllIdentityIcons'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
-import PopOver from './floating/PopOver'
 import Name, { useName } from './Name'
+import PopOver from './floating/PopOver'
 
 export type ForceProfileSource = {
   profileSource?: ProfileSource
@@ -27,11 +28,13 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   forceProfileSource?: ForceProfileSource
   className?: string
   avatarClassName?: string
-  addressesContainerClassName?: string
+  nameContainerClassName?: string
+  addressClassName?: string
   showAddress?: boolean
   nameClassName?: string
   onEditClick?: () => void
   showAllIdentity?: boolean
+  tooltipPlacement?: Placement
 }
 
 const ProfilePreview = ({
@@ -40,7 +43,9 @@ const ProfilePreview = ({
   className,
   avatarClassName,
   nameClassName,
-  addressesContainerClassName,
+  nameContainerClassName,
+  addressClassName,
+  tooltipPlacement,
   onEditClick,
   showAddress = true,
   showAllIdentity,
@@ -76,7 +81,6 @@ const ProfilePreview = ({
     <PopOver
       panelSize='sm'
       triggerOnHover
-      placement='top'
       yOffset={6}
       trigger={
         <Button
@@ -104,7 +108,7 @@ const ProfilePreview = ({
         )}
         forceProfileSource={forceProfileSource}
       />
-      <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
+      <div className={cx('flex flex-col gap-1', nameContainerClassName)}>
         <div className='relative left-1 flex items-center gap-2'>
           <Name
             profileSourceIconClassName='text-base'
@@ -116,42 +120,46 @@ const ProfilePreview = ({
           {onEditClick && !isLoading && editButton}
         </div>
         {showAddress && (
-          <div className='flex flex-col gap-1'>
+          <div
+            className={cx('flex flex-col gap-1 text-base', addressClassName)}
+          >
             {showGrillAddress && (
               <div className='flex flex-row items-center gap-2'>
-                <GrillIcon className='text-xl text-text-muted' />
+                <GrillIcon className='text-[1.25em] text-text-muted' />
                 <CopyTextInline
+                  tooltipPlacement={tooltipPlacement}
                   text={truncateAddress(address)}
                   tooltip={`Copy${isMyAddressPart} Grill public address`}
                   textToCopy={address}
                   textClassName={cx(
-                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
+                    'font-mono whitespace-nowrap overflow-hidden overflow-ellipsis'
                   )}
                 />
               </div>
             )}
             {showPolkadotAddress && (
               <div className='flex flex-row items-center gap-2'>
-                <PolkadotIcon className='relative left-1 text-xl text-text-muted' />
+                <PolkadotIcon className='relative left-1 text-[1.25em] text-text-muted' />
                 <CopyTextInline
+                  tooltipPlacement={tooltipPlacement}
                   text={truncateAddress(address)}
                   tooltip={`Copy${isMyAddressPart} Polkadot address`}
                   textToCopy={address}
                   textClassName={cx(
-                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
+                    'font-mono whitespace-nowrap overflow-hidden overflow-ellipsis'
                   )}
                 />
               </div>
             )}
             {showEvmAddress && (
               <div className='flex flex-row items-center gap-2'>
-                <EthIcon className='relative left-1 text-xl text-text-muted' />
+                <EthIcon className='relative left-1 text-[1.25em] text-text-muted' />
                 <CopyTextInline
                   text={truncateAddress(evmAddress)}
                   tooltip={`Copy${isMyAddressPart} EVM address`}
                   textToCopy={evmAddress}
                   textClassName={cx(
-                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
+                    'font-mono whitespace-nowrap overflow-hidden overflow-ellipsis'
                   )}
                 />
               </div>
