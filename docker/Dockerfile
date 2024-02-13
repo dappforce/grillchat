@@ -62,7 +62,7 @@ RUN set -x \
     && mv ci.env .env \
     && yarn build
 
-FROM gcr.io/distroless/nodejs:18 AS runner
+FROM gcr.io/distroless/nodejs20-debian12 AS runner
 
 ARG GH_NEXTAUTH_URL
 ARG GH_NEXT_PUBLIC_SUBSTRATE_URL
