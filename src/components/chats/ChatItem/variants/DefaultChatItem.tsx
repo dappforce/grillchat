@@ -125,7 +125,7 @@ export default function DefaultChatItem({
         {link && linkMetadata?.title && (
           <LinkPreview
             renderNullIfLinkEmbedable
-            className={cx('my-1')}
+            className={cx('my-1 mb-6')}
             link={link}
             linkMetadata={linkMetadata}
             isMyMessage={isMyMessage}

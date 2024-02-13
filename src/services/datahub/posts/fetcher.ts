@@ -36,7 +36,6 @@ export const DATAHUB_POST_FRAGMENT = gql`
     canonical
     tagsOriginal
     followersCount
-    activeStakingSuperLikesCount
     ownedByAccount {
       id
     }
