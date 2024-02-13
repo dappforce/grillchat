@@ -200,7 +200,7 @@ export default function ChatItemMenus({
               {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
                 if (hasILiked) return null
                 const menuList = (
-                  <div className='relative'>
+                  <div className='relative w-full'>
                     <MenuList
                       size='sm'
                       menus={[
@@ -219,6 +219,7 @@ export default function ChatItemMenus({
                 )
                 return disabledCause ? (
                   <PopOver
+                    triggerClassName='w-full'
                     trigger={menuList}
                     panelSize='sm'
                     triggerOnHover
