@@ -21,7 +21,6 @@ import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
-import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 
@@ -97,11 +96,6 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <SubsocialApiReconnect />
         <ToasterConfig />
         <ForegroundNotificationHandler />
-        <NextNProgress
-          color='#4d46dc'
-          options={{ showSpinner: false }}
-          showOnShallow={false}
-        />
         <HeadConfig {...head} />
         <GoogleAnalytics trackPageViews gaMeasurementId={getAugmentedGaId()} />
         <div className={cx('font-sans')}>
