@@ -22,9 +22,12 @@ export default function Sidebar({ ...props }: ComponentProps<'aside'>) {
   const { pathname } = useRouter()
 
   return (
-    <aside
+    <nav
       {...props}
-      className={cx('flex h-screen flex-col px-4 py-4', props.className)}
+      className={cx(
+        'sticky top-0 flex h-screen flex-col px-4 py-4',
+        props.className
+      )}
       style={{ height: '100dvh' }}
     >
       <Link href='/'>
@@ -54,6 +57,6 @@ export default function Sidebar({ ...props }: ComponentProps<'aside'>) {
           Login
         </Button>
       </div>
-    </aside>
+    </nav>
   )
 }
