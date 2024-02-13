@@ -206,6 +206,7 @@ export default function CommonChatItem({
           childrenElement}
 
         <SuperLike
+          withPostReward
           messageId={message.id}
           className='mb-1.5 ml-2.5 mt-1 self-start'
         />

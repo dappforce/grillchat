@@ -1,5 +1,5 @@
 import SubsocialTokenImage from '@/assets/graphics/subsocial-tokens-large.png'
-import Button, { ButtonProps } from '@/components/Button'
+import Button from '@/components/Button'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { CONTENT_STAKING_LINK } from '@/constants/links'
 import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
@@ -14,11 +14,11 @@ import { useLoginModal } from '@/stores/login-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
-import { ReactNode, useState } from 'react'
+import { ComponentProps, ReactNode, useState } from 'react'
 import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
 import PostRewardStat from './PostRewardStat'
 
-export type SuperLikeProps = ButtonProps & {
+export type SuperLikeProps = ComponentProps<'div'> & {
   withPostReward: boolean
   messageId: string
 }
@@ -97,17 +97,18 @@ export default function SuperLike({
     <SuperLikeWrapper messageId={messageId} withPostReward={withPostReward}>
       {({ handleClick, disabled, hasILiked, superLikeCount, postRewards }) =>
         superLikeCount > 0 && (
-          <div className='flex items-center gap-3'>
+          <div
+            {...props}
+            className={cx('flex items-center gap-3', props.className)}
+          >
             <button
-              {...props}
               onClick={handleClick}
               disabled={disabled}
               className={cx(
                 'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
                 'hover:border-background-primary hover:text-text focus-visible:border-background-primary',
                 'disabled:bg-border-gray/50 disabled:text-text-muted',
-                hasILiked && 'bg-background-primary text-text',
-                props.className
+                hasILiked && 'bg-background-primary text-text'
               )}
             >
               {hasILiked ? (
