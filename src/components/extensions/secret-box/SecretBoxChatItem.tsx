@@ -46,6 +46,7 @@ export default function SecretBoxChatItem(props: ExtensionChatItemProps) {
 
   return (
     <CommonChatItem
+      othersMessage={{ checkMark: 'top' }}
       myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
       {...props}
     >
