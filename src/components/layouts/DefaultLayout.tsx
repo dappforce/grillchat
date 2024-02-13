@@ -3,8 +3,8 @@ import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import BackButton from '../BackButton'
-import Navbar, { NavbarProps } from '../navbar/Navbar'
-import NavbarExtension from '../navbar/NavbarExtension'
+import Navbar, { NavbarProps } from './navbar/Navbar'
+import NavbarExtension from './navbar/NavbarExtension'
 
 export type DefaultLayoutProps = ComponentProps<'div'> & {
   navbarProps?: NavbarProps

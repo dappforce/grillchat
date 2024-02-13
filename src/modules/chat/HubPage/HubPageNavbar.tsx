@@ -1,9 +1,9 @@
 import Button from '@/components/Button'
 import ChatImage from '@/components/chats/ChatImage'
-import AboutHubModal from '@/components/modals/about/AboutHubModal'
 import NavbarWithSearch, {
   NavbarWithSearchProps,
-} from '@/components/navbar/Navbar/custom/NavbarWithSearch'
+} from '@/components/layouts/navbar/Navbar/custom/NavbarWithSearch'
+import AboutHubModal from '@/components/modals/about/AboutHubModal'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
