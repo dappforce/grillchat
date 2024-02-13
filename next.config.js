@@ -28,29 +28,6 @@ const nextConfig = {
 
     return config
   },
-  async rewrites() {
-    return [
-      { source: '/hubs', destination: '/' },
-      { source: '/my-chats', destination: '/' },
-      { source: '/hot-chats', destination: '/' },
-      // { source: '/ai-bots', destination: '/' },
-      { source: '/creators', destination: '/' },
-    ]
-  },
-  async redirects() {
-    return [
-      {
-        source: '/c/:slug',
-        destination: '/x/c/:slug',
-        permanent: false,
-      },
-      {
-        source: '/:hubId/c/:slug',
-        destination: '/:hubId/:slug',
-        permanent: false,
-      },
-    ]
-  },
   images: {
     remotePatterns: [
       {
