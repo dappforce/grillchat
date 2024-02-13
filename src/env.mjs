@@ -1,6 +1,7 @@
 import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
+console.log('ENVS RIGHT NOW', process.env)
 export const env = createEnv({
   server: {
     SERVER_MNEMONIC: z.string().min(1),
