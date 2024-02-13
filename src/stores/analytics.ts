@@ -4,7 +4,7 @@ import { LocalStorage } from '@/utils/storage'
 import { type BaseEvent, type BrowserClient } from '@amplitude/analytics-types'
 import Router from 'next/router'
 import { useParentData } from './parent'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 const DEVICE_ID_STORAGE_KEY = 'device_id'
 const deviceIdStorage = new LocalStorage(() => DEVICE_ID_STORAGE_KEY)
@@ -56,7 +56,7 @@ const initialState: State = {
   deviceId: undefined,
 }
 
-export const useAnalytics = create<State & Actions>()((set, get) => {
+const useAnalyticsBase = create<State & Actions>()((set, get) => {
   return {
     ...initialState,
     _updateUserId: async (address: string | undefined) => {
@@ -133,6 +133,7 @@ export const useAnalytics = create<State & Actions>()((set, get) => {
     },
   }
 })
+export const useAnalytics = createSelectors(useAnalyticsBase)
 
 export function useSendEvent() {
   const sendEvent = useAnalytics((state) => state.sendEvent)

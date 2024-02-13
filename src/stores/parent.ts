@@ -1,6 +1,6 @@
 import { getUrlQuery } from '@/utils/links'
 import { getIsInIframe, isPWA } from '@/utils/window'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 type State = {
   parentOrigin: string
@@ -10,7 +10,7 @@ const initialState: State = {
   parentOrigin: 'grill-app',
 }
 
-export const useParentData = create<State>()((set) => ({
+const useParentDataBase = create<State>()((set) => ({
   ...initialState,
   init: async () => {
     const isInIframe = getIsInIframe()
@@ -22,3 +22,4 @@ export const useParentData = create<State>()((set) => ({
     set({ parentOrigin })
   },
 }))
+export const useParentData = createSelectors(useParentDataBase)

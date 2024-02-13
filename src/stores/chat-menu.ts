@@ -1,4 +1,4 @@
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 let enableOpen = true
 
@@ -14,7 +14,7 @@ const INITIAL_STATE: State = {
   openedChatId: null,
 }
 
-export const useChatMenu = create<State & Actions>()((set, get) => ({
+const useChatMenuBase = create<State & Actions>()((set, get) => ({
   ...INITIAL_STATE,
   setOpenedChatId: (openedChatId) => {
     if (!enableOpen) return
@@ -28,3 +28,4 @@ export const useChatMenu = create<State & Actions>()((set, get) => ({
     set({ openedChatId })
   },
 }))
+export const useChatMenu = createSelectors(useChatMenuBase)

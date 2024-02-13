@@ -3,7 +3,7 @@ import Toast from '@/components/Toast'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { IoRefresh } from 'react-icons/io5'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 type State = {
   isToastVisible: boolean
@@ -15,7 +15,7 @@ const initialState: State = {
   version: undefined,
 }
 
-export const useVersion = create<State>()((set, get) => ({
+const useVersionBase = create<State>()((set, get) => ({
   ...initialState,
   init: async () => {
     const versionHandling = async () => {
@@ -43,6 +43,7 @@ export const useVersion = create<State>()((set, get) => ({
     }, INTERVAL)
   },
 }))
+export const useVersion = createSelectors(useVersionBase)
 
 async function validateSameVersion(currentVersion: string | undefined) {
   try {

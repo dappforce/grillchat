@@ -21,7 +21,7 @@ import { isWebNotificationsEnabled } from '@/utils/window'
 import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import { useAnalytics, UserProperties } from './analytics'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 type State = {
   isInitialized?: boolean
@@ -129,7 +129,7 @@ const sendLaunchEvent = async (
   }
 }
 
-export const useMyAccount = create<State & Actions>()((set, get) => ({
+const useMyAccountBase = create<State & Actions>()((set, get) => ({
   ...initialState,
   setPreferredWallet: (wallet) => {
     set({ preferredWallet: wallet })
@@ -299,6 +299,7 @@ export const useMyAccount = create<State & Actions>()((set, get) => ({
     }
   },
 }))
+export const useMyAccount = createSelectors(useMyAccountBase)
 
 async function subscribeEnergy(
   address: string | null,
