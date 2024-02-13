@@ -1,4 +1,4 @@
-FROM node:18-slim as builder
+FROM node:20-slim as builder
 
 ARG GH_SERVER_MNEMONIC
 ARG GH_SERVER_DISCUSSION_CREATOR_MNEMONIC
@@ -82,7 +82,7 @@ RUN set -x \
     && mv ci.env .env \
     && yarn build
 
-FROM gcr.io/distroless/nodejs:18 AS runner
+FROM gcr.io/distroless/nodejs20-debian12 AS runner
 
 ARG GH_SERVER_MNEMONIC
 ARG GH_SERVER_DISCUSSION_CREATOR_MNEMONIC

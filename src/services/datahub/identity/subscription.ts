@@ -1,5 +1,4 @@
 import { useSubscriptionState } from '@/stores/subscription'
-import { getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
@@ -7,7 +6,7 @@ import {
   DataHubSubscriptionEventEnum,
   SubscribeIdentitySubscription,
 } from '../generated-query'
-import { datahubSubscription } from '../utils'
+import { datahubSubscription, isDatahubAvailable } from '../utils'
 import { getLinkedIdentityQuery } from './query'
 
 export function useDatahubIdentitySubscriber() {
@@ -22,7 +21,7 @@ export function useDatahubIdentitySubscriber() {
   }, [subState, queryClient])
 
   useEffect(() => {
-    if (!getDatahubConfig()) return
+    if (!isDatahubAvailable) return
 
     const listener = () => {
       if (document.visibilityState === 'visible') {

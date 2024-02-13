@@ -1,6 +1,6 @@
 import AboutChatRedirectPage from '@/modules/chat/AboutChatRedirectPage'
-import { AppCommonProps } from '@/pages/_app'
 import { getPostsServer } from '@/pages/api/posts'
+import { AppCommonProps } from '@/pages/_app'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'

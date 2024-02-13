@@ -1,9 +1,10 @@
 import NoResultImage from '@/assets/graphics/no-result.png'
 import Button from '@/components/Button'
+import Container from '@/components/Container'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
-import Container from '@/components/Container'
+import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
 import {
   getFollowedPostIdsByAddressQuery,
@@ -11,12 +12,13 @@ import {
 } from '@/services/subsocial/posts'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getCommunityHubId } from '@/utils/env/client'
 import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 import { HiOutlineEyeSlash } from 'react-icons/hi2'
 import useSortChatIdsByLatestMessage from '../hooks/useSortChatIdsByLatestMessage'
+
+const communityHubId = env.NEXT_PUBLIC_COMMUNITY_HUB_ID
 
 export type MyChatsContentProps = {
   changeTab: (selectedTab: number) => void
@@ -180,7 +182,7 @@ function NoChats({ changeTab }: NoChatsProps) {
         <p className='text-text-muted'>
           Here will be all the chats you joined or created
         </p>
-        {getCommunityHubId() ? (
+        {communityHubId ? (
           <>
             <Button
               className='mt-4 w-full'
@@ -219,11 +221,11 @@ function NoChats({ changeTab }: NoChatsProps) {
         )}
       </Container>
 
-      {getCommunityHubId() && (
+      {communityHubId && (
         <NewCommunityModal
           isOpen={isOpenNewCommunity}
           closeModal={() => setIsOpenNewCommunity(false)}
-          hubId={getCommunityHubId()}
+          hubId={communityHubId}
         />
       )}
     </>

@@ -1,6 +1,6 @@
 import { GrillConfig } from '@/../integration/index'
 import { Theme } from '@/@types/theme'
-import { getAmpId, getGaId } from '@/utils/env/client'
+import { env } from '@/env.mjs'
 import { getUrlQuery } from '@/utils/links'
 import { isServer } from '@tanstack/react-query'
 
@@ -8,14 +8,14 @@ export function getAugmentedGaId() {
   const { analytics } = getConfig()
   if (analytics === false) return undefined
 
-  return analytics?.ga || getGaId()
+  return analytics?.ga || env.NEXT_PUBLIC_GA_ID
 }
 
 export function getAugmentedAmpId() {
   const { analytics } = getConfig()
   if (analytics === false) return undefined
 
-  return analytics?.amp || getAmpId()
+  return analytics?.amp || env.NEXT_PUBLIC_AMP_ID
 }
 
 export type ConfigContextState = {

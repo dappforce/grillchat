@@ -1,5 +1,6 @@
-import LoginModal from '@/components/auth/LoginModal'
 import Button from '@/components/Button'
+import Toast from '@/components/Toast'
+import LoginModal from '@/components/auth/LoginModal'
 import { useOpenDonateExtension } from '@/components/extensions/donate/hooks/useOpenDonateExtension'
 import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
@@ -7,13 +8,13 @@ import FloatingMenus, {
 } from '@/components/floating/FloatingMenus'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
-import Toast from '@/components/Toast'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useCanSendMessage } from '@/hooks/useCanSendMessage'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
+import { isDatahubAvailable } from '@/services/datahub/utils'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
@@ -21,7 +22,6 @@ import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getDatahubConfig } from '@/utils/env/client'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
@@ -174,7 +174,7 @@ export default function ChatItemMenus({
 
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
-    if (getDatahubConfig() && canSendMessage && isMessageOwner)
+    if (isDatahubAvailable && canSendMessage && isMessageOwner)
       menus.unshift(editItem)
     if (canSendMessage) menus.unshift(replyItem)
 

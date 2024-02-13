@@ -1,7 +1,6 @@
 import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
 import { useSubscriptionState } from '@/stores/subscription'
-import { getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
@@ -9,7 +8,7 @@ import {
   DataHubSubscriptionEventEnum,
   SubscribePostSubscription,
 } from '../generated-query'
-import { datahubSubscription } from '../utils'
+import { datahubSubscription, isDatahubAvailable } from '../utils'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   getPostMetadataQuery,
@@ -29,7 +28,7 @@ export function useDatahubPostSubscriber(subscribedPostId?: string) {
   }, [subState, queryClient])
 
   useEffect(() => {
-    if (!getDatahubConfig()) return
+    if (!isDatahubAvailable) return
 
     const listener = () => {
       if (document.visibilityState === 'visible') {

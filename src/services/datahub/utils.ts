@@ -1,13 +1,28 @@
-import { getDatahubConfig } from '@/utils/env/client'
+import { env } from '@/env.mjs'
+import { Signer } from '@/utils/account'
 import { wait } from '@/utils/promise'
+import { u8aToHex } from '@polkadot/util'
+import { PostContent } from '@subsocial/api/types'
+import {
+  SocialCallDataArgs,
+  SocialEventDataApiInput,
+  SocialEventDataType,
+  socialCallName,
+  socialEventProtVersion,
+} from '@subsocial/data-hub-sdk'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 import { Client, createClient } from 'graphql-ws'
 import ws from 'isomorphic-ws'
+import sortKeysRecursive from 'sort-keys-recursive'
+
+const queryUrl = env.NEXT_PUBLIC_DATAHUB_QUERY_URL
+const subscriptionUrl = env.NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL
+
+export const isDatahubAvailable = !!(queryUrl && subscriptionUrl)
 
 export function datahubQueryRequest<T, V extends Variables = Variables>(
   config: RequestOptions<V, T>
 ) {
-  const { queryUrl } = getDatahubConfig() || {}
   if (!queryUrl) throw new Error('Datahub (Query) config is not set')
 
   const TIMEOUT = 10 * 1000 // 10 seconds
@@ -21,7 +36,6 @@ export function datahubQueryRequest<T, V extends Variables = Variables>(
 
 let client: Client | null = null
 function getClient() {
-  const { subscriptionUrl } = getDatahubConfig() || {}
   if (!subscriptionUrl)
     throw new Error('Datahub (Subscription) config is not set')
   if (!client) {
@@ -39,18 +53,6 @@ function getClient() {
 export function datahubSubscription() {
   return getClient()
 }
-
-import { Signer } from '@/utils/account'
-import { u8aToHex } from '@polkadot/util'
-import { PostContent } from '@subsocial/api/types'
-import {
-  SocialCallDataArgs,
-  socialCallName,
-  SocialEventDataApiInput,
-  SocialEventDataType,
-  socialEventProtVersion,
-} from '@subsocial/data-hub-sdk'
-import sortKeysRecursive from 'sort-keys-recursive'
 
 export type DatahubParams<T> = {
   address: string

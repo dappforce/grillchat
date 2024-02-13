@@ -1,4 +1,4 @@
-import { getCommunityHubId } from '@/utils/env/client'
+import { env } from '@/env.mjs'
 import { ConstantsConfig } from '.'
 
 const xsocialConfig: ConstantsConfig = {
@@ -30,7 +30,7 @@ const xsocialConfig: ConstantsConfig = {
     '1002': ['6914'],
   },
   communityHubIds: [
-    getCommunityHubId(),
+    env.NEXT_PUBLIC_COMMUNITY_HUB_ID,
     process.env.NODE_ENV === 'development' ? '1025' : '',
   ].filter(Boolean),
   pinnedHubIds: ['1772'],

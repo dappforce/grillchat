@@ -1,5 +1,5 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { getSubIdRequest } from '@/server/external'
+import { getSubIdRequest } from '@/services/external'
 
 import { z } from 'zod'
 

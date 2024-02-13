@@ -1,11 +1,11 @@
+import { env } from '@/env.mjs'
 import { ApiResponse, convertNonce, handlerWrapper } from '@/server/common'
-import { getSubsocialPromoSecret } from '@/utils/env/server'
 import { hexToU8a, u8aToString } from '@polkadot/util'
 import { naclDecrypt } from '@polkadot/util-crypto'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
 
-const secret = getSubsocialPromoSecret()
+const secret = env.SUBSOCIAL_PROMO_SECRET_HEX
 
 const querySchema = z.object({
   encryptedMessage: z.string(),

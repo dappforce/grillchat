@@ -1,8 +1,8 @@
 import LinkText from '@/components/LinkText'
 import Toast from '@/components/Toast'
+import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
 import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
-import { getAppId, getDatahubConfig } from '@/utils/env/client'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
@@ -15,14 +15,14 @@ import {
   SubscribeOrganizationSubscription,
 } from '../generated-query'
 import { isPersistentId } from '../posts/fetcher'
-import { datahubSubscription } from '../utils'
+import { datahubSubscription, isDatahubAvailable } from '../utils'
 import {
   getBlockedInAppDetailedQuery,
   getBlockedInPostIdDetailedQuery,
   getBlockedResourcesQuery,
   getModeratorQuery,
 } from './query'
-import { getBlockedResourceType, ResourceTypes } from './utils'
+import { ResourceTypes, getBlockedResourceType } from './utils'
 
 export function useDatahubModerationSubscriber() {
   const queryClient = useQueryClient()
@@ -30,7 +30,7 @@ export function useDatahubModerationSubscriber() {
   const myAddress = useMyMainAddress()
 
   useEffect(() => {
-    if (!getDatahubConfig()) return
+    if (!isDatahubAvailable) return
 
     const listener = () => {
       if (document.visibilityState === 'visible') {
@@ -232,7 +232,7 @@ async function processBlockedResources(
 
   const ctxAppIds = entity.organization.ctxAppIds
   const entityAppId = entity.ctxAppIds
-  const appId = getAppId()
+  const appId = env.NEXT_PUBLIC_APP_ID
 
   const isBlockedInAppContext =
     isNowBlocked && entityAppId.some((id) => id === appId || id === '*')

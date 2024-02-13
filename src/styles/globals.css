@@ -4,6 +4,10 @@
   }
 }
 
+* {
+  min-width: 0;
+}
+
 :root {
   --background: 236 239 244;
   --background-light: 248 250 252;

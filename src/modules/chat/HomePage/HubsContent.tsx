@@ -1,10 +1,10 @@
 import ChatPreview from '@/components/chats/ChatPreview'
 import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import { getAliasFromHubId, getPinnedHubIds } from '@/constants/config'
+import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
-import { getHubIds } from '@/utils/env/client'
 import { SpaceData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
@@ -15,7 +15,7 @@ export default function HubsContent({
   hubsChatCount = {},
 }: Pick<HubsPageProps, 'hubsChatCount'>) {
   const isInIframe = useIsInIframe()
-  const hubIds = getHubIds()
+  const hubIds = env.NEXT_PUBLIC_SPACE_IDS
 
   const sortedHubIds = useMemo(() => {
     return Array.from(new Set([...getPinnedHubIds(), ...hubIds]))

@@ -1,7 +1,7 @@
+import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { filterBlockedMessageIds } from '@/utils/chat'
-import { getAppId } from '@/utils/env/client'
 import { useMemo } from 'react'
 
 export default function useFilterBlockedMessageIds(
@@ -16,7 +16,7 @@ export default function useFilterBlockedMessageIds(
   const { data: blockedInChat } = getBlockedResourcesQuery.useQuery({
     postEntityId: chat?.entityId ?? '',
   })
-  const appId = getAppId()
+  const appId = env.NEXT_PUBLIC_APP_ID
   const { data: blockedInApp } = getBlockedResourcesQuery.useQuery({ appId })
 
   return useMemo(() => {

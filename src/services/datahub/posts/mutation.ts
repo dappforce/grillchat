@@ -6,7 +6,6 @@ import {
   deleteOptimisticData,
 } from '@/services/subsocial/commentIds/optimistic'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { getDatahubConfig } from '@/utils/env/client'
 import { ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { stringToU8a, u8aToHex } from '@polkadot/util'
@@ -15,20 +14,24 @@ import { PostContent } from '@subsocial/api/types'
 import {
   CreatePostCallParsedArgs,
   PostKind,
-  socialCallName,
   SynthCreatePostTxFailedCallParsedArgs,
   SynthCreatePostTxRetryCallParsedArgs,
   SynthUpdatePostTxFailedCallParsedArgs,
   SynthUpdatePostTxRetryCallParsedArgs,
   UpdatePostCallParsedArgs,
+  socialCallName,
 } from '@subsocial/data-hub-sdk'
 import {
-  useMutation,
   UseMutationOptions,
+  useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
 import axios from 'axios'
-import { createSignedSocialDataEvent, DatahubParams } from '../utils'
+import {
+  DatahubParams,
+  createSignedSocialDataEvent,
+  isDatahubAvailable,
+} from '../utils'
 
 export function isValidUUIDv4(maybeUuid: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -213,7 +216,7 @@ async function notifyUpdatePostFailedOrRetryStatus(
 
 function datahubWrapper<T extends (...args: any[]) => Promise<any>>(func: T) {
   return (...args: Parameters<T>) => {
-    if (!getDatahubConfig()) return
+    if (!isDatahubAvailable) return
     return func(...args)
   }
 }

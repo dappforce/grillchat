@@ -1,7 +1,7 @@
 import { getAliasFromHubId } from '@/constants/config'
+import { env } from '@/env.mjs'
 import { ParsedUrlQuery } from 'querystring'
 import urlJoin from 'url-join'
-import { getSubstrateUrl } from './env/client'
 
 export function getUrlQuery(queryName: string) {
   const query = window.location.search
@@ -29,14 +29,16 @@ export function getCurrentUrlWithoutQuery(queryNameToRemove?: string) {
   return window.location.origin + window.location.pathname
 }
 
-type CurrentPath = { query: ParsedUrlQuery }
+type CurrentPath = { query: ParsedUrlQuery; pathname?: string }
 function getHubIdFromUrl(currentPath: CurrentPath) {
   return currentPath.query.hubId as string
 }
 
 export function getHubPageLink(currentPath: CurrentPath) {
   const hubId = getHubIdFromUrl(currentPath)
-  return `/${hubId ?? ''}`
+  const isWidgetRoute = currentPath.pathname?.includes('/widget')
+  if (!isWidgetRoute) return `/hub/${hubId ?? ''}`
+  return `/widget/${hubId ?? ''}`
 }
 
 export function getChatPageLink(
@@ -51,7 +53,9 @@ export function getChatPageLink(
   if (!chatSlug && typeof currentSlug === 'string') {
     chatSlug = currentSlug
   }
-  return `/${hubAliasOrId}/${chatSlug}`
+  const isWidgetRoute = currentPath.pathname?.includes('/widget')
+  if (!isWidgetRoute) return `/${hubAliasOrId}/${chatSlug}`
+  return `/widget/${hubAliasOrId}/${chatSlug}`
 }
 
 export function validateVideoUrl(url: string) {
@@ -61,7 +65,7 @@ export function validateVideoUrl(url: string) {
 
 export function getPolkadotJsUrl(pathname?: string) {
   return urlJoin(
-    `https://polkadot.js.org/apps/?rpc=${getSubstrateUrl().wss}/#/`,
+    `https://polkadot.js.org/apps/?rpc=${env.NEXT_PUBLIC_SUBSTRATE_WSS}/#/`,
     pathname ?? ''
   )
 }

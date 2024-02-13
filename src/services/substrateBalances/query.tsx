@@ -1,6 +1,6 @@
-import { getSubIdRequest } from '@/server/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { isDef } from '@subsocial/utils'
+import { getSubIdRequest } from '../external'
 import { AccountInfoByChain } from './types'
 import { buildBalancesKey } from './utils'
 

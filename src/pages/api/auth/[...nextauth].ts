@@ -1,6 +1,6 @@
+import { env } from '@/env.mjs'
 import { getLinkedIdentityFromTwitterId } from '@/services/datahub/identity/fetcher'
 import { getBlockedResources } from '@/services/datahub/moderation/query'
-import { getAppId } from '@/utils/env/client'
 import type {
   GetServerSidePropsContext,
   NextApiRequest,
@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user }) {
       const [{ blockedInAppIds }, linkedAddresses] = await Promise.all([
         getBlockedResources({
-          appIds: [getAppId()],
+          appIds: [env.NEXT_PUBLIC_APP_ID],
           postEntityIds: [],
           spaceIds: [],
         }),

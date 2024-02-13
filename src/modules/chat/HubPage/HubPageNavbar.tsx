@@ -4,9 +4,9 @@ import AboutHubModal from '@/components/modals/about/AboutHubModal'
 import NavbarWithSearch, {
   NavbarWithSearchProps,
 } from '@/components/navbar/Navbar/custom/NavbarWithSearch'
+import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
-import { getHubIds } from '@/utils/env/client'
 import { ReactNode, useState } from 'react'
 
 export type HubPageNavbarProps = {
@@ -32,7 +32,7 @@ export default function HubPageNavbar({
 
   const isInIframe = useIsInIframe()
   const { data: space } = getSpaceQuery.useQuery(hubId)
-  const isInHub = getHubIds().includes(hubId)
+  const isInHub = env.NEXT_PUBLIC_SPACE_IDS.includes(hubId)
 
   const content = space?.content
 
