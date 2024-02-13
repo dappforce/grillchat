@@ -73,6 +73,10 @@ export default function FloatingWrapper({
   const hover = useHover(context, {
     handleClose: safePolygon(),
     enabled: !isTouchDevice() && !!showOnHover,
+    delay: {
+      open: 300,
+      close: 0,
+    },
   })
   const dismiss = useDismiss(context, {
     bubbles: false,

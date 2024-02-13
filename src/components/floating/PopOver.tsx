@@ -110,6 +110,10 @@ export default function PopOver({
   const hover = useHover(context, {
     enabled: !!triggerOnHover,
     handleClose: safePolygon(),
+    delay: {
+      open: 300,
+      close: 0,
+    },
   })
   const click = useClick(context, { enabled: !triggerOnHover })
   const dismiss = useDismiss(context)
