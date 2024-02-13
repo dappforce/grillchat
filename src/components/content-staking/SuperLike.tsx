@@ -97,7 +97,8 @@ export function SuperLikeWrapper({
   const entity = message?.struct.isComment ? 'comment' : 'post'
 
   const isDisabled =
-    !canBeSuperliked || isMyPost || loadingMyLike || loadingTotalStake
+    (!canBeSuperliked || isMyPost || loadingMyLike || loadingTotalStake) &&
+    !hasILiked
   let disabledCause = ''
   if (isMyPost) disabledCause = `You cannot like your own ${entity}`
   else if (!isExist)
