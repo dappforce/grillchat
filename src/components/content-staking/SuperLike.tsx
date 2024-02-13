@@ -111,11 +111,7 @@ export default function SuperLike({
                 hasILiked && 'bg-background-primary text-text'
               )}
             >
-              {hasILiked ? (
-                <IoDiamond className='relative top-px' />
-              ) : (
-                <IoDiamondOutline className='relative top-px' />
-              )}
+              {hasILiked ? <IoDiamond /> : <IoDiamondOutline />}
               <span>{superLikeCount}</span>
             </button>
             {postRewards?.isNotZero && <PostRewardStat postId={messageId} />}

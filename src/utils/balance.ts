@@ -26,7 +26,7 @@ export function useFormatBalance({
   }
 }
 
-export function useFormatSUB({
+export function formatSUB({
   value,
   toFixed,
 }: {
@@ -36,8 +36,5 @@ export function useFormatSUB({
   const formattedValue = formatUnits(value, 10)
   const balanceValueBN = new BigNumber(formattedValue)
 
-  return {
-    formattedValue: balanceValueBN.toFixed(toFixed),
-    tokenSymbol: 'SUB',
-  }
+  return balanceValueBN.toFixed(toFixed)
 }
