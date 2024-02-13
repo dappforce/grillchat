@@ -127,6 +127,7 @@ function ShouldStakeModal({ ...props }: ModalFunctionalityProps) {
           size='lg'
           href={CONTENT_STAKING_LINK}
           target='_blank'
+          rel='noopener noreferrer'
         >
           Start Locking SUB
         </Button>
