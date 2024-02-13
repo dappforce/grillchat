@@ -1,7 +1,7 @@
 import { LoginModalStep } from '@/components/auth/LoginModal/LoginModalContent'
 import { getUrlQuery } from '@/utils/links'
 import { useMyAccount } from './my-account'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 type State = {
   isOpen: boolean
@@ -20,7 +20,7 @@ const initialState: State = {
   defaultOpenState: undefined,
 }
 
-export const useLoginModal = create<State & Actions>()((set, get) => ({
+const useLoginModalBase = create<State & Actions>()((set, get) => ({
   ...initialState,
   setIsOpen: (isOpen, initialOpenState) => {
     if (!initialOpenState) {
@@ -52,3 +52,4 @@ export const useLoginModal = create<State & Actions>()((set, get) => ({
     }
   },
 }))
+export const useLoginModal = createSelectors(useLoginModalBase)

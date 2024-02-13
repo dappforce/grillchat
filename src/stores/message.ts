@@ -1,6 +1,6 @@
 import { LocalStorage } from '@/utils/storage'
 import { useParentData } from './parent'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 const MESSAGE_COUNT_STORAGE_KEY = 'message-count'
 const messageCountStorage = new LocalStorage(
@@ -52,7 +52,7 @@ const INITIAL_STATE: State = {
   },
 }
 
-export const useMessageData = create<State & Actions>()((set, get) => ({
+const useMessageDataBase = create<State & Actions>()((set, get) => ({
   ...INITIAL_STATE,
   setMessageBody: (messageBody: string) => {
     set({ messageBody: messageBody })
@@ -104,3 +104,4 @@ export const useMessageData = create<State & Actions>()((set, get) => ({
     set({ messageCount })
   },
 }))
+export const useMessageData = createSelectors(useMessageDataBase)
