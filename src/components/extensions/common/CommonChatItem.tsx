@@ -3,6 +3,7 @@ import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
+import SuperLike from '@/components/chats/ChatItem/SuperLike'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -18,7 +19,7 @@ type DerivativesData = {
 
 type MyMessageConfig = {
   children?: 'top' | 'bottom' | 'middle'
-  checkMark?: 'outside' | 'inside' | 'adaptive-inside'
+  checkMark?: 'adaptive-inside'
 }
 type OthersMessageConfig = {
   children?: 'bottom' | 'middle'
@@ -93,10 +94,6 @@ export default function CommonChatItem({
     </div>
   )
 
-  if (!body) {
-    myMessageConfig.checkMark = 'outside'
-  }
-
   return (
     <div className={cx('flex flex-col gap-2')}>
       <div
@@ -150,7 +147,10 @@ export default function CommonChatItem({
         {inReplyTo && (
           <RepliedMessagePreview
             originalMessage={body ?? ''}
-            className='mx-2.5 my-1 first:mt-2.5'
+            className={cx(
+              'mx-2.5 my-1',
+              isMyMessage && myMessageConfig.children !== 'top' && 'mt-2.5'
+            )}
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
             textColor={textColor}
@@ -205,14 +205,11 @@ export default function CommonChatItem({
           myMessageConfig.children === 'bottom' &&
           childrenElement}
 
-        {isMyMessage &&
-          myMessageConfig.checkMark === 'inside' &&
-          myMessageCheckMarkElement('px-2.5 last:pb-1.5')}
+        <SuperLike
+          messageId={message.id}
+          className='mb-1.5 ml-2.5 mt-1 self-start'
+        />
       </div>
-
-      {isMyMessage &&
-        myMessageConfig.checkMark === 'outside' &&
-        myMessageCheckMarkElement('px-2.5 last:pb-1.5')}
     </div>
   )
 }

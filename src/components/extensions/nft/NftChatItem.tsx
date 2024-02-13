@@ -48,7 +48,7 @@ export default function NftChatItem(props: Props) {
     <CommonChatItem
       {...props}
       othersMessage={{ checkMark: 'top' }}
-      myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
+      myMessageConfig={{ children: 'bottom', checkMark: 'adaptive-inside' }}
       className='max-w-xs'
     >
       {({ isMyMessage }) => (

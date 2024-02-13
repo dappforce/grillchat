@@ -119,7 +119,7 @@ export default function DonateMessagePreview({
     <CommonChatItem
       message={message}
       scrollToMessage={scrollToMessage}
-      myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
+      myMessageConfig={{ children: 'bottom', checkMark: 'adaptive-inside' }}
       className={cx('relative flex flex-col overflow-hidden')}
       chatId={chatId}
       hubId={hubId}
