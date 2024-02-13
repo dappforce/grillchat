@@ -1,8 +1,8 @@
 import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
-console.log('ENVS RIGHT NOW', process.env)
 export const env = createEnv({
+  skipValidation: true,
   server: {
     SERVER_MNEMONIC: z.string().min(1),
     SERVER_DISCUSSION_CREATOR_MNEMONIC: z.string().default(''),
