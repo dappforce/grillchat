@@ -5,8 +5,8 @@ import { create, createSelectors } from './utils'
 
 type State = {
   isOpen: boolean
-  initialOpenState?: LoginModalStep
-  defaultOpenState?: LoginModalStep
+  initialOpenState: LoginModalStep | undefined
+  defaultOpenState: LoginModalStep | undefined
 }
 
 type Actions = {
