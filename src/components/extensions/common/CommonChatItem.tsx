@@ -59,8 +59,8 @@ export default function CommonChatItem({
   const { ownerId, createdAtTime, dataType, isUpdated } = struct
   const { inReplyTo, body } = content || {}
 
-  const isMyMessage = true
-  // _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
+  const isMyMessage =
+    _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = isMessageSent(message.id, dataType)
 
