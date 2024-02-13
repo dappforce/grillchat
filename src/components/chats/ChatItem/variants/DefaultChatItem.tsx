@@ -119,7 +119,9 @@ export default function DefaultChatItem({
             {body}
           </Linkify>
           {!showSuperLikeCount && (
-            <span className='ml-3 select-none opacity-0'>{relativeTime}</span>
+            <span className='pointer-events-none ml-3 select-none opacity-0'>
+              {relativeTime}
+            </span>
           )}
         </p>
         {link && linkMetadata?.title && (
