@@ -50,6 +50,7 @@ export default function PostRewardStat({
           placement='top'
           yOffset={4}
           panelSize='sm'
+          triggerOnHover
           trigger={<span>{totalReward} SUB</span>}
         >
           <div>

@@ -7,6 +7,7 @@ import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
+import PopOver from '@/components/floating/PopOver'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
@@ -196,8 +197,9 @@ export default function ChatItemMenus({
             message && <MintingMessageNotice message={message} />
           ) : (
             <SuperLikeWrapper messageId={messageId} withPostReward={false}>
-              {({ disabled, handleClick, hasILiked }) =>
-                !hasILiked && (
+              {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
+                if (hasILiked) return null
+                const menuList = (
                   <div className='relative'>
                     <MenuList
                       size='sm'
@@ -205,7 +207,7 @@ export default function ChatItemMenus({
                         {
                           icon: IoDiamondOutline,
                           text: 'Like Message',
-                          disabled,
+                          disabled: isDisabled,
                           onClick: handleClick,
                         },
                       ]}
@@ -215,7 +217,19 @@ export default function ChatItemMenus({
                     </div>
                   </div>
                 )
-              }
+                return disabledCause ? (
+                  <PopOver
+                    trigger={menuList}
+                    panelSize='sm'
+                    triggerOnHover
+                    placement='top'
+                  >
+                    <p>{disabledCause}</p>
+                  </PopOver>
+                ) : (
+                  menuList
+                )
+              }}
             </SuperLikeWrapper>
           )
         }

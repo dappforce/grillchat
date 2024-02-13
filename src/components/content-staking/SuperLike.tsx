@@ -2,10 +2,12 @@ import SubsocialTokenImage from '@/assets/graphics/subsocial-tokens-large.png'
 import Button from '@/components/Button'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { CONTENT_STAKING_LINK } from '@/constants/links'
+import { getPostQuery } from '@/services/api/query'
 import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
 import {
   PostRewards,
   getAddressLikeCountToPostQuery,
+  getCanPostSuperLikedQuery,
   getPostRewardsQuery,
   getSuperLikeCountQuery,
   getTotalStakeQuery,
@@ -13,9 +15,11 @@ import {
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import dayjs from 'dayjs'
 import Image from 'next/image'
-import { ComponentProps, ReactNode, useState } from 'react'
+import { ComponentProps, ReactNode, useEffect, useState } from 'react'
 import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
+import PopOver from '../floating/PopOver'
 import PostRewardStat from './PostRewardStat'
 
 export type SuperLikeProps = ComponentProps<'div'> & {
@@ -32,7 +36,8 @@ export function SuperLikeWrapper({
   withPostReward: boolean
   children: (props: {
     hasILiked: boolean
-    disabled: boolean
+    isDisabled: boolean
+    disabledCause: string
     superLikeCount: number
     handleClick: () => void
     postRewards: PostRewards | undefined | null
@@ -44,8 +49,17 @@ export function SuperLikeWrapper({
   })
   const { setIsOpen } = useLoginModal()
 
+  const { data: message } = getPostQuery.useQuery(messageId)
   const { mutate: createSuperLike } = useCreateSuperLike()
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(messageId)
+
+  const clientCanPostSuperLiked = useClientValidationOfPostSuperLike(
+    message?.struct.createdAtTime ?? 0
+  )
+  const { data: canPostSuperLike } =
+    getCanPostSuperLikedQuery.useQuery(messageId)
+  const { canPostSuperLiked, isExist, validByCreatorMinStake } =
+    canPostSuperLike || {}
 
   const myAddress = useMyMainAddress()
   const { data: totalStake, isFetching: loadingTotalStake } =
@@ -56,10 +70,8 @@ export function SuperLikeWrapper({
       postId: messageId,
     })
 
-  const hasILiked = (myLike?.count ?? 0) > 0
-  const disabled = loadingMyLike || loadingTotalStake
-
   const handleClick = () => {
+    if (hasILiked) return
     if (!myAddress) {
       setIsOpen(true)
       return
@@ -71,10 +83,28 @@ export function SuperLikeWrapper({
     createSuperLike({ postId: messageId })
   }
 
+  const hasILiked = (myLike?.count ?? 0) > 0
+  const isMyPost = message?.struct.ownerId === myAddress
+
+  const canBeSuperliked = clientCanPostSuperLiked && canPostSuperLiked
+  const entity = message?.struct.isComment ? 'comment' : 'post'
+
+  const isDisabled =
+    !canBeSuperliked || isMyPost || loadingMyLike || loadingTotalStake
+  let disabledCause = ''
+  if (isMyPost) disabledCause = `You cannot like your own ${entity}`
+  else if (!isExist)
+    disabledCause = `This ${entity} is still being minted, please wait a few seconds`
+  else if (!validByCreatorMinStake)
+    disabledCause = `This ${entity} cannot be liked because its author has not yet locked at least 2,000 SUB`
+  else if (!canBeSuperliked)
+    disabledCause = `You cannot like ${entity}s that are older than 7 days`
+
   return (
     <>
       {children({
-        disabled,
+        isDisabled,
+        disabledCause,
         handleClick,
         hasILiked,
         superLikeCount: superLikeCount?.count ?? 0,
@@ -95,29 +125,52 @@ export default function SuperLike({
 }: SuperLikeProps) {
   return (
     <SuperLikeWrapper messageId={messageId} withPostReward={withPostReward}>
-      {({ handleClick, disabled, hasILiked, superLikeCount, postRewards }) =>
-        superLikeCount > 0 && (
+      {({
+        handleClick,
+        isDisabled,
+        disabledCause,
+        hasILiked,
+        superLikeCount,
+        postRewards,
+      }) => {
+        if (superLikeCount <= 0) return null
+        const button = (
+          <button
+            onClick={handleClick}
+            disabled={isDisabled}
+            className={cx(
+              'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
+              'enabled:hover:border-background-primary enabled:hover:text-text enabled:focus-visible:border-background-primary',
+              'disabled:bg-border-gray/50 disabled:text-text-muted',
+              hasILiked && 'bg-background-primary text-text'
+            )}
+          >
+            {hasILiked ? <IoDiamond /> : <IoDiamondOutline />}
+            <span>{superLikeCount}</span>
+          </button>
+        )
+        return (
           <div
             {...props}
             className={cx('flex items-center gap-3', props.className)}
           >
-            <button
-              onClick={handleClick}
-              disabled={disabled}
-              className={cx(
-                'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
-                'hover:border-background-primary hover:text-text focus-visible:border-background-primary',
-                'disabled:bg-border-gray/50 disabled:text-text-muted',
-                hasILiked && 'bg-background-primary text-text'
-              )}
-            >
-              {hasILiked ? <IoDiamond /> : <IoDiamondOutline />}
-              <span>{superLikeCount}</span>
-            </button>
+            {disabledCause ? (
+              <PopOver
+                yOffset={6}
+                panelSize='sm'
+                placement='top'
+                triggerOnHover
+                trigger={button}
+              >
+                <p>{disabledCause}</p>
+              </PopOver>
+            ) : (
+              button
+            )}
             {postRewards?.isNotZero && <PostRewardStat postId={messageId} />}
           </div>
         )
-      }
+      }}
     </SuperLikeWrapper>
   )
 }
@@ -149,4 +202,17 @@ function ShouldStakeModal({ ...props }: ModalFunctionalityProps) {
       </div>
     </Modal>
   )
+}
+
+function useClientValidationOfPostSuperLike(createdAtTime: number) {
+  const [, setState] = useState({})
+
+  useEffect(() => {
+    const interval = setInterval(() => setState({}), 5 * 1000 * 60) // refresh every 5 minutes
+    return () => clearInterval(interval)
+  }, [])
+
+  const isPostMadeMoreThan1WeekAgo =
+    dayjs().diff(dayjs(createdAtTime), 'day') > 7
+  return !isPostMadeMoreThan1WeekAgo
 }
