@@ -217,6 +217,10 @@ export type PostRewards = {
   postId: string
   reward: string
   isNotZero: boolean
+  rewardDetail: {
+    finalizedReward: string
+    draftReward: string
+  }
   rewardsBySource: {
     fromDirectSuperLikes: string
     fromCommentSuperLikes: string
@@ -248,6 +252,10 @@ const getPostRewards = poolQuery<string, PostRewards>({
         postId: item.persistentPostId,
         reward: total.toString(),
         isNotZero: total > 0,
+        rewardDetail: {
+          draftReward: draftRewardTotal,
+          finalizedReward: rewardTotal,
+        },
         rewardsBySource: {
           fromCommentSuperLikes: (
             parseToBigInt(rewardsBySource?.fromCommentSuperLikes) +
@@ -272,6 +280,10 @@ const getPostRewards = poolQuery<string, PostRewards>({
           reward: '0',
           draftReward: '0',
           isNotZero: false,
+          rewardDetail: {
+            draftReward: '0',
+            finalizedReward: '0',
+          },
           rewardsBySource: {
             fromCommentSuperLikes: '0',
             fromDirectSuperLikes: '0',

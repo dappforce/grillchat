@@ -20,22 +20,18 @@ export default function PostRewardStat({
 
   const totalReward = formatSUB({
     value: reward?.reward ?? '',
-    toFixed: 2,
   })
 
   const { fromCommentSuperLikes, fromDirectSuperLikes, fromShareSuperLikes } =
     reward?.rewardsBySource || {}
   const directReward = formatSUB({
-    value: reward?.rewardsBySource.fromDirectSuperLikes ?? '',
-    toFixed: 2,
+    value: fromDirectSuperLikes ?? '',
   })
   const commentReward = formatSUB({
-    value: reward?.rewardsBySource.fromCommentSuperLikes ?? '',
-    toFixed: 2,
+    value: fromCommentSuperLikes ?? '',
   })
   const sharesReward = formatSUB({
-    value: reward?.rewardsBySource.fromShareSuperLikes ?? '',
-    toFixed: 2,
+    value: fromShareSuperLikes ?? '',
   })
 
   if (!reward?.isNotZero) return null
@@ -44,7 +40,33 @@ export default function PostRewardStat({
     <div {...props} className={cx(props.className)}>
       <div className='flex items-center gap-1.5 text-text-muted'>
         <div className='relative flex items-center'>
-          <TbCoins />
+          {BigInt(reward.rewardDetail.draftReward) > 0 ? (
+            <PopOver
+              trigger={
+                <div className='flex items-center'>
+                  <TbCoins />
+                  <div className='absolute right-0 top-0 h-1 w-1 rounded-full bg-[#F8963A]' />
+                </div>
+              }
+            >
+              <span>
+                {BigInt(reward.rewardDetail.finalizedReward) > 0 && (
+                  <>
+                    {formatSUB({
+                      value: reward.rewardDetail.finalizedReward,
+                    })}{' '}
+                    SUB earned +{' '}
+                  </>
+                )}
+                {formatSUB({
+                  value: reward.rewardDetail.draftReward,
+                })}{' '}
+                approx. today
+              </span>
+            </PopOver>
+          ) : (
+            <TbCoins />
+          )}
         </div>
         <PopOver
           placement='top'

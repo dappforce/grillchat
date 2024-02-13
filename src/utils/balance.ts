@@ -28,10 +28,10 @@ export function useFormatBalance({
 
 export function formatSUB({
   value,
-  toFixed,
+  toFixed = 2,
 }: {
   value: string
-  toFixed: number
+  toFixed?: number
 }) {
   const formattedValue = formatUnits(value, 10)
   const balanceValueBN = new BigNumber(formattedValue)
