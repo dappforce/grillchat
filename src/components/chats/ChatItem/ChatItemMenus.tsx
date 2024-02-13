@@ -39,8 +39,8 @@ import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
 import urlJoin from 'url-join'
+import { SuperLikeWrapper } from '../../content-staking/SuperLike'
 import usePinnedMessage from '../hooks/usePinnedMessage'
-import { SuperLikeWrapper } from './SuperLike'
 
 export type ChatItemMenusProps = {
   messageId: string

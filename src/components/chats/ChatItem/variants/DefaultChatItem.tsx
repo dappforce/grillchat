@@ -7,12 +7,12 @@ import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query
 import { cx } from '@/utils/class-names'
 import Linkify from 'linkify-react'
 import { useState } from 'react'
+import SuperLike from '../../../content-staking/SuperLike'
 import { ScrollToMessage } from '../../ChatList/hooks/useScrollToMessage'
 import ChatRelativeTime from '../ChatRelativeTime'
 import LinkPreview from '../LinkPreview'
 import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
-import SuperLike from '../SuperLike'
 import { ChatItemContentProps } from './types'
 
 export type DefaultChatItemProps = ChatItemContentProps

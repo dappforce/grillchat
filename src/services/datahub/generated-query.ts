@@ -916,6 +916,7 @@ export type RankedAddressWithDetails = {
 
 export type RankedPostIdWithDetails = {
   __typename?: 'RankedPostIdWithDetails'
+  ownerAddress?: Maybe<Scalars['String']['output']>
   persistentPostId?: Maybe<Scalars['String']['output']>
   postId: Scalars['String']['output']
   rank: Scalars['Int']['output']
@@ -1236,6 +1237,32 @@ export type GetCanPostsSuperLikedQuery = {
   }>
 }
 
+export type GetPostRewardsQueryVariables = Exact<{
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetPostRewardsQuery = {
+  __typename?: 'Query'
+  activeStakingRewardsByPosts: Array<{
+    __typename?: 'RewardsByPostsResponseDto'
+    persistentPostId?: string | null
+    rewardTotal: string
+    draftRewardTotal: string
+    rewardsBySource?: {
+      __typename?: 'PostRewardsBySourceResponseDto'
+      fromDirectSuperLikes?: string | null
+      fromCommentSuperLikes?: string | null
+      fromShareSuperLikes?: string | null
+    } | null
+    draftRewardsBySource?: {
+      __typename?: 'PostRewardsBySourceResponseDto'
+      fromDirectSuperLikes?: string | null
+      fromCommentSuperLikes?: string | null
+      fromShareSuperLikes?: string | null
+    } | null
+  }>
+}
+
 export type SubscribeSuperLikeSubscriptionVariables = Exact<{
   [key: string]: never
 }>
@@ -1477,7 +1504,6 @@ export type DatahubPostFragmentFragment = {
   canonical?: string | null
   tagsOriginal?: string | null
   followersCount?: number | null
-  activeStakingSuperLikesCount?: number | null
   inReplyToKind?: InReplyToKind | null
   createdByAccount: { __typename?: 'Account'; id: string }
   ownedByAccount: { __typename?: 'Account'; id: string }
@@ -1553,7 +1579,6 @@ export type GetPostsQuery = {
       canonical?: string | null
       tagsOriginal?: string | null
       followersCount?: number | null
-      activeStakingSuperLikesCount?: number | null
       inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -1633,7 +1658,6 @@ export type GetOptimisticPostsQuery = {
       canonical?: string | null
       tagsOriginal?: string | null
       followersCount?: number | null
-      activeStakingSuperLikesCount?: number | null
       inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -1773,7 +1797,6 @@ export const DatahubPostFragment = gql`
     canonical
     tagsOriginal
     followersCount
-    activeStakingSuperLikesCount
     ownedByAccount {
       id
     }
@@ -1853,6 +1876,25 @@ export const GetCanPostsSuperLiked = gql`
       validByCreationDate
       validByCreatorMinStake
       validByLowValue
+    }
+  }
+`
+export const GetPostRewards = gql`
+  query GetPostRewards($postIds: [String!]!) {
+    activeStakingRewardsByPosts(args: { postPersistentIds: $postIds }) {
+      persistentPostId
+      rewardTotal
+      draftRewardTotal
+      rewardsBySource {
+        fromDirectSuperLikes
+        fromCommentSuperLikes
+        fromShareSuperLikes
+      }
+      draftRewardsBySource {
+        fromDirectSuperLikes
+        fromCommentSuperLikes
+        fromShareSuperLikes
+      }
     }
   }
 `

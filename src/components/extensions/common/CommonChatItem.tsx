@@ -3,7 +3,7 @@ import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
-import SuperLike from '@/components/chats/ChatItem/SuperLike'
+import SuperLike from '@/components/content-staking/SuperLike'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'

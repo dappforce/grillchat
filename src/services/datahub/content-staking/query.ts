@@ -7,6 +7,8 @@ import {
   GetAddressLikeCountToPostsQueryVariables,
   GetCanPostsSuperLikedQuery,
   GetCanPostsSuperLikedQueryVariables,
+  GetPostRewardsQuery,
+  GetPostRewardsQueryVariables,
   GetSuperLikeCountsQuery,
   GetSuperLikeCountsQueryVariables,
 } from '../generated-query'
@@ -131,7 +133,7 @@ const GET_CAN_POSTS_SUPER_LIKED = gql`
     }
   }
 `
-type CanPostSuperLiked = {
+export type CanPostSuperLiked = {
   postId: string
   canPostSuperLiked: boolean
   validByCreationDate: boolean
@@ -183,6 +185,109 @@ const getCanPostsSuperLiked = poolQuery<string, CanPostSuperLiked>({
 export const getCanPostSuperLikedQuery = createQuery({
   key: 'getCanPostSuperLiked',
   fetcher: getCanPostsSuperLiked,
+  defaultConfigGenerator: (param) => ({
+    enabled: !!param,
+  }),
+})
+
+const GET_POST_REWARDS = gql`
+  query GetPostRewards($postIds: [String!]!) {
+    activeStakingRewardsByPosts(args: { postPersistentIds: $postIds }) {
+      persistentPostId
+      rewardTotal
+      draftRewardTotal
+      rewardsBySource {
+        fromDirectSuperLikes
+        fromCommentSuperLikes
+        fromShareSuperLikes
+      }
+      draftRewardsBySource {
+        fromDirectSuperLikes
+        fromCommentSuperLikes
+        fromShareSuperLikes
+      }
+    }
+  }
+`
+function parseToBigInt(value: string | undefined | null) {
+  if (!value) return BigInt(0)
+  return BigInt(value.split('.')[0])
+}
+export type PostRewards = {
+  postId: string
+  reward: string
+  isNotZero: boolean
+  rewardsBySource: {
+    fromDirectSuperLikes: string
+    fromCommentSuperLikes: string
+    fromShareSuperLikes: string
+  }
+}
+const getPostRewards = poolQuery<string, PostRewards>({
+  multiCall: async (postIds) => {
+    const res = await datahubQueryRequest<
+      GetPostRewardsQuery,
+      GetPostRewardsQueryVariables
+    >({
+      document: GET_POST_REWARDS,
+      variables: { postIds },
+    })
+
+    const resultMap = new Map<string, PostRewards>()
+    res.activeStakingRewardsByPosts.forEach((item) => {
+      const {
+        draftRewardsBySource,
+        rewardsBySource,
+        draftRewardTotal,
+        rewardTotal,
+      } = item
+      const total = parseToBigInt(rewardTotal) + parseToBigInt(draftRewardTotal)
+      if (!item.persistentPostId) return
+
+      resultMap.set(item.persistentPostId, {
+        postId: item.persistentPostId,
+        reward: total.toString(),
+        isNotZero: total > 0,
+        rewardsBySource: {
+          fromCommentSuperLikes: (
+            parseToBigInt(rewardsBySource?.fromCommentSuperLikes) +
+            parseToBigInt(draftRewardsBySource?.fromCommentSuperLikes)
+          ).toString(),
+          fromDirectSuperLikes: (
+            parseToBigInt(rewardsBySource?.fromDirectSuperLikes) +
+            parseToBigInt(draftRewardsBySource?.fromDirectSuperLikes)
+          ).toString(),
+          fromShareSuperLikes: (
+            parseToBigInt(rewardsBySource?.fromShareSuperLikes) +
+            parseToBigInt(draftRewardsBySource?.fromShareSuperLikes)
+          ).toString(),
+        },
+      })
+    })
+
+    return postIds.map(
+      (postId) =>
+        resultMap.get(postId) ?? {
+          postId,
+          reward: '0',
+          draftReward: '0',
+          isNotZero: false,
+          rewardsBySource: {
+            fromCommentSuperLikes: '0',
+            fromDirectSuperLikes: '0',
+            fromShareSuperLikes: '0',
+          },
+        }
+    )
+  },
+  resultMapper: {
+    paramToKey: (param) => param,
+    resultToKey: (result) => result.postId,
+  },
+})
+export const getPostRewardsQuery = createQuery({
+  key: 'getPostRewards',
+  fetcher: getPostRewards,
   defaultConfigGenerator: (param) => ({
     enabled: !!param,
   }),

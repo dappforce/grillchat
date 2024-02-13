@@ -1,10 +1,10 @@
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { cx } from '@/utils/class-names'
 import { getEmojiAmount, validateTextContainsOnlyEmoji } from '@/utils/strings'
+import SuperLike from '../../../content-staking/SuperLike'
 import ChatRelativeTime from '../ChatRelativeTime'
 import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
-import SuperLike from '../SuperLike'
 import { ChatItemContentProps } from './types'
 
 export type EmojiChatItemProps = ChatItemContentProps
