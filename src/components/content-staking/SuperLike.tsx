@@ -17,7 +17,13 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import dayjs from 'dayjs'
 import Image from 'next/image'
-import { ComponentProps, ReactNode, useEffect, useState } from 'react'
+import {
+  ComponentProps,
+  ReactNode,
+  SyntheticEvent,
+  useEffect,
+  useState,
+} from 'react'
 import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
 import PopOver from '../floating/PopOver'
 import PostRewardStat from './PostRewardStat'
@@ -70,7 +76,8 @@ export function SuperLikeWrapper({
       postId: messageId,
     })
 
-  const handleClick = () => {
+  const handleClick = (e?: SyntheticEvent) => {
+    e?.stopPropagation()
     if (hasILiked) return
     if (!myAddress) {
       setIsOpen(true)
