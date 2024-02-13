@@ -24,17 +24,19 @@ import { useAnalytics, UserProperties } from './analytics'
 import { create, createSelectors } from './utils'
 
 type State = {
-  isInitialized?: boolean
-  isInitializedAddress?: boolean
+  isInitialized: boolean | undefined
+  isInitializedAddress: boolean | undefined
   isTemporaryAccount: boolean
 
   preferredWallet: Wallet | null
-  connectedWallet?: {
-    address: string
-    signer: Signer | null
-    energy?: number
-    _unsubscribeEnergy?: () => void
-  }
+  connectedWallet:
+    | {
+        address: string
+        signer: Signer | null
+        energy?: number
+        _unsubscribeEnergy?: () => void
+      }
+    | undefined
   parentProxyAddress: string | undefined
 
   address: string | null
@@ -61,6 +63,8 @@ type Actions = {
 }
 
 const initialState: State = {
+  connectedWallet: undefined,
+  isInitialized: undefined,
   isInitializedAddress: true,
   isTemporaryAccount: false,
   preferredWallet: null,
