@@ -2,13 +2,12 @@ import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
 export const env = createEnv({
-  skipValidation: true,
   server: {
-    SERVER_MNEMONIC: z.string().min(1),
+    SERVER_MNEMONIC: z.string().default(''),
     SERVER_DISCUSSION_CREATOR_MNEMONIC: z.string().default(''),
     USER_ID_SALT: z.string().default(''),
 
-    CRUST_IPFS_AUTH: z.string().min(1),
+    CRUST_IPFS_AUTH: z.string().default(''),
     IPFS_PIN_URL: z.string().default('https://pin.crustcloud.io/psa'),
     IPFS_WRITE_URL: z.string().default('https://gw-seattle.crustcloud.io'),
 
