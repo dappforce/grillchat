@@ -16,18 +16,18 @@ import {
 } from '@/pages/api/notifications/link-message'
 import { queryClient } from '@/services/provider'
 import mutationWrapper from '@/subsocial-query/base'
-import axios, { AxiosResponse } from 'axios'
-import { processMessageTpl } from '../utils'
+import { AxiosResponse } from 'axios'
+import { apiInstance, processMessageTpl } from '../utils'
 import { getLinkedTelegramAccountsQuery } from './query'
 
 async function linkTelegramAccount(data: ApiNotificationsLinkMessageBody) {
   if (!data) return null
 
-  const res = await axios.post('/api/notifications/link-message', data)
+  const res = await apiInstance.post('/api/notifications/link-message', data)
   const encodedMessage = (res.data as ApiNotificationsLinkMessageResponse).data
   const signedMessage = await processMessageTpl(encodedMessage)
 
-  const linkRes = await axios.post<
+  const linkRes = await apiInstance.post<
     any,
     AxiosResponse<ApiNotificationsLinkUrlResponse>,
     ApiNotificationsLinkUrlBody
@@ -51,12 +51,12 @@ export const useLinkTelegramAccount = mutationWrapper(linkTelegramAccount, {
 async function linkFcm(data: ApiFcmNotificationsLinkMessageBody) {
   if (!data) return null
 
-  const res = await axios.post('/api/notifications/link-fcm', data)
+  const res = await apiInstance.post('/api/notifications/link-fcm', data)
   const encodedMessage = (res.data as ApiFcmNotificationsLinkMessageResponse)
     .data
   const signedMessage = await processMessageTpl(encodedMessage)
 
-  const linkRes = await axios.post<
+  const linkRes = await apiInstance.post<
     any,
     AxiosResponse<ApiCommitSignedMessageResponse>,
     ApiCommitSignedMessageBody
