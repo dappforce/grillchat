@@ -21,7 +21,7 @@ export default function PWAInstall() {
       id='pwa-install'
       manifest-url={urlJoin(
         env.NEXT_PUBLIC_BASE_PATH,
-        `/manifest-${env.NEXT_PUBLIC_BASE_PATH.substring(1)}.json`
+        `/manifest${env.NEXT_PUBLIC_BASE_PATH.substring(1)}.json`
       )}
       manual-chrome='true'
       manual-apple='true'

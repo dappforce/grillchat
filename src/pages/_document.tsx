@@ -39,7 +39,7 @@ export default function Document() {
           rel='manifest'
           href={urlJoin(
             env.NEXT_PUBLIC_BASE_PATH,
-            `/manifest-${env.NEXT_PUBLIC_BASE_PATH.substring(1)}.json`
+            `/manifest${env.NEXT_PUBLIC_BASE_PATH.substring(1)}.json`
           )}
         />
         <link rel='mask-icon' href='/safari-pinned-tab.svg' color='#5bbad5' />
