@@ -1,14 +1,14 @@
 import { ApiDatahubIdentityBody } from '@/pages/api/datahub/identity'
+import { apiInstance } from '@/services/api/utils'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import {
   SocialCallDataArgs,
-  socialCallName,
   SynthCreateLinkedIdentityCallParsedArgs,
+  socialCallName,
 } from '@subsocial/data-hub-sdk'
-import axios from 'axios'
-import { createSocialDataEventPayload, DatahubParams } from '../utils'
+import { DatahubParams, createSocialDataEventPayload } from '../utils'
 
 async function linkIdentity(
   params: DatahubParams<SocialCallDataArgs<'synth_create_linked_identity'>>
@@ -26,11 +26,14 @@ async function linkIdentity(
     eventArgs
   )
 
-  await axios.post<any, any, ApiDatahubIdentityBody>('/api/datahub/identity', {
-    payload: input,
-    id,
-    provider,
-  })
+  await apiInstance.post<any, any, ApiDatahubIdentityBody>(
+    '/api/datahub/identity',
+    {
+      payload: input,
+      id,
+      provider,
+    }
+  )
 }
 
 export const useLinkIdentity = mutationWrapper(
