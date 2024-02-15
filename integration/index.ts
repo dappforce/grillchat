@@ -116,7 +116,7 @@ function createUrl(
   config: Required<Pick<GrillConfig, 'hub'>> & Pick<GrillConfig, 'channel'>,
   query?: QueryParamsBuilder
 ) {
-  let url = `https://grill.so/widget/${config.hub.id}`
+  let url = `https://grill.so/c/widget/${config.hub.id}`
   const channelConfig = config.channel
   let resourceId: string | null = null
   let resourceMetadata: ResourceMetadata | null = null
