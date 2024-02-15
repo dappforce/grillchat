@@ -55,7 +55,7 @@ export default function App(props: AppProps<AppCommonProps>) {
 
   return (
     <SessionProvider
-      basePath={env.NEXT_PUBLIC_BASE_PATH}
+      basePath={env.NEXT_PUBLIC_BASE_PATH || undefined}
       session={props.pageProps.session}
     >
       <ConfigProvider>
