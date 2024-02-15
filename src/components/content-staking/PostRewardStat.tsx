@@ -42,6 +42,8 @@ export default function PostRewardStat({
         <div className='relative flex items-center'>
           {BigInt(reward.rewardDetail.draftReward) > 0 ? (
             <PopOver
+              triggerOnHover
+              panelSize='sm'
               trigger={
                 <div className='flex items-center'>
                   <TbCoins />
