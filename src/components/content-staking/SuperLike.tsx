@@ -150,7 +150,7 @@ export default function SuperLike({
               'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
               'enabled:hover:border-background-primary enabled:hover:text-text enabled:focus-visible:border-background-primary',
               'disabled:bg-border-gray/50 disabled:text-text-muted',
-              hasILiked && 'bg-background-primary text-text'
+              hasILiked && 'bg-background-primary text-white'
             )}
           >
             {hasILiked ? <IoDiamond /> : <IoDiamondOutline />}
