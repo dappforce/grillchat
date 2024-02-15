@@ -187,6 +187,7 @@ jobs:
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12455
             GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
+            GH_NEXT_PUBLIC_BASE_PATH=/c
 
           target: runner
           tags: |

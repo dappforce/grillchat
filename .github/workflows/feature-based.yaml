@@ -74,6 +74,7 @@ jobs:
             GH_NEXTAUTH_URL=https://${{ env.name }}-grillchat.subsocial.network
             GH_NEXT_PUBLIC_APP_ID=12364
             GH_NEXT_PUBLIC_SPACE_IDS=12466,12467,12468
+            GH_NEXT_PUBLIC_BASE_PATH=/c
 
           target: runner
           tags: |

@@ -35,6 +35,7 @@ export const env = createEnv({
       .string()
       .default('')
       .transform((val) => val.split(',').filter(Boolean)),
+    NEXT_PUBLIC_BASE_PATH: z.string().default('/'),
     NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS: z
       .string()
       .default('')
@@ -63,6 +64,7 @@ export const env = createEnv({
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_ID: process.env.NEXT_PUBLIC_APP_ID,
+    NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
     NEXT_PUBLIC_MAIN_SPACE_ID: process.env.NEXT_PUBLIC_SPACE_IDS,
     NEXT_PUBLIC_SPACE_IDS: process.env.NEXT_PUBLIC_SPACE_IDS,
     NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS:
