@@ -1,7 +1,7 @@
 import { DecryptRespose } from '@/pages/api/promo-message/decrypt'
 import { EncryptRespose } from '@/pages/api/promo-message/encrypt'
-import { apiInstance } from '@/services/api/utils'
 import mutationWrapper from '@/subsocial-query/base'
+import axios from 'axios'
 
 export const canUsePromoExtensionAccounts = [
   '3tFT2KDqmyfBU7hoGTNSJ8j2aBXQvvSQS5ncBdgtMM6SBQBS',
@@ -16,7 +16,7 @@ type EncodeSecretBoxParams = {
 }
 
 async function encodeSecretBox({ message, address }: EncodeSecretBoxParams) {
-  const res = await apiInstance.post('/api/promo-message/encrypt', {
+  const res = await axios.post('/api/promo-message/encrypt', {
     message,
     address,
   })
@@ -37,7 +37,7 @@ async function decodeSecretBox({
   encryptedMessage,
   nonce,
 }: DecodeSecretBoxParams) {
-  const res = await apiInstance.post('/api/promo-message/decrypt', {
+  const res = await axios.post('/api/promo-message/decrypt', {
     encryptedMessage,
     nonce,
   })

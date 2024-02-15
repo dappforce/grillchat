@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
 import Toast from '@/components/Toast'
-import { apiInstance } from '@/services/api/utils'
+import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { IoRefresh } from 'react-icons/io5'
 import { create } from './utils'
@@ -46,7 +46,7 @@ export const useVersion = create<State>()((set, get) => ({
 
 async function validateSameVersion(currentVersion: string | undefined) {
   try {
-    const response = await apiInstance.get('/api/version')
+    const response = await axios.get('/api/version')
     const newVersion = response.data
 
     const isSameVersion =
