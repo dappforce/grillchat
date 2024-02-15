@@ -36,9 +36,9 @@ spec:
         paths:
           - backend:
               service:
-                name: mainnet-grillchat
+                name: web-app
                 port:
-                  number: 3000
+                  number: 3003
             path: '/'
             pathType: Prefix
 
@@ -46,6 +46,36 @@ spec:
     - hosts:
         - grill.so
       secretName: mainnet-grill-ssl
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/from-to-www-redirect: "true"
+    nginx.ingress.kubernetes.io/client-max-body-size: 10m
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 10m
+    nginx.org/client-max-body-size: 10m
+  name: grill-c
+  namespace: sub-back
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: grill.so
+    http:
+      paths:
+      - backend:
+          service:
+            name: mainnet-grillchat
+            port:
+              number: 3000
+        path: /c
+        pathType: Prefix
+  tls:
+  - hosts:
+    - grill.so
+    secretName: mainnet-grill-ssl
 
 ---
 apiVersion: v1
