@@ -1,12 +1,11 @@
 import { AccountData } from '@/pages/api/accounts-data'
+import { apiInstance } from '@/services/api/utils'
 import { createQuery, poolQuery } from '@/subsocial-query'
-
-import axios from 'axios'
 
 export async function getAccountsData(addresses: string[]) {
   const requestedIds = addresses.filter((id) => !!id)
   if (requestedIds.length === 0) return []
-  const res = await axios.get(
+  const res = await apiInstance.get(
     '/api/accounts-data?' + requestedIds.map((n) => `addresses=${n}`).join('&')
   )
 

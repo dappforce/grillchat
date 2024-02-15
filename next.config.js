@@ -12,6 +12,7 @@ const withPWA = require('next-pwa')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: '/c',
   reactStrictMode: true,
   experimental: {
     scrollRestoration: true,
@@ -35,6 +36,10 @@ const nextConfig = {
       { source: '/hot-chats', destination: '/' },
       // { source: '/ai-bots', destination: '/' },
       { source: '/creators', destination: '/' },
+      {
+        source: '/api/:path*',
+        destination: '/c/api/:path*',
+      },
     ]
   },
   async redirects() {

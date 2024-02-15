@@ -3,14 +3,14 @@ import {
   ApiNotificationsLinkedTelegramResponse,
 } from '@/pages/api/notifications/linked-telegram'
 import { createQuery } from '@/subsocial-query'
-import axios from 'axios'
+import { apiInstance } from '../utils'
 
 async function getLinkedTelegramAccounts(
   param: ApiNotificationsLinkedTelegramParam
 ) {
   if (!param.address) return null
 
-  const res = await axios.get('/api/notifications/linked-telegram', {
+  const res = await apiInstance.get('/api/notifications/linked-telegram', {
     params: param,
   })
   const responseData = res.data as ApiNotificationsLinkedTelegramResponse
