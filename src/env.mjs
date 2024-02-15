@@ -35,7 +35,7 @@ export const env = createEnv({
       .string()
       .default('')
       .transform((val) => val.split(',').filter(Boolean)),
-    NEXT_PUBLIC_BASE_PATH: z.string().default('/'),
+    NEXT_PUBLIC_BASE_PATH: z.string().default(''),
     NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS: z
       .string()
       .default('')
