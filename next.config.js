@@ -12,6 +12,7 @@ const withPWA = require('next-pwa')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || undefined,
   reactStrictMode: true,
   experimental: {
     scrollRestoration: true,
