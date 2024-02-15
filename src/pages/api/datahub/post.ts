@@ -15,8 +15,8 @@ import {
 import {
   CreateChatPermissionDeniedError,
   CreateMessagePermissionDeniedError,
-  RateLimitError,
   datahubMutationWrapper,
+  RateLimitError,
 } from '@/server/datahub-queue/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -53,7 +53,7 @@ const GET_handler = handlerWrapper({
   },
 })
 
-export type ApiDatahubPostMutationBody =
+export type DatahubPostMutationBody =
   | {
       action: 'create-post'
       payload: CreatePostOptimisticInput
@@ -78,7 +78,7 @@ const POST_handler = handlerWrapper({
 })<ApiDatahubPostResponse>({
   allowedMethods: ['POST'],
   errorLabel: 'datahub-mutation',
-  handler: async (data: ApiDatahubPostMutationBody, _, res) => {
+  handler: async (data: DatahubPostMutationBody, _, res) => {
     const mapper = datahubMutationWrapper(datahubPostActionMapping)
     try {
       await mapper(data)
@@ -106,7 +106,7 @@ const POST_handler = handlerWrapper({
   },
 })
 
-function datahubPostActionMapping(data: ApiDatahubPostMutationBody) {
+function datahubPostActionMapping(data: DatahubPostMutationBody) {
   switch (data.action) {
     case 'create-post':
       return createPostData(data.payload)

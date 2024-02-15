@@ -1,14 +1,8 @@
-import { env } from '@/env.mjs'
 import { enableWalletOnce, useMyAccount } from '@/stores/my-account'
 import { Signer, signMessage } from '@/utils/account'
 import type { Signer as InjectedSigner } from '@polkadot/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
-import axios from 'axios'
 import sortKeys from 'sort-keys-recursive'
-
-export const apiInstance = axios.create({
-  baseURL: env.NEXT_PUBLIC_BASE_PATH,
-})
 
 function parseMessageTpl(messageTpl: string) {
   const decodedMessage = decodeURIComponent(messageTpl)
