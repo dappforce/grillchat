@@ -71,10 +71,10 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://leaderboards-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://leaderboards-queue-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
-            GH_NEXTAUTH_URL=https://${{ env.name }}-grillchat.subsocial.network
+            GH_NEXTAUTH_URL=https://${{ env.name }}-grillchat.subsocial.network/c
+            GH_NEXT_PUBLIC_BASE_PATH=/c
             GH_NEXT_PUBLIC_APP_ID=12364
             GH_NEXT_PUBLIC_SPACE_IDS=12466,12467,12468
-            GH_NEXT_PUBLIC_BASE_PATH=/c
 
           target: runner
           tags: |

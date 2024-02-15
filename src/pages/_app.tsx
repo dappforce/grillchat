@@ -1,6 +1,7 @@
 import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
 import {
@@ -53,7 +54,10 @@ export default function App(props: AppProps<AppCommonProps>) {
     : ''
 
   return (
-    <SessionProvider session={props.pageProps.session}>
+    <SessionProvider
+      basePath={env.NEXT_PUBLIC_BASE_PATH}
+      session={props.pageProps.session}
+    >
       <ConfigProvider>
         <style jsx global>{`
           ${isInIframe
