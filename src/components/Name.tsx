@@ -7,18 +7,18 @@ import { useSendEvent } from '@/stores/analytics'
 import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
 import {
-  decodeProfileSource,
   ProfileSource,
-  profileSourceData,
   ProfileSourceIncludingOffchain,
+  decodeProfileSource,
+  profileSourceData,
 } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps } from 'react'
 import { useInView } from 'react-intersection-observer'
-import ChatModerateChip from './chats/ChatModerateChip'
-import PopOver from './floating/PopOver'
 import LinkText from './LinkText'
 import { ForceProfileSource } from './ProfilePreview'
+import ChatModerateChip from './chats/ChatModerateChip'
+import PopOver from './floating/PopOver'
 
 export type NameProps = ComponentProps<'span'> & {
   address: string
@@ -49,7 +49,7 @@ export default function Name({
   ...props
 }: NameProps) {
   const sendEvent = useSendEvent()
-  const { inView, ref } = useInView()
+  const { inView, ref } = useInView({ triggerOnce: true })
 
   const { isLoading, name, textColor, profileSource } = useName(
     address,

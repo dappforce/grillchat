@@ -1,6 +1,7 @@
 import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
 import {
@@ -24,6 +25,7 @@ import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
+import urlJoin from 'url-join'
 
 const PWAInstall = dynamic(() => import('@/components/PWAInstall'), {
   ssr: false,
@@ -53,7 +55,14 @@ export default function App(props: AppProps<AppCommonProps>) {
     : ''
 
   return (
-    <SessionProvider session={props.pageProps.session}>
+    <SessionProvider
+      basePath={
+        env.NEXT_PUBLIC_BASE_PATH
+          ? urlJoin(env.NEXT_PUBLIC_BASE_PATH, '/api/auth')
+          : undefined
+      }
+      session={props.pageProps.session}
+    >
       <ConfigProvider>
         <style jsx global>{`
           ${isInIframe

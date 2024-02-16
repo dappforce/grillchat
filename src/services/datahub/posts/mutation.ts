@@ -1,5 +1,6 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import { ApiDatahubPostMutationBody } from '@/pages/api/datahub/post'
+import { apiInstance } from '@/services/api/utils'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import {
   addOptimisticData,
@@ -26,7 +27,6 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
-import axios from 'axios'
 import {
   DatahubParams,
   createSignedSocialDataEvent,
@@ -81,10 +81,13 @@ async function createPostData(
     content
   )
 
-  await axios.post<any, any, ApiDatahubPostMutationBody>('/api/datahub/post', {
-    action: 'create-post',
-    payload: input as any,
-  })
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      action: 'create-post',
+      payload: input as any,
+    }
+  )
 }
 
 async function updatePostData(
@@ -114,10 +117,13 @@ async function updatePostData(
     content?.content
   )
 
-  await axios.post<any, any, ApiDatahubPostMutationBody>('/api/datahub/post', {
-    action: 'update-post',
-    payload: input as any,
-  })
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      action: 'update-post',
+      payload: input as any,
+    }
+  )
 }
 
 async function notifyCreatePostFailedOrRetryStatus(
@@ -159,10 +165,13 @@ async function notifyCreatePostFailedOrRetryStatus(
 
   const input = createSignedSocialDataEvent(event.name, params, event.args)
 
-  await axios.post<any, any, ApiDatahubPostMutationBody>('/api/datahub/post', {
-    action: 'notify-create-failed',
-    payload: input as any,
-  })
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      action: 'notify-create-failed',
+      payload: input as any,
+    }
+  )
 }
 
 async function notifyUpdatePostFailedOrRetryStatus(
@@ -208,10 +217,13 @@ async function notifyUpdatePostFailedOrRetryStatus(
 
   const input = createSignedSocialDataEvent(event.name, params, event.args)
 
-  await axios.post<any, any, ApiDatahubPostMutationBody>('/api/datahub/post', {
-    action: 'notify-update-failed',
-    payload: input as any,
-  })
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      action: 'notify-update-failed',
+      payload: input as any,
+    }
+  )
 }
 
 function datahubWrapper<T extends (...args: any[]) => Promise<any>>(func: T) {

@@ -39,7 +39,7 @@ export default function DefaultChatItem({
         createdAtTime={createdAtTime}
         isUpdated={isUpdated}
         className={cx(
-          'text-xs text-text-muted',
+          'text-xs text-text-muted [&:not(:last-child)]:mr-1',
           isMyMessage && 'dark:text-text-muted-on-primary'
         )}
       />
@@ -142,9 +142,7 @@ export default function DefaultChatItem({
           </div>
         )}
         <div
-          className={cx(
-            'absolute bottom-1 right-3 flex items-center gap-1 self-end'
-          )}
+          className={cx('absolute bottom-1 right-3 flex items-center self-end')}
         >
           {relativeTime}
         </div>

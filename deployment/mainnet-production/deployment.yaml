@@ -39,14 +39,14 @@ spec:
                 name: mainnet-grillchat-secret
           resources:
             requests:
-              memory: "450Mi"
-              cpu: "10m"
+              memory: '450Mi'
+              cpu: '10m'
             limits:
-              memory: "1600Mi"
-              cpu: "1"
+              memory: '1600Mi'
+              cpu: '1'
           readinessProbe:
             httpGet:
-              path: /
+              path: /c
               port: 3000
             failureThreshold: 3
             initialDelaySeconds: 20
@@ -55,7 +55,7 @@ spec:
             timeoutSeconds: 20
           livenessProbe:
             httpGet:
-              path: /
+              path: /c
               port: 3000
             failureThreshold: 3
             initialDelaySeconds: 30
