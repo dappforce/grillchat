@@ -1,11 +1,11 @@
 import { ApiDatahubPostMutationBody } from '@/pages/api/datahub/post'
+import { apiInstance } from '@/services/api/utils'
 import { queryClient } from '@/services/provider'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getMyMainAddress } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
-import axios from 'axios'
 import { DatahubParams, createSocialDataEventPayload } from '../utils'
 import { getAddressLikeCountToPostQuery, getSuperLikeCountQuery } from './query'
 
@@ -18,10 +18,13 @@ async function createSuperLike(params: DatahubParams<CreateSuperLikeArgs>) {
     params.args
   )
 
-  await axios.post<any, any, ApiDatahubPostMutationBody>('/api/datahub/post', {
-    payload: input as any,
-    action: 'create-superlike',
-  })
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      payload: input as any,
+      action: 'create-superlike',
+    }
+  )
 }
 
 export const useCreateSuperLike = mutationWrapper(
