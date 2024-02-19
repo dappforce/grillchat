@@ -207,7 +207,7 @@ export default function CommonChatItem({
 
         <SuperLike
           withPostReward
-          messageId={message.id}
+          postId={message.id}
           className='mb-1.5 ml-2.5 mt-1 self-start'
         />
       </div>

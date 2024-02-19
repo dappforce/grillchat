@@ -18,6 +18,7 @@ import {
 import { wait } from '@/utils/promise'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
+import { toSubsocialAddress } from '@subsocial/utils'
 import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import { useAnalytics, UserProperties } from './analytics'
@@ -400,4 +401,65 @@ export async function enableWalletOnce() {
       },
     })
   })
+}
+
+type PromiseOrValue<T> = Promise<T> | T
+export type WalletSigner = {
+  signRaw: (payload: {
+    address: string
+    data: string
+  }) => PromiseOrValue<string>
+}
+export function useGetCurrentSigner(): () => Promise<WalletSigner | undefined> {
+  const address = useMyAccount((state) => state.address)
+  const signer = useMyAccount((state) => state.signer)
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+
+  return async () => {
+    try {
+      if (!address || !parentProxyAddress)
+        throw new Error('You need to login first')
+      if (!parentProxyAddress) {
+        if (!signer) throw new Error('No signer connected')
+
+        return {
+          signRaw: ({ address, data }) => {
+            if (
+              toSubsocialAddress(signer.address) !== toSubsocialAddress(address)
+            )
+              throw new Error('Invalid address')
+
+            return signer.sign(data).toString()
+          },
+        }
+      }
+
+      const { web3Enable, web3FromAddress } = await import(
+        '@polkadot/extension-dapp'
+      )
+      const extensions = await web3Enable('grill.chat')
+
+      if (extensions.length === 0) {
+        return
+      }
+      const extSigner = (await web3FromAddress(parentProxyAddress)).signer
+
+      if (!extSigner)
+        throw new Error(
+          'Signer not found, please relogin your account to continue'
+        )
+      return {
+        signRaw: async ({ address, data }) => {
+          const sig = await extSigner!.signRaw?.({
+            address,
+            data,
+            type: 'bytes',
+          })
+          return sig?.signature.toString() ?? ''
+        },
+      }
+    } catch (err) {
+      return undefined
+    }
+  }
 }

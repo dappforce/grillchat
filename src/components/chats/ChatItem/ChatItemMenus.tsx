@@ -196,7 +196,7 @@ export default function ChatItemMenus({
           isOptimisticMessage ? (
             message && <MintingMessageNotice message={message} />
           ) : (
-            <SuperLikeWrapper messageId={messageId} withPostReward={false}>
+            <SuperLikeWrapper postId={messageId} withPostReward={false}>
               {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
                 if (hasILiked) return null
                 const menuList = (

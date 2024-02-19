@@ -35,6 +35,7 @@
     "@kiltprotocol/augment-api": "^0.34.0",
     "@kiltprotocol/type-definitions": "^0.34.0",
     "@kodadot1/uniquery": "^0.3.1-rc.0",
+    "@polkadot/extension-dapp": "0.44.6",
     "@polkadot/keyring": "^12.1.2",
     "@polkadot/react-identicon": "^3.6.3",
     "@polkadot/util": "^12.1.2",

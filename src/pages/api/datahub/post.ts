@@ -7,7 +7,6 @@ import {
 } from '@/server/datahub-queue/generated'
 import {
   createPostData,
-  createSuperLike,
   getCanAccountDo,
   notifyCreatePostFailedOrRetryStatus,
   notifyUpdatePostFailedOrRetryStatus,
@@ -19,7 +18,6 @@ import {
   RateLimitError,
   datahubMutationWrapper,
 } from '@/server/datahub-queue/utils'
-import { SocialEventDataApiInput } from '@subsocial/data-hub-sdk'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -72,10 +70,6 @@ export type ApiDatahubPostMutationBody =
       action: 'notify-update-failed'
       payload: UpdatePostBlockchainSyncStatusInput
     }
-  | {
-      action: 'create-superlike'
-      payload: SocialEventDataApiInput
-    }
 
 export type ApiDatahubPostResponse = ApiResponse
 const POST_handler = handlerWrapper({
@@ -122,8 +116,6 @@ function datahubPostActionMapping(data: ApiDatahubPostMutationBody) {
       return notifyCreatePostFailedOrRetryStatus(data.payload)
     case 'notify-update-failed':
       return notifyUpdatePostFailedOrRetryStatus(data.payload)
-    case 'create-superlike':
-      return createSuperLike(data.payload)
     default:
       throw new Error('Unknown action')
   }

@@ -120,7 +120,7 @@ export default function EmojiChatItem({
           !isMyMessage && 'mt-1.5',
           isMyMessage && 'flex-row-reverse'
         )}
-        messageId={messageId}
+        postId={messageId}
       />
     </div>
   )

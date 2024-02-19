@@ -1,4 +1,4 @@
-import { ApiDatahubPostMutationBody } from '@/pages/api/datahub/post'
+import { ApiDatahubSuperLikeMutationBody } from '@/pages/api/datahub/super-like'
 import { apiInstance } from '@/services/api/utils'
 import { queryClient } from '@/services/provider'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
@@ -18,12 +18,9 @@ async function createSuperLike(params: DatahubParams<CreateSuperLikeArgs>) {
     params.args
   )
 
-  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
-    '/api/datahub/post',
-    {
-      payload: input as any,
-      action: 'create-superlike',
-    }
+  await apiInstance.post<any, any, ApiDatahubSuperLikeMutationBody>(
+    '/api/datahub/super-like',
+    { payload: input as any }
   )
 }
 

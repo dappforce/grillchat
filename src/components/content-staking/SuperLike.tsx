@@ -8,13 +8,16 @@ import {
   PostRewards,
   getAddressLikeCountToPostQuery,
   getCanPostSuperLikedQuery,
+  getConfirmationMsgQuery,
   getPostRewardsQuery,
   getSuperLikeCountQuery,
   getTotalStakeQuery,
 } from '@/services/datahub/content-staking/query'
 import { useLoginModal } from '@/stores/login-modal'
-import { useMyMainAddress } from '@/stores/my-account'
+import { useGetCurrentSigner, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { LocalStorage } from '@/utils/storage'
+import { signatureVerify } from '@polkadot/util-crypto'
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import {
@@ -24,21 +27,23 @@ import {
   useEffect,
   useState,
 } from 'react'
+import toast from 'react-hot-toast'
 import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
+import Toast from '../Toast'
 import PopOver from '../floating/PopOver'
 import PostRewardStat from './PostRewardStat'
 
 export type SuperLikeProps = ComponentProps<'div'> & {
   withPostReward: boolean
-  messageId: string
+  postId: string
 }
 
 export function SuperLikeWrapper({
-  messageId,
+  postId,
   children,
   withPostReward,
 }: {
-  messageId: string
+  postId: string
   withPostReward: boolean
   children: (props: {
     hasILiked: boolean
@@ -49,21 +54,23 @@ export function SuperLikeWrapper({
     postRewards: PostRewards | undefined | null
   }) => ReactNode
 }) {
-  const [isOpenModal, setIsOpenModal] = useState(false)
-  const { data: postRewards } = getPostRewardsQuery.useQuery(messageId, {
+  const [openModalState, setOpenModalState] = useState<
+    'should-stake' | 'confirmation' | ''
+  >('')
+  const { data: postRewards } = getPostRewardsQuery.useQuery(postId, {
     enabled: withPostReward,
   })
   const { setIsOpen } = useLoginModal()
 
-  const { data: message } = getPostQuery.useQuery(messageId)
+  const { data: message } = getConfirmationMsgQuery.useQuery(undefined)
+  const { data: post } = getPostQuery.useQuery(postId)
   const { mutate: createSuperLike } = useCreateSuperLike()
-  const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(messageId)
+  const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(postId)
 
   const clientCanPostSuperLiked = useClientValidationOfPostSuperLike(
-    message?.struct.createdAtTime ?? 0
+    post?.struct.createdAtTime ?? 0
   )
-  const { data: canPostSuperLike } =
-    getCanPostSuperLikedQuery.useQuery(messageId)
+  const { data: canPostSuperLike } = getCanPostSuperLikedQuery.useQuery(postId)
   const { canPostSuperLiked, isExist, validByCreatorMinStake } =
     canPostSuperLike || {}
 
@@ -73,7 +80,7 @@ export function SuperLikeWrapper({
   const { data: myLike, isFetching: loadingMyLike } =
     getAddressLikeCountToPostQuery.useQuery({
       address: myAddress ?? '',
-      postId: messageId,
+      postId: postId,
     })
 
   const handleClick = (e?: SyntheticEvent) => {
@@ -84,21 +91,38 @@ export function SuperLikeWrapper({
       return
     }
     if (!totalStake?.hasStakedEnough) {
-      setIsOpenModal(true)
+      setOpenModalState('should-stake')
       return
     }
-    createSuperLike({ postId: messageId })
+
+    const sig = currentWeekSigStorage.get()
+    if (!sig || !message) {
+      setOpenModalState('confirmation')
+      return
+    }
+    const result = signatureVerify(message, sig, myAddress)
+    if (!result.isValid) {
+      currentWeekSigStorage.remove()
+      setOpenModalState('confirmation')
+      return
+    }
+    createSuperLike({ postId, confirmation: { msg: message, sig } })
   }
 
   const hasILiked = (myLike?.count ?? 0) > 0
-  const isMyPost = message?.struct.ownerId === myAddress
+  const isMyPost = post?.struct.ownerId === myAddress
 
   const canBeSuperliked = clientCanPostSuperLiked && canPostSuperLiked
-  const entity = message?.struct.isComment ? 'comment' : 'post'
+  const entity = post?.struct.isComment ? 'comment' : 'post'
 
   const isDisabled =
-    (!canBeSuperliked || isMyPost || loadingMyLike || loadingTotalStake) &&
+    (!canBeSuperliked ||
+      isMyPost ||
+      loadingMyLike ||
+      loadingTotalStake ||
+      !message) &&
     !hasILiked
+
   let disabledCause = ''
   if (isMyPost) disabledCause = `You cannot like your own ${entity}`
   else if (!isExist)
@@ -119,20 +143,25 @@ export function SuperLikeWrapper({
         postRewards,
       })}
       <ShouldStakeModal
-        closeModal={() => setIsOpenModal(false)}
-        isOpen={isOpenModal}
+        closeModal={() => setOpenModalState('')}
+        isOpen={openModalState === 'should-stake'}
+      />
+      <ApproveContentStakingModal
+        postId={postId}
+        closeModal={() => setOpenModalState('')}
+        isOpen={openModalState === 'confirmation'}
       />
     </>
   )
 }
 
 export default function SuperLike({
-  messageId,
+  postId,
   withPostReward,
   ...props
 }: SuperLikeProps) {
   return (
-    <SuperLikeWrapper messageId={messageId} withPostReward={withPostReward}>
+    <SuperLikeWrapper postId={postId} withPostReward={withPostReward}>
       {({
         handleClick,
         isDisabled,
@@ -175,11 +204,81 @@ export default function SuperLike({
             ) : (
               button
             )}
-            {postRewards?.isNotZero && <PostRewardStat postId={messageId} />}
+            {postRewards?.isNotZero && <PostRewardStat postId={postId} />}
           </div>
         )
       }}
     </SuperLikeWrapper>
+  )
+}
+
+const currentWeekSigStorage = new LocalStorage(() => 'df.current-week-sig')
+function ApproveContentStakingModal({
+  postId,
+  ...props
+}: ModalFunctionalityProps & { postId: string }) {
+  const myAddress = useMyMainAddress()
+  const [isSigning, setIsSigning] = useState(false)
+  const getSigner = useGetCurrentSigner()
+  const { mutate: createSuperLike } = useCreateSuperLike()
+  const { data: message } = getConfirmationMsgQuery.useQuery(undefined)
+
+  return (
+    <Modal
+      {...props}
+      title='Join a new week of Content Staking!'
+      description='By confirming, you agree to participate in the Content Staking Program this week, where you may get SUB tokens, NFTs, or other tokens, based on your active engagement.'
+      withCloseButton
+    >
+      <div className='flex flex-col items-center gap-6'>
+        <Image
+          src={SubsocialTokenImage}
+          alt='subsocial'
+          className='w-100'
+          style={{ maxWidth: '250px' }}
+        />
+        <Button
+          className='w-full'
+          disabled={!message}
+          isLoading={isSigning}
+          size='lg'
+          onClick={async () => {
+            setIsSigning(true)
+            try {
+              const signer = await getSigner()
+              if (signer && myAddress) {
+                const signature = await signer.signRaw({
+                  address: myAddress,
+                  data: message!,
+                })
+                currentWeekSigStorage.set(signature)
+                if (!message) throw new Error('No message to sign')
+                createSuperLike({
+                  postId,
+                  confirmation: { msg: message, sig: signature },
+                })
+              }
+            } catch (err) {
+              toast.custom((t) => (
+                <Toast
+                  t={t}
+                  title='Failed to sign the message'
+                  description={
+                    (err as any)?.message ||
+                    'Please try to refresh or relogin to your account'
+                  }
+                />
+              ))
+            } finally {
+              setIsSigning(false)
+              props.closeModal()
+            }
+          }}
+        >
+          Confirm
+        </Button>
+      </div>
+    </Modal>
   )
 }
 

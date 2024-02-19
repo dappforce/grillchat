@@ -1,6 +1,9 @@
 import { MINIMUM_LOCK } from '@/constants/subsocial'
+import { ApiDatahubSuperLikeGetResponse } from '@/pages/api/datahub/super-like'
+import { apiInstance } from '@/services/api/utils'
 import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
+import { AxiosResponse } from 'axios'
 import { gql } from 'graphql-request'
 import {
   GetAddressLikeCountToPostsQuery,
@@ -323,4 +326,16 @@ export const getTotalStakeQuery = createQuery({
   defaultConfigGenerator: (address) => ({
     enabled: !!address,
   }),
+})
+
+export const getConfirmationMsgQuery = createQuery({
+  key: 'getConfirmationMsg',
+  fetcher: async () => {
+    const res = await apiInstance.get<
+      any,
+      AxiosResponse<ApiDatahubSuperLikeGetResponse>,
+      any
+    >('/api/datahub/super-like')
+    return res.data.data ?? ''
+  },
 })
