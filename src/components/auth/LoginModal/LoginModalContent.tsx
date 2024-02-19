@@ -1,7 +1,6 @@
 import IncognitoIcon from '@/assets/icons/incognito.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
-import XLogoIcon from '@/assets/icons/x-logo.svg'
 import {
   CommonEvmAddressLinked,
   CommonEVMLoginErrorContent,
@@ -24,6 +23,8 @@ import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { signIn } from 'next-auth/react'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { IoLogoGoogle } from 'react-icons/io'
+import { RiTwitterXLine } from 'react-icons/ri'
 import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
 import { CustomConnectButton } from '../common/evm/CustomConnectButton'
 import LimitedPolkadotJsSupportContent from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
@@ -36,13 +37,14 @@ import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { ConnectWalletContent } from './contents/ConnectWalletContent'
 import { EnterSecretKeyContent } from './contents/EnterSecretKeyContent'
 import { NextActionsContent } from './contents/NextActionsContent'
-import XLoginLoading from './contents/XLoginLoadingContent'
+import OauthLoginLoading from './contents/OauthLoginLoadingContent'
 
 export type LoginModalStep =
   | PolkadotConnectSteps
   | 'login'
   | 'enter-secret-key'
   | 'x-login-loading'
+  | 'google-login-loading'
   | 'account-created'
   | 'next-actions'
   | 'connect-wallet'
@@ -88,61 +90,9 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
     <div>
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
-        <div className={cx('flex flex-col gap-4 pb-4')}>
-          {(() => {
-            if (loginOption !== 'all') return null
-            if (!isInIframe)
-              return (
-                <>
-                  {showErrorPanel && (
-                    <InfoPanel variant='error'>
-                      😕 Sorry there is some issue with logging you in, please
-                      try again or try different account
-                    </InfoPanel>
-                  )}
-                  <Button
-                    onClick={() => {
-                      sendEvent('x_login_started')
-                      signIn('twitter', {
-                        callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
-                      })
-                    }}
-                    size='lg'
-                  >
-                    <div className='flex items-center justify-center gap-2'>
-                      <XLogoIcon className='text-text-muted-on-primary' />
-                      Continue with X
-                    </div>
-                  </Button>
-                </>
-              )
-
-            if (!canUseAnonLogin) return null
-            return (
-              <Button
-                type='button'
-                size='lg'
-                className='w-full'
-                isLoading={isLoading}
-                onClick={async () => {
-                  sendEvent('login_anonymously')
-                  const newAddress = await loginAndRequestToken(null)
-                  if (newAddress) {
-                    setCurrentState('account-created')
-                  }
-                }}
-              >
-                <div className='flex items-center justify-center gap-2'>
-                  <IncognitoIcon className='text-text-muted-on-primary' />
-                  Continue anonymously
-                </div>
-              </Button>
-            )
-          })()}
+        <div className={cx('flex flex-col gap-4')}>
           <Button
-            variant={
-              isConnectWalletPrimaryButton ? 'primary' : 'primaryOutline'
-            }
+            variant='primary'
             onClick={() => {
               setCurrentState('connect-wallet')
               sendEvent('connect_wallet_started')
@@ -172,6 +122,67 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
               </div>
             </Button>
           )}
+          {loginOption === 'all' && canUseAnonLogin && isInIframe && (
+            <Button
+              type='button'
+              size='lg'
+              className='w-full'
+              variant='primaryOutline'
+              isLoading={isLoading}
+              onClick={async () => {
+                sendEvent('login_anonymously')
+                const newAddress = await loginAndRequestToken(null)
+                if (newAddress) {
+                  setCurrentState('account-created')
+                }
+              }}
+            >
+              <div className='flex items-center justify-center gap-2'>
+                <IncognitoIcon className='text-text-muted-on-primary' />
+                Continue anonymously
+              </div>
+            </Button>
+          )}
+          {!isInIframe && (
+            <div className='mt-2 flex flex-col'>
+              {showErrorPanel && (
+                <InfoPanel variant='error'>
+                  😕 Sorry there is some issue with logging you in, please try
+                  again or try different account
+                </InfoPanel>
+              )}
+              <div className='flex items-center justify-center gap-2'>
+                <Button
+                  variant='bgLighter'
+                  size='circle'
+                  onClick={() => {
+                    sendEvent('oauth_login_started', { provider: 'google' })
+                    signIn('google', {
+                      callbackUrl: `${getCurrentUrlWithoutQuery()}?login=google`,
+                    })
+                  }}
+                >
+                  <div className='flex items-center justify-center gap-2'>
+                    <IoLogoGoogle className='text-xl text-text-muted-on-primary' />
+                  </div>
+                </Button>
+                <Button
+                  variant='bgLighter'
+                  size='circle'
+                  onClick={() => {
+                    sendEvent('x_login_started', { provider: 'twitter' })
+                    signIn('twitter', {
+                      callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
+                    })
+                  }}
+                >
+                  <div className='flex items-center justify-center gap-2'>
+                    <RiTwitterXLine className='text-xl text-text-muted-on-primary' />
+                  </div>
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -184,7 +195,8 @@ type LoginModalContents = {
 export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'enter-secret-key': EnterSecretKeyContent,
-  'x-login-loading': XLoginLoading,
+  'x-login-loading': OauthLoginLoading,
+  'google-login-loading': OauthLoginLoading,
   'account-created': AccountCreatedContent,
   'next-actions': NextActionsContent,
   'connect-wallet': ConnectWalletContent,

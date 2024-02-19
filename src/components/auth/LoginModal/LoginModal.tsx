@@ -8,7 +8,7 @@ import { isTouchDevice } from '@/utils/device'
 import dynamic from 'next/dynamic'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
-import { loginModalContents, LoginModalStep } from './LoginModalContent'
+import { LoginModalStep, loginModalContents } from './LoginModalContent'
 
 const StayUpdatedModal = dynamic(
   () => import('@/components/chats/StayUpdatedModal'),
@@ -77,6 +77,11 @@ export default function LoginModal({
     'x-login-loading': {
       title: '🕔 Connecting to X',
       desc: 'We are connecting your X account to Grill.chat. Please wait for a few seconds.',
+      withCloseButton: false,
+    },
+    'google-login-loading': {
+      title: '🕔 Connecting to Google',
+      desc: 'We are connecting your Google account to Grill.chat. Please wait for a few seconds.',
       withCloseButton: false,
     },
     'account-created': {

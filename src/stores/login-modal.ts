@@ -47,6 +47,8 @@ export const useLoginModal = create<State & Actions>()((set, get) => ({
     const loginQuery = getUrlQuery('login')
     if (loginQuery === 'x') {
       set({ isOpen: true, initialOpenState: 'x-login-loading' })
+    } else if (loginQuery === 'google') {
+      set({ isOpen: true, initialOpenState: 'google-login-loading' })
     }
   },
 }))

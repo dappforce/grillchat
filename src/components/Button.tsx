@@ -1,5 +1,5 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
-import { cva, VariantProps } from 'class-variance-authority'
+import { VariantProps, cva } from 'class-variance-authority'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps, forwardRef } from 'react'
 import Spinner from './Spinner'
@@ -11,6 +11,8 @@ export const buttonStyles = cva('relative rounded-full transition', {
         'bg-background-primary border border-transparent text-text-on-primary',
       primaryOutline:
         'bg-transparent border border-background-primary text-text',
+      bgLighter:
+        'bg-background-lighter border border-transparent text-text-muted',
       whiteOutline: 'bg-transparent border border-white text-text',
       mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
       transparent: 'bg-transparent',

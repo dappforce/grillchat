@@ -12,17 +12,29 @@ import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import { Session } from 'next-auth'
 import { useSession } from 'next-auth/react'
 import { useEffect, useRef } from 'react'
 import { LoginModalContentProps } from '../LoginModalContent'
 
-export default function XLoginLoading({
+const providerMapper: Record<
+  Session['provider'],
+  { name: string; providerId: IdentityProvider }
+> = {
+  google: { name: 'Google', providerId: IdentityProvider.GOOGLE },
+  twitter: { name: 'X', providerId: IdentityProvider.TWITTER },
+}
+export default function OauthLoginLoading({
   closeModal,
   setCurrentState,
 }: LoginModalContentProps) {
   const sendEvent = useSendEvent()
 
   const { data: session, status } = useSession()
+  const provider = session?.provider ?? ''
+  const { providerId: identity, name } =
+    (provider && providerMapper[provider]) || {}
+
   const { mutateAsync: loginAsTemporaryAccount } = useLoginAndRequestToken({
     asTemporaryAccount: true,
   })
@@ -34,14 +46,14 @@ export default function XLoginLoading({
   const { mutate: linkIdentity, error: errorLinking } = useLinkIdentity()
   useToastError(
     errorLinking,
-    'Failed to link X profile',
+    `Failed to link ${name} profile`,
     () => 'Please refresh the page to relink your account'
   )
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
     onSuccess: () => {
       replaceUrl(getCurrentUrlWithoutQuery('login'))
       setCurrentState('account-created')
-      sendEvent('x_login_done')
+      sendEvent('oauth_login_done', { provider })
     },
   })
   useToastError(
@@ -72,7 +84,13 @@ export default function XLoginLoading({
       session &&
       linkedIdentity?.externalId === session?.user?.id
     if (foundIdentity && !upsertedProfile.current) {
-      sendEvent('x_login_creating_profile', undefined, { twitterLinked: true })
+      sendEvent(
+        'oauth_login_creating_profile',
+        { provider },
+        {
+          twitterLinked: true,
+        }
+      )
       upsertedProfile.current = true
       upsertProfile({
         content: {
@@ -84,6 +102,7 @@ export default function XLoginLoading({
         },
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linkedIdentity, sendEvent, session, setCurrentState, upsertProfile])
 
   const isAlreadyCalled = useRef(false)
@@ -95,13 +114,13 @@ export default function XLoginLoading({
     if (isAlreadyCalled.current || !session) return
 
     isAlreadyCalled.current = true
-    sendEvent('x_login_linking')
+    sendEvent('oauth_login_linking', { provider })
     ;(async () => {
       const address = await loginAsTemporaryAccount(null)
-      if (!address) return
+      if (!address || !identity) return
       linkIdentity({
         id: session.user?.id,
-        provider: IdentityProvider.TWITTER,
+        provider: identity,
       })
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -111,7 +130,7 @@ export default function XLoginLoading({
     <div className='flex flex-col items-center gap-4'>
       <DynamicLoadedHamsterLoading />
       <span className='text-sm text-text-muted'>
-        It may take up to 15 seconds
+        It may take up to 30 seconds
       </span>
     </div>
   )

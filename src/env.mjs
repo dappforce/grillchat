@@ -24,6 +24,12 @@ export const env = createEnv({
 
     DATAHUB_QUEUE_URL: z.string().default(''),
     DATAHUB_QUEUE_TOKEN: z.string().default(''),
+
+    NEXTAUTH_SECRET: z.string().default(''),
+    TWITTER_CLIENT_ID: z.string().default(''),
+    TWITTER_CLIENT_SECRET: z.string().default(''),
+    GOOGLE_CLIENT_ID: z.string().default(''),
+    GOOGLE_CLIENT_SECRET: z.string().default(''),
   },
   client: {
     NEXT_PUBLIC_APP_ID: z.string().default(''),
