@@ -1,10 +1,12 @@
 import { useMyAccount } from '@/stores/my-account'
+import { getNetwork } from '@/utils/network'
 import { useCallback, useEffect, useRef } from 'react'
 import useWrapInRef from './useWrapInRef'
 
+const DEFAULT_TIMEOUT = getNetwork() === 'xsocial' ? 10_000 : 30_000
 export default function useWaitHasEnergy(
   isUsingConnectedWallet?: boolean,
-  timeout = 10_000
+  timeout = DEFAULT_TIMEOUT
 ) {
   const hasEnergyResolvers = useRef<(() => void)[]>([])
   const { address, energy, resubscribeEnergy } = useAccountSwitch(
