@@ -23,6 +23,7 @@ import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
+import { estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import { PostData } from '@subsocial/api/types'
@@ -314,7 +315,7 @@ function MintingMessageNotice({ message }: { message: PostData }) {
         <p className='pt-2'>
           {isMoreThan10Mins
             ? 'It will be available as an off-chain message in 1 hour, and can then be replied to.'
-            : 'To interact with this message please wait until it is saved to the blockchain (≈ 15 sec).'}
+            : `To interact with this message please wait until it is saved to the blockchain (≈ ${estimatedWaitTime} sec).`}
         </p>
       </Transition>
     </div>

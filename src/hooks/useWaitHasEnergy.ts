@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import useWaitNewBlock from './useWaitNewBlock'
 import useWrapInRef from './useWrapInRef'
 
-const DEFAULT_TIMEOUT = getNetwork() === 'xsocial' ? 10_000 : 20_000
+const DEFAULT_TIMEOUT = getNetwork() === 'xsocial' ? 10_000 : 30_000
 export default function useWaitHasEnergy(
   isUsingConnectedWallet?: boolean,
   timeout = DEFAULT_TIMEOUT
