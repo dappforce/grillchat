@@ -1,6 +1,6 @@
 {
   "name": "@subsocial/grill-widget",
-  "version": "0.0.13",
+  "version": "0.1.2",
   "description": "Small integration script to help you integrate Grill.chat into your app.",
   "repository": "https://github.com/dappforce/grillchat/tree/main/integration",
   "main": "dist/index.js",
