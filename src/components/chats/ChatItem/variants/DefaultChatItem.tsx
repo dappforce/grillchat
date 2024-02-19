@@ -124,10 +124,15 @@ export default function DefaultChatItem({
             </span>
           )}
         </p>
+        <div
+          className={cx('absolute bottom-1 right-3 flex items-center self-end')}
+        >
+          {relativeTime}
+        </div>
         {link && linkMetadata?.title && (
           <LinkPreview
             renderNullIfLinkEmbedable
-            className={cx('my-1 mb-6')}
+            className={cx('my-1 last:mb-6')}
             link={link}
             linkMetadata={linkMetadata}
             isMyMessage={isMyMessage}
@@ -141,11 +146,6 @@ export default function DefaultChatItem({
             </span>
           </div>
         )}
-        <div
-          className={cx('absolute bottom-1 right-3 flex items-center self-end')}
-        >
-          {relativeTime}
-        </div>
       </div>
     </div>
   )
