@@ -170,7 +170,7 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
                   variant='bgLighter'
                   size='circle'
                   onClick={() => {
-                    sendEvent('x_login_started', { provider: 'twitter' })
+                    sendEvent('oauth_login_started', { provider: 'twitter' })
                     signIn('twitter', {
                       callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
                     })
