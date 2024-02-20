@@ -3,6 +3,7 @@ import ChatImage from '@/components/chats/ChatImage'
 import DataCard from '@/components/DataCard'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
+import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
@@ -23,6 +24,7 @@ export default function ChatCreateSuccessModal({
 
   const chatLink = urlJoin(
     getCurrentUrlOrigin(),
+    env.NEXT_PUBLIC_BASE_PATH,
     getChatPageLink({ query: {} }, createSlug(chatId, data?.content), hubId)
   )
 
