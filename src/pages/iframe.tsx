@@ -7,10 +7,10 @@ import { useEffect } from 'react'
 export default function IframePage() {
   useEffect(() => {
     grill.init({
-      hub: { id: 'x' },
+      hub: { id: 'featured' },
       onWidgetCreated: (iframe) => {
         iframe.src = iframe.src.replace(
-          'https://grill.chat',
+          'https://grill.so',
           getCurrentUrlOrigin()
         )
         return iframe
