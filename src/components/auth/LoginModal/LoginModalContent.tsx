@@ -145,8 +145,14 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
           )}
           {!isInIframe && (
             <div className='mt-2 flex flex-col'>
+              <div className='relative mb-4 text-center text-text-muted'>
+                <div className='absolute top-1/2 h-px w-full bg-border-gray' />
+                <span className='relative inline-block bg-background-light px-4'>
+                  or login with
+                </span>
+              </div>
               {showErrorPanel && (
-                <InfoPanel variant='error'>
+                <InfoPanel variant='error' className='mb-4'>
                   😕 Sorry there is some issue with logging you in, please try
                   again or try different account
                 </InfoPanel>
