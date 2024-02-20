@@ -37,7 +37,7 @@ function getHubIdFromUrl(currentPath: CurrentPath) {
 export function getHubPageLink(currentPath: CurrentPath) {
   const hubId = getHubIdFromUrl(currentPath)
   const isWidgetRoute = currentPath.pathname?.includes('/widget')
-  if (!isWidgetRoute) return `/hub/${hubId ?? ''}`
+  if (!isWidgetRoute) return `/${hubId ?? ''}`
   return `/widget/${hubId ?? ''}`
 }
 
