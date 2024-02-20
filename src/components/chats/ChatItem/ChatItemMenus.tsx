@@ -26,7 +26,7 @@ import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
-import { estimatedWaitTime } from '@/utils/network'
+import { currentNetwork, estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import { PostData } from '@subsocial/api/types'
@@ -194,46 +194,46 @@ export default function ChatItemMenus({
     <>
       <FloatingMenus
         beforeMenus={
-          isOptimisticMessage ? (
-            message && <MintingMessageNotice message={message} />
-          ) : (
-            <SuperLikeWrapper postId={messageId} withPostReward={false}>
-              {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
-                if (hasILiked) return null
-                const menuList = (
-                  <div className='relative w-full'>
-                    <MenuList
-                      size='sm'
-                      menus={[
-                        {
-                          icon: IoDiamondOutline,
-                          text: 'Like Message',
-                          disabled: isDisabled,
-                          onClick: handleClick,
-                        },
-                      ]}
-                    />
-                    <div className='absolute bottom-0 flex w-full flex-col'>
-                      <div className='mx-4 h-px bg-border-gray' />
-                    </div>
-                  </div>
-                )
-                return disabledCause ? (
-                  <PopOver
-                    triggerClassName='w-full'
-                    trigger={menuList}
-                    panelSize='sm'
-                    triggerOnHover
-                    placement='top'
-                  >
-                    <p>{disabledCause}</p>
-                  </PopOver>
-                ) : (
-                  menuList
-                )
-              }}
-            </SuperLikeWrapper>
-          )
+          isOptimisticMessage
+            ? message && <MintingMessageNotice message={message} />
+            : currentNetwork === 'subsocial' && (
+                <SuperLikeWrapper postId={messageId} withPostReward={false}>
+                  {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
+                    if (hasILiked) return null
+                    const menuList = (
+                      <div className='relative w-full'>
+                        <MenuList
+                          size='sm'
+                          menus={[
+                            {
+                              icon: IoDiamondOutline,
+                              text: 'Like Message',
+                              disabled: isDisabled,
+                              onClick: handleClick,
+                            },
+                          ]}
+                        />
+                        <div className='absolute bottom-0 flex w-full flex-col'>
+                          <div className='mx-4 h-px bg-border-gray' />
+                        </div>
+                      </div>
+                    )
+                    return disabledCause ? (
+                      <PopOver
+                        triggerClassName='w-full'
+                        trigger={menuList}
+                        panelSize='sm'
+                        triggerOnHover
+                        placement='top'
+                      >
+                        <p>{disabledCause}</p>
+                      </PopOver>
+                    ) : (
+                      menuList
+                    )
+                  }}
+                </SuperLikeWrapper>
+              )
         }
         menus={menus}
         allowedPlacements={[

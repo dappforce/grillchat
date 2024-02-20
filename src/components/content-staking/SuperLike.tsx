@@ -16,6 +16,7 @@ import {
 import { useLoginModal } from '@/stores/login-modal'
 import { useGetCurrentSigner, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { currentNetwork } from '@/utils/network'
 import { LocalStorage } from '@/utils/storage'
 import { signatureVerify } from '@polkadot/util-crypto'
 import dayjs from 'dayjs'
@@ -160,6 +161,8 @@ export default function SuperLike({
   withPostReward,
   ...props
 }: SuperLikeProps) {
+  if (currentNetwork !== 'subsocial') return null
+
   return (
     <SuperLikeWrapper postId={postId} withPostReward={withPostReward}>
       {({

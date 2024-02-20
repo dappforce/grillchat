@@ -1,4 +1,4 @@
-import { getNetwork } from '@/utils/network'
+import { currentNetwork } from '@/utils/network'
 import subsocialConfig from './subsocial'
 import xsocialConfig from './xsocial'
 
@@ -20,7 +20,7 @@ export type ConstantsConfig = {
 }
 
 export const constantsConfig =
-  getNetwork() === 'subsocial' ? subsocialConfig : xsocialConfig
+  currentNetwork === 'subsocial' ? subsocialConfig : xsocialConfig
 
 const hubIdToAliasMap = Object.entries(constantsConfig.aliases).reduce(
   (acc, [alias, hubId]) => {
