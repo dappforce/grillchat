@@ -1,4 +1,5 @@
 import ActivitiesImage from '@/assets/graphics/landing/activities.png'
+import Diamond from '@/assets/graphics/landing/diamond.png'
 import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
@@ -8,9 +9,14 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
   return (
     <section
       {...props}
-      className={cx('relative mx-auto max-w-5xl', props.className)}
+      className={cx('relative mx-auto max-w-6xl', props.className)}
     >
-      <div className='absolute -top-52 right-0 h-[855px] w-[855px] translate-x-1/2 rounded-full bg-[#5D88F0A8] blur-[200px]' />
+      <div className='absolute -top-52 right-0 h-[855px] w-[855px] translate-x-1/2 rounded-full bg-[#5D88F0A8] blur-[478px]' />
+      <Image
+        src={Diamond}
+        alt=''
+        className='absolute -right-8 top-64 h-40 w-40 translate-x-full -rotate-[30deg] opacity-60 blur-[2px]'
+      />
       <div className='relative flex flex-col'>
         <h3 className='mb-10 text-center text-5xl font-bold'>
           What Others Earn
