@@ -8,6 +8,7 @@ import FloatingMenus, {
 } from '@/components/floating/FloatingMenus'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
+import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useCanSendMessage } from '@/hooks/useCanSendMessage'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
@@ -106,6 +107,7 @@ export default function ChatItemMenus({
         onClick: () => {
           const chatPageLink = urlJoin(
             getCurrentUrlOrigin(),
+            env.NEXT_PUBLIC_BASE_PATH,
             getChatPageLink(router)
           )
           copyToClipboard(urlJoin(chatPageLink, messageId))
