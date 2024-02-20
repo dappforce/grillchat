@@ -1,6 +1,6 @@
 import StakingBannerImage from '@/assets/graphics/staking-banner-image.svg'
-import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
+import BannerActionButtons from './BannerActionButtons'
 
 const BannerSection = () => {
   return (
@@ -20,14 +20,8 @@ const BannerSection = () => {
         </div>
       </div>
       <StakingBannerImage className='w-full max-w-[490px]' />
-
-      <div className='text-lg font-medium text-slate-50'>
-        To start earning from Content Staking, you first nned to get some SUB:
-      </div>
       <div>
-        <Button variant='primary' size='lg'>
-          Get SUB
-        </Button>
+        <BannerActionButtons />
       </div>
     </div>
   )

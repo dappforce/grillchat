@@ -1,4 +1,4 @@
-type UnbondingChunks = {
+export type UnbondingChunks = {
   amount: string
   unlockEra: string
 }

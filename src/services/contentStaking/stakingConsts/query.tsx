@@ -1,6 +1,6 @@
 import { getSubIdRequest } from '@/server/external'
-import { StakingConsts } from '@/services/chainsInfo/types'
 import { createQuery, poolQuery } from '@/subsocial-query'
+import { StakingConsts } from './types'
 
 export const stakingConstsId = 'stakingConsts'
 
@@ -9,7 +9,7 @@ export const getStakingConstsData = () => {
 }
 
 export async function getStakingConstsRequest() {
-  return getSubIdRequest().get('/staking/consts')
+  return getSubIdRequest().get('/staking/creator/consts')
 }
 
 const getStakingConsts = poolQuery<string, StakingConsts>({

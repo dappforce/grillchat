@@ -1,6 +1,7 @@
 import { getSubIdRequest } from '@/server/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
-import { BackerLedger } from './types'
+import BN from 'bignumber.js'
+import { BackerLedger, UnbondingChunks } from './types'
 
 export async function getBackerLedgerRequest(account: string) {
   return getSubIdRequest().get('/staking/creator/backer/ledger', {
@@ -12,7 +13,19 @@ const getBackerLedger = poolQuery<string, BackerLedger>({
   multiCall: async (account) => {
     const resultPromise = account.map(async (account) => {
       const result = await getBackerLedgerRequest(account)
-      return { account, ...result.data }
+
+      const backerLedgerData = result?.data
+
+      const unbondingChunks = backerLedgerData?.unbondingInfo
+        .unbondingChunks as UnbondingChunks[]
+
+      let lockedBN = new BN(backerLedgerData?.totalLocked || '0')
+
+      unbondingChunks?.forEach(({ amount }) => {
+        lockedBN = lockedBN.minus(amount)
+      })
+
+      return { account, locked: lockedBN.toString(), ...result.data }
     })
 
     return Promise.all(resultPromise)
