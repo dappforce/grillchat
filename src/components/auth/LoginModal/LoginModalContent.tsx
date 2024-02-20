@@ -147,7 +147,7 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
             <div className='mt-2 flex flex-col'>
               <div className='relative mb-4 text-center text-text-muted'>
                 <div className='absolute top-1/2 h-px w-full bg-border-gray' />
-                <span className='relative inline-block bg-background-light px-4'>
+                <span className='relative inline-block bg-background-light px-4 text-sm'>
                   or login with
                 </span>
               </div>
