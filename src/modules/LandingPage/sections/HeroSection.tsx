@@ -28,10 +28,10 @@ export default function HeroSection(props: ComponentProps<'section'>) {
             <h1 className='text-5xl font-bold'>
               Monetize Every Like, Comment, And Post
             </h1>
-            <span className='text-2xl font-medium text-[#FEEFFB]'>
+            <h2 className='text-2xl font-medium text-[#FEEFFB]'>
               Revolutionary social platform where bloggers and their followers
               earn together
-            </span>
+            </h2>
           </div>
         </div>
         <div className='flex w-full items-center justify-center gap-6'>
