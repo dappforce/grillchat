@@ -143,7 +143,7 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
               </div>
             </Button>
           )}
-          {!isInIframe && (
+          {(!isInIframe || true) && (
             <div className='mt-2 flex flex-col'>
               {showErrorPanel && (
                 <InfoPanel variant='error'>
