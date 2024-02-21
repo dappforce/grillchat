@@ -62,10 +62,10 @@ export default function HeroSection(props: ComponentProps<'section'>) {
             Early-bird version
           </span>
           <div className='flex items-center gap-2 text-lg'>
-            <Button variant='transparent' roundings='xl'>
+            <Button variant='transparent' size='xl' roundings='xl'>
               Ask Questions
             </Button>
-            <Button variant='landingPrimary' roundings='xl'>
+            <Button variant='landingPrimary' size='xl' roundings='xl'>
               Start Earning
             </Button>
           </div>

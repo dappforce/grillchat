@@ -45,7 +45,7 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
             <span className='text-2xl font-medium'>
               Check out the statistics of how others earn on our platform:
             </span>
-            <Button variant='landingPrimary' className='text-lg' roundings='xl'>
+            <Button variant='landingPrimary' size='xl' roundings='xl'>
               See Live Stats
             </Button>
           </div>

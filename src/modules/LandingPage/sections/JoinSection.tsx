@@ -22,10 +22,11 @@ export default function JoinSection(props: ComponentProps<'section'>) {
         </span>
         <div className='mx-auto flex max-w-xl flex-col items-center gap-6'>
           <span className='text-2xl font-medium'>
-            Join today and get up to 4x more rewards from every like and post
-            you do
+            Join today and get up to 4x more rewards
+            <br />
+            from every like and post you do
           </span>
-          <Button className='bg-white text-lg text-[#3C39C0]' roundings='xl'>
+          <Button className='bg-white text-[#3C39C0]' size='xl' roundings='xl'>
             Start Earning
           </Button>
         </div>
