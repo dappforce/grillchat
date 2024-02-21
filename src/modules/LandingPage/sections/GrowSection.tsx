@@ -46,14 +46,14 @@ export default function GrowSection(props: ComponentProps<'section'>) {
               Likes during the last month
             </span>
             <span className='mb-1.5 text-5xl font-bold'>149,867</span>
-            <span className='text-xl text-[#D0D0D0]'>194,379 all time</span>
+            <span className='text-xl text-white/70'>194,379 all time</span>
           </div>
           <div className='flex flex-col rounded-3xl bg-white/10 p-5'>
             <span className='mb-2.5 text-2xl text-[#FEEFFB]'>
               Comments created during the last month
             </span>
             <span className='mb-1.5 text-5xl font-bold'>10,627</span>
-            <span className='text-xl text-[#D0D0D0]'>22,691 all time</span>
+            <span className='text-xl text-white/70'>22,691 all time</span>
           </div>
         </div>
         <div className='flex flex-col gap-4'>
