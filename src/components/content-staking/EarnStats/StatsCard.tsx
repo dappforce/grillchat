@@ -10,8 +10,8 @@ type StatsCardProps = {
 
 const StatsCard = ({ title, desc, subDesc, tooltipText }: StatsCardProps) => {
   return (
-    <div className='flex w-full h-full flex-col gap-2 rounded-2xl bg-white/5 p-4'>
-      <div className='text-sm font-normal text-slate-400'>
+    <div className='flex h-full w-full flex-col gap-2 rounded-2xl bg-white/5 p-4'>
+      <div className='text-sm font-normal text-text/80'>
         <PopOver
           trigger={
             <div className='flex items-center gap-2'>

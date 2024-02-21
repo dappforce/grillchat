@@ -110,6 +110,32 @@ body {
   }
 }
 
+.input-range {
+  -webkit-appearance: none;
+  background: #0F172A;
+  background-image: linear-gradient(#7C75EB, #7C75EB);
+  background-size: 70% 100%;
+  height: 10px;
+  border-radius: 38px;
+  background-repeat: no-repeat;
+}
+
+.input-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: #4F46E5;
+  cursor: ew-resize;
+}
+
+.input-range::-webkit-slider-runnable-track  {
+  -webkit-appearance: none;
+  box-shadow: none;
+  border: none;
+  background: transparent;
+}
+
 .unselectable {
   @apply select-none;
   user-drag: none;
