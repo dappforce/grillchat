@@ -139,7 +139,12 @@ export default function ChatPreview({
               )}
               {(() => {
                 if (withUnreadCount && chatId) {
-                  return <ChatUnreadCount className='ml-2' chatId={chatId} />
+                  return (
+                    <ChatUnreadCount
+                      className='ml-2 flex-shrink-0'
+                      chatId={chatId}
+                    />
+                  )
                 }
 
                 return null
