@@ -1,5 +1,5 @@
 import { Theme } from '@/@types/theme'
-import { useConfigContext } from '@/providers/ConfigProvider'
+import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { useTheme } from 'next-themes'
 
 export default function useGetTheme(): Theme | undefined {

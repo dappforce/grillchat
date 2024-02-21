@@ -1,9 +1,9 @@
-import { getLinkedChatIdsForHubId } from '@/constants/hubs'
-import { useConfigContext } from '@/providers/ConfigProvider'
+import { constantsConfig } from '@/constants/config'
+import { env } from '@/env.mjs'
+import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
-import { getAppId } from '@/utils/env/client'
 import { useMemo } from 'react'
 import useSortChatIdsByConfig from './useSortChatIdsByConfig'
 import useSortChatIdsByLatestMessage from './useSortChatIdsByLatestMessage'
@@ -21,7 +21,7 @@ export default function useSortedChats(
   const { data: moderationDataInHub } = getBlockedResourcesQuery.useQuery({
     spaceId: hubId,
   })
-  const appId = getAppId()
+  const appId = env.NEXT_PUBLIC_APP_ID
   const { data: moderationDataInApp } = getBlockedResourcesQuery.useQuery({
     appId,
   })
@@ -30,7 +30,10 @@ export default function useSortedChats(
 
   const { data } = getPostIdsBySpaceIdQuery.useQuery(hubId)
   const allChatIds = useMemo(() => {
-    return [...(data?.postIds ?? []), ...getLinkedChatIdsForHubId(hubId)]
+    return [
+      ...(data?.postIds ?? []),
+      ...(constantsConfig.linkedChatsForHubId[hubId] ?? []),
+    ]
   }, [data, hubId])
 
   const filteredChatIds = useMemo(() => {

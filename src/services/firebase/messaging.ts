@@ -1,4 +1,4 @@
-import { getFirebaseNotificationAppId } from '@/utils/env/client'
+import { env } from '@/env.mjs'
 import { getMessaging, getToken } from 'firebase/messaging'
 import firebaseApp from './config'
 
@@ -14,14 +14,14 @@ export const getMessageToken = async (): Promise<string | undefined> => {
     if (!registration) throw new Error('Registration not found')
 
     const token = await getToken(messaging, {
-      vapidKey: getFirebaseNotificationAppId(),
+      vapidKey: env.NEXT_PUBLIC_NOTIFICATION_APP_ID,
       serviceWorkerRegistration: registration,
     })
 
     return token
   } else if (permission === 'denied') {
     // The user has denied permission.
-    console.log('Permission denied by the user.')
+    console.warn('Permission denied by the user.')
   } else {
     // The user has not yet been asked for permission.
     await Notification.requestPermission()

@@ -1,12 +1,12 @@
 import { getMaxMessageLength } from '@/constants/chat'
-import { DatahubPostMutationBody } from '@/pages/api/datahub/post'
+import { ApiDatahubPostMutationBody } from '@/pages/api/datahub/post'
+import { apiInstance } from '@/services/api/utils'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import {
   addOptimisticData,
   deleteOptimisticData,
 } from '@/services/subsocial/commentIds/optimistic'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { getDatahubConfig } from '@/utils/env/client'
 import { ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { stringToU8a, u8aToHex } from '@polkadot/util'
@@ -15,20 +15,23 @@ import { PostContent } from '@subsocial/api/types'
 import {
   CreatePostCallParsedArgs,
   PostKind,
-  socialCallName,
   SynthCreatePostTxFailedCallParsedArgs,
   SynthCreatePostTxRetryCallParsedArgs,
   SynthUpdatePostTxFailedCallParsedArgs,
   SynthUpdatePostTxRetryCallParsedArgs,
   UpdatePostCallParsedArgs,
+  socialCallName,
 } from '@subsocial/data-hub-sdk'
 import {
-  useMutation,
   UseMutationOptions,
+  useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
-import axios from 'axios'
-import { createSignedSocialDataEvent, DatahubParams } from '../utils'
+import {
+  DatahubParams,
+  createSignedSocialDataEvent,
+  isDatahubAvailable,
+} from '../utils'
 
 export function isValidUUIDv4(maybeUuid: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -78,10 +81,13 @@ async function createPostData(
     content
   )
 
-  await axios.post<any, any, DatahubPostMutationBody>('/api/datahub/post', {
-    action: 'create-post',
-    payload: input as any,
-  })
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      action: 'create-post',
+      payload: input as any,
+    }
+  )
 }
 
 async function updatePostData(
@@ -111,10 +117,13 @@ async function updatePostData(
     content?.content
   )
 
-  await axios.post<any, any, DatahubPostMutationBody>('/api/datahub/post', {
-    action: 'update-post',
-    payload: input as any,
-  })
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      action: 'update-post',
+      payload: input as any,
+    }
+  )
 }
 
 async function notifyCreatePostFailedOrRetryStatus(
@@ -156,10 +165,13 @@ async function notifyCreatePostFailedOrRetryStatus(
 
   const input = createSignedSocialDataEvent(event.name, params, event.args)
 
-  await axios.post<any, any, DatahubPostMutationBody>('/api/datahub/post', {
-    action: 'notify-create-failed',
-    payload: input as any,
-  })
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      action: 'notify-create-failed',
+      payload: input as any,
+    }
+  )
 }
 
 async function notifyUpdatePostFailedOrRetryStatus(
@@ -205,15 +217,18 @@ async function notifyUpdatePostFailedOrRetryStatus(
 
   const input = createSignedSocialDataEvent(event.name, params, event.args)
 
-  await axios.post<any, any, DatahubPostMutationBody>('/api/datahub/post', {
-    action: 'notify-update-failed',
-    payload: input as any,
-  })
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      action: 'notify-update-failed',
+      payload: input as any,
+    }
+  )
 }
 
 function datahubWrapper<T extends (...args: any[]) => Promise<any>>(func: T) {
   return (...args: Parameters<T>) => {
-    if (!getDatahubConfig()) return
+    if (!isDatahubAvailable) return
     return func(...args)
   }
 }

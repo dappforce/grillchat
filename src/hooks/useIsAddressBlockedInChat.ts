@@ -1,6 +1,6 @@
+import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
-import { getAppId } from '@/utils/env/client'
 import { useMemo } from 'react'
 
 export default function useIsAddressBlockedInChat(
@@ -22,7 +22,7 @@ export default function useIsAddressBlockedInChat(
     postEntityId: entityId || '',
   })
   const { data: appModeration } = getBlockedResourcesQuery.useQuery({
-    appId: getAppId(),
+    appId: env.NEXT_PUBLIC_APP_ID,
   })
   const blockedAddressesInOriginalHub =
     originalHubModeration?.blockedResources.address

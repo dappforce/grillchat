@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mainnet-grillchat
+  name: mainnet-grillchat
+  namespace: sub-back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mainnet-grillchat
+  template:
+    metadata:
+      labels:
+        app: mainnet-grillchat
+      name: mainnet-grillchat
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mainnet-grillchat
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - image: <IMAGE>
+          imagePullPolicy: IfNotPresent
+          name: mainnet-grillchat
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: mainnet-grillchat-env
+            - secretRef:
+                name: mainnet-grillchat-secret
+          resources:
+            requests:
+              memory: '450Mi'
+              cpu: '10m'
+            limits:
+              memory: '1600Mi'
+              cpu: '1'
+          readinessProbe:
+            httpGet:
+              path: /c
+              port: 3000
+            failureThreshold: 3
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 20
+          livenessProbe:
+            httpGet:
+              path: /c
+              port: 3000
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 35
+
+      imagePullSecrets:
+        - name: dockerhub
+      restartPolicy: Always

@@ -1,9 +1,14 @@
 import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
-import { ConfigProvider, useConfigContext } from '@/providers/ConfigProvider'
+import {
+  ConfigProvider,
+  useConfigContext,
+} from '@/providers/config/ConfigProvider'
+import { getAugmentedGaId } from '@/providers/config/utils'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/services/provider'
@@ -11,7 +16,6 @@ import { initAllStores } from '@/stores/registry'
 import { useTransactions } from '@/stores/transactions'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
-import { getGaId } from '@/utils/env/client'
 import '@rainbow-me/rainbowkit/styles.css'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
@@ -21,6 +25,7 @@ import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
+import urlJoin from 'url-join'
 
 const PWAInstall = dynamic(() => import('@/components/PWAInstall'), {
   ssr: false,
@@ -50,7 +55,14 @@ export default function App(props: AppProps<AppCommonProps>) {
     : ''
 
   return (
-    <SessionProvider session={props.pageProps.session}>
+    <SessionProvider
+      basePath={
+        env.NEXT_PUBLIC_BASE_PATH
+          ? urlJoin(env.NEXT_PUBLIC_BASE_PATH, '/api/auth')
+          : undefined
+      }
+      session={props.pageProps.session}
+    >
       <ConfigProvider>
         <style jsx global>{`
           ${isInIframe
@@ -100,7 +112,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
           showOnShallow={false}
         />
         <HeadConfig {...head} />
-        <GoogleAnalytics trackPageViews gaMeasurementId={getGaId()} />
+        <GoogleAnalytics trackPageViews gaMeasurementId={getAugmentedGaId()} />
         <div className={cx('font-sans')}>
           <ErrorBoundary>
             <EvmProvider>

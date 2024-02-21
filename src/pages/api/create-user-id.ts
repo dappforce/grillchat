@@ -1,5 +1,5 @@
+import { env } from '@/env.mjs'
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { getUserIdSalt } from '@/utils/env/server'
 import { createHash } from 'crypto'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
@@ -21,7 +21,7 @@ export default handlerWrapper({
   handler: async (data, _, res) => {
     let userId: string
     try {
-      const userIdInput = `${data.address}-${getUserIdSalt() ?? ''}`
+      const userIdInput = `${data.address}-${env.USER_ID_SALT ?? ''}`
       userId = createHash('sha256').update(userIdInput).digest('hex')
     } catch (e: any) {
       return res.status(500).send({

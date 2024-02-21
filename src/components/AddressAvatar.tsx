@@ -18,7 +18,7 @@ import {
 import { ForceProfileSource } from './ProfilePreview'
 
 export const resolveEnsAvatarSrc = (ensName: string) =>
-  `https://metadata.ens.domains/mainnet/avatar/${ensName}`
+  `https://euc.li/${ensName}`
 
 export type AddressAvatarProps = ComponentProps<'div'> & {
   address: string

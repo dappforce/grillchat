@@ -1,11 +1,11 @@
-import { getLinkedChatIdsForHubId } from '@/constants/hubs'
+import { constantsConfig } from '@/constants/config'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
+import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
-import { getDatahubConfig } from '@/utils/env/client'
 import { removeUndefinedValues } from '@/utils/general'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
@@ -18,7 +18,7 @@ export async function prefetchChatPreviewsData(
   const res = await getPostIdsBySpaceIdQuery.fetchQuery(queryClient, hubId)
   const allChatIds = [
     ...(res?.postIds ?? []),
-    ...getLinkedChatIdsForHubId(hubId),
+    ...(constantsConfig.linkedChatsForHubId[hubId] ?? []),
   ]
 
   const [{ lastMessages, chats }] = await Promise.all([
@@ -49,7 +49,7 @@ export async function getChatPreviewsData(
   queryClient: QueryClient,
   chatIds: string[]
 ) {
-  const lastMessageGetter = !!getDatahubConfig()
+  const lastMessageGetter = isDatahubAvailable
     ? getLastMessagesFromDatahub
     : getLastMessages
   const [lastMessages, chats] = await Promise.all([

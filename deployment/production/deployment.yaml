@@ -32,12 +32,9 @@ spec:
           name: grillchat
           ports:
             - containerPort: 3000
-          env:
-            - name: REDIS_HOST
-              value: redis-master.default
-            - name: REDIS_PORT
-              value: '6379'
           envFrom:
+            - configMapRef:
+                name: grillchat-env
             - secretRef:
                 name: grillchat-secret
           resources:

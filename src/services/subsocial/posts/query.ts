@@ -1,11 +1,11 @@
-import { getLinkedChatIdsForHubId } from '@/constants/hubs'
+import { constantsConfig } from '@/constants/config'
+import { env } from '@/env.mjs'
 import { followedIdsStorage } from '@/stores/my-account'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import {
-  createSubsocialQuery,
   SubsocialQueryData,
+  createSubsocialQuery,
 } from '@/subsocial-query/subsocial/query'
-import { getHubIds } from '@/utils/env/client'
 import { gql } from 'graphql-request'
 import { POST_FRAGMENT } from '../squid/fragments'
 import {
@@ -112,9 +112,9 @@ async function getPostsByContent(search: string) {
   if (!search) return []
 
   const linkedPostIds = new Set<string>()
-  const hubIds = getHubIds()
+  const hubIds = env.NEXT_PUBLIC_SPACE_IDS
   hubIds.forEach((hubId) => {
-    const linkedChatIds = getLinkedChatIdsForHubId(hubId)
+    const linkedChatIds = constantsConfig.linkedChatsForHubId[hubId] ?? []
     linkedChatIds.forEach((chatId) => linkedPostIds.add(chatId))
   })
 
@@ -125,7 +125,7 @@ async function getPostsByContent(search: string) {
     document: GET_POSTS_BY_CONTENT,
     variables: {
       search,
-      spaceIds: getHubIds(),
+      spaceIds: env.NEXT_PUBLIC_SPACE_IDS,
       postIds: Array.from(linkedPostIds.values()),
     },
   })

@@ -7,10 +7,10 @@ import {
 import { getPostQuery } from '@/services/api/query'
 import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
+import { isDatahubAvailable } from '@/services/datahub/utils'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
-import { getDatahubConfig } from '@/utils/env/client'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { getChatPageLink } from '@/utils/links'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
@@ -250,10 +250,10 @@ export function useUpsertPost(
     config,
     {
       // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
-      supressSendingTxError: !!getDatahubConfig(),
+      supressSendingTxError: isDatahubAvailable,
       txCallbacks: {
         onSend: ({ data }) => {
-          if (getDatahubConfig()) return
+          if (isDatahubAvailable) return
 
           const { payload, action } = checkAction(data)
           if (action === 'update') {

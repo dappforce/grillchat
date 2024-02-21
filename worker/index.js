@@ -20,7 +20,7 @@ self.addEventListener('notificationclick', (event) => {
       urlToOpen += `/${spaceId}/${rootPostId}/${postId}`
     }
   } catch (e) {
-    console.log('Error in loading notification response:', e)
+    console.warn('Error in loading notification response:', e)
   } finally {
     // Update / clear the value for App Badge on notification click.
     event.waitUntil(navigator.clearAppBadge())
@@ -100,7 +100,7 @@ async function getUnreadCount(squidUrl) {
 
     return totalUnread
   } catch (e) {
-    console.log('Error fetching unreads in service worker', e)
+    console.warn('Error fetching unreads in service worker', e)
     return undefined
   }
 }

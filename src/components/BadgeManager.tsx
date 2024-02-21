@@ -1,8 +1,8 @@
 import { lastReadTimeLocalForage } from '@/components/chats/hooks/useLastReadMessageTimeFromStorage'
+import { env } from '@/env.mjs'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { followedIdsStorage, useMyMainAddress } from '@/stores/my-account'
-import { getSquidUrl } from '@/utils/env/client'
-import { gql, GraphQLClient } from 'graphql-request'
+import { GraphQLClient, gql } from 'graphql-request'
 import { useEffect } from 'react'
 
 export default function BadgeManager() {
@@ -31,7 +31,7 @@ async function syncBadge(address: string | null) {
 }
 
 async function getUnreadCount(address: string | null) {
-  const squidUrl = getSquidUrl()
+  const squidUrl = env.NEXT_PUBLIC_SQUID_URL
   if (!squidUrl) return 0
 
   let chatIdsToFetch = ['754', '7465']
@@ -78,7 +78,7 @@ async function getUnreadCount(address: string | null) {
 
     return totalUnread
   } catch (e) {
-    console.log('Error fetching unreads in badge manager', e)
+    console.warn('Error fetching unreads in badge manager', e)
     return undefined
   }
 }

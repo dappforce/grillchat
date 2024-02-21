@@ -1,5 +1,5 @@
+import { apiInstance } from '@/services/api/utils'
 import { createQuery, poolQuery } from '@/subsocial-query'
-import axios from 'axios'
 
 export const coingeckoTokenIds: Record<string, string> = {
   eth: 'ethereum',
@@ -20,7 +20,7 @@ export type Price = {
 export async function getPrices(tokenIds: string[]) {
   const requestedIds = tokenIds.filter((id) => !!id)
   if (requestedIds.length === 0) return []
-  const res = await axios.get(
+  const res = await apiInstance.get(
     '/api/prices?' + requestedIds.map((n) => `tokensIds=${n}`).join('&')
   )
 

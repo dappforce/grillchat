@@ -9,6 +9,7 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { useTransactions } from '@/stores/transactions'
 import { getCurrentUrlWithoutQuery } from '@/utils/links'
+import { estimatedWaitTime } from '@/utils/network'
 import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
@@ -111,7 +112,7 @@ export default function XLoginLoading({
     <div className='flex flex-col items-center gap-4'>
       <DynamicLoadedHamsterLoading />
       <span className='text-sm text-text-muted'>
-        It may take up to 15 seconds
+        It may take up to {estimatedWaitTime} seconds
       </span>
     </div>
   )

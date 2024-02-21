@@ -1,5 +1,6 @@
 import { CopyText } from '@/components/CopyText'
 import QrCode from '@/components/QrCode'
+import { env } from '@/env.mjs'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
@@ -15,6 +16,7 @@ function ShareSessionContent() {
 
   const shareSessionLink = urlJoin(
     getCurrentUrlOrigin(),
+    env.NEXT_PUBLIC_BASE_PATH,
     `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${encodedSecretKey}`
   )
 

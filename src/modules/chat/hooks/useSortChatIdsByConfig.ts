@@ -1,5 +1,5 @@
 import useMounted from '@/hooks/useMounted'
-import { useConfigContext } from '@/providers/ConfigProvider'
+import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { useMemo } from 'react'
 
 export default function useSortChatIdsByConfig(chatIds: string[]) {

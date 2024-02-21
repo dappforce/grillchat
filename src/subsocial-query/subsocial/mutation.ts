@@ -2,7 +2,7 @@ import { useTransactions } from '@/stores/transactions'
 import { generatePromiseQueue } from '@/utils/promise'
 import type { ApiPromise } from '@polkadot/api'
 import type { SubsocialApi, SubsocialIpfsApi } from '@subsocial/api'
-import { useMutation, UseMutationResult } from '@tanstack/react-query'
+import { UseMutationResult, useMutation } from '@tanstack/react-query'
 import { makeCombinedCallback } from '../base'
 import { getConnectionConfig, getGlobalTxCallbacks } from './config'
 import { getSubstrateHttpApi } from './connection'
@@ -304,7 +304,7 @@ async function getNonce(substrateApi: ApiPromise, address: string) {
 
           clearTimeout(timeoutId)
         } catch (err) {
-          console.log('Error getting nonce', err)
+          console.error('Error getting nonce', err)
           reject(new Error('Failed to get nonce'))
         }
       }

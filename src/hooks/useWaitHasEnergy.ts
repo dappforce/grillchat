@@ -1,15 +1,19 @@
 import { useMyAccount } from '@/stores/my-account'
+import { currentNetwork } from '@/utils/network'
 import { useCallback, useEffect, useRef } from 'react'
+import useWaitNewBlock from './useWaitNewBlock'
 import useWrapInRef from './useWrapInRef'
 
+const DEFAULT_TIMEOUT = currentNetwork === 'xsocial' ? 10_000 : 30_000
 export default function useWaitHasEnergy(
   isUsingConnectedWallet?: boolean,
-  timeout = 10_000
+  timeout = DEFAULT_TIMEOUT
 ) {
   const hasEnergyResolvers = useRef<(() => void)[]>([])
   const { address, energy, resubscribeEnergy } = useAccountSwitch(
     isUsingConnectedWallet
   )
+  const waitNewBlock = useWaitNewBlock()
   const energyRef = useWrapInRef(energy)
 
   const generateNewPromise = useCallback(() => {
@@ -30,10 +34,18 @@ export default function useWaitHasEnergy(
   }, [timeout, resubscribeEnergy])
 
   useEffect(() => {
-    if (!energy || energy <= 0) return
-    hasEnergyResolvers.current.forEach((resolve) => resolve())
-    hasEnergyResolvers.current = []
-  }, [energy, generateNewPromise])
+    if (!energy || energy <= 0 || hasEnergyResolvers.current.length === 0)
+      return
+    function resolveAllPending() {
+      hasEnergyResolvers.current.forEach((resolve) => resolve())
+      hasEnergyResolvers.current = []
+    }
+    if (currentNetwork === 'xsocial') {
+      resolveAllPending()
+    } else {
+      waitNewBlock().then(resolveAllPending)
+    }
+  }, [energy, generateNewPromise, waitNewBlock])
 
   useEffect(() => {
     return () => {

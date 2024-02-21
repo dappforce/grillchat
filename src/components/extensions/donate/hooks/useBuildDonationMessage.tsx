@@ -7,13 +7,13 @@ import { DonateProperies } from '@subsocial/api/types'
 import { parseUnits } from 'ethers'
 import { useAccount } from 'wagmi'
 import { BeforeMessageResult } from '../../common/CommonExtensionModal'
-import { useDonate, useGetBalance } from '../api/hooks'
 import { useSubstrateDonation } from '../DonateModal/donateForm/mutation'
 import {
   ChainListItem,
   DonateModalStep,
   TokenListItem,
 } from '../DonateModal/types'
+import { useDonate, useGetBalance } from '../api/hooks'
 
 type BuildBeforeSendParams = {
   setCurrentStep: (step: DonateModalStep) => void
@@ -26,11 +26,22 @@ type BeforeSendProps = {
   messageParams: SendMessageParams
 }
 
-export const useBuildEvmDontationMessage = ({
+export function useBuildDonationMessage(
+  props: BuildBeforeSendParams,
+  isEvmChain: boolean
+) {
+  const buildSubstrateMessage = useBuildSubstrateDonationMessage(props)
+  const buildEvmMessage = useBuildEvmDonationMessage(props)
+
+  if (isEvmChain) return buildEvmMessage
+  else return buildSubstrateMessage
+}
+
+export function useBuildEvmDonationMessage({
   setCurrentStep,
   selectedToken,
   selectedChain,
-}: BuildBeforeSendParams) => {
+}: BuildBeforeSendParams) {
   const { sendTransferTx } = useDonate(selectedToken.id, selectedChain.id)
   const { closeModal, initialData } = useExtensionModalState(
     'subsocial-donations'
@@ -71,11 +82,11 @@ export const useBuildEvmDontationMessage = ({
     })
 }
 
-export const useBuildSubstrateDontationMessage = ({
+export function useBuildSubstrateDonationMessage({
   setCurrentStep,
   selectedToken,
   selectedChain,
-}: BuildBeforeSendParams) => {
+}: BuildBeforeSendParams) {
   const { closeModal, initialData } = useExtensionModalState(
     'subsocial-donations'
   )

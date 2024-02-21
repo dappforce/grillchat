@@ -2,11 +2,12 @@ import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import { ERRORS } from '@/constants/error'
+import { env } from '@/env.mjs'
 import useAutofocus from '@/hooks/useAutofocus'
 import useLoginOption from '@/hooks/useLoginOption'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
-import { useConfigContext } from '@/providers/ConfigProvider'
+import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useSendOffchainMessage } from '@/services/datahub/posts/mutation'
 import {
@@ -23,7 +24,6 @@ import {
   useMyMainAddress,
 } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getOffchainPostingHubs } from '@/utils/env/client'
 import { LocalStorage } from '@/utils/storage'
 import dynamic from 'next/dynamic'
 import {
@@ -227,7 +227,8 @@ export default function ChatForm({
     hasSentMessageStorage.set('true')
 
     resetForm()
-    const isOffchainPosting = getOffchainPostingHubs().includes(hubId)
+    const isOffchainPosting =
+      env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(hubId)
     if (isOffchainPosting) {
       sendOffchainMessage({
         ...messageParams,

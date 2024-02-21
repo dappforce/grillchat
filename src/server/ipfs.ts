@@ -1,22 +1,15 @@
-import {
-  getCrustIpfsAuth,
-  getIpfsPinUrl,
-  getIpfsWriteUrl,
-} from '@/utils/env/server'
+import { env } from '@/env.mjs'
 import { SubsocialIpfsApi } from '@subsocial/api'
 
 export function getIpfsApi() {
-  const pinUrl = getIpfsPinUrl()
-  const writeUrl = getIpfsWriteUrl()
-
-  console.log('pinUrl', pinUrl)
-  console.log('writeUrl', writeUrl)
+  const pinUrl = env.IPFS_PIN_URL
+  const writeUrl = env.IPFS_WRITE_URL
 
   const props = pinUrl.includes('crust')
     ? { asLink: false, 'meta.gatewayId': 1 }
     : { asLink: true }
 
-  const headers = { authorization: `Bearer ${getCrustIpfsAuth()}` }
+  const headers = { authorization: `Bearer ${env.CRUST_IPFS_AUTH}` }
 
   const ipfs = new SubsocialIpfsApi({
     ipfsNodeUrl: writeUrl,

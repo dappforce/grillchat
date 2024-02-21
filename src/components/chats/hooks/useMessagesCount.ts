@@ -1,11 +1,10 @@
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
+import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
-import { getDatahubConfig } from '@/utils/env/client'
 
 export function useMessagesCount(chatId: string) {
-  const isDatahubEnabled = !!getDatahubConfig()
   const { data } = getPostMetadataQuery.useQuery(chatId, {
-    enabled: isDatahubEnabled,
+    enabled: isDatahubAvailable,
   })
   const messagesCount = data?.totalCommentsCount ?? 0
 
@@ -13,31 +12,30 @@ export function useMessagesCount(chatId: string) {
   const { data: commentIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
     chatId,
     {
-      enabled: !isDatahubEnabled,
+      enabled: !isDatahubAvailable,
     }
   )
 
-  if (isDatahubEnabled) {
+  if (isDatahubAvailable) {
     return messagesCount
   }
   return commentIds?.length ?? 0
 }
 
 export function useMessagesCounts(chatIds: string[]) {
-  const isDatahubEnabled = !!getDatahubConfig()
   const postMetadataQueries = getPostMetadataQuery.useQueries(chatIds, {
-    enabled: isDatahubEnabled,
+    enabled: isDatahubAvailable,
   })
 
   // need length, and only if no datahub
   const commentIdsQueries = getCommentIdsByPostIdFromChainQuery.useQueries(
     chatIds,
     {
-      enabled: !isDatahubEnabled,
+      enabled: !isDatahubAvailable,
     }
   )
 
-  if (isDatahubEnabled) {
+  if (isDatahubAvailable) {
     return postMetadataQueries.map(({ data }) => data?.totalCommentsCount ?? 0)
   }
   return commentIdsQueries.map(({ data }) => data?.length ?? 0)

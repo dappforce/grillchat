@@ -1,10 +1,10 @@
 import CommunityAddIcon from '@/assets/icons/community-add.svg'
 import Button from '@/components/Button'
+import Tabs, { TabsProps } from '@/components/Tabs'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
-import Tabs, { TabsProps } from '@/components/Tabs'
-import { PRIMARY_COMMUNITY_HUB_ID } from '@/constants/hubs'
+import { env } from '@/env.mjs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
@@ -15,7 +15,6 @@ import {
   useMyMainAddress,
 } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getMainHubId } from '@/utils/env/client'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -28,7 +27,9 @@ export type HubsPageProps = {
   hubsChatCount: { [id: string]: number }
 }
 
-const hotChatsHubId = getMainHubId()
+const hotChatsHubId = env.NEXT_PUBLIC_MAIN_SPACE_ID
+const communityHubId = env.NEXT_PUBLIC_COMMUNITY_HUB_ID
+
 const addressFromStorage = accountAddressStorage.get()
 
 export const homePageAdditionalTabs: {
@@ -179,7 +180,7 @@ export default function HubsPage(props: HubsPageProps) {
           withHashIntegration={false}
           tabsRightElement={
             isLoggedIn &&
-            PRIMARY_COMMUNITY_HUB_ID && (
+            communityHubId && (
               <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
                 <Button
                   size='xs'
@@ -206,11 +207,11 @@ export default function HubsPage(props: HubsPageProps) {
         />
       </SearchChannelsWrapper>
 
-      {PRIMARY_COMMUNITY_HUB_ID && (
+      {communityHubId && (
         <NewCommunityModal
           isOpen={isOpenNewCommunity}
           closeModal={() => setIsOpenNewCommunity(false)}
-          hubId={PRIMARY_COMMUNITY_HUB_ID}
+          hubId={communityHubId}
         />
       )}
     </DefaultLayout>

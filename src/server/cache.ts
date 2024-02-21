@@ -1,5 +1,21 @@
-import { getRedisConfig } from '@/utils/env/server'
+import { env } from '@/env.mjs'
 import Redis, { RedisOptions } from 'ioredis'
+
+export function getRedisConfig() {
+  const host = env.REDIS_HOST
+  const port = env.REDIS_PORT
+  const password = env.REDIS_PASSWORD
+
+  const parsedPort = parseInt(port)
+
+  if (!host || !port || isNaN(parsedPort) || !password) {
+    throw new Error(
+      'Redis configuration is not complete, need host, port, password'
+    )
+  }
+
+  return { host, port: parsedPort, password }
+}
 
 export function createRedisInstance() {
   try {

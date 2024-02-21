@@ -46,3 +46,13 @@ spec:
     - hosts:
         - grill.chat
       secretName: grill-ssl
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grillchat-env
+  namespace: sub-back
+data:
+  REDIS_HOST: 'redis-master.default'
+  REDIS_PORT: '6379'

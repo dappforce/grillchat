@@ -1,9 +1,9 @@
 import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
-import TextArea from '@/components/inputs/TextArea'
 import LinkText, { linkTextStyles } from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
+import TextArea from '@/components/inputs/TextArea'
 import useDebounce from '@/hooks/useDebounce'
 import { getNftQuery } from '@/services/api/query'
 import { useExtensionModalState } from '@/stores/extension'
@@ -55,7 +55,7 @@ export default function NftModal({
       const data = parseNftMarketplaceLink(debouncedLink)
       setParsedLinkData(data)
     } catch (err) {
-      console.log('Error parsing nft link', err)
+      console.error('Error parsing nft link', err)
       setNftLinkError(
         <span>
           😥 Sorry, we cannot parse this URL.{' '}

@@ -1,8 +1,9 @@
+import LinkText from '@/components/LinkText'
+import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
-import LinkText from '@/components/LinkText'
-import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
+import SuperLike from '@/components/content-staking/SuperLike'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -17,11 +18,12 @@ type DerivativesData = {
 }
 
 type MyMessageConfig = {
-  children?: 'top' | 'bottom'
-  checkMark?: 'outside' | 'inside'
+  children?: 'top' | 'bottom' | 'middle'
+  checkMark?: 'adaptive-inside'
 }
 type OthersMessageConfig = {
-  children?: 'bottom'
+  children?: 'bottom' | 'middle'
+  checkMark?: 'top' | 'bottom'
 }
 
 type CommonChatItemProps = ExtensionChatItemProps & {
@@ -34,10 +36,11 @@ type CommonChatItemProps = ExtensionChatItemProps & {
 
 const defaultMyMessageConfig: MyMessageConfig = {
   children: 'bottom',
-  checkMark: 'inside',
+  checkMark: 'adaptive-inside',
 }
 const defaultOthersMessageConfig: OthersMessageConfig = {
   children: 'bottom',
+  checkMark: 'bottom',
 }
 export default function CommonChatItem({
   myMessageConfig = defaultMyMessageConfig,
@@ -67,13 +70,18 @@ export default function CommonChatItem({
       ? children({ isMyMessage, relativeTime, isSent })
       : children
 
-  const checkMarkElement = (
-    <div
+  const otherMessageCheckMarkElement = (
+    <ChatRelativeTime
+      isUpdated={isUpdated}
+      createdAtTime={createdAtTime}
       className={cx(
-        'flex items-center gap-1 px-2.5 last:pb-1.5',
-        isMyMessage && 'self-end'
+        'text-xs text-text-muted',
+        isMyMessage && 'dark:text-text-muted-on-primary'
       )}
-    >
+    />
+  )
+  const myMessageCheckMarkElement = (className?: string) => (
+    <div className={cx('flex items-center gap-1 self-end', className)}>
       <ChatRelativeTime
         isUpdated={isUpdated}
         createdAtTime={createdAtTime}
@@ -108,12 +116,29 @@ export default function CommonChatItem({
               color={textColor}
               className={cx('mr-2 text-sm font-medium text-text-secondary')}
             />
-            <ChatRelativeTime
-              isUpdated={isUpdated}
-              createdAtTime={createdAtTime}
-              className='flex-shrink-0 text-xs text-text-muted'
-              style={{ color: textColor }}
-            />
+            {!isMyMessage &&
+              othersMessage.checkMark === 'top' &&
+              otherMessageCheckMarkElement}
+          </div>
+        )}
+
+        {/** Put on top of body because it will cause the p to not be last child and mess up the padding */}
+        {isMyMessage && myMessageConfig.checkMark === 'adaptive-inside' && (
+          <div
+            className={cx(
+              'absolute bottom-1 right-1.5 z-10 flex items-center gap-1 self-end rounded-full bg-background-primary-light px-1.5 py-0.5'
+            )}
+          >
+            {myMessageCheckMarkElement()}
+          </div>
+        )}
+        {!isMyMessage && othersMessage.checkMark === 'bottom' && (
+          <div
+            className={cx(
+              'absolute bottom-1 right-1.5 z-10 flex items-center gap-1 self-end rounded-full bg-background-light px-1.5 py-0.5'
+            )}
+          >
+            {otherMessageCheckMarkElement}
           </div>
         )}
 
@@ -122,7 +147,10 @@ export default function CommonChatItem({
         {inReplyTo && (
           <RepliedMessagePreview
             originalMessage={body ?? ''}
-            className='mx-2.5 my-1 first:mt-2.5'
+            className={cx(
+              'mx-2.5 my-1',
+              isMyMessage && myMessageConfig.children !== 'top' && 'mt-2.5'
+            )}
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
             textColor={textColor}
@@ -130,6 +158,11 @@ export default function CommonChatItem({
             hubId={hubId}
           />
         )}
+
+        {isMyMessage &&
+          myMessageConfig.children === 'middle' &&
+          childrenElement}
+        {!isMyMessage && othersMessage.children === 'middle' && childrenElement}
 
         {body && (
           <p
@@ -158,6 +191,11 @@ export default function CommonChatItem({
             >
               {body}
             </Linkify>
+            {!isMyMessage && othersMessage.checkMark === 'bottom' && (
+              <span className='pointer-events-none ml-3 select-none opacity-0'>
+                {otherMessageCheckMarkElement}
+              </span>
+            )}
           </p>
         )}
 
@@ -167,14 +205,12 @@ export default function CommonChatItem({
           myMessageConfig.children === 'bottom' &&
           childrenElement}
 
-        {isMyMessage &&
-          myMessageConfig.checkMark === 'inside' &&
-          checkMarkElement}
+        <SuperLike
+          withPostReward
+          postId={message.id}
+          className='mb-1.5 ml-2.5 mt-1 self-start'
+        />
       </div>
-
-      {isMyMessage &&
-        myMessageConfig.checkMark === 'outside' &&
-        checkMarkElement}
     </div>
   )
 }

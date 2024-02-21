@@ -7,10 +7,10 @@ import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { ApiStakedParams, ApiStakedResponse } from '@/pages/api/staked'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
-import axios from 'axios'
 import { useMemo } from 'react'
 import { SubsocialProfile } from '../subsocial/profiles/fetcher'
 import { getIdentities, getPosts, getProfiles } from './fetcher'
+import { apiInstance } from './utils'
 
 const getPost = poolQuery<string, PostData>({
   multiCall: async (postIds) => {
@@ -95,7 +95,7 @@ async function getNft(nft: ApiNftParams | null) {
   urlQuery.set('collectionId', nft.collectionId)
   urlQuery.set('nftId', nft.nftId)
 
-  const res = await axios.get('/api/nft?' + urlQuery.toString())
+  const res = await apiInstance.get('/api/nft?' + urlQuery.toString())
   const responseData = res.data as ApiNftResponse
   return responseData.data
 }
@@ -139,7 +139,7 @@ export const getIdentityQuery = createQuery({
 
 async function getCanUserDoDatahubAction(input: DatahubPostQueryInput) {
   const urlParams = new URLSearchParams(input)
-  const res = await axios.get('/api/datahub/post?' + urlParams.toString())
+  const res = await apiInstance.get('/api/datahub/post?' + urlParams.toString())
   return (res.data as ApiDatahubPostGetResponse).isAllowed
 }
 export const getCanUserDoDatahubActionQuery = createQuery({
@@ -149,7 +149,7 @@ export const getCanUserDoDatahubActionQuery = createQuery({
 
 async function getHasUserStaked(input: ApiStakedParams) {
   const urlParams = new URLSearchParams(input)
-  const res = await axios.get('/api/staked?' + urlParams.toString())
+  const res = await apiInstance.get('/api/staked?' + urlParams.toString())
   return (res.data as ApiStakedResponse).data
 }
 export const getHasUserStakedQuery = createQuery({

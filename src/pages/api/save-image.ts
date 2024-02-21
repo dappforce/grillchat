@@ -46,7 +46,7 @@ export default async function handler(
       .flatten({ background: '#ffffff' })
       .resize({
         fit: 'inside',
-        width: 1024,
+        width: 1600,
         height: 1024,
         withoutEnlargement: true,
       })
@@ -55,7 +55,7 @@ export default async function handler(
 
     cid = await saveAndPinImage(processedImage)
   } catch (e: any) {
-    console.log('Error saving image', e)
+    console.error('Error saving image', e)
     return res.status(500).send({
       message: 'Error saving image',
       success: false,

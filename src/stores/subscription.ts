@@ -1,6 +1,6 @@
 import { create } from './utils'
 
-type SubscriptionType = 'post' | 'identity'
+type SubscriptionType = 'post' | 'identity' | 'creator-staking'
 export type SubscriptionState = 'dynamic' | 'always-sub'
 type State = {
   subscriptionState: Record<SubscriptionType, SubscriptionState>
@@ -17,6 +17,7 @@ const INITIAL_STATE: State = {
   subscriptionState: {
     identity: 'dynamic',
     post: 'dynamic',
+    'creator-staking': 'dynamic',
   },
 }
 

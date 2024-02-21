@@ -1,5 +1,5 @@
-import { SUBSTRATE_URL } from '@/constants/subsocial'
+import { env } from '@/env.mjs'
 
 export function getExplorerUrl(blockHash: string | number) {
-  return `https://polkadot.js.org/apps/?rpc=${SUBSTRATE_URL}#/explorer/query/${blockHash}`
+  return `https://polkadot.js.org/apps/?rpc=${env.NEXT_PUBLIC_SUBSTRATE_WSS}#/explorer/query/${blockHash}`
 }

@@ -1,8 +1,8 @@
+import { env } from '@/env.mjs'
 import {
   getBlockedResources,
   getBlockedResourcesQuery,
 } from '@/services/datahub/moderation/query'
-import { getAppId } from '@/utils/env/client'
 import { QueryClient } from '@tanstack/react-query'
 
 export async function prefetchBlockedEntities(
@@ -15,7 +15,7 @@ export async function prefetchBlockedEntities(
       await getBlockedResources({
         spaceIds,
         postEntityIds: postIds,
-        appIds: [getAppId()],
+        appIds: [env.NEXT_PUBLIC_APP_ID],
       })
     blockedInSpaceIds.forEach((data) => {
       getBlockedResourcesQuery.setQueryData(
@@ -41,6 +41,6 @@ export async function prefetchBlockedEntities(
 
     return { blockedInSpaceIds, blockedInPostIds, blockedInAppIds }
   } catch (err) {
-    console.log('Error prefetching blocked entities', err)
+    console.error('Error prefetching blocked entities', err)
   }
 }

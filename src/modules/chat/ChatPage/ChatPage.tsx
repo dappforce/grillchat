@@ -12,16 +12,16 @@ import Spinner from '@/components/Spinner'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { useConfigContext } from '@/providers/ConfigProvider'
+import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
+import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getDatahubConfig } from '@/utils/env/client'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
   getChatPageLink,
@@ -79,12 +79,12 @@ export default function ChatPage({
   }, [isOpenCreateSuccessModal])
 
   const { data: chatMetadata } = getPostMetadataQuery.useQuery(chatId, {
-    enabled: !!getDatahubConfig(),
+    enabled: isDatahubAvailable,
   })
   const { data: commentIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
     chatId,
     {
-      enabled: !getDatahubConfig(),
+      enabled: !isDatahubAvailable,
     }
   )
 

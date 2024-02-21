@@ -3,9 +3,9 @@ import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useRevalidateChatPage, useSaveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import datahubMutation from '@/services/datahub/posts/mutation'
+import { isDatahubAvailable } from '@/services/datahub/utils'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { getDatahubConfig } from '@/utils/env/client'
 import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { KeyringPair } from '@polkadot/keyring/types'
@@ -124,7 +124,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     config,
     {
       // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
-      supressSendingTxError: !!getDatahubConfig(),
+      supressSendingTxError: isDatahubAvailable,
       txCallbacks: {
         onStart: ({ address, context, data }) => {
           preventWindowUnload()
@@ -165,7 +165,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           const isCreating = !messageIdToEdit && optimisticId
           const isUpdating = messageIdToEdit
 
-          if (!isAfterTxGenerated || !getDatahubConfig()) {
+          if (!isAfterTxGenerated || !isDatahubAvailable) {
             if (isCreating) {
               deleteOptimisticData({
                 chatId: data.chatId,

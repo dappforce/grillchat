@@ -1,11 +1,13 @@
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
-import MessageModal from '@/components/modals/MessageModal'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
+import MessageModal from '@/components/modals/MessageModal'
 import { getPostQuery } from '@/services/api/query'
+import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { cx } from '@/utils/class-names'
 import Linkify from 'linkify-react'
 import { useState } from 'react'
+import SuperLike from '../../../content-staking/SuperLike'
 import { ScrollToMessage } from '../../ChatList/hooks/useScrollToMessage'
 import ChatRelativeTime from '../ChatRelativeTime'
 import LinkPreview from '../LinkPreview'
@@ -25,8 +27,25 @@ export default function DefaultChatItem({
 }: DefaultChatItemProps) {
   const messageId = message.id
 
+  const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(messageId)
+  const showSuperLikeCount = (superLikeCount?.count ?? 0) > 0
+
   const { createdAtTime, ownerId, isUpdated } = message.struct
   const { inReplyTo, body, link, linkMetadata } = message.content || {}
+
+  const relativeTime = (
+    <>
+      <ChatRelativeTime
+        createdAtTime={createdAtTime}
+        isUpdated={isUpdated}
+        className={cx(
+          'text-xs text-text-muted [&:not(:last-child)]:mr-1',
+          isMyMessage && 'dark:text-text-muted-on-primary'
+        )}
+      />
+      {isMyMessage && <MessageStatusIndicator message={message} />}
+    </>
+  )
 
   return (
     <div className={cx('flex flex-col', props.className)}>
@@ -46,12 +65,7 @@ export default function DefaultChatItem({
               labelingData={{ chatId }}
               messageId={messageId}
               address={ownerId}
-              className={cx('mr-2 text-sm font-medium text-text-secondary')}
-            />
-            <ChatRelativeTime
-              createdAtTime={createdAtTime}
-              className='flex-shrink-0 text-xs text-text-muted'
-              isUpdated={isUpdated}
+              className={cx('text-sm font-medium text-text-secondary')}
             />
           </div>
         )}
@@ -104,26 +118,32 @@ export default function DefaultChatItem({
           >
             {body}
           </Linkify>
+          {!showSuperLikeCount && (
+            <span className='pointer-events-none ml-3 select-none opacity-0'>
+              {relativeTime}
+            </span>
+          )}
         </p>
+        <div
+          className={cx('absolute bottom-1 right-3 flex items-center self-end')}
+        >
+          {relativeTime}
+        </div>
         {link && linkMetadata?.title && (
           <LinkPreview
             renderNullIfLinkEmbedable
-            className={cx('my-1')}
+            className={cx('my-1 last:mb-6')}
             link={link}
             linkMetadata={linkMetadata}
             isMyMessage={isMyMessage}
           />
         )}
-        {isMyMessage && (
-          <div
-            className={cx('flex items-center gap-1', isMyMessage && 'self-end')}
-          >
-            <ChatRelativeTime
-              createdAtTime={createdAtTime}
-              isUpdated={isUpdated}
-              className='text-xs text-text-muted dark:text-text-muted-on-primary'
-            />
-            <MessageStatusIndicator message={message} />
+        {showSuperLikeCount && (
+          <div className={cx('mt-1 flex items-center')}>
+            <SuperLike withPostReward postId={message.id} />
+            <span className='pointer-events-none ml-4 select-none opacity-0'>
+              {relativeTime}
+            </span>
           </div>
         )}
       </div>

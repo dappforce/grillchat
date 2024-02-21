@@ -1,10 +1,14 @@
+import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import {
   coingeckoTokenIds,
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
+import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { useMyMainAddress } from '@/stores/my-account'
+import { useProfileModal } from '@/stores/profile-modal'
+import { getBalanceInDollars } from '@/utils/balance'
 import { cx, getCommonClassNames } from '@/utils/class-names'
-import { getBalanceInDollars } from '@/utils/formatBalance'
 import { DonateProperies } from '@subsocial/api/types'
 import { formatUnits } from 'ethers'
 import { HiArrowUpRight } from 'react-icons/hi2'
@@ -25,9 +29,17 @@ const DonatePreview = ({
   body,
   inReplyTo,
 }: DonatePreviewProps) => {
+  const { openModal } = useProfileModal()
+  const myAddress = useMyMainAddress()
+  const { refetch } = getBalancesQuery.useQuery(
+    { address: myAddress ?? '', chainName: 'subsocial' },
+    { enabled: false }
+  )
+
   if (!extensionProps) return null
 
-  const { token, amount, txHash, decimals, chain } = extensionProps
+  const { token, amount, txHash, decimals, chain, to } = extensionProps
+  const isMyAddress = myAddress === to
 
   const tokenId = coingeckoTokenIds[(token as string).toLowerCase()]
 
@@ -67,6 +79,19 @@ const DonatePreview = ({
           </LinkText>
         </div>
         <div className='text-sm'>≈ ${amountInDollars}</div>
+        {isMyAddress && (
+          <Button
+            variant='whiteOutline'
+            size='sm'
+            className='bg-white text-[#DA612B] hover:bg-transparent hover:text-white focus-visible:bg-transparent focus-visible:text-white'
+            onClick={() => {
+              refetch()
+              openModal({ defaultOpenState: 'withdraw-tokens' })
+            }}
+          >
+            Withdraw
+          </Button>
+        )}
       </div>
     </div>
   )
@@ -94,7 +119,7 @@ export default function DonateMessagePreview({
     <CommonChatItem
       message={message}
       scrollToMessage={scrollToMessage}
-      myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
+      myMessageConfig={{ children: 'bottom', checkMark: 'adaptive-inside' }}
       className={cx('relative flex flex-col overflow-hidden')}
       chatId={chatId}
       hubId={hubId}

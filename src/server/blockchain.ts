@@ -10,11 +10,11 @@ export function getTxSubDispatchErrorMessage(
     // for module errors, we have the section indexed, lookup
     const decoded = api.registry.findMetaError(error.asModule)
     const { docs, name, section } = decoded
-    console.log(`${section}.${name}: ${docs.join(' ')}`)
+    console.error(`${section}.${name}: ${docs.join(' ')}`)
     errorMsg = `${section}.${name}: ${docs.join(' ')}`
   } else {
     // Other, CannotLookup, BadOrigin, no extra info
-    console.log(error.toString())
+    console.error(error.toString())
     errorMsg = error.toString()
   }
   return errorMsg

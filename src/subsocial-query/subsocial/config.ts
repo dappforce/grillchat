@@ -1,4 +1,4 @@
-import { SUBSTRATE_HTTP_URL, SUBSTRATE_URL } from '@/constants/subsocial'
+import { env } from '@/env.mjs'
 import type { SubsocialApi } from '@subsocial/api'
 
 export interface SubsocialConnectionConfig {
@@ -11,8 +11,8 @@ export interface SubsocialConnectionConfig {
 
 // TODO: research better way to have this config set outside of this subsocial-query folder
 let config: SubsocialConnectionConfig = {
-  substrateUrl: SUBSTRATE_URL,
-  substrateHttpUrl: SUBSTRATE_HTTP_URL,
+  substrateUrl: env.NEXT_PUBLIC_SUBSTRATE_WSS,
+  substrateHttpUrl: env.NEXT_PUBLIC_SUBSTRATE_URL,
   ipfsNodeUrl: 'https://ipfs.subsocial.network',
   ipfsAdminNodeUrl: 'https://gw.crustfiles.app',
 }

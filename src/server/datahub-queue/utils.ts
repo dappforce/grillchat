@@ -1,9 +1,16 @@
 import { ERRORS } from '@/constants/error'
+import { env } from '@/env.mjs'
 import { getServerAccount } from '@/server/common'
 import { signDatahubPayload } from '@/services/datahub/utils'
-import { getDatahubQueueConfig } from '@/utils/env/server'
 import { SocialEventDataApiInput } from '@subsocial/data-hub-sdk'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
+
+function getDatahubQueueConfig() {
+  return {
+    url: env.DATAHUB_QUEUE_URL,
+    token: env.DATAHUB_QUEUE_TOKEN,
+  }
+}
 
 export function datahubQueueRequest<T, V extends Variables = Variables>(
   config: RequestOptions<V, T>
@@ -99,4 +106,15 @@ export const backendSigWrapper = async (input: SocialEventDataApiInput) => {
   signDatahubPayload(signer, input)
 
   return input
+}
+
+export function throwErrorIfNotProcessed(
+  data: { processed: boolean; message?: string | null },
+  defaultMessage?: string
+) {
+  if (!data.processed) {
+    throw new Error(
+      data.message ?? defaultMessage ?? 'Failed to process request'
+    )
+  }
 }

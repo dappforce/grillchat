@@ -68,10 +68,6 @@ export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
           eventSource: 'install_app',
         })
         installApp()
-        openModal({
-          defaultOpenState: 'telegram-notifications',
-          onBackClick: closeModal,
-        })
       },
     })
   }
@@ -109,6 +105,7 @@ export default function StayUpdatedModal({ ...props }: StayUpdatedModalProps) {
         <MenuList className='py-0' menus={menus} />
       </Modal>
       <EmailSubscriptionModal
+        onBackClick={() => setIsOpenEmailModal(false)}
         isOpen={isOpenEmailModal}
         closeModal={() => setIsOpenEmailModal(false)}
       />
