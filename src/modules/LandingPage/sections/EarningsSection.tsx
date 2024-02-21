@@ -23,18 +23,18 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
         </h3>
         <div className='grid grid-cols-2 gap-7'>
           <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
-            <span className='mb-2 text-xl text-[#FEEFFB]'>
+            <span className='mb-3 text-2xl text-[#FEEFFB]'>
               Earned by users and bloggers last month
             </span>
-            <span className='text-5xl font-bold'>1M+ SUB</span>
-            <span className='mt-4 text-xl'>≈ $10,234</span>
+            <span className='mb-1.5 text-5xl font-bold'>1M+ SUB</span>
+            <span className='text-xl text-[#D0D0D0]'>≈ $10,234</span>
           </div>
           <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
-            <span className='mb-2 text-xl text-[#FEEFFB]'>
+            <span className='mb-3 text-2xl text-[#FEEFFB]'>
               Earned by top users on a single post
             </span>
-            <span className='text-5xl font-bold'>1000+ SUB</span>
-            <span className='mt-4 text-xl'>≈ $11 per post</span>
+            <span className='mb-1.5 text-5xl font-bold'>1000+ SUB</span>
+            <span className='text-xl text-[#D0D0D0]'>≈ $11 per post</span>
           </div>
           <Image
             src={ActivitiesImage}
