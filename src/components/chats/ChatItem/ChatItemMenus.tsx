@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import MenuList from '@/components/MenuList'
 import Toast from '@/components/Toast'
 import LoginModal from '@/components/auth/LoginModal'
 import { useOpenDonateExtension } from '@/components/extensions/donate/hooks/useOpenDonateExtension'
@@ -6,14 +7,17 @@ import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
+import PopOver from '@/components/floating/PopOver'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
+import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useCanSendMessage } from '@/hooks/useCanSendMessage'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
+import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
@@ -23,6 +27,7 @@ import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
+import { currentNetwork, estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import { PostData } from '@subsocial/api/types'
@@ -33,10 +38,12 @@ import { BiGift } from 'react-icons/bi'
 import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FiLink } from 'react-icons/fi'
 import { HiChevronRight } from 'react-icons/hi2'
+import { IoDiamondOutline } from 'react-icons/io5'
 import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
 import urlJoin from 'url-join'
+import { SuperLikeWrapper } from '../../content-staking/SuperLike'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 
 export type ChatItemMenusProps = {
@@ -82,6 +89,8 @@ export default function ChatItemMenus({
   const setReplyTo = useMessageData((state) => state.setReplyTo)
   const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
 
+  const { mutate: createSuperLike } = useCreateSuperLike()
+
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { ownerId, dataType } = message?.struct || {}
 
@@ -106,6 +115,7 @@ export default function ChatItemMenus({
         onClick: () => {
           const chatPageLink = urlJoin(
             getCurrentUrlOrigin(),
+            env.NEXT_PUBLIC_BASE_PATH,
             getChatPageLink(router)
           )
           copyToClipboard(urlJoin(chatPageLink, messageId))
@@ -186,8 +196,46 @@ export default function ChatItemMenus({
     <>
       <FloatingMenus
         beforeMenus={
-          isOptimisticMessage &&
-          message && <MintingMessageNotice message={message} />
+          isOptimisticMessage
+            ? message && <MintingMessageNotice message={message} />
+            : currentNetwork === 'subsocial' && (
+                <SuperLikeWrapper postId={messageId} withPostReward={false}>
+                  {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
+                    if (hasILiked) return null
+                    const menuList = (
+                      <div className='relative w-full'>
+                        <MenuList
+                          size='sm'
+                          menus={[
+                            {
+                              icon: IoDiamondOutline,
+                              text: 'Like Message',
+                              disabled: isDisabled,
+                              onClick: handleClick,
+                            },
+                          ]}
+                        />
+                        <div className='absolute bottom-0 flex w-full flex-col'>
+                          <div className='mx-4 h-px bg-border-gray' />
+                        </div>
+                      </div>
+                    )
+                    return disabledCause ? (
+                      <PopOver
+                        triggerClassName='w-full'
+                        trigger={menuList}
+                        panelSize='sm'
+                        triggerOnHover
+                        placement='top'
+                      >
+                        <p>{disabledCause}</p>
+                      </PopOver>
+                    ) : (
+                      menuList
+                    )
+                  }}
+                </SuperLikeWrapper>
+              )
         }
         menus={menus}
         allowedPlacements={[
@@ -314,7 +362,7 @@ function MintingMessageNotice({ message }: { message: PostData }) {
         <p className='pt-2'>
           {isMoreThan10Mins
             ? 'It will be available as an off-chain message in 1 hour, and can then be replied to.'
-            : 'To interact with this message please wait until it is saved to the blockchain (≈ 15 sec).'}
+            : `To interact with this message please wait until it is saved to the blockchain (≈ ${estimatedWaitTime} sec).`}
         </p>
       </Transition>
     </div>

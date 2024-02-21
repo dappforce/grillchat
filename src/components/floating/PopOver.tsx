@@ -1,3 +1,4 @@
+import { HOVER_MENU_DELAY_OPT } from '@/constants/interaction'
 import useMounted from '@/hooks/useMounted'
 import { cx } from '@/utils/class-names'
 import {
@@ -110,6 +111,7 @@ export default function PopOver({
   const hover = useHover(context, {
     enabled: !!triggerOnHover,
     handleClose: safePolygon(),
+    delay: HOVER_MENU_DELAY_OPT,
   })
   const click = useClick(context, { enabled: !triggerOnHover })
   const dismiss = useDismiss(context)

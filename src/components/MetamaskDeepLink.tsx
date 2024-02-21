@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useMyAccount } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
@@ -27,6 +28,7 @@ export function useMetamaskDeepLink({
 
   const shareSessionUrl = urlJoin(
     getCurrentUrlOrigin(),
+    env.NEXT_PUBLIC_BASE_PATH,
     `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${encodedSecretKey}&returnUrl=${encodeURIComponent(
       customDeeplinkReturnUrl?.(router.asPath) ?? router.asPath
     )}`

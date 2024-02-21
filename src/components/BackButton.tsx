@@ -1,7 +1,9 @@
+import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useLocation } from '@/stores/location'
 import { getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
+import urlJoin from 'url-join'
 import Button, { ButtonProps } from './Button'
 
 export type BackButtonProps = ButtonProps & {
@@ -24,7 +26,10 @@ export default function BackButton({
 
   const hasBackToCurrentSession = !!prevUrl
 
-  const prevUrlPathname = prevUrl?.replace(getCurrentUrlOrigin(), '')
+  const prevUrlPathname = prevUrl?.replace(
+    urlJoin(getCurrentUrlOrigin(), env.NEXT_PUBLIC_BASE_PATH),
+    ''
+  )
   let isDefaultBackLinkSameAsPrevUrl = defaultBackLink === prevUrlPathname
   if (homeLinks.includes(defaultBackLink)) {
     isDefaultBackLinkSameAsPrevUrl = homeLinks.includes(prevUrlPathname ?? '')

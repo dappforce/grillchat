@@ -2,6 +2,7 @@ import SubwalletIcon from '@/assets/icons/subwallet.png'
 import Button from '@/components/Button'
 import PopOver from '@/components/floating/PopOver'
 import MenuList, { MenuListProps } from '@/components/MenuList'
+import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
@@ -120,6 +121,7 @@ export default function PolkadotConnectWalletContent({
     // Currently, if the url contains encoded / (%252F) inside the link, it will not open the link, instead open search engine
     const urlToGo = urlJoin(
       getCurrentUrlOrigin(),
+      env.NEXT_PUBLIC_BASE_PATH,
       `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${
         useMyAccount.getState().encodedSecretKey
       }`

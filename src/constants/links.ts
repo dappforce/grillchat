@@ -17,3 +17,5 @@ export function getTelegramNotificationsBotLink(command: string) {
 }
 
 export const SUBSOCIAL_IPFS_GATEWAY = 'https://ipfs.subsocial.network/'
+
+export const CONTENT_STAKING_LINK = 'https://sub.id/creators'
