@@ -7,6 +7,7 @@ import HeroSection from './sections/HeroSection'
 import HowItWorksSection from './sections/HowItWorksSection'
 import HowToEarnSection from './sections/HowToEarnSection'
 import JoinSection from './sections/JoinSection'
+import SubAvailableSection from './sections/SubAvailableSection'
 import SubTokenSection from './sections/SubTokenSection'
 import UsersSection from './sections/UsersSection'
 import VideoSection from './sections/VideoSection'
@@ -34,6 +35,8 @@ export default function LandingPage() {
       <EarlyBirdSection className='relative z-10' />
       <GrowSection className='relative z-0' />
       <JoinSection className='relative z-10' />
+
+      <SubAvailableSection className='relative z-10' />
       <div />
       <div />
       <div />
