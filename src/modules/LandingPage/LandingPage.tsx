@@ -19,7 +19,7 @@ export default function LandingPage() {
   return (
     <main
       className={cx(
-        'space-y-48 overflow-x-clip bg-[#0F172A] text-white',
+        'space-y-48 overflow-x-clip bg-[#0F172A] text-white [&>*]:px-4',
         landingFont.className
       )}
     >
