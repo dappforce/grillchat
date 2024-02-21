@@ -314,11 +314,12 @@ function ShouldStakeModal({ ...props }: ModalFunctionalityProps) {
   )
 }
 
+const CLIENT_CHECK_INTERVAL = 5 * 1000 * 60 // 5 minutes
 function useClientValidationOfPostSuperLike(createdAtTime: number) {
   const [, setState] = useState({})
 
   useEffect(() => {
-    const interval = setInterval(() => setState({}), 5 * 1000 * 60) // refresh every 5 minutes
+    const interval = setInterval(() => setState({}), CLIENT_CHECK_INTERVAL) // refresh every interval
     return () => clearInterval(interval)
   }, [])
 

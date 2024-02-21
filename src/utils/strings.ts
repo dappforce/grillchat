@@ -5,10 +5,6 @@ export function truncateText(text: string, length: number) {
   return truncate(text, { length })
 }
 
-export function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
-}
-
 export function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text)
 }

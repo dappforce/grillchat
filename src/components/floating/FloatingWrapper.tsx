@@ -1,10 +1,11 @@
+import { HOVER_MENU_DELAY_OPT } from '@/constants/interaction'
 import { isTouchDevice } from '@/utils/device'
 import {
   Alignment,
-  autoPlacement,
   FloatingPortal,
-  offset,
   Placement,
+  autoPlacement,
+  offset,
   safePolygon,
   useClientPoint,
   useDismiss,
@@ -73,10 +74,7 @@ export default function FloatingWrapper({
   const hover = useHover(context, {
     handleClose: safePolygon(),
     enabled: !isTouchDevice() && !!showOnHover,
-    delay: {
-      open: 300,
-      close: 0,
-    },
+    delay: HOVER_MENU_DELAY_OPT,
   })
   const dismiss = useDismiss(context, {
     bubbles: false,
