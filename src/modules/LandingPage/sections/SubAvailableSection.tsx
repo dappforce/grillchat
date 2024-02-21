@@ -10,6 +10,7 @@ import { ComponentProps } from 'react'
 export default function SubAvailableSection(props: ComponentProps<'section'>) {
   return (
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
+      <div className='absolute left-32 top-3/4 h-[731px] w-[731px] -translate-x-full -translate-y-full rounded-full bg-[#33A6BF94] blur-[478px]' />
       <div className='relative overflow-clip rounded-3xl p-10'>
         <Image
           src={TokenBg}

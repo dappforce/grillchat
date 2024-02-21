@@ -33,10 +33,10 @@ export default function LandingPage() {
       <HowItWorksSection className='relative z-0' />
 
       <EarlyBirdSection className='relative z-10' />
-      <GrowSection className='relative z-0' />
+      <GrowSection className='relative z-10' />
       <JoinSection className='relative z-10' />
 
-      <SubAvailableSection className='relative z-10' />
+      <SubAvailableSection className='relative z-0' />
       <div />
       <div />
       <div />
