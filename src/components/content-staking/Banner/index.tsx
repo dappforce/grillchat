@@ -1,10 +1,23 @@
 import StakingBannerImage from '@/assets/graphics/staking-banner-image.svg'
 import LinkText from '@/components/LinkText'
+import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
+import { useMyMainAddress } from '@/stores/my-account'
+import BN from 'bignumber.js'
 import BannerActionButtons from './BannerActionButtons'
+import StatsCards from './StakerDashboard'
 
 const BannerSection = () => {
+  const myAddress = useMyMainAddress()
+
+  const { data: ledger, isLoading: ledgerLoading } =
+    getBackerLedgerQuery.useQuery(myAddress || '')
+
+  const { locked } = ledger || {}
+
+  const isLockedTokens = !new BN(locked || '0').isZero()
+
   return (
-    <div className='flex flex-col items-center gap-6 rounded-[20px] bg-content-staking-banner p-4'>
+    <div className='flex flex-col items-center gap-6 rounded-[20px] bg-white/5 p-4'>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between gap-4'>
           <div className='font-unbounded text-4xl font-extrabold leading-none text-slate-50'>
@@ -19,7 +32,12 @@ const BannerSection = () => {
           engaging with good content on the network.
         </div>
       </div>
-      <StakingBannerImage className='w-full max-w-[490px]' />
+      {isLockedTokens ? (
+        <StatsCards />
+      ) : (
+        <StakingBannerImage className='w-full max-w-[490px]' />
+      )}
+
       <div>
         <BannerActionButtons />
       </div>

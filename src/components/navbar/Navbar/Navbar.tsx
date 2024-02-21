@@ -37,6 +37,7 @@ export type NavbarProps = ComponentProps<'div'> & {
     defaultBackLink: string
     forceUseDefaultBackLink?: boolean
   }
+  containerClassName?: string
   customContent?: (elements: {
     logoLink: ReactNode
     authComponent: ReactNode
@@ -48,6 +49,7 @@ export type NavbarProps = ComponentProps<'div'> & {
 export default function Navbar({
   customContent,
   backButtonProps,
+  containerClassName,
   ...props
 }: NavbarProps) {
   const { enableLoginButton = true } = useConfigContext()
@@ -171,7 +173,7 @@ export default function Navbar({
           props.className
         )}
       >
-        <Container className={cx('flex h-14 w-full', props.className)}>
+        <Container className={cx('flex h-14 w-full', props.className, containerClassName)}>
           {customContent ? (
             customContent({
               logoLink,

@@ -8,12 +8,6 @@ const mockedData = [
     tooltipText: 'blablabla',
   },
   {
-    title: 'Total SUB earned by creators',
-    desc: '1,754,834 SUB',
-    subDesc: '$17,563.34',
-    tooltipText: 'blablabla',
-  },
-  {
     title: 'Total participants',
     desc: '217',
     tooltipText: 'blablabla',
@@ -31,7 +25,7 @@ const EarnStats = () => {
           How much can I earn ?
         </LinkText>
       </div>
-      <div className='grid grid-cols-3 items-center gap-4'>
+      <div className='grid grid-cols-2 items-center gap-4'>
         {mockedData.map((props, i) => (
           <StatsCard key={i} {...props} />
         ))}

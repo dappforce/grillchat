@@ -6,10 +6,12 @@ const ContentStakingPage = () => {
   return (
     <DefaultLayout
       navbarProps={{
+        containerClassName: 'max-w-screen-medium',
         customContent: ({ logoLink, authComponent, notificationBell }) => {
           return (
             <Navbar
               className='w-full'
+              containerClassName='max-w-screen-medium'
               customContent={() => (
                 <div className='flex w-full items-center justify-between gap-4'>
                   {logoLink}
@@ -25,7 +27,7 @@ const ContentStakingPage = () => {
       }}
     >
       <div className='flex flex-col'>
-        <div className='relative mx-auto mt-4 w-full max-w-screen-md px-0'>
+        <div className='relative mx-auto mt-4 w-full max-w-screen-medium px-0'>
           <ContentStaking />
         </div>
       </div>

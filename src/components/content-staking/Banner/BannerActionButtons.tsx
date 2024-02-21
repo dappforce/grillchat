@@ -33,8 +33,6 @@ const BannerActionButtons = () => {
 
   const isLockedTokens = !new BN(locked || '0').isZero()
 
-  console.log(backerLedger)
-
   const text = !haveSub
     ? 'To start earning from Content Staking, you first need to get some SUB:'
     : 'To start earning from Content Staking, you need to lock at least 2,000 SUB:'
