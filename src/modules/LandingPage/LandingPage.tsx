@@ -1,5 +1,6 @@
 import { landingFont } from '@/fonts'
 import { cx } from '@/utils/class-names'
+import EarlyBirdSection from './sections/EarlyBirdSection'
 import EarningsSection from './sections/EarningsSection'
 import HeroSection from './sections/HeroSection'
 import HowItWorksSection from './sections/HowItWorksSection'
@@ -28,6 +29,7 @@ export default function LandingPage() {
 
       <HowToEarnSection className='relative z-10' />
       <HowItWorksSection className='relative z-0' />
+      <EarlyBirdSection className='relative z-0' />
       <div />
       <div />
       <div />
