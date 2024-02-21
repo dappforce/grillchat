@@ -8,6 +8,7 @@ import HeroSection from './sections/HeroSection'
 import HowItWorksSection from './sections/HowItWorksSection'
 import HowToEarnSection from './sections/HowToEarnSection'
 import JoinSection from './sections/JoinSection'
+import QuestionsSection from './sections/QuestionsSection'
 import SubAvailableSection from './sections/SubAvailableSection'
 import SubTokenSection from './sections/SubTokenSection'
 import UsersSection from './sections/UsersSection'
@@ -38,7 +39,8 @@ export default function LandingPage() {
       <JoinSection className='relative z-10' />
 
       <SubAvailableSection className='relative z-0' />
-      <CommunitySection className='relative z-0' />
+      <CommunitySection className='relative z-10' />
+      <QuestionsSection className='relative z-0' />
       <div />
       <div />
       <div />

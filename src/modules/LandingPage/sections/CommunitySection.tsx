@@ -11,7 +11,7 @@ import { ComponentProps } from 'react'
 export default function CommunitySection(props: ComponentProps<'section'>) {
   return (
     <section className={cx('mx-auto max-w-6xl', props.className)}>
-      <h3 className='mb-10 text-5xl font-bold'>
+      <h3 className='mb-10 text-center text-5xl font-bold'>
         What Our Community Says About Grill.so
       </h3>
       <div className='grid grid-cols-[2fr_3fr] gap-7'>
