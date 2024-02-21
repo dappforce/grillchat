@@ -12,6 +12,7 @@ export default function VideoSection(props: ComponentProps<'section'>) {
         className='absolute -left-16 top-64 h-56 w-56 rotate-[18deg] opacity-60 blur-[2px]'
       />
       <div className={cx('relative mx-auto max-w-6xl')}>
+        <div className='absolute -bottom-12 right-0 h-[731px] w-[731px] translate-x-3/4 translate-y-1/2 rounded-full bg-[#D034E9A6] blur-[478px]' />
         <div className='absolute -top-20 left-0 h-[731px] w-[731px] -translate-x-1/2 bg-[#4F46E5C4] blur-[478px]' />
         <div className='relative flex flex-col items-center text-center'>
           <h3 className='mb-4 text-5xl font-bold'>How To Start Earning?</h3>

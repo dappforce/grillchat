@@ -21,17 +21,19 @@ export default function LandingPage() {
     >
       <HeroSection />
 
-      <UsersSection className='relative z-10' />
-      <EarningsSection className='relative z-0' />
+      <UsersSection className='relative z-20' />
+      <EarningsSection className='relative z-10' />
 
-      <VideoSection className='relative z-10' />
-      <JoinSection className='relative z-0' />
+      <VideoSection className='relative z-0' />
+      <JoinSection className='relative z-10' />
       <SubTokenSection className='relative z-10' />
 
       <HowToEarnSection className='relative z-10' />
       <HowItWorksSection className='relative z-0' />
-      <EarlyBirdSection className='relative z-0' />
+
+      <EarlyBirdSection className='relative z-10' />
       <GrowSection className='relative z-0' />
+      <JoinSection className='relative z-10' />
       <div />
       <div />
       <div />

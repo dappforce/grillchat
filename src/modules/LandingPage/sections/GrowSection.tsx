@@ -11,6 +11,8 @@ export default function GrowSection(props: ComponentProps<'section'>) {
       {...props}
       className={cx('relative mx-auto max-w-6xl', props.className)}
     >
+      <div className='absolute right-28 top-0 h-[731px] w-[731px] -translate-y-1/2 translate-x-full rounded-full bg-[#48AEF861] blur-[478px]' />
+      <div className='absolute bottom-0 left-28 h-[731px] w-[731px] -translate-x-full translate-y-full rounded-full bg-[#33A6BF94] blur-[478px]' />
       <div className='flex flex-col gap-10'>
         <h3 className='relative text-center text-5xl font-bold leading-none'>
           <HighlightedText size='sm' rotate={3}>
@@ -54,6 +56,16 @@ export default function GrowSection(props: ComponentProps<'section'>) {
             <span className='mb-1.5 text-5xl font-bold'>10,627</span>
             <span className='text-xl text-[#D0D0D0]'>22,691 all time</span>
           </div>
+        </div>
+        <div className='flex flex-col gap-4'>
+          <span className='text-3xl font-bold'>
+            The easiest way in the market to monetize your blogging is on Grill
+          </span>
+          <span className='text-2xl text-[#FEEFFB]'>
+            Other social media do not give effective monetization of your
+            audience’s engagement, but we do! Invite them to interact with your
+            content on Grill.so, and get rewards for each like!
+          </span>
         </div>
       </div>
     </section>
