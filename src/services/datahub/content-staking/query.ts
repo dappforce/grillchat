@@ -80,38 +80,42 @@ type AddressLikeCountToPost = {
   count: number
   address: string
 }
-// This query is can only check one address at a time, this is currently not a problem because this query will mostly be used to fetch the like count of the current user
-// If there will be other cases, this query should be updated to accept multiple addresses
 const getAddressLikeCountToPosts = poolQuery<
   { postId: string; address: string },
   AddressLikeCountToPost
 >({
   multiCall: async (params) => {
     if (!params.length) return []
-    const address = params[0].address
-    const postIds = params.map((param) => param.postId)
-
-    const res = await datahubQueryRequest<
-      GetAddressLikeCountToPostsQuery,
-      GetAddressLikeCountToPostsQueryVariables
-    >({
-      document: GET_ADDRESS_LIKE_COUNT_TO_POSTS,
-      variables: { postIds, address },
+    const addressesToPostIdsMap = new Map<string, string[]>()
+    params.forEach((param) => {
+      const postIds = addressesToPostIdsMap.get(param.address) || []
+      postIds.push(param.postId)
+      addressesToPostIdsMap.set(param.address, postIds)
     })
 
-    const resultMap = new Map<string, AddressLikeCountToPost>()
-    res.activeStakingSuperLikeCountsByStaker.forEach((item) => {
-      if (!item.persistentPostId) return
-      resultMap.set(item.persistentPostId, {
-        postId: item.persistentPostId,
-        count: item.count,
-        address,
+    const promises: Promise<AddressLikeCountToPost[]>[] = []
+    async function fetchAddressLikeCount(address: string, postIds: string[]) {
+      const addressResults = await datahubQueryRequest<
+        GetAddressLikeCountToPostsQuery,
+        GetAddressLikeCountToPostsQueryVariables
+      >({
+        document: GET_ADDRESS_LIKE_COUNT_TO_POSTS,
+        variables: { postIds, address },
       })
+      return addressResults.activeStakingSuperLikeCountsByStaker.map(
+        (item) => ({
+          postId: item.persistentPostId || '',
+          count: item.count,
+          address,
+        })
+      )
+    }
+    addressesToPostIdsMap.forEach((postIds, address) => {
+      promises.push(fetchAddressLikeCount(address, postIds))
     })
 
-    return postIds.map(
-      (postId) => resultMap.get(postId) ?? { postId, count: 0, address }
-    )
+    const results = await Promise.all(promises)
+    return results.flat()
   },
   resultMapper: {
     paramToKey: (param) => `${param.postId}-${param.address}`,
