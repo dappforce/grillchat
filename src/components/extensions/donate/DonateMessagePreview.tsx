@@ -7,8 +7,8 @@ import {
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
+import { getBalanceInDollars } from '@/utils/balance'
 import { cx, getCommonClassNames } from '@/utils/class-names'
-import { getBalanceInDollars } from '@/utils/formatBalance'
 import { DonateProperies } from '@subsocial/api/types'
 import { formatUnits } from 'ethers'
 import { HiArrowUpRight } from 'react-icons/hi2'
@@ -119,7 +119,7 @@ export default function DonateMessagePreview({
     <CommonChatItem
       message={message}
       scrollToMessage={scrollToMessage}
-      myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
+      myMessageConfig={{ children: 'bottom', checkMark: 'adaptive-inside' }}
       className={cx('relative flex flex-col overflow-hidden')}
       chatId={chatId}
       hubId={hubId}

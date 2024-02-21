@@ -1,12 +1,13 @@
 import { ActionCardProps } from '@/components/ActionCard'
-import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
-import UpsertChatModal from '@/components/community/UpsertChatModal'
-import ModerationInfoModal from '@/components/moderation/ModerationInfoModal'
 import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
+import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
+import UpsertChatModal from '@/components/community/UpsertChatModal'
+import ModerationInfoModal from '@/components/moderation/ModerationInfoModal'
 import { isCommunityHubId } from '@/constants/config'
+import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
@@ -71,7 +72,11 @@ export default function AboutChatModal({
   if (!content) return null
 
   const hubId = chat.struct.spaceId
-  const chatUrl = urlJoin(getCurrentUrlOrigin(), getChatPageLink(router))
+  const chatUrl = urlJoin(
+    getCurrentUrlOrigin(),
+    env.NEXT_PUBLIC_BASE_PATH,
+    getChatPageLink(router)
+  )
   const chatOwner = chat.struct.ownerId
   const isChatInsideCommunityHub = isCommunityHubId(hubId)
 

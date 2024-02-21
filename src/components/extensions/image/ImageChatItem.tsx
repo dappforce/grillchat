@@ -19,11 +19,12 @@ export default function ImageChatItem(props: ExtensionChatItemProps) {
   return (
     <CommonChatItem
       {...props}
-      myMessageConfig={{ children: 'bottom', checkMark: 'outside' }}
+      othersMessage={{ children: 'middle', checkMark: 'bottom' }}
+      myMessageConfig={{ children: 'middle', checkMark: 'adaptive-inside' }}
       className='max-w-xs'
     >
       {() => (
-        <div className='flex flex-col [&:not(:first-child)]:mt-1'>
+        <div className='flex flex-col [&:not(:first-child)]:mt-1 [&:not(:last-child)]:mb-1'>
           <ClickableMedia
             src={imageProperties.image}
             alt=''

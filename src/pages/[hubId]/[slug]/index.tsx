@@ -8,6 +8,7 @@ import { getPricesFromCache } from '@/pages/api/prices'
 import { getProfilesServer } from '@/pages/api/profiles'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery, getProfileQuery } from '@/services/api/query'
+import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
@@ -51,15 +52,15 @@ async function getChatsData(client: QueryClient, chatId: string) {
   const ownersSet = new Set(owners)
   const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)
 
-  const prices = await getPricesFromCache(Object.values(coingeckoTokenIds))
-
-  const [accountsDataPromise, profilesPromise] = await Promise.allSettled([
-    getAccountsDataFromCache(chatPageOwnerIds, 'GET'),
-    getProfilesServer(chatPageOwnerIds),
-    ...chatPageOwnerIds.map((ownerId) =>
-      getLinkedIdentityQuery.fetchQuery(client, ownerId)
-    ),
-  ] as const)
+  const [accountsDataPromise, profilesPromise, prices] =
+    await Promise.allSettled([
+      getAccountsDataFromCache(chatPageOwnerIds, 'GET'),
+      getProfilesServer(chatPageOwnerIds),
+      getPricesFromCache(Object.values(coingeckoTokenIds)),
+      ...chatPageOwnerIds.map((ownerId) =>
+        getLinkedIdentityQuery.fetchQuery(client, ownerId)
+      ),
+    ] as const)
   if (accountsDataPromise.status === 'fulfilled') {
     accountsDataPromise.value.forEach((accountAddresses) => {
       getAccountDataQuery.setQueryData(
@@ -82,7 +83,7 @@ async function getChatsData(client: QueryClient, chatId: string) {
   return {
     messages,
     messageIds,
-    prices,
+    prices: prices.status === 'fulfilled' ? prices.value : [],
   }
 }
 
@@ -99,12 +100,21 @@ async function getMessageIdsFromDatahub(client: QueryClient, chatId: string) {
       chatId
     )
   getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(client, chatId)
-  const messages = await getPostsServer(res.data)
-  messages.forEach((message) => {
-    getPostQuery.setQueryData(client, message.id, message)
-  })
 
-  return { messageIds: res.data, messages }
+  const [messages, superlikes] = await Promise.allSettled([
+    getPostsServer(res.data),
+    getSuperLikeCountQuery.fetchQueries(client, res.data),
+  ] as const)
+  if (messages.status === 'fulfilled') {
+    messages.value.forEach((message) => {
+      getPostQuery.setQueryData(client, message.id, message)
+    })
+  }
+
+  return {
+    messageIds: res.data,
+    messages: messages.status === 'fulfilled' ? messages.value : [],
+  }
 }
 async function getMessageIdsFromChain(client: QueryClient, chatId: string) {
   const messageIds = await getCommentIdsByPostIdFromChainQuery.fetchQuery(

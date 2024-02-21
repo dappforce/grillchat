@@ -1,10 +1,10 @@
 import { useMyAccount } from '@/stores/my-account'
-import { getNetwork } from '@/utils/network'
+import { currentNetwork } from '@/utils/network'
 import { useCallback, useEffect, useRef } from 'react'
 import useWaitNewBlock from './useWaitNewBlock'
 import useWrapInRef from './useWrapInRef'
 
-const DEFAULT_TIMEOUT = getNetwork() === 'xsocial' ? 10_000 : 30_000
+const DEFAULT_TIMEOUT = currentNetwork === 'xsocial' ? 10_000 : 30_000
 export default function useWaitHasEnergy(
   isUsingConnectedWallet?: boolean,
   timeout = DEFAULT_TIMEOUT
@@ -40,7 +40,7 @@ export default function useWaitHasEnergy(
       hasEnergyResolvers.current.forEach((resolve) => resolve())
       hasEnergyResolvers.current = []
     }
-    if (getNetwork() === 'xsocial') {
+    if (currentNetwork === 'xsocial') {
       resolveAllPending()
     } else {
       waitNewBlock().then(resolveAllPending)

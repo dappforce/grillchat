@@ -1,5 +1,5 @@
-import { getNetwork } from '@/utils/network'
+import { currentNetwork } from '@/utils/network'
 
 export function getEvmPalletName() {
-  return getNetwork() === 'xsocial' ? 'evmAccounts' : 'evmAddresses'
+  return currentNetwork === 'xsocial' ? 'evmAccounts' : 'evmAddresses'
 }

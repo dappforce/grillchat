@@ -916,6 +916,7 @@ export type RankedAddressWithDetails = {
 
 export type RankedPostIdWithDetails = {
   __typename?: 'RankedPostIdWithDetails'
+  ownerAddress?: Maybe<Scalars['String']['output']>
   persistentPostId?: Maybe<Scalars['String']['output']>
   postId: Scalars['String']['output']
   rank: Scalars['Int']['output']
@@ -1194,6 +1195,91 @@ export type UpdateOrganizationInput = {
   name?: InputMaybe<Scalars['String']['input']>
 }
 
+export type GetSuperLikeCountsQueryVariables = Exact<{
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetSuperLikeCountsQuery = {
+  __typename?: 'Query'
+  activeStakingSuperLikeCountsByPost: Array<{
+    __typename?: 'SuperLikeCountsByPostResponse'
+    persistentPostId?: string | null
+    count: number
+  }>
+}
+
+export type GetAddressLikeCountToPostsQueryVariables = Exact<{
+  address: Scalars['String']['input']
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetAddressLikeCountToPostsQuery = {
+  __typename?: 'Query'
+  activeStakingSuperLikeCountsByStaker: Array<{
+    __typename?: 'SuperLikeCountsByStakerResponse'
+    persistentPostId?: string | null
+    count: number
+  }>
+}
+
+export type GetCanPostsSuperLikedQueryVariables = Exact<{
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetCanPostsSuperLikedQuery = {
+  __typename?: 'Query'
+  activeStakingCanDoSuperLikeByPost: Array<{
+    __typename?: 'CanDoSuperLikeByPostsResponseDto'
+    persistentPostId: string
+    validByCreationDate: boolean
+    validByCreatorMinStake: boolean
+    validByLowValue: boolean
+  }>
+}
+
+export type GetPostRewardsQueryVariables = Exact<{
+  postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetPostRewardsQuery = {
+  __typename?: 'Query'
+  activeStakingRewardsByPosts: Array<{
+    __typename?: 'RewardsByPostsResponseDto'
+    persistentPostId?: string | null
+    rewardTotal: string
+    draftRewardTotal: string
+    rewardsBySource?: {
+      __typename?: 'PostRewardsBySourceResponseDto'
+      fromDirectSuperLikes?: string | null
+      fromCommentSuperLikes?: string | null
+      fromShareSuperLikes?: string | null
+    } | null
+    draftRewardsBySource?: {
+      __typename?: 'PostRewardsBySourceResponseDto'
+      fromDirectSuperLikes?: string | null
+      fromCommentSuperLikes?: string | null
+      fromShareSuperLikes?: string | null
+    } | null
+  }>
+}
+
+export type SubscribeSuperLikeSubscriptionVariables = Exact<{
+  [key: string]: never
+}>
+
+export type SubscribeSuperLikeSubscription = {
+  __typename?: 'Subscription'
+  activeStakingSuperLike: {
+    __typename?: 'SuperLikeSubscriptionPayload'
+    event: DataHubSubscriptionEventEnum
+    entity: {
+      __typename?: 'ActiveStakingSuperLike'
+      staker: { __typename?: 'Account'; id: string }
+      post: { __typename?: 'Post'; persistentId?: string | null }
+    }
+  }
+}
+
 export type GetLinkedIdentitiesQueryVariables = Exact<{
   substrateAddress: Scalars['String']['input']
 }>
@@ -1418,7 +1504,6 @@ export type DatahubPostFragmentFragment = {
   canonical?: string | null
   tagsOriginal?: string | null
   followersCount?: number | null
-  activeStakingSuperLikesCount?: number | null
   inReplyToKind?: InReplyToKind | null
   createdByAccount: { __typename?: 'Account'; id: string }
   ownedByAccount: { __typename?: 'Account'; id: string }
@@ -1494,7 +1579,6 @@ export type GetPostsQuery = {
       canonical?: string | null
       tagsOriginal?: string | null
       followersCount?: number | null
-      activeStakingSuperLikesCount?: number | null
       inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -1574,7 +1658,6 @@ export type GetOptimisticPostsQuery = {
       canonical?: string | null
       tagsOriginal?: string | null
       followersCount?: number | null
-      activeStakingSuperLikesCount?: number | null
       inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -1714,7 +1797,6 @@ export const DatahubPostFragment = gql`
     canonical
     tagsOriginal
     followersCount
-    activeStakingSuperLikesCount
     ownedByAccount {
       id
     }
@@ -1763,6 +1845,68 @@ export const DatahubPostFragment = gql`
       pinnedResources {
         post {
           id
+          persistentId
+        }
+      }
+    }
+  }
+`
+export const GetSuperLikeCounts = gql`
+  query GetSuperLikeCounts($postIds: [String!]!) {
+    activeStakingSuperLikeCountsByPost(args: { postPersistentIds: $postIds }) {
+      persistentPostId
+      count
+    }
+  }
+`
+export const GetAddressLikeCountToPosts = gql`
+  query GetAddressLikeCountToPosts($address: String!, $postIds: [String!]!) {
+    activeStakingSuperLikeCountsByStaker(
+      args: { postPersistentIds: $postIds, address: $address }
+    ) {
+      persistentPostId
+      count
+    }
+  }
+`
+export const GetCanPostsSuperLiked = gql`
+  query GetCanPostsSuperLiked($postIds: [String!]!) {
+    activeStakingCanDoSuperLikeByPost(args: { postPersistentIds: $postIds }) {
+      persistentPostId
+      validByCreationDate
+      validByCreatorMinStake
+      validByLowValue
+    }
+  }
+`
+export const GetPostRewards = gql`
+  query GetPostRewards($postIds: [String!]!) {
+    activeStakingRewardsByPosts(args: { postPersistentIds: $postIds }) {
+      persistentPostId
+      rewardTotal
+      draftRewardTotal
+      rewardsBySource {
+        fromDirectSuperLikes
+        fromCommentSuperLikes
+        fromShareSuperLikes
+      }
+      draftRewardsBySource {
+        fromDirectSuperLikes
+        fromCommentSuperLikes
+        fromShareSuperLikes
+      }
+    }
+  }
+`
+export const SubscribeSuperLike = gql`
+  subscription SubscribeSuperLike {
+    activeStakingSuperLike {
+      event
+      entity {
+        staker {
+          id
+        }
+        post {
           persistentId
         }
       }
