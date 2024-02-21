@@ -19,36 +19,40 @@ export default function HowItWorksSection(props: ComponentProps<'section'>) {
       <div className='relative flex flex-col gap-10'>
         <h3 className='text-center text-5xl font-bold'>How Does It Work?</h3>
         <div className='grid grid-cols-4 gap-5'>
-          <div className='rounded-3xl bg-white/10 p-6 pb-8 pt-10'>
+          <div className='flex flex-col rounded-3xl bg-white/10 p-6 pb-8 pt-10'>
             <div className='mb-8 flex items-center justify-center'>
               <One className='text-[100px]' />
             </div>
+            <span className='mb-2 text-2xl font-bold'>Stake SUB</span>
             <p className='text-xl text-[#FEEFFB]'>
-              Every user who stakes at least 2000 SUB can like posts and
-              comments
+              Every user who stakes at least 2000 SUB can monetize their social
+              activity
             </p>
           </div>
-          <div className='rounded-3xl bg-white/10 p-6 pt-10'>
+          <div className='flex flex-col rounded-3xl bg-white/10 p-6 pt-10'>
             <div className='mb-8 flex items-center justify-center'>
               <Two className='text-[100px]' />
             </div>
+            <span className='mb-2 text-2xl font-bold'>Like to Earn</span>
             <p className='text-xl text-[#FEEFFB]'>
               When you like someone’s content, you earn extra rewards in SUB
               tokens
             </p>
           </div>
-          <div className='rounded-3xl bg-white/10 p-6 pt-10'>
+          <div className='flex flex-col rounded-3xl bg-white/10 p-6 pt-10'>
             <div className='mb-8 flex items-center justify-center'>
               <Three className='text-[100px]' />
             </div>
+            <span className='mb-2 text-2xl font-bold'>Post to Earn</span>
             <p className='text-xl text-[#FEEFFB]'>
               When someone likes your post or comment, you receive a reward
             </p>
           </div>
-          <div className='rounded-3xl bg-white/10 p-6 pt-10'>
+          <div className='flex flex-col rounded-3xl bg-white/10 p-6 pt-10'>
             <div className='mb-8 flex items-center justify-center'>
               <Four className='text-[100px]' />
             </div>
+            <span className='mb-2 text-2xl font-bold'>Even More!</span>
             <p className='text-xl text-[#FEEFFB]'>
               When someone likes a comment under your post, you and the
               comment’s author both receive a reward in the ratio of 30% to 70%
