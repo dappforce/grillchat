@@ -21,6 +21,7 @@ import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
@@ -43,17 +44,6 @@ export type AppCommonProps = {
 }
 
 export default function App(props: AppProps<AppCommonProps>) {
-  const isInIframe = useIsInIframe()
-
-  const scrollbarSelector = isInIframe ? 'body' : 'html'
-  const scrollbarStyling = props.pageProps.alwaysShowScrollbarOffset
-    ? `
-      ${scrollbarSelector} {
-        overflow-y: scroll;
-      }
-    `
-    : ''
-
   return (
     <SessionProvider
       basePath={
@@ -64,25 +54,60 @@ export default function App(props: AppProps<AppCommonProps>) {
       session={props.pageProps.session}
     >
       <ConfigProvider>
-        <style jsx global>{`
-          ${isInIframe
-            ? // Fix issue with iframe height not calculated correctly in iframe
-              `
-            html,
-            body {
-              height: 100%;
-              overflow: auto;
-              -webkit-overflow-scrolling: touch;
-            }
-          `
-            : ''}
-
-          ${scrollbarStyling}
-        `}</style>
+        <Styles
+          alwaysShowScrollbarOffset={props.pageProps.alwaysShowScrollbarOffset}
+        />
         <AppContent {...props} />
         <PWAInstall />
       </ConfigProvider>
     </SessionProvider>
+  )
+}
+
+function Styles({
+  alwaysShowScrollbarOffset,
+}: {
+  alwaysShowScrollbarOffset?: boolean
+}) {
+  const router = useRouter()
+  const isInIframe = useIsInIframe()
+
+  const isLandingPage = router.pathname === '/landing'
+
+  const scrollbarSelector = isInIframe ? 'body' : 'html'
+  const scrollbarStyling = alwaysShowScrollbarOffset
+    ? `
+      ${scrollbarSelector} {
+        overflow-y: scroll;
+      }
+    `
+    : ''
+
+  return (
+    <style jsx global>{`
+      ${isInIframe
+        ? // Fix issue with iframe height not calculated correctly in iframe
+          `
+        html,
+        body {
+          height: 100%;
+          overflow: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+      `
+        : ''}
+      ${isLandingPage
+        ? `
+          @media screen and (min-width: 768px) {
+            :root {
+              font-size: 1rem;
+            }
+          }
+        `
+        : ''}
+
+      ${scrollbarStyling}
+    `}</style>
   )
 }
 
