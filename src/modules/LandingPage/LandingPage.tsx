@@ -1,5 +1,6 @@
 import { landingFont } from '@/fonts'
 import { cx } from '@/utils/class-names'
+import CommunitySection from './sections/CommunitySection'
 import EarlyBirdSection from './sections/EarlyBirdSection'
 import EarningsSection from './sections/EarningsSection'
 import GrowSection from './sections/GrowSection'
@@ -37,6 +38,7 @@ export default function LandingPage() {
       <JoinSection className='relative z-10' />
 
       <SubAvailableSection className='relative z-0' />
+      <CommunitySection className='relative z-0' />
       <div />
       <div />
       <div />
