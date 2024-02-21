@@ -23,7 +23,7 @@ const DonateRepliedMessagePreviewPart = ({
   }
 
   return (
-    <span>
+    <span className='flex-shrink-0'>
       <div
         className={cx(
           getCommonClassNames('donateMessagePreviewBg'),
