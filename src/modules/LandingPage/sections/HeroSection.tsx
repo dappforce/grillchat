@@ -1,4 +1,7 @@
 import BgImage from '@/assets/graphics/landing/bg.png'
+import MoneyImage from '@/assets/graphics/landing/moneybag.png'
+import ThumbsUpImage from '@/assets/graphics/landing/thumbsup.png'
+import WritingImage from '@/assets/graphics/landing/writing.png'
 import Grill from '@/assets/logo/grill.svg'
 import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
@@ -35,22 +38,22 @@ export default function HeroSection(props: ComponentProps<'section'>) {
           </div>
         </div>
         <div className='flex w-full items-center justify-center gap-6'>
-          <div className='flex basis-60 flex-col items-center justify-center gap-6 rounded-3xl bg-white/5 p-8 backdrop-blur-sm'>
-            <span className='text-5xl'>✍</span>
+          <div className='flex basis-60 flex-col items-center justify-center gap-5 rounded-3xl bg-white/5 p-8 backdrop-blur-sm'>
+            <Image src={WritingImage} className='w-14' alt='' />
             <span className='text-3xl font-bold'>Post</span>
           </div>
           <span className='text-4xl text-[#7B77E0]'>
             <HiChevronRight />
           </span>
-          <div className='flex basis-60 flex-col items-center justify-center gap-6 rounded-3xl bg-white/5 p-8 backdrop-blur-sm'>
-            <span className='text-5xl'>👍</span>
+          <div className='flex basis-60 flex-col items-center justify-center gap-5 rounded-3xl bg-white/5 p-8 backdrop-blur-sm'>
+            <Image src={ThumbsUpImage} className='w-14' alt='' />
             <span className='text-3xl font-bold'>Like</span>
           </div>
           <span className='text-4xl text-[#7B77E0]'>
             <HiChevronRight />
           </span>
-          <div className='flex basis-60 flex-col items-center justify-center gap-6 rounded-3xl bg-white/5 p-8 backdrop-blur-sm'>
-            <span className='text-5xl'>💰</span>
+          <div className='flex basis-60 flex-col items-center justify-center gap-3 rounded-3xl bg-white/5 p-8 backdrop-blur-sm'>
+            <Image src={MoneyImage} className='w-16' alt='' />
             <span className='text-3xl font-bold'>Earn</span>
           </div>
         </div>

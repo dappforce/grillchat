@@ -1,5 +1,8 @@
 import ArrowRight from '@/assets/graphics/landing/arrow-right.svg'
+import MoneyImage from '@/assets/graphics/landing/moneybag.png'
+import ThumbsUpImage from '@/assets/graphics/landing/thumbsup.png'
 import { cx } from '@/utils/class-names'
+import Image from 'next/image'
 import { ComponentProps } from 'react'
 
 export default function HowToEarnSection(props: ComponentProps<'section'>) {
@@ -13,10 +16,14 @@ export default function HowToEarnSection(props: ComponentProps<'section'>) {
           How to earn tokens on the platform
         </h3>
         <div className='flex gap-10'>
-          <div className='flex flex-shrink-0 items-center justify-center rounded-3xl bg-white/10 px-6 py-8 text-[98px]'>
-            <span className='flex-shrink-0'>👍</span>
+          <div className='flex flex-shrink-0 items-center justify-center gap-2 rounded-3xl bg-white/10 px-6 py-8 text-[98px]'>
+            <Image
+              src={ThumbsUpImage}
+              alt=''
+              className='mx-4 w-20 flex-shrink-0'
+            />
             <ArrowRight className='w-16 flex-shrink-0' />
-            <span className='flex-shrink-0'>💰</span>
+            <Image src={MoneyImage} alt='' className='w-24 flex-shrink-0' />
           </div>
           <div className='flex flex-col gap-4 py-12 text-2xl font-medium text-[#FEEFFB]'>
             <span className='text-3xl font-bold'>Earn on:</span>
