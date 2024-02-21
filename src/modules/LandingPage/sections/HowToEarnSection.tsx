@@ -28,13 +28,13 @@ export default function HowToEarnSection(props: ComponentProps<'section'>) {
           <div className='flex flex-col gap-4 py-12 text-2xl font-medium text-[#FEEFFB]'>
             <span className='text-3xl font-bold'>Earn on:</span>
             <div className='grid grid-cols-[max-content_1fr] gap-x-2 gap-y-4'>
-              <span>💰</span>
+              <Image src={MoneyImage} alt='' className='w-7 flex-shrink-0' />
               <span>Every like on your post</span>
-              <span>💰</span>
+              <Image src={MoneyImage} alt='' className='w-7 flex-shrink-0' />
               <span>Every like on your comment</span>
-              <span>💰</span>
+              <Image src={MoneyImage} alt='' className='w-7 flex-shrink-0' />
               <span>When you like posts and comments of other creators</span>
-              <span>💰</span>
+              <Image src={MoneyImage} alt='' className='w-7 flex-shrink-0' />
               <span>
                 When comments under your post receive likes - you receive a
                 percentage of the reward for that like
