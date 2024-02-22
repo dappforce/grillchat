@@ -16,7 +16,7 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
       <Image
         src={Diamond}
         alt=''
-        className='unselectable absolute -top-24 right-4 h-24 w-24 -rotate-[30deg] opacity-60 blur-[2px] xl:-right-8 xl:top-64 xl:h-40 xl:w-40 xl:translate-x-full '
+        className='unselectable absolute -right-2 -top-24 h-24 w-24 -rotate-[30deg] opacity-60 blur-[2px] xl:-right-8 xl:top-64 xl:h-40 xl:w-40 xl:translate-x-full '
       />
       <div className='relative flex flex-col'>
         <Heading className='mb-10'>What Others Earn</Heading>
