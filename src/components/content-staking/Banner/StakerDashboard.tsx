@@ -87,7 +87,7 @@ const StatsCards = () => {
   return (
     <div
       className={cx(
-        'w-full grid grid-cols-2 gap-4',
+        'grid w-full grid-cols-2 gap-4',
         !myAddress ? 'md:grid-cols-2' : 'md:grid-cols-3'
       )}
     >
@@ -125,11 +125,11 @@ export const DashboardCard = ({
       className={cx(
         'w-full',
         'flex flex-col gap-2 rounded-2xl !py-4 px-4 md:px-6',
-        'w-full bg-white/5 backdrop-blur-[24.5px]',
+        'w-full bg-black/5 backdrop-blur-xl dark:bg-white/5',
         className
       )}
     >
-      <div className='flex items-center gap-2 text-text/80'>
+      <div className='flex items-center gap-2 text-text-muted'>
         {infoTitle ? (
           <PopOver
             trigger={
@@ -153,7 +153,7 @@ export const DashboardCard = ({
         <div className='text-[19px] font-semibold text-text md:text-2xl'>
           {value}
         </div>
-        {desc && <div className='text-sm text-text/80'>{desc}</div>}
+        {desc && <div className='text-sm text-text-muted'>{desc}</div>}
       </div>
     </div>
   )

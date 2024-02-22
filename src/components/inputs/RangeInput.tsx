@@ -35,9 +35,9 @@ const RangeInput = ({
       const inputWidth = target.offsetWidth
       const width = currentLabelRef.current.offsetWidth
 
-      var left = parseInt(val) / max * (inputWidth - width)
+      var left = (parseInt(val) / max) * (inputWidth - width)
 
-      currentLabelRef.current.style.left = left + 'px'
+      currentLabelRef.current.style.left = left - 1 + 'px'
     }
 
     setValue(Number(e.target.value))
@@ -48,7 +48,8 @@ const RangeInput = ({
       {valueLabel && (
         <div
           ref={currentLabelRef}
-          className='absolute top-[-74px] rounded-xl bg-indigo-600 px-2'
+          style={{ top: -(currentLabelRef.current?.offsetHeight || 0) }}
+          className='absolute rounded-xl bg-indigo-600 px-2 py-[6px]'
         >
           {valueLabel}
         </div>
@@ -61,10 +62,10 @@ const RangeInput = ({
         max={max}
         className={cx('input-range w-full')}
       />
-      <div className='flex justify-between text-sm text-text'>
-        <span>{minLabel}</span>
-        <span>{middleLabel}</span>
-        <span>{maxLabel}</span>
+      <div className='flex relative justify-between text-sm text-text'>
+        {minLabel}
+        {middleLabel}
+        {maxLabel}
       </div>
     </div>
   )

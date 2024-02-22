@@ -41,7 +41,7 @@ const CurrentStake = () => {
 
   return (
     <div className='flex items-center gap-4'>
-      <div className='flex w-full flex-col gap-1 rounded-2xl bg-gray-50 p-4'>
+      <div className='flex w-full flex-col gap-1 rounded-2xl bg-black/5 backdrop-blur-xl dark:bg-white/5 p-4'>
         <div className='text-sm leading-5 text-text-muted'>My current lock</div>
         <div className='text-base font-medium leading-6'>
           {currentStake} {tokenSymbol}
@@ -81,7 +81,7 @@ const MinimumStake = () => {
   const minimumStaking = formatBalance(minimumStakingAmount, decimal)
 
   return (
-    <div className='flex w-full flex-col gap-1 rounded-2xl bg-gray-50 p-4'>
+    <div className='flex w-full flex-col gap-1 rounded-2xl bg-black/5 backdrop-blur-xl dark:bg-white/5 p-4'>
       <div className='text-sm leading-5 text-text-muted'>Minimum lock</div>
       <div className='text-base font-medium leading-6'>
         {minimumStaking} {tokenSymbol}

@@ -17,17 +17,17 @@ const BannerSection = () => {
   const isLockedTokens = !new BN(locked || '0').isZero()
 
   return (
-    <div className='flex flex-col items-center gap-6 rounded-[20px] bg-white/5 p-4'>
+    <div className='flex flex-col items-center gap-6 rounded-[20px] bg-black/5 p-4 backdrop-blur-xl dark:bg-white/5'>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between gap-4'>
-          <div className='font-unbounded text-4xl font-extrabold leading-none text-slate-50'>
+          <div className='font-unbounded text-4xl font-extrabold leading-none text-text'>
             Content Staking
           </div>
           <LinkText variant='primary' className='hover:no-underline' href={''}>
             How does it work?
           </LinkText>
         </div>
-        <div className='text-lg font-medium leading-[26px] text-slate-400'>
+        <div className='text-lg font-medium leading-[26px] text-text-muted'>
           Content Staking allows SUB token holders to earn more SUB by actively
           engaging with good content on the network.
         </div>

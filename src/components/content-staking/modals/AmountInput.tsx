@@ -243,7 +243,7 @@ export const AmountInput = ({
         {balanceValue && (
           <div>
             {balanceLabel}:{' '}
-            <span className={clsx('font-semibold text-black')}>
+            <span className={clsx('font-semibold text-text')}>
               {balanceValue}
             </span>
           </div>
@@ -278,7 +278,7 @@ export const AmountInput = ({
           'focus:outline-none focus:ring-1 focus:ring-indigo-500',
           'hover:outline-none hover:ring-1 hover:ring-indigo-500',
           'focus-visible:!ring-1 focus-visible:ring-indigo-500',
-          '!bg-[#FAFBFF] text-black hover:bg-[#FAFBFF]',
+          'text-text',
           className
         )}
       />
