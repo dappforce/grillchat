@@ -15,7 +15,7 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
       <Image
         src={Diamond}
         alt=''
-        className='absolute -right-8 top-64 h-40 w-40 translate-x-full -rotate-[30deg] opacity-60 blur-[2px]'
+        className='unselectable absolute -right-8 top-64 h-40 w-40 translate-x-full -rotate-[30deg] opacity-60 blur-[2px] '
       />
       <div className='relative flex flex-col'>
         <h3 className='mb-10 text-center text-5xl font-bold'>

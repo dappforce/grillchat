@@ -109,3 +109,9 @@ body {
     filter: brightness(1.4);
   }
 }
+
+.unselectable {
+  @apply select-none;
+  user-drag: none;
+  -webkit-user-drag: none;
+}

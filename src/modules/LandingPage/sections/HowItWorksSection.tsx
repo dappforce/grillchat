@@ -14,7 +14,7 @@ export default function HowItWorksSection(props: ComponentProps<'section'>) {
       <Image
         src={Diamond}
         alt=''
-        className='absolute -left-10 top-0 h-32 w-32 -translate-x-full rotate-[30deg] opacity-40 blur-[2px]'
+        className='unselectable absolute -left-10 top-0 h-32 w-32 -translate-x-full rotate-[30deg] opacity-40 blur-[2px]'
       />
       <div className='relative flex flex-col gap-10'>
         <h3 className='text-center text-5xl font-bold'>How Does It Work?</h3>

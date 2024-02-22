@@ -21,10 +21,10 @@ export default function HeroSection(props: ComponentProps<'section'>) {
       <Image
         src={BgImage}
         alt=''
-        className='absolute inset-0 h-full w-full object-cover object-right opacity-30'
+        className='absolute inset-0 h-full w-full select-none object-cover object-right opacity-30'
       />
       <div className='absolute bottom-0 h-40 w-full bg-gradient-to-t from-[#0F172A] to-transparent' />
-      <div className='relative flex flex-col gap-24'>
+      <div className='relative flex flex-col gap-[8vh]'>
         <div className='flex flex-col items-center gap-12'>
           <Grill className='text-[88px]' />
           <div className='flex flex-col gap-6 text-center'>

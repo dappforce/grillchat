@@ -12,15 +12,15 @@ export default function QuestionsSection(props: ComponentProps<'section'>) {
       <Image
         src={QuestionMark}
         alt=''
-        className='absolute -left-8 top-8 w-28 -translate-y-full -rotate-[27deg] opacity-75 blur-[2px]'
+        className='unselectable absolute -left-8 top-8 w-28 -translate-y-full -rotate-[27deg] opacity-75 blur-[2px]'
       />
       <Image
         src={QuestionMark}
         alt=''
-        className='absolute -right-8 bottom-8 w-40 translate-y-1/2 rotate-[27deg] opacity-75 blur-sm'
+        className='unselectable absolute -right-8 bottom-8 w-40 translate-y-1/2 rotate-[27deg] opacity-75 blur-sm'
       />
       <div className='relative flex flex-col items-center gap-6'>
-        <Image src={Diamond} alt='' className='w-14' />
+        <Image src={Diamond} alt='' className='unselectable w-14' />
         <h3 className='text-center text-5xl font-bold'>
           Still Have Questions?
         </h3>

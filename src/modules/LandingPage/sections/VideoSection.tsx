@@ -9,7 +9,7 @@ export default function VideoSection(props: ComponentProps<'section'>) {
       <Image
         src={Diamond}
         alt=''
-        className='absolute -left-16 top-64 h-56 w-56 rotate-[18deg] opacity-60 blur-[2px]'
+        className='unselectable absolute -left-16 top-64 h-56 w-56 rotate-[18deg] opacity-60 blur-[2px]'
       />
       <div className={cx('relative mx-auto max-w-6xl')}>
         <div className='absolute -bottom-12 right-0 h-[731px] w-[731px] translate-x-3/4 translate-y-1/2 rounded-full bg-[#D034E9A6] blur-[478px]' />
