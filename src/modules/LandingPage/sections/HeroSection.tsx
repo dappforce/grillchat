@@ -8,6 +8,7 @@ import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps, forwardRef } from 'react'
 import { HiChevronRight } from 'react-icons/hi2'
+import Heading from '../common/Heading'
 
 const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
   ({ ...props }, ref) => {
@@ -34,9 +35,9 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
                 <Grill className='text-6xl md:text-7xl lg:text-[88px]' />
               </div>
               <div className='flex flex-col gap-4 text-center sm:gap-6'>
-                <h1 className='text-balance text-3xl font-bold sm:text-4xl lg:text-5xl'>
+                <Heading as='h1'>
                   Monetize Every Like, Comment, And Post
-                </h1>
+                </Heading>
                 <h2 className='text-xl font-medium text-[#FEEFFB] sm:text-2xl'>
                   Revolutionary social platform where bloggers and their
                   followers earn together

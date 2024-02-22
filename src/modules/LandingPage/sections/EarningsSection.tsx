@@ -4,6 +4,7 @@ import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
+import Heading from '../common/Heading'
 
 export default function EarningsSection(props: ComponentProps<'section'>) {
   return (
@@ -15,37 +16,46 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
       <Image
         src={Diamond}
         alt=''
-        className='unselectable absolute -right-8 top-64 h-40 w-40 translate-x-full -rotate-[30deg] opacity-60 blur-[2px] '
+        className='unselectable absolute -top-24 right-4 h-24 w-24 -rotate-[30deg] opacity-60 blur-[2px] xl:-right-8 xl:top-64 xl:h-40 xl:w-40 xl:translate-x-full '
       />
       <div className='relative flex flex-col'>
-        <h3 className='mb-10 text-center text-5xl font-bold'>
-          What Others Earn
-        </h3>
-        <div className='grid grid-cols-2 gap-7'>
+        <Heading className='mb-10'>What Others Earn</Heading>
+        <div className='grid grid-cols-1 gap-7 sm:grid-cols-2'>
           <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
-            <span className='mb-3 text-2xl text-[#FEEFFB]'>
+            <span className='mb-3 text-lg text-[#FEEFFB] sm:text-xl lg:text-2xl'>
               Earned by users and bloggers last month
             </span>
-            <span className='mb-1.5 text-5xl font-bold'>1M+ SUB</span>
-            <span className='text-xl text-white/70'>≈ $10,234</span>
+            <span className='mb-1.5 mt-auto text-3xl font-bold sm:text-4xl lg:text-5xl'>
+              1M+ SUB
+            </span>
+            <span className='text-lg text-white/70 sm:text-xl'>≈ $10,234</span>
           </div>
           <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
-            <span className='mb-3 text-2xl text-[#FEEFFB]'>
+            <span className='mb-3 text-lg text-[#FEEFFB] sm:text-xl lg:text-2xl'>
               Earned by top users on a single post
             </span>
-            <span className='mb-1.5 text-5xl font-bold'>1000+ SUB</span>
-            <span className='text-xl text-white/70'>≈ $11 per post</span>
+            <span className='mb-1.5 mt-auto text-3xl font-bold sm:text-4xl lg:text-5xl'>
+              1000+ SUB
+            </span>
+            <span className='text-lg text-white/70 sm:text-xl'>
+              ≈ $11 per post
+            </span>
           </div>
           <Image
             src={ActivitiesImage}
-            className='col-span-2 w-full rounded-3xl'
+            className='w-full rounded-3xl sm:col-span-2'
             alt=''
           />
-          <div className='col-span-2 flex items-center justify-between rounded-3xl bg-white/5 px-5 py-6'>
-            <span className='text-2xl font-medium'>
+          <div className='flex flex-col items-center justify-between gap-4 rounded-3xl bg-white/5 px-5 py-6 sm:col-span-2 md:flex-row'>
+            <span className='text-center text-xl font-medium md:text-left md:text-2xl'>
               Check out the statistics of how others earn on our platform:
             </span>
-            <Button variant='landingPrimary' size='xl' roundings='xl'>
+            <Button
+              className='flex-shrink-0'
+              variant='landingPrimary'
+              size='xl'
+              roundings='xl'
+            >
               See Live Stats
             </Button>
           </div>
