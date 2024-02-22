@@ -34,7 +34,7 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
                 <Grill className='text-6xl md:text-7xl lg:text-[88px]' />
               </div>
               <div className='flex flex-col gap-4 text-center sm:gap-6'>
-                <h1 className='text-3xl font-bold sm:text-4xl lg:text-5xl'>
+                <h1 className='text-balance text-3xl font-bold sm:text-4xl lg:text-5xl'>
                   Monetize Every Like, Comment, And Post
                 </h1>
                 <h2 className='text-xl font-medium text-[#FEEFFB] sm:text-2xl'>

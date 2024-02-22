@@ -12,7 +12,7 @@ export default function UsersSection({ ...props }: UsersSectionProps) {
     <section
       {...props}
       className={cx(
-        'relative mx-auto grid max-w-4xl grid-cols-2 justify-center gap-20',
+        'relative mx-auto grid max-w-lg grid-cols-1 justify-center gap-20 sm:max-w-xl md:max-w-4xl md:grid-cols-2',
         props.className
       )}
     >
@@ -20,10 +20,10 @@ export default function UsersSection({ ...props }: UsersSectionProps) {
         <div className='mb-6 h-36'>
           <Image className='max-h-full w-auto' src={Blogger} alt='' />
         </div>
-        <HighlightedText className='mb-4 text-3xl font-bold'>
+        <HighlightedText className='mb-4 text-2xl font-bold md:text-3xl'>
           For bloggers
         </HighlightedText>
-        <p className='text-2xl font-medium text-[#FEEFFB]'>
+        <p className='text-balance text-lg text-[#FEEFFB] sm:text-xl md:text-2xl md:font-medium'>
           When your followers like or comment on your posts, you earn daily
           token rewards
         </p>
@@ -32,10 +32,10 @@ export default function UsersSection({ ...props }: UsersSectionProps) {
         <div className='mb-6 h-36'>
           <Image className='max-h-full w-auto' src={CryptoEnthusiast} alt='' />
         </div>
-        <HighlightedText className='mb-4 text-3xl font-bold'>
+        <HighlightedText className='mb-4 text-2xl font-bold md:text-3xl'>
           For crypto enthusiasts
         </HighlightedText>
-        <p className='text-2xl font-medium text-[#FEEFFB]'>
+        <p className='text-balance text-lg text-[#FEEFFB] sm:text-xl md:text-2xl md:font-medium'>
           Comment and like every day! Every action you make is monetized
         </p>
       </div>
