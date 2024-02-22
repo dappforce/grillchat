@@ -27,7 +27,7 @@ export default function Navbar({
     >
       <div className='mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:h-[70px]'>
         <div>
-          <Grill className='text-2xl sm:text-4xl' />
+          <Grill className='text-[28px] sm:text-4xl' />
         </div>
         <div className='flex items-center gap-4'>
           <Button
