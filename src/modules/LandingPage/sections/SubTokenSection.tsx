@@ -1,14 +1,19 @@
 import { cx } from '@/utils/class-names'
 import Script from 'next/script'
 import { ComponentProps, useRef } from 'react'
+import Heading from '../common/Heading'
 
 export default function SubTokenSection(props: ComponentProps<'section'>) {
   const elementRef = useRef()
   return (
     <section {...props} className={cx('mx-auto max-w-6xl', props.className)}>
-      <h3 className='mb-10 text-center text-5xl font-bold'>
+      <Heading
+        className={cx(
+          'mb-10 font-medium text-[#FEEFFB] md:font-bold md:text-white'
+        )}
+      >
         On Grill you earn in SUB tokens that are convertible and transferable
-      </h3>
+      </Heading>
       <Script
         src='https://widgets.coingecko.com/coingecko-coin-market-ticker-list-widget.js'
         onLoad={() => {
@@ -24,7 +29,7 @@ export default function SubTokenSection(props: ComponentProps<'section'>) {
           elementRef.current?.shadowRoot?.adoptedStyleSheets?.push(sheet)
         }}
       ></Script>
-      <div className='overflow-clip rounded-3xl bg-white/10 px-6 py-2'>
+      <div className='overflow-clip rounded-3xl bg-white/10 px-2 py-2 md:px-6'>
         {/** @ts-expect-error - this widget (web component) is not in jsx.element */}
         <coingecko-coin-market-ticker-list-widget
           ref={elementRef}
