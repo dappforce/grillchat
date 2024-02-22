@@ -25,21 +25,21 @@ export default function Navbar({
         className
       )}
     >
-      <div className='mx-auto flex h-[70px] max-w-6xl items-center justify-between px-4'>
+      <div className='mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:h-[70px]'>
         <div>
-          <Grill className='text-4xl' />
+          <Grill className='text-2xl sm:text-4xl' />
         </div>
         <div className='flex items-center gap-4'>
           <Button
             variant='transparent'
-            className='px-4.5 py-2 text-lg'
+            className='hidden px-4.5 py-2 text-lg sm:block'
             roundings='xl'
           >
             Ask Questions
           </Button>
           <Button
             variant='landingPrimary'
-            className='px-4.5 py-2 text-lg'
+            className='px-4 py-1 text-lg sm:px-4.5 sm:py-2'
             roundings='xl'
           >
             Start Earning

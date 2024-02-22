@@ -29,7 +29,9 @@ export default function LandingPage() {
           landingFont.className
         )}
       >
-        <HeroSection logoRef={ref} />
+        <div ref={ref}>
+          <HeroSection />
+        </div>
 
         <UsersSection className='relative z-20' />
         <EarningsSection className='relative z-10' />
