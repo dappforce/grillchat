@@ -12,7 +12,7 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
       {...props}
       className={cx('relative mx-auto max-w-6xl', props.className)}
     >
-      <div className='absolute -top-52 right-0 h-[855px] w-[855px] translate-x-1/2 rounded-full bg-[#5D88F0A8] blur-[478px]' />
+      <div className='absolute -top-52 right-0 h-[855px] w-[855px] translate-x-1/2 rounded-full bg-[#5D88F0A8] blur-[239px]' />
       <Image
         src={Diamond}
         alt=''
