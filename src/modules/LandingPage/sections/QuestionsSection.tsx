@@ -4,6 +4,7 @@ import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
+import Heading from '../common/Heading'
 
 export default function QuestionsSection(props: ComponentProps<'section'>) {
   return (
@@ -21,9 +22,7 @@ export default function QuestionsSection(props: ComponentProps<'section'>) {
       />
       <div className='relative flex flex-col items-center gap-6'>
         <Image src={Diamond} alt='' className='unselectable w-14' />
-        <h3 className='text-center text-5xl font-bold'>
-          Still Have Questions?
-        </h3>
+        <Heading>Still Have Questions?</Heading>
         <Button variant='landingPrimary' size='xl' roundings='xl'>
           Ask them here
         </Button>
