@@ -7,6 +7,7 @@ const highlightedTextVariants = cva(
   {
     variants: {
       size: {
+        xs: 'h-[calc(100%)] w-[calc(100%_+_0.5rem)] -left-1 top-px',
         sm: 'h-[calc(100%)] w-[calc(100%_+_1rem)] -left-2 top-px',
         md: 'h-[calc(100%_+_0.5rem)] w-[calc(100%_+_2rem)] -left-4 -top-1',
       },
@@ -38,7 +39,7 @@ export default function HighlightedText({
   ...props
 }: HighlightedTextProps) {
   return (
-    <span {...props} className={cx('relative', props.className)}>
+    <span {...props} className={cx('relative inline-block', props.className)}>
       <span
         className={cx(highlightedTextVariants({ size, rotate, roundings }))}
       />
