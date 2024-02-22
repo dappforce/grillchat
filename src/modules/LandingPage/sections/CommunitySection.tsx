@@ -83,10 +83,10 @@ function TestimonialCard({
       )}
     >
       <div className='flex items-center gap-4'>
-        <Image src={image} className='h-14 w-14' alt='' />
+        <Image src={image} className='h-10 w-10 lg:h-14 lg:w-14' alt='' />
         <span className='text-2xl font-medium'>{name}</span>
       </div>
-      <p className='whitespace-pre-wrap text-xl'>{text}</p>
+      <p className='whitespace-pre-wrap text-lg md:text-xl'>{text}</p>
     </div>
   )
 }
