@@ -12,7 +12,7 @@ export default function GrowSection(props: ComponentProps<'section'>) {
       {...props}
       className={cx('relative mx-auto max-w-6xl', props.className)}
     >
-      <div className='absolute right-28 top-0 h-[731px] w-[731px] -translate-y-1/2 translate-x-full rounded-full bg-[#48AEF861] blur-[478px]' />
+      <div className='absolute right-52 top-0 h-[731px] w-[731px] -translate-y-1/2 translate-x-full rounded-full bg-[#48AEF861] blur-[239px] lg:right-28' />
       <div className='flex flex-col gap-6 md:gap-10'>
         <Heading className='relative'>
           <HighlightedText size='sm' rotate={3}>

@@ -11,14 +11,21 @@ import Heading from '../common/Heading'
 export default function HowItWorksSection(props: ComponentProps<'section'>) {
   return (
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
-      <div className='absolute -top-20 left-0 h-[731px] w-[731px] -translate-x-1/2 bg-[#4F46E5C4] blur-[478px]' />
+      <div className='absolute bottom-0 left-0 h-[731px] w-[731px] -translate-x-1/2 bg-[#4F46E5C4] blur-[239px]' />
       <Image
         src={Diamond}
         alt=''
-        className='unselectable absolute -left-10 top-0 h-32 w-32 -translate-x-full rotate-[30deg] opacity-40 blur-[2px]'
+        className='unselectable absolute -left-10 top-0 hidden h-32 w-32 -translate-x-full rotate-[30deg] opacity-40 blur-sm lg:block'
       />
       <div className='relative flex flex-col gap-10'>
-        <Heading>How Does It Work?</Heading>
+        <Heading className='relative mx-auto max-w-max'>
+          <Image
+            src={Diamond}
+            alt=''
+            className='unselectable absolute -bottom-3 -left-4 h-28 w-28 -translate-x-1/2 rotate-[30deg] opacity-40 blur-sm lg:hidden'
+          />
+          How Does It Work?
+        </Heading>
         <div className='grid grid-cols-1 gap-5 lg:grid-cols-4'>
           <Step
             numberIcon={One}
