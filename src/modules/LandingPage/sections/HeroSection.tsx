@@ -32,10 +32,13 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
           <div className='flex flex-col gap-8 md:gap-12 lg:gap-[8vh]'>
             <div className='flex flex-col items-center gap-8 sm:gap-12'>
               <div className='flex items-center justify-center'>
-                <Grill className='text-6xl md:text-7xl lg:text-[88px]' />
+                <Grill className='text-6xl md:text-7xl lg:text-[clamp(70px,_9vh,_88px)]' />
               </div>
               <div className='flex flex-col gap-4 text-center sm:gap-6'>
-                <Heading as='h1'>
+                <Heading
+                  as='h1'
+                  className='lg:text-[clamp(2.75rem,_6vh,_3rem)]'
+                >
                   Monetize Every Like, Comment, And Post
                 </Heading>
                 <h2 className='text-xl font-medium text-[#FEEFFB] sm:text-2xl'>
