@@ -20,8 +20,6 @@ import VideoSection from './sections/VideoSection'
 export default function LandingPage() {
   const { ref, inView } = useInView({ initialInView: true })
 
-  console.log(inView)
-
   return (
     <>
       <Navbar isShowing={!inView} />
