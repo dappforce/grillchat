@@ -39,11 +39,11 @@ spec:
                 name: grillchat-secret
           resources:
             requests:
-              memory: "750Mi"
-              cpu: "100m"
+              memory: '750Mi'
+              cpu: '100m'
             limits:
-              memory: "1600Mi"
-              cpu: "1"
+              memory: '1600Mi'
+              cpu: '1'
           readinessProbe:
             httpGet:
               path: /

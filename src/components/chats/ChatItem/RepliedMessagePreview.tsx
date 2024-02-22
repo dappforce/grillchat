@@ -54,10 +54,6 @@ export default function RepliedMessagePreview({
 
   const messageContent = message?.content?.body
 
-  if (!message) {
-    return null
-  }
-
   const extensionId = extensions?.[0]?.id
 
   const extensionRepliedPart = getExtensionConfig(
@@ -83,9 +79,11 @@ export default function RepliedMessagePreview({
     setIsLoading(false)
   }
 
+  const usedText = message ? showedText || emptyBodyText : '<message not found>'
+
   const bodyText = (
     <span className='overflow-hidden overflow-ellipsis whitespace-nowrap opacity-75'>
-      {isMessageBlocked ? '<message moderated>' : showedText || emptyBodyText}
+      {isMessageBlocked ? '<message moderated>' : usedText}
     </span>
   )
 
@@ -114,12 +112,14 @@ export default function RepliedMessagePreview({
         {isEditing ? (
           <span className='font-medium text-text-secondary'>Edit message</span>
         ) : (
-          <Name
-            showModeratorChip
-            address={message?.struct.ownerId}
-            className='font-medium'
-            color={textColor}
-          />
+          message && (
+            <Name
+              showModeratorChip
+              address={message?.struct.ownerId}
+              className='font-medium'
+              color={textColor}
+            />
+          )
         )}
         {place === 'body' && !isMessageBlocked && extensionPart ? (
           <div className={cx('flex items-center gap-2')}>

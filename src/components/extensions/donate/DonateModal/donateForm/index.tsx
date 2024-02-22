@@ -1,6 +1,6 @@
+import ProfilePreview from '@/components/ProfilePreview'
 import CommonExtensionModal from '@/components/extensions/common/CommonExtensionModal'
 import SelectInput from '@/components/inputs/SelectInput'
-import ProfilePreview from '@/components/ProfilePreview'
 import { getPostQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useExtensionModalState } from '@/stores/extension'
