@@ -104,8 +104,8 @@ function OpenInNewTabLink({ children, ...props }: LinkTextProps) {
       <span className='inline-block'>{children}</span>
       <svg width='20' height='21' viewBox='0 0 20 21' fill='none'>
         <path
-          fill-rule='evenodd'
-          clip-rule='evenodd'
+          fillRule='evenodd'
+          clipRule='evenodd'
           d='M6.22279 5.15L14.3228 5.15C14.8198 5.15 15.2228 5.55294 15.2228 6.05L15.2228 14.15C15.2228 14.6471 14.8198 15.05 14.3228 15.05C13.8257 15.05 13.4228 14.6471 13.4228 14.15L13.4228 8.22279L5.95919 15.6864C5.60772 16.0379 5.03787 16.0379 4.6864 15.6864C4.33492 15.3349 4.33492 14.7651 4.6864 14.4136L12.15 6.95L6.22279 6.95C5.72574 6.95 5.32279 6.54706 5.32279 6.05C5.32279 5.55294 5.72574 5.15 6.22279 5.15Z'
           fill='white'
           fillOpacity='0.5'
