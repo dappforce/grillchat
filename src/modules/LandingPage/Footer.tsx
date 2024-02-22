@@ -16,31 +16,34 @@ export default function Footer(props: ComponentProps<'footer'>) {
         props.className
       )}
     >
-      <div>
+      <div className='hidden md:block'>
         <Grill className='relative -left-2 text-4xl' />
       </div>
-      <div className='grid grid-cols-[repeat(14,_minmax(0,_1fr))] gap-4 text-lg'>
-        <div className='col-span-3 flex flex-col gap-3'>
-          <LinkText>
-            <HighlightedText size='md' roundings='lg' rotate={3}>
-              Start Earning
-            </HighlightedText>
-          </LinkText>
+      <div className='grid grid-cols-2 gap-4 text-base sm:grid-cols-3 sm:text-lg lg:grid-cols-[repeat(14,_minmax(0,_1fr))]'>
+        <div className='flex flex-col gap-3 lg:col-span-3'>
+          <HighlightedText
+            size='sm'
+            roundings='lg'
+            rotate={3}
+            className='max-w-max'
+          >
+            <LinkText>Start Earning</LinkText>
+          </HighlightedText>
           <OpenInNewTabLink>Discuss Grill</OpenInNewTabLink>
           <OpenInNewTabLink>Documentation</OpenInNewTabLink>
         </div>
-        <div className='col-span-3 flex flex-col gap-3'>
+        <div className='flex flex-col gap-3 lg:col-span-3'>
           <OpenInNewTabLink>SUB on MEXC</OpenInNewTabLink>
           <OpenInNewTabLink>SUB on HydraDX</OpenInNewTabLink>
           <OpenInNewTabLink>SUB on StellaSwap</OpenInNewTabLink>
         </div>
-        <div className='col-span-3 flex flex-col gap-3'>
+        <div className='flex flex-col gap-3 lg:col-span-3'>
           <OpenInNewTabLink>How to Earn SUB</OpenInNewTabLink>
           <OpenInNewTabLink>Lock SUB</OpenInNewTabLink>
           <OpenInNewTabLink>Leaderboard</OpenInNewTabLink>
         </div>
-        <div className='col-span-5 flex flex-col gap-3 rounded-3xl bg-white/5 p-5'>
-          <span className='text-[#FEEFFB]'>
+        <div className='col-span-2 flex flex-col gap-3 rounded-3xl bg-white/5 p-4 sm:col-span-3 sm:p-5 lg:col-span-5'>
+          <span className='text-center text-[#FEEFFB] sm:text-left'>
             Participate in future activities
           </span>
           <div className='relative'>
@@ -99,7 +102,7 @@ function OpenInNewTabLink({ children, ...props }: LinkTextProps) {
   return (
     <LinkText
       {...props}
-      className={cx('flex items-center gap-2', props.className)}
+      className={cx('flex max-w-max items-center gap-2', props.className)}
     >
       <span className='inline-block'>{children}</span>
       <svg width='20' height='21' viewBox='0 0 20 21' fill='none'>
