@@ -9,7 +9,10 @@ import Image from 'next/image'
 import { ComponentProps } from 'react'
 import { HiChevronRight } from 'react-icons/hi2'
 
-export default function HeroSection(props: ComponentProps<'section'>) {
+export default function HeroSection({
+  logoRef,
+  ...props
+}: ComponentProps<'section'> & { logoRef: ComponentProps<'div'>['ref'] }) {
   return (
     <section
       {...props}
@@ -26,7 +29,9 @@ export default function HeroSection(props: ComponentProps<'section'>) {
       <div className='absolute bottom-0 h-40 w-full bg-gradient-to-t from-[#0F172A] to-transparent' />
       <div className='relative flex flex-col gap-[8vh]'>
         <div className='flex flex-col items-center gap-12'>
-          <Grill className='text-[88px]' />
+          <div className='flex items-center justify-center' ref={logoRef}>
+            <Grill className='text-[88px]' />
+          </div>
           <div className='flex flex-col gap-6 text-center'>
             <h1 className='text-5xl font-bold'>
               Monetize Every Like, Comment, And Post

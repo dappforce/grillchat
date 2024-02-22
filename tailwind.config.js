@@ -13,6 +13,9 @@ module.exports = {
         base: ['1rem', '1.35'],
         '4.5xl': '2.5rem',
       },
+      padding: {
+        4.5: '1.125rem',
+      },
       colors: {
         background: 'rgb(var(--background) / <alpha-value>)',
         'background-light': 'rgb(var(--background-light) / <alpha-value>)',
