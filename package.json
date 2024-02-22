@@ -64,6 +64,8 @@
     "compressorjs": "^1.2.1",
     "dayjs": "^1.11.7",
     "eip-712": "^1.0.0",
+    "embla-carousel-autoplay": "^8.0.0-rc23",
+    "embla-carousel-react": "^8.0.0-rc23",
     "eslint": "8.34.0",
     "eslint-config-next": "13.2.1",
     "ethers": "^6.3.0",

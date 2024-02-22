@@ -5,10 +5,20 @@ import Gbrady12 from '@/assets/graphics/landing/testimonials/gbrady12.png'
 import Marta from '@/assets/graphics/landing/testimonials/marta.png'
 import Wavingood from '@/assets/graphics/landing/testimonials/wavingood.png'
 import { cx } from '@/utils/class-names'
+import { EmblaCarouselType } from 'embla-carousel'
+import Autoplay from 'embla-carousel-autoplay'
+import useEmblaCarousel from 'embla-carousel-react'
 import Image, { ImageProps } from 'next/image'
-import { ComponentProps } from 'react'
+import React, {
+  ComponentProps,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
+import Heading from '../common/Heading'
 
-const testimonial: {
+const testimonials: {
   image: ImageProps['src']
   name: string
   text: string
@@ -63,14 +73,15 @@ Being a part of The Creator Economy is great!`,
 export default function CommunitySection(props: ComponentProps<'section'>) {
   return (
     <section className={cx('mx-auto max-w-6xl', props.className)}>
-      <h3 className='mb-10 text-center text-5xl font-bold'>
+      <Heading className='mb-10'>
         What Our Community Says About Grill.so
-      </h3>
-      <div className='grid grid-cols-[2fr_3fr] gap-7'>
-        {testimonial.map((t) => (
+      </Heading>
+      <div className='hidden grid-cols-[2fr_3fr] gap-7 md:grid'>
+        {testimonials.map((t) => (
           <TestimonialCard {...t} key={t.name} />
         ))}
       </div>
+      <TestimonialCarousel className='md:hidden' />
     </section>
   )
 }
@@ -100,4 +111,107 @@ function TestimonialCard({
       <p className='whitespace-pre-wrap text-lg md:text-xl'>{text}</p>
     </div>
   )
+}
+
+function TestimonialCarousel({ className }: { className?: string }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
+    Autoplay({ delay: 3000, stopOnInteraction: false }),
+  ])
+
+  const { selectedIndex, scrollSnaps, onDotButtonClick } =
+    useDotButton(emblaApi)
+
+  return (
+    <div className={cx('overflow-hidden', className)} ref={emblaRef}>
+      <div className='flex'>
+        {testimonials.map(({ className: _, ...t }) => (
+          <div className='mr-6 flex-[0_0_100%]' key={t.name}>
+            <TestimonialCard className='h-full' {...t} />
+          </div>
+        ))}
+      </div>
+
+      <div className='mx-auto mt-6 flex max-w-max appearance-none gap-2.5 rounded-full bg-white/10 p-2.5'>
+        {scrollSnaps.map((_, index) => (
+          <DotButton
+            key={index}
+            onClick={() => onDotButtonClick(index)}
+            isActive={index === selectedIndex}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+type DotProps = PropsWithChildren<
+  React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  > & {
+    isActive?: boolean
+  }
+>
+
+export const DotButton: React.FC<DotProps> = (props) => {
+  const { children, isActive, ...restProps } = props
+
+  return (
+    <button
+      type='button'
+      {...restProps}
+      className={cx(
+        'h-2.5 w-2.5 rounded-full bg-white/50 transition-all duration-300',
+        isActive && 'w-8 bg-[#EC7930]',
+        restProps.className
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
+type UseDotButtonType = {
+  selectedIndex: number
+  scrollSnaps: number[]
+  onDotButtonClick: (index: number) => void
+}
+
+export const useDotButton = (
+  emblaApi: EmblaCarouselType | undefined
+): UseDotButtonType => {
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([])
+
+  const onDotButtonClick = useCallback(
+    (index: number) => {
+      if (!emblaApi) return
+      emblaApi.scrollTo(index)
+    },
+    [emblaApi]
+  )
+
+  const onInit = useCallback((emblaApi: EmblaCarouselType) => {
+    setScrollSnaps(emblaApi.scrollSnapList())
+  }, [])
+
+  const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
+    setSelectedIndex(emblaApi.selectedScrollSnap())
+  }, [])
+
+  useEffect(() => {
+    if (!emblaApi) return
+
+    onInit(emblaApi)
+    onSelect(emblaApi)
+    emblaApi.on('reInit', onInit)
+    emblaApi.on('reInit', onSelect)
+    emblaApi.on('select', onSelect)
+  }, [emblaApi, onInit, onSelect])
+
+  return {
+    selectedIndex,
+    scrollSnaps,
+    onDotButtonClick,
+  }
 }
