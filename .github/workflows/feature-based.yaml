@@ -75,10 +75,10 @@ jobs:
             GH_NEXT_PUBLIC_SPACE_IDS=12466,12467,12468
 
             # without base path
-            GH_NEXTAUTH_URL=https://${{ env.name }}-grillchat.subsocial.network
+            # GH_NEXTAUTH_URL=https://${{ env.name }}-grillchat.subsocial.network
             # with base path
-            # GH_NEXTAUTH_URL=https://${{ env.name }}-grillchat.subsocial.network/c/api/auth
-            # GH_NEXT_PUBLIC_BASE_PATH=/c
+            GH_NEXTAUTH_URL=https://${{ env.name }}-grillchat.subsocial.network/c/api/auth
+            GH_NEXT_PUBLIC_BASE_PATH=/c
 
           target: runner
           tags: |
