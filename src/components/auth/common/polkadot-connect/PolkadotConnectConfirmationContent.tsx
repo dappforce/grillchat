@@ -4,6 +4,7 @@ import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoadin
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
+import { estimatedWaitTime } from '@/utils/network'
 import { toSubsocialAddress } from '@subsocial/utils'
 import Image from 'next/image'
 import { useState } from 'react'
@@ -77,6 +78,11 @@ export default function PolkadotConnectConfirmationContent({
                     }
                   }}
                   isLoading={isLoading || isLoadingEnergy || isProcessing}
+                  loadingText={
+                    isLoading
+                      ? `It may take up to ${estimatedWaitTime} seconds`
+                      : undefined
+                  }
                 >
                   Confirm
                 </Button>
