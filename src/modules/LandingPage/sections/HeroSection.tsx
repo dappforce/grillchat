@@ -27,7 +27,7 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
           className='unselectable absolute inset-0 h-full w-full object-cover object-right opacity-30'
         />
         <div className='absolute bottom-0 left-0 h-40 w-full bg-gradient-to-t from-[#0F172A] to-transparent' />
-        <div className='relative flex flex-1 flex-col justify-between'>
+        <div className='relative flex flex-1 flex-col justify-between sm:justify-around'>
           <div />
           <div className='mb-[clamp(0px,_4vh,_4rem)] flex flex-col gap-8 sm:mb-0 md:gap-12 lg:gap-[8vh]'>
             <div className='flex flex-col items-center gap-8 sm:gap-12'>
@@ -68,7 +68,7 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
               </div>
             </div>
           </div>
-          <div className='mt-8 flex flex-col items-center gap-6 sm:mt-[8vh]'>
+          <div className='mt-8 flex flex-col items-center gap-6 sm:mb-[4vh] sm:mt-[max(4rem,_4vh)]'>
             <div className='flex w-full flex-col-reverse justify-center gap-3 text-lg sm:flex-row sm:items-center sm:gap-4'>
               <Button variant='landingPrimaryOutline' size='xl' roundings='xl'>
                 Ask Questions
