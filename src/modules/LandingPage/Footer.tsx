@@ -42,7 +42,7 @@ export default function Footer(props: ComponentProps<'footer'>) {
           <OpenInNewTabLink>Lock SUB</OpenInNewTabLink>
           <OpenInNewTabLink>Leaderboard</OpenInNewTabLink>
         </div>
-        <div className='col-span-2 flex flex-col gap-3 rounded-3xl bg-white/5 p-4 sm:col-span-3 sm:p-5 lg:col-span-5'>
+        <div className='col-span-2 flex flex-col gap-3 rounded-3xl bg-white/5 p-4 pb-5 sm:col-span-3 sm:p-5 sm:pb-6 lg:col-span-5'>
           <span className='text-center text-[#FEEFFB] sm:text-left'>
             Participate in future activities
           </span>
