@@ -8,6 +8,7 @@ export function getBlurFallbackStyles(translate?: {
   y?: string
 }): CSSProperties {
   return {
+    willChange: 'filter',
     backfaceVisibility: 'hidden',
     MozBackfaceVisibility: 'hidden',
     WebkitBackfaceVisibility: 'hidden',
