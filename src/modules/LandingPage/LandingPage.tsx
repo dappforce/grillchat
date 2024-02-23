@@ -31,7 +31,7 @@ export default function LandingPage() {
       >
         <HeroSection ref={ref} />
 
-        <UsersSection className='relative z-20' />
+        <UsersSection className='relative z-20 !mt-12 sm:!mt-8 md:!mt-28' />
         <EarningsSection className='relative z-10' />
 
         <VideoSection className='relative z-0' />
