@@ -6,6 +6,7 @@ import BN from 'bignumber.js'
 import BannerActionButtons from './BannerActionButtons'
 import StatsCards from './StakerDashboard'
 import SectionWrapper from '../utils/SectionWrapper'
+import StakingStepper from './StakingStepper'
 
 const BannerSection = () => {
   const myAddress = useMyMainAddress()
@@ -36,7 +37,8 @@ const BannerSection = () => {
       {isLockedTokens ? (
         <StatsCards />
       ) : (
-        <StakingBannerImage className='w-full max-w-[490px]' />
+        // <StakingBannerImage className='w-full max-w-[490px]' />
+        <StakingStepper />
       )}
 
       <div>
