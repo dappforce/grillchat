@@ -35,7 +35,7 @@ const StatsCards = () => {
 
   const myLock = (
     <>
-      {myLockWithDecimals.toString()} {tokenSymbol}
+      {myLockWithDecimals.toFixed(2)} {tokenSymbol}
     </>
   )
 

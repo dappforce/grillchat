@@ -1,3 +1,4 @@
+import CheckIcon from '@/assets/icons/check-icon.svg'
 import { cx } from '@/utils/class-names'
 import { useMemo, useRef } from 'react'
 
@@ -30,11 +31,13 @@ const Stepper = ({ items, className, currentStep }: StepperProps) => {
 }
 
 const StepperItem = ({
+  id,
   label,
   title,
   isComleted,
+  currentStep,
   isLastElement,
-}: StepperItem & { isLastElement: boolean, currentStep: string }) => {
+}: StepperItem & { isLastElement: boolean; currentStep: string }) => {
   const labelRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLDivElement>(null)
 
@@ -47,15 +50,27 @@ const StepperItem = ({
   return (
     <li className={cx('group', { ['flex-1 shrink basis-0']: !isLastElement })}>
       <div className='flex items-center text-xl font-medium'>
-        <span
-          ref={labelRef}
+        {isComleted ? (
+          <CheckIcon className='h-[40px] w-[40px]' />
+        ) : (
+          <span
+            ref={labelRef}
+            className={cx(
+              'flex h-[40px] w-[40px] items-center justify-center rounded-full ring-2 ring-inset ',
+              currentStep === id || isComleted
+                ? 'text-text ring-slate-50'
+                : 'text-slate-500 ring-slate-500'
+            )}
+          >
+            {label}
+          </span>
+        )}
+        <div
           className={cx(
-            'flex h-[40px] w-[40px] items-center justify-center rounded-full ring ring-inset ring-slate-50'
+            'ms-2 h-0.5 w-full flex-1 bg-text-muted group-last:hidden',
+            currentStep === id && !isComleted ? 'bg-slate-50' : 'bg-slate-500'
           )}
-        >
-          {label}
-        </span>
-        <div className='ms-2 h-px w-full flex-1 bg-text-muted group-last:hidden'></div>
+        ></div>
       </div>
       <div
         ref={titleRef}

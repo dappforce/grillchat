@@ -37,7 +37,6 @@ const BannerSection = () => {
       {isLockedTokens ? (
         <StatsCards />
       ) : (
-        // <StakingBannerImage className='w-full max-w-[490px]' />
         <StakingStepper />
       )}
 

@@ -82,7 +82,7 @@ function StakingTxButton({
           <Button
             onClick={() => {
               onClick && onClick()
-              mutateAsync({ spaceId, amount })
+              mutateAsync({ spaceId, amount, decimal })
             }}
             disabled={disableButton}
             variant={'primary'}
