@@ -24,12 +24,12 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
         <Image
           src={BgImage}
           alt=''
-          className='absolute inset-0 h-full w-full select-none object-cover object-right opacity-30'
+          className='unselectable absolute inset-0 h-full w-full object-cover object-right opacity-30'
         />
         <div className='absolute bottom-0 left-0 h-40 w-full bg-gradient-to-t from-[#0F172A] to-transparent' />
         <div className='relative flex flex-1 flex-col justify-between'>
           <div />
-          <div className='flex flex-col gap-8 md:gap-12 lg:gap-[8vh]'>
+          <div className='mb-[clamp(0px,_4vh,_4rem)] flex flex-col gap-8 sm:mb-0 md:gap-12 lg:gap-[8vh]'>
             <div className='flex flex-col items-center gap-8 sm:gap-12'>
               <div className='flex items-center justify-center'>
                 <Grill className='text-6xl md:text-7xl lg:text-[clamp(70px,_9vh,_88px)]' />
