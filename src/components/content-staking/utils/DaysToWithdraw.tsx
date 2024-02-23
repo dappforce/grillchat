@@ -1,6 +1,8 @@
 import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
+import { cx } from '@/utils/class-names'
 import { pluralize } from '@subsocial/utils'
 import BN from 'bignumber.js'
+import { sectionBg } from './SectionWrapper'
 
 export const formatTime = (seconds: number) => {
   const timeUnits = [
@@ -55,7 +57,7 @@ export const DaysToWithdrawWarning = ({
   unbondingPeriodInEras,
 }: DaysToUnstakeProps) => {
   return (
-    <div className='rounded-[15px] bg-black/5 backdrop-blur-xl dark:bg-white/5 px-4 py-2 text-text-primary'>
+    <div className={cx('rounded-2xl px-4 py-2 text-text-primary', sectionBg)}>
       ℹ️ Unlocking takes about{' '}
       <DaysToWithdraw unbondingPeriodInEras={unbondingPeriodInEras} /> before
       you can withdraw

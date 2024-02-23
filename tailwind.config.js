@@ -6,6 +6,9 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      gridTemplateRows: {
+        0: 'repeat(1, minmax(0, 0fr))',
+      },
       screens: {
         'medium': '924px',
       },

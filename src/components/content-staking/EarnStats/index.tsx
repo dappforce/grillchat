@@ -25,7 +25,7 @@ const EarnStats = () => {
           How much can I earn ?
         </LinkText>
       </div>
-      <div className='grid grid-cols-2 items-center gap-4'>
+      <div className='grid grid-cols-2 items-stretch gap-4'>
         {mockedData.map((props, i) => (
           <StatsCard key={i} {...props} />
         ))}

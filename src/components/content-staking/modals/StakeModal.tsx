@@ -4,12 +4,14 @@ import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
 import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
 import { useMyMainAddress } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
 import { formatBalance } from '@/utils/formatBalance'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useEffect, useState } from 'react'
 import { BsQuestionCircle } from 'react-icons/bs'
 import { DaysToWithdrawWarning } from '../utils/DaysToWithdraw'
+import { sectionBg } from '../utils/SectionWrapper'
 import {
   StakeOrIncreaseStakeAmountInput,
   UnstakeAmountInput,
@@ -41,7 +43,9 @@ const CurrentStake = () => {
 
   return (
     <div className='flex items-center gap-4'>
-      <div className='flex w-full flex-col gap-1 rounded-2xl bg-black/5 backdrop-blur-xl dark:bg-white/5 p-4'>
+      <div
+        className={cx('flex w-full flex-col gap-1 rounded-2xl p-4', sectionBg)}
+      >
         <div className='text-sm leading-5 text-text-muted'>My current lock</div>
         <div className='text-base font-medium leading-6'>
           {currentStake} {tokenSymbol}
@@ -81,7 +85,9 @@ const MinimumStake = () => {
   const minimumStaking = formatBalance(minimumStakingAmount, decimal)
 
   return (
-    <div className='flex w-full flex-col gap-1 rounded-2xl bg-black/5 backdrop-blur-xl dark:bg-white/5 p-4'>
+    <div
+      className={cx('flex w-full flex-col gap-1 rounded-2xl p-4', sectionBg)}
+    >
       <div className='text-sm leading-5 text-text-muted'>Minimum lock</div>
       <div className='text-base font-medium leading-6'>
         {minimumStaking} {tokenSymbol}

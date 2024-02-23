@@ -14,6 +14,7 @@ import BN from 'bignumber.js'
 import { useMemo } from 'react'
 import { BsQuestionCircle } from 'react-icons/bs'
 import { getBackerLedgerQuery } from '../../../services/contentStaking/backerLedger/query'
+import { sectionBg } from '../utils/SectionWrapper'
 
 const StatsCards = () => {
   const myAddress = useMyMainAddress()
@@ -125,7 +126,7 @@ export const DashboardCard = ({
       className={cx(
         'w-full',
         'flex flex-col gap-2 rounded-2xl !py-4 px-4 md:px-6',
-        'w-full bg-black/5 backdrop-blur-xl dark:bg-white/5',
+        sectionBg,
         className
       )}
     >

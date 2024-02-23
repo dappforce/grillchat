@@ -111,10 +111,10 @@ body {
 }
 
 .input-range {
-  -webkit-appearance: none;
+  appearance: none;
   background: rgb(236 239 244);
   background-image: linear-gradient(rgba(79, 70, 229, 0.50), rgba(79, 70, 229, 0.50));
-  background-size: 70% 100%;
+  /* background-size: 70% 100%; */
   height: 10px;
   border-radius: 38px;
   background-repeat: no-repeat;
@@ -122,9 +122,9 @@ body {
 
 :is(.dark *) > .input-range {
   background: #0F172A;
-  -webkit-appearance: none;
+  appearance: none;
   background-image: linear-gradient(rgba(79, 70, 229, 0.50), rgba(79, 70, 229, 0.50));
-  background-size: 70% 100%;
+  /* background-size: 70% 100%; */
   height: 10px;
   border-radius: 38px;
   background-repeat: no-repeat;

@@ -1,6 +1,7 @@
 import RangeInput from '@/components/inputs/RangeInput'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
+import SectionWrapper from '../utils/SectionWrapper'
 import { StatsCardContent } from './StatsCard'
 const mockedData = [
   {
@@ -32,7 +33,7 @@ const RangeLabel = ({ label, desc, className }: RangeLabelProps) => {
 }
 
 const EarnCalcSection = () => {
-  const [rangeValue, setRangeValue] = useState(0)
+  const [rangeValue, setRangeValue] = useState(1000)
 
   return (
     <div className='flex flex-col gap-4'>
@@ -41,9 +42,9 @@ const EarnCalcSection = () => {
           How much can I earn
         </div>
       </div>
-      <div className='flex flex-col gap-4 rounded-2xl bg-black/5 backdrop-blur-xl dark:bg-white/5'>
+      <SectionWrapper className='flex flex-col gap-4'>
         <div className='p-4'>
-          <div className='mb-14 text-base text-text'>
+          <div className='mb-16 text-base text-text'>
             How much would you like to stake?
           </div>
           <RangeInput
@@ -69,7 +70,7 @@ const EarnCalcSection = () => {
                 <RangeLabel
                   label={'$5000'}
                   desc='100,000 SUB'
-                  className='text-center absolute left-1/2 transform -translate-x-1/2'
+                  className='absolute left-1/2 -translate-x-1/2 transform text-center'
                 />
               ),
               maxLabel: (
@@ -83,8 +84,8 @@ const EarnCalcSection = () => {
           />
         </div>
         <div className='border-t-[1px] border-t-white/20'>
-          <div className='flex items-stretch px-4 w-full'>
-            <div className='text-center py-4 w-full'>
+          <div className='flex w-full items-stretch px-4'>
+            <div className='flex w-full flex-col items-center gap-2 py-4 text-center'>
               <StatsCardContent
                 title='Your minimum rewards:'
                 desc={'34.35 SUB / week'}
@@ -94,7 +95,7 @@ const EarnCalcSection = () => {
               />
             </div>
             <div className='border-l-[1px] border-l-white/20'></div>
-            <div className='text-center py-4 w-full'>
+            <div className='flex w-full flex-col items-center gap-2 py-4 text-center'>
               <StatsCardContent
                 title='Your maximum rewards:'
                 desc={'144.35 SUB / week'}
@@ -105,7 +106,7 @@ const EarnCalcSection = () => {
             </div>
           </div>
         </div>
-      </div>
+      </SectionWrapper>
     </div>
   )
 }

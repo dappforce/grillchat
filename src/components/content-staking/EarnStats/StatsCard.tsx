@@ -1,6 +1,7 @@
 import PopOver from '@/components/floating/PopOver'
 import { FiInfo } from 'react-icons/fi'
-import { cx } from '../../../utils/class-names';
+import { cx } from '../../../utils/class-names'
+import { sectionBg } from '../utils/SectionWrapper'
 
 type StatsCardProps = {
   title: string
@@ -12,7 +13,12 @@ type StatsCardProps = {
 
 const StatsCard = (props: StatsCardProps) => {
   return (
-    <div className='flex h-full w-full flex-col gap-2 rounded-2xl bg-black/5 p-4 backdrop-blur-xl dark:bg-white/5'>
+    <div
+      className={cx(
+        'flex w-full flex-col gap-2 rounded-2xl p-4',
+        sectionBg
+      )}
+    >
       <StatsCardContent {...props} />
     </div>
   )
@@ -23,7 +29,7 @@ export const StatsCardContent = ({
   desc,
   subDesc,
   tooltipText,
-  titleClassName
+  titleClassName,
 }: StatsCardProps) => {
   return (
     <>
