@@ -22,11 +22,11 @@ metadata:
   name: grillchat-<BRANCH>
   namespace: sub-back
   annotations:
-    ingress.kubernetes.io/from-to-www-redirect: "true"
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-    nginx.org/client-max-body-size: "10m"
-    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
-    nginx.ingress.kubernetes.io/client-max-body-size: "10m"
+    ingress.kubernetes.io/from-to-www-redirect: 'true'
+    nginx.ingress.kubernetes.io/from-to-www-redirect: 'true'
+    nginx.org/client-max-body-size: '10m'
+    nginx.ingress.kubernetes.io/proxy-body-size: '10m'
+    nginx.ingress.kubernetes.io/client-max-body-size: '10m'
 
 spec:
   ingressClassName: nginx
@@ -39,7 +39,7 @@ spec:
                 name: grillchat-<BRANCH>
                 port:
                   number: 3000
-            path: "/"
+            path: '/'
             pathType: Prefix
 
   tls:
@@ -54,5 +54,5 @@ metadata:
   name: grillchat-<BRANCH>-env
   namespace: sub-back
 data:
-  REDIS_HOST: "redis-master.default"
-  REDIS_PORT: "6379"
+  REDIS_HOST: 'redis-master.default'
+  REDIS_PORT: '6379'

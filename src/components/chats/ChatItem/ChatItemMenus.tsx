@@ -8,6 +8,7 @@ import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
 import PopOver from '@/components/floating/PopOver'
+import HideMessageModal from '@/components/modals/HideMessageModal'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
 import { env } from '@/env.mjs'
@@ -37,7 +38,7 @@ import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
 import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FiLink } from 'react-icons/fi'
-import { HiChevronRight } from 'react-icons/hi2'
+import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { IoDiamondOutline } from 'react-icons/io5'
 import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
@@ -54,7 +55,7 @@ export type ChatItemMenusProps = {
   enableChatMenu?: boolean
 }
 
-type ModalState = 'login' | 'metadata' | 'moderate' | null
+type ModalState = 'login' | 'metadata' | 'moderate' | 'hide' | null
 
 export default function ChatItemMenus({
   messageId,
@@ -130,6 +131,13 @@ export default function ChatItemMenus({
         onClick: () => setModalState('metadata'),
       },
     ]
+
+    const hideMenu: FloatingMenusProps['menus'][number] = {
+      text: 'Hide',
+      icon: HiOutlineEyeSlash,
+      onClick: () => setModalState('hide'),
+    }
+    if (isMessageOwner && !isOptimisticMessage) menus.unshift(hideMenu)
 
     if (isAuthorized) {
       menus.unshift({
@@ -271,6 +279,13 @@ export default function ChatItemMenus({
       />
       <ModerationModal
         isOpen={modalState === 'moderate'}
+        closeModal={() => setModalState(null)}
+        messageId={messageId}
+        chatId={chatId}
+        hubId={hubId}
+      />
+      <HideMessageModal
+        isOpen={modalState === 'hide'}
         closeModal={() => setModalState(null)}
         messageId={messageId}
         chatId={chatId}

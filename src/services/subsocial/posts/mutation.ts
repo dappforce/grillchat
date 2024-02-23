@@ -5,6 +5,7 @@ import {
   useRevalidateChatPage,
 } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
+import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
@@ -386,6 +387,78 @@ export const HideUnhideChatWrapper = createMutationWrapper(
   useHideUnhidePost,
   'Failed to hide/unhide chat'
 )
+
+export type HideMessageParams = {
+  messageId: string
+}
+export function useHideMessage(
+  config?: SubsocialMutationConfig<HideMessageParams>
+) {
+  const client = useQueryClient()
+
+  const waitHasEnergy = useWaitHasEnergy()
+
+  return useSubsocialMutation<HideMessageParams>(
+    {
+      getWallet: getCurrentWallet,
+      generateContext: undefined,
+      transactionGenerator: async ({
+        data: params,
+        apis: { substrateApi },
+      }) => {
+        console.log('waiting energy...')
+        await waitHasEnergy()
+
+        await datahubMutation.updatePostData({
+          ...getCurrentWallet(),
+          args: { postId: params.messageId, changes: { hidden: true } },
+        })
+
+        if (!isPersistentId(params.messageId)) {
+          throw new Error(
+            'Hiding offchain message, this error is expected to be supresssed'
+          )
+        }
+
+        return {
+          tx: substrateApi.tx.posts.updatePost(params.messageId, {
+            hidden: true,
+          }),
+          summary: 'Hiding message',
+        }
+      },
+    },
+    config,
+    {
+      supressSendingTxError: true,
+      txCallbacks: {
+        onStart: async ({ data }) => {
+          preventWindowUnload()
+
+          getPostQuery.setQueryData(client, data.messageId, (message) => {
+            if (!message) return message
+            return {
+              ...message,
+              struct: {
+                ...message.struct,
+                hidden: true,
+              },
+            }
+          })
+        },
+        onSend: () => allowWindowUnload(),
+        onError: async ({ data }) => {
+          allowWindowUnload()
+          getPostQuery.invalidate(client, data.messageId)
+        },
+        onSuccess: async ({ data }) => {
+          await invalidatePostServerCache(data.messageId)
+          getPostQuery.invalidate(client, data.messageId)
+        },
+      },
+    }
+  )
+}
 
 export type PinMessageParams = {
   chatId: string

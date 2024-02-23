@@ -7,13 +7,13 @@ import { DonateProperies } from '@subsocial/api/types'
 import { parseUnits } from 'ethers'
 import { useAccount } from 'wagmi'
 import { BeforeMessageResult } from '../../common/CommonExtensionModal'
-import { useDonate, useGetBalance } from '../api/hooks'
 import { useSubstrateDonation } from '../DonateModal/donateForm/mutation'
 import {
   ChainListItem,
   DonateModalStep,
   TokenListItem,
 } from '../DonateModal/types'
+import { useDonate, useGetBalance } from '../api/hooks'
 
 type BuildBeforeSendParams = {
   setCurrentStep: (step: DonateModalStep) => void

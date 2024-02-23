@@ -1,8 +1,8 @@
 import CommunityAddIcon from '@/assets/icons/community-add.svg'
 import Button from '@/components/Button'
+import Container from '@/components/Container'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
-import Container from '@/components/Container'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { isCommunityHubId } from '@/constants/config'
@@ -18,11 +18,11 @@ import {
   HiOutlineClock,
   HiOutlineUsers,
 } from 'react-icons/hi2'
+import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import useSortedChats, {
   SortChatOption,
   sortChatOptions,
 } from '../hooks/useSortedChats'
-import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import HubPageNavbar from './HubPageNavbar'
 
 const sortByStorage = new LocalStorage(() => 'hub-sort-by')

@@ -3,9 +3,9 @@ import { getHubIdFromAlias } from '@/constants/config'
 import MessageRedirectPage, {
   MessageRedirectPageProps,
 } from '@/modules/chat/MessageRedirectPage'
+import { AppCommonProps } from '@/pages/_app'
 import { getNftDataServer } from '@/pages/api/nft'
 import { getPostsServer } from '@/pages/api/posts'
-import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
 import { ResourceTypes } from '@/services/datahub/moderation/utils'
