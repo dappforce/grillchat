@@ -4,13 +4,21 @@ import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
 
-export default function JoinSection(props: ComponentProps<'section'>) {
+export default function JoinSection({
+  contentClassName,
+  ...props
+}: ComponentProps<'section'> & { contentClassName?: string }) {
   return (
     <section
       {...props}
       className={cx('relative mx-auto max-w-6xl', props.className)}
     >
-      <div className='relative w-full overflow-clip rounded-3xl bg-gradient-to-r from-[#3F3CD5] to-[#343292] p-6 text-center sm:p-8 lg:py-12'>
+      <div
+        className={cx(
+          'relative w-full overflow-clip rounded-3xl bg-gradient-to-r from-[#3F3CD5] to-[#343292] p-6 text-center sm:p-8 lg:py-12',
+          contentClassName
+        )}
+      >
         <Image
           src={CoinsImage}
           alt=''

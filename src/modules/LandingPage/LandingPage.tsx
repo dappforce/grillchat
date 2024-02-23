@@ -35,7 +35,6 @@ export default function LandingPage() {
         <EarningsSection className='relative z-10' />
 
         <VideoSection className='relative z-0' />
-        <JoinSection className='relative z-10' />
         <SubTokenSection className='relative z-10' />
 
         <HowToEarnSection className='relative z-10' />
