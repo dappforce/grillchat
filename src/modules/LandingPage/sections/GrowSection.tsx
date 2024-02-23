@@ -20,7 +20,7 @@ export default function GrowSection(props: ComponentProps<'section'>) {
           </HighlightedText>
           <span className='relative z-10'>
             {' '}
-            Your Community Through The Grill.So Audience &{' '}
+            Your Community Through The Grill.so Audience &{' '}
           </span>
           <HighlightedText size='sm' rotate={3}>
             Monetize
