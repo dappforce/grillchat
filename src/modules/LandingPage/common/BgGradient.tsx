@@ -8,7 +8,7 @@ export default function BgGradient(
 ) {
   return (
     <div
-      className={cx('visible rounded-full blur-[239px]', props.className)}
+      className={cx('visible rounded-full blur-[225px]', props.className)}
       style={{ ...getBlurFallbackStyles({ translate: props.translate }) }}
     />
   )
