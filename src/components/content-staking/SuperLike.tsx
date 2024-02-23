@@ -192,7 +192,7 @@ export default function SuperLike({
         return (
           <div
             {...props}
-            className={cx('flex items-center gap-3', props.className)}
+            className={cx('flex items-center gap-3 text-sm', props.className)}
           >
             {disabledCause ? (
               <PopOver
