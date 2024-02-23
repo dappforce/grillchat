@@ -1,7 +1,9 @@
+import { env } from '@/env.mjs'
 import { getCurrentUrlOrigin } from '@/utils/links'
 import { sendMessageToParentWindow } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import urlJoin from 'url-join'
 import { ConfigContextState, getConfig } from './utils'
 
 const ConfigContext = createContext<ConfigContextState>({
@@ -29,16 +31,20 @@ export function ConfigProvider({ children }: { children: any }) {
       if (eventData && eventData.type === 'grill:setConfig') {
         const payload = eventData.payload as string
         const currentPathnameAndQuery = window.location.href.replace(
-          getCurrentUrlOrigin(),
+          urlJoin(getCurrentUrlOrigin(), env.NEXT_PUBLIC_BASE_PATH),
+          ''
+        )
+        const payloadPathname = payload.replace(
+          new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}`),
           ''
         )
         if (
-          payload &&
-          !payload.startsWith('http') &&
-          payload !== currentPathnameAndQuery
+          payloadPathname &&
+          !payloadPathname.startsWith('http') &&
+          payloadPathname !== currentPathnameAndQuery
         ) {
           sendMessageToParentWindow('isUpdatingConfig', 'true')
-          await push(payload)
+          await push(payloadPathname)
           sendMessageToParentWindow('isUpdatingConfig', 'false')
         }
       }
