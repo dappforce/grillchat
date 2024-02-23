@@ -17,6 +17,9 @@ export default function SubTokenSection(props: ComponentProps<'section'>) {
     sheet.insertRule(
       `.cg-center-align { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }`
     )
+    sheet.insertRule(
+      `.cg-showmore { border: 1px solid rgba(255, 255, 255, .40) !important; background: transparent !important; border-radius: 0.75rem !important; padding: 0.5rem 1.125rem !important; font-size: 14px !important; }`
+    )
     // @ts-expect-error - shadowRoot is not in the types
     elementRef.current?.shadowRoot?.adoptedStyleSheets?.push(sheet)
   }
@@ -28,8 +31,9 @@ export default function SubTokenSection(props: ComponentProps<'section'>) {
   return (
     <section {...props} className={cx('mx-auto max-w-6xl', props.className)}>
       <Heading
+        withMargin
         className={cx(
-          'mb-10 text-2xl font-medium text-[#FEEFFB] sm:font-bold sm:text-white'
+          'text-2xl font-medium text-[#FEEFFB] sm:font-bold sm:text-white'
         )}
       >
         On Grill you earn in SUB tokens that are convertible and transferable
