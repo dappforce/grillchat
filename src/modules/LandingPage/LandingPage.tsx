@@ -25,7 +25,7 @@ export default function LandingPage() {
       <Navbar isShowing={!inView} />
       <main
         className={cx(
-          'space-y-32 overflow-x-clip bg-[#0F172A] text-white md:space-y-48 [&>*]:px-4',
+          'space-y-24 overflow-x-clip bg-[#0F172A] text-white md:space-y-44 [&>*]:px-4',
           landingFont.className
         )}
       >
