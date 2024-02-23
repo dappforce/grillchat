@@ -25,7 +25,7 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
           className='unselectable absolute inset-0 h-full w-full object-cover object-left-top md:hidden'
         />
         <div className='relative flex flex-col'>
-          <Heading className='mb-6 md:mb-10'>SUB Token Is Available On</Heading>
+          <Heading withMargin>SUB Token Is Available On</Heading>
           <div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:gap-6'>
             <div className='flex flex-col items-center gap-4 rounded-3xl border border-[#412C63] bg-white/5 p-6 text-center backdrop-blur-2xl lg:p-8'>
               <Image src={Mexc} className='h-8 w-auto md:h-10' alt='' />

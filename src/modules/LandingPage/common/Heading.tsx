@@ -17,7 +17,7 @@ export default function Heading({
       {...props}
       className={cx(
         'text-balance text-center text-3xl font-bold sm:text-4xl lg:text-5xl',
-        withMargin && 'mb-4 sm:mb-6 md:mb-8 lg:mb-10',
+        withMargin && 'mb-6 md:mb-8 lg:mb-10',
         props.className
       )}
     />

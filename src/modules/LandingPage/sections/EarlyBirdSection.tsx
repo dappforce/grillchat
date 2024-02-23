@@ -8,8 +8,8 @@ import Heading from '../common/Heading'
 export default function EarlyBirdSection(props: ComponentProps<'section'>) {
   return (
     <section {...props} className={cx('mx-auto max-w-6xl', props.className)}>
-      <div className='flex flex-col items-center gap-10'>
-        <Heading>Early-Bird Benefits</Heading>
+      <div className='flex flex-col items-center'>
+        <Heading withMargin>Early-Bird Benefits</Heading>
         <div className='grid w-full grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-7'>
           <div className='flex flex-col rounded-3xl bg-white/5 p-5 md:p-6 md:pb-8 md:pt-10'>
             <div className='mb-4 flex items-center justify-center md:mb-8'>

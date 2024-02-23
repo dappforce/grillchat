@@ -17,8 +17,8 @@ export default function HowItWorksSection(props: ComponentProps<'section'>) {
         alt=''
         className='unselectable absolute -left-10 top-0 hidden h-32 w-32 -translate-x-full rotate-[30deg] opacity-40 blur-sm lg:block'
       />
-      <div className='relative flex flex-col gap-10'>
-        <Heading className='relative mx-auto max-w-max'>
+      <div className='relative flex flex-col'>
+        <Heading withMargin className='relative mx-auto max-w-max'>
           <Image
             src={Diamond}
             alt=''
