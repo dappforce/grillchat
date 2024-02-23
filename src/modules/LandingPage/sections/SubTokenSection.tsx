@@ -29,7 +29,7 @@ export default function SubTokenSection(props: ComponentProps<'section'>) {
     <section {...props} className={cx('mx-auto max-w-6xl', props.className)}>
       <Heading
         className={cx(
-          'mb-10 font-medium text-[#FEEFFB] md:font-bold md:text-white'
+          'mb-10 text-2xl font-medium text-[#FEEFFB] sm:font-bold sm:text-white'
         )}
       >
         On Grill you earn in SUB tokens that are convertible and transferable
