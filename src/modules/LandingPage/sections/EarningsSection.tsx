@@ -20,8 +20,8 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
       <Image
         src={Diamond}
         alt=''
-        style={getBlurFallbackStyles()}
-        className='unselectable absolute -left-4 -top-16 h-24 w-24 -rotate-[30deg] opacity-60 blur-[2px] xl:left-4 xl:h-40 xl:w-40 xl:-translate-x-full xl:opacity-80'
+        style={getBlurFallbackStyles({ rotate: '-30deg' })}
+        className='unselectable absolute -left-4 -top-16 h-24 w-24 opacity-60 blur-[2px] xl:-left-32 xl:h-40 xl:w-40 xl:opacity-80'
       />
       <div className='relative flex flex-col'>
         <Heading withMargin>What Others Earn Here</Heading>

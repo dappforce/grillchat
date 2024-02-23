@@ -15,8 +15,11 @@ export default function VideoSection(props: ComponentProps<'section'>) {
       <Image
         src={Diamond}
         alt=''
-        style={getBlurFallbackStyles()}
-        className='unselectable absolute -right-4 -top-4 h-24 w-24 -translate-y-1/2 rotate-[18deg] opacity-60 blur-[3px] md:h-56 md:w-56 lg:-right-16 lg:h-44 lg:w-44 lg:translate-x-1/2 lg:rotate-[18deg] xl:h-56 xl:w-56'
+        style={getBlurFallbackStyles({
+          rotate: '18deg',
+          translate: { y: '-50%' },
+        })}
+        className='unselectable absolute -right-4 -top-4 h-24 w-24 opacity-60 blur-[3px] md:h-56 md:w-56 xl:-right-40 xl:h-56 xl:w-56'
       />
       <BgGradient
         translate={{ x: '-75%' }}

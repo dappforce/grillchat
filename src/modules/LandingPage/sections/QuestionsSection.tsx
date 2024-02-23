@@ -17,13 +17,20 @@ export default function QuestionsSection(props: ComponentProps<'section'>) {
       <Image
         src={QuestionMark}
         alt=''
-        style={getBlurFallbackStyles()}
-        className='unselectable absolute -left-8 top-8 w-28 -translate-y-full -rotate-[27deg] opacity-75 blur-[2px]'
+        style={getBlurFallbackStyles({
+          rotate: '-27deg',
+          translate: { y: '-100%' },
+        })}
+        className='unselectable absolute -left-8 top-8 w-28 opacity-75 blur-[2px]'
       />
       <Image
         src={QuestionMark}
         alt=''
-        className='unselectable absolute -right-8 bottom-8 w-40 translate-y-1/2 rotate-[27deg] opacity-75 blur-sm'
+        style={getBlurFallbackStyles({
+          rotate: '27deg',
+          translate: { y: '50%' },
+        })}
+        className='unselectable absolute -right-8 bottom-8 w-40 opacity-75 blur-sm'
       />
       <div className='relative flex flex-col items-center gap-6'>
         <Image src={Diamond} alt='' className='unselectable w-14' />

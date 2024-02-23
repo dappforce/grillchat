@@ -3,7 +3,7 @@ import Two from '@/assets/graphics/landing/2.svg'
 import Three from '@/assets/graphics/landing/3.svg'
 import Four from '@/assets/graphics/landing/4.svg'
 import Diamond from '@/assets/graphics/landing/diamond.png'
-import { cx } from '@/utils/class-names'
+import { cx, getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
 import BgGradient from '../common/BgGradient'
@@ -19,15 +19,13 @@ export default function HowItWorksSection(props: ComponentProps<'section'>) {
       <Image
         src={Diamond}
         alt=''
-        className='unselectable absolute -left-10 top-0 hidden h-32 w-32 -translate-x-full rotate-[30deg] opacity-40 blur-sm lg:block'
+        className='unselectable absolute -left-8 -top-12 h-32 w-32 opacity-40 blur-[6px] xl:-left-40'
+        style={getBlurFallbackStyles({
+          rotate: '30deg',
+        })}
       />
       <div className='relative flex flex-col'>
         <Heading withMargin className='relative mx-auto max-w-max'>
-          <Image
-            src={Diamond}
-            alt=''
-            className='unselectable absolute -bottom-3 -left-4 h-28 w-28 -translate-x-1/2 rotate-[30deg] opacity-40 blur-sm lg:hidden'
-          />
           How Does It Work?
         </Heading>
         <div className='grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-5'>
