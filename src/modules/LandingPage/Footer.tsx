@@ -73,7 +73,7 @@ export default function Footer(props: ComponentProps<'footer'>) {
         <div className='flex items-center gap-4 text-lg'>
           <Button
             size='noPadding'
-            className='rounded-full bg-white/10 p-1.5'
+            className='rounded-full bg-white/5 p-1.5'
             variant='transparent'
           >
             <RiTwitterXLine />

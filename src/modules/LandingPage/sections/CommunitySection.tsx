@@ -129,7 +129,7 @@ function TestimonialCarousel({ className }: { className?: string }) {
         ))}
       </div>
 
-      <div className='mx-auto mt-6 flex max-w-max appearance-none gap-2.5 rounded-full bg-white/10 p-2.5'>
+      <div className='mx-auto mt-6 flex max-w-max appearance-none gap-2.5 rounded-full bg-white/5 p-2.5'>
         {scrollSnaps.map((_, index) => (
           <DotButton
             key={index}

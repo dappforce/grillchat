@@ -11,7 +11,7 @@ export default function EarlyBirdSection(props: ComponentProps<'section'>) {
       <div className='flex flex-col items-center gap-10'>
         <Heading>Early-Bird Benefits</Heading>
         <div className='grid w-full grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-7'>
-          <div className='flex flex-col rounded-3xl bg-white/10 p-5 md:p-6 md:pb-8 md:pt-10'>
+          <div className='flex flex-col rounded-3xl bg-white/5 p-5 md:p-6 md:pb-8 md:pt-10'>
             <div className='mb-4 flex items-center justify-center md:mb-8'>
               <Competition className='w-16 sm:w-24' />
             </div>
@@ -19,7 +19,7 @@ export default function EarlyBirdSection(props: ComponentProps<'section'>) {
               The earlier you join, the lower the competition
             </p>
           </div>
-          <div className='flex flex-col rounded-3xl bg-white/10 p-5 md:p-6 md:pb-8 md:pt-10'>
+          <div className='flex flex-col rounded-3xl bg-white/5 p-5 md:p-6 md:pb-8 md:pt-10'>
             <div className='mb-4 flex items-center justify-center md:mb-8'>
               <Attraction className='w-16 sm:w-24' />
             </div>
@@ -27,7 +27,7 @@ export default function EarlyBirdSection(props: ComponentProps<'section'>) {
               Your content will be much more visible and attract more attention
             </p>
           </div>
-          <div className='flex flex-col rounded-3xl bg-white/10 p-5 md:p-6 md:pb-8 md:pt-10'>
+          <div className='flex flex-col rounded-3xl bg-white/5 p-5 md:p-6 md:pb-8 md:pt-10'>
             <div className='mb-4 flex items-center justify-center md:mb-8'>
               <IncreasedRewards className='w-16 sm:w-24' />
             </div>

@@ -17,7 +17,7 @@ export default function HowToEarnSection(props: ComponentProps<'section'>) {
           How To Earn Tokens On The Platform
         </Heading>
         <div className='flex flex-col gap-6 md:flex-row md:gap-10'>
-          <div className='flex flex-shrink-0 items-center justify-around gap-2 rounded-3xl bg-white/10 px-6 py-8 sm:justify-center sm:gap-16 md:gap-2'>
+          <div className='flex flex-shrink-0 items-center justify-around gap-2 rounded-3xl bg-white/5 px-6 py-8 sm:justify-center sm:gap-16 md:gap-2'>
             <Image
               src={ThumbsUpImage}
               alt=''

@@ -50,7 +50,7 @@ export default function GrowSection(props: ComponentProps<'section'>) {
           </div>
         </div>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-          <div className='flex flex-col rounded-3xl bg-white/10 p-5'>
+          <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
             <span className='mb-2.5 text-lg text-[#FEEFFB] md:text-xl lg:text-2xl'>
               Likes during the last month
             </span>
@@ -61,7 +61,7 @@ export default function GrowSection(props: ComponentProps<'section'>) {
               194,379 all time
             </span>
           </div>
-          <div className='flex flex-col rounded-3xl bg-white/10 p-5'>
+          <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
             <span className='mb-2.5 text-lg text-[#FEEFFB] md:text-xl lg:text-2xl'>
               Comments created during the last month
             </span>

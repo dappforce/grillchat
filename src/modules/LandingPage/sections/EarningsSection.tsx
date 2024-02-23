@@ -19,8 +19,10 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
         className='unselectable absolute -right-2 -top-24 h-24 w-24 -rotate-[30deg] opacity-60 blur-[2px] xl:-right-8 xl:top-64 xl:h-40 xl:w-40 xl:translate-x-full '
       />
       <div className='relative flex flex-col'>
-        <Heading className='mb-10'>What Others Earn Here</Heading>
-        <div className='grid grid-cols-1 gap-7 sm:grid-cols-2'>
+        <Heading className='mb-4 sm:mb-6 md:mb-8 lg:mb-10'>
+          What Others Earn Here
+        </Heading>
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-7'>
           <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
             <span className='mb-3 text-lg text-[#FEEFFB] sm:text-xl lg:text-2xl'>
               Earned by users and bloggers last month

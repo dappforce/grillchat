@@ -24,7 +24,7 @@ export default function VideoSection(props: ComponentProps<'section'>) {
         )}
       >
         <div className='relative flex flex-col items-center text-center'>
-          <Heading className='mb-4'>How To Start Earning?</Heading>
+          <Heading className='mb-2 lg:mb-4'>How To Start Earning?</Heading>
           <span className='mb-6 text-lg text-[#FEEFFB] sm:text-xl md:mb-10'>
             Watch the short video guide
           </span>

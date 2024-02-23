@@ -31,7 +31,7 @@ export default function Navbar({
         </div>
         <div className='flex items-center gap-4'>
           <Button
-            variant='transparent'
+            variant='landingPrimaryOutline'
             className='hidden px-4.5 py-2 text-lg sm:block'
             roundings='xl'
           >

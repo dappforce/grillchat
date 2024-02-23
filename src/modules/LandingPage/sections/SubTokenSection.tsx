@@ -42,7 +42,7 @@ export default function SubTokenSection(props: ComponentProps<'section'>) {
         onReady={handleReady}
         src='https://widgets.coingecko.com/coingecko-coin-ticker-widget.js'
       />
-      <div className='overflow-clip rounded-3xl bg-white/10 px-2 py-2 md:px-6'>
+      <div className='overflow-clip rounded-3xl bg-white/5 px-2 py-2 md:px-6'>
         {mdUp ? (
           // @ts-expect-error - this widget (web component) is not in jsx.element
           <coingecko-coin-market-ticker-list-widget

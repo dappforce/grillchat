@@ -26,7 +26,7 @@ export default function HowItWorksSection(props: ComponentProps<'section'>) {
           />
           How Does It Work?
         </Heading>
-        <div className='grid grid-cols-1 gap-5 lg:grid-cols-4'>
+        <div className='grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-5'>
           <Step
             numberIcon={One}
             title='Stake SUB'
@@ -63,7 +63,7 @@ function Step({
   content: string
 }) {
   return (
-    <div className='flex items-center gap-4 rounded-3xl bg-white/10 px-4 py-5 sm:px-6 sm:py-8 lg:flex-col lg:items-center lg:gap-0 lg:pb-8 lg:pt-10'>
+    <div className='flex items-center gap-4 rounded-3xl bg-white/5 px-4 py-5 sm:px-6 sm:py-8 lg:flex-col lg:items-center lg:gap-0 lg:pb-8 lg:pt-10'>
       <div className='flex w-16 flex-shrink-0 items-center justify-center md:w-20 lg:mb-8'>
         <NumberIcon className='text-[72px] md:text-[82px]' />
       </div>
