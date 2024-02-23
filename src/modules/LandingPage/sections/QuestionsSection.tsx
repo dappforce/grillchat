@@ -1,18 +1,23 @@
 import Diamond from '@/assets/graphics/landing/diamond.png'
 import QuestionMark from '@/assets/graphics/landing/question-mark.png'
 import Button from '@/components/Button'
-import { cx } from '@/utils/class-names'
+import { cx, getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
+import BgGradient from '../common/BgGradient'
 import Heading from '../common/Heading'
 
 export default function QuestionsSection(props: ComponentProps<'section'>) {
   return (
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
-      <div className='absolute left-1/2 top-1/2 h-[572px] w-[572px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4F46E5B5] blur-[239px]' />
+      <BgGradient
+        translate={{ x: '-50%', y: '-50%' }}
+        className='absolute left-1/2 top-1/2 h-[572px] w-[572px] bg-[#4F46E5B5]'
+      />
       <Image
         src={QuestionMark}
         alt=''
+        style={getBlurFallbackStyles()}
         className='unselectable absolute -left-8 top-8 w-28 -translate-y-full -rotate-[27deg] opacity-75 blur-[2px]'
       />
       <Image

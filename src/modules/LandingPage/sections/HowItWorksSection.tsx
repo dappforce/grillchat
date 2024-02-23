@@ -6,12 +6,16 @@ import Diamond from '@/assets/graphics/landing/diamond.png'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
+import BgGradient from '../common/BgGradient'
 import Heading from '../common/Heading'
 
 export default function HowItWorksSection(props: ComponentProps<'section'>) {
   return (
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
-      <div className='absolute bottom-0 left-0 h-[731px] w-[731px] -translate-x-1/2 bg-[#4F46E5C4] blur-[239px]' />
+      <BgGradient
+        translate={{ x: '-100%' }}
+        className='absolute bottom-0 left-24 h-[731px] w-[731px] bg-[#4F46E5C4]'
+      />
       <Image
         src={Diamond}
         alt=''

@@ -3,6 +3,7 @@ import PinkHeartImage from '@/assets/graphics/landing/pink-heart.png'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
+import BgGradient from '../common/BgGradient'
 import Heading from '../common/Heading'
 import HighlightedText from '../common/HighlightedText'
 
@@ -12,7 +13,10 @@ export default function GrowSection(props: ComponentProps<'section'>) {
       {...props}
       className={cx('relative mx-auto max-w-6xl', props.className)}
     >
-      <div className='absolute right-52 top-0 h-[731px] w-[731px] -translate-y-1/2 translate-x-full rounded-full bg-[#48AEF861] blur-[239px] lg:right-28' />
+      <BgGradient
+        translate={{ y: '-50%', x: '100%' }}
+        className='absolute right-52 top-0 h-[731px] w-[731px] bg-[#48AEF861] lg:right-28'
+      />
       <div className='flex flex-col'>
         <Heading className='relative' withMargin>
           <HighlightedText size='sm' rotate={3}>

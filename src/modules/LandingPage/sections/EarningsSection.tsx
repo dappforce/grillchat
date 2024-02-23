@@ -1,9 +1,10 @@
 import ActivitiesImage from '@/assets/graphics/landing/activities.png'
 import Diamond from '@/assets/graphics/landing/diamond.png'
 import Button from '@/components/Button'
-import { cx } from '@/utils/class-names'
+import { cx, getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
+import BgGradient from '../common/BgGradient'
 import Heading from '../common/Heading'
 
 export default function EarningsSection(props: ComponentProps<'section'>) {
@@ -12,10 +13,14 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
       {...props}
       className={cx('relative mx-auto max-w-6xl', props.className)}
     >
-      <div className='absolute -top-52 right-0 h-[855px] w-[855px] translate-x-1/2 rounded-full bg-[#5D88F0A8] blur-[239px]' />
+      <BgGradient
+        translate={{ x: '100%' }}
+        className='absolute -top-52 right-48 h-[855px] w-[855px] bg-[#5D88F0A8]'
+      />
       <Image
         src={Diamond}
         alt=''
+        style={getBlurFallbackStyles()}
         className='unselectable absolute -left-4 -top-16 h-24 w-24 -rotate-[30deg] opacity-60 blur-[2px] xl:left-4 xl:h-40 xl:w-40 xl:-translate-x-full xl:opacity-80'
       />
       <div className='relative flex flex-col'>

@@ -7,12 +7,16 @@ import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
+import BgGradient from '../common/BgGradient'
 import Heading from '../common/Heading'
 
 export default function SubAvailableSection(props: ComponentProps<'section'>) {
   return (
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
-      <div className='absolute left-32 top-3/4 h-[731px] w-[731px] -translate-x-full -translate-y-full rounded-full bg-[#33A6BF94] blur-[239px]' />
+      <BgGradient
+        translate={{ x: '-100%', y: '-100%' }}
+        className='absolute left-32 top-3/4 h-[731px] w-[731px] bg-[#33A6BF94]'
+      />
       <div className='relative overflow-clip rounded-3xl px-4 py-8 pb-4 lg:p-10'>
         <Image
           src={TokenBgDesktop}

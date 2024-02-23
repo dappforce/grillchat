@@ -3,14 +3,21 @@ import clsx from 'clsx'
 import { CSSProperties } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-export function getBlurFallbackStyles(): CSSProperties {
+export function getBlurFallbackStyles(translate?: {
+  x?: string
+  y?: string
+}): CSSProperties {
   return {
     backfaceVisibility: 'hidden',
     MozBackfaceVisibility: 'hidden',
     WebkitBackfaceVisibility: 'hidden',
-    transform: 'translate3d(0, 0, 0)',
-    msTransform: 'translate3d(0, 0, 0)',
-    WebkitTransform: 'translate3d(0, 0, 0)',
+    transform: `translate3d(${translate?.x || '0'}, ${translate?.y || '0'}, 0)`,
+    msTransform: `translate3d(${translate?.x || '0'}, ${
+      translate?.y || '0'
+    }, 0)`,
+    WebkitTransform: `translate3d(${translate?.x || '0'}, ${
+      translate?.y || '0'
+    }, 0)`,
   }
 }
 
