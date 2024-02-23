@@ -1,9 +1,9 @@
 import { useGetMyCreatorsIds } from '@/components/content-staking/hooks/useGetMyCreatorsIds'
-import { getSubIdRequest } from '@/server/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { useMemo } from 'react'
 import { getCreatorsListData } from '../creatorsList/query'
 import { RewardsData } from './types'
+import { getSubIdRequest } from '@/services/external'
 
 export const useGetBackerRewards = (account: string) => {
   const creatorsListData = getCreatorsListData()
@@ -29,7 +29,7 @@ export async function getBackerRewardsRequest(
   account: string,
   spaceIds: string[]
 ) {
-  return getSubIdRequest().get('/staking/creator/backer/rewards', {
+  return getSubIdRequest().get('staking/creator/backer/rewards', {
     params: { account, spaceIds: spaceIds.join(',') },
   })
 }

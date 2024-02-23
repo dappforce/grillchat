@@ -1,6 +1,6 @@
-import { getSubIdRequest } from '@/server/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { RegisteredCreator } from './types'
+import { getSubIdRequest } from '@/services/external'
 
 export const creatorsListId = 'creatorsListId'
 
@@ -9,7 +9,7 @@ export const getCreatorsListData = () => {
 }
 
 export async function getCreatorsListRequest() {
-  return getSubIdRequest().get('/staking/creator/list')
+  return getSubIdRequest().get('staking/creator/list')
 }
 
 const getCreatorsList = poolQuery<string, RegisteredCreator[]>({

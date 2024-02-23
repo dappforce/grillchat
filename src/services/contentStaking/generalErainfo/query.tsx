@@ -1,6 +1,6 @@
-import { getSubIdRequest } from '@/server/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { GeneralEraInfo } from './types'
+import { getSubIdRequest } from '@/services/external'
 
 export const generalEraInfoId = 'generalEraInfoId'
 
@@ -9,7 +9,7 @@ export const getGeneralEraInfoData = () => {
 }
 
 export async function getGeneralEraInfoRequest() {
-  return getSubIdRequest().get('/staking/creator/era/info')
+  return getSubIdRequest().get('staking/creator/era/info')
 }
 
 const getGeneralEraInfo = poolQuery<string, GeneralEraInfo>({

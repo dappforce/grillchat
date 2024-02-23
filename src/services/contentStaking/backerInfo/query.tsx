@@ -1,6 +1,6 @@
-import { getSubIdRequest } from '@/server/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { BackerInfo } from './types'
+import { getSubIdRequest } from '@/services/external'
 
 export const getBackerInfoBySpaceIds = (address: string, spaceIds: string[]) => {
   const { data: backerInfo } = getBackerInfoQuery.useQuery({
@@ -25,7 +25,7 @@ export async function getBackerInfoRequest(
   account: string,
   spaceIds: string[]
 ) {
-  return getSubIdRequest().get('/staking/creator/backer/info', {
+  return getSubIdRequest().get('staking/creator/backer/info', {
     params: { account, spaceIds: spaceIds.join(',') },
   })
 }

@@ -1,7 +1,7 @@
-import { getSubIdRequest } from '@/server/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { getGeneralEraInfoData } from '../generalErainfo/query'
 import { EraStake } from './types'
+import { getSubIdRequest } from '@/services/external'
 
 export async function getEraStakeRequest(era: string, spaceIds: string[]) {
   return getSubIdRequest().get('staking/creator/era/stake', {
@@ -22,8 +22,6 @@ const getBackerRewards = poolQuery<string, EraStake>({
 
     const resultPromise = spaceIds.map(async (spaceId) => {
       const item = eraStake[spaceId]
-
-      const id = `${spaceId}-${currentEra || '0'}`
 
       if (!item)
         return {

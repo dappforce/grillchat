@@ -1,6 +1,6 @@
-import { getSubIdRequest } from '@/server/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { StakingConsts } from './types'
+import { getSubIdRequest } from '@/services/external'
 
 export const stakingConstsId = 'stakingConsts'
 
