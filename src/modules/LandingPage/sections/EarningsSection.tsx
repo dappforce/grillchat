@@ -21,8 +21,8 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
       <div className='relative flex flex-col'>
         <Heading withMargin>What Others Earn Here</Heading>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-7'>
-          <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
-            <span className='mb-3 text-lg text-[#FEEFFB] sm:text-xl lg:text-2xl'>
+          <div className='flex flex-col rounded-3xl bg-white/5 p-5 text-center sm:text-left'>
+            <span className='mb-1.5 text-lg text-[#FEEFFB] sm:mb-3 sm:text-xl lg:text-2xl'>
               Earned by users and bloggers last month
             </span>
             <span className='mb-1.5 mt-auto text-3xl font-bold sm:text-4xl lg:text-5xl'>
@@ -30,8 +30,8 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
             </span>
             <span className='text-lg text-white/70 sm:text-xl'>≈ $10,234</span>
           </div>
-          <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
-            <span className='mb-3 text-lg text-[#FEEFFB] sm:text-xl lg:text-2xl'>
+          <div className='flex flex-col rounded-3xl bg-white/5 p-5 text-center sm:text-left'>
+            <span className='mb-1.5 text-lg text-[#FEEFFB] sm:mb-3 sm:text-xl lg:text-2xl'>
               Earned by top users on a single post
             </span>
             <span className='mb-1.5 mt-auto text-3xl font-bold sm:text-4xl lg:text-5xl'>
