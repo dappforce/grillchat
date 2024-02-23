@@ -28,8 +28,8 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
           <Heading className='mb-6 md:mb-10'>SUB Token Is Available On</Heading>
           <div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:gap-6'>
             <div className='flex flex-col items-center gap-4 rounded-3xl border border-[#412C63] bg-white/5 p-6 text-center backdrop-blur-2xl lg:p-8'>
-              <Image src={Mexc} className='mb-1 w-full max-w-[200px]' alt='' />
-              <span className='text-lg sm:text-xl lg:text-2xl'>
+              <Image src={Mexc} className='h-8 w-auto md:h-10' alt='' />
+              <span className='-mt-1 text-lg sm:mt-0 sm:text-xl lg:text-2xl'>
                 View Instructions
               </span>
               <Button variant='landingPrimary' roundings='xl' size='xl'>
@@ -37,12 +37,8 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
               </Button>
             </div>
             <div className='flex flex-col items-center gap-4 rounded-3xl border border-[#412C63] bg-white/5 p-6 text-center backdrop-blur-2xl lg:p-8'>
-              <Image
-                src={Hydradx}
-                className='mb-1 w-full max-w-[200px]'
-                alt=''
-              />
-              <span className='text-lg sm:text-xl lg:text-2xl'>
+              <Image src={Hydradx} className='h-8 w-auto md:h-10' alt='' />
+              <span className='-mt-1 text-lg sm:mt-0 sm:text-xl lg:text-2xl'>
                 View Instructions
               </span>
               <Button variant='landingPrimary' roundings='xl' size='xl'>
@@ -50,12 +46,8 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
               </Button>
             </div>
             <div className='flex flex-col items-center gap-4 rounded-3xl border border-[#412C63] bg-white/5 p-6 text-center backdrop-blur-2xl lg:p-8'>
-              <Image
-                src={StellaSwap}
-                className='mb-1 w-full max-w-[200px]'
-                alt=''
-              />
-              <span className='text-lg sm:text-xl lg:text-2xl'>
+              <Image src={StellaSwap} className='h-8 w-auto md:h-10' alt='' />
+              <span className='-mt-1 text-lg sm:mt-0 sm:text-xl lg:text-2xl'>
                 View Instructions
               </span>
               <Button variant='landingPrimary' roundings='xl' size='xl'>
