@@ -48,10 +48,8 @@ For me the best is undoubtedly the information that can be found here in an easy
     image: Marta,
     name: 'Marta',
     text: `So glad to be a part of such a cool community! Subsocial grows and develops 🚀 Between December 22 to January 22 Subsocial have had an over 25% growth in engagement 💪🏻
-
 The team conducted 8 contests and giveaways and rewarded 35 Subbers with 47,500 SUB 🔥
-Over 10 Subbers have also earned up to 7,000 SUB for simply engaging in discussions and giving valuable feedback 😍
-It's incredible, but further - more!`,
+Over 10 Subbers have also earned up to 7,000 SUB for simply engaging in discussions and giving valuable feedback 😍. It's incredible, but further - more!`,
     className: 'row-span-6',
   },
   {
@@ -76,7 +74,7 @@ export default function CommunitySection(props: ComponentProps<'section'>) {
       <Heading className='mb-10'>
         What Our Community Says About Grill.so
       </Heading>
-      <div className='hidden grid-cols-[2fr_3fr] gap-7 md:grid'>
+      <div className='hidden grid-cols-[3fr_4fr] gap-7 md:grid'>
         {testimonials.map((t) => (
           <TestimonialCard {...t} key={t.name} />
         ))}
