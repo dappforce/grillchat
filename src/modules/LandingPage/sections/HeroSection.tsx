@@ -69,11 +69,8 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
             </div>
           </div>
           <div className='mt-8 flex flex-col items-center gap-6 sm:mt-[8vh]'>
-            <span className='text-xl font-medium text-[#FEEFFB] sm:text-2xl'>
-              Early-bird version
-            </span>
-            <div className='flex w-full flex-col-reverse justify-center gap-2 text-lg sm:flex-row sm:items-center'>
-              <Button variant='transparent' size='xl' roundings='xl'>
+            <div className='flex w-full flex-col-reverse justify-center gap-3 text-lg sm:flex-row sm:items-center sm:gap-4'>
+              <Button variant='landingPrimaryOutline' size='xl' roundings='xl'>
                 Ask Questions
               </Button>
               <Button variant='landingPrimary' size='xl' roundings='xl'>
