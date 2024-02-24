@@ -19,7 +19,7 @@ const BannerSection = () => {
   const isLockedTokens = !new BN(locked || '0').isZero()
 
   return (
-    <SectionWrapper className='flex flex-col items-center gap-6 p-4'>
+    <SectionWrapper className='flex flex-col items-center gap-4 p-4'>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between gap-4'>
           <div className='font-unbounded text-4xl font-extrabold leading-none text-text'>

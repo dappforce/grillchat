@@ -2,7 +2,7 @@ import SectionWrapper from '../utils/SectionWrapper'
 
 const HowItWorksSection = () => {
   return (
-    <SectionWrapper className='flex w-full flex-col items-center gap-2 p-4'>
+    <div className='flex w-full flex-col items-center gap-2'>
       <div className='flex w-full flex-col items-center gap-2'>
         <div className='text-2xl font-bold leading-none text-text'>
           How does it work
@@ -22,7 +22,7 @@ const HowItWorksSection = () => {
           className='h-[372px] w-full max-w-2xl rounded-2xl'
         ></iframe>
       </div>
-    </SectionWrapper>
+    </div>
   )
 }
 

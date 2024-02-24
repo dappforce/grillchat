@@ -51,7 +51,7 @@ const StepperItem = ({
     <li className={cx('group', { ['flex-1 shrink basis-0']: !isLastElement })}>
       <div className='flex items-center text-xl font-medium'>
         {isComleted ? (
-          <CheckIcon className='h-[40px] w-[40px]' />
+          <CheckIcon ref={labelRef} className='h-[40px] w-[40px]' />
         ) : (
           <span
             ref={labelRef}
@@ -68,7 +68,7 @@ const StepperItem = ({
         <div
           className={cx(
             'ms-2 h-0.5 w-full flex-1 bg-text-muted group-last:hidden',
-            currentStep === id && !isComleted ? 'bg-slate-50' : 'bg-slate-500'
+            isComleted ? 'bg-slate-50' : 'bg-slate-500'
           )}
         ></div>
       </div>
@@ -77,7 +77,14 @@ const StepperItem = ({
         className='mt-3 w-fit'
         style={{ marginLeft: titleAlignment }}
       >
-        <span className='text-base font-medium leading-[26px] text-text'>
+        <span
+          className={cx(
+            'text-base font-medium leading-[26px] text-text',
+            currentStep === id || isComleted
+              ? 'text-text ring-slate-50'
+              : 'text-slate-500 ring-slate-500'
+          )}
+        >
           {title}
         </span>
       </div>

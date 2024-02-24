@@ -15,7 +15,7 @@ const StatsCard = (props: StatsCardProps) => {
   return (
     <div
       className={cx(
-        'flex w-full flex-col gap-2 rounded-2xl p-4',
+        'flex w-full flex-col items-center gap-2 rounded-2xl p-4',
         sectionBg
       )}
     >
