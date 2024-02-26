@@ -14,9 +14,8 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
       className={cx('relative mx-auto max-w-6xl', props.className)}
     >
       <BgGradient
-        translate={{ x: '100%' }}
         color='blue'
-        className='absolute -top-52 right-48 h-[855px] w-[855px]'
+        className='absolute -top-52 right-48 h-[855px] w-[855px] translate-x-full'
       />
       <Image
         src={Diamond}

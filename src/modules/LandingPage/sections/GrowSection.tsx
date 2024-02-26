@@ -14,11 +14,10 @@ export default function GrowSection(props: ComponentProps<'section'>) {
       className={cx('relative mx-auto max-w-6xl', props.className)}
     >
       <BgGradient
-        translate={{ y: '-50%', x: '100%' }}
         color='blue'
-        className='absolute right-52 top-0 h-[731px] w-[731px] lg:right-28'
+        className='absolute right-52 top-1/2 h-[731px] w-[731px] -translate-y-1/2 translate-x-full lg:right-28'
       />
-      <div className='flex flex-col'>
+      <div className='relative flex flex-col'>
         <Heading className='relative' withMargin>
           <HighlightedText size='sm' rotate={3}>
             Grow

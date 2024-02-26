@@ -22,14 +22,12 @@ export default function VideoSection(props: ComponentProps<'section'>) {
         className='unselectable absolute -right-4 -top-4 h-24 w-24 opacity-60 blur-[3px] md:h-56 md:w-56 xl:-right-40 xl:h-56 xl:w-56'
       />
       <BgGradient
-        translate={{ x: '-75%' }}
         color='dark-blue'
-        className='absolute -left-20 -top-20 h-[731px] w-[731px]'
+        className='absolute -left-20 -top-20 h-[731px] w-[731px] -translate-x-3/4'
       />
       <BgGradient
         color='purple'
-        translate={{ y: '100%', x: '100%' }}
-        className='absolute -bottom-48 right-48 h-[731px] w-[731px] translate-x-3/4 rounded-full lg:bottom-32'
+        className='absolute -bottom-48 right-48 h-[731px] w-[731px] translate-x-full translate-y-full rounded-full lg:bottom-32'
       />
       <div
         className={cx(

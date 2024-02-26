@@ -11,9 +11,8 @@ export default function QuestionsSection(props: ComponentProps<'section'>) {
   return (
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
       <BgGradient
-        translate={{ x: '-50%', y: '-50%' }}
         color='dark-blue'
-        className='absolute left-1/2 top-1/2 h-[572px] w-[572px]'
+        className='absolute left-1/2 top-1/2 h-[572px] w-[572px] -translate-x-1/2 -translate-y-1/2'
       />
       <Image
         src={QuestionMark}

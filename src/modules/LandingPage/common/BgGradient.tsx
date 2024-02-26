@@ -3,7 +3,7 @@ import BlueGradient from '@/assets/graphics/landing/gradients/blue.png'
 import DarkBlueGradient from '@/assets/graphics/landing/gradients/dark-blue.png'
 import GreenGradient from '@/assets/graphics/landing/gradients/green.png'
 import PurpleGradient from '@/assets/graphics/landing/gradients/purple.png'
-import { cx, getBlurFallbackStyles } from '@/utils/class-names'
+import { cx } from '@/utils/class-names'
 import Image, { StaticImageData } from 'next/image'
 import { ComponentProps } from 'react'
 
@@ -18,10 +18,8 @@ const colorMapper: Record<(typeof colors)[number], StaticImageData> = {
 
 export default function BgGradient({
   color,
-  translate,
   ...props
 }: Omit<ComponentProps<'div'>, 'translate'> & {
-  translate?: { x?: string; y?: string }
   color: (typeof colors)[number]
 }) {
   const src = colorMapper[color]
@@ -29,15 +27,15 @@ export default function BgGradient({
   return (
     <div
       {...props}
-      className={cx('relative rounded-full', props.className)}
-      style={{
-        ...getBlurFallbackStyles({ translate }),
-      }}
+      className={cx(
+        'pointer-events-none relative rounded-full',
+        props.className
+      )}
     >
       <Image
         src={src}
         alt=''
-        className='unselectable absolute inset-0 h-full w-full origin-center scale-[250%]'
+        className='unselectable absolute inset-0 h-full w-full origin-center scale-[200%]'
       />
     </div>
   )
