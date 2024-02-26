@@ -4,6 +4,7 @@ import StellaSwap from '@/assets/graphics/landing/stellaswap.png'
 import TokenBgDesktop from '@/assets/graphics/landing/token-bg-desktop.png'
 import TokenBg from '@/assets/graphics/landing/token-bg.png'
 import Button from '@/components/Button'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
@@ -11,6 +12,7 @@ import BgGradient from '../common/BgGradient'
 import Heading from '../common/Heading'
 
 export default function SubAvailableSection(props: ComponentProps<'section'>) {
+  const sendEvent = useSendEvent()
   return (
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
       <BgGradient
@@ -43,6 +45,12 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
                 href='https://www.youtube.com/watch?v=Hggz8sEM2Wk&list=PL5WL9aalTKGwNwY94n8nz8TOd7JVdQdfF&index=2'
                 target='_blank'
                 rel='noopener noreferrer'
+                onClick={() =>
+                  sendEvent('lp_get_sub', {
+                    value: 'mexc',
+                    eventSource: 'sub-available-section',
+                  })
+                }
               >
                 Get SUB
               </Button>
@@ -59,6 +67,12 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
                 href='https://www.youtube.com/watch?v=Gs0y3FECzro&list=PL5WL9aalTKGwNwY94n8nz8TOd7JVdQdfF'
                 target='_blank'
                 rel='noopener noreferrer'
+                onClick={() =>
+                  sendEvent('lp_get_sub', {
+                    value: 'hydradx',
+                    eventSource: 'sub-available-section',
+                  })
+                }
               >
                 Get SUB
               </Button>
@@ -75,6 +89,12 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
                 href='https://docs.subsocial.network/docs/tutorials/GetSUB/stellaswap'
                 target='_blank'
                 rel='noopener noreferrer'
+                onClick={() =>
+                  sendEvent('lp_get_sub', {
+                    value: 'stellaswap',
+                    eventSource: 'sub-available-section',
+                  })
+                }
               >
                 Get SUB
               </Button>

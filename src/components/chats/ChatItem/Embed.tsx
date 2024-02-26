@@ -1,5 +1,5 @@
 import { cx } from '@/utils/class-names'
-import { ComponentProps, useMemo } from 'react'
+import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
 import LiteYouTubeEmbed from 'react-lite-youtube-embed'
 import { InstagramEmbed, TikTokEmbed } from 'react-social-media-embed'
 import { Tweet } from 'react-tweet'
@@ -21,33 +21,46 @@ export default function Embed({ link: url, ...props }: EmbedProps) {
   )
 }
 
-function getYoutubeVideoId(youtubeLink: string) {
-  const regExp =
-    /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
-  const match = youtubeLink.match(regExp)
-  if (match && match[2].length == 11) {
-    return match[2]
+const YOUTUBE_REGEX =
+  /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|\&v=)([^#\&\?]*).*/
+export function getYoutubeVideoId(youtubeLink: string) {
+  const match = youtubeLink.match(YOUTUBE_REGEX)
+  const id = decodeURIComponent(match?.[2] ?? '')
+  if (id.length === 11) {
+    return id
   } else {
     return undefined
   }
 }
 
-function YoutubeEmbed({ link }: { link: string }) {
+export function YoutubeEmbed({
+  link,
+  ...props
+}: { link: string } & ComponentProps<'div'>) {
+  const [thumbnailRes, setThumbnailRes] =
+    useState<ThumbnailRes>('maxresdefault')
   const youtubeId = useMemo(() => getYoutubeVideoId(link), [link])
 
   if (!youtubeId) return null
 
   return (
-    <div className='w-full overflow-hidden rounded-lg'>
+    <div
+      {...props}
+      className={cx(
+        'relative aspect-video w-full overflow-hidden rounded-lg',
+        props.className
+      )}
+    >
+      <YoutubeThumbnailChecker src={link} setThumbnailRes={setThumbnailRes} />
       <LiteYouTubeEmbed
         id={youtubeId}
         adNetwork={true}
         params=''
         playlist={false}
-        poster='hqdefault'
+        poster={thumbnailRes}
         title='YouTube Embed'
         noCookie={true}
-        wrapperClass={cx('w-full h-[300px] rounded-md bg-center relative')}
+        wrapperClass={cx('inset-0 absolute w-full h-full bg-center bg-cover')}
         activatedClass='group activated'
         playerClass={cx(
           'bg-[#f00] rounded-2xl w-20 h-14 top-1/2 left-1/2 -translate-x-1/2 absolute -translate-y-1/2',
@@ -59,6 +72,63 @@ function YoutubeEmbed({ link }: { link: string }) {
         aspectWidth={16}
       />
     </div>
+  )
+}
+
+const thumbnail = [
+  'maxresdefault',
+  'sddefault',
+  'hqdefault',
+  'mqdefault',
+  'default',
+] as const
+export type ThumbnailRes = (typeof thumbnail)[number]
+
+export function YoutubeThumbnailChecker({
+  setThumbnailRes,
+  src,
+}: {
+  src: string
+  setThumbnailRes: (res: ThumbnailRes) => void
+}) {
+  const currentRetries = useRef(0)
+  const imgRef = useRef<HTMLImageElement | null>(null)
+  const youtubeId = useMemo(() => getYoutubeVideoId(src), [src])
+  const [res, setRes] = useState(0)
+  useEffect(() => {
+    setThumbnailRes(thumbnail[res])
+  }, [res, setThumbnailRes])
+
+  useEffect(() => {
+    function checkImage() {
+      if (imgRef.current?.complete) {
+        if (
+          imgRef.current.naturalWidth === 120 &&
+          imgRef.current.naturalHeight === 90
+        ) {
+          if (res < thumbnail.length - 1) {
+            setRes(res + 1)
+          }
+        }
+      } else {
+        currentRetries.current++
+        if (currentRetries.current <= 5)
+          setTimeout(() => {
+            checkImage()
+          }, 200)
+      }
+    }
+    checkImage()
+  }, [res])
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      alt=''
+      ref={imgRef}
+      style={{ display: 'none' }}
+      src={`https://i3.ytimg.com/vi/${youtubeId}/${thumbnail[res]}.jpg`}
+    />
   )
 }
 

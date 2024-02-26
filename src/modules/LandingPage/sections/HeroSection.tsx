@@ -4,16 +4,17 @@ import ThumbsUpImage from '@/assets/graphics/landing/thumbsup.png'
 import WritingImage from '@/assets/graphics/landing/writing.png'
 import Grill from '@/assets/logo/grill.svg'
 import Button from '@/components/Button'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import { ComponentProps, forwardRef } from 'react'
 import { HiChevronRight } from 'react-icons/hi2'
 import Heading from '../common/Heading'
 
 const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
   ({ ...props }, ref) => {
-    const router = useRouter()
+    const sendEvent = useSendEvent()
+
     return (
       <section
         {...props}
@@ -77,6 +78,9 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
                 size='xl'
                 roundings='xl'
                 href='/ask'
+                onClick={() =>
+                  sendEvent('lp_ask_questions', { eventSource: 'hero' })
+                }
               >
                 Ask Questions
               </Button>
@@ -85,6 +89,9 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
                 size='xl'
                 roundings='xl'
                 href='/staking'
+                onClick={() =>
+                  sendEvent('lp_start_earning', { eventSource: 'hero' })
+                }
               >
                 Start Earning
               </Button>

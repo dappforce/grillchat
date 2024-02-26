@@ -1,5 +1,6 @@
 import Grill from '@/assets/logo/grill.svg'
 import Button from '@/components/Button'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { Transition } from '@headlessui/react'
 
@@ -10,6 +11,8 @@ export default function Navbar({
   isShowing?: boolean
   className?: string
 }) {
+  const sendEvent = useSendEvent()
+
   return (
     <Transition
       as='nav'
@@ -35,6 +38,9 @@ export default function Navbar({
             className='hidden px-4.5 py-2 text-lg sm:block'
             roundings='xl'
             href='/ask'
+            onClick={() =>
+              sendEvent('lp_ask_questions', { eventSource: 'navbar' })
+            }
           >
             Ask Questions
           </Button>
@@ -43,6 +49,9 @@ export default function Navbar({
             className='px-4 py-1 text-lg sm:px-4.5 sm:py-2'
             roundings='xl'
             href='/staking'
+            onClick={() =>
+              sendEvent('lp_start_earning', { eventSource: 'navbar' })
+            }
           >
             Start Earning
           </Button>

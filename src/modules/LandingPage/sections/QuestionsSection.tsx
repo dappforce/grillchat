@@ -1,6 +1,7 @@
 import Diamond from '@/assets/graphics/landing/diamond.png'
 import QuestionMark from '@/assets/graphics/landing/question-mark.png'
 import Button from '@/components/Button'
+import { useSendEvent } from '@/stores/analytics'
 import { cx, getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
@@ -8,6 +9,7 @@ import BgGradient from '../common/BgGradient'
 import Heading from '../common/Heading'
 
 export default function QuestionsSection(props: ComponentProps<'section'>) {
+  const sendEvent = useSendEvent()
   return (
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
       <BgGradient
@@ -35,7 +37,15 @@ export default function QuestionsSection(props: ComponentProps<'section'>) {
       <div className='relative flex flex-col items-center gap-6'>
         <Image src={Diamond} alt='' className='unselectable w-14' />
         <Heading>Still Have Questions?</Heading>
-        <Button variant='landingPrimary' size='xl' roundings='xl' href='/ask'>
+        <Button
+          variant='landingPrimary'
+          size='xl'
+          roundings='xl'
+          href='/ask'
+          onClick={() =>
+            sendEvent('lp_ask_questions', { eventSource: 'ask-section' })
+          }
+        >
           Ask them here
         </Button>
       </div>

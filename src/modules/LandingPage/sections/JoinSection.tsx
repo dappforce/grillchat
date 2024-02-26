@@ -1,13 +1,19 @@
 import CoinsImage from '@/assets/graphics/landing/coins.png'
 import Button from '@/components/Button'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
 
 export default function JoinSection({
   contentClassName,
+  eventSource,
   ...props
-}: ComponentProps<'section'> & { contentClassName?: string }) {
+}: ComponentProps<'section'> & {
+  contentClassName?: string
+  eventSource?: string
+}) {
+  const sendEvent = useSendEvent()
   return (
     <section
       {...props}
@@ -38,6 +44,11 @@ export default function JoinSection({
             size='xl'
             roundings='xl'
             href='/staking'
+            onClick={() =>
+              sendEvent('lp_start_earning', {
+                eventSource: eventSource || 'join',
+              })
+            }
           >
             Start Earning
           </Button>

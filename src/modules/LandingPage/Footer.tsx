@@ -4,6 +4,7 @@ import LinkText, { LinkTextProps } from '@/components/LinkText'
 import Toast from '@/components/Toast'
 import Input from '@/components/inputs/Input'
 import { useSubscribeInLanding } from '@/services/subsocial-offchain/mutation'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ComponentProps } from 'react'
@@ -11,11 +12,12 @@ import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { BiLogoTelegram } from 'react-icons/bi'
 import { RiDiscordFill, RiTwitterXLine } from 'react-icons/ri'
+import { useInView } from 'react-intersection-observer'
 import { z } from 'zod'
 import HighlightedText from './common/HighlightedText'
 
 export default function Footer(props: ComponentProps<'footer'>) {
-  const { mutate } = useSubscribeInLanding()
+  const sendEvent = useSendEvent()
   return (
     <footer
       className={cx(
@@ -34,21 +36,60 @@ export default function Footer(props: ComponentProps<'footer'>) {
             rotate={3}
             className='max-w-max'
           >
-            <LinkText href='/staking'>Start Earning</LinkText>
+            <LinkText
+              href='/staking'
+              onClick={() =>
+                sendEvent('lp_start_earning', { eventSource: 'footer' })
+              }
+            >
+              Start Earning
+            </LinkText>
           </HighlightedText>
-          <OpenInNewTabLink href='/discuss'>Discuss Grill</OpenInNewTabLink>
-          <OpenInNewTabLink href='https://docs.subsocial.network/docs/basics/content-staking/content-staking'>
+          <OpenInNewTabLink
+            href='/discuss'
+            onClick={() => sendEvent('lp_discuss_grill')}
+          >
+            Discuss Grill
+          </OpenInNewTabLink>
+          <OpenInNewTabLink
+            href='https://docs.subsocial.network/docs/basics/content-staking/content-staking'
+            onClick={() => sendEvent('lp_docs_clicked')}
+          >
             Documentation
           </OpenInNewTabLink>
         </div>
         <div className='flex flex-col gap-3 lg:col-span-3'>
-          <OpenInNewTabLink href='https://www.youtube.com/watch?v=Hggz8sEM2Wk&list=PL5WL9aalTKGwNwY94n8nz8TOd7JVdQdfF&index=2'>
+          <OpenInNewTabLink
+            href='https://www.youtube.com/watch?v=Hggz8sEM2Wk&list=PL5WL9aalTKGwNwY94n8nz8TOd7JVdQdfF&index=2'
+            onClick={() =>
+              sendEvent('lp_get_sub', {
+                value: 'mexc',
+                eventSource: 'footer',
+              })
+            }
+          >
             SUB on MEXC
           </OpenInNewTabLink>
-          <OpenInNewTabLink href='https://www.youtube.com/watch?v=Gs0y3FECzro&list=PL5WL9aalTKGwNwY94n8nz8TOd7JVdQdfF'>
+          <OpenInNewTabLink
+            href='https://www.youtube.com/watch?v=Gs0y3FECzro&list=PL5WL9aalTKGwNwY94n8nz8TOd7JVdQdfF'
+            onClick={() =>
+              sendEvent('lp_get_sub', {
+                value: 'hydradx',
+                eventSource: 'footer',
+              })
+            }
+          >
             SUB on HydraDX
           </OpenInNewTabLink>
-          <OpenInNewTabLink href='https://docs.subsocial.network/docs/tutorials/GetSUB/stellaswap'>
+          <OpenInNewTabLink
+            href='https://docs.subsocial.network/docs/tutorials/GetSUB/stellaswap'
+            onClick={() =>
+              sendEvent('lp_get_sub', {
+                value: 'stellaswap',
+                eventSource: 'footer',
+              })
+            }
+          >
             SUB on StellaSwap
           </OpenInNewTabLink>
         </div>
@@ -66,8 +107,18 @@ export default function Footer(props: ComponentProps<'footer'>) {
           >
             How to Earn SUB
           </OpenInNewTabLink>
-          <OpenInNewTabLink href='/staking'>Lock SUB</OpenInNewTabLink>
-          <OpenInNewTabLink href='https://grill.so/leaderboard'>
+          <OpenInNewTabLink
+            href='/staking'
+            onClick={() =>
+              sendEvent('lp_start_earning', { eventSource: 'footer-lock-sub' })
+            }
+          >
+            Lock SUB
+          </OpenInNewTabLink>
+          <OpenInNewTabLink
+            href='https://grill.so/leaderboard'
+            onClick={() => sendEvent('lp_leaderboard_clicked')}
+          >
             Leaderboard
           </OpenInNewTabLink>
         </div>
@@ -117,8 +168,19 @@ const formSchema = z.object({
 })
 type FormSchema = z.infer<typeof formSchema>
 function ParticipateCard(props: ComponentProps<'div'>) {
+  const sendEvent = useSendEvent()
+  const { ref } = useInView({
+    triggerOnce: true,
+    onChange: (inView) => {
+      if (inView) {
+        sendEvent('lp_email_form_on_screen')
+      }
+    },
+  })
+
   const { mutate, isLoading } = useSubscribeInLanding({
     onSuccess: () => {
+      sendEvent('lp_email_from_sent')
       reset()
       toast.custom((t) => (
         <Toast
@@ -159,6 +221,7 @@ function ParticipateCard(props: ComponentProps<'div'>) {
         'flex flex-col gap-3 rounded-3xl bg-white/5 p-4 pb-5 sm:p-5',
         props.className
       )}
+      ref={ref}
     >
       <span className='text-center text-[#FEEFFB] sm:text-left'>
         Participate in future activities
@@ -171,6 +234,7 @@ function ParticipateCard(props: ComponentProps<'div'>) {
           variant='fill-bg'
           placeholder='Your email'
           size='sm'
+          onClick={() => sendEvent('lp_email_form_clicked')}
           className='bg-[#10182B] pr-12 ring-0'
         />
         <button

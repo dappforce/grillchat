@@ -1,6 +1,7 @@
 import ActivitiesImage from '@/assets/graphics/landing/activities.png'
 import Diamond from '@/assets/graphics/landing/diamond.png'
 import Button from '@/components/Button'
+import { useSendEvent } from '@/stores/analytics'
 import { cx, getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
@@ -8,6 +9,7 @@ import BgGradient from '../common/BgGradient'
 import Heading from '../common/Heading'
 
 export default function EarningsSection(props: ComponentProps<'section'>) {
+  const sendEvent = useSendEvent()
   return (
     <section
       {...props}
@@ -61,6 +63,7 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
               size='xl'
               roundings='xl'
               href='https://grill.so/leaderboard'
+              onClick={() => sendEvent('lp_live_stats')}
             >
               See Live Stats
             </Button>
