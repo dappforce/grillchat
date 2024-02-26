@@ -5,13 +5,16 @@ import WritingImage from '@/assets/graphics/landing/writing.png'
 import Grill from '@/assets/logo/grill.svg'
 import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
+import { getChatPageLink } from '@/utils/links'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { ComponentProps, forwardRef } from 'react'
 import { HiChevronRight } from 'react-icons/hi2'
 import Heading from '../common/Heading'
 
 const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
   ({ ...props }, ref) => {
+    const router = useRouter()
     return (
       <section
         {...props}
@@ -70,10 +73,20 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
           </div>
           <div className='mt-8 flex flex-col items-center gap-6 sm:mb-[4vh] sm:mt-[max(4rem,_4vh)]'>
             <div className='flex w-full flex-col-reverse justify-center gap-3 text-lg sm:flex-row sm:items-center sm:gap-4'>
-              <Button variant='landingPrimaryOutline' size='xl' roundings='xl'>
+              <Button
+                variant='landingPrimaryOutline'
+                size='xl'
+                roundings='xl'
+                href={getChatPageLink(router, 'subsocial-official-54469')}
+              >
                 Ask Questions
               </Button>
-              <Button variant='landingPrimary' size='xl' roundings='xl'>
+              <Button
+                variant='landingPrimary'
+                size='xl'
+                roundings='xl'
+                href='https://grill.so'
+              >
                 Start Earning
               </Button>
             </div>

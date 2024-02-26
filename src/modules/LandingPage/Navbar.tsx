@@ -1,7 +1,9 @@
 import Grill from '@/assets/logo/grill.svg'
 import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
+import { getChatPageLink } from '@/utils/links'
 import { Transition } from '@headlessui/react'
+import { useRouter } from 'next/router'
 
 export default function Navbar({
   className,
@@ -10,6 +12,8 @@ export default function Navbar({
   isShowing?: boolean
   className?: string
 }) {
+  const router = useRouter()
+
   return (
     <Transition
       as='nav'
@@ -34,6 +38,7 @@ export default function Navbar({
             variant='landingPrimaryOutline'
             className='hidden px-4.5 py-2 text-lg sm:block'
             roundings='xl'
+            href={getChatPageLink(router, 'subsocial-official-54469')}
           >
             Ask Questions
           </Button>
@@ -41,6 +46,7 @@ export default function Navbar({
             variant='landingPrimary'
             className='px-4 py-1 text-lg sm:px-4.5 sm:py-2'
             roundings='xl'
+            href='/'
           >
             Start Earning
           </Button>

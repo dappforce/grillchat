@@ -15,7 +15,7 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
     >
       <BgGradient
         translate={{ x: '100%' }}
-        color='#5D88F0A8'
+        color='blue'
         className='absolute -top-52 right-48 h-[855px] w-[855px]'
       />
       <Image
@@ -61,6 +61,7 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
               variant='landingPrimary'
               size='xl'
               roundings='xl'
+              href='https://grill.so/leaderboard'
             >
               See Live Stats
             </Button>

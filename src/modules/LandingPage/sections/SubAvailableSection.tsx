@@ -15,7 +15,7 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
       <BgGradient
         translate={{ x: '-100%', y: '-100%' }}
-        color='#33A6BF94'
+        color='green'
         className='absolute left-32 top-3/4 h-[731px] w-[731px]'
       />
       <div className='relative overflow-clip rounded-3xl px-4 py-8 pb-4 lg:p-10'>

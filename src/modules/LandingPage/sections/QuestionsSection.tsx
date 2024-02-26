@@ -12,7 +12,7 @@ export default function QuestionsSection(props: ComponentProps<'section'>) {
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
       <BgGradient
         translate={{ x: '-50%', y: '-50%' }}
-        color='#4F46E5B5'
+        color='dark-blue'
         className='absolute left-1/2 top-1/2 h-[572px] w-[572px]'
       />
       <Image

@@ -23,11 +23,11 @@ export default function VideoSection(props: ComponentProps<'section'>) {
       />
       <BgGradient
         translate={{ x: '-75%' }}
-        color='#4F46E5C4'
+        color='dark-blue'
         className='absolute -left-20 -top-20 h-[731px] w-[731px]'
       />
       <BgGradient
-        color='#D034E9A6'
+        color='purple'
         translate={{ y: '100%', x: '100%' }}
         className='absolute -bottom-48 right-48 h-[731px] w-[731px] translate-x-3/4 rounded-full lg:bottom-32'
       />

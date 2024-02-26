@@ -15,7 +15,7 @@ export default function GrowSection(props: ComponentProps<'section'>) {
     >
       <BgGradient
         translate={{ y: '-50%', x: '100%' }}
-        color='#48AEF861'
+        color='blue'
         className='absolute right-52 top-0 h-[731px] w-[731px] lg:right-28'
       />
       <div className='flex flex-col'>

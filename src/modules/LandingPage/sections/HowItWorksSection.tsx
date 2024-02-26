@@ -14,7 +14,7 @@ export default function HowItWorksSection(props: ComponentProps<'section'>) {
     <section className={cx('relative mx-auto max-w-6xl', props.className)}>
       <BgGradient
         translate={{ x: '-100%' }}
-        color='#4F46E5C4'
+        color='dark-blue'
         className='absolute bottom-0 left-24 h-[731px] w-[731px]'
       />
       <Image
