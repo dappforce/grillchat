@@ -1,10 +1,10 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
-import { cva, VariantProps } from 'class-variance-authority'
+import { VariantProps, cva } from 'class-variance-authority'
 import Link, { LinkProps } from 'next/link'
 import { ComponentProps, forwardRef } from 'react'
 import Spinner from './Spinner'
 
-export const buttonStyles = cva('relative rounded-full transition', {
+export const buttonStyles = cva('relative transition', {
   variants: {
     variant: {
       primary:
@@ -15,6 +15,14 @@ export const buttonStyles = cva('relative rounded-full transition', {
       mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
       transparent: 'bg-transparent',
       redOutline: 'bg-transparent border border-text-red',
+      landingPrimary:
+        'bg-gradient-to-r from-[#DB4646] to-[#F9A11E] text-white hover:!ring-white/50 focus-visible:!ring-white/50',
+      landingPrimaryOutline:
+        'border border-[#DB4646] text-white hover:!ring-white/50 focus-visible:!ring-white/50',
+    },
+    roundings: {
+      full: 'rounded-full',
+      xl: 'rounded-xl',
     },
     disabledStyle: {
       default: '',
@@ -30,6 +38,7 @@ export const buttonStyles = cva('relative rounded-full transition', {
       sm: 'px-4 py-1.5',
       md: 'px-6 py-2',
       lg: 'px-8 py-3',
+      xl: 'text-lg md:text-xl py-2.5 px-4 md:py-3 md:px-5',
     },
     interactive: {
       all: cx(
@@ -49,6 +58,7 @@ export const buttonStyles = cva('relative rounded-full transition', {
     size: 'md',
     interactive: 'all',
     disabledStyle: 'default',
+    roundings: 'full',
   },
   compoundVariants: [
     {
@@ -89,6 +99,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     nextLinkProps,
     loadingText = 'Loading',
     disabledStyle,
+    roundings,
     type = 'button',
     ...props
   },
@@ -114,6 +125,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       disabled: disabled && withDisabledStyles,
       interactive,
       disabledStyle,
+      roundings,
     }),
     'inline-block text-center',
     props.className

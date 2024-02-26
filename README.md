@@ -1,5 +1,5 @@
 <a href="https://x.grill.chat">
-  <p align="center"><img height=100 src="https://raw.githubusercontent.com/dappforce/grillchat/main/src/assets/logo/logo.svg"/></p>
+  <p align="center"><img height=100 src="https://raw.githubusercontent.com/dappforce/grillchat/main/src/assets/logo/grill.svg"/></p>
 </a>
 <p align="center">
   <strong>

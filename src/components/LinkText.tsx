@@ -21,13 +21,16 @@ export const linkTextStyles = cva(
   }
 )
 
-export type LinkTextProps = Omit<ComponentProps<'a'>, 'href'> &
-  VariantProps<typeof linkTextStyles> & {
-    href?: LinkProps['href']
-    openInNewTab?: boolean
-    withArrow?: boolean
-    arrowClassName?: string
-  }
+export type LinkTextProps = Omit<
+  Omit<ComponentProps<'a'>, 'href'> &
+    VariantProps<typeof linkTextStyles> & {
+      href?: LinkProps['href']
+      openInNewTab?: boolean
+      withArrow?: boolean
+      arrowClassName?: string
+    },
+  'ref'
+>
 
 const LinkText = forwardRef<any, LinkTextProps>(function LinkText(
   { href, variant, openInNewTab, withArrow, arrowClassName, ...props },
