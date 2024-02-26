@@ -15,7 +15,8 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
     >
       <BgGradient
         translate={{ x: '100%' }}
-        className='absolute -top-52 right-48 h-[855px] w-[855px] bg-[#5D88F0A8]'
+        color='#5D88F0A8'
+        className='absolute -top-52 right-48 h-[855px] w-[855px]'
       />
       <Image
         src={Diamond}
