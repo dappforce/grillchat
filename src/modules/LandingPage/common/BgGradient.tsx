@@ -35,6 +35,7 @@ export default function BgGradient({
       <Image
         src={src}
         alt=''
+        priority
         className='unselectable absolute inset-0 h-full w-full origin-center scale-[200%]'
       />
     </div>
