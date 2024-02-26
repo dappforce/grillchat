@@ -17,7 +17,7 @@ export const ContentStaking = () => {
         <HowItWorksSection />
         <FAQSection />
         <SectionWrapper className='flex flex-col items-center gap-4 px-4 py-6'>
-          <div className='text-2xl font-bold leading-none text-text'>
+          <div className='text-[28px] font-bold leading-none'>
             Still have questions? Ask others
           </div>
           <Button variant='primaryOutline' size='lg'>

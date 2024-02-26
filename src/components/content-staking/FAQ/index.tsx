@@ -63,7 +63,7 @@ const items = [
 const FAQSection = () => {
   return (
     <div className='flex flex-col gap-4'>
-      <div className='text-2xl font-bold leading-none text-text'>FAQ</div>
+      <div className='text-[28px] font-bold leading-none'>FAQ</div>
       <SectionWrapper className='px-4 py-6'>
         <div>
           <Accordion items={items} />

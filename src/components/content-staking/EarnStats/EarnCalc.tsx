@@ -74,13 +74,13 @@ const EarnCalcSection = () => {
   return (
     <div className='flex flex-col gap-4'>
       <div>
-        <div className='text-2xl font-bold leading-none'>
+        <div className='text-[28px] font-bold leading-none'>
           How much can I earn
         </div>
       </div>
       <SectionWrapper className='flex flex-col gap-4'>
         <div className='p-4'>
-          <div className='mb-16 text-base text-text'>
+          <div className='mb-16 text-xl text-text'>
             How much would you like to stake?
           </div>
           <RangeInput

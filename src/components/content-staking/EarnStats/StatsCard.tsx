@@ -7,7 +7,7 @@ type StatsCardProps = {
   title: React.ReactNode
   desc: React.ReactNode
   subDesc?: React.ReactNode
-  tooltipText: string
+  tooltipText: React.ReactNode
   titleClassName?: string
 }
 
@@ -33,7 +33,7 @@ export const StatsCardContent = ({
 }: StatsCardProps) => {
   return (
     <>
-      <div className='text-sm font-normal text-text-muted'>
+      <div className='text-base font-normal text-slate-300 leading-[22px]'>
         <PopOver
           trigger={
             <div className={cx('flex items-center gap-2')}>
@@ -50,9 +50,9 @@ export const StatsCardContent = ({
           {tooltipText}
         </PopOver>
       </div>
-      <div className='text-2xl font-semibold text-text'>{desc}</div>
+      <div className='text-2xl font-semibold text-text leading-8'>{desc}</div>
       {subDesc && (
-        <div className='text-base font-normal text-slate-400'>{subDesc}</div>
+        <div className='text-base font-normal text-slate-300 leading-none'>{subDesc}</div>
       )}
     </>
   )

@@ -46,7 +46,7 @@ const EarnStats = () => {
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between gap-4'>
-        <div className='text-2xl font-bold leading-none'>
+        <div className='text-[28px] font-bold leading-none'>
           How much others earn
         </div>
         <LinkText variant='primary' className='no-underline'>

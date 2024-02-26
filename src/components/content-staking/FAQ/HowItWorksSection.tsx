@@ -2,12 +2,12 @@ import SectionWrapper from '../utils/SectionWrapper'
 
 const HowItWorksSection = () => {
   return (
-    <div className='flex w-full flex-col items-center gap-2'>
+    <div className='flex w-full flex-col items-center gap-4'>
       <div className='flex w-full flex-col items-center gap-2'>
-        <div className='text-2xl font-bold leading-none text-text'>
+        <div className='text-[28px] font-bold leading-none'>
           How does it work
         </div>
-        <div className='text-sm font-normal leading-[22px] text-text-muted'>
+        <div className='text-base font-normal text-slate-300 leading-[22px]'>
           Watch a quick video tutorial:
         </div>
       </div>

@@ -15,6 +15,7 @@ import { useMemo } from 'react'
 import { BsQuestionCircle } from 'react-icons/bs'
 import { getBackerLedgerQuery } from '../../../services/contentStaking/backerLedger/query'
 import { sectionBg } from '../utils/SectionWrapper'
+import { StatsCardContent } from '../EarnStats/StatsCard'
 
 const StatsCards = () => {
   const myAddress = useMyMainAddress()
@@ -63,6 +64,7 @@ const StatsCards = () => {
           </SkeletonFallback>
         ),
         infoTitle: 'How many tokens you have locked',
+        desc: 'asdasdasd',
       },
       {
         title: 'Total locked',
@@ -72,6 +74,7 @@ const StatsCards = () => {
           </SkeletonFallback>
         ),
         infoTitle: 'The total amount of tokens locked on the Subsocial network',
+        desc: 'asdasdasd',
       },
       {
         title: 'Total participants',
@@ -110,11 +113,11 @@ type StatsCardProps = {
   title: string
   value: React.ReactNode
   desc?: React.ReactNode
-  infoTitle?: React.ReactNode
+  infoTitle: React.ReactNode
   className?: string
 }
 
-export const DashboardCard = ({
+const DashboardCard = ({
   title,
   value,
   desc,
@@ -125,37 +128,18 @@ export const DashboardCard = ({
     <div
       className={cx(
         'w-full',
-        'flex flex-col gap-2 rounded-2xl !py-4 px-4 md:px-6',
+        'flex flex-col items-center gap-2 rounded-2xl !py-4 px-4 md:px-6',
         sectionBg,
         className
       )}
     >
-      <div className='flex items-center gap-2 text-text-muted'>
-        {infoTitle ? (
-          <PopOver
-            trigger={
-              <div className='flex items-center gap-2'>
-                {title}
-                <BsQuestionCircle />
-              </div>
-            }
-            panelSize='sm'
-            yOffset={4}
-            placement='top'
-            triggerOnHover
-          >
-            {infoTitle}
-          </PopOver>
-        ) : (
-          title
-        )}
-      </div>
-      <div>
-        <div className='text-[19px] font-semibold text-text md:text-2xl'>
-          {value}
-        </div>
-        {desc && <div className='text-sm text-text-muted'>{desc}</div>}
-      </div>
+      <StatsCardContent
+        title={title}
+        desc={value}
+        tooltipText={infoTitle}
+        titleClassName='justify-center'
+        subDesc={desc} 
+      />
     </div>
   )
 }

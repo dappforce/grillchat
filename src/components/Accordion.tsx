@@ -13,7 +13,7 @@ type AccordionProps = {
 
 const Accordion = ({ items }: AccordionProps) => {
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex flex-col gap-6'>
       {items.map((item, index) => (
         <AccordionItem key={index} {...item} />
       ))}
@@ -28,7 +28,7 @@ const AccordionItem = ({ title, content }: AccordionItemProps) => {
     <div className='flex flex-col'>
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className='flex items-center gap-2 text-base font-medium leading-none text-text'
+        className='flex items-center gap-2 text-xl font-medium leading-none text-text'
       >
         <FaAngleRight
           size={20}
@@ -44,7 +44,7 @@ const AccordionItem = ({ title, content }: AccordionItemProps) => {
       </div>
       <div
         className={cx(
-          'ml-[28px] grid overflow-hidden text-base font-normal leading-6 text-text-muted',
+          'ml-[28px] grid overflow-hidden text-base font-normal leading-6 text-slate-300',
           'transition-[grid-template-rows] duration-300 ease-out',
           { ['mb-2 grid-rows-1 mt-4']: isOpen, ['grid-rows-0']: !isOpen }
         )}
