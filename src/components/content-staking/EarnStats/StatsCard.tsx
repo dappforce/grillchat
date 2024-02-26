@@ -4,9 +4,9 @@ import { cx } from '../../../utils/class-names'
 import { sectionBg } from '../utils/SectionWrapper'
 
 type StatsCardProps = {
-  title: string
-  desc: string
-  subDesc?: string
+  title: React.ReactNode
+  desc: React.ReactNode
+  subDesc?: React.ReactNode
   tooltipText: string
   titleClassName?: string
 }

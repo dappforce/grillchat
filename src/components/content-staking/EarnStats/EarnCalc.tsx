@@ -1,6 +1,12 @@
 import RangeInput from '@/components/inputs/RangeInput'
+import SkeletonFallback from '@/components/SkeletonFallback'
+import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
+import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
+import { getPriceQuery } from '@/services/subsocial/prices/query'
 import { cx } from '@/utils/class-names'
-import { useState } from 'react'
+import { balanceWithDecimal, convertToBalanceWithDecimal } from '@subsocial/utils'
+import BN from 'bignumber.js'
+import { useMemo, useState } from 'react'
 import SectionWrapper from '../utils/SectionWrapper'
 import { StatsCardContent } from './StatsCard'
 const mockedData = [
@@ -34,6 +40,36 @@ const RangeLabel = ({ label, desc, className }: RangeLabelProps) => {
 
 const EarnCalcSection = () => {
   const [rangeValue, setRangeValue] = useState(1000)
+  const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
+  const { data, isLoading } = getGeneralEraInfoData()
+  const { data: price, isLoading: priceLoading } =
+    getPriceQuery.useQuery('subsocial')
+
+  const tokenPrice = price?.current_price
+
+  const { locked } = data || {}
+
+  const { min, max, subAmount } = useMemo(() => {
+    if (!locked || !tokenPrice) return { min: new BN(0), max: new BN(0), subAmount: new BN(0) }
+
+    const subAmount = new BN(rangeValue).dividedBy(new BN(tokenPrice))
+
+    const lockedWithDecimal = convertToBalanceWithDecimal(
+      locked,
+      decimal || 0
+    )
+
+    const min = new BN(5.75)
+      .multipliedBy(new BN(7200))
+      .multipliedBy(new BN(7))
+      .dividedBy(lockedWithDecimal)
+      .multipliedBy(subAmount)
+
+    const max = min.multipliedBy(new BN(3))
+
+    return { min, max, subAmount }
+  }, [rangeValue, locked, tokenPrice])
+
 
   return (
     <div className='flex flex-col gap-4'>
@@ -60,7 +96,7 @@ const EarnCalcSection = () => {
                   ${rangeValue.toString()}
                 </span>
                 <span className='text-sm leading-none text-white/80'>
-                  2000 SUB
+                  {subAmount?.toFixed(2)} {tokenSymbol}
                 </span>
               </div>
             }
@@ -88,7 +124,11 @@ const EarnCalcSection = () => {
             <div className='flex w-full flex-col items-center gap-2 py-4 text-center'>
               <StatsCardContent
                 title='Your minimum rewards:'
-                desc={'34.35 SUB / week'}
+                desc={
+                  <SkeletonFallback isLoading={isLoading || priceLoading}>
+                    {min.toFixed(2)} {tokenSymbol} / week
+                  </SkeletonFallback>
+                }
                 tooltipText={'blablabla'}
                 titleClassName='justify-center'
                 subDesc='$56.34'
@@ -98,7 +138,11 @@ const EarnCalcSection = () => {
             <div className='flex w-full flex-col items-center gap-2 py-4 text-center'>
               <StatsCardContent
                 title='Your maximum rewards:'
-                desc={'144.35 SUB / week'}
+                desc={
+                  <SkeletonFallback isLoading={isLoading || priceLoading}>
+                    {max.toFixed(2)} {tokenSymbol} / week
+                  </SkeletonFallback>
+                }
                 tooltipText={'blablabla'}
                 titleClassName='justify-center'
                 subDesc='$210.37'
