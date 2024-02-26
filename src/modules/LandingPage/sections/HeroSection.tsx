@@ -5,7 +5,6 @@ import WritingImage from '@/assets/graphics/landing/writing.png'
 import Grill from '@/assets/logo/grill.svg'
 import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
-import { getChatPageLink } from '@/utils/links'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ComponentProps, forwardRef } from 'react'
@@ -77,7 +76,7 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
                 variant='landingPrimaryOutline'
                 size='xl'
                 roundings='xl'
-                href={getChatPageLink(router, 'subsocial-official-54469')}
+                href='/ask'
               >
                 Ask Questions
               </Button>
@@ -85,7 +84,7 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
                 variant='landingPrimary'
                 size='xl'
                 roundings='xl'
-                href='https://grill.so'
+                href='/staking'
               >
                 Start Earning
               </Button>

@@ -35,7 +35,7 @@ export default function QuestionsSection(props: ComponentProps<'section'>) {
       <div className='relative flex flex-col items-center gap-6'>
         <Image src={Diamond} alt='' className='unselectable w-14' />
         <Heading>Still Have Questions?</Heading>
-        <Button variant='landingPrimary' size='xl' roundings='xl'>
+        <Button variant='landingPrimary' size='xl' roundings='xl' href='/ask'>
           Ask them here
         </Button>
       </div>

@@ -33,7 +33,12 @@ export default function JoinSection({
             <br className='hidden sm:inline' />
             from every like and post you do
           </span>
-          <Button className='bg-white text-[#3C39C0]' size='xl' roundings='xl'>
+          <Button
+            className='bg-white text-[#3C39C0]'
+            size='xl'
+            roundings='xl'
+            href='/staking'
+          >
             Start Earning
           </Button>
         </div>

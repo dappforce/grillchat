@@ -27,20 +27,42 @@ export default function Footer(props: ComponentProps<'footer'>) {
             rotate={3}
             className='max-w-max'
           >
-            <LinkText>Start Earning</LinkText>
+            <LinkText href='/staking'>Start Earning</LinkText>
           </HighlightedText>
-          <OpenInNewTabLink>Discuss Grill</OpenInNewTabLink>
-          <OpenInNewTabLink>Documentation</OpenInNewTabLink>
+          <OpenInNewTabLink href='/discuss'>Discuss Grill</OpenInNewTabLink>
+          <OpenInNewTabLink href='https://docs.subsocial.network/docs/basics/content-staking/content-staking'>
+            Documentation
+          </OpenInNewTabLink>
         </div>
         <div className='flex flex-col gap-3 lg:col-span-3'>
-          <OpenInNewTabLink>SUB on MEXC</OpenInNewTabLink>
-          <OpenInNewTabLink>SUB on HydraDX</OpenInNewTabLink>
-          <OpenInNewTabLink>SUB on StellaSwap</OpenInNewTabLink>
+          <OpenInNewTabLink href='https://www.youtube.com/watch?v=Hggz8sEM2Wk&list=PL5WL9aalTKGwNwY94n8nz8TOd7JVdQdfF&index=2'>
+            SUB on MEXC
+          </OpenInNewTabLink>
+          <OpenInNewTabLink href='https://www.youtube.com/watch?v=Gs0y3FECzro&list=PL5WL9aalTKGwNwY94n8nz8TOd7JVdQdfF'>
+            SUB on HydraDX
+          </OpenInNewTabLink>
+          <OpenInNewTabLink href='https://docs.subsocial.network/docs/tutorials/GetSUB/stellaswap'>
+            SUB on StellaSwap
+          </OpenInNewTabLink>
         </div>
         <div className='flex flex-col gap-3 lg:col-span-3'>
-          <OpenInNewTabLink>How to Earn SUB</OpenInNewTabLink>
-          <OpenInNewTabLink>Lock SUB</OpenInNewTabLink>
-          <OpenInNewTabLink>Leaderboard</OpenInNewTabLink>
+          <OpenInNewTabLink
+            openInNewTab={false}
+            onClick={(e) => {
+              e.preventDefault()
+              document
+                .getElementById('how-to-earn')
+                ?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            style={{ scrollMarginTop: '64px' }}
+            href='#how-to-earn'
+          >
+            How to Earn SUB
+          </OpenInNewTabLink>
+          <OpenInNewTabLink href='/staking'>Lock SUB</OpenInNewTabLink>
+          <OpenInNewTabLink href='https://grill.so/leaderboard'>
+            Leaderboard
+          </OpenInNewTabLink>
         </div>
         <div className='col-span-2 mt-4 flex flex-col gap-3 rounded-3xl bg-white/5 p-4 pb-5 sm:col-span-3 sm:mt-4 sm:p-5 lg:col-span-5 lg:mt-0'>
           <span className='text-center text-[#FEEFFB] sm:text-left'>
@@ -103,6 +125,7 @@ function OpenInNewTabLink({ children, ...props }: LinkTextProps) {
     <LinkText
       {...props}
       className={cx('flex max-w-max items-center gap-2', props.className)}
+      openInNewTab={props.openInNewTab ?? true}
     >
       <span className='inline-block'>{children}</span>
       <svg width='20' height='21' viewBox='0 0 20 21' fill='none'>

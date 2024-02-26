@@ -36,7 +36,14 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
               <span className='-mt-1 text-lg sm:mt-0 sm:text-xl lg:text-2xl'>
                 View Instructions
               </span>
-              <Button variant='landingPrimary' roundings='xl' size='xl'>
+              <Button
+                variant='landingPrimary'
+                roundings='xl'
+                size='xl'
+                href='https://www.youtube.com/watch?v=Hggz8sEM2Wk&list=PL5WL9aalTKGwNwY94n8nz8TOd7JVdQdfF&index=2'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
                 Get SUB
               </Button>
             </div>
@@ -45,7 +52,14 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
               <span className='-mt-1 text-lg sm:mt-0 sm:text-xl lg:text-2xl'>
                 View Instructions
               </span>
-              <Button variant='landingPrimary' roundings='xl' size='xl'>
+              <Button
+                variant='landingPrimary'
+                roundings='xl'
+                size='xl'
+                href='https://www.youtube.com/watch?v=Gs0y3FECzro&list=PL5WL9aalTKGwNwY94n8nz8TOd7JVdQdfF'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
                 Get SUB
               </Button>
             </div>
@@ -54,7 +68,14 @@ export default function SubAvailableSection(props: ComponentProps<'section'>) {
               <span className='-mt-1 text-lg sm:mt-0 sm:text-xl lg:text-2xl'>
                 View Instructions
               </span>
-              <Button variant='landingPrimary' roundings='xl' size='xl'>
+              <Button
+                variant='landingPrimary'
+                roundings='xl'
+                size='xl'
+                href='https://docs.subsocial.network/docs/tutorials/GetSUB/stellaswap'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
                 Get SUB
               </Button>
             </div>

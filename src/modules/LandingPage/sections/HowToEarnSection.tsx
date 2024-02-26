@@ -10,7 +10,11 @@ export default function HowToEarnSection(props: ComponentProps<'section'>) {
   return (
     <section
       {...props}
-      className={cx('relative mx-auto max-w-6xl', props.className)}
+      id='how-to-earn'
+      className={cx(
+        'relative mx-auto max-w-6xl scroll-mt-24 scroll-smooth',
+        props.className
+      )}
     >
       <div className='flex flex-col items-center'>
         <Heading withMargin>How To Earn Tokens On The Platform</Heading>
