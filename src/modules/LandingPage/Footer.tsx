@@ -1,14 +1,21 @@
 import Grill from '@/assets/logo/grill.svg'
 import Button from '@/components/Button'
 import LinkText, { LinkTextProps } from '@/components/LinkText'
+import Toast from '@/components/Toast'
 import Input from '@/components/inputs/Input'
+import { useSubscribeInLanding } from '@/services/subsocial-offchain/mutation'
 import { cx } from '@/utils/class-names'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { ComponentProps } from 'react'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { BiLogoTelegram } from 'react-icons/bi'
 import { RiDiscordFill, RiTwitterXLine } from 'react-icons/ri'
+import { z } from 'zod'
 import HighlightedText from './common/HighlightedText'
 
 export default function Footer(props: ComponentProps<'footer'>) {
+  const { mutate } = useSubscribeInLanding()
   return (
     <footer
       className={cx(
@@ -64,31 +71,7 @@ export default function Footer(props: ComponentProps<'footer'>) {
             Leaderboard
           </OpenInNewTabLink>
         </div>
-        <div className='col-span-2 mt-4 flex flex-col gap-3 rounded-3xl bg-white/5 p-4 pb-5 sm:col-span-3 sm:mt-4 sm:p-5 lg:col-span-5 lg:mt-0'>
-          <span className='text-center text-[#FEEFFB] sm:text-left'>
-            Participate in future activities
-          </span>
-          <div className='relative'>
-            <Input
-              variant='fill-bg'
-              placeholder='Your email'
-              size='sm'
-              className='bg-[#10182B] pr-12 ring-0'
-            />
-            <svg
-              width='18'
-              height='15'
-              viewBox='0 0 18 15'
-              fill='none'
-              className='absolute right-4 top-1/2 -translate-y-1/2'
-            >
-              <path
-                d='M1 6.5C0.447715 6.5 -4.82823e-08 6.94772 0 7.5C4.82823e-08 8.05228 0.447715 8.5 1 8.5L1 6.5ZM17.7071 8.20711C18.0976 7.81658 18.0976 7.18342 17.7071 6.79289L11.3431 0.428931C10.9526 0.0384069 10.3195 0.038407 9.92893 0.428931C9.53841 0.819456 9.53841 1.45262 9.92893 1.84315L15.5858 7.5L9.92893 13.1569C9.53841 13.5474 9.53841 14.1805 9.92893 14.5711C10.3195 14.9616 10.9526 14.9616 11.3431 14.5711L17.7071 8.20711ZM1 8.5L17 8.5L17 6.5L1 6.5L1 8.5Z'
-                fill='white'
-              />
-            </svg>
-          </div>
-        </div>
+        <ParticipateCard className='col-span-2 mt-4 sm:col-span-3 sm:mt-4 lg:col-span-5 lg:mt-0' />
       </div>
       <div className='flex justify-between pb-16'>
         <span className='text-lg text-[#805B7B]'>© 2024 Grill.so</span>
@@ -117,6 +100,83 @@ export default function Footer(props: ComponentProps<'footer'>) {
         </div>
       </div>
     </footer>
+  )
+}
+
+const formSchema = z.object({
+  email: z.string().email('Invalid email address'),
+})
+type FormSchema = z.infer<typeof formSchema>
+function ParticipateCard(props: ComponentProps<'div'>) {
+  const { mutate, isLoading } = useSubscribeInLanding({
+    onSuccess: () => {
+      reset()
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          type='default'
+          icon={() => <span className='mr-1'>🎉</span>}
+          title='Thanks for joining us! Exciting updates await in your inbox!'
+        />
+      ))
+    },
+  })
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormSchema>({
+    mode: 'onChange',
+    resolver: zodResolver(formSchema),
+    defaultValues: { email: '' },
+  })
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (errors.email?.message) {
+      toast.custom((t) => (
+        <Toast t={t} type='error' title={errors.email?.message} />
+      ))
+    }
+    handleSubmit((data) => {
+      mutate({ email: data.email })
+    })(e)
+  }
+
+  return (
+    <div
+      {...props}
+      className={cx(
+        'flex flex-col gap-3 rounded-3xl bg-white/5 p-4 pb-5 sm:p-5',
+        props.className
+      )}
+    >
+      <span className='text-center text-[#FEEFFB] sm:text-left'>
+        Participate in future activities
+      </span>
+      <form className='relative' onSubmit={onSubmit}>
+        <Input
+          {...register('email')}
+          disabled={isLoading}
+          type='email'
+          variant='fill-bg'
+          placeholder='Your email'
+          size='sm'
+          className='bg-[#10182B] pr-12 ring-0'
+        />
+        <button
+          type='submit'
+          className='absolute right-4 top-1/2 -translate-y-1/2'
+        >
+          <svg width='18' height='15' viewBox='0 0 18 15' fill='none'>
+            <path
+              d='M1 6.5C0.447715 6.5 -4.82823e-08 6.94772 0 7.5C4.82823e-08 8.05228 0.447715 8.5 1 8.5L1 6.5ZM17.7071 8.20711C18.0976 7.81658 18.0976 7.18342 17.7071 6.79289L11.3431 0.428931C10.9526 0.0384069 10.3195 0.038407 9.92893 0.428931C9.53841 0.819456 9.53841 1.45262 9.92893 1.84315L15.5858 7.5L9.92893 13.1569C9.53841 13.5474 9.53841 14.1805 9.92893 14.5711C10.3195 14.9616 10.9526 14.9616 11.3431 14.5711L17.7071 8.20711ZM1 8.5L17 8.5L17 6.5L1 6.5L1 8.5Z'
+              fill='white'
+            />
+          </svg>
+        </button>
+      </form>
+    </div>
   )
 }
 

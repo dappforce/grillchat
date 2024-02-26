@@ -17,3 +17,11 @@ export async function subscribeWithEmail({
   return res.data
 }
 export const useSubscribeWithEmail = mutationWrapper(subscribeWithEmail)
+
+export async function subscribeInLanding({ email }: { email: string }) {
+  const res = await subsocialOffchainApi.post('/mail/add_email/518168', {
+    email,
+  })
+  return res.data
+}
+export const useSubscribeInLanding = mutationWrapper(subscribeInLanding)
