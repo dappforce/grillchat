@@ -80,6 +80,9 @@ export default function Footer(props: ComponentProps<'footer'>) {
             size='noPadding'
             className='rounded-full bg-white/5 p-1.5'
             variant='transparent'
+            href='https://twitter.com/SubsocialChain'
+            target='_blank'
+            rel='noreferrer noopener'
           >
             <RiTwitterXLine />
           </Button>
@@ -87,6 +90,9 @@ export default function Footer(props: ComponentProps<'footer'>) {
             size='noPadding'
             className='rounded-full bg-white/10 p-1.5'
             variant='transparent'
+            href='https://discord.gg/3a2JsRppXj'
+            target='_blank'
+            rel='noreferrer noopener'
           >
             <RiDiscordFill />
           </Button>
@@ -94,6 +100,9 @@ export default function Footer(props: ComponentProps<'footer'>) {
             size='noPadding'
             className='rounded-full bg-white/10 p-1.5'
             variant='transparent'
+            href='https://t.me/SubsocialNetwork'
+            target='_blank'
+            rel='noreferrer noopener'
           >
             <BiLogoTelegram className='relative -left-px' />
           </Button>
