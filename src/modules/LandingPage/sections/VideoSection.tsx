@@ -1,5 +1,4 @@
 import Diamond from '@/assets/graphics/landing/diamond.png'
-import { YoutubeEmbed } from '@/components/chats/ChatItem/Embed'
 import { useSendEvent } from '@/stores/analytics'
 import { cx, getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
@@ -42,11 +41,14 @@ export default function VideoSection(props: ComponentProps<'section'>) {
           <span className='mb-6 text-lg text-[#FEEFFB] sm:text-xl md:mb-10'>
             Watch the short video guide
           </span>
-          <YoutubeEmbed
+          <div className='flex aspect-video h-auto w-full max-w-2xl items-center justify-center rounded-3xl bg-white/10'>
+            <span className='text-5xl font-bold'>Coming Soon</span>
+          </div>
+          {/* <YoutubeEmbed
             className='flex aspect-video h-auto w-full max-w-2xl items-center justify-center rounded-3xl bg-white/10'
             link='https://www.youtube.com/watch?v=KVh-URCs9dM'
             onClick={() => sendEvent('lp_start_video')}
-          />
+          /> */}
         </div>
         <JoinSection
           eventSource='video'

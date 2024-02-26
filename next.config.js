@@ -36,6 +36,9 @@ const nextConfig = {
       { source: '/hot-chats', destination: '/' },
       // { source: '/ai-bots', destination: '/' },
       { source: '/creators', destination: '/' },
+
+      { source: '/ask', destination: '/featured/54469' },
+      { source: '/discuss', destination: '/featured/54469' },
     ]
   },
   async redirects() {
