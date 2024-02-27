@@ -1,6 +1,5 @@
 import Button from '@/components/Button'
 import PopOver from '@/components/floating/PopOver'
-import LinkText from '@/components/LinkText'
 import { cx } from '@/utils/class-names'
 import { FiInfo } from 'react-icons/fi'
 import { sectionBg } from '../utils/SectionWrapper'
@@ -25,13 +24,8 @@ const items = [
 const HowToGetRewardsSection = () => {
   return (
     <div className='flex flex-col gap-4'>
-      <div className='flex items-center justify-between gap-4'>
-        <div className='text-[28px] font-bold leading-none'>
-          How to get rewards
-        </div>
-        <LinkText variant='primary' className='no-underline'>
-          How much can I earn ?
-        </LinkText>
+      <div className='text-[28px] font-bold leading-none'>
+        How to get rewards
       </div>
       <div className='flex items-stretch gap-4'>
         {items.map((props, i) => (

@@ -11,6 +11,7 @@ type RangeInputProps = {
     maxLabel: React.ReactNode
     middleLabel: React.ReactNode
   }
+  rerenderTrigger?: any[]
 }
 
 const RangeInput = ({
@@ -35,9 +36,12 @@ const RangeInput = ({
       if (currentLabelRef.current) {
         const inputWidth = inputRef.current.offsetWidth
         const width = currentLabelRef.current.offsetWidth
-  
+
+        const currentLabelHeight = currentLabelRef.current.offsetHeight
+        
         var left = (value / max) * (inputWidth - width)
-  
+        
+        currentLabelRef.current.style.top = -currentLabelHeight - 8 + 'px'
         currentLabelRef.current.style.left = left - 1 + 'px'
       }
     }
@@ -67,7 +71,6 @@ const RangeInput = ({
       {valueLabel && (
         <div
           ref={currentLabelRef}
-          style={{ top: -((currentLabelRef.current?.offsetHeight || 0) + 8) }}
           className='absolute rounded-xl bg-indigo-600 px-2 py-[6px]'
         >
           {valueLabel}

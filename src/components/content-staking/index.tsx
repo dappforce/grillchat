@@ -3,7 +3,7 @@ import BannerSection from './Banner'
 import FAQSection from './FAQ'
 import HowItWorksSection from './FAQ/HowItWorksSection'
 import StatsData from './StatsData'
-import EarnCalcSection from './StatsData/EarnCalc'
+import UsersEarnInfo from './StatsData/UsersEarnInfo'
 import { ContentStakingContextWrapper } from './utils/ContentStakingContext'
 import SectionWrapper from './utils/SectionWrapper'
 
@@ -13,7 +13,7 @@ export const ContentStaking = () => {
       <div className='flex flex-col gap-[50px]'>
         <BannerSection />
         <StatsData />
-        <EarnCalcSection />
+        <UsersEarnInfo />
         <HowItWorksSection />
         <FAQSection />
         <SectionWrapper className='flex flex-col items-center gap-4 px-4 py-6'>

@@ -1,3 +1,4 @@
+import FAQIcon from '@/assets/icons/faq-icon.svg'
 import Accordion from '@/components/Accordion'
 import SectionWrapper from '../utils/SectionWrapper'
 
@@ -64,10 +65,9 @@ const FAQSection = () => {
   return (
     <div className='flex flex-col gap-4'>
       <div className='text-[28px] font-bold leading-none'>FAQ</div>
-      <SectionWrapper className='px-4 py-6'>
-        <div>
-          <Accordion items={items} />
-        </div>
+      <SectionWrapper className='relative px-4 py-6 overflow-hidden'>
+        <FAQIcon className='absolute right-[-38px] top-[-35px] rotate-[36deg]' />
+        <Accordion items={items} className='max-w-[80%]' />
       </SectionWrapper>
     </div>
   )
