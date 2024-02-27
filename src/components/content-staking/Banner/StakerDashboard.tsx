@@ -1,14 +1,11 @@
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
+import { getGeneralStatsData } from '@/services/datahub/generalStats/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import {
-  convertToBalanceWithDecimal,
-  isDef,
-  toShortMoney,
-} from '@subsocial/utils'
+import { convertToBalanceWithDecimal, isDef } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useMemo } from 'react'
 import { getBackerLedgerQuery } from '../../../services/contentStaking/backerLedger/query'
@@ -17,15 +14,22 @@ import { sectionBg } from '../utils/SectionWrapper'
 
 const StatsCards = () => {
   const myAddress = useMyMainAddress()
+  const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
 
   const { data: info, isLoading: generalEraInfoLoading } =
     getGeneralEraInfoData()
   const { data: ledger, isLoading: ledgerLoading } =
     getBackerLedgerQuery.useQuery(myAddress || '')
 
-  const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
+  const { data: generalStatsData, isLoading: generalStatsLoading } =
+    getGeneralStatsData()
 
-  const stakedBalanceValue = info?.staked ?? 0
+  const stakersEarnedTotal = generalStatsData?.stakersEarnedTotal
+
+  const stakersEarnedTotalBN = stakersEarnedTotal
+    ? convertToBalanceWithDecimal(stakersEarnedTotal, decimal || 0)
+    : new BN(0)
+
   const { locked } = ledger || {}
 
   const myLockWithDecimals = locked
@@ -38,17 +42,9 @@ const StatsCards = () => {
     </>
   )
 
-  const stakedBalanceWithDecimals = stakedBalanceValue
-    ? convertToBalanceWithDecimal(stakedBalanceValue.toString(), decimal || 0)
-    : new BN(0)
-
-  const stakedBalance = (
+  const totalEarnedTokens = (
     <>
-      {toShortMoney({
-        num: stakedBalanceWithDecimals.toNumber(),
-        fractions: 2,
-      })}{' '}
-      {tokenSymbol}
+      {stakersEarnedTotalBN.toFixed(2)} {tokenSymbol}
     </>
   )
 
@@ -65,10 +61,10 @@ const StatsCards = () => {
         desc: 'asdasdasd',
       },
       {
-        title: 'Total locked',
+        title: 'Total SUB earned by stakers',
         value: (
-          <SkeletonFallback isLoading={generalEraInfoLoading}>
-            {stakedBalance}
+          <SkeletonFallback isLoading={generalStatsLoading}>
+            {totalEarnedTokens}
           </SkeletonFallback>
         ),
         infoTitle: 'The total amount of tokens locked on the Subsocial network',

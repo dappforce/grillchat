@@ -1,5 +1,5 @@
-import RangeInput from '@/components/inputs/RangeInput'
 import SkeletonFallback from '@/components/SkeletonFallback'
+import RangeInput from '@/components/inputs/RangeInput'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
 import { getPriceQuery } from '@/services/subsocial/prices/query'
@@ -7,7 +7,7 @@ import { cx } from '@/utils/class-names'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useMemo, useState } from 'react'
-import { StatsCardContent } from '../StatsCard'
+import StatsCard from '../StatsCard'
 const mockedData = [
   {
     title: 'Total SUB earned by stakers',
@@ -106,36 +106,29 @@ const EarnCalcSection = () => {
             ),
           }}
         />
-      </div>
-      <div className='border-t-[1px] border-t-white/20'>
-        <div className='flex w-full items-stretch px-4'>
-          <div className='flex w-full flex-col items-center gap-2 py-4 text-center'>
-            <StatsCardContent
-              title='Your minimum rewards:'
-              desc={
-                <SkeletonFallback isLoading={isLoading || priceLoading}>
-                  {min.toFixed(2)} {tokenSymbol} / week
-                </SkeletonFallback>
-              }
-              tooltipText={'blablabla'}
-              titleClassName='justify-center'
-              subDesc='$56.34'
-            />
-          </div>
-          <div className='border-l-[1px] border-l-white/20'></div>
-          <div className='flex w-full flex-col items-center gap-2 py-4 text-center'>
-            <StatsCardContent
-              title='Your maximum rewards:'
-              desc={
-                <SkeletonFallback isLoading={isLoading || priceLoading}>
-                  {max.toFixed(2)} {tokenSymbol} / week
-                </SkeletonFallback>
-              }
-              tooltipText={'blablabla'}
-              titleClassName='justify-center'
-              subDesc='$210.37'
-            />
-          </div>
+        <div className='flex w-full items-stretch mt-4 gap-4'>
+          <StatsCard
+            title='Your minimum rewards:'
+            desc={
+              <SkeletonFallback isLoading={isLoading || priceLoading}>
+                {min.toFixed(2)} {tokenSymbol} / week
+              </SkeletonFallback>
+            }
+            tooltipText={'blablabla'}
+            titleClassName='justify-center'
+            subDesc='$56.34'
+          />
+          <StatsCard
+            title='Your maximum rewards:'
+            desc={
+              <SkeletonFallback isLoading={isLoading || priceLoading}>
+                {max.toFixed(2)} {tokenSymbol} / week
+              </SkeletonFallback>
+            }
+            tooltipText={'blablabla'}
+            titleClassName='justify-center'
+            subDesc='$210.37'
+          />
         </div>
       </div>
     </>

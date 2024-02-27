@@ -7,16 +7,10 @@ import SectionWrapper from '../utils/SectionWrapper'
 import BannerActionButtons from './BannerActionButtons'
 import StatsCards from './StakerDashboard'
 import StakingStepper from './StakingStepper'
+import { useContentStakingContext } from '../utils/ContentStakingContext'
 
 const BannerSection = () => {
-  const myAddress = useMyMainAddress()
-
-  const { data: ledger, isLoading: ledgerLoading } =
-    getBackerLedgerQuery.useQuery(myAddress || '')
-
-  const { locked } = ledger || {}
-
-  const isLockedTokens = !new BN(locked || '0').isZero()
+  const { isLockedTokens } = useContentStakingContext()
 
   return (
     <SectionWrapper className='relative z-[1] flex flex-col items-center gap-5 p-4'>

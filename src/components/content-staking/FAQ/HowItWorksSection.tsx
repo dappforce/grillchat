@@ -1,9 +1,8 @@
 import BgGradient from '@/modules/LandingPage/common/BgGradient'
-import SectionWrapper from '../utils/SectionWrapper'
 
 const HowItWorksSection = () => {
   return (
-    <div className='relative flex z-[1] w-full flex-col items-center gap-4'>
+    <div className='relative z-[1] flex w-full flex-col items-center gap-4'>
       <BgGradient
         color='pink'
         className='absolute left-[171px] top-[40px] z-0 h-[740px] w-[740px] translate-x-full'
@@ -12,7 +11,7 @@ const HowItWorksSection = () => {
         <div className='text-[28px] font-bold leading-none'>
           How does it work
         </div>
-        <div className='text-base font-normal text-slate-300 leading-[22px]'>
+        <div className='text-base font-normal leading-[22px] text-slate-300'>
           Watch a quick video tutorial:
         </div>
       </div>

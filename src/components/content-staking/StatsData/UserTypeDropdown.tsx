@@ -3,6 +3,7 @@ import LinkText from '@/components/LinkText'
 import { useState } from 'react'
 import { FaAngleDown } from 'react-icons/fa'
 import { UserType } from './UsersEarnInfo'
+import { cx } from '@/utils/class-names'
 
 export type UserTypeDropdownProps = {
   value: UserType
@@ -45,7 +46,13 @@ export default function UserTypeDropdown({
               className='hover:no-underline'
             >
               <span className='flex items-center gap-2'>
-                {value} <FaAngleDown />
+                {value} <FaAngleDown className={cx(
+                  {
+                    ['-rotate-90']: open,
+                    ['rotate-0']: !open,
+                  },
+                  'transition-transform duration-300 ease-out'
+                )}/>
               </span>
             </LinkText>
           </span>
