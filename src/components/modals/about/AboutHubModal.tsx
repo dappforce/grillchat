@@ -1,4 +1,5 @@
 import TruncatedText from '@/components/TruncatedText'
+import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { cx } from '@/utils/class-names'
@@ -29,13 +30,16 @@ export default function AboutHubModal({
     'metadata' | 'qr' | null
   >(null)
 
+  const refSearchParam = useReferralSearchParam()
+
   const content = hub?.content
   if (!content) return null
 
   const hubUrl = urlJoin(
     getCurrentUrlOrigin(),
     env.NEXT_PUBLIC_BASE_PATH,
-    getHubPageLink(router)
+    getHubPageLink(router),
+    refSearchParam
   )
   const contentList: AboutModalProps['contentList'] = [
     {

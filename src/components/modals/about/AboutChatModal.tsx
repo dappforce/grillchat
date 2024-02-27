@@ -6,6 +6,7 @@ import TruncatedText from '@/components/TruncatedText'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import UpsertChatModal from '@/components/community/UpsertChatModal'
 import ModerationInfoModal from '@/components/moderation/ModerationInfoModal'
+import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { isCommunityHubId } from '@/constants/config'
 import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
@@ -62,6 +63,7 @@ export default function AboutChatModal({
     showHiddenPost: { type: 'all' },
   })
   const sendEvent = useSendEvent()
+  const refSearchParam = useReferralSearchParam()
 
   const [openedModalType, setOpenedModalType] = useState<InnerModalType>(null)
 
@@ -75,7 +77,8 @@ export default function AboutChatModal({
   const chatUrl = urlJoin(
     getCurrentUrlOrigin(),
     env.NEXT_PUBLIC_BASE_PATH,
-    getChatPageLink(router)
+    getChatPageLink(router),
+    refSearchParam
   )
   const chatOwner = chat.struct.ownerId
   const isChatInsideCommunityHub = isCommunityHubId(hubId)

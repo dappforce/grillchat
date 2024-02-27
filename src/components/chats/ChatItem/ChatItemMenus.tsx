@@ -11,6 +11,7 @@ import PopOver from '@/components/floating/PopOver'
 import HideMessageModal from '@/components/modals/HideMessageModal'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
+import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useCanSendMessage } from '@/hooks/useCanSendMessage'
@@ -18,7 +19,6 @@ import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
-import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
@@ -69,6 +69,7 @@ export default function ChatItemMenus({
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
   const isMessageOwner = useIsOwnerOfPost(messageId)
+  const refSearchParam = useReferralSearchParam()
 
   const router = useRouter()
   const isLoggingInWithKey = useRef(false)
@@ -89,8 +90,6 @@ export default function ChatItemMenus({
 
   const setReplyTo = useMessageData((state) => state.setReplyTo)
   const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
-
-  const { mutate: createSuperLike } = useCreateSuperLike()
 
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { ownerId, dataType } = message?.struct || {}
@@ -119,7 +118,7 @@ export default function ChatItemMenus({
             env.NEXT_PUBLIC_BASE_PATH,
             getChatPageLink(router)
           )
-          copyToClipboard(urlJoin(chatPageLink, messageId))
+          copyToClipboard(urlJoin(chatPageLink, messageId, refSearchParam))
           toast.custom((t) => (
             <Toast t={t} title='Message link copied to clipboard!' />
           ))

@@ -13,6 +13,12 @@ export function useReferralId() {
   return profile.data?.profileSpace?.id
 }
 
+export function useReferralSearchParam() {
+  const refId = useReferralId()
+  if (!refId) return ''
+  return `?ref=${refId}`
+}
+
 export function ReferralUrlChanger() {
   const referralId = useReferralId()
   const router = useRouter()
