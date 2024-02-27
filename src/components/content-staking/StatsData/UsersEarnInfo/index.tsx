@@ -10,7 +10,7 @@ const UsersEarnInfo = () => {
   const [userType, setUserType] = useState<UserType>('staker')
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex z-[1] flex-col gap-4'>
       <div>
         <div className='text-[28px] font-bold leading-none flex items-center gap-2'>
           How much can I earn as a

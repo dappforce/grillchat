@@ -4,8 +4,12 @@ import HowToGetRewardsSection from './HowToGetRewardsSection'
 
 const StatsData = () => {
   const { isLockedTokens } = useContentStakingContext()
-  
-  return isLockedTokens ? <HowToGetRewardsSection /> : <EarnStats />
+
+  return (
+    <div className='z-[1]'>
+      {isLockedTokens ? <HowToGetRewardsSection /> : <EarnStats />}
+    </div>
+  )
 }
 
 export default StatsData

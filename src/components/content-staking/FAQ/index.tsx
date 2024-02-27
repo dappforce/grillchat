@@ -63,7 +63,7 @@ const items = [
 
 const FAQSection = () => {
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex z-[1] flex-col gap-4'>
       <div className='text-[28px] font-bold leading-none'>FAQ</div>
       <SectionWrapper className='relative px-4 py-6 overflow-hidden'>
         <FAQIcon className='absolute right-[-38px] top-[-35px] rotate-[36deg]' />

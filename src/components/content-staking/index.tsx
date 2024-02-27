@@ -16,7 +16,7 @@ export const ContentStaking = () => {
         <UsersEarnInfo />
         <HowItWorksSection />
         <FAQSection />
-        <SectionWrapper className='flex flex-col items-center gap-4 px-4 py-6'>
+        <SectionWrapper className='flex z-[1] flex-col items-center gap-4 px-4 py-6'>
           <div className='text-[28px] font-bold leading-none'>
             Still have questions? Ask others
           </div>
