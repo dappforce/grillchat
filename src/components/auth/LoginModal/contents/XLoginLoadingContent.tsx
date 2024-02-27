@@ -1,5 +1,4 @@
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
-import { useReferralId } from '@/components/referral/ReferralUrlChanger'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
@@ -10,7 +9,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { useTransactions } from '@/stores/transactions'
-import { getCurrentUrlWithoutQuery } from '@/utils/links'
+import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { estimatedWaitTime } from '@/utils/network'
 import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
@@ -41,7 +40,6 @@ export default function XLoginLoading({
     () => 'Please refresh the page to relink your account'
   )
 
-  const refId = useReferralId()
   const { mutate: setReferrerId } = useSetReferrerId()
 
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
@@ -78,6 +76,8 @@ export default function XLoginLoading({
       linkedIdentity &&
       session &&
       linkedIdentity?.externalId === session?.user?.id
+
+    const refId = getUrlQuery('ref')
     if (foundIdentity && !upsertedProfile.current) {
       sendEvent('x_login_creating_profile', undefined, { twitterLinked: true })
       upsertedProfile.current = true
