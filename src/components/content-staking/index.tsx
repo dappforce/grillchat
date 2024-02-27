@@ -1,9 +1,9 @@
 import Button from '../Button'
 import BannerSection from './Banner'
-import EarnStats from './EarnStats'
-import EarnCalcSection from './EarnStats/EarnCalc'
 import FAQSection from './FAQ'
 import HowItWorksSection from './FAQ/HowItWorksSection'
+import StatsData from './StatsData'
+import EarnCalcSection from './StatsData/EarnCalc'
 import { ContentStakingContextWrapper } from './utils/ContentStakingContext'
 import SectionWrapper from './utils/SectionWrapper'
 
@@ -12,7 +12,7 @@ export const ContentStaking = () => {
     <ContentStakingContextWrapper>
       <div className='flex flex-col gap-[50px]'>
         <BannerSection />
-        <EarnStats />
+        <StatsData />
         <EarnCalcSection />
         <HowItWorksSection />
         <FAQSection />

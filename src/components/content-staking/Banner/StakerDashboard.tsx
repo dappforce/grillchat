@@ -1,4 +1,3 @@
-import PopOver from '@/components/floating/PopOver'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
@@ -12,10 +11,9 @@ import {
 } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useMemo } from 'react'
-import { BsQuestionCircle } from 'react-icons/bs'
 import { getBackerLedgerQuery } from '../../../services/contentStaking/backerLedger/query'
+import { StatsCardContent } from '../StatsData/StatsCard'
 import { sectionBg } from '../utils/SectionWrapper'
-import { StatsCardContent } from '../EarnStats/StatsCard'
 
 const StatsCards = () => {
   const myAddress = useMyMainAddress()
@@ -138,7 +136,7 @@ const DashboardCard = ({
         desc={value}
         tooltipText={infoTitle}
         titleClassName='justify-center'
-        subDesc={desc} 
+        subDesc={desc}
       />
     </div>
   )
