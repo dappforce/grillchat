@@ -1,6 +1,7 @@
 import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
@@ -131,6 +132,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <SubsocialApiReconnect />
         <ToasterConfig />
         <ForegroundNotificationHandler />
+        <ReferralUrlChanger />
         <NextNProgress
           color='#4d46dc'
           options={{ showSpinner: false }}

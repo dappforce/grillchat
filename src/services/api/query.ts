@@ -117,6 +117,9 @@ const getProfile = poolQuery<string, SubsocialProfile>({
 export const getProfileQuery = createQuery({
   key: 'profile',
   fetcher: getProfile,
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data,
+  }),
 })
 
 const getIdentity = poolQuery<string, Identities>({

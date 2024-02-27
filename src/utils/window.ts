@@ -1,3 +1,6 @@
+import { env } from '@/env.mjs'
+import urlJoin from 'url-join'
+
 export function preventWindowUnload() {
   window.onbeforeunload = function (e) {
     e.preventDefault()
@@ -71,12 +74,32 @@ export function isInMobileOrTablet() {
   return check
 }
 
+const GLOBAL_QUERIES = ['ref']
 export function replaceUrl(url: string) {
-  const pathname = url.replace(window.location.origin, '')
+  if (!new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}/*.`).test(url)) {
+    url = urlJoin(env.NEXT_PUBLIC_BASE_PATH, url)
+  }
+
+  const pathnameWithQuery = url.replace(window.location.origin, '')
+  const [pathname, query] = pathnameWithQuery.split('?')
+  const searchParams = new URLSearchParams(query)
+  const currentSearchParams = new URLSearchParams(window.location.search)
+  for (const key of GLOBAL_QUERIES) {
+    if (currentSearchParams.has(key)) {
+      searchParams.set(key, currentSearchParams.get(key)!)
+    }
+  }
+
+  let finalUrl = pathname
+  const finalQuery = searchParams.toString()
+  if (finalQuery) {
+    finalUrl += '?' + finalQuery
+  }
+
   window.history.replaceState(
-    { ...window.history.state, url: pathname, as: pathname },
+    { ...window.history.state, url: finalUrl, as: finalUrl },
     '',
-    url
+    finalUrl
   )
 }
 

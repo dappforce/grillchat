@@ -1,5 +1,6 @@
 import { getAliasFromHubId } from '@/constants/config'
 import { env } from '@/env.mjs'
+import { isServer } from '@tanstack/react-query'
 import { ParsedUrlQuery } from 'querystring'
 import urlJoin from 'url-join'
 
@@ -27,6 +28,11 @@ export function getCurrentUrlWithoutQuery(queryNameToRemove?: string) {
     return url + '?' + search
   }
   return window.location.origin + window.location.pathname
+}
+
+export function getCurrentSearchParams() {
+  if (isServer) return new URLSearchParams()
+  return new URLSearchParams(window.location.search)
 }
 
 type CurrentPath = { query: ParsedUrlQuery; pathname?: string }
