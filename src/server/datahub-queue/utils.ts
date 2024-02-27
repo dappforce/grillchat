@@ -2,7 +2,6 @@ import { ERRORS } from '@/constants/error'
 import { env } from '@/env.mjs'
 import { getServerAccount } from '@/server/common'
 import { signDatahubPayload } from '@/services/datahub/utils'
-import { SocialEventDataApiInput } from '@subsocial/data-hub-sdk'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 
 function getDatahubQueueConfig() {
@@ -98,13 +97,20 @@ export class CreateChatPermissionDeniedError extends Error {
   }
 }
 
-export const backendSigWrapper = async (input: SocialEventDataApiInput) => {
+export const backendSigWrapper = async <
+  T extends {
+    providerAddr: string
+    sig: string
+  }
+>(
+  input: T
+) => {
   const signer = await getServerAccount()
   if (!signer) throw new Error('Invalid Mnemonic')
 
   input.providerAddr = signer.address
-  signDatahubPayload(signer, input)
 
+  signDatahubPayload(signer, input)
   return input
 }
 
