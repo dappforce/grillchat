@@ -16,7 +16,7 @@ async function setReferrerId(params: DatahubParams<SetReferrerIdArgs>) {
 
   await apiInstance.post<any, any, ApiDatahubSuperLikeMutationBody>(
     '/api/datahub/referral',
-    { payload: input as any }
+    input as any
   )
 }
 
