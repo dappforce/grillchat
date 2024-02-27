@@ -1,8 +1,10 @@
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
+import { useReferralId } from '@/components/referral/ReferralUrlChanger'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -12,7 +14,7 @@ import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { estimatedWaitTime } from '@/utils/network'
 import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
-import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import { DataHubClientId, IdentityProvider } from '@subsocial/data-hub-sdk'
 import { useSession } from 'next-auth/react'
 import { useEffect, useRef } from 'react'
 import { LoginModalContentProps } from '../LoginModalContent'
@@ -38,6 +40,10 @@ export default function XLoginLoading({
     'Failed to link X profile',
     () => 'Please refresh the page to relink your account'
   )
+
+  const refId = useReferralId()
+  const { mutate: setReferrerId } = useSetReferrerId()
+
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
     onSuccess: () => {
       replaceUrl(getCurrentUrlWithoutQuery('login'))
@@ -75,6 +81,12 @@ export default function XLoginLoading({
     if (foundIdentity && !upsertedProfile.current) {
       sendEvent('x_login_creating_profile', undefined, { twitterLinked: true })
       upsertedProfile.current = true
+      if (refId) {
+        setReferrerId({
+          clientId: DataHubClientId.GRILLSO,
+          refId,
+        })
+      }
       upsertProfile({
         content: {
           image: session?.user?.image ?? '',
@@ -85,7 +97,15 @@ export default function XLoginLoading({
         },
       })
     }
-  }, [linkedIdentity, sendEvent, session, setCurrentState, upsertProfile])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    linkedIdentity,
+    sendEvent,
+    session,
+    setCurrentState,
+    upsertProfile,
+    setReferrerId,
+  ])
 
   const isAlreadyCalled = useRef(false)
   useEffect(() => {
