@@ -1822,6 +1822,24 @@ export type SubscribePostSubscription = {
   }
 }
 
+export type GetReferrerIdQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetReferrerIdQuery = {
+  __typename?: 'Query'
+  socialProfiles: {
+    __typename?: 'SocialProfilesResponse'
+    data: Array<{
+      __typename?: 'SocialProfile'
+      referrersList?: Array<{
+        __typename?: 'UserReferrerDetail'
+        referrerId: string
+      }> | null
+    }>
+  }
+}
+
 export const DatahubPostFragment = gql`
   fragment DatahubPostFragment on Post {
     id
@@ -2179,6 +2197,17 @@ export const SubscribePost = gql`
         dataType
         rootPost {
           persistentId
+        }
+      }
+    }
+  }
+`
+export const GetReferrerId = gql`
+  query GetReferrerId($address: String!) {
+    socialProfiles(args: { where: { substrateAddresses: [$address] } }) {
+      data {
+        referrersList {
+          referrerId
         }
       }
     }

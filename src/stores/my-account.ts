@@ -2,6 +2,7 @@ import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { getReferrerIdQuery } from '@/services/datahub/referral/query'
 import { queryClient } from '@/services/provider'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
@@ -103,15 +104,21 @@ const sendLaunchEvent = async (
   if (!address) {
     sendEvent('launch_app')
   } else {
-    const [linkedTgAccData, evmLinkedAddress, ownedPostIds, linkedIdentity] =
-      await Promise.allSettled([
-        getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
-          address,
-        }),
-        getAccountDataQuery.fetchQuery(queryClient, address),
-        getOwnedPostIdsQuery.fetchQuery(queryClient, address),
-        getLinkedIdentityQuery.fetchQuery(queryClient, address),
-      ] as const)
+    const [
+      linkedTgAccData,
+      evmLinkedAddress,
+      ownedPostIds,
+      linkedIdentity,
+      referrerId,
+    ] = await Promise.allSettled([
+      getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
+        address,
+      }),
+      getAccountDataQuery.fetchQuery(queryClient, address),
+      getOwnedPostIdsQuery.fetchQuery(queryClient, address),
+      getLinkedIdentityQuery.fetchQuery(queryClient, address),
+      getReferrerIdQuery.fetchQuery(queryClient, address),
+    ] as const)
 
     if (linkedTgAccData.status === 'fulfilled')
       userProperties.tgNotifsConnected =
@@ -123,6 +130,7 @@ const sendLaunchEvent = async (
     if (linkedIdentity.status === 'fulfilled')
       userProperties.twitterLinked =
         linkedIdentity.value?.provider === IdentityProvider.Twitter
+    if (referrerId.status === 'fulfilled') userProperties.ref = referrerId.value
 
     userProperties.webNotifsEnabled = isWebNotificationsEnabled()
 
