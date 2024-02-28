@@ -1,6 +1,7 @@
 import { cx } from '@/utils/class-names'
 import React, { useState } from 'react'
 import { FaAngleRight } from 'react-icons/fa6'
+import { mutedTextColorStyles } from './content-staking/utils/commonStyles'
 
 type AccordionItemProps = {
   title: string
@@ -45,9 +46,10 @@ const AccordionItem = ({ title, content }: AccordionItemProps) => {
       </div>
       <div
         className={cx(
-          'ml-[28px] grid overflow-hidden text-base font-normal leading-6 text-slate-300',
+          'ml-[28px] grid overflow-hidden text-base font-normal leading-6',
           'transition-[grid-template-rows] duration-300 ease-out',
-          { ['mb-2 mt-4 grid-rows-1']: isOpen, ['grid-rows-0']: !isOpen }
+          { ['mb-2 mt-4 grid-rows-1']: isOpen, ['grid-rows-0']: !isOpen },
+          mutedTextColorStyles
         )}
       >
         {content}

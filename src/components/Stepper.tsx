@@ -51,15 +51,21 @@ const StepperItem = ({
     <li className={cx('group', { ['flex-1 shrink basis-0']: !isLastElement })}>
       <div className='flex items-center text-xl font-medium'>
         {isComleted ? (
-          <CheckIcon ref={labelRef} className='h-[40px] w-[40px]' />
+          <CheckIcon
+            ref={labelRef}
+            className={cx(
+              'h-[40px] w-[40px] [&>circle]:fill-slate-500 [&>path]:fill-white',
+              'dark:[&>circle]:fill-white dark:[&>path]:fill-background-lighter'
+            )}
+          />
         ) : (
           <span
             ref={labelRef}
             className={cx(
               'flex h-[40px] w-[40px] items-center justify-center rounded-full ring-2 ring-inset ',
               currentStep === id || isComleted
-                ? 'text-text ring-slate-50'
-                : 'text-slate-500 ring-slate-500'
+                ? 'ring-slate-500 text-slate-500 dark:text-text dark:ring-slate-50'
+                : 'text-slate-300 ring-slate-300 dark:text-slate-500 dark:ring-slate-500'
             )}
           >
             {label}
@@ -68,7 +74,9 @@ const StepperItem = ({
         <div
           className={cx(
             'ms-2 h-0.5 w-full flex-1 bg-text-muted group-last:hidden',
-            isComleted ? 'bg-slate-50' : 'bg-slate-500'
+            isComleted
+              ? 'bg-slate-500 dark:bg-slate-50'
+              : 'bg-slate-300 dark:bg-slate-500'
           )}
         ></div>
       </div>
@@ -81,8 +89,8 @@ const StepperItem = ({
           className={cx(
             'text-base font-medium leading-[26px] text-text',
             currentStep === id || isComleted
-              ? 'text-text ring-slate-50'
-              : 'text-slate-500 ring-slate-500'
+              ? 'text-slate-500 dark:text-text'
+              : 'darl:text-slate-500 text-slate-300'
           )}
         >
           {title}

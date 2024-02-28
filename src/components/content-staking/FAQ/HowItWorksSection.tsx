@@ -1,17 +1,27 @@
+import useGetTheme from '@/hooks/useGetTheme'
 import BgGradient from '@/modules/LandingPage/common/BgGradient'
+import { cx } from '@/utils/class-names'
+import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
 
 const HowItWorksSection = () => {
+  const theme = useGetTheme()
+  
   return (
     <div className='relative z-[1] flex w-full flex-col items-center gap-4'>
-      <BgGradient
-        color='pink'
-        className='absolute left-[171px] top-[40px] z-0 h-[740px] w-[740px] translate-x-full'
-      />
+      {theme === 'dark' && (
+        <BgGradient
+          color='pink'
+          className='absolute left-[171px] top-[40px] z-0 h-[740px] w-[740px] translate-x-full'
+        />
+      )}
       <div className='flex w-full flex-col items-center gap-2'>
-        <div className='text-[28px] font-bold leading-none'>
-          How does it work?
-        </div>
-        <div className='text-base font-normal leading-[22px] text-slate-300'>
+        <div className={sectionTitleStyles}>How does it work?</div>
+        <div
+          className={cx(
+            'text-base font-normal leading-[22px]',
+            mutedTextColorStyles
+          )}
+        >
           Watch a quick video tutorial:
         </div>
       </div>

@@ -145,7 +145,7 @@ const DashboardCard = ({
       className={cx(
         'w-full',
         'flex flex-col items-center gap-2 rounded-2xl !py-4 px-4 md:px-6',
-        sectionBg,
+        'dark:bg-white/5 backdrop-blur-xl bg-slate-50',
         className
       )}
     >

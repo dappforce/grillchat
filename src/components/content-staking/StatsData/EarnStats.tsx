@@ -8,6 +8,7 @@ import BN from 'bignumber.js'
 import StatsCard from './StatsCard'
 import { getBalanceInDollars } from '@/utils/balance'
 import { getPriceQuery } from '@/services/subsocial/prices/query'
+import { sectionTitleStyles } from '../utils/commonStyles'
 
 const EarnStats = () => {
   const { decimal, tokenSymbol } = useGetChainDataByNetwork('subsocial') || {}
@@ -61,13 +62,13 @@ const EarnStats = () => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='text-[28px] font-bold leading-none'>
+      <div className={sectionTitleStyles}>
         How much others earn
       </div>
 
       <div className='grid md:grid-cols-2 grid-cols-1 items-stretch gap-4'>
         {mockedData.map((props, i) => (
-          <StatsCard key={i} {...props} />
+          <StatsCard sectionClassName='bg-white' key={i} {...props} />
         ))}
       </div>
     </div>

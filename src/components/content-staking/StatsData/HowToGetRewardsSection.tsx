@@ -3,6 +3,7 @@ import PopOver from '@/components/floating/PopOver'
 import { cx } from '@/utils/class-names'
 import { FiInfo } from 'react-icons/fi'
 import { sectionBg } from '../utils/SectionWrapper'
+import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
 
 const items = [
   {
@@ -24,7 +25,7 @@ const items = [
 const HowToGetRewardsSection = () => {
   return (
     <div className='flex flex-col gap-4'>
-      <div className='text-[28px] font-bold leading-none'>
+      <div className={sectionTitleStyles}>
         How to get rewards
       </div>
       <div className='flex md:flex-row flex-col items-stretch gap-4'>
@@ -73,7 +74,7 @@ const CardItem = ({
             {tooltipText}
           </PopOver>
         </div>
-        <div className='text-base font-normal text-slate-300'>{desc}</div>
+        <div className={cx('text-base font-normal', mutedTextColorStyles)}>{desc}</div>
       </div>
       <Button
         className='self-center'

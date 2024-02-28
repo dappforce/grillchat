@@ -5,7 +5,7 @@ type SectionWrapperProps = {
   className?: string
 }
 
-export const sectionBg = 'bg-black/5 dark:bg-white/5 backdrop-blur-xl'
+export const sectionBg = 'bg-white dark:bg-white/5 backdrop-blur-xl'
 
 const SectionWrapper = ({ children, className }: SectionWrapperProps) => {
   return (

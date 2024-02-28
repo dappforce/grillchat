@@ -1,7 +1,9 @@
 import FAQIcon from '@/assets/icons/faq-icon.svg'
 import Accordion from '@/components/Accordion'
-import SectionWrapper from '../utils/SectionWrapper'
+import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
+import SectionWrapper from '../utils/SectionWrapper'
+import { sectionTitleStyles } from '../utils/commonStyles'
 
 const items = [
   {
@@ -47,10 +49,17 @@ const items = [
 const FAQSection = () => {
   return (
     <div className='z-[1] flex flex-col gap-4'>
-      <div className='text-[28px] font-bold leading-none'>FAQ</div>
+      <div className={sectionTitleStyles}>FAQ</div>
       <SectionWrapper className='relative overflow-hidden px-4 py-6'>
-        {!isTouchDevice() && <FAQIcon className='absolute right-[-38px] top-[-35px] rotate-[36deg]' />}
-        <Accordion items={items} className='md:max-w-[80%] max-w-full' />
+        {!isTouchDevice() && (
+          <FAQIcon
+            className={cx(
+              'absolute right-[-38px] top-[-35px] rotate-[36deg] fill-opacity-100',
+              'dark:[&>g]:fill-white/10 [&>g]:fill-slate-100'
+            )}
+          />
+        )}
+        <Accordion items={items} className='max-w-full md:max-w-[80%]' />
       </SectionWrapper>
     </div>
   )

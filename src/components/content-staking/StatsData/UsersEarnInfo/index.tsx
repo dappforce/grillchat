@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import SectionWrapper from '../../utils/SectionWrapper'
+import { sectionTitleStyles } from '../../utils/commonStyles'
 import UserTypeDropdown from '../UserTypeDropdown'
 import EarnCalcSection from './EarnCalcByStaker'
 import EarnInfoByCretor from './EarnInfoByCreator'
@@ -11,12 +12,10 @@ const UsersEarnInfo = () => {
 
   return (
     <div className='z-[1] flex flex-col gap-4'>
-      <div>
-        <span className='text-[28px] font-bold leading-none'>
-          How much can I earn as a{' '}
-          <UserTypeDropdown value={userType} onChangeValue={setUserType} />
-        </span>
-      </div>
+      <span className={sectionTitleStyles}>
+        How much can I earn as a{' '}
+        <UserTypeDropdown value={userType} onChangeValue={setUserType} />
+      </span>
       <SectionWrapper className='flex flex-col gap-4'>
         {userType === 'staker' ? <EarnCalcSection /> : <EarnInfoByCretor />}
       </SectionWrapper>

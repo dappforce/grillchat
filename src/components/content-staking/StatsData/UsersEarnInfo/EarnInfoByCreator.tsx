@@ -1,5 +1,7 @@
 import SkeletonFallback from '@/components/SkeletonFallback'
 import StatsCard from '../StatsCard'
+import { cx } from '@/utils/class-names'
+import { mutedTextColorStyles } from '../../utils/commonStyles'
 
 const items = [
   '💎 Create high quality posts and comments',
@@ -46,7 +48,7 @@ type ListItemProps = {
 }
 
 const ListItem = ({ children }: ListItemProps) => (
-  <li className='font-normal leading-8 text-slate-300'>{children}</li>
+  <li className={cx('font-normal leading-8', mutedTextColorStyles)}>{children}</li>
 )
 
 export default EarnInfoByCretor

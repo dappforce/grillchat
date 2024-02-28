@@ -45,14 +45,16 @@ export default function UserTypeDropdown({
               {...referenceProps}
               className='hover:no-underline'
             >
-              <span className='flex items-center gap-2'>
-                {value} <FaAngleDown className={cx(
-                  {
-                    ['-rotate-90']: open,
-                    ['rotate-0']: !open,
-                  },
-                  'transition-transform duration-300 ease-out'
-                )}/>
+              <span className='inline-block'>
+                <span className='flex items-center gap-2 w-fit'>
+                  {value} <FaAngleDown className={cx(
+                    {
+                      ['-rotate-90']: open,
+                      ['rotate-0']: !open,
+                    },
+                    'transition-transform duration-300 ease-out'
+                  )}/>
+                </span>
               </span>
             </LinkText>
           </span>

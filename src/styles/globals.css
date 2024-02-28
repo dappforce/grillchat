@@ -60,6 +60,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  @variants fill-opacity-100 {
+    .fill-opacity-100 {
+      g {
+        fill-opacity: 1;
+      }
+    }
+  }
+
+}
+
 * {
   @apply scrollbar-thin scrollbar-track-background scrollbar-thumb-background-lightest scrollbar-track-rounded-full scrollbar-thumb-rounded-full dark:scrollbar-thumb-background-lighter;
 }
