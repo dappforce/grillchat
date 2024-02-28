@@ -10,12 +10,12 @@ const UsersEarnInfo = () => {
   const [userType, setUserType] = useState<UserType>('staker')
 
   return (
-    <div className='flex z-[1] flex-col gap-4'>
+    <div className='z-[1] flex flex-col gap-4'>
       <div>
-        <div className='text-[28px] font-bold leading-none flex items-center gap-2'>
-          How much can I earn as a
+        <span className='text-[28px] font-bold leading-none'>
+          How much can I earn as a{' '}
           <UserTypeDropdown value={userType} onChangeValue={setUserType} />
-        </div>
+        </span>
       </div>
       <SectionWrapper className='flex flex-col gap-4'>
         {userType === 'staker' ? <EarnCalcSection /> : <EarnInfoByCretor />}

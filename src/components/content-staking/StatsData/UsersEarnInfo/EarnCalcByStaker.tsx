@@ -140,7 +140,7 @@ const EarnCalcSection = () => {
             ),
           }}
         />
-        <div className='mt-4 flex w-full items-stretch gap-4'>
+        <div className='mt-4 flex md:flex-row flex-col w-full items-stretch gap-4'>
           <StatsCard
             title='Your minimum rewards:'
             desc={

@@ -65,7 +65,7 @@ const EarnStats = () => {
         How much others earn
       </div>
 
-      <div className='grid grid-cols-2 items-stretch gap-4'>
+      <div className='grid md:grid-cols-2 grid-cols-1 items-stretch gap-4'>
         {mockedData.map((props, i) => (
           <StatsCard key={i} {...props} />
         ))}

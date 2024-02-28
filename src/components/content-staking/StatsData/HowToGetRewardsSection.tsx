@@ -27,7 +27,7 @@ const HowToGetRewardsSection = () => {
       <div className='text-[28px] font-bold leading-none'>
         How to get rewards
       </div>
-      <div className='flex items-stretch gap-4'>
+      <div className='flex md:flex-row flex-col items-stretch gap-4'>
         {items.map((props, i) => (
           <CardItem key={i} {...props} />
         ))}

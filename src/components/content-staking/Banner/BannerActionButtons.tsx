@@ -133,7 +133,7 @@ const LockingButtons = () => {
 
   return (
     <>
-      <div className='flex items-center gap-6'>
+      <div className='flex items-center md:gap-6 gap-4'>
         <Button
           size={isTouchDevice() ? 'md' : 'lg'}
           variant={isLockedTokens ? 'primaryOutline' : 'primary'}

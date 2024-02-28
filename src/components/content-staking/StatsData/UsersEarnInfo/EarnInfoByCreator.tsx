@@ -21,7 +21,8 @@ const EarnInfoByCretor = () => {
     {
       title: 'Possible rewards per commen:',
       desc: <SkeletonFallback isLoading={false}>144.35 SUB</SkeletonFallback>,
-      tooltipText: 'The average amount of rewards that comments on Subsocial earn',
+      tooltipText:
+        'The average amount of rewards that comments on Subsocial earn',
     },
   ]
   return (
@@ -31,7 +32,7 @@ const EarnInfoByCretor = () => {
           <ListItem key={index}>{item}</ListItem>
         ))}
       </ul>
-      <div className='grid grid-cols-2 items-stretch gap-4'>
+      <div className='grid grid-cols-1 items-stretch gap-4 md:grid-cols-2'>
         {cardsItems.map((props, i) => (
           <StatsCard key={i} {...props} />
         ))}
