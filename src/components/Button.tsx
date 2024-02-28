@@ -11,7 +11,7 @@ export const buttonStyles = cva('relative transition', {
       primary:
         'bg-background-primary border border-transparent text-text-on-primary',
       primaryOutline:
-        'bg-transparent border border-background-primary text-text',
+        'bg-transparent border border-background-primary/50 dark:border-background-primary/80 text-text',
       bgLighter:
         'bg-background-lighter border border-transparent text-text-muted',
       whiteOutline: 'bg-transparent border border-white text-text',
