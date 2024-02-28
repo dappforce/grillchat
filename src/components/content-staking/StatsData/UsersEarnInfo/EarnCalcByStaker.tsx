@@ -1,4 +1,4 @@
-import SkeletonFallback from '@/components/SkeletonFallback'
+import FormatBalance from '@/components/FormatBalance'
 import RangeInput from '@/components/inputs/RangeInput'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
@@ -8,6 +8,7 @@ import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useMemo, useState } from 'react'
 import StatsCard from '../StatsCard'
+import { getBalanceInDollars } from '@/utils/balance'
 const mockedData = [
   {
     title: 'Total SUB earned by stakers',
@@ -106,28 +107,56 @@ const EarnCalcSection = () => {
             ),
           }}
         />
-        <div className='flex w-full items-stretch mt-4 gap-4'>
+        <div className='mt-4 flex w-full items-stretch gap-4'>
           <StatsCard
             title='Your minimum rewards:'
             desc={
-              <SkeletonFallback isLoading={isLoading || priceLoading}>
-                {min.toFixed(2)} {tokenSymbol} / week
-              </SkeletonFallback>
+              <FormatBalance
+                value={min.toString()}
+                symbol={`${tokenSymbol} / week`}
+                loading={isLoading || priceLoading}
+                defaultMaximumFractionDigits={3}
+              />
             }
             tooltipText={'blablabla'}
             titleClassName='justify-center'
-            subDesc='$56.34'
+            subDesc={
+              <FormatBalance
+                value={getBalanceInDollars(
+                  min.toString(),
+                  tokenPrice
+                )}
+                symbol={'$'}
+                loading={isLoading || priceLoading}
+                defaultMaximumFractionDigits={2}
+                startFromSymbol
+              />
+            }
           />
           <StatsCard
             title='Your maximum rewards:'
             desc={
-              <SkeletonFallback isLoading={isLoading || priceLoading}>
-                {max.toFixed(2)} {tokenSymbol} / week
-              </SkeletonFallback>
+              <FormatBalance
+                value={max.toString()}
+                symbol={`${tokenSymbol} / week`}
+                loading={isLoading || priceLoading}
+                defaultMaximumFractionDigits={3}
+              />
             }
             tooltipText={'blablabla'}
             titleClassName='justify-center'
-            subDesc='$210.37'
+            subDesc={
+              <FormatBalance
+                value={getBalanceInDollars(
+                  max.toString(),
+                  tokenPrice
+                )}
+                symbol={'$'}
+                loading={isLoading || priceLoading}
+                defaultMaximumFractionDigits={2}
+                startFromSymbol
+              />
+            }
           />
         </div>
       </div>

@@ -1,13 +1,10 @@
 import LinkText from '@/components/LinkText'
 import BgGradient from '@/modules/LandingPage/common/BgGradient'
-import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
-import { useMyMainAddress } from '@/stores/my-account'
-import BN from 'bignumber.js'
+import { useContentStakingContext } from '../utils/ContentStakingContext'
 import SectionWrapper from '../utils/SectionWrapper'
 import BannerActionButtons from './BannerActionButtons'
 import StatsCards from './StakerDashboard'
 import StakingStepper from './StakingStepper'
-import { useContentStakingContext } from '../utils/ContentStakingContext'
 
 const BannerSection = () => {
   const { isLockedTokens } = useContentStakingContext()

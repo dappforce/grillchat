@@ -5,7 +5,7 @@ import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/que
 import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { formatBalance } from '@/utils/formatBalance'
+import { parseBalance } from '@/utils/formatBalance'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useEffect, useState } from 'react'
@@ -28,7 +28,7 @@ const CurrentStake = () => {
 
   const { minimumStakingAmount } = consts || {}
 
-  const currentStake = formatBalance(locked, decimal)
+  const currentStake = parseBalance(locked, decimal)
 
   const showMimimumStake = new BN(locked || '0').lt(minimumStakingAmount || '0')
 
@@ -36,7 +36,7 @@ const CurrentStake = () => {
     ? convertToBalanceWithDecimal(minimumStakingAmount, decimal || 0)
     : '0'
 
-  const requiredLock = formatBalance(
+  const requiredLock = parseBalance(
     new BN(minimumStakingAmount || '0').minus(locked || '0').toString(),
     decimal
   )
@@ -82,7 +82,7 @@ const MinimumStake = () => {
 
   const { minimumStakingAmount } = consts || {}
 
-  const minimumStaking = formatBalance(minimumStakingAmount, decimal)
+  const minimumStaking = parseBalance(minimumStakingAmount, decimal)
 
   return (
     <div

@@ -1,7 +1,9 @@
+import FormatBalance from '@/components/FormatBalance'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
 import { getGeneralStatsData } from '@/services/datahub/generalStats/query'
+import { getPriceQuery } from '@/services/subsocial/prices/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
@@ -9,12 +11,17 @@ import { convertToBalanceWithDecimal, isDef } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useMemo } from 'react'
 import { getBackerLedgerQuery } from '../../../services/contentStaking/backerLedger/query'
+import { getBalanceInDollars } from '../../../utils/formatBalance'
 import { StatsCardContent } from '../StatsData/StatsCard'
 import { sectionBg } from '../utils/SectionWrapper'
 
 const StatsCards = () => {
   const myAddress = useMyMainAddress()
   const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
+  const { data: price, isLoading: priceLoading } =
+    getPriceQuery.useQuery('subsocial')
+
+  const tokenPrice = price?.current_price
 
   const { data: info, isLoading: generalEraInfoLoading } =
     getGeneralEraInfoData()
@@ -36,39 +43,56 @@ const StatsCards = () => {
     ? convertToBalanceWithDecimal(locked, decimal || 0)
     : new BN(0)
 
-  const myLock = (
-    <>
-      {myLockWithDecimals.toFixed(2)} {tokenSymbol}
-    </>
-  )
-
-  const totalEarnedTokens = (
-    <>
-      {stakersEarnedTotalBN.toFixed(2)} {tokenSymbol}
-    </>
-  )
-
+  console.log(priceLoading || ledgerLoading)
   const dashboardData = useMemo(() => {
     return [
       {
         title: 'My lock',
         value: (
-          <SkeletonFallback isLoading={ledgerLoading}>
-            {myLock}
-          </SkeletonFallback>
+          <FormatBalance
+            value={myLockWithDecimals.toString()}
+            symbol={tokenSymbol}
+            loading={ledgerLoading}
+            defaultMaximumFractionDigits={3}
+          />
         ),
         infoTitle: 'How many tokens you have locked',
-        desc: 'asdasdasd',
+        desc: (
+          <FormatBalance
+            value={getBalanceInDollars(
+              myLockWithDecimals.toString(),
+              tokenPrice
+            )}
+            symbol={'$'}
+            loading={priceLoading || ledgerLoading}
+            defaultMaximumFractionDigits={2}
+            startFromSymbol
+          />
+        ),
       },
       {
         title: 'Total SUB earned by stakers',
         value: (
-          <SkeletonFallback isLoading={generalStatsLoading}>
-            {totalEarnedTokens}
-          </SkeletonFallback>
+          <FormatBalance
+            value={stakersEarnedTotalBN.toString()}
+            symbol={tokenSymbol}
+            loading={generalStatsLoading}
+            defaultMaximumFractionDigits={3}
+          />
         ),
         infoTitle: 'The total amount of tokens locked on the Subsocial network',
-        desc: 'asdasdasd',
+        desc: (
+          <FormatBalance
+            value={getBalanceInDollars(
+              stakersEarnedTotalBN.toString(),
+              tokenPrice
+            )}
+            symbol={'$'}
+            loading={priceLoading || generalStatsLoading}
+            defaultMaximumFractionDigits={2}
+            startFromSymbol
+          />
+        ),
       },
       {
         title: 'Total participants',

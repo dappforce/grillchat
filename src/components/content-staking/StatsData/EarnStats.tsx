@@ -1,3 +1,4 @@
+import FormatBalance from '@/components/FormatBalance'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
@@ -5,11 +6,17 @@ import { getGeneralStatsData } from '@/services/datahub/generalStats/query'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import StatsCard from './StatsCard'
+import { getBalanceInDollars } from '@/utils/balance'
+import { getPriceQuery } from '@/services/subsocial/prices/query'
 
 const EarnStats = () => {
   const { decimal, tokenSymbol } = useGetChainDataByNetwork('subsocial') || {}
   const { data: info, isLoading: generalEraInfoLoading } =
     getGeneralEraInfoData()
+
+  const { data: price, isLoading: priceLoading } = getPriceQuery.useQuery('subsocial')
+
+  const tokenPrice = price?.current_price
 
   const { data: generalStatsData, isLoading: generalStatsLoading } =
     getGeneralStatsData()
@@ -24,11 +31,22 @@ const EarnStats = () => {
     {
       title: 'Total SUB earned by stakers',
       desc: (
-        <SkeletonFallback isLoading={generalStatsLoading}>
-          {stakersEarnedTotalBN.toFormat(2)} {tokenSymbol}
-        </SkeletonFallback>
+        <FormatBalance
+          value={stakersEarnedTotalBN.toString()}
+          symbol={tokenSymbol}
+          loading={generalStatsLoading}
+          defaultMaximumFractionDigits={3}
+        />
       ),
-      subDesc: '$15,656.34',
+      subDesc: (
+        <FormatBalance
+          value={getBalanceInDollars(stakersEarnedTotalBN.toString(), tokenPrice)}
+          symbol={'$'}
+          loading={priceLoading || generalStatsLoading}
+          defaultMaximumFractionDigits={2}
+          startFromSymbol
+        />
+      ),
       tooltipText: 'blablabla',
     },
     {

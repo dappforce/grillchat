@@ -10,7 +10,7 @@ const GET_GENERAL_STATS = gql`
   query GetGeneralStats {
     activeStakingTotalActivityMetricsForFixedPeriod(
       args: {
-        period: WEEK
+        period: ALL_TIME
         likedPostsCount: false
         likedCreatorsCount: false
         stakersEarnedTotal: true

@@ -78,6 +78,7 @@ const CardItem = ({
       <Button
         className='self-center'
         href={buttonLink}
+        size={'lg'}
         target='__blank'
         variant='primary'
       >

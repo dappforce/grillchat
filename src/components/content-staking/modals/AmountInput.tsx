@@ -5,7 +5,7 @@ import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/qu
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { formatBalance } from '@/utils/formatBalance'
+import { parseBalance } from '@/utils/formatBalance'
 import {
   balanceWithDecimal,
   convertToBalanceWithDecimal,
@@ -85,7 +85,7 @@ export const StakeOrIncreaseStakeAmountInput = (
     validateInput(maxAmount.toString())
   }
 
-  const balanceValue = formatBalance(availableBalance.toString(), decimals)
+  const balanceValue = parseBalance(availableBalance.toString(), decimals)
 
   const validateInput = (amountValue: string) => {
     const amountWithDecimals = balanceWithDecimal(amountValue, decimals || 0)
@@ -161,7 +161,7 @@ export const UnstakeAmountInput = (props: CommonAmountInputProps) => {
     validateInput(maxAmount.toString())
   }
 
-  const balanceValue = formatBalance(locked, decimals)
+  const balanceValue = parseBalance(locked, decimals)
 
   const validateInput = (amountValue: string) => {
     const amountWithDecimals = balanceWithDecimal(amountValue, decimals || 0)
