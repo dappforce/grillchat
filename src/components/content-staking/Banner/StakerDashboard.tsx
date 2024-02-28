@@ -43,7 +43,6 @@ const StatsCards = () => {
     ? convertToBalanceWithDecimal(locked, decimal || 0)
     : new BN(0)
 
-  console.log(priceLoading || ledgerLoading)
   const dashboardData = useMemo(() => {
     return [
       {
@@ -80,7 +79,7 @@ const StatsCards = () => {
             defaultMaximumFractionDigits={3}
           />
         ),
-        infoTitle: 'The total amount of tokens locked on the Subsocial network',
+        infoTitle: 'Since Content Staking was released',
         desc: (
           <FormatBalance
             value={getBalanceInDollars(
@@ -101,7 +100,6 @@ const StatsCards = () => {
             {info?.backerCount}
           </SkeletonFallback>
         ),
-        infoTitle: 'The total number of unique accounts currently locking SUB',
       },
     ].filter(isDef)
   }, [generalEraInfoLoading, ledgerLoading, myAddress])
@@ -131,7 +129,7 @@ type StatsCardProps = {
   title: string
   value: React.ReactNode
   desc?: React.ReactNode
-  infoTitle: React.ReactNode
+  infoTitle?: React.ReactNode
   className?: string
 }
 

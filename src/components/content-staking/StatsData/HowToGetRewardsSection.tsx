@@ -10,14 +10,14 @@ const items = [
     desc: 'Like posts and comments of other users to earn staking rewards.',
     tooltipText: 'blablabla',
     buttonLink: '',
-    buttonText: 'Go to feed',
+    buttonText: 'My feed',
   },
   {
     title: 'Creator Rewards',
-    desc: 'Write posts and comments to earn rewards from every like it receives.',
+    desc: 'Create posts and comments to earn rewards from every like it every like they receive.',
     tooltipText: 'blablabla',
     buttonLink: '',
-    buttonText: 'Learn more',
+    buttonText: 'Create a post',
   },
 ]
 

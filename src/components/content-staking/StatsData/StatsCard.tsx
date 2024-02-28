@@ -7,7 +7,7 @@ type StatsCardProps = {
   title: React.ReactNode
   desc: React.ReactNode
   subDesc?: React.ReactNode
-  tooltipText: React.ReactNode
+  tooltipText?: React.ReactNode
   titleClassName?: string
 }
 
@@ -33,26 +33,32 @@ export const StatsCardContent = ({
 }: StatsCardProps) => {
   return (
     <>
-      <div className='text-base font-normal text-slate-300 leading-[22px]'>
-        <PopOver
-          trigger={
-            <div className={cx('flex items-center gap-2')}>
-              {title}
-              <FiInfo className='block text-xs' />
-            </div>
-          }
-          panelSize='sm'
-          triggerClassName={titleClassName}
-          yOffset={4}
-          placement='top'
-          triggerOnHover
-        >
-          {tooltipText}
-        </PopOver>
+      <div className='text-base font-normal leading-[22px] text-slate-300'>
+        {tooltipText ? (
+          <PopOver
+            trigger={
+              <div className={cx('flex items-center gap-2')}>
+                {title}
+                <FiInfo className='block text-xs' />
+              </div>
+            }
+            panelSize='sm'
+            triggerClassName={titleClassName}
+            yOffset={4}
+            placement='top'
+            triggerOnHover
+          >
+            {tooltipText}
+          </PopOver>
+        ) : (
+          title
+        )}
       </div>
-      <div className='text-2xl font-semibold text-text leading-8'>{desc}</div>
+      <div className='text-2xl font-semibold leading-8 text-text'>{desc}</div>
       {subDesc && (
-        <div className='text-base font-normal text-slate-300 leading-none'>{subDesc}</div>
+        <div className='text-base font-normal leading-none text-slate-300'>
+          {subDesc}
+        </div>
       )}
     </>
   )

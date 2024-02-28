@@ -90,7 +90,7 @@ const BannerActionButtons = () => {
           :
         </>
       ),
-      buttons: <LockingButtons locked={locked} />,
+      buttons: <LockingButtons />,
     },
   }
 
@@ -118,16 +118,11 @@ const BannerActionButtons = () => {
   )
 }
 
-type LockingButtonsProps = {
-  locked?: string
-}
-
-const LockingButtons = ({ locked }: LockingButtonsProps) => {
+const LockingButtons = () => {
   const [openStakeModal, setOpenStakeModal] = useState(false)
   const [modalVariant, setModalVariant] = useState<StakingModalVariant>('stake')
   const [amount, setAmount] = useState('0')
-
-  const isLockedTokens = !new BN(locked || '0').isZero()
+  const { isLockedTokens } = useContentStakingContext()
 
   const lockSubButtonText = isLockedTokens ? 'Lock more SUB' : 'Lock SUB'
 
@@ -141,7 +136,7 @@ const LockingButtons = ({ locked }: LockingButtonsProps) => {
       <div className='flex items-center gap-6'>
         <Button
           size={isTouchDevice() ? 'md' : 'lg'}
-          variant={'primary'}
+          variant={isLockedTokens ? 'primaryOutline' : 'primary'}
           onClick={() =>
             onButtonClick(isLockedTokens ? 'increaseStake' : 'stake')
           }

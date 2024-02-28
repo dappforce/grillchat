@@ -21,6 +21,7 @@ const RangeInput = ({
   max,
   rangeLabels,
   valueLabel,
+  rerenderTrigger
 }: RangeInputProps) => {
   const { minLabel, maxLabel, middleLabel } = rangeLabels || {}
   const currentLabelRef = React.useRef<HTMLInputElement>(null)
@@ -45,7 +46,7 @@ const RangeInput = ({
         currentLabelRef.current.style.left = left - 1 + 'px'
       }
     }
-  }, [])
+  }, [JSON.stringify(rerenderTrigger)])
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let target = e.target

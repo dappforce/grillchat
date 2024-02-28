@@ -47,7 +47,7 @@ const EarnStats = () => {
           startFromSymbol
         />
       ),
-      tooltipText: 'blablabla',
+      tooltipText: 'Since Content Staking was released',
     },
     {
       title: 'Total participants',
@@ -56,7 +56,6 @@ const EarnStats = () => {
           {info?.backerCount}
         </SkeletonFallback>
       ),
-      tooltipText: 'blablabla',
     },
   ]
 

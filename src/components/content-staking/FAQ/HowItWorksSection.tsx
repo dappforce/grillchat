@@ -9,7 +9,7 @@ const HowItWorksSection = () => {
       />
       <div className='flex w-full flex-col items-center gap-2'>
         <div className='text-[28px] font-bold leading-none'>
-          How does it work
+          How does it work?
         </div>
         <div className='text-base font-normal leading-[22px] text-slate-300'>
           Watch a quick video tutorial:

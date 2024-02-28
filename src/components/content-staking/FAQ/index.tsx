@@ -4,68 +4,50 @@ import SectionWrapper from '../utils/SectionWrapper'
 
 const items = [
   {
-    title: 'What is staking?',
+    title: 'What is Content Staking?',
     content: (
       <>
-        The Creator Staking system has two main objectives: grow the network,
-        and improve curation. Here, we will look at how the system functions.
+        Content Staking allows creators to earn rewards for producing content on
+        Subsocial, and rewards users for curating and interacting with their
+        favorite pieces of content.
         <br /> <br />
-        Heavy inspiration was taken from the Dapp Staking system implemented on
-        Astar Network, aimed at incentivizing developers to build applications
-        on the network. Creator Staking expands this idea to include creators of
-        content and communities, as those are also very valuable to Subsocial.
+        The system aims to grow the user and content base of Subsocial through
+        incentives.
       </>
     ),
   },
   {
-    title: 'What is the minimum amount of tokens required to stake?',
+    title: 'Why should I lock my tokens?',
     content: (
       <>
-        The Creator Staking system has two main objectives: grow the network,
-        and improve curation. Here, we will look at how the system functions.
-        <br /> <br />
-        Heavy inspiration was taken from the Dapp Staking system implemented on
-        Astar Network, aimed at incentivizing developers to build applications
-        on the network. Creator Staking expands this idea to include creators of
-        content and communities, as those are also very valuable to Subsocial.
+        Locking at least 2,000 SUB will allow you to like posts, support your
+        favorite creators, and earn even more SUB!
       </>
     ),
   },
   {
-    title: 'What are the rewards for staking?',
+    title: 'How can I increase my rewards?',
     content: (
       <>
-        The Creator Staking system has two main objectives: grow the network,
-        and improve curation. Here, we will look at how the system functions.
+        To maximize your rewards, make sure to like at least 10 posts per day.
+        The more SUB you lock, the more rewards you will get.
         <br /> <br />
-        Heavy inspiration was taken from the Dapp Staking system implemented on
-        Astar Network, aimed at incentivizing developers to build applications
-        on the network. Creator Staking expands this idea to include creators of
-        content and communities, as those are also very valuable to Subsocial.
+        You can also earn rewards by creating good posts, comments, and shares
+        that other users like.
       </>
     ),
   },
   {
-    title: 'How long does it take to receive staking rewards?',
-    content: (
-      <>
-        The Creator Staking system has two main objectives: grow the network,
-        and improve curation. Here, we will look at how the system functions.
-        <br /> <br />
-        Heavy inspiration was taken from the Dapp Staking system implemented on
-        Astar Network, aimed at incentivizing developers to build applications
-        on the network. Creator Staking expands this idea to include creators of
-        content and communities, as those are also very valuable to Subsocial.
-      </>
-    ),
+    title: 'When will I receive my rewards?',
+    content: <>Rewards are distributed every Monday for the previous week.</>,
   },
 ]
 
 const FAQSection = () => {
   return (
-    <div className='flex z-[1] flex-col gap-4'>
+    <div className='z-[1] flex flex-col gap-4'>
       <div className='text-[28px] font-bold leading-none'>FAQ</div>
-      <SectionWrapper className='relative px-4 py-6 overflow-hidden'>
+      <SectionWrapper className='relative overflow-hidden px-4 py-6'>
         <FAQIcon className='absolute right-[-38px] top-[-35px] rotate-[36deg]' />
         <Accordion items={items} className='max-w-[80%]' />
       </SectionWrapper>

@@ -16,12 +16,12 @@ export const ContentStaking = () => {
         <UsersEarnInfo />
         <HowItWorksSection />
         <FAQSection />
-        <SectionWrapper className='flex z-[1] flex-col items-center gap-4 px-4 py-6'>
+        <SectionWrapper className='z-[1] flex flex-col items-center gap-4 px-4 py-6'>
           <div className='text-[28px] font-bold leading-none'>
-            Still have questions? Ask others
+            Still have questions?
           </div>
           <Button variant='primaryOutline' size='lg'>
-            Open chat
+            Ask us
           </Button>
         </SectionWrapper>
       </div>

@@ -13,15 +13,15 @@ const items = [
 const EarnInfoByCretor = () => {
   const cardsItems = [
     {
-      title: 'Average rewards per post:',
+      title: 'Possible rewards per post:',
       desc: <SkeletonFallback isLoading={false}>234.35 SUB</SkeletonFallback>,
       subDesc: '$15,656.34',
-      tooltipText: 'blablabla',
+      tooltipText: 'The average amount of rewards that posts on Subsocial earn',
     },
     {
-      title: 'Average rewards per comment:',
+      title: 'Possible rewards per commen:',
       desc: <SkeletonFallback isLoading={false}>144.35 SUB</SkeletonFallback>,
-      tooltipText: 'blablabla',
+      tooltipText: 'The average amount of rewards that comments on Subsocial earn',
     },
   ]
   return (
