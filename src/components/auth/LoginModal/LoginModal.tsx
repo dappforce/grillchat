@@ -2,11 +2,13 @@ import { linkTextStyles } from '@/components/LinkText'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useLoginOption from '@/hooks/useLoginOption'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import dynamic from 'next/dynamic'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import SaveGrillKeyModal from '../SaveGrillKeyModal'
 import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import { LoginModalStep, loginModalContents } from './LoginModalContent'
 
@@ -42,6 +44,9 @@ export default function LoginModal({
   onBackClick,
   ...props
 }: LoginModalProps) {
+  const openedNextStepsModal = useLoginModal.use.openedNextStepModal()
+  const closeNextStepModal = useLoginModal.use.closeNextStepModal()
+
   const [isOpenStayUpdatedModal, setIsOpenStayUpdatedModal] = useState(false)
   const { loginOption } = useLoginOption()
 
@@ -256,6 +261,15 @@ export default function LoginModal({
           closeModal={() => setIsOpenStayUpdatedModal(false)}
         />
       )}
+      <SaveGrillKeyModal
+        isOpen={openedNextStepsModal?.step === 'save-grill-key'}
+        closeModal={() => closeNextStepModal()}
+        provider={
+          openedNextStepsModal?.step === 'save-grill-key'
+            ? openedNextStepsModal.provider
+            : undefined
+        }
+      />
     </>
   )
 }
