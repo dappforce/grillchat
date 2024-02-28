@@ -1,6 +1,5 @@
-const { themeVariants, prefersLight, prefersDark } = require('tailwindcss-theme-variants');
-
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
@@ -10,7 +9,7 @@ module.exports = {
         0: 'repeat(1, minmax(0, 0fr))',
       },
       screens: {
-        'medium': '924px',
+        medium: '924px',
       },
       fontFamily: {
         sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
@@ -57,15 +56,5 @@ module.exports = {
   plugins: [
     require('tailwind-scrollbar')({ nocompatible: true }),
     require('tailwindcss-touch')(),
-    themeVariants({
-      themes: {
-        light: {
-          mediaQuery: prefersLight /* "@media (prefers-color-scheme: light)" */,
-        },
-        dark: {
-          mediaQuery: prefersDark /* "@media (prefers-color-scheme: dark)" */,
-        },
-      },
-    }),
   ],
 }
