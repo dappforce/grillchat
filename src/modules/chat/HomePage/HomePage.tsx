@@ -4,6 +4,7 @@ import Tabs, { TabsProps } from '@/components/Tabs'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
+import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
@@ -18,6 +19,7 @@ import { cx } from '@/utils/class-names'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import urlJoin from 'url-join'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
@@ -70,6 +72,8 @@ export default function HubsPage(props: HubsPageProps) {
   const isFirstAccessed = useLocation((state) => state.isFirstAccessed)
   const { search, setSearch, getFocusedElementIndex, focusController } =
     useSearch()
+
+  const refSearchParam = useReferralSearchParam()
 
   const tabs: TabsProps['tabs'] = [
     {
@@ -136,7 +140,9 @@ export default function HubsPage(props: HubsPageProps) {
     setSelectedTab(selectedTab)
     const selectedTabId = tabs[selectedTab]?.id
     if (selectedTabId)
-      router.push(`/${selectedTabId}`, undefined, { shallow: true })
+      router.push(urlJoin(`/${selectedTabId}`, refSearchParam), undefined, {
+        shallow: true,
+      })
   }
 
   const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
