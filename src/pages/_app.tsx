@@ -125,7 +125,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   }, [])
 
   return (
-    <ThemeProvider attribute='class' forcedTheme={theme}>
+    <ThemeProvider attribute='class' defaultTheme='light' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
         <DatahubSubscriber />
         <BadgeManager />
