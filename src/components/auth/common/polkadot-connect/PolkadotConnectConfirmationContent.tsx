@@ -1,12 +1,10 @@
-import ProcessingHumster from '@/assets/graphics/processing-humster.png'
+import LinkingDark from '@/assets/graphics/linking-dark.svg'
+import LinkingLight from '@/assets/graphics/linking-light.svg'
 import Button from '@/components/Button'
-import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import { estimatedWaitTime } from '@/utils/network'
 import { toSubsocialAddress } from '@subsocial/utils'
-import Image from 'next/image'
 import { useState } from 'react'
 import { PolkadotConnectContentProps } from './types'
 
@@ -48,16 +46,17 @@ export default function PolkadotConnectConfirmationContent({
           {({ isLoading, mutateAsync: addProxy }) => {
             return (
               <>
-                <div className='mb-2'>
+                <div className='mb-2 w-full'>
                   {isLoading || isProcessing ? (
-                    <DynamicLoadedHamsterLoading />
+                    <div className='animate-pulse'>
+                      <LinkingLight className='block w-full dark:hidden' />
+                      <LinkingDark className='hidden w-full dark:block' />
+                    </div>
                   ) : (
-                    <Image
-                      className='w-64 max-w-xs rounded-full'
-                      priority
-                      src={ProcessingHumster}
-                      alt=''
-                    />
+                    <>
+                      <LinkingLight className='block w-full dark:hidden' />
+                      <LinkingDark className='hidden w-full dark:block' />
+                    </>
                   )}
                 </div>
 
@@ -79,9 +78,7 @@ export default function PolkadotConnectConfirmationContent({
                   }}
                   isLoading={isLoading || isLoadingEnergy || isProcessing}
                   loadingText={
-                    isLoading
-                      ? `It may take up to ${estimatedWaitTime} seconds`
-                      : undefined
+                    isLoading ? 'Pending Confirmation...' : undefined
                   }
                 >
                   Confirm

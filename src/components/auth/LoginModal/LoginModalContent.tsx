@@ -20,11 +20,9 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
-import { signIn } from 'next-auth/react'
+import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { IoLogoGoogle } from 'react-icons/io'
-import { RiTwitterXLine } from 'react-icons/ri'
+import { HiPlus } from 'react-icons/hi2'
 import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
 import { CustomConnectButton } from '../common/evm/CustomConnectButton'
 import LimitedPolkadotJsSupportContent from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
@@ -35,7 +33,8 @@ import PolkadotConnectWalletContent from '../common/polkadot-connect/PolkadotCon
 import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { ConnectWalletContent } from './contents/ConnectWalletContent'
-import { EnterSecretKeyContent } from './contents/EnterSecretKeyContent'
+import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
+import NewAccountContent from './contents/NewAccountContent'
 import { NextActionsContent } from './contents/NextActionsContent'
 import OauthLoginLoading from './contents/OauthLoginLoadingContent'
 
@@ -45,6 +44,7 @@ export type LoginModalStep =
   | 'enter-secret-key'
   | 'x-login-loading'
   | 'google-login-loading'
+  | 'new-account'
   | 'account-created'
   | 'next-actions'
   | 'connect-wallet'
@@ -83,18 +83,31 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
   }, [])
 
   const canUseAnonLogin = !loginRequired
-  const isConnectWalletPrimaryButton =
-    loginOption === 'polkadot' || (isInIframe && !canUseAnonLogin)
+  const isConnectWalletPrimaryButton = loginOption === 'polkadot'
 
   return (
     <div>
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className={cx('flex flex-col gap-4')}>
+          {loginOption === 'all' && (
+            <Button
+              variant='primary'
+              onClick={() => setCurrentState('enter-secret-key')}
+              size='lg'
+            >
+              <div className='flex items-center justify-center gap-2'>
+                <KeyIcon className='text-text-muted-on-primary' />
+                Log in with Grill key
+              </div>
+            </Button>
+          )}
           <Button
-            variant='primary'
+            variant={
+              isConnectWalletPrimaryButton ? 'primary' : 'primaryOutline'
+            }
             onClick={() => {
-              setCurrentState('connect-wallet')
+              setCurrentState('polkadot-connect')
               sendEvent('connect_wallet_started')
             }}
             size='lg'
@@ -107,21 +120,9 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
                     : 'text-text-muted'
                 )}
               />
-              Connect wallet
+              Connect via Polkadot
             </div>
           </Button>
-          {loginOption === 'all' && (
-            <Button
-              variant='primaryOutline'
-              onClick={() => setCurrentState('enter-secret-key')}
-              size='lg'
-            >
-              <div className='flex items-center justify-center gap-2'>
-                <KeyIcon className='text-text-muted' />
-                Enter Grill key
-              </div>
-            </Button>
-          )}
           {loginOption === 'all' && canUseAnonLogin && isInIframe && (
             <Button
               type='button'
@@ -138,17 +139,17 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
               }}
             >
               <div className='flex items-center justify-center gap-2'>
-                <IncognitoIcon className='text-text-muted-on-primary' />
+                <IncognitoIcon className='text-text-muted' />
                 Continue anonymously
               </div>
             </Button>
           )}
           {!isInIframe && (
-            <div className='mt-2 flex flex-col'>
+            <div className='mt-1 flex flex-col'>
               <div className='relative mb-4 text-center text-text-muted'>
-                <div className='absolute top-1/2 h-px w-full bg-border-gray' />
+                <div className='absolute top-1/2 h-px w-full bg-background-lightest dark:bg-background-lightest/50' />
                 <span className='relative inline-block bg-background-light px-4 text-sm'>
-                  or login with
+                  OR
                 </span>
               </div>
               {showErrorPanel && (
@@ -157,36 +158,20 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
                   again or try different account
                 </InfoPanel>
               )}
-              <div className='flex items-center justify-center gap-2'>
-                <Button
-                  variant='bgLighter'
-                  size='circle'
-                  onClick={() => {
-                    sendEvent('oauth_login_started', { provider: 'google' })
-                    signIn('google', {
-                      callbackUrl: `${getCurrentUrlWithoutQuery()}?login=google`,
-                    })
-                  }}
-                >
-                  <div className='flex items-center justify-center gap-2'>
-                    <IoLogoGoogle className='text-xl text-text-muted-on-primary' />
+              <Button
+                variant='primaryOutline'
+                onClick={() => setCurrentState('new-account')}
+              >
+                <div className='flex items-center justify-center gap-2'>
+                  <HiPlus className='text-[20px] text-text-muted' />
+                  <div className='flex flex-col text-left'>
+                    <span>Create new account</span>
+                    <span className='text-sm text-text-muted'>
+                      via Metamask, X, Google
+                    </span>
                   </div>
-                </Button>
-                <Button
-                  variant='bgLighter'
-                  size='circle'
-                  onClick={() => {
-                    sendEvent('oauth_login_started', { provider: 'twitter' })
-                    signIn('twitter', {
-                      callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
-                    })
-                  }}
-                >
-                  <div className='flex items-center justify-center gap-2'>
-                    <RiTwitterXLine className='text-xl text-text-muted-on-primary' />
-                  </div>
-                </Button>
-              </div>
+                </div>
+              </Button>
             </div>
           )}
         </div>
@@ -200,7 +185,8 @@ type LoginModalContents = {
 }
 export const loginModalContents: LoginModalContents = {
   login: LoginContent,
-  'enter-secret-key': EnterSecretKeyContent,
+  'enter-secret-key': LoginWithGrillKeyContent,
+  'new-account': NewAccountContent,
   'x-login-loading': OauthLoginLoading,
   'google-login-loading': OauthLoginLoading,
   'account-created': AccountCreatedContent,

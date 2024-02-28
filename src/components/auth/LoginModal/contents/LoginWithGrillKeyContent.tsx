@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import Notice from '@/components/Notice'
 import Toast from '@/components/Toast'
 import TextArea from '@/components/inputs/TextArea'
 import { useSendEvent } from '@/stores/analytics'
@@ -7,7 +8,7 @@ import { SyntheticEvent, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { LoginModalContentProps } from '../LoginModalContent'
 
-export const EnterSecretKeyContent = ({
+export const LoginWithGrillKeyContent = ({
   beforeLogin,
   afterLogin,
   closeModal,
@@ -51,6 +52,10 @@ export const EnterSecretKeyContent = ({
         onChange={(e) => setPrivateKey((e.target as HTMLTextAreaElement).value)}
         placeholder='Enter your Grill key'
       />
+      <Notice noticeType='info'>
+        IMPORTANT: Do not enter the private key of an account that holds any
+        funds, assets, NFTs, etc.
+      </Notice>
       <Button disabled={!privateKey} type='submit' size='lg'>
         Login
       </Button>

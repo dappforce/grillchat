@@ -1,4 +1,4 @@
-import InfoPanel from '@/components/InfoPanel'
+import { linkTextStyles } from '@/components/LinkText'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useLoginOption from '@/hooks/useLoginOption'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -29,7 +29,7 @@ type ModalConfig = {
     withoutDefaultPadding?: boolean
     backToStep?: LoginModalStep
     withBackButton?: boolean | ((address: string | null) => boolean)
-    withFooter?: boolean
+    withFooter?: 'privacy-policy' | 'dont-have-account'
     finalizeTemporaryAccount?: boolean
     withCloseButton?: boolean
   }
@@ -55,24 +55,18 @@ export default function LoginModal({
     login: {
       title: '🔐 Login',
       desc: '',
-      withFooter: true,
+      withFooter: 'privacy-policy',
     },
     'enter-secret-key': {
-      title: '🔑 Grill key',
-      desc: (
-        <span className='flex flex-col'>
-          <span>
-            To access GrillChat, you need a Grill key. If you do not have one,
-            just write your first chat message, and you will be given one.
-          </span>
-          <InfoPanel className='mt-4'>
-            DO NOT enter the private key of an account that holds any funds,
-            assets, NFTs, etc.
-          </InfoPanel>
-        </span>
-      ),
+      title: '🔑 Log in with Grill key',
+      desc: 'Grill key is like a long password and consists of 12 words',
       withBackButton: true,
-      withFooter: true,
+      withFooter: 'dont-have-account',
+    },
+    'new-account': {
+      title: '🔑 New Grill account',
+      desc: 'Choose an authentication method from the options below to create a new Grill account.',
+      withBackButton: true,
     },
     'x-login-loading': {
       title: '🕔 Connecting to X',
@@ -103,7 +97,7 @@ export default function LoginModal({
       title: '🔑 Connect EVM',
       desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display ENS names and NFTs, and interact with ERC20s.',
       withBackButton: true,
-      backToStep: 'connect-wallet',
+      backToStep: 'new-account',
     },
     'evm-address-linked': {
       title: '🎉 EVM address linked',
@@ -114,7 +108,6 @@ export default function LoginModal({
       title: '😕 Something went wrong',
       desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
       withBackButton: true,
-      withFooter: false,
       backToStep: 'connect-wallet',
     },
     'evm-set-profile': {
@@ -122,10 +115,9 @@ export default function LoginModal({
       desc: 'Do you want to set your EVM as your default address?',
     },
     'polkadot-connect': {
-      title: '🔗 Connect Polkadot',
-      desc: 'Choose a wallet to connect to Grill.chat',
+      title: '🔗 Connect via Polkadot',
+      desc: 'Select a wallet to connect to Grill using an existing Polkadot account',
       withBackButton: true,
-      backToStep: 'connect-wallet',
       withoutDefaultPadding: true,
     },
     'polkadot-js-limited-support': {
@@ -140,14 +132,14 @@ export default function LoginModal({
     },
     'polkadot-connect-account': {
       title: '🔗 Select an account',
-      desc: 'Select an account to connect to Grill.chat.',
+      desc: 'Select an account to connect to Grill.chat',
       withBackButton: true,
       backToStep: 'polkadot-connect',
       withoutDefaultPadding: true,
     },
     'polkadot-connect-confirmation': {
-      title: '🔑 Link Confirmation',
-      desc: 'Please confirm the connection in your Polkadot wallet.',
+      title: '🔑 Link Your Account',
+      desc: 'Confirm the account connection in your Polkadot wallet',
       withBackButton: true,
       backToStep: 'polkadot-connect-account',
     },
@@ -198,11 +190,30 @@ export default function LoginModal({
       ? withBackButton(address)
       : withBackButton
 
+  let footer: React.ReactNode | true | undefined
+  if (withFooter === 'privacy-policy') {
+    footer = true
+  } else if (withFooter === 'dont-have-account') {
+    footer = (
+      <div className='flex flex-col items-center gap-0.5 p-4 pb-4 pt-3 text-center'>
+        <span className='text-text-muted'>Don&apos;t have an account?</span>
+        <button
+          className={linkTextStyles({ variant: 'primary' })}
+          onClick={() => {
+            setCurrentState('new-account')
+          }}
+        >
+          Create a new one
+        </button>
+      </div>
+    )
+  }
+
   return (
     <>
       <Modal
         {...props}
-        withFooter={withFooter}
+        withFooter={footer}
         initialFocus={isTouchDevice() ? undefined : inputRef}
         title={title}
         withCloseButton={withCloseButton}

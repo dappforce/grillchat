@@ -1,7 +1,7 @@
 import { cx } from '@/utils/class-names'
 import { Dialog, Transition } from '@headlessui/react'
-import { cva, VariantProps } from 'class-variance-authority'
-import { Fragment } from 'react'
+import { VariantProps, cva } from 'class-variance-authority'
+import { Fragment, ReactNode } from 'react'
 import { HiOutlineChevronLeft, HiXMark } from 'react-icons/hi2'
 import Button from '../Button'
 import LinkText from '../LinkText'
@@ -46,7 +46,7 @@ export type ModalProps = ModalFunctionalityProps &
     panelClassName?: string
     contentClassName?: string
     initialFocus?: React.RefObject<HTMLElement>
-    withFooter?: boolean
+    withFooter?: boolean | ReactNode
   }
 
 export default function Modal({
@@ -166,22 +166,28 @@ export default function Modal({
                 </div>
 
                 {withFooter && (
-                  <div className='flex items-center justify-center gap-4 border-t border-background-lightest px-6 py-5 text-sm text-text-muted'>
-                    <LinkText
-                      href='https://subsocial.network/legal/privacy'
-                      className='font-normal'
-                      openInNewTab
-                    >
-                      Privacy Policy
-                    </LinkText>
-                    <span>&middot;</span>
-                    <LinkText
-                      href='https://subsocial.network/legal/terms'
-                      className='font-normal'
-                      openInNewTab
-                    >
-                      Terms of Service
-                    </LinkText>
+                  <div className='border-t border-background-lightest dark:border-background-lightest/50'>
+                    {withFooter === true ? (
+                      <div className='flex items-center justify-center gap-4 px-6 py-5 text-sm text-text-muted '>
+                        <LinkText
+                          href='https://subsocial.network/legal/privacy'
+                          className='font-normal'
+                          openInNewTab
+                        >
+                          Privacy Policy
+                        </LinkText>
+                        <span>&middot;</span>
+                        <LinkText
+                          href='https://subsocial.network/legal/terms'
+                          className='font-normal'
+                          openInNewTab
+                        >
+                          Terms of Service
+                        </LinkText>
+                      </div>
+                    ) : (
+                      withFooter
+                    )}
                   </div>
                 )}
               </Dialog.Panel>
