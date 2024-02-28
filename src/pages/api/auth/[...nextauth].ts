@@ -8,15 +8,26 @@ import type {
 } from 'next'
 import type { NextAuthOptions } from 'next-auth'
 import NextAuth, { getServerSession } from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
 import TwitterProvider from 'next-auth/providers/twitter'
 
+declare module 'next-auth' {
+  interface Session {
+    provider: 'google' | 'twitter'
+  }
+}
+
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET ?? '',
+  secret: env.NEXTAUTH_SECRET,
   providers: [
     TwitterProvider({
-      clientId: process.env.TWITTER_CLIENT_ID ?? '',
-      clientSecret: process.env.TWITTER_CLIENT_SECRET ?? '',
+      clientId: env.TWITTER_CLIENT_ID,
+      clientSecret: env.TWITTER_CLIENT_SECRET,
       version: '2.0',
+    }),
+    GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
   ],
   pages: {
@@ -42,10 +53,21 @@ export const authOptions: NextAuthOptions = {
       if (!blockedAddress) return true
       return `/?auth-blocked=${blockedAddress}`
     },
+    async jwt(all) {
+      const { account, token } = all
+      if (account) {
+        token.provider = account.provider
+      }
+      return token
+    },
     async session({ session, token }) {
       let image = session.user.image ?? ''
       image = image.replace('_normal', '')
-      return { ...session, user: { ...session.user, image, id: token.sub! } }
+      return {
+        ...session,
+        user: { ...session.user, image, id: token.sub! },
+        provider: token.provider,
+      }
     },
   },
 }

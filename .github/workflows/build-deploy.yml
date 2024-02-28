@@ -115,8 +115,6 @@ jobs:
             GH_DATAHUB_QUEUE_URL=https://queue-data-hub.subsocial.network/graphql
             GH_DATAHUB_QUEUE_TOKEN=${{ secrets.DATAHUB_QUEUE_TOKEN }}
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=1386
-            GH_TWITTER_CLIENT_ID=${{ secrets.TWITTER_CLIENT_ID }}
-            GH_TWITTER_CLIENT_SECRET=${{ secrets.TWITTER_CLIENT_SECRET }}
             GH_NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             GH_NEXTAUTH_URL=https://grill.chat
           target: storybook

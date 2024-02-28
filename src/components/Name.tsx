@@ -13,6 +13,7 @@ import {
   profileSourceData,
 } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
+import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { ComponentProps } from 'react'
 import { useInView } from 'react-intersection-observer'
 import LinkText from './LinkText'
@@ -63,9 +64,14 @@ export default function Name({
   let usedProfileSource: ProfileSourceIncludingOffchain | undefined =
     profileSource
   let usedTooltipLinkId = name
-  if (linkedIdentity && profileSource === 'subsocial-profile') {
-    usedProfileSource = 'x'
-    usedTooltipLinkId = linkedIdentity.externalId
+  if (profileSource === 'subsocial-profile') {
+    if (linkedIdentity?.provider === IdentityProvider.TWITTER) {
+      usedProfileSource = 'x'
+      usedTooltipLinkId = linkedIdentity.externalId
+    } else if (linkedIdentity?.provider === IdentityProvider.GOOGLE) {
+      usedProfileSource = 'google'
+      usedTooltipLinkId = linkedIdentity.externalId
+    }
   }
 
   let {
