@@ -2,6 +2,7 @@ import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
+import CustomLink from '@/components/referral/CustomLink'
 import { constantsConfig } from '@/constants/config'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginOption from '@/hooks/useLoginOption'
@@ -18,7 +19,6 @@ import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
 import { Wallet, getWallets } from '@talismn/connect-wallets'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ComponentProps, ReactNode, useEffect, useRef, useState } from 'react'
 import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
@@ -145,9 +145,9 @@ export default function Navbar({
 
   const logoLink = (
     <div className='flex items-center'>
-      <Link href={getHubPageLink(router)} aria-label='Back'>
+      <CustomLink href={getHubPageLink(router)} aria-label='Back'>
         <Logo className='text-2xl' />
-      </Link>
+      </CustomLink>
     </div>
   )
 
