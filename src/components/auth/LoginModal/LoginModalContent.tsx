@@ -27,7 +27,6 @@ import { CustomConnectButton } from '../common/evm/CustomConnectButton'
 import LimitedPolkadotJsSupportContent from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
-import PolkadotConnectSuccess from '../common/polkadot-connect/PolkadotConnectSuccess'
 import PolkadotConnectWalletContent from '../common/polkadot-connect/PolkadotConnectWalletContent'
 import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
@@ -186,11 +185,11 @@ export const loginModalContents: LoginModalContents = {
   'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmation,
-  'polkadot-connect-success': PolkadotConnectSuccess,
 }
 
 function PolkadotConnectConfirmation({
   setCurrentState,
+  closeModal,
 }: LoginModalContentProps) {
   const { mutateAsync, error } = useLoginAndRequestToken({
     asTemporaryAccount: true,
@@ -199,6 +198,7 @@ function PolkadotConnectConfirmation({
 
   return (
     <PolkadotConnectConfirmationContent
+      closeModal={closeModal}
       setCurrentState={setCurrentState}
       beforeAddProxy={async () => {
         await mutateAsync(null)

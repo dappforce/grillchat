@@ -1,7 +1,6 @@
 import { linkTextStyles } from '@/components/LinkText'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useLoginOption from '@/hooks/useLoginOption'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -121,16 +120,6 @@ export default function LoginModal({
       withBackButton: true,
       backToStep: 'polkadot-connect-account',
     },
-    'polkadot-connect-success': {
-      title:
-        loginOption === 'polkadot'
-          ? '🎉 Chat joined!'
-          : '🎉 Polkadot account linked',
-      desc:
-        loginOption === 'polkadot'
-          ? 'Here, you can talk about the Active Staking system with others, and share which promising authors you are following.'
-          : "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
-    },
   }
 
   const header = modalHeader[currentState]
@@ -152,7 +141,6 @@ export default function LoginModal({
   }, [props.isOpen])
 
   const address = useMyMainAddress()
-  const { data: accountData } = getAccountDataQuery.useQuery(address ?? '')
   const showBackButton =
     typeof withBackButton === 'function'
       ? withBackButton(address)
@@ -195,16 +183,10 @@ export default function LoginModal({
         titleClassName={cx(withoutDefaultPadding && 'px-6')}
         descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
         closeModal={() => {
-          if (
-            loginOption === 'polkadot' &&
-            currentState === 'polkadot-connect-success'
-          ) {
-            props.closeModal()
-            setIsOpenStayUpdatedModal(true)
-            return
-          }
-
           props.closeModal()
+          if (loginOption === 'polkadot') {
+            setIsOpenStayUpdatedModal(true)
+          }
         }}
       >
         <ModalContent

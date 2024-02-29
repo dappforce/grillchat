@@ -17,7 +17,6 @@ import LimitedPolkadotJsSupportContent, {
 } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
-import PolkadotConnectSuccess from '../common/polkadot-connect/PolkadotConnectSuccess'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
 import LinkedAddressesContent from './contents/LinkedAddressesContent'
@@ -76,7 +75,6 @@ const modalContents: {
   'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
-  'polkadot-connect-success': PolkadotConnectSuccess,
   'polkadot-connect-unlink': PolkadotConnectUnlink,
   'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
   'withdraw-tokens': WithdrawContent,
@@ -283,17 +281,6 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       desc: 'Please confirm the connection in your Polkadot wallet.',
       withBackButton: 'polkadot-connect-account',
     },
-    'polkadot-connect-success': {
-      title:
-        loginOption === 'polkadot'
-          ? '🎉 Chat joined!'
-          : '🎉 Polkadot account linked',
-      desc:
-        loginOption === 'polkadot'
-          ? 'Here, you can talk about the Active Staking system with others, and share which promising authors you are following.'
-          : "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
-      withBackButton: false,
-    },
     'polkadot-connect-unlink': {
       title: '🤔 Unlink Polkadot address?',
       desc: undefined,
@@ -346,12 +333,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
   }
 
   const augmentedCloseModal = () => {
-    if (currentState === 'polkadot-connect-success' && hasPreviousIdentity) {
-      setCurrentStateAugmented('polkadot-connect-identity-removed')
-    } else if (
-      currentState === 'evm-address-linked' &&
-      (ensNames?.length ?? 0) > 0
-    ) {
+    if (currentState === 'evm-address-linked' && (ensNames?.length ?? 0) > 0) {
       setCurrentStateAugmented('evm-set-profile-suggestion')
     } else closeModal()
   }

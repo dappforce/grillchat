@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { PolkadotConnectContentProps } from './types'
 
 export default function PolkadotConnectConfirmationContent({
-  setCurrentState,
+  closeModal,
   beforeAddProxy,
   onError,
 }: PolkadotConnectContentProps & {
@@ -36,7 +36,7 @@ export default function PolkadotConnectConfirmationContent({
                 sendEvent('polkadot_address_linked', undefined, {
                   polkadotLinked: true,
                 })
-                setCurrentState('polkadot-connect-success')
+                closeModal()
               },
               onError,
             },
