@@ -76,24 +76,8 @@ export default function Navbar({
     if (auth) setIsLoginModalOpen(true)
   }, [setIsLoginModalOpen])
 
-  const [openPrivateKeyNotice, setOpenPrivateKeyNotice] = useState(false)
   const isLoggingInWithKey = useRef(false)
   const timeoutRef = useRef<any>()
-
-  useEffect(() => {
-    const isChangedAddressFromGuest = prevAddress === null && address
-    if (
-      isInitializedAddress ||
-      isLoggingInWithKey.current ||
-      !address ||
-      !isChangedAddressFromGuest
-    )
-      return
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    timeoutRef.current = setTimeout(() => {
-      setOpenPrivateKeyNotice(true)
-    }, 10_000)
-  }, [address, isInitializedAddress, prevAddress])
 
   const { loginOption } = useLoginOption()
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
@@ -123,14 +107,7 @@ export default function Navbar({
     if (!isInitialized) return <div className='w-20' />
 
     if (isLoggedIn && !isTemporaryAccount) {
-      return (
-        <ProfileAvatar
-          popOverControl={{
-            isOpen: openPrivateKeyNotice,
-            setIsOpen: setOpenPrivateKeyNotice,
-          }}
-        />
-      )
+      return <ProfileAvatar />
     }
 
     return enableLoginButton ? (
@@ -194,8 +171,6 @@ export default function Navbar({
         isOpen={isLoginModalOpen}
         closeModal={() => setIsLoginModalOpen(false)}
         initialOpenState={initialLoginModalOpenState}
-        beforeLogin={() => (isLoggingInWithKey.current = true)}
-        afterLogin={() => (isLoggingInWithKey.current = false)}
       />
       <AuthErrorModal />
     </>

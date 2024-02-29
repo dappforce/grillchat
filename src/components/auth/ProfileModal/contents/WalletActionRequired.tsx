@@ -13,8 +13,8 @@ export const WalletActionRequiredBody = () => (
   </div>
 )
 
-const ActionRequierdContent = (_props: ProfileModalContentProps) => (
+const ActionRequiredContent = (_props: ProfileModalContentProps) => (
   <WalletActionRequiredBody />
 )
 
-export default ActionRequierdContent
+export default ActionRequiredContent

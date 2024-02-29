@@ -40,6 +40,5 @@ export type ProfileModalContentProps = {
     forceFlowBackTo?: ProfileModalState
   ) => void
   closeModal: () => void
-  notification?: NotificationControl
   evmAddress?: string | null
 }

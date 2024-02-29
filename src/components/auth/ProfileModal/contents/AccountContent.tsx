@@ -38,7 +38,6 @@ import { useIsPushNotificationEnabled } from './notifications/PushNotificationCo
 export default function AccountContent({
   address,
   setCurrentState,
-  notification,
 }: ProfileModalContentProps) {
   const { showNotification, closeNotification } =
     useFirstVisitNotification('notification-menu')
@@ -144,15 +143,9 @@ export default function AccountContent({
         ]
       : []),
     {
-      text: (
-        <span className='flex items-center gap-2'>
-          <span>Show Grill Key</span>
-          {/* {notification?.showNotif && <DotBlinkingNotification />} */}
-        </span>
-      ),
+      text: 'Show Grill key',
       icon: KeyIcon,
       onClick: () => {
-        notification?.setNotifDone()
         onShowPrivateKeyClick()
       },
     },
