@@ -230,15 +230,18 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     }
     return address
   },
-  loginAsTemporaryAccount: () => {
+  loginAsTemporaryAccount: async () => {
     set({ isTemporaryAccount: true })
     const encodedTempAcc = temporaryAccountStorage.get()
     let tempAcc = undefined
     if (encodedTempAcc) tempAcc = decodeSecretKey(encodedTempAcc)
 
-    return get().login(tempAcc, {
+    const res = await get().login(tempAcc, {
       asTemporaryAccount: true,
     })
+    if (!res) temporaryAccountStorage.remove()
+
+    return res
   },
   finalizeTemporaryAccount: () => {
     saveLoginInfoToStorage()
