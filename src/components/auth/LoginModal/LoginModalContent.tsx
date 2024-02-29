@@ -21,6 +21,7 @@ import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
+import { estimatedWaitTime } from '@/utils/network'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi2'
 import { CustomConnectButton } from '../common/evm/CustomConnectButton'
@@ -230,10 +231,12 @@ export function EvmLoginError({ setCurrentState }: LoginModalContentProps) {
 }
 export function LinkEvmContent({ setCurrentState }: LoginModalContentProps) {
   const { mutate, isLoading: isLoggingIn } = useLoginBeforeSignEvm()
+  const [hasSignedMessage, setHasSignedMessage] = useState(false)
 
   const { signAndLinkEvmAddress, isLoading: isLinking } =
     useSignMessageAndLinkEvmAddress({
       onFinishSignMessage: () => {
+        setHasSignedMessage(true)
         useLoginModal
           .getState()
           .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
@@ -243,6 +246,7 @@ export function LinkEvmContent({ setCurrentState }: LoginModalContentProps) {
         useMyAccount.getState().finalizeTemporaryAccount()
       },
       onError: () => {
+        setHasSignedMessage(false)
         setCurrentState('evm-linking-error')
       },
     })
@@ -254,6 +258,11 @@ export function LinkEvmContent({ setCurrentState }: LoginModalContentProps) {
       className={cx('w-full')}
       beforeSignEvmAddress={() => mutate()}
       signAndLinkEvmAddress={signAndLinkEvmAddress}
+      loadingText={
+        hasSignedMessage
+          ? `It may take up to ${estimatedWaitTime} seconds`
+          : 'Pending Confirmation...'
+      }
       isLoading={isLoading}
       secondLabel='Sign Message'
     />
