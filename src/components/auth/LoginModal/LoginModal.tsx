@@ -72,16 +72,6 @@ export default function LoginModal({
       desc: 'Choose an authentication method from the options below to create a new Grill account.',
       withBackButton: true,
     },
-    'x-login-loading': {
-      title: '🕔 Connecting to X',
-      desc: 'We are connecting your X account to Grill.chat. Please wait for a few seconds.',
-      withCloseButton: false,
-    },
-    'google-login-loading': {
-      title: '🕔 Connecting to Google',
-      desc: 'We are connecting your Google account to Grill.chat. Please wait for a few seconds.',
-      withCloseButton: false,
-    },
     'account-created': {
       title: '🎉 Account created',
       desc: 'We have created an account linked to your X for you. You can now use Grill.chat!',

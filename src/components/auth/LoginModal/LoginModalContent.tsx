@@ -33,14 +33,11 @@ import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
 import NewAccountContent from './contents/NewAccountContent'
-import OauthLoginLoading from './contents/OauthLoginLoadingContent'
 
 export type LoginModalStep =
   | PolkadotConnectSteps
   | 'login'
   | 'enter-secret-key'
-  | 'x-login-loading'
-  | 'google-login-loading'
   | 'new-account'
   | 'account-created'
   | 'evm-address-link'
@@ -181,8 +178,6 @@ export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'enter-secret-key': LoginWithGrillKeyContent,
   'new-account': NewAccountContent,
-  'x-login-loading': OauthLoginLoading,
-  'google-login-loading': OauthLoginLoading,
   'account-created': AccountCreatedContent,
   'evm-address-link': LinkEvmContent,
   'evm-address-linked': CommonEvmAddressLinked,
