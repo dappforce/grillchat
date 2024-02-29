@@ -232,7 +232,11 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
   },
   loginAsTemporaryAccount: () => {
     set({ isTemporaryAccount: true })
-    return get().login(temporaryAccountStorage.get() || undefined, {
+    const encodedTempAcc = temporaryAccountStorage.get()
+    let tempAcc = undefined
+    if (encodedTempAcc) tempAcc = decodeSecretKey(encodedTempAcc)
+
+    return get().login(tempAcc, {
       asTemporaryAccount: true,
     })
   },
