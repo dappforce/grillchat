@@ -111,7 +111,7 @@ function CreateProfileForm({ onSuccess }: { onSuccess?: () => void }) {
               placeholder='Bio (optional)'
               {...register('about')}
               variant='fill-bg'
-              error={errors.name?.message}
+              error={errors.about?.message}
             />
             <FormButton
               schema={formSchema}
