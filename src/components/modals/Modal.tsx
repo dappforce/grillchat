@@ -36,6 +36,7 @@ const panelStyles = cva(
 
 export type ModalProps = ModalFunctionalityProps &
   VariantProps<typeof panelStyles> & {
+    className?: string
     titleClassName?: string
     descriptionClassName?: string
     withCloseButton?: boolean
@@ -51,6 +52,7 @@ export type ModalProps = ModalFunctionalityProps &
 
 export default function Modal({
   children,
+  className,
   titleClassName,
   contentClassName,
   panelClassName,
@@ -71,7 +73,7 @@ export default function Modal({
       <Dialog
         as='div'
         initialFocus={initialFocus}
-        className='relative z-40 text-text'
+        className={cx('relative z-40 text-text', className)}
         onClick={(e) => e.stopPropagation()}
         onClose={closeModal}
       >

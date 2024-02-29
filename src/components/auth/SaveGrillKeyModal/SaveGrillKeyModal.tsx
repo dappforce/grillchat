@@ -64,6 +64,7 @@ export default function SaveGrillKeyModal({
   const contentProps: ContentProps = {
     closeModal: props.closeModal,
     setCurrentState: setStep,
+    provider: provider ?? 'google',
   }
 
   const closeModal = () => {
@@ -100,6 +101,7 @@ function DoOauthLogin({ onSuccess }: { onSuccess: () => void }) {
 type ContentProps = {
   closeModal: () => void
   setCurrentState: (state: Steps) => void
+  provider: 'x' | 'google' | 'evm'
 }
 function SaveStep({ setCurrentState }: ContentProps) {
   const [openCopiedTooltip, setOpenCopiedTooltip] = useState(false)
@@ -156,7 +158,7 @@ function SaveStep({ setCurrentState }: ContentProps) {
   )
 }
 
-function EnterKeyStep({ setCurrentState }: ContentProps) {
+function EnterKeyStep({ setCurrentState, provider, closeModal }: ContentProps) {
   const encodedSecretKey = useMyAccount.use.encodedSecretKey()
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
@@ -171,7 +173,11 @@ function EnterKeyStep({ setCurrentState }: ContentProps) {
           setError('The Grill key you entered is incorrect. Please try again.')
           return
         }
-        setCurrentState('loading')
+        if (provider === 'evm') {
+          closeModal()
+        } else {
+          setCurrentState('loading')
+        }
       }}
       className='flex flex-col gap-4'
     >

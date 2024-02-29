@@ -7,9 +7,8 @@ function EvmLoginError({
 }: ProfileModalContentProps) {
   return (
     <CommonEVMLoginErrorContent
-      setModalStep={() => setCurrentState('link-evm-address')}
+      onSuccess={() => setCurrentState('link-evm-address')}
       onError={() => setCurrentState('evm-linking-error')}
-      signAndLinkOnConnect={!evmAddress}
     />
   )
 }

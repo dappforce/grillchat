@@ -5,7 +5,7 @@ import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { useTransactions } from '@/stores/transactions'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
@@ -41,6 +41,7 @@ export default function useOauthLogin({
   })
 
   const myAddress = useMyMainAddress()
+  const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
     myAddress ?? ''
   )
@@ -57,6 +58,7 @@ export default function useOauthLogin({
     onSuccess: () => {
       replaceUrl(getCurrentUrlWithoutQuery('login'))
       sendEvent('oauth_login_done', { provider })
+      finalizeTemporaryAccount()
       onSuccess()
     },
   })

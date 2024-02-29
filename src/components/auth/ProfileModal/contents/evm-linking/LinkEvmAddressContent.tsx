@@ -33,7 +33,6 @@ function LinkEvmAddressContent({
       key='connect-btn'
       className={cx('w-full', { ['mt-4']: isNotEqAddresses })}
       signAndLinkEvmAddress={signAndLinkEvmAddress}
-      signAndLinkOnConnect={!isNotEqAddresses}
       isLoading={isLoading}
       label={isNotEqAddresses ? 'Link another account' : undefined}
       secondLabel='Sign Message'

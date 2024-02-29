@@ -17,6 +17,7 @@ import useToastError from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { useRequestToken } from '@/services/api/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
@@ -240,8 +241,12 @@ export function EvmLoginError({ setCurrentState }: LoginModalContentProps) {
     <CommonEVMLoginErrorContent
       isLoading={isLoading}
       beforeSignEvmAddress={() => mutate()}
-      setModalStep={() => setCurrentState('evm-address-linked')}
-      signAndLinkOnConnect={true}
+      onFinishSignMessage={() =>
+        useLoginModal
+          .getState()
+          .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
+      }
+      onSuccess={() => setCurrentState('evm-address-linked')}
     />
   )
 }
@@ -250,7 +255,15 @@ export function LinkEvmContent({ setCurrentState }: LoginModalContentProps) {
 
   const { signAndLinkEvmAddress, isLoading: isLinking } =
     useSignMessageAndLinkEvmAddress({
-      onSuccess: () => setCurrentState('evm-address-linked'),
+      onFinishSignMessage: () => {
+        useLoginModal
+          .getState()
+          .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
+      },
+      onSuccess: () => {
+        setCurrentState('evm-address-linked')
+        useMyAccount.getState().finalizeTemporaryAccount()
+      },
       onError: () => {
         setCurrentState('evm-linking-error')
       },

@@ -60,6 +60,7 @@ const useSignEvmLinkMessage = () => {
 
 type SignMessageAndLinkAddressProps = {
   onSuccess?: () => void
+  onFinishSignMessage?: () => void
   onError?: () => void
   linkedEvmAddress?: string | null
 }
@@ -67,6 +68,7 @@ type SignMessageAndLinkAddressProps = {
 export default function useSignMessageAndLinkEvmAddress({
   onSuccess,
   onError,
+  onFinishSignMessage,
   linkedEvmAddress,
 }: SignMessageAndLinkAddressProps) {
   const {
@@ -109,6 +111,7 @@ export default function useSignMessageAndLinkEvmAddress({
       signerAddress
     )
     if (data) {
+      onFinishSignMessage?.()
       linkEvmAddress({
         evmAddress,
         evmSignature: data,

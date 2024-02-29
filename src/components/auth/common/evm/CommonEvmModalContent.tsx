@@ -6,29 +6,29 @@ import Image from 'next/image'
 import { CustomConnectButton } from './CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
-  setModalStep?: () => void
+  onFinishSignMessage?: () => void
+  onSuccess?: () => void
   onError?: () => void
-  signAndLinkOnConnect?: boolean
   beforeSignEvmAddress?: () => Promise<void>
   isLoading?: boolean
 }
 
 export const CommonEVMLoginErrorContent = ({
-  setModalStep,
+  onFinishSignMessage,
+  onSuccess,
   onError,
-  signAndLinkOnConnect,
   beforeSignEvmAddress,
   isLoading: _isLoading,
 }: CommonEVMLoginErrorProps) => {
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
-    onSuccess: setModalStep,
+    onSuccess,
+    onFinishSignMessage,
     onError,
   })
 
   return (
     <CustomConnectButton
       isLoading={_isLoading || isLoading}
-      signAndLinkOnConnect={signAndLinkOnConnect}
       signAndLinkEvmAddress={signAndLinkEvmAddress}
       beforeSignEvmAddress={beforeSignEvmAddress}
       className='w-full'

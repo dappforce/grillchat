@@ -1,4 +1,5 @@
-import ProcessingHumster from '@/assets/graphics/processing-humster.png'
+import LinkingDark from '@/assets/graphics/linking-dark.svg'
+import LinkingLight from '@/assets/graphics/linking-light.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import {
   getConnector,
@@ -9,7 +10,6 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 
@@ -18,7 +18,6 @@ type CustomConnectButtonProps = ButtonProps & {
   label?: React.ReactNode
   secondLabel?: React.ReactNode
   withWalletActionImage?: boolean
-  signAndLinkOnConnect?: boolean
   beforeSignEvmAddress?: () => Promise<void>
   signAndLinkEvmAddress: (
     emvAddress?: string,
@@ -36,7 +35,6 @@ export const CustomConnectButton = ({
   withWalletActionImage = true,
   secondLabel,
   isLoading,
-  signAndLinkOnConnect = true,
   ...buttonProps
 }: CustomConnectButtonProps) => {
   const [hasInteractedOnce, setHasInteractedOnce] = useState(false)
@@ -61,19 +59,12 @@ export const CustomConnectButton = ({
     )
   }
 
-  const { isConnected } = useAccount({
-    onConnect: async ({ address }) => {
-      !isConnected &&
-        !isTouchDevice() &&
-        signAndLinkOnConnect &&
-        linkEvmAddress(address ?? '')
-    },
-  })
+  const { isConnecting } = useAccount()
 
   const commonButtonProps: ButtonProps = {
     size: 'lg',
     className: className,
-    isLoading: isLoading,
+    isLoading: isLoading || isConnecting,
     ...buttonProps,
   }
 
@@ -150,15 +141,13 @@ export const CustomConnectButton = ({
     </ConnectButton.Custom>
   )
 
-  if (hasInteractedOnce && withWalletActionImage) {
+  if (withWalletActionImage) {
     return (
       <div className='flex w-full flex-col items-center gap-4'>
-        <Image
-          className='w-64 max-w-xs rounded-full'
-          priority
-          src={ProcessingHumster}
-          alt=''
-        />
+        <div className='mb-2 w-full'>
+          <LinkingLight className='block w-full dark:hidden' />
+          <LinkingDark className='hidden w-full dark:block' />
+        </div>
 
         {customButton}
       </div>

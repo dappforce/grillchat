@@ -3,11 +3,11 @@ import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useLoginOption from '@/hooks/useLoginOption'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useLoginModal } from '@/stores/login-modal'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import dynamic from 'next/dynamic'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import SaveGrillKeyModal from '../SaveGrillKeyModal'
 import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import { LoginModalStep, loginModalContents } from './LoginModalContent'
@@ -32,7 +32,6 @@ type ModalConfig = {
     backToStep?: LoginModalStep
     withBackButton?: boolean | ((address: string | null) => boolean)
     withFooter?: 'privacy-policy' | 'dont-have-account'
-    finalizeTemporaryAccount?: boolean
     withCloseButton?: boolean
   }
 }
@@ -49,7 +48,6 @@ export default function LoginModal({
 
   const [isOpenStayUpdatedModal, setIsOpenStayUpdatedModal] = useState(false)
   const { loginOption } = useLoginOption()
-  const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [currentState, setCurrentState] =
@@ -87,7 +85,6 @@ export default function LoginModal({
     'account-created': {
       title: '🎉 Account created',
       desc: 'We have created an account linked to your X for you. You can now use Grill.chat!',
-      finalizeTemporaryAccount: true,
     },
     'next-actions': {
       title: '🎉 Unlock the Full Potential of Web3',
@@ -108,7 +105,6 @@ export default function LoginModal({
     'evm-address-linked': {
       title: '🎉 EVM address linked',
       desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
-      finalizeTemporaryAccount: true,
     },
     'evm-linking-error': {
       title: '😕 Something went wrong',
@@ -158,7 +154,6 @@ export default function LoginModal({
         loginOption === 'polkadot'
           ? 'Here, you can talk about the Active Staking system with others, and share which promising authors you are following.'
           : "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
-      finalizeTemporaryAccount: true,
     },
   }
 
@@ -179,15 +174,6 @@ export default function LoginModal({
     if (props.isOpen) setCurrentState(initialOpenState)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isOpen])
-
-  // need to use useLayoutEffect to make finalize account works first before rendering any data inside the step
-  // because this won't be called the step component calls closeModal inside the useEffect
-  useLayoutEffect(() => {
-    if (header.finalizeTemporaryAccount) {
-      const { finalizeTemporaryAccount } = useMyAccount.getState()
-      finalizeTemporaryAccount()
-    }
-  }, [header])
 
   const address = useMyMainAddress()
   const { data: accountData } = getAccountDataQuery.useQuery(address ?? '')
@@ -219,6 +205,10 @@ export default function LoginModal({
     <>
       <Modal
         {...props}
+        className={cx(
+          'transition-opacity',
+          openedNextStepsModal?.step && 'opacity-0'
+        )}
         withFooter={footer}
         initialFocus={isTouchDevice() ? undefined : inputRef}
         title={title}
@@ -266,7 +256,6 @@ export default function LoginModal({
         isOpen={openedNextStepsModal?.step === 'save-grill-key'}
         closeModal={() => {
           closeNextStepModal()
-          finalizeTemporaryAccount()
         }}
         provider={
           openedNextStepsModal?.step === 'save-grill-key'
