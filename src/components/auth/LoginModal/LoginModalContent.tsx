@@ -194,12 +194,16 @@ function PolkadotConnectConfirmation({
   const { mutateAsync, error } = useLoginAndRequestToken({
     asTemporaryAccount: true,
   })
+  const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
   useToastError(error, 'Create account for polkadot connection failed')
 
   return (
     <PolkadotConnectConfirmationContent
       closeModal={closeModal}
       setCurrentState={setCurrentState}
+      onSuccess={() => {
+        finalizeTemporaryAccount()
+      }}
       beforeAddProxy={async () => {
         await mutateAsync(null)
         return true

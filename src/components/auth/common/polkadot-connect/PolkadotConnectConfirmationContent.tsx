@@ -12,7 +12,9 @@ export default function PolkadotConnectConfirmationContent({
   closeModal,
   beforeAddProxy,
   onError,
+  onSuccess,
 }: PolkadotConnectContentProps & {
+  onSuccess?: () => void
   onError?: () => void
   beforeAddProxy?: () => Promise<boolean>
 }) {
@@ -36,6 +38,7 @@ export default function PolkadotConnectConfirmationContent({
                 sendEvent('polkadot_address_linked', undefined, {
                   polkadotLinked: true,
                 })
+                onSuccess?.()
                 closeModal()
               },
               onError,
