@@ -21,7 +21,7 @@ export const CommonEVMLoginErrorContent = ({
   isLoading: _isLoading,
 }: CommonEVMLoginErrorProps) => {
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
-    setModalStep,
+    onSuccess: setModalStep,
     onError,
   })
 

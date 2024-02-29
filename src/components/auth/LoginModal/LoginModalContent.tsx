@@ -250,7 +250,7 @@ export function LinkEvmContent({ setCurrentState }: LoginModalContentProps) {
 
   const { signAndLinkEvmAddress, isLoading: isLinking } =
     useSignMessageAndLinkEvmAddress({
-      setModalStep: () => setCurrentState('evm-address-linked'),
+      onSuccess: () => setCurrentState('evm-address-linked'),
       onError: () => {
         setCurrentState('evm-linking-error')
       },
