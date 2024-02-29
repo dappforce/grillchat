@@ -1,8 +1,10 @@
 import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
 import Button from '@/components/Button'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
+import { estimatedWaitTime } from '@/utils/network'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import Image from 'next/image'
+import { useState } from 'react'
 import { CustomConnectButton } from './CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
@@ -20,9 +22,13 @@ export const CommonEVMLoginErrorContent = ({
   beforeSignEvmAddress,
   isLoading: _isLoading,
 }: CommonEVMLoginErrorProps) => {
+  const [hasSignedMessage, setHasSignedMessage] = useState(false)
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
     onSuccess,
-    onFinishSignMessage,
+    onFinishSignMessage: () => {
+      setHasSignedMessage(true)
+      onFinishSignMessage?.()
+    },
     onError,
   })
 
@@ -34,6 +40,11 @@ export const CommonEVMLoginErrorContent = ({
       className='w-full'
       label='Try again'
       secondLabel='Sign Message'
+      loadingText={
+        hasSignedMessage
+          ? 'Pending Confirmation...'
+          : `It may take up to ${estimatedWaitTime} seconds`
+      }
     />
   )
 }
