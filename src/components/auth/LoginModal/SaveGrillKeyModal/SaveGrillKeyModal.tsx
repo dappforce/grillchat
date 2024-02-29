@@ -82,7 +82,7 @@ export default function SaveGrillKeyModal({
   }
 
   const closeModal = () => {
-    if (step === 'account-created') props.closeModal()
+    if (step === 'account-created') finishLogin(props.closeModal)
   }
 
   return (
