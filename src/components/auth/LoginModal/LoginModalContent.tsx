@@ -19,12 +19,10 @@ import { useRequestToken } from '@/services/api/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
-import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi2'
-import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
 import { CustomConnectButton } from '../common/evm/CustomConnectButton'
 import LimitedPolkadotJsSupportContent from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
@@ -48,7 +46,6 @@ export type LoginModalStep =
   | 'evm-address-link'
   | 'evm-address-linked'
   | 'evm-linking-error'
-  | 'evm-set-profile'
 
 export type LoginModalContentProps = ModalFunctionalityProps & {
   setCurrentState: Dispatch<SetStateAction<LoginModalStep>>
@@ -190,18 +187,6 @@ export const loginModalContents: LoginModalContents = {
   'evm-address-link': LinkEvmContent,
   'evm-address-linked': CommonEvmAddressLinked,
   'evm-linking-error': EvmLoginError,
-  'evm-set-profile': ({ closeModal }) => (
-    <CommonEvmSetProfileContent
-      onSkipClick={closeModal}
-      onSetEvmIdentityClick={() => {
-        useProfileModal.getState().openModal({
-          defaultOpenState: 'profile-settings',
-          customInternalStepProps: { defaultTab: 'evm' },
-        })
-        closeModal()
-      }}
-    />
-  ),
   'polkadot-connect': PolkadotConnectWalletContent,
   'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,

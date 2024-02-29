@@ -102,10 +102,6 @@ export default function LoginModal({
       withBackButton: true,
       backToStep: 'new-account',
     },
-    'evm-set-profile': {
-      title: '🤔 Set as default identity?',
-      desc: 'Do you want to set your EVM as your default address?',
-    },
     'polkadot-connect': {
       title: '🔗 Connect via Polkadot',
       desc: 'Select a wallet to connect to Grill using an existing Polkadot account',
@@ -215,15 +211,6 @@ export default function LoginModal({
           ) {
             props.closeModal()
             setIsOpenStayUpdatedModal(true)
-            return
-          }
-          if (
-            currentState === 'evm-address-linked' &&
-            (accountData?.ensNames?.length ?? 0) > 0
-          ) {
-            setCurrentState('evm-set-profile')
-            return
-          } else if (currentState === 'x-login-loading') {
             return
           }
 
