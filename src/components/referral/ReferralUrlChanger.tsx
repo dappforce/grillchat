@@ -1,4 +1,5 @@
 import { getProfileQuery } from '@/services/api/query'
+import { isClientGeneratedOptimisticId } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import {
   getCurrentSearchParams,
@@ -10,7 +11,10 @@ import { useEffect } from 'react'
 export function useReferralId() {
   const myAddress = useMyMainAddress()
   const profile = getProfileQuery.useQuery(myAddress ?? '')
-  return profile.data?.profileSpace?.id
+  const spaceId = profile.data?.profileSpace?.id
+  if (isClientGeneratedOptimisticId(spaceId)) return undefined
+
+  return spaceId
 }
 
 export function useReferralSearchParam() {
