@@ -207,6 +207,8 @@ export default function LoginModal({
         />
       )}
       <SaveGrillKeyModal
+        withoutOverlay={withoutOverlay}
+        withoutShadow={withoutShadow}
         isOpen={openedNextStepsModal?.step === 'save-grill-key'}
         closeModal={() => {
           closeNextStepModal()
@@ -218,6 +220,8 @@ export default function LoginModal({
         }
       />
       <CreateProfileModal
+        withoutOverlay={withoutOverlay}
+        withoutShadow={withoutShadow}
         isOpen={openedNextStepsModal?.step === 'create-profile'}
         closeModal={() => {
           closeNextStepModal()

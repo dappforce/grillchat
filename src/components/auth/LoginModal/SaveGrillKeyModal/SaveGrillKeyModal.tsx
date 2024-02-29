@@ -4,7 +4,10 @@ import InfoPanel from '@/components/InfoPanel'
 import ProfilePreview from '@/components/ProfilePreview'
 import PopOver from '@/components/floating/PopOver'
 import TextArea from '@/components/inputs/TextArea'
-import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import Modal, {
+  ModalFunctionalityProps,
+  ModalProps,
+} from '@/components/modals/Modal'
 import { spaceMono } from '@/fonts'
 import { SupportedExternalProvider } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -17,7 +20,8 @@ import { MdOutlineContentCopy } from 'react-icons/md'
 import { finishLogin } from '../utils'
 import useOauthLogin from './useOauthLogin'
 
-export type SaveGrillKeyModalProps = ModalFunctionalityProps
+export type SaveGrillKeyModalProps = ModalFunctionalityProps &
+  Pick<ModalProps, 'withoutOverlay' | 'withoutShadow'>
 
 type Steps = 'save' | 'enter' | 'loading' | 'account-created'
 const providerMapper: Record<SupportedExternalProvider, string> = {

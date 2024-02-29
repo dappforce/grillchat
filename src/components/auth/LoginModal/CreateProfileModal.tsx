@@ -2,7 +2,10 @@ import FormButton from '@/components/FormButton'
 import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import TextArea from '@/components/inputs/TextArea'
-import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import Modal, {
+  ModalFunctionalityProps,
+  ModalProps,
+} from '@/components/modals/Modal'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
@@ -15,7 +18,8 @@ import { finishLogin, getRedirectCallback } from './utils'
 
 export default function CreateProfileModal({
   ...props
-}: ModalFunctionalityProps) {
+}: ModalFunctionalityProps &
+  Pick<ModalProps, 'withoutOverlay' | 'withoutShadow'>) {
   const hasRedirectCallback = !!getRedirectCallback()
   return (
     <Modal
