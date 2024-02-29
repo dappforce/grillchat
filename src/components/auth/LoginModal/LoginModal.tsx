@@ -86,16 +86,6 @@ export default function LoginModal({
       title: '🎉 Account created',
       desc: 'We have created an account linked to your X for you. You can now use Grill.chat!',
     },
-    'next-actions': {
-      title: '🎉 Unlock the Full Potential of Web3',
-      desc: "By connecting an EVM or Polkadot address, you'll be able to use features such as donations and NFTs, display your identity, and much more.",
-    },
-    'connect-wallet': {
-      title: '🔑 Connect Wallet',
-      desc: 'Choose a wallet to connect to Grill.chat',
-      withBackButton: (address) => !address,
-      withoutDefaultPadding: true,
-    },
     'evm-address-link': {
       title: '🔑 Connect EVM',
       desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display ENS names and NFTs, and interact with ERC20s.',
@@ -110,7 +100,7 @@ export default function LoginModal({
       title: '😕 Something went wrong',
       desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
       withBackButton: true,
-      backToStep: 'connect-wallet',
+      backToStep: 'new-account',
     },
     'evm-set-profile': {
       title: '🤔 Set as default identity?',

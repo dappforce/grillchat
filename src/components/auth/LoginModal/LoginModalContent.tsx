@@ -33,10 +33,8 @@ import PolkadotConnectSuccess from '../common/polkadot-connect/PolkadotConnectSu
 import PolkadotConnectWalletContent from '../common/polkadot-connect/PolkadotConnectWalletContent'
 import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
-import { ConnectWalletContent } from './contents/ConnectWalletContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
 import NewAccountContent from './contents/NewAccountContent'
-import { NextActionsContent } from './contents/NextActionsContent'
 import OauthLoginLoading from './contents/OauthLoginLoadingContent'
 
 export type LoginModalStep =
@@ -47,8 +45,6 @@ export type LoginModalStep =
   | 'google-login-loading'
   | 'new-account'
   | 'account-created'
-  | 'next-actions'
-  | 'connect-wallet'
   | 'evm-address-link'
   | 'evm-address-linked'
   | 'evm-linking-error'
@@ -191,8 +187,6 @@ export const loginModalContents: LoginModalContents = {
   'x-login-loading': OauthLoginLoading,
   'google-login-loading': OauthLoginLoading,
   'account-created': AccountCreatedContent,
-  'next-actions': NextActionsContent,
-  'connect-wallet': ConnectWalletContent,
   'evm-address-link': LinkEvmContent,
   'evm-address-linked': CommonEvmAddressLinked,
   'evm-linking-error': EvmLoginError,
