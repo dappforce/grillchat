@@ -49,7 +49,7 @@ export const CommonEVMLoginContent = ({
       label={buttonLabel}
       secondLabel='Sign Message'
       loadingText={
-        hasSignedMessage
+        !hasSignedMessage
           ? 'Pending Confirmation...'
           : `It may take up to ${estimatedWaitTime} seconds`
       }

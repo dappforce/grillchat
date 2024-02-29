@@ -11,11 +11,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { finishLogin } from './utils'
+import { finishLogin, getRedirectCallback } from './utils'
 
 export default function CreateProfileModal({
   ...props
 }: ModalFunctionalityProps) {
+  const hasRedirectCallback = !!getRedirectCallback()
   return (
     <Modal
       {...props}
@@ -24,9 +25,11 @@ export default function CreateProfileModal({
       withCloseButton={false}
     >
       <CreateProfileForm
-        onSuccess={() => {
-          finishLogin(props.closeModal)
-        }}
+        loadingUntilTxSuccess={hasRedirectCallback}
+        onTxSuccess={
+          hasRedirectCallback ? () => finishLogin(props.closeModal) : undefined
+        }
+        onSuccessSent={hasRedirectCallback ? undefined : props.closeModal}
       />
     </Modal>
   )
@@ -39,7 +42,15 @@ const formSchema = z.object({
 })
 type FormSchema = z.infer<typeof formSchema>
 
-function CreateProfileForm({ onSuccess }: { onSuccess?: () => void }) {
+function CreateProfileForm({
+  onSuccessSent,
+  onTxSuccess,
+  loadingUntilTxSuccess,
+}: {
+  onSuccessSent?: () => void
+  onTxSuccess?: () => void
+  loadingUntilTxSuccess?: boolean
+}) {
   const sendEvent = useSendEvent()
 
   const [isImageLoading, setIsImageLoading] = useState(false)
@@ -61,10 +72,20 @@ function CreateProfileForm({ onSuccess }: { onSuccess?: () => void }) {
   })
 
   return (
-    <UpsertProfileWrapper>
+    <UpsertProfileWrapper
+      loadingUntilTxSuccess={loadingUntilTxSuccess}
+      config={{
+        txCallbacks: {
+          onSuccess: () => {
+            onTxSuccess?.()
+          },
+        },
+      }}
+    >
       {({ mutateAsync, isLoading }) => {
-        const onSubmit = handleSubmit((data) => {
-          mutateAsync({
+        const onSubmit = handleSubmit(async (data) => {
+          sendEvent('account_settings_changed', { profileSource: 'custom' })
+          await mutateAsync({
             content: {
               name: data.name,
               image: data.image,
@@ -75,8 +96,7 @@ function CreateProfileForm({ onSuccess }: { onSuccess?: () => void }) {
               }),
             },
           })
-          sendEvent('account_settings_changed', { profileSource: 'custom' })
-          onSuccess?.()
+          onSuccessSent?.()
         })
 
         return (
