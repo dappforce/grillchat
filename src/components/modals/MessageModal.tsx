@@ -1,18 +1,18 @@
 import { getPostQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { CommentData } from '@subsocial/api/types'
 import { useEffect, useRef, useState } from 'react'
 import { HiArrowUpRight, HiOutlineInformationCircle } from 'react-icons/hi2'
-import LoginModal from '../auth/LoginModal'
 import Button from '../Button'
 import Card from '../Card'
+import ProfilePreview from '../ProfilePreview'
+import { Skeleton } from '../SkeletonFallback'
 import ChatItem from '../chats/ChatItem'
 import { ScrollToMessage } from '../chats/ChatList/hooks/useScrollToMessage'
 import PopOver from '../floating/PopOver'
-import ProfilePreview from '../ProfilePreview'
-import { Skeleton } from '../SkeletonFallback'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
 export type MessageModalProps = ModalFunctionalityProps & {
@@ -35,7 +35,8 @@ export default function MessageModal({
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isDifferentRecipient = recipient !== myAddress
 
-  const [isOpenLoginModal, setIsOpenLoginModal] = useState(false)
+  const isOpenLoginModal = useLoginModal.use.isOpen()
+  const setIsOpenLoginModal = useLoginModal.use.setIsOpen()
 
   const { data: message } = getPostQuery.useQuery(messageId)
   const chatId = (message as unknown as CommentData)?.struct.rootPostId
@@ -152,12 +153,6 @@ export default function MessageModal({
           </Card>
         )}
       </Modal>
-      <LoginModal
-        isOpen={isOpenLoginModal}
-        closeModal={() => setIsOpenLoginModal(false)}
-        initialOpenState='enter-secret-key'
-        onBackClick={() => setIsOpenLoginModal(false)}
-      />
     </>
   )
 }

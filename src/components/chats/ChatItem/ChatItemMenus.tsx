@@ -1,7 +1,6 @@
 import Button from '@/components/Button'
 import MenuList from '@/components/MenuList'
 import Toast from '@/components/Toast'
-import LoginModal from '@/components/auth/LoginModal'
 import { useOpenDonateExtension } from '@/components/extensions/donate/hooks/useOpenDonateExtension'
 import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
@@ -24,6 +23,7 @@ import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -55,7 +55,7 @@ export type ChatItemMenusProps = {
   enableChatMenu?: boolean
 }
 
-type ModalState = 'login' | 'metadata' | 'moderate' | 'hide' | null
+type ModalState = 'metadata' | 'moderate' | 'hide' | null
 
 export default function ChatItemMenus({
   messageId,
@@ -169,7 +169,7 @@ export default function ChatItemMenus({
       icon: RiCopperCoinLine,
       onClick: () => {
         if (!address) {
-          setModalState('login')
+          useLoginModal.getState().setIsOpen(true)
           return
         }
 
@@ -270,12 +270,6 @@ export default function ChatItemMenus({
           entity={message}
         />
       )}
-      <LoginModal
-        isOpen={modalState === 'login'}
-        closeModal={() => setModalState(null)}
-        beforeLogin={() => (isLoggingInWithKey.current = true)}
-        afterLogin={() => (isLoggingInWithKey.current = false)}
-      />
       <ModerationModal
         isOpen={modalState === 'moderate'}
         closeModal={() => setModalState(null)}
