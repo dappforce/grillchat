@@ -2,11 +2,15 @@ import Button from '@/components/Button'
 import Notice from '@/components/Notice'
 import Toast from '@/components/Toast'
 import TextArea from '@/components/inputs/TextArea'
+import { getProfileQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount } from '@/stores/my-account'
+import { useQueryClient } from '@tanstack/react-query'
 import { SyntheticEvent, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { LoginModalContentProps } from '../LoginModalContent'
+import { finishLogin } from '../utils'
 
 export const LoginWithGrillKeyContent = ({
   beforeLogin,
@@ -17,17 +21,26 @@ export const LoginWithGrillKeyContent = ({
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const sendEvent = useSendEvent()
+  const queryClient = useQueryClient()
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
     beforeLogin?.()
 
     const trimmedPk = privateKey.trim()
-    if (await login(trimmedPk)) {
+    const address = await login(trimmedPk)
+    if (address) {
+      const profile = await getProfileQuery.fetchQuery(queryClient, address)
       afterLogin?.()
       sendEvent('login', { eventSource: 'login_modal' })
       setPrivateKey('')
-      closeModal()
+
+      if (!profile?.profileSpace?.id) {
+        useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
+        closeModal()
+      } else {
+        finishLogin(closeModal)
+      }
     } else {
       toast.custom((t) => (
         <Toast
