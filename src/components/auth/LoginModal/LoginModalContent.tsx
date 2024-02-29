@@ -242,6 +242,7 @@ export function LinkEvmContent({ setCurrentState }: LoginModalContentProps) {
           .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
       },
       onSuccess: () => {
+        setHasSignedMessage(false)
         setCurrentState('evm-address-linked')
         useMyAccount.getState().finalizeTemporaryAccount()
       },

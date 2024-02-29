@@ -24,12 +24,18 @@ export const CommonEVMLoginErrorContent = ({
 }: CommonEVMLoginErrorProps) => {
   const [hasSignedMessage, setHasSignedMessage] = useState(false)
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
-    onSuccess,
+    onSuccess: () => {
+      setHasSignedMessage(false)
+      onSuccess?.()
+    },
     onFinishSignMessage: () => {
       setHasSignedMessage(true)
       onFinishSignMessage?.()
     },
-    onError,
+    onError: () => {
+      setHasSignedMessage(false)
+      onError?.()
+    },
   })
 
   return (
