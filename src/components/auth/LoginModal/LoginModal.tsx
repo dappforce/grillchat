@@ -49,6 +49,7 @@ export default function LoginModal({
 
   const [isOpenStayUpdatedModal, setIsOpenStayUpdatedModal] = useState(false)
   const { loginOption } = useLoginOption()
+  const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [currentState, setCurrentState] =
@@ -263,7 +264,10 @@ export default function LoginModal({
       )}
       <SaveGrillKeyModal
         isOpen={openedNextStepsModal?.step === 'save-grill-key'}
-        closeModal={() => closeNextStepModal()}
+        closeModal={() => {
+          closeNextStepModal()
+          finalizeTemporaryAccount()
+        }}
         provider={
           openedNextStepsModal?.step === 'save-grill-key'
             ? openedNextStepsModal.provider

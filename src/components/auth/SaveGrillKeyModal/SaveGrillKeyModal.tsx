@@ -1,12 +1,13 @@
 import Button from '@/components/Button'
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
 import InfoPanel from '@/components/InfoPanel'
+import ProfilePreview from '@/components/ProfilePreview'
 import PopOver from '@/components/floating/PopOver'
 import TextArea from '@/components/inputs/TextArea'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { spaceMono } from '@/fonts'
 import { SupportedExternalProvider } from '@/stores/login-modal'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { decodeSecretKey } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { estimatedWaitTime } from '@/utils/network'
@@ -17,7 +18,7 @@ import useOauthLogin from './useOauthLogin'
 
 export type SaveGrillKeyModalProps = ModalFunctionalityProps
 
-type Steps = 'save' | 'enter' | 'loading'
+type Steps = 'save' | 'enter' | 'loading' | 'account-created'
 const providerMapper: Record<SupportedExternalProvider, string> = {
   evm: 'EVM',
   google: 'Google',
@@ -27,12 +28,11 @@ export default function SaveGrillKeyModal({
   provider,
   ...props
 }: SaveGrillKeyModalProps & { provider?: 'x' | 'google' | 'evm' }) {
-  const [step, setStep] = useState<'save' | 'enter' | 'loading'>('save')
+  const [step, setStep] = useState<Steps>('save')
   const [isDoneLoading, setIsDoneLoading] = useState(false)
 
   useEffect(() => {
-    if (step === 'loading' && isDoneLoading) props.closeModal()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (step === 'loading' && isDoneLoading) setStep('account-created')
   }, [isDoneLoading, step])
 
   const modalInfo: Record<
@@ -54,6 +54,10 @@ export default function SaveGrillKeyModal({
         providerMapper[provider ?? 'google']
       } account to Grill.chat. Please wait for a few seconds.`,
     },
+    'account-created': {
+      title: '🎉 Account created',
+      desc: 'We have created an account linked to your X for you. You can now use Grill.chat!',
+    },
   }
   const currentInfo = modalInfo[step]
 
@@ -62,11 +66,17 @@ export default function SaveGrillKeyModal({
     setCurrentState: setStep,
   }
 
+  const closeModal = () => {
+    if (step === 'account-created') props.closeModal()
+  }
+
   return (
     <Modal
       {...props}
+      closeModal={closeModal}
       title={currentInfo.title}
       description={currentInfo.desc}
+      withCloseButton={step === 'account-created'}
       onBackClick={
         currentInfo.backTo ? () => setStep(currentInfo.backTo!) : undefined
       }
@@ -74,9 +84,10 @@ export default function SaveGrillKeyModal({
       {provider !== 'evm' && (
         <DoOauthLogin onSuccess={() => setIsDoneLoading(true)} />
       )}
-      {step === 'save' && <SaveGrillKeyModalSaveStep {...contentProps} />}
-      {step === 'enter' && <SaveGrillKeyModalEnterStep {...contentProps} />}
-      {step === 'loading' && <SaveGrillKeyModalLoadingStep {...contentProps} />}
+      {step === 'save' && <SaveStep {...contentProps} />}
+      {step === 'enter' && <EnterKeyStep {...contentProps} />}
+      {step === 'loading' && <LoadingStep {...contentProps} />}
+      {step === 'account-created' && <AccountCreatedStep {...contentProps} />}
     </Modal>
   )
 }
@@ -90,7 +101,7 @@ type ContentProps = {
   closeModal: () => void
   setCurrentState: (state: Steps) => void
 }
-function SaveGrillKeyModalSaveStep({ setCurrentState }: ContentProps) {
+function SaveStep({ setCurrentState }: ContentProps) {
   const [openCopiedTooltip, setOpenCopiedTooltip] = useState(false)
   const encodedSecretKey = useMyAccount.use.encodedSecretKey()
 
@@ -145,7 +156,7 @@ function SaveGrillKeyModalSaveStep({ setCurrentState }: ContentProps) {
   )
 }
 
-function SaveGrillKeyModalEnterStep({ setCurrentState }: ContentProps) {
+function EnterKeyStep({ setCurrentState }: ContentProps) {
   const encodedSecretKey = useMyAccount.use.encodedSecretKey()
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
@@ -179,13 +190,37 @@ function SaveGrillKeyModalEnterStep({ setCurrentState }: ContentProps) {
   )
 }
 
-function SaveGrillKeyModalLoadingStep({}: ContentProps) {
+function LoadingStep({}: ContentProps) {
   return (
     <div className='flex flex-col items-center gap-4'>
       <DynamicLoadedHamsterLoading />
       <span className='text-sm text-text-muted'>
         It may take up to {estimatedWaitTime} seconds
       </span>
+    </div>
+  )
+}
+
+export const AccountCreatedStep = ({ closeModal }: ContentProps) => {
+  const myAddress = useMyMainAddress()
+
+  return (
+    <div className='flex flex-col'>
+      {myAddress && (
+        <div
+          className={cx(
+            'mb-6 mt-2 flex flex-col rounded-2xl bg-background-lighter p-4'
+          )}
+        >
+          <ProfilePreview
+            address={myAddress}
+            avatarClassName={cx('h-16 w-16')}
+          />
+        </div>
+      )}
+      <Button size='lg' onClick={() => closeModal()}>
+        Continue
+      </Button>
     </div>
   )
 }

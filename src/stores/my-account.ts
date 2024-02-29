@@ -254,7 +254,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     parentProxyAddressStorage.remove()
     if (address) followedIdsStorage.remove(address)
 
-    set({ ...initialState })
+    set({ ...initialState, isInitialized: true })
   },
   init: async () => {
     const { isInitialized, login } = get()

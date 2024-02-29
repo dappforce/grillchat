@@ -76,11 +76,12 @@ export function isInMobileOrTablet() {
 
 const GLOBAL_QUERIES = ['ref']
 export function replaceUrl(url: string) {
-  if (!new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}/*.`).test(url)) {
-    url = urlJoin(env.NEXT_PUBLIC_BASE_PATH, url)
+  let removedOrigin = url.replace(window.location.origin, '')
+  if (!new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}/*.`).test(removedOrigin)) {
+    removedOrigin = urlJoin(env.NEXT_PUBLIC_BASE_PATH, removedOrigin)
   }
 
-  const pathnameWithQuery = url.replace(window.location.origin, '')
+  const pathnameWithQuery = removedOrigin.replace(window.location.origin, '')
   const [pathname, query] = pathnameWithQuery.split('?')
   const searchParams = new URLSearchParams(query)
   const currentSearchParams = new URLSearchParams(window.location.search)
