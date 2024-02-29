@@ -77,7 +77,10 @@ export function isInMobileOrTablet() {
 const GLOBAL_QUERIES = ['ref']
 export function replaceUrl(url: string) {
   let removedOrigin = url.replace(window.location.origin, '')
-  if (!new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}/*.`).test(removedOrigin)) {
+  if (
+    !new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}/*.`).test(removedOrigin) &&
+    removedOrigin !== env.NEXT_PUBLIC_BASE_PATH
+  ) {
     removedOrigin = urlJoin(env.NEXT_PUBLIC_BASE_PATH, removedOrigin)
   }
 
