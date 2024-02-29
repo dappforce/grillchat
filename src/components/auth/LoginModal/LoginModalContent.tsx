@@ -16,6 +16,7 @@ import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAdd
 import useToastError from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { useRequestToken } from '@/services/api/mutation'
+import { getProfileQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -192,6 +193,13 @@ function PolkadotConnectConfirmation({
   setCurrentState,
   closeModal,
 }: LoginModalContentProps) {
+  const connectedWalletAddress = useMyAccount(
+    (state) => state.connectedWallet?.address
+  )
+  const { data: profile } = getProfileQuery.useQuery(
+    connectedWalletAddress ?? ''
+  )
+
   const { mutateAsync, error } = useLoginAndRequestToken({
     asTemporaryAccount: true,
   })
@@ -204,6 +212,10 @@ function PolkadotConnectConfirmation({
       setCurrentState={setCurrentState}
       onSuccess={() => {
         finalizeTemporaryAccount()
+        if (profile?.profileSpace?.id) {
+          useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
+        }
+        closeModal()
       }}
       beforeAddProxy={async () => {
         await mutateAsync(null)

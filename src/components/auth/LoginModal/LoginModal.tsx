@@ -8,6 +8,7 @@ import { isTouchDevice } from '@/utils/device'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
+import CreateProfileModal from './CreateProfileModal'
 import { LoginModalStep, loginModalContents } from './LoginModalContent'
 import SaveGrillKeyModal from './SaveGrillKeyModal'
 
@@ -211,6 +212,12 @@ export default function LoginModal({
             ? openedNextStepsModal.provider
             : undefined
         }
+      />
+      <CreateProfileModal
+        isOpen={openedNextStepsModal?.step === 'create-profile'}
+        closeModal={() => {
+          closeNextStepModal()
+        }}
       />
     </>
   )
