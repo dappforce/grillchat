@@ -170,7 +170,7 @@ export default function Modal({
                 {withFooter && (
                   <div className='border-t border-background-lightest dark:border-background-lightest/50'>
                     {withFooter === true ? (
-                      <div className='flex items-center justify-center gap-4 px-6 py-5 text-sm text-text-muted '>
+                      <div className='flex items-center justify-center gap-4 px-6 py-4 text-sm text-text-muted'>
                         <LinkText
                           href='https://subsocial.network/legal/privacy'
                           className='font-normal'
