@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import { sectionBg } from '../utils/SectionWrapper'
@@ -10,12 +11,14 @@ const items = [
     desc: 'Like posts and comments of other users to earn staking rewards.',
     buttonLink: 'https://grill.so/?tab=feed',
     buttonText: 'My feed',
+    analyticsId: 'cs_go_to_feed',
   },
   {
     title: 'Creator Rewards',
     desc: 'Create posts and comments to earn rewards from every like it every like they receive.',
     buttonLink: 'https://grill.so/posts/new',
     buttonText: 'Create a post',
+    analyticsId: 'cs_write_post',
   },
 ]
 
@@ -37,9 +40,18 @@ type CardItemProps = {
   desc: string
   buttonLink: string
   buttonText: string
+  analyticsId: string
 }
 
-const CardItem = ({ title, desc, buttonLink, buttonText }: CardItemProps) => {
+const CardItem = ({
+  title,
+  desc,
+  buttonLink,
+  buttonText,
+  analyticsId,
+}: CardItemProps) => {
+  const sendEvent = useSendEvent()
+
   return (
     <div
       className={cx('flex w-full flex-col gap-4 rounded-2xl p-4', sectionBg)}
@@ -58,6 +70,7 @@ const CardItem = ({ title, desc, buttonLink, buttonText }: CardItemProps) => {
         size={isTouchDevice() ? 'md' : 'lg'}
         target='__blank'
         variant='primary'
+        onClick={() => sendEvent(analyticsId)}
       >
         {buttonText}
       </Button>

@@ -3,6 +3,7 @@ import RangeInput from '@/components/inputs/RangeInput'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
 import { getPriceQuery } from '@/services/subsocial/prices/query'
+import { useSendEvent } from '@/stores/analytics'
 import { getBalanceInDollars } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
 import { convertToBalanceWithDecimal, toShortMoney } from '@subsocial/utils'
@@ -14,6 +15,7 @@ const minRangeValue = 2000
 const maxRangeValue = 1000000
 
 const EarnCalcSection = () => {
+  const sendEvent = useSendEvent()
   const [rangeValue, setRangeValue] = useState(50000)
   const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
   const { data, isLoading } = getGeneralEraInfoData()
@@ -44,13 +46,14 @@ const EarnCalcSection = () => {
   return (
     <>
       <div className='p-4'>
-        <div className='mb-16 md:text-xl text-lg text-text'>Staked amount:</div>
+        <div className='mb-16 text-lg text-text md:text-xl'>Staked amount:</div>
         <RangeInput
           value={rangeValue}
-          rerenderTrigger={[ priceLoading ]}
+          rerenderTrigger={[priceLoading]}
           setValue={setRangeValue}
           min={minRangeValue}
           max={maxRangeValue}
+          onMouseUp={() => sendEvent('cs_slider_moved', { value: rangeValue })}
           valueLabel={
             <div className={cx('flex flex-col gap-2 text-center font-medium')}>
               <span className='text-base leading-none text-white'>
@@ -140,7 +143,7 @@ const EarnCalcSection = () => {
             ),
           }}
         />
-        <div className='mt-4 flex md:flex-row flex-col w-full items-stretch gap-4'>
+        <div className='mt-4 flex w-full flex-col items-stretch gap-4 md:flex-row'>
           <StatsCard
             title='Your minimum rewards:'
             desc={
@@ -200,8 +203,12 @@ type RangeLabelProps = {
 const RangeLabel = ({ label, desc, className }: RangeLabelProps) => {
   return (
     <div className={cx('flex flex-col font-medium', className)}>
-      <span className='md:text-lg text-base leading-[26px] text-text'>{label}</span>
-      <span className='md:text-base text-sm leading-[26px] text-text-muted'>{desc}</span>
+      <span className='text-base leading-[26px] text-text md:text-lg'>
+        {label}
+      </span>
+      <span className='text-sm leading-[26px] text-text-muted md:text-base'>
+        {desc}
+      </span>
     </div>
   )
 }

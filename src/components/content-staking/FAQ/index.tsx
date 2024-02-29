@@ -4,9 +4,11 @@ import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import SectionWrapper from '../utils/SectionWrapper'
 import { sectionTitleStyles } from '../utils/commonStyles'
+import { useSendEvent } from '@/stores/analytics'
 
 const items = [
   {
+    id: 'what',
     title: 'What is Content Staking?',
     content: (
       <>
@@ -20,6 +22,7 @@ const items = [
     ),
   },
   {
+    id: 'why',
     title: 'Why should I lock my tokens?',
     content: (
       <>
@@ -29,6 +32,7 @@ const items = [
     ),
   },
   {
+    id: 'how',
     title: 'How can I increase my rewards?',
     content: (
       <>
@@ -41,12 +45,24 @@ const items = [
     ),
   },
   {
+    id: 'when',
     title: 'When will I receive my rewards?',
     content: <>Rewards are distributed every Monday for the previous week.</>,
   },
 ]
 
 const FAQSection = () => {
+  const sendEvent = useSendEvent()
+
+  const accordionItems = items.map((item) => ({
+    title: item.title,
+    content: item.content,
+    onClick: () => {
+      sendEvent('cs_faq_expanded', { value: item.id })
+      console.log('cs_faq_expanded', { value: item.id })
+    },
+  }))
+
   return (
     <div className='z-[1] flex flex-col gap-4'>
       <div className={sectionTitleStyles}>FAQ</div>
@@ -59,7 +75,7 @@ const FAQSection = () => {
             )}
           />
         )}
-        <Accordion items={items} className='max-w-full md:max-w-[80%]' />
+        <Accordion items={accordionItems} className='max-w-full md:max-w-[80%]' />
       </SectionWrapper>
     </div>
   )

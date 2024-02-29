@@ -1,17 +1,25 @@
-import { getBackerInfoBySpaceIds, getBackerInfoQuery } from '@/services/contentStaking/backerInfo/query'
+import {
+  getBackerInfoBySpaceIds,
+  getBackerInfoQuery,
+} from '@/services/contentStaking/backerInfo/query'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
+import {
+  generalEraInfoId,
+  getGeneralEraInfoQuery,
+} from '@/services/contentStaking/generalErainfo/query'
 import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { createMutationWrapper } from '@/services/subsocial/utils'
+import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { balanceWithDecimal, isDef } from '@subsocial/utils'
-import { ACTIVE_STAKING_SPACE_ID } from '../utils'
-import { generalEraInfoId, getGeneralEraInfoQuery } from '@/services/contentStaking/generalErainfo/query'
-import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useQueryClient } from '@tanstack/react-query'
+import { ACTIVE_STAKING_SPACE_ID } from '../utils'
+import useConnectWallet from '@/hooks/useConnectWallet'
 
 type MutationProps = {
   amount?: string
@@ -26,19 +34,25 @@ export function useLockOrIncreaseTx(
 ) {
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const client = useQueryClient()
+  const sendEvent = useSendEvent()
+  useConnectWallet()
 
   return useSubsocialMutation(
     {
       getWallet: () =>
         getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),
       generateContext: undefined,
-      transactionGenerator: async ({
-        data: params,
-      }) => {
+      transactionGenerator: async ({ data: params }) => {
         const currentGrillAddress = useMyAccount.getState().address
         if (!currentGrillAddress) throw new Error('No address connected')
 
-        const { amount, isOnlyActiveStaking, decimal, creatorsSpaceIds, myCreatorsIds } = params
+        const {
+          amount,
+          isOnlyActiveStaking,
+          decimal,
+          creatorsSpaceIds,
+          myCreatorsIds,
+        } = params
 
         if (!amount) {
           throw new Error('Amount is required')
@@ -84,6 +98,8 @@ export function useLockOrIncreaseTx(
             account: address,
             spaceIds: data.creatorsSpaceIds,
           })
+
+          sendEvent('cs_unlock', { value: data.amount })
         },
       },
     }

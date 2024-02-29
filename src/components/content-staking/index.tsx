@@ -8,8 +8,11 @@ import UsersEarnInfo from './StatsData/UsersEarnInfo'
 import { ContentStakingContextWrapper } from './utils/ContentStakingContext'
 import SectionWrapper from './utils/SectionWrapper'
 import { sectionTitleStyles } from './utils/commonStyles'
+import { useSendEvent } from '@/stores/analytics'
 
 export const ContentStaking = () => {
+  const sendEvent = useSendEvent()
+  
   return (
     <ContentStakingContextWrapper>
       <div className='flex flex-col gap-[50px]'>
@@ -24,6 +27,7 @@ export const ContentStaking = () => {
             variant='primaryOutline'
             className='text-text-primary'
             size={isTouchDevice() ? 'md' : 'lg'}
+            onClick={() => sendEvent('cs_questions_chat_clicked')}
             href='grill.so/c/ask'
             target='_blank'
           >

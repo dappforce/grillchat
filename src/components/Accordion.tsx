@@ -1,16 +1,18 @@
 import { cx } from '@/utils/class-names'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaAngleRight } from 'react-icons/fa6'
 import { mutedTextColorStyles } from './content-staking/utils/commonStyles'
 
 type AccordionItemProps = {
   title: string
   content: React.ReactNode
+  onClick?: () => void
 }
 
 type AccordionProps = {
   items: AccordionItemProps[]
   className?: string
+  onClick?: () => void
 }
 
 const Accordion = ({ items, className }: AccordionProps) => {
@@ -23,14 +25,24 @@ const Accordion = ({ items, className }: AccordionProps) => {
   )
 }
 
-const AccordionItem = ({ title, content }: AccordionItemProps) => {
+const AccordionItem = ({ title, content, onClick }: AccordionItemProps) => {
   const [isOpen, setIsOpen] = useState(false)
+
+  const onItemClick = () => {
+    setIsOpen(!isOpen)
+  }
+
+  useEffect(() => {
+    if (isOpen) {
+      onClick?.()
+    }
+  }, [isOpen])
 
   return (
     <div className='flex flex-col'>
       <div
-        onClick={() => setIsOpen(!isOpen)}
-        className='flex cursor-pointer items-center gap-2 md:text-xl text-lg font-medium leading-none text-text'
+        onClick={() => onItemClick()}
+        className='flex cursor-pointer items-center gap-2 text-lg font-medium leading-none text-text md:text-xl'
       >
         <FaAngleRight
           size={20}

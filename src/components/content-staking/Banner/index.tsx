@@ -10,11 +10,13 @@ import BannerActionButtons from './BannerActionButtons'
 import StatsCards from './StakerDashboard'
 import StakingStepper from './StakingStepper'
 import { useEffect, useState } from 'react'
+import { useSendEvent } from '@/stores/analytics'
 
 const BannerSection = () => {
   const { isLockedTokens, ledgerLoading } = useContentStakingContext()
   const theme = useGetTheme()
   const [showBgGradient, setShowBgGradient] = useState(true)
+  const sendEvent = useSendEvent()
 
   useEffect(() => {
     setShowBgGradient(theme === 'dark')
@@ -40,6 +42,7 @@ const BannerSection = () => {
             variant='primary'
             className='hover:no-underline'
             target='_blank'
+            onClick={() => sendEvent('cs_how_it_works')}
             href={
               'https://docs.subsocial.network/docs/basics/content-staking/content-staking/'
             }

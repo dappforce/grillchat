@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { ComponentProps, useEffect, useMemo } from 'react'
 import { cx } from '../../utils/class-names'
-type RangeInputProps = {
+
+type RangeInputProps = ComponentProps<'input'> & {
   value: number
   setValue: (value: number) => void
   min: number
@@ -21,7 +22,8 @@ const RangeInput = ({
   max,
   rangeLabels,
   valueLabel,
-  rerenderTrigger
+  rerenderTrigger,
+  ...props
 }: RangeInputProps) => {
   const { minLabel, maxLabel, middleLabel } = rangeLabels || {}
   const currentLabelRef = React.useRef<HTMLInputElement>(null)
@@ -70,6 +72,7 @@ const RangeInput = ({
         min={min}
         max={max}
         className={cx('input-range w-full')}
+        {...props}
       />
       <div className='relative flex justify-between text-sm text-text'>
         {minLabel}

@@ -14,12 +14,14 @@ import StakingModal, { StakingModalVariant } from '../modals/StakeModal'
 import { ACTIVE_STAKING_SPACE_ID, calculateBalanceForStaking } from '../utils'
 import { useContentStakingContext } from '../utils/ContentStakingContext'
 import { mutedTextColorStyles } from '../utils/commonStyles'
+import { useSendEvent } from '@/stores/analytics'
 
 const BannerActionButtons = () => {
   const myAddress = useMyMainAddress()
   const { currentStep } = useContentStakingContext()
   const [isOpenLoginModal, setIsOpenLoginModal] = useState(false)
   const { data } = getStakingConstsData()
+  const sendEvent = useSendEvent()
 
   const { minimumStakingAmount } = data || {}
 
@@ -72,6 +74,7 @@ const BannerActionButtons = () => {
           target='_blank'
           className='hover:text-white'
           variant={'primary'}
+          onClick={() => sendEvent('cs_get_sub')}
         >
           Get SUB
         </Button>

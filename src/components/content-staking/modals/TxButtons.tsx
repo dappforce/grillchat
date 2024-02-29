@@ -11,7 +11,6 @@ import { useGetMyCreatorsIds } from '../hooks/useGetMyCreatorsIds'
 import { LockOrIncreaseTxWrapper } from '../mutations/lockOrIncreaseTx'
 import { UnlockTxWrapper } from '../mutations/unlockTx'
 import { ACTIVE_STAKING_SPACE_ID, calculateBalanceForStaking } from '../utils'
-import getAmountRange from '../utils/getAmountRangeForAnalytics'
 import { StakingModalVariant } from './StakeModal'
 
 export type CommonTxButtonProps = {
@@ -100,8 +99,6 @@ function StakingTxButton({
 
 export function StakeOrIncreaseTxButton(props: CommonTxButtonProps) {
   const myAddress = useMyMainAddress()
-  const sendEvent = useSendEvent()
-  const { decimal } = useGetChainDataByNetwork('subsocial') || {}
 
   const { data: balanceByNetwork } = getBalancesQuery.useQuery({
     address: myAddress || '',
@@ -117,12 +114,6 @@ export function StakeOrIncreaseTxButton(props: CommonTxButtonProps) {
   return (
     <StakingTxButton
       {...props}
-      onClick={() =>
-        sendEvent('cs_stake_increase', {
-          amountRange: getAmountRange(decimal || 0, props.amount),
-          eventSource: props.eventSource,
-        })
-      }
       disabled={availableBalance.isZero() || props.disabled}
       tx='creatorStaking.stake'
     />

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { FaAngleDown } from 'react-icons/fa'
 import { UserType } from './UsersEarnInfo'
 import { cx } from '@/utils/class-names'
+import { useAnalytics, useSendEvent } from '@/stores/analytics'
 
 export type UserTypeDropdownProps = {
   value: UserType
@@ -15,6 +16,14 @@ export default function UserTypeDropdown({
   onChangeValue,
 }: UserTypeDropdownProps) {
   const [open, setOpen] = useState(false)
+  const sendEvent = useSendEvent()
+  const deviceId = useAnalytics((state) => state.deviceId)
+  const userId = useAnalytics((state) => state.userId)
+
+  const onDropdownValueChange = (value: UserType) => {
+    onChangeValue(value)
+    sendEvent('cs_rewards_guide_changed', { value }, { deviceId, userId })
+  }
 
   return (
     <FloatingMenus
@@ -25,11 +34,11 @@ export default function UserTypeDropdown({
       menus={[
         {
           text: 'Staker',
-          onClick: () => onChangeValue('staker'),
+          onClick: () => onDropdownValueChange('staker'),
         },
         {
           text: 'Creator',
-          onClick: () => onChangeValue('creator'),
+          onClick: () => onDropdownValueChange('creator'),
         },
       ]}
       allowedPlacements={['bottom-start', 'bottom-end', 'bottom']}
