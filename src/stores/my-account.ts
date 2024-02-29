@@ -86,6 +86,7 @@ export const followedIdsStorage = new LocalStorageAndForage(
 )
 export const hasSentMessageStorage = new LocalStorage(() => 'has-sent-message')
 const accountStorage = new LocalStorage(() => 'account')
+const temporaryAccountStorage = new LocalStorage(() => 'temp-account')
 const parentProxyAddressStorage = new LocalStorage(
   () => 'connectedWalletAddress'
 )
@@ -220,7 +221,9 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       })
 
       get()._subscribeEnergy()
-      if (!asTemporaryAccount) saveLoginInfoToStorage()
+      if (asTemporaryAccount) {
+        temporaryAccountStorage.set(encodedSecretKey)
+      } else saveLoginInfoToStorage()
     } catch (e) {
       console.error('Failed to login', e)
       return false
@@ -229,10 +232,13 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
   },
   loginAsTemporaryAccount: () => {
     set({ isTemporaryAccount: true })
-    return get().login(undefined, { asTemporaryAccount: true })
+    return get().login(temporaryAccountStorage.get() || undefined, {
+      asTemporaryAccount: true,
+    })
   },
   finalizeTemporaryAccount: () => {
     saveLoginInfoToStorage()
+    temporaryAccountStorage.remove()
     set({ isTemporaryAccount: false })
   },
   _subscribeEnergy: () => {
