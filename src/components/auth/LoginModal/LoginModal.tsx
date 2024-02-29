@@ -156,7 +156,7 @@ export default function LoginModal({
         <button
           className={linkTextStyles({ variant: 'primary' })}
           onClick={() => {
-            setCurrentState('new-account')
+            setCurrentState('login')
           }}
         >
           Create a new one
