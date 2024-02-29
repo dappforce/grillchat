@@ -5,6 +5,7 @@ import { ParsedUrlQuery } from 'querystring'
 import urlJoin from 'url-join'
 
 export function getUrlQuery(queryName: string) {
+  if (isServer) return ''
   const query = window.location.search
   const searchParams = new URLSearchParams(query)
   return searchParams.get(queryName) ?? ''

@@ -19,6 +19,9 @@ const StayUpdatedModal = dynamic(
 
 export type LoginModalProps = {
   onBackClick?: () => void
+  disableOutsideClickClose?: boolean
+  withoutOverlay?: boolean
+  withoutShadow?: boolean
 }
 
 type ModalConfig = {
@@ -33,7 +36,12 @@ type ModalConfig = {
   }
 }
 
-export default function LoginModal({ onBackClick }: LoginModalProps) {
+export default function LoginModal({
+  onBackClick,
+  disableOutsideClickClose,
+  withoutOverlay,
+  withoutShadow,
+}: LoginModalProps) {
   const isOpen = useLoginModal.use.isOpen()
   const setIsOpen = useLoginModal.use.setIsOpen()
   const initialOpenState = useLoginModal.use.initialOpenState() || 'login'
@@ -160,6 +168,8 @@ export default function LoginModal({ onBackClick }: LoginModalProps) {
   return (
     <>
       <Modal
+        withoutOverlay={withoutOverlay}
+        withoutShadow={withoutShadow}
         isOpen={isOpen}
         className={cx(
           'transition-opacity',
@@ -168,13 +178,15 @@ export default function LoginModal({ onBackClick }: LoginModalProps) {
         withFooter={footer}
         initialFocus={isTouchDevice() ? undefined : inputRef}
         title={title}
-        withCloseButton={withCloseButton}
+        withCloseButton={!disableOutsideClickClose && withCloseButton}
         description={desc}
         onBackClick={showBackButton ? usedOnBackClick : undefined}
         contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
         titleClassName={cx(withoutDefaultPadding && 'px-6')}
         descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
         closeModal={() => {
+          if (disableOutsideClickClose) return
+
           setIsOpen(false)
           if (loginOption === 'polkadot') {
             setIsOpenStayUpdatedModal(true)

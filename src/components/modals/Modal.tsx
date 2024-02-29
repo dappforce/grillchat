@@ -48,6 +48,8 @@ export type ModalProps = ModalFunctionalityProps &
     contentClassName?: string
     initialFocus?: React.RefObject<HTMLElement>
     withFooter?: boolean | ReactNode
+    withoutOverlay?: boolean
+    withoutShadow?: boolean
   }
 
 export default function Modal({
@@ -61,6 +63,8 @@ export default function Modal({
   descriptionClassName,
   closeModal,
   onBackClick,
+  withoutOverlay,
+  withoutShadow,
   withCloseButton,
   isOpen,
   title,
@@ -77,17 +81,19 @@ export default function Modal({
         onClick={(e) => e.stopPropagation()}
         onClose={closeModal}
       >
-        <Transition.Child
-          as={Fragment}
-          enter='ease-out duration-300'
-          enterFrom='opacity-0'
-          enterTo='opacity-100'
-          leave='ease-in duration-200'
-          leaveFrom='opacity-100'
-          leaveTo='opacity-0'
-        >
-          <div className='fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm' />
-        </Transition.Child>
+        {!withoutOverlay && (
+          <Transition.Child
+            as={Fragment}
+            enter='ease-out duration-300'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-200'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
+          >
+            <div className='fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm' />
+          </Transition.Child>
+        )}
 
         <div className='fixed inset-0 w-screen overflow-y-auto'>
           <div
@@ -107,7 +113,11 @@ export default function Modal({
             >
               <Dialog.Panel
                 style={{ backfaceVisibility: 'hidden' }}
-                className={cx(panelStyles({ size }), panelClassName)}
+                className={cx(
+                  panelStyles({ size }),
+                  withoutShadow && 'shadow-none',
+                  panelClassName
+                )}
               >
                 <div
                   className={cx(
