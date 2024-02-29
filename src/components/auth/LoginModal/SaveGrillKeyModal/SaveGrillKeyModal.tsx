@@ -96,7 +96,7 @@ export default function SaveGrillKeyModal({
         currentInfo.backTo ? () => setStep(currentInfo.backTo!) : undefined
       }
     >
-      {provider !== 'evm' && (
+      {props.isOpen && provider !== 'evm' && (
         <DoOauthLogin onSuccess={() => setIsDoneLoading(true)} />
       )}
       <Component {...contentProps} />
