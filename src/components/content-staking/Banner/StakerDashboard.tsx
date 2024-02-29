@@ -88,7 +88,7 @@ const StatsCards = () => {
       ),
     },
     {
-      title: 'Total participants',
+      title: 'Total stakers',
       value: (
         <SkeletonFallback isLoading={generalEraInfoLoading}>
           {info?.backerCount}

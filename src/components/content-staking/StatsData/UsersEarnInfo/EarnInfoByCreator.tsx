@@ -1,7 +1,10 @@
-import SkeletonFallback from '@/components/SkeletonFallback'
-import StatsCard from '../StatsCard'
+import FormatBalance from '@/components/FormatBalance'
+import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
+import { getPriceQuery } from '@/services/subsocial/prices/query'
+import { getBalanceInDollars } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
 import { mutedTextColorStyles } from '../../utils/commonStyles'
+import StatsCard from '../StatsCard'
 
 const items = [
   '💎 Create high quality posts and comments',
@@ -12,17 +15,49 @@ const items = [
   '👍 Like the content of other creators to maximize your daily rewards',
 ]
 
+const rewardsPerPost = '1000'
+const rewardsPerComment = '100'
+
 const EarnInfoByCretor = () => {
+  const { tokenSymbol } = useGetChainDataByNetwork('subsocial') || {}
+  const tokenPrice = getPriceQuery.useQuery('subsocial').data?.current_price
   const cardsItems = [
     {
       title: 'Possible rewards per post:',
-      desc: <SkeletonFallback isLoading={false}>234.35 SUB</SkeletonFallback>,
-      subDesc: '$15,656.34',
+      desc: (
+        <FormatBalance
+          value={rewardsPerPost}
+          symbol={tokenSymbol}
+          defaultMaximumFractionDigits={3}
+        />
+      ),
+      subDesc: (
+        <FormatBalance
+          value={getBalanceInDollars(rewardsPerPost, tokenPrice)}
+          symbol={'$'}
+          defaultMaximumFractionDigits={2}
+          startFromSymbol
+        />
+      ),
       tooltipText: 'The average amount of rewards that posts on Subsocial earn',
     },
     {
       title: 'Possible rewards per commen:',
-      desc: <SkeletonFallback isLoading={false}>144.35 SUB</SkeletonFallback>,
+      desc: (
+        <FormatBalance
+          value={rewardsPerComment}
+          symbol={tokenSymbol}
+          defaultMaximumFractionDigits={3}
+        />
+      ),
+      subDesc: (
+        <FormatBalance
+          value={getBalanceInDollars(rewardsPerComment, tokenPrice)}
+          symbol={'$'}
+          defaultMaximumFractionDigits={2}
+          startFromSymbol
+        />
+      ),
       tooltipText:
         'The average amount of rewards that comments on Subsocial earn',
     },
@@ -48,7 +83,9 @@ type ListItemProps = {
 }
 
 const ListItem = ({ children }: ListItemProps) => (
-  <li className={cx('font-normal leading-8', mutedTextColorStyles)}>{children}</li>
+  <li className={cx('font-normal leading-8', mutedTextColorStyles)}>
+    {children}
+  </li>
 )
 
 export default EarnInfoByCretor

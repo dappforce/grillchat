@@ -51,7 +51,7 @@ const EarnStats = () => {
       tooltipText: 'Since Content Staking was released',
     },
     {
-      title: 'Total participants',
+      title: 'Total stakers',
       desc: (
         <SkeletonFallback isLoading={generalEraInfoLoading}>
           {info?.backerCount}
