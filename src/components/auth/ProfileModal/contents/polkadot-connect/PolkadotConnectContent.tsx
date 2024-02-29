@@ -1,8 +1,8 @@
-import PolkadotConnectWalletContent from '@/components/auth/common/polkadot-connect/PolkadotConnectWalletContent'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import { CopyTextInline } from '@/components/CopyText'
 import LinkText from '@/components/LinkText'
+import PolkadotConnectWalletContent from '@/components/auth/common/polkadot-connect/PolkadotConnectWalletContent'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
@@ -12,12 +12,18 @@ import UnlinkAddressWrapper from '../common/UnlinkAddressWrapper'
 
 export default function PolkadotConnectContent({
   setCurrentState,
+  closeModal,
 }: ProfileModalContentProps) {
   const sendEvent = useSendEvent()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
 
   if (!parentProxyAddress) {
-    return <PolkadotConnectWalletContent setCurrentState={setCurrentState} />
+    return (
+      <PolkadotConnectWalletContent
+        setCurrentState={setCurrentState}
+        closeModal={closeModal}
+      />
+    )
   }
 
   return (
