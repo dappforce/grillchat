@@ -8,15 +8,14 @@ import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { encodeProfileSource } from '@/utils/profile'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { finishLogin } from './utils'
 
 export default function CreateProfileModal({
   ...props
 }: ModalFunctionalityProps) {
-  const router = useRouter()
   return (
     <Modal
       {...props}
@@ -26,7 +25,7 @@ export default function CreateProfileModal({
     >
       <CreateProfileForm
         onSuccess={() => {
-          router.push('https://grill.so?onboarding=true')
+          finishLogin(props.closeModal)
         }}
       />
     </Modal>
