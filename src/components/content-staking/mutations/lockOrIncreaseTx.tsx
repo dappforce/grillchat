@@ -25,7 +25,7 @@ export function useLockOrIncreaseTx(
 
   return useSubsocialMutation(
     {
-      getWallet: () => getCurrentWallet('injected'),
+      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,
@@ -56,10 +56,10 @@ export function useLockOrIncreaseTx(
     config,
     {
       txCallbacks: {
-        onSuccess: ({ address, data }) => {
-          getBackerLedgerQuery.invalidate(client, address)
-          getGeneralEraInfoQuery.invalidate(client, generalEraInfoId)
-          getBackerInfoQuery.invalidate(client, {
+        onSuccess: async ({ address, data }) => {
+          await getBackerLedgerQuery.invalidate(client, address)
+          await getGeneralEraInfoQuery.invalidate(client, generalEraInfoId)
+          await getBackerInfoQuery.invalidate(client, {
             account: address,
             spaceIds: [data.spaceId],
           })

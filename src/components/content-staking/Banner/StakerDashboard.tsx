@@ -9,11 +9,9 @@ import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import { convertToBalanceWithDecimal, isDef } from '@subsocial/utils'
 import BN from 'bignumber.js'
-import { useMemo } from 'react'
 import { getBackerLedgerQuery } from '../../../services/contentStaking/backerLedger/query'
 import { getBalanceInDollars } from '../../../utils/formatBalance'
 import { StatsCardContent } from '../StatsData/StatsCard'
-import { sectionBg } from '../utils/SectionWrapper'
 
 const StatsCards = () => {
   const myAddress = useMyMainAddress()
@@ -43,66 +41,61 @@ const StatsCards = () => {
     ? convertToBalanceWithDecimal(locked, decimal || 0)
     : new BN(0)
 
-  const dashboardData = useMemo(() => {
-    return [
-      {
-        title: 'My lock',
-        value: (
-          <FormatBalance
-            value={myLockWithDecimals.toString()}
-            symbol={tokenSymbol}
-            loading={ledgerLoading}
-            defaultMaximumFractionDigits={3}
-          />
-        ),
-        infoTitle: 'How many tokens you have locked',
-        desc: (
-          <FormatBalance
-            value={getBalanceInDollars(
-              myLockWithDecimals.toString(),
-              tokenPrice
-            )}
-            symbol={'$'}
-            loading={priceLoading || ledgerLoading}
-            defaultMaximumFractionDigits={2}
-            startFromSymbol
-          />
-        ),
-      },
-      {
-        title: 'Total SUB earned by stakers',
-        value: (
-          <FormatBalance
-            value={stakersEarnedTotalBN.toString()}
-            symbol={tokenSymbol}
-            loading={generalStatsLoading}
-            defaultMaximumFractionDigits={3}
-          />
-        ),
-        infoTitle: 'Since Content Staking was released',
-        desc: (
-          <FormatBalance
-            value={getBalanceInDollars(
-              stakersEarnedTotalBN.toString(),
-              tokenPrice
-            )}
-            symbol={'$'}
-            loading={priceLoading || generalStatsLoading}
-            defaultMaximumFractionDigits={2}
-            startFromSymbol
-          />
-        ),
-      },
-      {
-        title: 'Total participants',
-        value: (
-          <SkeletonFallback isLoading={generalEraInfoLoading}>
-            {info?.backerCount}
-          </SkeletonFallback>
-        ),
-      },
-    ].filter(isDef)
-  }, [generalEraInfoLoading, ledgerLoading, myAddress])
+  const dashboardData = [
+    {
+      title: 'My lock',
+      value: (
+        <FormatBalance
+          value={myLockWithDecimals.toString()}
+          symbol={tokenSymbol}
+          loading={ledgerLoading}
+          defaultMaximumFractionDigits={3}
+        />
+      ),
+      infoTitle: 'How many tokens you have locked',
+      desc: (
+        <FormatBalance
+          value={getBalanceInDollars(myLockWithDecimals.toString(), tokenPrice)}
+          symbol={'$'}
+          loading={priceLoading || ledgerLoading}
+          defaultMaximumFractionDigits={2}
+          startFromSymbol
+        />
+      ),
+    },
+    {
+      title: 'Total SUB earned by stakers',
+      value: (
+        <FormatBalance
+          value={stakersEarnedTotalBN.toString()}
+          symbol={tokenSymbol}
+          loading={generalStatsLoading}
+          defaultMaximumFractionDigits={3}
+        />
+      ),
+      infoTitle: 'Since Content Staking was released',
+      desc: (
+        <FormatBalance
+          value={getBalanceInDollars(
+            stakersEarnedTotalBN.toString(),
+            tokenPrice
+          )}
+          symbol={'$'}
+          loading={priceLoading || generalStatsLoading}
+          defaultMaximumFractionDigits={2}
+          startFromSymbol
+        />
+      ),
+    },
+    {
+      title: 'Total participants',
+      value: (
+        <SkeletonFallback isLoading={generalEraInfoLoading}>
+          {info?.backerCount}
+        </SkeletonFallback>
+      ),
+    },
+  ]
 
   return (
     <div
@@ -145,7 +138,7 @@ const DashboardCard = ({
       className={cx(
         'w-full',
         'flex flex-col items-center gap-2 rounded-2xl !py-4 px-4 md:px-6',
-        'dark:bg-white/5 backdrop-blur-xl bg-slate-50',
+        'bg-slate-50 backdrop-blur-xl dark:bg-white/5',
         className
       )}
     >

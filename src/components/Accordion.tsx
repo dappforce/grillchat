@@ -30,7 +30,7 @@ const AccordionItem = ({ title, content }: AccordionItemProps) => {
     <div className='flex flex-col'>
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className='flex cursor-pointer items-center gap-2 text-xl font-medium leading-none text-text'
+        className='flex cursor-pointer items-center gap-2 md:text-xl text-lg font-medium leading-none text-text'
       >
         <FaAngleRight
           size={20}

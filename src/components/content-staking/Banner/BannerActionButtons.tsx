@@ -1,5 +1,5 @@
-import LoginModal from '@/components/auth/LoginModal'
 import Button from '@/components/Button'
+import LoginModal from '@/components/auth/LoginModal'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
 import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
@@ -9,9 +9,11 @@ import { isTouchDevice } from '@/utils/device'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useState } from 'react'
+import { cx } from '../../../utils/class-names'
 import StakingModal, { StakingModalVariant } from '../modals/StakeModal'
 import { ACTIVE_STAKING_SPACE_ID, calculateBalanceForStaking } from '../utils'
 import { useContentStakingContext } from '../utils/ContentStakingContext'
+import { mutedTextColorStyles } from '../utils/commonStyles'
 
 const BannerActionButtons = () => {
   const myAddress = useMyMainAddress()
@@ -102,7 +104,12 @@ const BannerActionButtons = () => {
     <>
       <div className='flex flex-col items-center gap-4'>
         {text && !isLockedTokens && (
-          <div className='w-full max-w-[552px] text-center text-base font-normal text-text-muted'>
+          <div
+            className={cx(
+              'w-full max-w-[552px] text-center text-base font-normal',
+              mutedTextColorStyles
+            )}
+          >
             {text}
           </div>
         )}
@@ -133,10 +140,11 @@ const LockingButtons = () => {
 
   return (
     <>
-      <div className='flex items-center md:gap-6 gap-4'>
+      <div className='flex items-center gap-4 md:gap-6'>
         <Button
           size={isTouchDevice() ? 'md' : 'lg'}
           variant={isLockedTokens ? 'primaryOutline' : 'primary'}
+          className={cx({['text-indigo-500']: isLockedTokens})}
           onClick={() =>
             onButtonClick(isLockedTokens ? 'increaseStake' : 'stake')
           }
@@ -147,6 +155,7 @@ const LockingButtons = () => {
           <Button
             size={isTouchDevice() ? 'md' : 'lg'}
             variant={'redOutline'}
+            className='text-text-red'
             onClick={() => onButtonClick('unstake')}
           >
             Unlock SUB

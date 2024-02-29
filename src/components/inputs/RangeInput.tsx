@@ -43,27 +43,12 @@ const RangeInput = ({
         var left = (value / max) * (inputWidth - width)
         
         currentLabelRef.current.style.top = -currentLabelHeight - 8 + 'px'
-        currentLabelRef.current.style.left = left - 1 + 'px'
+        currentLabelRef.current.style.left = left + 'px'
       }
     }
-  }, [JSON.stringify(rerenderTrigger)])
+  }, [currentLabelRef.current?.offsetWidth, max, min, value, JSON.stringify(rerenderTrigger)])
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let target = e.target
-    const val = target.value
-    let percentage = ((parseInt(val) - min) * 100) / (max - min)
-
-    target.style.backgroundSize = percentage + '% 100%'
-
-    if (currentLabelRef.current) {
-      const inputWidth = target.offsetWidth
-      const width = currentLabelRef.current.offsetWidth
-
-      var left = (parseInt(val) / max) * (inputWidth - width)
-
-      currentLabelRef.current.style.left = left - 1 + 'px'
-    }
-
     setValue(Number(e.target.value))
   }
 
@@ -72,7 +57,7 @@ const RangeInput = ({
       {valueLabel && (
         <div
           ref={currentLabelRef}
-          className='absolute rounded-xl bg-indigo-600 px-2 py-[6px]'
+          className='absolute rounded-xl bg-indigo-600 px-2 py-[6px] w-max'
         >
           {valueLabel}
         </div>

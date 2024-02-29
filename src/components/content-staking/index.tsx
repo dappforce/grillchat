@@ -1,3 +1,4 @@
+import { isTouchDevice } from '@/utils/device'
 import Button from '../Button'
 import BannerSection from './Banner'
 import FAQSection from './FAQ'
@@ -18,10 +19,12 @@ export const ContentStaking = () => {
         <HowItWorksSection />
         <FAQSection />
         <SectionWrapper className='z-[1] flex flex-col items-center gap-4 px-4 py-6'>
-          <div className={sectionTitleStyles}>
-            Still have questions?
-          </div>
-          <Button variant='primaryOutline' size='lg'>
+          <div className={sectionTitleStyles}>Still have questions?</div>
+          <Button
+            variant='primaryOutline'
+            className='text-indigo-500'
+            size={isTouchDevice() ? 'md' : 'lg'}
+          >
             Ask us
           </Button>
         </SectionWrapper>

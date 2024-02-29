@@ -4,6 +4,7 @@ import { cx } from '@/utils/class-names'
 import { FiInfo } from 'react-icons/fi'
 import { sectionBg } from '../utils/SectionWrapper'
 import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
+import { isTouchDevice } from '@/utils/device'
 
 const items = [
   {
@@ -57,7 +58,7 @@ const CardItem = ({
       className={cx('flex w-full flex-col gap-4 rounded-2xl p-4', sectionBg)}
     >
       <div className='flex flex-col gap-2'>
-        <div className='text-xl font-medium leading-[30px] text-text'>
+        <div className='md:text-xl text-lg font-medium leading-[30px] text-text'>
           <PopOver
             trigger={
               <div className={cx('flex items-center gap-2')}>
@@ -79,7 +80,7 @@ const CardItem = ({
       <Button
         className='self-center'
         href={buttonLink}
-        size={'lg'}
+        size={isTouchDevice() ? 'md' : 'lg'}
         target='__blank'
         variant='primary'
       >

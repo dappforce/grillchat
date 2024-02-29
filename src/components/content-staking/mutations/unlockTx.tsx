@@ -26,7 +26,7 @@ export function useLockOrIncreaseTx(
 
   return useSubsocialMutation(
     {
-      getWallet: () => getCurrentWallet('injected'),
+      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,

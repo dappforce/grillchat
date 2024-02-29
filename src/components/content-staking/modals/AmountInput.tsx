@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import FormatBalance from '@/components/FormatBalance'
 import Input from '@/components/inputs/Input'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
 import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
@@ -130,9 +131,11 @@ export const StakeOrIncreaseStakeAmountInput = (
       {...props}
       onMaxAmountClick={onMaxAmountClick}
       balanceValue={
-        <>
-          {balanceValue} {tokenSymbol}
-        </>
+        <FormatBalance
+          value={balanceValue}
+          symbol={tokenSymbol}
+          defaultMaximumFractionDigits={3}
+        />
       }
       validateInput={validateInput}
     />
@@ -198,9 +201,11 @@ export const UnstakeAmountInput = (props: CommonAmountInputProps) => {
       <AmountInput
         {...props}
         balanceValue={
-          <>
-            {balanceValue} {tokenSymbol}
-          </>
+          <FormatBalance
+            value={balanceValue}
+            symbol={tokenSymbol}
+            defaultMaximumFractionDigits={3}
+          />
         }
         onMaxAmountClick={onMaxAmountClick}
         validateInput={validateInput}

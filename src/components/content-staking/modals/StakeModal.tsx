@@ -1,3 +1,4 @@
+import FormatBalance from '@/components/FormatBalance'
 import PopOver from '@/components/floating/PopOver'
 import Modal from '@/components/modals/Modal'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
@@ -48,7 +49,11 @@ const CurrentStake = () => {
       >
         <div className='text-sm leading-5 text-text-muted'>My current lock</div>
         <div className='text-base font-medium leading-6'>
-          {currentStake} {tokenSymbol}
+          <FormatBalance
+            value={currentStake}
+            symbol={tokenSymbol}
+            defaultMaximumFractionDigits={3}
+          />
         </div>
       </div>
       {showMimimumStake && (
@@ -68,7 +73,11 @@ const CurrentStake = () => {
             {minimumStake.toString()} SUB
           </PopOver>
           <div className='text-base font-medium leading-6'>
-            {requiredLock} {tokenSymbol}
+            <FormatBalance
+              value={requiredLock}
+              symbol={tokenSymbol}
+              defaultMaximumFractionDigits={3}
+            />
           </div>
         </div>
       )}

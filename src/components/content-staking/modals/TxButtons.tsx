@@ -95,18 +95,6 @@ function StakingTxButton({
         )
       }}
     </LockOrIncreaseTxWrapper>
-
-    // <LazyTxButton
-    //   network='subsocial'
-    //   accountId={myAddress}
-    //   tx={tx}
-    //   disabled={disableButton}
-    //   component={Component}
-    //   onClick={onClick}
-    //   params={buildParams}
-    //   onFailed={showParsedErrorMessage}
-    //   onSuccess={onSuccess}
-    // />
   )
 }
 

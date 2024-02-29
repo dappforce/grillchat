@@ -44,7 +44,7 @@ const EarnCalcSection = () => {
   return (
     <>
       <div className='p-4'>
-        <div className='mb-16 text-xl text-text'>Staked amount:</div>
+        <div className='mb-16 md:text-xl text-lg text-text'>Staked amount:</div>
         <RangeInput
           value={rangeValue}
           rerenderTrigger={[ priceLoading ]}
@@ -200,8 +200,8 @@ type RangeLabelProps = {
 const RangeLabel = ({ label, desc, className }: RangeLabelProps) => {
   return (
     <div className={cx('flex flex-col font-medium', className)}>
-      <span className='text-lg leading-[26px] text-text'>{label}</span>
-      <span className='text-base leading-[26px] text-text-muted'>{desc}</span>
+      <span className='md:text-lg text-base leading-[26px] text-text'>{label}</span>
+      <span className='md:text-base text-sm leading-[26px] text-text-muted'>{desc}</span>
     </div>
   )
 }

@@ -18,12 +18,12 @@ const BannerSection = () => {
     <div className='flex flex-col gap-6'>
       <div className='flex w-full flex-col gap-3'>
         <div className='flex items-center justify-between gap-2'>
-          <div className='font-unbounded text-[32px] font-extrabold leading-none text-text'>
+          <div className='font-unbounded md:text-[32px] text-2xl font-extrabold leading-none text-text'>
             Content Staking
           </div>
         </div>
         <div
-          className={cx('text-xl font-normal leading-8', mutedTextColorStyles)}
+          className={cx('md:text-xl text-base font-normal leading-8', mutedTextColorStyles)}
         >
           Content Staking allows SUB token holders to earn SUB by actively
           engaging with good content on the network.{' '}

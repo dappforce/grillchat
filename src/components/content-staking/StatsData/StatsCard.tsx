@@ -57,7 +57,7 @@ export const StatsCardContent = ({
           title
         )}
       </div>
-      <div className='text-2xl font-semibold leading-8 text-text'>{desc}</div>
+      <div className='md:text-2xl text-xl font-semibold leading-8 text-text'>{desc}</div>
       {subDesc && (
         <div className={cx('text-base font-normal leading-none', mutedTextColorStyles)}>
           {subDesc}
