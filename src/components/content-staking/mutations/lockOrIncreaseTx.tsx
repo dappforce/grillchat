@@ -1,3 +1,4 @@
+import useConnectWallet from '@/hooks/useConnectWallet'
 import { getBackerInfoQuery } from '@/services/contentStaking/backerInfo/query'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
 import {
@@ -6,6 +7,7 @@ import {
 } from '@/services/contentStaking/generalErainfo/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { createMutationWrapper } from '@/services/subsocial/utils'
+import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useMyAccount } from '@/stores/my-account'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
@@ -22,18 +24,18 @@ export function useLockOrIncreaseTx(
   config?: SubsocialMutationConfig<MutationProps>
 ) {
   const client = useQueryClient()
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+  useConnectWallet()
 
   return useSubsocialMutation(
     {
-      getWallet: getCurrentWallet,
+      getWallet: () =>
+        getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,
         apis: { substrateApi },
       }) => {
-        const currentGrillAddress = useMyAccount.getState().address
-        if (!currentGrillAddress) throw new Error('No address connected')
-
         const { spaceId, amount, decimal } = params
 
         if (!amount) {
@@ -59,6 +61,10 @@ export function useLockOrIncreaseTx(
         onSuccess: async ({ address, data }) => {
           await getBackerLedgerQuery.invalidate(client, address)
           await getGeneralEraInfoQuery.invalidate(client, generalEraInfoId)
+          await getBalancesQuery.invalidate(client, {
+            address,
+            chainName: 'subsocial',
+          })
           await getBackerInfoQuery.invalidate(client, {
             account: address,
             spaceIds: [data.spaceId],

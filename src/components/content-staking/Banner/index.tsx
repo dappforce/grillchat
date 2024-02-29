@@ -9,31 +9,47 @@ import { mutedTextColorStyles } from '../utils/commonStyles'
 import BannerActionButtons from './BannerActionButtons'
 import StatsCards from './StakerDashboard'
 import StakingStepper from './StakingStepper'
+import { useEffect, useState } from 'react'
 
 const BannerSection = () => {
   const { isLockedTokens, ledgerLoading } = useContentStakingContext()
   const theme = useGetTheme()
+  const [showBgGradient, setShowBgGradient] = useState(true)
+
+  useEffect(() => {
+    setShowBgGradient(theme === 'dark')
+  }, [theme])
 
   return (
     <div className='flex flex-col gap-6'>
       <div className='flex w-full flex-col gap-3'>
         <div className='flex items-center justify-between gap-2'>
-          <div className='font-unbounded md:text-[32px] text-2xl font-extrabold leading-none text-text'>
+          <div className='font-unbounded text-2xl font-extrabold leading-none text-text md:text-[32px]'>
             Content Staking
           </div>
         </div>
         <div
-          className={cx('md:text-xl text-base font-normal leading-8', mutedTextColorStyles)}
+          className={cx(
+            'text-base font-normal leading-8 md:text-xl',
+            mutedTextColorStyles
+          )}
         >
           Content Staking allows SUB token holders to earn SUB by actively
           engaging with good content on the network.{' '}
-          <LinkText variant='primary' className='hover:no-underline' href={''}>
+          <LinkText
+            variant='primary'
+            className='hover:no-underline'
+            target='_blank'
+            href={
+              'https://docs.subsocial.network/docs/basics/content-staking/content-staking/'
+            }
+          >
             How does it work?
           </LinkText>
         </div>
       </div>
       <SectionWrapper className='relative z-[1] flex flex-col items-center gap-4 p-4 md:gap-5'>
-        {theme === 'dark' && (
+        {showBgGradient && (
           <BgGradient
             color='dark-blue'
             className='absolute left-[80px] top-[55px] z-0 h-[731px] w-[731px] -translate-x-full'

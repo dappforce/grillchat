@@ -31,15 +31,15 @@ export const ContentStakingContextWrapper: React.FC<ContextWrapperProps> = ({
   const myAddress = useMyMainAddress()
   const { tokenSymbol } = useGetChainDataByNetwork('subsocial') || {}
 
-  const { data: ledger, isLoading: ledgerLoading } = getBackerLedgerQuery.useQuery(myAddress || '')
+  const { data: ledger, isLoading: ledgerLoading } =
+    getBackerLedgerQuery.useQuery(myAddress || '')
 
   const { locked } = ledger || {}
 
-  const { data: balanceByNetwork } =
-    getBalancesQuery.useQuery({
-      address: myAddress || '',
-      chainName: 'subsocial',
-    })
+  const { data: balanceByNetwork } = getBalancesQuery.useQuery({
+    address: myAddress || '',
+    chainName: 'subsocial',
+  })
 
   const balanceByCurrency = balanceByNetwork?.balances?.[tokenSymbol || '']
 
@@ -74,7 +74,7 @@ export const ContentStakingContextWrapper: React.FC<ContextWrapperProps> = ({
   const value = {
     currentStep,
     setCurrentStep,
-    isLockedTokens,
+    isLockedTokens: isLockedTokens,
     ledgerLoading,
     isHasSub,
   }

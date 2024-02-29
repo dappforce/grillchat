@@ -1,4 +1,4 @@
-import { getBackerInfoBySpaceIds } from '@/services/contentStaking/backerInfo/query'
+import { getBackerInfoBySpaceIds, getBackerInfoQuery } from '@/services/contentStaking/backerInfo/query'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
 import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
@@ -8,8 +8,10 @@ import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { balanceWithDecimal, isDef } from '@subsocial/utils'
-import { useQueryClient } from 'wagmi'
 import { ACTIVE_STAKING_SPACE_ID } from '../utils'
+import { generalEraInfoId, getGeneralEraInfoQuery } from '@/services/contentStaking/generalErainfo/query'
+import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { useQueryClient } from '@tanstack/react-query'
 
 type MutationProps = {
   amount?: string
@@ -22,11 +24,13 @@ type MutationProps = {
 export function useLockOrIncreaseTx(
   config?: SubsocialMutationConfig<MutationProps>
 ) {
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const client = useQueryClient()
 
   return useSubsocialMutation(
     {
-      getWallet: getCurrentWallet,
+      getWallet: () =>
+        getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,
@@ -69,7 +73,18 @@ export function useLockOrIncreaseTx(
     config,
     {
       txCallbacks: {
-        onSuccess: () => {},
+        onSuccess: async ({ address, data }) => {
+          await getBackerLedgerQuery.invalidate(client, address)
+          await getGeneralEraInfoQuery.invalidate(client, generalEraInfoId)
+          await getBalancesQuery.invalidate(client, {
+            address,
+            chainName: 'subsocial',
+          })
+          await getBackerInfoQuery.invalidate(client, {
+            account: address,
+            spaceIds: data.creatorsSpaceIds,
+          })
+        },
       },
     }
   )

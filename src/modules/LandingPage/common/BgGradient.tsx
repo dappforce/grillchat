@@ -25,7 +25,8 @@ export default function BgGradient({
   color: (typeof colors)[number]
 }) {
   const src = colorMapper[color]
-  if (!src || typeof window === 'undefined') return null
+
+  if (!src) return null
   return (
     <div
       {...props}

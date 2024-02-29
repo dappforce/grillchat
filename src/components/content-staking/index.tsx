@@ -22,8 +22,10 @@ export const ContentStaking = () => {
           <div className={sectionTitleStyles}>Still have questions?</div>
           <Button
             variant='primaryOutline'
-            className='text-indigo-500'
+            className='text-text-primary'
             size={isTouchDevice() ? 'md' : 'lg'}
+            href='grill.so/c/ask'
+            target='_blank'
           >
             Ask us
           </Button>

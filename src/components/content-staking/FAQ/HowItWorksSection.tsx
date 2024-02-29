@@ -2,13 +2,19 @@ import useGetTheme from '@/hooks/useGetTheme'
 import BgGradient from '@/modules/LandingPage/common/BgGradient'
 import { cx } from '@/utils/class-names'
 import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
+import { useEffect, useState } from 'react'
 
 const HowItWorksSection = () => {
   const theme = useGetTheme()
+  const [showBgGradient, setShowBgGradient] = useState(true)
+
+  useEffect(() => {
+    setShowBgGradient(theme === 'dark')
+  }, [theme])
   
   return (
     <div className='relative z-[1] flex w-full flex-col items-center gap-4'>
-      {theme === 'dark' && (
+      {showBgGradient && (
         <BgGradient
           color='pink'
           className='absolute left-[171px] top-[40px] z-0 h-[740px] w-[740px] translate-x-full'

@@ -1,5 +1,5 @@
-import useAccountsFromPreferredWallet from '@/components/auth/common/polkadot-connect/hooks/useAccountsFromPreferredWallet'
 import Toast from '@/components/Toast'
+import useConnectWallet from '@/hooks/useConnectWallet'
 import { getChainsInfoQuery } from '@/services/chainsInfo/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { createMutationWrapper } from '@/services/subsocial/utils'
@@ -7,9 +7,7 @@ import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useLazySubstrateMutation } from '@/subsocial-query/subsocial/lazyMutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
-import { convertAddressToGenericAddress, Signer } from '@/utils/account'
 import { useQueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 
 type SubstrateDonationProps = {
@@ -42,30 +40,10 @@ export function useSubstrateDonation(
   } = otherProps || {}
   const client = useQueryClient()
   const { data: chainInfo } = getChainsInfoQuery.useQuery(chainName || '')
-  const { accounts, isLoading } = useAccountsFromPreferredWallet()
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
-  const connectWallet = useMyAccount((state) => state.connectWallet)
   const address = useMyMainAddress()
-
   const { wsNode, node } = chainInfo || {}
-
-  useEffect(() => {
-    if (parentProxyAddress && accounts) {
-      const signer = accounts.find((account) => {
-        const genericAccountAddress = convertAddressToGenericAddress(
-          account.address
-        )
-        const genericProxyAddress =
-          convertAddressToGenericAddress(parentProxyAddress)
-
-        return genericAccountAddress === genericProxyAddress
-      })?.signer
-
-      if (signer) {
-        connectWallet(parentProxyAddress, signer as Signer)
-      }
-    }
-  }, [parentProxyAddress, isLoading])
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+  useConnectWallet()
 
   return useLazySubstrateMutation<SubstrateDonationProps>(
     {
