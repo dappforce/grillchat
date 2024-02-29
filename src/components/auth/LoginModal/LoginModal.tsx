@@ -82,10 +82,6 @@ export default function LoginModal({
       withBackButton: true,
       backToStep: 'new-account',
     },
-    'evm-address-linked': {
-      title: '🎉 EVM address linked',
-      desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
-    },
     'evm-linking-error': {
       title: '😕 Something went wrong',
       desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',

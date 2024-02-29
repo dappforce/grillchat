@@ -1,18 +1,14 @@
 import IncognitoIcon from '@/assets/icons/incognito.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
-import {
-  CommonEvmAddressLinked,
-  CommonEVMLoginErrorContent,
-} from '@/components/auth/common/evm/CommonEvmModalContent'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
+import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useLoginOption from '@/hooks/useLoginOption'
-import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { useRequestToken } from '@/services/api/mutation'
@@ -22,10 +18,8 @@ import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
-import { estimatedWaitTime } from '@/utils/network'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi2'
-import { CustomConnectButton } from '../common/evm/CustomConnectButton'
 import LimitedPolkadotJsSupportContent from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
@@ -34,6 +28,7 @@ import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
 import NewAccountContent from './contents/NewAccountContent'
+import { finishLogin } from './utils'
 
 export type LoginModalStep =
   | PolkadotConnectSteps
@@ -42,7 +37,6 @@ export type LoginModalStep =
   | 'new-account'
   | 'account-created'
   | 'evm-address-link'
-  | 'evm-address-linked'
   | 'evm-linking-error'
 
 export type LoginModalContentProps = ModalFunctionalityProps & {
@@ -180,9 +174,8 @@ export const loginModalContents: LoginModalContents = {
   'enter-secret-key': LoginWithGrillKeyContent,
   'new-account': NewAccountContent,
   'account-created': AccountCreatedContent,
-  'evm-address-link': LinkEvmContent,
-  'evm-address-linked': CommonEvmAddressLinked,
-  'evm-linking-error': EvmLoginError,
+  'evm-address-link': EvmLoginStep,
+  'evm-linking-error': (props) => <EvmLoginStep isErrorStep {...props} />,
   'polkadot-connect': PolkadotConnectWalletContent,
   'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
@@ -214,8 +207,9 @@ function PolkadotConnectConfirmation({
         finalizeTemporaryAccount()
         if (!profile?.profileSpace?.id) {
           useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
+        } else {
+          finishLogin(closeModal)
         }
-        closeModal()
       }}
       beforeAddProxy={async () => {
         await mutateAsync(null)
@@ -225,11 +219,16 @@ function PolkadotConnectConfirmation({
   )
 }
 
-export function EvmLoginError({ setCurrentState }: LoginModalContentProps) {
+export function EvmLoginStep({
+  setCurrentState,
+  isErrorStep,
+  closeModal,
+}: LoginModalContentProps & { isErrorStep?: boolean }) {
   const { mutate, isLoading } = useLoginBeforeSignEvm()
 
   return (
-    <CommonEVMLoginErrorContent
+    <CommonEVMLoginContent
+      buttonLabel={isErrorStep ? 'Try again' : undefined}
       isLoading={isLoading}
       beforeSignEvmAddress={() => mutate()}
       onFinishSignMessage={() =>
@@ -237,47 +236,14 @@ export function EvmLoginError({ setCurrentState }: LoginModalContentProps) {
           .getState()
           .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
       }
-      onSuccess={() => setCurrentState('evm-address-linked')}
-    />
-  )
-}
-export function LinkEvmContent({ setCurrentState }: LoginModalContentProps) {
-  const { mutate, isLoading: isLoggingIn } = useLoginBeforeSignEvm()
-  const [hasSignedMessage, setHasSignedMessage] = useState(false)
-
-  const { signAndLinkEvmAddress, isLoading: isLinking } =
-    useSignMessageAndLinkEvmAddress({
-      onFinishSignMessage: () => {
-        setHasSignedMessage(true)
-        useLoginModal
-          .getState()
-          .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
-      },
-      onSuccess: () => {
-        setHasSignedMessage(false)
-        setCurrentState('evm-address-linked')
-        useMyAccount.getState().finalizeTemporaryAccount()
-      },
-      onError: () => {
-        setHasSignedMessage(false)
+      onError={() => {
         setCurrentState('evm-linking-error')
-      },
-    })
-
-  const isLoading = isLoggingIn || isLinking
-
-  return (
-    <CustomConnectButton
-      className={cx('w-full')}
-      beforeSignEvmAddress={() => mutate()}
-      signAndLinkEvmAddress={signAndLinkEvmAddress}
-      loadingText={
-        hasSignedMessage
-          ? `It may take up to ${estimatedWaitTime} seconds`
-          : 'Pending Confirmation...'
-      }
-      isLoading={isLoading}
-      secondLabel='Sign Message'
+      }}
+      onSuccess={() => {
+        useMyAccount.getState().finalizeTemporaryAccount()
+        closeModal()
+        useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
+      }}
     />
   )
 }

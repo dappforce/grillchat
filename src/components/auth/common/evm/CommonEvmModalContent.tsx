@@ -13,9 +13,11 @@ type CommonEVMLoginErrorProps = {
   onError?: () => void
   beforeSignEvmAddress?: () => Promise<void>
   isLoading?: boolean
+  buttonLabel?: string
 }
 
-export const CommonEVMLoginErrorContent = ({
+export const CommonEVMLoginContent = ({
+  buttonLabel,
   onFinishSignMessage,
   onSuccess,
   onError,
@@ -44,7 +46,7 @@ export const CommonEVMLoginErrorContent = ({
       signAndLinkEvmAddress={signAndLinkEvmAddress}
       beforeSignEvmAddress={beforeSignEvmAddress}
       className='w-full'
-      label='Try again'
+      label={buttonLabel}
       secondLabel='Sign Message'
       loadingText={
         hasSignedMessage

@@ -14,6 +14,7 @@ import { estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
 import { useEffect, useState } from 'react'
 import { MdOutlineContentCopy } from 'react-icons/md'
+import { finishLogin } from '../utils'
 import useOauthLogin from './useOauthLogin'
 
 export type SaveGrillKeyModalProps = ModalFunctionalityProps
@@ -234,7 +235,7 @@ export const AccountCreatedStep = ({ closeModal }: ContentProps) => {
           />
         </div>
       )}
-      <Button size='lg' onClick={() => closeModal()}>
+      <Button size='lg' onClick={() => finishLogin(closeModal)}>
         Continue
       </Button>
     </div>
