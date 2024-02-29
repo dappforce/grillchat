@@ -5,7 +5,7 @@ import {
   SubsocialMutationConfig,
   WalletAccount,
 } from '@/subsocial-query/subsocial/types'
-import { useMutation, UseMutationResult } from '@tanstack/react-query'
+import { UseMutationResult, useMutation } from '@tanstack/react-query'
 
 export function getCurrentWallet(
   walletType: 'injected' | 'grill' = 'grill'

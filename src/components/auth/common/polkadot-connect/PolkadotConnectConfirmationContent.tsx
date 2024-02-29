@@ -4,6 +4,7 @@ import Button from '@/components/Button'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
+import { estimatedWaitTime } from '@/utils/network'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { useState } from 'react'
 import { PolkadotConnectContentProps } from './types'
@@ -20,6 +21,7 @@ export default function PolkadotConnectConfirmationContent({
 }) {
   const sendEvent = useSendEvent()
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isSent, setIsSent] = useState(false)
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const isLoadingEnergy = useMyAccount(
     (state) => state.connectedWallet?.energy === undefined
@@ -33,6 +35,9 @@ export default function PolkadotConnectConfirmationContent({
           loadingUntilTxSuccess
           config={{
             txCallbacks: {
+              onSend: () => {
+                setIsSent(true)
+              },
               onSuccess: () => {
                 saveProxyAddress()
                 sendEvent('polkadot_address_linked', undefined, {
@@ -46,11 +51,11 @@ export default function PolkadotConnectConfirmationContent({
             onError,
           }}
         >
-          {({ isLoading, mutateAsync: addProxy }) => {
+          {({ isLoading: isAddingProxy, mutateAsync: addProxy }) => {
             return (
               <>
                 <div className='mb-2 w-full'>
-                  {isLoading || isProcessing ? (
+                  {isAddingProxy || isProcessing ? (
                     <div className='animate-pulse'>
                       <LinkingLight className='block w-full dark:hidden' />
                       <LinkingDark className='hidden w-full dark:block' />
@@ -79,9 +84,13 @@ export default function PolkadotConnectConfirmationContent({
                       addProxy(null)
                     }
                   }}
-                  isLoading={isLoading || isLoadingEnergy || isProcessing}
+                  isLoading={isAddingProxy || isLoadingEnergy || isProcessing}
                   loadingText={
-                    isLoading ? 'Pending Confirmation...' : undefined
+                    isSent
+                      ? `It may take up to ${estimatedWaitTime} seconds`
+                      : isAddingProxy
+                      ? 'Pending Confirmation...'
+                      : undefined
                   }
                 >
                   Confirm

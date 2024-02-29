@@ -376,7 +376,7 @@ export function useMyMainAddress() {
 }
 
 export function getHasEnoughEnergy(energy: number | undefined | null) {
-  return energy ?? 0 > ESTIMATED_ENERGY_FOR_ONE_TX
+  return (energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
 }
 
 export async function enableWallet({
