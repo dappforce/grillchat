@@ -7,9 +7,9 @@ import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
-import SaveGrillKeyModal from '../SaveGrillKeyModal'
 import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import { LoginModalStep, loginModalContents } from './LoginModalContent'
+import SaveGrillKeyModal from './SaveGrillKeyModal'
 
 const StayUpdatedModal = dynamic(
   () => import('@/components/chats/StayUpdatedModal'),

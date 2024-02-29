@@ -10,6 +10,7 @@ type State = {
   openedNextStepModal:
     | undefined
     | { step: 'save-grill-key'; provider: SupportedExternalProvider }
+    | { step: 'create-profile' }
     | { step: 'set-profile' }
 }
 

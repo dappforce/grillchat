@@ -37,29 +37,39 @@ export default function SaveGrillKeyModal({
 
   const modalInfo: Record<
     Steps,
-    { title: string; desc: string; backTo?: Steps }
+    {
+      title: string
+      desc: string
+      backTo?: Steps
+      component: (props: ContentProps) => JSX.Element
+    }
   > = {
     save: {
       title: '🔑 Save your Grill key',
       desc: 'Your Grill key is like a long password. Save it in a safe place, so you can recover your account later.',
+      component: SaveStep,
     },
     enter: {
       title: '🔑 Enter your Grill key',
       desc: "Enter the Grill key you received in the previous step. This way, we'll make sure you saved it.",
       backTo: 'save',
+      component: EnterKeyStep,
     },
     loading: {
       title: `🕔 Connecting to ${providerMapper[provider ?? 'google']}`,
       desc: `We are connecting your ${
         providerMapper[provider ?? 'google']
       } account to Grill.chat. Please wait for a few seconds.`,
+      component: LoadingStep,
     },
     'account-created': {
       title: '🎉 Account created',
       desc: 'We have created an account linked to your X for you. You can now use Grill.chat!',
+      component: AccountCreatedStep,
     },
   }
   const currentInfo = modalInfo[step]
+  const Component = currentInfo.component
 
   const contentProps: ContentProps = {
     closeModal: props.closeModal,
@@ -85,10 +95,7 @@ export default function SaveGrillKeyModal({
       {provider !== 'evm' && (
         <DoOauthLogin onSuccess={() => setIsDoneLoading(true)} />
       )}
-      {step === 'save' && <SaveStep {...contentProps} />}
-      {step === 'enter' && <EnterKeyStep {...contentProps} />}
-      {step === 'loading' && <LoadingStep {...contentProps} />}
-      {step === 'account-created' && <AccountCreatedStep {...contentProps} />}
+      <Component {...contentProps} />
     </Modal>
   )
 }
