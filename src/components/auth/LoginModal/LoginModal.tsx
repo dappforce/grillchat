@@ -1,5 +1,5 @@
 import { linkTextStyles } from '@/components/LinkText'
-import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import Modal from '@/components/modals/Modal'
 import useLoginOption from '@/hooks/useLoginOption'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -17,11 +17,8 @@ const StayUpdatedModal = dynamic(
   { ssr: false }
 )
 
-export type LoginModalProps = ModalFunctionalityProps & {
-  initialOpenState?: LoginModalStep
+export type LoginModalProps = {
   onBackClick?: () => void
-  afterLogin?: () => void
-  beforeLogin?: () => void
 }
 
 type ModalConfig = {
@@ -36,13 +33,11 @@ type ModalConfig = {
   }
 }
 
-export default function LoginModal({
-  afterLogin,
-  beforeLogin,
-  initialOpenState = 'login',
-  onBackClick,
-  ...props
-}: LoginModalProps) {
+export default function LoginModal({ onBackClick }: LoginModalProps) {
+  const isOpen = useLoginModal.use.isOpen()
+  const setIsOpen = useLoginModal.use.setIsOpen()
+  const initialOpenState = useLoginModal.use.initialOpenState() || 'login'
+
   const openedNextStepsModal = useLoginModal.use.openedNextStepModal()
   const closeNextStepModal = useLoginModal.use.closeNextStepModal()
 
@@ -133,9 +128,9 @@ export default function LoginModal({
     onBackClick || (() => setCurrentState(backToStep || 'login'))
 
   useEffect(() => {
-    if (props.isOpen) setCurrentState(initialOpenState)
+    if (isOpen) setCurrentState(initialOpenState)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.isOpen])
+  }, [isOpen])
 
   const address = useMyMainAddress()
   const showBackButton =
@@ -165,7 +160,7 @@ export default function LoginModal({
   return (
     <>
       <Modal
-        {...props}
+        isOpen={isOpen}
         className={cx(
           'transition-opacity',
           openedNextStepsModal?.step && 'opacity-0'
@@ -180,7 +175,7 @@ export default function LoginModal({
         titleClassName={cx(withoutDefaultPadding && 'px-6')}
         descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
         closeModal={() => {
-          props.closeModal()
+          setIsOpen(false)
           if (loginOption === 'polkadot') {
             setIsOpenStayUpdatedModal(true)
           }
@@ -189,7 +184,8 @@ export default function LoginModal({
         <ModalContent
           setCurrentState={setCurrentState}
           currentStep={currentState}
-          {...props}
+          isOpen={isOpen}
+          closeModal={() => setIsOpen(false)}
         />
       </Modal>
       {loginOption === 'polkadot' && (

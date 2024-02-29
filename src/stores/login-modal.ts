@@ -68,6 +68,12 @@ const useLoginModalBase = create<State & Actions>()((set, get) => ({
           provider: loginQuery as SupportedExternalProvider,
         },
       })
+      return
+    }
+
+    const auth = getUrlQuery('auth') === 'true'
+    if (auth) {
+      set({ isOpen: true })
     }
   },
 }))

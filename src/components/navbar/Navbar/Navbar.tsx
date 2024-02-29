@@ -6,7 +6,6 @@ import CustomLink from '@/components/referral/CustomLink'
 import { constantsConfig } from '@/constants/config'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginOption from '@/hooks/useLoginOption'
-import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getUnreadCountQuery } from '@/services/datahub/posts/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
@@ -14,13 +13,13 @@ import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getHubPageLink, getUrlQuery } from '@/utils/links'
+import { getHubPageLink } from '@/utils/links'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
 import { Wallet, getWallets } from '@talismn/connect-wallets'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ComponentProps, ReactNode, useEffect, useRef, useState } from 'react'
+import { ComponentProps, ReactNode, useEffect, useState } from 'react'
 import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
 import AuthErrorModal from './AuthErrorModal'
 
@@ -53,13 +52,9 @@ export default function Navbar({
   const { enableLoginButton = true } = useConfigContext()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isTemporaryAccount = useMyAccount((state) => state.isTemporaryAccount)
-  const isInitializedAddress = useMyAccount(
-    (state) => state.isInitializedAddress
-  )
   const router = useRouter()
 
   const address = useMyMainAddress()
-  const prevAddress = usePrevious(address)
   const isLoggedIn = !!address
 
   const isLoginModalOpen = useLoginModal((state) => state.isOpen)
@@ -67,17 +62,6 @@ export default function Navbar({
   const setLoginModalDefaultOpenState = useLoginModal(
     (state) => state.setDefaultOpenState
   )
-  const initialLoginModalOpenState = useLoginModal(
-    (state) => state.initialOpenState
-  )
-
-  useEffect(() => {
-    const auth = getUrlQuery('auth') === 'true'
-    if (auth) setIsLoginModalOpen(true)
-  }, [setIsLoginModalOpen])
-
-  const isLoggingInWithKey = useRef(false)
-  const timeoutRef = useRef<any>()
 
   const { loginOption } = useLoginOption()
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
@@ -167,11 +151,7 @@ export default function Navbar({
           )}
         </Container>
       </nav>
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        closeModal={() => setIsLoginModalOpen(false)}
-        initialOpenState={initialLoginModalOpenState}
-      />
+      <LoginModal />
       <AuthErrorModal />
     </>
   )
