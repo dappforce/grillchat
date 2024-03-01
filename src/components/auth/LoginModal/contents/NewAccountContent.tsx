@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { IoLogoGoogle } from 'react-icons/io'
 import { RiTwitterXLine } from 'react-icons/ri'
 import { SiEthereum } from 'react-icons/si'
+import urlJoin from 'url-join'
 import { LoginModalContentProps } from '../LoginModalContent'
 
 export default function NewAccountContent({
@@ -49,6 +50,16 @@ export default function NewAccountContent({
   )
 }
 
+function getOauthCallbackUrl(oauthProvider: string) {
+  const fromQuery = encodeURIComponent(getUrlQuery('from'))
+  const refQuery = encodeURIComponent(getUrlQuery('ref'))
+  return urlJoin(
+    getCurrentUrlWithoutQuery(),
+    `?login=${oauthProvider}`,
+    fromQuery ? `&from=${fromQuery}` : '',
+    refQuery ? `&ref=${refQuery}` : ''
+  )
+}
 function GoogleButton() {
   const [loading, setLoading] = useState(false)
   return (
@@ -58,9 +69,7 @@ function GoogleButton() {
       onClick={() => {
         setLoading(true)
         signIn('google', {
-          callbackUrl: `${getCurrentUrlWithoutQuery()}?login=google&from=${getUrlQuery(
-            'from'
-          )}`,
+          callbackUrl: getOauthCallbackUrl('google'),
         })
       }}
     >
@@ -84,9 +93,7 @@ function XLoginButton() {
       onClick={() => {
         setLoading(true)
         signIn('twitter', {
-          callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x&from=${getUrlQuery(
-            'from'
-          )}`,
+          callbackUrl: getOauthCallbackUrl('x'),
         })
       }}
     >

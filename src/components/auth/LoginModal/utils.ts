@@ -1,5 +1,4 @@
 import { getCurrentUrlOrigin, getUrlQuery } from '@/utils/links'
-import Router from 'next/router'
 import urlJoin from 'url-join'
 
 export function getRedirectCallback() {
@@ -9,7 +8,7 @@ export function getRedirectCallback() {
 export function finishLogin(closeModal: () => void) {
   const fromPath = getRedirectCallback()
   if (fromPath) {
-    Router.push(urlJoin(getCurrentUrlOrigin(), fromPath))
+    window.location.href = urlJoin(getCurrentUrlOrigin(), fromPath)
     return
   }
   closeModal()
