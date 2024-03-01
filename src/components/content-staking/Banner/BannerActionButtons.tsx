@@ -1,27 +1,27 @@
 import Button from '@/components/Button'
-import LoginModal from '@/components/auth/LoginModal'
+import useLoginOption from '@/hooks/useLoginOption'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
 import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { cx } from '../../../utils/class-names'
 import StakingModal, { StakingModalVariant } from '../modals/StakeModal'
 import { ACTIVE_STAKING_SPACE_ID, calculateBalanceForStaking } from '../utils'
 import { useContentStakingContext } from '../utils/ContentStakingContext'
 import { mutedTextColorStyles } from '../utils/commonStyles'
-import { useSendEvent } from '@/stores/analytics'
 
 const BannerActionButtons = () => {
   const myAddress = useMyMainAddress()
   const { currentStep } = useContentStakingContext()
-  const [isOpenLoginModal, setIsOpenLoginModal] = useState(false)
   const { data } = getStakingConstsData()
   const sendEvent = useSendEvent()
+  const { promptUserForLogin } = useLoginOption()
 
   const { minimumStakingAmount } = data || {}
 
@@ -59,7 +59,7 @@ const BannerActionButtons = () => {
         <Button
           size={isTouchDevice() ? 'md' : 'lg'}
           variant={'primary'}
-          onClick={() => setIsOpenLoginModal(true)}
+          onClick={() => promptUserForLogin()}
         >
           Login
         </Button>
@@ -118,12 +118,6 @@ const BannerActionButtons = () => {
         )}
         <div>{buttons}</div>
       </div>
-      <LoginModal
-        isOpen={isOpenLoginModal}
-        closeModal={() => setIsOpenLoginModal(false)}
-        initialOpenState='login'
-        onBackClick={() => setIsOpenLoginModal(false)}
-      />
     </>
   )
 }
@@ -147,7 +141,7 @@ const LockingButtons = () => {
         <Button
           size={isTouchDevice() ? 'md' : 'lg'}
           variant={isLockedTokens ? 'primaryOutline' : 'primary'}
-          className={cx({['text-text-primary']: isLockedTokens})}
+          className={cx({ ['text-text-primary']: isLockedTokens })}
           onClick={() =>
             onButtonClick(isLockedTokens ? 'increaseStake' : 'stake')
           }

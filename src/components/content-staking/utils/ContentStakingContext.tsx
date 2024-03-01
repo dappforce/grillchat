@@ -32,7 +32,7 @@ export const ContentStakingContextWrapper: React.FC<ContextWrapperProps> = ({
   const { tokenSymbol } = useGetChainDataByNetwork('subsocial') || {}
 
   const { data: ledger, isLoading: ledgerLoading } =
-    getBackerLedgerQuery.useQuery(myAddress || '')
+    getBackerLedgerQuery.useQuery(myAddress || '', { enabled: !!myAddress })
 
   const { locked } = ledger || {}
 
@@ -56,7 +56,11 @@ export const ContentStakingContextWrapper: React.FC<ContextWrapperProps> = ({
 
     if (!myAddress) {
       setCurrentStep('login')
-    }
+    } /* else if (myAddress && !isHasSub) {
+      setCurrentStep('get-sub')
+    } else {
+      setCurrentStep('lock-sub')
+    } */
 
     if (isLockedTokens) {
       setCurrentStep('lock-sub')
@@ -74,8 +78,8 @@ export const ContentStakingContextWrapper: React.FC<ContextWrapperProps> = ({
   const value = {
     currentStep,
     setCurrentStep,
-    isLockedTokens: isLockedTokens,
-    ledgerLoading,
+    isLockedTokens: !myAddress ? false : isLockedTokens,
+    ledgerLoading: !myAddress ? false : ledgerLoading,
     isHasSub,
   }
 

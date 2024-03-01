@@ -5,7 +5,6 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import { convertToBalanceWithDecimal, isEmptyArray } from '@subsocial/utils'
-import { useMemo } from 'react'
 import { sectionTitleStyles } from '../utils/commonStyles'
 import UnstakingTable, { TimeRemaining } from './UnstakingTable'
 import WithdrawTxButton from './WithdrawTxButton'
@@ -18,12 +17,8 @@ const UnstakingSection = () => {
     myAddress || ''
   )
 
-  const data = useMemo(() => {
-    if (!ledger) {
-      return []
-    }
-
-    return ledger.unbondingInfo.unbondingChunks.map((item, i) => {
+  const data =
+    ledger?.unbondingInfo.unbondingChunks.map((item, i) => {
       const amountWithDecimals = convertToBalanceWithDecimal(
         item.amount,
         decimal || 0
@@ -54,8 +49,7 @@ const UnstakingSection = () => {
         unstakingAmount,
         timeRemaining: <TimeRemaining unlockEra={item.unlockEra} />,
       }
-    })
-  }, [!!ledger, isLoading, myAddress, isTouchDevice()])
+    }) || []
 
   if (isEmptyArray(data)) return null
 

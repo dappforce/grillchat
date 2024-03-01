@@ -1,3 +1,4 @@
+import useConnectWallet from '@/hooks/useConnectWallet'
 import {
   getBackerInfoBySpaceIds,
   getBackerInfoQuery,
@@ -12,14 +13,13 @@ import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { createMutationWrapper } from '@/services/subsocial/utils'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { balanceWithDecimal, isDef } from '@subsocial/utils'
 import { useQueryClient } from '@tanstack/react-query'
 import { ACTIVE_STAKING_SPACE_ID } from '../utils'
-import useConnectWallet from '@/hooks/useConnectWallet'
 
 type MutationProps = {
   amount?: string
@@ -29,10 +29,13 @@ type MutationProps = {
   myCreatorsIds: string[]
 }
 
-export function useLockOrIncreaseTx(
-  config?: SubsocialMutationConfig<MutationProps>
-) {
+export function useUnlockTx(config?: SubsocialMutationConfig<MutationProps>) {
+  const currentGrillAddress = useMyMainAddress()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+  const { data: backerLedger } = getBackerLedgerQuery.useQuery(
+    currentGrillAddress || ''
+  )
+  const { data: stakingConsts } = getStakingConstsData()
   const client = useQueryClient()
   const sendEvent = useSendEvent()
   useConnectWallet()
@@ -43,7 +46,6 @@ export function useLockOrIncreaseTx(
         getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),
       generateContext: undefined,
       transactionGenerator: async ({ data: params }) => {
-        const currentGrillAddress = useMyAccount.getState().address
         if (!currentGrillAddress) throw new Error('No address connected')
 
         const {
@@ -58,16 +60,11 @@ export function useLockOrIncreaseTx(
           throw new Error('Amount is required')
         }
 
-        const { data: backerLedger } = getBackerLedgerQuery.useQuery(
-          currentGrillAddress || ''
-        )
-        const { data: stakingConsts } = getStakingConstsData()
-
         const { locked: myTotalLock } = backerLedger || {}
         const { minimumStakingAmount } = stakingConsts || {}
 
         const unstakeTx = isOnlyActiveStaking
-          ? await buildUnstakingParams(amount, 18)
+          ? await buildUnstakingParams(amount, decimal)
           : await buildBatchParams({
               myAddress: currentGrillAddress,
               amount,
@@ -80,7 +77,7 @@ export function useLockOrIncreaseTx(
 
         return {
           tx: unstakeTx,
-          summary: 'Stake or increase stake of tokens',
+          summary: 'Unlock tokens',
         }
       },
     },
@@ -195,7 +192,7 @@ const buildBatchParams = async ({
 }
 
 export const UnlockTxWrapper = createMutationWrapper(
-  useLockOrIncreaseTx,
+  useUnlockTx,
   'Failed to stake or increase the stake tokens. Please try again.',
   true
 )

@@ -5,6 +5,9 @@ import { getBalanceInDollars } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
 import { mutedTextColorStyles } from '../../utils/commonStyles'
 import StatsCard from '../StatsCard'
+import Button from '@/components/Button'
+import { isTouchDevice } from '@/utils/device'
+import { useContentStakingContext } from '../../utils/ContentStakingContext'
 
 const items = [
   '💎 Create high quality posts and comments',
@@ -20,6 +23,7 @@ const rewardsPerComment = '100'
 
 const EarnInfoByCretor = () => {
   const { tokenSymbol } = useGetChainDataByNetwork('subsocial') || {}
+  const { isLockedTokens } = useContentStakingContext()
   const tokenPrice = getPriceQuery.useQuery('subsocial').data?.current_price
   const cardsItems = [
     {
@@ -74,6 +78,17 @@ const EarnInfoByCretor = () => {
           <StatsCard key={i} {...props} />
         ))}
       </div>
+      <Button
+        variant={isLockedTokens ? 'primaryOutline' : 'primary'}
+        href='https://grill.so/posts/new'
+        target='_blank'
+        size={isTouchDevice() ? 'md' : 'lg'}
+        className={cx('mt-4 w-fit self-center', {
+          ['text-text-primary']: isLockedTokens,
+        })}
+      >
+        Start posting
+      </Button>
     </div>
   )
 }

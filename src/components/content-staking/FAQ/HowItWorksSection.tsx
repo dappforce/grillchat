@@ -34,7 +34,10 @@ const HowItWorksSection = () => {
         </div>
       </div>
       <div className='flex w-full justify-center'>
-        <iframe
+        <div className='flex aspect-video h-auto w-full max-w-2xl items-center justify-center rounded-3xl bg-white/10'>
+          <span className='text-5xl font-bold'>Coming Soon</span>
+        </div>
+        {/* <iframe
           width='auto'
           height='auto'
           src='https://www.youtube.com/embed/dQw4w9WgXcQ?si=6LwW0mYXO6qO6eTU'
@@ -42,7 +45,7 @@ const HowItWorksSection = () => {
           allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
           allowFullScreen
           className='h-[372px] w-full max-w-2xl rounded-2xl'
-        ></iframe>
+        ></iframe> */}
       </div>
     </div>
   )
