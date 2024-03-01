@@ -15,6 +15,8 @@ import {
   loginWithSecretKey,
   Signer,
 } from '@/utils/account'
+import { waitNewBlock } from '@/utils/blockchain'
+import { currentNetwork } from '@/utils/network'
 import { wait } from '@/utils/promise'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
@@ -327,14 +329,25 @@ async function subscribeEnergy(
     return subscribeEnergy(address, onEnergyUpdate, true)
   }
 
+  let prev: null | number = null
   const unsub = substrateApi.query.energy.energyBalance(
     address,
-    (energyAmount) => {
+    async (energyAmount) => {
       let parsedEnergy: unknown = energyAmount
       if (typeof energyAmount.toPrimitive === 'function') {
         parsedEnergy = energyAmount.toPrimitive()
       }
+
       const energy = parseFloat(parsedEnergy + '')
+      if (
+        prev !== null &&
+        prev < ESTIMATED_ENERGY_FOR_ONE_TX &&
+        currentNetwork === 'subsocial'
+      )
+        await waitNewBlock()
+
+      prev = energy
+
       console.log('Current energy: ', address, energy)
       onEnergyUpdate(energy)
     }
