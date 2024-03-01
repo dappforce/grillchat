@@ -1,7 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
-import ProfileModal from '@/components/auth/ProfileModal'
 import Button from '@/components/Button'
-import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
+import ProfileModal from '@/components/auth/ProfileModal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
@@ -20,7 +19,6 @@ export default function ProfileAvatar({
   popOverControl,
   ...props
 }: ProfileAvatarProps) {
-  const isAdmin = useIsModerationAdmin()
   const address = useMyMainAddress()
   const openModal = useProfileModal((state) => state.openModal)
 
@@ -34,17 +32,14 @@ export default function ProfileAvatar({
 
   return (
     <>
-      <div {...props} className={cx('relative', props.className)}>
+      <div {...props} className={cx('relative h-9 w-9', props.className)}>
         <Button
-          className={cx(
-            'relative z-10 flex items-center gap-2 py-1.5 pl-2 pr-3',
-            isAdmin && 'bg-orange-600 dark:bg-orange-700'
-          )}
-          variant={isAdmin ? 'primary' : 'primaryOutline'}
+          variant='primaryOutline'
+          className='h-full w-full rounded-full border border-border-gray'
+          size='noPadding'
           onClick={() => openModal()}
         >
-          <AddressAvatar address={address ?? ''} className='h-6 w-6' />
-          <span className='text-sm'>Account</span>
+          <AddressAvatar address={address ?? ''} className='h-full w-full' />
         </Button>
       </div>
       <ProfileModal />
