@@ -169,8 +169,7 @@ export function useName(
 ) {
   const { data: profile, isLoading: isLoadingProfile } =
     getProfileQuery.useQuery(address)
-  const { data: accountData, isLoading: isLoadingEvm } =
-    getAccountDataQuery.useQuery(address)
+  const { data: accountData } = getAccountDataQuery.useQuery(address)
   const textColor = useRandomColor(address, { isAddress: true })
 
   const userProfileSource = profile?.profileSpace?.content?.profileSource
@@ -235,7 +234,7 @@ export function useName(
     accountData,
     profile,
     evmAddress,
-    isLoading: isLoadingEvm || isLoadingProfile || isLoadingIdentities,
+    isLoading: isLoadingProfile || isLoadingIdentities,
     textColor,
     ensNames,
   }

@@ -38,8 +38,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     const [isAvatarError, setIsAvatarError] = useState(false)
     const onImageError = useCallback(() => setIsAvatarError(true), [])
 
-    const { data: accountData, isLoading } =
-      getAccountDataQuery.useQuery(address)
+    const { data: accountData } = getAccountDataQuery.useQuery(address)
 
     const { data: profile } = getProfileQuery.useQuery(address)
     const { ensNames } = accountData || {}
@@ -83,25 +82,25 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       setIsAvatarError(false)
     }, [profileAvatar])
 
-    if (isLoading) {
-      return (
-        <div
-          className={cx(
-            'relative flex flex-shrink-0 animate-pulse items-stretch gap-2.5 overflow-hidden outline-none'
-          )}
-        >
-          <div
-            style={{ backgroundClip: 'padding-box' }}
-            className={cx(
-              'bg-background-light',
-              'rounded-full',
-              'h-9 w-9 self-center',
-              props.className
-            )}
-          ></div>
-        </div>
-      )
-    }
+    // if (isLoading) {
+    //   return (
+    //     <div
+    //       className={cx(
+    //         'relative flex flex-shrink-0 animate-pulse items-stretch gap-2.5 overflow-hidden outline-none'
+    //       )}
+    //     >
+    //       <div
+    //         style={{ backgroundClip: 'padding-box' }}
+    //         className={cx(
+    //           'bg-background-light',
+    //           'rounded-full',
+    //           'h-9 w-9 self-center',
+    //           props.className
+    //         )}
+    //       ></div>
+    //     </div>
+    //   )
+    // }
 
     return (
       <div
