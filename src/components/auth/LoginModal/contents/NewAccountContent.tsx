@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
+import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { IoLogoGoogle } from 'react-icons/io'
@@ -8,6 +9,7 @@ import { RiTwitterXLine } from 'react-icons/ri'
 import { SiEthereum } from 'react-icons/si'
 import urlJoin from 'url-join'
 import { LoginModalContentProps } from '../LoginModalContent'
+import { getRedirectCallback } from '../utils'
 
 export default function NewAccountContent({
   setCurrentState,
@@ -51,8 +53,8 @@ export default function NewAccountContent({
 }
 
 function getOauthCallbackUrl(oauthProvider: string) {
-  const fromQuery = encodeURIComponent(getUrlQuery('from'))
-  const refQuery = encodeURIComponent(getUrlQuery('ref'))
+  const fromQuery = encodeURIComponent(getRedirectCallback())
+  const refQuery = encodeURIComponent(getReferralIdInUrl())
   return urlJoin(
     getCurrentUrlWithoutQuery(),
     `?login=${oauthProvider}`,

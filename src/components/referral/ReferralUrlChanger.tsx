@@ -4,9 +4,14 @@ import { useMyMainAddress } from '@/stores/my-account'
 import {
   getCurrentSearchParams,
   getCurrentUrlWithoutQuery,
+  getUrlQuery,
 } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+
+export function getReferralIdInUrl() {
+  return getUrlQuery('ref')
+}
 
 export function useReferralId() {
   const myAddress = useMyMainAddress()

@@ -1,3 +1,4 @@
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
@@ -8,7 +9,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { useTransactions } from '@/stores/transactions'
-import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
+import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
 import { DataHubClientId, IdentityProvider } from '@subsocial/data-hub-sdk'
@@ -92,7 +93,7 @@ export default function useOauthLogin({
       session &&
       linkedIdentity?.externalId === session?.user?.id
 
-    const refId = getUrlQuery('ref')
+    const refId = getReferralIdInUrl()
     if (foundIdentity && !upsertedProfile.current) {
       sendEvent(
         'oauth_login_creating_profile',
