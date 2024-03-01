@@ -1,5 +1,4 @@
 import { useMyAccount } from '@/stores/my-account'
-import { waitNewBlock } from '@/utils/blockchain'
 import { currentNetwork } from '@/utils/network'
 import { useCallback, useEffect, useRef } from 'react'
 import useWrapInRef from './useWrapInRef'
@@ -39,11 +38,7 @@ export default function useWaitHasEnergy(
       hasEnergyResolvers.current.forEach((resolve) => resolve())
       hasEnergyResolvers.current = []
     }
-    if (currentNetwork === 'xsocial') {
-      resolveAllPending()
-    } else {
-      waitNewBlock().then(resolveAllPending)
-    }
+    resolveAllPending()
   }, [energy, generateNewPromise])
 
   useEffect(() => {

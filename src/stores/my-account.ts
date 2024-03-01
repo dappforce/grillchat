@@ -339,7 +339,12 @@ async function subscribeEnergy(
       }
 
       const energy = parseFloat(parsedEnergy + '')
-      if (prev === 0 && currentNetwork === 'subsocial') await waitNewBlock()
+      if (
+        (prev ?? 0) < ESTIMATED_ENERGY_FOR_ONE_TX &&
+        currentNetwork === 'subsocial'
+      )
+        await waitNewBlock()
+
       prev = energy
 
       console.log('Current energy: ', address, energy)
