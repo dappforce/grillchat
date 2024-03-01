@@ -340,7 +340,7 @@ async function subscribeEnergy(
 
       const energy = parseFloat(parsedEnergy + '')
       if (
-        prev &&
+        prev !== null &&
         prev < ESTIMATED_ENERGY_FOR_ONE_TX &&
         currentNetwork === 'subsocial'
       )
