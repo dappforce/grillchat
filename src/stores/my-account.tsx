@@ -1,3 +1,4 @@
+import Toast from '@/components/Toast'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { IdentityProvider } from '@/services/datahub/generated-query'
@@ -24,6 +25,7 @@ import { isWebNotificationsEnabled } from '@/utils/window'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
+import toast from 'react-hot-toast'
 import { useAnalytics, UserProperties } from './analytics'
 import { create, createSelectors } from './utils'
 
@@ -320,6 +322,15 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
         if (!isProxyValid) {
           parentProxyAddressStorage.remove()
           set({ parentProxyAddress: undefined })
+          get().logout()
+          toast.custom((t) => (
+            <Toast
+              t={t}
+              type='error'
+              title='Logged out'
+              subtitle='You seem to have logged in to your wallet in another device, please relogin to use it here'
+            />
+          ))
         }
       } catch (err) {
         console.error('Failed to fetch proxies', err)
