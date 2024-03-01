@@ -6,6 +6,7 @@ import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
 import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useLoginOption from '@/hooks/useLoginOption'
@@ -13,6 +14,7 @@ import useToastError from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { useRequestToken } from '@/services/api/mutation'
 import { getProfileQuery } from '@/services/api/query'
+import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -192,8 +194,9 @@ function PolkadotConnectConfirmation({
   const { data: profile } = getProfileQuery.useQuery(
     connectedWalletAddress ?? ''
   )
+  const { mutate: setReferrerId } = useSetReferrerId()
 
-  const { mutateAsync, error } = useLoginAndRequestToken({
+  const { mutateAsync: loginAndRequestToken, error } = useLoginAndRequestToken({
     asTemporaryAccount: true,
   })
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
@@ -212,7 +215,8 @@ function PolkadotConnectConfirmation({
         }
       }}
       beforeAddProxy={async () => {
-        await mutateAsync(null)
+        await loginAndRequestToken(null)
+        setReferrerId({ refId: getReferralIdInUrl() })
         return true
       }}
     />
@@ -225,17 +229,19 @@ export function EvmLoginStep({
   closeModal,
 }: LoginModalContentProps & { isErrorStep?: boolean }) {
   const { mutate, isLoading } = useLoginBeforeSignEvm()
+  const { mutate: setReferrerId } = useSetReferrerId()
 
   return (
     <CommonEVMLoginContent
       buttonLabel={isErrorStep ? 'Try again' : undefined}
       isLoading={isLoading}
       beforeSignEvmAddress={() => mutate()}
-      onFinishSignMessage={() =>
+      onFinishSignMessage={() => {
+        setReferrerId({ refId: getReferralIdInUrl() })
         useLoginModal
           .getState()
           .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
-      }
+      }}
       onError={() => {
         setCurrentState('evm-linking-error')
       }}

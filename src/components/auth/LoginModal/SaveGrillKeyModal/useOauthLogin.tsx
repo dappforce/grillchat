@@ -12,7 +12,7 @@ import { useTransactions } from '@/stores/transactions'
 import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
-import { DataHubClientId, IdentityProvider } from '@subsocial/data-hub-sdk'
+import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { Session } from 'next-auth'
 import { useSession } from 'next-auth/react'
 import { useEffect, useRef } from 'react'
@@ -93,7 +93,6 @@ export default function useOauthLogin({
       session &&
       linkedIdentity?.externalId === session?.user?.id
 
-    const refId = getReferralIdInUrl()
     if (foundIdentity && !upsertedProfile.current) {
       sendEvent(
         'oauth_login_creating_profile',
@@ -103,12 +102,6 @@ export default function useOauthLogin({
         }
       )
       upsertedProfile.current = true
-      if (refId) {
-        setReferrerId({
-          clientId: DataHubClientId.GRILLSO,
-          refId,
-        })
-      }
       upsertProfile({
         content: {
           image: session?.user?.image ?? '',
@@ -135,6 +128,7 @@ export default function useOauthLogin({
     ;(async () => {
       const address = await loginAsTemporaryAccount(null)
       if (!address || !identity) return
+      setReferrerId({ refId: getReferralIdInUrl() })
       linkIdentity({
         id: session.user?.id,
         provider: identity,
