@@ -80,7 +80,6 @@ async function getIsAddressNeedEnergy(address: string) {
         }
         const energy = parseFloat(parsedEnergy + '')
         const isAddressNeedEnergy = energy < ESTIMATED_ENERGY_FOR_ONE_TX
-        console.log('ENERGY', energy, isAddressNeedEnergy)
         resolve(isAddressNeedEnergy)
         unsub.then((unsub) => unsub())
       }
