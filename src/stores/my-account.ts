@@ -366,7 +366,8 @@ async function subscribeEnergy(
 
       const energy = parseFloat(parsedEnergy + '')
       if (
-        (prev ?? 0) < ESTIMATED_ENERGY_FOR_ONE_TX &&
+        prev &&
+        prev < ESTIMATED_ENERGY_FOR_ONE_TX &&
         currentNetwork === 'subsocial'
       )
         await waitNewBlock()
