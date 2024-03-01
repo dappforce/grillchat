@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlWithoutQuery } from '@/utils/links'
+import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { IoLogoGoogle } from 'react-icons/io'
@@ -58,7 +58,9 @@ function GoogleButton() {
       onClick={() => {
         setLoading(true)
         signIn('google', {
-          callbackUrl: `${getCurrentUrlWithoutQuery()}?login=google`,
+          callbackUrl: `${getCurrentUrlWithoutQuery()}?login=google&from=${getUrlQuery(
+            'from'
+          )}`,
         })
       }}
     >
@@ -82,7 +84,9 @@ function XLoginButton() {
       onClick={() => {
         setLoading(true)
         signIn('twitter', {
-          callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
+          callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x&from=${getUrlQuery(
+            'from'
+          )}`,
         })
       }}
     >
