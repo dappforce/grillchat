@@ -32,7 +32,7 @@ const BannerSection = () => {
         </div>
         <div
           className={cx(
-            'text-base font-normal leading-8 md:text-xl',
+            'text-base font-normal md:leading-8 leading-6 md:text-xl',
             mutedTextColorStyles
           )}
         >

@@ -1,3 +1,4 @@
+import Button from '@/components/Button'
 import FormatBalance from '@/components/FormatBalance'
 import RangeInput from '@/components/inputs/RangeInput'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
@@ -6,9 +7,13 @@ import { getPriceQuery } from '@/services/subsocial/prices/query'
 import { useSendEvent } from '@/stores/analytics'
 import { getBalanceInDollars } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
+import { isTouchDevice } from '@/utils/device'
 import { convertToBalanceWithDecimal, toShortMoney } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useMemo, useState } from 'react'
+import StakingModal from '../../modals/StakeModal'
+import { ACTIVE_STAKING_SPACE_ID } from '../../utils'
+import { useContentStakingContext } from '../../utils/ContentStakingContext'
 import StatsCard from '../StatsCard'
 
 const minRangeValue = 2000
@@ -16,9 +21,12 @@ const maxRangeValue = 1000000
 
 const EarnCalcSection = () => {
   const sendEvent = useSendEvent()
+  const [openStakeModal, setOpenStakeModal] = useState(false)
+  const [amount, setAmount] = useState('')
   const [rangeValue, setRangeValue] = useState(50000)
   const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
   const { data, isLoading } = getGeneralEraInfoData()
+  const { isLockedTokens } = useContentStakingContext()
   const { data: price, isLoading: priceLoading } =
     getPriceQuery.useQuery('subsocial')
 
@@ -45,7 +53,7 @@ const EarnCalcSection = () => {
 
   return (
     <>
-      <div className='p-4'>
+      <div className='flex flex-col p-4'>
         <div className='mb-16 text-lg text-text md:text-xl'>Staked amount:</div>
         <RangeInput
           value={rangeValue}
@@ -189,7 +197,23 @@ const EarnCalcSection = () => {
             }
           />
         </div>
+        <Button
+          variant={isLockedTokens ? 'primaryOutline' : 'primary'}
+          onClick={() => setOpenStakeModal(true)}
+          size={isTouchDevice() ? 'md' : 'lg'}
+          className={cx('mt-4 w-fit self-center', {['text-text-primary']: isLockedTokens})}
+        >
+          {isLockedTokens ? 'Lock more SUB' : 'Start earning'}
+        </Button>
       </div>
+      <StakingModal
+        open={openStakeModal}
+        closeModal={() => setOpenStakeModal(false)}
+        spaceId={ACTIVE_STAKING_SPACE_ID}
+        modalVariant={isLockedTokens ? 'increaseStake' : 'stake'}
+        amount={amount}
+        setAmount={setAmount}
+      />
     </>
   )
 }

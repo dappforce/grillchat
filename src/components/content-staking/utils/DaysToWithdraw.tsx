@@ -2,6 +2,7 @@ import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/
 import { cx } from '@/utils/class-names'
 import { pluralize } from '@subsocial/utils'
 import BN from 'bignumber.js'
+import { useBlockNumberContext } from './BlockNumberContext'
 import { sectionBg } from './SectionWrapper'
 
 export const formatTime = (seconds: number) => {
@@ -22,10 +23,9 @@ export const formatTime = (seconds: number) => {
   }
 }
 
-const blockTime = 12000
-
 export const useGetOneEraTime = () => {
   const { data: eraInfo } = getGeneralEraInfoData()
+  const { blockTime } = useBlockNumberContext()
 
   const { blockPerEra } = eraInfo || {}
 

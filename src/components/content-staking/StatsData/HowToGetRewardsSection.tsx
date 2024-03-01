@@ -4,6 +4,7 @@ import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import { sectionBg } from '../utils/SectionWrapper'
 import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
+import { useEffect, useState } from 'react'
 
 const items = [
   {
@@ -24,7 +25,7 @@ const items = [
 
 const HowToGetRewardsSection = () => {
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex z-[1] flex-col gap-4'>
       <div className={sectionTitleStyles}>How to get rewards</div>
       <div className='flex flex-col items-stretch gap-4 md:flex-row'>
         {items.map((props, i) => (
@@ -41,14 +42,16 @@ type CardItemProps = {
   buttonLink: string
   buttonText: string
   analyticsId: string
+  buttonVariant?: 'primary' | 'primaryOutline'
 }
 
-const CardItem = ({
+export const CardItem = ({
   title,
   desc,
   buttonLink,
   buttonText,
   analyticsId,
+  buttonVariant = 'primary',
 }: CardItemProps) => {
   const sendEvent = useSendEvent()
 
@@ -65,11 +68,13 @@ const CardItem = ({
         </div>
       </div>
       <Button
-        className='self-center'
+        className={cx('self-center', {
+          ['text-text-primary']: buttonVariant === 'primaryOutline',
+        })}
         href={buttonLink}
         size={isTouchDevice() ? 'md' : 'lg'}
         target='__blank'
-        variant='primary'
+        variant={buttonVariant}
         onClick={() => sendEvent(analyticsId)}
       >
         {buttonText}
