@@ -55,11 +55,13 @@ export default function useOauthLogin({
   const { mutate: setReferrerId } = useSetReferrerId()
 
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
-    onSuccess: () => {
-      replaceUrl(getCurrentUrlWithoutQuery('login'))
-      sendEvent('oauth_login_done', { provider })
-      finalizeTemporaryAccount()
-      onSuccess()
+    txCallbacks: {
+      onSuccess: () => {
+        replaceUrl(getCurrentUrlWithoutQuery('login'))
+        sendEvent('oauth_login_done', { provider })
+        finalizeTemporaryAccount()
+        onSuccess()
+      },
     },
   })
   useToastError(

@@ -37,7 +37,10 @@ export default function SaveGrillKeyModal({
   const [isDoneLoading, setIsDoneLoading] = useState(false)
 
   useEffect(() => {
-    if (props.isOpen) setStep('save')
+    if (props.isOpen) {
+      setStep('save')
+      setIsDoneLoading(false)
+    }
   }, [props.isOpen])
   useEffect(() => {
     if (step === 'loading' && isDoneLoading) setStep('account-created')
