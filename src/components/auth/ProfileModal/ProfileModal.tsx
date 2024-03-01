@@ -194,7 +194,7 @@ export default function ProfileModal({
       withBackButton: true,
     },
     'private-key': {
-      title: '🔑 Grill key',
+      title: '🔑 My Grill key',
       withBackButton: true,
     },
     'share-session': {

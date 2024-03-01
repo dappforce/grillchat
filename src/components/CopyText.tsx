@@ -47,9 +47,10 @@ export function CopyText({
   isCodeText,
   withHideButton,
   wordBreakType = 'words',
+  copyButtonText,
   size,
   ...props
-}: CopyTextProps) {
+}: CopyTextProps & { copyButtonText?: string }) {
   const [isCopied, setIsCopied] = useState(false)
   const [isHidden, setIsHidden] = useState(false)
 
@@ -102,8 +103,79 @@ export function CopyText({
         )}
       </div>
       <Button disabled={isCopied} onClick={handleClick} size='lg'>
-        {isCopied ? 'Copied' : 'Copy'}
+        {isCopied ? 'Copied' : copyButtonText || 'Copy'}
       </Button>
+    </div>
+  )
+}
+
+export function CopyTextInlineButton({
+  text,
+  textToCopy,
+  onCopyClick,
+  isCodeText,
+  wordBreakType = 'words',
+  size,
+  ...props
+}: CopyTextProps) {
+  const [openCopiedTooltip, setOpenCopiedTooltip] = useState(false)
+
+  const handleClick = () => {
+    copyToClipboard(getTextToCopy({ text, textToCopy }))
+
+    onCopyClick?.()
+    setOpenCopiedTooltip(true)
+    setTimeout(() => {
+      setOpenCopiedTooltip(false)
+    }, 2000)
+  }
+
+  const fontClassName = isCodeText && spaceMono.className
+
+  return (
+    <div
+      {...props}
+      className={cx('flex flex-col items-stretch gap-4', props.className)}
+    >
+      <div
+        className={cx(
+          'flex items-stretch rounded-2xl border border-border-gray',
+          fontClassName
+        )}
+      >
+        <div
+          className={cx(
+            'cursor-pointer select-all break-words px-4 py-2',
+            wordBreakType === 'words' ? 'break-words' : 'break-all',
+            copyTextStyles({ size })
+          )}
+        >
+          {text}
+        </div>
+        <PopOver
+          panelSize='sm'
+          placement='top'
+          triggerClassName='flex-shrink-0'
+          yOffset={-4}
+          manualTrigger={{
+            isOpen: openCopiedTooltip,
+            setIsOpen: setOpenCopiedTooltip,
+          }}
+          trigger={
+            <div className='px-3'>
+              <Button
+                variant='transparent'
+                className='p-1 text-text-primary'
+                onClick={() => handleClick()}
+              >
+                <MdOutlineContentCopy />
+              </Button>
+            </div>
+          }
+        >
+          <span>Copied!</span>
+        </PopOver>
+      </div>
     </div>
   )
 }

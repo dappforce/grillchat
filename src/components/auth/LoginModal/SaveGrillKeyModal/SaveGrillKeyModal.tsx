@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import { CopyTextInlineButton } from '@/components/CopyText'
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
 import InfoPanel from '@/components/InfoPanel'
 import ProfilePreview from '@/components/ProfilePreview'
@@ -15,7 +16,7 @@ import { decodeSecretKey } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import { finishLogin } from '../utils'
 import useOauthLogin from './useOauthLogin'
@@ -124,16 +125,14 @@ type ContentProps = {
 function SaveStep({ setCurrentState }: ContentProps) {
   const [openCopiedTooltip, setOpenCopiedTooltip] = useState(false)
   const encodedSecretKey = useMyAccount.use.encodedSecretKey()
-
-  useEffect(() => {
-    if (!openCopiedTooltip) return
-    setTimeout(() => {
-      setOpenCopiedTooltip(false)
-    }, 2000)
-  }, [openCopiedTooltip])
+  const decodedSecretKey = useMemo(
+    () => decodeSecretKey(encodedSecretKey ?? ''),
+    [encodedSecretKey]
+  )
 
   return (
     <div className='flex flex-col gap-4'>
+      <CopyTextInlineButton isCodeText text={decodedSecretKey} />
       <div
         className={cx(
           'flex min-h-16 items-stretch justify-between rounded-2xl border border-border-gray',

@@ -4,7 +4,6 @@ import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import LinkedAddressesIcon from '@/assets/icons/linked-addresses.svg'
 import MoonIcon from '@/assets/icons/moon.svg'
-import ShareIcon from '@/assets/icons/share.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
 import Button from '@/components/Button'
@@ -149,7 +148,6 @@ export default function AccountContent({
         onShowPrivateKeyClick()
       },
     },
-    { text: 'Share Session', icon: ShareIcon, onClick: onShareSessionClick },
     {
       text: 'Suggest Feature',
       icon: SuggestFeatureIcon,
