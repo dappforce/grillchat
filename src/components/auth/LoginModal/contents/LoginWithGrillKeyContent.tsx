@@ -23,8 +23,11 @@ export const LoginWithGrillKeyContent = ({
   const sendEvent = useSendEvent()
   const queryClient = useQueryClient()
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     beforeLogin?.()
 
     const trimmedPk = privateKey.trim()
@@ -51,6 +54,7 @@ export const LoginWithGrillKeyContent = ({
         />
       ))
     }
+    setIsLoading(false)
   }
 
   return (
@@ -69,7 +73,12 @@ export const LoginWithGrillKeyContent = ({
         IMPORTANT: Do not enter the private key of an account that holds any
         funds, assets, NFTs, etc.
       </Notice>
-      <Button disabled={!privateKey} type='submit' size='lg'>
+      <Button
+        isLoading={isLoading}
+        disabled={!privateKey}
+        type='submit'
+        size='lg'
+      >
         Login
       </Button>
     </form>

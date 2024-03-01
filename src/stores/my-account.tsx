@@ -513,3 +513,7 @@ export function useGetCurrentSigner(): () => Promise<WalletSigner | undefined> {
     }
   }
 }
+
+export function getIsLoggedIn() {
+  return !!accountStorage.get()
+}

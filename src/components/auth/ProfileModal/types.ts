@@ -1,15 +1,6 @@
 import React from 'react'
 import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 
-type NotificationControl = {
-  showNotif: boolean
-  setNotifDone: () => void
-}
-
-export type ProfileModalProps = {
-  notification?: NotificationControl
-}
-
 export type ProfileModalState =
   | PolkadotConnectSteps
   | 'account'

@@ -1,7 +1,6 @@
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
 import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
-import Modal from '@/components/modals/Modal'
-import useLoginOption from '@/hooks/useLoginOption'
+import Modal, { ModalProps } from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -37,11 +36,7 @@ import PolkadotConnectContent from './contents/polkadot-connect/PolkadotConnectC
 import PolkadotConnectIdentityRemovedContent from './contents/polkadot-connect/PolkadotConnectIdentityRemovedContent'
 import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUnlink'
 import WithdrawContent from './contents/withdraw/WithdrawContent'
-import {
-  ProfileModalContentProps,
-  ProfileModalProps,
-  ProfileModalState,
-} from './types'
+import { ProfileModalContentProps, ProfileModalState } from './types'
 
 const modalContents: {
   [key in ProfileModalState]: (props: ProfileModalContentProps) => JSX.Element
@@ -101,9 +96,15 @@ export const forceBackFlowStorage = new SessionStorage(
   () => 'force-back-profile-flow'
 )
 
-export default function ProfileModal({ notification }: ProfileModalProps) {
-  const { loginOption } = useLoginOption()
+type ProfileModalProps = { disableOutsideClickClose?: boolean } & Pick<
+  ModalProps,
+  'withoutOverlay' | 'withoutShadow'
+>
 
+export default function ProfileModal({
+  disableOutsideClickClose,
+  ...props
+}: ProfileModalProps) {
   const { isOpen, defaultOpenState, closeModal, onBackClick } =
     useProfileModal()
 
@@ -115,7 +116,6 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       enabled: isOpen,
     }
   )
-  const hasPreviousIdentity = useHasPreviousGrillIdentity()
 
   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
@@ -333,6 +333,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
   }
 
   const augmentedCloseModal = () => {
+    if (disableOutsideClickClose) return
     if (currentState === 'evm-address-linked' && (ensNames?.length ?? 0) > 0) {
       setCurrentStateAugmented('evm-set-profile-suggestion')
     } else closeModal()
@@ -341,6 +342,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
 
   return (
     <Modal
+      {...props}
       isOpen={isOpen}
       closeModal={augmentedCloseModal}
       title={title}
@@ -349,7 +351,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       titleClassName={cx(withoutDefaultPadding && 'px-6')}
       descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
       withFooter={withFooter}
-      withCloseButton
+      withCloseButton={!disableOutsideClickClose}
       onBackClick={withBackButton ? usedOnBackClick : undefined}
     >
       <Content
