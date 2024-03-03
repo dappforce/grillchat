@@ -59,7 +59,7 @@ const AccordionItem = ({ title, content, onClick }: AccordionItemProps) => {
       <div
         className={cx(
           'ml-[28px] grid overflow-hidden text-base font-normal leading-6',
-          'transition-[grid-template-rows] duration-300 ease-out',
+          'transition-accordion-height duration-300 ease-out',
           { ['mb-2 mt-4 grid-rows-1']: isOpen, ['grid-rows-0']: !isOpen },
           mutedTextColorStyles
         )}

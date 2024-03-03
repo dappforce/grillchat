@@ -56,21 +56,9 @@ export const ContentStakingContextWrapper: React.FC<ContextWrapperProps> = ({
 
     if (!myAddress) {
       setCurrentStep('login')
-    } /* else if (myAddress && !isHasSub) {
+    } else if (myAddress && !isHasSub) {
       setCurrentStep('get-sub')
     } else {
-      setCurrentStep('lock-sub')
-    } */
-
-    if (isLockedTokens) {
-      setCurrentStep('lock-sub')
-    }
-
-    if (myAddress) {
-      setCurrentStep('get-sub')
-    }
-
-    if (isHasSub) {
       setCurrentStep('lock-sub')
     }
   }, [balanceByCurrency, locked, myAddress])

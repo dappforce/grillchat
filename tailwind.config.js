@@ -15,6 +15,9 @@ module.exports = {
         sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
         unbounded: 'Unbounded, sans-serif',
       },
+      transitionProperty: {
+        'accordion-height': 'margin-top, grid-template-rows'
+      },
       fontSize: {
         base: ['1rem', '1.35'],
         '4.5xl': '2.5rem',

@@ -60,7 +60,7 @@ const BannerSection = () => {
         )}
 
         <SkeletonFallback
-          className='h-[181px] w-full rounded-2xl'
+          className='md:h-[181px] h-[248px] w-full rounded-2xl'
           isLoading={ledgerLoading}
         >
           {isLockedTokens ? <StatsCards /> : <StakingStepper />}
