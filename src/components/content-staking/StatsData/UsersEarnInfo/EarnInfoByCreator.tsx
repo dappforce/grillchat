@@ -93,7 +93,7 @@ const EarnInfoByCretor = () => {
         href='https://grill.so/posts/new'
         target='_blank'
         size={isTouchDevice() ? 'md' : 'lg'}
-        className={cx('mt-4 w-fit self-center', {
+        className={cx('w-fit self-center', {
           ['text-text-primary']: isLockedTokens,
         })}
         onClick={() => sendEvent('cs_start_posting_clicked')}

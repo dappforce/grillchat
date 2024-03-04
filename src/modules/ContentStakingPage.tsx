@@ -27,7 +27,7 @@ const ContentStakingPage = () => {
       }}
     >
       <div className='flex flex-col overflow-hidden md:px-0 px-4'>
-        <div className='relative mx-auto mt-4 mb-[131px] w-full max-w-screen-medium px-0'>
+        <div className='relative mx-auto mt-5 mb-[131px] w-full max-w-screen-medium px-0'>
           <ContentStaking />
         </div>
       </div>
