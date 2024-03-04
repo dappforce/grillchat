@@ -14,6 +14,7 @@ export type HubPageNavbarProps = {
   auth: ReactNode
   backButton: ReactNode
   notificationBell: ReactNode
+  newPostButton: ReactNode
   searchProps: NavbarWithSearchProps['searchProps']
   hubId: string
   chatsCount: number

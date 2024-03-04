@@ -6,6 +6,7 @@ import CustomLink from '@/components/referral/CustomLink'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginOption from '@/hooks/useLoginOption'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
+import { getProfileQuery } from '@/services/api/query'
 import { getNotificationCountQuery } from '@/services/subsocial/notifications/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
@@ -38,6 +39,7 @@ export type NavbarProps = ComponentProps<'div'> & {
     authComponent: ReactNode
     notificationBell: ReactNode
     backButton: ReactNode
+    newPostButton: ReactNode
   }) => JSX.Element
 }
 
@@ -52,9 +54,9 @@ export default function Navbar({
   const router = useRouter()
 
   const address = useMyMainAddress()
+  const { data: profile } = getProfileQuery.useQuery(address ?? '')
   const isLoggedIn = !!address
 
-  const isLoginModalOpen = useLoginModal((state) => state.isOpen)
   const setIsLoginModalOpen = useLoginModal((state) => state.setIsOpen)
   const setLoginModalDefaultOpenState = useLoginModal(
     (state) => state.setDefaultOpenState
@@ -88,7 +90,7 @@ export default function Navbar({
     if (!isInitialized) return <div className='w-20' />
 
     if (isLoggedIn && !isTemporaryAccount) {
-      return <ProfileAvatar />
+      return <ProfileAvatar className='ml-1.5' />
     }
 
     return enableLoginButton ? (
@@ -117,6 +119,19 @@ export default function Navbar({
     </div>
   )
 
+  const newPostButton = profile?.profileSpace && (
+    <Button
+      roundings='lg'
+      variant='mutedOutline'
+      className='mr-2 border-[#D9D9D9] text-sm font-medium text-text'
+      size='xs'
+      nextLinkProps={{ forceHardNavigation: true }}
+      href={`/${profile.profileSpace.id}/posts/new`}
+    >
+      New post
+    </Button>
+  )
+
   const isInIframe = useIsInIframe()
   const notificationBell = !isInIframe && <NotificationBell />
 
@@ -136,11 +151,13 @@ export default function Navbar({
               authComponent,
               notificationBell,
               backButton,
+              newPostButton,
             })
           ) : (
             <div className='flex w-full items-center justify-between'>
               {logoLink}
               <div className='flex items-center gap-2'>
+                {newPostButton}
                 {notificationBell}
                 {authComponent}
               </div>
@@ -171,7 +188,7 @@ function NotificationBell() {
     <Button
       size='circle'
       variant='transparent'
-      className='text-text-muted dark:text-text'
+      className='relative top-px text-text-muted dark:text-text'
       nextLinkProps={{ forceHardNavigation: true }}
       href='/notifications'
       onClick={() => sendEvent('open_ann_chat', { eventSource: 'notifs_bell' })}

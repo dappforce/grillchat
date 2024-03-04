@@ -32,7 +32,7 @@ export default function ProfileAvatar({
 
   return (
     <>
-      <div {...props} className={cx('relative h-9 w-9', props.className)}>
+      <div {...props} className={cx('relative h-8 w-8', props.className)}>
         <Button
           variant='primaryOutline'
           className='h-full w-full rounded-full border border-border-gray'

@@ -150,13 +150,19 @@ export default function HubsPage(props: HubsPageProps) {
   return (
     <DefaultLayout
       navbarProps={{
-        customContent: ({ logoLink, authComponent, notificationBell }) => {
+        customContent: ({
+          logoLink,
+          authComponent,
+          notificationBell,
+          newPostButton,
+        }) => {
           return (
             <NavbarWithSearch
               customContent={(searchButton) => (
                 <div className='flex w-full items-center justify-between gap-4'>
                   {logoLink}
                   <div className='flex items-center gap-1'>
+                    {newPostButton}
                     {searchButton}
                     {notificationBell}
                     <div className='ml-2'>{authComponent}</div>

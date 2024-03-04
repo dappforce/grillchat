@@ -25,6 +25,7 @@ export const buttonStyles = cva('relative transition', {
     roundings: {
       full: 'rounded-full',
       xl: 'rounded-xl',
+      lg: 'rounded-lg',
     },
     disabledStyle: {
       default: '',
