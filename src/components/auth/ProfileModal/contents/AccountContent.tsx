@@ -1,8 +1,6 @@
 import BellIcon from '@/assets/icons/bell.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
-import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
-import LinkedAddressesIcon from '@/assets/icons/linked-addresses.svg'
 import MoonIcon from '@/assets/icons/moon.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
@@ -10,7 +8,6 @@ import Button from '@/components/Button'
 import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
-import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
@@ -18,17 +15,17 @@ import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { installApp, isInstallAvailable } from '@/utils/install'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
-import { FiDownload } from 'react-icons/fi'
+import { FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
@@ -62,18 +59,20 @@ export default function AccountContent({
   const commonEventProps = { eventSource: 'profile_menu' }
   const { disconnect } = useDisconnect()
 
-  const colorModeOptions = useColorModeOptions()
+  const { data: profile } = getProfileQuery.useQuery(address)
 
-  const {
-    count: linkedAddressesCount,
-    maxCount: maxLinkedCount,
-    isLoading: isLoadingLinkedAcccountCount,
-  } = useLinkedAccountCount()
-  const {
-    count: activatedNotificationCount,
-    maxCount: maxNotificationCount,
-    isLoading: isLoadingActivatedNotificationCount,
-  } = useActivatedNotificationCount()
+  // const colorModeOptions = useColorModeOptions()
+
+  // const {
+  //   count: linkedAddressesCount,
+  //   maxCount: maxLinkedCount,
+  //   isLoading: isLoadingLinkedAcccountCount,
+  // } = useLinkedAccountCount()
+  // const {
+  //   count: activatedNotificationCount,
+  //   maxCount: maxNotificationCount,
+  //   isLoading: isLoadingActivatedNotificationCount,
+  // } = useActivatedNotificationCount()
 
   const onLinkedAddressesClick = () => {
     sendEvent('open_linked_addresses', commonEventProps)
@@ -101,12 +100,12 @@ export default function AccountContent({
     {
       text: (
         <span className='flex items-center gap-2'>
-          <span>Notifications</span>
-          {!isLoadingActivatedNotificationCount && (
+          <span>Notifications Settings</span>
+          {/* {!isLoadingActivatedNotificationCount && (
             <Notice size='sm' noticeType='grey'>
               {activatedNotificationCount} / {maxNotificationCount}
             </Notice>
-          )}
+          )} */}
           {showNotification && <DotBlinkingNotification />}
         </span>
       ),
@@ -116,28 +115,39 @@ export default function AccountContent({
         setCurrentState('notifications')
       },
     },
-    {
-      text: (
-        <span className='flex items-center gap-2'>
-          <span>Linked Addresses</span>
-          {!isLoadingLinkedAcccountCount && (
-            <Notice size='sm' noticeType='grey'>
-              {linkedAddressesCount} / {maxLinkedCount}
-            </Notice>
-          )}
-        </span>
-      ),
-      icon: LinkedAddressesIcon,
-      onClick: onLinkedAddressesClick,
-    },
-    ...colorModeOptions,
-    ...(isInstallAvailable()
+    // {
+    //   text: (
+    //     <span className='flex items-center gap-2'>
+    //       <span>Linked Addresses</span>
+    //       {!isLoadingLinkedAcccountCount && (
+    //         <Notice size='sm' noticeType='grey'>
+    //           {linkedAddressesCount} / {maxLinkedCount}
+    //         </Notice>
+    //       )}
+    //     </span>
+    //   ),
+    //   icon: LinkedAddressesIcon,
+    //   onClick: onLinkedAddressesClick,
+    // },
+    // ...colorModeOptions,
+    // ...(isInstallAvailable()
+    //   ? [
+    //       {
+    //         text: 'Install app',
+    //         icon: FiDownload,
+    //         onClick: installApp,
+    //         iconClassName: 'text-text-muted text-xl',
+    //       },
+    //     ]
+    //   : []),
+    ...(profile?.profileSpace?.id
       ? [
           {
-            text: 'Install app',
-            icon: FiDownload,
-            onClick: installApp,
-            iconClassName: 'text-text-muted text-xl',
+            text: 'My Profile',
+            icon: FaRegUser,
+            onClick: () => {
+              window.location.href = `/${profile?.profileSpace?.id}`
+            },
           },
         ]
       : []),
@@ -153,13 +163,13 @@ export default function AccountContent({
       icon: SuggestFeatureIcon,
       href: SUGGEST_FEATURE_LINK,
     },
-    {
-      text: 'About App',
-      icon: InfoIcon,
-      onClick: onAboutClick,
-    },
+    // {
+    //   text: 'About App',
+    //   icon: InfoIcon,
+    //   onClick: onAboutClick,
+    // },
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
-  ]
+  ].filter(Boolean)
 
   const balanceValueBN = new BigNumber(balanceValue)
 
