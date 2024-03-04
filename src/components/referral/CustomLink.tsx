@@ -19,6 +19,8 @@ export default function CustomLink(props: React.PropsWithChildren<LinkProps>) {
 function augmentLink(link: LinkProps['href'], refId: string) {
   if (typeof link === 'string') {
     if (link.startsWith('http')) return link
+    // urljoin have issue with '/', '?ref=...', where it becomes '/ref=...'
+    if (link === '/') return `/?ref=${refId}`
     return urlJoin(link, `?ref=${refId}`)
   } else {
     return {
