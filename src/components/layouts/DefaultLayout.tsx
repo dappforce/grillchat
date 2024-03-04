@@ -5,11 +5,13 @@ import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import BackButton from '../BackButton'
 import Navbar, { NavbarProps } from '../navbar/Navbar'
 import NavbarExtension from '../navbar/NavbarExtension'
+import Sidebar from './Sidebar'
 
 export type DefaultLayoutProps = ComponentProps<'div'> & {
   navbarProps?: NavbarProps
   withBackButton?: LayoutNavbarExtensionProps
   withFixedHeight?: boolean
+  withSidebar?: boolean
 }
 
 export default function DefaultLayout({
@@ -17,6 +19,7 @@ export default function DefaultLayout({
   navbarProps,
   withBackButton,
   withFixedHeight,
+  withSidebar,
   ...props
 }: DefaultLayoutProps) {
   return (
@@ -28,9 +31,18 @@ export default function DefaultLayout({
       style={withFixedHeight ? { height: '100dvh' } : { minHeight: '100svh' }}
       {...props}
     >
-      <Navbar {...navbarProps} />
+      <Navbar {...navbarProps} largerMaxWidth={withSidebar} />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
-      {children}
+      {withSidebar ? (
+        <div className='container-page flex flex-1'>
+          <div className='sticky top-14 w-[225px] border-r border-border-gray'>
+            <Sidebar />
+          </div>
+          <div className='flex-1 border-r border-border-gray'>{children}</div>
+        </div>
+      ) : (
+        children
+      )}
     </div>
   )
 }

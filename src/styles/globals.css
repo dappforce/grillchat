@@ -1,8 +1,8 @@
-@media screen and (min-width: 768px) {
+/* @media screen and (min-width: 768px) {
   :root {
     font-size: 0.9375rem;
   }
-}
+} */
 
 * {
   min-width: 0;
@@ -114,4 +114,9 @@ body {
   @apply select-none;
   user-drag: none;
   -webkit-user-drag: none;
+}
+
+.container-page {
+  @apply mx-auto w-full px-2;
+  max-width: 1200px;
 }

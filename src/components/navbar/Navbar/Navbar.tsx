@@ -30,6 +30,7 @@ const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), {
 })
 
 export type NavbarProps = ComponentProps<'div'> & {
+  largerMaxWidth?: boolean
   backButtonProps?: {
     defaultBackLink: string
     forceUseDefaultBackLink?: boolean
@@ -44,6 +45,7 @@ export type NavbarProps = ComponentProps<'div'> & {
 }
 
 export default function Navbar({
+  largerMaxWidth,
   customContent,
   backButtonProps,
   ...props
@@ -144,7 +146,13 @@ export default function Navbar({
           props.className
         )}
       >
-        <Container className={cx('flex h-14 w-full', props.className)}>
+        <Container
+          className={cx(
+            'flex h-14 w-full',
+            largerMaxWidth && 'container-page',
+            props.className
+          )}
+        >
           {customContent ? (
             customContent({
               logoLink,
@@ -186,7 +194,7 @@ function NotificationBell() {
 
   return (
     <Button
-      size='circleSm'
+      size='circle'
       variant='transparent'
       className='relative top-px text-text-muted dark:text-text'
       nextLinkProps={{ forceHardNavigation: true }}

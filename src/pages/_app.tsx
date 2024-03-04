@@ -134,7 +134,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <ForegroundNotificationHandler />
         <ReferralUrlChanger />
         <NextNProgress
-          color='#4d46dc'
+          color='#eb2f95'
           options={{ showSpinner: false }}
           showOnShallow={false}
         />

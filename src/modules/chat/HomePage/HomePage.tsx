@@ -149,6 +149,7 @@ export default function HubsPage(props: HubsPageProps) {
 
   return (
     <DefaultLayout
+      withSidebar
       navbarProps={{
         customContent: ({
           logoLink,
