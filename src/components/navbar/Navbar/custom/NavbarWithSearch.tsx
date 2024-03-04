@@ -65,7 +65,7 @@ export default function NavbarWithSearch({
 
   const searchButton = (
     <Button
-      size='circle'
+      size='circleSm'
       variant='transparent'
       className='text-text-muted dark:text-text'
       onClick={() => {

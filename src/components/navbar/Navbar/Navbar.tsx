@@ -90,7 +90,7 @@ export default function Navbar({
     if (!isInitialized) return <div className='w-20' />
 
     if (isLoggedIn && !isTemporaryAccount) {
-      return <ProfileAvatar className='ml-1.5' />
+      return <ProfileAvatar className='ml-0.5' />
     }
 
     return enableLoginButton ? (
@@ -186,7 +186,7 @@ function NotificationBell() {
 
   return (
     <Button
-      size='circle'
+      size='circleSm'
       variant='transparent'
       className='relative top-px text-text-muted dark:text-text'
       nextLinkProps={{ forceHardNavigation: true }}

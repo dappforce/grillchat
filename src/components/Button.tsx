@@ -37,6 +37,7 @@ export const buttonStyles = cva('relative transition', {
     size: {
       noPadding: 'p-0',
       circle: 'p-2',
+      circleSm: 'p-1',
       xs: 'px-3 py-1.5',
       sm: 'px-4 py-1.5',
       md: 'px-6 py-2',
