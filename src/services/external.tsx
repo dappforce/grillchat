@@ -2,7 +2,7 @@ import axios from 'axios'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 
 export function getSubIdRequest() {
-  return axios.create({ baseURL: 'https://grill-staging-subid.subsocial.network/api/v1/' })
+  return axios.create({ baseURL: 'http://localhost:3001/api/v1/' })
 }
 
 export function subsocialSquidRequest<T, V extends Variables = Variables>(

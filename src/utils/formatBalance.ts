@@ -2,7 +2,9 @@ import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BigNumber from 'bignumber.js'
 
 export const getBalanceInDollars = (balance?: string, price?: string | null) =>
-  price && balance ? new BigNumber(price).multipliedBy(new BigNumber(balance)).toFixed(4) : '0'
+  price && balance
+    ? new BigNumber(price).multipliedBy(new BigNumber(balance)).toFixed(4)
+    : '0'
 
 export const parseBalance = (balance?: string, decimals?: number) => {
   if (!balance || !decimals) return '0'
@@ -36,7 +38,7 @@ export const formatBalance = ({
     }
   }
 
-  return Number(value).toLocaleString('en-IN', {
+  return Number(value).toLocaleString('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits,
   })

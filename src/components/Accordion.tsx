@@ -7,6 +7,7 @@ type AccordionItemProps = {
   title: string
   content: React.ReactNode
   onClick?: () => void
+  isLastItem?: boolean
 }
 
 type AccordionProps = {
@@ -19,13 +20,13 @@ const Accordion = ({ items, className }: AccordionProps) => {
   return (
     <div className={cx('flex flex-col gap-6', className)}>
       {items.map((item, index) => (
-        <AccordionItem key={index} {...item} />
+        <AccordionItem key={index} isLastItem={index === items.length - 1} {...item} />
       ))}
     </div>
   )
 }
 
-const AccordionItem = ({ title, content, onClick }: AccordionItemProps) => {
+const AccordionItem = ({ title, content, onClick, isLastItem }: AccordionItemProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const onItemClick = () => {
@@ -60,7 +61,7 @@ const AccordionItem = ({ title, content, onClick }: AccordionItemProps) => {
         className={cx(
           'ml-[28px] grid overflow-hidden text-base font-normal leading-6',
           'transition-accordion-height duration-300 ease-out',
-          { ['mb-2 mt-4 grid-rows-1']: isOpen, ['grid-rows-0']: !isOpen },
+          { [`${isLastItem ? '' : 'mb-2'} mt-4 grid-rows-1`]: isOpen, ['grid-rows-0']: !isOpen },
           mutedTextColorStyles
         )}
       >

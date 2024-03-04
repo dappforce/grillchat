@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import FormatBalance from '@/components/FormatBalance'
+import LinkText from '@/components/LinkText'
 import RangeInput from '@/components/inputs/RangeInput'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
@@ -162,7 +163,22 @@ const EarnCalcSection = () => {
                 defaultMaximumFractionDigits={3}
               />
             }
-            tooltipText={'blablabla'}
+            tooltipText={
+              <>
+                The amount of SUB you will receive if you only like 1 post per
+                week, and there is no{' '}
+                <LinkText
+                  href={
+                    'https://docs.subsocial.network/docs/basics/content-staking/content-staking/'
+                  }
+                  target='_blank'
+                  variant={'primary'}
+                >
+                  multiplier
+                </LinkText>
+                .
+              </>
+            }
             titleClassName='justify-center'
             subDesc={
               <FormatBalance
@@ -184,7 +200,21 @@ const EarnCalcSection = () => {
                 defaultMaximumFractionDigits={3}
               />
             }
-            tooltipText={'blablabla'}
+            tooltipText={
+              <>
+                The amount of SUB you will receive if you like 10 post per day
+                for the entire week, and there is a{' '}
+                <LinkText
+                  href={
+                    'https://docs.subsocial.network/docs/basics/content-staking/content-staking/'
+                  }
+                  target='_blank'
+                  variant={'primary'}
+                >
+                  4x multiplier
+                </LinkText>
+              </>
+            }
             titleClassName='justify-center'
             subDesc={
               <FormatBalance
@@ -204,7 +234,9 @@ const EarnCalcSection = () => {
             sendEvent('cs_start_earning_clicked')
           }}
           size={isTouchDevice() ? 'md' : 'lg'}
-          className={cx('mt-4 w-fit self-center', {['text-text-primary']: isLockedTokens})}
+          className={cx('mt-4 w-fit self-center', {
+            ['border-text-primary text-text-primary']: isLockedTokens,
+          })}
         >
           {isLockedTokens ? 'Lock more SUB' : 'Start earning'}
         </Button>

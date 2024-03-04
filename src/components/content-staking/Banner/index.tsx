@@ -15,7 +15,7 @@ import { useSendEvent } from '@/stores/analytics'
 const BannerSection = () => {
   const { isLockedTokens, ledgerLoading } = useContentStakingContext()
   const theme = useGetTheme()
-  const [showBgGradient, setShowBgGradient] = useState(true)
+  const [showBgGradient, setShowBgGradient] = useState(false)
   const sendEvent = useSendEvent()
 
   useEffect(() => {

@@ -1,15 +1,13 @@
 import useGetTheme from '@/hooks/useGetTheme'
 import BgGradient from '@/modules/LandingPage/common/BgGradient'
-import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
 import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
 import { sectionBg } from '../utils/SectionWrapper'
 
 const HowItWorksSection = () => {
-  const sendEvent = useSendEvent()
   const theme = useGetTheme()
-  const [showBgGradient, setShowBgGradient] = useState(true)
+  const [showBgGradient, setShowBgGradient] = useState(false)
 
   useEffect(() => {
     setShowBgGradient(theme === 'dark')

@@ -1,10 +1,10 @@
 import FAQIcon from '@/assets/icons/faq-icon.svg'
 import Accordion from '@/components/Accordion'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import SectionWrapper from '../utils/SectionWrapper'
 import { sectionTitleStyles } from '../utils/commonStyles'
-import { useSendEvent } from '@/stores/analytics'
 
 const items = [
   {
@@ -70,12 +70,15 @@ const FAQSection = () => {
         {!isTouchDevice() && (
           <FAQIcon
             className={cx(
-              'absolute right-[-38px] top-[-35px] rotate-[36deg] fill-opacity-100',
-              'dark:[&>g]:fill-white/10 [&>g]:fill-slate-100'
+              'fill-opacity-100 absolute right-[-38px] top-[-35px] rotate-[36deg]',
+              '[&>g]:fill-slate-100 dark:[&>g]:fill-white/10'
             )}
           />
         )}
-        <Accordion items={accordionItems} className='max-w-full md:max-w-[80%]' />
+        <Accordion
+          items={accordionItems}
+          className='max-w-full md:max-w-[80%]'
+        />
       </SectionWrapper>
     </div>
   )

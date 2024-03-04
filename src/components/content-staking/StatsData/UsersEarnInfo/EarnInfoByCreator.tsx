@@ -56,7 +56,7 @@ const EarnInfoByCretor = () => {
       tooltipText: 'The average amount of rewards that posts on Subsocial earn',
     },
     {
-      title: 'Possible rewards per commen:',
+      title: 'Possible rewards per comment:',
       desc: (
         <FormatBalance
           value={rewardsPerComment}
@@ -94,7 +94,7 @@ const EarnInfoByCretor = () => {
         target='_blank'
         size={isTouchDevice() ? 'md' : 'lg'}
         className={cx('w-fit self-center', {
-          ['text-text-primary']: isLockedTokens,
+          ['text-text-primary border-text-primary']: isLockedTokens,
         })}
         onClick={() => sendEvent('cs_start_posting_clicked')}
       >

@@ -141,7 +141,7 @@ const LockingButtons = () => {
         <Button
           size={isTouchDevice() ? 'md' : 'lg'}
           variant={isLockedTokens ? 'primaryOutline' : 'primary'}
-          className={cx({ ['text-text-primary']: isLockedTokens })}
+          className={cx({ ['text-text-primary border-text-primary']: isLockedTokens })}
           onClick={() =>
             onButtonClick(isLockedTokens ? 'increaseStake' : 'stake')
           }

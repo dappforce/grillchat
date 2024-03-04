@@ -78,7 +78,7 @@ const RangeInput = ({
       }
 
       const value = min + (max - min) * (newLeft / sliderMaxPosition)
-      document.body.style.userSelect = 'none'
+      document.body.classList.add('unselectable-text')
       setValue(value)
     }
 
@@ -88,7 +88,7 @@ const RangeInput = ({
   const closeDragElement = () => {
     document.removeEventListener('mouseup', closeDragElement)
     document.removeEventListener('mousemove', moveLabel)
-    document.body.style.userSelect = 'auto'
+    document.body.classList.remove('unselectable-text')
   }
 
   const onMouseDown = () => {
