@@ -35,6 +35,7 @@ export function ReferralUrlChanger() {
   useEffect(() => {
     if (!referralId) return
     const current = getCurrentSearchParams()
+    current.set('ref', referralId)
 
     const newPath = `${getCurrentUrlWithoutQuery()}?${current.toString()}`
     router.replace(newPath, undefined, { shallow: true })
