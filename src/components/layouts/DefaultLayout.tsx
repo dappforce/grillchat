@@ -31,11 +31,11 @@ export default function DefaultLayout({
       style={withFixedHeight ? { height: '100dvh' } : { minHeight: '100svh' }}
       {...props}
     >
-      <Navbar {...navbarProps} largerMaxWidth={withSidebar} />
+      <Navbar {...navbarProps} withSidebar={withSidebar} />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
-        <div className='container-page flex flex-1 border-r border-border-gray !pr-0'>
-          <div className='sticky top-14 w-[225px] border-r border-border-gray'>
+        <div className='container-page flex flex-1 border-border-gray !pl-0 !pr-0 md:border-r md:!pl-4'>
+          <div className='sticky top-14 hidden w-[225px] border-r border-border-gray md:block'>
             <Sidebar />
           </div>
           <div className='flex-1'>{children}</div>
