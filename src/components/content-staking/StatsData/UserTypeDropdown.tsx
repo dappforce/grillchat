@@ -27,6 +27,7 @@ export default function UserTypeDropdown({
 
   return (
     <FloatingMenus
+      showOnHover
       manualMenuController={{
         open,
         onOpenChange: setOpen,

@@ -199,7 +199,10 @@ const EarnCalcSection = () => {
         </div>
         <Button
           variant={isLockedTokens ? 'primaryOutline' : 'primary'}
-          onClick={() => setOpenStakeModal(true)}
+          onClick={() => {
+            setOpenStakeModal(true)
+            sendEvent('cs_start_earning_clicked')
+          }}
           size={isTouchDevice() ? 'md' : 'lg'}
           className={cx('mt-4 w-fit self-center', {['text-text-primary']: isLockedTokens})}
         >

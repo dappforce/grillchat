@@ -1,27 +1,37 @@
+import Button from '@/components/Button'
 import FormatBalance from '@/components/FormatBalance'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getPriceQuery } from '@/services/subsocial/prices/query'
 import { getBalanceInDollars } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
-import { mutedTextColorStyles } from '../../utils/commonStyles'
-import StatsCard from '../StatsCard'
-import Button from '@/components/Button'
 import { isTouchDevice } from '@/utils/device'
 import { useContentStakingContext } from '../../utils/ContentStakingContext'
+import { mutedTextColorStyles } from '../../utils/commonStyles'
+import StatsCard from '../StatsCard'
+import { useSendEvent } from '@/stores/analytics'
 
 const items = [
-  '💎 Create high quality posts and comments',
-  '📅 Be consistent and ensure you post at least once per day',
-  '💬 Engage with your community in the comments section',
-  '👁 Increase visibility by sharing your posts and comments to other social networks',
-  '🤝 Interact with other users in the comments of popular posts to gain likes',
-  '👍 Like the content of other creators to maximize your daily rewards',
+  <>💎 &nbsp;Create high quality posts and comments</>,
+  <>📅 &nbsp;Be consistent and ensure you post at least once per day</>,
+  <>💬 &nbsp;Engage with your community in the comments section</>,
+  <>
+    👁 &nbsp;Increase visibility by sharing your posts and comments to other
+    social networks
+  </>,
+  <>
+    🤝 &nbsp;Interact with other users in the comments of popular posts to gain
+    likes
+  </>,
+  <>
+    👍 &nbsp;Like the content of other creators to maximize your daily rewards
+  </>,
 ]
 
 const rewardsPerPost = '1000'
 const rewardsPerComment = '100'
 
 const EarnInfoByCretor = () => {
+  const sendEvent = useSendEvent()
   const { tokenSymbol } = useGetChainDataByNetwork('subsocial') || {}
   const { isLockedTokens } = useContentStakingContext()
   const tokenPrice = getPriceQuery.useQuery('subsocial').data?.current_price
@@ -86,6 +96,7 @@ const EarnInfoByCretor = () => {
         className={cx('mt-4 w-fit self-center', {
           ['text-text-primary']: isLockedTokens,
         })}
+        onClick={() => sendEvent('cs_start_posting_clicked')}
       >
         Start posting
       </Button>
