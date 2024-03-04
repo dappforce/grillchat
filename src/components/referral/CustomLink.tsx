@@ -2,7 +2,12 @@ import Link, { LinkProps } from 'next/link'
 import urlJoin from 'url-join'
 import { useReferralId } from './ReferralUrlChanger'
 
-export default function CustomLink(props: React.PropsWithChildren<LinkProps>) {
+export type CustomLinkProps = React.ComponentProps<typeof Link> & {
+  forceHardNavigation?: boolean
+}
+export default function CustomLink(
+  props: React.ComponentProps<typeof Link> & { forceHardNavigation?: boolean }
+) {
   const refId = useReferralId()
   if (refId) {
     const { href, as } = props
@@ -11,6 +16,10 @@ export default function CustomLink(props: React.PropsWithChildren<LinkProps>) {
       href: augmentLink(href, refId),
       as: as && augmentLink(as, refId),
     }
+  }
+
+  if (props.forceHardNavigation && typeof props.href === 'string') {
+    return <a {...props} href={props.href} />
   }
 
   return <Link {...props} />

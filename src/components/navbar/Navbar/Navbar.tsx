@@ -3,23 +3,20 @@ import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import CustomLink from '@/components/referral/CustomLink'
-import { constantsConfig } from '@/constants/config'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginOption from '@/hooks/useLoginOption'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
-import { getUnreadCountQuery } from '@/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
+import { getNotificationCountQuery } from '@/services/subsocial/notifications/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getHubPageLink } from '@/utils/links'
-import { getIdFromSlug } from '@/utils/slug'
-import { LocalStorage } from '@/utils/storage'
+import { useExternalStorage } from '@/utils/polkaverse-storage'
 import { Wallet, getWallets } from '@talismn/connect-wallets'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ComponentProps, ReactNode, useEffect, useState } from 'react'
+import { ComponentProps, ReactNode, useEffect } from 'react'
 import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
 import AuthErrorModal from './AuthErrorModal'
 
@@ -157,41 +154,26 @@ export default function Navbar({
   )
 }
 
-const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
-const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
+const LAST_READ_NOTIFICATION_KEY = 'lastReadNotification'
 function NotificationBell() {
+  const myAddress = useMyMainAddress()
+  const { data: lastReadNotif } = useExternalStorage(
+    LAST_READ_NOTIFICATION_KEY,
+    { storageKeyType: 'user' }
+  )
+  const { data: unreadCount } = getNotificationCountQuery.useQuery({
+    address: myAddress ?? '',
+    afterDate: lastReadNotif,
+  })
   const sendEvent = useSendEvent()
-  const [lastTimestamp, setLastTimestamp] = useState(() =>
-    parseInt(bellLastReadStorage.get() ?? '')
-  )
-
-  // enable unread count only from datahub data because we can't get unread count by timestamp from squid/chain
-  const { data: unreadCount } = getUnreadCountQuery.useQuery(
-    {
-      chatId: constantsConfig.annChatId,
-      lastRead: { timestamp: lastTimestamp },
-    },
-    {
-      enabled: isDatahubAvailable && !!lastTimestamp,
-      staleTime: Infinity,
-    }
-  )
-
-  const { query } = useRouter()
-  useEffect(() => {
-    if (typeof query.slug !== 'string') return
-    if (getIdFromSlug(query.slug) === constantsConfig.annChatId) {
-      bellLastReadStorage.set(Date.now().toString())
-      setLastTimestamp(Date.now())
-    }
-  }, [query])
 
   return (
     <Button
       size='circle'
       variant='transparent'
       className='text-text-muted dark:text-text'
-      href={`/x/grill-announcements-${constantsConfig.annChatId}`}
+      nextLinkProps={{ forceHardNavigation: true }}
+      href='/notifications'
       onClick={() => sendEvent('open_ann_chat', { eventSource: 'notifs_bell' })}
     >
       <div className='relative'>

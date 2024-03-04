@@ -7370,6 +7370,265 @@ export enum Status {
   Deleted = 'Deleted'
 }
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  accountById?: Maybe<Account>;
+  accountFollowers: Array<AccountFollowers>;
+  accountFollowersById?: Maybe<AccountFollowers>;
+  accounts: Array<Account>;
+  activities: Array<Activity>;
+  activityById?: Maybe<Activity>;
+  commentFollowers: Array<CommentFollowers>;
+  commentFollowersById?: Maybe<CommentFollowers>;
+  contentExtensionById?: Maybe<ContentExtension>;
+  contentExtensions: Array<ContentExtension>;
+  evmAccountById?: Maybe<EvmAccount>;
+  evmAccounts: Array<EvmAccount>;
+  evmSubstrateAccountLinkById?: Maybe<EvmSubstrateAccountLink>;
+  evmSubstrateAccountLinks: Array<EvmSubstrateAccountLink>;
+  extensionPinnedResourceById?: Maybe<ExtensionPinnedResource>;
+  extensionPinnedResources: Array<ExtensionPinnedResource>;
+  inBatchNotifications: Array<InBatchNotifications>;
+  inBatchNotificationsById?: Maybe<InBatchNotifications>;
+  ipfsFetchLogById?: Maybe<IpfsFetchLog>;
+  ipfsFetchLogs: Array<IpfsFetchLog>;
+  newsFeedById?: Maybe<NewsFeed>;
+  newsFeeds: Array<NewsFeed>;
+  notificationById?: Maybe<Notification>;
+  notifications: Array<Notification>;
+  postById?: Maybe<Post>;
+  postFollowers: Array<PostFollowers>;
+  postFollowersById?: Maybe<PostFollowers>;
+  posts: Array<Post>;
+  reactionById?: Maybe<Reaction>;
+  reactions: Array<Reaction>;
+  spaceById?: Maybe<Space>;
+  spaceFollowers: Array<SpaceFollowers>;
+  spaceFollowersById?: Maybe<SpaceFollowers>;
+  spaces: Array<Space>;
+};
+
+
+export type SubscriptionAccountByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionAccountFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<AccountFollowersOrderByInput>>;
+  where?: InputMaybe<AccountFollowersWhereInput>;
+};
+
+
+export type SubscriptionAccountFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionAccountsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<AccountOrderByInput>>;
+  where?: InputMaybe<AccountWhereInput>;
+};
+
+
+export type SubscriptionActivitiesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ActivityOrderByInput>>;
+  where?: InputMaybe<ActivityWhereInput>;
+};
+
+
+export type SubscriptionActivityByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionCommentFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<CommentFollowersOrderByInput>>;
+  where?: InputMaybe<CommentFollowersWhereInput>;
+};
+
+
+export type SubscriptionCommentFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionContentExtensionByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionContentExtensionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ContentExtensionOrderByInput>>;
+  where?: InputMaybe<ContentExtensionWhereInput>;
+};
+
+
+export type SubscriptionEvmAccountByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionEvmAccountsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EvmAccountOrderByInput>>;
+  where?: InputMaybe<EvmAccountWhereInput>;
+};
+
+
+export type SubscriptionEvmSubstrateAccountLinkByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionEvmSubstrateAccountLinksArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<EvmSubstrateAccountLinkOrderByInput>>;
+  where?: InputMaybe<EvmSubstrateAccountLinkWhereInput>;
+};
+
+
+export type SubscriptionExtensionPinnedResourceByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionExtensionPinnedResourcesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ExtensionPinnedResourceOrderByInput>>;
+  where?: InputMaybe<ExtensionPinnedResourceWhereInput>;
+};
+
+
+export type SubscriptionInBatchNotificationsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<InBatchNotificationsOrderByInput>>;
+  where?: InputMaybe<InBatchNotificationsWhereInput>;
+};
+
+
+export type SubscriptionInBatchNotificationsByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionIpfsFetchLogByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionIpfsFetchLogsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<IpfsFetchLogOrderByInput>>;
+  where?: InputMaybe<IpfsFetchLogWhereInput>;
+};
+
+
+export type SubscriptionNewsFeedByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionNewsFeedsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<NewsFeedOrderByInput>>;
+  where?: InputMaybe<NewsFeedWhereInput>;
+};
+
+
+export type SubscriptionNotificationByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionNotificationsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<NotificationOrderByInput>>;
+  where?: InputMaybe<NotificationWhereInput>;
+};
+
+
+export type SubscriptionPostByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionPostFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostFollowersOrderByInput>>;
+  where?: InputMaybe<PostFollowersWhereInput>;
+};
+
+
+export type SubscriptionPostFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionPostsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PostOrderByInput>>;
+  where?: InputMaybe<PostWhereInput>;
+};
+
+
+export type SubscriptionReactionByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionReactionsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ReactionOrderByInput>>;
+  where?: InputMaybe<ReactionWhereInput>;
+};
+
+
+export type SubscriptionSpaceByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionSpaceFollowersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceFollowersOrderByInput>>;
+  where?: InputMaybe<SpaceFollowersWhereInput>;
+};
+
+
+export type SubscriptionSpaceFollowersByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type SubscriptionSpacesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SpaceOrderByInput>>;
+  where?: InputMaybe<SpaceWhereInput>;
+};
+
 export type TweetAttachmentsDetails = {
   __typename?: 'TweetAttachmentsDetails';
   mediaKeys?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -7521,6 +7780,14 @@ export type GetEvmAddressesQueryVariables = Exact<{
 
 
 export type GetEvmAddressesQuery = { __typename?: 'Query', evmSubstrateAccountLinks: Array<{ __typename?: 'EvmSubstrateAccountLink', evmAccount: { __typename?: 'EvmAccount', id: string }, substrateAccount: { __typename?: 'Account', id: string } }> };
+
+export type GetNotificationsCountQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+  afterDate?: InputMaybe<Scalars['DateTime']['input']>;
+}>;
+
+
+export type GetNotificationsCountQuery = { __typename?: 'Query', notificationsConnection: { __typename?: 'NotificationsConnection', totalCount: number } };
 
 export type GetPostsQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -7690,6 +7957,16 @@ export const GetEvmAddresses = gql`
     substrateAccount {
       id
     }
+  }
+}
+    `;
+export const GetNotificationsCount = gql`
+    query GetNotificationsCount($address: String!, $afterDate: DateTime = "1970-01-01T00:00:00.000Z") {
+  notificationsConnection(
+    orderBy: id_ASC
+    where: {account: {id_eq: $address}, activity: {aggregated_eq: true, date_gt: $afterDate, account: {id_not_eq: $address}}}
+  ) {
+    totalCount
   }
 }
     `;
