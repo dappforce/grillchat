@@ -117,6 +117,6 @@ body {
 }
 
 .container-page {
-  @apply mx-auto w-full px-2;
+  @apply mx-auto w-full px-4;
   max-width: 1200px;
 }

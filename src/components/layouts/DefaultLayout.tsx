@@ -34,11 +34,11 @@ export default function DefaultLayout({
       <Navbar {...navbarProps} largerMaxWidth={withSidebar} />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
-        <div className='container-page flex flex-1'>
+        <div className='container-page flex flex-1 border-r border-border-gray !pr-0'>
           <div className='sticky top-14 w-[225px] border-r border-border-gray'>
             <Sidebar />
           </div>
-          <div className='flex-1 border-r border-border-gray'>{children}</div>
+          <div className='flex-1'>{children}</div>
         </div>
       ) : (
         children
