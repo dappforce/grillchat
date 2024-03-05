@@ -52,10 +52,10 @@ jobs:
           push: true
           build-args: |
             GH_NOTIFICATIONS_URL=https://staging-grill-notifications.subsocial.network/graphql
-            GH_NEXT_PUBLIC_AMP_ID=19b9413e325bc2321fae1ea80cfb2915
+            GH_NEXT_PUBLIC_AMP_ID=71bf5a46800fedba5e9a01243b988164
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12467
-            GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
+            GH_NEXT_PUBLIC_GA_ID=fake
             GH_IPFS_WRITE_URL=https://gw-seattle.crustcloud.io
             GH_IPFS_PIN_URL=https://test-pin.crustcloud.io/psa
             GH_NEXT_PUBLIC_NOTIFICATION_APP_ID=BJaKjx7xtiIXtSUT8tR6VDG0WwhFwdqOqp8L5kc6alGBUtndnlV_DUJ6sze_z70VEBOKk4AT_wZTJqE9dC7sbEQ
