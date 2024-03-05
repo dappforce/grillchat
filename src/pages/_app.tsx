@@ -73,7 +73,8 @@ function Styles({
   const router = useRouter()
   const isInIframe = useIsInIframe()
 
-  const isLandingPage = router.pathname === '/landing'
+  const isUsing16BaseSize =
+    router.pathname === '/landing' || router.pathname === '/'
 
   const scrollbarSelector = isInIframe ? 'body' : 'html'
   const scrollbarStyling = alwaysShowScrollbarOffset
@@ -97,7 +98,7 @@ function Styles({
         }
       `
         : ''}
-      ${isLandingPage
+      ${isUsing16BaseSize
         ? `
           @media screen and (min-width: 768px) {
             :root {

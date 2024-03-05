@@ -23,7 +23,7 @@ const Container: typeof BaseContainer = forwardRef(function Container(
     return (
       <BaseContainer
         {...props}
-        className={cx((props as any).className, 'max-w-screen-lg')}
+        className={cx((props as any).className, 'max-w-screen-xl')}
         ref={ref}
       />
     )

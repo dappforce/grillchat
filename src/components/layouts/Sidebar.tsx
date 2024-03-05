@@ -1,3 +1,4 @@
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import { IconType } from 'react-icons'
@@ -10,17 +11,21 @@ import { TiFlashOutline } from 'react-icons/ti'
 import CustomLink from '../referral/CustomLink'
 
 export default function Sidebar() {
+  const myAddress = useMyMainAddress()
+
   return (
     <aside className='flex flex-col p-4 pl-0 text-text-muted/80'>
       <ul className='flex flex-col gap-4'>
         <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation />
         <SidebarItem icon={BiChat} title='Chat' href='/' />
-        <SidebarItem
-          icon={LuCompass}
-          title='My Spaces'
-          href='/my-spaces'
-          forceHardNavigation
-        />
+        {myAddress && (
+          <SidebarItem
+            icon={LuCompass}
+            title='My Spaces'
+            href='/my-spaces'
+            forceHardNavigation
+          />
+        )}
 
         <div className='border-t border-border-gray' />
 
@@ -81,7 +86,7 @@ function SidebarItem({
       >
         <Icon className='text-xl' />
         <span className='text-sm font-medium'>{title}</span>
-      </CustomLink>{' '}
+      </CustomLink>
     </li>
   )
 }
