@@ -9,8 +9,8 @@
 }
 
 :root {
-  --background: 236 239 244;
-  --background-light: 248 250 252;
+  --background: 248 250 252;
+  --background-light: 255 255 255;
   --background-lighter: 236 239 244;
   --background-lightest: 219 222 230;
   --background-primary: 235 47 149;
