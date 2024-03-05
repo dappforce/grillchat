@@ -4,7 +4,7 @@ import urlJoin from 'url-join'
 
 export default function Document() {
   return (
-    <Html lang='en'>
+    <Html lang='en' className='bg-transparent'>
       <Head>
         <link
           rel='icon'
@@ -195,7 +195,7 @@ export default function Document() {
           )}
         />
       </Head>
-      <body>
+      <body className='bg-transparent'>
         <Main />
         <NextScript />
       </body>
