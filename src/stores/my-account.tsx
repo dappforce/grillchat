@@ -427,7 +427,7 @@ export async function enableWallet({
   if (!preferredWallet) return
 
   try {
-    await preferredWallet.enable('grill.chat')
+    await preferredWallet.enable('grillapp')
     const unsub = preferredWallet.subscribeAccounts((accounts) => {
       listener(accounts ?? [])
     })
@@ -487,7 +487,7 @@ export function useGetCurrentSigner(): () => Promise<WalletSigner | undefined> {
       const { web3Enable, web3FromAddress } = await import(
         '@polkadot/extension-dapp'
       )
-      const extensions = await web3Enable('grill.chat')
+      const extensions = await web3Enable('grillapp')
 
       if (extensions.length === 0) {
         return

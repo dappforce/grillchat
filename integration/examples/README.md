@@ -5,7 +5,7 @@
    | -------------------------------------- | ------------------------------------ | ---------------------------------------------- |
    | ![desktop](./images/subid/desktop.png) | ![mobile](./images/subid/mobile.png) | ![mobile-open](./images/subid/mobile-open.png) |
 
-   Sub ID is using Grill.chat as simple chat system for whole polkadot ecosystem for their [website](https://subid.io).
+   Sub ID is using Grill as simple chat system for whole polkadot ecosystem for their [website](https://subid.io).
 
    Code: <https://github.com/dappforce/subid/tree/main/src/components/chat>
 

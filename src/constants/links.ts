@@ -1,5 +1,9 @@
+import { currentNetwork } from '@/utils/network'
+
 export const SUGGEST_FEATURE_LINK =
-  'https://grill.chat/x/grill-improvements-1316'
+  currentNetwork === 'xsocial'
+    ? 'https://grill.chat/x/grill-improvements-1316'
+    : 'https://grillapp.net/c/subsocial/85666'
 
 export function getSuggestNewChatRoomLink(prefill: {
   chatName?: string

@@ -5,6 +5,7 @@ import MessageModal from '@/components/modals/MessageModal'
 import { getPostQuery } from '@/services/api/query'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { cx } from '@/utils/class-names'
+import { currentNetwork } from '@/utils/network'
 import Linkify from 'linkify-react'
 import { useState } from 'react'
 import SuperLike from '../../../content-staking/SuperLike'
@@ -84,7 +85,11 @@ export default function DefaultChatItem({
             options={{
               render: ({ content, attributes }) => {
                 const href = attributes.href || ''
-                if (href.startsWith('https://grill.chat')) {
+                const baseUrl =
+                  currentNetwork === 'xsocial'
+                    ? 'https://grill.chat'
+                    : 'https://grillapp.net'
+                if (href.startsWith(baseUrl)) {
                   content = content.replace(/(https?:\/\/)?(www\.)?/, '')
                 }
 
