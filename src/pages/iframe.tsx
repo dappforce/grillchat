@@ -10,7 +10,7 @@ export default function IframePage() {
       hub: { id: 'featured' },
       onWidgetCreated: (iframe) => {
         iframe.src = iframe.src.replace(
-          'https://grill.so',
+          'https://grillapp.net',
           getCurrentUrlOrigin()
         )
         return iframe

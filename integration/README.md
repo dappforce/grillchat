@@ -1,6 +1,6 @@
 # Grill Widget
 
-Grill Widget is a tiny package (< 1kb compressed) that you can use to integrate [Grill.so](https://grill.so) into your app. It wraps all of the available configs in a simple function call.
+Grill Widget is a tiny package (< 1kb compressed) that you can use to integrate [Grill](https://grillapp.net) into your app. It wraps all of the available configs in a simple function call.
 
 https://github.com/dappforce/grillchat/assets/39906111/1d1ca9b5-c49f-49e4-9c04-ae4a4a390b33
 
@@ -64,13 +64,13 @@ grill.init({
 
 All config options are optional. If you don't pass any config, it will use the default config.
 
-| Name              | Type                                               | Description                                                                                                                                                                                                                                                                  |
-| ----------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `widgetElementId` | `string`                                           | The `id` of the div that you want to render the chat to. Default to `grill`                                                                                                                                                                                                  |
-| `hub`             | `{ id: string }`                                   | The `id` or the `domain name` of the space that you want to show the topics from. You can read on how to [manage your space here](https://github.com/dappforce/grillchat/blob/main/README.md#how-to-manage-your-space). Default to `{ id: 'featured' }` (grill.so home page) |
-| `channel`         | [`Channel`](#channel-option)                       | Option to make the iframe open chat room (a channel) directly. Read more about this option [here](#channel-option)                                                                                                                                                           |
-| `theme`           | `'light' or 'dark'`                                | The theme of the chat. If omitted, it will use the system preferences or the last <https://grill.so> theme selected by the user.                                                                                                                                             |
-| `onWidgetCreated` | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                                                                                                                                                              |
+| Name              | Type                                               | Description                                                                                                                                                                                                                                                                      |
+| ----------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `widgetElementId` | `string`                                           | The `id` of the div that you want to render the chat to. Default to `grill`                                                                                                                                                                                                      |
+| `hub`             | `{ id: string }`                                   | The `id` or the `domain name` of the space that you want to show the topics from. You can read on how to [manage your space here](https://github.com/dappforce/grillchat/blob/main/README.md#how-to-manage-your-space). Default to `{ id: 'featured' }` (grillapp.net home page) |
+| `channel`         | [`Channel`](#channel-option)                       | Option to make the iframe open chat room (a channel) directly. Read more about this option [here](#channel-option)                                                                                                                                                               |
+| `theme`           | `'light' or 'dark'`                                | The theme of the chat. If omitted, it will use the system preferences or the last <https://grillapp.net> theme selected by the user.                                                                                                                                             |
+| `onWidgetCreated` | `(iframe: HTMLIFrameElement) => HTMLIFrameElement` | A function that will be called when the iframe is created. You can use this to customize the iframe attributes.                                                                                                                                                                  |
 
 ### Channel Option
 
