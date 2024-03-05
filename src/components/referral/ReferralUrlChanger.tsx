@@ -19,7 +19,7 @@ export function useReferralId() {
   const spaceId = profile.data?.profileSpace?.id
   if (isClientGeneratedOptimisticId(spaceId)) return undefined
 
-  return spaceId
+  return spaceId || getReferralIdInUrl()
 }
 
 export function useReferralSearchParam() {
