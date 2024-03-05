@@ -176,7 +176,7 @@ export default function Navbar({
           ) : (
             <div className='flex w-full items-center justify-between'>
               {logoLink}
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-1'>
                 {newPostButton}
                 {notificationBell}
                 {authComponent}
