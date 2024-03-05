@@ -128,4 +128,4 @@ jobs:
         run: NAME=${{ env.name }} && kubectl -n sub-back rollout status deployment/grillchat-${NAME}
 
       - name: CF deploy
-        run: curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/dns_records"      -H "X-Auth-Email:${{ secrets.CF_MAIL }}"      -H "Authorization:Bearer ${{ secrets.CF_TOKEN }}"      -H "Content-Type:application/json"      --data '{"type":"A","name":"${{ env.name }}-grillchat.subsocial.network","content":"174.138.105.155","ttl":3600,"priority":10,"proxied":true}'
+        run: curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/dns_records"      -H "X-Auth-Email:${{ secrets.CF_MAIL }}"      -H "Authorization:Bearer ${{ secrets.CF_TOKEN }}"      -H "Content-Type:application/json"      --data '{"type":"A","name":"${{ env.name }}.subsocial.network","content":"174.138.105.155","ttl":3600,"priority":10,"proxied":true}'
