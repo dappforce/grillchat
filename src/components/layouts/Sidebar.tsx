@@ -22,7 +22,7 @@ export default function Sidebar() {
           <SidebarItem
             icon={LuCompass}
             title='My Spaces'
-            href='/my-spaces'
+            href={`/accounts/${myAddress}/spaces`}
             forceHardNavigation
           />
         )}
