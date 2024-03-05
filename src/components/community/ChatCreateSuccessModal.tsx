@@ -1,8 +1,8 @@
 import Button from '@/components/Button'
-import DataCard from '@/components/DataCard'
-import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import ChatImage from '@/components/chats/ChatImage'
+import DataCard from '@/components/DataCard'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
 import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
@@ -63,7 +63,7 @@ export default function ChatCreateSuccessModal({
               openNewWindow(
                 twitterShareUrl(
                   chatLink,
-                  'I just created a new discussion room on Grill.chat, come check it out!'
+                  'I just created a new discussion room on GrillApp.net, come check it out!'
                 )
               )
             }

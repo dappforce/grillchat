@@ -58,7 +58,7 @@ const getWallet = (chains: Chain[]) => {
   const walletOptions = {
     chains,
     projectId: walletConnectProjectId,
-    appName: 'Grill.chat',
+    appName: 'Grill',
   }
   const supportedWallets: Record<string, Wallet> = {
     metamask: metaMaskWallet(walletOptions),
