@@ -60,7 +60,7 @@ export const CommonEVMLoginContent = ({
 export const CommonEvmAddressLinked = () => {
   const twitterUrl = twitterShareUrl(
     'https://grill.chat',
-    `I just linked my #EVM wallet to Grill.chat! Now, I can have a consistent identity and take advantage of new features such as interacting with #ERC20, #NFT, and other smart contracts 🥳`,
+    `I just linked my #EVM wallet to GrillApp.net! Now, I can have a consistent identity and take advantage of new features such as interacting with #ERC20, #NFT, and other smart contracts 🥳`,
     { tags: ['Ethereum', 'Grillchat', 'Subsocial'] }
   )
 

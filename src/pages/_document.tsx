@@ -46,10 +46,10 @@ export default function Document() {
         <meta name='msapplication-TileColor' content='#111729' />
         <meta name='theme-color' content='#111729' />
 
-        <meta name='application-name' content='Grill.chat' />
+        <meta name='application-name' content='Grill' />
         <meta name='apple-mobile-web-app-capable' content='yes' />
         <meta name='apple-mobile-web-app-status-bar-style' content='default' />
-        <meta name='apple-mobile-web-app-title' content='Grill.chat' />
+        <meta name='apple-mobile-web-app-title' content='Grill' />
         <meta name='format-detection' content='telephone=no' />
         <meta name='mobile-web-app-capable' content='yes' />
         <meta

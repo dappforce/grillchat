@@ -33,13 +33,13 @@ export default function WelcomeModal({ ...props }: WelcomeModalProps) {
       title={
         <div className='mt-4 flex flex-col items-center'>
           <Logo className='text-5xl' />
-          <p className='mt-5 text-center'>👋 Welcome to GrillChat</p>
+          <p className='mt-5 text-center'>👋 Welcome to Grill</p>
         </div>
       }
       description={
         <span className='block text-center'>
           Engage in discussions anonymously without fear of social persecution.
-          Grill.chat runs on the{' '}
+          Grill runs on the{' '}
           <LinkText
             variant='primary'
             href='https://subsocial.network/xsocial'

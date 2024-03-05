@@ -8,7 +8,7 @@ export default function AboutGrillDesc({ ...props }: AboutGrillDescProps) {
   return (
     <span {...props} className={cx(props.className)}>
       Engage in discussions anonymously without fear of social prosecution.
-      Grill.chat runs on the{' '}
+      Grill runs on the{' '}
       <LinkText
         variant='primary'
         href='https://subsocial.network/xsocial'

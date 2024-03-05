@@ -1,14 +1,14 @@
 import Button from '@/components/Button'
 import { CopyTextInlineButton } from '@/components/CopyText'
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
-import InfoPanel from '@/components/InfoPanel'
-import ProfilePreview from '@/components/ProfilePreview'
 import PopOver from '@/components/floating/PopOver'
+import InfoPanel from '@/components/InfoPanel'
 import TextArea from '@/components/inputs/TextArea'
 import Modal, {
   ModalFunctionalityProps,
   ModalProps,
 } from '@/components/modals/Modal'
+import ProfilePreview from '@/components/ProfilePreview'
 import { spaceMono } from '@/fonts'
 import { SupportedExternalProvider } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -71,12 +71,12 @@ export default function SaveGrillKeyModal({
       title: `🕔 Connecting to ${providerMapper[provider ?? 'google']}`,
       desc: `We are connecting your ${
         providerMapper[provider ?? 'google']
-      } account to Grill.chat. Please wait for a few seconds.`,
+      } account to Grill. Please wait for a few seconds.`,
       component: LoadingStep,
     },
     'account-created': {
       title: '🎉 Account created',
-      desc: 'We have created an account linked to your X for you. You can now use Grill.chat!',
+      desc: 'We have created an account linked to your X for you. You can now use Grill!',
       component: AccountCreatedStep,
     },
   }
@@ -135,7 +135,7 @@ function SaveStep({ setCurrentState }: ContentProps) {
       <CopyTextInlineButton isCodeText text={decodedSecretKey} />
       <div
         className={cx(
-          'flex min-h-16 items-stretch justify-between rounded-2xl border border-border-gray',
+          'min-h-16 flex items-stretch justify-between rounded-2xl border border-border-gray',
           spaceMono.className
         )}
       >
