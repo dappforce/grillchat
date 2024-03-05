@@ -116,7 +116,7 @@ export default function Footer(props: ComponentProps<'footer'>) {
             Lock SUB
           </OpenInNewTabLink>
           <OpenInNewTabLink
-            href='https://grill.so/leaderboard'
+            href='https://grillapp.net/leaderboard'
             onClick={() => sendEvent('lp_leaderboard_clicked')}
           >
             Leaderboard
@@ -125,7 +125,7 @@ export default function Footer(props: ComponentProps<'footer'>) {
         <ParticipateCard className='col-span-2 mt-4 sm:col-span-3 sm:mt-4 lg:col-span-5 lg:mt-0' />
       </div>
       <div className='flex justify-between pb-16'>
-        <span className='text-lg text-[#805B7B]'>© 2024 Grill.so</span>
+        <span className='text-lg text-[#805B7B]'>© 2024 Grillapp.net</span>
         <div className='flex items-center gap-4 text-lg'>
           <Button
             size='noPadding'

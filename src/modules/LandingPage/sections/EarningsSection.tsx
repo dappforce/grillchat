@@ -62,7 +62,7 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
               variant='landingPrimary'
               size='xl'
               roundings='xl'
-              href='https://grill.so/leaderboard'
+              href='https://grillapp.net/leaderboard'
               onClick={() => sendEvent('lp_live_stats')}
             >
               See Live Stats

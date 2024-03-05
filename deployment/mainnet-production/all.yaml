@@ -31,7 +31,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: grill.so
+    - host: grillapp.net
       http:
         paths:
           - backend:
@@ -44,7 +44,7 @@ spec:
 
   tls:
     - hosts:
-        - grill.so
+        - grillapp.net
       secretName: mainnet-grill-ssl
 
 ---
@@ -62,7 +62,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: grill.so
+    - host: grillapp.net
       http:
         paths:
           - backend:
@@ -74,7 +74,7 @@ spec:
             pathType: Prefix
   tls:
     - hosts:
-        - grill.so
+        - grillapp.net
       secretName: mainnet-grill-ssl
 
 ---

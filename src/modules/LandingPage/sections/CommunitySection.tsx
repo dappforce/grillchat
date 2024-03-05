@@ -71,7 +71,7 @@ Being a part of The Creator Economy is great!`,
 export default function CommunitySection(props: ComponentProps<'section'>) {
   return (
     <section className={cx('mx-auto max-w-6xl', props.className)}>
-      <Heading withMargin>What Our Community Says About Grill.so</Heading>
+      <Heading withMargin>What Our Community Says About Grill</Heading>
       <div className='hidden grid-cols-[3fr_4fr] gap-7 md:grid'>
         {testimonials.map((t) => (
           <TestimonialCard {...t} key={t.name} />
