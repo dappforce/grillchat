@@ -1,42 +1,33 @@
-import BellIcon from '@/assets/icons/bell.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 import KeyIcon from '@/assets/icons/key.svg'
-import MoonIcon from '@/assets/icons/moon.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
-import SunIcon from '@/assets/icons/sun.svg'
 import Button from '@/components/Button'
-import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
-import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
-import useGetTheme from '@/hooks/useGetTheme'
-import { useConfigContext } from '@/providers/config/ConfigProvider'
-import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
-import { cx } from '@/utils/class-names'
+import {
+  getIsAnIframeInSameOrigin,
+  sendMessageToParentWindow,
+} from '@/utils/window'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
-import { useTheme } from 'next-themes'
 import { FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
-import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
 
 export default function AccountContent({
   address,
   setCurrentState,
 }: ProfileModalContentProps) {
-  const { showNotification, closeNotification } =
-    useFirstVisitNotification('notification-menu')
+  // const { showNotification, closeNotification } =
+  //   useFirstVisitNotification('notification-menu')
 
   const {
     data: balance,
@@ -74,47 +65,47 @@ export default function AccountContent({
   //   isLoading: isLoadingActivatedNotificationCount,
   // } = useActivatedNotificationCount()
 
-  const onLinkedAddressesClick = () => {
-    sendEvent('open_linked_addresses', commonEventProps)
-    setCurrentState('linked-addresses')
-  }
+  // const onLinkedAddressesClick = () => {
+  //   sendEvent('open_linked_addresses', commonEventProps)
+  //   setCurrentState('linked-addresses')
+  // }
   const onShowPrivateKeyClick = () => {
     sendEvent('open_show_private_key_modal', commonEventProps)
     setCurrentState('private-key')
   }
-  const onShareSessionClick = () => {
-    sendEvent('open_share_session_modal', commonEventProps)
-    setCurrentState('share-session')
-  }
+  // const onShareSessionClick = () => {
+  //   sendEvent('open_share_session_modal', commonEventProps)
+  //   setCurrentState('share-session')
+  // }
   const onLogoutClick = () => {
     disconnect()
     sendEvent('open_log_out_modal', commonEventProps)
     setCurrentState('logout')
   }
-  const onAboutClick = () => {
-    sendEvent('open_about_app_info', commonEventProps)
-    setCurrentState('about')
-  }
+  // const onAboutClick = () => {
+  //   sendEvent('open_about_app_info', commonEventProps)
+  //   setCurrentState('about')
+  // }
 
   const menus: MenuListProps['menus'] = [
-    {
-      text: (
-        <span className='flex items-center gap-2'>
-          <span>Notifications Settings</span>
-          {/* {!isLoadingActivatedNotificationCount && (
-            <Notice size='sm' noticeType='grey'>
-              {activatedNotificationCount} / {maxNotificationCount}
-            </Notice>
-          )} */}
-          {showNotification && <DotBlinkingNotification />}
-        </span>
-      ),
-      icon: BellIcon,
-      onClick: () => {
-        closeNotification()
-        setCurrentState('notifications')
-      },
-    },
+    // {
+    //   text: (
+    //     <span className='flex items-center gap-2'>
+    //       <span>Notifications Settings</span>
+    //       {/* {!isLoadingActivatedNotificationCount && (
+    //         <Notice size='sm' noticeType='grey'>
+    //           {activatedNotificationCount} / {maxNotificationCount}
+    //         </Notice>
+    //       )} */}
+    //       {showNotification && <DotBlinkingNotification />}
+    //     </span>
+    //   ),
+    //   icon: BellIcon,
+    //   onClick: () => {
+    //     closeNotification()
+    //     setCurrentState('notifications')
+    //   },
+    // },
     // {
     //   text: (
     //     <span className='flex items-center gap-2'>
@@ -146,7 +137,15 @@ export default function AccountContent({
             text: 'My Profile',
             icon: FaRegUser,
             onClick: () => {
-              window.location.href = `/${profile?.profileSpace?.id}`
+              const isInGrillSoPolkaverseSide = getIsAnIframeInSameOrigin()
+              if (isInGrillSoPolkaverseSide) {
+                sendMessageToParentWindow(
+                  'redirect',
+                  `/${profile?.profileSpace?.id}`
+                )
+              } else {
+                window.location.href = `/${profile?.profileSpace?.id}`
+              }
             },
           },
         ]
@@ -162,6 +161,12 @@ export default function AccountContent({
       text: 'Suggest Feature',
       icon: SuggestFeatureIcon,
       href: SUGGEST_FEATURE_LINK,
+      onClick: (e) => {
+        if (getIsAnIframeInSameOrigin()) {
+          e.preventDefault()
+          sendMessageToParentWindow('redirect', SUGGEST_FEATURE_LINK)
+        }
+      },
     },
     // {
     //   text: 'About App',
@@ -169,7 +174,7 @@ export default function AccountContent({
     //   onClick: onAboutClick,
     // },
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
-  ].filter(Boolean)
+  ]
 
   const balanceValueBN = new BigNumber(balanceValue)
 
@@ -239,58 +244,58 @@ export default function AccountContent({
   )
 }
 
-function useColorModeOptions(): MenuListProps['menus'] {
-  const { setTheme } = useTheme()
-  const theme = useGetTheme()
-  const { theme: configTheme } = useConfigContext()
+// function useColorModeOptions(): MenuListProps['menus'] {
+//   const { setTheme } = useTheme()
+//   const theme = useGetTheme()
+//   const { theme: configTheme } = useConfigContext()
 
-  if (configTheme) return []
+//   if (configTheme) return []
 
-  const lightModeOption: MenuListProps['menus'][number] = {
-    text: 'Light Mode',
-    onClick: () => setTheme('light'),
-    icon: SunIcon,
-    iconClassName: cx('text-text-muted'),
-  }
-  const darkModeOption: MenuListProps['menus'][number] = {
-    text: 'Dark Mode',
-    onClick: () => setTheme('dark'),
-    icon: MoonIcon,
-    iconClassName: cx('text-text-muted'),
-  }
+//   const lightModeOption: MenuListProps['menus'][number] = {
+//     text: 'Light Mode',
+//     onClick: () => setTheme('light'),
+//     icon: SunIcon,
+//     iconClassName: cx('text-text-muted'),
+//   }
+//   const darkModeOption: MenuListProps['menus'][number] = {
+//     text: 'Dark Mode',
+//     onClick: () => setTheme('dark'),
+//     icon: MoonIcon,
+//     iconClassName: cx('text-text-muted'),
+//   }
 
-  if (theme === 'light') return [darkModeOption]
-  if (theme === 'dark') return [lightModeOption]
+//   if (theme === 'light') return [darkModeOption]
+//   if (theme === 'dark') return [lightModeOption]
 
-  return []
-}
+//   return []
+// }
 
-function useLinkedAccountCount() {
-  const myAddress = useMyMainAddress()
-  const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
-  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(
-    myAddress ?? ''
-  )
+// function useLinkedAccountCount() {
+//   const myAddress = useMyMainAddress()
+//   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
+//   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(
+//     myAddress ?? ''
+//   )
 
-  let count = 0
-  if (hasProxy) count++
-  if (accountData?.evmAddress) count++
+//   let count = 0
+//   if (hasProxy) count++
+//   if (accountData?.evmAddress) count++
 
-  return { count, maxCount: 2, isLoading }
-}
+//   return { count, maxCount: 2, isLoading }
+// }
 
-function useActivatedNotificationCount() {
-  const myAddress = useMyMainAddress()
-  const { data: linkedAccounts, isLoading } =
-    getLinkedTelegramAccountsQuery.useQuery({
-      address: myAddress ?? '',
-    })
-  const isTelegramLinked = !!linkedAccounts?.length
-  const isPushNotificationEnabled = useIsPushNotificationEnabled()
+// function useActivatedNotificationCount() {
+//   const myAddress = useMyMainAddress()
+//   const { data: linkedAccounts, isLoading } =
+//     getLinkedTelegramAccountsQuery.useQuery({
+//       address: myAddress ?? '',
+//     })
+//   const isTelegramLinked = !!linkedAccounts?.length
+//   const isPushNotificationEnabled = useIsPushNotificationEnabled()
 
-  let count = 0
-  if (isTelegramLinked) count++
-  if (isPushNotificationEnabled) count++
+//   let count = 0
+//   if (isTelegramLinked) count++
+//   if (isPushNotificationEnabled) count++
 
-  return { count, maxCount: 2, isLoading }
-}
+//   return { count, maxCount: 2, isLoading }
+// }

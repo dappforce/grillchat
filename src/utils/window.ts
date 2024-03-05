@@ -1,5 +1,6 @@
 import { env } from '@/env.mjs'
 import urlJoin from 'url-join'
+import { getCurrentUrlOrigin } from './links'
 
 export function preventWindowUnload() {
   window.onbeforeunload = function (e) {
@@ -42,6 +43,16 @@ export function getIsInIframe() {
     return true
   }
 }
+export function getIsAnIframeInSameOrigin() {
+  try {
+    return (
+      getIsInIframe() && getCurrentUrlOrigin() === window.parent.location.origin
+    )
+  } catch {
+    return false
+  }
+}
+
 export function getIsInIos() {
   if (typeof window === 'undefined') return false
   return (
