@@ -24,7 +24,7 @@ export default function GrowSection(props: ComponentProps<'section'>) {
           </HighlightedText>
           <span className='relative z-10'>
             {' '}
-            Your Community Through The Grill.so Audience &{' '}
+            Your Community Through The Grill Audience &{' '}
           </span>
           <HighlightedText size='sm' rotate={3}>
             Monetize
@@ -87,7 +87,7 @@ export default function GrowSection(props: ComponentProps<'section'>) {
               <span className='relative z-10'>
                 Other social media do not give effective monetization of your
                 audience’s engagement, but we do! Invite them to interact with
-                your content on Grill.so, and get{' '}
+                your content on Grill, and get{' '}
               </span>
               <HighlightedText size='xs' roundings='lg' rotate={3}>
                 rewards for each like!
