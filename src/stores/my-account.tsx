@@ -111,7 +111,7 @@ const sendLaunchEvent = async (
   const sendEvent = useAnalytics.getState().sendEvent
 
   if (!address) {
-    sendEvent('launch_app')
+    sendEvent('app_launched')
   } else {
     const [
       linkedTgAccData,
@@ -143,7 +143,7 @@ const sendLaunchEvent = async (
 
     userProperties.webNotifsEnabled = isWebNotificationsEnabled()
 
-    sendEvent('launch_app', undefined, userProperties)
+    sendEvent('app_launched', undefined, userProperties)
   }
 }
 
