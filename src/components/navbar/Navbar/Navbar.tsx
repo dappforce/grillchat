@@ -96,7 +96,7 @@ export default function Navbar({
     if (!isInitialized) return <div className='w-20' />
 
     if (isLoggedIn && !isTemporaryAccount) {
-      return <ProfileAvatar className='ml-0.5' />
+      return <ProfileAvatar />
     }
 
     return enableLoginButton ? (

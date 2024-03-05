@@ -160,7 +160,7 @@ export default function HubsPage(props: HubsPageProps) {
                     {newPostButton}
                     {searchButton}
                     {notificationBell}
-                    <div className='ml-3'>{authComponent}</div>
+                    <div className='ml-2.5'>{authComponent}</div>
                   </div>
                 </div>
               )}
