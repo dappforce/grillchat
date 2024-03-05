@@ -23,8 +23,7 @@ export default function HeadConfig({
   isTitleBrandFocused,
   cardFormat = 'summary',
 }: HeadConfigProps) {
-  const defaultTitle =
-    'Grill.so: Monetize Every Like, Comment, Post | Web3 Social'
+  const defaultTitle = 'Grill: Monetize Every Like, Comment, Post | Web3 Social'
   const summarizedTitle = summarize(title || defaultTitle)
 
   let usedTitle
