@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import CreateProfileModal from './CreateProfileModal'
-import { LoginModalStep, loginModalContents } from './LoginModalContent'
+import { loginModalContents, LoginModalStep } from './LoginModalContent'
 import SaveGrillKeyModal from './SaveGrillKeyModal'
 
 const StayUpdatedModal = dynamic(
@@ -77,7 +77,7 @@ export default function LoginModal({
     },
     'account-created': {
       title: '🎉 Account created',
-      desc: 'We have created an account linked to your X for you. You can now use Grill.chat!',
+      desc: 'We have created an account linked to your X for you. You can now use Grill!',
     },
     'evm-address-link': {
       title: '🔑 Connect EVM',
@@ -109,7 +109,7 @@ export default function LoginModal({
     },
     'polkadot-connect-account': {
       title: '🔗 Select an account',
-      desc: 'Select an account to connect to Grill.chat',
+      desc: 'Select an account to connect to Grill',
       withBackButton: true,
       backToStep: 'polkadot-connect',
       withoutDefaultPadding: true,

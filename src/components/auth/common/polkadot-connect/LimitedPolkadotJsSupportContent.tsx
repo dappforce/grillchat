@@ -14,7 +14,7 @@ export default function LimitedPolkadotJsSupportContent() {
         href={getCurrentUrlWithoutQuery()}
         target='_blank'
       >
-        Go to Grill.chat site
+        Go to Grill site
       </Button>
     </div>
   )
@@ -33,7 +33,7 @@ export function LimitedPolkadotJsSupportExplanation({
         href={getCurrentUrlWithoutQuery()}
         openInNewTab
       >
-        Grill.chat
+        Grill
       </LinkText>
       . To use this embedded version, please use{' '}
       <LinkText variant='primary' onClick={goToWalletSelection}>

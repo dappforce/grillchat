@@ -158,14 +158,14 @@ export default function ModerationInfoModal({
         {...props}
         isOpen={props.isOpen && !isOpenConfirmation}
         title='🛡 Moderation'
-        description='Moderated content will not be deleted from the blockchain but be hidden from the other users in Grill.chat.'
+        description='Moderated content will not be deleted from the blockchain but be hidden from the other users in Grill.'
       >
         <div className='flex flex-col gap-4'>
           {hasAnyBlockedInApp && (
             <BlockedUsersList
               data={blockedInAppCardData}
               isLoading={isLoadingBlockedInApp}
-              title='Blocked users in whole Grill.chat'
+              title='Blocked users in whole Grill'
             />
           )}
           <BlockedUsersList

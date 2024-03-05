@@ -51,8 +51,8 @@ export default function LaunchCommunityPage() {
             {title}
           </h1>
           <p className='text-text-muted'>
-            Grill.chat streamlines the process of setting up an anonymous chat
-            group for your brand or community. Use our{' '}
+            Grill streamlines the process of setting up an anonymous chat group
+            for your brand or community. Use our{' '}
             <LinkText
               href={GITHUB_LINK}
               variant='primary'

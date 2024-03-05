@@ -23,20 +23,18 @@ export default function HeadConfig({
   isTitleBrandFocused,
   cardFormat = 'summary',
 }: HeadConfigProps) {
-  const defaultTitle = 'Chat Anonymously On-Chain Without Wallets'
+  const defaultTitle = 'Grill: Monetize Every Like, Comment, Post | Web3 Social'
   const summarizedTitle = summarize(title || defaultTitle)
 
   let usedTitle
-  if (isTitleBrandFocused || !title)
-    usedTitle = 'Grill.chat: ' + summarizedTitle
-  else usedTitle = summarizedTitle + ' | Grill.chat'
+  if (isTitleBrandFocused || !title) usedTitle = 'Grill: ' + summarizedTitle
+  else usedTitle = summarizedTitle + ' | Grill'
 
   const defaultDesc =
-    'Talk with others from around the world and create your own communities about any topic, utilizing our censorship-resistant blockchain and app with anonymous logins.'
+    'Revolutionary Web3 social finance platform where bloggers and their followers earn together. Blockchain, NFT, and crypto content.'
   const usedDesc = description || defaultDesc
 
-  const usedImage =
-    image || 'https://grill.chat/icons/maskable-icon-192x192.png'
+  const usedImage = image || 'https://grill.chat/grill-default-cover.png'
 
   return (
     <Head>
@@ -50,7 +48,7 @@ export default function HeadConfig({
 
       <meta property='og:title' content={usedTitle} />
       <meta property='og:description' content={usedDesc} />
-      <meta property='og:site_name' content='Grill.chat' />
+      <meta property='og:site_name' content='Grill' />
       <meta property='og:image' content={usedImage} />
 
       {disableZoom ? (

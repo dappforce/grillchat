@@ -7,18 +7,18 @@
   </strong>
 </p>
 <p align="center">
-  Grill.chat offers a smooth and simple onboarding and user experience while still leveraging the power of blockchain technology.
+  Grill offers a smooth and simple onboarding and user experience while still leveraging the power of blockchain technology.
 </p>
 </br>
 <p align="center"><img height=20 src="https://github.com/dappforce/grillchat/actions/workflows/build-deploy.yml/badge.svg" alt="production-build"/></p>
 ---
-## How to integrate Grill.chat into your app 🤝
+## How to integrate Grill into your app 🤝
 
 It's now simpler than ever before to have an anonymous, on-chain chat right in your application 🎉.
 
 Read the [integration guide](./integration/README.md) to get started.
 
-## How to run Grill.chat locally 🏃‍♂️
+## How to run Grill locally 🏃‍♂️
 
 Requirements:
 
@@ -71,6 +71,6 @@ Below is the list of environment variables that you can use to customize your ch
 
 ## How to Manage Your Space
 
-[Grill.chat](https://grill.chat) home page contains list of topics for user to choose from. This topics are listed from all the posts in a [subsocial space](https://docs.subsocial.network/docs/develop/concepts/spaces/). You can create space in xSocial chain using [Gazer](https://x.gazer.app/) - a CMS for xSocial Network.
+[Grill](https://grillapp.net) home page contains list of topics for user to choose from. This topics are listed from all the posts in a [subsocial space](https://docs.subsocial.network/docs/develop/concepts/spaces/). You can [create space](https://grillapp.net/new-space) in Subsocial chain.
 
-You can add chat rooms into your space by creating [posts](https://docs.subsocial.network/docs/develop/concepts/postsAndComments) inside it. After you created your post, you can check that it is listed in Grill.chat by going to `https://grill.chat/{your space id}`.
+You can add chat rooms into your space by creating [posts](https://docs.subsocial.network/docs/develop/concepts/postsAndComments) inside it. After you created your post, you can check that it is listed in Grill by going to `https://grillapp.net/c/{your space id}`.

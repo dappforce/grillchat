@@ -1,9 +1,9 @@
 import Button from '@/components/Button'
 import Container from '@/components/Container'
-import LinkText from '@/components/LinkText'
-import { Skeleton } from '@/components/SkeletonFallback'
 import ExtensionModals from '@/components/extensions'
 import TextArea from '@/components/inputs/TextArea'
+import LinkText from '@/components/LinkText'
+import { Skeleton } from '@/components/SkeletonFallback'
 import { getIsHubWithoutJoinButton } from '@/constants/config'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import useLoginOption from '@/hooks/useLoginOption'
@@ -158,8 +158,8 @@ function ChatInputWrapper({
                     >
                       stake SUB
                     </LinkText>
-                    , enable Grill.chat notifications, and sign in to Grill with
-                    that account, or link it to your existing account.
+                    , enable Grill notifications, and sign in to Grill with that
+                    account, or link it to your existing account.
                   </span>
                 </span>
               )

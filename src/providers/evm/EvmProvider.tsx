@@ -25,7 +25,7 @@ const { chains, publicClient, webSocketPublicClient } = getConfiguredChains()
 const walletOptions = {
   chains,
   projectId: walletConnectProjectId,
-  appName: 'Grill.chat',
+  appName: 'Grill',
 }
 const commonWallets = [metaMaskWallet(walletOptions)]
 
