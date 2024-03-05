@@ -13,12 +13,7 @@ export default function Sidebar() {
   return (
     <aside className='flex flex-col p-4 pl-0 text-text-muted/80'>
       <ul className='flex flex-col gap-4'>
-        <SidebarItem
-          icon={BiNews}
-          title='Feed'
-          href='/feed'
-          forceHardNavigation
-        />
+        <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation />
         <SidebarItem icon={BiChat} title='Chat' href='/' />
         <SidebarItem
           icon={LuCompass}
@@ -79,7 +74,7 @@ function SidebarItem({
       <CustomLink
         className={cx(
           'flex items-center gap-4 transition hover:text-text-primary focus-visible:text-text-primary',
-          pathname === href && 'text-text-primary'
+          pathname === href && !forceHardNavigation && 'text-text-primary'
         )}
         forceHardNavigation={forceHardNavigation}
         href={href}
