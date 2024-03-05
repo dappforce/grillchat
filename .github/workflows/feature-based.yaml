@@ -77,7 +77,7 @@ jobs:
             # without base path
             # GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network
             # with base path
-            GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network/c
+            GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network/c/api/auth
             GH_NEXT_PUBLIC_BASE_PATH=/c
 
           target: runner
