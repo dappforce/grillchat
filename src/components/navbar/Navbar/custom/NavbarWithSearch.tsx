@@ -4,6 +4,7 @@ import { cx } from '@/utils/class-names'
 import { useRef, useState } from 'react'
 import { Options, useHotkeys } from 'react-hotkeys-hook'
 import { BsXCircleFill } from 'react-icons/bs'
+import { FiSearch } from 'react-icons/fi'
 import { HiMagnifyingGlass } from 'react-icons/hi2'
 
 export type NavbarWithSearchProps = {
@@ -73,7 +74,7 @@ export default function NavbarWithSearch({
         searchRef.current?.focus()
       }}
     >
-      <HiMagnifyingGlass className='text-xl' />
+      <FiSearch className='text-xl' />
     </Button>
   )
 

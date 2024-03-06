@@ -20,7 +20,8 @@ import { Wallet, getWallets } from '@talismn/connect-wallets'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ComponentProps, Fragment, ReactNode, useEffect, useState } from 'react'
-import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
+import { FaRegBell } from 'react-icons/fa'
+import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import AuthErrorModal from './AuthErrorModal'
 
@@ -266,7 +267,7 @@ function NotificationBell() {
       onClick={() => sendEvent('open_ann_chat', { eventSource: 'notifs_bell' })}
     >
       <div className='relative'>
-        <HiOutlineBell className='text-xl' />
+        <FaRegBell className='text-xl' />
         {!!unreadCount && unreadCount > 0 && (
           <div className='absolute right-0.5 top-0 -translate-y-1/2 translate-x-1/2 rounded-full bg-text-red px-1.5 text-xs text-text-on-primary'>
             {unreadCount}
