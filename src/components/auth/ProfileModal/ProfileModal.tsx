@@ -1,5 +1,5 @@
-import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
+import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
 import Modal, { ModalProps } from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getProfileQuery } from '@/services/api/query'
@@ -18,11 +18,15 @@ import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotCo
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
+import LinkedAddressesContent from './contents/LinkedAddressesContent'
+import LogoutContent from './contents/LogoutContent'
+import PrivateKeyContent from './contents/PrivateKeyContent'
+import SimpleProfileSettingsContent from './contents/ProfileSettingsContent/SimpleProfileSettingsContent'
+import ShareSessionContent from './contents/ShareSessionContent'
+import WalletActionRequiredContent from './contents/WalletActionRequired'
 import EvmLoginError from './contents/evm-linking/EvmLoginError'
 import LinkEvmAddressContent from './contents/evm-linking/LinkEvmAddressContent'
 import UnlinkEvmConfirmationContent from './contents/evm-linking/UnlinkEvmConfirmationContent'
-import LinkedAddressesContent from './contents/LinkedAddressesContent'
-import LogoutContent from './contents/LogoutContent'
 import NotificationContent from './contents/notifications/NotificationContent'
 import PushNotificationContent, {
   getPushNotificationUsableStatus,
@@ -31,10 +35,6 @@ import TelegramNotificationContent from './contents/notifications/TelegramNotifi
 import PolkadotConnectContent from './contents/polkadot-connect/PolkadotConnectContent'
 import PolkadotConnectIdentityRemovedContent from './contents/polkadot-connect/PolkadotConnectIdentityRemovedContent'
 import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUnlink'
-import PrivateKeyContent from './contents/PrivateKeyContent'
-import ProfileSettingsContent from './contents/ProfileSettingsContent'
-import ShareSessionContent from './contents/ShareSessionContent'
-import WalletActionRequiredContent from './contents/WalletActionRequired'
 import WithdrawContent from './contents/withdraw/WithdrawContent'
 import { ProfileModalContentProps, ProfileModalState } from './types'
 
@@ -43,7 +43,7 @@ const modalContents: {
 } = {
   account: AccountContent,
   'linked-addresses': LinkedAddressesContent,
-  'profile-settings': ProfileSettingsContent,
+  'profile-settings': SimpleProfileSettingsContent,
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,

@@ -8,12 +8,13 @@ import { encodeProfileSource } from '@/utils/profile'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps, useEffect, useState } from 'react'
-import { Controller, useForm, UseFormWatch } from 'react-hook-form'
+import { Controller, UseFormWatch, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import FormButton from '../FormButton'
+import { useName } from '../Name'
 import ImageInput from '../inputs/ImageInput'
 import Input from '../inputs/Input'
-import { useName } from '../Name'
+import TextArea from '../inputs/TextArea'
 
 export type SubsocialProfileFormProps = ComponentProps<'form'> & {
   onSuccess?: () => void
@@ -23,6 +24,7 @@ export type SubsocialProfileFormProps = ComponentProps<'form'> & {
 const formSchema = z.object({
   image: z.string(),
   name: z.string().min(3, 'Name is too short').max(25, 'Name is too long'),
+  about: z.string().max(160, 'Bio is too long'),
 })
 export function validateNickname(name: string) {
   return formSchema.safeParse({ name }).success
@@ -53,6 +55,7 @@ export default function SubsocialProfileForm({
     defaultValues: {
       name: profileContent?.name ?? '',
       image: profileContent?.image ?? '',
+      about: profileContent?.about ?? '',
     },
     resolver: zodResolver(formSchema),
     mode: 'onChange',
@@ -67,12 +70,13 @@ export default function SubsocialProfileForm({
   return (
     <UpsertProfileWrapper>
       {({ mutateAsync, isLoading }) => {
-        const onSubmit = handleSubmit((data) => {
-          mutateAsync({
+        const onSubmit = handleSubmit(async (data) => {
+          await mutateAsync({
             content: {
               ...profile?.profileSpace?.content,
               name: data.name,
               image: data.image,
+              about: data.about,
               profileSource: encodeProfileSource({
                 source: 'subsocial-profile',
               }),
@@ -107,12 +111,20 @@ export default function SubsocialProfileForm({
               />
             </div>
             <Input
-              placeholder='Name (3-25 symbols)'
+              placeholder='* Profile name'
               {...register('name')}
               variant='fill-bg'
               error={errors.name?.message}
             />
+            <TextArea
+              rows={3}
+              placeholder='Bio (optional)'
+              {...register('about')}
+              variant='fill-bg'
+              error={errors.about?.message}
+            />
             <ProfileFormButton
+              originalAbout={profileContent?.about}
               originalImage={profileContent?.image}
               isLoading={isLoading || isImageLoading}
               address={myAddress || ''}
@@ -130,16 +142,21 @@ function ProfileFormButton({
   watch,
   isLoading,
   originalImage,
+  originalAbout,
 }: {
   address: string
   watch: UseFormWatch<FormSchema>
   isLoading: boolean
   originalImage?: string
+  originalAbout?: string
 }) {
-  const { name, image } = watch()
+  const { name, image, about } = watch()
   const currentName = useName(address)
 
-  const isNotChanged = currentName.name === name && image === originalImage
+  const isNotChanged =
+    currentName.name === name &&
+    image === originalImage &&
+    about === originalAbout
 
   return (
     <FormButton
