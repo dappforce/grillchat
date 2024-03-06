@@ -53,6 +53,7 @@ export function SuperLikeWrapper({
     superLikeCount: number
     handleClick: () => void
     postRewards: PostRewards | undefined | null
+    isOffchainPost?: boolean
   }) => ReactNode
 }) {
   const [openModalState, setOpenModalState] = useState<
@@ -115,6 +116,7 @@ export function SuperLikeWrapper({
 
   const canBeSuperliked = clientCanPostSuperLiked && canPostSuperLiked
   const entity = post?.struct.isComment ? 'comment' : 'post'
+  const isOffchainPost = post?.struct.dataType === 'offChain'
 
   const isDisabled =
     (!canBeSuperliked ||
@@ -132,6 +134,8 @@ export function SuperLikeWrapper({
     disabledCause = `This ${entity} cannot be liked because its author has not yet locked at least 2,000 SUB`
   else if (!canBeSuperliked)
     disabledCause = `You cannot like ${entity}s that are older than 7 days`
+  else if (isOffchainPost)
+    disabledCause = `You cannot like off-chain ${entity}s`
 
   return (
     <>
@@ -142,6 +146,7 @@ export function SuperLikeWrapper({
         hasILiked,
         superLikeCount: superLikeCount?.count ?? 0,
         postRewards,
+        isOffchainPost,
       })}
       <ShouldStakeModal
         closeModal={() => setOpenModalState('')}
@@ -172,8 +177,9 @@ export default function SuperLike({
         hasILiked,
         superLikeCount,
         postRewards,
+        isOffchainPost,
       }) => {
-        if (superLikeCount <= 0) return null
+        if (superLikeCount <= 0 || isOffchainPost) return null
         const button = (
           <button
             onClick={handleClick}
