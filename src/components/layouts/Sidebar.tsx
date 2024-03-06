@@ -14,7 +14,7 @@ export default function Sidebar() {
   const myAddress = useMyMainAddress()
 
   return (
-    <aside className='flex flex-col p-4 pl-0 text-text-muted/80'>
+    <aside className='flex flex-col p-4 pl-0 text-[#64748BCC]'>
       <ul className='flex flex-col gap-4'>
         <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation />
         <SidebarItem icon={BiChat} title='Chat' href='/' />
