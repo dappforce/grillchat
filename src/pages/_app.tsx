@@ -113,11 +113,11 @@ function Styles({
       ${isPagesWithSidebar
         ? `
         :root {
-          --background: 236 239 244;
-          --background-light: 248 250 252;
-          --background-lighter: 236 239 244;
-          --background-lightest: 219 222 230;
-          --border-gray: 207 212 222;
+          --background: 248 250 252;
+          --background-light: 255 255 255;
+          --background-lighter: 248 250 252;
+          --background-lightest: 236 239 244;
+          --border-gray: 223 229 240;
         }
       `
         : ''}
