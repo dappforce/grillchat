@@ -119,6 +119,13 @@ function Styles({
           --background-lightest: 236 239 244;
           --border-gray: 223 229 240;
         }
+        .dark {
+          --background: 17 23 41;
+          --background-light: 32 41 58;
+          --background-lighter: 44 56 79;
+          --background-lightest: 54 74 102;
+          --border-gray: 51 59 74;
+        }
       `
         : ''}
 
