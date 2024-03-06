@@ -58,6 +58,13 @@ export default function Document() {
         />
         <meta name='msapplication-tap-highlight' content='no' />
 
+        <link rel='preconnect' href='https://fonts.googleapis.com' />
+        <link rel='preconnect' href='https://fonts.gstatic.com' />
+        <link
+          href='https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;400;500;600;700;800;900&display=swap'
+          rel='stylesheet'
+        />
+
         <link
           rel='apple-touch-startup-image'
           media='screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)'

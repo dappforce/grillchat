@@ -44,6 +44,7 @@ export function useSubsocialMutation<Data, Context = undefined>(
 ): UseMutationResult<string, Error, Data, unknown> {
   const workerFunc = async (data: Data) => {
     const wallet = await getWallet()
+
     if (!wallet.address || !wallet.signer)
       throw new Error('You need to connect your wallet first!')
 

@@ -38,6 +38,7 @@ export type NavbarProps = ComponentProps<'div'> & {
     defaultBackLink: string
     forceUseDefaultBackLink?: boolean
   }
+  containerClassName?: string
   customContent?: (elements: {
     logoLink: ReactNode
     authComponent: ReactNode
@@ -51,6 +52,7 @@ export default function Navbar({
   withSidebar,
   customContent,
   backButtonProps,
+  containerClassName,
   ...props
 }: NavbarProps) {
   const [openSidebar, setOpenSidebar] = useState(false)
@@ -162,7 +164,7 @@ export default function Navbar({
           className={cx(
             'flex h-14 w-full',
             withSidebar && 'container-page',
-            props.className
+            containerClassName
           )}
         >
           {customContent ? (

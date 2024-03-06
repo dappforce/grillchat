@@ -44,7 +44,7 @@ const menuListItemStyles = cva<MenuListVariants>(
 type Menu = {
   text: string | JSX.Element
   iconClassName?: string
-  icon: React.ComponentType<{ className?: string }>
+  icon?: React.ComponentType<{ className?: string }>
   onClick?: (e: SyntheticEvent) => void
   href?: string
   disabled?: boolean
@@ -84,12 +84,14 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
             disabledStyle='subtle'
             onClick={onClick}
           >
-            <Icon
-              className={cx(
-                'flex-shrink-0 text-[1.25em] text-text-muted',
-                iconClassName
-              )}
-            />
+            {Icon && (
+              <Icon
+                className={cx(
+                  'flex-shrink-0 text-[1.25em] text-text-muted',
+                  iconClassName
+                )}
+              />
+            )}
             {isValidElement(text) ? text : <span>{text}</span>}
           </Button>
         )

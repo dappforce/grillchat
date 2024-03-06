@@ -1,13 +1,22 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
-
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
   theme: {
     extend: {
+      gridTemplateRows: {
+        0: 'repeat(1, minmax(0, 0fr))',
+      },
+      screens: {
+        medium: '924px',
+      },
       fontFamily: {
         sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+        unbounded: 'Unbounded, sans-serif',
+      },
+      transitionProperty: {
+        'accordion-height': 'margin-top, grid-template-rows',
       },
       fontSize: {
         base: ['1rem', '1.35'],

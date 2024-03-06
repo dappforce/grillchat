@@ -12,6 +12,7 @@ export function getCurrentWallet(
 ): WalletAccount {
   if (walletType === 'injected') {
     const wallet = useMyAccount.getState().connectedWallet
+
     return {
       address: wallet?.address ?? '',
       signer: wallet?.signer ?? null,
