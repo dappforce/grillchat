@@ -24,15 +24,9 @@ export default function PostRewardStat({
 
   const { fromCommentSuperLikes, fromDirectSuperLikes, fromShareSuperLikes } =
     reward?.rewardsBySource || {}
-  const directReward = formatSUB({
-    value: fromDirectSuperLikes ?? '',
-  })
-  const commentReward = formatSUB({
-    value: fromCommentSuperLikes ?? '',
-  })
-  const sharesReward = formatSUB({
-    value: fromShareSuperLikes ?? '',
-  })
+  const directReward = formatSUB({ value: fromDirectSuperLikes ?? '' })
+  const commentReward = formatSUB({ value: fromCommentSuperLikes ?? '' })
+  const sharesReward = formatSUB({ value: fromShareSuperLikes ?? '' })
 
   if (!reward?.isNotZero) return null
 

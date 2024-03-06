@@ -14,10 +14,15 @@ import {
   getTotalStakeQuery,
 } from '@/services/datahub/content-staking/query'
 import { useLoginModal } from '@/stores/login-modal'
-import { useGetCurrentSigner, useMyMainAddress } from '@/stores/my-account'
+import {
+  useGetCurrentSigner,
+  useMyAccount,
+  useMyMainAddress,
+} from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import { LocalStorage } from '@/utils/storage'
+import { u8aToHex } from '@polkadot/util'
 import { signatureVerify } from '@polkadot/util-crypto'
 import dayjs from 'dayjs'
 import Image from 'next/image'
@@ -77,6 +82,8 @@ export function SuperLikeWrapper({
     canPostSuperLike || {}
 
   const myAddress = useMyMainAddress()
+  const myGrillAddress = useMyAccount.use.address()
+
   const { data: totalStake, isFetching: loadingTotalStake } =
     getTotalStakeQuery.useQuery(myAddress ?? '')
   const { data: myLike, isFetching: loadingMyLike } =
@@ -87,8 +94,8 @@ export function SuperLikeWrapper({
 
   const handleClick = (e?: SyntheticEvent) => {
     e?.stopPropagation()
-    if (hasILiked) return
-    if (!myAddress) {
+    if (hasILiked || !message) return
+    if (!myAddress || !myGrillAddress) {
       setIsOpen(true)
       return
     }
@@ -97,15 +104,21 @@ export function SuperLikeWrapper({
       return
     }
 
-    const sig = currentWeekSigStorage.get()
-    if (!sig || !message) {
-      setOpenModalState('confirmation')
-      return
+    let sig = currentWeekSigStorage.get()
+    if (!sig) {
+      const signer = useMyAccount.getState().signer
+      if (signer && myGrillAddress) {
+        sig = u8aToHex(signer.sign?.(message))
+        currentWeekSigStorage.set(sig)
+      } else {
+        toast.error('No signer provided')
+        return
+      }
     }
-    const result = signatureVerify(message, sig, myAddress)
+    const result = signatureVerify(message, sig, myGrillAddress)
     if (!result.isValid) {
       currentWeekSigStorage.remove()
-      setOpenModalState('confirmation')
+      handleClick()
       return
     }
     createSuperLike({ postId, confirmation: { msg: message, sig } })
@@ -188,7 +201,7 @@ export default function SuperLike({
               'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
               'enabled:hover:border-background-primary enabled:hover:text-text enabled:focus-visible:border-background-primary',
               'disabled:bg-border-gray/50 disabled:text-text-muted',
-              hasILiked && 'bg-background-primary text-white'
+              hasILiked && '!bg-background-primary !text-white'
             )}
           >
             {hasILiked ? <IoDiamond /> : <IoDiamondOutline />}
