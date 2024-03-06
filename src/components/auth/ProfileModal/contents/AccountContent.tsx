@@ -1,22 +1,29 @@
 import ExitIcon from '@/assets/icons/exit.svg'
 import KeyIcon from '@/assets/icons/key.svg'
+import MoonIcon from '@/assets/icons/moon.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
+import SunIcon from '@/assets/icons/sun.svg'
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
+import useGetTheme from '@/hooks/useGetTheme'
+import useIsInIframe from '@/hooks/useIsInIframe'
+import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
+import { cx } from '@/utils/class-names'
 import {
   getIsAnIframeInSameOrigin,
   sendMessageToParentWindow,
 } from '@/utils/window'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
+import { useTheme } from 'next-themes'
 import { FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
@@ -28,6 +35,8 @@ export default function AccountContent({
 }: ProfileModalContentProps) {
   // const { showNotification, closeNotification } =
   //   useFirstVisitNotification('notification-menu')
+
+  const isInIframe = useIsInIframe()
 
   const {
     data: balance,
@@ -52,7 +61,7 @@ export default function AccountContent({
 
   const { data: profile } = getProfileQuery.useQuery(address)
 
-  // const colorModeOptions = useColorModeOptions()
+  const colorModeOptions = useColorModeOptions()
 
   // const {
   //   count: linkedAddressesCount,
@@ -120,7 +129,6 @@ export default function AccountContent({
     //   icon: LinkedAddressesIcon,
     //   onClick: onLinkedAddressesClick,
     // },
-    // ...colorModeOptions,
     // ...(isInstallAvailable()
     //   ? [
     //       {
@@ -173,6 +181,7 @@ export default function AccountContent({
     //   icon: InfoIcon,
     //   onClick: onAboutClick,
     // },
+    ...(!isInIframe ? colorModeOptions : []),
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
   ]
 
@@ -244,31 +253,31 @@ export default function AccountContent({
   )
 }
 
-// function useColorModeOptions(): MenuListProps['menus'] {
-//   const { setTheme } = useTheme()
-//   const theme = useGetTheme()
-//   const { theme: configTheme } = useConfigContext()
+function useColorModeOptions(): MenuListProps['menus'] {
+  const { setTheme } = useTheme()
+  const theme = useGetTheme()
+  const { theme: configTheme } = useConfigContext()
 
-//   if (configTheme) return []
+  if (configTheme) return []
 
-//   const lightModeOption: MenuListProps['menus'][number] = {
-//     text: 'Light Mode',
-//     onClick: () => setTheme('light'),
-//     icon: SunIcon,
-//     iconClassName: cx('text-text-muted'),
-//   }
-//   const darkModeOption: MenuListProps['menus'][number] = {
-//     text: 'Dark Mode',
-//     onClick: () => setTheme('dark'),
-//     icon: MoonIcon,
-//     iconClassName: cx('text-text-muted'),
-//   }
+  const lightModeOption: MenuListProps['menus'][number] = {
+    text: 'Light Mode',
+    onClick: () => setTheme('light'),
+    icon: SunIcon,
+    iconClassName: cx('text-text-muted'),
+  }
+  const darkModeOption: MenuListProps['menus'][number] = {
+    text: 'Dark Mode',
+    onClick: () => setTheme('dark'),
+    icon: MoonIcon,
+    iconClassName: cx('text-text-muted'),
+  }
 
-//   if (theme === 'light') return [darkModeOption]
-//   if (theme === 'dark') return [lightModeOption]
+  if (theme === 'light') return [darkModeOption]
+  if (theme === 'dark') return [lightModeOption]
 
-//   return []
-// }
+  return []
+}
 
 // function useLinkedAccountCount() {
 //   const myAddress = useMyMainAddress()
