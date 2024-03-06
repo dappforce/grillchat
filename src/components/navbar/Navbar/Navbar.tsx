@@ -257,10 +257,13 @@ function NotificationBell() {
     LAST_READ_NOTIFICATION_KEY,
     { storageKeyType: 'user' }
   )
-  const { data: unreadCount } = getNotificationCountQuery.useQuery({
-    address: myAddress ?? '',
-    afterDate: lastReadNotif,
-  })
+  const { data: unreadCount } = getNotificationCountQuery.useQuery(
+    {
+      address: myAddress ?? '',
+      afterDate: lastReadNotif || undefined,
+    },
+    { enabled: !!lastReadNotif && !!myAddress }
+  )
   const sendEvent = useSendEvent()
 
   return (
