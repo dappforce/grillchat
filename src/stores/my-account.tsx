@@ -9,6 +9,7 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
 import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useParentData } from '@/stores/parent'
+import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import {
   decodeSecretKey,
   encodeSecretKey,
@@ -315,11 +316,34 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     if (parentProxyAddress) {
       set({ parentProxyAddress })
       try {
-        const proxy = await getProxiesQuery.fetchQuery(queryClient, {
+        // Remove proxy with type 'Any'
+        const proxies = await getProxiesQuery.fetchQuery(queryClient, {
           address: parentProxyAddress,
         })
-        const isProxyValid = proxy.includes(get().address ?? '')
-        if (!isProxyValid) {
+        const currentProxy = proxies.find(
+          ({ address }) => address === get().address
+        )
+        if (currentProxy?.proxyType === 'Any') {
+          async function removeProxy() {
+            const api = await getSubsocialApi()
+            const substrateApi = await api.substrateApi
+            await substrateApi.tx.proxy
+              .proxy(
+                parentProxyAddress!,
+                null,
+                substrateApi.tx.proxy.removeProxies()
+              )
+              .signAndSend(get().signer!)
+          }
+          removeProxy()
+
+          parentProxyAddressStorage.remove()
+          set({ parentProxyAddress: undefined })
+          get().logout()
+          alert(
+            'Sorry we had to remove your proxy, please relogin to use your account again.'
+          )
+        } else if (!currentProxy) {
           parentProxyAddressStorage.remove()
           set({ parentProxyAddress: undefined })
           get().logout()

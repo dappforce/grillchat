@@ -14,10 +14,15 @@ async function getProxies({
     .map((proxy) => {
       const proxyData = proxy.toPrimitive()
       if (Array.isArray(proxyData)) {
-        return toSubsocialAddress((proxyData[0] as any)?.delegate)!
+        const data = proxyData[0] as any
+        return {
+          address: toSubsocialAddress(data?.delegate)!,
+          proxyType: data?.proxyType,
+        }
       }
+      return null
     })
-    .filter(Boolean) as string[]
+    .filter(Boolean) as { address: string; proxyType: string }[]
 }
 
 export const getProxiesQuery = createSubsocialQuery({
