@@ -1,1 +1,1 @@
-export const PAGES_WITH_SIDEBAR = ['/staking', '/']
+export const PAGES_WITH_SIDEBAR = ['/staking', '/', '/[hubId]']

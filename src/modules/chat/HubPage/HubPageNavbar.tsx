@@ -41,7 +41,7 @@ export default function HubPageNavbar({
   if (isInHub && !isInIframe) {
     leftSection = (
       <div className='flex flex-1 items-center overflow-hidden'>
-        {backButton}
+        {/* {backButton} */}
         <Button
           variant='transparent'
           interactive='none'

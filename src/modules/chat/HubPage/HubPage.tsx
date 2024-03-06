@@ -53,6 +53,7 @@ export default function HubPage({ hubId }: HubPageProps) {
 
   return (
     <DefaultLayout
+      withSidebar
       navbarProps={{
         customContent: ({
           backButton,
