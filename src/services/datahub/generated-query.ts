@@ -55,6 +55,7 @@ export type Account = {
   postsCreated: Array<Post>
   postsOwned: Array<Post>
   profileSpace?: Maybe<Space>
+  socialProfile?: Maybe<SocialProfile>
   spacesCreated: Array<Space>
   spacesOwned: Array<Space>
 }
@@ -307,6 +308,12 @@ export type DailyStatsByStakerResponse = {
   totalLazyRewardAmount: Scalars['String']['output']
 }
 
+export enum DataHubClientId {
+  Grillso = 'GRILLSO',
+  Other = 'OTHER',
+  Polkaverse = 'POLKAVERSE',
+}
+
 export enum DataHubSubscriptionEventEnum {
   ActiveStakingSuperLikeCreated = 'ACTIVE_STAKING_SUPER_LIKE_CREATED',
   ActiveStakingSuperLikeStateUpdated = 'ACTIVE_STAKING_SUPER_LIKE_STATE_UPDATED',
@@ -408,6 +415,8 @@ export type IdTimestampPair = {
 
 export enum IdentityProvider {
   Email = 'EMAIL',
+  Facebook = 'FACEBOOK',
+  Google = 'GOOGLE',
   Twitter = 'TWITTER',
 }
 
@@ -761,6 +770,7 @@ export type Query = {
   moderators?: Maybe<ModeratorsResponse>
   postMetadata: Array<PostMetadataResponse>
   posts: FindPostsResponseDto
+  socialProfiles: SocialProfilesResponse
   unreadMessages: Array<UnreadPostsCountResponse>
 }
 
@@ -898,6 +908,10 @@ export type QueryPostsArgs = {
   where: FindPostsArgs
 }
 
+export type QuerySocialProfilesArgs = {
+  args: SocialProfileInput
+}
+
 export type QueryUnreadMessagesArgs = {
   where: UnreadMessagesInput
 }
@@ -923,7 +937,13 @@ export type RankedPostIdWithDetails = {
   score: Scalars['Float']['output']
 }
 
+export type RankedPostIdsByActiveStakingActivityFilter = {
+  normalizeOrder?: InputMaybe<Scalars['Boolean']['input']>
+  uniquenessRange?: InputMaybe<Scalars['Int']['input']>
+}
+
 export type RankedPostIdsByActiveStakingActivityInput = {
+  filter?: InputMaybe<RankedPostIdsByActiveStakingActivityFilter>
   limit?: InputMaybe<Scalars['Int']['input']>
   offset?: InputMaybe<Scalars['Int']['input']>
   order?: InputMaybe<ActiveStakingListOrder>
@@ -987,6 +1007,26 @@ export enum SocialEventDataType {
   OffChain = 'offChain',
   Optimistic = 'optimistic',
   Persistent = 'persistent',
+}
+
+export type SocialProfile = {
+  __typename?: 'SocialProfile'
+  account: Account
+  id: Scalars['String']['output']
+  referrersList?: Maybe<Array<UserReferrerDetail>>
+}
+
+export type SocialProfileInput = {
+  where: SocialProfileInputWhereArgs
+}
+
+export type SocialProfileInputWhereArgs = {
+  substrateAddresses: Array<Scalars['String']['input']>
+}
+
+export type SocialProfilesResponse = {
+  __typename?: 'SocialProfilesResponse'
+  data: Array<SocialProfile>
 }
 
 export type Space = {
@@ -1120,19 +1160,21 @@ export type SuperLikeSubscriptionPayload = {
 export type SuperLikesCreatorRewards = {
   __typename?: 'SuperLikesCreatorRewards'
   posts: Array<SuperLikesCreatorRewardsByPost>
+  rewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
   total: Scalars['String']['output']
 }
 
 export type SuperLikesCreatorRewardsByPost = {
   __typename?: 'SuperLikesCreatorRewardsByPost'
+  /** @deprecated Should be used totalAmount instead. */
   amount: Scalars['String']['output']
-  directRewardAmount: Scalars['String']['output']
   directSuperLikesCount: Scalars['Int']['output']
   postId: Scalars['String']['output']
   postPersistentId: Scalars['String']['output']
-  sharedRewardAmount: Scalars['String']['output']
+  rewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
   sharedSuperLikesCount: Scalars['Int']['output']
   superLikesCount: Scalars['Int']['output']
+  totalAmount: Scalars['String']['output']
 }
 
 export type SuperLikesResponseDto = {
@@ -1193,6 +1235,15 @@ export type UpdateOrganizationInput = {
   description?: InputMaybe<Scalars['String']['input']>
   id: Scalars['String']['input']
   name?: InputMaybe<Scalars['String']['input']>
+}
+
+export type UserReferrerDetail = {
+  __typename?: 'UserReferrerDetail'
+  clientId: DataHubClientId
+  id: Scalars['String']['output']
+  referrerId: Scalars['String']['output']
+  socialProfile: SocialProfile
+  timestamp: Scalars['String']['output']
 }
 
 export type GetSuperLikeCountsQueryVariables = Exact<{
@@ -1771,6 +1822,24 @@ export type SubscribePostSubscription = {
   }
 }
 
+export type GetReferrerIdQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetReferrerIdQuery = {
+  __typename?: 'Query'
+  socialProfiles: {
+    __typename?: 'SocialProfilesResponse'
+    data: Array<{
+      __typename?: 'SocialProfile'
+      referrersList?: Array<{
+        __typename?: 'UserReferrerDetail'
+        referrerId: string
+      }> | null
+    }>
+  }
+}
+
 export const DatahubPostFragment = gql`
   fragment DatahubPostFragment on Post {
     id
@@ -2128,6 +2197,17 @@ export const SubscribePost = gql`
         dataType
         rootPost {
           persistentId
+        }
+      }
+    }
+  }
+`
+export const GetReferrerId = gql`
+  query GetReferrerId($address: String!) {
+    socialProfiles(args: { where: { substrateAddresses: [$address] } }) {
+      data {
+        referrersList {
+          referrerId
         }
       }
     }

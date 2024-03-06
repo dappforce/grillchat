@@ -1,9 +1,10 @@
 import Container from '@/components/Container'
+import CustomLink from '@/components/referral/CustomLink'
 import { SortChatOption } from '@/modules/chat/hooks/useSortedChats'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import { ImageProps } from 'next/image'
-import Link, { LinkProps } from 'next/link'
+import { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
 import { RiPushpinLine } from 'react-icons/ri'
 import ChatImage, { ChatImageProps } from '../ChatImage'
@@ -57,7 +58,7 @@ export default function ChatPreview({
   ...props
 }: ChatPreviewProps) {
   const Component = asContainer ? Container<'div'> : 'div'
-  const ContentContainer = asLink ? Link : 'div'
+  const ContentContainer = asLink ? CustomLink : 'div'
 
   const renderAdditionalData = () => {
     if (isPinned || chatId) {

@@ -4,7 +4,7 @@ import urlJoin from 'url-join'
 
 export default function Document() {
   return (
-    <Html lang='en'>
+    <Html lang='en' className='bg-transparent'>
       <Head>
         <link
           rel='icon'
@@ -46,10 +46,10 @@ export default function Document() {
         <meta name='msapplication-TileColor' content='#111729' />
         <meta name='theme-color' content='#111729' />
 
-        <meta name='application-name' content='Grill.chat' />
+        <meta name='application-name' content='Grill' />
         <meta name='apple-mobile-web-app-capable' content='yes' />
         <meta name='apple-mobile-web-app-status-bar-style' content='default' />
-        <meta name='apple-mobile-web-app-title' content='Grill.chat' />
+        <meta name='apple-mobile-web-app-title' content='Grill' />
         <meta name='format-detection' content='telephone=no' />
         <meta name='mobile-web-app-capable' content='yes' />
         <meta
@@ -58,9 +58,12 @@ export default function Document() {
         />
         <meta name='msapplication-tap-highlight' content='no' />
 
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+        <link rel='preconnect' href='https://fonts.googleapis.com' />
+        <link rel='preconnect' href='https://fonts.gstatic.com' />
+        <link
+          href='https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;400;500;600;700;800;900&display=swap'
+          rel='stylesheet'
+        />
 
         <link
           rel='apple-touch-startup-image'
@@ -199,7 +202,7 @@ export default function Document() {
           )}
         />
       </Head>
-      <body>
+      <body className='bg-transparent'>
         <Main />
         <NextScript />
       </body>

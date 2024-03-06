@@ -1,0 +1,2 @@
+export const SOURCE_IMAGE_MAX_SIZE = 50 * 1024 * 1024 // 50MB
+export const COMPRESSED_IMAGE_MAX_SIZE = 1 * 1024 * 1024 // 1MB

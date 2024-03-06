@@ -4,6 +4,7 @@ import Tabs, { TabsProps } from '@/components/Tabs'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
+import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
@@ -18,6 +19,7 @@ import { cx } from '@/utils/class-names'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import urlJoin from 'url-join'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
@@ -48,19 +50,13 @@ export const homePageAdditionalTabs: {
   //   text: 'AI Bots',
   //   hubId: '1031',
   // },
-  {
-    id: 'creators',
-    text: 'Creators',
-    hubId: '1218',
-  },
 ]
 
 const pathnameTabIdMapper: Record<string, number> = {
   '/my-chats': 0,
   '/hot-chats': 1,
-  '/creators': 2,
   // '/ai-bots': 2,
-  '/hubs': 3,
+  '/hubs': 2,
 }
 
 export default function HubsPage(props: HubsPageProps) {
@@ -70,6 +66,8 @@ export default function HubsPage(props: HubsPageProps) {
   const isFirstAccessed = useLocation((state) => state.isFirstAccessed)
   const { search, setSearch, getFocusedElementIndex, focusController } =
     useSearch()
+
+  const refSearchParam = useReferralSearchParam()
 
   const tabs: TabsProps['tabs'] = [
     {
@@ -136,24 +134,33 @@ export default function HubsPage(props: HubsPageProps) {
     setSelectedTab(selectedTab)
     const selectedTabId = tabs[selectedTab]?.id
     if (selectedTabId)
-      router.push(`/${selectedTabId}`, undefined, { shallow: true })
+      router.push(urlJoin(`/${selectedTabId}`, refSearchParam), undefined, {
+        shallow: true,
+      })
   }
 
   const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
 
   return (
     <DefaultLayout
+      withSidebar
       navbarProps={{
-        customContent: ({ logoLink, authComponent, notificationBell }) => {
+        customContent: ({
+          logoLink,
+          authComponent,
+          notificationBell,
+          newPostButton,
+        }) => {
           return (
             <NavbarWithSearch
               customContent={(searchButton) => (
                 <div className='flex w-full items-center justify-between gap-4'>
                   {logoLink}
-                  <div className='flex items-center gap-1'>
+                  <div className='flex items-center gap-0'>
+                    {newPostButton}
                     {searchButton}
                     {notificationBell}
-                    <div className='ml-2'>{authComponent}</div>
+                    <div className='ml-2.5'>{authComponent}</div>
                   </div>
                 </div>
               )}

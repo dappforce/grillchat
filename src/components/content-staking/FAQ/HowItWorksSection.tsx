@@ -2,8 +2,8 @@ import useGetTheme from '@/hooks/useGetTheme'
 import BgGradient from '@/modules/LandingPage/common/BgGradient'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
-import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
 import { sectionBg } from '../utils/SectionWrapper'
+import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
 
 const HowItWorksSection = () => {
   const theme = useGetTheme()
@@ -33,7 +33,12 @@ const HowItWorksSection = () => {
         </div>
       </div>
       <div className='flex w-full justify-center'>
-        <div className={cx('flex aspect-video h-auto w-full max-w-2xl items-center justify-center rounded-3xl', sectionBg)}>
+        <div
+          className={cx(
+            'flex aspect-video h-auto w-full max-w-2xl items-center justify-center rounded-3xl',
+            sectionBg
+          )}
+        >
           <span className='text-5xl font-bold'>Coming Soon</span>
         </div>
         {/* <iframe

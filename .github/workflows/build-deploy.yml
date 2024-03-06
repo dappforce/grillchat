@@ -115,8 +115,6 @@ jobs:
             GH_DATAHUB_QUEUE_URL=https://queue-data-hub.subsocial.network/graphql
             GH_DATAHUB_QUEUE_TOKEN=${{ secrets.DATAHUB_QUEUE_TOKEN }}
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=1386
-            GH_TWITTER_CLIENT_ID=${{ secrets.TWITTER_CLIENT_ID }}
-            GH_TWITTER_CLIENT_SECRET=${{ secrets.TWITTER_CLIENT_SECRET }}
             GH_NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
             GH_NEXTAUTH_URL=https://grill.chat
           target: storybook
@@ -184,10 +182,10 @@ jobs:
             GH_NEXT_PUBLIC_NOTIFICATION_APP_ID=BECyoVsDLEgsOj9MvhoetL3YGYZVCE5RzhADmBugpp0hu7QBV_xG8veiT_qAFxF9S8qXKhPvaPiD5oMrdWrFNB0
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12662
             GH_NEXT_PUBLIC_SPACE_IDS=12659,12660,12455,12662
-            GH_NEXT_PUBLIC_AMP_ID=a05f8e7876f03e8bffeb039125345da1
+            GH_NEXT_PUBLIC_AMP_ID=2eeca0e8a0163c89e3f023c971e426a6
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12455
-            GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
+            GH_NEXT_PUBLIC_GA_ID=G-TP1XEFNHQD
 
           target: runner
           tags: |

@@ -1,5 +1,5 @@
 import { Router } from 'next/router'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 let histories: string[] = []
 let startHistoryLength: number
@@ -16,7 +16,7 @@ const initialState: State = {
   isFirstAccessed: true,
 }
 
-export const useLocation = create<State>()((set, get) => ({
+const useLocationBase = create<State>()((set, get) => ({
   ...initialState,
   init: () => {
     set({ currentUrl: window.location.href })
@@ -48,3 +48,4 @@ export const useLocation = create<State>()((set, get) => ({
     })
   },
 }))
+export const useLocation = createSelectors(useLocationBase)

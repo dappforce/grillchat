@@ -1,6 +1,6 @@
+import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { RegisteredCreator } from './types'
-import { getSubIdRequest } from '@/services/external'
 
 export const creatorsListId = 'creatorsListId'
 

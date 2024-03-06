@@ -1,8 +1,9 @@
 import { cx } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
-import Link, { LinkProps } from 'next/link'
+import { LinkProps } from 'next/link'
 import { ComponentProps, forwardRef } from 'react'
 import { HiArrowUpRight } from 'react-icons/hi2'
+import CustomLink from './referral/CustomLink'
 
 export const linkTextStyles = cva(
   'cursor-pointer hover:underline focus-visible:underline',
@@ -65,7 +66,7 @@ const LinkText = forwardRef<any, LinkTextProps>(function LinkText(
   }
 
   return (
-    <Link href={href} passHref legacyBehavior>
+    <CustomLink href={href} passHref legacyBehavior>
       <a
         {...props}
         {...anchorProps}
@@ -82,7 +83,7 @@ const LinkText = forwardRef<any, LinkTextProps>(function LinkText(
           />
         )}
       </a>
-    </Link>
+    </CustomLink>
   )
 })
 

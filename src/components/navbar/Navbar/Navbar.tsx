@@ -2,26 +2,27 @@ import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
-import { constantsConfig } from '@/constants/config'
+import Sidebar from '@/components/layouts/Sidebar'
+import CustomLink from '@/components/referral/CustomLink'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginOption from '@/hooks/useLoginOption'
-import usePrevious from '@/hooks/usePrevious'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
-import { getUnreadCountQuery } from '@/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
+import { getProfileQuery } from '@/services/api/query'
+import { getNotificationCountQuery } from '@/services/subsocial/notifications/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getHubPageLink, getUrlQuery } from '@/utils/links'
-import { getIdFromSlug } from '@/utils/slug'
-import { LocalStorage } from '@/utils/storage'
+import { getHubPageLink } from '@/utils/links'
+import { useExternalStorage } from '@/utils/polkaverse-storage'
+import { Dialog, Transition } from '@headlessui/react'
 import { Wallet, getWallets } from '@talismn/connect-wallets'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ComponentProps, ReactNode, useEffect, useRef, useState } from 'react'
-import { HiOutlineBell, HiOutlineChevronLeft } from 'react-icons/hi2'
+import { ComponentProps, Fragment, ReactNode, useEffect, useState } from 'react'
+import { FaRegBell } from 'react-icons/fa'
+import { HiOutlineChevronLeft } from 'react-icons/hi2'
+import { RxHamburgerMenu } from 'react-icons/rx'
 import AuthErrorModal from './AuthErrorModal'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
@@ -33,6 +34,7 @@ const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), {
 })
 
 export type NavbarProps = ComponentProps<'div'> & {
+  withSidebar?: boolean
   backButtonProps?: {
     defaultBackLink: string
     forceUseDefaultBackLink?: boolean
@@ -43,59 +45,32 @@ export type NavbarProps = ComponentProps<'div'> & {
     authComponent: ReactNode
     notificationBell: ReactNode
     backButton: ReactNode
+    newPostButton: ReactNode
+    hamburgerMenu: ReactNode
   }) => JSX.Element
 }
 
 export default function Navbar({
+  withSidebar,
   customContent,
   backButtonProps,
   containerClassName,
   ...props
 }: NavbarProps) {
+  const [openSidebar, setOpenSidebar] = useState(false)
   const { enableLoginButton = true } = useConfigContext()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isTemporaryAccount = useMyAccount((state) => state.isTemporaryAccount)
-  const isInitializedAddress = useMyAccount(
-    (state) => state.isInitializedAddress
-  )
   const router = useRouter()
 
   const address = useMyMainAddress()
-  const prevAddress = usePrevious(address)
+  const { data: profile } = getProfileQuery.useQuery(address ?? '')
   const isLoggedIn = !!address
 
-  const isLoginModalOpen = useLoginModal((state) => state.isOpen)
   const setIsLoginModalOpen = useLoginModal((state) => state.setIsOpen)
   const setLoginModalDefaultOpenState = useLoginModal(
     (state) => state.setDefaultOpenState
   )
-  const initialLoginModalOpenState = useLoginModal(
-    (state) => state.initialOpenState
-  )
-
-  useEffect(() => {
-    const auth = getUrlQuery('auth') === 'true'
-    if (auth) setIsLoginModalOpen(true)
-  }, [setIsLoginModalOpen])
-
-  const [openPrivateKeyNotice, setOpenPrivateKeyNotice] = useState(false)
-  const isLoggingInWithKey = useRef(false)
-  const timeoutRef = useRef<any>()
-
-  useEffect(() => {
-    const isChangedAddressFromGuest = prevAddress === null && address
-    if (
-      isInitializedAddress ||
-      isLoggingInWithKey.current ||
-      !address ||
-      !isChangedAddressFromGuest
-    )
-      return
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    timeoutRef.current = setTimeout(() => {
-      setOpenPrivateKeyNotice(true)
-    }, 10_000)
-  }, [address, isInitializedAddress, prevAddress])
 
   const { loginOption } = useLoginOption()
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
@@ -125,14 +100,7 @@ export default function Navbar({
     if (!isInitialized) return <div className='w-20' />
 
     if (isLoggedIn && !isTemporaryAccount) {
-      return (
-        <ProfileAvatar
-          popOverControl={{
-            isOpen: openPrivateKeyNotice,
-            setIsOpen: setOpenPrivateKeyNotice,
-          }}
-        />
-      )
+      return <ProfileAvatar />
     }
 
     return enableLoginButton ? (
@@ -145,11 +113,23 @@ export default function Navbar({
   }
   const authComponent = renderAuthComponent()
 
+  const hamburgerMenu = (
+    <Button
+      size='circle'
+      variant='transparent'
+      className='-ml-2 mr-1 md:hidden'
+      onClick={() => setOpenSidebar(true)}
+    >
+      <RxHamburgerMenu className='text-xl text-text-muted' />
+    </Button>
+  )
+
   const logoLink = (
     <div className='flex items-center'>
-      <Link href={getHubPageLink(router)} aria-label='Back'>
+      {hamburgerMenu}
+      <CustomLink href={getHubPageLink(router)} aria-label='Back'>
         <Logo className='text-2xl' />
-      </Link>
+      </CustomLink>
     </div>
   )
 
@@ -159,6 +139,19 @@ export default function Navbar({
         <HiOutlineChevronLeft />
       </BackButton>
     </div>
+  )
+
+  const newPostButton = profile?.profileSpace && (
+    <Button
+      roundings='lg'
+      variant='mutedOutline'
+      className='mr-2 border-[#D9D9D9] text-sm font-medium text-text'
+      size='xs'
+      nextLinkProps={{ forceHardNavigation: true }}
+      href={`/${profile.profileSpace.id}/posts/new`}
+    >
+      New post
+    </Button>
   )
 
   const isInIframe = useIsInIframe()
@@ -173,18 +166,27 @@ export default function Navbar({
           props.className
         )}
       >
-        <Container className={cx('flex h-14 w-full', props.className, containerClassName)}>
+        <Container
+          className={cx(
+            'flex h-14 w-full',
+            withSidebar && 'container-page',
+            containerClassName
+          )}
+        >
           {customContent ? (
             customContent({
               logoLink,
               authComponent,
               notificationBell,
               backButton,
+              newPostButton,
+              hamburgerMenu,
             })
           ) : (
             <div className='flex w-full items-center justify-between'>
               {logoLink}
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-1'>
+                {newPostButton}
                 {notificationBell}
                 {authComponent}
               </div>
@@ -192,57 +194,86 @@ export default function Navbar({
           )}
         </Container>
       </nav>
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        closeModal={() => setIsLoginModalOpen(false)}
-        initialOpenState={initialLoginModalOpenState}
-        beforeLogin={() => (isLoggingInWithKey.current = true)}
-        afterLogin={() => (isLoggingInWithKey.current = false)}
-      />
+      <LoginModal />
       <AuthErrorModal />
+      <DrawerSidebar
+        openSidebar={openSidebar}
+        setOpenSidebar={setOpenSidebar}
+      />
     </>
   )
 }
 
-const BELL_LAST_READ_STORAGE_NAME = 'announcement-last-read'
-const bellLastReadStorage = new LocalStorage(() => BELL_LAST_READ_STORAGE_NAME)
+function DrawerSidebar({
+  openSidebar,
+  setOpenSidebar,
+}: {
+  openSidebar: boolean
+  setOpenSidebar: (open: boolean) => void
+}) {
+  return (
+    <Transition appear show={openSidebar} as={Fragment}>
+      <Dialog
+        as='div'
+        className={cx('relative z-40')}
+        onClose={() => setOpenSidebar(false)}
+      >
+        <Transition.Child
+          as={Fragment}
+          enter='ease-out duration-200'
+          enterFrom='opacity-0'
+          enterTo='opacity-100'
+          leave='ease-in duration-150'
+          leaveFrom='opacity-100'
+          leaveTo='opacity-0'
+        >
+          <div className='fixed top-14 z-20 h-[calc(100vh_-_3.5rem)] w-full bg-black/50 opacity-0 backdrop-blur-sm' />
+        </Transition.Child>
+        <Transition.Child
+          as={Fragment}
+          enter='ease-out duration-200'
+          enterFrom='opacity-0 left-[-220px]'
+          enterTo='opacity-100 left-0'
+          leave='ease-in duration-150'
+          leaveFrom='opacity-100 left-0'
+          leaveTo='opacity-0 left-[-220px]'
+        >
+          <Dialog.Panel
+            as='div'
+            className='fixed top-14 z-30 h-[calc(100vh_-_3.5rem)] w-[220px] bg-background pl-4'
+          >
+            <Sidebar />
+          </Dialog.Panel>
+        </Transition.Child>
+      </Dialog>
+    </Transition>
+  )
+}
+
+const LAST_READ_NOTIFICATION_KEY = 'lastReadNotification'
 function NotificationBell() {
+  const myAddress = useMyMainAddress()
+  const { data: lastReadNotif } = useExternalStorage(
+    LAST_READ_NOTIFICATION_KEY,
+    { storageKeyType: 'user' }
+  )
+  const { data: unreadCount } = getNotificationCountQuery.useQuery({
+    address: myAddress ?? '',
+    afterDate: lastReadNotif,
+  })
   const sendEvent = useSendEvent()
-  const [lastTimestamp, setLastTimestamp] = useState(() =>
-    parseInt(bellLastReadStorage.get() ?? '')
-  )
-
-  // enable unread count only from datahub data because we can't get unread count by timestamp from squid/chain
-  const { data: unreadCount } = getUnreadCountQuery.useQuery(
-    {
-      chatId: constantsConfig.annChatId,
-      lastRead: { timestamp: lastTimestamp },
-    },
-    {
-      enabled: isDatahubAvailable && !!lastTimestamp,
-      staleTime: Infinity,
-    }
-  )
-
-  const { query } = useRouter()
-  useEffect(() => {
-    if (typeof query.slug !== 'string') return
-    if (getIdFromSlug(query.slug) === constantsConfig.annChatId) {
-      bellLastReadStorage.set(Date.now().toString())
-      setLastTimestamp(Date.now())
-    }
-  }, [query])
 
   return (
     <Button
       size='circle'
       variant='transparent'
-      className='text-text-muted dark:text-text'
-      href={`/x/grill-announcements-${constantsConfig.annChatId}`}
+      className='relative top-px text-text-muted dark:text-text'
+      nextLinkProps={{ forceHardNavigation: true }}
+      href='/notifications'
       onClick={() => sendEvent('open_ann_chat', { eventSource: 'notifs_bell' })}
     >
       <div className='relative'>
-        <HiOutlineBell className='text-xl' />
+        <FaRegBell className='text-xl' />
         {!!unreadCount && unreadCount > 0 && (
           <div className='absolute right-0.5 top-0 -translate-y-1/2 translate-x-1/2 rounded-full bg-text-red px-1.5 text-xs text-text-on-primary'>
             {unreadCount}

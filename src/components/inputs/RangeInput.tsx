@@ -100,7 +100,7 @@ const RangeInput = ({
       {valueLabel && (
         <div
           ref={currentLabelRef}
-          className='absolute w-max cursor-ew-resize rounded-xl bg-indigo-600 px-2 py-[6px]'
+          className='absolute w-max cursor-ew-resize rounded-xl bg-background-primary px-2 py-[6px]'
           onMouseDown={onMouseDown}
         >
           {valueLabel}

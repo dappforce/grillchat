@@ -32,7 +32,7 @@ const StakingStepper = () => {
 
   return (
     <Stepper
-      className='max-w-[318px] my-3'
+      className='my-3 max-w-[318px]'
       items={steps}
       currentStep={currentStep}
     />

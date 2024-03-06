@@ -1,25 +1,27 @@
-import InfoPanel from '@/components/InfoPanel'
-import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { linkTextStyles } from '@/components/LinkText'
+import Modal from '@/components/modals/Modal'
 import useLoginOption from '@/hooks/useLoginOption'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useLoginModal } from '@/stores/login-modal'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import dynamic from 'next/dynamic'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
-import { loginModalContents, LoginModalStep } from './LoginModalContent'
+import CreateProfileModal from './CreateProfileModal'
+import { LoginModalStep, loginModalContents } from './LoginModalContent'
+import SaveGrillKeyModal from './SaveGrillKeyModal'
 
 const StayUpdatedModal = dynamic(
   () => import('@/components/chats/StayUpdatedModal'),
   { ssr: false }
 )
 
-export type LoginModalProps = ModalFunctionalityProps & {
-  initialOpenState?: LoginModalStep
+export type LoginModalProps = {
   onBackClick?: () => void
-  afterLogin?: () => void
-  beforeLogin?: () => void
+  disableOutsideClickClose?: boolean
+  withoutOverlay?: boolean
+  withoutShadow?: boolean
 }
 
 type ModalConfig = {
@@ -29,19 +31,24 @@ type ModalConfig = {
     withoutDefaultPadding?: boolean
     backToStep?: LoginModalStep
     withBackButton?: boolean | ((address: string | null) => boolean)
-    withFooter?: boolean
-    finalizeTemporaryAccount?: boolean
+    withFooter?: 'privacy-policy' | 'dont-have-account'
     withCloseButton?: boolean
   }
 }
 
 export default function LoginModal({
-  afterLogin,
-  beforeLogin,
-  initialOpenState = 'login',
   onBackClick,
-  ...props
+  disableOutsideClickClose,
+  withoutOverlay,
+  withoutShadow,
 }: LoginModalProps) {
+  const isOpen = useLoginModal.use.isOpen()
+  const setIsOpen = useLoginModal.use.setIsOpen()
+  const initialOpenState = useLoginModal.use.initialOpenState() || 'login'
+
+  const openedNextStepsModal = useLoginModal.use.openedNextStepModal()
+  const closeNextStepModal = useLoginModal.use.closeNextStepModal()
+
   const [isOpenStayUpdatedModal, setIsOpenStayUpdatedModal] = useState(false)
   const { loginOption } = useLoginOption()
 
@@ -55,72 +62,39 @@ export default function LoginModal({
     login: {
       title: '🔐 Login',
       desc: '',
-      withFooter: true,
+      withFooter: 'privacy-policy',
     },
     'enter-secret-key': {
-      title: '🔑 Grill key',
-      desc: (
-        <span className='flex flex-col'>
-          <span>
-            To access GrillChat, you need a Grill key. If you do not have one,
-            just write your first chat message, and you will be given one.
-          </span>
-          <InfoPanel className='mt-4'>
-            DO NOT enter the private key of an account that holds any funds,
-            assets, NFTs, etc.
-          </InfoPanel>
-        </span>
-      ),
+      title: '🔑 Log in with Grill key',
+      desc: 'Grill key is like a long password and consists of 12 words',
       withBackButton: true,
-      withFooter: true,
+      withFooter: 'dont-have-account',
     },
-    'x-login-loading': {
-      title: '🕔 Connecting to X',
-      desc: 'We are connecting your X account to Grill.chat. Please wait for a few seconds.',
-      withCloseButton: false,
+    'new-account': {
+      title: '🔑 New Grill account',
+      desc: 'Choose an authentication method from the options below to create a new Grill account.',
+      withBackButton: true,
     },
     'account-created': {
       title: '🎉 Account created',
-      desc: 'We have created an account linked to your X for you. You can now use Grill.chat!',
-      finalizeTemporaryAccount: true,
-    },
-    'next-actions': {
-      title: '🎉 Unlock the Full Potential of Web3',
-      desc: "By connecting an EVM or Polkadot address, you'll be able to use features such as donations and NFTs, display your identity, and much more.",
-    },
-    'connect-wallet': {
-      title: '🔑 Connect Wallet',
-      desc: 'Choose a wallet to connect to Grill.chat',
-      withBackButton: (address) => !address,
-      withoutDefaultPadding: true,
+      desc: 'We have created an account linked to your X for you. You can now use Grill!',
     },
     'evm-address-link': {
       title: '🔑 Connect EVM',
       desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display ENS names and NFTs, and interact with ERC20s.',
       withBackButton: true,
-      backToStep: 'connect-wallet',
-    },
-    'evm-address-linked': {
-      title: '🎉 EVM address linked',
-      desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
-      finalizeTemporaryAccount: true,
+      backToStep: 'new-account',
     },
     'evm-linking-error': {
       title: '😕 Something went wrong',
       desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
       withBackButton: true,
-      withFooter: false,
-      backToStep: 'connect-wallet',
-    },
-    'evm-set-profile': {
-      title: '🤔 Set as default identity?',
-      desc: 'Do you want to set your EVM as your default address?',
+      backToStep: 'new-account',
     },
     'polkadot-connect': {
-      title: '🔗 Connect Polkadot',
-      desc: 'Choose a wallet to connect to Grill.chat',
+      title: '🔗 Connect via Polkadot',
+      desc: 'Select a wallet to connect to Grill using an existing Polkadot account',
       withBackButton: true,
-      backToStep: 'connect-wallet',
       withoutDefaultPadding: true,
     },
     'polkadot-js-limited-support': {
@@ -135,27 +109,16 @@ export default function LoginModal({
     },
     'polkadot-connect-account': {
       title: '🔗 Select an account',
-      desc: 'Select an account to connect to Grill.chat.',
+      desc: 'Select an account to connect to Grill',
       withBackButton: true,
       backToStep: 'polkadot-connect',
       withoutDefaultPadding: true,
     },
     'polkadot-connect-confirmation': {
-      title: '🔑 Link Confirmation',
-      desc: 'Please confirm the connection in your Polkadot wallet.',
+      title: '🔑 Link Your Account',
+      desc: 'Confirm the account connection in your Polkadot wallet',
       withBackButton: true,
       backToStep: 'polkadot-connect-account',
-    },
-    'polkadot-connect-success': {
-      title:
-        loginOption === 'polkadot'
-          ? '🎉 Chat joined!'
-          : '🎉 Polkadot account linked',
-      desc:
-        loginOption === 'polkadot'
-          ? 'Here, you can talk about the Active Staking system with others, and share which promising authors you are following.'
-          : "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
-      finalizeTemporaryAccount: true,
     },
   }
 
@@ -173,73 +136,97 @@ export default function LoginModal({
     onBackClick || (() => setCurrentState(backToStep || 'login'))
 
   useEffect(() => {
-    if (props.isOpen) setCurrentState(initialOpenState)
+    if (isOpen) setCurrentState(initialOpenState)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.isOpen])
-
-  // need to use useLayoutEffect to make finalize account works first before rendering any data inside the step
-  // because this won't be called the step component calls closeModal inside the useEffect
-  useLayoutEffect(() => {
-    if (header.finalizeTemporaryAccount) {
-      const { finalizeTemporaryAccount } = useMyAccount.getState()
-      finalizeTemporaryAccount()
-    }
-  }, [header])
+  }, [isOpen])
 
   const address = useMyMainAddress()
-  const { data: accountData } = getAccountDataQuery.useQuery(address ?? '')
   const showBackButton =
     typeof withBackButton === 'function'
       ? withBackButton(address)
       : withBackButton
 
+  let footer: React.ReactNode | true | undefined
+  if (withFooter === 'privacy-policy') {
+    footer = true
+  } else if (withFooter === 'dont-have-account') {
+    footer = (
+      <div className='flex flex-col items-center gap-0.5 p-4 pb-4 pt-3 text-center'>
+        <span className='text-text-muted'>Don&apos;t have an account?</span>
+        <button
+          className={linkTextStyles({ variant: 'primary' })}
+          onClick={() => {
+            setCurrentState('login')
+          }}
+        >
+          Create a new one
+        </button>
+      </div>
+    )
+  }
+
   return (
     <>
       <Modal
-        {...props}
-        withFooter={withFooter}
+        withoutOverlay={withoutOverlay}
+        withoutShadow={withoutShadow}
+        isOpen={isOpen}
+        className={cx(
+          'transition-opacity',
+          openedNextStepsModal?.step && 'opacity-0'
+        )}
+        withFooter={footer}
         initialFocus={isTouchDevice() ? undefined : inputRef}
         title={title}
-        withCloseButton={withCloseButton}
+        withCloseButton={!disableOutsideClickClose && withCloseButton}
         description={desc}
         onBackClick={showBackButton ? usedOnBackClick : undefined}
         contentClassName={cx(withoutDefaultPadding && '!px-0 !pb-0')}
         titleClassName={cx(withoutDefaultPadding && 'px-6')}
         descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
         closeModal={() => {
-          if (
-            loginOption === 'polkadot' &&
-            currentState === 'polkadot-connect-success'
-          ) {
-            props.closeModal()
-            setIsOpenStayUpdatedModal(true)
-            return
-          }
-          if (
-            currentState === 'evm-address-linked' &&
-            (accountData?.ensNames?.length ?? 0) > 0
-          ) {
-            setCurrentState('evm-set-profile')
-            return
-          } else if (currentState === 'x-login-loading') {
-            return
-          }
+          if (disableOutsideClickClose) return
 
-          props.closeModal()
+          setIsOpen(false)
+          if (loginOption === 'polkadot') {
+            setIsOpenStayUpdatedModal(true)
+          }
         }}
       >
         <ModalContent
           setCurrentState={setCurrentState}
           currentStep={currentState}
-          {...props}
+          isOpen={isOpen}
+          closeModal={() => setIsOpen(false)}
         />
       </Modal>
-      {loginOption === 'polkadot' && (
+      {/* {loginOption === 'polkadot' && (
         <StayUpdatedModal
           isOpen={isOpenStayUpdatedModal}
           closeModal={() => setIsOpenStayUpdatedModal(false)}
         />
-      )}
+      )} */}
+      <SaveGrillKeyModal
+        withoutOverlay={withoutOverlay}
+        withoutShadow={withoutShadow}
+        isOpen={openedNextStepsModal?.step === 'save-grill-key'}
+        closeModal={() => {
+          closeNextStepModal()
+        }}
+        provider={
+          openedNextStepsModal?.step === 'save-grill-key'
+            ? openedNextStepsModal.provider
+            : undefined
+        }
+      />
+      <CreateProfileModal
+        withoutOverlay={withoutOverlay}
+        withoutShadow={withoutShadow}
+        isOpen={openedNextStepsModal?.step === 'create-profile'}
+        closeModal={() => {
+          closeNextStepModal()
+        }}
+      />
     </>
   )
 }

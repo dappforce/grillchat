@@ -12,8 +12,10 @@ import { ReactNode, useState } from 'react'
 export type HubPageNavbarProps = {
   logo: ReactNode
   auth: ReactNode
+  hamburgerMenu: ReactNode
   backButton: ReactNode
   notificationBell: ReactNode
+  newPostButton: ReactNode
   searchProps: NavbarWithSearchProps['searchProps']
   hubId: string
   chatsCount: number
@@ -23,6 +25,7 @@ export default function HubPageNavbar({
   auth,
   notificationBell,
   backButton,
+  hamburgerMenu,
   logo,
   hubId,
   searchProps,
@@ -39,8 +42,9 @@ export default function HubPageNavbar({
   let leftSection = logo
   if (isInHub && !isInIframe) {
     leftSection = (
-      <div className='flex flex-1 items-center overflow-hidden'>
-        {backButton}
+      <div className='flex flex-1 items-center'>
+        {/* {backButton} */}
+        {hamburgerMenu}
         <Button
           variant='transparent'
           interactive='none'
@@ -72,7 +76,7 @@ export default function HubPageNavbar({
     <>
       <NavbarWithSearch
         customContent={(searchButton) => (
-          <div className='flex w-full justify-between gap-2 overflow-hidden'>
+          <div className='flex w-full justify-between gap-2'>
             {leftSection}
             <div className='flex items-center gap-1 text-text-muted dark:text-text'>
               {searchButton}

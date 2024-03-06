@@ -53,17 +53,22 @@ export default function HubPage({ hubId }: HubPageProps) {
 
   return (
     <DefaultLayout
+      withSidebar
       navbarProps={{
         customContent: ({
           backButton,
           logoLink,
           authComponent,
           notificationBell,
+          hamburgerMenu,
+          newPostButton,
         }) => {
           return (
             <HubPageNavbar
+              hamburgerMenu={hamburgerMenu}
               chatsCount={allChatIds.length}
               auth={authComponent}
+              newPostButton={newPostButton}
               notificationBell={notificationBell}
               backButton={backButton}
               logo={logoLink}

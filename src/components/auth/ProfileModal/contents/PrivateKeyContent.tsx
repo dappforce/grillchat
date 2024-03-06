@@ -1,10 +1,12 @@
-import { CopyText } from '@/components/CopyText'
+import Button from '@/components/Button'
+import { CopyTextInlineButton } from '@/components/CopyText'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { decodeSecretKey, isSecretKeyUsingMiniSecret } from '@/utils/account'
 import { useMemo } from 'react'
+import { ProfileModalContentProps } from '../types'
 
-function PrivateKeyContent() {
+function PrivateKeyContent({ setCurrentState }: ProfileModalContentProps) {
   const encodedSecretKey = useMyAccount((state) => state.encodedSecretKey)
   const { secretKey, isUsingMiniSecret } = useMemo(() => {
     const decodedSecretKey = decodeSecretKey(encodedSecretKey ?? '')
@@ -25,16 +27,24 @@ function PrivateKeyContent() {
 
   return (
     <div className='flex flex-col items-center gap-4'>
-      <p className='mb-2 text-text-muted'>
+      <p className='text-text-muted'>
         Grill key is like a long password. We recommend keeping it in a safe
         place, so you can recover your account.
       </p>
-      <CopyText
+      <CopyTextInlineButton
         onCopyClick={onCopyClick}
         isCodeText
         wordBreakType={isUsingMiniSecret ? 'all' : 'words'}
         text={secretKey || ''}
       />
+      <Button
+        variant='primaryOutline'
+        size='lg'
+        className='w-full'
+        onClick={() => setCurrentState('share-session')}
+      >
+        Share my session
+      </Button>
     </div>
   )
 }

@@ -43,9 +43,12 @@ const Table = ({ columns, data }: TableProps) => {
             return (
               <tr
                 key={i}
-                className={cx('border-b border-[#D4E2EF] dark:border-white/20', {
-                  ['border-none']: i === data.length - 1,
-                })}
+                className={cx(
+                  'border-b border-[#D4E2EF] dark:border-white/20',
+                  {
+                    ['border-none']: i === data.length - 1,
+                  }
+                )}
               >
                 {columns.map(({ index, align }, j) => {
                   const value = item[index]

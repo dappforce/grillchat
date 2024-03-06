@@ -2,15 +2,15 @@ import LinkText from '@/components/LinkText'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import useGetTheme from '@/hooks/useGetTheme'
 import BgGradient from '@/modules/LandingPage/common/BgGradient'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
+import { useEffect, useState } from 'react'
 import { useContentStakingContext } from '../utils/ContentStakingContext'
 import SectionWrapper from '../utils/SectionWrapper'
 import { mutedTextColorStyles } from '../utils/commonStyles'
 import BannerActionButtons from './BannerActionButtons'
 import StatsCards from './StakerDashboard'
 import StakingStepper from './StakingStepper'
-import { useEffect, useState } from 'react'
-import { useSendEvent } from '@/stores/analytics'
 
 const BannerSection = () => {
   const { isLockedTokens, ledgerLoading } = useContentStakingContext()
@@ -32,7 +32,7 @@ const BannerSection = () => {
         </div>
         <div
           className={cx(
-            'text-base font-normal md:leading-8 leading-6 md:text-xl',
+            'text-base font-normal leading-6 md:text-xl md:leading-8',
             mutedTextColorStyles
           )}
         >
@@ -60,7 +60,7 @@ const BannerSection = () => {
         )}
 
         <SkeletonFallback
-          className='md:h-[181px] h-[248px] w-full rounded-2xl'
+          className='h-[248px] w-full rounded-2xl md:h-[181px]'
           isLoading={ledgerLoading}
         >
           {isLockedTokens ? <StatsCards /> : <StakingStepper />}

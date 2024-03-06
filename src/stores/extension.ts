@@ -2,7 +2,7 @@ import {
   extensionInitialDataTypes,
   MessageExtensionIds,
 } from '@/components/extensions/config'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 type State = {
   _extensionModalStates: {
@@ -25,7 +25,7 @@ const INITIAL_STATE: State = {
   _extensionModalStates: {},
 }
 
-export const useExtensionData = create<State & Actions>()((set, get) => ({
+const useExtensionDataBase = create<State & Actions>()((set, get) => ({
   ...INITIAL_STATE,
   closeExtensionModal: (id) => {
     set({
@@ -50,6 +50,7 @@ export const useExtensionData = create<State & Actions>()((set, get) => ({
     })
   },
 }))
+export const useExtensionData = createSelectors(useExtensionDataBase)
 
 export function useIsExtensionModalOpen<Id extends MessageExtensionIds>(
   id: Id

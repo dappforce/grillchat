@@ -4,7 +4,8 @@ import { datahubQueryRequest } from '../utils'
 
 const generalStatsId = 'generalStatsId'
 
-export const getGeneralStatsData = () => getGeneralStatsQuery.useQuery(generalStatsId)
+export const getGeneralStatsData = () =>
+  getGeneralStatsQuery.useQuery(generalStatsId)
 
 const GET_GENERAL_STATS = gql`
   query GetGeneralStats {

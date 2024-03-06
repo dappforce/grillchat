@@ -1,7 +1,7 @@
+import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { getGeneralEraInfoData } from '../generalErainfo/query'
 import { EraStake } from './types'
-import { getSubIdRequest } from '@/services/external'
 
 export async function getEraStakeRequest(era: string, spaceIds: string[]) {
   return getSubIdRequest().get('staking/creator/era/stake', {

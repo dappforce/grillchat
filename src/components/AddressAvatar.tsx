@@ -38,10 +38,9 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     const [isAvatarError, setIsAvatarError] = useState(false)
     const onImageError = useCallback(() => setIsAvatarError(true), [])
 
-    const { data: accountData, isLoading } =
-      getAccountDataQuery.useQuery(address)
+    const { data: accountData } = getAccountDataQuery.useQuery(address)
 
-    const { data: profile } = getProfileQuery.useQuery(address)
+    const { data: profile, isLoading } = getProfileQuery.useQuery(address)
     const { ensNames } = accountData || {}
 
     const avatar = useMemo(() => {

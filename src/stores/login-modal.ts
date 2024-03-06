@@ -1,26 +1,36 @@
 import { LoginModalStep } from '@/components/auth/LoginModal/LoginModalContent'
 import { getUrlQuery } from '@/utils/links'
 import { useMyAccount } from './my-account'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 type State = {
   isOpen: boolean
-  initialOpenState?: LoginModalStep
-  defaultOpenState?: LoginModalStep
+  initialOpenState: LoginModalStep | undefined
+  defaultOpenState: LoginModalStep | undefined
+  openedNextStepModal:
+    | undefined
+    | { step: 'save-grill-key'; provider: SupportedExternalProvider }
+    | { step: 'create-profile' }
 }
 
 type Actions = {
   setIsOpen: (isOpen: boolean, initialOpenState?: LoginModalStep) => void
   setDefaultOpenState: (defaultOpenState: LoginModalStep) => void
+  openNextStepModal: (modal: State['openedNextStepModal']) => void
+  closeNextStepModal: () => void
 }
 
 const initialState: State = {
   isOpen: false,
   initialOpenState: undefined,
   defaultOpenState: undefined,
+  openedNextStepModal: undefined,
 }
 
-export const useLoginModal = create<State & Actions>()((set, get) => ({
+export const supportedExternalProviders = ['x', 'google', 'evm'] as const
+export type SupportedExternalProvider =
+  (typeof supportedExternalProviders)[number]
+const useLoginModalBase = create<State & Actions>()((set, get) => ({
   ...initialState,
   setIsOpen: (isOpen, initialOpenState) => {
     if (!initialOpenState) {
@@ -43,10 +53,28 @@ export const useLoginModal = create<State & Actions>()((set, get) => ({
   setDefaultOpenState: (defaultOpenState) => {
     set({ defaultOpenState })
   },
+  openNextStepModal: (modal) => {
+    set({ openedNextStepModal: modal })
+  },
+  closeNextStepModal: () => {
+    set({ openedNextStepModal: undefined })
+  },
   init: () => {
     const loginQuery = getUrlQuery('login')
-    if (loginQuery === 'x') {
-      set({ isOpen: true, initialOpenState: 'x-login-loading' })
+    if (supportedExternalProviders.includes(loginQuery)) {
+      set({
+        openedNextStepModal: {
+          step: 'save-grill-key',
+          provider: loginQuery as SupportedExternalProvider,
+        },
+      })
+      return
+    }
+
+    const auth = getUrlQuery('auth') === 'true'
+    if (auth) {
+      set({ isOpen: true })
     }
   },
 }))
+export const useLoginModal = createSelectors(useLoginModalBase)

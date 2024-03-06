@@ -1,15 +1,18 @@
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { cx } from '@/utils/class-names'
+import { currentNetwork } from '@/utils/network'
 import { ComponentProps } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import BackButton from '../BackButton'
 import Navbar, { NavbarProps } from '../navbar/Navbar'
 import NavbarExtension from '../navbar/NavbarExtension'
+import Sidebar from './Sidebar'
 
 export type DefaultLayoutProps = ComponentProps<'div'> & {
   navbarProps?: NavbarProps
   withBackButton?: LayoutNavbarExtensionProps
   withFixedHeight?: boolean
+  withSidebar?: boolean
 }
 
 export default function DefaultLayout({
@@ -17,8 +20,13 @@ export default function DefaultLayout({
   navbarProps,
   withBackButton,
   withFixedHeight,
+  withSidebar,
   ...props
 }: DefaultLayoutProps) {
+  if (currentNetwork === 'xsocial') {
+    withSidebar = false
+  }
+
   return (
     <div
       className={cx(
@@ -28,9 +36,18 @@ export default function DefaultLayout({
       style={withFixedHeight ? { height: '100dvh' } : { minHeight: '100svh' }}
       {...props}
     >
-      <Navbar {...navbarProps} />
+      <Navbar {...navbarProps} withSidebar={withSidebar} />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
-      {children}
+      {withSidebar ? (
+        <div className='container-page flex flex-1 border-border-gray !pl-0 !pr-0 md:border-r md:!pl-4'>
+          <div className='sticky top-14 hidden w-[225px] border-r border-border-gray md:block'>
+            <Sidebar />
+          </div>
+          <div className='flex-1'>{children}</div>
+        </div>
+      ) : (
+        children
+      )}
     </div>
   )
 }

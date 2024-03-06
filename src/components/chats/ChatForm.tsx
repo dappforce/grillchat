@@ -327,10 +327,10 @@ export default function ChatForm({
         )}
       </form>
 
-      <StayUpdatedModal
+      {/* <StayUpdatedModal
         isOpen={isOpenCtaModal}
         closeModal={() => setIsOpenCtaModal(false)}
-      />
+      /> */}
     </>
   )
 }

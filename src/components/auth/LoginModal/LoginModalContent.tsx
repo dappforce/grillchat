@@ -1,55 +1,45 @@
 import IncognitoIcon from '@/assets/icons/incognito.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
-import XLogoIcon from '@/assets/icons/x-logo.svg'
-import {
-  CommonEvmAddressLinked,
-  CommonEVMLoginErrorContent,
-} from '@/components/auth/common/evm/CommonEvmModalContent'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
+import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useLoginOption from '@/hooks/useLoginOption'
-import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import useToastError from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { useRequestToken } from '@/services/api/mutation'
+import { getProfileQuery } from '@/services/api/query'
+import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
-import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
-import { signIn } from 'next-auth/react'
+import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
-import { CustomConnectButton } from '../common/evm/CustomConnectButton'
+import { HiPlus } from 'react-icons/hi2'
 import LimitedPolkadotJsSupportContent from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
-import PolkadotConnectSuccess from '../common/polkadot-connect/PolkadotConnectSuccess'
 import PolkadotConnectWalletContent from '../common/polkadot-connect/PolkadotConnectWalletContent'
 import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
-import { ConnectWalletContent } from './contents/ConnectWalletContent'
-import { EnterSecretKeyContent } from './contents/EnterSecretKeyContent'
-import { NextActionsContent } from './contents/NextActionsContent'
-import XLoginLoading from './contents/XLoginLoadingContent'
+import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
+import NewAccountContent from './contents/NewAccountContent'
+import { finishLogin } from './utils'
 
 export type LoginModalStep =
   | PolkadotConnectSteps
   | 'login'
   | 'enter-secret-key'
-  | 'x-login-loading'
+  | 'new-account'
   | 'account-created'
-  | 'next-actions'
-  | 'connect-wallet'
   | 'evm-address-link'
-  | 'evm-address-linked'
   | 'evm-linking-error'
-  | 'evm-set-profile'
 
 export type LoginModalContentProps = ModalFunctionalityProps & {
   setCurrentState: Dispatch<SetStateAction<LoginModalStep>>
@@ -81,70 +71,31 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
   }, [])
 
   const canUseAnonLogin = !loginRequired
-  const isConnectWalletPrimaryButton =
-    loginOption === 'polkadot' || (isInIframe && !canUseAnonLogin)
+  const isConnectWalletPrimaryButton = loginOption === 'polkadot'
 
   return (
     <div>
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
-        <div className={cx('flex flex-col gap-4 pb-4')}>
-          {(() => {
-            if (loginOption !== 'all') return null
-            if (!isInIframe)
-              return (
-                <>
-                  {showErrorPanel && (
-                    <InfoPanel variant='error'>
-                      😕 Sorry there is some issue with logging you in, please
-                      try again or try different account
-                    </InfoPanel>
-                  )}
-                  <Button
-                    onClick={() => {
-                      sendEvent('x_login_started')
-                      signIn('twitter', {
-                        callbackUrl: `${getCurrentUrlWithoutQuery()}?login=x`,
-                      })
-                    }}
-                    size='lg'
-                  >
-                    <div className='flex items-center justify-center gap-2'>
-                      <XLogoIcon className='text-text-muted-on-primary' />
-                      Continue with X
-                    </div>
-                  </Button>
-                </>
-              )
-
-            if (!canUseAnonLogin) return null
-            return (
-              <Button
-                type='button'
-                size='lg'
-                className='w-full'
-                isLoading={isLoading}
-                onClick={async () => {
-                  sendEvent('login_anonymously')
-                  const newAddress = await loginAndRequestToken(null)
-                  if (newAddress) {
-                    setCurrentState('account-created')
-                  }
-                }}
-              >
-                <div className='flex items-center justify-center gap-2'>
-                  <IncognitoIcon className='text-text-muted-on-primary' />
-                  Continue anonymously
-                </div>
-              </Button>
-            )
-          })()}
+        <div className={cx('flex flex-col gap-4')}>
+          {loginOption === 'all' && (
+            <Button
+              variant='primary'
+              onClick={() => setCurrentState('enter-secret-key')}
+              size='lg'
+            >
+              <div className='flex items-center justify-center gap-2'>
+                <KeyIcon className='text-text-muted-on-primary' />
+                Log in with Grill key
+              </div>
+            </Button>
+          )}
           <Button
             variant={
               isConnectWalletPrimaryButton ? 'primary' : 'primaryOutline'
             }
             onClick={() => {
-              setCurrentState('connect-wallet')
+              setCurrentState('polkadot-connect')
               sendEvent('connect_wallet_started')
             }}
             size='lg'
@@ -157,20 +108,59 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
                     : 'text-text-muted'
                 )}
               />
-              Connect wallet
+              Connect via Polkadot
             </div>
           </Button>
-          {loginOption === 'all' && (
+          {loginOption === 'all' && canUseAnonLogin && isInIframe && (
             <Button
-              variant='primaryOutline'
-              onClick={() => setCurrentState('enter-secret-key')}
+              type='button'
               size='lg'
+              className='w-full'
+              variant='primaryOutline'
+              isLoading={isLoading}
+              onClick={async () => {
+                sendEvent('login_anonymously')
+                const newAddress = await loginAndRequestToken(null)
+                if (newAddress) {
+                  setCurrentState('account-created')
+                }
+              }}
             >
               <div className='flex items-center justify-center gap-2'>
-                <KeyIcon className='text-text-muted' />
-                Enter Grill key
+                <IncognitoIcon className='text-text-muted' />
+                Continue anonymously
               </div>
             </Button>
+          )}
+          {!isInIframe && (
+            <div className='mt-1 flex flex-col'>
+              <div className='relative mb-4 text-center text-text-muted'>
+                <div className='absolute top-1/2 h-px w-full bg-background-lightest dark:bg-background-lightest/50' />
+                <span className='relative inline-block bg-background-light px-4 text-sm'>
+                  OR
+                </span>
+              </div>
+              {showErrorPanel && (
+                <InfoPanel variant='error' className='mb-4'>
+                  😕 Sorry there is some issue with logging you in, please try
+                  again or try different account
+                </InfoPanel>
+              )}
+              <Button
+                variant='primaryOutline'
+                onClick={() => setCurrentState('new-account')}
+              >
+                <div className='flex items-center justify-center gap-2'>
+                  <HiPlus className='text-[20px] text-text-muted' />
+                  <div className='flex flex-col text-left'>
+                    <span>Create new account</span>
+                    <span className='text-sm text-text-muted'>
+                      via Metamask, X, Google
+                    </span>
+                  </div>
+                </div>
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -183,84 +173,83 @@ type LoginModalContents = {
 }
 export const loginModalContents: LoginModalContents = {
   login: LoginContent,
-  'enter-secret-key': EnterSecretKeyContent,
-  'x-login-loading': XLoginLoading,
+  'enter-secret-key': LoginWithGrillKeyContent,
+  'new-account': NewAccountContent,
   'account-created': AccountCreatedContent,
-  'next-actions': NextActionsContent,
-  'connect-wallet': ConnectWalletContent,
-  'evm-address-link': LinkEvmContent,
-  'evm-address-linked': CommonEvmAddressLinked,
-  'evm-linking-error': EvmLoginError,
-  'evm-set-profile': ({ closeModal }) => (
-    <CommonEvmSetProfileContent
-      onSkipClick={closeModal}
-      onSetEvmIdentityClick={() => {
-        useProfileModal.getState().openModal({
-          defaultOpenState: 'profile-settings',
-          customInternalStepProps: { defaultTab: 'evm' },
-        })
-        closeModal()
-      }}
-    />
-  ),
+  'evm-address-link': EvmLoginStep,
+  'evm-linking-error': (props) => <EvmLoginStep isErrorStep {...props} />,
   'polkadot-connect': PolkadotConnectWalletContent,
   'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmation,
-  'polkadot-connect-success': PolkadotConnectSuccess,
 }
 
 function PolkadotConnectConfirmation({
   setCurrentState,
+  closeModal,
 }: LoginModalContentProps) {
-  const { mutateAsync, error } = useLoginAndRequestToken({
+  const connectedWalletAddress = useMyAccount(
+    (state) => state.connectedWallet?.address
+  )
+  const { data: profile } = getProfileQuery.useQuery(
+    connectedWalletAddress ?? ''
+  )
+  const { mutate: setReferrerId } = useSetReferrerId()
+
+  const { mutateAsync: loginAndRequestToken, error } = useLoginAndRequestToken({
     asTemporaryAccount: true,
   })
+  const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
   useToastError(error, 'Create account for polkadot connection failed')
 
   return (
     <PolkadotConnectConfirmationContent
+      closeModal={closeModal}
       setCurrentState={setCurrentState}
+      onSuccess={() => {
+        finalizeTemporaryAccount()
+        if (!profile?.profileSpace?.id) {
+          useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
+        } else {
+          finishLogin(closeModal)
+        }
+      }}
       beforeAddProxy={async () => {
-        await mutateAsync(null)
+        await loginAndRequestToken(null)
+        setReferrerId({ refId: getReferralIdInUrl() })
         return true
       }}
     />
   )
 }
 
-export function EvmLoginError({ setCurrentState }: LoginModalContentProps) {
+export function EvmLoginStep({
+  setCurrentState,
+  isErrorStep,
+  closeModal,
+}: LoginModalContentProps & { isErrorStep?: boolean }) {
   const { mutate, isLoading } = useLoginBeforeSignEvm()
+  const { mutate: setReferrerId } = useSetReferrerId()
 
   return (
-    <CommonEVMLoginErrorContent
+    <CommonEVMLoginContent
+      buttonLabel={isErrorStep ? 'Try again' : undefined}
       isLoading={isLoading}
       beforeSignEvmAddress={() => mutate()}
-      setModalStep={() => setCurrentState('evm-address-linked')}
-      signAndLinkOnConnect={true}
-    />
-  )
-}
-export function LinkEvmContent({ setCurrentState }: LoginModalContentProps) {
-  const { mutate, isLoading: isLoggingIn } = useLoginBeforeSignEvm()
-
-  const { signAndLinkEvmAddress, isLoading: isLinking } =
-    useSignMessageAndLinkEvmAddress({
-      setModalStep: () => setCurrentState('evm-address-linked'),
-      onError: () => {
+      onFinishSignMessage={() => {
+        setReferrerId({ refId: getReferralIdInUrl() })
+        useLoginModal
+          .getState()
+          .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
+      }}
+      onError={() => {
         setCurrentState('evm-linking-error')
-      },
-    })
-
-  const isLoading = isLoggingIn || isLinking
-
-  return (
-    <CustomConnectButton
-      className={cx('w-full')}
-      beforeSignEvmAddress={() => mutate()}
-      signAndLinkEvmAddress={signAndLinkEvmAddress}
-      isLoading={isLoading}
-      secondLabel='Sign Message'
+      }}
+      onSuccess={() => {
+        useMyAccount.getState().finalizeTemporaryAccount()
+        closeModal()
+        useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
+      }}
     />
   )
 }

@@ -4,6 +4,7 @@ import KusamaIcon from '@/assets/icons/kusama-dynamic-size.svg'
 import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
 import SubsocialIcon from '@/assets/icons/subsocial-dynamic-size.svg'
 import XLogoIcon from '@/assets/icons/x-logo-dynamic-size.svg'
+import { IoLogoGoogle } from 'react-icons/io'
 
 type ProfileSourceData =
   | { source: 'ens'; content: string }
@@ -58,12 +59,12 @@ export function decodeProfileSource(encoded: string | undefined): {
   return { source, content }
 }
 
-export type ProfileSourceIncludingOffchain = ProfileSource | 'x'
+export type ProfileSourceIncludingOffchain = ProfileSource | 'x' | 'google'
 export const profileSourceData: {
   [key in ProfileSourceIncludingOffchain]?: {
     icon: any
     tooltip: string
-    link: (id: string, address: string) => string
+    link?: (id: string, address: string) => string
   }
 } = {
   'kilt-w3n': {
@@ -95,5 +96,9 @@ export const profileSourceData: {
     icon: XLogoIcon,
     tooltip: 'X Profile',
     link: (id) => `https://twitter.com/intent/user?user_id=${id}`,
+  },
+  google: {
+    icon: IoLogoGoogle,
+    tooltip: 'Linked with Google',
   },
 }

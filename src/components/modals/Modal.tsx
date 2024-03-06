@@ -1,7 +1,7 @@
 import { cx } from '@/utils/class-names'
 import { Dialog, Transition } from '@headlessui/react'
-import { cva, VariantProps } from 'class-variance-authority'
-import { Fragment } from 'react'
+import { VariantProps, cva } from 'class-variance-authority'
+import { Fragment, ReactNode } from 'react'
 import { HiOutlineChevronLeft, HiXMark } from 'react-icons/hi2'
 import Button from '../Button'
 import LinkText from '../LinkText'
@@ -36,6 +36,7 @@ const panelStyles = cva(
 
 export type ModalProps = ModalFunctionalityProps &
   VariantProps<typeof panelStyles> & {
+    className?: string
     titleClassName?: string
     descriptionClassName?: string
     withCloseButton?: boolean
@@ -46,11 +47,14 @@ export type ModalProps = ModalFunctionalityProps &
     panelClassName?: string
     contentClassName?: string
     initialFocus?: React.RefObject<HTMLElement>
-    withFooter?: boolean
+    withFooter?: boolean | ReactNode
+    withoutOverlay?: boolean
+    withoutShadow?: boolean
   }
 
 export default function Modal({
   children,
+  className,
   titleClassName,
   contentClassName,
   panelClassName,
@@ -59,6 +63,8 @@ export default function Modal({
   descriptionClassName,
   closeModal,
   onBackClick,
+  withoutOverlay,
+  withoutShadow,
   withCloseButton,
   isOpen,
   title,
@@ -71,21 +77,23 @@ export default function Modal({
       <Dialog
         as='div'
         initialFocus={initialFocus}
-        className='relative z-40 text-text'
+        className={cx('relative z-40 text-text', className)}
         onClick={(e) => e.stopPropagation()}
         onClose={closeModal}
       >
-        <Transition.Child
-          as={Fragment}
-          enter='ease-out duration-300'
-          enterFrom='opacity-0'
-          enterTo='opacity-100'
-          leave='ease-in duration-200'
-          leaveFrom='opacity-100'
-          leaveTo='opacity-0'
-        >
-          <div className='fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm' />
-        </Transition.Child>
+        {!withoutOverlay && (
+          <Transition.Child
+            as={Fragment}
+            enter='ease-out duration-300'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-200'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
+          >
+            <div className='fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm' />
+          </Transition.Child>
+        )}
 
         <div className='fixed inset-0 w-screen overflow-y-auto'>
           <div
@@ -105,7 +113,11 @@ export default function Modal({
             >
               <Dialog.Panel
                 style={{ backfaceVisibility: 'hidden' }}
-                className={cx(panelStyles({ size }), panelClassName)}
+                className={cx(
+                  panelStyles({ size }),
+                  withoutShadow && 'shadow-none',
+                  panelClassName
+                )}
               >
                 <div
                   className={cx(
@@ -166,22 +178,28 @@ export default function Modal({
                 </div>
 
                 {withFooter && (
-                  <div className='flex items-center justify-center gap-4 border-t border-background-lightest px-6 py-5 text-sm text-text-muted'>
-                    <LinkText
-                      href='https://subsocial.network/legal/privacy'
-                      className='font-normal'
-                      openInNewTab
-                    >
-                      Privacy Policy
-                    </LinkText>
-                    <span>&middot;</span>
-                    <LinkText
-                      href='https://subsocial.network/legal/terms'
-                      className='font-normal'
-                      openInNewTab
-                    >
-                      Terms of Service
-                    </LinkText>
+                  <div className='border-t border-background-lightest dark:border-background-lightest/50'>
+                    {withFooter === true ? (
+                      <div className='flex items-center justify-center gap-4 px-6 py-4 text-sm text-text-muted'>
+                        <LinkText
+                          href='https://subsocial.network/legal/privacy'
+                          className='font-normal'
+                          openInNewTab
+                        >
+                          Privacy Policy
+                        </LinkText>
+                        <span>&middot;</span>
+                        <LinkText
+                          href='https://subsocial.network/legal/terms'
+                          className='font-normal'
+                          openInNewTab
+                        >
+                          Terms of Service
+                        </LinkText>
+                      </div>
+                    ) : (
+                      withFooter
+                    )}
                   </div>
                 )}
               </Dialog.Panel>

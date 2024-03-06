@@ -1,6 +1,6 @@
 import { cx } from '@/utils/class-names'
-import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
 import { useContentStakingContext } from '../utils/ContentStakingContext'
+import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
 import { CardItem } from './HowToGetRewardsSection'
 
 const items = [

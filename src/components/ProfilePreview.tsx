@@ -14,8 +14,8 @@ import AddressAvatar from './AddressAvatar'
 import AllIdentityIcons from './AllIdentityIcons'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
-import PopOver from './floating/PopOver'
 import Name, { useName } from './Name'
+import PopOver from './floating/PopOver'
 
 export type ForceProfileSource = {
   profileSource?: ProfileSource
@@ -99,7 +99,7 @@ const ProfilePreview = ({
         address={address}
         className={cx(
           // if avatarClassName is provided, use it, otherwise use default size
-          avatarClassName ? 'h-20 w-20' : 'h-16 w-16 md:h-20 md:w-20',
+          avatarClassName ? 'h-18 w-18' : 'md:h-18 md:w-18 h-16 w-16',
           avatarClassName
         )}
         forceProfileSource={forceProfileSource}

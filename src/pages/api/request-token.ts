@@ -31,7 +31,7 @@ export default handlerWrapper({
       })
 
     try {
-      const isNeedEnergy = getIsAddressNeedEnergy(data.address)
+      const isNeedEnergy = await getIsAddressNeedEnergy(data.address)
       if (!isNeedEnergy)
         return res.status(200).send({ success: true, message: 'OK', data: '' })
     } catch {}

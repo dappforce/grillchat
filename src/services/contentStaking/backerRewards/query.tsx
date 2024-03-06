@@ -1,9 +1,9 @@
 import { useGetMyCreatorsIds } from '@/components/content-staking/hooks/useGetMyCreatorsIds'
+import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { useMemo } from 'react'
 import { getCreatorsListData } from '../creatorsList/query'
 import { RewardsData } from './types'
-import { getSubIdRequest } from '@/services/external'
 
 export const useGetBackerRewards = (account: string) => {
   const creatorsListData = getCreatorsListData()

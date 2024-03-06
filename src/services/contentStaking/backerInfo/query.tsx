@@ -1,8 +1,11 @@
+import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { BackerInfo } from './types'
-import { getSubIdRequest } from '@/services/external'
 
-export const getBackerInfoBySpaceIds = (address: string, spaceIds: string[]) => {
+export const getBackerInfoBySpaceIds = (
+  address: string,
+  spaceIds: string[]
+) => {
   const { data: backerInfo } = getBackerInfoQuery.useQuery({
     account: address,
     spaceIds,

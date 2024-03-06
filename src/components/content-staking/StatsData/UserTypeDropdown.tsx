@@ -1,10 +1,10 @@
-import FloatingMenus from '@/components/floating/FloatingMenus'
 import LinkText from '@/components/LinkText'
+import FloatingMenus from '@/components/floating/FloatingMenus'
+import { useAnalytics, useSendEvent } from '@/stores/analytics'
+import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import { FaAngleDown } from 'react-icons/fa'
 import { UserType } from './UsersEarnInfo'
-import { cx } from '@/utils/class-names'
-import { useAnalytics, useSendEvent } from '@/stores/analytics'
 
 export type UserTypeDropdownProps = {
   value: UserType
@@ -56,14 +56,17 @@ export default function UserTypeDropdown({
               className='hover:no-underline'
             >
               <span className='inline-block'>
-                <span className='flex items-center gap-2 w-fit'>
-                  {value} <FaAngleDown className={cx(
-                    {
-                      ['-rotate-90']: open,
-                      ['rotate-0']: !open,
-                    },
-                    'transition-transform duration-300 ease-out'
-                  )}/>
+                <span className='flex w-fit items-center gap-2'>
+                  {value}{' '}
+                  <FaAngleDown
+                    className={cx(
+                      {
+                        ['-rotate-90']: open,
+                        ['rotate-0']: !open,
+                      },
+                      'transition-transform duration-300 ease-out'
+                    )}
+                  />
                 </span>
               </span>
             </LinkText>

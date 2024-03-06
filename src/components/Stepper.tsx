@@ -64,7 +64,7 @@ const StepperItem = ({
             className={cx(
               'flex h-[40px] w-[40px] items-center justify-center rounded-full ring-2 ring-inset ',
               currentStep === id || isComleted
-                ? 'ring-slate-500 text-slate-500 dark:text-text dark:ring-slate-50'
+                ? 'text-slate-500 ring-slate-500 dark:text-text dark:ring-slate-50'
                 : 'text-slate-300 ring-slate-300 dark:text-slate-500 dark:ring-slate-500'
             )}
           >

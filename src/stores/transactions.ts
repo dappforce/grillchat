@@ -1,5 +1,5 @@
 import { SubscriptionState } from './subscription'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 type State = {
   pendingTransactions: Set<string>
@@ -17,7 +17,7 @@ const initialState: State = {
   subscriptionState: 'dynamic',
 }
 
-export const useTransactions = create<State & Actions>()((set, get) => ({
+const useTransactionsBase = create<State & Actions>()((set, get) => ({
   ...initialState,
   setSubscriptionState: (state) => {
     set({ subscriptionState: state })
@@ -33,3 +33,4 @@ export const useTransactions = create<State & Actions>()((set, get) => ({
     set({ pendingTransactions: new Set(pendingTransactions) })
   },
 }))
+export const useTransactions = createSelectors(useTransactionsBase)

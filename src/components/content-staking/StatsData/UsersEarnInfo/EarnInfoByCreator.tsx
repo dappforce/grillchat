@@ -6,8 +6,8 @@ import { useSendEvent } from '@/stores/analytics'
 import { getBalanceInDollars } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import { mutedTextColorStyles } from '../../utils/commonStyles'
 import { useContentStakingContext } from '../../utils/ContentStakingContext'
+import { mutedTextColorStyles } from '../../utils/commonStyles'
 import StatsCard from '../StatsCard'
 
 const items = [

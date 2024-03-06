@@ -1,47 +1,46 @@
-import BellIcon from '@/assets/icons/bell.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
-import InfoIcon from '@/assets/icons/info.svg'
 import KeyIcon from '@/assets/icons/key.svg'
-import LinkedAddressesIcon from '@/assets/icons/linked-addresses.svg'
 import MoonIcon from '@/assets/icons/moon.svg'
-import ShareIcon from '@/assets/icons/share.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
 import Button from '@/components/Button'
-import DotBlinkingNotification from '@/components/DotBlinkingNotification'
 import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
-import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
-import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import useGetTheme from '@/hooks/useGetTheme'
+import useIsInIframe from '@/hooks/useIsInIframe'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
-import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { installApp, isInstallAvailable } from '@/utils/install'
+import { currentNetwork } from '@/utils/network'
+import {
+  getIsAnIframeInSameOrigin,
+  sendMessageToParentWindow,
+} from '@/utils/window'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
-import { FiDownload } from 'react-icons/fi'
+import { FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
-import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
 
 export default function AccountContent({
   address,
   setCurrentState,
-  notification,
 }: ProfileModalContentProps) {
-  const { showNotification, closeNotification } =
-    useFirstVisitNotification('notification-menu')
+  // const { showNotification, closeNotification } =
+  //   useFirstVisitNotification('notification-menu')
+
+  const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
+
+  const isInIframe = useIsInIframe()
 
   const {
     data: balance,
@@ -64,109 +63,133 @@ export default function AccountContent({
   const commonEventProps = { eventSource: 'profile_menu' }
   const { disconnect } = useDisconnect()
 
+  const { data: profile } = getProfileQuery.useQuery(address)
+
   const colorModeOptions = useColorModeOptions()
 
-  const {
-    count: linkedAddressesCount,
-    maxCount: maxLinkedCount,
-    isLoading: isLoadingLinkedAcccountCount,
-  } = useLinkedAccountCount()
-  const {
-    count: activatedNotificationCount,
-    maxCount: maxNotificationCount,
-    isLoading: isLoadingActivatedNotificationCount,
-  } = useActivatedNotificationCount()
+  // const {
+  //   count: linkedAddressesCount,
+  //   maxCount: maxLinkedCount,
+  //   isLoading: isLoadingLinkedAcccountCount,
+  // } = useLinkedAccountCount()
+  // const {
+  //   count: activatedNotificationCount,
+  //   maxCount: maxNotificationCount,
+  //   isLoading: isLoadingActivatedNotificationCount,
+  // } = useActivatedNotificationCount()
 
-  const onLinkedAddressesClick = () => {
-    sendEvent('open_linked_addresses', commonEventProps)
-    setCurrentState('linked-addresses')
-  }
+  // const onLinkedAddressesClick = () => {
+  //   sendEvent('open_linked_addresses', commonEventProps)
+  //   setCurrentState('linked-addresses')
+  // }
   const onShowPrivateKeyClick = () => {
     sendEvent('open_show_private_key_modal', commonEventProps)
     setCurrentState('private-key')
   }
-  const onShareSessionClick = () => {
-    sendEvent('open_share_session_modal', commonEventProps)
-    setCurrentState('share-session')
-  }
+  // const onShareSessionClick = () => {
+  //   sendEvent('open_share_session_modal', commonEventProps)
+  //   setCurrentState('share-session')
+  // }
   const onLogoutClick = () => {
     disconnect()
     sendEvent('open_log_out_modal', commonEventProps)
     setCurrentState('logout')
   }
-  const onAboutClick = () => {
-    sendEvent('open_about_app_info', commonEventProps)
-    setCurrentState('about')
-  }
+  // const onAboutClick = () => {
+  //   sendEvent('open_about_app_info', commonEventProps)
+  //   setCurrentState('about')
+  // }
 
   const menus: MenuListProps['menus'] = [
-    {
-      text: (
-        <span className='flex items-center gap-2'>
-          <span>Notifications</span>
-          {!isLoadingActivatedNotificationCount && (
-            <Notice size='sm' noticeType='grey'>
-              {activatedNotificationCount} / {maxNotificationCount}
-            </Notice>
-          )}
-          {showNotification && <DotBlinkingNotification />}
-        </span>
-      ),
-      icon: BellIcon,
-      onClick: () => {
-        closeNotification()
-        setCurrentState('notifications')
-      },
-    },
-    {
-      text: (
-        <span className='flex items-center gap-2'>
-          <span>Linked Addresses</span>
-          {!isLoadingLinkedAcccountCount && (
-            <Notice size='sm' noticeType='grey'>
-              {linkedAddressesCount} / {maxLinkedCount}
-            </Notice>
-          )}
-        </span>
-      ),
-      icon: LinkedAddressesIcon,
-      onClick: onLinkedAddressesClick,
-    },
-    ...colorModeOptions,
-    ...(isInstallAvailable()
+    // {
+    //   text: (
+    //     <span className='flex items-center gap-2'>
+    //       <span>Notifications Settings</span>
+    //       {/* {!isLoadingActivatedNotificationCount && (
+    //         <Notice size='sm' noticeType='grey'>
+    //           {activatedNotificationCount} / {maxNotificationCount}
+    //         </Notice>
+    //       )} */}
+    //       {showNotification && <DotBlinkingNotification />}
+    //     </span>
+    //   ),
+    //   icon: BellIcon,
+    //   onClick: () => {
+    //     closeNotification()
+    //     setCurrentState('notifications')
+    //   },
+    // },
+    // {
+    //   text: (
+    //     <span className='flex items-center gap-2'>
+    //       <span>Linked Addresses</span>
+    //       {!isLoadingLinkedAcccountCount && (
+    //         <Notice size='sm' noticeType='grey'>
+    //           {linkedAddressesCount} / {maxLinkedCount}
+    //         </Notice>
+    //       )}
+    //     </span>
+    //   ),
+    //   icon: LinkedAddressesIcon,
+    //   onClick: onLinkedAddressesClick,
+    // },
+    // ...(isInstallAvailable()
+    //   ? [
+    //       {
+    //         text: 'Install app',
+    //         icon: FiDownload,
+    //         onClick: installApp,
+    //         iconClassName: 'text-text-muted text-xl',
+    //       },
+    //     ]
+    //   : []),
+    ...(profile?.profileSpace?.id && currentNetwork === 'subsocial'
       ? [
           {
-            text: 'Install app',
-            icon: FiDownload,
-            onClick: installApp,
-            iconClassName: 'text-text-muted text-xl',
+            text: 'My Profile',
+            icon: FaRegUser,
+            onClick: () => {
+              const isInGrillSoPolkaverseSide = getIsAnIframeInSameOrigin()
+              if (isInGrillSoPolkaverseSide) {
+                sendMessageToParentWindow(
+                  'redirect',
+                  `/${profile?.profileSpace?.id}`
+                )
+              } else {
+                window.location.href = `/${profile?.profileSpace?.id}`
+              }
+            },
+          },
+        ]
+      : []),
+    ...(!hasProxyAddress
+      ? [
+          {
+            text: 'Show Grill key',
+            icon: KeyIcon,
+            onClick: () => {
+              onShowPrivateKeyClick()
+            },
           },
         ]
       : []),
     {
-      text: (
-        <span className='flex items-center gap-2'>
-          <span>Show Grill Key</span>
-          {/* {notification?.showNotif && <DotBlinkingNotification />} */}
-        </span>
-      ),
-      icon: KeyIcon,
-      onClick: () => {
-        notification?.setNotifDone()
-        onShowPrivateKeyClick()
-      },
-    },
-    { text: 'Share Session', icon: ShareIcon, onClick: onShareSessionClick },
-    {
       text: 'Suggest Feature',
       icon: SuggestFeatureIcon,
       href: SUGGEST_FEATURE_LINK,
+      onClick: (e) => {
+        if (getIsAnIframeInSameOrigin()) {
+          e.preventDefault()
+          sendMessageToParentWindow('redirect', SUGGEST_FEATURE_LINK)
+        }
+      },
     },
-    {
-      text: 'About App',
-      icon: InfoIcon,
-      onClick: onAboutClick,
-    },
+    // {
+    //   text: 'About App',
+    //   icon: InfoIcon,
+    //   onClick: onAboutClick,
+    // },
+    ...(!isInIframe ? colorModeOptions : []),
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
   ]
 
@@ -264,32 +287,32 @@ function useColorModeOptions(): MenuListProps['menus'] {
   return []
 }
 
-function useLinkedAccountCount() {
-  const myAddress = useMyMainAddress()
-  const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
-  const { data: accountData, isLoading } = getAccountDataQuery.useQuery(
-    myAddress ?? ''
-  )
+// function useLinkedAccountCount() {
+//   const myAddress = useMyMainAddress()
+//   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
+//   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(
+//     myAddress ?? ''
+//   )
 
-  let count = 0
-  if (hasProxy) count++
-  if (accountData?.evmAddress) count++
+//   let count = 0
+//   if (hasProxy) count++
+//   if (accountData?.evmAddress) count++
 
-  return { count, maxCount: 2, isLoading }
-}
+//   return { count, maxCount: 2, isLoading }
+// }
 
-function useActivatedNotificationCount() {
-  const myAddress = useMyMainAddress()
-  const { data: linkedAccounts, isLoading } =
-    getLinkedTelegramAccountsQuery.useQuery({
-      address: myAddress ?? '',
-    })
-  const isTelegramLinked = !!linkedAccounts?.length
-  const isPushNotificationEnabled = useIsPushNotificationEnabled()
+// function useActivatedNotificationCount() {
+//   const myAddress = useMyMainAddress()
+//   const { data: linkedAccounts, isLoading } =
+//     getLinkedTelegramAccountsQuery.useQuery({
+//       address: myAddress ?? '',
+//     })
+//   const isTelegramLinked = !!linkedAccounts?.length
+//   const isPushNotificationEnabled = useIsPushNotificationEnabled()
 
-  let count = 0
-  if (isTelegramLinked) count++
-  if (isPushNotificationEnabled) count++
+//   let count = 0
+//   if (isTelegramLinked) count++
+//   if (isPushNotificationEnabled) count++
 
-  return { count, maxCount: 2, isLoading }
-}
+//   return { count, maxCount: 2, isLoading }
+// }

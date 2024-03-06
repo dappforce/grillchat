@@ -1,5 +1,5 @@
 import { cx } from '@/utils/class-names'
-import { ReactNode } from 'react'
+import { ReactNode, SyntheticEvent } from 'react'
 import MenuList, { MenuListProps } from '../MenuList'
 import FloatingWrapper, { FloatingWrapperProps } from './FloatingWrapper'
 
@@ -53,8 +53,8 @@ function FloatingMenuPanel({
 }: FloatingMenuItemProps) {
   const augmentedMenus = menus.map((menu) => ({
     ...menu,
-    onClick: () => {
-      menu.onClick?.()
+    onClick: (e: SyntheticEvent) => {
+      menu.onClick?.(e)
       closeMenu()
     },
   }))

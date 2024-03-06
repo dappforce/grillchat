@@ -59,14 +59,16 @@ const useSignEvmLinkMessage = () => {
 }
 
 type SignMessageAndLinkAddressProps = {
-  setModalStep?: () => void
+  onSuccess?: () => void
+  onFinishSignMessage?: () => void
   onError?: () => void
   linkedEvmAddress?: string | null
 }
 
 export default function useSignMessageAndLinkEvmAddress({
-  setModalStep,
+  onSuccess,
   onError,
+  onFinishSignMessage,
   linkedEvmAddress,
 }: SignMessageAndLinkAddressProps) {
   const {
@@ -81,7 +83,7 @@ export default function useSignMessageAndLinkEvmAddress({
     isLoading: isLinkingEvmAddress,
     onCallbackLoading,
   } = useLinkEvmAddress({
-    setModalStep,
+    onSuccess,
     onError,
     linkedEvmAddress,
   })
@@ -109,6 +111,7 @@ export default function useSignMessageAndLinkEvmAddress({
       signerAddress
     )
     if (data) {
+      onFinishSignMessage?.()
       linkEvmAddress({
         evmAddress,
         evmSignature: data,

@@ -3,7 +3,7 @@ import formidable from 'formidable'
 import { NextApiRequest, NextApiResponse } from 'next'
 import sharp from 'sharp'
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
+const MAX_FILE_SIZE = 1 * 1024 * 1024 // 1MB
 
 export type SaveImageResponse = {
   success: boolean
@@ -32,7 +32,7 @@ export default async function handler(
     image = files.image[0]
   } catch (e: any) {
     return res.status(500).send({
-      message: 'Image is too large, max size is 2MB',
+      message: 'Image is too large, max size is 1MB',
       success: false,
       errors: e.message,
     })

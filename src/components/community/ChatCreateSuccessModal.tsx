@@ -9,6 +9,7 @@ import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import urlJoin from 'url-join'
+import { useReferralSearchParam } from '../referral/ReferralUrlChanger'
 
 export type ChatCreateSuccessModalProps = ModalFunctionalityProps & {
   chatId: string
@@ -21,11 +22,13 @@ export default function ChatCreateSuccessModal({
 }: ChatCreateSuccessModalProps) {
   const { data, isLoading } = getPostQuery.useQuery(chatId)
   const { IntegratedSkeleton } = useIntegratedSkeleton(isLoading)
+  const refSearchParam = useReferralSearchParam()
 
   const chatLink = urlJoin(
     getCurrentUrlOrigin(),
     env.NEXT_PUBLIC_BASE_PATH,
-    getChatPageLink({ query: {} }, createSlug(chatId, data?.content), hubId)
+    getChatPageLink({ query: {} }, createSlug(chatId, data?.content), hubId),
+    refSearchParam
   )
 
   return (
@@ -60,7 +63,7 @@ export default function ChatCreateSuccessModal({
               openNewWindow(
                 twitterShareUrl(
                   chatLink,
-                  'I just created a new discussion room on Grill.chat, come check it out!'
+                  'I just created a new discussion room on GrillApp.net, come check it out!'
                 )
               )
             }

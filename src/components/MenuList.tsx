@@ -1,6 +1,6 @@
 import { cx } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
-import React, { ComponentProps, isValidElement } from 'react'
+import React, { ComponentProps, isValidElement, SyntheticEvent } from 'react'
 import Button from './Button'
 
 type MenuListVariants = {
@@ -45,7 +45,7 @@ type Menu = {
   text: string | JSX.Element
   iconClassName?: string
   icon?: React.ComponentType<{ className?: string }>
-  onClick?: () => void
+  onClick?: (e: SyntheticEvent) => void
   href?: string
   disabled?: boolean
   className?: string
@@ -84,12 +84,14 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
             disabledStyle='subtle'
             onClick={onClick}
           >
-            {Icon && <Icon
-              className={cx(
-                'flex-shrink-0 text-[1.25em] text-text-muted',
-                iconClassName
-              )}
-            />}
+            {Icon && (
+              <Icon
+                className={cx(
+                  'flex-shrink-0 text-[1.25em] text-text-muted',
+                  iconClassName
+                )}
+              />
+            )}
             {isValidElement(text) ? text : <span>{text}</span>}
           </Button>
         )

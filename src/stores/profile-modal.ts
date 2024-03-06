@@ -1,6 +1,7 @@
 import { ProfileModalState } from '@/components/auth/ProfileModal/types'
+import { sendMessageToParentWindow } from '@/utils/window'
 import { useMyAccount } from './my-account'
-import { create } from './utils'
+import { create, createSelectors } from './utils'
 
 type State = {
   isOpen: boolean
@@ -24,7 +25,7 @@ const initialState: State = {
   defaultOpenState: undefined,
 }
 
-export const useProfileModal = create<State & Actions>()((set) => ({
+const useProfileModalBase = create<State & Actions>()((set) => ({
   ...initialState,
   openModal: (config) => {
     if (
@@ -39,6 +40,8 @@ export const useProfileModal = create<State & Actions>()((set) => ({
     set({ customInternalStepProps: undefined })
   },
   closeModal: () => {
+    sendMessageToParentWindow('profile', 'close')
     set(initialState)
   },
 }))
+export const useProfileModal = createSelectors(useProfileModalBase)

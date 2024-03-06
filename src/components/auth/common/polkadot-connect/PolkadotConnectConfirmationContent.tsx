@@ -1,24 +1,27 @@
-import ProcessingHumster from '@/assets/graphics/processing-humster.png'
+import LinkingDark from '@/assets/graphics/linking-dark.svg'
+import LinkingLight from '@/assets/graphics/linking-light.svg'
 import Button from '@/components/Button'
-import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
+import { estimatedWaitTime } from '@/utils/network'
 import { toSubsocialAddress } from '@subsocial/utils'
-import Image from 'next/image'
 import { useState } from 'react'
 import { PolkadotConnectContentProps } from './types'
 
 export default function PolkadotConnectConfirmationContent({
-  setCurrentState,
+  closeModal,
   beforeAddProxy,
   onError,
+  onSuccess,
 }: PolkadotConnectContentProps & {
+  onSuccess?: () => void
   onError?: () => void
   beforeAddProxy?: () => Promise<boolean>
 }) {
   const sendEvent = useSendEvent()
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isSent, setIsSent] = useState(false)
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const isLoadingEnergy = useMyAccount(
     (state) => state.connectedWallet?.energy === undefined
@@ -32,31 +35,36 @@ export default function PolkadotConnectConfirmationContent({
           loadingUntilTxSuccess
           config={{
             txCallbacks: {
+              onSend: () => {
+                setIsSent(true)
+              },
               onSuccess: () => {
                 saveProxyAddress()
                 sendEvent('polkadot_address_linked', undefined, {
                   polkadotLinked: true,
                 })
-                setCurrentState('polkadot-connect-success')
+                onSuccess?.()
+                closeModal()
               },
               onError,
             },
             onError,
           }}
         >
-          {({ isLoading, mutateAsync: addProxy }) => {
+          {({ isLoading: isAddingProxy, mutateAsync: addProxy }) => {
             return (
               <>
-                <div className='mb-2'>
-                  {isLoading || isProcessing ? (
-                    <DynamicLoadedHamsterLoading />
+                <div className='mb-2 w-full'>
+                  {isAddingProxy || isProcessing ? (
+                    <div className='animate-pulse'>
+                      <LinkingLight className='block w-full dark:hidden' />
+                      <LinkingDark className='hidden w-full dark:block' />
+                    </div>
                   ) : (
-                    <Image
-                      className='w-64 max-w-xs rounded-full'
-                      priority
-                      src={ProcessingHumster}
-                      alt=''
-                    />
+                    <>
+                      <LinkingLight className='block w-full dark:hidden' />
+                      <LinkingDark className='hidden w-full dark:block' />
+                    </>
                   )}
                 </div>
 
@@ -76,7 +84,14 @@ export default function PolkadotConnectConfirmationContent({
                       addProxy(null)
                     }
                   }}
-                  isLoading={isLoading || isLoadingEnergy || isProcessing}
+                  isLoading={isAddingProxy || isLoadingEnergy || isProcessing}
+                  loadingText={
+                    isSent
+                      ? `It may take up to ${estimatedWaitTime} seconds`
+                      : isAddingProxy
+                      ? 'Pending Confirmation...'
+                      : undefined
+                  }
                 >
                   Confirm
                 </Button>

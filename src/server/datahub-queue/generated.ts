@@ -17,6 +17,13 @@ export type Scalars = {
   JSON: { input: any; output: any; }
 };
 
+export type ActiveStakingConfirmationMessageResponse = {
+  __typename?: 'ActiveStakingConfirmationMessageResponse';
+  message: Scalars['String']['output'];
+  week: Scalars['Int']['output'];
+  year: Scalars['Int']['output'];
+};
+
 export type CanAccountDoArgsInput = {
   action: CanUserDoAction;
   address: Scalars['String']['input'];
@@ -137,6 +144,7 @@ export type Mutation = {
   moderationExecuteForceCall: IngestDataResponseDto;
   moderationInitModerator: IngestDataResponseDto;
   moderationUnblockResource: IngestDataResponseDto;
+  socialProfileAddReferrerId: IngestDataResponseDto;
   updatePostBlockchainSyncStatus: IngestDataResponseDto;
   updatePostOptimistic: IngestDataResponseDto;
 };
@@ -197,6 +205,11 @@ export type MutationModerationUnblockResourceArgs = {
 };
 
 
+export type MutationSocialProfileAddReferrerIdArgs = {
+  args: SocialProfileAddReferrerIdInput;
+};
+
+
 export type MutationUpdatePostBlockchainSyncStatusArgs = {
   updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput;
 };
@@ -215,6 +228,7 @@ export type PersistentDataItemFromSquid = {
 
 export type Query = {
   __typename?: 'Query';
+  activeStakingConfirmationMessage: ActiveStakingConfirmationMessageResponse;
   canAccountDo: CanAccountDoResponse;
   coldSocialEvents: FindSocialEventsResponseDto;
   latestColdSocialEvent?: Maybe<SocialEventRecoveryData>;
@@ -290,6 +304,7 @@ export enum SocialCallName {
   SynthModerationForceUnblockResource = 'synth_moderation_force_unblock_resource',
   SynthModerationInitModerator = 'synth_moderation_init_moderator',
   SynthModerationUnblockResource = 'synth_moderation_unblock_resource',
+  SynthSocialProfileAddReferrerId = 'synth_social_profile_add_referrer_id',
   SynthUpdatePostTxFailed = 'synth_update_post_tx_failed',
   SynthUpdatePostTxRetry = 'synth_update_post_tx_retry',
   UpdatePost = 'update_post',
@@ -313,6 +328,14 @@ export type SocialEventRecoveryData = {
   signer: Scalars['String']['output'];
   unixTimestamp: Scalars['BigInt']['output'];
   uuid?: Maybe<Scalars['String']['output']>;
+};
+
+export type SocialProfileAddReferrerIdInput = {
+  callData?: InputMaybe<SocialCallDataInput>;
+  dataType: SocialEventDataType;
+  protVersion?: InputMaybe<Scalars['String']['input']>;
+  providerAddr: Scalars['String']['input'];
+  sig: Scalars['String']['input'];
 };
 
 export type UpdatePostBlockchainSyncStatusInput = {
@@ -402,6 +425,18 @@ export type NotifyUpdatePostTxFailedOrRetryStatusMutationVariables = Exact<{
 
 export type NotifyUpdatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
+export type SetReferrerIdMutationVariables = Exact<{
+  setReferrerIdInput: SocialProfileAddReferrerIdInput;
+}>;
+
+
+export type SetReferrerIdMutation = { __typename?: 'Mutation', socialProfileAddReferrerId: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+
+export type GetSuperLikeConfirmationMsgQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSuperLikeConfirmationMsgQuery = { __typename?: 'Query', activeStakingConfirmationMessage: { __typename?: 'ActiveStakingConfirmationMessageResponse', message: string, week: number } };
+
 export type CreateSuperLikeMutationVariables = Exact<{
   createSuperLikeInput: CreateMutateActiveStakingSuperLikeInput;
 }>;
@@ -490,6 +525,22 @@ export const NotifyUpdatePostTxFailedOrRetryStatus = gql`
   ) {
     processed
     message
+  }
+}
+    `;
+export const SetReferrerId = gql`
+    mutation SetReferrerId($setReferrerIdInput: SocialProfileAddReferrerIdInput!) {
+  socialProfileAddReferrerId(args: $setReferrerIdInput) {
+    processed
+    message
+  }
+}
+    `;
+export const GetSuperLikeConfirmationMsg = gql`
+    query GetSuperLikeConfirmationMsg {
+  activeStakingConfirmationMessage {
+    message
+    week
   }
 }
     `;

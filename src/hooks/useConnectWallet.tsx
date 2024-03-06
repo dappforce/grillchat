@@ -1,7 +1,7 @@
-import useAccountsFromPreferredWallet from "@/components/auth/common/polkadot-connect/hooks/useAccountsFromPreferredWallet"
-import { useMyAccount } from "@/stores/my-account"
-import { Signer, convertAddressToGenericAddress } from "@/utils/account"
-import { useEffect } from "react"
+import useAccountsFromPreferredWallet from '@/components/auth/common/polkadot-connect/hooks/useAccountsFromPreferredWallet'
+import { useMyAccount } from '@/stores/my-account'
+import { Signer, convertAddressToGenericAddress } from '@/utils/account'
+import { useEffect } from 'react'
 
 const useConnectWallet = () => {
   const { accounts, isLoading } = useAccountsFromPreferredWallet()

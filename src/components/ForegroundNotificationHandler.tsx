@@ -1,13 +1,14 @@
 import { getPostQuery } from '@/services/api/query'
 import firebaseApp from '@/services/firebase/config'
 import { cx } from '@/utils/class-names'
+import { currentNetwork } from '@/utils/network'
 import * as firebaseMessaging from 'firebase/messaging'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { HiArrowUpRight } from 'react-icons/hi2'
 import Button from './Button'
-import ChatImage from './chats/ChatImage'
 import Toast from './Toast'
+import ChatImage from './chats/ChatImage'
 
 export default function ForegroundNotificationHandler() {
   useEffect(() => {
@@ -21,7 +22,11 @@ export default function ForegroundNotificationHandler() {
       if (!data || !notification) return
 
       const { postId, rootPostId, spaceId } = data || {}
-      const urlToOpen = `https://grill.chat/${spaceId}/${rootPostId}?messageId=${postId}`
+      const baseUrl =
+        currentNetwork === 'xsocial'
+          ? 'https://grill.chat'
+          : 'https://grillapp.net'
+      const urlToOpen = `${baseUrl}/${spaceId}/${rootPostId}?messageId=${postId}`
       toast.custom(
         (t) => (
           <Toast

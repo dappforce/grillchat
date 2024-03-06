@@ -2,8 +2,8 @@ import Button from '@/components/Button'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
 import { sectionBg } from '../utils/SectionWrapper'
+import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
 
 const items = [
   {

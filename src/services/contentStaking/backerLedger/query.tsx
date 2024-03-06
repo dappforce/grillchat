@@ -1,7 +1,7 @@
+import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import BN from 'bignumber.js'
 import { BackerLedger, UnbondingChunks } from './types'
-import { getSubIdRequest } from '@/services/external'
 
 export async function getBackerLedgerRequest(account: string) {
   return getSubIdRequest().get('staking/creator/backer/ledger', {

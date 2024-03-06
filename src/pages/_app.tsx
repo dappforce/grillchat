@@ -1,6 +1,8 @@
 import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
+import { PAGES_WITH_SIDEBAR } from '@/constants/layout'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
@@ -72,7 +74,10 @@ function Styles({
   const router = useRouter()
   const isInIframe = useIsInIframe()
 
-  const isLandingPage = router.pathname === '/landing'
+  const isPagesWithSidebar = PAGES_WITH_SIDEBAR.includes(router.pathname)
+  const isUsing16BaseSize =
+    router.pathname === '/landing' ||
+    PAGES_WITH_SIDEBAR.includes(router.pathname)
 
   const scrollbarSelector = isInIframe ? 'body' : 'html'
   const scrollbarStyling = alwaysShowScrollbarOffset
@@ -96,7 +101,7 @@ function Styles({
         }
       `
         : ''}
-      ${isLandingPage
+      ${isUsing16BaseSize
         ? `
           @media screen and (min-width: 768px) {
             :root {
@@ -104,6 +109,17 @@ function Styles({
             }
           }
         `
+        : ''}
+      ${isPagesWithSidebar
+        ? `
+        :root {
+          --background: 248 250 252;
+          --background-light: 255 255 255;
+          --background-lighter: 248 250 252;
+          --background-lightest: 236 239 244;
+          --border-gray: 223 229 240;
+        }
+      `
         : ''}
 
       ${scrollbarStyling}
@@ -124,15 +140,16 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   }, [])
 
   return (
-    <ThemeProvider attribute='class' forcedTheme={theme}>
+    <ThemeProvider attribute='class' defaultTheme='light' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
         <DatahubSubscriber />
         <BadgeManager />
         <SubsocialApiReconnect />
         <ToasterConfig />
         <ForegroundNotificationHandler />
+        <ReferralUrlChanger />
         <NextNProgress
-          color='#4d46dc'
+          color='#eb2f95'
           options={{ showSpinner: false }}
           showOnShallow={false}
         />

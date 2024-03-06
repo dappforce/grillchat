@@ -1,8 +1,7 @@
 import PopOver from '@/components/floating/PopOver'
 import { FiInfo } from 'react-icons/fi'
-import { cx } from '../../../utils/class-names';
-import { sectionBg } from '../utils/SectionWrapper'
-import { mutedTextColorStyles } from '../utils/commonStyles';
+import { cx } from '../../../utils/class-names'
+import { mutedTextColorStyles } from '../utils/commonStyles'
 
 type StatsCardProps = {
   title: React.ReactNode
@@ -18,7 +17,7 @@ const StatsCard = (props: StatsCardProps) => {
     <div
       className={cx(
         'flex w-full flex-col items-center gap-2 rounded-2xl p-4',
-        'dark:bg-white/5 backdrop-blur-xl bg-slate-50',
+        'bg-slate-50 backdrop-blur-xl dark:bg-white/5',
         props.sectionClassName
       )}
     >
@@ -36,7 +35,12 @@ export const StatsCardContent = ({
 }: StatsCardProps) => {
   return (
     <>
-      <div className={cx('text-base font-normal leading-[22px]', mutedTextColorStyles)}>
+      <div
+        className={cx(
+          'text-base font-normal leading-[22px]',
+          mutedTextColorStyles
+        )}
+      >
         {tooltipText ? (
           <PopOver
             trigger={
@@ -57,9 +61,16 @@ export const StatsCardContent = ({
           title
         )}
       </div>
-      <div className='md:text-2xl text-xl font-semibold leading-8 text-text'>{desc}</div>
+      <div className='text-xl font-semibold leading-8 text-text md:text-2xl'>
+        {desc}
+      </div>
       {subDesc && (
-        <div className={cx('text-base font-normal leading-none', mutedTextColorStyles)}>
+        <div
+          className={cx(
+            'text-base font-normal leading-none',
+            mutedTextColorStyles
+          )}
+        >
           {subDesc}
         </div>
       )}

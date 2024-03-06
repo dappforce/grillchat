@@ -5,7 +5,7 @@ import { cx } from '@/utils/class-names'
 import { LoginModalContentProps } from '../LoginModalContent'
 
 export const AccountCreatedContent = ({
-  setCurrentState,
+  closeModal,
 }: LoginModalContentProps) => {
   const myAddress = useMyMainAddress()
 
@@ -23,7 +23,7 @@ export const AccountCreatedContent = ({
           />
         </div>
       )}
-      <Button size='lg' onClick={() => setCurrentState('next-actions')}>
+      <Button size='lg' onClick={() => closeModal()}>
         Continue
       </Button>
     </div>

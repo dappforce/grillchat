@@ -1,8 +1,8 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
 import { VariantProps, cva } from 'class-variance-authority'
-import Link, { LinkProps } from 'next/link'
 import { ComponentProps, forwardRef } from 'react'
 import Spinner from './Spinner'
+import CustomLink, { CustomLinkProps } from './referral/CustomLink'
 
 export const buttonStyles = cva('relative transition', {
   variants: {
@@ -10,7 +10,9 @@ export const buttonStyles = cva('relative transition', {
       primary:
         'bg-background-primary border border-transparent text-text-on-primary',
       primaryOutline:
-        'bg-transparent border border-background-primary text-text',
+        'bg-transparent border border-background-primary/50 dark:border-background-primary/80 text-text',
+      bgLighter:
+        'bg-background-lighter border border-transparent text-text-muted',
       whiteOutline: 'bg-transparent border border-white text-text',
       mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
       transparent: 'bg-transparent',
@@ -23,6 +25,7 @@ export const buttonStyles = cva('relative transition', {
     roundings: {
       full: 'rounded-full',
       xl: 'rounded-xl',
+      lg: 'rounded-lg',
     },
     disabledStyle: {
       default: '',
@@ -34,6 +37,7 @@ export const buttonStyles = cva('relative transition', {
     size: {
       noPadding: 'p-0',
       circle: 'p-2',
+      circleSm: 'p-1',
       xs: 'px-3 py-1.5',
       sm: 'px-4 py-1.5',
       md: 'px-6 py-2',
@@ -82,7 +86,7 @@ type ButtonPropsWithRef = VariantProps<typeof buttonStyles> &
     withDisabledStyles?: boolean
     isLoading?: boolean
     loadingText?: string
-    nextLinkProps?: Omit<LinkProps, 'href'>
+    nextLinkProps?: Omit<CustomLinkProps, 'href'>
   }
 export type ButtonProps = Omit<ButtonPropsWithRef, 'ref'>
 
@@ -111,7 +115,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       <>
         <span className='invisible -z-10 opacity-0'>{children}</span>
         <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center'>
-          <span className='mr-2'>{loadingText}</span>{' '}
+          <span className='mr-2 whitespace-nowrap'>{loadingText}</span>{' '}
           <Spinner className='h-4 w-4' />
         </div>
       </>
@@ -133,11 +137,14 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
 
   if (href) {
     return (
-      <Link {...nextLinkProps} href={href} passHref legacyBehavior>
-        <a ref={ref as any} {...props} className={className}>
-          {children}
-        </a>
-      </Link>
+      <CustomLink
+        className={className}
+        ref={ref as any}
+        {...nextLinkProps}
+        href={href}
+      >
+        {children}
+      </CustomLink>
     )
   }
 

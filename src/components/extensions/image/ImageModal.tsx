@@ -2,10 +2,14 @@ import ImageAdd from '@/assets/icons/image-add.svg'
 import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
-import { SUPPORTED_IMAGE_EXTENSIONS } from '@/components/inputs/ImageInput'
-import TextArea from '@/components/inputs/TextArea'
 import MediaLoader, { MediaLoaderProps } from '@/components/MediaLoader'
 import Spinner from '@/components/Spinner'
+import { SUPPORTED_IMAGE_EXTENSIONS } from '@/components/inputs/ImageInput'
+import TextArea from '@/components/inputs/TextArea'
+import {
+  COMPRESSED_IMAGE_MAX_SIZE,
+  SOURCE_IMAGE_MAX_SIZE,
+} from '@/constants/image'
 import useDebounce from '@/hooks/useDebounce'
 import { useSaveImage } from '@/services/api/mutation'
 import { useExtensionModalState } from '@/stores/extension'
@@ -198,6 +202,7 @@ type ImageUploadProps = {
   setUploadedImageLink: React.Dispatch<React.SetStateAction<ImageStatus>>
 }
 function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
+  const [errorMsg, setErrorMsg] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const {
     mutate: saveImage,
@@ -234,7 +239,19 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
 
   const onImageChosen = async (files: File[]) => {
     const image = files[0] ?? null
+    if (image.size > SOURCE_IMAGE_MAX_SIZE) {
+      setErrorMsg(
+        `Your image is too big. Try to upload smaller version less than ${
+          SOURCE_IMAGE_MAX_SIZE / 1024 / 1024
+        } MB`
+      )
+      return
+    }
     const resizedImage = await resizeImage(image)
+    if (resizedImage.size > COMPRESSED_IMAGE_MAX_SIZE) {
+      setErrorMsg('Your image is too big. Try to upload smaller version')
+      return
+    }
     saveImage(resizedImage)
   }
 
@@ -262,7 +279,11 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
           </div>
         )}
       </Dropzone>
-      {isError && <InfoPanel>😥 Sorry, we cannot upload your image.</InfoPanel>}
+      {(errorMsg || isError) && (
+        <InfoPanel>
+          {errorMsg || '😥 Sorry, we cannot upload your image.'}
+        </InfoPanel>
+      )}
     </>
   )
 }

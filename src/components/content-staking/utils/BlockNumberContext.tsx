@@ -27,9 +27,9 @@ type BlockNumberContextWrapperProps = {
   children?: React.ReactNode
 }
 
-export const BlockNumberContextWrapper: React.FC<BlockNumberContextWrapperProps> = ({
-  children,
-}) => {
+export const BlockNumberContextWrapper: React.FC<
+  BlockNumberContextWrapperProps
+> = ({ children }) => {
   const [currentBlockNumber, setCurrentBlockNumber] = useState<BN>(new BN(0))
   const [blockTime, setBlockTime] = useState<BN>(new BN(0))
   const [currentTimestamp, setCurrentTimestamp] = useState<BN>(new BN(0))

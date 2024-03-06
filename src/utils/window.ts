@@ -1,3 +1,7 @@
+import { env } from '@/env.mjs'
+import urlJoin from 'url-join'
+import { getCurrentUrlOrigin } from './links'
+
 export function preventWindowUnload() {
   window.onbeforeunload = function (e) {
     e.preventDefault()
@@ -39,6 +43,16 @@ export function getIsInIframe() {
     return true
   }
 }
+export function getIsAnIframeInSameOrigin() {
+  try {
+    return (
+      getIsInIframe() && getCurrentUrlOrigin() === window.parent.location.origin
+    )
+  } catch {
+    return false
+  }
+}
+
 export function getIsInIos() {
   if (typeof window === 'undefined') return false
   return (
@@ -71,12 +85,36 @@ export function isInMobileOrTablet() {
   return check
 }
 
+const GLOBAL_QUERIES = ['ref']
 export function replaceUrl(url: string) {
-  const pathname = url.replace(window.location.origin, '')
+  let removedOrigin = url.replace(window.location.origin, '')
+  if (
+    !new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}/*.`).test(removedOrigin) &&
+    removedOrigin !== env.NEXT_PUBLIC_BASE_PATH
+  ) {
+    removedOrigin = urlJoin(env.NEXT_PUBLIC_BASE_PATH, removedOrigin)
+  }
+
+  const pathnameWithQuery = removedOrigin.replace(window.location.origin, '')
+  const [pathname, query] = pathnameWithQuery.split('?')
+  const searchParams = new URLSearchParams(query)
+  const currentSearchParams = new URLSearchParams(window.location.search)
+  for (const key of GLOBAL_QUERIES) {
+    if (currentSearchParams.has(key)) {
+      searchParams.set(key, currentSearchParams.get(key)!)
+    }
+  }
+
+  let finalUrl = pathname
+  const finalQuery = searchParams.toString()
+  if (finalQuery) {
+    finalUrl += '?' + finalQuery
+  }
+
   window.history.replaceState(
-    { ...window.history.state, url: pathname, as: pathname },
+    { ...window.history.state, url: finalUrl, as: finalUrl },
     '',
-    url
+    finalUrl
   )
 }
 

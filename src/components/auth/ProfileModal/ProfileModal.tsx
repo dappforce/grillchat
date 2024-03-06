@@ -1,7 +1,6 @@
-import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
-import Modal from '@/components/modals/Modal'
-import useLoginOption from '@/hooks/useLoginOption'
+import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
+import Modal, { ModalProps } from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -17,14 +16,17 @@ import LimitedPolkadotJsSupportContent, {
 } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
-import PolkadotConnectSuccess from '../common/polkadot-connect/PolkadotConnectSuccess'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
+import LinkedAddressesContent from './contents/LinkedAddressesContent'
+import LogoutContent from './contents/LogoutContent'
+import PrivateKeyContent from './contents/PrivateKeyContent'
+import SimpleProfileSettingsContent from './contents/ProfileSettingsContent/SimpleProfileSettingsContent'
+import ShareSessionContent from './contents/ShareSessionContent'
+import WalletActionRequiredContent from './contents/WalletActionRequired'
 import EvmLoginError from './contents/evm-linking/EvmLoginError'
 import LinkEvmAddressContent from './contents/evm-linking/LinkEvmAddressContent'
 import UnlinkEvmConfirmationContent from './contents/evm-linking/UnlinkEvmConfirmationContent'
-import LinkedAddressesContent from './contents/LinkedAddressesContent'
-import LogoutContent from './contents/LogoutContent'
 import NotificationContent from './contents/notifications/NotificationContent'
 import PushNotificationContent, {
   getPushNotificationUsableStatus,
@@ -33,23 +35,15 @@ import TelegramNotificationContent from './contents/notifications/TelegramNotifi
 import PolkadotConnectContent from './contents/polkadot-connect/PolkadotConnectContent'
 import PolkadotConnectIdentityRemovedContent from './contents/polkadot-connect/PolkadotConnectIdentityRemovedContent'
 import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUnlink'
-import PrivateKeyContent from './contents/PrivateKeyContent'
-import ProfileSettingsContent from './contents/ProfileSettingsContent'
-import ShareSessionContent from './contents/ShareSessionContent'
-import WalletActionRequiredContent from './contents/WalletActionRequired'
 import WithdrawContent from './contents/withdraw/WithdrawContent'
-import {
-  ProfileModalContentProps,
-  ProfileModalProps,
-  ProfileModalState,
-} from './types'
+import { ProfileModalContentProps, ProfileModalState } from './types'
 
 const modalContents: {
   [key in ProfileModalState]: (props: ProfileModalContentProps) => JSX.Element
 } = {
   account: AccountContent,
   'linked-addresses': LinkedAddressesContent,
-  'profile-settings': ProfileSettingsContent,
+  'profile-settings': SimpleProfileSettingsContent,
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
@@ -76,7 +70,6 @@ const modalContents: {
   'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
-  'polkadot-connect-success': PolkadotConnectSuccess,
   'polkadot-connect-unlink': PolkadotConnectUnlink,
   'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
   'withdraw-tokens': WithdrawContent,
@@ -93,7 +86,7 @@ const pushNotificationDesc: Record<
   string
 > = {
   'need-install':
-    'Push notifications are not available in your browser. Please install Grill.chat to activate notifications.',
+    'Push notifications are not available in your browser. Please install Grill to activate notifications.',
   unsupported: 'Push notifications are not available in your browser.',
   usable:
     'Push notifications allow you to receive direct updates from Grill in your browser.',
@@ -103,9 +96,15 @@ export const forceBackFlowStorage = new SessionStorage(
   () => 'force-back-profile-flow'
 )
 
-export default function ProfileModal({ notification }: ProfileModalProps) {
-  const { loginOption } = useLoginOption()
+type ProfileModalProps = { disableOutsideClickClose?: boolean } & Pick<
+  ModalProps,
+  'withoutOverlay' | 'withoutShadow'
+>
 
+export default function ProfileModal({
+  disableOutsideClickClose,
+  ...props
+}: ProfileModalProps) {
   const { isOpen, defaultOpenState, closeModal, onBackClick } =
     useProfileModal()
 
@@ -117,7 +116,6 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       enabled: isOpen,
     }
   )
-  const hasPreviousIdentity = useHasPreviousGrillIdentity()
 
   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
@@ -196,7 +194,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       withBackButton: true,
     },
     'private-key': {
-      title: '🔑 Grill key',
+      title: '🔑 My Grill key',
       withBackButton: true,
     },
     'share-session': {
@@ -235,7 +233,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
     },
     notifications: {
       title: '🔔 Notifications',
-      desc: 'Receive Grill.chat notifications in various locations',
+      desc: 'Receive Grill notifications in various locations',
       withBackButton: true,
       withoutDefaultPadding: true,
     },
@@ -253,7 +251,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       title: '🔗 Connect Polkadot',
       desc: hasProxy
         ? 'Use your Polkadot identity and enable donations, NFTs, and more.'
-        : 'Choose a wallet to connect to Grill.chat',
+        : 'Choose a wallet to connect to Grill',
       withBackButton: () => {
         if (!hasProxy) setPreferredWallet(null)
         return 'linked-addresses'
@@ -271,7 +269,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
     },
     'polkadot-connect-account': {
       title: '🔗 Select an account',
-      desc: 'Select an account to connect to Grill.chat',
+      desc: 'Select an account to connect to Grill',
       withBackButton: () => {
         setPreferredWallet(null)
         return 'polkadot-connect'
@@ -282,17 +280,6 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       title: '🔑 Link Confirmation',
       desc: 'Please confirm the connection in your Polkadot wallet.',
       withBackButton: 'polkadot-connect-account',
-    },
-    'polkadot-connect-success': {
-      title:
-        loginOption === 'polkadot'
-          ? '🎉 Chat joined!'
-          : '🎉 Polkadot account linked',
-      desc:
-        loginOption === 'polkadot'
-          ? 'Here, you can talk about the Active Staking system with others, and share which promising authors you are following.'
-          : "Now you can use all of Grill's Polkadot features such as donations and NFTs, and display your Polkadot identity.",
-      withBackButton: false,
     },
     'polkadot-connect-unlink': {
       title: '🤔 Unlink Polkadot address?',
@@ -346,12 +333,8 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
   }
 
   const augmentedCloseModal = () => {
-    if (currentState === 'polkadot-connect-success' && hasPreviousIdentity) {
-      setCurrentStateAugmented('polkadot-connect-identity-removed')
-    } else if (
-      currentState === 'evm-address-linked' &&
-      (ensNames?.length ?? 0) > 0
-    ) {
+    if (disableOutsideClickClose) return
+    if (currentState === 'evm-address-linked' && (ensNames?.length ?? 0) > 0) {
       setCurrentStateAugmented('evm-set-profile-suggestion')
     } else closeModal()
   }
@@ -359,6 +342,7 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
 
   return (
     <Modal
+      {...props}
       isOpen={isOpen}
       closeModal={augmentedCloseModal}
       title={title}
@@ -367,13 +351,12 @@ export default function ProfileModal({ notification }: ProfileModalProps) {
       titleClassName={cx(withoutDefaultPadding && 'px-6')}
       descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
       withFooter={withFooter}
-      withCloseButton
+      withCloseButton={!disableOutsideClickClose}
       onBackClick={withBackButton ? usedOnBackClick : undefined}
     >
       <Content
         address={address}
         setCurrentState={setCurrentStateAugmented}
-        notification={notification}
         evmAddress={linkedEvmAddress}
         closeModal={augmentedCloseModal}
       />

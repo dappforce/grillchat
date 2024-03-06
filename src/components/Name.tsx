@@ -13,6 +13,7 @@ import {
   profileSourceData,
 } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
+import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { ComponentProps } from 'react'
 import { useInView } from 'react-intersection-observer'
 import LinkText from './LinkText'
@@ -63,9 +64,14 @@ export default function Name({
   let usedProfileSource: ProfileSourceIncludingOffchain | undefined =
     profileSource
   let usedTooltipLinkId = name
-  if (linkedIdentity && profileSource === 'subsocial-profile') {
-    usedProfileSource = 'x'
-    usedTooltipLinkId = linkedIdentity.externalId
+  if (profileSource === 'subsocial-profile') {
+    if (linkedIdentity?.provider === IdentityProvider.TWITTER) {
+      usedProfileSource = 'x'
+      usedTooltipLinkId = linkedIdentity.externalId
+    } else if (linkedIdentity?.provider === IdentityProvider.GOOGLE) {
+      usedProfileSource = 'google'
+      usedTooltipLinkId = linkedIdentity.externalId
+    }
   }
 
   let {
@@ -163,8 +169,7 @@ export function useName(
 ) {
   const { data: profile, isLoading: isLoadingProfile } =
     getProfileQuery.useQuery(address)
-  const { data: accountData, isLoading: isLoadingEvm } =
-    getAccountDataQuery.useQuery(address)
+  const { data: accountData } = getAccountDataQuery.useQuery(address)
   const textColor = useRandomColor(address, { isAddress: true })
 
   const userProfileSource = profile?.profileSpace?.content?.profileSource
@@ -229,7 +234,7 @@ export function useName(
     accountData,
     profile,
     evmAddress,
-    isLoading: isLoadingEvm || isLoadingProfile || isLoadingIdentities,
+    isLoading: isLoadingProfile || isLoadingIdentities,
     textColor,
     ensNames,
   }

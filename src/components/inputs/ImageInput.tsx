@@ -1,8 +1,12 @@
 import ImageAdd from '@/assets/icons/image-add.svg'
+import {
+  COMPRESSED_IMAGE_MAX_SIZE,
+  SOURCE_IMAGE_MAX_SIZE,
+} from '@/constants/image'
 import { useSaveImage } from '@/services/api/mutation'
 import { cx } from '@/utils/class-names'
 import { resizeImage } from '@/utils/image'
-import React, { ComponentProps, useEffect } from 'react'
+import React, { ComponentProps, useEffect, useState } from 'react'
 import Dropzone from 'react-dropzone'
 import { HiTrash } from 'react-icons/hi2'
 import Button from '../Button'
@@ -38,13 +42,27 @@ export default function ImageInput({
   ...props
 }: ImageInputProps) {
   const { mutate: saveImage, isError, isLoading, data, reset } = useSaveImage()
+  const [errorMsg, setErrorMsg] = useState('')
+
   useEffect(() => {
     if (setIsLoading) setIsLoading(isLoading)
   }, [setIsLoading, isLoading])
 
   const onImageChosen = async (files: File[]) => {
     const image = files[0] ?? null
+    if (image.size > SOURCE_IMAGE_MAX_SIZE) {
+      setErrorMsg(
+        `Your image is too big. Try to upload smaller version less than ${
+          SOURCE_IMAGE_MAX_SIZE / 1024 / 1024
+        } MB`
+      )
+      return
+    }
     const resizedImage = await resizeImage(image)
+    if (resizedImage.size > COMPRESSED_IMAGE_MAX_SIZE) {
+      setErrorMsg('Your image is too big. Try to upload smaller version')
+      return
+    }
     saveImage(resizedImage)
   }
 
@@ -81,9 +99,9 @@ export default function ImageInput({
           </div>
         )}
       </Dropzone>
-      {(error || isError) && (
+      {(error || isError || errorMsg) && (
         <InfoPanel>
-          {error || '😥 Sorry, we cannot upload your image.'}
+          {errorMsg || error || '😥 Sorry, we cannot upload your image.'}
         </InfoPanel>
       )}
       {shownImage && (

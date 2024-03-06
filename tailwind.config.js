@@ -16,7 +16,7 @@ module.exports = {
         unbounded: 'Unbounded, sans-serif',
       },
       transitionProperty: {
-        'accordion-height': 'margin-top, grid-template-rows'
+        'accordion-height': 'margin-top, grid-template-rows',
       },
       fontSize: {
         base: ['1rem', '1.35'],

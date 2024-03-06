@@ -1,7 +1,7 @@
-import { CustomConnectButton } from '@/components/auth/common/evm/CustomConnectButton'
-import { ProfileModalContentProps } from '@/components/auth/ProfileModal/types'
 import Button from '@/components/Button'
 import EvmAddress from '@/components/EvmAddress'
+import { ProfileModalContentProps } from '@/components/auth/ProfileModal/types'
+import { CustomConnectButton } from '@/components/auth/common/evm/CustomConnectButton'
 import useSignMessageAndLinkEvmAddress from '@/hooks/useSignMessageAndLinkEvmAddress'
 import { cx } from '@/utils/class-names'
 import { useAccount } from 'wagmi'
@@ -21,7 +21,9 @@ function LinkEvmAddressContent({
     evmAddress !== addressFromExtLowercased
 
   const { signAndLinkEvmAddress, isLoading } = useSignMessageAndLinkEvmAddress({
-    setModalStep: () => setCurrentState('evm-address-linked'),
+    onSuccess: () => {
+      setCurrentState('evm-address-linked')
+    },
     onError: () => setCurrentState('evm-linking-error'),
     linkedEvmAddress: evmAddress,
   })
@@ -31,7 +33,6 @@ function LinkEvmAddressContent({
       key='connect-btn'
       className={cx('w-full', { ['mt-4']: isNotEqAddresses })}
       signAndLinkEvmAddress={signAndLinkEvmAddress}
-      signAndLinkOnConnect={!isNotEqAddresses}
       isLoading={isLoading}
       label={isNotEqAddresses ? 'Link another account' : undefined}
       secondLabel='Sign Message'
