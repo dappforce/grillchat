@@ -5,9 +5,10 @@ import { useReferralId } from './ReferralUrlChanger'
 export type CustomLinkProps = React.ComponentProps<typeof Link> & {
   forceHardNavigation?: boolean
 }
-export default function CustomLink(
-  props: React.ComponentProps<typeof Link> & { forceHardNavigation?: boolean }
-) {
+export default function CustomLink({
+  forceHardNavigation,
+  ...props
+}: React.ComponentProps<typeof Link> & { forceHardNavigation?: boolean }) {
   const refId = useReferralId()
   if (refId) {
     const { href, as } = props
@@ -18,7 +19,7 @@ export default function CustomLink(
     }
   }
 
-  if (props.forceHardNavigation && typeof props.href === 'string') {
+  if (forceHardNavigation && typeof props.href === 'string') {
     return <a {...props} href={props.href} />
   }
 
