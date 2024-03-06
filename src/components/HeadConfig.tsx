@@ -1,3 +1,4 @@
+import { getCurrentUrlOrigin } from '@/utils/links'
 import Head from 'next/head'
 
 export type HeadConfigProps = {
@@ -34,7 +35,8 @@ export default function HeadConfig({
     'Revolutionary Web3 social finance platform where bloggers and their followers earn together. Blockchain, NFT, and crypto content.'
   const usedDesc = description || defaultDesc
 
-  const usedImage = image || 'https://grill.chat/c/grill-default-cover.png'
+  const usedImage =
+    image || `${getCurrentUrlOrigin()}/c/grill-default-cover.png`
 
   return (
     <Head>
