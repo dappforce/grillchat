@@ -141,6 +141,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
         className={className}
         ref={ref as any}
         {...nextLinkProps}
+        {...props}
         href={href}
       >
         {children}
