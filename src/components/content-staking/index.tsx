@@ -9,9 +9,9 @@ import NoSubSection from './StatsData/NoSubSection'
 import UsersEarnInfo from './StatsData/UsersEarnInfo'
 import UnstakingSection from './UnstakingSection'
 import { BlockNumberContextWrapper } from './utils/BlockNumberContext'
+import { sectionTitleStyles } from './utils/commonStyles'
 import { ContentStakingContextWrapper } from './utils/ContentStakingContext'
 import SectionWrapper from './utils/SectionWrapper'
-import { sectionTitleStyles } from './utils/commonStyles'
 
 export const ContentStaking = () => {
   const sendEvent = useSendEvent()
@@ -34,7 +34,7 @@ export const ContentStaking = () => {
               className='border-text-primary text-text-primary'
               size={isTouchDevice() ? 'md' : 'lg'}
               onClick={() => sendEvent('cs_questions_chat_clicked')}
-              href='grillapp.net/c/ask'
+              href='/ask'
               target='_blank'
             >
               Ask us
