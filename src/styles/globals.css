@@ -9,10 +9,10 @@
 }
 
 :root {
-  --background: 236 239 244;
-  --background-light: 248 250 252;
-  --background-lighter: 236 239 244;
-  --background-lightest: 219 222 230;
+  --background: 248 250 252;
+  --background-light: 255 255 255;
+  --background-lighter: 248 250 252;
+  --background-lightest: 236 239 244;
   --background-primary: 235 47 149;
   --background-primary-light: 224 225 254;
   --background-warning: 225 181 62;
@@ -29,7 +29,7 @@
   --text-on-primary: 255 255 255;
   --text-muted-on-primary: 203 213 225;
   --text-red: 220 70 70;
-  --border-gray: 207 212 222;
+  --border-gray: 219 222 230;
 }
 
 .dark {
