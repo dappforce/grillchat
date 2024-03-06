@@ -24,7 +24,7 @@ export function useAddProxy(config?: SubsocialMutationConfig<null>) {
 
         const addProxyTx = substrateApi.tx.freeProxy.addFreeProxy(
           currentGrillAddress,
-          'Any',
+          'SocialActions',
           0
         )
 

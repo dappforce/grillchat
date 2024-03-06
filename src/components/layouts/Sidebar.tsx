@@ -1,4 +1,5 @@
-import { useMyMainAddress } from '@/stores/my-account'
+import useIsMounted from '@/hooks/useIsMounted'
+import { getIsLoggedIn, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import { IconType } from 'react-icons'
@@ -12,13 +13,16 @@ import CustomLink from '../referral/CustomLink'
 
 export default function Sidebar() {
   const myAddress = useMyMainAddress()
+  const isMounted = useIsMounted()
+
+  if (!isMounted) return null
 
   return (
     <aside className='flex flex-col p-4 pl-0 text-[#64748BCC]'>
       <ul className='flex flex-col gap-4'>
         <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation />
         <SidebarItem icon={BiChat} title='Chat' href='/' />
-        {myAddress && (
+        {getIsLoggedIn() && (
           <SidebarItem
             icon={LuCompass}
             title='My Spaces'
