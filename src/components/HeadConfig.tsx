@@ -21,9 +21,9 @@ export default function HeadConfig({
   disableZoom,
   image,
   isTitleBrandFocused,
-  cardFormat = 'summary',
+  cardFormat = 'summary_large_image',
 }: HeadConfigProps) {
-  const defaultTitle = 'Grill: Monetize Every Like, Comment, Post | Web3 Social'
+  const defaultTitle = 'Monetize Every Like, Comment, Post | Web3 Social'
   const summarizedTitle = summarize(title || defaultTitle)
 
   let usedTitle
@@ -34,7 +34,7 @@ export default function HeadConfig({
     'Revolutionary Web3 social finance platform where bloggers and their followers earn together. Blockchain, NFT, and crypto content.'
   const usedDesc = description || defaultDesc
 
-  const usedImage = image || 'https://grill.chat/grill-default-cover.png'
+  const usedImage = image || 'https://grill.chat/c/grill-default-cover.png'
 
   return (
     <Head>
