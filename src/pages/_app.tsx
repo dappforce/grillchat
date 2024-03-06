@@ -74,6 +74,7 @@ function Styles({
   const router = useRouter()
   const isInIframe = useIsInIframe()
 
+  const isPagesWithSidebar = PAGES_WITH_SIDEBAR.includes(router.pathname)
   const isUsing16BaseSize =
     router.pathname === '/landing' ||
     PAGES_WITH_SIDEBAR.includes(router.pathname)
@@ -108,6 +109,17 @@ function Styles({
             }
           }
         `
+        : ''}
+      ${isPagesWithSidebar
+        ? `
+        :root {
+          --background: 236 239 244;
+          --background-light: 248 250 252;
+          --background-lighter: 236 239 244;
+          --background-lightest: 219 222 230;
+          --border-gray: 207 212 222;
+        }
+      `
         : ''}
 
       ${scrollbarStyling}
