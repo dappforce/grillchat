@@ -4,7 +4,7 @@ import { UseMutationResult } from '@tanstack/react-query'
 import { useState } from 'react'
 import useCommonTxSteps from '../hooks'
 
-type Status =
+export type Status =
   | 'idle'
   | 'starting'
   | 'sending'

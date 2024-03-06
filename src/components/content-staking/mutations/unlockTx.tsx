@@ -10,7 +10,7 @@ import {
 } from '@/services/contentStaking/generalErainfo/query'
 import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { createMutationWrapper } from '@/services/subsocial/utils'
+import { Status, createMutationWrapper } from '@/services/subsocial/utils'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -191,8 +191,42 @@ const buildBatchParams = async ({
   return api.tx.utility.batch(batchTsx)
 }
 
-export const UnlockTxWrapper = createMutationWrapper(
-  useUnlockTx,
-  'Failed to stake or increase the stake tokens. Please try again.',
-  true
-)
+type UnlockTxWrapperProps = {
+  closeModal: () => void
+  children: (params: {
+    mutateAsync: (variables: MutationProps) => Promise<string | undefined>
+    isLoading: boolean
+    status: Status
+    loadingText: string | undefined
+  }) => JSX.Element
+}
+
+export const UnlockTxWrapper = ({
+  closeModal,
+  children,
+}: UnlockTxWrapperProps) => {
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+
+  const Wrapper = createMutationWrapper(
+    useUnlockTx,
+    'Failed to unlock the tokens',
+    !!parentProxyAddress
+  )
+
+  return (
+    <Wrapper
+      loadingUntilTxSuccess
+      config={{
+        txCallbacks: {
+          onSuccess: () => {
+            closeModal()
+          },
+        },
+      }}
+    >
+      {(props) => {
+        return children(props)
+      }}
+    </Wrapper>
+  )
+}

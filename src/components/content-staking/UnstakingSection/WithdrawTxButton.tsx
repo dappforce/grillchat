@@ -46,8 +46,8 @@ const WithdrawTxButton = ({ switchToFirstTab }: WithdrawTxButtonProps) => {
   }, [!!unbondingChunks?.length, currentEra, backerLedgerLoading])
 
   return (
-    <div className='md:self-end self-center'>
-      <WithdrawTxWrapper loadingUntilTxSuccess>
+    <div className='self-center md:self-end'>
+      <WithdrawTxWrapper>
         {({ mutateAsync, isLoading }) => {
           return (
             <Button
