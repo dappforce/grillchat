@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import CreateProfileModal from './CreateProfileModal'
-import { loginModalContents, LoginModalStep } from './LoginModalContent'
+import { LoginModalStep, loginModalContents } from './LoginModalContent'
 import SaveGrillKeyModal from './SaveGrillKeyModal'
 
 const StayUpdatedModal = dynamic(
@@ -200,12 +200,12 @@ export default function LoginModal({
           closeModal={() => setIsOpen(false)}
         />
       </Modal>
-      {loginOption === 'polkadot' && (
+      {/* {loginOption === 'polkadot' && (
         <StayUpdatedModal
           isOpen={isOpenStayUpdatedModal}
           closeModal={() => setIsOpenStayUpdatedModal(false)}
         />
-      )}
+      )} */}
       <SaveGrillKeyModal
         withoutOverlay={withoutOverlay}
         withoutShadow={withoutShadow}
