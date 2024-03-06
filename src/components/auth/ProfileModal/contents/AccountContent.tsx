@@ -18,6 +18,7 @@ import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { currentNetwork } from '@/utils/network'
 import {
   getIsAnIframeInSameOrigin,
   sendMessageToParentWindow,
@@ -142,7 +143,7 @@ export default function AccountContent({
     //       },
     //     ]
     //   : []),
-    ...(profile?.profileSpace?.id
+    ...(profile?.profileSpace?.id && currentNetwork === 'subsocial'
       ? [
           {
             text: 'My Profile',
