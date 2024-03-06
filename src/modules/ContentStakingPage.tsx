@@ -1,27 +1,21 @@
 import ContentStaking from '@/components/content-staking'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import Navbar from '@/components/navbar/Navbar'
 
 const ContentStakingPage = () => {
   return (
     <DefaultLayout
+      withSidebar
       navbarProps={{
         containerClassName: 'max-w-screen-medium',
         customContent: ({ logoLink, authComponent, notificationBell }) => {
           return (
-            <Navbar
-              className='w-full'
-              containerClassName='max-w-screen-medium'
-              customContent={() => (
-                <div className='flex w-full items-center justify-between gap-4'>
-                  {logoLink}
-                  <div className='flex items-center gap-1'>
-                    {notificationBell}
-                    <div className='ml-2'>{authComponent}</div>
-                  </div>
-                </div>
-              )}
-            />
+            <div className='flex w-full items-center justify-between gap-4'>
+              {logoLink}
+              <div className='flex items-center gap-1'>
+                {notificationBell}
+                <div className='ml-2'>{authComponent}</div>
+              </div>
+            </div>
           )
         },
       }}

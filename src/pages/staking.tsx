@@ -1,3 +1,3 @@
-import ContentStakingPagee from 'src/modules/ContentStakingPage'
+import ContentStakingPage from 'src/modules/ContentStakingPage'
 
-export default ContentStakingPagee
+export default ContentStakingPage

@@ -2,6 +2,7 @@ import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
+import { PAGES_WITH_SIDEBAR } from '@/constants/layout'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
@@ -74,7 +75,8 @@ function Styles({
   const isInIframe = useIsInIframe()
 
   const isUsing16BaseSize =
-    router.pathname === '/landing' || router.pathname === '/'
+    router.pathname === '/landing' ||
+    PAGES_WITH_SIDEBAR.includes(router.pathname)
 
   const scrollbarSelector = isInIframe ? 'body' : 'html'
   const scrollbarStyling = alwaysShowScrollbarOffset
