@@ -1,7 +1,7 @@
 import useConnectWallet from '@/hooks/useConnectWallet'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { createMutationWrapper } from '@/services/subsocial/utils'
+import { Status, createMutationWrapper } from '@/services/subsocial/utils'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
@@ -45,8 +45,30 @@ export function useWithdrawTx(config?: SubsocialMutationConfig<{}>) {
     }
   )
 }
-export const WithdrawTxWrapper = createMutationWrapper(
-  useWithdrawTx,
-  'Failed to withdraw unlocked tokens. Please try again.',
-  true
-)
+
+type WithdrawTxWrapperProps = {
+  children: (params: {
+    mutateAsync: ({}) => Promise<string | undefined>
+    isLoading: boolean
+    status: Status
+    loadingText: string | undefined
+  }) => JSX.Element
+}
+
+export const WithdrawTxWrapper = ({ children }: WithdrawTxWrapperProps) => {
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+
+  const Wrapper = createMutationWrapper(
+    useWithdrawTx,
+    'Failed to withdraw unlocked tokens. Please try again.',
+    !!parentProxyAddress
+  )
+
+  return (
+    <Wrapper loadingUntilTxSuccess>
+      {(props) => {
+        return children(props)
+      }}
+    </Wrapper>
+  )
+}

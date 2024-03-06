@@ -1,9 +1,7 @@
 import Button from '@/components/Button'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getCreatorsListData } from '@/services/contentStaking/creatorsList/query'
-import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { isEmptyArray } from '@subsocial/utils'
 import BN from 'bignumber.js'
@@ -52,16 +50,7 @@ function StakingTxButton({
     disabled
 
   return (
-    <LockOrIncreaseTxWrapper
-      loadingUntilTxSuccess
-      config={{
-        txCallbacks: {
-          onSuccess: () => {
-            closeModal()
-          },
-        },
-      }}
-    >
+    <LockOrIncreaseTxWrapper closeModal={closeModal}>
       {({ mutateAsync, isLoading }) => {
         return (
           <Button
@@ -129,16 +118,7 @@ export function UnstakeTxButton(props: CommonTxButtonProps) {
     disabled
 
   return (
-    <UnlockTxWrapper
-      loadingUntilTxSuccess
-      config={{
-        txCallbacks: {
-          onSuccess: () => {
-            closeModal()
-          },
-        },
-      }}
-    >
+    <UnlockTxWrapper closeModal={closeModal}>
       {({ mutateAsync, isLoading }) => {
         return (
           <Button

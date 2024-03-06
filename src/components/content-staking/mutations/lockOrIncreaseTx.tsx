@@ -6,7 +6,7 @@ import {
   getGeneralEraInfoQuery,
 } from '@/services/contentStaking/generalErainfo/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { createMutationWrapper } from '@/services/subsocial/utils'
+import { Status, createMutationWrapper } from '@/services/subsocial/utils'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
@@ -82,8 +82,48 @@ export function useLockOrIncreaseTx(
     }
   )
 }
-export const LockOrIncreaseTxWrapper = createMutationWrapper(
-  useLockOrIncreaseTx,
-  'Failed to stake or increase the stake tokens. Please try again.',
-  true
-)
+// export const LockOrIncreaseTxWrapper = createMutationWrapper(
+//   useLockOrIncreaseTx,
+//   'Failed to stake or increase the stake tokens. Please try again.',
+//   true
+// )
+
+type LockOrIncreaseTxWrapperProps = {
+  closeModal: () => void
+  children: (params: {
+    mutateAsync: (variables: MutationProps) => Promise<string | undefined>
+    isLoading: boolean
+    status: Status
+    loadingText: string | undefined
+  }) => JSX.Element
+}
+
+export const LockOrIncreaseTxWrapper = ({
+  closeModal,
+  children,
+}: LockOrIncreaseTxWrapperProps) => {
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+
+  const Wrapper = createMutationWrapper(
+    useLockOrIncreaseTx,
+    'Failed to stake or increase the stake tokens. Please try again.',
+    !!parentProxyAddress
+  )
+
+  return (
+    <Wrapper
+      loadingUntilTxSuccess
+      config={{
+        txCallbacks: {
+          onSuccess: () => {
+            closeModal()
+          },
+        },
+      }}
+    >
+      {(props) => {
+        return children(props)
+      }}
+    </Wrapper>
+  )
+}
