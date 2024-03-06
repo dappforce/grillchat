@@ -16,6 +16,7 @@ import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import {
   getIsAnIframeInSameOrigin,
@@ -35,6 +36,8 @@ export default function AccountContent({
 }: ProfileModalContentProps) {
   // const { showNotification, closeNotification } =
   //   useFirstVisitNotification('notification-menu')
+
+  const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
 
   const isInIframe = useIsInIframe()
 
@@ -158,13 +161,17 @@ export default function AccountContent({
           },
         ]
       : []),
-    {
-      text: 'Show Grill key',
-      icon: KeyIcon,
-      onClick: () => {
-        onShowPrivateKeyClick()
-      },
-    },
+    ...(!hasProxyAddress
+      ? [
+          {
+            text: 'Show Grill key',
+            icon: KeyIcon,
+            onClick: () => {
+              onShowPrivateKeyClick()
+            },
+          },
+        ]
+      : []),
     {
       text: 'Suggest Feature',
       icon: SuggestFeatureIcon,
