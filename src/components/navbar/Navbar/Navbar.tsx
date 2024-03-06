@@ -46,6 +46,7 @@ export type NavbarProps = ComponentProps<'div'> & {
     notificationBell: ReactNode
     backButton: ReactNode
     newPostButton: ReactNode
+    hamburgerMenu: ReactNode
   }) => JSX.Element
 }
 
@@ -112,16 +113,20 @@ export default function Navbar({
   }
   const authComponent = renderAuthComponent()
 
+  const hamburgerMenu = (
+    <Button
+      size='circle'
+      variant='transparent'
+      className='-ml-2 mr-1 md:hidden'
+      onClick={() => setOpenSidebar(true)}
+    >
+      <RxHamburgerMenu className='text-xl text-text-muted' />
+    </Button>
+  )
+
   const logoLink = (
     <div className='flex items-center'>
-      <Button
-        size='circle'
-        variant='transparent'
-        className='-ml-2 mr-1 lg:hidden'
-        onClick={() => setOpenSidebar(true)}
-      >
-        <RxHamburgerMenu className='text-xl text-text-muted' />
-      </Button>
+      {hamburgerMenu}
       <CustomLink href={getHubPageLink(router)} aria-label='Back'>
         <Logo className='text-2xl' />
       </CustomLink>
@@ -175,6 +180,7 @@ export default function Navbar({
               notificationBell,
               backButton,
               newPostButton,
+              hamburgerMenu,
             })
           ) : (
             <div className='flex w-full items-center justify-between'>

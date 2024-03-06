@@ -60,10 +60,12 @@ export default function HubPage({ hubId }: HubPageProps) {
           logoLink,
           authComponent,
           notificationBell,
+          hamburgerMenu,
           newPostButton,
         }) => {
           return (
             <HubPageNavbar
+              hamburgerMenu={hamburgerMenu}
               chatsCount={allChatIds.length}
               auth={authComponent}
               newPostButton={newPostButton}
