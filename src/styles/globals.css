@@ -60,6 +60,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.fill-opacity-100 g {
+  fill-opacity: 1;
+};
+
 * {
   @apply scrollbar-thin scrollbar-track-background scrollbar-thumb-background-lightest scrollbar-track-rounded-full scrollbar-thumb-rounded-full dark:scrollbar-thumb-background-lighter;
 }
@@ -110,8 +114,58 @@ body {
   }
 }
 
+.input-range {
+  appearance: none;
+  background: rgb(236 239 244);
+  background-image: linear-gradient(rgba(79, 70, 229, 0.50), rgba(79, 70, 229, 0.50));
+  height: 10px;
+  border-radius: 38px;
+  background-repeat: no-repeat;
+}
+
+:is(.dark *) > .input-range {
+  background: #0F172A;
+  appearance: none;
+  background-image: linear-gradient(rgba(79, 70, 229, 0.50), rgba(79, 70, 229, 0.50));
+  height: 10px;
+  border-radius: 38px;
+  background-repeat: no-repeat;
+}
+
+.input-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: #4F46E5;
+  cursor: ew-resize;
+}
+
+.input-range::-webkit-slider-runnable-track  {
+  -webkit-appearance: none;
+  box-shadow: none;
+  border: none;
+  background: transparent;
+}
+
 .unselectable {
   @apply select-none;
   user-drag: none;
   -webkit-user-drag: none;
+}
+
+.unselectable-text{
+  user-select: none;
+  -webkit-user-select: none; /* Safari fallback only */
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
+}
+
+.selecteble-text{
+  user-select: auto;
+  -webkit-user-select: auto; /* Safari fallback only */
+  -webkit-user-select: auto; /* Chrome/Safari */
+  -moz-user-select: auto; /* Firefox */
+  -ms-user-select: auto; /* IE10+ */
 }

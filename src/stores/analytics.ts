@@ -30,6 +30,8 @@ export type UserProperties = {
   ownedChat?: boolean
   hasJoinedChats?: boolean
   hasPersonalizedProfile?: boolean
+  deviceId?: string
+  userId?: string
 }
 
 type State = {

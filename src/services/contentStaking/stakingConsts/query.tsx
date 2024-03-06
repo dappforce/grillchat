@@ -1,0 +1,29 @@
+import { createQuery, poolQuery } from '@/subsocial-query'
+import { StakingConsts } from './types'
+import { getSubIdRequest } from '@/services/external'
+
+export const stakingConstsId = 'stakingConsts'
+
+export const getStakingConstsData = () => {
+  return getCreatorsListQuery.useQuery(stakingConstsId)
+}
+
+export async function getStakingConstsRequest() {
+  return getSubIdRequest().get('/staking/creator/consts')
+}
+
+const getStakingConsts = poolQuery<string, StakingConsts>({
+  multiCall: async () => {
+    const result = await getStakingConstsRequest()
+
+    return [result.data]
+  },
+  resultMapper: {
+    paramToKey: (id) => id,
+    resultToKey: () => stakingConstsId,
+  },
+})
+export const getCreatorsListQuery = createQuery({
+  key: 'stakingConsts',
+  fetcher: getStakingConsts,
+})
