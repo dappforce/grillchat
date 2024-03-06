@@ -1,14 +1,13 @@
 import Button from '@/components/Button'
-import { CopyTextInlineButton } from '@/components/CopyText'
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
-import PopOver from '@/components/floating/PopOver'
 import InfoPanel from '@/components/InfoPanel'
+import ProfilePreview from '@/components/ProfilePreview'
+import PopOver from '@/components/floating/PopOver'
 import TextArea from '@/components/inputs/TextArea'
 import Modal, {
   ModalFunctionalityProps,
   ModalProps,
 } from '@/components/modals/Modal'
-import ProfilePreview from '@/components/ProfilePreview'
 import { spaceMono } from '@/fonts'
 import { SupportedExternalProvider } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -132,10 +131,9 @@ function SaveStep({ setCurrentState }: ContentProps) {
 
   return (
     <div className='flex flex-col gap-4'>
-      <CopyTextInlineButton isCodeText text={decodedSecretKey} />
       <div
         className={cx(
-          'min-h-16 flex items-stretch justify-between rounded-2xl border border-border-gray',
+          'flex min-h-16 items-stretch justify-between rounded-2xl border border-border-gray',
           spaceMono.className
         )}
       >
