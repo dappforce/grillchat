@@ -1,20 +1,20 @@
 import { cx } from '@/utils/class-names'
-import { useContentStakingContext } from '../utils/ContentStakingContext'
 import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
+import { useContentStakingContext } from '../utils/ContentStakingContext'
 import { CardItem } from './HowToGetRewardsSection'
 
 const items = [
   {
     title: 'Comment hot posts',
     desc: 'You will receive rewards in SUB tokens for every like your comment gets.',
-    buttonLink: 'https://grill.so/?tab=posts&type=hot&date=week',
+    buttonLink: 'https://grillapp.net/?tab=posts&type=hot',
     buttonText: 'Go to Hot Posts',
     analyticsId: 'cs_go_to_hot_posts',
   },
   {
     title: 'Create quallity posts',
     desc: 'You will receive rewards in SUB tokens for every like your content gets.',
-    buttonLink: 'https://grill.so/posts/new',
+    buttonLink: 'https://grillapp.net/posts/new',
     buttonText: 'Create a post',
     analyticsId: 'cs_write_post',
   },

@@ -1,8 +1,8 @@
 import Grill from '@/assets/logo/grill.svg'
 import Button from '@/components/Button'
+import Input from '@/components/inputs/Input'
 import LinkText, { LinkTextProps } from '@/components/LinkText'
 import Toast from '@/components/Toast'
-import Input from '@/components/inputs/Input'
 import { useSubscribeInLanding } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
@@ -116,7 +116,7 @@ export default function Footer(props: ComponentProps<'footer'>) {
             Lock SUB
           </OpenInNewTabLink>
           <OpenInNewTabLink
-            href='https://grill.so/leaderboard'
+            href='https://grillapp.net/leaderboard'
             onClick={() => sendEvent('lp_leaderboard_clicked')}
           >
             Leaderboard

@@ -2,22 +2,21 @@ import Button from '@/components/Button'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import { sectionBg } from '../utils/SectionWrapper'
 import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
-import { useEffect, useState } from 'react'
+import { sectionBg } from '../utils/SectionWrapper'
 
 const items = [
   {
     title: 'Staker Rewards',
     desc: 'Like posts and comments of other users to earn staking rewards.',
-    buttonLink: 'https://grill.so/?tab=feed',
+    buttonLink: 'https://grillapp.net/?tab=feed',
     buttonText: 'My feed',
     analyticsId: 'cs_go_to_feed',
   },
   {
     title: 'Creator Rewards',
     desc: 'Create posts and comments to earn rewards from every like it every like they receive.',
-    buttonLink: 'https://grill.so/posts/new',
+    buttonLink: 'https://grillapp.net/posts/new',
     buttonText: 'Create a post',
     analyticsId: 'cs_write_post',
   },
@@ -25,7 +24,7 @@ const items = [
 
 const HowToGetRewardsSection = () => {
   return (
-    <div className='flex z-[1] flex-col gap-4'>
+    <div className='z-[1] flex flex-col gap-4'>
       <div className={sectionTitleStyles}>How to get rewards</div>
       <div className='flex flex-col items-stretch gap-4 md:flex-row'>
         {items.map((props, i) => (

@@ -2,13 +2,13 @@ import Button from '@/components/Button'
 import FormatBalance from '@/components/FormatBalance'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getPriceQuery } from '@/services/subsocial/prices/query'
+import { useSendEvent } from '@/stores/analytics'
 import { getBalanceInDollars } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import { useContentStakingContext } from '../../utils/ContentStakingContext'
 import { mutedTextColorStyles } from '../../utils/commonStyles'
+import { useContentStakingContext } from '../../utils/ContentStakingContext'
 import StatsCard from '../StatsCard'
-import { useSendEvent } from '@/stores/analytics'
 
 const items = [
   <>💎 &nbsp;Create high quality posts and comments</>,
@@ -90,11 +90,11 @@ const EarnInfoByCretor = () => {
       </div>
       <Button
         variant={isLockedTokens ? 'primaryOutline' : 'primary'}
-        href='https://grill.so/posts/new'
+        href='https://grillapp.net/posts/new'
         target='_blank'
         size={isTouchDevice() ? 'md' : 'lg'}
         className={cx('w-fit self-center', {
-          ['text-text-primary border-text-primary']: isLockedTokens,
+          ['border-text-primary text-text-primary']: isLockedTokens,
         })}
         onClick={() => sendEvent('cs_start_posting_clicked')}
       >
