@@ -138,10 +138,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   if (href) {
     return (
       <CustomLink
-        className={className}
-        ref={ref as any}
-        {...nextLinkProps}
         {...props}
+        {...nextLinkProps}
+        className={cx(className, props.className)}
+        ref={ref as any}
         href={href}
       >
         {children}
