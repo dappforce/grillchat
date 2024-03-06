@@ -36,5 +36,5 @@ export function formatSUB({
   const formattedValue = formatUnits(value, 10)
   const balanceValueBN = new BigNumber(formattedValue)
 
-  return balanceValueBN.toFixed(toFixed)
+  return balanceValueBN.toPrecision(toFixed)
 }
