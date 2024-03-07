@@ -156,7 +156,13 @@ export default function DefaultChatItem({
         <div
           className={cx('mt-1 flex items-center', !showSuperLike && 'hidden')}
         >
-          <SuperLike withPostReward postId={message.id} />
+          <SuperLike
+            postRewardClassName={cx(
+              isMyMessage && 'text-text-muted-on-primary-light'
+            )}
+            withPostReward
+            postId={message.id}
+          />
           <span className='pointer-events-none ml-4 select-none opacity-0'>
             {relativeTime()}
           </span>

@@ -43,6 +43,7 @@ import PostRewardStat from './PostRewardStat'
 export type SuperLikeProps = ComponentProps<'div'> & {
   withPostReward: boolean
   postId: string
+  postRewardClassName?: string
 }
 
 export function SuperLikeWrapper({
@@ -180,6 +181,7 @@ export function SuperLikeWrapper({
 
 export default function SuperLike({
   postId,
+  postRewardClassName,
   withPostReward,
   ...props
 }: SuperLikeProps) {
@@ -231,7 +233,9 @@ export default function SuperLike({
             ) : (
               button
             )}
-            {postRewards?.isNotZero && <PostRewardStat postId={postId} />}
+            {postRewards?.isNotZero && (
+              <PostRewardStat className={postRewardClassName} postId={postId} />
+            )}
           </div>
         )
       }}

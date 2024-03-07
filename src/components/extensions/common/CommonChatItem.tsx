@@ -218,6 +218,9 @@ export default function CommonChatItem({
           childrenElement}
 
         <SuperLike
+          postRewardClassName={cx(
+            isMyMessage && 'text-text-muted-on-primary-light'
+          )}
           withPostReward
           postId={message.id}
           className='mb-1.5 ml-2.5 mt-1 self-start'
