@@ -44,6 +44,7 @@ export type SuperLikeProps = ComponentProps<'div'> & {
   withPostReward: boolean
   postId: string
   postRewardClassName?: string
+  isMyMessage?: boolean
 }
 
 export function SuperLikeWrapper({
@@ -181,7 +182,7 @@ export function SuperLikeWrapper({
 
 export default function SuperLike({
   postId,
-  postRewardClassName,
+  isMyMessage,
   withPostReward,
   ...props
 }: SuperLikeProps) {
@@ -207,6 +208,8 @@ export default function SuperLike({
               'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-[#7779F3] transition dark:bg-background-lighter',
               'enabled:hover:border-[#7779F3] enabled:focus-visible:border-[#7779F3]',
               'disabled:!bg-border-gray/50 disabled:!text-text-muted',
+              isMyMessage &&
+                'dark:disabled:!bg-black/20 dark:disabled:!text-white/50',
               hasILiked &&
                 '!bg-gradient-to-r from-[#8B55FD] to-[#7493FC] !text-white'
             )}
@@ -234,7 +237,12 @@ export default function SuperLike({
               button
             )}
             {postRewards?.isNotZero && (
-              <PostRewardStat className={postRewardClassName} postId={postId} />
+              <PostRewardStat
+                className={cx(
+                  isMyMessage && 'text-text-muted-on-primary-light'
+                )}
+                postId={postId}
+              />
             )}
           </div>
         )

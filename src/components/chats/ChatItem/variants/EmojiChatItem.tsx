@@ -115,10 +115,8 @@ export default function EmojiChatItem({
         </div>
       )}
       <SuperLike
+        isMyMessage={isMyMessage}
         withPostReward
-        postRewardClassName={cx(
-          isMyMessage && 'text-text-muted-on-primary-light'
-        )}
         className={cx(
           !isMyMessage && 'mt-1.5',
           isMyMessage && 'flex-row-reverse'

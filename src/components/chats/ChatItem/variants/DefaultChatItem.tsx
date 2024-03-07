@@ -157,9 +157,7 @@ export default function DefaultChatItem({
           className={cx('mt-1 flex items-center', !showSuperLike && 'hidden')}
         >
           <SuperLike
-            postRewardClassName={cx(
-              isMyMessage && 'text-text-muted-on-primary-light'
-            )}
+            isMyMessage={isMyMessage}
             withPostReward
             postId={message.id}
           />
