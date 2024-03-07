@@ -1,3 +1,4 @@
+import WalletIcon from '@/assets/graphics/wallet.svg'
 import SubwalletIcon from '@/assets/icons/subwallet.png'
 import Button from '@/components/Button'
 import PopOver from '@/components/floating/PopOver'
@@ -117,33 +118,61 @@ export default function PolkadotConnectWalletContent({
     }
   })
 
-  if (!hasInstalledWallet && isInMobileOrTablet()) {
-    // Currently, if the url contains encoded / (%252F) inside the link, it will not open the link, instead open search engine
-    const urlToGo = urlJoin(
-      getCurrentUrlOrigin(),
-      env.NEXT_PUBLIC_BASE_PATH,
-      `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${
-        useMyAccount.getState().encodedSecretKey
-      }`
-    )
-    menus = [
-      {
-        icon: () => (
-          <Image
-            width={32}
-            height={32}
-            className='h-10 w-10 flex-shrink-0 object-contain'
-            src={SubwalletIcon}
-            alt='Subwallet'
-          />
-        ),
-        text: 'Subwallet',
-        className: cx('gap-4'),
-        href: `https://mobile.subwallet.app/browser?url=${encodeURIComponent(
-          urlToGo
-        )}`,
-      },
-    ]
+  if (isInMobileOrTablet()) {
+    if (hasInstalledWallet) {
+      menus = [
+        {
+          text: (
+            <div className='flex w-full items-center justify-between gap-4'>
+              <span>Connect Wallet</span>
+            </div>
+          ),
+          className: cx('gap-4'),
+          icon: () => (
+            <Image
+              width={32}
+              height={32}
+              className='h-10 w-10 flex-shrink-0 object-contain'
+              src={WalletIcon}
+              alt=''
+            />
+          ),
+          onClick: () => {
+            const firstInstalledWallet = installedWallets[0]
+            setPreferredWallet(firstInstalledWallet)
+            setCurrentState('polkadot-connect-account')
+            sendEvent('select_polkadot_wallet', { kind: 'mobile-wallet' })
+          },
+        },
+      ]
+    } else {
+      // Currently, if the url contains encoded / (%252F) inside the link, it will not open the link, instead open search engine
+      const urlToGo = urlJoin(
+        getCurrentUrlOrigin(),
+        env.NEXT_PUBLIC_BASE_PATH,
+        `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${
+          useMyAccount.getState().encodedSecretKey
+        }`
+      )
+      menus = [
+        {
+          icon: () => (
+            <Image
+              width={32}
+              height={32}
+              className='h-10 w-10 flex-shrink-0 object-contain'
+              src={SubwalletIcon}
+              alt='Subwallet'
+            />
+          ),
+          text: 'Subwallet',
+          className: cx('gap-4'),
+          href: `https://mobile.subwallet.app/browser?url=${encodeURIComponent(
+            urlToGo
+          )}`,
+        },
+      ]
+    }
   }
 
   return (
