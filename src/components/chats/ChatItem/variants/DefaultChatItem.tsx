@@ -143,14 +143,17 @@ export default function DefaultChatItem({
             isMyMessage={isMyMessage}
           />
         )}
-        {showSuperLikeCount && (
-          <div className={cx('mt-1 flex items-center')}>
-            <SuperLike withPostReward postId={message.id} />
-            <span className='pointer-events-none ml-4 select-none opacity-0'>
-              {relativeTime}
-            </span>
-          </div>
-        )}
+        <div
+          className={cx(
+            'mt-1 flex items-center',
+            !showSuperLikeCount && 'hidden'
+          )}
+        >
+          <SuperLike withPostReward postId={message.id} />
+          <span className='pointer-events-none ml-4 select-none opacity-0'>
+            {relativeTime}
+          </span>
+        </div>
       </div>
     </div>
   )
