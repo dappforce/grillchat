@@ -65,6 +65,7 @@ export const LoginWithGrillKeyContent = ({
         rows={3}
         size='sm'
         autoFocus
+        onPaste={() => sendEvent('login_grill_key_pasted')}
         variant='fill-bg'
         onChange={(e) => setPrivateKey((e.target as HTMLTextAreaElement).value)}
         placeholder='Enter your Grill key'

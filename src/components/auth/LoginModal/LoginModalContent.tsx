@@ -81,7 +81,10 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
           {loginOption === 'all' && (
             <Button
               variant='primary'
-              onClick={() => setCurrentState('enter-secret-key')}
+              onClick={() => {
+                sendEvent('login_grill_key_clicked')
+                setCurrentState('enter-secret-key')
+              }}
               size='lg'
             >
               <div className='flex items-center justify-center gap-2'>
@@ -96,7 +99,7 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
             }
             onClick={() => {
               setCurrentState('polkadot-connect')
-              sendEvent('connect_wallet_started')
+              sendEvent('login_polkadot_account_clicked')
             }}
             size='lg'
           >

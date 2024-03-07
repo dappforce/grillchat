@@ -13,6 +13,7 @@ import { getCurrentUrlOrigin } from '@/utils/links'
 import { isInMobileOrTablet } from '@/utils/window'
 import { getWallets, Wallet } from '@talismn/connect-wallets'
 import Image from 'next/image'
+import { useEffect } from 'react'
 import { FiDownload } from 'react-icons/fi'
 import urlJoin from 'url-join'
 import { PolkadotConnectContentProps } from './types'
@@ -44,6 +45,17 @@ export default function PolkadotConnectWalletContent({
     else otherWallets.push(wallet)
   })
   let hasInstalledWallet = installedWallets.length
+
+  useEffect(() => {
+    const installed = getWallets().reduce((acc, wallet) => {
+      acc[wallet.extensionName] = wallet.installed ?? false
+      return acc
+    }, {} as Record<string, boolean>)
+    if (isInMobileOrTablet() && hasInstalledWallet) {
+      installed['nova'] = true
+    }
+    sendEvent('login_polkadot_opened', installed)
+  }, [sendEvent, hasInstalledWallet])
 
   let menus: MenuListProps['menus'] = [
     ...installedWallets,
@@ -110,6 +122,10 @@ export default function PolkadotConnectWalletContent({
           return
         }
         if (!wallet.installed) return
+
+        sendEvent('login_polkadot_wallet_clicked', {
+          value: wallet.extensionName,
+        })
 
         setPreferredWallet(wallet)
         setCurrentState('polkadot-connect-account')
