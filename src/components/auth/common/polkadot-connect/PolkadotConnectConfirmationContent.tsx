@@ -40,6 +40,7 @@ export default function PolkadotConnectConfirmationContent({
               },
               onSuccess: () => {
                 saveProxyAddress()
+                sendEvent('login_polkadot_confirmed')
                 sendEvent('polkadot_address_linked', undefined, {
                   polkadotLinked: true,
                 })

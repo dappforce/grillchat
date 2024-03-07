@@ -1,6 +1,7 @@
 import { linkTextStyles } from '@/components/LinkText'
 import Modal from '@/components/modals/Modal'
 import useLoginOption from '@/hooks/useLoginOption'
+import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -42,6 +43,7 @@ export default function LoginModal({
   withoutOverlay,
   withoutShadow,
 }: LoginModalProps) {
+  const sendEvent = useSendEvent()
   const isOpen = useLoginModal.use.isOpen()
   const setIsOpen = useLoginModal.use.setIsOpen()
   const initialOpenState = useLoginModal.use.initialOpenState() || 'login'
@@ -133,7 +135,13 @@ export default function LoginModal({
     withCloseButton = true,
   } = header
   const usedOnBackClick =
-    onBackClick || (() => setCurrentState(backToStep || 'login'))
+    onBackClick ||
+    (() => {
+      setCurrentState(backToStep || 'login')
+      if (currentState === 'enter-secret-key') {
+        sendEvent('login_grill_key_back_clicked')
+      }
+    })
 
   useEffect(() => {
     if (isOpen) setCurrentState(initialOpenState)
@@ -157,6 +165,7 @@ export default function LoginModal({
           className={linkTextStyles({ variant: 'primary' })}
           onClick={() => {
             setCurrentState('login')
+            sendEvent('login_grill_key_create_new_clicked')
           }}
         >
           Create a new one

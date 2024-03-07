@@ -9,13 +9,14 @@ import Modal, {
   ModalProps,
 } from '@/components/modals/Modal'
 import { spaceMono } from '@/fonts'
+import { useSendEvent } from '@/stores/analytics'
 import { SupportedExternalProvider } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { decodeSecretKey } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MdOutlineContentCopy } from 'react-icons/md'
 import { finishLogin } from '../utils'
 import useOauthLogin from './useOauthLogin'
@@ -35,6 +36,7 @@ export default function SaveGrillKeyModal({
 }: SaveGrillKeyModalProps & { provider?: 'x' | 'google' | 'evm' }) {
   const [step, setStep] = useState<Steps>('save')
   const [isDoneLoading, setIsDoneLoading] = useState(false)
+  const sendEvent = useSendEvent()
 
   useEffect(() => {
     if (props.isOpen) {
@@ -100,7 +102,12 @@ export default function SaveGrillKeyModal({
       description={currentInfo.desc}
       withCloseButton={step === 'account-created'}
       onBackClick={
-        currentInfo.backTo ? () => setStep(currentInfo.backTo!) : undefined
+        currentInfo.backTo
+          ? () => {
+              if (step === 'enter') sendEvent('login_mnemonic_back_clicked')
+              setStep(currentInfo.backTo!)
+            }
+          : undefined
       }
     >
       {props.isOpen && provider !== 'evm' && (
@@ -124,10 +131,11 @@ type ContentProps = {
 function SaveStep({ setCurrentState }: ContentProps) {
   const [openCopiedTooltip, setOpenCopiedTooltip] = useState(false)
   const encodedSecretKey = useMyAccount.use.encodedSecretKey()
-  const decodedSecretKey = useMemo(
-    () => decodeSecretKey(encodedSecretKey ?? ''),
-    [encodedSecretKey]
-  )
+  const sendEvent = useSendEvent()
+
+  useEffect(() => {
+    sendEvent('login_mnemonic_opened')
+  }, [sendEvent])
 
   return (
     <div className='flex flex-col gap-4'>
@@ -137,7 +145,10 @@ function SaveStep({ setCurrentState }: ContentProps) {
           spaceMono.className
         )}
       >
-        <div className={cx('cursor-pointer select-all break-words px-4 py-2')}>
+        <div
+          className={cx('cursor-pointer select-all break-words px-4 py-2')}
+          onCopy={() => sendEvent('login_mnemonic_copied')}
+        >
           {decodeSecretKey(encodedSecretKey ?? '')}
         </div>
         <PopOver
@@ -154,9 +165,10 @@ function SaveStep({ setCurrentState }: ContentProps) {
               <Button
                 variant='transparent'
                 className='p-1 text-text-primary'
-                onClick={() =>
+                onClick={() => {
                   copyToClipboard(decodeSecretKey(encodedSecretKey ?? ''))
-                }
+                  sendEvent('login_mnemonic_copy_clicked')
+                }}
               >
                 <MdOutlineContentCopy />
               </Button>
@@ -166,7 +178,13 @@ function SaveStep({ setCurrentState }: ContentProps) {
           <span>Copied!</span>
         </PopOver>
       </div>
-      <Button size='lg' onClick={() => setCurrentState('enter')}>
+      <Button
+        size='lg'
+        onClick={() => {
+          setCurrentState('enter')
+          sendEvent('login_mnemonic_confirmed')
+        }}
+      >
         I saved my key in a safe place
       </Button>
     </div>
@@ -177,6 +195,7 @@ function EnterKeyStep({ setCurrentState, provider, closeModal }: ContentProps) {
   const encodedSecretKey = useMyAccount.use.encodedSecretKey()
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
+  const sendEvent = useSendEvent()
 
   const isFinished = value.split(/[a-z]\s[a-z]/g).length === 12
 
@@ -185,6 +204,7 @@ function EnterKeyStep({ setCurrentState, provider, closeModal }: ContentProps) {
       onSubmit={(e) => {
         e.preventDefault()
         if (value.trim() !== decodeSecretKey(encodedSecretKey ?? '')) {
+          sendEvent('login_mnemonic_wrong')
           setError('The Grill key you entered is incorrect. Please try again.')
           return
         }

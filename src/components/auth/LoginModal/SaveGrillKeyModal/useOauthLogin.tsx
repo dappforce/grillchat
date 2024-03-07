@@ -59,7 +59,7 @@ export default function useOauthLogin({
     txCallbacks: {
       onSuccess: () => {
         replaceUrl(getCurrentUrlWithoutQuery('login'))
-        sendEvent('oauth_login_done', { provider })
+        sendEvent('login_oauth_successful', { provider })
         finalizeTemporaryAccount()
         onSuccess()
       },
@@ -70,6 +70,16 @@ export default function useOauthLogin({
     'Failed to create profile',
     () => 'Please refresh the page to relink your account'
   )
+
+  useEffect(() => {
+    if (errorLinking || errorUpsert) {
+      sendEvent('login_oauth_error', {
+        value: errorLinking || errorUpsert,
+        provider,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errorLinking, errorUpsert])
 
   const setBlockchainSubscriptionState = useTransactions(
     (state) => state.setSubscriptionState
@@ -128,6 +138,7 @@ export default function useOauthLogin({
     ;(async () => {
       const address = await loginAsTemporaryAccount(null)
       if (!address || !identity) return
+      sendEvent('account_created', { loginBy: provider })
       setReferrerId({ refId: getReferralIdInUrl() })
       linkIdentity({
         id: session.user?.id,

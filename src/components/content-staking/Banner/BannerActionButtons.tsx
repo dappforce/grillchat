@@ -59,7 +59,10 @@ const BannerActionButtons = () => {
         <Button
           size={isTouchDevice() ? 'md' : 'lg'}
           variant={'primary'}
-          onClick={() => promptUserForLogin()}
+          onClick={() => {
+            sendEvent('login_button_clicked', { eventSource: 'staking' })
+            promptUserForLogin()
+          }}
         >
           Login
         </Button>

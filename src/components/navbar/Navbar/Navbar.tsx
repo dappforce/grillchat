@@ -62,6 +62,7 @@ export default function Navbar({
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isTemporaryAccount = useMyAccount((state) => state.isTemporaryAccount)
   const router = useRouter()
+  const sendEvent = useSendEvent()
 
   const address = useMyMainAddress()
   const { data: profile } = getProfileQuery.useQuery(address ?? '')
@@ -104,7 +105,13 @@ export default function Navbar({
     }
 
     return enableLoginButton ? (
-      <Button onClick={login} className='px-5 text-sm'>
+      <Button
+        onClick={() => {
+          login()
+          sendEvent('login_button_clicked', { eventSource: 'navbar' })
+        }}
+        className='px-5 text-sm'
+      >
         Login
       </Button>
     ) : (

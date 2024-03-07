@@ -81,7 +81,10 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
           {loginOption === 'all' && (
             <Button
               variant='primary'
-              onClick={() => setCurrentState('enter-secret-key')}
+              onClick={() => {
+                sendEvent('login_grill_key_clicked')
+                setCurrentState('enter-secret-key')
+              }}
               size='lg'
             >
               <div className='flex items-center justify-center gap-2'>
@@ -96,7 +99,7 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
             }
             onClick={() => {
               setCurrentState('polkadot-connect')
-              sendEvent('connect_wallet_started')
+              sendEvent('login_polkadot_account_clicked')
             }}
             size='lg'
           >
@@ -148,7 +151,10 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
               )}
               <Button
                 variant='primaryOutline'
-                onClick={() => setCurrentState('new-account')}
+                onClick={() => {
+                  setCurrentState('new-account')
+                  sendEvent('login_create_new_clicked')
+                }}
               >
                 <div className='flex items-center justify-center gap-2'>
                   <HiPlus className='text-[20px] text-text-muted' />
@@ -230,6 +236,7 @@ export function EvmLoginStep({
 }: LoginModalContentProps & { isErrorStep?: boolean }) {
   const { mutate, isLoading } = useLoginBeforeSignEvm()
   const { mutate: setReferrerId } = useSetReferrerId()
+  const sendEvent = useSendEvent()
 
   return (
     <CommonEVMLoginContent
@@ -247,6 +254,7 @@ export function EvmLoginStep({
       }}
       onSuccess={() => {
         useMyAccount.getState().finalizeTemporaryAccount()
+        sendEvent('account_created', { loginBy: 'evm' })
         closeModal()
         useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
       }}

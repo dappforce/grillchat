@@ -59,7 +59,6 @@ const FAQSection = () => {
     content: item.content,
     onClick: () => {
       sendEvent('cs_faq_expanded', { value: item.id })
-      console.log('cs_faq_expanded', { value: item.id })
     },
   }))
 
