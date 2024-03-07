@@ -88,15 +88,15 @@ export function isInMobileOrTablet() {
 const GLOBAL_QUERIES = ['ref']
 export function replaceUrl(url: string) {
   let removedOrigin = url.replace(window.location.origin, '')
+  // if url doesn't include basepath, it will add it
   if (
-    !new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}/*.`).test(removedOrigin) &&
+    !new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}/.`).test(removedOrigin) &&
     removedOrigin !== env.NEXT_PUBLIC_BASE_PATH
   ) {
     removedOrigin = urlJoin(env.NEXT_PUBLIC_BASE_PATH, removedOrigin)
   }
 
-  const pathnameWithQuery = removedOrigin.replace(window.location.origin, '')
-  const [pathname, query] = pathnameWithQuery.split('?')
+  const [pathname, query] = removedOrigin.split('?')
   const searchParams = new URLSearchParams(query)
   const currentSearchParams = new URLSearchParams(window.location.search)
   for (const key of GLOBAL_QUERIES) {
@@ -110,6 +110,8 @@ export function replaceUrl(url: string) {
   if (finalQuery) {
     finalUrl += '?' + finalQuery
   }
+
+  console.log(finalUrl)
 
   window.history.replaceState(
     { ...window.history.state, url: finalUrl, as: finalUrl },
