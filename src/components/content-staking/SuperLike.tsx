@@ -202,10 +202,11 @@ export default function SuperLike({
             onClick={handleClick}
             disabled={isDisabled}
             className={cx(
-              'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-background-lighter px-2 py-0.5 text-text-primary transition-colors',
-              'enabled:hover:border-background-primary enabled:focus-visible:border-background-primary',
+              'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-[#7779F3] transition dark:bg-background-lighter',
+              'enabled:hover:border-[#7779F3] enabled:focus-visible:border-[#7779F3]',
               'disabled:bg-border-gray/50 disabled:text-text-muted',
-              hasILiked && '!bg-background-primary !text-white'
+              hasILiked &&
+                '!bg-gradient-to-r from-[#8B55FD] to-[#7493FC] !text-white'
             )}
           >
             {hasILiked ? <IoDiamond /> : <IoDiamondOutline />}
