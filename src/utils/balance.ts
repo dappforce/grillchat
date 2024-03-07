@@ -29,12 +29,27 @@ export function useFormatBalance({
 export function formatSUB({
   value,
   toFixed = 2,
+  toPrecision,
 }: {
   value: string
   toFixed?: number
+  toPrecision?: number
 }) {
   const formattedValue = formatUnits(value, 10)
-  const balanceValueBN = new BigNumber(formattedValue)
+  const [prefix, postfix] = formattedValue.split('.')
+  let afterDecimalPoint = postfix
+  if (toPrecision) {
+    afterDecimalPoint = parseFloat(`0.${postfix}`)
+      .toPrecision(toPrecision)
+      .substring(2)
+  } else if (toFixed) {
+    afterDecimalPoint = postfix
+      .substring(0, toFixed)
+      .padEnd(toFixed, '0')
+      .substring(0, toFixed)
+  }
 
-  return balanceValueBN.toPrecision(toFixed)
+  console.log(afterDecimalPoint)
+
+  return `${prefix}.${afterDecimalPoint}`
 }
