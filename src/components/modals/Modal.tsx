@@ -196,6 +196,15 @@ export default function Modal({
                         >
                           Terms of Service
                         </LinkText>
+                        <span>&middot;</span>
+                        <LinkText
+                          href='https://grillapp.net/legal/content-policy'
+                          className='font-normal'
+                          openInNewTab
+                          forceHardNavigation
+                        >
+                          Content Policy
+                        </LinkText>
                       </div>
                     ) : (
                       withFooter
