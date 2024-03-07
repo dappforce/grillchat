@@ -111,7 +111,9 @@ export default function HubsPage(props: HubsPageProps) {
   useEffect(() => {
     if (!router.isReady) return
 
-    const currentPathname = window.location.pathname.substring(1)
+    const currentPathname = window.location.pathname
+      .replace(env.NEXT_PUBLIC_BASE_PATH, '')
+      .substring(1)
     if (!currentPathname) {
       if (followedPostIds?.length) {
         setSelectedTab(0)
@@ -122,6 +124,7 @@ export default function HubsPage(props: HubsPageProps) {
       }
     } else {
       const index = tabs.findIndex(({ id }) => id === currentPathname)
+      console.log(index, 'brooo', currentPathname)
       if (index > -1) setSelectedTab(index)
     }
 
