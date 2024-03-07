@@ -13,6 +13,7 @@ import {
   getSuperLikeCountQuery,
   getTotalStakeQuery,
 } from '@/services/datahub/content-staking/query'
+import { useChatMenu } from '@/stores/chat-menu'
 import { useLoginModal } from '@/stores/login-modal'
 import {
   useGetCurrentSigner,
@@ -68,6 +69,7 @@ export function SuperLikeWrapper({
     enabled: withPostReward,
   })
   const { setIsOpen } = useLoginModal()
+  const isMenuOpened = useChatMenu((state) => state.openedChatId === postId)
 
   const { data: message } = getConfirmationMsgQuery.useQuery(undefined)
   const { data: post } = getPostQuery.useQuery(postId)
@@ -93,7 +95,9 @@ export function SuperLikeWrapper({
     })
 
   const handleClick = (e?: SyntheticEvent) => {
-    e?.stopPropagation()
+    // prevent chat menu from opening when clicking this button
+    if (!isMenuOpened) e?.stopPropagation()
+
     if (hasILiked || !message) return
     if (!myAddress || !myGrillAddress) {
       setIsOpen(true)
