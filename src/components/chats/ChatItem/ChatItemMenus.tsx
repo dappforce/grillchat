@@ -33,7 +33,7 @@ import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BiGift } from 'react-icons/bi'
 import { BsFillPinAngleFill } from 'react-icons/bs'
@@ -72,7 +72,6 @@ export default function ChatItemMenus({
   const refSearchParam = useReferralSearchParam()
 
   const router = useRouter()
-  const isLoggingInWithKey = useRef(false)
 
   const address = useMyMainAddress()
   const { data: message } = getPostQuery.useQuery(messageId)

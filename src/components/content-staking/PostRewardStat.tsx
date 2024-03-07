@@ -20,13 +20,23 @@ export default function PostRewardStat({
 
   const totalReward = formatSUB({
     value: reward?.reward ?? '',
+    toPrecision: 2,
   })
 
   const { fromCommentSuperLikes, fromDirectSuperLikes, fromShareSuperLikes } =
     reward?.rewardsBySource || {}
-  const directReward = formatSUB({ value: fromDirectSuperLikes ?? '' })
-  const commentReward = formatSUB({ value: fromCommentSuperLikes ?? '' })
-  const sharesReward = formatSUB({ value: fromShareSuperLikes ?? '' })
+  const directReward = formatSUB({
+    value: fromDirectSuperLikes ?? '',
+    toPrecision: 2,
+  })
+  const commentReward = formatSUB({
+    value: fromCommentSuperLikes ?? '',
+    toPrecision: 2,
+  })
+  const sharesReward = formatSUB({
+    value: fromShareSuperLikes ?? '',
+    toPrecision: 2,
+  })
 
   if (!reward?.isNotZero) return null
 
@@ -50,12 +60,14 @@ export default function PostRewardStat({
                   <>
                     {formatSUB({
                       value: reward.rewardDetail.finalizedReward,
+                      toPrecision: 2,
                     })}{' '}
                     SUB earned +{' '}
                   </>
                 )}
                 {formatSUB({
                   value: reward.rewardDetail.draftReward,
+                  toPrecision: 2,
                 })}{' '}
                 approx. today
               </span>
