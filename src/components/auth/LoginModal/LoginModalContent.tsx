@@ -148,7 +148,10 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
               )}
               <Button
                 variant='primaryOutline'
-                onClick={() => setCurrentState('new-account')}
+                onClick={() => {
+                  setCurrentState('new-account')
+                  sendEvent('login_create_new_clicked')
+                }}
               >
                 <div className='flex items-center justify-center gap-2'>
                   <HiPlus className='text-[20px] text-text-muted' />

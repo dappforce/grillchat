@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { signIn } from 'next-auth/react'
@@ -14,6 +15,7 @@ import { getRedirectCallback } from '../utils'
 export default function NewAccountContent({
   setCurrentState,
 }: LoginModalContentProps) {
+  const sendEvent = useSendEvent()
   return (
     <div className='flex flex-col gap-4'>
       <GoogleButton />
@@ -23,6 +25,7 @@ export default function NewAccountContent({
         variant='primaryOutline'
         onClick={() => {
           setCurrentState('evm-address-link')
+          sendEvent('login_evm_clicked')
         }}
       >
         <div className='flex items-center justify-center gap-2'>
@@ -39,7 +42,10 @@ export default function NewAccountContent({
       <Button
         size='lg'
         variant='primaryOutline'
-        onClick={() => setCurrentState('login')}
+        onClick={() => {
+          setCurrentState('login')
+          sendEvent('login_already_have_clicked')
+        }}
       >
         <div className='flex flex-col items-center justify-center'>
           <span>I already have an account</span>
@@ -64,12 +70,14 @@ function getOauthCallbackUrl(oauthProvider: string) {
 }
 function GoogleButton() {
   const [loading, setLoading] = useState(false)
+  const sendEvent = useSendEvent()
   return (
     <Button
       size='lg'
       isLoading={loading}
       onClick={() => {
         setLoading(true)
+        sendEvent('login_google_clicked')
         signIn('google', {
           callbackUrl: getOauthCallbackUrl('google'),
         })
@@ -87,6 +95,7 @@ function GoogleButton() {
 
 function XLoginButton() {
   const [loading, setLoading] = useState(false)
+  const sendEvent = useSendEvent()
   return (
     <Button
       size='lg'
@@ -94,6 +103,7 @@ function XLoginButton() {
       isLoading={loading}
       onClick={() => {
         setLoading(true)
+        sendEvent('login_x_clicked')
         signIn('twitter', {
           callbackUrl: getOauthCallbackUrl('x'),
         })
