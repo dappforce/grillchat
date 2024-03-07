@@ -103,7 +103,7 @@ function XLoginButton() {
       isLoading={loading}
       onClick={() => {
         setLoading(true)
-        sendEvent('login_x_clicked')
+        sendEvent('login_twitter_clicked')
         signIn('twitter', {
           callbackUrl: getOauthCallbackUrl('x'),
         })
