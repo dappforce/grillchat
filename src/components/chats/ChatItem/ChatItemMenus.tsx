@@ -217,7 +217,10 @@ export default function ChatItemMenus({
                               icon: IoDiamondOutline,
                               text: 'Like Message',
                               disabled: isDisabled,
-                              onClick: handleClick,
+                              onClick: () => {
+                                handleClick()
+                                setIsOpenChatMenu(null)
+                              },
                             },
                           ]}
                         />
