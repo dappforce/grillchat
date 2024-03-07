@@ -128,7 +128,9 @@ export default function DefaultChatItem({
           </Linkify>
           {!showSuperLike && (
             <span
-              className={cx('pointer-events-none ml-3 select-none opacity-0')}
+              className={cx(
+                'pointer-events-none ml-3 select-none px-1 opacity-0'
+              )}
             >
               {relativeTime()}
             </span>
@@ -136,7 +138,7 @@ export default function DefaultChatItem({
         </p>
         <div
           className={cx(
-            'absolute bottom-1 right-3 z-10 flex items-center self-end rounded-full px-1.5 py-0.5',
+            'absolute bottom-0.5 right-2 z-10 flex items-center self-end rounded-full px-1.5 py-0.5',
             !showSuperLike && showLinkPreview && 'bg-black/35'
           )}
         >
