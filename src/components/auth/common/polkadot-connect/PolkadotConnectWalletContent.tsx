@@ -118,7 +118,7 @@ export default function PolkadotConnectWalletContent({
     }
   })
 
-  if (isInMobileOrTablet() || true) {
+  if (isInMobileOrTablet()) {
     if (hasInstalledWallet) {
       menus = [
         {
