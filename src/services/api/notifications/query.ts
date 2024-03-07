@@ -20,6 +20,8 @@ export const getLinkedTelegramAccountsQuery = createQuery({
   key: 'getLinkedTelegramAccounts',
   fetcher: getLinkedTelegramAccounts,
   defaultConfigGenerator: (data) => ({
-    enabled: !!data?.address,
+    // enabled: !!data?.address,
+    // Temporary disable linked telegram because the integration for mainnet is not there yet
+    enabled: false,
   }),
 })
