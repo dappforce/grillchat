@@ -62,8 +62,8 @@ export default function CommonChatItem({
   const { inReplyTo, body } = content || {}
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(message.id)
 
-  const isMyMessage = true
-  // _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
+  const isMyMessage =
+    _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = isMessageSent(message.id, dataType)
 
