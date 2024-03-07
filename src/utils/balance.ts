@@ -49,7 +49,5 @@ export function formatSUB({
       .substring(0, toFixed)
   }
 
-  console.log(afterDecimalPoint)
-
   return `${prefix}.${afterDecimalPoint}`
 }
