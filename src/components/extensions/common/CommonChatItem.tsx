@@ -4,6 +4,7 @@ import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import SuperLike from '@/components/content-staking/SuperLike'
+import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -59,6 +60,7 @@ export default function CommonChatItem({
   const { struct, content } = message
   const { ownerId, createdAtTime, dataType, isUpdated } = struct
   const { inReplyTo, body } = content || {}
+  const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(message.id)
 
   const isMyMessage =
     _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
@@ -70,13 +72,14 @@ export default function CommonChatItem({
       ? children({ isMyMessage, relativeTime, isSent })
       : children
 
-  const otherMessageCheckMarkElement = (
+  const otherMessageCheckMarkElement = (className?: string) => (
     <ChatRelativeTime
       isUpdated={isUpdated}
       createdAtTime={createdAtTime}
       className={cx(
         'text-xs text-text-muted',
-        isMyMessage && 'dark:text-text-muted-on-primary'
+        isMyMessage && 'dark:text-text-muted-on-primary',
+        className
       )}
     />
   )
@@ -93,6 +96,12 @@ export default function CommonChatItem({
       <MessageStatusIndicator message={message} />
     </div>
   )
+
+  const isOthersMessageChildrenOnBottom =
+    !isMyMessage &&
+    (superLikeCount?.count ?? 0) <= 0 &&
+    (othersMessage.children === 'bottom' ||
+      (othersMessage.children === 'middle' && !body))
 
   return (
     <div className={cx('flex flex-col gap-2')}>
@@ -118,7 +127,7 @@ export default function CommonChatItem({
             />
             {!isMyMessage &&
               othersMessage.checkMark === 'top' &&
-              otherMessageCheckMarkElement}
+              otherMessageCheckMarkElement()}
           </div>
         )}
 
@@ -135,10 +144,13 @@ export default function CommonChatItem({
         {!isMyMessage && othersMessage.checkMark === 'bottom' && (
           <div
             className={cx(
-              'absolute bottom-1 right-1.5 z-10 flex items-center gap-1 self-end rounded-full bg-background-light px-1.5 py-0.5'
+              'absolute bottom-1 right-1.5 z-10 flex items-center gap-1 self-end rounded-full px-1.5 py-0.5',
+              isOthersMessageChildrenOnBottom && 'bg-black/35'
             )}
           >
-            {otherMessageCheckMarkElement}
+            {otherMessageCheckMarkElement(
+              cx(isOthersMessageChildrenOnBottom && 'text-white')
+            )}
           </div>
         )}
 
@@ -193,7 +205,7 @@ export default function CommonChatItem({
             </Linkify>
             {!isMyMessage && othersMessage.checkMark === 'bottom' && (
               <span className='pointer-events-none ml-3 select-none opacity-0'>
-                {otherMessageCheckMarkElement}
+                {otherMessageCheckMarkElement()}
               </span>
             )}
           </p>
