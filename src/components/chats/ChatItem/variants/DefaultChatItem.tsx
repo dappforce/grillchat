@@ -29,24 +29,27 @@ export default function DefaultChatItem({
   const messageId = message.id
 
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(messageId)
-  const showSuperLikeCount = (superLikeCount?.count ?? 0) > 0
+  const showSuperLike = (superLikeCount?.count ?? 0) > 0
 
   const { createdAtTime, ownerId, isUpdated } = message.struct
   const { inReplyTo, body, link, linkMetadata } = message.content || {}
 
-  const relativeTime = (
+  const relativeTime = (className?: string) => (
     <>
       <ChatRelativeTime
         createdAtTime={createdAtTime}
         isUpdated={isUpdated}
         className={cx(
           'text-xs text-text-muted [&:not(:last-child)]:mr-1',
-          isMyMessage && 'dark:text-text-muted-on-primary'
+          isMyMessage && 'text-text-muted-on-primary-light',
+          className
         )}
       />
       {isMyMessage && <MessageStatusIndicator message={message} />}
     </>
   )
+
+  const showLinkPreview = link && linkMetadata?.title
 
   return (
     <div className={cx('flex flex-col', props.className)}>
@@ -54,7 +57,7 @@ export default function DefaultChatItem({
         className={cx(
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl px-2.5 py-1.5',
           isMyMessage
-            ? 'bg-background-primary-light text-text dark:bg-background-primary dark:text-text-on-primary'
+            ? 'bg-background-primary-light text-text dark:bg-background-primary/70 dark:text-text-on-primary'
             : 'bg-background-light'
         )}
       >
@@ -123,16 +126,23 @@ export default function DefaultChatItem({
           >
             {body}
           </Linkify>
-          {!showSuperLikeCount && (
-            <span className='pointer-events-none ml-3 select-none opacity-0'>
-              {relativeTime}
+          {!showSuperLike && (
+            <span
+              className={cx(
+                'pointer-events-none ml-3 select-none px-1 opacity-0'
+              )}
+            >
+              {relativeTime()}
             </span>
           )}
         </p>
         <div
-          className={cx('absolute bottom-1 right-3 flex items-center self-end')}
+          className={cx(
+            'absolute bottom-0.5 right-2 z-10 flex items-center self-end rounded-full px-1.5 py-0.5',
+            !showSuperLike && showLinkPreview && 'bg-black/35'
+          )}
         >
-          {relativeTime}
+          {relativeTime(cx(!showSuperLike && showLinkPreview && '!text-white'))}
         </div>
         {link && linkMetadata?.title && (
           <LinkPreview
@@ -144,14 +154,15 @@ export default function DefaultChatItem({
           />
         )}
         <div
-          className={cx(
-            'mt-1 flex items-center',
-            !showSuperLikeCount && 'hidden'
-          )}
+          className={cx('mt-1 flex items-center', !showSuperLike && 'hidden')}
         >
-          <SuperLike withPostReward postId={message.id} />
+          <SuperLike
+            isMyMessage={isMyMessage}
+            withPostReward
+            postId={message.id}
+          />
           <span className='pointer-events-none ml-4 select-none opacity-0'>
-            {relativeTime}
+            {relativeTime()}
           </span>
         </div>
       </div>

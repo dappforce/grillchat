@@ -48,9 +48,7 @@ export default function MessageStatusIndicator({
         if (messageStatus === 'sending') {
           return (
             <IoCheckmarkOutline
-              className={cx(
-                'text-sm text-text-muted dark:text-text-muted-on-primary'
-              )}
+              className={cx('text-sm text-text-muted-on-primary-light')}
             />
           )
         } else if (messageStatus === 'blockchain') {

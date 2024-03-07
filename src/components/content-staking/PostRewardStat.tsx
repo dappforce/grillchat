@@ -41,8 +41,8 @@ export default function PostRewardStat({
   if (!reward?.isNotZero) return null
 
   return (
-    <div {...props} className={cx(props.className)}>
-      <div className='flex items-center gap-1.5 text-text-muted'>
+    <div {...props} className={cx('text-text-muted', props.className)}>
+      <div className='flex items-center gap-1.5'>
         <div className='relative flex items-center'>
           {BigInt(reward.rewardDetail.draftReward) > 0 ? (
             <PopOver

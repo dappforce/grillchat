@@ -115,6 +115,7 @@ export default function EmojiChatItem({
         </div>
       )}
       <SuperLike
+        isMyMessage={isMyMessage}
         withPostReward
         className={cx(
           !isMyMessage && 'mt-1.5',

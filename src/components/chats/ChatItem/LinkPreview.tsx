@@ -65,7 +65,7 @@ export default function LinkPreview({
         <p className='font-semibold'>{truncatedTitle}</p>
         <p
           className={cx(
-            isMyMessage ? 'text-text-muted-on-primary' : 'text-text-muted'
+            isMyMessage ? 'text-text-muted-on-primary-light' : 'text-text-muted'
           )}
         >
           {truncatedDesc}
