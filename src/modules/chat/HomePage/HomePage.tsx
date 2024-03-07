@@ -112,7 +112,7 @@ export default function HubsPage(props: HubsPageProps) {
     if (!router.isReady) return
 
     const currentPathname = window.location.pathname
-      .replace(env.NEXT_PUBLIC_BASE_PATH, '')
+      .replace(new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}`), '')
       .substring(1)
     if (!currentPathname) {
       if (followedPostIds?.length) {
