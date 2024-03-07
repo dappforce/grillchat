@@ -124,7 +124,6 @@ export default function HubsPage(props: HubsPageProps) {
       }
     } else {
       const index = tabs.findIndex(({ id }) => id === currentPathname)
-      console.log(index, 'brooo', currentPathname)
       if (index > -1) setSelectedTab(index)
     }
 
