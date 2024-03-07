@@ -1,9 +1,9 @@
 import { cx } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import { LinkProps } from 'next/link'
-import { ComponentProps, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import { HiArrowUpRight } from 'react-icons/hi2'
-import CustomLink from './referral/CustomLink'
+import CustomLink, { CustomLinkProps } from './referral/CustomLink'
 
 export const linkTextStyles = cva(
   'cursor-pointer hover:underline focus-visible:underline',
@@ -23,7 +23,7 @@ export const linkTextStyles = cva(
 )
 
 export type LinkTextProps = Omit<
-  Omit<ComponentProps<'a'>, 'href'> &
+  Omit<CustomLinkProps, 'href'> &
     VariantProps<typeof linkTextStyles> & {
       href?: LinkProps['href']
       openInNewTab?: boolean
@@ -66,23 +66,19 @@ const LinkText = forwardRef<any, LinkTextProps>(function LinkText(
   }
 
   return (
-    <CustomLink href={href} passHref legacyBehavior>
-      <a
-        {...props}
-        {...anchorProps}
-        ref={ref}
-        className={cx(linkTextStyles({ variant }), props.className)}
-      >
-        {props.children}
-        {withArrow && (
-          <HiArrowUpRight
-            className={cx(
-              'relative -top-px ml-1 inline text-sm',
-              arrowClassName
-            )}
-          />
-        )}
-      </a>
+    <CustomLink
+      {...props}
+      {...anchorProps}
+      className={cx(linkTextStyles({ variant }), props.className)}
+      href={href}
+      ref={ref}
+    >
+      {props.children}
+      {withArrow && (
+        <HiArrowUpRight
+          className={cx('relative -top-px ml-1 inline text-sm', arrowClassName)}
+        />
+      )}
     </CustomLink>
   )
 })

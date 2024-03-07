@@ -202,7 +202,7 @@ export default function Document() {
           )}
         />
       </Head>
-      <body className='bg-transparent'>
+      <body className='bg-transparent text-text'>
         <Main />
         <NextScript />
       </body>
