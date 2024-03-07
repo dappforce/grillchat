@@ -183,7 +183,7 @@ export default function Modal({
                       <div className='flex items-center justify-center gap-4 px-6 py-4 text-sm text-text-muted'>
                         <LinkText
                           href='https://subsocial.network/legal/privacy'
-                          className='font-normal'
+                          className='whitespace-nowrap font-normal'
                           openInNewTab
                         >
                           Privacy Policy
@@ -191,7 +191,7 @@ export default function Modal({
                         <span>&middot;</span>
                         <LinkText
                           href='https://subsocial.network/legal/terms'
-                          className='font-normal'
+                          className='whitespace-nowrap font-normal'
                           openInNewTab
                         >
                           Terms of Service
@@ -199,7 +199,7 @@ export default function Modal({
                         <span>&middot;</span>
                         <LinkText
                           href='https://grillapp.net/legal/content-policy'
-                          className='font-normal'
+                          className='whitespace-nowrap font-normal'
                           openInNewTab
                           forceHardNavigation
                         >
