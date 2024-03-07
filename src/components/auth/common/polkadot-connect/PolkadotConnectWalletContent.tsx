@@ -118,7 +118,7 @@ export default function PolkadotConnectWalletContent({
     }
   })
 
-  if (isInMobileOrTablet()) {
+  if (isInMobileOrTablet() || true) {
     if (hasInstalledWallet) {
       menus = [
         {
@@ -129,13 +129,7 @@ export default function PolkadotConnectWalletContent({
           ),
           className: cx('gap-4'),
           icon: () => (
-            <Image
-              width={32}
-              height={32}
-              className='h-10 w-10 flex-shrink-0 object-contain'
-              src={WalletIcon}
-              alt=''
-            />
+            <WalletIcon className='h-[36px] w-[36px] flex-shrink-0' />
           ),
           onClick: () => {
             const firstInstalledWallet = installedWallets[0]
