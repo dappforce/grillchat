@@ -62,8 +62,8 @@ export default function CommonChatItem({
   const { inReplyTo, body } = content || {}
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(message.id)
 
-  const isMyMessage =
-    _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
+  const isMyMessage = true
+  // _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = isMessageSent(message.id, dataType)
 
@@ -103,13 +103,19 @@ export default function CommonChatItem({
     (othersMessage.children === 'bottom' ||
       (othersMessage.children === 'middle' && !body))
 
+  const isMyMessageChildrenOnBottom =
+    isMyMessage &&
+    (superLikeCount?.count ?? 0) <= 0 &&
+    (myMessageConfig.children === 'bottom' ||
+      (myMessageConfig.children === 'middle' && !body))
+
   return (
     <div className={cx('flex flex-col gap-2')}>
       <div
         className={cx(
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl',
           isMyMessage
-            ? 'bg-background-primary-light text-text dark:text-text-on-primary'
+            ? 'bg-background-primary-light text-text dark:bg-background-primary/70 dark:text-text-on-primary'
             : 'bg-background-light',
           className
         )}
@@ -135,10 +141,13 @@ export default function CommonChatItem({
         {isMyMessage && myMessageConfig.checkMark === 'adaptive-inside' && (
           <div
             className={cx(
-              'absolute bottom-1 right-1.5 z-10 flex items-center gap-1 self-end rounded-full bg-background-primary-light px-1.5 py-0.5'
+              'absolute bottom-1 right-1.5 z-10 flex items-center gap-1 self-end rounded-full px-1.5 py-0.5',
+              isMyMessageChildrenOnBottom && 'bg-black/45'
             )}
           >
-            {myMessageCheckMarkElement()}
+            {myMessageCheckMarkElement(
+              cx(isMyMessageChildrenOnBottom && 'text-white')
+            )}
           </div>
         )}
         {!isMyMessage && othersMessage.checkMark === 'bottom' && (

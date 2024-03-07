@@ -43,8 +43,8 @@ function ChatItemContainer(
   const ownerId = message.struct.ownerId
   const senderAddress = ownerId ?? ''
 
-  const isMyMessage =
-    address === senderAddress || senderAddress === parentProxyAddress
+  const isMyMessage = true
+  // address === senderAddress || senderAddress === parentProxyAddress
 
   return (
     <div

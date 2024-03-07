@@ -57,7 +57,7 @@ export default function DefaultChatItem({
         className={cx(
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl px-2.5 py-1.5',
           isMyMessage
-            ? 'bg-background-primary-light text-text dark:text-text-on-primary'
+            ? 'bg-background-primary-light text-text dark:bg-background-primary/70 dark:text-text-on-primary'
             : 'bg-background-light'
         )}
       >

@@ -206,7 +206,7 @@ export default function SuperLike({
             className={cx(
               'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-[#7779F3] transition dark:bg-background-lighter',
               'enabled:hover:border-[#7779F3] enabled:focus-visible:border-[#7779F3]',
-              'disabled:bg-border-gray/50 disabled:text-text-muted',
+              'disabled:!bg-border-gray/50 disabled:!text-text-muted',
               hasILiked &&
                 '!bg-gradient-to-r from-[#8B55FD] to-[#7493FC] !text-white'
             )}
