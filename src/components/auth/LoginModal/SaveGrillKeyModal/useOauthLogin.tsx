@@ -61,6 +61,7 @@ export default function useOauthLogin({
         replaceUrl(getCurrentUrlWithoutQuery('login'))
         sendEvent('oauth_login_done', { provider })
         finalizeTemporaryAccount()
+        sendEvent('account_created', { loginBy: provider })
         onSuccess()
       },
     },

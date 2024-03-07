@@ -230,6 +230,7 @@ export function EvmLoginStep({
 }: LoginModalContentProps & { isErrorStep?: boolean }) {
   const { mutate, isLoading } = useLoginBeforeSignEvm()
   const { mutate: setReferrerId } = useSetReferrerId()
+  const sendEvent = useSendEvent()
 
   return (
     <CommonEVMLoginContent
@@ -247,6 +248,7 @@ export function EvmLoginStep({
       }}
       onSuccess={() => {
         useMyAccount.getState().finalizeTemporaryAccount()
+        sendEvent('account_created', { loginBy: 'evm' })
         closeModal()
         useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
       }}
