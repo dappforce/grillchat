@@ -78,7 +78,7 @@ export default function CommonChatItem({
       createdAtTime={createdAtTime}
       className={cx(
         'text-xs text-text-muted',
-        isMyMessage && 'dark:text-text-muted-on-primary',
+        isMyMessage && 'text-text-muted-on-primary-light',
         className
       )}
     />
@@ -90,7 +90,7 @@ export default function CommonChatItem({
         createdAtTime={createdAtTime}
         className={cx(
           'text-xs text-text-muted',
-          isMyMessage && 'dark:text-text-muted-on-primary'
+          isMyMessage && 'text-text-muted-on-primary-light'
         )}
       />
       <MessageStatusIndicator message={message} />
@@ -109,7 +109,7 @@ export default function CommonChatItem({
         className={cx(
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl',
           isMyMessage
-            ? 'bg-background-primary-light text-text dark:bg-background-primary dark:text-text-on-primary'
+            ? 'bg-background-primary-light text-text dark:text-text-on-primary'
             : 'bg-background-light',
           className
         )}

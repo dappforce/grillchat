@@ -97,7 +97,9 @@ export default function NftChatItem(props: Props) {
             <div
               className={cx(
                 'flex items-center justify-between text-xs',
-                isMyMessage ? 'text-text-muted-on-primary' : 'text-text-muted'
+                isMyMessage
+                  ? 'text-text-muted-on-primary-light'
+                  : 'text-text-muted'
               )}
             >
               <NftDataSkeleton content={nftData} className={cx('w-16')}>
