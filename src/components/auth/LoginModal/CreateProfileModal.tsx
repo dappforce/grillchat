@@ -11,7 +11,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { encodeProfileSource } from '@/utils/profile'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { finishLogin, getRedirectCallback } from './utils'
@@ -20,7 +20,13 @@ export default function CreateProfileModal({
   ...props
 }: ModalFunctionalityProps &
   Pick<ModalProps, 'withoutOverlay' | 'withoutShadow'>) {
+  const sendEvent = useSendEvent()
   const hasRedirectCallback = !!getRedirectCallback()
+
+  useEffect(() => {
+    sendEvent('login_profile_form_opened')
+  }, [sendEvent])
+
   return (
     <Modal
       {...props}
@@ -31,9 +37,21 @@ export default function CreateProfileModal({
       <CreateProfileForm
         loadingUntilTxSuccess={hasRedirectCallback}
         onTxSuccess={
-          hasRedirectCallback ? () => finishLogin(props.closeModal) : undefined
+          hasRedirectCallback
+            ? () => {
+                sendEvent('login_profile_created')
+                finishLogin(props.closeModal)
+              }
+            : undefined
         }
-        onSuccessSent={hasRedirectCallback ? undefined : props.closeModal}
+        onSuccessSent={
+          hasRedirectCallback
+            ? undefined
+            : () => {
+                sendEvent('login_profile_created')
+                props.closeModal()
+              }
+        }
       />
     </Modal>
   )
