@@ -180,7 +180,7 @@ export default function AccountContent({
       onClick: (e) => {
         if (getIsAnIframeInSameOrigin()) {
           e.preventDefault()
-          sendMessageToParentWindow('redirect', SUGGEST_FEATURE_LINK)
+          sendMessageToParentWindow('redirect-hard', SUGGEST_FEATURE_LINK)
         }
       },
     },

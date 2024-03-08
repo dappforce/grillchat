@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import MessageModal from '@/components/modals/MessageModal'
+import useGetTheme from '@/hooks/useGetTheme'
 import { getPostQuery } from '@/services/api/query'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { cx } from '@/utils/class-names'
@@ -27,6 +28,7 @@ export default function DefaultChatItem({
   ...props
 }: DefaultChatItemProps) {
   const messageId = message.id
+  const theme = useGetTheme()
 
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(messageId)
   const showSuperLike = (superLikeCount?.count ?? 0) > 0
@@ -77,6 +79,7 @@ export default function DefaultChatItem({
           <RepliedMessagePreview
             originalMessage={body ?? ''}
             className='my-1'
+            textColor={theme === 'dark' ? '#fff' : undefined}
             repliedMessageId={inReplyTo.id}
             scrollToMessage={scrollToMessage}
             chatId={chatId}

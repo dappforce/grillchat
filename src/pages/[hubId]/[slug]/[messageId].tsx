@@ -64,10 +64,13 @@ export const getStaticProps = getCommonStaticProps<
 
     try {
       const results = await getPostsServer([chatId, messageId])
+      results.forEach((post) => {
+        getPostQuery.setQueryData(queryClient, post.id, post)
+      })
+
       const chat = results.find((post) => post.id === chatId)
       const message = results.find((post) => post.id === messageId)
 
-      const ownerId = message?.struct.ownerId
       messageId = message?.id ?? messageId
 
       const extensionData = await getMessageDataFromExtension(
@@ -122,10 +125,6 @@ export const getStaticProps = getCommonStaticProps<
           cardFormat = 'summary_large_image'
         }
       }
-
-      results.forEach((post) => {
-        getPostQuery.setQueryData(queryClient, post.id, post)
-      })
     } catch (err) {
       console.error('Error fetching for message page: ', err)
     }

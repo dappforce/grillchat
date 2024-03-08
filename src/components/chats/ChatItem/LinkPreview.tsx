@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
 import { cx } from '@/utils/class-names'
+import { currentNetwork } from '@/utils/network'
 import { LinkMetadata } from '@subsocial/api/types'
 import truncate from 'lodash.truncate'
 import { ComponentProps, useMemo, useState } from 'react'
@@ -21,7 +22,10 @@ export default function LinkPreview({
   ...props
 }: LinkPreviewProps) {
   const canEmbed = useCanRenderEmbed(link)
-  const internalLinkText = useMemo(() => getInternalLinkText(link), [link])
+  const { forceHardNavigation, text } = useMemo(
+    () => getInternalLinkText(link),
+    [link]
+  )
   const [isImageError, setIsImageError] = useState(false)
 
   if (!linkMetadata || (canEmbed && renderNullIfLinkEmbedable)) return null
@@ -80,14 +84,15 @@ export default function LinkPreview({
             className='mt-2 max-h-72 rounded-lg bg-background-lighter/50 object-contain'
           />
         )}
-        {internalLinkText && (
+        {text && (
           <Button
             onClick={(e) => e.stopPropagation()}
             variant={isMyMessage ? 'whiteOutline' : 'primaryOutline'}
             className='mt-2 w-full'
             href={link}
+            nextLinkProps={{ forceHardNavigation }}
           >
-            {internalLinkText}
+            {text}
           </Button>
         )}
       </div>
@@ -95,7 +100,12 @@ export default function LinkPreview({
   )
 }
 
-const internalLinkTexts = [
+type InternalLink = {
+  checker: (link: string) => boolean
+  text: string
+  forceHardNavigation?: boolean
+}
+const grillChatInternalLinkTexts: InternalLink[] = [
   {
     checker: (link: string) =>
       // regex for url grill.chat/[any text]/[any text] for message page
@@ -115,6 +125,41 @@ const internalLinkTexts = [
     text: 'Open page',
   },
 ]
+
+const grillAppInternalLinkTexts: InternalLink[] = [
+  {
+    checker: (link: string) =>
+      // regex for url grillapp.net/c/[any text]/[any text] for message page
+      /(?:https?:\/\/)?(?:www\.)?(?:grillapp\.net)\/c\/(.+)\/(.+)\/(.+)/.test(
+        link
+      ),
+    text: 'View message',
+  },
+  {
+    checker: (link: string) =>
+      // regex for url grillapp.net/c[any text]/[any text] for chat page
+      /(?:https?:\/\/)?(?:www\.)?(?:grillapp\.net)\/c\/(.+)\/(.+)/.test(link),
+    text: 'Open chat',
+  },
+  {
+    checker: (link: string) =>
+      // regex for url grillapp.net/c[any text] for hub page
+      /(?:https?:\/\/)?(?:www\.)?(?:grillapp\.net)\/c\/(.+)/.test(link),
+    text: 'Open page',
+  },
+  {
+    checker: (link: string) =>
+      // regex for url grillapp.net/[any text] for polkaverse pages
+      /(?:https?:\/\/)?(?:www\.)?(?:grillapp\.net)\/(.+)/.test(link),
+    text: 'Open page',
+    forceHardNavigation: true,
+  },
+]
 function getInternalLinkText(link: string) {
-  return internalLinkTexts.find((item) => item.checker(link))?.text
+  const usedInternalLinkChecker =
+    currentNetwork === 'xsocial'
+      ? grillChatInternalLinkTexts
+      : grillAppInternalLinkTexts
+  const found = usedInternalLinkChecker.find((item) => item.checker(link))
+  return { text: found?.text, forceHardNavigation: found?.forceHardNavigation }
 }

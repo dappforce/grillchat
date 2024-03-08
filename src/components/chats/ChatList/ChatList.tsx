@@ -4,6 +4,7 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
+import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
@@ -74,6 +75,7 @@ function ChatListContent({
 }: ChatListProps) {
   const sendEvent = useSendEvent()
   const { enableBackButton } = useConfigContext()
+  const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId)
 
   const scrollableContainerId = useId()
 
@@ -187,6 +189,11 @@ function ChatListContent({
         {totalDataCount === 0 && (
           <CenterChatNotice
             isMyChat={isMyChat}
+            customText={
+              (postMetadata?.totalCommentsCount ?? 0) > 0
+                ? 'Loading messages...'
+                : undefined
+            }
             className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
           />
         )}

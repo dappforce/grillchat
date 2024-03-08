@@ -5,8 +5,9 @@ import { ComponentProps } from 'react'
 
 export default function CenterChatNotice({
   isMyChat,
+  customText,
   ...props
-}: ComponentProps<'div'> & { isMyChat: boolean }) {
+}: ComponentProps<'div'> & { isMyChat: boolean; customText?: string }) {
   const { customTexts } = useConfigContext()
 
   return (
@@ -48,7 +49,9 @@ export default function CenterChatNotice({
           </div>
         </>
       ) : (
-        <span>{customTexts?.noTextInChannel ?? 'No messages here yet'}</span>
+        <span>
+          {customTexts?.noTextInChannel ?? customText ?? 'No messages here yet'}
+        </span>
       )}
     </div>
   )
