@@ -4,7 +4,7 @@ import { createQuery } from '@/subsocial-query'
 async function getLinkedTelegramAccounts(
   param: ApiNotificationsLinkedTelegramParam
 ) {
-  return [] as { username: string }[]
+  return [] as { userName: string }[]
   // if (!param.address) return null
 
   // const res = await apiInstance.get('/api/notifications/linked-telegram', {
