@@ -99,9 +99,8 @@ async function getMessageIdsFromDatahub(client: QueryClient, chatId: string) {
       client,
       chatId
     )
-  getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(client, chatId)
 
-  const [messages, superlikes] = await Promise.allSettled([
+  const [messages] = await Promise.allSettled([
     getPostsServer(res.data),
     getSuperLikeCountQuery.fetchQueries(client, res.data),
   ] as const)
@@ -110,6 +109,8 @@ async function getMessageIdsFromDatahub(client: QueryClient, chatId: string) {
       getPostQuery.setQueryData(client, message.id, message)
     })
   }
+
+  getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(client, chatId)
 
   return {
     messageIds: res.data,
@@ -164,6 +165,8 @@ export const getStaticProps = getCommonStaticProps<
     let image: string | null = null
     try {
       const [chatData] = await getPostsServer([chatId])
+      getPostQuery.setQueryData(queryClient, chatId, chatData)
+
       const originalHubId = chatData.struct.spaceId
       const hubIds = [hubId]
       if (originalHubId && originalHubId !== hubId) {
@@ -171,13 +174,17 @@ export const getStaticProps = getCommonStaticProps<
       }
 
       const chatEntityId = chatData.entityId ?? ''
-      const [{ prices }, blockedData] = await Promise.all([
+      const [chatsPromise, blockedDataPromise] = await Promise.allSettled([
         getChatsData(queryClient, chatId),
         prefetchBlockedEntities(queryClient, hubIds, [chatEntityId]),
         prefetchPostMetadata(queryClient, chatId),
       ] as const)
 
-      if (blockedData) {
+      if (
+        blockedDataPromise.status === 'fulfilled' &&
+        blockedDataPromise.value
+      ) {
+        const blockedData = blockedDataPromise.value
         let isChatModerated = false
         ;[
           ...blockedData.blockedInSpaceIds,
@@ -204,18 +211,19 @@ export const getStaticProps = getCommonStaticProps<
         image = chatImage ? getIpfsContentUrl(chatImage) : null
       }
 
-      getPostQuery.setQueryData(queryClient, chatId, chatData)
+      if (chatsPromise.status === 'fulfilled') {
+        const prices = chatsPromise.value.prices
+        prices.forEach((price) => {
+          const { id, current_price } = price || {}
 
-      prices.forEach((price) => {
-        const { id, current_price } = price || {}
-
-        if (id && current_price) {
-          getPriceQuery.setQueryData(queryClient, id, {
-            id,
-            current_price: current_price?.toString(),
-          })
-        }
-      })
+          if (id && current_price) {
+            getPriceQuery.setQueryData(queryClient, id, {
+              id,
+              current_price: current_price?.toString(),
+            })
+          }
+        })
+      }
     } catch (err) {
       console.error('Error fetching for chat page: ', err)
     }
