@@ -32,6 +32,7 @@ import { create, createSelectors } from './utils'
 type State = {
   isInitialized: boolean | undefined
   isInitializedAddress: boolean | undefined
+  isInitializedProxy: boolean | undefined
   isTemporaryAccount: boolean
 
   preferredWallet: Wallet | null
@@ -72,6 +73,7 @@ const initialState: State = {
   connectedWallet: undefined,
   isInitialized: undefined,
   isInitializedAddress: true,
+  isInitializedProxy: false,
   isTemporaryAccount: false,
   preferredWallet: null,
   parentProxyAddress: undefined,
@@ -271,7 +273,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     parentProxyAddressStorage.remove()
     if (address) followedIdsStorage.remove(address)
 
-    set({ ...initialState, isInitialized: true })
+    set({ ...initialState, isInitialized: true, isInitializedProxy: true })
   },
   init: async () => {
     const { isInitialized, login } = get()
@@ -359,6 +361,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
         console.error('Failed to fetch proxies', err)
       }
     }
+    set({ isInitializedProxy: true })
   },
 }))
 export const useMyAccount = createSelectors(useMyAccountBase)
