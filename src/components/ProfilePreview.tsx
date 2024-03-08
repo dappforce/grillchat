@@ -32,6 +32,7 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   nameClassName?: string
   onEditClick?: () => void
   showAllIdentity?: boolean
+  asLink?: boolean
 }
 
 const ProfilePreview = ({
@@ -41,6 +42,7 @@ const ProfilePreview = ({
   avatarClassName,
   nameClassName,
   addressesContainerClassName,
+  asLink,
   onEditClick,
   showAddress = true,
   showAllIdentity,
@@ -96,6 +98,7 @@ const ProfilePreview = ({
   return (
     <div {...props} className={cx('flex items-center gap-3', className)}>
       <AddressAvatar
+        asLink={asLink}
         address={address}
         className={cx(
           // if avatarClassName is provided, use it, otherwise use default size
@@ -107,6 +110,7 @@ const ProfilePreview = ({
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
         <div className='relative left-1 flex items-center gap-2'>
           <Name
+            asLink={asLink}
             profileSourceIconClassName='text-base'
             profileSourceIconPosition='right'
             address={address}
