@@ -1,6 +1,5 @@
 import Toast from '@/components/Toast'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
-import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getReferrerIdQuery } from '@/services/datahub/referral/query'
@@ -115,24 +114,24 @@ const sendLaunchEvent = async (
     sendEvent('app_launched')
   } else {
     const [
-      linkedTgAccData,
+      // linkedTgAccData,
       evmLinkedAddress,
       ownedPostIds,
       linkedIdentity,
       referrerId,
     ] = await Promise.allSettled([
-      getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
-        address,
-      }),
+      // getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
+      //   address,
+      // }),
       getAccountDataQuery.fetchQuery(queryClient, address),
       getOwnedPostIdsQuery.fetchQuery(queryClient, address),
       getLinkedIdentityQuery.fetchQuery(queryClient, address),
       getReferrerIdQuery.fetchQuery(queryClient, address),
     ] as const)
 
-    if (linkedTgAccData.status === 'fulfilled')
-      userProperties.tgNotifsConnected =
-        (linkedTgAccData.value?.length || 0) > 0
+    // if (linkedTgAccData.status === 'fulfilled')
+    //   userProperties.tgNotifsConnected =
+    //     (linkedTgAccData.value?.length || 0) > 0
     if (evmLinkedAddress.status === 'fulfilled')
       userProperties.evmLinked = !!evmLinkedAddress.value
     if (ownedPostIds.status === 'fulfilled')
