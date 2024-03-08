@@ -3,12 +3,14 @@ import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
+import { getUserProfileLink } from '@/utils/links'
 import { decodeProfileSource } from '@/utils/profile'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
 import {
   ComponentProps,
+  ComponentPropsWithoutRef,
   forwardRef,
   useCallback,
   useEffect,
@@ -16,18 +18,21 @@ import {
   useState,
 } from 'react'
 import { ForceProfileSource } from './ProfilePreview'
+import PopOver from './floating/PopOver'
+import CustomLink from './referral/CustomLink'
 
 export const resolveEnsAvatarSrc = (ensName: string) =>
   `https://euc.li/${ensName}`
 
 export type AddressAvatarProps = ComponentProps<'div'> & {
   address: string
+  asLink?: boolean
   forceProfileSource?: ForceProfileSource
 }
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   function AddressAvatar(
-    { address, forceProfileSource, ...props }: AddressAvatarProps,
+    { address, forceProfileSource, asLink, ...props }: AddressAvatarProps,
     ref
   ) {
     const backgroundColor = useRandomColor(address, {
@@ -102,10 +107,15 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       )
     }
 
+    const profileLink = asLink
+      ? getUserProfileLink(profile?.profileSpace?.id)
+      : undefined
+
     return (
-      <div
+      <LinkOrText
         {...props}
-        ref={ref}
+        href={profileLink}
+        ref={ref as any}
         className={cx(
           'relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full bg-background-lightest',
           props.className
@@ -143,9 +153,32 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
             />
           </div>
         </div>
-      </div>
+      </LinkOrText>
     )
   }
 )
+
+const LinkOrText = forwardRef<
+  any,
+  ComponentPropsWithoutRef<'span'> & { href?: string }
+>(({ href, ...props }, ref) => {
+  if (href) {
+    return (
+      <PopOver
+        trigger={
+          <CustomLink href={href} forceHardNavigation {...props} ref={ref} />
+        }
+        panelSize='sm'
+        triggerOnHover
+        placement='top'
+        yOffset={6}
+      >
+        <span>Open profile</span>
+      </PopOver>
+    )
+  }
+  return <div {...props} ref={ref} />
+})
+LinkOrText.displayName = 'LinkOrText'
 
 export default AddressAvatar

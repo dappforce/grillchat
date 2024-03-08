@@ -76,3 +76,8 @@ export function getPolkadotJsUrl(pathname?: string) {
     pathname ?? ''
   )
 }
+
+export function getUserProfileLink(profileId?: string) {
+  if (!profileId) return undefined
+  return `/${profileId}`
+}
