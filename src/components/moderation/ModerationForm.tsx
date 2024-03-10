@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
@@ -16,10 +17,10 @@ import {
 } from 'react-icons/hi2'
 import { z } from 'zod'
 import FormButton from '../FormButton'
-import SelectInput, { ListItem } from '../inputs/SelectInput'
 import LinkText from '../LinkText'
 import { useName } from '../Name'
 import Toast from '../Toast'
+import SelectInput, { ListItem } from '../inputs/SelectInput'
 
 export type ModerationFormProps = ComponentProps<'form'> & {
   messageId: string
@@ -89,7 +90,7 @@ export default function ModerationForm({
             args: {
               resourceId: args.resourceId,
               ctxPostIds: ['*'],
-              ctxAppIds: ['*'],
+              ctxAppIds: [env.NEXT_PUBLIC_APP_ID].filter(Boolean),
             },
           })
 
@@ -180,7 +181,7 @@ export default function ModerationForm({
             reasonId,
             resourceId,
             ctxPostIds: ['*'],
-            ctxAppIds: ['*'],
+            ctxAppIds: [env.NEXT_PUBLIC_APP_ID].filter(Boolean),
           },
         })
 
