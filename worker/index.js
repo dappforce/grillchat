@@ -1,12 +1,8 @@
 import { gql, GraphQLClient } from 'graphql-request'
 import { appStorage } from '../src/constants/localforage'
-import { currentNetwork } from '../src/utils/network'
 
-const includedChatIdsInUnreadCount =
-  currentNetwork === 'subsocial'
-    ? // grill chat, polkadot chat
-      ['54469', '54461']
-    : ['754', '7465']
+// grill chat, polkadot chat
+const includedChatIdsInUnreadCount = ['54469', '54461']
 
 // Handling Notification Click event.
 // Keep this method above the importScripts to avoid overriding.
