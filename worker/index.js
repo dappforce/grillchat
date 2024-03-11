@@ -1,6 +1,12 @@
 import { gql, GraphQLClient } from 'graphql-request'
-import { getIncludedChatIdsForUnreadCount } from '../src/constants/chat'
 import { appStorage } from '../src/constants/localforage'
+import { currentNetwork } from '../src/utils/network'
+
+const includedChatIdsInUnreadCount =
+  currentNetwork === 'subsocial'
+    ? // grill chat, polkadot chat
+      ['54469', '54461']
+    : ['754', '7465']
 
 // Handling Notification Click event.
 // Keep this method above the importScripts to avoid overriding.
@@ -54,7 +60,7 @@ const getAddressStorageKey = () => 'accountPublicKey'
 const getFollowedIdsStorageKey = (address) => `followedPostIds:${address}`
 async function getUnreadCount(squidUrl) {
   const address = await appStorage.getItem(getAddressStorageKey())
-  let chatIdsToFetch = getIncludedChatIdsForUnreadCount()
+  let chatIdsToFetch = includedChatIdsInUnreadCount
   if (address) {
     try {
       const followedIds = JSON.parse(
