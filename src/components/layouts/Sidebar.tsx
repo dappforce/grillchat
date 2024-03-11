@@ -18,7 +18,7 @@ export default function Sidebar() {
   if (!isMounted) return null
 
   return (
-    <aside className='flex flex-col p-4 pl-0 text-[#64748BCC]'>
+    <aside className='flex flex-col p-4 pl-0 text-[#64748BCC] dark:text-text-muted'>
       <ul className='flex flex-col gap-4'>
         <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation />
         <SidebarItem icon={BiChat} title='Chat' href='/' />
