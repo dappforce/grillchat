@@ -131,7 +131,7 @@ export default function PolkadotConnectWalletContent({
     }
   })
 
-  if (isInMobileOrTablet()) {
+  if (isInMobileOrTablet() || true) {
     if (hasInstalledWallet) {
       menus = [
         {
@@ -159,8 +159,8 @@ export default function PolkadotConnectWalletContent({
         {
           icon: () => (
             <Image
-              width={32}
-              height={32}
+              width={200}
+              height={200}
               className='h-10 w-10 flex-shrink-0 object-contain'
               src={SubwalletIcon}
               alt='Subwallet'
@@ -175,18 +175,16 @@ export default function PolkadotConnectWalletContent({
         {
           icon: () => (
             <Image
-              width={32}
-              height={32}
-              className='h-10 w-10 flex-shrink-0 object-contain'
+              width={200}
+              height={200}
+              className='h-10 w-10 flex-shrink-0 rounded-md object-contain'
               src={NovaIcon}
               alt='NovaWallet'
             />
           ),
           text: 'Nova Wallet',
           className: cx('gap-4'),
-          href: `https://mobile.subwallet.app/browser?url=${encodeURIComponent(
-            urlToGo
-          )}`,
+          href: 'https://novawallet.io/',
         },
       ]
     }
