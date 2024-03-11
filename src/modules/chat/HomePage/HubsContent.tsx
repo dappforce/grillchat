@@ -1,4 +1,5 @@
 import ChatPreview from '@/components/chats/ChatPreview'
+import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import { getAliasFromHubId, getPinnedHubIds } from '@/constants/config'
 import { env } from '@/env.mjs'
@@ -30,7 +31,7 @@ export default function HubsContent({
 
       <div className='flex flex-col overflow-auto'>
         {hubs.map((hub) => {
-          if (!hub) return null
+          if (!hub) return <ChatPreviewSkeleton asContainer />
           const hubId = hub.id
           return (
             <ChatPreviewContainer
