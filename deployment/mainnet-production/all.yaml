@@ -70,14 +70,7 @@ spec:
                 name: mainnet-grillchat
                 port:
                   number: 3000
-            path: /c
-            pathType: Exact
-          - backend:
-              service:
-                name: mainnet-grillchat
-                port:
-                  number: 3000
-            path: /c/
+            path: /c(/|$)(.*)
             pathType: Prefix
   tls:
     - hosts:
