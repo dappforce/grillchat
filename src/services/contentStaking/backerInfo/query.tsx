@@ -29,7 +29,7 @@ export async function getBackerInfoRequest(
   spaceIds: string[]
 ) {
   return getSubIdRequest().get('staking/creator/backer/info', {
-    params: { account, spaceIds: spaceIds.join(',') },
+    params: { account, ids: spaceIds.join(',') },
   })
 }
 
@@ -54,8 +54,7 @@ const getBackerInfo = poolQuery<
         const item = data[spaceId]
 
         backerInfoRecord[spaceId] = {
-          totalStaked: item?.[0]?.staked.toString() || '0',
-          stakes: item,
+          totalStaked: item,
         }
       })
 

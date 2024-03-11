@@ -4,6 +4,7 @@ import {
   getBackerInfoQuery,
 } from '@/services/contentStaking/backerInfo/query'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
+import { getCreatorsListData } from '@/services/contentStaking/creatorsList/query'
 import {
   generalEraInfoId,
   getGeneralEraInfoQuery,
@@ -19,13 +20,13 @@ import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { balanceWithDecimal, isDef } from '@subsocial/utils'
 import { useQueryClient } from '@tanstack/react-query'
+import { useGetMyCreatorsIds } from '../hooks/useGetMyCreatorsIds'
 import { ACTIVE_STAKING_SPACE_ID } from '../utils'
 
 type MutationProps = {
   amount?: string
   isOnlyActiveStaking: boolean
   decimal: number
-  creatorsSpaceIds: string[]
   myCreatorsIds: string[]
 }
 
@@ -35,6 +36,20 @@ export function useUnlockTx(config?: SubsocialMutationConfig<MutationProps>) {
   const { data: backerLedger } = getBackerLedgerQuery.useQuery(
     currentGrillAddress || ''
   )
+
+  const { data: creatorsList } = getCreatorsListData()
+
+  const spaceIds = creatorsList?.map((item) => item.spaceId)
+  const myCreatorsIds = useGetMyCreatorsIds(spaceIds)
+
+  const creatorsSpaceIds =
+    myCreatorsIds?.filter((id) => id !== ACTIVE_STAKING_SPACE_ID) || []
+
+  const backerInfoBySpaceIds = getBackerInfoBySpaceIds(
+    currentGrillAddress || '',
+    creatorsSpaceIds
+  )
+
   const { data: stakingConsts } = getStakingConstsData()
   const client = useQueryClient()
   const sendEvent = useSendEvent()
@@ -48,13 +63,7 @@ export function useUnlockTx(config?: SubsocialMutationConfig<MutationProps>) {
       transactionGenerator: async ({ data: params }) => {
         if (!currentGrillAddress) throw new Error('No address connected')
 
-        const {
-          amount,
-          isOnlyActiveStaking,
-          decimal,
-          creatorsSpaceIds,
-          myCreatorsIds,
-        } = params
+        const { amount, isOnlyActiveStaking, decimal, myCreatorsIds } = params
 
         if (!amount) {
           throw new Error('Amount is required')
@@ -66,12 +75,11 @@ export function useUnlockTx(config?: SubsocialMutationConfig<MutationProps>) {
         const unstakeTx = isOnlyActiveStaking
           ? await buildUnstakingParams(amount, decimal)
           : await buildBatchParams({
-              myAddress: currentGrillAddress,
               amount,
               decimal,
               myTotalLock: myTotalLock || '',
               minimumStakingAmount: minimumStakingAmount || '',
-              creatorsSpaceIds,
+              backerInfoBySpaceIds,
               myCreatorsIds,
             })
 
@@ -93,7 +101,7 @@ export function useUnlockTx(config?: SubsocialMutationConfig<MutationProps>) {
           })
           await getBackerInfoQuery.invalidate(client, {
             account: address,
-            spaceIds: data.creatorsSpaceIds,
+            spaceIds: spaceIds || [],
           })
 
           sendEvent('cs_unlock', { value: data.amount })
@@ -119,29 +127,22 @@ const buildUnstakingParams = async (amount?: string, decimal?: number) => {
 }
 
 type BatchParamsProps = {
-  myAddress: string
   amount: string
   decimal: number
   myTotalLock: string
   minimumStakingAmount: string
-  creatorsSpaceIds: string[]
   myCreatorsIds: string[]
+  backerInfoBySpaceIds: Record<string, { totalStaked: string }>
 }
 
 const buildBatchParams = async ({
-  myAddress,
   amount,
   decimal,
   myTotalLock,
   minimumStakingAmount,
-  creatorsSpaceIds,
   myCreatorsIds,
+  backerInfoBySpaceIds,
 }: BatchParamsProps) => {
-  const backerInfoBySpaceIds = getBackerInfoBySpaceIds(
-    myAddress || '',
-    creatorsSpaceIds
-  )
-
   if (
     !backerInfoBySpaceIds ||
     !myTotalLock ||
