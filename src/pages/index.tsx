@@ -2,7 +2,7 @@ import { constantsConfig } from '@/constants/config'
 import { env } from '@/env.mjs'
 import HomePage, {
   homePageAdditionalTabs,
-  HubsPageProps,
+  HomePageProps,
 } from '@/modules/chat/HomePage'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
@@ -12,11 +12,11 @@ import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
 
 export const getStaticProps = getCommonStaticProps<
-  HubsPageProps & AppCommonProps
+  HomePageProps & AppCommonProps
 >(
   () => ({ alwaysShowScrollbarOffset: true }),
   async () => {
-    const hubsChatCount: HubsPageProps['hubsChatCount'] = {}
+    const hubsChatCount: HomePageProps['hubsChatCount'] = {}
     const hubIds = env.NEXT_PUBLIC_SPACE_IDS
 
     const queryClient = new QueryClient()

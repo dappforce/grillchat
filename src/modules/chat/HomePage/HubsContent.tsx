@@ -9,11 +9,11 @@ import { SpaceData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { HubsPageProps } from './HomePage'
+import { HomePageProps } from './HomePage'
 
 export default function HubsContent({
   hubsChatCount = {},
-}: Pick<HubsPageProps, 'hubsChatCount'>) {
+}: Pick<HomePageProps, 'hubsChatCount'>) {
   const isInIframe = useIsInIframe()
   const hubIds = env.NEXT_PUBLIC_SPACE_IDS
 
