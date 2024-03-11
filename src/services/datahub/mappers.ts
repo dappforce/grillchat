@@ -122,7 +122,7 @@ export const mapDatahubPostFragment = (
       image: post.image ?? '',
       title: post.title ?? '',
       link: post.link ?? '',
-      body: post.body || '',
+      body: (post.body || '').replace(/\n{3,}/g, '\n\n'),
       canonical: post.canonical ?? '',
       isShowMore: post.isShowMore ?? false,
       tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),

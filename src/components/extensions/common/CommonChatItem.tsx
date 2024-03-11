@@ -83,14 +83,21 @@ export default function CommonChatItem({
       )}
     />
   )
-  const myMessageCheckMarkElement = (className?: string) => (
+  const myMessageCheckMarkElement = ({
+    className,
+    timeClassName,
+  }: {
+    className?: string
+    timeClassName?: string
+  }) => (
     <div className={cx('flex items-center gap-1 self-end', className)}>
       <ChatRelativeTime
         isUpdated={isUpdated}
         createdAtTime={createdAtTime}
         className={cx(
-          'text-xs text-text-muted',
-          isMyMessage && 'text-text-muted-on-primary-light'
+          'text-xs text-text-muted-on-primary-light',
+          isMyMessage && 'text-text-muted-on-primary-light',
+          timeClassName
         )}
       />
       <MessageStatusIndicator message={message} />
@@ -146,7 +153,9 @@ export default function CommonChatItem({
             )}
           >
             {myMessageCheckMarkElement(
-              cx(isMyMessageChildrenOnBottom && 'text-white')
+              isMyMessageChildrenOnBottom
+                ? { className: 'text-white', timeClassName: 'text-white' }
+                : {}
             )}
           </div>
         )}
