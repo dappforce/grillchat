@@ -6,6 +6,7 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
+import { getUserProfileLink } from '@/utils/links'
 import {
   ProfileSource,
   ProfileSourceIncludingOffchain,
@@ -14,12 +15,13 @@ import {
 } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
-import { ComponentProps } from 'react'
+import { ComponentProps, ComponentPropsWithoutRef, forwardRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import LinkText from './LinkText'
 import { ForceProfileSource } from './ProfilePreview'
 import ChatModerateChip from './chats/ChatModerateChip'
 import PopOver from './floating/PopOver'
+import CustomLink from './referral/CustomLink'
 
 export type NameProps = ComponentProps<'span'> & {
   address: string
@@ -33,6 +35,7 @@ export type NameProps = ComponentProps<'span'> & {
   labelingData?: { chatId: string }
   forceProfileSource?: ForceProfileSource
   clipText?: boolean
+  asLink?: boolean
 }
 
 export default function Name({
@@ -47,12 +50,13 @@ export default function Name({
   forceProfileSource,
   clipText,
   profileSourceIconPosition = 'right',
+  asLink,
   ...props
 }: NameProps) {
   const sendEvent = useSendEvent()
   const { inView, ref } = useInView({ triggerOnce: true })
 
-  const { isLoading, name, textColor, profileSource } = useName(
+  const { isLoading, name, textColor, profileSource, profile } = useName(
     address,
     forceProfileSource
   )
@@ -132,9 +136,14 @@ export default function Name({
     </div>
   )
 
+  const profileLink = asLink
+    ? getUserProfileLink(profile?.profileSpace?.id)
+    : undefined
+
   return (
-    <span
+    <LinkOrText
       {...props}
+      href={profileLink}
       ref={ref}
       className={cx(
         'flex items-center gap-1',
@@ -159,9 +168,32 @@ export default function Name({
           address={address}
         />
       )}
-    </span>
+    </LinkOrText>
   )
 }
+
+const LinkOrText = forwardRef<
+  any,
+  ComponentPropsWithoutRef<'span'> & { href?: string }
+>(({ href, ...props }, ref) => {
+  if (href) {
+    return (
+      <PopOver
+        trigger={
+          <CustomLink href={href} forceHardNavigation {...props} ref={ref} />
+        }
+        panelSize='sm'
+        triggerOnHover
+        placement='top'
+        yOffset={6}
+      >
+        <span>Open profile</span>
+      </PopOver>
+    )
+  }
+  return <div {...props} ref={ref} />
+})
+LinkOrText.displayName = 'LinkOrText'
 
 export function useName(
   address: string,

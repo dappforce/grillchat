@@ -260,16 +260,19 @@ function DrawerSidebar({
 const LAST_READ_NOTIFICATION_KEY = 'lastReadNotification'
 function NotificationBell() {
   const myAddress = useMyMainAddress()
-  const { data: lastReadNotif } = useExternalStorage(
-    LAST_READ_NOTIFICATION_KEY,
-    { storageKeyType: 'user' }
-  )
+  const isInitializedProxy = useMyAccount.use.isInitializedProxy()
+
+  const { getDataForAddress } = useExternalStorage(LAST_READ_NOTIFICATION_KEY, {
+    storageKeyType: 'user',
+  })
+
+  const lastReadNotif = getDataForAddress(myAddress ?? '')
   const { data: unreadCount } = getNotificationCountQuery.useQuery(
     {
       address: myAddress ?? '',
       afterDate: lastReadNotif || undefined,
     },
-    { enabled: !!lastReadNotif && !!myAddress }
+    { enabled: !!myAddress && !!lastReadNotif && !!isInitializedProxy }
   )
   const sendEvent = useSendEvent()
 

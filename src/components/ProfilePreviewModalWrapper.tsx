@@ -2,10 +2,10 @@ import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import { RiCopperCoinLine } from 'react-icons/ri'
 import ActionCard from './ActionCard'
-import { useOpenDonateExtension } from './extensions/donate/hooks/useOpenDonateExtension'
-import Modal from './modals/Modal'
 import Name, { NameProps } from './Name'
 import ProfilePreview from './ProfilePreview'
+import { useOpenDonateExtension } from './extensions/donate/hooks/useOpenDonateExtension'
+import Modal from './modals/Modal'
 
 export type ProfilePreviewModalWrapperProps = {
   address: string
@@ -35,7 +35,7 @@ export default function ProfilePreviewModalWrapper({
         isOpen={isOpenAccountModal}
         closeModal={() => setIsOpenAccountModal(false)}
       >
-        <ProfilePreview address={address} className='mb-2' />
+        <ProfilePreview asLink address={address} className='mb-2' />
         {messageId && (
           <ActionCard
             className='mt-2'

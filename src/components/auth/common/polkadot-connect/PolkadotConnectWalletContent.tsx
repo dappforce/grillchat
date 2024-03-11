@@ -1,21 +1,18 @@
+import NovaIcon from '@/assets/graphics/nova.jpg'
+import SubwalletIcon from '@/assets/graphics/subwallet.png'
 import WalletIcon from '@/assets/graphics/wallet.svg'
-import SubwalletIcon from '@/assets/icons/subwallet.png'
 import Button from '@/components/Button'
 import PopOver from '@/components/floating/PopOver'
 import MenuList, { MenuListProps } from '@/components/MenuList'
-import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import { ACCOUNT_SECRET_KEY_URL_PARAMS } from '@/pages/account'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlOrigin } from '@/utils/links'
 import { isInMobileOrTablet } from '@/utils/window'
 import { getWallets, Wallet } from '@talismn/connect-wallets'
 import Image from 'next/image'
 import { useEffect } from 'react'
 import { FiDownload } from 'react-icons/fi'
-import urlJoin from 'url-join'
 import { PolkadotConnectContentProps } from './types'
 
 function getShouldWalletDisabled(wallet: Wallet, isInIframe: boolean) {
@@ -157,19 +154,13 @@ export default function PolkadotConnectWalletContent({
       ]
     } else {
       // Currently, if the url contains encoded / (%252F) inside the link, it will not open the link, instead open search engine
-      const urlToGo = urlJoin(
-        getCurrentUrlOrigin(),
-        env.NEXT_PUBLIC_BASE_PATH,
-        `/account?${ACCOUNT_SECRET_KEY_URL_PARAMS}=${
-          useMyAccount.getState().encodedSecretKey
-        }`
-      )
+      const urlToGo = window.location.href
       menus = [
         {
           icon: () => (
             <Image
-              width={32}
-              height={32}
+              width={200}
+              height={200}
               className='h-10 w-10 flex-shrink-0 object-contain'
               src={SubwalletIcon}
               alt='Subwallet'
@@ -180,6 +171,20 @@ export default function PolkadotConnectWalletContent({
           href: `https://mobile.subwallet.app/browser?url=${encodeURIComponent(
             urlToGo
           )}`,
+        },
+        {
+          icon: () => (
+            <Image
+              width={200}
+              height={200}
+              className='h-10 w-10 flex-shrink-0 rounded-md object-contain'
+              src={NovaIcon}
+              alt='NovaWallet'
+            />
+          ),
+          text: 'Nova Wallet',
+          className: cx('gap-4'),
+          href: 'https://novawallet.io/',
         },
       ]
     }

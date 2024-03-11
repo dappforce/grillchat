@@ -57,25 +57,21 @@ export default function GrowSection(props: ComponentProps<'section'>) {
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
             <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
               <span className='mb-2.5 text-lg text-[#FEEFFB] md:text-xl lg:text-2xl'>
-                Likes during the last month
+                Possible rewards per post
               </span>
               <span className='mb-1.5 text-3xl font-bold md:text-4xl lg:text-5xl'>
-                149,867
+                ≈ 1000 SUB
               </span>
-              <span className='text-lg text-white/70 md:text-xl'>
-                194,379 all time
-              </span>
+              <span className='text-lg text-white/70 md:text-xl'>≈ $10.45</span>
             </div>
             <div className='flex flex-col rounded-3xl bg-white/5 p-5'>
               <span className='mb-2.5 text-lg text-[#FEEFFB] md:text-xl lg:text-2xl'>
-                Comments created during the last month
+                Possible rewards per comment
               </span>
               <span className='mb-1.5 text-3xl font-bold md:text-4xl lg:text-5xl'>
-                10,627
+                ≈ 100 SUB
               </span>
-              <span className='text-lg text-white/70 md:text-xl'>
-                22,691 all time
-              </span>
+              <span className='text-lg text-white/70 md:text-xl'>≈ $1.34</span>
             </div>
           </div>
           <div className='flex flex-col gap-4'>

@@ -8,6 +8,7 @@ import { fcmPushNotificationStorage } from './notifications/PushNotificationCont
 
 function LogoutContent({ setCurrentState }: ProfileModalContentProps) {
   const closeModal = useProfileModal((state) => state.closeModal)
+  const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
   const address = useMyAccount((state) => state.address)
   const logout = useMyAccount((state) => state.logout)
   const sendEvent = useSendEvent()
@@ -31,9 +32,15 @@ function LogoutContent({ setCurrentState }: ProfileModalContentProps) {
 
   return (
     <div className='mt-4 flex flex-col gap-4'>
-      <Button size='lg' onClick={onShowPrivateKeyClick}>
-        No, show me my Grill key
-      </Button>
+      {!hasProxyAddress ? (
+        <Button size='lg' onClick={onShowPrivateKeyClick}>
+          No, show me my Grill key
+        </Button>
+      ) : (
+        <Button size='lg' onClick={() => setCurrentState('account')}>
+          No, keep me logged in
+        </Button>
+      )}
       <Button
         isLoading={isLoading}
         size='lg'

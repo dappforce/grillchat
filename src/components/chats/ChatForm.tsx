@@ -35,6 +35,7 @@ import {
   useState,
 } from 'react'
 import { toast } from 'react-hot-toast'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
@@ -87,6 +88,11 @@ export default function ChatForm({
   const messageToEdit = useMessageData((state) => state.messageToEdit)
   const clearAction = useMessageData((state) => state.clearAction)
   const setMessageBody = useMessageData((state) => state.setMessageBody)
+
+  useHotkeys('esc', clearAction, {
+    keydown: true,
+    enableOnFormTags: ['TEXTAREA'],
+  })
 
   const { data: editedMessage } = getPostQuery.useQuery(messageToEdit, {
     enabled: !!messageToEdit,
