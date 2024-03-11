@@ -57,7 +57,6 @@ metadata:
     nginx.ingress.kubernetes.io/from-to-www-redirect: 'true'
     nginx.ingress.kubernetes.io/proxy-body-size: 10m
     nginx.org/client-max-body-size: 10m
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
   name: grill-c
   namespace: sub-back
 spec:
@@ -71,7 +70,14 @@ spec:
                 name: mainnet-grillchat
                 port:
                   number: 3000
-            path: /c(/|$)(.*)
+            path: /c
+            pathType: Exact
+          - backend:
+              service:
+                name: mainnet-grillchat
+                port:
+                  number: 3000
+            path: /c/
             pathType: Prefix
   tls:
     - hosts:
