@@ -51,7 +51,6 @@ jobs:
           file: docker/Dockerfile
           push: true
           build-args: |
-            GH_NOTIFICATIONS_URL=https://staging-grill-notifications.subsocial.network/graphql
             GH_NEXT_PUBLIC_AMP_ID=71bf5a46800fedba5e9a01243b988164
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12467
@@ -70,6 +69,7 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://notifications-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://notifications-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://notifications-queue-data-hub.subsocial.network/graphql
+            GH_NOTIFICATIONS_URL=https://notifications-notif-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
             GH_NEXT_PUBLIC_APP_ID=12364
             GH_NEXT_PUBLIC_SPACE_IDS=12466,12467,12468,12660

@@ -4,7 +4,7 @@ import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 function getNotificationsConfig() {
   return {
     url: env.NOTIFICATIONS_URL,
-    token: env.NOTIFICATIONS_TOKEN,
+    token: env.DATAHUB_QUEUE_TOKEN,
   }
 }
 

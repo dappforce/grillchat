@@ -14,7 +14,6 @@ export const env = createEnv({
     COVALENT_API_KEY: z.string().default(''),
 
     NOTIFICATIONS_URL: z.string().default(''),
-    NOTIFICATIONS_TOKEN: z.string().default(''),
 
     REDIS_HOST: z.string().default(''),
     REDIS_PORT: z.string().default(''),
