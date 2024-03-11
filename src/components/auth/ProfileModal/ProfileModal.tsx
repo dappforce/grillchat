@@ -108,6 +108,7 @@ export default function ProfileModal({
   const { isOpen, defaultOpenState, closeModal, onBackClick } =
     useProfileModal()
 
+  const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
   const address = useMyMainAddress() ?? ''
   // Prefetch telegram linked account data
   getLinkedTelegramAccountsQuery.useQuery(
@@ -190,7 +191,9 @@ export default function ProfileModal({
       withBackButton: true,
     },
     logout: {
-      title: '🤔 Did you back up your Grill key?',
+      title: hasProxyAddress
+        ? '🤔 Are you sure you want to logout?'
+        : '🤔 Did you back up your Grill key?',
       withBackButton: true,
     },
     'private-key': {
