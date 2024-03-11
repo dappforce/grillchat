@@ -26,7 +26,7 @@ import {
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
-import { FaRegUser } from 'react-icons/fa'
+import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
@@ -101,24 +101,22 @@ export default function AccountContent({
   // }
 
   const menus: MenuListProps['menus'] = [
-    // {
-    //   text: (
-    //     <span className='flex items-center gap-2'>
-    //       <span>Notifications Settings</span>
-    //       {/* {!isLoadingActivatedNotificationCount && (
-    //         <Notice size='sm' noticeType='grey'>
-    //           {activatedNotificationCount} / {maxNotificationCount}
-    //         </Notice>
-    //       )} */}
-    //       {showNotification && <DotBlinkingNotification />}
-    //     </span>
-    //   ),
-    //   icon: BellIcon,
-    //   onClick: () => {
-    //     closeNotification()
-    //     setCurrentState('notifications')
-    //   },
-    // },
+    {
+      text: (
+        <span className='flex items-center gap-2'>
+          <span>Notifications Settings</span>
+          {/* {!isLoadingActivatedNotificationCount && (
+            <Notice size='sm' noticeType='grey'>
+              {activatedNotificationCount} / {maxNotificationCount}
+            </Notice>
+          )} */}
+        </span>
+      ),
+      icon: FaRegBell,
+      onClick: () => {
+        setCurrentState('notifications')
+      },
+    },
     // {
     //   text: (
     //     <span className='flex items-center gap-2'>

@@ -50,7 +50,9 @@ export default function TelegramNotificationContent(
 
   return (
     <div className='flex flex-col gap-6'>
-      <Notice leftIcon='✅'>Telegram Notifications Enabled</Notice>
+      {!isLoadingAccount && (
+        <Notice leftIcon='✅'>Telegram Notifications Enabled</Notice>
+      )}
       <DataCard
         data={[
           {
