@@ -128,7 +128,6 @@ export function UnstakeTxButton(props: CommonTxButtonProps) {
                 isOnlyActiveStaking,
                 decimal: decimal || 0,
                 myCreatorsIds,
-                creatorsSpaceIds,
               })
             }}
             variant={'primary'}
