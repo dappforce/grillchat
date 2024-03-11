@@ -1,11 +1,13 @@
+import { YoutubeEmbed } from '@/components/chats/ChatItem/Embed'
 import useGetTheme from '@/hooks/useGetTheme'
 import BgGradient from '@/modules/LandingPage/common/BgGradient'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { useEffect, useState } from 'react'
-import { sectionBg } from '../utils/SectionWrapper'
 import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
 
 const HowItWorksSection = () => {
+  const sendEvent = useSendEvent()
   const theme = useGetTheme()
   const [showBgGradient, setShowBgGradient] = useState(false)
 
@@ -33,23 +35,11 @@ const HowItWorksSection = () => {
         </div>
       </div>
       <div className='flex w-full justify-center'>
-        <div
-          className={cx(
-            'flex aspect-video h-auto w-full max-w-2xl items-center justify-center rounded-3xl',
-            sectionBg
-          )}
-        >
-          <span className='text-5xl font-bold'>Coming Soon</span>
-        </div>
-        {/* <iframe
-          width='auto'
-          height='auto'
-          src='https://www.youtube.com/embed/dQw4w9WgXcQ?si=6LwW0mYXO6qO6eTU'
-          title='YouTube video player'
-          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-          allowFullScreen
-          className='h-[372px] w-full max-w-2xl rounded-2xl'
-        ></iframe> */}
+        <YoutubeEmbed
+          className='flex aspect-video h-auto w-full max-w-2xl items-center justify-center rounded-3xl bg-white/10'
+          link='https://www.youtube.com/watch?v=GADCpOW2Sy4'
+          onClick={() => sendEvent('content_staking_start_video')}
+        />
       </div>
     </div>
   )
