@@ -12,7 +12,19 @@ jobs:
   front_build:
     strategy:
       matrix:
-        apps: [main, test]
+        apps: [main, test, deploy]
+        isMaster:
+          - ${{ contains(github.ref, 'main') }}
+        isDeploy:
+          - ${{ startsWith(github.ref, 'refs/heads/feat/') }}
+        exclude:
+          - isMaster: false
+            apps: main
+          - isMaster: false
+            apps: test
+          - isMaster: true
+            apps: deploy
+
     name: Build ${{ matrix.apps }} Docker image
     runs-on: ubuntu-latest
     steps:
