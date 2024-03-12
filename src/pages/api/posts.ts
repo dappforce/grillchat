@@ -105,11 +105,13 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
     // link fetching itself has timeout of 20_000, but for data fetching, it faster timeout
     // if it needs more than 8s, the post fetching is not delayed, but it will still be fetched and put to redis
     // so that in the next fetch, it will have the correct data from the redis
-    setTimeout(() => {
-      throw new Error('Link metadata fetching timeout')
-    }, 8_000)
-    const metadata = await getLinkMetadata(link)
-    if (metadata) metadataMap[link] = metadata
+    try {
+      setTimeout(() => {
+        throw new Error('Link metadata fetching timeout')
+      }, 8_000)
+      const metadata = await getLinkMetadata(link)
+      if (metadata) metadataMap[link] = metadata
+    } catch {}
   })
   await Promise.allSettled(metadataPromises)
 
