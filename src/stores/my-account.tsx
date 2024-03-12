@@ -142,10 +142,10 @@ const sendLaunchEvent = async (
     if (linkedIdentity.status === 'fulfilled')
       userProperties.twitterLinked =
         linkedIdentity.value?.provider === IdentityProvider.Twitter
-    if (referrerId.status === 'fulfilled') userProperties.ref = referrerId.value
+    if (referrerId.status === 'fulfilled')
+      userProperties.ref = referrerId.value || getReferralIdInUrl()
 
     userProperties.webNotifsEnabled = isWebNotificationsEnabled()
-    userProperties.ref = getReferralIdInUrl()
 
     sendEvent('app_launched', undefined, userProperties)
   }
