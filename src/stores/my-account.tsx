@@ -114,7 +114,7 @@ const sendLaunchEvent = async (
   const sendEvent = useAnalytics.getState().sendEvent
 
   if (!address) {
-    sendEvent('app_launched')
+    sendEvent('app_launched', undefined, { ref: getReferralIdInUrl() })
   } else {
     const [
       // linkedTgAccData,
