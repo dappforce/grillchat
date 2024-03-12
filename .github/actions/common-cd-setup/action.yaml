@@ -59,11 +59,11 @@ runs:
         shell: bash
         run: |
           NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/all.yaml
-          NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/deploy.yaml
+          NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/deployment.yaml
           curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ inputs.zone_input }}/dns_records"      -H "X-Auth-Email:${{ inputs.mail_input }}"      -H "Authorization:Bearer ${{ inputs.tokens_input }}"      -H "Content-Type:application/json"      --data '{"type":"A","name":"${{ env.name }}-grillchat.subsocial.network","content":"174.138.105.155","ttl":3600,"priority":10,"proxied":true}'
 
       - name: Deploy ${{ inputs.app_input }}
         shell: bash
         run: |
-          sed -i 's|<IMAGE>|'${{ env.image }}'|' $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/deploy.yaml
+          sed -i 's|<IMAGE>|'${{ env.image }}'|' $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/deployment.yaml
           kubectl apply -f $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/
