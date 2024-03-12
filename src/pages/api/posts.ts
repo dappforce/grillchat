@@ -6,7 +6,6 @@ import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
 import { getUrlFromText } from '@/utils/strings'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
-import axios from 'axios'
 import { parser } from 'html-metadata-parser'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -134,9 +133,7 @@ export async function getLinkMetadata(
   }
 
   try {
-    const pageData = await axios(link, { timeout: 5_000 })
-    console.log('PAGEDATA', pageData)
-    const metadata = await parser(link, { timeout: 5_000 })
+    const metadata = await parser(link, { timeout: 20_000 })
     const allMetadata = JSON.parse(
       JSON.stringify({
         ...metadata.meta,
