@@ -121,11 +121,14 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
 const getMetadataRedisKey = (url: string) => 'metadata:' + url
 const METADATA_MAX_AGE = 60 * 60 * 24 * 30 // 1 month
 const METADATA_ERROR_MAX_AGE = 60 * 60 * 1 // 1 hour
-async function getLinkMetadata(link: string): Promise<LinkMetadata | null> {
+export async function getLinkMetadata(
+  link: string,
+  revalidate?: boolean
+): Promise<LinkMetadata | null> {
   const cachedData = await redisCallWrapper((redis) =>
     redis?.get(getMetadataRedisKey(link))
   )
-  if (cachedData) {
+  if (cachedData && !revalidate) {
     return JSON.parse(cachedData) as LinkMetadata
   }
 
