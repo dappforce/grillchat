@@ -145,9 +145,9 @@ const sendLaunchEvent = async (
     if (referrerId.status === 'fulfilled') userProperties.ref = referrerId.value
 
     userProperties.webNotifsEnabled = isWebNotificationsEnabled()
+    userProperties.ref = getReferralIdInUrl()
 
     sendEvent('app_launched', undefined, userProperties)
-    sendEvent('update_ref', undefined, { ref: getReferralIdInUrl() })
   }
 }
 
