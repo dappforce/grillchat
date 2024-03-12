@@ -34,7 +34,7 @@ runs:
         id: extract_branch
 
       - name: Extract feature branch name
-        if: startsWith(github.ref, 'refs/heads/deploy/')
+        if: startsWith(github.ref, 'refs/heads/feat/')
         shell: bash
         run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^deploy\///')" >> $GITHUB_ENV
         id: extract_features_branch
