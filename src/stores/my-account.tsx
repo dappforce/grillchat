@@ -115,7 +115,6 @@ const sendLaunchEvent = async (
 
   if (!address) {
     sendEvent('app_launched')
-    sendEvent('update_ref', { ref: getReferralIdInUrl() })
   } else {
     const [
       // linkedTgAccData,
@@ -147,8 +146,8 @@ const sendLaunchEvent = async (
 
     userProperties.webNotifsEnabled = isWebNotificationsEnabled()
 
-    sendEvent('update_ref', { ref: getReferralIdInUrl() })
     sendEvent('app_launched', undefined, userProperties)
+    sendEvent('update_ref', undefined, { ref: getReferralIdInUrl() })
   }
 }
 
@@ -205,10 +204,11 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
         const { parentOrigin } = useParentData.getState()
         analytics.sendEvent(
           'account_created',
-          { ref: getReferralIdInUrl() },
+          {},
           {
             cameFrom: parentOrigin,
             cohortDate: dayjs().toDate(),
+            ref: getReferralIdInUrl(),
           }
         )
       } else if (secretKey.startsWith('0x')) {
