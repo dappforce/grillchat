@@ -138,7 +138,10 @@ export default function useOauthLogin({
     ;(async () => {
       const address = await loginAsTemporaryAccount(null)
       if (!address || !identity) return
-      sendEvent('account_created', { loginBy: provider })
+      sendEvent('account_created', {
+        loginBy: provider,
+        ref: getReferralIdInUrl(),
+      })
       setReferrerId({ refId: getReferralIdInUrl() })
       linkIdentity({
         id: session.user?.id,
