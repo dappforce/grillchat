@@ -65,9 +65,13 @@ const useAnalyticsBase = create<State & Actions>()((set, get) => {
     _updateUserId: async (address: string | undefined) => {
       const { amp } = get()
       if (address) {
-        const userId = await createUserId(address)
-        amp?.setUserId(userId)
-        set({ userId })
+        try {
+          const userId = await createUserId(address)
+          amp?.setUserId(userId)
+          set({ userId })
+        } catch (err) {
+          console.error('Error creating user id', err)
+        }
       } else {
         amp?.setUserId(undefined)
         set({ userId: undefined })
