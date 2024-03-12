@@ -1,3 +1,4 @@
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import Toast from '@/components/Toast'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { IdentityProvider } from '@/services/datahub/generated-query'
@@ -113,7 +114,7 @@ const sendLaunchEvent = async (
   const sendEvent = useAnalytics.getState().sendEvent
 
   if (!address) {
-    sendEvent('app_launched')
+    sendEvent('app_launched', undefined, { ref: getReferralIdInUrl() })
   } else {
     const [
       // linkedTgAccData,
@@ -141,7 +142,8 @@ const sendLaunchEvent = async (
     if (linkedIdentity.status === 'fulfilled')
       userProperties.twitterLinked =
         linkedIdentity.value?.provider === IdentityProvider.Twitter
-    if (referrerId.status === 'fulfilled') userProperties.ref = referrerId.value
+    if (referrerId.status === 'fulfilled')
+      userProperties.ref = referrerId.value || getReferralIdInUrl()
 
     userProperties.webNotifsEnabled = isWebNotificationsEnabled()
 
@@ -206,6 +208,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
           {
             cameFrom: parentOrigin,
             cohortDate: dayjs().toDate(),
+            ref: getReferralIdInUrl(),
           }
         )
       } else if (secretKey.startsWith('0x')) {

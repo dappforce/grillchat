@@ -254,7 +254,11 @@ export function EvmLoginStep({
       }}
       onSuccess={() => {
         useMyAccount.getState().finalizeTemporaryAccount()
-        sendEvent('account_created', { loginBy: 'evm' })
+        sendEvent(
+          'account_created',
+          { loginBy: 'evm' },
+          { ref: getReferralIdInUrl() }
+        )
         closeModal()
         useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
       }}
