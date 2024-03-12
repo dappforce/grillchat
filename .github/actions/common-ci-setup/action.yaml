@@ -1,0 +1,64 @@
+name: Common CI setup
+description: 'Sets up the environment for jobs during CI'
+
+inputs:
+  username_input:
+     description: "the DockerHub username"
+     required: true
+  password_input:
+     description: "the DockerHub password"
+     required: true
+  app_input:
+     description: "the App name"
+     required: true
+
+runs:
+  using: composite
+  steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract main branch name
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Extract feature branch name
+        if: startsWith(github.ref, 'refs/heads/deploy/')
+        shell: bash
+        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^deploy\///')" >> $GITHUB_ENV
+        id: extract_features_branch
+
+      - name: Set up Docker context for buildx
+        id: buildx-context
+        shell: bash
+        run: |
+           docker context create builders
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+        with:
+          endpoint: builders
+          version: latest
+
+      - name: Login to DockerHub
+        uses: docker/login-action@master
+        with:
+          username: ${{ inputs.username_input }}
+          password: ${{ inputs.password_input }}
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-single-buildx
+
+      - name: Prepare
+        id: prep
+        shell: bash
+        run: |
+          echo "image=dappforce/subsocial-web-app:grillchat:${{ inputs.app_input }}-${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
