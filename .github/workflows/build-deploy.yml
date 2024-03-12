@@ -108,7 +108,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Build docker image
-        if: matrix.apps == 'feat'
+        if: matrix.apps == 'deploy'
         uses: docker/build-push-action@v5
         with:
           context: .
