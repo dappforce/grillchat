@@ -108,6 +108,7 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
     async function getMetadata() {
       console.log('fetching metadata', link)
       const metadata = await getLinkMetadata(link)
+      console.log('done getting link metadata', link)
       if (metadata) metadataMap[link] = metadata
     }
     return new Promise((resolve, reject) => {
@@ -115,7 +116,10 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
         console.log('rejected', link)
         reject('Link metadata fetching timeout')
       }, 8_000)
-      getMetadata().then(resolve, reject)
+      getMetadata().then(() => {
+        console.log('resolving...', link)
+        resolve(null)
+      }, reject)
     })
   })
   await Promise.allSettled(metadataPromises)
@@ -131,7 +135,7 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   return posts
 }
 
-const getMetadataRedisKey = (url: string) => 'linkmetadata:' + url
+const getMetadataRedisKey = (url: string) => 'linkmetadataa:' + url
 const METADATA_MAX_AGE = 60 * 60 * 24 * 30 // 1 month
 const METADATA_ERROR_MAX_AGE = 60 * 60 * 1 // 1 hour
 export async function getLinkMetadata(
@@ -171,6 +175,7 @@ export async function getLinkMetadata(
         METADATA_MAX_AGE
       )
     )
+    console.log('returning', link)
     return parsedMetadata
   } catch (err) {
     console.error('Error fetching link metadata for link: ', link)
