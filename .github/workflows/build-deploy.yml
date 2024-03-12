@@ -1,8 +1,8 @@
 name: build and deploy grillchat in production
 on:
   push:
-    branches:
-      - main
+    # branches:
+    #   - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -101,129 +101,129 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
 
-  prod_deploy:
-    name: prod-deploy
-    needs: front_build
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
+  # prod_deploy:
+  #   name: prod-deploy
+  #   needs: front_build
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.ref == 'refs/heads/main' }}
+  #   steps:
+  #     - name: Checkout main
+  #       uses: actions/checkout@v4
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
+  #     - name: Extract branch name
+  #       shell: bash
+  #       run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+  #       id: extract_branch
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
+  #     - name: Install doctl
+  #       uses: digitalocean/action-doctl@v2
+  #       with:
+  #         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
 
-      - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
+  #     - name: Save DigitalOcean kubeconfig with short-lived credentials
+  #       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
 
-      - name: Update deploy file
-        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/production/deployment.yaml
+  #     - name: Update deploy file
+  #       run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/production/deployment.yaml
 
-      - name: Deploy to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/deployment/production/
+  #     - name: Deploy to DigitalOcean Kubernetes
+  #       run: kubectl apply -f $GITHUB_WORKSPACE/deployment/production/
 
-      - name: Verify deployment
-        run: kubectl -n sub-back rollout status deployment/grillchat
+  #     - name: Verify deployment
+  #       run: kubectl -n sub-back rollout status deployment/grillchat
 
-      - name: Add more replica
-        run: kubectl -n sub-back scale --replicas=2 deployment/grillchat
+  #     - name: Add more replica
+  #       run: kubectl -n sub-back scale --replicas=2 deployment/grillchat
 
-  mainnet-prod_deploy:
-    name: mainnet-prod-deploy
-    needs: mainnet_front_build
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
+  # mainnet-prod_deploy:
+  #   name: mainnet-prod-deploy
+  #   needs: mainnet_front_build
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.ref == 'refs/heads/main' }}
+  #   steps:
+  #     - name: Checkout main
+  #       uses: actions/checkout@v4
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
+  #     - name: Extract branch name
+  #       shell: bash
+  #       run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+  #       id: extract_branch
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
+  #     - name: Install doctl
+  #       uses: digitalocean/action-doctl@v2
+  #       with:
+  #         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
 
-      - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
+  #     - name: Save DigitalOcean kubeconfig with short-lived credentials
+  #       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
 
-      - name: Update deploy file
-        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:mainnet-grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/mainnet-production/deployment.yaml
+  #     - name: Update deploy file
+  #       run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:mainnet-grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/mainnet-production/deployment.yaml
 
-      - name: Deploy to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/deployment/mainnet-production/
+  #     - name: Deploy to DigitalOcean Kubernetes
+  #       run: kubectl apply -f $GITHUB_WORKSPACE/deployment/mainnet-production/
 
-      - name: Verify deployment
-        run: kubectl -n sub-back rollout status deployment/mainnet-grillchat
+  #     - name: Verify deployment
+  #       run: kubectl -n sub-back rollout status deployment/mainnet-grillchat
 
-      - name: Add more replica
-        run: kubectl -n sub-back scale --replicas=2 deployment/mainnet-grillchat
+  #     - name: Add more replica
+  #       run: kubectl -n sub-back scale --replicas=2 deployment/mainnet-grillchat
 
-  front-bk-prod-deploy:
-    name: bk-prod-deploy
-    needs: front_build
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
+  # front-bk-prod-deploy:
+  #   name: bk-prod-deploy
+  #   needs: front_build
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.ref == 'refs/heads/main' }}
+  #   steps:
+  #     - name: Checkout main
+  #       uses: actions/checkout@v4
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
+  #     - name: Extract branch name
+  #       shell: bash
+  #       run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+  #       id: extract_branch
 
-      - name: executing remote ssh commands
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.BACKUP_HOST }}
-          username: ${{ secrets.BACKUP_USERNAME }}
-          key: ${{ secrets.BACKUP_KEY }}
-          port: ${{ secrets.BACKUP_PORT }}
-          script: |
-            cd /root/grillchat
-            ./update.sh
+  #     - name: executing remote ssh commands
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.BACKUP_HOST }}
+  #         username: ${{ secrets.BACKUP_USERNAME }}
+  #         key: ${{ secrets.BACKUP_KEY }}
+  #         port: ${{ secrets.BACKUP_PORT }}
+  #         script: |
+  #           cd /root/grillchat
+  #           ./update.sh
 
-  storybook_deploy:
-    name: storybook-prod-deploy
-    needs: front_build
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/storybook' }}
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
+  # storybook_deploy:
+  #   name: storybook-prod-deploy
+  #   needs: front_build
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.ref == 'refs/heads/storybook' }}
+  #   steps:
+  #     - name: Checkout main
+  #       uses: actions/checkout@v4
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
+  #     - name: Extract branch name
+  #       shell: bash
+  #       run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+  #       id: extract_branch
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
+  #     - name: Install doctl
+  #       uses: digitalocean/action-doctl@v2
+  #       with:
+  #         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
 
-      - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
+  #     - name: Save DigitalOcean kubeconfig with short-lived credentials
+  #       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
 
-      - name: Update deploy file
-        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/storybook/deployment.yaml
+  #     - name: Update deploy file
+  #       run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/storybook/deployment.yaml
 
-      - name: Deploy to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/deployment/storybook/
+  #     - name: Deploy to DigitalOcean Kubernetes
+  #       run: kubectl apply -f $GITHUB_WORKSPACE/deployment/storybook/
 
-      - name: Verify deployment
-        run: kubectl -n sub-back rollout status deployment/grillchat-storybook
+  #     - name: Verify deployment
+  #       run: kubectl -n sub-back rollout status deployment/grillchat-storybook
 
-      - name: Verify deployment
-        run: kubectl -n sub-back rollout status deployment/grillchat-storybook
+  #     - name: Verify deployment
+  #       run: kubectl -n sub-back rollout status deployment/grillchat-storybook
