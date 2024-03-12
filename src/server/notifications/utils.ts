@@ -2,7 +2,6 @@ import { env } from '@/env.mjs'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 
 function getNotificationsConfig() {
-  console.log(env.NOTIFICATIONS_TOKEN)
   return {
     url: env.NOTIFICATIONS_URL,
     token: env.NOTIFICATIONS_TOKEN,

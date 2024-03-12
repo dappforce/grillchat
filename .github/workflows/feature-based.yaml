@@ -70,7 +70,6 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://notifications-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://notifications-queue-data-hub.subsocial.network/graphql
             GH_NOTIFICATIONS_URL=https://notifications-notif-data-hub.subsocial.network/graphql
-            GH_NOTIFICATIONS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZX0.CgxdNXbqpRJDqHgkp87VKoOwC5_M56KE6IwsUtW5GKE
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
             GH_NEXT_PUBLIC_APP_ID=12364
             GH_NEXT_PUBLIC_SPACE_IDS=12466,12467,12468,12660
