@@ -23,9 +23,12 @@ import { getLinkedTelegramAccountsQuery } from './query'
 async function linkTelegramAccount(data: ApiNotificationsLinkMessageBody) {
   if (!data) return null
 
+  console.log('FETCHING LINK MESSAGE...')
   const res = await apiInstance.post('/api/notifications/link-message', data)
   const encodedMessage = (res.data as ApiNotificationsLinkMessageResponse).data
+  console.log('ENCODED MESSAGE', encodedMessage)
   const signedMessage = await processMessageTpl(encodedMessage)
+  console.log('FINISHED SIGNING')
 
   const linkRes = await apiInstance.post<
     any,
