@@ -106,13 +106,11 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
     // if it needs more than 8s, the post fetching is not delayed, but it will still be fetched and put to redis
     // so that in the next fetch, it will have the correct data from the redis
     async function getMetadata() {
-      console.log('fetching', link)
       const metadata = await getLinkMetadata(link)
       if (metadata) metadataMap[link] = metadata
     }
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        console.log('rejecting, timeout', link)
         reject('Link metadata fetching timeout')
       }, 8_000)
       getMetadata().then(resolve, reject)
@@ -146,7 +144,6 @@ export async function getLinkMetadata(
   }
 
   try {
-    console.log('parsing', link)
     const metadata = await parser(link, { timeout: 20_000 })
     const allMetadata = JSON.parse(
       JSON.stringify({
@@ -160,7 +157,6 @@ export async function getLinkMetadata(
       parsedMetadata.siteName = allMetadata.site_name
     }
 
-    console.log('set to cache', link)
     redisCallWrapper((redis) =>
       redis?.set(
         getMetadataRedisKey(link),
@@ -171,7 +167,7 @@ export async function getLinkMetadata(
     )
     return parsedMetadata
   } catch (err) {
-    console.error('Error fetching page metadata for link: ', link)
+    console.error('Error fetching link metadata for link: ', link)
     redisCallWrapper((redis) =>
       redis?.set(
         getMetadataRedisKey(link),
