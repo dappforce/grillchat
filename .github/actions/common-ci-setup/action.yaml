@@ -25,9 +25,9 @@ runs:
         id: extract_branch
 
       - name: Extract feature branch name
-        if: startsWith(github.ref, 'refs/heads/deploy/')
+        if: startsWith(github.ref, 'refs/heads/feat/')
         shell: bash
-        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^deploy\///')" >> $GITHUB_ENV
+        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^feat\///')" >> $GITHUB_ENV
         id: extract_features_branch
 
       - name: Set up Docker context for buildx
@@ -61,4 +61,4 @@ runs:
         id: prep
         shell: bash
         run: |
-          echo "image=dappforce/subsocial-web-app:grillchat:${{ inputs.app_input }}-${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
+          echo "image=dappforce/subsocial-web-app-grillchat:${{ inputs.app_input }}-${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
