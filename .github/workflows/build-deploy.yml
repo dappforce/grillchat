@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - deploy/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,7 +17,7 @@ jobs:
         isMaster:
           - ${{ contains(github.ref, 'main') }}
         isDeploy:
-          - ${{ startsWith(github.ref, 'refs/heads/feat/') }}
+          - ${{ startsWith(github.ref, 'refs/heads/deploy/') }}
         exclude:
           - isMaster: false
             apps: main
@@ -161,7 +162,7 @@ jobs:
         isMaster:
           - ${{ contains(github.ref, 'main') }}
         isDeploy:
-          - ${{ startsWith(github.ref, 'refs/heads/feat/') }}
+          - ${{ startsWith(github.ref, 'refs/heads/deploy/') }}
         exclude:
           - isMaster: false
             apps: main
@@ -188,7 +189,7 @@ jobs:
           tokens_input:  ${{ secrets.CF_TOKEN }}
 
       - name: stage deploy ${{ matrix.apps }}
-        if: startsWith(github.ref, 'refs/heads/feat/')
+        if: startsWith(github.ref, 'refs/heads/deploy/')
         uses: './.github/actions/common-cd-setup'
         with:
           token_input:  ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_STAGING }}
