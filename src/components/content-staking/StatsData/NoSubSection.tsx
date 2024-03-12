@@ -1,6 +1,6 @@
 import { cx } from '@/utils/class-names'
-import { useContentStakingContext } from '../utils/ContentStakingContext'
 import { mutedTextColorStyles, sectionTitleStyles } from '../utils/commonStyles'
+import { useContentStakingContext } from '../utils/ContentStakingContext'
 import { CardItem } from './HowToGetRewardsSection'
 
 const items = [
@@ -32,8 +32,8 @@ const NoSubSection = () => {
           Don&apos;t have SUB? You can still earn rewards
         </div>
         <div className={cx(mutedTextColorStyles, 'text-base leading-[22px]')}>
-          Get rewarded for your content within the first 30 days after
-          registration even without having SUB tokens.
+          Get rewarded for your content after registration even without having
+          SUB tokens.
         </div>
       </div>
       <div className='flex flex-col items-stretch gap-4 md:flex-row'>

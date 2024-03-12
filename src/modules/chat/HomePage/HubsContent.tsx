@@ -1,4 +1,5 @@
 import ChatPreview from '@/components/chats/ChatPreview'
+import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import ChatSpecialButtons from '@/components/chats/ChatSpecialButtons'
 import { getAliasFromHubId, getPinnedHubIds } from '@/constants/config'
 import { env } from '@/env.mjs'
@@ -9,11 +10,11 @@ import { SpaceData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { HubsPageProps } from './HomePage'
+import { HomePageProps } from './HomePage'
 
 export default function HubsContent({
   hubsChatCount = {},
-}: Pick<HubsPageProps, 'hubsChatCount'>) {
+}: Pick<HomePageProps, 'hubsChatCount'>) {
   const isInIframe = useIsInIframe()
   const hubIds = env.NEXT_PUBLIC_SPACE_IDS
 
@@ -30,7 +31,7 @@ export default function HubsContent({
 
       <div className='flex flex-col overflow-auto'>
         {hubs.map((hub) => {
-          if (!hub) return null
+          if (!hub) return <ChatPreviewSkeleton asContainer />
           const hubId = hub.id
           return (
             <ChatPreviewContainer
