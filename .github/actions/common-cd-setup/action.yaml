@@ -34,9 +34,9 @@ runs:
         id: extract_branch
 
       - name: Extract feature branch name
-        if: startsWith(github.ref, 'refs/heads/feat/')
+        if: startsWith(github.ref, 'refs/heads/deploy/')
         shell: bash
-        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^feat\///')" >> $GITHUB_ENV
+        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^deploy\///')" >> $GITHUB_ENV
         id: extract_features_branch
 
       - name: Prepare
@@ -55,7 +55,7 @@ runs:
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ inputs.k8s_input }}
 
       - name: Add feature name
-        if: startsWith(github.ref, 'refs/heads/feat/')
+        if: startsWith(github.ref, 'refs/heads/deploy/')
         shell: bash
         run: |
           NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/all.yaml

@@ -25,9 +25,9 @@ runs:
         id: extract_branch
 
       - name: Extract feature branch name
-        if: startsWith(github.ref, 'refs/heads/feat/')
+        if: startsWith(github.ref, 'refs/heads/deploy/')
         shell: bash
-        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^feat\///')" >> $GITHUB_ENV
+        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^deploy\///')" >> $GITHUB_ENV
         id: extract_features_branch
 
       - name: Set up Docker context for buildx
