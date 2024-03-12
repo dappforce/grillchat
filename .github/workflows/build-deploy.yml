@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         apps: [main, test]
-    name: build & Push ${{ matrix.apps }} Docker image to Docker Hub
+    name: Build ${{ matrix.apps }} Docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,7 +27,7 @@ jobs:
           app_input: ${{ matrix.apps }}
 
       - name: Build testnet production image
-        if:  ${{ matrix.apps }} == 'test'
+        if: matrix.apps == 'test'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -65,7 +65,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Build mainnet production image
-        if:  ${{ matrix.apps }} == 'main'
+        if: matrix.apps == 'main'
         uses: docker/build-push-action@v5
         with:
           context: .
