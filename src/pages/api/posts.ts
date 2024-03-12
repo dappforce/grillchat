@@ -101,9 +101,22 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   })
 
   const metadataMap: Record<string, LinkMetadata> = {}
-  const metadataPromises = Array.from(linksToFetch).map(async (link) => {
-    const metadata = await getLinkMetadata(link)
-    if (metadata) metadataMap[link] = metadata
+  const metadataPromises = Array.from(linksToFetch).map((link) => {
+    // link fetching itself has timeout of 20_000, but for data fetching, it faster timeout
+    // if it needs more than 8s, the post fetching is not delayed, but it will still be fetched and put to redis
+    // so that in the next fetch, it will have the correct data from the redis
+    async function getMetadata() {
+      const metadata = await getLinkMetadata(link)
+      if (metadata) metadataMap[link] = metadata
+    }
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject('Link metadata fetching timeout')
+      }, 8_000)
+      getMetadata().then(() => {
+        resolve(null)
+      }, reject)
+    })
   })
   await Promise.allSettled(metadataPromises)
 
@@ -120,17 +133,20 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
 
 const getMetadataRedisKey = (url: string) => 'metadata:' + url
 const METADATA_MAX_AGE = 60 * 60 * 24 * 30 // 1 month
-const METADATA_ERROR_MAX_AGE = 60 * 60 * 24 // 1 day
-async function getLinkMetadata(link: string): Promise<LinkMetadata | null> {
+const METADATA_ERROR_MAX_AGE = 60 * 60 * 1 // 1 hour
+export async function getLinkMetadata(
+  link: string,
+  revalidate?: boolean
+): Promise<LinkMetadata | null> {
   const cachedData = await redisCallWrapper((redis) =>
     redis?.get(getMetadataRedisKey(link))
   )
-  if (cachedData) {
+  if (cachedData && !revalidate) {
     return JSON.parse(cachedData) as LinkMetadata
   }
 
   try {
-    const metadata = await parser(link, { timeout: 5_000 })
+    const metadata = await parser(link, { timeout: 20_000 })
     const allMetadata = JSON.parse(
       JSON.stringify({
         ...metadata.meta,
@@ -153,7 +169,7 @@ async function getLinkMetadata(link: string): Promise<LinkMetadata | null> {
     )
     return parsedMetadata
   } catch (err) {
-    console.error('Error fetching page metadata for link: ', link)
+    console.error('Error fetching link metadata for link: ', link)
     redisCallWrapper((redis) =>
       redis?.set(
         getMetadataRedisKey(link),

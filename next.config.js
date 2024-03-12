@@ -53,6 +53,16 @@ const nextConfig = {
         destination: '/:hubId/:slug',
         permanent: false,
       },
+      {
+        source: '/report',
+        destination: 'https://forms.gle/Gjh3ELaNHTBotiwN7',
+        permanent: false,
+      },
+      {
+        source: '/appeal',
+        destination: 'https://forms.gle/nKjNwentimo2f6Yi6',
+        permanent: false,
+      },
     ]
   },
   images: {

@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - storybook
+      - deploy/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,40 +11,36 @@ concurrency:
 
 jobs:
   front_build:
-    name: build & Push Docker image to Docker Hub
+    strategy:
+      matrix:
+        apps: [main, test, deploy]
+        isMaster:
+          - ${{ contains(github.ref, 'main') }}
+        isDeploy:
+          - ${{ startsWith(github.ref, 'refs/heads/deploy/') }}
+        exclude:
+          - isMaster: false
+            apps: main
+          - isMaster: false
+            apps: test
+          - isMaster: true
+            apps: deploy
+
+    name: Build ${{ matrix.apps }} Docker image
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Extract branch name
-        shell: bash
-        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Prepare
-        id: prep
-        run: |
-          echo "image=dappforce/subsocial-web-app:grillchat-${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@master
-
-      - name: Login to DockerHub
-        uses: docker/login-action@master
+      - name: Base ${{ matrix.apps }}
+        uses: './.github/actions/common-ci-setup'
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username_input: ${{ secrets.DOCKER_USERNAME }}
+          password_input: ${{ secrets.DOCKER_PASSWORD }}
+          app_input: ${{ matrix.apps }}
 
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-single-buildx
-
-      - name: Build production image
-        if: ${{ github.ref == 'refs/heads/main' }}
+      - name: Build testnet production image
+        if: matrix.apps == 'test'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -75,95 +71,14 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=grill-web-push.appspot.com
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=762898090466
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:762898090466:web:2a09d26c3bab706b95d1bb
-
           target: runner
           tags: |
             ${{ env.image }}
-            dappforce/subsocial-web-app:grillchat-master-latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - name: Build storybook image
-        if: ${{ github.ref == 'refs/heads/storybook' }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          builder: ${{ steps.buildx.outputs.name }}
-          file: docker/storybook-Dockerfile
-          push: true
-          build-args: |
-            GH_NEXT_PUBLIC_SPACE_IDS=1002,1005,1010,1011,1023,1030,1772
-            GH_NEXT_PUBLIC_MODERATION_URL=https://moderation.subsocial.network/graphql
-            GH_NOTIFICATIONS_URL=https://grill-notifications.subsocial.network/graphql
-            GH_NOTIFICATIONS_TOKEN=${{ secrets.NOTIFICATIONS_AUTH_TOKEN }}
-            GH_NEXT_PUBLIC_AMP_ID=81d0fc2014ce14eed5a475efe9a44035
-            GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/xsocial/graphql
-            GH_NEXT_PUBLIC_GA_ID=G-FT28TL1W3M
-            GH_IPFS_WRITE_URL=https://gw-seattle.crustcloud.io
-            GH_IPFS_PIN_URL=https://pin.crustcloud.io/psa
-            GH_CRUST_IPFS_AUTH=${{ secrets.CRUST_IPFS_AUTH }}
-            GH_SUBSOCIAL_PROMO_SECRET_HEX=${{ secrets.SUBSOCIAL_PROMO_SECRET_HEX }}
-            GH_USER_ID_SALT=${{ secrets.USER_ID_SALT }}
-            GH_SERVER_MNEMONIC=${{ secrets.SERVER_ENERGY_MNEMONIC }}
-            GH_NEXT_PUBLIC_APP_ID=1456
-            GH_SERVER_DISCUSSION_CREATOR_MNEMONIC=${{ secrets.SERVER_DISCUSSION_CREATOR_MNEMONIC }}
-            GH_COVALENT_API_KEY=${{ secrets.COVALENT_API_KEY }}
-            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://xsocial.subsocial.network
-            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://xsocial.subsocial.network
-            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://data-hub.subsocial.network/graphql
-            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://data-hub.subsocial.network/graphql-ws
-            GH_DATAHUB_QUEUE_URL=https://queue-data-hub.subsocial.network/graphql
-            GH_DATAHUB_QUEUE_TOKEN=${{ secrets.DATAHUB_QUEUE_TOKEN }}
-            GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=1386
-            GH_NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-            GH_NEXTAUTH_URL=https://grill.chat
-          target: storybook
-          tags: |
-            ${{ env.image }}
-            dappforce/subsocial-web-app:grillchat-storybook-master-latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-  mainnet_front_build:
-    name: build & Push mainnet Docker image to Docker Hub
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Extract branch name
-        shell: bash
-        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
-
-      - name: Mainnet Prepare
-        id: mainprep
-        run: |
-          echo "mainimage=dappforce/subsocial-web-app:mainnet-grillchat-${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@master
-
-      - name: Login to DockerHub
-        uses: docker/login-action@master
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-single-buildx
 
       - name: Build mainnet production image
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: matrix.apps == 'main'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -186,11 +101,52 @@ jobs:
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12455
             GH_NEXT_PUBLIC_GA_ID=G-TP1XEFNHQD
-
           target: runner
           tags: |
-            ${{ env.mainimage }}
+            ${{ env.image }}
             dappforce/subsocial-web-app:mainnet-grillchat-master-latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Build staging docker image
+        if: matrix.apps == 'deploy'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          builder: ${{ steps.buildx.outputs.name }}
+          file: docker/Dockerfile
+          push: true
+          build-args: |
+            GH_NEXT_PUBLIC_AMP_ID=71bf5a46800fedba5e9a01243b988164
+            GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
+            GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12467
+            GH_NEXT_PUBLIC_GA_ID=fake
+            GH_IPFS_WRITE_URL=https://gw-seattle.crustcloud.io
+            GH_IPFS_PIN_URL=https://test-pin.crustcloud.io/psa
+            GH_NEXT_PUBLIC_NOTIFICATION_APP_ID=BJaKjx7xtiIXtSUT8tR6VDG0WwhFwdqOqp8L5kc6alGBUtndnlV_DUJ6sze_z70VEBOKk4AT_wZTJqE9dC7sbEQ
+            GH_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=gl-notifications-dev.firebaseapp.com
+            GH_NEXT_PUBLIC_FIREBASE_PROJECT_ID=gl-notifications-dev
+            GH_NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyC7pSekdJQ0PpUDCY4eEkEeDGCazVES6QI
+            GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=gl-notifications-dev.appspot.com
+            GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=581626459774
+            GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:581626459774:web:6b7098eb48c0b142f50a2f
+            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://para.subsocial.network
+            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://para.subsocial.network
+            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://notifications-data-hub.subsocial.network/graphql
+            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://notifications-data-hub.subsocial.network/graphql-ws
+            GH_DATAHUB_QUEUE_URL=https://notifications-queue-data-hub.subsocial.network/graphql
+            GH_NOTIFICATIONS_URL=https://notifications-notif-data-hub.subsocial.network/graphql
+            GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
+            GH_NEXT_PUBLIC_APP_ID=12364
+            GH_NEXT_PUBLIC_SPACE_IDS=12466,12467,12468,12660
+            # without base path
+            # GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network
+            # with base path
+            GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network/c/api/auth
+            GH_NEXT_PUBLIC_BASE_PATH=/c
+          target: runner
+          tags: |
+            ${{ env.image }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -199,129 +155,46 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-  prod_deploy:
-    name: prod-deploy
+  front_deploy:
+    strategy:
+      matrix:
+        apps: [main, test, deploy]
+        isMaster:
+          - ${{ contains(github.ref, 'main') }}
+        isDeploy:
+          - ${{ startsWith(github.ref, 'refs/heads/deploy/') }}
+        exclude:
+          - isMaster: false
+            apps: main
+          - isMaster: false
+            apps: test
+          - isMaster: true
+            apps: deploy
+    name: deploy ${{ matrix.apps }}
+    runs-on: ubuntu-latest
     needs: front_build
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
-      - name: Checkout main
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
-
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
+      - name: prod deploy ${{ matrix.apps }}
+        if: github.ref == 'refs/heads/main'
+        uses: './.github/actions/common-cd-setup'
         with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
+          token_input: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
+          k8s_input: ${{ secrets.K8S_PROD }}
+          app_input: ${{ matrix.apps }}
+          zone_input: ${{ secrets.CF_ZONE }}
+          mail_input: ${{ secrets.CF_MAIL }}
+          tokens_input: ${{ secrets.CF_TOKEN }}
 
-      - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
-
-      - name: Update deploy file
-        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/production/deployment.yaml
-
-      - name: Deploy to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/deployment/production/
-
-      - name: Verify deployment
-        run: kubectl -n sub-back rollout status deployment/grillchat
-
-      - name: Add more replica
-        run: kubectl -n sub-back scale --replicas=2 deployment/grillchat
-
-  mainnet-prod_deploy:
-    name: mainnet-prod-deploy
-    needs: mainnet_front_build
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-
-      - name: Extract branch name
-        shell: bash
-        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
-
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
+      - name: stage deploy ${{ matrix.apps }}
+        if: startsWith(github.ref, 'refs/heads/deploy/')
+        uses: './.github/actions/common-cd-setup'
         with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
-
-      - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
-
-      - name: Update deploy file
-        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:mainnet-grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/mainnet-production/deployment.yaml
-
-      - name: Deploy to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/deployment/mainnet-production/
-
-      - name: Verify deployment
-        run: kubectl -n sub-back rollout status deployment/mainnet-grillchat
-
-      - name: Add more replica
-        run: kubectl -n sub-back scale --replicas=2 deployment/mainnet-grillchat
-
-  front-bk-prod-deploy:
-    name: bk-prod-deploy
-    needs: front_build
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-
-      - name: Extract branch name
-        shell: bash
-        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
-
-      - name: executing remote ssh commands
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.BACKUP_HOST }}
-          username: ${{ secrets.BACKUP_USERNAME }}
-          key: ${{ secrets.BACKUP_KEY }}
-          port: ${{ secrets.BACKUP_PORT }}
-          script: |
-            cd /root/grillchat
-            ./update.sh
-
-  storybook_deploy:
-    name: storybook-prod-deploy
-    needs: front_build
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/storybook' }}
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-
-      - name: Extract branch name
-        shell: bash
-        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        id: extract_branch
-
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
-
-      - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
-
-      - name: Update deploy file
-        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-web-app:grillchat-'${TAG}'|' $GITHUB_WORKSPACE/deployment/storybook/deployment.yaml
-
-      - name: Deploy to DigitalOcean Kubernetes
-        run: kubectl apply -f $GITHUB_WORKSPACE/deployment/storybook/
-
-      - name: Verify deployment
-        run: kubectl -n sub-back rollout status deployment/grillchat-storybook
-
-      - name: Verify deployment
-        run: kubectl -n sub-back rollout status deployment/grillchat-storybook
+          token_input: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_STAGING }}
+          k8s_input: ${{ secrets.K8S_STAGING }}
+          app_input: ${{ matrix.apps }}
+          zone_input: ${{ secrets.CF_ZONE }}
+          mail_input: ${{ secrets.CF_MAIL }}
+          tokens_input: ${{ secrets.CF_TOKEN }}

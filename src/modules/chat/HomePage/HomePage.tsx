@@ -25,7 +25,7 @@ import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
 
-export type HubsPageProps = {
+export type HomePageProps = {
   hubsChatCount: { [id: string]: number }
 }
 
@@ -59,7 +59,7 @@ const pathnameTabIdMapper: Record<string, number> = {
   '/hubs': 2,
 }
 
-export default function HubsPage(props: HubsPageProps) {
+export default function HomePage(props: HomePageProps) {
   const isLoggedIn = useMyAccount((state) => !!state.address)
   const router = useRouter()
   const sendEvent = useSendEvent()

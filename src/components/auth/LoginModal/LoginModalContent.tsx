@@ -214,7 +214,7 @@ function PolkadotConnectConfirmation({
       setCurrentState={setCurrentState}
       onSuccess={() => {
         finalizeTemporaryAccount()
-        if (!profile?.profileSpace?.id && !isFetched) {
+        if (!profile?.profileSpace?.id && isFetched) {
           useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
         } else {
           finishLogin(closeModal)
@@ -254,7 +254,11 @@ export function EvmLoginStep({
       }}
       onSuccess={() => {
         useMyAccount.getState().finalizeTemporaryAccount()
-        sendEvent('account_created', { loginBy: 'evm' })
+        sendEvent(
+          'account_created',
+          { loginBy: 'evm' },
+          { ref: getReferralIdInUrl() }
+        )
         closeModal()
         useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
       }}

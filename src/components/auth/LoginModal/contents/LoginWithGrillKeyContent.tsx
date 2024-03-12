@@ -6,6 +6,7 @@ import { getProfileQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount } from '@/stores/my-account'
+import { isSecretKeyUsingMiniSecret } from '@/utils/account'
 import { useQueryClient } from '@tanstack/react-query'
 import { SyntheticEvent, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -76,7 +77,7 @@ export const LoginWithGrillKeyContent = ({
       </Notice>
       <Button
         isLoading={isLoading}
-        disabled={!privateKey}
+        disabled={!isValidSecretKey(privateKey)}
         type='submit'
         size='lg'
       >
@@ -84,4 +85,18 @@ export const LoginWithGrillKeyContent = ({
       </Button>
     </form>
   )
+}
+
+function isValidSecretKey(key: string) {
+  if (key.startsWith('0x')) {
+    const augmented = key.slice(2)
+    return isSecretKeyUsingMiniSecret(augmented)
+  }
+
+  const words = key.split(' ').filter(Boolean)
+  if (words.length !== 12) {
+    return false
+  }
+
+  return true
 }
