@@ -107,7 +107,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
-      - name: Build docker image
+      - name: Build staging docker image
         if: matrix.apps == 'deploy'
         uses: docker/build-push-action@v5
         with:
