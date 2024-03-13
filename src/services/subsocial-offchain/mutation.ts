@@ -25,3 +25,20 @@ export async function subscribeInLanding({ email }: { email: string }) {
   return res.data
 }
 export const useSubscribeInLanding = mutationWrapper(subscribeInLanding)
+
+export async function subscribeViaLoginGoogle({
+  email,
+  address,
+}: {
+  email: string
+  address: string
+}) {
+  const res = await subsocialOffchainApi.post('/mail/add_email/839924', {
+    email,
+    address,
+  })
+  return res.data
+}
+export const useSubscribeViaLoginGoogle = mutationWrapper(
+  subscribeViaLoginGoogle
+)
