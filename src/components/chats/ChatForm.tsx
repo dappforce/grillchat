@@ -39,6 +39,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
+import { sendEventWithRef } from '../referral/analytics'
 
 const StayUpdatedModal = dynamic(() => import('./StayUpdatedModal'), {
   ssr: false,
@@ -257,7 +258,13 @@ export default function ChatForm({
     //   storage.set('true')
     // }
     const firstExtension = sendMessageParams.extensions?.[0]
-    sendEvent('send_message', { extensionType: firstExtension?.id })
+    sendEventWithRef(myAddress ?? '', (ref) => {
+      sendEvent(
+        'comment_published',
+        { extensionType: firstExtension?.id },
+        { ref }
+      )
+    })
 
     onSubmit?.(!!messageParams.messageIdToEdit)
     incrementMessageCount()
