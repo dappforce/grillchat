@@ -1,6 +1,7 @@
 import LinkingDark from '@/assets/graphics/linking-dark.svg'
 import LinkingLight from '@/assets/graphics/linking-light.svg'
 import Button from '@/components/Button'
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
@@ -40,7 +41,11 @@ export default function PolkadotConnectConfirmationContent({
               },
               onSuccess: () => {
                 saveProxyAddress()
-                sendEvent('login', { loginBy: 'polkadot' })
+                sendEvent(
+                  'login',
+                  { loginBy: 'polkadot' },
+                  { ref: getReferralIdInUrl() }
+                )
                 sendEvent('polkadot_address_linked', undefined, {
                   polkadotLinked: true,
                 })

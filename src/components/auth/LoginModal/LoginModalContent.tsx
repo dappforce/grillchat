@@ -222,7 +222,7 @@ function PolkadotConnectConfirmation({
       }}
       beforeAddProxy={async () => {
         await loginAndRequestToken(null)
-        setReferrerId({ refId: getReferralIdInUrl() })
+        setReferrerId({ refId: getReferralIdInUrl(), walletType: 'injected' })
         return true
       }}
     />
