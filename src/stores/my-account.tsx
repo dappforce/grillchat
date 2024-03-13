@@ -256,6 +256,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
                   subtitle='Sorry we had to remove your proxy, please relogin to use your account again.'
                 />
               ))
+              throw new Error('Proxy removed')
             },
             onInvalidProxy: () => {
               get().logout()
@@ -267,6 +268,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
                   subtitle='You seem to have logged in to your wallet in another device, please relogin using "Connect via Polkadot" to use it here'
                 />
               ))
+              throw new Error('Proxy removed')
             },
           })
         }
