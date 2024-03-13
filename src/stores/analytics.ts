@@ -96,9 +96,10 @@ const useAnalyticsBase = create<State & Actions>()((set, get) => {
 
       const slug = Router.query.slug as string
       const chatId = slug && getIdFromSlug(slug)
+      const pathname = Router.asPath.split('?')[0]
       const commonProperties = {
         from: parentOrigin,
-        pathname: Router.asPath,
+        pathname,
         hubId: Router.query.hubId,
         chatId,
       }

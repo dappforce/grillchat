@@ -29,7 +29,10 @@ export default function AccountPage() {
     login(decodeSecretKey(encodedSecretKey)).then((data) => {
       routeReplace.current(returnUrl)
     })
-    sendEvent('login', { eventSource: 'share_session_link' })
+    sendEvent('login', {
+      eventSource: 'share_session_link',
+      loginBy: 'share-session',
+    })
   }, [login, isInitialized, sendEvent])
 
   return <DefaultLayout />
