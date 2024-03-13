@@ -46,10 +46,19 @@ export default function useOauthLogin({
 
   const myAddress = useMyMainAddress()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+  const { data: linkedIdentity, refetch } = getLinkedIdentityQuery.useQuery(
     myAddress ?? ''
   )
-  const { mutate: linkIdentity, error: errorLinking } = useLinkIdentity()
+  const { mutate: linkIdentity, error: errorLinking } = useLinkIdentity({
+    onSuccess: () => {
+      const intervalId = setInterval(async () => {
+        const res = await refetch()
+        if (res.data) {
+          clearInterval(intervalId)
+        }
+      }, 2_000)
+    },
+  })
   useToastError(
     errorLinking,
     `Failed to link ${name} profile`,
