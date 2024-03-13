@@ -14,7 +14,6 @@ import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
-import { useQueryClient } from '@tanstack/react-query'
 import { Session } from 'next-auth'
 import { useSession } from 'next-auth/react'
 import { useEffect, useRef } from 'react'
@@ -43,7 +42,6 @@ export default function useOauthLogin({
     asTemporaryAccount: true,
   })
 
-  const queryClient = useQueryClient()
   const myAddress = useMyMainAddress()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
