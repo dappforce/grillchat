@@ -36,12 +36,15 @@ const POST_handler = handlerWrapper({
   allowedMethods: ['POST'],
   errorLabel: 'moderation-action',
   handler: async (data, req, res) => {
-    const { id, payload } = data as ApiDatahubIdentityBody
-    const authObj = await auth(req, res)
-    const user = authObj?.user
-    if (!user || user.id !== id) {
-      res.status(403).json({ message: 'Unauthorized', success: false })
-      return
+    const { id, payload, provider } = data as ApiDatahubIdentityBody
+
+    if (provider !== IdentityProvider.POLKADOT) {
+      const authObj = await auth(req, res)
+      const user = authObj?.user
+      if (!user || user.id !== id) {
+        res.status(403).json({ message: 'Unauthorized', success: false })
+        return
+      }
     }
 
     const mapper = datahubMutationWrapper(datahubIdentityActionMapping)
