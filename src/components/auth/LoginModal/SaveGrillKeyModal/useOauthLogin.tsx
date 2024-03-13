@@ -2,6 +2,7 @@ import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
@@ -49,9 +50,15 @@ export default function useOauthLogin({
   const { data: linkedIdentity, refetch } = getLinkedIdentityQuery.useQuery(
     myAddress ?? ''
   )
+  const linkedIdentityRef = useWrapInRef(linkedIdentity)
   const { mutate: linkIdentity, error: errorLinking } = useLinkIdentity({
     onSuccess: () => {
       const intervalId = setInterval(async () => {
+        if (linkedIdentityRef.current) {
+          clearInterval(intervalId)
+          return
+        }
+
         const res = await refetch()
         if (res.data) {
           clearInterval(intervalId)
