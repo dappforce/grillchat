@@ -3,10 +3,12 @@ import { queryClient } from '@/services/provider'
 import { getReferralIdInUrl } from './ReferralUrlChanger'
 
 export async function getReferralIdFromDbOrUrl(address: string) {
-  return (
-    (await getReferrerIdQuery.fetchQuery(queryClient, address)) ||
-    getReferralIdInUrl()
-  )
+  try {
+    const refId = await getReferrerIdQuery.fetchQuery(queryClient, address)
+    return refId || getReferralIdInUrl()
+  } catch {
+    return getReferralIdInUrl()
+  }
 }
 
 export async function sendEventWithRef(
