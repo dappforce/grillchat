@@ -452,8 +452,13 @@ export async function enableWallet({
   listener: (accounts: WalletAccount[]) => void
   onError: (err: unknown) => void
 }) {
-  const preferredWallet = useMyAccount.getState().preferredWallet
-  if (!preferredWallet) return
+  let preferredWallet = useMyAccount.getState().preferredWallet
+  if (!preferredWallet) {
+    const firstInstalledWallet = getWallets().find((wallet) => wallet.installed)
+    if (!firstInstalledWallet)
+      return onError(new Error('No supported wallet found'))
+    preferredWallet = firstInstalledWallet
+  }
 
   try {
     await preferredWallet.enable('grillapp')

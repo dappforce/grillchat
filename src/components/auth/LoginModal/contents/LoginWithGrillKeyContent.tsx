@@ -36,7 +36,7 @@ export const LoginWithGrillKeyContent = ({
     if (address) {
       const profile = await getProfileQuery.fetchQuery(queryClient, address)
       afterLogin?.()
-      sendEvent('login', { eventSource: 'login_modal' })
+      sendEvent('login', { eventSource: 'login_modal', loginBy: 'grill-key' })
       setPrivateKey('')
 
       if (!profile?.profileSpace?.id) {

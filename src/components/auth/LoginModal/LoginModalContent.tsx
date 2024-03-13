@@ -214,7 +214,7 @@ function PolkadotConnectConfirmation({
       setCurrentState={setCurrentState}
       onSuccess={() => {
         finalizeTemporaryAccount()
-        if (!profile?.profileSpace?.id && !isFetched) {
+        if (!profile?.profileSpace?.id && isFetched) {
           useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
         } else {
           finishLogin(closeModal)
