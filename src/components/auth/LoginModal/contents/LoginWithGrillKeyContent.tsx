@@ -32,8 +32,9 @@ export const LoginWithGrillKeyContent = ({
 
     const trimmedPk = privateKey.trim()
     const address = await login(trimmedPk)
-    if (address) {
-      const profile = await getProfileQuery.fetchQuery(queryClient, address)
+    const mainAddress = useMyAccount.getState().parentProxyAddress || address
+    if (mainAddress) {
+      const profile = await getProfileQuery.fetchQuery(queryClient, mainAddress)
       afterLogin?.()
       setPrivateKey('')
 
@@ -41,7 +42,7 @@ export const LoginWithGrillKeyContent = ({
         useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
         closeModal()
 
-        sendEventWithRef(address, (refId) => {
+        sendEventWithRef(mainAddress, (refId) => {
           sendEvent(
             'login',
             { eventSource: 'login_modal', loginBy: 'grill-key' },
@@ -49,7 +50,7 @@ export const LoginWithGrillKeyContent = ({
           )
         })
       } else {
-        await sendEventWithRef(address, (refId) => {
+        await sendEventWithRef(mainAddress, (refId) => {
           sendEvent(
             'login',
             { eventSource: 'login_modal', loginBy: 'grill-key' },
