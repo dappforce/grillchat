@@ -2,6 +2,7 @@ import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
@@ -46,10 +47,25 @@ export default function useOauthLogin({
 
   const myAddress = useMyMainAddress()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+  const { data: linkedIdentity, refetch } = getLinkedIdentityQuery.useQuery(
     myAddress ?? ''
   )
-  const { mutate: linkIdentity, error: errorLinking } = useLinkIdentity()
+  const linkedIdentityRef = useWrapInRef(linkedIdentity)
+  const { mutate: linkIdentity, error: errorLinking } = useLinkIdentity({
+    onSuccess: () => {
+      const intervalId = setInterval(async () => {
+        if (linkedIdentityRef.current) {
+          clearInterval(intervalId)
+          return
+        }
+
+        const res = await refetch()
+        if (res.data) {
+          clearInterval(intervalId)
+        }
+      }, 2_000)
+    },
+  })
   useToastError(
     errorLinking,
     `Failed to link ${name} profile`,
