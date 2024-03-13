@@ -197,7 +197,7 @@ function PolkadotConnectConfirmation({
   const connectedWalletAddress = useMyAccount(
     (state) => state.connectedWallet?.address
   )
-  const { data: profile, isFetched } = getProfileQuery.useQuery(
+  const { data: profile, isSuccess } = getProfileQuery.useQuery(
     connectedWalletAddress ?? ''
   )
   const { mutate: setReferrerId } = useSetReferrerId()
@@ -214,7 +214,7 @@ function PolkadotConnectConfirmation({
       setCurrentState={setCurrentState}
       onSuccess={() => {
         finalizeTemporaryAccount()
-        if (!profile?.profileSpace?.id && isFetched) {
+        if (!profile?.profileSpace?.id && isSuccess) {
           useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
         } else {
           finishLogin(closeModal)
