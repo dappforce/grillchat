@@ -241,8 +241,9 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       if (!isInitialization) {
         const parentProxyAddress = await getParentProxyAddress(address)
         if (parentProxyAddress) {
+          parentProxyAddressStorage.set(parentProxyAddress)
           set({ parentProxyAddress })
-          validateParentProxyAddress({
+          await validateParentProxyAddress({
             grillAddress: address,
             parentProxyAddress,
             signer,
@@ -256,7 +257,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
                   subtitle='Sorry we had to remove your proxy, please relogin to use your account again.'
                 />
               ))
-              throw new Error('Proxy removed')
             },
             onInvalidProxy: () => {
               get().logout()
@@ -268,16 +268,25 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
                   subtitle='You seem to have logged in to your wallet in another device, please relogin using "Connect via Polkadot" to use it here'
                 />
               ))
-              throw new Error('Proxy removed')
             },
           })
         }
       }
     } catch (e) {
       console.error('Failed to login', e)
+      if (!isInitialization) {
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            type='error'
+            title='Login Failed'
+            description='The Grill key you provided is not valid'
+          />
+        ))
+      }
       return false
     }
-    return address
+    return get().address || false
   },
   loginAsTemporaryAccount: async () => {
     set({ isTemporaryAccount: true })
@@ -359,7 +368,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
     if (parentProxyAddress) {
       set({ parentProxyAddress })
-      validateParentProxyAddress({
+      await validateParentProxyAddress({
         grillAddress: get().address!,
         parentProxyAddress,
         signer: get().signer!,
