@@ -1,12 +1,13 @@
 import { cx, interactionRingStyles } from '@/utils/class-names'
-import { cva, VariantProps } from 'class-variance-authority'
+import { VariantProps, cva } from 'class-variance-authority'
 import { useId } from 'react'
 
 const inputStyles = cva('', {
   variants: {
     variant: {
       fill: 'bg-background-light',
-      'fill-bg': 'bg-background ring-1 ring-border-gray appearance-none',
+      'fill-bg':
+        'bg-background/50 dark:bg-background ring-1 ring-border-gray appearance-none',
       outlined:
         'ring-1 ring-background-lightest appearance-none bg-transparent',
     },
