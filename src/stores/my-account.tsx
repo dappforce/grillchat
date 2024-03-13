@@ -1,5 +1,6 @@
-import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import Toast from '@/components/Toast'
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
@@ -11,12 +12,12 @@ import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useParentData } from '@/stores/parent'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import {
+  Signer,
   decodeSecretKey,
   encodeSecretKey,
   generateAccount,
   isSecretKeyUsingMiniSecret,
   loginWithSecretKey,
-  Signer,
 } from '@/utils/account'
 import { waitNewBlock } from '@/utils/blockchain'
 import { currentNetwork } from '@/utils/network'
@@ -24,10 +25,10 @@ import { wait } from '@/utils/promise'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
 import { toSubsocialAddress } from '@subsocial/utils'
-import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
+import { Wallet, WalletAccount, getWallets } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import toast from 'react-hot-toast'
-import { useAnalytics, UserProperties } from './analytics'
+import { UserProperties, useAnalytics } from './analytics'
 import { create, createSelectors } from './utils'
 
 type State = {
@@ -202,15 +203,17 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       if (!secretKey) {
         secretKey = (await generateAccount()).secretKey
         const { parentOrigin } = useParentData.getState()
-        analytics.sendEvent(
-          'account_created',
-          {},
-          {
-            cameFrom: parentOrigin,
-            cohortDate: dayjs().toDate(),
-            ref: getReferralIdInUrl(),
-          }
-        )
+        sendEventWithRef(address, (refId) => {
+          analytics.sendEvent(
+            'account_created',
+            {},
+            {
+              cameFrom: parentOrigin,
+              cohortDate: dayjs().toDate(),
+              ref: refId,
+            }
+          )
+        })
       } else if (secretKey.startsWith('0x')) {
         const augmented = secretKey.substring(2)
         if (isSecretKeyUsingMiniSecret(augmented)) {

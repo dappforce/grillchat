@@ -1,6 +1,7 @@
 import LinkingDark from '@/assets/graphics/linking-dark.svg'
 import LinkingLight from '@/assets/graphics/linking-light.svg'
 import Button from '@/components/Button'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
@@ -38,12 +39,18 @@ export default function PolkadotConnectConfirmationContent({
               onSend: () => {
                 setIsSent(true)
               },
-              onSuccess: () => {
+              onSuccess: async () => {
                 saveProxyAddress()
-                sendEvent('login', { loginBy: 'polkadot' })
                 sendEvent('polkadot_address_linked', undefined, {
                   polkadotLinked: true,
                 })
+                await sendEventWithRef(
+                  connectedWallet?.address ?? '',
+                  (refId) => {
+                    sendEvent('login', { loginBy: 'polkadot' }, { ref: refId })
+                  }
+                )
+
                 onSuccess?.()
                 closeModal()
               },

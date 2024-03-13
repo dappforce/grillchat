@@ -29,11 +29,11 @@ export default function CreateProfileModal({
   const hasSubmitted = useRef(false)
 
   useEffect(() => {
-    if (profile?.profileSpace?.id && !hasSubmitted.current) {
+    if (props.isOpen && profile?.profileSpace?.id && !hasSubmitted.current) {
       finishLogin(props.closeModal)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile])
+  }, [profile, props.isOpen])
 
   useEffect(() => {
     sendEvent('login_profile_form_opened')

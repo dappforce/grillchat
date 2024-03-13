@@ -1,4 +1,5 @@
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
@@ -138,15 +139,14 @@ export default function useOauthLogin({
     ;(async () => {
       const address = await loginAsTemporaryAccount(null)
       if (!address || !identity) return
-      sendEvent(
-        'account_created',
-        { loginBy: provider },
-        { ref: getReferralIdInUrl() }
-      )
       setReferrerId({ refId: getReferralIdInUrl() })
       linkIdentity({
         id: session.user?.id,
         provider: identity,
+      })
+
+      sendEventWithRef(address, async (refId) => {
+        sendEvent('account_created', { loginBy: provider }, { ref: refId })
       })
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
