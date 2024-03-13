@@ -148,7 +148,7 @@ export default function useOauthLogin({
       })
 
       sendEventWithRef(address, async (refId) => {
-        sendEvent('login', { loginBy: provider }, { ref: refId })
+        sendEvent('account_created', { loginBy: provider }, { ref: refId })
       })
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
