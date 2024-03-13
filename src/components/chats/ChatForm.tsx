@@ -259,11 +259,7 @@ export default function ChatForm({
     // }
     const firstExtension = sendMessageParams.extensions?.[0]
     sendEventWithRef(myAddress ?? '', (ref) => {
-      sendEvent(
-        'comment_published',
-        { extensionType: firstExtension?.id },
-        { ref }
-      )
+      sendEvent('send_comment', { extensionType: firstExtension?.id }, { ref })
     })
 
     onSubmit?.(!!messageParams.messageIdToEdit)
