@@ -27,6 +27,7 @@ metadata:
     nginx.org/client-max-body-size: '10m'
     nginx.ingress.kubernetes.io/proxy-body-size: '10m'
     nginx.ingress.kubernetes.io/client-max-body-size: '10m'
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: nginx
   rules:
@@ -38,14 +39,7 @@ spec:
                 name: grillchat-<BRANCH>
                 port:
                   number: 3000
-            path: /c
-            pathType: Exact
-          - backend:
-              service:
-                name: grillchat-<BRANCH>
-                port:
-                  number: 3000
-            path: /c/
+            path: /c(/|$)(.*)
             pathType: Prefix
 
   tls:
