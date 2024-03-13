@@ -415,8 +415,10 @@ export type IdTimestampPair = {
 
 export enum IdentityProvider {
   Email = 'EMAIL',
+  Evm = 'EVM',
   Facebook = 'FACEBOOK',
   Google = 'GOOGLE',
+  Polkadot = 'POLKADOT',
   Twitter = 'TWITTER',
 }
 
@@ -625,6 +627,41 @@ export type MutationModerationUpdateOrganizationModeratorArgs = {
   args: ModerationUpdateOrganizationModeratorInput
 }
 
+export enum NotificationServiceName {
+  Discord = 'DISCORD',
+  Email = 'EMAIL',
+  Fcm = 'FCM',
+  Telegram = 'TELEGRAM',
+}
+
+export type NotificationsAccountsLink = {
+  __typename?: 'NotificationsAccountsLink'
+  active: Scalars['Boolean']['output']
+  createdAt: Scalars['DateTime']['output']
+  fcmTokens: Array<Scalars['String']['output']>
+  following: Scalars['Boolean']['output']
+  id: Scalars['String']['output']
+  notificationServiceAccountId: Scalars['String']['output']
+  notificationServiceName: NotificationServiceName
+  socialProfile?: Maybe<SocialProfile>
+  substrateAccount: Account
+}
+
+export type NotificationsSettings = {
+  __typename?: 'NotificationsSettings'
+  id: Scalars['String']['output']
+  socialProfile?: Maybe<SocialProfile>
+  subscriptionEvents: Array<Scalars['String']['output']>
+  subscriptions: Array<NotificationsSubscription>
+  substrateAccount: Account
+}
+
+export type NotificationsSubscription = {
+  __typename?: 'NotificationsSubscription'
+  eventName: Scalars['String']['output']
+  telegramBot: Scalars['Boolean']['output']
+}
+
 export enum PinnedResourceType {
   Post = 'Post',
   Space = 'Space',
@@ -689,6 +726,7 @@ export type Post = {
   updatedAtTime?: Maybe<Scalars['DateTime']['output']>
   upvotesCount?: Maybe<Scalars['Int']['output']>
   uuid?: Maybe<Scalars['String']['output']>
+  views?: Maybe<Array<PostView>>
 }
 
 export type PostFollowers = {
@@ -736,6 +774,28 @@ export type PostSubscriptionPayload = {
   persistentId?: Maybe<Scalars['String']['output']>
 }
 
+export type PostView = {
+  __typename?: 'PostView'
+  createdAtTime: Scalars['DateTime']['output']
+  duration: Scalars['Int']['output']
+  id: Scalars['String']['output']
+  post: Post
+  postPersistentId?: Maybe<Scalars['String']['output']>
+  viewerId: Scalars['String']['output']
+}
+
+export type PostViewsCountResponse = {
+  __typename?: 'PostViewsCountResponse'
+  postId: Scalars['String']['output']
+  postPersistentId: Scalars['String']['output']
+  viewsCountTotal: Scalars['Int']['output']
+}
+
+export type PostsViewsCountsInput = {
+  ids?: InputMaybe<Array<Scalars['String']['input']>>
+  persistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
 export type Query = {
   __typename?: 'Query'
   activeStakingAccountActivityMetricsForFixedPeriod: AccountActivityMetricsForFixedPeriodResponseDto
@@ -770,6 +830,7 @@ export type Query = {
   moderators?: Maybe<ModeratorsResponse>
   postMetadata: Array<PostMetadataResponse>
   posts: FindPostsResponseDto
+  postsViewsCounts: Array<PostViewsCountResponse>
   socialProfiles: SocialProfilesResponse
   unreadMessages: Array<UnreadPostsCountResponse>
 }
@@ -908,6 +969,10 @@ export type QueryPostsArgs = {
   where: FindPostsArgs
 }
 
+export type QueryPostsViewsCountsArgs = {
+  where: PostsViewsCountsInput
+}
+
 export type QuerySocialProfilesArgs = {
   args: SocialProfileInput
 }
@@ -957,12 +1022,30 @@ export type RankedPostIdsByActiveStakingActivityResponse = {
   total: Scalars['Int']['output']
 }
 
-export type RewardByPostItemDto = {
-  __typename?: 'RewardByPostItemDto'
+export type RewardsByPostDetails = {
+  __typename?: 'RewardsByPostDetails'
   amount: Scalars['String']['output']
+  distributionPercent?: Maybe<Scalars['Int']['output']>
+  from?: Maybe<RewardsByPostDirectionTarget>
   postId: Scalars['String']['output']
-  postPerstentId: Scalars['String']['output']
+  postKind?: Maybe<PostKind>
+  postPersistentId: Scalars['String']['output']
+  sharedReward?: Maybe<Scalars['Boolean']['output']>
+  spaceId?: Maybe<Scalars['String']['output']>
   superLikeId: Scalars['String']['output']
+  superLikeMultiplier: Scalars['Int']['output']
+  to?: Maybe<RewardsByPostDirectionTarget>
+}
+
+export enum RewardsByPostDirectionTarget {
+  App = 'APP',
+  Comment = 'COMMENT',
+  RegularPost = 'REGULAR_POST',
+  RootPost = 'ROOT_POST',
+  RootSpace = 'ROOT_SPACE',
+  Share = 'SHARE',
+  ShareOrigin = 'SHARE_ORIGIN',
+  TargetEntityOwner = 'TARGET_ENTITY_OWNER',
 }
 
 export type RewardsByPostsInput = {
@@ -1012,7 +1095,12 @@ export enum SocialEventDataType {
 export type SocialProfile = {
   __typename?: 'SocialProfile'
   account: Account
+  activeStakingTrial: Scalars['Boolean']['output']
+  activeStakingTrialFinishedAtTime?: Maybe<Scalars['DateTime']['output']>
+  activeStakingTrialStartedAtTime?: Maybe<Scalars['DateTime']['output']>
   id: Scalars['String']['output']
+  notificationsAccountLinks?: Maybe<Array<NotificationsAccountsLink>>
+  notificationsSettings?: Maybe<NotificationsSettings>
   referrersList?: Maybe<Array<UserReferrerDetail>>
 }
 
@@ -1328,6 +1416,19 @@ export type SubscribeSuperLikeSubscription = {
       staker: { __typename?: 'Account'; id: string }
       post: { __typename?: 'Post'; persistentId?: string | null }
     }
+  }
+}
+
+export type GetGeneralStatsQueryVariables = Exact<{ [key: string]: never }>
+
+export type GetGeneralStatsQuery = {
+  __typename?: 'Query'
+  activeStakingTotalActivityMetricsForFixedPeriod: {
+    __typename?: 'TotalActivityMetricsForFixedPeriodResponseDto'
+    likedPostsCount?: number | null
+    likedCreatorsCount?: number | null
+    stakersEarnedTotal?: string | null
+    creatorEarnedTotal?: string | null
   }
 }
 
@@ -1979,6 +2080,24 @@ export const SubscribeSuperLike = gql`
           persistentId
         }
       }
+    }
+  }
+`
+export const GetGeneralStats = gql`
+  query GetGeneralStats {
+    activeStakingTotalActivityMetricsForFixedPeriod(
+      args: {
+        period: ALL_TIME
+        likedPostsCount: false
+        likedCreatorsCount: false
+        stakersEarnedTotal: true
+        creatorEarnedTotal: false
+      }
+    ) {
+      likedPostsCount
+      likedCreatorsCount
+      stakersEarnedTotal
+      creatorEarnedTotal
     }
   }
 `
