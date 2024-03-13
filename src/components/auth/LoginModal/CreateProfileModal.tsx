@@ -6,8 +6,10 @@ import Modal, {
   ModalFunctionalityProps,
   ModalProps,
 } from '@/components/modals/Modal'
+import { getProfileQuery } from '@/services/api/query'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { encodeProfileSource } from '@/utils/profile'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -22,6 +24,15 @@ export default function CreateProfileModal({
   Pick<ModalProps, 'withoutOverlay' | 'withoutShadow'>) {
   const sendEvent = useSendEvent()
   const hasRedirectCallback = !!getRedirectCallback()
+  const myAddress = useMyMainAddress()
+  const { data: profile } = getProfileQuery.useQuery(myAddress ?? '')
+
+  useEffect(() => {
+    if (profile?.profileSpace?.id) {
+      finishLogin(props.closeModal)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile])
 
   useEffect(() => {
     sendEvent('login_profile_form_opened')
