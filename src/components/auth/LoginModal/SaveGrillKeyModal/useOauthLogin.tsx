@@ -1,4 +1,5 @@
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
@@ -13,6 +14,7 @@ import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import { useQueryClient } from '@tanstack/react-query'
 import { Session } from 'next-auth'
 import { useSession } from 'next-auth/react'
 import { useEffect, useRef } from 'react'
@@ -41,6 +43,7 @@ export default function useOauthLogin({
     asTemporaryAccount: true,
   })
 
+  const queryClient = useQueryClient()
   const myAddress = useMyMainAddress()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
@@ -138,15 +141,14 @@ export default function useOauthLogin({
     ;(async () => {
       const address = await loginAsTemporaryAccount(null)
       if (!address || !identity) return
-      sendEvent(
-        'account_created',
-        { loginBy: provider },
-        { ref: getReferralIdInUrl() }
-      )
       setReferrerId({ refId: getReferralIdInUrl() })
       linkIdentity({
         id: session.user?.id,
         provider: identity,
+      })
+
+      sendEventWithRef(address, async (refId) => {
+        sendEvent('login', { loginBy: provider }, { ref: refId })
       })
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps

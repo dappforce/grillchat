@@ -2,7 +2,7 @@ import Button from '@/components/Button'
 import Notice from '@/components/Notice'
 import Toast from '@/components/Toast'
 import TextArea from '@/components/inputs/TextArea'
-import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import { getProfileQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
@@ -37,17 +37,28 @@ export const LoginWithGrillKeyContent = ({
     if (address) {
       const profile = await getProfileQuery.fetchQuery(queryClient, address)
       afterLogin?.()
-      sendEvent(
-        'login',
-        { eventSource: 'login_modal', loginBy: 'grill-key' },
-        { ref: getReferralIdInUrl() }
-      )
       setPrivateKey('')
 
       if (!profile?.profileSpace?.id) {
         useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
         closeModal()
+
+        sendEventWithRef(address, (refId) => {
+          sendEvent(
+            'login',
+            { eventSource: 'login_modal', loginBy: 'grill-key' },
+            { ref: refId }
+          )
+        })
       } else {
+        await sendEventWithRef(address, (refId) => {
+          sendEvent(
+            'login',
+            { eventSource: 'login_modal', loginBy: 'grill-key' },
+            { ref: refId }
+          )
+        })
+
         finishLogin(closeModal)
       }
     } else {

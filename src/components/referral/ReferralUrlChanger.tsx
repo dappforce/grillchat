@@ -1,4 +1,5 @@
 import { getProfileQuery } from '@/services/api/query'
+import { getReferrerIdQuery } from '@/services/datahub/referral/query'
 import { isClientGeneratedOptimisticId } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import {
@@ -6,11 +7,22 @@ import {
   getCurrentUrlWithoutQuery,
   getUrlQuery,
 } from '@/utils/links'
+import { QueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
 export function getReferralIdInUrl() {
   return getUrlQuery('ref')
+}
+
+export async function getReferralIdFromDbOrUrl(
+  client: QueryClient,
+  address: string
+) {
+  return (
+    (await getReferrerIdQuery.fetchQuery(client, address)) ||
+    getReferralIdInUrl()
+  )
 }
 
 export function useReferralId() {

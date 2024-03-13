@@ -7,6 +7,7 @@ import Logo from '@/components/Logo'
 import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useLoginOption from '@/hooks/useLoginOption'
@@ -252,13 +253,14 @@ export function EvmLoginStep({
       onError={() => {
         setCurrentState('evm-linking-error')
       }}
-      onSuccess={() => {
+      onSuccess={async () => {
         useMyAccount.getState().finalizeTemporaryAccount()
-        sendEvent(
-          'account_created',
-          { loginBy: 'evm' },
-          { ref: getReferralIdInUrl() }
-        )
+
+        const address = useMyAccount.getState().address
+        sendEventWithRef(address ?? '', (refId) => {
+          sendEvent('account_created', { loginBy: 'evm' }, { ref: refId })
+        })
+
         closeModal()
         useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
       }}
