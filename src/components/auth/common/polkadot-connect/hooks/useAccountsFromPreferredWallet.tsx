@@ -10,8 +10,11 @@ export default function useAccountsFromPreferredWallet(onError?: () => void) {
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
   const [accounts, setAccounts] = useState<WalletAccount[] | null>(null)
   const onErrorRef = useWrapInRef(onError)
+  const isInitialized = useMyAccount.use.isInitialized()
 
   useEffect(() => {
+    if (!isInitialized) return
+
     const unsub = enableWallet({
       listener: (accounts) => setAccounts(accounts ?? []),
       onError: (err) => {
@@ -29,7 +32,7 @@ export default function useAccountsFromPreferredWallet(onError?: () => void) {
     return () => {
       unsub.then((unsub) => unsub?.())
     }
-  }, [preferredWallet, onErrorRef, setPreferredWallet])
+  }, [preferredWallet, onErrorRef, setPreferredWallet, isInitialized])
 
   return { accounts, isLoading: accounts === null }
 }

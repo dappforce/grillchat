@@ -6,12 +6,14 @@ import Modal, {
   ModalFunctionalityProps,
   ModalProps,
 } from '@/components/modals/Modal'
+import { getProfileQuery } from '@/services/api/query'
 import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { encodeProfileSource } from '@/utils/profile'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { finishLogin, getRedirectCallback } from './utils'
@@ -22,6 +24,16 @@ export default function CreateProfileModal({
   Pick<ModalProps, 'withoutOverlay' | 'withoutShadow'>) {
   const sendEvent = useSendEvent()
   const hasRedirectCallback = !!getRedirectCallback()
+  const myAddress = useMyMainAddress()
+  const { data: profile } = getProfileQuery.useQuery(myAddress ?? '')
+  const hasSubmitted = useRef(false)
+
+  useEffect(() => {
+    if (props.isOpen && profile?.profileSpace?.id && !hasSubmitted.current) {
+      finishLogin(props.closeModal)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile, props.isOpen])
 
   useEffect(() => {
     sendEvent('login_profile_form_opened')
@@ -36,6 +48,7 @@ export default function CreateProfileModal({
     >
       <CreateProfileForm
         loadingUntilTxSuccess={hasRedirectCallback}
+        onSubmit={() => (hasSubmitted.current = true)}
         onTxSuccess={
           hasRedirectCallback
             ? () => {
@@ -65,10 +78,12 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 function CreateProfileForm({
+  onSubmit,
   onSuccessSent,
   onTxSuccess,
   loadingUntilTxSuccess,
 }: {
+  onSubmit?: () => void
   onSuccessSent?: () => void
   onTxSuccess?: () => void
   loadingUntilTxSuccess?: boolean
@@ -105,8 +120,9 @@ function CreateProfileForm({
       }}
     >
       {({ mutateAsync, isLoading }) => {
-        const onSubmit = handleSubmit(async (data) => {
+        const handleCreateProfileSubmit = handleSubmit(async (data) => {
           sendEvent('account_settings_changed', { profileSource: 'custom' })
+          onSubmit?.()
           await mutateAsync({
             content: {
               name: data.name,
@@ -122,7 +138,10 @@ function CreateProfileForm({
         })
 
         return (
-          <form onSubmit={onSubmit} className={cx('flex flex-col gap-4')}>
+          <form
+            onSubmit={handleCreateProfileSubmit}
+            className={cx('flex flex-col gap-4')}
+          >
             <div className='self-center'>
               <Controller
                 control={control}

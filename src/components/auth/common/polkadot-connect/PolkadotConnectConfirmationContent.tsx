@@ -1,10 +1,13 @@
 import LinkingDark from '@/assets/graphics/linking-dark.svg'
 import LinkingLight from '@/assets/graphics/linking-light.svg'
 import Button from '@/components/Button'
+import { sendEventWithRef } from '@/components/referral/analytics'
+import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { estimatedWaitTime } from '@/utils/network'
+import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { useState } from 'react'
 import { PolkadotConnectContentProps } from './types'
@@ -27,6 +30,7 @@ export default function PolkadotConnectConfirmationContent({
     (state) => state.connectedWallet?.energy === undefined
   )
   const saveProxyAddress = useMyAccount((state) => state.saveProxyAddress)
+  const { mutateAsync: linkIdentity } = useLinkIdentity()
 
   return (
     <div className='mt-2 flex flex-col gap-6'>
@@ -38,12 +42,12 @@ export default function PolkadotConnectConfirmationContent({
               onSend: () => {
                 setIsSent(true)
               },
-              onSuccess: () => {
+              onSuccess: async () => {
                 saveProxyAddress()
-                sendEvent('login', { loginBy: 'polkadot' })
                 sendEvent('polkadot_address_linked', undefined, {
                   polkadotLinked: true,
                 })
+
                 onSuccess?.()
                 closeModal()
               },
@@ -83,6 +87,21 @@ export default function PolkadotConnectConfirmationContent({
                       setIsProcessing(false)
                       if (!shouldProceed) return
                       addProxy(null)
+
+                      linkIdentity({
+                        id: connectedWallet?.address ?? '',
+                        provider: IdentityProvider.POLKADOT,
+                      })
+                      sendEventWithRef(
+                        connectedWallet?.address ?? '',
+                        (refId) => {
+                          sendEvent(
+                            'login',
+                            { loginBy: 'polkadot' },
+                            { ref: refId }
+                          )
+                        }
+                      )
                     }
                   }}
                   isLoading={isAddingProxy || isLoadingEnergy || isProcessing}

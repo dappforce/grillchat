@@ -1,5 +1,6 @@
-import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import Toast from '@/components/Toast'
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
@@ -11,12 +12,13 @@ import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useParentData } from '@/stores/parent'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import {
+  Signer,
   decodeSecretKey,
   encodeSecretKey,
   generateAccount,
   isSecretKeyUsingMiniSecret,
   loginWithSecretKey,
-  Signer,
+  validateAddress,
 } from '@/utils/account'
 import { waitNewBlock } from '@/utils/blockchain'
 import { currentNetwork } from '@/utils/network'
@@ -24,10 +26,10 @@ import { wait } from '@/utils/promise'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
 import { toSubsocialAddress } from '@subsocial/utils'
-import { getWallets, Wallet, WalletAccount } from '@talismn/connect-wallets'
+import { Wallet, WalletAccount, getWallets } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import toast from 'react-hot-toast'
-import { useAnalytics, UserProperties } from './analytics'
+import { UserProperties, useAnalytics } from './analytics'
 import { create, createSelectors } from './utils'
 
 type State = {
@@ -68,6 +70,7 @@ type Actions = {
   disconnectProxy: () => void
   _subscribeEnergy: () => void
   _subscribeConnectedWalletEnergy: () => void
+  _readPreferredWalletFromStorage: () => Wallet | undefined
 }
 
 const initialState: State = {
@@ -202,15 +205,17 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       if (!secretKey) {
         secretKey = (await generateAccount()).secretKey
         const { parentOrigin } = useParentData.getState()
-        analytics.sendEvent(
-          'account_created',
-          {},
-          {
-            cameFrom: parentOrigin,
-            cohortDate: dayjs().toDate(),
-            ref: getReferralIdInUrl(),
-          }
-        )
+        sendEventWithRef(address, (refId) => {
+          analytics.sendEvent(
+            'account_created',
+            {},
+            {
+              cameFrom: parentOrigin,
+              cohortDate: dayjs().toDate(),
+              ref: refId,
+            }
+          )
+        })
       } else if (secretKey.startsWith('0x')) {
         const augmented = secretKey.substring(2)
         if (isSecretKeyUsingMiniSecret(augmented)) {
@@ -233,11 +238,56 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       if (asTemporaryAccount) {
         temporaryAccountStorage.set(encodedSecretKey)
       } else saveLoginInfoToStorage()
+
+      if (!isInitialization) {
+        const parentProxyAddress = await getParentProxyAddress(address)
+        if (parentProxyAddress) {
+          parentProxyAddressStorage.set(parentProxyAddress)
+          set({ parentProxyAddress })
+          await validateParentProxyAddress({
+            grillAddress: address,
+            parentProxyAddress,
+            signer,
+            onAnyProxyRemoved: () => {
+              get().logout()
+              toast.custom((t) => (
+                <Toast
+                  t={t}
+                  type='error'
+                  title='Login failed'
+                  subtitle='Sorry we had to remove your proxy, please relogin to use your account again.'
+                />
+              ))
+            },
+            onInvalidProxy: () => {
+              get().logout()
+              toast.custom((t) => (
+                <Toast
+                  t={t}
+                  type='error'
+                  title='Login failed'
+                  subtitle='You seem to have logged in to your wallet in another device, please relogin using "Connect via Polkadot" to use it here'
+                />
+              ))
+            },
+          })
+        }
+      }
     } catch (e) {
       console.error('Failed to login', e)
+      if (!isInitialization) {
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            type='error'
+            title='Login Failed'
+            description='The Grill key you provided is not valid'
+          />
+        ))
+      }
       return false
     }
-    return address
+    return get().address || false
   },
   loginAsTemporaryAccount: async () => {
     set({ isTemporaryAccount: true })
@@ -278,12 +328,24 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
     set({ ...initialState, isInitialized: true, isInitializedProxy: true })
   },
+  _readPreferredWalletFromStorage: () => {
+    const preferredWallet = preferredWalletStorage.get()
+    let wallet: Wallet | undefined
+    if (preferredWallet) {
+      wallet = getWallets().find((wallet) => wallet.title === preferredWallet)
+      if (wallet) set({ preferredWallet: wallet })
+      else preferredWalletStorage.remove()
+    }
+    return wallet
+  },
   init: async () => {
-    const { isInitialized, login } = get()
+    const { isInitialized, login, _readPreferredWalletFromStorage } = get()
 
     // Prevent multiple initialization
     if (isInitialized !== undefined) return
     set({ isInitialized: false })
+
+    _readPreferredWalletFromStorage()
 
     const encodedSecretKey = accountStorage.get()
     const parentProxyAddress = parentProxyAddressStorage.get()
@@ -308,48 +370,24 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
     set({ isInitialized: true })
 
-    const preferredWallet = preferredWalletStorage.get()
-    if (preferredWallet) {
-      const wallet = getWallets().find(
-        (wallet) => wallet.title === preferredWallet
-      )
-      if (wallet) set({ preferredWallet: wallet })
-      else preferredWalletStorage.remove()
-    }
-
     if (parentProxyAddress) {
       set({ parentProxyAddress })
-      try {
-        // Remove proxy with type 'Any'
-        const proxies = await getProxiesQuery.fetchQuery(queryClient, {
-          address: parentProxyAddress,
-        })
-        const currentProxy = proxies.find(
-          ({ address }) => address === get().address
-        )
-        if (currentProxy?.proxyType === 'Any') {
-          async function removeProxy() {
-            const api = await getSubsocialApi()
-            const substrateApi = await api.substrateApi
-            await substrateApi.tx.proxy
-              .proxy(
-                parentProxyAddress!,
-                null,
-                substrateApi.tx.proxy.removeProxies()
-              )
-              .signAndSend(get().signer!)
-          }
-          removeProxy()
-
-          parentProxyAddressStorage.remove()
-          set({ parentProxyAddress: undefined })
+      await validateParentProxyAddress({
+        grillAddress: get().address!,
+        parentProxyAddress,
+        signer: get().signer!,
+        onAnyProxyRemoved: () => {
           get().logout()
-          alert(
-            'Sorry we had to remove your proxy, please relogin to use your account again.'
-          )
-        } else if (!currentProxy) {
-          parentProxyAddressStorage.remove()
-          set({ parentProxyAddress: undefined })
+          toast.custom((t) => (
+            <Toast
+              t={t}
+              type='error'
+              title='Logged out'
+              subtitle='Sorry we had to remove your proxy, please relogin to use your account again.'
+            />
+          ))
+        },
+        onInvalidProxy: () => {
           get().logout()
           toast.custom((t) => (
             <Toast
@@ -359,15 +397,74 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
               subtitle='You seem to have logged in to your wallet in another device, please relogin to use it here'
             />
           ))
-        }
-      } catch (err) {
-        console.error('Failed to fetch proxies', err)
-      }
+        },
+      })
     }
     set({ isInitializedProxy: true })
   },
 }))
 export const useMyAccount = createSelectors(useMyAccountBase)
+
+async function validateParentProxyAddress({
+  grillAddress,
+  parentProxyAddress,
+  signer,
+  onAnyProxyRemoved,
+  onInvalidProxy,
+}: {
+  parentProxyAddress: string
+  grillAddress: string
+  signer: Signer
+  onInvalidProxy: () => void
+  onAnyProxyRemoved: () => void
+}) {
+  try {
+    // Remove proxy with type 'Any'
+    const proxies = await getProxiesQuery.fetchQuery(queryClient, {
+      address: parentProxyAddress,
+    })
+    const currentProxy = proxies.find(({ address }) => address === grillAddress)
+    if (currentProxy?.proxyType === 'Any') {
+      async function removeProxy() {
+        const api = await getSubsocialApi()
+        const substrateApi = await api.substrateApi
+        await substrateApi.tx.proxy
+          .proxy(
+            parentProxyAddress!,
+            null,
+            substrateApi.tx.proxy.removeProxies()
+          )
+          .signAndSend(signer)
+      }
+      removeProxy()
+
+      onAnyProxyRemoved()
+    } else if (!currentProxy) {
+      onInvalidProxy()
+    }
+  } catch (err) {
+    console.error('Failed to fetch proxies', err)
+  }
+}
+
+async function getParentProxyAddress(grillAddress: string) {
+  try {
+    const linkedIdentity = await getLinkedIdentityQuery.fetchQuery(
+      queryClient,
+      grillAddress
+    )
+    if (linkedIdentity?.provider === IdentityProvider.Polkadot) {
+      const isValid = await validateAddress(linkedIdentity.substrateAccount)
+      if (!isValid) return null
+
+      return linkedIdentity.externalId
+    }
+    return null
+  } catch (err) {
+    console.error('Failed to get linked identity')
+    return null
+  }
+}
 
 async function subscribeEnergy(
   address: string | null,
@@ -454,10 +551,19 @@ export async function enableWallet({
 }) {
   let preferredWallet = useMyAccount.getState().preferredWallet
   if (!preferredWallet) {
-    const firstInstalledWallet = getWallets().find((wallet) => wallet.installed)
-    if (!firstInstalledWallet)
-      return onError(new Error('No supported wallet found'))
-    preferredWallet = firstInstalledWallet
+    const fromStorage = useMyAccount
+      .getState()
+      ._readPreferredWalletFromStorage()
+    if (fromStorage) {
+      preferredWallet = fromStorage
+    } else {
+      const firstInstalledWallet = getWallets().find(
+        (wallet) => wallet.installed
+      )
+      if (!firstInstalledWallet)
+        return onError(new Error('No supported wallet found'))
+      preferredWallet = firstInstalledWallet
+    }
   }
 
   try {

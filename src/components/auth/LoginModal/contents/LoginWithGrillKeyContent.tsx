@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import Notice from '@/components/Notice'
-import Toast from '@/components/Toast'
 import TextArea from '@/components/inputs/TextArea'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import { getProfileQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
@@ -9,7 +9,6 @@ import { useMyAccount } from '@/stores/my-account'
 import { isSecretKeyUsingMiniSecret } from '@/utils/account'
 import { useQueryClient } from '@tanstack/react-query'
 import { SyntheticEvent, useRef, useState } from 'react'
-import { toast } from 'react-hot-toast'
 import { LoginModalContentProps } from '../LoginModalContent'
 import { finishLogin } from '../utils'
 
@@ -33,27 +32,34 @@ export const LoginWithGrillKeyContent = ({
 
     const trimmedPk = privateKey.trim()
     const address = await login(trimmedPk)
-    if (address) {
-      const profile = await getProfileQuery.fetchQuery(queryClient, address)
+    const mainAddress = useMyAccount.getState().parentProxyAddress || address
+    if (mainAddress) {
+      const profile = await getProfileQuery.fetchQuery(queryClient, mainAddress)
       afterLogin?.()
-      sendEvent('login', { eventSource: 'login_modal', loginBy: 'grill-key' })
       setPrivateKey('')
 
       if (!profile?.profileSpace?.id) {
         useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
         closeModal()
+
+        sendEventWithRef(mainAddress, (refId) => {
+          sendEvent(
+            'login',
+            { eventSource: 'login_modal', loginBy: 'grill-key' },
+            { ref: refId }
+          )
+        })
       } else {
+        await sendEventWithRef(mainAddress, (refId) => {
+          sendEvent(
+            'login',
+            { eventSource: 'login_modal', loginBy: 'grill-key' },
+            { ref: refId }
+          )
+        })
+
         finishLogin(closeModal)
       }
-    } else {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          type='error'
-          title='Login Failed'
-          description='The Grill key you provided is not valid'
-        />
-      ))
     }
     setIsLoading(false)
   }

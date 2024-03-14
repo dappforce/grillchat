@@ -7,6 +7,7 @@ import Logo from '@/components/Logo'
 import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useLoginOption from '@/hooks/useLoginOption'
@@ -197,7 +198,7 @@ function PolkadotConnectConfirmation({
   const connectedWalletAddress = useMyAccount(
     (state) => state.connectedWallet?.address
   )
-  const { data: profile, isFetched } = getProfileQuery.useQuery(
+  const { data: profile, isSuccess } = getProfileQuery.useQuery(
     connectedWalletAddress ?? ''
   )
   const { mutate: setReferrerId } = useSetReferrerId()
@@ -214,7 +215,7 @@ function PolkadotConnectConfirmation({
       setCurrentState={setCurrentState}
       onSuccess={() => {
         finalizeTemporaryAccount()
-        if (!profile?.profileSpace?.id && isFetched) {
+        if (!profile?.profileSpace?.id && isSuccess) {
           useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
         } else {
           finishLogin(closeModal)
@@ -222,7 +223,7 @@ function PolkadotConnectConfirmation({
       }}
       beforeAddProxy={async () => {
         await loginAndRequestToken(null)
-        setReferrerId({ refId: getReferralIdInUrl() })
+        setReferrerId({ refId: getReferralIdInUrl(), walletType: 'injected' })
         return true
       }}
     />
@@ -252,13 +253,14 @@ export function EvmLoginStep({
       onError={() => {
         setCurrentState('evm-linking-error')
       }}
-      onSuccess={() => {
+      onSuccess={async () => {
         useMyAccount.getState().finalizeTemporaryAccount()
-        sendEvent(
-          'account_created',
-          { loginBy: 'evm' },
-          { ref: getReferralIdInUrl() }
-        )
+
+        const address = useMyAccount.getState().address
+        sendEventWithRef(address ?? '', (refId) => {
+          sendEvent('account_created', { loginBy: 'evm' }, { ref: refId })
+        })
+
         closeModal()
         useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
       }}
