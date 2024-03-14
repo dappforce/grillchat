@@ -162,17 +162,13 @@ export default function AccountContent({
           },
         ]
       : []),
-    ...(!hasProxyAddress
-      ? [
-          {
-            text: 'Show Grill key',
-            icon: KeyIcon,
-            onClick: () => {
-              onShowPrivateKeyClick()
-            },
-          },
-        ]
-      : []),
+    {
+      text: 'Show Grill key',
+      icon: KeyIcon,
+      onClick: () => {
+        onShowPrivateKeyClick()
+      },
+    },
     {
       text: 'Suggest Feature',
       icon: SuggestFeatureIcon,
