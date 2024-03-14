@@ -3,10 +3,12 @@ import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { IdentityProvider } from '@/services/datahub/generated-query'
+import { linkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getReferrerIdQuery } from '@/services/datahub/referral/query'
 import { queryClient } from '@/services/provider'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
 import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useParentData } from '@/stores/parent'
@@ -348,7 +350,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     _readPreferredWalletFromStorage()
 
     const encodedSecretKey = accountStorage.get()
-    const parentProxyAddress = parentProxyAddressStorage.get()
+    const parentProxyAddressFromStorage = parentProxyAddressStorage.get()
 
     if (encodedSecretKey) {
       const storageAddress = accountAddressStorage.get()
@@ -363,12 +365,17 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
         set({ address: null })
       }
 
-      sendLaunchEvent(address, parentProxyAddress)
+      sendLaunchEvent(address, parentProxyAddressFromStorage)
     } else {
       sendLaunchEvent()
     }
 
     set({ isInitialized: true })
+
+    const address = get().address
+    const parentProxyAddress =
+      parentProxyAddressFromStorage ||
+      (address ? await getParentProxyAddress(address) : undefined)
 
     if (parentProxyAddress) {
       set({ parentProxyAddress })
@@ -401,9 +408,42 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       })
     }
     set({ isInitializedProxy: true })
+
+    // if we use parentProxy from storage, then need to check whether the account is linked in datahub or not, and link if not yet
+    // this is a background process, so it needs to be done after all other init is done
+    const finalAddress = get().address
+    const finalParentProxyAddress = get().parentProxyAddress
+    if (finalAddress && finalParentProxyAddress) {
+      linkPolkadotIfNotLinked(finalAddress, finalParentProxyAddress)
+    }
   },
 }))
 export const useMyAccount = createSelectors(useMyAccountBase)
+
+async function linkPolkadotIfNotLinked(
+  address: string,
+  parentProxyAddress: string
+) {
+  const linkedAddress = await getParentProxyAddress(address)
+  if (
+    toSubsocialAddress(linkedAddress ?? '')! ===
+    toSubsocialAddress(parentProxyAddress)!
+  )
+    return
+
+  try {
+    await linkIdentity({
+      ...getCurrentWallet(),
+      args: {
+        id: parentProxyAddress,
+        // @ts-expect-error because using IdentityProvider from generated types, but its same with the datahub sdk
+        provider: IdentityProvider.Polkadot,
+      },
+    })
+  } catch (err) {
+    console.error('Failed to link polkadot identity', err)
+  }
+}
 
 async function validateParentProxyAddress({
   grillAddress,

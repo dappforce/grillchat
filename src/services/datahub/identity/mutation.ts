@@ -10,7 +10,7 @@ import {
 } from '@subsocial/data-hub-sdk'
 import { DatahubParams, createSocialDataEventPayload } from '../utils'
 
-async function linkIdentity(
+export async function linkIdentity(
   params: DatahubParams<SocialCallDataArgs<'synth_create_linked_identity'>>
 ) {
   const { id, provider } = params.args
