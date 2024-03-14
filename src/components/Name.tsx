@@ -1,7 +1,6 @@
 import useAddressIdentityId from '@/hooks/useAddressIdentityId'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
-import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
@@ -15,6 +14,7 @@ import {
   profileSourceData,
 } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
+import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { ComponentProps, ComponentPropsWithoutRef, forwardRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import LinkText from './LinkText'
@@ -69,10 +69,10 @@ export default function Name({
     profileSource
   let usedTooltipLinkId = name
   if (profileSource === 'subsocial-profile') {
-    if (linkedIdentity?.provider === IdentityProvider.Twitter) {
+    if (linkedIdentity?.provider === IdentityProvider.TWITTER) {
       usedProfileSource = 'x'
       usedTooltipLinkId = linkedIdentity.externalId
-    } else if (linkedIdentity?.provider === IdentityProvider.Google) {
+    } else if (linkedIdentity?.provider === IdentityProvider.GOOGLE) {
       usedProfileSource = 'google'
       usedTooltipLinkId = linkedIdentity.externalId
     }
