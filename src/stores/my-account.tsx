@@ -567,11 +567,8 @@ export async function enableWallet({
   }
 
   try {
-    console.log('ENABLING WALLET...')
     await preferredWallet.enable('grillapp')
-    console.log('ENABLED, SUBSCRIBING...')
     const unsub = preferredWallet.subscribeAccounts((accounts) => {
-      console.log('GOT...', accounts)
       listener(accounts ?? [])
     })
     return () => {
