@@ -440,6 +440,7 @@ async function linkPolkadotIfNotLinked(
         provider: IdentityProvider.Polkadot,
       },
     })
+    getLinkedIdentityQuery.invalidate(queryClient, address)
   } catch (err) {
     console.error('Failed to link polkadot identity', err)
   }
