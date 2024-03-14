@@ -69,6 +69,7 @@ type Actions = {
   disconnectProxy: () => void
   _subscribeEnergy: () => void
   _subscribeConnectedWalletEnergy: () => void
+  _readPreferredWalletFromStorage: () => Wallet | undefined
 }
 
 const initialState: State = {
@@ -281,12 +282,24 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
     set({ ...initialState, isInitialized: true, isInitializedProxy: true })
   },
+  _readPreferredWalletFromStorage: () => {
+    const preferredWallet = preferredWalletStorage.get()
+    let wallet: Wallet | undefined
+    if (preferredWallet) {
+      wallet = getWallets().find((wallet) => wallet.title === preferredWallet)
+      if (wallet) set({ preferredWallet: wallet })
+      else preferredWalletStorage.remove()
+    }
+    return wallet
+  },
   init: async () => {
-    const { isInitialized, login } = get()
+    const { isInitialized, login, _readPreferredWalletFromStorage } = get()
 
     // Prevent multiple initialization
     if (isInitialized !== undefined) return
     set({ isInitialized: false })
+
+    _readPreferredWalletFromStorage()
 
     const encodedSecretKey = accountStorage.get()
     const parentProxyAddress = parentProxyAddressStorage.get()
@@ -310,15 +323,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     }
 
     set({ isInitialized: true })
-
-    const preferredWallet = preferredWalletStorage.get()
-    if (preferredWallet) {
-      const wallet = getWallets().find(
-        (wallet) => wallet.title === preferredWallet
-      )
-      if (wallet) set({ preferredWallet: wallet })
-      else preferredWalletStorage.remove()
-    }
 
     if (parentProxyAddress) {
       set({ parentProxyAddress })
@@ -457,10 +461,19 @@ export async function enableWallet({
 }) {
   let preferredWallet = useMyAccount.getState().preferredWallet
   if (!preferredWallet) {
-    const firstInstalledWallet = getWallets().find((wallet) => wallet.installed)
-    if (!firstInstalledWallet)
-      return onError(new Error('No supported wallet found'))
-    preferredWallet = firstInstalledWallet
+    const fromStorage = useMyAccount
+      .getState()
+      ._readPreferredWalletFromStorage()
+    if (fromStorage) {
+      preferredWallet = fromStorage
+    } else {
+      const firstInstalledWallet = getWallets().find(
+        (wallet) => wallet.installed
+      )
+      if (!firstInstalledWallet)
+        return onError(new Error('No supported wallet found'))
+      preferredWallet = firstInstalledWallet
+    }
   }
 
   try {
