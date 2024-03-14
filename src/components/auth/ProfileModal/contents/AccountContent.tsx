@@ -16,7 +16,6 @@ import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import {
@@ -29,6 +28,7 @@ import { useTheme } from 'next-themes'
 import { FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
+import { useCanUseGrillKey } from '../hooks'
 import { ProfileModalContentProps } from '../types'
 
 export default function AccountContent({
@@ -38,7 +38,7 @@ export default function AccountContent({
   // const { showNotification, closeNotification } =
   //   useFirstVisitNotification('notification-menu')
 
-  const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
+  const canUseGrillKey = useCanUseGrillKey()
 
   const isInIframe = useIsInIframe()
 
@@ -162,7 +162,7 @@ export default function AccountContent({
           },
         ]
       : []),
-    ...(!hasProxyAddress
+    ...(canUseGrillKey
       ? [
           {
             text: 'Show Grill key',
