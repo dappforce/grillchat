@@ -100,8 +100,6 @@ export function replaceUrl(url: string) {
     finalUrl += '?' + finalQuery
   }
 
-  console.log(finalUrl)
-
   window.history.replaceState(
     { ...window.history.state, url: finalUrl, as: finalUrl },
     '',

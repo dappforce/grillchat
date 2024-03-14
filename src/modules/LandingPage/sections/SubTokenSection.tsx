@@ -50,9 +50,6 @@ export default function SubTokenSection(props: ComponentProps<'section'>) {
         {mdUp ? (
           // @ts-expect-error - this widget (web component) is not in jsx.element
           <coingecko-coin-market-ticker-list-widget
-            onLoad={() => {
-              console.log('first')
-            }}
             ref={elementRef}
             coin-id='subsocial'
             currency='usd'

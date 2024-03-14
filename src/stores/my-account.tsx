@@ -241,9 +241,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       } else saveLoginInfoToStorage()
 
       if (!isInitialization) {
-        console.log('getting')
         const parentProxyAddress = await getParentProxyAddress(address)
-        console.log('gettingsdf', parentProxyAddress)
         if (parentProxyAddress) {
           parentProxyAddressStorage.set(parentProxyAddress)
           set({ parentProxyAddress })
