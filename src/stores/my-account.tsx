@@ -18,7 +18,6 @@ import {
   generateAccount,
   isSecretKeyUsingMiniSecret,
   loginWithSecretKey,
-  validateAddress,
 } from '@/utils/account'
 import { waitNewBlock } from '@/utils/blockchain'
 import { currentNetwork } from '@/utils/network'
@@ -238,56 +237,11 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       if (asTemporaryAccount) {
         temporaryAccountStorage.set(encodedSecretKey)
       } else saveLoginInfoToStorage()
-
-      if (!isInitialization) {
-        const parentProxyAddress = await getParentProxyAddress(address)
-        if (parentProxyAddress) {
-          parentProxyAddressStorage.set(parentProxyAddress)
-          set({ parentProxyAddress })
-          await validateParentProxyAddress({
-            grillAddress: address,
-            parentProxyAddress,
-            signer,
-            onAnyProxyRemoved: () => {
-              get().logout()
-              toast.custom((t) => (
-                <Toast
-                  t={t}
-                  type='error'
-                  title='Login failed'
-                  subtitle='Sorry we had to remove your proxy, please relogin to use your account again.'
-                />
-              ))
-            },
-            onInvalidProxy: () => {
-              get().logout()
-              toast.custom((t) => (
-                <Toast
-                  t={t}
-                  type='error'
-                  title='Login failed'
-                  subtitle='You seem to have logged in to your wallet in another device, please relogin using "Connect via Polkadot" to use it here'
-                />
-              ))
-            },
-          })
-        }
-      }
     } catch (e) {
       console.error('Failed to login', e)
-      if (!isInitialization) {
-        toast.custom((t) => (
-          <Toast
-            t={t}
-            type='error'
-            title='Login Failed'
-            description='The Grill key you provided is not valid'
-          />
-        ))
-      }
       return false
     }
-    return get().address || false
+    return address
   },
   loginAsTemporaryAccount: async () => {
     set({ isTemporaryAccount: true })
@@ -372,22 +326,37 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
     if (parentProxyAddress) {
       set({ parentProxyAddress })
-      await validateParentProxyAddress({
-        grillAddress: get().address!,
-        parentProxyAddress,
-        signer: get().signer!,
-        onAnyProxyRemoved: () => {
+      try {
+        // Remove proxy with type 'Any'
+        const proxies = await getProxiesQuery.fetchQuery(queryClient, {
+          address: parentProxyAddress,
+        })
+        const currentProxy = proxies.find(
+          ({ address }) => address === get().address
+        )
+        if (currentProxy?.proxyType === 'Any') {
+          async function removeProxy() {
+            const api = await getSubsocialApi()
+            const substrateApi = await api.substrateApi
+            await substrateApi.tx.proxy
+              .proxy(
+                parentProxyAddress!,
+                null,
+                substrateApi.tx.proxy.removeProxies()
+              )
+              .signAndSend(get().signer!)
+          }
+          removeProxy()
+
+          parentProxyAddressStorage.remove()
+          set({ parentProxyAddress: undefined })
           get().logout()
-          toast.custom((t) => (
-            <Toast
-              t={t}
-              type='error'
-              title='Logged out'
-              subtitle='Sorry we had to remove your proxy, please relogin to use your account again.'
-            />
-          ))
-        },
-        onInvalidProxy: () => {
+          alert(
+            'Sorry we had to remove your proxy, please relogin to use your account again.'
+          )
+        } else if (!currentProxy) {
+          parentProxyAddressStorage.remove()
+          set({ parentProxyAddress: undefined })
           get().logout()
           toast.custom((t) => (
             <Toast
@@ -397,74 +366,15 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
               subtitle='You seem to have logged in to your wallet in another device, please relogin to use it here'
             />
           ))
-        },
-      })
+        }
+      } catch (err) {
+        console.error('Failed to fetch proxies', err)
+      }
     }
     set({ isInitializedProxy: true })
   },
 }))
 export const useMyAccount = createSelectors(useMyAccountBase)
-
-async function validateParentProxyAddress({
-  grillAddress,
-  parentProxyAddress,
-  signer,
-  onAnyProxyRemoved,
-  onInvalidProxy,
-}: {
-  parentProxyAddress: string
-  grillAddress: string
-  signer: Signer
-  onInvalidProxy: () => void
-  onAnyProxyRemoved: () => void
-}) {
-  try {
-    // Remove proxy with type 'Any'
-    const proxies = await getProxiesQuery.fetchQuery(queryClient, {
-      address: parentProxyAddress,
-    })
-    const currentProxy = proxies.find(({ address }) => address === grillAddress)
-    if (currentProxy?.proxyType === 'Any') {
-      async function removeProxy() {
-        const api = await getSubsocialApi()
-        const substrateApi = await api.substrateApi
-        await substrateApi.tx.proxy
-          .proxy(
-            parentProxyAddress!,
-            null,
-            substrateApi.tx.proxy.removeProxies()
-          )
-          .signAndSend(signer)
-      }
-      removeProxy()
-
-      onAnyProxyRemoved()
-    } else if (!currentProxy) {
-      onInvalidProxy()
-    }
-  } catch (err) {
-    console.error('Failed to fetch proxies', err)
-  }
-}
-
-async function getParentProxyAddress(grillAddress: string) {
-  try {
-    const linkedIdentity = await getLinkedIdentityQuery.fetchQuery(
-      queryClient,
-      grillAddress
-    )
-    if (linkedIdentity?.provider === IdentityProvider.Polkadot) {
-      const isValid = await validateAddress(linkedIdentity.substrateAccount)
-      if (!isValid) return null
-
-      return linkedIdentity.externalId
-    }
-    return null
-  } catch (err) {
-    console.error('Failed to get linked identity')
-    return null
-  }
-}
 
 async function subscribeEnergy(
   address: string | null,

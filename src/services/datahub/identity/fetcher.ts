@@ -4,14 +4,13 @@ import {
   GetLinkedIdentitiesFromTwitterIdQueryVariables,
   GetLinkedIdentitiesQuery,
   GetLinkedIdentitiesQueryVariables,
-  IdentityProvider,
 } from '../generated-query'
 import { datahubQueryRequest } from '../utils'
 
 export type Identity = {
   id: string
   externalId: string
-  provider: IdentityProvider
+  provider: string
   substrateAccount: string
 }
 
