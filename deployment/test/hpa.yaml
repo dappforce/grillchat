@@ -6,7 +6,7 @@ metadata:
   name: grillchat
   namespace: sub-back
 spec:
-  maxReplicas: 3
+  maxReplicas: 2
   minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
