@@ -1,5 +1,7 @@
 import Button from '@/components/Button'
 import { useLinkFcm } from '@/services/api/notifications/mutation'
+import { IdentityProvider } from '@/services/datahub/generated-query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
@@ -8,7 +10,15 @@ import { fcmPushNotificationStorage } from './notifications/PushNotificationCont
 
 function LogoutContent({ setCurrentState }: ProfileModalContentProps) {
   const closeModal = useProfileModal((state) => state.closeModal)
-  const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
+
+  const parentProxyAddress = useMyAccount.use.parentProxyAddress()
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+    parentProxyAddress ?? ''
+  )
+  const isNotUsingPolkadotOrAlreadyLinkedPolkadot =
+    !parentProxyAddress ||
+    linkedIdentity?.provider === IdentityProvider.Polkadot
+
   const address = useMyAccount((state) => state.address)
   const logout = useMyAccount((state) => state.logout)
   const sendEvent = useSendEvent()
@@ -32,9 +42,15 @@ function LogoutContent({ setCurrentState }: ProfileModalContentProps) {
 
   return (
     <div className='mt-4 flex flex-col gap-4'>
-      <Button size='lg' onClick={onShowPrivateKeyClick}>
-        No, show me my Grill key
-      </Button>
+      {isNotUsingPolkadotOrAlreadyLinkedPolkadot ? (
+        <Button size='lg' onClick={onShowPrivateKeyClick}>
+          No, show me my Grill key
+        </Button>
+      ) : (
+        <Button size='lg' onClick={() => setCurrentState('account')}>
+          No, keep me logged in
+        </Button>
+      )}
       <Button
         isLoading={isLoading}
         size='lg'
