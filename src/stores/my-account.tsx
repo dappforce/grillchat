@@ -8,7 +8,6 @@ import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getReferrerIdQuery } from '@/services/datahub/referral/query'
 import { queryClient } from '@/services/provider'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
 import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useParentData } from '@/stores/parent'
@@ -242,7 +241,9 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       } else saveLoginInfoToStorage()
 
       if (!isInitialization) {
+        console.log('getting')
         const parentProxyAddress = await getParentProxyAddress(address)
+        console.log('gettingsdf', parentProxyAddress)
         if (parentProxyAddress) {
           parentProxyAddressStorage.set(parentProxyAddress)
           set({ parentProxyAddress })
@@ -433,7 +434,7 @@ async function linkPolkadotIfNotLinked(
 
   try {
     await linkIdentity({
-      ...getCurrentWallet(),
+      address,
       args: {
         id: parentProxyAddress,
         // @ts-expect-error because using IdentityProvider from generated types, but its same with the datahub sdk
