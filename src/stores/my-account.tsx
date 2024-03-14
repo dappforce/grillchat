@@ -578,6 +578,7 @@ export async function enableWallet({
       if (typeof unsub === 'function') unsub()
     }
   } catch (err) {
+    console.error('Error enabling wallet', err)
     onError(err)
   }
 }
