@@ -288,6 +288,15 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     if (isInitialized !== undefined) return
     set({ isInitialized: false })
 
+    const preferredWallet = preferredWalletStorage.get()
+    if (preferredWallet) {
+      const wallet = getWallets().find(
+        (wallet) => wallet.title === preferredWallet
+      )
+      if (wallet) set({ preferredWallet: wallet })
+      else preferredWalletStorage.remove()
+    }
+
     const encodedSecretKey = accountStorage.get()
     const parentProxyAddress = parentProxyAddressStorage.get()
 
@@ -310,15 +319,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     }
 
     set({ isInitialized: true })
-
-    const preferredWallet = preferredWalletStorage.get()
-    if (preferredWallet) {
-      const wallet = getWallets().find(
-        (wallet) => wallet.title === preferredWallet
-      )
-      if (wallet) set({ preferredWallet: wallet })
-      else preferredWalletStorage.remove()
-    }
 
     if (parentProxyAddress) {
       set({ parentProxyAddress })
