@@ -54,6 +54,12 @@ runs:
         shell: bash
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ inputs.k8s_input }}
 
+      - name: Remove HPA
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          [[ "${{ inputs.app_input }}" == "main" ]] && kubectl delete hpa -n sub-back mainnet-grillchat --ignore-not-found=true || kubectl delete hpa -n sub-back grillchat --ignore-not-found=true
+
       - name: Add feature name
         if: startsWith(github.ref, 'refs/heads/deploy/')
         shell: bash
@@ -66,4 +72,12 @@ runs:
         shell: bash
         run: |
           sed -i 's|<IMAGE>|'${{ env.image }}'|' $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/deployment.yaml
-          kubectl apply -f $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/
+          kubectl apply -f $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/all.yaml
+          kubectl apply -f $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/deployment.yaml
+
+      - name: Add HPA
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          [[ "${{ inputs.app_input }}" == "main" ]] && kubectl rollout status -n sub-back deployment/mainnet-grillchat || kubectl rollout status -n sub-back deployment/grillchat
+          kubectl apply -f $GITHUB_WORKSPACE/deployment/${{ inputs.app_input }}/hpa.yaml
