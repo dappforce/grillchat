@@ -31,27 +31,34 @@ export async function processMessageTpl(encodedMessage: string) {
     connectedWallet,
   } = useMyAccount.getState()
   let signedPayload
+  console.log('PARENT PROXY ADDRESS', parentProxyAddress)
   if (!parentProxyAddress) {
     signedPayload = await signMessage(parsedMessage.payloadToSign)
   } else {
     let currentAccountSigner: InjectedSigner | undefined
 
+    console.log('CHECKING CONNECTION', parentProxyAddress, connectedWallet)
     if (connectedWallet?.address !== parentProxyAddress) {
+      console.log('enabling wallet', parentProxyAddress)
       const accounts = await enableWalletOnce()
+      console.log('done enabling', parentProxyAddress)
       const foundAcc = accounts.find(
         ({ address }) => toSubsocialAddress(address)! === parentProxyAddress
       )
+      console.log('found acc', foundAcc)
       if (!foundAcc)
         throw new Error(
           `Cannot find your account in your ${preferredWallet} wallet. If you use another wallet, please unlink and link your wallet again`
         )
 
+      console.log('connecting', foundAcc.signer)
       connectWallet(foundAcc.address, foundAcc.signer as Signer)
       currentAccountSigner = foundAcc.signer as InjectedSigner
     } else {
       currentAccountSigner = connectedWallet.signer as InjectedSigner
     }
 
+    console.log('signing', currentAccountSigner.signRaw)
     const payload: { signature: string } | undefined =
       await currentAccountSigner.signRaw?.({
         address: parentProxyAddress,
@@ -59,6 +66,7 @@ export async function processMessageTpl(encodedMessage: string) {
         type: 'bytes',
       })
 
+    console.log('finish signing', payload, currentAccountSigner.signRaw)
     if (!payload) throw new Error('Failed to sign message')
     signedPayload = payload.signature
   }
