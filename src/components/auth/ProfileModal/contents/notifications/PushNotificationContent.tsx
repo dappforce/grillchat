@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import Toast from '@/components/Toast'
+import useToastError from '@/hooks/useToastError'
 import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { getMessageToken } from '@/services/firebase/messaging'
 import { useSendEvent } from '@/stores/analytics'
@@ -199,7 +200,11 @@ function EnableNotificationButton({
   const [fcmToken, setFcmToken] = useState<string | undefined>()
   const sendEvent = useSendEvent()
 
-  const { mutate: linkFcm, isLoading: isLinking } = useLinkFcm({
+  const {
+    mutate: linkFcm,
+    isLoading: isLinking,
+    error,
+  } = useLinkFcm({
     onSuccess: () => {
       // FCM Token Enabled.
       if (fcmToken && myAddress) {
@@ -209,6 +214,7 @@ function EnableNotificationButton({
       }
     },
   })
+  useToastError(error, 'Failed to enable push notification')
 
   const isLoading = isLinking || isGettingToken
 

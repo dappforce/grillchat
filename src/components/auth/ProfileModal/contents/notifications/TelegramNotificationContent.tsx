@@ -5,6 +5,7 @@ import DataCard from '@/components/DataCard'
 import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
+import useToastError from '@/hooks/useToastError'
 import { useLinkTelegramAccount } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -158,6 +159,7 @@ function ConnectTelegramButton({
     data: url,
     mutate: getLinkingMessage,
     isLoading,
+    error,
   } = useLinkTelegramAccount({
     onSuccess: async (url) => {
       if (!url) throw new Error('Error generating url')
@@ -167,6 +169,7 @@ function ConnectTelegramButton({
       }
     },
   })
+  useToastError(error, 'Failed to enable telegram notifications')
 
   const handleClickLinking = async () => {
     if (!address) return
