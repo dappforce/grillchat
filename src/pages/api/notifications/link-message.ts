@@ -33,8 +33,8 @@ export default handlerWrapper({
         : createUnlinkingMessageForTelegram
 
     const message = await createMessageForTelegram({
-      substrateAddress: data.address,
-      proxySubstrateAddress: data.parentProxyAddress,
+      substrateAddress: data.parentProxyAddress || data.address,
+      proxySubstrateAddress: data.parentProxyAddress ? data.address : undefined,
     })
 
     return res.status(200).send({
