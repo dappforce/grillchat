@@ -39,10 +39,10 @@ spec:
                 name: mainnet-grillchat-secret
           resources:
             requests:
-              memory: '1500Mi'
+              memory: '1300Mi'
               cpu: '100m'
             limits:
-              memory: '2000Mi'
+              memory: '1600Mi'
               cpu: '1'
           readinessProbe:
             httpGet:
