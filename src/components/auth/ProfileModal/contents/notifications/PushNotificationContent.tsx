@@ -231,7 +231,14 @@ function EnableNotificationButton({
   }
 
   return (
-    <Button size='lg' onClick={handleClickEnable} isLoading={isLoading}>
+    <Button
+      size='lg'
+      onClick={handleClickEnable}
+      isLoading={isLoading}
+      loadingText={
+        isGettingToken ? 'Pending Notification Approval...' : undefined
+      }
+    >
       Enable Notifications
     </Button>
   )
