@@ -6,17 +6,19 @@ import SunIcon from '@/assets/icons/sun.svg'
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
+import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useGetTheme from '@/hooks/useGetTheme'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
+import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import {
@@ -30,6 +32,7 @@ import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
+import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
 
 export default function AccountContent({
   address,
@@ -37,8 +40,6 @@ export default function AccountContent({
 }: ProfileModalContentProps) {
   // const { showNotification, closeNotification } =
   //   useFirstVisitNotification('notification-menu')
-
-  const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
 
   const isInIframe = useIsInIframe()
 
@@ -72,11 +73,11 @@ export default function AccountContent({
   //   maxCount: maxLinkedCount,
   //   isLoading: isLoadingLinkedAcccountCount,
   // } = useLinkedAccountCount()
-  // const {
-  //   count: activatedNotificationCount,
-  //   maxCount: maxNotificationCount,
-  //   isLoading: isLoadingActivatedNotificationCount,
-  // } = useActivatedNotificationCount()
+  const {
+    count: activatedNotificationCount,
+    maxCount: maxNotificationCount,
+    isLoading: isLoadingActivatedNotificationCount,
+  } = useActivatedNotificationCount()
 
   // const onLinkedAddressesClick = () => {
   //   sendEvent('open_linked_addresses', commonEventProps)
@@ -105,11 +106,11 @@ export default function AccountContent({
       text: (
         <span className='flex items-center gap-2'>
           <span>Notifications Settings</span>
-          {/* {!isLoadingActivatedNotificationCount && (
+          {!isLoadingActivatedNotificationCount && (
             <Notice size='sm' noticeType='grey'>
               {activatedNotificationCount} / {maxNotificationCount}
             </Notice>
-          )} */}
+          )}
         </span>
       ),
       icon: FaRegBell,
@@ -295,18 +296,18 @@ function useColorModeOptions(): MenuListProps['menus'] {
 //   return { count, maxCount: 2, isLoading }
 // }
 
-// function useActivatedNotificationCount() {
-//   const myAddress = useMyMainAddress()
-//   const { data: linkedAccounts, isLoading } =
-//     getLinkedTelegramAccountsQuery.useQuery({
-//       address: myAddress ?? '',
-//     })
-//   const isTelegramLinked = !!linkedAccounts?.length
-//   const isPushNotificationEnabled = useIsPushNotificationEnabled()
+function useActivatedNotificationCount() {
+  const myAddress = useMyMainAddress()
+  const { data: linkedAccounts, isLoading } =
+    getLinkedTelegramAccountsQuery.useQuery({
+      address: myAddress ?? '',
+    })
+  const isTelegramLinked = !!linkedAccounts?.length
+  const isPushNotificationEnabled = useIsPushNotificationEnabled()
 
-//   let count = 0
-//   if (isTelegramLinked) count++
-//   if (isPushNotificationEnabled) count++
+  let count = 0
+  if (isTelegramLinked) count++
+  if (isPushNotificationEnabled) count++
 
-//   return { count, maxCount: 2, isLoading }
-// }
+  return { count, maxCount: 2, isLoading }
+}
