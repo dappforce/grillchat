@@ -13,7 +13,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { getIsInIos } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ProfileModalContentProps } from '../../types'
 
 export default function TelegramNotificationContent(
@@ -30,7 +30,8 @@ export default function TelegramNotificationContent(
   } = getLinkedTelegramAccountsQuery.useQuery({
     address,
   })
-  const isLoadingAccount = isLoading || isFetching
+  // Only want to display loading state if its loading, or user clicks I have connected bot (isAfterConnect is true) and isFetching
+  const isLoadingAccount = isLoading || (isFetching && isAfterConnect)
   const { IntegratedSkeleton } = useIntegratedSkeleton(isLoadingAccount)
   const hasLinkedAccount = !isLoadingAccount ? linkedAccounts?.[0] : null
 
@@ -150,10 +151,6 @@ function ConnectTelegramButton({
   afterConnect,
 }: ProfileModalContentProps & { afterConnect?: () => void }) {
   const queryClient = useQueryClient()
-  const { isFetching: isFetchingAccount } =
-    getLinkedTelegramAccountsQuery.useQuery({
-      address,
-    })
   const sendEvent = useSendEvent()
 
   const {
@@ -172,6 +169,19 @@ function ConnectTelegramButton({
   })
   useToastError(error, 'Failed to enable telegram notifications')
 
+  const { data: linkedAccount } = getLinkedTelegramAccountsQuery.useQuery(
+    {
+      address,
+    },
+    { refetchInterval: url ? 2000 : false }
+  )
+  useEffect(() => {
+    if (linkedAccount?.length) {
+      afterConnect?.()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkedAccount])
+
   const handleClickLinking = async () => {
     if (!address) return
     sendEvent('start_connecting_tg_notifs')
@@ -179,6 +189,7 @@ function ConnectTelegramButton({
   }
 
   const handleClickReload = () => {
+    console.log('masuk clifck reload')
     getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
     afterConnect?.()
   }
@@ -193,12 +204,7 @@ function ConnectTelegramButton({
           {url}
         </LinkText>
       </Card>
-      <Button
-        size='lg'
-        variant='primaryOutline'
-        onClick={handleClickReload}
-        isLoading={isFetchingAccount}
-      >
+      <Button size='lg' variant='primaryOutline' onClick={handleClickReload}>
         I have connected the bot
       </Button>
     </div>
