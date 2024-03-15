@@ -3,6 +3,7 @@ import { appStorage } from '../src/constants/localforage'
 
 // grill chat, polkadot chat
 const includedChatIdsInUnreadCount = ['54469', '54461']
+const grillSpaces = (process.env.NEXT_PUBLIC_SPACE_IDS ?? '').split(',')
 
 // Handling Notification Click event.
 // Keep this method above the importScripts to avoid overriding.
@@ -19,7 +20,11 @@ self.addEventListener('notificationclick', (event) => {
       const data = notification['FCM_MSG']['data']
       const { postId, rootPostId } = data
       spaceId = data.spaceId
-      urlToOpen += `/c/${spaceId}/${rootPostId}/${postId}`
+      if (grillSpaces.includes(spaceId)) {
+        urlToOpen += `/c/${spaceId}/${rootPostId}/${postId}`
+      } else {
+        urlToOpen += `/comments/${postId}`
+      }
     }
   } catch (e) {
     console.warn('Error in loading notification response:', e)
