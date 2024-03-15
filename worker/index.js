@@ -19,7 +19,7 @@ self.addEventListener('notificationclick', (event) => {
       const data = notification['FCM_MSG']['data']
       const { postId, rootPostId } = data
       spaceId = data.spaceId
-      urlToOpen += `/${spaceId}/${rootPostId}/${postId}`
+      urlToOpen += `/c/${spaceId}/${rootPostId}/${postId}`
     }
   } catch (e) {
     console.warn('Error in loading notification response:', e)
