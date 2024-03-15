@@ -15,16 +15,30 @@ import {
   ApiNotificationsLinkMessageResponse,
 } from '@/pages/api/notifications/link-message'
 import { queryClient } from '@/services/provider'
+import { useMyAccount } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { AxiosResponse } from 'axios'
 import { apiInstance, processMessageTpl } from '../utils'
 import { getLinkedTelegramAccountsQuery } from './query'
 
-async function linkTelegramAccount(data: ApiNotificationsLinkMessageBody) {
+async function linkTelegramAccount(
+  data: Omit<ApiNotificationsLinkMessageBody, 'address' | 'parentProxyAddress'>
+) {
   if (!data) return null
 
-  const res = await apiInstance.post('/api/notifications/link-message', data)
-  const encodedMessage = (res.data as ApiNotificationsLinkMessageResponse).data
+  const { address, parentProxyAddress } = useMyAccount.getState()
+  if (!address) throw new Error('You need to login first')
+
+  const res = await apiInstance.post<
+    any,
+    AxiosResponse<ApiNotificationsLinkMessageResponse>,
+    ApiNotificationsLinkMessageBody
+  >('/api/notifications/link-message', {
+    action: data.action,
+    address,
+    parentProxyAddress,
+  })
+  const encodedMessage = res.data.data
   const signedMessage = await processMessageTpl(encodedMessage)
 
   const linkRes = await apiInstance.post<
@@ -41,8 +55,12 @@ async function linkTelegramAccount(data: ApiNotificationsLinkMessageBody) {
 export const useLinkTelegramAccount = mutationWrapper(linkTelegramAccount, {
   onSuccess: (_, variables) => {
     if (variables.action === 'unlink') {
+      const { address, parentProxyAddress } = useMyAccount.getState()
+      const mainAddress = parentProxyAddress || address
+      if (!mainAddress) return
+
       getLinkedTelegramAccountsQuery.invalidate(queryClient, {
-        address: variables.address,
+        address: mainAddress,
       })
     }
   },

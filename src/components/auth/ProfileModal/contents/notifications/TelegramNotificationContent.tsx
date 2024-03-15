@@ -129,7 +129,7 @@ function DisconnectButton({
 
   const handleClick = async () => {
     if (!address) return
-    getLinkingMessage({ address, action: 'unlink' })
+    getLinkingMessage({ action: 'unlink' })
   }
 
   return (
@@ -174,7 +174,7 @@ function ConnectTelegramButton({
   const handleClickLinking = async () => {
     if (!address) return
     sendEvent('start_connecting_tg_notifs')
-    getLinkingMessage({ address, action: 'link' })
+    getLinkingMessage({ action: 'link' })
   }
 
   const handleClickReload = () => {

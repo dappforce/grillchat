@@ -8,6 +8,7 @@ import { z } from 'zod'
 
 const bodySchema = z.object({
   address: z.string(),
+  parentProxyAddress: z.string().optional(),
   fcmToken: z.string(),
   action: z.union([z.literal('link'), z.literal('unlink')], {
     invalid_type_error: 'Invalid action',
@@ -32,7 +33,11 @@ export default handlerWrapper({
         ? createLinkingMessageForFcm
         : createUnlinkingMessageForFcm
 
-    const message = await createMessageForFcm(data.address, data.fcmToken)
+    const message = await createMessageForFcm({
+      fcmToken: data.fcmToken,
+      substrateAddress: data.address,
+      proxySubstrateAddress: data.parentProxyAddress,
+    })
 
     return res.status(200).send({
       success: true,
