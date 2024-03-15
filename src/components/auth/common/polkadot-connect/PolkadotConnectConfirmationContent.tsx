@@ -71,6 +71,8 @@ export default function PolkadotConnectConfirmationContent({
               loadingText = 'Waiting for energy...'
             } else if (isAddingProxy) {
               loadingText = 'Pending Confirmation...'
+            } else if (isProcessing) {
+              loadingText = 'Creating your proxy account...'
             } else {
               loadingText = undefined
             }
