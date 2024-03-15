@@ -139,6 +139,7 @@ jobs:
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
             GH_NEXT_PUBLIC_APP_ID=12364
             GH_NEXT_PUBLIC_SPACE_IDS=12466,12467,12468,12660
+            GH_NEXT_PUBLIC_NOTIFICATION_IS_STAGING=true
             # without base path
             # GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network
             # with base path
