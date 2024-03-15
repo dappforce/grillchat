@@ -176,7 +176,7 @@ function DisableNotificationButton({
     setIsGettingToken(false)
     if (!fcmToken) return
 
-    unlinkFcm({ address, fcmToken, action: 'unlink' })
+    unlinkFcm({ fcmToken, action: 'unlink' })
   }
 
   return (
@@ -226,7 +226,7 @@ function EnableNotificationButton({
     if (!fcmToken) return
 
     setFcmToken(fcmToken)
-    linkFcm({ address, fcmToken, action: 'link' })
+    linkFcm({ fcmToken, action: 'link' })
     sendEvent('wp_notifs_asked')
   }
 

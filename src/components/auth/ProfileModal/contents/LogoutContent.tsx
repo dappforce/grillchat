@@ -24,7 +24,7 @@ function LogoutContent({ setCurrentState }: ProfileModalContentProps) {
 
     if (fcmToken && address) {
       fcmPushNotificationStorage.remove(address ?? '')
-      linkFcm({ address, fcmToken, action: 'unlink' })
+      linkFcm({ fcmToken, action: 'unlink' })
     }
     logout()
     closeModal()

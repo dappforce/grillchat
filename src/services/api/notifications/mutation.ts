@@ -66,10 +66,26 @@ export const useLinkTelegramAccount = mutationWrapper(linkTelegramAccount, {
   },
 })
 
-async function linkFcm(data: ApiFcmNotificationsLinkMessageBody) {
+async function linkFcm(
+  data: Omit<
+    ApiFcmNotificationsLinkMessageBody,
+    'address' | 'parentProxyAddress'
+  >
+) {
   if (!data) return null
 
-  const res = await apiInstance.post('/api/notifications/link-fcm', data)
+  const { parentProxyAddress, address } = useMyAccount.getState()
+  if (!address) throw new Error('You need to login first')
+
+  const res = await apiInstance.post<
+    any,
+    AxiosResponse<ApiFcmNotificationsLinkMessageResponse>,
+    ApiFcmNotificationsLinkMessageBody
+  >('/api/notifications/link-fcm', {
+    ...data,
+    parentProxyAddress,
+    address,
+  })
   const encodedMessage = (res.data as ApiFcmNotificationsLinkMessageResponse)
     .data
   const signedMessage = await processMessageTpl(encodedMessage)
