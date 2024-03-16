@@ -1,12 +1,14 @@
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { Skeleton } from '@/components/SkeletonFallback'
+import Toast from '@/components/Toast'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { Signer, truncateAddress } from '@/utils/account'
 import { toSubsocialAddress } from '@subsocial/utils'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import toast from 'react-hot-toast'
 import useAccountsFromPreferredWallet from './hooks/useAccountsFromPreferredWallet'
 import { PolkadotConnectContentProps } from './types'
 
@@ -19,8 +21,17 @@ export default function PolkadotConnectAccountContent({
 }: PolkadotConnectContentProps) {
   const sendEvent = useSendEvent()
   const connectWallet = useMyAccount((state) => state.connectWallet)
-  const { accounts, isLoading } = useAccountsFromPreferredWallet(() =>
-    setCurrentState('polkadot-connect')
+  const { accounts, isLoading } = useAccountsFromPreferredWallet(
+    (err, preferredWallet) => {
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          title={`Failed to get accounts from ${preferredWallet || 'wallet'}`}
+          description={(err as any)?.message}
+        />
+      ))
+      setCurrentState('polkadot-connect')
+    }
   )
 
   const menus: MenuListProps['menus'] =
