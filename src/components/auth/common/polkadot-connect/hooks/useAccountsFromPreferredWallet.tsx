@@ -1,11 +1,11 @@
-import Toast from '@/components/Toast'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { enableWallet, useMyAccount } from '@/stores/my-account'
 import { WalletAccount } from '@talismn/connect-wallets'
 import { useEffect, useState } from 'react'
-import { toast } from 'react-hot-toast'
 
-export default function useAccountsFromPreferredWallet(onError?: () => void) {
+export default function useAccountsFromPreferredWallet(
+  onError?: (err: unknown, preferredWallet: string | undefined) => void
+) {
   const preferredWallet = useMyAccount((state) => state.preferredWallet)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
   const [accounts, setAccounts] = useState<WalletAccount[] | null>(null)
@@ -18,15 +18,8 @@ export default function useAccountsFromPreferredWallet(onError?: () => void) {
     const unsub = enableWallet({
       listener: (accounts) => setAccounts(accounts ?? []),
       onError: (err) => {
-        toast.custom((t) => (
-          <Toast
-            t={t}
-            title={`Failed to get accounts from ${preferredWallet?.title}`}
-            description={(err as any)?.message}
-          />
-        ))
         setPreferredWallet(null)
-        onErrorRef.current?.()
+        onErrorRef.current?.(err, preferredWallet?.title)
       },
     })
     return () => {
