@@ -6,7 +6,7 @@ import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePre
 import SuperLike from '@/components/content-staking/SuperLike'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
@@ -56,14 +56,12 @@ export default function CommonChatItem({
   hubId,
 }: CommonChatItemProps) {
   const myAddress = useMyMainAddress()
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const { struct, content } = message
   const { ownerId, createdAtTime, dataType, isUpdated } = struct
   const { inReplyTo, body } = content || {}
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(message.id)
 
-  const isMyMessage =
-    _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
+  const isMyMessage = _isMyMessage ?? ownerId === myAddress
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = isMessageSent(message.id, dataType)
 
@@ -117,7 +115,34 @@ export default function CommonChatItem({
       (myMessageConfig.children === 'middle' && !body))
 
   return (
-    <div className={cx('flex flex-col gap-2')}>
+    <div className={cx('relative flex flex-col gap-2')}>
+      {isMyMessage && myMessageConfig.checkMark === 'adaptive-inside' && (
+        <div
+          className={cx(
+            'absolute bottom-1 right-1.5 z-10 flex items-center gap-1 self-end rounded-full px-1.5 py-0.5',
+            isMyMessageChildrenOnBottom && 'bg-black/45'
+          )}
+        >
+          {myMessageCheckMarkElement(
+            isMyMessageChildrenOnBottom
+              ? { className: 'text-white', timeClassName: 'text-white' }
+              : {}
+          )}
+        </div>
+      )}
+
+      {!isMyMessage && othersMessage.checkMark === 'bottom' && (
+        <div
+          className={cx(
+            'absolute bottom-1 right-1.5 z-10 flex items-center gap-1 self-end rounded-full px-1.5 py-0.5',
+            isOthersMessageChildrenOnBottom && 'bg-black/35'
+          )}
+        >
+          {otherMessageCheckMarkElement(
+            cx(isOthersMessageChildrenOnBottom && 'text-white')
+          )}
+        </div>
+      )}
       <div
         className={cx(
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl',
@@ -141,34 +166,6 @@ export default function CommonChatItem({
             {!isMyMessage &&
               othersMessage.checkMark === 'top' &&
               otherMessageCheckMarkElement()}
-          </div>
-        )}
-
-        {/** Put on top of body because it will cause the p to not be last child and mess up the padding */}
-        {isMyMessage && myMessageConfig.checkMark === 'adaptive-inside' && (
-          <div
-            className={cx(
-              'absolute bottom-1 right-1.5 z-10 flex items-center gap-1 self-end rounded-full px-1.5 py-0.5',
-              isMyMessageChildrenOnBottom && 'bg-black/45'
-            )}
-          >
-            {myMessageCheckMarkElement(
-              isMyMessageChildrenOnBottom
-                ? { className: 'text-white', timeClassName: 'text-white' }
-                : {}
-            )}
-          </div>
-        )}
-        {!isMyMessage && othersMessage.checkMark === 'bottom' && (
-          <div
-            className={cx(
-              'absolute bottom-1 right-1.5 z-10 flex items-center gap-1 self-end rounded-full px-1.5 py-0.5',
-              isOthersMessageChildrenOnBottom && 'bg-black/35'
-            )}
-          >
-            {otherMessageCheckMarkElement(
-              cx(isOthersMessageChildrenOnBottom && 'text-white')
-            )}
           </div>
         )}
 

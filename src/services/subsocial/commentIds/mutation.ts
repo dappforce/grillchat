@@ -178,23 +178,21 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           } else {
             if (isCreating) {
               datahubMutation.notifyCreatePostFailedOrRetryStatus({
-                address,
+                ...getCurrentWallet(),
                 args: {
                   optimisticId,
                   reason: error,
                 },
                 timestamp: Date.now(),
-                signer: getCurrentWallet().signer,
               })
             } else if (isUpdating) {
               datahubMutation.notifyUpdatePostFailedOrRetryStatus({
+                ...getCurrentWallet(),
                 args: {
                   postId: messageIdToEdit,
                   reason: error,
                 },
                 timestamp: Date.now(),
-                address,
-                signer: getCurrentWallet().signer,
               })
             }
           }
@@ -273,14 +271,13 @@ function notifyRetryStatus(
   if (!signer || !content.optimisticId) return
 
   datahubMutation.notifyCreatePostFailedOrRetryStatus({
-    address,
+    ...getCurrentWallet(),
     args: {
       optimisticId: content.optimisticId,
       reason,
       isRetrying: { success },
     },
     timestamp: Date.now(),
-    signer,
   })
 }
 

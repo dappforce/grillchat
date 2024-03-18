@@ -1,3 +1,4 @@
+import Toast from '@/components/Toast'
 import useAccountsFromPreferredWallet from '@/components/auth/common/polkadot-connect/hooks/useAccountsFromPreferredWallet'
 import SubstrateDonateFormPart from '@/components/extensions/donate/DonateModal/donateForm/SubstrateDonateFormPart'
 import {
@@ -20,12 +21,21 @@ import { isAddress } from '@polkadot/util-crypto'
 import { isEmptyArray } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { ProfileModalContentProps } from '../../types'
 import SubstrateWithdrawButton from './SubstrateWithdrawButton'
 
 const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
   const firstChainItem = chainItems[0]
-  const { accounts, isLoading } = useAccountsFromPreferredWallet()
+  const { accounts, isLoading } = useAccountsFromPreferredWallet((err) => {
+    toast.custom((t) => (
+      <Toast
+        t={t}
+        title={'Cannot find wallet, please reconnect to do this action'}
+        description={(err as any)?.message}
+      />
+    ))
+  })
   const myAddress = useMyMainAddress()
 
   const accountItems = useMemo(() => {
@@ -46,6 +56,7 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
           convertAddressToGenericAddress(myAddress)
       ) || []
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts?.length, isLoading, myAddress])
 
   const [recipient, setRecipient] = useState<InputItem | undefined>(
@@ -56,6 +67,7 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
     if (!isLoading && accounts && !isEmptyArray(accounts)) {
       setRecipient(accountItems[0])
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
 
   const [selectedChain, setSelectedChain] =
@@ -95,6 +107,7 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
           item.id !== recipient?.id
       ) || []
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipient, accounts?.length, myAddress])
 
   const disabledButton =

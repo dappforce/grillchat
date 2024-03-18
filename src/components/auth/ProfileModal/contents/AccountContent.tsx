@@ -31,6 +31,7 @@ import { useTheme } from 'next-themes'
 import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
+import { useCanUseGrillKey } from '../hooks'
 import { ProfileModalContentProps } from '../types'
 import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
 
@@ -41,6 +42,7 @@ export default function AccountContent({
   // const { showNotification, closeNotification } =
   //   useFirstVisitNotification('notification-menu')
 
+  const canUseGrillKey = useCanUseGrillKey()
   const isInIframe = useIsInIframe()
 
   const {
@@ -102,22 +104,6 @@ export default function AccountContent({
   // }
 
   const menus: MenuListProps['menus'] = [
-    {
-      text: (
-        <span className='flex items-center gap-2'>
-          <span>Notifications Settings</span>
-          {!isLoadingActivatedNotificationCount && (
-            <Notice size='sm' noticeType='grey'>
-              {activatedNotificationCount} / {maxNotificationCount}
-            </Notice>
-          )}
-        </span>
-      ),
-      icon: FaRegBell,
-      onClick: () => {
-        setCurrentState('notifications')
-      },
-    },
     // {
     //   text: (
     //     <span className='flex items-center gap-2'>
@@ -161,11 +147,31 @@ export default function AccountContent({
           },
         ]
       : []),
+    ...(canUseGrillKey
+      ? [
+          {
+            text: 'Show Grill key',
+            icon: KeyIcon,
+            onClick: () => {
+              onShowPrivateKeyClick()
+            },
+          },
+        ]
+      : []),
     {
-      text: 'Show Grill key',
-      icon: KeyIcon,
+      text: (
+        <span className='flex items-center gap-2'>
+          <span>Notifications Settings</span>
+          {!isLoadingActivatedNotificationCount && (
+            <Notice size='sm' noticeType='grey'>
+              {activatedNotificationCount} / {maxNotificationCount}
+            </Notice>
+          )}
+        </span>
+      ),
+      icon: FaRegBell,
       onClick: () => {
-        onShowPrivateKeyClick()
+        setCurrentState('notifications')
       },
     },
     {

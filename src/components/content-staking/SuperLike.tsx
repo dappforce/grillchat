@@ -2,6 +2,7 @@ import SubsocialTokenImage from '@/assets/graphics/subsocial-tokens-large.png'
 import Button from '@/components/Button'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { CONTENT_STAKING_LINK } from '@/constants/links'
+import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
 import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
 import {
@@ -134,7 +135,7 @@ export function SuperLikeWrapper({
   const isMyPost = post?.struct.ownerId === myAddress
 
   const canBeSuperliked = clientCanPostSuperLiked && canPostSuperLiked
-  const entity = post?.struct.isComment ? 'comment' : 'post'
+  const entity = post?.struct.isComment ? 'message' : 'post'
   const isOffchainPost = post?.struct.dataType === 'offChain'
 
   const isDisabled =
@@ -146,15 +147,23 @@ export function SuperLikeWrapper({
     !hasILiked
 
   let disabledCause = ''
-  if (isMyPost) disabledCause = `You cannot like your own ${entity}`
+  if (isMyPost) {
+    const isOffchainPostInUsualHub =
+      isOffchainPost &&
+      !env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(post.struct.spaceId ?? '')
+    if (isOffchainPostInUsualHub) {
+      disabledCause = `Your ${entity} is not monetized, because its not sent to blockchain, you can resend it to make it monetized`
+    } else {
+      disabledCause = `You cannot like your own ${entity}`
+    }
+  } else if (isOffchainPost)
+    disabledCause = `You cannot like off-chain ${entity}s`
   else if (!isExist)
     disabledCause = `This ${entity} is still being minted, please wait a few seconds`
   else if (!validByCreatorMinStake)
     disabledCause = `This ${entity} cannot be liked because its author has not yet locked at least 2,000 SUB`
   else if (!canBeSuperliked)
     disabledCause = `You cannot like ${entity}s that are older than 7 days`
-  else if (isOffchainPost)
-    disabledCause = `You cannot like off-chain ${entity}s`
 
   return (
     <>

@@ -271,14 +271,13 @@ export function useUpsertPost(
             })
           }
         },
-        onError: ({ data, address, context }, error, isAfterTxGenerated) => {
+        onError: ({ data, context }, error, isAfterTxGenerated) => {
           const { action, payload } = checkAction(data)
           if (!isAfterTxGenerated) return
 
           if (action === 'create' && context.content.optimisticId) {
             datahubMutation.notifyCreatePostFailedOrRetryStatus({
-              address,
-              signer: getCurrentWallet().signer,
+              ...getCurrentWallet(),
               timestamp: Date.now(),
               args: {
                 optimisticId: context.content.optimisticId,
@@ -287,13 +286,12 @@ export function useUpsertPost(
             })
           } else if (action === 'update') {
             datahubMutation.notifyUpdatePostFailedOrRetryStatus({
+              ...getCurrentWallet(),
               args: {
                 postId: payload.postId,
                 reason: error,
               },
-              address,
               timestamp: Date.now(),
-              signer: getCurrentWallet().signer,
             })
           }
         },

@@ -82,7 +82,16 @@ export function createSocialDataEventPayload<
   T extends keyof typeof socialCallName
 >(
   callName: T,
-  { isOffchain, timestamp, address, uuid, proxyToAddress }: DatahubParams<{}>,
+  {
+    isOffchain,
+    timestamp,
+    address,
+    uuid,
+    proxyToAddress,
+  }: Pick<
+    DatahubParams<{}>,
+    'isOffchain' | 'timestamp' | 'address' | 'uuid' | 'proxyToAddress'
+  >,
   eventArgs: SocialCallDataArgs<T>,
   content?: PostContent
 ) {
