@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import Spinner from '@/components/Spinner'
 import Toast from '@/components/Toast'
 import Modal from '@/components/modals/Modal'
+import { env } from '@/env.mjs'
 import useRerender from '@/hooks/useRerender'
 import { ResendFailedMessageWrapper } from '@/services/subsocial/commentIds/mutation'
 import {
@@ -33,8 +34,13 @@ export default function MessageStatusIndicator({
   const [isAfterResending, setIsAfterResending] = useState(false)
 
   const messageStatus = getMessageStatusById(message)
+  const isOffchainMessageInUsualHub =
+    message.struct.dataType === 'offChain' &&
+    !env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(
+      message.struct.spaceId ?? ''
+    )
 
-  if (message.struct.dataType === 'offChain' || isFailedOptimisticMessage) {
+  if (isOffchainMessageInUsualHub || isFailedOptimisticMessage) {
     if (isAfterResending) {
       return <Spinner className='h-2.5 w-2.5' />
     }
