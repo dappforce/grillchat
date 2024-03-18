@@ -95,6 +95,7 @@ jobs:
             GH_DATAHUB_QUEUE_URL=https://sub-queue-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_APP_ID=1
             GH_NEXT_PUBLIC_NOTIFICATION_APP_ID=BECyoVsDLEgsOj9MvhoetL3YGYZVCE5RzhADmBugpp0hu7QBV_xG8veiT_qAFxF9S8qXKhPvaPiD5oMrdWrFNB0
+            GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/grill_notifications_bot/
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12662
             GH_NEXT_PUBLIC_SPACE_IDS=12659,12660,12455,12662
             GH_NEXT_PUBLIC_AMP_ID=2eeca0e8a0163c89e3f023c971e426a6
@@ -139,7 +140,7 @@ jobs:
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
             GH_NEXT_PUBLIC_APP_ID=12364
             GH_NEXT_PUBLIC_SPACE_IDS=12466,12467,12468,12660
-            GH_NEXT_PUBLIC_NOTIFICATION_IS_STAGING=true
+            GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/g_notif_staging_bot/
             # without base path
             # GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network
             # with base path

@@ -5,7 +5,7 @@ import DataCard from '@/components/DataCard'
 import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
-import { TELEGRAM_NOTIFICATIONS_BOT_LINK } from '@/constants/links'
+import { env } from '@/env.mjs'
 import useToastError from '@/hooks/useToastError'
 import { useLinkTelegramAccount } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
@@ -82,7 +82,7 @@ export default function TelegramNotificationContent(
             title: 'Telegram Bot for Grill',
             content: (
               <LinkText
-                href={TELEGRAM_NOTIFICATIONS_BOT_LINK}
+                href={env.NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT}
                 variant='primary'
                 className='mt-1 flex items-center gap-2'
                 openInNewTab

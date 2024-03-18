@@ -15,13 +15,8 @@ export function getSuggestNewChatRoomLink(prefill: {
   }&entry.1674564644=${prefill.chatName}`
 }
 
-export const TELEGRAM_NOTIFICATIONS_BOT_LINK =
-  env.NEXT_PUBLIC_NOTIFICATION_IS_STAGING
-    ? 'https://t.me/g_notif_staging_bot/'
-    : 'https://t.me/grill_notifications_bot/'
-
 export function getTelegramNotificationsBotLink(command: string) {
-  return `${TELEGRAM_NOTIFICATIONS_BOT_LINK}?start=${command}`
+  return `${env.NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT}?start=${command}`
 }
 
 export const SUBSOCIAL_IPFS_GATEWAY = 'https://ipfs.subsocial.network/'
