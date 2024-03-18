@@ -6,7 +6,7 @@ import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePre
 import SuperLike from '@/components/content-staking/SuperLike'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
@@ -56,14 +56,12 @@ export default function CommonChatItem({
   hubId,
 }: CommonChatItemProps) {
   const myAddress = useMyMainAddress()
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const { struct, content } = message
   const { ownerId, createdAtTime, dataType, isUpdated } = struct
   const { inReplyTo, body } = content || {}
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(message.id)
 
-  const isMyMessage =
-    _isMyMessage ?? (ownerId === myAddress || parentProxyAddress === ownerId)
+  const isMyMessage = _isMyMessage ?? ownerId === myAddress
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = isMessageSent(message.id, dataType)
 
