@@ -134,7 +134,7 @@ export function SuperLikeWrapper({
   const isMyPost = post?.struct.ownerId === myAddress
 
   const canBeSuperliked = clientCanPostSuperLiked && canPostSuperLiked
-  const entity = post?.struct.isComment ? 'comment' : 'post'
+  const entity = post?.struct.isComment ? 'message' : 'post'
   const isOffchainPost = post?.struct.dataType === 'offChain'
 
   const isDisabled =
@@ -146,7 +146,13 @@ export function SuperLikeWrapper({
     !hasILiked
 
   let disabledCause = ''
-  if (isMyPost) disabledCause = `You cannot like your own ${entity}`
+  if (post?.struct.dataType === 'offChain')
+    disabledCause = `This ${entity} is not monetized.${
+      isMyPost
+        ? ` You can monetize this ${entity} by resending your message`
+        : ''
+    }`
+  else if (isMyPost) disabledCause = `You cannot like your own ${entity}`
   else if (!isExist)
     disabledCause = `This ${entity} is still being minted, please wait a few seconds`
   else if (!validByCreatorMinStake)
