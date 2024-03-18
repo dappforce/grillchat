@@ -9,7 +9,6 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { installApp, isInstallAvailable } from '@/utils/install'
 import { LocalStorage } from '@/utils/storage'
-import { getIsInIos } from '@/utils/window'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { FiPlusSquare } from 'react-icons/fi'
@@ -24,9 +23,9 @@ export const fcmPushNotificationStorage = new LocalStorage(
 type NotificationUsableStatus = 'need-install' | 'unsupported' | 'usable'
 export function getPushNotificationUsableStatus(): NotificationUsableStatus {
   if (typeof Notification === 'undefined') {
-    if (getIsInIos()) {
-      return 'need-install'
-    }
+    // if (getIsInIos()) {
+    //   return 'need-install'
+    // }
     return 'unsupported'
   }
   return 'usable'
