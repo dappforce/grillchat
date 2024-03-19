@@ -29,11 +29,12 @@ const providerMapper: Record<SupportedExternalProvider, string> = {
   evm: 'EVM',
   google: 'Google',
   x: 'X',
+  polkadot: 'Polkadot',
 }
 export default function SaveGrillKeyModal({
   provider,
   ...props
-}: SaveGrillKeyModalProps & { provider?: 'x' | 'google' | 'evm' }) {
+}: SaveGrillKeyModalProps & { provider?: SupportedExternalProvider }) {
   const [step, setStep] = useState<Steps>('save')
   const [isDoneLoading, setIsDoneLoading] = useState(false)
   const sendEvent = useSendEvent()
@@ -126,7 +127,7 @@ function DoOauthLogin({ onSuccess }: { onSuccess: () => void }) {
 type ContentProps = {
   closeModal: () => void
   setCurrentState: (state: Steps) => void
-  provider: 'x' | 'google' | 'evm'
+  provider: SupportedExternalProvider
 }
 function SaveStep({ setCurrentState }: ContentProps) {
   const [openCopiedTooltip, setOpenCopiedTooltip] = useState(false)
@@ -208,7 +209,7 @@ function EnterKeyStep({ setCurrentState, provider, closeModal }: ContentProps) {
           setError('The Grill key you entered is incorrect. Please try again.')
           return
         }
-        if (provider === 'evm') {
+        if (provider === 'evm' || provider === 'polkadot') {
           closeModal()
         } else {
           setCurrentState('loading')
