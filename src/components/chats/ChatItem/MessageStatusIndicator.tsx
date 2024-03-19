@@ -4,6 +4,7 @@ import Toast from '@/components/Toast'
 import Modal from '@/components/modals/Modal'
 import { env } from '@/env.mjs'
 import useRerender from '@/hooks/useRerender'
+import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import { ResendFailedMessageWrapper } from '@/services/subsocial/commentIds/mutation'
 import {
   isClientGeneratedOptimisticId,
@@ -36,6 +37,7 @@ export default function MessageStatusIndicator({
 
   const messageStatus = getMessageStatusById(message)
   const isOffchainMessageInUsualHub =
+    !isPersistentId(message.id) &&
     message.struct.dataType === 'offChain' &&
     !env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(
       message.struct.spaceId ?? ''
