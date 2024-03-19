@@ -70,6 +70,9 @@ export const POST_FRAGMENT = gql`
         id
       }
     }
+    parentPost {
+      id
+    }
     sharedPost {
       id
     }

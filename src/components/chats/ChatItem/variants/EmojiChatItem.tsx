@@ -2,6 +2,7 @@ import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper
 import { cx } from '@/utils/class-names'
 import { getEmojiAmount, validateTextContainsOnlyEmoji } from '@/utils/strings'
 import SuperLike from '../../../content-staking/SuperLike'
+import { getRepliedMessageId } from '../../utils'
 import ChatRelativeTime from '../ChatRelativeTime'
 import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
@@ -33,7 +34,9 @@ export default function EmojiChatItem({
   const messageId = message.id
 
   const { createdAtTime, ownerId, isUpdated } = message.struct
-  const { inReplyTo, body } = message.content || {}
+  const { body } = message.content || {}
+
+  const repliedMessageId = getRepliedMessageId(message)
 
   const emojiCount = getEmojiAmount(body ?? '')
 
@@ -90,11 +93,11 @@ export default function EmojiChatItem({
             'flex flex-col gap-4 overflow-hidden py-2'
           )}
         >
-          {inReplyTo?.id && (
+          {repliedMessageId && (
             <div className='w-full overflow-hidden rounded-xl bg-background-light px-2.5 py-2'>
               <RepliedMessagePreview
                 originalMessage={body ?? ''}
-                repliedMessageId={inReplyTo.id}
+                repliedMessageId={repliedMessageId}
                 scrollToMessage={scrollToMessage}
                 chatId={chatId}
                 hubId={hubId}

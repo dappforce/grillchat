@@ -1,4 +1,5 @@
 import { waitStopScrolling } from '@/utils/window'
+import { PostData } from '@subsocial/api/types'
 
 export function getMessageElementId(messageId: string) {
   return `message-${messageId}`
@@ -35,4 +36,8 @@ export async function scrollToMessageElement(
       element.classList.remove('highlighted')
     }
   }
+}
+
+export function getRepliedMessageId(post: PostData) {
+  return post.struct.parentPostId || post.content?.inReplyTo?.id
 }

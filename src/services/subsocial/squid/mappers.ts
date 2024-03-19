@@ -137,6 +137,7 @@ export const mapPostFragment = (post: PostFragmentFragment): PostData => {
     spaceId: post.space?.id ?? post.rootPost?.space?.id ?? '',
     isUpdated: !!post.updatedAtTime,
     rootPostId: post.rootPost?.id ?? '',
+    parentPostId: post.parentPost?.id,
     followersCount: post.followersCount ?? 0,
   }
 
