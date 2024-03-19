@@ -104,7 +104,7 @@ declare module '@subsocial/api/types' {
         followersCount?: number
         blockchainSyncFailed?: boolean
         dataType?: 'persistent' | 'optimistic' | 'offChain'
-        parentPostId?: string
+        parentPostId?: string | null
       },
     PostContent
   > & { requestedId?: string }

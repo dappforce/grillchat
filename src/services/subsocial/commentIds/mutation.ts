@@ -103,6 +103,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               content: content,
               cid: cid,
               rootPostId: data.chatId,
+              parentPostId: data.replyTo,
               spaceId: data.hubId,
             },
           })
@@ -111,7 +112,12 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           return {
             tx: substrateApi.tx.posts.createPost(
               null,
-              { Comment: { parentId: null, rootPostId: data.chatId } },
+              {
+                Comment: {
+                  parentPostId: data.replyTo || null,
+                  rootPostId: data.chatId,
+                },
+              },
               IpfsWrapper(cid)
             ),
             summary: 'Sending message',
