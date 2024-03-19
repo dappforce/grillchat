@@ -6,7 +6,7 @@ import datahubMutation from '@/services/datahub/posts/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
+import { IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
@@ -30,7 +30,6 @@ async function generateMessageContent(
     const content = originalPost?.content
     const savedContent = {
       body: params.message,
-      inReplyTo: ReplyWrapper(content?.inReplyTo?.id),
       extensions: content?.extensions,
     } as PostContent
 
@@ -39,7 +38,6 @@ async function generateMessageContent(
 
   const content = {
     body: params.message,
-    inReplyTo: ReplyWrapper(params.replyTo),
     extensions: params.extensions,
     optimisticId: crypto.randomUUID(),
   } as PostContent
@@ -204,6 +202,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
 type ResendFailedMessageParams = {
   chatId: string
+  replyTo?: string
   content: PostContent
 }
 export function useResendFailedMessage(
@@ -219,7 +218,6 @@ export function useResendFailedMessage(
       transactionGenerator: async ({ apis: { substrateApi }, data }) => {
         const content = {
           body: data.content.body,
-          inReplyTo: data.content.inReplyTo,
           extensions: data.content.extensions,
           optimisticId: data.content.optimisticId,
         } as PostContent & { optimisticId: string }
@@ -233,7 +231,12 @@ export function useResendFailedMessage(
         return {
           tx: substrateApi.tx.posts.createPost(
             null,
-            { Comment: { parentId: null, rootPostId: data.chatId } },
+            {
+              Comment: {
+                parentId: data.replyTo ?? null,
+                rootPostId: data.chatId,
+              },
+            },
             IpfsWrapper(cid)
           ),
           summary: 'Retrying sending message',

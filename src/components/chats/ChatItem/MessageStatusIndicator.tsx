@@ -17,6 +17,7 @@ import { SyntheticEvent, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { BsExclamationLg } from 'react-icons/bs'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
+import { getRepliedMessageId } from '../utils'
 import CheckMarkExplanationModal from './CheckMarkExplanationModal'
 
 export type MessageStatus = 'sending' | 'offChain' | 'optimistic' | 'blockchain'
@@ -149,6 +150,7 @@ function ResendMessageIndicator({
                   await mutateAsync({
                     chatId: message.struct.rootPostId,
                     content: message.content,
+                    replyTo: getRepliedMessageId(message),
                   })
                   toast.custom((t) => (
                     <Toast

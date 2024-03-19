@@ -10,11 +10,10 @@ import { getCommentIdsByPostIdFromChainQuery } from './query'
 import { SendMessageParams } from './types'
 
 export function getOptimisticContent(
-  postContent: Pick<PostContent, 'body' | 'inReplyTo' | 'extensions'>
+  postContent: Pick<PostContent, 'body' | 'extensions'>
 ) {
   return {
     body: postContent.body,
-    inReplyTo: postContent.inReplyTo,
     extensions: postContent.extensions,
   }
 }
@@ -49,6 +48,7 @@ export function addOptimisticData({
       createdAtTime: Date.now(),
       ownerId: address,
       rootPostId: params.chatId,
+      parentPostId: params.replyTo,
     },
     content: ipfsContent,
   } as unknown as PostData)

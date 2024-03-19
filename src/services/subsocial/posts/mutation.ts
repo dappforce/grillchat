@@ -553,7 +553,6 @@ async function getUpdatedPinPostContent(
     title: content.title,
     image: content.image,
     extensions: content.extensions,
-    inReplyTo: content.inReplyTo,
   }
 
   const pinExtension = chatContent.extensions?.find(
