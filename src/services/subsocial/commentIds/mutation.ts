@@ -239,7 +239,7 @@ export function useResendFailedMessage(
             null,
             {
               Comment: {
-                parentId: data.replyTo ?? null,
+                parentId: data.replyTo || null,
                 rootPostId: data.chatId,
               },
             },
