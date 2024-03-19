@@ -34,8 +34,18 @@ import { UserProperties, useAnalytics } from './analytics'
 import { create, createSelectors } from './utils'
 
 type State = {
+  /**
+   * `isInitialized` is `true` when the addresses (address & parentProxyAddress) are all set
+   * but there is still a case where the proxy is invalid and user will be logged out after that
+   */
   isInitialized: boolean | undefined
+  /**
+   * `isInitializedAddress` is `true` if the current address is result of initialization process (user is not just logged in)
+   */
   isInitializedAddress: boolean | undefined
+  /**
+   * `isInitializedProxy` is `true` when the initialization process is all done, including checking the proxy
+   */
   isInitializedProxy: boolean | undefined
   isTemporaryAccount: boolean
 
@@ -369,15 +379,17 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       sendLaunchEvent()
     }
 
-    set({ isInitialized: true })
-
     const address = get().address
     const parentProxyAddress =
       parentProxyAddressFromStorage ||
       (address ? await getParentProxyAddress(address) : undefined)
 
+    set({
+      isInitialized: true,
+      parentProxyAddress: parentProxyAddress ?? undefined,
+    })
+
     if (parentProxyAddress) {
-      set({ parentProxyAddress })
       await validateParentProxyAddress({
         grillAddress: get().address!,
         parentProxyAddress,
