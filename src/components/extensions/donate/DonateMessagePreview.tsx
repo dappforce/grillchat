@@ -108,7 +108,7 @@ export default function DonateMessagePreview({
 }: DonateMessagePreviewProps) {
   const { content } = message
 
-  const { extensions, body, inReplyTo } = content || {}
+  const { extensions, body } = content || {}
   const repliedMessageId = getRepliedMessageId(message)
   const properties = getPostExtensionProperties(
     extensions?.[0],
