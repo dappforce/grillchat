@@ -42,12 +42,16 @@ const EarnCalcSection = () => {
     const lockedWithDecimal = convertToBalanceWithDecimal(locked, decimal || 0)
 
     const min = new BN(5.75)
-      .multipliedBy(new BN(7200))
-      .multipliedBy(new BN(7))
-      .dividedBy(lockedWithDecimal)
-      .multipliedBy(rangeValue)
+      .multipliedBy(7200) // rewardsPerDay
+      .dividedBy(lockedWithDecimal) // rewardsPerSub for 10 likes
+      .dividedBy(10) // rewardsPerSub for 1 like
+      .multipliedBy(rangeValue) // rewardsPerLock
+      .multipliedBy(7) // rewardsPerLock for week
+      .multipliedBy(0.38) // 38% of rewards goes to staker
 
-    const max = min.multipliedBy(new BN(3))
+    const max = min
+      .multipliedBy(10) // 10 likes
+      .multipliedBy(2.5) // multiplier
 
     return { min, max }
   }, [rangeValue, locked, tokenPrice])
