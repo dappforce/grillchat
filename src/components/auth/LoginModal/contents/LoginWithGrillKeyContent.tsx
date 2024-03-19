@@ -9,6 +9,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { isSecretKeyUsingMiniSecret } from '@/utils/account'
 import { useQueryClient } from '@tanstack/react-query'
 import { SyntheticEvent, useRef, useState } from 'react'
+import { AiOutlineScan } from 'react-icons/ai'
 import { LoginModalContentProps } from '../LoginModalContent'
 import { finishLogin } from '../utils'
 
@@ -16,6 +17,7 @@ export const LoginWithGrillKeyContent = ({
   beforeLogin,
   afterLogin,
   closeModal,
+  setCurrentState,
 }: LoginModalContentProps) => {
   const login = useMyAccount((state) => state.login)
   const [privateKey, setPrivateKey] = useState('')
@@ -66,6 +68,15 @@ export const LoginWithGrillKeyContent = ({
 
   return (
     <form onSubmit={onSubmit} className='mt-2 flex flex-col gap-4'>
+      <Button
+        variant='transparent'
+        size='noPadding'
+        onClick={() => setCurrentState('scan-qr')}
+        interactive='none'
+        className='absolute right-5 top-[1.625rem] flex items-center gap-2 text-text-primary md:right-6 md:top-7'
+      >
+        <AiOutlineScan className='text-xl' /> Scan QR
+      </Button>
       <TextArea
         ref={inputRef}
         value={privateKey}

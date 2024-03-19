@@ -92,6 +92,7 @@
     "nextjs-cors": "^2.1.2",
     "nextjs-google-analytics": "^2.3.3",
     "nextjs-progressbar": "^0.0.16",
+    "qr-scanner": "^1.4.2",
     "randomcolor": "^0.6.2",
     "react": "18.2.0",
     "react-device-detect": "^2.2.3",
