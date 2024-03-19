@@ -1,4 +1,6 @@
+import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import Button from '@/components/Button'
+import LinkText from '@/components/LinkText'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
@@ -21,6 +23,19 @@ export default function NewAccountContent({
       <GoogleButton />
       <XLoginButton />
       <Button
+        variant='primaryOutline'
+        onClick={() => {
+          setCurrentState('polkadot-connect')
+          sendEvent('login_polkadot_account_clicked')
+        }}
+        size='lg'
+      >
+        <div className='flex items-center justify-center gap-2'>
+          <PolkadotIcon className={cx('text-text-muted')} />
+          Connect via Polkadot
+        </div>
+      </Button>
+      <Button
         size='lg'
         variant='primaryOutline'
         onClick={() => {
@@ -33,9 +48,19 @@ export default function NewAccountContent({
           Connect Wallet
         </div>
       </Button>
-      <div className='relative text-center text-text-muted'>
+      <span className='text-center text-sm text-text-muted'>
+        By creating an account, you agree to the{' '}
+        <LinkText
+          href='https://grillapp.net/legal/content-policy'
+          variant='primary'
+        >
+          Content Policy
+        </LinkText>
+        .
+      </span>
+      <div className='relative flex items-center justify-center text-center text-text-muted'>
         <div className='absolute top-1/2 h-px w-full bg-background-lightest dark:bg-background-lightest/50' />
-        <span className='relative inline-block bg-background-light px-4 text-sm'>
+        <span className='relative inline-block bg-background-light px-4 text-xs'>
           OR
         </span>
       </div>
@@ -49,9 +74,6 @@ export default function NewAccountContent({
       >
         <div className='flex flex-col items-center justify-center'>
           <span>I already have an account</span>
-          <span className='text-sm text-text-muted'>
-            Grill key or Polkadot wallet
-          </span>
         </div>
       </Button>
     </div>
