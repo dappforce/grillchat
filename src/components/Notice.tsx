@@ -34,7 +34,7 @@ export default function Notice({
       className={cx(noticeStyles({ noticeType }), props.className)}
     >
       {leftIcon && <span>{leftIcon}</span>}
-      <span>{props.children}</span>
+      <div>{props.children}</div>
     </Card>
   )
 }
