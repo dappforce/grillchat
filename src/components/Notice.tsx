@@ -8,7 +8,7 @@ const noticeStyles = cva('flex items-start gap-2', {
     noticeType: {
       success: cx('text-green-600 bg-green-600/10'),
       info: cx(
-        'text-blue-600 bg-blue-600/10 dark:text-blue-400 dark:bg-blue-500/10'
+        'text-blue-600 bg-blue-500/10 dark:text-blue-400 dark:bg-blue-500/10'
       ),
       grey: cx('text-text-muted bg-background-lighter'),
     },
