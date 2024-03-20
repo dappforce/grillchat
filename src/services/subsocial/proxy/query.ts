@@ -22,7 +22,10 @@ async function getProxies({
       }
       return null
     })
-    .filter(Boolean) as { address: string; proxyType: string }[]
+    .filter((data) => !!data?.address) as {
+    address: string
+    proxyType: string
+  }[]
 }
 
 export const getProxiesQuery = createSubsocialQuery({

@@ -80,7 +80,7 @@ export default function PolkadotConnectConfirmationContent({
                   )}
                 </div>
 
-                {proxies?.length && (
+                {!!proxies?.length && (
                   <Notice noticeType='info'>
                     <div className='flex flex-col gap-2'>
                       <span>
