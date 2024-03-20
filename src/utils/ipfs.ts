@@ -1,4 +1,5 @@
 import { SUBSOCIAL_IPFS_GATEWAY } from '@/constants/links'
+import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import { CID } from 'ipfs-http-client'
 import { importer } from 'ipfs-unixfs-importer'
 import urlJoin from 'url-join'
@@ -49,6 +50,7 @@ export function IpfsWrapper(cid?: string) {
 }
 
 export function ReplyWrapper(replyToMessageId: string | undefined | null) {
+  if (replyToMessageId && isPersistentId(replyToMessageId)) return undefined
   return replyToMessageId
     ? ({
         id: replyToMessageId,

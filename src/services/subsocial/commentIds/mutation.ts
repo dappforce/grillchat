@@ -2,11 +2,12 @@ import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useRevalidateChatPage, useSaveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
+import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { IpfsWrapper } from '@/utils/ipfs'
+import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
@@ -30,6 +31,7 @@ async function generateMessageContent(
     const content = originalPost?.content
     const savedContent = {
       body: params.message,
+      inReplyTo: ReplyWrapper(content?.inReplyTo?.id),
       extensions: content?.extensions,
     } as PostContent
 
@@ -38,6 +40,7 @@ async function generateMessageContent(
 
   const content = {
     body: params.message,
+    inReplyTo: ReplyWrapper(params.replyTo),
     extensions: params.extensions,
     optimisticId: crypto.randomUUID(),
   } as PostContent
@@ -97,13 +100,17 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             summary: 'Updating message',
           }
         } else {
+          const replyToPersistentId =
+            data.replyTo && isPersistentId(data.replyTo)
+              ? data.replyTo
+              : undefined
           await datahubMutation.createPostData({
             ...getCurrentWallet(),
             args: {
               content: content,
               cid: cid,
               rootPostId: data.chatId,
-              parentPostId: data.replyTo,
+              parentPostId: replyToPersistentId,
               spaceId: data.hubId,
             },
           })
@@ -114,7 +121,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               null,
               {
                 Comment: {
-                  parentPostId: data.replyTo || null,
+                  parentPostId: replyToPersistentId || null,
                   rootPostId: data.chatId,
                 },
               },
@@ -222,8 +229,13 @@ export function useResendFailedMessage(
       getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi }, data }) => {
+        const replyToPersistentId =
+          data.replyTo && isPersistentId(data.replyTo)
+            ? data.replyTo
+            : undefined
         const content = {
           body: data.content.body,
+          inReplyTo: data.content.inReplyTo,
           extensions: data.content.extensions,
           optimisticId: data.content.optimisticId,
         } as PostContent & { optimisticId: string }
@@ -239,7 +251,7 @@ export function useResendFailedMessage(
             null,
             {
               Comment: {
-                parentId: data.replyTo || null,
+                parentId: replyToPersistentId || null,
                 rootPostId: data.chatId,
               },
             },

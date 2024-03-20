@@ -9,15 +9,6 @@ import {
 import { getCommentIdsByPostIdFromChainQuery } from './query'
 import { SendMessageParams } from './types'
 
-export function getOptimisticContent(
-  postContent: Pick<PostContent, 'body' | 'extensions'>
-) {
-  return {
-    body: postContent.body,
-    extensions: postContent.extensions,
-  }
-}
-
 export const commentIdsOptimisticEncoder = {
   encode: (id: string) => `optimistic-${id}`,
   decode: (id: string) => id.replace('optimistic-', ''),
