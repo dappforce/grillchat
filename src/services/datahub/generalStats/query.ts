@@ -32,6 +32,7 @@ type GeneralStats = {
   creatorsEarnedTotal: string
 }
 const getGeneralStats = poolQuery<string, GeneralStats>({
+  name: 'getGeneralStats',
   multiCall: async () => {
     const res = await datahubQueryRequest<
       {

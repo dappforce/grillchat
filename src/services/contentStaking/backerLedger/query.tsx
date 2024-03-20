@@ -10,6 +10,7 @@ export async function getBackerLedgerRequest(account: string) {
 }
 
 const getBackerLedger = poolQuery<string, BackerLedger>({
+  name: 'getBackerLedger',
   multiCall: async (account) => {
     const resultPromise = account.map(async (account) => {
       const result = await getBackerLedgerRequest(account)

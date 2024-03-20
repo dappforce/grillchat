@@ -107,6 +107,7 @@ const getMessagesCountAfterTime = poolQuery<
   { chatId: string; time: number },
   { chatId: string; totalCount: number }
 >({
+  name: 'getMessagesCountAfterTime',
   multiCall: async (params) => {
     if (!params.length) return []
     const queries: { query: string; chatId: string }[] = []

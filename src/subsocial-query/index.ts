@@ -2,6 +2,7 @@ export * from './base'
 export * from './types'
 
 export interface PoolQueryConfig<SingleParam, SingleReturn> {
+  name: string
   getQueryId?: (param: SingleParam) => string
   multiCall: (params: SingleParam[]) => Promise<SingleReturn[]>
   resultMapper?: {
@@ -25,6 +26,7 @@ export function poolQuery<SingleParam, SingleReturn>(
   config: PoolQueryConfig<SingleParam, SingleReturn>
 ): (param: SingleParam) => Promise<SingleReturn | null> {
   const {
+    name,
     getQueryId,
     multiCall,
     singleCall,
@@ -91,7 +93,7 @@ export function poolQuery<SingleParam, SingleReturn>(
       }
       currentBatchResolver(result)
     } catch (e) {
-      console.error('Error in poolQuery: ', e)
+      console.error(`Error in poolQuery: ${name}`, e)
       currentBatchResolver([])
     }
   }

@@ -93,6 +93,7 @@ const pooledGetBlockedResource = poolQuery<
     type: 'spaceId' | 'postEntityId' | 'appId'
   }
 >({
+  name: 'pooledGetBlockedResource',
   multiCall: async (params) => {
     if (!params.length) return []
     const spaceIds: string[] = []

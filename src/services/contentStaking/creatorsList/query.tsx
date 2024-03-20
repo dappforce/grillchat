@@ -13,6 +13,7 @@ export async function getCreatorsListRequest() {
 }
 
 const getCreatorsList = poolQuery<string, RegisteredCreator[]>({
+  name: 'getCreatorsList',
   multiCall: async () => {
     const result = await getCreatorsListRequest()
 

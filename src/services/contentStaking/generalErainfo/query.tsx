@@ -13,6 +13,7 @@ export async function getGeneralEraInfoRequest() {
 }
 
 const getGeneralEraInfo = poolQuery<string, GeneralEraInfo>({
+  name: 'getGeneralEraInfo',
   multiCall: async () => {
     const result = await getGeneralEraInfoRequest()
 
