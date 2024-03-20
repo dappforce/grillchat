@@ -82,9 +82,9 @@ export default function AccountContent({
   //   sendEvent('open_linked_addresses', commonEventProps)
   //   setCurrentState('linked-addresses')
   // }
-  const onShowPrivateKeyClick = () => {
-    sendEvent('open_show_private_key_modal', commonEventProps)
-    setCurrentState('private-key')
+  const onPrivacySecurityKeyClick = () => {
+    sendEvent('open_privacy_security_modal', commonEventProps)
+    setCurrentState('privacy-security')
   }
   // const onShareSessionClick = () => {
   //   sendEvent('open_share_session_modal', commonEventProps)
@@ -165,10 +165,10 @@ export default function AccountContent({
     ...(canUseGrillKey
       ? [
           {
-            text: 'Show Grill key',
+            text: 'Privacy and Security',
             icon: KeyIcon,
             onClick: () => {
-              onShowPrivateKeyClick()
+              onPrivacySecurityKeyClick()
             },
           },
         ]

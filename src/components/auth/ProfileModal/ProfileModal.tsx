@@ -20,6 +20,7 @@ import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
 import LinkedAddressesContent from './contents/LinkedAddressesContent'
 import LogoutContent from './contents/LogoutContent'
+import PrivacySecurityContent from './contents/PrivacySecurityContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import SimpleProfileSettingsContent from './contents/ProfileSettingsContent/SimpleProfileSettingsContent'
 import ShareSessionContent from './contents/ShareSessionContent'
@@ -44,6 +45,7 @@ const modalContents: {
   account: AccountContent,
   'linked-addresses': LinkedAddressesContent,
   'profile-settings': SimpleProfileSettingsContent,
+  'privacy-security': PrivacySecurityContent,
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
@@ -196,14 +198,18 @@ export default function ProfileModal({
         : '🤔 Did you back up your Grill key?',
       withBackButton: true,
     },
+    'privacy-security': {
+      title: '🔑 Privacy & Security',
+      withBackButton: true,
+    },
     'private-key': {
       title: '🔑 My Grill key',
-      withBackButton: true,
+      withBackButton: 'privacy-security',
     },
     'share-session': {
       title: '💻 Share session',
       desc: 'Use this link or scan the QR code to quickly log in to this account on another device.',
-      withBackButton: true,
+      withBackButton: 'privacy-security',
     },
     about: {
       title: 'About app',
