@@ -11,7 +11,6 @@ import { useLinkTelegramAccount } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { useSendEvent } from '@/stores/analytics'
 import { getIsInIos } from '@/utils/window'
-import { useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { ProfileModalContentProps } from '../../types'
@@ -150,7 +149,7 @@ function ConnectTelegramButton({
   address,
   afterConnect,
 }: ProfileModalContentProps & { afterConnect?: () => void }) {
-  const queryClient = useQueryClient()
+  // const queryClient = useQueryClient()
   const sendEvent = useSendEvent()
 
   const {
@@ -188,11 +187,10 @@ function ConnectTelegramButton({
     getLinkingMessage({ action: 'link' })
   }
 
-  const handleClickReload = () => {
-    console.log('masuk clifck reload')
-    getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
-    afterConnect?.()
-  }
+  // const handleClickReload = () => {
+  //   getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
+  //   afterConnect?.()
+  // }
 
   return url ? (
     <div className='flex flex-col gap-4'>
@@ -204,9 +202,9 @@ function ConnectTelegramButton({
           {url}
         </LinkText>
       </Card>
-      <Button size='lg' variant='primaryOutline' onClick={handleClickReload}>
+      {/* <Button size='lg' variant='primaryOutline' onClick={handleClickReload}>
         I have connected the bot
-      </Button>
+      </Button> */}
     </div>
   ) : (
     <Button size='lg' onClick={handleClickLinking} isLoading={isLoading}>
