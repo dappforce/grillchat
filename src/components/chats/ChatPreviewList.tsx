@@ -105,7 +105,7 @@ function ChatPreviewContainer({
       isHidden={chat.struct.hidden}
       image={content?.image}
       title={content?.title}
-      description={content?.summary}
+      description={content?.body}
       chatId={chat.id}
       hubId={usedHubId}
       isPinned={isPinned}

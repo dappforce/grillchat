@@ -46,12 +46,7 @@ const AboutChatModal = dynamic(
   }
 )
 
-type ChatMetadata = {
-  title: string
-  body: string
-  image: string
-  summary?: string
-}
+type ChatMetadata = { title: string; body: string; image: string }
 
 export type ChatPageProps = {
   hubId: string
@@ -292,7 +287,7 @@ function NavbarChatInfo({
     replaceUrl(getCurrentUrlWithoutQuery())
   }, [router])
 
-  const chatTitle = chatMetadata?.title || chatMetadata?.summary || 'Untitled'
+  const chatTitle = chatMetadata?.title
 
   return (
     <div className='flex flex-1 items-center overflow-hidden'>
@@ -316,7 +311,7 @@ function NavbarChatInfo({
         <div className='flex flex-col overflow-hidden'>
           <div className='flex items-center gap-2 overflow-hidden'>
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
-              {chatTitle}
+              {chatTitle || 'Untitled'}
             </span>
             <ChatModerateChip chatId={chatId} />
             {chat?.struct.hidden && (

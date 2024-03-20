@@ -15,30 +15,16 @@ import {
   ApiNotificationsLinkMessageResponse,
 } from '@/pages/api/notifications/link-message'
 import { queryClient } from '@/services/provider'
-import { useMyAccount } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { AxiosResponse } from 'axios'
 import { apiInstance, processMessageTpl } from '../utils'
 import { getLinkedTelegramAccountsQuery } from './query'
 
-async function linkTelegramAccount(
-  data: Omit<ApiNotificationsLinkMessageBody, 'address' | 'parentProxyAddress'>
-) {
+async function linkTelegramAccount(data: ApiNotificationsLinkMessageBody) {
   if (!data) return null
 
-  const { address, parentProxyAddress } = useMyAccount.getState()
-  if (!address) throw new Error('You need to login first')
-
-  const res = await apiInstance.post<
-    any,
-    AxiosResponse<ApiNotificationsLinkMessageResponse>,
-    ApiNotificationsLinkMessageBody
-  >('/api/notifications/link-message', {
-    action: data.action,
-    address,
-    parentProxyAddress,
-  })
-  const encodedMessage = res.data.data
+  const res = await apiInstance.post('/api/notifications/link-message', data)
+  const encodedMessage = (res.data as ApiNotificationsLinkMessageResponse).data
   const signedMessage = await processMessageTpl(encodedMessage)
 
   const linkRes = await apiInstance.post<
@@ -55,37 +41,17 @@ async function linkTelegramAccount(
 export const useLinkTelegramAccount = mutationWrapper(linkTelegramAccount, {
   onSuccess: (_, variables) => {
     if (variables.action === 'unlink') {
-      const { address, parentProxyAddress } = useMyAccount.getState()
-      const mainAddress = parentProxyAddress || address
-      if (!mainAddress) return
-
       getLinkedTelegramAccountsQuery.invalidate(queryClient, {
-        address: mainAddress,
+        address: variables.address,
       })
     }
   },
 })
 
-async function linkFcm(
-  data: Omit<
-    ApiFcmNotificationsLinkMessageBody,
-    'address' | 'parentProxyAddress'
-  >
-) {
+async function linkFcm(data: ApiFcmNotificationsLinkMessageBody) {
   if (!data) return null
 
-  const { parentProxyAddress, address } = useMyAccount.getState()
-  if (!address) throw new Error('You need to login first')
-
-  const res = await apiInstance.post<
-    any,
-    AxiosResponse<ApiFcmNotificationsLinkMessageResponse>,
-    ApiFcmNotificationsLinkMessageBody
-  >('/api/notifications/link-fcm', {
-    ...data,
-    parentProxyAddress,
-    address,
-  })
+  const res = await apiInstance.post('/api/notifications/link-fcm', data)
   const encodedMessage = (res.data as ApiFcmNotificationsLinkMessageResponse)
     .data
   const signedMessage = await processMessageTpl(encodedMessage)

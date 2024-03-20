@@ -83,7 +83,6 @@ export default function ChatPreview({
     }
   }
 
-  const usedTitle = title || description || 'Untitled'
   const defaultDesc = description || (isHidden ? 'Hidden Chat' : title ?? '')
 
   return (
@@ -106,7 +105,7 @@ export default function ChatPreview({
       >
         <ChatImage
           chatId={chatId}
-          chatTitle={usedTitle}
+          chatTitle={title ?? ''}
           image={image}
           rounding={rounding}
           className='self-center sm:h-14 sm:w-14'
@@ -116,7 +115,7 @@ export default function ChatPreview({
             <div className='flex items-center justify-between gap-2 overflow-hidden'>
               <div className='flex items-center gap-2 overflow-hidden'>
                 <span className='overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
-                  {usedTitle}
+                  {title || 'Untitled'}
                 </span>
                 {chatId && <ChatModerateChip chatId={chatId} />}
               </div>

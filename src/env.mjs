@@ -46,7 +46,6 @@ export const env = createEnv({
       .string()
       .default('')
       .transform((val) => val.split(',').filter(Boolean)),
-    NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT: z.string().default(''),
 
     NEXT_PUBLIC_AMP_ID: z.string().default(''),
     NEXT_PUBLIC_GA_ID: z.string().default(''),
@@ -76,8 +75,6 @@ export const env = createEnv({
     NEXT_PUBLIC_SPACE_IDS: process.env.NEXT_PUBLIC_SPACE_IDS,
     NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS:
       process.env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS,
-    NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT:
-      process.env.NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT,
 
     NEXT_PUBLIC_AMP_ID: process.env.NEXT_PUBLIC_AMP_ID,
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
