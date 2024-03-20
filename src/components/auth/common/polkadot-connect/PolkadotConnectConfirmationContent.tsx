@@ -1,7 +1,6 @@
 import LinkingDark from '@/assets/graphics/linking-dark.svg'
 import LinkingLight from '@/assets/graphics/linking-light.svg'
 import Button from '@/components/Button'
-import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
@@ -14,7 +13,6 @@ import { estimatedWaitTime } from '@/utils/network'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { useState } from 'react'
-import { FaArrowRightLong } from 'react-icons/fa6'
 import { PolkadotConnectContentProps } from './types'
 
 export default function PolkadotConnectConfirmationContent({
@@ -91,10 +89,8 @@ export default function PolkadotConnectConfirmationContent({
                         automatically disconnected.
                       </span>
                       <span>
-                        You can connect to the same account using Grill key.{' '}
-                        <LinkText className='font-medium'>
-                          Learn how <FaArrowRightLong className='inline' />
-                        </LinkText>
+                        You can connect to the same account with your Grill key
+                        on the login screen.
                       </span>
                     </div>
                   </Notice>
