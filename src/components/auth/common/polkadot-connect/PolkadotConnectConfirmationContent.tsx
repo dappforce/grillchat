@@ -5,6 +5,7 @@ import { sendEventWithRef } from '@/components/referral/analytics'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount } from '@/stores/my-account'
 import { estimatedWaitTime } from '@/utils/network'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
@@ -86,7 +87,11 @@ export default function PolkadotConnectConfirmationContent({
                         : true
                       setIsProcessing(false)
                       if (!shouldProceed) return
-                      addProxy(null)
+                      await addProxy(null)
+                      useLoginModal.getState().openNextStepModal({
+                        step: 'save-grill-key',
+                        provider: 'polkadot',
+                      })
 
                       linkIdentity({
                         id: connectedWallet?.address ?? '',

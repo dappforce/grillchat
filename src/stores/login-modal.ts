@@ -27,7 +27,12 @@ const initialState: State = {
   openedNextStepModal: undefined,
 }
 
-export const supportedExternalProviders = ['x', 'google', 'evm'] as const
+export const supportedExternalProviders = [
+  'x',
+  'google',
+  'evm',
+  'polkadot',
+] as const
 export type SupportedExternalProvider =
   (typeof supportedExternalProviders)[number]
 const useLoginModalBase = create<State & Actions>()((set, get) => ({

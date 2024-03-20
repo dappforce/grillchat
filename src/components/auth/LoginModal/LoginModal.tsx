@@ -51,7 +51,7 @@ export default function LoginModal({
   const openedNextStepsModal = useLoginModal.use.openedNextStepModal()
   const closeNextStepModal = useLoginModal.use.closeNextStepModal()
 
-  const [isOpenStayUpdatedModal, setIsOpenStayUpdatedModal] = useState(false)
+  // const [isOpenStayUpdatedModal, setIsOpenStayUpdatedModal] = useState(false)
   const { loginOption } = useLoginOption()
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -97,6 +97,7 @@ export default function LoginModal({
       title: '🔗 Connect via Polkadot',
       desc: 'Select a wallet to connect to Grill using an existing Polkadot account',
       withBackButton: true,
+      backToStep: loginOption === 'polkadot' ? 'login' : 'new-account',
       withoutDefaultPadding: true,
     },
     'polkadot-js-limited-support': {
@@ -197,9 +198,9 @@ export default function LoginModal({
           if (disableOutsideClickClose) return
 
           setIsOpen(false)
-          if (loginOption === 'polkadot') {
-            setIsOpenStayUpdatedModal(true)
-          }
+          // if (loginOption === 'polkadot') {
+          //   setIsOpenStayUpdatedModal(true)
+          // }
         }}
       >
         <ModalContent

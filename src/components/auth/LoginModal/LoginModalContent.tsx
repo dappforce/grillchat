@@ -94,27 +94,21 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
               </div>
             </Button>
           )}
-          <Button
-            variant={
-              isConnectWalletPrimaryButton ? 'primary' : 'primaryOutline'
-            }
-            onClick={() => {
-              setCurrentState('polkadot-connect')
-              sendEvent('login_polkadot_account_clicked')
-            }}
-            size='lg'
-          >
-            <div className='flex items-center justify-center gap-2'>
-              <WalletIcon
-                className={cx(
-                  isConnectWalletPrimaryButton
-                    ? 'text-text-muted-on-primary'
-                    : 'text-text-muted'
-                )}
-              />
-              Connect via Polkadot
-            </div>
-          </Button>
+          {loginOption === 'polkadot' && (
+            <Button
+              variant='primary'
+              onClick={() => {
+                setCurrentState('polkadot-connect')
+                sendEvent('login_polkadot_account_clicked')
+              }}
+              size='lg'
+            >
+              <div className='flex items-center justify-center gap-2'>
+                <WalletIcon className={cx('text-text-muted-on-primary')} />
+                Connect via Polkadot
+              </div>
+            </Button>
+          )}
           {loginOption === 'all' && canUseAnonLogin && isInIframe && (
             <Button
               type='button'
@@ -138,9 +132,9 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
           )}
           {!isInIframe && (
             <div className='mt-1 flex flex-col'>
-              <div className='relative mb-4 text-center text-text-muted'>
+              <div className='relative mb-4 flex items-center justify-center text-center text-text-muted'>
                 <div className='absolute top-1/2 h-px w-full bg-background-lightest dark:bg-background-lightest/50' />
-                <span className='relative inline-block bg-background-light px-4 text-sm'>
+                <span className='relative inline-block bg-background-light px-4 text-xs'>
                   OR
                 </span>
               </div>
@@ -152,6 +146,7 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
               )}
               <Button
                 variant='primaryOutline'
+                size='lg'
                 onClick={() => {
                   setCurrentState('new-account')
                   sendEvent('login_create_new_clicked')
@@ -161,9 +156,6 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
                   <HiPlus className='text-[20px] text-text-muted' />
                   <div className='flex flex-col text-left'>
                     <span>Create new account</span>
-                    <span className='text-sm text-text-muted'>
-                      via Metamask, X, Google
-                    </span>
                   </div>
                 </div>
               </Button>
