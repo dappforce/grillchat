@@ -34,6 +34,7 @@ const GET_handler = handlerWrapper({
   inputSchema: querySchema,
   dataGetter: (req: NextApiRequest) => req.query,
 })<ResponseData>({
+  errorLabel: 'profiles',
   allowedMethods: ['GET'],
   handler: async (data, _, res) => {
     const addresses = Array.isArray(data.addresses)
@@ -50,6 +51,7 @@ const POST_handler = handlerWrapper({
   inputSchema: bodySchema,
   dataGetter: (req: NextApiRequest) => req.body,
 })<{}>({
+  errorLabel: 'profiles',
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     redisCallWrapper(async (redis) => {

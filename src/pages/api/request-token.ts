@@ -21,6 +21,7 @@ export default handlerWrapper({
   inputSchema: bodySchema,
   dataGetter: (req) => req.body,
 })<ResponseData>({
+  errorLabel: 'request-token',
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     const isValidAddress = await validateAddress(data.address)

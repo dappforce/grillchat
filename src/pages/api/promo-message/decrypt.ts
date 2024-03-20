@@ -23,6 +23,7 @@ export default handlerWrapper({
   dataGetter: (req: NextApiRequest) => req.body,
 })<ResponseData>({
   allowedMethods: ['POST'],
+  errorLabel: 'decrypt-promo-message',
   handler: async (data, _, res) => {
     let decryptedMessage
 

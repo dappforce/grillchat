@@ -29,6 +29,7 @@ export default handlerWrapper({
   inputSchema: querySchema,
   dataGetter: (req: NextApiRequest) => req.query,
 })<ResponseData>({
+  errorLabel: 'identities',
   allowedMethods: ['GET'],
   handler: async (data, _, res) => {
     const addresses = Array.isArray(data.addresses)

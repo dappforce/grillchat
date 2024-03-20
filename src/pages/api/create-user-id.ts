@@ -17,6 +17,7 @@ export default handlerWrapper({
   inputSchema: bodySchema,
   dataGetter: (req: NextApiRequest) => req.body,
 })<ResponseData>({
+  errorLabel: 'create-user-id',
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     let userId: string

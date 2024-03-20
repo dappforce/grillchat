@@ -14,6 +14,7 @@ export default handlerWrapper({
   inputSchema: bodySchema,
   dataGetter: (req) => req.body,
 })<ResponseData>({
+  errorLabel: 'save-file',
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     const { saveAndPinJson } = getIpfsApi()
