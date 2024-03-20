@@ -187,11 +187,6 @@ function ConnectTelegramButton({
     getLinkingMessage({ action: 'link' })
   }
 
-  // const handleClickReload = () => {
-  //   getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
-  //   afterConnect?.()
-  // }
-
   return url ? (
     <div className='flex flex-col gap-4'>
       <Card className='flex flex-col justify-between overflow-hidden'>
@@ -202,9 +197,14 @@ function ConnectTelegramButton({
           {url}
         </LinkText>
       </Card>
-      {/* <Button size='lg' variant='primaryOutline' onClick={handleClickReload}>
-        I have connected the bot
-      </Button> */}
+      <Button
+        isLoading
+        loadingText='Connecting...'
+        size='lg'
+        variant='primaryOutline'
+      >
+        Connecting
+      </Button>
     </div>
   ) : (
     <Button size='lg' onClick={handleClickLinking} isLoading={isLoading}>
