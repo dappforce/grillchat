@@ -72,6 +72,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 const getPostsData = generateGetDataFromSquidWithBlockchainFallback(
+  'posts',
   getPostsFromSubsocial,
   { paramToId: (param) => param, responseToId: (post) => post.id },
   {
