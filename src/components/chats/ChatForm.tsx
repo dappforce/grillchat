@@ -26,7 +26,6 @@ import {
 } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
-import dynamic from 'next/dynamic'
 import {
   ComponentProps,
   SyntheticEvent,
@@ -42,9 +41,9 @@ import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
 import { sendEventWithRef } from '../referral/analytics'
 
-const StayUpdatedModal = dynamic(() => import('./StayUpdatedModal'), {
-  ssr: false,
-})
+// const StayUpdatedModal = dynamic(() => import('./StayUpdatedModal'), {
+//   ssr: false,
+// })
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   hubId: string

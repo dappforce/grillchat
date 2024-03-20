@@ -109,6 +109,7 @@ export const mapDatahubPostFragment = (
     spaceId: post.space?.id ?? post.rootPost?.space?.id ?? '',
     isUpdated: !!post.updatedAtTime,
     rootPostId: post.rootPost?.persistentId ?? '',
+    parentPostId: post.parentPost?.persistentId ?? null,
     followersCount: post.followersCount ?? 0,
     blockchainSyncFailed: post.blockchainSyncFailed,
   }

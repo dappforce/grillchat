@@ -9,16 +9,6 @@ import {
 import { getCommentIdsByPostIdFromChainQuery } from './query'
 import { SendMessageParams } from './types'
 
-export function getOptimisticContent(
-  postContent: Pick<PostContent, 'body' | 'inReplyTo' | 'extensions'>
-) {
-  return {
-    body: postContent.body,
-    inReplyTo: postContent.inReplyTo,
-    extensions: postContent.extensions,
-  }
-}
-
 export const commentIdsOptimisticEncoder = {
   encode: (id: string) => `optimistic-${id}`,
   decode: (id: string) => id.replace('optimistic-', ''),
@@ -49,6 +39,7 @@ export function addOptimisticData({
       createdAtTime: Date.now(),
       ownerId: address,
       rootPostId: params.chatId,
+      parentPostId: params.replyTo,
     },
     content: ipfsContent,
   } as unknown as PostData)
