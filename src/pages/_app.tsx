@@ -60,7 +60,7 @@ export default function App(props: AppProps<AppCommonProps>) {
           alwaysShowScrollbarOffset={props.pageProps.alwaysShowScrollbarOffset}
         />
         <AppContent {...props} />
-        <PWAInstall />
+        {/* <PWAInstall /> */}
       </ConfigProvider>
     </SessionProvider>
   )
