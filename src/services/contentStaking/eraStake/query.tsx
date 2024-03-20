@@ -10,6 +10,7 @@ export async function getEraStakeRequest(era: string, spaceIds: string[]) {
 }
 
 const getBackerRewards = poolQuery<string, EraStake>({
+  name: 'getBackerRewards',
   multiCall: async (spaceIds) => {
     const { data } = getGeneralEraInfoData()
 

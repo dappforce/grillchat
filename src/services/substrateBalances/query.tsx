@@ -24,6 +24,7 @@ const getBalancesCall = poolQuery<
   BalanceKey,
   { key: string; balances: Record<string, AccountInfoByChain> }
 >({
+  name: 'getBalancesCall',
   multiCall: async (keys) => {
     const promises = keys.map(async ({ address, chainName }) => {
       const result = await getBalancesByNetwork(address, chainName)

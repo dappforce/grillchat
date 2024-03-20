@@ -2,6 +2,7 @@ import { redisCallWrapper } from '@/server/cache'
 import { DataSource } from '@/services/subsocial/utils'
 
 export function generateGetDataFromSquidWithBlockchainFallback<Param, Response>(
+  dataName: string,
   getData: (params: Param[], dataSource?: DataSource) => Promise<Response[]>,
   mapper: {
     paramToId: (param: Param) => string
@@ -61,7 +62,7 @@ export function generateGetDataFromSquidWithBlockchainFallback<Param, Response>(
       }
       mergedPosts.push(...dataFromBlockchain)
     } catch (e) {
-      console.error('Error fetching posts from blockchain', e)
+      console.error(`Error fetching ${dataName} from blockchain`, e)
     }
 
     const filteredPosts = mergedPosts.filter((post) => !!post)

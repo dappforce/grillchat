@@ -13,6 +13,7 @@ import { getIdentities, getPosts, getProfiles } from './fetcher'
 import { apiInstance } from './utils'
 
 const getPost = poolQuery<string, PostData>({
+  name: 'getPost',
   multiCall: async (postIds) => {
     if (postIds.length === 0) return []
     return getPosts(postIds)
@@ -105,6 +106,7 @@ export const getNftQuery = createQuery({
 })
 
 const getProfile = poolQuery<string, SubsocialProfile>({
+  name: 'getProfile',
   multiCall: async (addresses) => {
     if (addresses.length === 0) return []
     return getProfiles(addresses)
@@ -123,6 +125,7 @@ export const getProfileQuery = createQuery({
 })
 
 const getIdentity = poolQuery<string, Identities>({
+  name: 'getIdentity',
   multiCall: async (addresses) => {
     if (addresses.length === 0) return []
     return getIdentities(addresses)

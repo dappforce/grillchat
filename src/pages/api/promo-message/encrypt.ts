@@ -25,6 +25,7 @@ export default handlerWrapper({
   inputSchema: querySchema,
   dataGetter: (req: NextApiRequest) => req.body,
 })<ResponseData>({
+  errorLabel: 'encrypt-promo-message',
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     let encyptedMessage

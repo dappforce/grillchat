@@ -12,6 +12,7 @@ const handler = handlerWrapper({
   dataGetter: (req) => req.body,
 })<{ data: Awaited<ReturnType<typeof getLinkMetadata>> }>({
   allowedMethods: ['POST'],
+  errorLabel: 'revalidation-link',
   handler: async (data, _, res) => {
     try {
       const metadata = await getLinkMetadata(data.link, true)
@@ -24,6 +25,5 @@ const handler = handlerWrapper({
       })
     }
   },
-  errorLabel: 'Error revalidating link',
 })
 export default handler

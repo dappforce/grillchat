@@ -10,6 +10,7 @@ import { createDynamicSubsocialQuery } from '../utils'
 
 const getSpaceFromBlockchain = poolQuery<SubsocialQueryData<string>, SpaceData>(
   {
+    name: 'getSpaceFromBlockchain',
     multiCall: async (allParams) => {
       if (allParams.length === 0) return []
       const [{ api }] = allParams
@@ -34,6 +35,7 @@ export const GET_SPACES = gql`
   }
 `
 const getSpaceFromSquid = poolQuery<string, SpaceData>({
+  name: 'getSpaceFromSquid',
   multiCall: async (spaceIds) => {
     if (spaceIds.length === 0) return []
     const res = await squidRequest<GetSpacesQuery, GetSpacesQueryVariables>({

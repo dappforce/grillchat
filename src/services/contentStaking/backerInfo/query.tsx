@@ -42,6 +42,7 @@ const getBackerInfo = poolQuery<
   Params,
   { account: string; info: Record<string, BackerInfo> }
 >({
+  name: 'getBackerInfo',
   multiCall: async (params) => {
     const resultPromise = params.map(async ({ account, spaceIds }) => {
       const result = await getBackerInfoRequest(account, spaceIds)

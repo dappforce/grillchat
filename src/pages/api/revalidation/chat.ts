@@ -16,6 +16,7 @@ const handler = handlerWrapper({
   inputSchema: bodySchema,
   dataGetter: (req) => req.body,
 })({
+  errorLabel: 'revalidation-chat',
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     try {
@@ -55,6 +56,5 @@ const handler = handlerWrapper({
       })
     }
   },
-  errorLabel: 'Error revalidating post',
 })
 export default handler

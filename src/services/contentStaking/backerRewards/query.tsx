@@ -40,6 +40,7 @@ type Params = {
 }
 
 const getBackerRewards = poolQuery<Params, RewardsData>({
+  name: 'getBackerRewards',
   multiCall: async (params) => {
     const resultPromise = params.map(async ({ account, spaceIds }) => {
       const result = await getBackerRewardsRequest(account, spaceIds)
