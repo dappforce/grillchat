@@ -72,6 +72,7 @@ export default function SubsocialProfileForm({
       {({ mutateAsync, isLoading }) => {
         const onSubmit = handleSubmit(async (data) => {
           await mutateAsync({
+            spaceId: profile?.profileSpace?.id,
             content: {
               ...profile?.profileSpace?.content,
               name: data.name,

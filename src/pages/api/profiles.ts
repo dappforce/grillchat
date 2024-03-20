@@ -2,8 +2,8 @@ import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { generateGetDataFromSquidWithBlockchainFallback } from '@/server/squid'
 import {
-  getProfilesFromSubsocial,
   SubsocialProfile,
+  getProfilesFromSubsocial,
 } from '@/services/subsocial/profiles/fetcher'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -34,6 +34,7 @@ const GET_handler = handlerWrapper({
   inputSchema: querySchema,
   dataGetter: (req: NextApiRequest) => req.query,
 })<ResponseData>({
+  errorLabel: 'profiles',
   allowedMethods: ['GET'],
   handler: async (data, _, res) => {
     const addresses = Array.isArray(data.addresses)
@@ -50,6 +51,7 @@ const POST_handler = handlerWrapper({
   inputSchema: bodySchema,
   dataGetter: (req: NextApiRequest) => req.body,
 })<{}>({
+  errorLabel: 'profiles',
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     redisCallWrapper(async (redis) => {
@@ -74,6 +76,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export const getProfilesServer = generateGetDataFromSquidWithBlockchainFallback(
+  'profiles',
   getProfilesFromSubsocial,
   { paramToId: (param) => param, responseToId: (response) => response.address },
   {

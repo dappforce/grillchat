@@ -61,6 +61,7 @@ export default handlerWrapper({
   inputSchema: querySchema,
   dataGetter: (req: NextApiRequest) => req.query,
 })<NftResponseData>({
+  errorLabel: 'nft',
   allowedMethods: ['GET'],
   handler: async (data, _, res) => {
     const nftProperties = data

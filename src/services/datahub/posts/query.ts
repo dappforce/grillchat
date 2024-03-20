@@ -247,6 +247,7 @@ const getPostMetadata = poolQuery<
   string,
   { lastCommentId: string; totalCommentsCount: number; postId: string }
 >({
+  name: 'getPostMetadata',
   multiCall: async (data) => {
     const res = await datahubQueryRequest<
       GetPostMetadataQuery,
@@ -289,6 +290,7 @@ const getUnreadCount = poolQuery<
   { chatId: string; lastRead: { postId?: string; timestamp?: number } },
   number
 >({
+  name: 'getUnreadCount',
   multiCall: async (data) => {
     const pairs = await Promise.all(
       data.map(async ({ chatId, lastRead }) => {

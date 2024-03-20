@@ -21,6 +21,7 @@ const getPostIdsBySpaceId = poolQuery<
   SubsocialQueryData<string>,
   { spaceId: string; postIds: string[] }
 >({
+  name: 'getPostIdsBySpaceId',
   multiCall: async (allParams) => {
     if (allParams.length === 0) return []
     const [{ api }] = allParams

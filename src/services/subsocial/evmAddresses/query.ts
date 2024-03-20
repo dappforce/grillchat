@@ -13,6 +13,7 @@ export async function getAccountsData(addresses: string[]) {
 }
 
 const getAccountData = poolQuery<string, AccountData>({
+  name: 'getAccountData',
   multiCall: async (addresses) => {
     const filteredAddresses = addresses.filter(Boolean)
     if (filteredAddresses.length === 0) return []

@@ -28,6 +28,7 @@ export async function getPrices(tokenIds: string[]) {
 }
 
 const getPrice = poolQuery<string, Price>({
+  name: 'getPrice',
   multiCall: async (tokensIds) => {
     if (tokensIds.length === 0) return []
     return getPrices(tokensIds)

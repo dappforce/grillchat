@@ -9,6 +9,7 @@ import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
+import { apiInstance } from '@/services/api/utils'
 import { useSendOffchainMessage } from '@/services/datahub/posts/mutation'
 import {
   SendMessageParams,
@@ -423,6 +424,8 @@ function showErrorSendingMessageToast(
       }, remainingSeconds * 1000)
     }
   }
+
+  apiInstance.post('/api/logger', { error: error + '' }).catch(console.error)
 
   showErrorToast(error, title, {
     toastConfig: { duration: isRateLimited ? 5000 : Infinity },

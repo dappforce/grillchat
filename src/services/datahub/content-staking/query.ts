@@ -30,6 +30,7 @@ type SuperLikeCount = {
   count: number
 }
 const getSuperLikeCounts = poolQuery<string, SuperLikeCount>({
+  name: 'getSuperLikeCounts',
   multiCall: async (postIds) => {
     const res = await datahubQueryRequest<
       GetSuperLikeCountsQuery,
@@ -84,6 +85,7 @@ const getAddressLikeCountToPosts = poolQuery<
   { postId: string; address: string },
   AddressLikeCountToPost
 >({
+  name: 'getAddressLikeCountToPosts',
   multiCall: async (params) => {
     if (!params.length) return []
     const addressesToPostIdsMap = new Map<string, string[]>()
@@ -149,6 +151,7 @@ export type CanPostSuperLiked = {
   isExist: boolean
 }
 const getCanPostsSuperLiked = poolQuery<string, CanPostSuperLiked>({
+  name: 'getCanPostsSuperLiked',
   multiCall: async (postIds) => {
     const res = await datahubQueryRequest<
       GetCanPostsSuperLikedQuery,
@@ -235,6 +238,7 @@ export type PostRewards = {
   }
 }
 const getPostRewards = poolQuery<string, PostRewards>({
+  name: 'getPostRewards',
   multiCall: async (postIds) => {
     const res = await datahubQueryRequest<
       GetPostRewardsQuery,

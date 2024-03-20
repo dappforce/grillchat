@@ -13,6 +13,7 @@ export async function getStakingConstsRequest() {
 }
 
 const getStakingConsts = poolQuery<string, StakingConsts>({
+  name: 'getStakingConsts',
   multiCall: async () => {
     const result = await getStakingConstsRequest()
 

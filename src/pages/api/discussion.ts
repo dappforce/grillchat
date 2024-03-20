@@ -42,6 +42,7 @@ export default handlerWrapper({
   inputSchema: bodySchema,
   dataGetter: (req: NextApiRequest) => req.body,
 })<DiscussionDataResponse>({
+  errorLabel: 'discussion',
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     const { resourceId, spaceId, content } = data

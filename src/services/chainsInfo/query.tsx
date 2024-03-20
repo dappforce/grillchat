@@ -25,6 +25,7 @@ export const useGetChainDataByNetwork = (network: string) => {
 }
 
 const getChainsInfoCall = poolQuery<string, ChainInfo>({
+  name: 'getChainsInfo',
   multiCall: async () => {
     const result = await getChainsInfo()
 
