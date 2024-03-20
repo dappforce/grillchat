@@ -7,7 +7,7 @@ import datahubMutation from '@/services/datahub/posts/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
+import { IpfsWrapper, ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
@@ -100,17 +100,13 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             summary: 'Updating message',
           }
         } else {
-          const replyToPersistentId =
-            data.replyTo && isPersistentId(data.replyTo)
-              ? data.replyTo
-              : undefined
           await datahubMutation.createPostData({
             ...getCurrentWallet(),
             args: {
               content: content,
               cid: cid,
               rootPostId: data.chatId,
-              parentPostId: replyToPersistentId,
+              parentPostId: ParentPostIdWrapper(data.replyTo),
               spaceId: data.hubId,
             },
           })
@@ -121,7 +117,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               null,
               {
                 Comment: {
-                  parentPostId: replyToPersistentId || null,
+                  parentPostId: ParentPostIdWrapper(data.replyTo) || null,
                   rootPostId: data.chatId,
                 },
               },

@@ -58,6 +58,13 @@ export function ReplyWrapper(replyToMessageId: string | undefined | null) {
       } as const)
     : undefined
 }
+export function ParentPostIdWrapper(
+  replyToMessageId: string | undefined | null
+) {
+  if (replyToMessageId && isPersistentId(replyToMessageId))
+    return replyToMessageId
+  return undefined
+}
 
 const block = {
   get: async (cid: string) => {

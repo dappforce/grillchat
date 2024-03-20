@@ -7,7 +7,7 @@ import {
   deleteOptimisticData,
 } from '@/services/subsocial/commentIds/optimistic'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { ReplyWrapper } from '@/utils/ipfs'
+import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { stringToU8a, u8aToHex } from '@polkadot/util'
 import { blake2AsHex, decodeAddress } from '@polkadot/util-crypto'
@@ -32,7 +32,6 @@ import {
   createSignedSocialDataEvent,
   isDatahubAvailable,
 } from '../utils'
-import { isPersistentId } from './fetcher'
 
 export function isValidUUIDv4(maybeUuid: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -277,10 +276,7 @@ export function useSendOffchainMessage(
         timestamp: data.timestamp,
         isOffchain: true,
         args: {
-          parentPostId:
-            data.replyTo && isPersistentId(data.replyTo)
-              ? data.replyTo
-              : undefined,
+          parentPostId: ParentPostIdWrapper(data.replyTo),
           content: content,
           rootPostId: data.chatId,
           spaceId: data.hubId,
