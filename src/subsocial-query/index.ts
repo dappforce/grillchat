@@ -93,7 +93,12 @@ export function poolQuery<SingleParam, SingleReturn>(
       }
       currentBatchResolver(result)
     } catch (e) {
-      console.error(`Error in poolQuery: ${name}`, e)
+      console.error(
+        `Error in poolQuery: ${name}, params: ${JSON.stringify(
+          currentQueryPool
+        )}`,
+        e
+      )
       currentBatchResolver([])
     }
   }
