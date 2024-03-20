@@ -42,25 +42,21 @@ export async function getTelegramAccountsLinked(address: string) {
 
 // Linking
 const CREATE_LINKING_MESSAGE_FOR_TELEGRAM = gql`
-  query GetLinkingMessageForTelegram(
-    $input: LinkAddressWithTelegramAccountMessageInput!
-  ) {
-    linkAddressWithTelegramAccountMessage(input: $input) {
+  query GetLinkingMessageForTelegram($address: String!) {
+    linkingMessageForTelegramAccount(substrateAccount: $address) {
       messageTpl
     }
   }
 `
-export async function createLinkingMessageForTelegram(
-  input: GetLinkingMessageForTelegramQueryVariables['input']
-) {
+export async function createLinkingMessageForTelegram(address: string) {
   const data = await notificationsRequest<
     GetLinkingMessageForTelegramQuery,
     GetLinkingMessageForTelegramQueryVariables
   >({
     document: CREATE_LINKING_MESSAGE_FOR_TELEGRAM,
-    variables: { input },
+    variables: { address },
   })
-  return data.linkAddressWithTelegramAccountMessage.messageTpl
+  return data.linkingMessageForTelegramAccount.messageTpl
 }
 
 const CREATE_TEMPORARY_LINKING_ID_FOR_TELEGRAM = gql`
@@ -90,25 +86,21 @@ export async function createTemporaryLinkingUrlForTelegram(
 
 // Unlinking
 const CREATE_UNLINKING_MESSAGE_FOR_TELEGRAM = gql`
-  query GetUnlinkingMessageForTelegram(
-    $input: UnlinkAddressWithTelegramAccountMessageInput!
-  ) {
-    unlinkAddressFromTelegramAccountMessage(input: $input) {
+  query GetUnlinkingMessageForTelegram($address: String!) {
+    unlinkingMessageForTelegramAccount(substrateAccount: $address) {
       messageTpl
     }
   }
 `
-export async function createUnlinkingMessageForTelegram(
-  input: GetUnlinkingMessageForTelegramQueryVariables['input']
-) {
+export async function createUnlinkingMessageForTelegram(address: string) {
   const data = await notificationsRequest<
     GetUnlinkingMessageForTelegramQuery,
     GetUnlinkingMessageForTelegramQueryVariables
   >({
     document: CREATE_UNLINKING_MESSAGE_FOR_TELEGRAM,
-    variables: { input },
+    variables: { address },
   })
-  return data.unlinkAddressFromTelegramAccountMessage.messageTpl
+  return data.unlinkingMessageForTelegramAccount.messageTpl
 }
 
 const UNLINK_TELEGRAM_ACCOUNT = gql`
@@ -137,46 +129,48 @@ export async function unlinkTelegramAccount(signedMessageWithDetails: string) {
 
 // Linking FCM Token with Account.
 const GET_LINKING_MESSAGE_FOR_FCM = gql`
-  query GetLinkingMessageForFcm(
-    $input: AddFcmTokenToAddressMessageMessageInput!
-  ) {
-    addFcmTokenToAddressMessage(input: $input) {
+  query GetLinkingMessageForFcm($address: String!, $fcmToken: String!) {
+    addFcmTokenToAddressMessage(
+      input: { substrateAddress: $address, fcmToken: $fcmToken }
+    ) {
       messageTpl
     }
   }
 `
 export async function createLinkingMessageForFcm(
-  input: GetLinkingMessageForFcmQueryVariables['input']
+  address: string,
+  fcmToken: string
 ) {
   const data = await notificationsRequest<
     GetLinkingMessageForFcmQuery,
     GetLinkingMessageForFcmQueryVariables
   >({
     document: GET_LINKING_MESSAGE_FOR_FCM,
-    variables: { input },
+    variables: { address, fcmToken },
   })
   return data.addFcmTokenToAddressMessage.messageTpl
 }
 
 // Unlinking FCM Token with Account.
 const GET_UNLINKING_MESSAGE_FOR_FCM = gql`
-  query GetUnlinkingMessageFromFcm(
-    $input: DeleteFcmTokenFromAddressMessageInput!
-  ) {
-    deleteFcmTokenFromAddressMessage(input: $input) {
+  query GetUnlinkingMessageFromFcm($address: String!, $fcmToken: String!) {
+    deleteFcmTokenFromAddressMessage(
+      input: { substrateAddress: $address, fcmToken: $fcmToken }
+    ) {
       messageTpl
     }
   }
 `
 export async function createUnlinkingMessageForFcm(
-  input: GetUnlinkingMessageFromFcmQueryVariables['input']
+  address: string,
+  fcmToken: string
 ) {
   const data = await notificationsRequest<
     GetUnlinkingMessageFromFcmQuery,
     GetUnlinkingMessageFromFcmQueryVariables
   >({
     document: GET_UNLINKING_MESSAGE_FOR_FCM,
-    variables: { input },
+    variables: { address, fcmToken },
   })
   return data.deleteFcmTokenFromAddressMessage.messageTpl
 }

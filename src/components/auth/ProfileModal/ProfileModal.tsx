@@ -9,7 +9,6 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { SessionStorage } from '@/utils/storage'
-import { useQueryClient } from '@tanstack/react-query'
 import React, { useCallback, useEffect, useState } from 'react'
 import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
 import LimitedPolkadotJsSupportContent, {
@@ -106,7 +105,6 @@ export default function ProfileModal({
   disableOutsideClickClose,
   ...props
 }: ProfileModalProps) {
-  const queryClient = useQueryClient()
   const { isOpen, defaultOpenState, closeModal, onBackClick } =
     useProfileModal()
 
@@ -245,10 +243,7 @@ export default function ProfileModal({
     'telegram-notifications': {
       title: '🔔 Telegram bot',
       desc: 'Connect your account to our Telegram bot to receive notifications from Grill.',
-      withBackButton: () => {
-        getLinkedTelegramAccountsQuery.invalidate(queryClient)
-        return 'notifications'
-      },
+      withBackButton: 'notifications',
     },
     'push-notifications': {
       title: '🔔 Push Notifications',

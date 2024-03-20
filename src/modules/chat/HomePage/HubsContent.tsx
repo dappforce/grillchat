@@ -98,7 +98,7 @@ function ChatPreviewContainer({
       isPinned={getPinnedHubIds().includes(hub.id)}
       image={content?.image}
       title={content?.name}
-      description={content?.summary}
+      description={content?.about}
       withFocusedStyle={isFocused}
     />
   )

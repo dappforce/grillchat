@@ -8,7 +8,6 @@ import { z } from 'zod'
 
 const bodySchema = z.object({
   address: z.string(),
-  parentProxyAddress: z.string().optional(),
   action: z.union([z.literal('link'), z.literal('unlink')], {
     invalid_type_error: 'Invalid action',
   }),
@@ -32,10 +31,7 @@ export default handlerWrapper({
         ? createLinkingMessageForTelegram
         : createUnlinkingMessageForTelegram
 
-    const message = await createMessageForTelegram({
-      substrateAddress: data.parentProxyAddress || data.address,
-      proxySubstrateAddress: data.parentProxyAddress ? data.address : undefined,
-    })
+    const message = await createMessageForTelegram(data.address)
 
     return res.status(200).send({
       success: true,
