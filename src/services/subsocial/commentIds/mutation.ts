@@ -117,7 +117,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               null,
               {
                 Comment: {
-                  parentPostId: ParentPostIdWrapper(data.replyTo) || null,
+                  parentId: ParentPostIdWrapper(data.replyTo) || null,
                   rootPostId: data.chatId,
                 },
               },
