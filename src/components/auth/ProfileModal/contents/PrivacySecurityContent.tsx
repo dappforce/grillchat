@@ -1,4 +1,6 @@
+import GrillKeyDark from '@/assets/graphics/grill-key-dark.svg'
 import GrillKey from '@/assets/graphics/grill-key.svg'
+import ShareSessionDark from '@/assets/graphics/share-session-dark.svg'
 import ShareSession from '@/assets/graphics/share-session.svg'
 import Button from '@/components/Button'
 import { HiChevronRight } from 'react-icons/hi2'
@@ -16,7 +18,8 @@ export default function PrivacySecurityContent({
         interactive='none'
         onClick={() => setCurrentState('private-key')}
       >
-        <GrillKey className='w-16 flex-shrink-0' />
+        <GrillKey className='w-16 flex-shrink-0 dark:hidden' />
+        <GrillKeyDark className='w-16 flex-shrink-0 dark:block' />
         <div className='mb-4 flex flex-1 items-center gap-4'>
           <div className='flex flex-1 flex-col gap-1.5'>
             <span className='font-semibold'>Grill Key</span>
@@ -34,7 +37,8 @@ export default function PrivacySecurityContent({
         interactive='none'
         onClick={() => setCurrentState('share-session')}
       >
-        <ShareSession className='w-16 flex-shrink-0' />
+        <ShareSession className='w-16 flex-shrink-0 dark:hidden' />
+        <ShareSessionDark className='w-16 flex-shrink-0 dark:block' />
         <div className='flex flex-1 items-center gap-4'>
           <div className='flex flex-1 flex-col gap-1.5'>
             <span className='font-semibold'>Share Session</span>
