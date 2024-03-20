@@ -93,6 +93,7 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://sub-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://sub-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://sub-queue-data-hub.subsocial.network/graphql
+            GH_NOTIFICATIONS_URL=https://sub-notif-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_APP_ID=1
             GH_NEXT_PUBLIC_NOTIFICATION_APP_ID=BECyoVsDLEgsOj9MvhoetL3YGYZVCE5RzhADmBugpp0hu7QBV_xG8veiT_qAFxF9S8qXKhPvaPiD5oMrdWrFNB0
             GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/grill_notifications_bot/
