@@ -42,7 +42,7 @@ export function generateGetDataFromSquidWithBlockchainFallback<Param, Response>(
         })
       }
     } catch (e) {
-      console.error('Error fetching posts from squid', e)
+      console.error(`Error fetching ${dataName} from squid`, e)
     }
 
     const foundPostIds = new Set()
