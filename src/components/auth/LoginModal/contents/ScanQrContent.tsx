@@ -96,7 +96,7 @@ export default function ScanQrContent({ closeModal }: LoginModalContentProps) {
       <span className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>
         Allow camera to scan QR
       </span>
-      <video ref={videoRef} className='h-full w-full' />
+      <video ref={videoRef} className='h-full w-full object-cover' />
       {isLoading && (
         <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>
           <Spinner className='h-16 w-16' />
