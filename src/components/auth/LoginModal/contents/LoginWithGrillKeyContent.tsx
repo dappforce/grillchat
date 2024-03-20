@@ -75,7 +75,8 @@ export const LoginWithGrillKeyContent = ({
         interactive='none'
         className='absolute right-5 top-[1.625rem] flex items-center gap-2 text-text-primary md:right-6 md:top-7'
       >
-        <AiOutlineScan className='text-xl' /> Scan QR
+        <AiOutlineScan className='text-2xl md:text-xl' />
+        <span className='hidden md:block'> Scan QR</span>
       </Button>
       <TextArea
         ref={inputRef}
