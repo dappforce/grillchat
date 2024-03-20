@@ -19,7 +19,7 @@ export default function PrivacySecurityContent({
         onClick={() => setCurrentState('private-key')}
       >
         <GrillKey className='w-16 flex-shrink-0 dark:hidden' />
-        <GrillKeyDark className='w-16 flex-shrink-0 dark:block' />
+        <GrillKeyDark className='hidden w-16 flex-shrink-0 dark:block' />
         <div className='mb-4 flex flex-1 items-center gap-4'>
           <div className='flex flex-1 flex-col gap-1.5'>
             <span className='font-semibold'>Grill Key</span>
@@ -38,7 +38,7 @@ export default function PrivacySecurityContent({
         onClick={() => setCurrentState('share-session')}
       >
         <ShareSession className='w-16 flex-shrink-0 dark:hidden' />
-        <ShareSessionDark className='w-16 flex-shrink-0 dark:block' />
+        <ShareSessionDark className='hidden w-16 flex-shrink-0 dark:block' />
         <div className='flex flex-1 items-center gap-4'>
           <div className='flex flex-1 flex-col gap-1.5'>
             <span className='font-semibold'>Share Session</span>
