@@ -27,6 +27,8 @@ export default function ScanQrContent({ closeModal }: LoginModalContentProps) {
     const scanner = new QrScanner(
       videoRef.current,
       async (result) => {
+        if (isLoading) return
+
         setIsLoading(true)
         try {
           const sk = result.data.split(`${ACCOUNT_SECRET_KEY_URL_PARAMS}=`)[1]
