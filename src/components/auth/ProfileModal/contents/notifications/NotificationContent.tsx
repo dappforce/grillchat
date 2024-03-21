@@ -31,8 +31,11 @@ export default function NotificationContent({
           text: (
             <span className='flex items-center gap-2'>
               <span>Telegram Bot</span>
-              {!!linkedAccounts?.length && <Notice size='sm'>Enabled</Notice>}
-              {telegram.showNotification && <DotBlinkingNotification />}
+              {!!linkedAccounts?.length ? (
+                <Notice size='sm'>Enabled</Notice>
+              ) : (
+                telegram.showNotification && <DotBlinkingNotification />
+              )}
             </span>
           ),
           iconClassName: cx('text-text-muted text-[20px]'),

@@ -192,10 +192,10 @@ export default function Navbar({
           ) : (
             <div className='flex w-full items-center justify-between'>
               {logoLink}
-              <div className='flex items-center gap-1'>
+              <div className='flex items-center'>
                 {newPostButton}
                 {notificationBell}
-                {authComponent}
+                <div className='ml-2.5'>{authComponent}</div>
               </div>
             </div>
           )}

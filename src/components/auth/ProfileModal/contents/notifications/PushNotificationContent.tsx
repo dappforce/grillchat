@@ -2,13 +2,13 @@ import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import Toast from '@/components/Toast'
+import useToastError from '@/hooks/useToastError'
 import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { getMessageToken } from '@/services/firebase/messaging'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { installApp, isInstallAvailable } from '@/utils/install'
 import { LocalStorage } from '@/utils/storage'
-import { getIsInIos } from '@/utils/window'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { FiPlusSquare } from 'react-icons/fi'
@@ -23,9 +23,9 @@ export const fcmPushNotificationStorage = new LocalStorage(
 type NotificationUsableStatus = 'need-install' | 'unsupported' | 'usable'
 export function getPushNotificationUsableStatus(): NotificationUsableStatus {
   if (typeof Notification === 'undefined') {
-    if (getIsInIos()) {
-      return 'need-install'
-    }
+    // if (getIsInIos()) {
+    //   return 'need-install'
+    // }
     return 'unsupported'
   }
   return 'usable'
@@ -175,7 +175,7 @@ function DisableNotificationButton({
     setIsGettingToken(false)
     if (!fcmToken) return
 
-    unlinkFcm({ address, fcmToken, action: 'unlink' })
+    unlinkFcm({ fcmToken, action: 'unlink' })
   }
 
   return (
@@ -199,7 +199,11 @@ function EnableNotificationButton({
   const [fcmToken, setFcmToken] = useState<string | undefined>()
   const sendEvent = useSendEvent()
 
-  const { mutate: linkFcm, isLoading: isLinking } = useLinkFcm({
+  const {
+    mutate: linkFcm,
+    isLoading: isLinking,
+    error,
+  } = useLinkFcm({
     onSuccess: () => {
       // FCM Token Enabled.
       if (fcmToken && myAddress) {
@@ -209,6 +213,7 @@ function EnableNotificationButton({
       }
     },
   })
+  useToastError(error, 'Failed to enable push notification')
 
   const isLoading = isLinking || isGettingToken
 
@@ -220,12 +225,19 @@ function EnableNotificationButton({
     if (!fcmToken) return
 
     setFcmToken(fcmToken)
-    linkFcm({ address, fcmToken, action: 'link' })
+    linkFcm({ fcmToken, action: 'link' })
     sendEvent('wp_notifs_asked')
   }
 
   return (
-    <Button size='lg' onClick={handleClickEnable} isLoading={isLoading}>
+    <Button
+      size='lg'
+      onClick={handleClickEnable}
+      isLoading={isLoading}
+      loadingText={
+        isGettingToken ? 'Pending Notification Approval...' : undefined
+      }
+    >
       Enable Notifications
     </Button>
   )

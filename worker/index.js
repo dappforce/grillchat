@@ -1,6 +1,9 @@
 import { gql, GraphQLClient } from 'graphql-request'
-import { getIncludedChatIdsForUnreadCount } from '../src/constants/chat'
 import { appStorage } from '../src/constants/localforage'
+
+// grill chat, polkadot chat
+const includedChatIdsInUnreadCount = ['54469', '54461']
+const grillSpaces = (process.env.NEXT_PUBLIC_SPACE_IDS ?? '').split(',')
 
 // Handling Notification Click event.
 // Keep this method above the importScripts to avoid overriding.
@@ -17,7 +20,11 @@ self.addEventListener('notificationclick', (event) => {
       const data = notification['FCM_MSG']['data']
       const { postId, rootPostId } = data
       spaceId = data.spaceId
-      urlToOpen += `/${spaceId}/${rootPostId}/${postId}`
+      if (grillSpaces.includes(spaceId)) {
+        urlToOpen += `/c/${spaceId}/${rootPostId}/${postId}`
+      } else {
+        urlToOpen += `/comments/${postId}`
+      }
     }
   } catch (e) {
     console.warn('Error in loading notification response:', e)
@@ -54,7 +61,7 @@ const getAddressStorageKey = () => 'accountPublicKey'
 const getFollowedIdsStorageKey = (address) => `followedPostIds:${address}`
 async function getUnreadCount(squidUrl) {
   const address = await appStorage.getItem(getAddressStorageKey())
-  let chatIdsToFetch = getIncludedChatIdsForUnreadCount()
+  let chatIdsToFetch = includedChatIdsInUnreadCount
   if (address) {
     try {
       const followedIds = JSON.parse(
