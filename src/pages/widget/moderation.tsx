@@ -38,7 +38,7 @@ export default function ModerationPage() {
       isOpen={isOpen}
       closeModal={() => setIsOpen(false)}
       messageId={postToModerate}
-      withoutRevalidateCurrentPath
+      isFromWidget
     />
   )
 }

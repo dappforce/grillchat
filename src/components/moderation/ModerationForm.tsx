@@ -24,7 +24,7 @@ import SelectInput, { ListItem } from '../inputs/SelectInput'
 export type ModerationFormProps = ComponentProps<'form'> & {
   messageId: string
   chatId?: string
-  withoutRevalidateCurrentPath?: boolean
+  isFromWidget?: boolean
   onSuccess?: () => void
 }
 
@@ -57,7 +57,7 @@ export default function ModerationForm({
   messageId,
   chatId,
   onSuccess,
-  withoutRevalidateCurrentPath,
+  isFromWidget,
   ...props
 }: ModerationFormProps) {
   const sendEvent = useSendEvent()
@@ -71,7 +71,8 @@ export default function ModerationForm({
     [reasons]
   )
 
-  const { data: message } = getPostQuery.useQuery(messageId)
+  const { data: message, isLoading: isLoadingPost } =
+    getPostQuery.useQuery(messageId)
   const ownerId = message?.struct.ownerId ?? ''
 
   const { name } = useName(ownerId)
@@ -85,7 +86,7 @@ export default function ModerationForm({
         const isBlockingOwner = args.resourceId === ownerId
         const undo = () =>
           mutate({
-            withoutRevalidateCurrentPath,
+            withoutRevalidateCurrentPath: isFromWidget,
             callName: 'synth_moderation_unblock_resource',
             args: {
               resourceId: args.resourceId,
@@ -164,7 +165,8 @@ export default function ModerationForm({
         let resourceId: string
         switch (blockingContent.id) {
           case 'message':
-            resourceId = message?.entityId ?? ''
+            if (isFromWidget) resourceId = messageId
+            else resourceId = message?.entityId ?? ''
             break
           case 'owner':
             resourceId = ownerId
@@ -176,7 +178,7 @@ export default function ModerationForm({
         const reasonId = reason.id
 
         mutate({
-          withoutRevalidateCurrentPath,
+          withoutRevalidateCurrentPath: isFromWidget,
           callName: 'synth_moderation_block_resource',
           args: {
             reasonId,
@@ -249,6 +251,7 @@ export default function ModerationForm({
         schema={formSchema}
         watch={watch}
         size='lg'
+        disabled={isLoadingPost}
         isLoading={isLoading}
       >
         Moderate

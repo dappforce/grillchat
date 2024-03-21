@@ -4,13 +4,13 @@ import ModerationForm from './ModerationForm'
 export type ModerationModalProps = ModalFunctionalityProps & {
   messageId: string
   chatId?: string
-  withoutRevalidateCurrentPath?: boolean
+  isFromWidget?: boolean
 }
 
 export default function ModerationModal({
   messageId,
   chatId,
-  withoutRevalidateCurrentPath,
+  isFromWidget,
   ...props
 }: ModerationModalProps) {
   return (
@@ -25,7 +25,7 @@ export default function ModerationModal({
           onSuccess={() => props.closeModal()}
           chatId={chatId}
           messageId={messageId}
-          withoutRevalidateCurrentPath={withoutRevalidateCurrentPath}
+          isFromWidget={isFromWidget}
         />
       </div>
     </Modal>
