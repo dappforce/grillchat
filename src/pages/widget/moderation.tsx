@@ -4,11 +4,11 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { useEffect, useState } from 'react'
 
 export default function ModerationPage() {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
   const myAddress = useMyMainAddress()
   const isAdmin = useIsModerationAdmin(myAddress ?? '')
 
-  const [postToModerate, setPostToModerate] = useState('68319')
+  const [postToModerate, setPostToModerate] = useState('')
 
   useEffect(() => {
     const handler = async (event: MessageEvent) => {
