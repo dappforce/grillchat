@@ -31,8 +31,7 @@ export default function ModerationPage() {
     return () => {
       window.removeEventListener('message', handler)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [isAdmin])
 
   return (
     <ModerationModal
