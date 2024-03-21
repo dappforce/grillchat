@@ -1,12 +1,19 @@
 import ModerationModal from '@/components/moderation/ModerationModal'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import { useMyMainAddress } from '@/stores/my-account'
+import { sendMessageToParentWindow } from '@/utils/window'
 import { useEffect, useState } from 'react'
 
 export default function ModerationPage() {
   const [isOpen, setIsOpen] = useState(false)
   const myAddress = useMyMainAddress()
   const isAdmin = useIsModerationAdmin(myAddress ?? '')
+
+  useEffect(() => {
+    if (!isOpen) {
+      sendMessageToParentWindow('moderation', 'close')
+    }
+  }, [isOpen])
 
   const [postToModerate, setPostToModerate] = useState('')
 
