@@ -20,7 +20,7 @@ type ModerationCallNames =
   | (typeof socialCallName)['synth_moderation_unblock_resource']
 type ModerationActionsParams<T extends ModerationCallNames> = DatahubParams<
   SocialCallDataArgs<T>
-> & { callName: T }
+> & { callName: T; withoutRevalidateCurrentPath?: boolean }
 async function moderationActions<T extends ModerationCallNames>(
   data: ModerationActionsParams<T>
 ) {
@@ -64,6 +64,7 @@ export const useModerationActions = mutationWrapper(
   },
   {
     onSuccess: (_, variables) => {
+      if (variables.withoutRevalidateCurrentPath) return
       // HOTFIX: there is no event from subscription when the new moderator and org is linked, so we invalidate the query manually
       const completeArgs = augmentModerationActionParams(variables)
       if (completeArgs.callName === 'synth_moderation_init_moderator') {

@@ -23,8 +23,8 @@ import SelectInput, { ListItem } from '../inputs/SelectInput'
 
 export type ModerationFormProps = ComponentProps<'form'> & {
   messageId: string
-  chatId: string
-  hubId: string
+  chatId?: string
+  withoutRevalidateCurrentPath?: boolean
   onSuccess?: () => void
 }
 
@@ -56,8 +56,8 @@ const blockingContentOptions = (isOwner?: boolean) => {
 export default function ModerationForm({
   messageId,
   chatId,
-  hubId,
   onSuccess,
+  withoutRevalidateCurrentPath,
   ...props
 }: ModerationFormProps) {
   const sendEvent = useSendEvent()
@@ -85,6 +85,7 @@ export default function ModerationForm({
         const isBlockingOwner = args.resourceId === ownerId
         const undo = () =>
           mutate({
+            withoutRevalidateCurrentPath,
             callName: 'synth_moderation_unblock_resource',
             args: {
               resourceId: args.resourceId,
@@ -175,6 +176,7 @@ export default function ModerationForm({
         const reasonId = reason.id
 
         mutate({
+          withoutRevalidateCurrentPath,
           callName: 'synth_moderation_block_resource',
           args: {
             reasonId,
