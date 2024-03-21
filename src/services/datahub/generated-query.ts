@@ -309,6 +309,7 @@ export type DailyStatsByStakerResponse = {
 }
 
 export enum DataHubClientId {
+  Grillapp = 'GRILLAPP',
   Grillso = 'GRILLSO',
   Other = 'OTHER',
   Polkaverse = 'POLKAVERSE',
@@ -696,6 +697,7 @@ export type Post = {
   image?: Maybe<Scalars['String']['output']>
   inReplyToKind?: Maybe<InReplyToKind>
   inReplyToPost?: Maybe<Post>
+  ipfsContentRefetchCount: Scalars['Int']['output']
   isComment: Scalars['Boolean']['output']
   isShowMore: Scalars['Boolean']['output']
   kind: PostKind
@@ -1084,6 +1086,7 @@ export type RewardsReportItem = {
   amount: Scalars['String']['output']
   decimals: Scalars['Int']['output']
   roles: Array<Scalars['String']['output']>
+  trialCreatorAmount?: Maybe<Scalars['String']['output']>
 }
 
 export enum SocialEventDataType {
@@ -1665,6 +1668,7 @@ export type DatahubPostFragmentFragment = {
     persistentId?: string | null
     space?: { __typename?: 'Space'; id: string } | null
   } | null
+  parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
   inReplyToPost?: { __typename?: 'Post'; persistentId?: string | null } | null
   extensions: Array<{
     __typename?: 'ContentExtension'
@@ -1740,6 +1744,7 @@ export type GetPostsQuery = {
         persistentId?: string | null
         space?: { __typename?: 'Space'; id: string } | null
       } | null
+      parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
       inReplyToPost?: {
         __typename?: 'Post'
         persistentId?: string | null
@@ -1819,6 +1824,7 @@ export type GetOptimisticPostsQuery = {
         persistentId?: string | null
         space?: { __typename?: 'Space'; id: string } | null
       } | null
+      parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
       inReplyToPost?: {
         __typename?: 'Post'
         persistentId?: string | null
@@ -1978,6 +1984,9 @@ export const DatahubPostFragment = gql`
       space {
         id
       }
+    }
+    parentPost {
+      persistentId
     }
     inReplyToKind
     inReplyToPost {

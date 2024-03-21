@@ -7,7 +7,7 @@ import {
   deleteOptimisticData,
 } from '@/services/subsocial/commentIds/optimistic'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { ReplyWrapper } from '@/utils/ipfs'
+import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { stringToU8a, u8aToHex } from '@polkadot/util'
 import { blake2AsHex, decodeAddress } from '@polkadot/util-crypto'
@@ -59,17 +59,19 @@ export function getDeterministicId({
 async function createPostData(
   params: DatahubParams<{
     rootPostId?: string
+    parentPostId?: string
     spaceId: string
     cid?: string
     content: PostContent
   }>
 ) {
   const { args } = params
-  const { content, spaceId, cid, rootPostId } = args
+  const { content, spaceId, cid, rootPostId, parentPostId } = args
   const eventArgs: CreatePostCallParsedArgs = {
     forced: false,
     postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
     rootPostId,
+    parentPostId,
     spaceId,
     ipfsSrc: cid,
   }
@@ -274,6 +276,7 @@ export function useSendOffchainMessage(
         timestamp: data.timestamp,
         isOffchain: true,
         args: {
+          parentPostId: ParentPostIdWrapper(data.replyTo),
           content: content,
           rootPostId: data.chatId,
           spaceId: data.hubId,

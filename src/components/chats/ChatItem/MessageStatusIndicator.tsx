@@ -4,6 +4,7 @@ import Toast from '@/components/Toast'
 import Modal from '@/components/modals/Modal'
 import { env } from '@/env.mjs'
 import useRerender from '@/hooks/useRerender'
+import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import { ResendFailedMessageWrapper } from '@/services/subsocial/commentIds/mutation'
 import {
   isClientGeneratedOptimisticId,
@@ -17,6 +18,7 @@ import { SyntheticEvent, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { BsExclamationLg } from 'react-icons/bs'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
+import { getRepliedMessageId } from '../utils'
 import CheckMarkExplanationModal from './CheckMarkExplanationModal'
 
 export type MessageStatus = 'sending' | 'offChain' | 'optimistic' | 'blockchain'
@@ -35,6 +37,7 @@ export default function MessageStatusIndicator({
 
   const messageStatus = getMessageStatusById(message)
   const isOffchainMessageInUsualHub =
+    !isPersistentId(message.id) &&
     message.struct.dataType === 'offChain' &&
     !env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(
       message.struct.spaceId ?? ''
@@ -149,6 +152,7 @@ function ResendMessageIndicator({
                   await mutateAsync({
                     chatId: message.struct.rootPostId,
                     content: message.content,
+                    replyTo: getRepliedMessageId(message),
                   })
                   toast.custom((t) => (
                     <Toast

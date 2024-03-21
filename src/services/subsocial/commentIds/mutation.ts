@@ -2,11 +2,12 @@ import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useRevalidateChatPage, useSaveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
+import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { IpfsWrapper, ReplyWrapper } from '@/utils/ipfs'
+import { IpfsWrapper, ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
@@ -105,6 +106,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               content: content,
               cid: cid,
               rootPostId: data.chatId,
+              parentPostId: ParentPostIdWrapper(data.replyTo),
               spaceId: data.hubId,
             },
           })
@@ -113,7 +115,12 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           return {
             tx: substrateApi.tx.posts.createPost(
               null,
-              { Comment: { parentId: null, rootPostId: data.chatId } },
+              {
+                Comment: {
+                  parentId: ParentPostIdWrapper(data.replyTo) || null,
+                  rootPostId: data.chatId,
+                },
+              },
               IpfsWrapper(cid)
             ),
             summary: 'Sending message',
@@ -204,6 +211,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
 
 type ResendFailedMessageParams = {
   chatId: string
+  replyTo?: string
   content: PostContent
 }
 export function useResendFailedMessage(
@@ -217,6 +225,10 @@ export function useResendFailedMessage(
       getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi }, data }) => {
+        const replyToPersistentId =
+          data.replyTo && isPersistentId(data.replyTo)
+            ? data.replyTo
+            : undefined
         const content = {
           body: data.content.body,
           inReplyTo: data.content.inReplyTo,
@@ -233,7 +245,12 @@ export function useResendFailedMessage(
         return {
           tx: substrateApi.tx.posts.createPost(
             null,
-            { Comment: { parentId: null, rootPostId: data.chatId } },
+            {
+              Comment: {
+                parentId: replyToPersistentId || null,
+                rootPostId: data.chatId,
+              },
+            },
             IpfsWrapper(cid)
           ),
           summary: 'Retrying sending message',

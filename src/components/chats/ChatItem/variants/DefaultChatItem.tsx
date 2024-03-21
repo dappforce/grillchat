@@ -11,6 +11,7 @@ import Linkify from 'linkify-react'
 import { useState } from 'react'
 import SuperLike from '../../../content-staking/SuperLike'
 import { ScrollToMessage } from '../../ChatList/hooks/useScrollToMessage'
+import { getRepliedMessageId } from '../../utils'
 import ChatRelativeTime from '../ChatRelativeTime'
 import LinkPreview from '../LinkPreview'
 import MessageStatusIndicator from '../MessageStatusIndicator'
@@ -34,7 +35,7 @@ export default function DefaultChatItem({
   const showSuperLike = (superLikeCount?.count ?? 0) > 0
 
   const { createdAtTime, ownerId, isUpdated } = message.struct
-  const { inReplyTo, body, link, linkMetadata } = message.content || {}
+  const { body, link, linkMetadata } = message.content || {}
 
   const relativeTime = (className?: string) => (
     <>
@@ -52,6 +53,7 @@ export default function DefaultChatItem({
   )
 
   const showLinkPreview = link && linkMetadata?.title
+  const repliedMessageId = getRepliedMessageId(message)
 
   return (
     <div className={cx('flex flex-col', props.className)}>
@@ -75,12 +77,12 @@ export default function DefaultChatItem({
             />
           </div>
         )}
-        {inReplyTo && (
+        {repliedMessageId && (
           <RepliedMessagePreview
             originalMessage={body ?? ''}
             className='my-1'
             textColor={theme === 'dark' ? '#fff' : undefined}
-            repliedMessageId={inReplyTo.id}
+            repliedMessageId={repliedMessageId}
             scrollToMessage={scrollToMessage}
             chatId={chatId}
             hubId={hubId}

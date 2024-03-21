@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
+import { getRepliedMessageId } from '@/components/chats/utils'
 import {
   coingeckoTokenIds,
   getPriceQuery,
@@ -21,13 +22,13 @@ type DonatePreviewProps = {
   extensionProps?: DonateProperies
   isMyMessage: boolean
   body?: string
-  inReplyTo?: string
+  repliedMessageId?: string
 }
 
 const DonatePreview = ({
   extensionProps,
   body,
-  inReplyTo,
+  repliedMessageId,
 }: DonatePreviewProps) => {
   const { openModal } = useProfileModal()
   const myAddress = useMyMainAddress()
@@ -60,7 +61,7 @@ const DonatePreview = ({
     <div
       className={cx(
         'rounded-[4px] px-5 py-5',
-        { 'mt-1': body || inReplyTo },
+        { 'mt-1': body || repliedMessageId },
         getCommonClassNames('donateMessagePreviewBg')
       )}
     >
@@ -107,7 +108,8 @@ export default function DonateMessagePreview({
 }: DonateMessagePreviewProps) {
   const { content } = message
 
-  const { extensions, body, inReplyTo } = content || {}
+  const { extensions, body } = content || {}
+  const repliedMessageId = getRepliedMessageId(message)
   const properties = getPostExtensionProperties(
     extensions?.[0],
     'subsocial-donations'
@@ -130,7 +132,7 @@ export default function DonateMessagePreview({
             extensionProps={properties}
             isMyMessage={isMyMessage}
             body={body}
-            inReplyTo={inReplyTo?.id}
+            repliedMessageId={repliedMessageId}
           />
         </div>
       )}

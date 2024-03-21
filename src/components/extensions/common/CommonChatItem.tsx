@@ -3,6 +3,7 @@ import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
+import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike from '@/components/content-staking/SuperLike'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
@@ -58,7 +59,8 @@ export default function CommonChatItem({
   const myAddress = useMyMainAddress()
   const { struct, content } = message
   const { ownerId, createdAtTime, dataType, isUpdated } = struct
-  const { inReplyTo, body } = content || {}
+  const { body } = content || {}
+  const repliedMessageId = getRepliedMessageId(message)
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(message.id)
 
   const isMyMessage = _isMyMessage ?? ownerId === myAddress
@@ -171,14 +173,14 @@ export default function CommonChatItem({
 
         {isMyMessage && myMessageConfig.children === 'top' && childrenElement}
 
-        {inReplyTo && (
+        {repliedMessageId && (
           <RepliedMessagePreview
             originalMessage={body ?? ''}
             className={cx(
               'mx-2.5 my-1',
               isMyMessage && myMessageConfig.children !== 'top' && 'mt-2.5'
             )}
-            repliedMessageId={inReplyTo.id}
+            repliedMessageId={repliedMessageId}
             scrollToMessage={scrollToMessage}
             textColor={textColor}
             chatId={chatId}

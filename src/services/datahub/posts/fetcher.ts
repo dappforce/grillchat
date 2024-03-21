@@ -48,6 +48,9 @@ export const DATAHUB_POST_FRAGMENT = gql`
         id
       }
     }
+    parentPost {
+      persistentId
+    }
     inReplyToKind
     inReplyToPost {
       persistentId
