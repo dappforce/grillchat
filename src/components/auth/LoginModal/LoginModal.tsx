@@ -6,17 +6,11 @@ import { useLoginModal } from '@/stores/login-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import CreateProfileModal from './CreateProfileModal'
 import { LoginModalStep, loginModalContents } from './LoginModalContent'
 import SaveGrillKeyModal from './SaveGrillKeyModal'
-
-const StayUpdatedModal = dynamic(
-  () => import('@/components/chats/StayUpdatedModal'),
-  { ssr: false }
-)
 
 export type LoginModalProps = {
   onBackClick?: () => void
@@ -71,6 +65,12 @@ export default function LoginModal({
       desc: 'Grill key is like a long password and consists of 12 words',
       withBackButton: true,
       withFooter: 'dont-have-account',
+    },
+    'scan-qr': {
+      title: '📷 Scan QR Code',
+      desc: 'Scan the QR code with your Grill mobile app to log in',
+      withBackButton: true,
+      backToStep: 'enter-secret-key',
     },
     'new-account': {
       title: '🔑 New Grill account',

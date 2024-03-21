@@ -1,9 +1,11 @@
 import LinkingDark from '@/assets/graphics/linking-dark.svg'
 import LinkingLight from '@/assets/graphics/linking-light.svg'
 import Button from '@/components/Button'
+import Notice from '@/components/Notice'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
+import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount } from '@/stores/my-account'
@@ -32,6 +34,10 @@ export default function PolkadotConnectConfirmationContent({
   )
   const saveProxyAddress = useMyAccount((state) => state.saveProxyAddress)
   const { mutateAsync: linkIdentity } = useLinkIdentity()
+  const { data: proxies } = getProxiesQuery.useQuery(
+    { address: connectedWallet?.address ?? '' },
+    { enabled: !!connectedWallet?.address }
+  )
 
   return (
     <div className='mt-2 flex flex-col gap-6'>
@@ -73,6 +79,22 @@ export default function PolkadotConnectConfirmationContent({
                     </>
                   )}
                 </div>
+
+                {!!proxies?.length && (
+                  <Notice noticeType='info'>
+                    <div className='flex flex-col gap-2'>
+                      <span>
+                        ℹ️ You&apos;ve logged into this account from another
+                        device. If you continue, the previous device will be
+                        automatically disconnected.
+                      </span>
+                      <span>
+                        You can connect to the same account with your Grill key
+                        on the login screen.
+                      </span>
+                    </div>
+                  </Notice>
+                )}
 
                 <Button
                   className='w-full'
