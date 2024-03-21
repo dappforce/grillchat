@@ -154,7 +154,7 @@ export default function ModerationForm({
 
   if (!myAddress) return null
 
-  const isOwner = ownerId === myAddress
+  const isOwner = ownerId ? ownerId === myAddress : true
 
   return (
     <form
@@ -165,8 +165,7 @@ export default function ModerationForm({
         let resourceId: string
         switch (blockingContent.id) {
           case 'message':
-            if (isFromWidget) resourceId = messageId
-            else resourceId = message?.entityId ?? ''
+            resourceId = messageId
             break
           case 'owner':
             resourceId = ownerId
