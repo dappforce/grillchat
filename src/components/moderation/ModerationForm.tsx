@@ -1,4 +1,3 @@
-import { env } from '@/env.mjs'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
@@ -90,7 +89,7 @@ export default function ModerationForm({
             args: {
               resourceId: args.resourceId,
               ctxPostIds: ['*'],
-              ctxAppIds: [env.NEXT_PUBLIC_APP_ID].filter(Boolean),
+              ctxAppIds: ['*'],
             },
           })
 
@@ -181,7 +180,7 @@ export default function ModerationForm({
             reasonId,
             resourceId,
             ctxPostIds: ['*'],
-            ctxAppIds: [env.NEXT_PUBLIC_APP_ID].filter(Boolean),
+            ctxAppIds: ['*'],
           },
         })
 

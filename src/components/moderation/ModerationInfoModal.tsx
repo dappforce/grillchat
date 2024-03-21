@@ -1,5 +1,4 @@
 import BlockedImage from '@/assets/graphics/blocked.png'
-import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { getPostQuery } from '@/services/api/query'
 import { GetBlockedInAppDetailedQuery } from '@/services/datahub/generated-query'
@@ -147,7 +146,7 @@ export default function ModerationInfoModal({
       args: {
         resourceId: toBeUnblocked.id,
         ctxPostIds: ['*'],
-        ctxAppIds: [env.NEXT_PUBLIC_APP_ID].filter(Boolean),
+        ctxAppIds: ['*'],
       },
     })
   }
