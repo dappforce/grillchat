@@ -3,6 +3,7 @@ import Button from '@/components/Button'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { CONTENT_STAKING_LINK } from '@/constants/links'
 import { env } from '@/env.mjs'
+import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
 import { getPostQuery } from '@/services/api/query'
 import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
 import {
@@ -16,11 +17,7 @@ import {
 } from '@/services/datahub/content-staking/query'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useLoginModal } from '@/stores/login-modal'
-import {
-  useGetCurrentSigner,
-  useMyAccount,
-  useMyMainAddress,
-} from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import { LocalStorage } from '@/utils/storage'
@@ -37,8 +34,8 @@ import {
 } from 'react'
 import toast from 'react-hot-toast'
 import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
-import Toast from '../Toast'
 import PopOver from '../floating/PopOver'
+import BlockedModal from '../moderation/BlockedModal'
 import PostRewardStat from './PostRewardStat'
 
 export type SuperLikeProps = ComponentProps<'div'> & {
@@ -66,11 +63,12 @@ export function SuperLikeWrapper({
   }) => ReactNode
 }) {
   const [openModalState, setOpenModalState] = useState<
-    'should-stake' | 'confirmation' | ''
+    'should-stake' | 'blocked' | ''
   >('')
   const { data: postRewards } = getPostRewardsQuery.useQuery(postId, {
     enabled: withPostReward,
   })
+  const { isBlocked, isLoading: loadingBlocked } = useIsAddressBlockedInApp()
   const { setIsOpen } = useLoginModal()
   const isMenuOpened = useChatMenu((state) => state.openedChatId === postId)
 
@@ -97,11 +95,52 @@ export function SuperLikeWrapper({
       postId: postId,
     })
 
+  const hasILiked = (myLike?.count ?? 0) > 0
+  const isMyPost = post?.struct.ownerId === myAddress
+
+  const canBeSuperliked = clientCanPostSuperLiked && canPostSuperLiked
+  const entity = post?.struct.isComment ? 'message' : 'post'
+  const isOffchainPost = post?.struct.dataType === 'offChain'
+
+  const isDisabled =
+    (!canBeSuperliked ||
+      isMyPost ||
+      loadingMyLike ||
+      loadingTotalStake ||
+      loadingBlocked ||
+      !message) &&
+    !hasILiked
+
+  let disabledCause = ''
+  if (isMyPost) {
+    const isOffchainPostInUsualHub =
+      isOffchainPost &&
+      !env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(post.struct.spaceId ?? '')
+    if (isOffchainPostInUsualHub) {
+      disabledCause = `Your ${entity} is not monetized, because its not sent to blockchain, you can resend it to make it monetized`
+    } else {
+      disabledCause = `You cannot like your own ${entity}`
+    }
+  } else if (isOffchainPost)
+    disabledCause = `You cannot like off-chain ${entity}s`
+  else if (!isExist)
+    disabledCause = `This ${entity} is still being minted, please wait a few seconds`
+  else if (!validByCreatorMinStake)
+    disabledCause = `This ${entity} cannot be liked because its author has not yet locked at least 2,000 SUB`
+  else if (!canBeSuperliked)
+    disabledCause = `You cannot like ${entity}s that are older than 7 days`
+
   const handleClick = (e?: SyntheticEvent) => {
     // prevent chat menu from opening when clicking this button
     if (!isMenuOpened) e?.stopPropagation()
 
-    if (hasILiked || !message) return
+    if (hasILiked || !message || isDisabled) return
+
+    if (isBlocked) {
+      setOpenModalState('blocked')
+      return
+    }
+
     if (!myAddress || !myGrillAddress) {
       setIsOpen(true)
       return
@@ -131,40 +170,6 @@ export function SuperLikeWrapper({
     createSuperLike({ postId, confirmation: { msg: message, sig } })
   }
 
-  const hasILiked = (myLike?.count ?? 0) > 0
-  const isMyPost = post?.struct.ownerId === myAddress
-
-  const canBeSuperliked = clientCanPostSuperLiked && canPostSuperLiked
-  const entity = post?.struct.isComment ? 'message' : 'post'
-  const isOffchainPost = post?.struct.dataType === 'offChain'
-
-  const isDisabled =
-    (!canBeSuperliked ||
-      isMyPost ||
-      loadingMyLike ||
-      loadingTotalStake ||
-      !message) &&
-    !hasILiked
-
-  let disabledCause = ''
-  if (isMyPost) {
-    const isOffchainPostInUsualHub =
-      isOffchainPost &&
-      !env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(post.struct.spaceId ?? '')
-    if (isOffchainPostInUsualHub) {
-      disabledCause = `Your ${entity} is not monetized, because its not sent to blockchain, you can resend it to make it monetized`
-    } else {
-      disabledCause = `You cannot like your own ${entity}`
-    }
-  } else if (isOffchainPost)
-    disabledCause = `You cannot like off-chain ${entity}s`
-  else if (!isExist)
-    disabledCause = `This ${entity} is still being minted, please wait a few seconds`
-  else if (!validByCreatorMinStake)
-    disabledCause = `This ${entity} cannot be liked because its author has not yet locked at least 2,000 SUB`
-  else if (!canBeSuperliked)
-    disabledCause = `You cannot like ${entity}s that are older than 7 days`
-
   return (
     <>
       {children({
@@ -180,11 +185,15 @@ export function SuperLikeWrapper({
         closeModal={() => setOpenModalState('')}
         isOpen={openModalState === 'should-stake'}
       />
-      <ApproveContentStakingModal
+      <BlockedModal
+        isOpen={openModalState === 'blocked'}
+        closeModal={() => setOpenModalState('')}
+      />
+      {/* <ApproveContentStakingModal
         postId={postId}
         closeModal={() => setOpenModalState('')}
         isOpen={openModalState === 'confirmation'}
-      />
+      /> */}
     </>
   )
 }
@@ -261,74 +270,74 @@ export default function SuperLike({
 }
 
 const currentWeekSigStorage = new LocalStorage(() => 'df.current-week-sig')
-function ApproveContentStakingModal({
-  postId,
-  ...props
-}: ModalFunctionalityProps & { postId: string }) {
-  const myAddress = useMyMainAddress()
-  const [isSigning, setIsSigning] = useState(false)
-  const getSigner = useGetCurrentSigner()
-  const { mutate: createSuperLike } = useCreateSuperLike()
-  const { data: message } = getConfirmationMsgQuery.useQuery(undefined)
+// function ApproveContentStakingModal({
+//   postId,
+//   ...props
+// }: ModalFunctionalityProps & { postId: string }) {
+//   const myAddress = useMyMainAddress()
+//   const [isSigning, setIsSigning] = useState(false)
+//   const getSigner = useGetCurrentSigner()
+//   const { mutate: createSuperLike } = useCreateSuperLike()
+//   const { data: message } = getConfirmationMsgQuery.useQuery(undefined)
 
-  return (
-    <Modal
-      {...props}
-      title='Join a new week of Content Staking!'
-      description='By confirming, you agree to participate in the Content Staking Program this week, where you may get SUB tokens, NFTs, or other tokens, based on your active engagement.'
-      withCloseButton
-    >
-      <div className='flex flex-col items-center gap-6'>
-        <Image
-          src={SubsocialTokenImage}
-          alt='subsocial'
-          className='w-100'
-          style={{ maxWidth: '250px' }}
-        />
-        <Button
-          className='w-full'
-          disabled={!message}
-          isLoading={isSigning}
-          size='lg'
-          onClick={async () => {
-            setIsSigning(true)
-            try {
-              const signer = await getSigner()
-              if (signer && myAddress) {
-                const signature = await signer.signRaw({
-                  address: myAddress,
-                  data: message!,
-                })
-                currentWeekSigStorage.set(signature)
-                if (!message) throw new Error('No message to sign')
-                createSuperLike({
-                  postId,
-                  confirmation: { msg: message, sig: signature },
-                })
-              }
-            } catch (err) {
-              toast.custom((t) => (
-                <Toast
-                  t={t}
-                  title='Failed to sign the message'
-                  description={
-                    (err as any)?.message ||
-                    'Please try to refresh or relogin to your account'
-                  }
-                />
-              ))
-            } finally {
-              setIsSigning(false)
-              props.closeModal()
-            }
-          }}
-        >
-          Confirm
-        </Button>
-      </div>
-    </Modal>
-  )
-}
+//   return (
+//     <Modal
+//       {...props}
+//       title='Join a new week of Content Staking!'
+//       description='By confirming, you agree to participate in the Content Staking Program this week, where you may get SUB tokens, NFTs, or other tokens, based on your active engagement.'
+//       withCloseButton
+//     >
+//       <div className='flex flex-col items-center gap-6'>
+//         <Image
+//           src={SubsocialTokenImage}
+//           alt='subsocial'
+//           className='w-100'
+//           style={{ maxWidth: '250px' }}
+//         />
+//         <Button
+//           className='w-full'
+//           disabled={!message}
+//           isLoading={isSigning}
+//           size='lg'
+//           onClick={async () => {
+//             setIsSigning(true)
+//             try {
+//               const signer = await getSigner()
+//               if (signer && myAddress) {
+//                 const signature = await signer.signRaw({
+//                   address: myAddress,
+//                   data: message!,
+//                 })
+//                 currentWeekSigStorage.set(signature)
+//                 if (!message) throw new Error('No message to sign')
+//                 createSuperLike({
+//                   postId,
+//                   confirmation: { msg: message, sig: signature },
+//                 })
+//               }
+//             } catch (err) {
+//               toast.custom((t) => (
+//                 <Toast
+//                   t={t}
+//                   title='Failed to sign the message'
+//                   description={
+//                     (err as any)?.message ||
+//                     'Please try to refresh or relogin to your account'
+//                   }
+//                 />
+//               ))
+//             } finally {
+//               setIsSigning(false)
+//               props.closeModal()
+//             }
+//           }}
+//         >
+//           Confirm
+//         </Button>
+//       </div>
+//     </Modal>
+//   )
+// }
 
 function ShouldStakeModal({ ...props }: ModalFunctionalityProps) {
   return (
