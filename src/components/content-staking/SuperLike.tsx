@@ -1,7 +1,3 @@
-import SubsocialTokenImage from '@/assets/graphics/subsocial-tokens-large.png'
-import Button from '@/components/Button'
-import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { CONTENT_STAKING_LINK } from '@/constants/links'
 import { env } from '@/env.mjs'
 import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
 import { getPostQuery } from '@/services/api/query'
@@ -17,6 +13,7 @@ import {
 } from '@/services/datahub/content-staking/query'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useLoginModal } from '@/stores/login-modal'
+import { useMessageData } from '@/stores/message'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
@@ -24,7 +21,6 @@ import { LocalStorage } from '@/utils/storage'
 import { u8aToHex } from '@polkadot/util'
 import { signatureVerify } from '@polkadot/util-crypto'
 import dayjs from 'dayjs'
-import Image from 'next/image'
 import {
   ComponentProps,
   ReactNode,
@@ -35,7 +31,6 @@ import {
 import toast from 'react-hot-toast'
 import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
 import PopOver from '../floating/PopOver'
-import BlockedModal from '../moderation/BlockedModal'
 import PostRewardStat from './PostRewardStat'
 
 export type SuperLikeProps = ComponentProps<'div'> & {
@@ -62,9 +57,7 @@ export function SuperLikeWrapper({
     isOffchainPost?: boolean
   }) => ReactNode
 }) {
-  const [openModalState, setOpenModalState] = useState<
-    'should-stake' | 'blocked' | ''
-  >('')
+  const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
   const { data: postRewards } = getPostRewardsQuery.useQuery(postId, {
     enabled: withPostReward,
   })
@@ -137,7 +130,7 @@ export function SuperLikeWrapper({
     if (hasILiked || !message || isDisabled) return
 
     if (isBlocked) {
-      setOpenModalState('blocked')
+      setOpenMessageModal('blocked')
       return
     }
 
@@ -146,7 +139,7 @@ export function SuperLikeWrapper({
       return
     }
     if (!totalStake?.hasStakedEnough) {
-      setOpenModalState('should-stake')
+      setOpenMessageModal('should-stake')
       return
     }
 
@@ -181,19 +174,6 @@ export function SuperLikeWrapper({
         postRewards,
         isOffchainPost,
       })}
-      <ShouldStakeModal
-        closeModal={() => setOpenModalState('')}
-        isOpen={openModalState === 'should-stake'}
-      />
-      <BlockedModal
-        isOpen={openModalState === 'blocked'}
-        closeModal={() => setOpenModalState('')}
-      />
-      {/* <ApproveContentStakingModal
-        postId={postId}
-        closeModal={() => setOpenModalState('')}
-        isOpen={openModalState === 'confirmation'}
-      /> */}
     </>
   )
 }
@@ -270,103 +250,6 @@ export default function SuperLike({
 }
 
 const currentWeekSigStorage = new LocalStorage(() => 'df.current-week-sig')
-// function ApproveContentStakingModal({
-//   postId,
-//   ...props
-// }: ModalFunctionalityProps & { postId: string }) {
-//   const myAddress = useMyMainAddress()
-//   const [isSigning, setIsSigning] = useState(false)
-//   const getSigner = useGetCurrentSigner()
-//   const { mutate: createSuperLike } = useCreateSuperLike()
-//   const { data: message } = getConfirmationMsgQuery.useQuery(undefined)
-
-//   return (
-//     <Modal
-//       {...props}
-//       title='Join a new week of Content Staking!'
-//       description='By confirming, you agree to participate in the Content Staking Program this week, where you may get SUB tokens, NFTs, or other tokens, based on your active engagement.'
-//       withCloseButton
-//     >
-//       <div className='flex flex-col items-center gap-6'>
-//         <Image
-//           src={SubsocialTokenImage}
-//           alt='subsocial'
-//           className='w-100'
-//           style={{ maxWidth: '250px' }}
-//         />
-//         <Button
-//           className='w-full'
-//           disabled={!message}
-//           isLoading={isSigning}
-//           size='lg'
-//           onClick={async () => {
-//             setIsSigning(true)
-//             try {
-//               const signer = await getSigner()
-//               if (signer && myAddress) {
-//                 const signature = await signer.signRaw({
-//                   address: myAddress,
-//                   data: message!,
-//                 })
-//                 currentWeekSigStorage.set(signature)
-//                 if (!message) throw new Error('No message to sign')
-//                 createSuperLike({
-//                   postId,
-//                   confirmation: { msg: message, sig: signature },
-//                 })
-//               }
-//             } catch (err) {
-//               toast.custom((t) => (
-//                 <Toast
-//                   t={t}
-//                   title='Failed to sign the message'
-//                   description={
-//                     (err as any)?.message ||
-//                     'Please try to refresh or relogin to your account'
-//                   }
-//                 />
-//               ))
-//             } finally {
-//               setIsSigning(false)
-//               props.closeModal()
-//             }
-//           }}
-//         >
-//           Confirm
-//         </Button>
-//       </div>
-//     </Modal>
-//   )
-// }
-
-function ShouldStakeModal({ ...props }: ModalFunctionalityProps) {
-  return (
-    <Modal
-      {...props}
-      title='Wait a sec...'
-      description='In this app, every like is more than just a thumbs-up! When you like a post, both you and the author can earn extra SUB tokens. For this, you need to start locking SUB tokens first.'
-      withCloseButton
-    >
-      <div className='flex flex-col items-center gap-6'>
-        <Image
-          src={SubsocialTokenImage}
-          alt='subsocial'
-          className='w-100'
-          style={{ maxWidth: '250px' }}
-        />
-        <Button
-          className='w-full'
-          size='lg'
-          href={CONTENT_STAKING_LINK}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          Start Locking SUB
-        </Button>
-      </div>
-    </Modal>
-  )
-}
 
 const CLIENT_CHECK_INTERVAL = 5 * 1000 * 60 // 5 minutes
 function useClientValidationOfPostSuperLike(createdAtTime: number) {

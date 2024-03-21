@@ -17,7 +17,7 @@ export default function BlockedModal(props: ModalFunctionalityProps) {
       }
       description='You are now restricted from taking actions on Grill, but can still manage your locked SUB, and use other applications running on the Subsocial network.'
     >
-      <div className='grid w-full grid-cols-2'>
+      <div className='grid w-full grid-cols-2 gap-4'>
         <Button size='lg' variant='primary' href='/staking'>
           Manage SUB
         </Button>

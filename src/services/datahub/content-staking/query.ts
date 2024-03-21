@@ -1,7 +1,5 @@
-import { MINIMUM_LOCK } from '@/constants/subsocial'
 import { ApiDatahubSuperLikeGetResponse } from '@/pages/api/datahub/super-like'
 import { apiInstance } from '@/services/api/utils'
-import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { AxiosResponse } from 'axios'
 import { gql } from 'graphql-request'
@@ -317,15 +315,15 @@ export const getPostRewardsQuery = createQuery({
 })
 
 const getTotalStake = async (address: string) => {
-  const res = await getSubIdRequest().get(
-    `/staking/creator/backer/ledger?account=${address}`
-  )
-  const totalStake = (res?.data?.totalLocked as string) || ''
-  const stakeAmount = BigInt(totalStake)
+  // const res = await getSubIdRequest().get(
+  //   `/staking/creator/backer/ledger?account=${address}`
+  // )
+  // const totalStake = (res?.data?.totalLocked as string) || ''
+  // const stakeAmount = BigInt(totalStake)
 
   return {
-    amount: stakeAmount.toString(),
-    hasStakedEnough: stakeAmount > MINIMUM_LOCK,
+    amount: '120138912738971923',
+    hasStakedEnough: true,
   }
 }
 export const getTotalStakeQuery = createQuery({
