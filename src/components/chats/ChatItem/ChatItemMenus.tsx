@@ -277,7 +277,6 @@ export default function ChatItemMenus({
         closeModal={() => setModalState(null)}
         messageId={messageId}
         chatId={chatId}
-        hubId={hubId}
       />
       <HideMessageModal
         isOpen={modalState === 'hide'}
