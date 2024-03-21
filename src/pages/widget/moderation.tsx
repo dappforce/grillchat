@@ -9,12 +9,6 @@ export default function ModerationPage() {
   const myAddress = useMyMainAddress()
   const isAdmin = useIsModerationAdmin(myAddress ?? '')
 
-  useEffect(() => {
-    if (!isOpen) {
-      sendMessageToParentWindow('moderation', 'close')
-    }
-  }, [isOpen])
-
   const [postToModerate, setPostToModerate] = useState('')
 
   useEffect(() => {
@@ -36,7 +30,10 @@ export default function ModerationPage() {
   return (
     <ModerationModal
       isOpen={isOpen}
-      closeModal={() => setIsOpen(false)}
+      closeModal={() => {
+        sendMessageToParentWindow('moderation', 'close')
+        setIsOpen(false)
+      }}
       messageId={postToModerate}
       isFromWidget
     />
