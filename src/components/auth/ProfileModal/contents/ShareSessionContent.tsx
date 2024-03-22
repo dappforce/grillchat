@@ -24,7 +24,7 @@ function ShareSessionContent() {
     <div className='mt-2 flex flex-col gap-4'>
       <QrCode url={shareSessionLink} />
       <CopyText
-        copyButtonText='Copy login link'
+        copyButtonText='Copy my login link'
         wordBreakType='all'
         text={shareSessionLink}
         onCopyClick={onCopyClick}
