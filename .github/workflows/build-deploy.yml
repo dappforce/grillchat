@@ -83,7 +83,7 @@ jobs:
         with:
           context: .
           builder: ${{ steps.buildx.outputs.name }}
-          file: docker/mainnet-Dockerfile
+          file: docker/Dockerfile
           push: true
           build-args: |
             GH_NEXTAUTH_URL=https://grillapp.net/c/api/auth
@@ -103,6 +103,12 @@ jobs:
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12455
             GH_NEXT_PUBLIC_GA_ID=G-TP1XEFNHQD
+            GH_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=grill-web-push.firebaseapp.com
+            GH_NEXT_PUBLIC_FIREBASE_PROJECT_ID=grill-web-push
+            GH_NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyCdu_lvl18590HFoAXTysuKStaJJkaA4h4
+            GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=grill-web-push.appspot.com
+            GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=762898090466
+            GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:762898090466:web:8b27ce87e8cb476f95d1bb
           target: runner
           tags: |
             ${{ env.image }}
