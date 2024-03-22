@@ -157,7 +157,7 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
                 <div className='flex items-center justify-center gap-2'>
                   <HiPlus className='text-[20px] text-text-muted' />
                   <div className='flex flex-col text-left'>
-                    <span>Create new account</span>
+                    <span>Create new Grill account</span>
                   </div>
                 </div>
               </Button>
