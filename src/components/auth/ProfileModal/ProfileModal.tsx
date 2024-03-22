@@ -207,7 +207,7 @@ export default function ProfileModal({
       withBackButton: 'privacy-security',
     },
     'share-session': {
-      title: '💻 Share session',
+      title: '💻 Share my session',
       desc: 'Use this link or scan the QR code to quickly log in to this account on another device.',
       withBackButton: 'privacy-security',
     },
