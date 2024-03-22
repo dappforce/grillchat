@@ -93,8 +93,10 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://sub-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://sub-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://sub-queue-data-hub.subsocial.network/graphql
+            GH_NOTIFICATIONS_URL=https://sub-notif-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_APP_ID=1
             GH_NEXT_PUBLIC_NOTIFICATION_APP_ID=BECyoVsDLEgsOj9MvhoetL3YGYZVCE5RzhADmBugpp0hu7QBV_xG8veiT_qAFxF9S8qXKhPvaPiD5oMrdWrFNB0
+            GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/grill_notifications_bot/
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12662
             GH_NEXT_PUBLIC_SPACE_IDS=12659,12660,12455,12662
             GH_NEXT_PUBLIC_AMP_ID=2eeca0e8a0163c89e3f023c971e426a6
@@ -117,7 +119,6 @@ jobs:
           file: docker/Dockerfile
           push: true
           build-args: |
-            GH_NOTIFICATIONS_URL=https://staging-grill-notifications.subsocial.network/graphql
             GH_NEXT_PUBLIC_AMP_ID=71bf5a46800fedba5e9a01243b988164
             GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12467
@@ -136,9 +137,11 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://notifications-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://notifications-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://notifications-queue-data-hub.subsocial.network/graphql
+            GH_NOTIFICATIONS_URL=https://notifications-notif-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
             GH_NEXT_PUBLIC_APP_ID=12364
             GH_NEXT_PUBLIC_SPACE_IDS=12466,12467,12468,12660
+            GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/g_notif_staging_bot/
             # without base path
             # GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network
             # with base path
@@ -181,20 +184,20 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: './.github/actions/common-cd-setup'
         with:
-          token_input:  ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
-          k8s_input:  ${{ secrets.K8S_PROD }}
+          token_input: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
+          k8s_input: ${{ secrets.K8S_PROD }}
           app_input: ${{ matrix.apps }}
-          zone_input:  ${{ secrets.CF_ZONE }}
-          mail_input:  ${{ secrets.CF_MAIL }}
-          tokens_input:  ${{ secrets.CF_TOKEN }}
+          zone_input: ${{ secrets.CF_ZONE }}
+          mail_input: ${{ secrets.CF_MAIL }}
+          tokens_input: ${{ secrets.CF_TOKEN }}
 
       - name: stage deploy ${{ matrix.apps }}
         if: startsWith(github.ref, 'refs/heads/deploy/')
         uses: './.github/actions/common-cd-setup'
         with:
-          token_input:  ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_STAGING }}
-          k8s_input:  ${{ secrets.K8S_STAGING }}
+          token_input: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_STAGING }}
+          k8s_input: ${{ secrets.K8S_STAGING }}
           app_input: ${{ matrix.apps }}
-          zone_input:  ${{ secrets.CF_ZONE }}
-          mail_input:  ${{ secrets.CF_MAIL }}
-          tokens_input:  ${{ secrets.CF_TOKEN }}
+          zone_input: ${{ secrets.CF_ZONE }}
+          mail_input: ${{ secrets.CF_MAIL }}
+          tokens_input: ${{ secrets.CF_TOKEN }}

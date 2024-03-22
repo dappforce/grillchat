@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import { currentNetwork } from '@/utils/network'
 
 export const SUGGEST_FEATURE_LINK =
@@ -14,10 +15,8 @@ export function getSuggestNewChatRoomLink(prefill: {
   }&entry.1674564644=${prefill.chatName}`
 }
 
-const TELEGRAM_NOTIFICATIONS_BOT_LINK = 'https://t.me/grill_notifications_bot/'
-
 export function getTelegramNotificationsBotLink(command: string) {
-  return `${TELEGRAM_NOTIFICATIONS_BOT_LINK}?start=${command}`
+  return `${env.NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT}?start=${command}`
 }
 
 export const SUBSOCIAL_IPFS_GATEWAY = 'https://ipfs.subsocial.network/'

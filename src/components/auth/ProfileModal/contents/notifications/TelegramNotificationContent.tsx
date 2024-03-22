@@ -5,13 +5,14 @@ import DataCard from '@/components/DataCard'
 import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import { useIntegratedSkeleton } from '@/components/SkeletonFallback'
+import { env } from '@/env.mjs'
+import useToastError from '@/hooks/useToastError'
 import { useLinkTelegramAccount } from '@/services/api/notifications/mutation'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { useSendEvent } from '@/stores/analytics'
 import { getIsInIos } from '@/utils/window'
-import { useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ProfileModalContentProps } from '../../types'
 
 export default function TelegramNotificationContent(
@@ -28,7 +29,8 @@ export default function TelegramNotificationContent(
   } = getLinkedTelegramAccountsQuery.useQuery({
     address,
   })
-  const isLoadingAccount = isLoading || isFetching
+  // Only want to display loading state if its loading, or user clicks I have connected bot (isAfterConnect is true) and isFetching
+  const isLoadingAccount = isLoading || (isFetching && isAfterConnect)
   const { IntegratedSkeleton } = useIntegratedSkeleton(isLoadingAccount)
   const hasLinkedAccount = !isLoadingAccount ? linkedAccounts?.[0] : null
 
@@ -50,7 +52,9 @@ export default function TelegramNotificationContent(
 
   return (
     <div className='flex flex-col gap-6'>
-      <Notice leftIcon='✅'>Telegram Notifications Enabled</Notice>
+      {!isLoadingAccount && (
+        <Notice leftIcon='✅'>Telegram Notifications Enabled</Notice>
+      )}
       <DataCard
         data={[
           {
@@ -77,7 +81,7 @@ export default function TelegramNotificationContent(
             title: 'Telegram Bot for Grill',
             content: (
               <LinkText
-                href='https://t.me/grill_notifications_bot'
+                href={env.NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT}
                 variant='primary'
                 className='mt-1 flex items-center gap-2'
                 openInNewTab
@@ -126,7 +130,7 @@ function DisconnectButton({
 
   const handleClick = async () => {
     if (!address) return
-    getLinkingMessage({ address, action: 'unlink' })
+    getLinkingMessage({ action: 'unlink' })
   }
 
   return (
@@ -145,17 +149,14 @@ function ConnectTelegramButton({
   address,
   afterConnect,
 }: ProfileModalContentProps & { afterConnect?: () => void }) {
-  const queryClient = useQueryClient()
-  const { isFetching: isFetchingAccount } =
-    getLinkedTelegramAccountsQuery.useQuery({
-      address,
-    })
+  // const queryClient = useQueryClient()
   const sendEvent = useSendEvent()
 
   const {
     data: url,
     mutate: getLinkingMessage,
     isLoading,
+    error,
   } = useLinkTelegramAccount({
     onSuccess: async (url) => {
       if (!url) throw new Error('Error generating url')
@@ -165,16 +166,25 @@ function ConnectTelegramButton({
       }
     },
   })
+  useToastError(error, 'Failed to enable telegram notifications')
+
+  const { data: linkedAccount } = getLinkedTelegramAccountsQuery.useQuery(
+    {
+      address,
+    },
+    { refetchInterval: url ? 2000 : false }
+  )
+  useEffect(() => {
+    if (linkedAccount?.length) {
+      afterConnect?.()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkedAccount])
 
   const handleClickLinking = async () => {
     if (!address) return
     sendEvent('start_connecting_tg_notifs')
-    getLinkingMessage({ address, action: 'link' })
-  }
-
-  const handleClickReload = () => {
-    getLinkedTelegramAccountsQuery.invalidate(queryClient, { address })
-    afterConnect?.()
+    getLinkingMessage({ action: 'link' })
   }
 
   return url ? (
@@ -188,12 +198,12 @@ function ConnectTelegramButton({
         </LinkText>
       </Card>
       <Button
+        isLoading
+        loadingText='Connecting...'
         size='lg'
         variant='primaryOutline'
-        onClick={handleClickReload}
-        isLoading={isFetchingAccount}
       >
-        I have connected the bot
+        Connecting
       </Button>
     </div>
   ) : (
