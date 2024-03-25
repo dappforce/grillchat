@@ -9,7 +9,7 @@ const createRedisCache = require('@neshca/cache-handler/redis-stack').default
 const createLruCache = require('@neshca/cache-handler/local-lru').default
 const { createClient } = require('ioredis')
 
-export function getRedisConfig() {
+function getRedisConfig() {
   const host = process.env.REDIS_HOST
   const port = process.env.REDIS_PORT
   const password = process.env.REDIS_PASSWORD
@@ -25,7 +25,7 @@ export function getRedisConfig() {
   return { host, port: parsedPort, password }
 }
 
-export function createRedisInstance() {
+function createRedisInstance() {
   try {
     const config = getRedisConfig()
 
