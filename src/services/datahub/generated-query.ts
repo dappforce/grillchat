@@ -1894,6 +1894,7 @@ export type GetPostMetadataQuery = {
       id: string
       persistentId?: string | null
       rootPostPersistentId: string
+      createdAtTime: any
     } | null
   }>
 }
@@ -2302,6 +2303,7 @@ export const GetPostMetadata = gql`
         id
         persistentId
         rootPostPersistentId
+        createdAtTime
       }
     }
   }

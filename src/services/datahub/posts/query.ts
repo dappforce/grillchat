@@ -239,13 +239,19 @@ const GET_POST_METADATA = gql`
         id
         persistentId
         rootPostPersistentId
+        createdAtTime
       }
     }
   }
 `
 const getPostMetadata = poolQuery<
   string,
-  { lastCommentId: string; totalCommentsCount: number; postId: string }
+  {
+    lastCommentId: string
+    totalCommentsCount: number
+    postId: string
+    createdAtTime: number
+  }
 >({
   name: 'getPostMetadata',
   multiCall: async (data) => {
@@ -258,13 +264,16 @@ const getPostMetadata = poolQuery<
         where: { persistentIds: data },
       },
     })
+
     const postMetadata = res.postMetadata
     return postMetadata.map((metadata) => {
       const comment = metadata.latestComment
+      const commentId = comment?.persistentId || comment?.id || ''
       return {
-        lastCommentId: comment?.persistentId || comment?.id || '',
+        lastCommentId: commentId,
         totalCommentsCount: parseInt(metadata.totalCommentsCount),
-        postId: metadata.latestComment?.rootPostPersistentId || '',
+        postId: comment?.rootPostPersistentId || '',
+        createdAtTime: comment?.createdAtTime || 0,
       }
     })
   },
