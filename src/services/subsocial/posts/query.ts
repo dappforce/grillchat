@@ -16,32 +16,23 @@ import {
 } from '../squid/generated'
 import { mapPostFragment } from '../squid/mappers'
 import { squidRequest } from '../squid/utils'
+import { getPostIdsBySpaceIdsFromSubsocial } from './fetcher'
 
 const getPostIdsBySpaceId = poolQuery<
-  SubsocialQueryData<string>,
+  string,
   { spaceId: string; postIds: string[] }
 >({
   name: 'getPostIdsBySpaceId',
   multiCall: async (allParams) => {
     if (allParams.length === 0) return []
-    const [{ api }] = allParams
-    const spaceIds = allParams.map(({ data }) => data).filter((id) => !!id)
-    if (spaceIds.length === 0) return []
-
-    const res = await Promise.all(
-      spaceIds.map((spaceId) => api.blockchain.postIdsBySpaceId(spaceId))
-    )
-    return res.map((postIds, i) => ({
-      spaceId: spaceIds[i],
-      postIds,
-    }))
+    return getPostIdsBySpaceIdsFromSubsocial(allParams)
   },
   resultMapper: {
-    paramToKey: (param) => param.data,
+    paramToKey: (param) => param,
     resultToKey: (result) => result?.spaceId ?? '',
   },
 })
-export const getPostIdsBySpaceIdQuery = createSubsocialQuery({
+export const getPostIdsBySpaceIdQuery = createQuery({
   key: 'postIdsBySpaceId',
   fetcher: getPostIdsBySpaceId,
 })
