@@ -150,7 +150,7 @@ export default function AccountContent({
     ...(canUseGrillKey
       ? [
           {
-            text: 'Privacy and Security',
+            text: 'My Key & Session',
             icon: KeyIcon,
             onClick: () => {
               onPrivacySecurityKeyClick()

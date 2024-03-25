@@ -28,6 +28,7 @@ import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotCo
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
 import PolkadotConnectWalletContent from '../common/polkadot-connect/PolkadotConnectWalletContent'
 import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
+import ScanQRButton from './ScanQRButton'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
 import NewAccountContent from './contents/NewAccountContent'
@@ -51,7 +52,8 @@ export type LoginModalContentProps = ModalFunctionalityProps & {
   beforeLogin?: () => void
 }
 
-export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
+export const LoginContent = (props: LoginModalContentProps) => {
+  const { setCurrentState } = props
   const { loginOption } = useLoginOption()
   const sendEvent = useSendEvent()
 
@@ -74,10 +76,10 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
   }, [])
 
   const canUseAnonLogin = !loginRequired
-  const isConnectWalletPrimaryButton = loginOption === 'polkadot'
 
   return (
     <div>
+      <ScanQRButton {...props} />
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className={cx('flex flex-col gap-4')}>
