@@ -17,7 +17,7 @@ export function datahubQueueRequest<T, V extends Variables = Variables>(
   const { url, token } = getDatahubQueueConfig() || {}
   if (!url) throw new Error('Datahub (Mutation) config is not set')
 
-  const TIMEOUT = 3 * 1000 // 3 seconds
+  const TIMEOUT = 10 * 1000 // 10 seconds
   const client = new GraphQLClient(url, {
     timeout: TIMEOUT,
     headers: {
