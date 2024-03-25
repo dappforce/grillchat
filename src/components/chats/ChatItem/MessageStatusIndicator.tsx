@@ -192,5 +192,9 @@ function useIsFailedOptimisticMessage(message: PostData) {
     }
   }, [isMoreThan1Mins, rerender])
 
-  return message.struct.dataType === 'optimistic' && isMoreThan1Mins
+  return (
+    message.struct.dataType === 'optimistic' &&
+    isMoreThan1Mins &&
+    !isPersistentId(message.id)
+  )
 }

@@ -15,7 +15,10 @@ import { StatsCardContent } from '../StatsData/StatsCard'
 
 const StatsCards = () => {
   const myAddress = useMyMainAddress()
-  const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
+  const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {
+    decimal: 10,
+    tokenSymbol: 'SUB',
+  }
   const { data: price, isLoading: priceLoading } =
     getPriceQuery.useQuery('subsocial')
 
@@ -32,13 +35,13 @@ const StatsCards = () => {
   const stakersEarnedTotal = generalStatsData?.stakersEarnedTotal
 
   const stakersEarnedTotalBN = stakersEarnedTotal
-    ? convertToBalanceWithDecimal(stakersEarnedTotal, decimal || 0)
+    ? convertToBalanceWithDecimal(stakersEarnedTotal, decimal)
     : new BN(0)
 
   const { locked } = ledger || {}
 
   const myLockWithDecimals = locked
-    ? convertToBalanceWithDecimal(locked, decimal || 0)
+    ? convertToBalanceWithDecimal(locked, decimal)
     : new BN(0)
 
   const dashboardData = [
