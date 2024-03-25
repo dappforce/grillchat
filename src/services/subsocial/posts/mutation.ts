@@ -18,7 +18,7 @@ import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { getCurrentWallet } from '../hooks'
-import { createMutationWrapper } from '../utils'
+import { createMutationWrapper } from '../utils/mutation'
 import {
   getFollowedPostIdsByAddressQuery,
   getOwnedPostIdsQuery,

@@ -1,7 +1,10 @@
 import useConnectWallet from '@/hooks/useConnectWallet'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { Status, createMutationWrapper } from '@/services/subsocial/utils'
+import {
+  Status,
+  createMutationWrapper,
+} from '@/services/subsocial/utils/mutation'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'

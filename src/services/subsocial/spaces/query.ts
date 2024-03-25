@@ -6,7 +6,7 @@ import { SPACE_FRAGMENT } from '../squid/fragments'
 import { GetSpacesQuery, GetSpacesQueryVariables } from '../squid/generated'
 import { mapSpaceFragment } from '../squid/mappers'
 import { squidRequest } from '../squid/utils'
-import { createDynamicSubsocialQuery } from '../utils'
+import { createDynamicSubsocialQuery } from '../utils/query'
 
 const getSpaceFromBlockchain = poolQuery<SubsocialQueryData<string>, SpaceData>(
   {

@@ -1,5 +1,5 @@
 import { redisCallWrapper } from '@/server/cache'
-import { DataSource } from '@/services/subsocial/utils'
+import { DataSource } from '@/services/subsocial/utils/service-mapper'
 
 export function generateGetDataFromSquidWithBlockchainFallback<Param, Response>(
   dataName: string,

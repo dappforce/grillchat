@@ -8,7 +8,7 @@ import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SpaceContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { getCurrentWallet } from '../hooks'
-import { createMutationWrapper } from '../utils'
+import { createMutationWrapper } from '../utils/mutation'
 
 type CommonParams = {
   content: {

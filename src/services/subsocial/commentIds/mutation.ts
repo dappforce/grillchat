@@ -13,7 +13,7 @@ import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { getCurrentWallet } from '../hooks'
-import { createMutationWrapper } from '../utils'
+import { createMutationWrapper } from '../utils/mutation'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
 import { SendMessageParams } from './types'
 

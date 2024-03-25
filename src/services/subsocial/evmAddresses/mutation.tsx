@@ -9,7 +9,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useDisconnect } from 'wagmi'
 import { getCurrentWallet } from '../hooks'
-import { createMutationWrapper } from '../utils'
+import { createMutationWrapper } from '../utils/mutation'
 import { getEvmPalletName } from './utils'
 
 type LinkEvmAddressMutationProps = {

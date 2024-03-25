@@ -12,7 +12,7 @@ import {
 } from '../squid/generated'
 import { mapPostFragment } from '../squid/mappers'
 import { squidRequest } from '../squid/utils'
-import { standaloneDynamicFetcherWrapper } from '../utils'
+import { standaloneDynamicFetcherWrapper } from '../utils/service-mapper'
 
 async function getPostsFromBlockchain({
   api,
