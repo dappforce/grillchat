@@ -63,13 +63,9 @@ async function getLastMessagesFromDatahub(
   queryClient: QueryClient,
   chatIds: string[]
 ) {
-  const postMetadatas = await Promise.all(
-    chatIds
-      .map((chatId) => {
-        return getPostMetadataQuery.fetchQuery(queryClient, chatId)
-      })
-      .filter(Boolean)
-  )
+  const postMetadatas = (
+    await getPostMetadataQuery.fetchQueries(queryClient, chatIds)
+  ).filter(Boolean)
   const lastMessageIds = postMetadatas
     .map((metadata) => metadata?.lastCommentId)
     .filter(Boolean) as string[]

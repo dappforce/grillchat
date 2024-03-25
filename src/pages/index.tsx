@@ -24,22 +24,18 @@ export const getStaticProps = getCommonStaticProps<
     const queryClient = new QueryClient()
 
     try {
-      const hubsData = await getSpaceQuery.fetchQueries(queryClient, hubIds)
-
       const additionalHubIds = homePageAdditionalTabs.map(({ hubId }) => hubId)
 
       await Promise.all([
+        getSpaceQuery.fetchQueries(queryClient, hubIds),
         prefetchChatPreviewsData(queryClient, env.NEXT_PUBLIC_MAIN_SPACE_ID),
         ...additionalHubIds.map((hubId) =>
           prefetchChatPreviewsData(queryClient, hubId)
         ),
-        ...hubsData.map(async (hub) => {
-          if (!hub) return
-
-          const res = await getPostIdsBySpaceIdQuery.fetchQuery(null, hub.id)
-          const linkedChats = constantsConfig.linkedChatsForHubId[hub.id] ?? []
-          hubsChatCount[hub.id] =
-            (res?.postIds.length ?? 0) + linkedChats.length
+        ...hubIds.map(async (hubId) => {
+          const res = await getPostIdsBySpaceIdQuery.fetchQuery(null, hubId)
+          const linkedChats = constantsConfig.linkedChatsForHubId[hubId] ?? []
+          hubsChatCount[hubId] = (res?.postIds.length ?? 0) + linkedChats.length
         }),
       ])
     } catch (err) {
