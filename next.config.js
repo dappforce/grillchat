@@ -1,14 +1,25 @@
+const isProd = process.env.NODE_ENV === 'production'
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 const runtimeCaching = require('./cache')
 const withPWA = require('next-pwa')({
   dest: 'public',
-  disable: process.env.NODE_ENV !== 'production',
+  disable: !isProd,
   buildExcludes: [/chunks\/.*$/, /media\/.*$/],
   publicExcludes: ['!splashscreens/**/*', '!screenshots/**/*'],
   runtimeCaching,
 })
+
+const redisHost = process.env.REDIS_HOST
+const redisPort = process.env.REDIS_PORT
+const redisPassword = process.env.REDIS_PASSWORD
+
+const shouldUseRedisCache =
+  process.env.NODE_ENV === 'production' && redisHost && redisPort
+
+console.log('SHOULD USE REDIS CACHE', shouldUseRedisCache, process.env.GIT_HASH)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -18,6 +29,18 @@ const nextConfig = {
     scrollRestoration: true,
     largePageDataBytes: 200 * 1024, // 200kb
   },
+
+  generateBuildId:
+    shouldUseRedisCache && process.env.GIT_HASH
+      ? async () => {
+          return process.env.GIT_HASH
+        }
+      : undefined,
+  // if in prod and redis env vars are set, use redis cache, to share same cache across different pods
+  cacheMaxMemorySize: shouldUseRedisCache ? 0 : undefined,
+  cacheHandler: shouldUseRedisCache
+    ? require.resolve('./cache-handler.js')
+    : undefined,
   transpilePackages: ['react-tweet'],
 
   webpack(config) {

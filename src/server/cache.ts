@@ -8,7 +8,7 @@ export function getRedisConfig() {
 
   const parsedPort = parseInt(port)
 
-  if (!host || !port || isNaN(parsedPort) || !password) {
+  if (!host || !port || isNaN(parsedPort)) {
     throw new Error(
       'Redis configuration is not complete, need host, port, password'
     )
