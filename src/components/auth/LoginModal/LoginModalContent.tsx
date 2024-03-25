@@ -22,6 +22,7 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { AiOutlineScan } from 'react-icons/ai'
 import { HiPlus } from 'react-icons/hi2'
 import LimitedPolkadotJsSupportContent from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
@@ -74,10 +75,19 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
   }, [])
 
   const canUseAnonLogin = !loginRequired
-  const isConnectWalletPrimaryButton = loginOption === 'polkadot'
 
   return (
     <div>
+      <Button
+        variant='transparent'
+        size='noPadding'
+        onClick={() => setCurrentState('scan-qr')}
+        interactive='none'
+        className='absolute right-5 top-[1.625rem] flex items-center gap-2 text-text-primary md:right-6 md:top-7'
+      >
+        <AiOutlineScan className='text-2xl md:text-xl' />
+        <span className='hidden md:block'> Scan QR</span>
+      </Button>
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className={cx('flex flex-col gap-4')}>

@@ -59,6 +59,7 @@ export default function LoginModal({
       title: '🔐 Login',
       desc: '',
       withFooter: 'privacy-policy',
+      withCloseButton: false,
     },
     'enter-secret-key': {
       title: '🔑 Log in with Grill key',
