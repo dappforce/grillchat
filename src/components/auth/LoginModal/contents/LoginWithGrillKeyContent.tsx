@@ -71,7 +71,10 @@ export const LoginWithGrillKeyContent = ({
       <Button
         variant='transparent'
         size='noPadding'
-        onClick={() => setCurrentState('scan-qr')}
+        onClick={() => {
+          setCurrentState('scan-qr')
+          sendEvent('login_scan_qr_clicked', { eventSource: 'login-grill-key' })
+        }}
         interactive='none'
         className='absolute right-5 top-[1.625rem] flex items-center gap-2 text-text-primary md:right-6 md:top-7'
       >
