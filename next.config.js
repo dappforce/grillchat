@@ -39,7 +39,7 @@ const nextConfig = {
   // if in prod and redis env vars are set, use redis cache, to share same cache across different pods
   cacheMaxMemorySize: shouldUseRedisCache ? 0 : undefined,
   cacheHandler: shouldUseRedisCache
-    ? require.resolve('./cache-handler.js')
+    ? require.resolve('./cache-handler.mjs')
     : undefined,
   transpilePackages: ['react-tweet'],
 
