@@ -9,6 +9,7 @@ import { env } from '@/env.mjs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
+import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useLocation } from '@/stores/location'
 import {
   accountAddressStorage,
@@ -30,7 +31,7 @@ export type HomePageProps = {
 }
 
 const hotChatsHubId = env.NEXT_PUBLIC_MAIN_SPACE_ID
-const communityHubId = env.NEXT_PUBLIC_COMMUNITY_HUB_ID
+export const communityHubId = env.NEXT_PUBLIC_COMMUNITY_HUB_ID
 
 const addressFromStorage = accountAddressStorage.get()
 
@@ -141,7 +142,7 @@ export default function HomePage(props: HomePageProps) {
       })
   }
 
-  const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
+  const { openModal } = useCreateChatModal()
 
   return (
     <DefaultLayout
@@ -196,7 +197,7 @@ export default function HomePage(props: HomePageProps) {
                   variant='primary'
                   className='flex items-center gap-2'
                   onClick={() => {
-                    setIsOpenNewCommunity(true)
+                    openModal({ defaultOpenState: 'new-comunity' })
                     sendEvent('open_community_creation_modal', {
                       eventSource: 'home',
                     })
@@ -216,13 +217,7 @@ export default function HomePage(props: HomePageProps) {
         />
       </SearchChannelsWrapper>
 
-      {communityHubId && (
-        <NewCommunityModal
-          isOpen={isOpenNewCommunity}
-          closeModal={() => setIsOpenNewCommunity(false)}
-          hubId={communityHubId}
-        />
-      )}
+      {communityHubId && <NewCommunityModal hubId={communityHubId} />}
     </DefaultLayout>
   )
 }
