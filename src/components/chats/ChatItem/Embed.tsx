@@ -185,9 +185,13 @@ function getComponent(link: string) {
   return null
 }
 
+export function canRenderEmbed(link: string) {
+  const embedType = urlMapper.find((item) => item.checker(link))?.name
+  return embedType && embedType !== 'preview'
+}
+
 export function useCanRenderEmbed(link: string) {
   return useMemo(() => {
-    const embedType = urlMapper.find((item) => item.checker(link))?.name
-    return embedType && embedType !== 'preview'
+    return canRenderEmbed(link)
   }, [link])
 }

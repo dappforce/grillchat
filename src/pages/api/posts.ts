@@ -1,3 +1,4 @@
+import { canRenderEmbed } from '@/components/chats/ChatItem/Embed'
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { generateGetDataFromSquidWithBlockchainFallback } from '@/server/squid'
@@ -100,7 +101,10 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   const linksToFetch = new Set<string>()
   posts.forEach((post) => {
     post.struct.ownerId = toSubsocialAddress(post.struct.ownerId)!
-    if (post.content?.link) linksToFetch.add(post.content.link)
+    const link = post.content?.link
+    const shouldLinkBeFetched =
+      link && link.startsWith('https') && !canRenderEmbed(link)
+    if (link && shouldLinkBeFetched) linksToFetch.add(link)
   })
 
   const metadataMap: Record<string, LinkMetadata> = {}

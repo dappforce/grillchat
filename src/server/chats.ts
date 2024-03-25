@@ -70,7 +70,6 @@ async function getLastMessagesFromDatahub(
   queryClient: QueryClient,
   chatIds: string[]
 ) {
-  console.timeLog('homepage', 'start postmetadatas')
   const postMetadatas = (
     await getPostMetadataQuery.fetchQueries(queryClient, chatIds)
   ).filter(Boolean)
@@ -79,10 +78,8 @@ async function getLastMessagesFromDatahub(
     .filter(Boolean) as string[]
   let lastMessages: PostData[] = []
   if (lastMessageIds.length > 0) {
-    console.timeLog('homepage', 'start lastposts')
     lastMessages = await getPostsServer(lastMessageIds)
   }
-  console.timeLog('homepage', 'done last messages')
   return lastMessages
 }
 
