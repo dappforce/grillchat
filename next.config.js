@@ -19,8 +19,6 @@ const redisPassword = process.env.REDIS_PASSWORD
 const shouldUseRedisCache =
   process.env.NODE_ENV === 'production' && redisHost && redisPort
 
-console.log('SHOULD USE REDIS CACHE', shouldUseRedisCache, process.env.GIT_HASH)
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || undefined,
@@ -30,12 +28,6 @@ const nextConfig = {
     largePageDataBytes: 200 * 1024, // 200kb
   },
 
-  generateBuildId:
-    shouldUseRedisCache && process.env.GIT_HASH
-      ? async () => {
-          return process.env.GIT_HASH
-        }
-      : undefined,
   // if in prod and redis env vars are set, use redis cache, to share same cache across different pods
   cacheMaxMemorySize: shouldUseRedisCache ? 0 : undefined,
   cacheHandler: shouldUseRedisCache
