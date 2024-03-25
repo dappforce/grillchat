@@ -2,20 +2,22 @@ import ChatIcon from '@/assets/icons/bubble-chat.svg'
 import HubIcon from '@/assets/icons/hub.svg'
 import MegaphoneIcon from '@/assets/icons/megaphone.svg'
 import ActionCard, { ActionCardProps } from '@/components/ActionCard'
-import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import Modal from '@/components/modals/Modal'
 import { useSendEvent } from '@/stores/analytics'
-import { useState } from 'react'
+import { useCreateChatModal } from '@/stores/create-chat-modal'
 import UpsertChatModal from './UpsertChatModal'
 
-export type NewCommunityModalProps = ModalFunctionalityProps & {
+export type NewCommunityModalProps = {
   hubId: string
+  withBackButton?: boolean
 }
 
 export default function NewCommunityModal({
   hubId,
-  ...props
+  withBackButton = true,
 }: NewCommunityModalProps) {
-  const [openedModalState, setOpenedModalState] = useState<null | 'chat'>(null)
+  const { openModal, isOpen, defaultOpenState, closeModal } =
+    useCreateChatModal()
   const sendEvent = useSendEvent()
 
   const menus: ActionCardProps['actions'] = [
@@ -25,7 +27,7 @@ export default function NewCommunityModal({
       icon: ChatIcon,
       firstVisitNotificationStorageName: 'new-community-chat',
       onClick: () => {
-        setOpenedModalState('chat')
+        openModal({ defaultOpenState: 'create-chat' })
         sendEvent('open_chat_creation_form')
       },
     },
@@ -46,20 +48,24 @@ export default function NewCommunityModal({
   return (
     <>
       <Modal
-        {...props}
-        isOpen={props.isOpen && openedModalState === null}
+        isOpen={isOpen && defaultOpenState === 'new-comunity'}
         title='💭 New Community'
         withCloseButton
+        closeModal={closeModal}
       >
         <ActionCard className='mt-2' actions={menus} />
       </Modal>
       <UpsertChatModal
-        isOpen={openedModalState === 'chat'}
-        closeModal={() => setOpenedModalState(null)}
-        onBackClick={() => setOpenedModalState(null)}
+        isOpen={defaultOpenState === 'create-chat'}
+        closeModal={() => closeModal()}
+        onBackClick={
+          withBackButton
+            ? () => openModal({ defaultOpenState: 'new-comunity' })
+            : undefined
+        }
         formProps={{
           hubId,
-          onTxSuccess: props.closeModal,
+          onTxSuccess: closeModal,
         }}
       />
     </>

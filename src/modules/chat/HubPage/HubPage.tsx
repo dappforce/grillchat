@@ -8,6 +8,7 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { isCommunityHubId } from '@/constants/config'
 import useSearch from '@/hooks/useSearch'
 import { useSendEvent } from '@/stores/analytics'
+import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
@@ -119,7 +120,7 @@ function CommunityHubToolbar({
   changeSortBy,
 }: CommunityHubToolbarProps) {
   const isLoggedIn = useMyAccount((state) => !!state.address)
-  const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
+  const { openModal } = useCreateChatModal()
   const sendEvent = useSendEvent()
 
   return (
@@ -181,7 +182,7 @@ function CommunityHubToolbar({
             !isLoggedIn && 'pointer-events-none select-none opacity-0'
           )}
           onClick={() => {
-            setIsOpenNewCommunity(true)
+            openModal({ defaultOpenState: 'new-comunity' })
             sendEvent('open_community_creation_modal', { eventSource: 'hub' })
           }}
         >
@@ -189,11 +190,7 @@ function CommunityHubToolbar({
           <span>New</span>
         </Button>
       </Container>
-      <NewCommunityModal
-        hubId={hubId}
-        closeModal={() => setIsOpenNewCommunity(false)}
-        isOpen={isOpenNewCommunity}
-      />
+      <NewCommunityModal hubId={hubId} />
     </>
   )
 }
