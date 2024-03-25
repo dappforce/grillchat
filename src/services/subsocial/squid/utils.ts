@@ -10,7 +10,7 @@ export function squidRequest<T, V extends Variables = Variables>(
 ) {
   if (!squidUrl) throw new Error('Squid URL is not defined')
 
-  const SQUID_TIMEOUT = 3 * 1000 // 3 seconds
+  const SQUID_TIMEOUT = 10 * 1000 // 10 seconds
   const client = new GraphQLClient(squidUrl, {
     timeout: SQUID_TIMEOUT,
     ...config,
