@@ -8,6 +8,7 @@ const getBalancesByNetwork = async (
   account: string,
   network: string
 ): Promise<Record<string, AccountInfoByChain>> => {
+  if (!account || !network) return {}
   const balances = await getSubIdRequest().get(
     `/${account}/balances/${network}`
   )
