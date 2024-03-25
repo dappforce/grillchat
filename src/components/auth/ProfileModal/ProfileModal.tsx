@@ -9,6 +9,7 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { SessionStorage } from '@/utils/storage'
+import { useQueryClient } from '@tanstack/react-query'
 import React, { useCallback, useEffect, useState } from 'react'
 import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
 import LimitedPolkadotJsSupportContent, {
@@ -20,6 +21,7 @@ import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
 import LinkedAddressesContent from './contents/LinkedAddressesContent'
 import LogoutContent from './contents/LogoutContent'
+import PrivacySecurityContent from './contents/PrivacySecurityContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
 import SimpleProfileSettingsContent from './contents/ProfileSettingsContent/SimpleProfileSettingsContent'
 import ShareSessionContent from './contents/ShareSessionContent'
@@ -44,6 +46,7 @@ const modalContents: {
   account: AccountContent,
   'linked-addresses': LinkedAddressesContent,
   'profile-settings': SimpleProfileSettingsContent,
+  'privacy-security': PrivacySecurityContent,
   'private-key': PrivateKeyContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
@@ -105,6 +108,7 @@ export default function ProfileModal({
   disableOutsideClickClose,
   ...props
 }: ProfileModalProps) {
+  const queryClient = useQueryClient()
   const { isOpen, defaultOpenState, closeModal, onBackClick } =
     useProfileModal()
 
@@ -196,14 +200,18 @@ export default function ProfileModal({
         : '🤔 Did you back up your Grill key?',
       withBackButton: true,
     },
-    'private-key': {
-      title: '🔑 My Grill key',
+    'privacy-security': {
+      title: '🔑 Privacy & Security',
       withBackButton: true,
     },
+    'private-key': {
+      title: '🔑 My Grill key',
+      withBackButton: 'privacy-security',
+    },
     'share-session': {
-      title: '💻 Share session',
+      title: '💻 Share my session',
       desc: 'Use this link or scan the QR code to quickly log in to this account on another device.',
-      withBackButton: true,
+      withBackButton: 'privacy-security',
     },
     about: {
       title: 'About app',
@@ -243,7 +251,10 @@ export default function ProfileModal({
     'telegram-notifications': {
       title: '🔔 Telegram bot',
       desc: 'Connect your account to our Telegram bot to receive notifications from Grill.',
-      withBackButton: 'notifications',
+      withBackButton: () => {
+        getLinkedTelegramAccountsQuery.invalidate(queryClient)
+        return 'notifications'
+      },
     },
     'push-notifications': {
       title: '🔔 Push Notifications',

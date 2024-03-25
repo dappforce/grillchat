@@ -170,6 +170,7 @@ function ChatListContent({
 
   const isAllMessagesLoaded = renderedMessageIds.length === totalDataCount
   let alreadyRenderLastReadMessage = false
+  let isFirstRenderedMessage = true
 
   return (
     <ChatListContext.Provider value={scrollContainerRef}>
@@ -235,7 +236,9 @@ function ChatListContent({
                 // bottom message is the first element, because the flex direction is reversed
                 if (!message) return null
 
-                const isBottomMessage = index === 0
+                const isBottomMessage = isFirstRenderedMessage
+                isFirstRenderedMessage = false
+
                 const isMessageRead =
                   lastFocusedTime >= message.struct.createdAtTime
                 // Only show the unread message notice for first message that is marked as read

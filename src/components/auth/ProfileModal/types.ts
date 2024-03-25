@@ -8,6 +8,7 @@ export type ProfileModalState =
   | 'profile-settings'
   | 'polkadot-connect-unlink'
   | 'polkadot-connect-identity-removed'
+  | 'privacy-security'
   | 'private-key'
   | 'logout'
   | 'share-session'

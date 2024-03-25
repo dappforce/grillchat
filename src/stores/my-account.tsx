@@ -70,7 +70,11 @@ type State = {
 type Actions = {
   login: (
     secretKey?: string,
-    config?: { isInitialization?: boolean; asTemporaryAccount?: boolean }
+    config?: {
+      isInitialization?: boolean
+      asTemporaryAccount?: boolean
+      withErrorToast?: boolean
+    }
   ) => Promise<string | false>
   loginAsTemporaryAccount: () => Promise<string | false>
   finalizeTemporaryAccount: () => void
@@ -208,7 +212,11 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     parentProxyAddressStorage.remove()
   },
   login: async (secretKey, config) => {
-    const { asTemporaryAccount, isInitialization } = config || {}
+    const {
+      asTemporaryAccount,
+      isInitialization,
+      withErrorToast = true,
+    } = config || {}
     const { toSubsocialAddress } = await import('@subsocial/utils')
     const analytics = useAnalytics.getState()
     let address: string = ''
@@ -286,7 +294,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       }
     } catch (e) {
       console.error('Failed to login', e)
-      if (!isInitialization) {
+      if (!isInitialization && withErrorToast) {
         toast.custom((t) => (
           <Toast
             t={t}
@@ -627,6 +635,7 @@ export async function enableWallet({
       if (typeof unsub === 'function') unsub()
     }
   } catch (err) {
+    console.error('Error enabling wallet', err)
     onError(err)
   }
 }

@@ -6,16 +6,19 @@ import SunIcon from '@/assets/icons/sun.svg'
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
+import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useGetTheme from '@/hooks/useGetTheme'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
+import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import {
@@ -25,11 +28,12 @@ import {
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
-import { FaRegUser } from 'react-icons/fa'
+import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
 import { useCanUseGrillKey } from '../hooks'
 import { ProfileModalContentProps } from '../types'
+import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
 
 export default function AccountContent({
   address,
@@ -39,7 +43,6 @@ export default function AccountContent({
   //   useFirstVisitNotification('notification-menu')
 
   const canUseGrillKey = useCanUseGrillKey()
-
   const isInIframe = useIsInIframe()
 
   const {
@@ -72,19 +75,19 @@ export default function AccountContent({
   //   maxCount: maxLinkedCount,
   //   isLoading: isLoadingLinkedAcccountCount,
   // } = useLinkedAccountCount()
-  // const {
-  //   count: activatedNotificationCount,
-  //   maxCount: maxNotificationCount,
-  //   isLoading: isLoadingActivatedNotificationCount,
-  // } = useActivatedNotificationCount()
+  const {
+    count: activatedNotificationCount,
+    maxCount: maxNotificationCount,
+    isLoading: isLoadingActivatedNotificationCount,
+  } = useActivatedNotificationCount()
 
   // const onLinkedAddressesClick = () => {
   //   sendEvent('open_linked_addresses', commonEventProps)
   //   setCurrentState('linked-addresses')
   // }
-  const onShowPrivateKeyClick = () => {
-    sendEvent('open_show_private_key_modal', commonEventProps)
-    setCurrentState('private-key')
+  const onPrivacySecurityKeyClick = () => {
+    sendEvent('open_privacy_security_modal', commonEventProps)
+    setCurrentState('privacy-security')
   }
   // const onShareSessionClick = () => {
   //   sendEvent('open_share_session_modal', commonEventProps)
@@ -101,24 +104,6 @@ export default function AccountContent({
   // }
 
   const menus: MenuListProps['menus'] = [
-    // {
-    //   text: (
-    //     <span className='flex items-center gap-2'>
-    //       <span>Notifications Settings</span>
-    //       {/* {!isLoadingActivatedNotificationCount && (
-    //         <Notice size='sm' noticeType='grey'>
-    //           {activatedNotificationCount} / {maxNotificationCount}
-    //         </Notice>
-    //       )} */}
-    //       {showNotification && <DotBlinkingNotification />}
-    //     </span>
-    //   ),
-    //   icon: BellIcon,
-    //   onClick: () => {
-    //     closeNotification()
-    //     setCurrentState('notifications')
-    //   },
-    // },
     // {
     //   text: (
     //     <span className='flex items-center gap-2'>
@@ -165,14 +150,30 @@ export default function AccountContent({
     ...(canUseGrillKey
       ? [
           {
-            text: 'Show Grill key',
+            text: 'Privacy and Security',
             icon: KeyIcon,
             onClick: () => {
-              onShowPrivateKeyClick()
+              onPrivacySecurityKeyClick()
             },
           },
         ]
       : []),
+    {
+      text: (
+        <span className='flex items-center gap-2'>
+          <span>Notifications Settings</span>
+          {!isLoadingActivatedNotificationCount && (
+            <Notice size='sm' noticeType='grey'>
+              {activatedNotificationCount} / {maxNotificationCount}
+            </Notice>
+          )}
+        </span>
+      ),
+      icon: FaRegBell,
+      onClick: () => {
+        setCurrentState('notifications')
+      },
+    },
     {
       text: 'Suggest Feature',
       icon: SuggestFeatureIcon,
@@ -301,18 +302,18 @@ function useColorModeOptions(): MenuListProps['menus'] {
 //   return { count, maxCount: 2, isLoading }
 // }
 
-// function useActivatedNotificationCount() {
-//   const myAddress = useMyMainAddress()
-//   const { data: linkedAccounts, isLoading } =
-//     getLinkedTelegramAccountsQuery.useQuery({
-//       address: myAddress ?? '',
-//     })
-//   const isTelegramLinked = !!linkedAccounts?.length
-//   const isPushNotificationEnabled = useIsPushNotificationEnabled()
+function useActivatedNotificationCount() {
+  const myAddress = useMyMainAddress()
+  const { data: linkedAccounts, isLoading } =
+    getLinkedTelegramAccountsQuery.useQuery({
+      address: myAddress ?? '',
+    })
+  const isTelegramLinked = !!linkedAccounts?.length
+  const isPushNotificationEnabled = useIsPushNotificationEnabled()
 
-//   let count = 0
-//   if (isTelegramLinked) count++
-//   if (isPushNotificationEnabled) count++
+  let count = 0
+  if (isTelegramLinked) count++
+  if (isPushNotificationEnabled) count++
 
-//   return { count, maxCount: 2, isLoading }
-// }
+  return { count, maxCount: 2, isLoading }
+}

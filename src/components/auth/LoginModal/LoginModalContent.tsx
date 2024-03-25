@@ -31,11 +31,13 @@ import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
 import NewAccountContent from './contents/NewAccountContent'
+import ScanQrContent from './contents/ScanQrContent'
 import { finishLogin } from './utils'
 
 export type LoginModalStep =
   | PolkadotConnectSteps
   | 'login'
+  | 'scan-qr'
   | 'enter-secret-key'
   | 'new-account'
   | 'account-created'
@@ -155,7 +157,7 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
                 <div className='flex items-center justify-center gap-2'>
                   <HiPlus className='text-[20px] text-text-muted' />
                   <div className='flex flex-col text-left'>
-                    <span>Create new account</span>
+                    <span>Create new Grill account</span>
                   </div>
                 </div>
               </Button>
@@ -172,6 +174,7 @@ type LoginModalContents = {
 }
 export const loginModalContents: LoginModalContents = {
   login: LoginContent,
+  'scan-qr': ScanQrContent,
   'enter-secret-key': LoginWithGrillKeyContent,
   'new-account': NewAccountContent,
   'account-created': AccountCreatedContent,
