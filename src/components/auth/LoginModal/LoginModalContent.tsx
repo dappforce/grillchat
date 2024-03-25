@@ -22,13 +22,13 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { AiOutlineScan } from 'react-icons/ai'
 import { HiPlus } from 'react-icons/hi2'
 import LimitedPolkadotJsSupportContent from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
 import PolkadotConnectWalletContent from '../common/polkadot-connect/PolkadotConnectWalletContent'
 import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
+import ScanQRButton from './ScanQRButton'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
 import NewAccountContent from './contents/NewAccountContent'
@@ -52,7 +52,8 @@ export type LoginModalContentProps = ModalFunctionalityProps & {
   beforeLogin?: () => void
 }
 
-export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
+export const LoginContent = (props: LoginModalContentProps) => {
+  const { setCurrentState } = props
   const { loginOption } = useLoginOption()
   const sendEvent = useSendEvent()
 
@@ -78,19 +79,7 @@ export const LoginContent = ({ setCurrentState }: LoginModalContentProps) => {
 
   return (
     <div>
-      <Button
-        variant='transparent'
-        size='noPadding'
-        onClick={() => {
-          setCurrentState('scan-qr')
-          sendEvent('login_scan_qr_clicked', { eventSource: 'login' })
-        }}
-        interactive='none'
-        className='absolute right-5 top-[1.625rem] flex items-center gap-2 text-text-primary md:right-6 md:top-7'
-      >
-        <AiOutlineScan className='text-2xl md:text-xl' />
-        <span className='hidden md:block'> Scan QR</span>
-      </Button>
+      <ScanQRButton {...props} />
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className={cx('flex flex-col gap-4')}>

@@ -11,6 +11,7 @@ import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/
 import CreateProfileModal from './CreateProfileModal'
 import { LoginModalStep, loginModalContents } from './LoginModalContent'
 import SaveGrillKeyModal from './SaveGrillKeyModal'
+import { prevScanQrStep } from './ScanQRButton'
 
 export type LoginModalProps = {
   onBackClick?: () => void
@@ -71,7 +72,7 @@ export default function LoginModal({
       title: '📷 Scan QR Code',
       desc: 'Scan the QR code with your Grill mobile app to log in',
       withBackButton: true,
-      backToStep: 'enter-secret-key',
+      backToStep: prevScanQrStep || 'login',
     },
     'new-account': {
       title: '🔑 New Grill account',

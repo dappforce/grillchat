@@ -9,16 +9,13 @@ import { useMyAccount } from '@/stores/my-account'
 import { isSecretKeyUsingMiniSecret } from '@/utils/account'
 import { useQueryClient } from '@tanstack/react-query'
 import { SyntheticEvent, useRef, useState } from 'react'
-import { AiOutlineScan } from 'react-icons/ai'
 import { LoginModalContentProps } from '../LoginModalContent'
+import ScanQRButton from '../ScanQRButton'
 import { finishLogin } from '../utils'
 
-export const LoginWithGrillKeyContent = ({
-  beforeLogin,
-  afterLogin,
-  closeModal,
-  setCurrentState,
-}: LoginModalContentProps) => {
+export const LoginWithGrillKeyContent = (props: LoginModalContentProps) => {
+  const { beforeLogin, afterLogin, closeModal } = props
+
   const login = useMyAccount((state) => state.login)
   const [privateKey, setPrivateKey] = useState('')
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -68,19 +65,7 @@ export const LoginWithGrillKeyContent = ({
 
   return (
     <form onSubmit={onSubmit} className='mt-2 flex flex-col gap-4'>
-      <Button
-        variant='transparent'
-        size='noPadding'
-        onClick={() => {
-          setCurrentState('scan-qr')
-          sendEvent('login_scan_qr_clicked', { eventSource: 'login-grill-key' })
-        }}
-        interactive='none'
-        className='absolute right-5 top-[1.625rem] flex items-center gap-2 text-text-primary md:right-6 md:top-7'
-      >
-        <AiOutlineScan className='text-2xl md:text-xl' />
-        <span className='hidden md:block'> Scan QR</span>
-      </Button>
+      <ScanQRButton {...props} />
       <TextArea
         ref={inputRef}
         value={privateKey}
