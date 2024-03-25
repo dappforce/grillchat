@@ -14,7 +14,7 @@ export default function PrivacySecurityContent({
       <Button
         variant='transparent'
         size='noPadding'
-        className='flex gap-4 rounded-xl bg-slate-100 px-4 pb-0 pt-4 text-left hover:bg-slate-100/80 focus-visible:bg-slate-100/80 dark:bg-background-lighter dark:hover:bg-background-lighter/80 dark:focus-visible:bg-background-lighter/80'
+        className='flex min-h-[100px] gap-4 rounded-xl bg-slate-100 px-4 pb-0 pt-4 text-left ring-2 ring-transparent hover:bg-slate-100/80 hover:ring-background-primary focus-visible:bg-slate-100/80 focus-visible:ring-background-primary dark:bg-background-lighter dark:hover:bg-background-lighter/80 dark:focus-visible:bg-background-lighter/80'
         interactive='none'
         onClick={() => setCurrentState('private-key')}
       >
@@ -33,7 +33,7 @@ export default function PrivacySecurityContent({
       <Button
         variant='transparent'
         size='noPadding'
-        className='flex items-center gap-4 rounded-xl bg-slate-100 p-4 text-left hover:bg-slate-100/80 focus-visible:bg-slate-100/80 dark:bg-background-lighter dark:hover:bg-background-lighter/80 dark:focus-visible:bg-background-lighter/80'
+        className='flex min-h-[100px] items-center gap-4 rounded-xl bg-slate-100 p-4 text-left ring-2 ring-transparent hover:bg-slate-100/80 hover:ring-background-primary focus-visible:bg-slate-100/80 focus-visible:ring-background-primary dark:bg-background-lighter dark:hover:bg-background-lighter/80 dark:focus-visible:bg-background-lighter/80'
         interactive='none'
         onClick={() => setCurrentState('share-session')}
       >
