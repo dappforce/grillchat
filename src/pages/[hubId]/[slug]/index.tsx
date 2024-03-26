@@ -3,7 +3,6 @@ import { getHubIdFromAlias } from '@/constants/config'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { AppCommonProps } from '@/pages/_app'
 import { getPostsServer } from '@/pages/api/posts'
-import { getPricesFromCache } from '@/pages/api/prices'
 import { getProfilesServer } from '@/pages/api/profiles'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery, getProfileQuery } from '@/services/api/query'
@@ -14,10 +13,6 @@ import {
 } from '@/services/datahub/posts/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
-import {
-  coingeckoTokenIds,
-  getPriceQuery,
-} from '@/services/subsocial/prices/query'
 import { removeUndefinedValues } from '@/utils/general'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
@@ -49,10 +44,9 @@ async function getChatsMessagesData(client: QueryClient, chatId: string) {
   const ownersSet = new Set(owners)
   const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)
 
-  const [profilesPromise, prices] = await Promise.allSettled([
+  const [profilesPromise] = await Promise.allSettled([
     getProfilesServer(chatPageOwnerIds),
-    getPricesFromCache(Object.values(coingeckoTokenIds)),
-  ] as const)
+  ])
   if (profilesPromise.status === 'fulfilled') {
     profilesPromise.value.forEach((profile) => {
       getProfileQuery.setQueryData(
@@ -66,7 +60,6 @@ async function getChatsMessagesData(client: QueryClient, chatId: string) {
   return {
     messages,
     messageIds,
-    prices: prices.status === 'fulfilled' ? prices.value : [],
   }
 }
 
@@ -179,9 +172,9 @@ export const getStaticProps = getCommonStaticProps<
     let desc: string | null = null
     let image: string | null = null
     try {
-      const [messagesPromise, chatPromise] = await Promise.allSettled([
-        getChatsMessagesData(queryClient, chatId),
+      const [chatPromise] = await Promise.allSettled([
         prefetchChatAndBlockedEntities(queryClient, chatId, hubId),
+        getChatsMessagesData(queryClient, chatId),
         prefetchPostMetadata(queryClient, chatId),
       ] as const)
 
@@ -203,20 +196,6 @@ export const getStaticProps = getCommonStaticProps<
           const chatImage = chatData.content?.image
           image = chatImage ? getIpfsContentUrl(chatImage) : null
         }
-      }
-
-      if (messagesPromise.status === 'fulfilled') {
-        const prices = messagesPromise.value.prices
-        prices.forEach((price) => {
-          const { id, current_price } = price || {}
-
-          if (id && current_price) {
-            getPriceQuery.setQueryData(queryClient, id, {
-              id,
-              current_price: current_price?.toString(),
-            })
-          }
-        })
       }
     } catch (err) {
       console.error('Error fetching for chat page: ', err)
