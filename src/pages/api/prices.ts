@@ -1,4 +1,4 @@
-import { MinimalUsageQueueWithTimeLimit } from '@/utils/data-structure'
+import { redisCallWrapper } from '@/server/cache'
 import axios from 'axios'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -25,8 +25,10 @@ export type ApiPricesResponse = {
   hash?: string
 }
 
-const MAX_CACHE_ITEMS = 500_000
-const priceCache = new MinimalUsageQueueWithTimeLimit<Price>(MAX_CACHE_ITEMS, 5)
+const MAX_AGE = 60 * 60 // 1 hour
+function getCacheKey(tokenId: string) {
+  return `price:${tokenId}`
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -56,14 +58,18 @@ export async function getPricesFromCache(tokenIds: string[]) {
   const needToFetchIds: string[] = []
 
   let newlyFetchedData: Price[] = []
-  tokenIds.forEach((tokenId) => {
-    const cachedData = priceCache.get(tokenId)
-    if (cachedData) {
-      prices.push(cachedData)
-    } else {
-      needToFetchIds.push(tokenId)
-    }
-  })
+  await Promise.all(
+    tokenIds.map(async (tokenId) => {
+      const cachedData = await redisCallWrapper((redis) =>
+        redis?.get(getCacheKey(tokenId))
+      )
+      if (cachedData) {
+        prices.push(JSON.parse(cachedData) as Price)
+      } else {
+        needToFetchIds.push(tokenId)
+      }
+    })
+  )
 
   if (needToFetchIds.length > 0) {
     try {
@@ -78,7 +84,14 @@ export async function getPricesFromCache(tokenIds: string[]) {
       }
 
       res.data.forEach((priceItem: Price) => {
-        priceCache.add(priceItem.id, priceItem)
+        redisCallWrapper((redis) =>
+          redis?.set(
+            getCacheKey(priceItem.id),
+            JSON.stringify(priceItem),
+            'EX',
+            MAX_AGE
+          )
+        )
       })
 
       newlyFetchedData.push(...res.data)

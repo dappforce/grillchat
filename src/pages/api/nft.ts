@@ -1,8 +1,8 @@
 import { nftChains } from '@/components/extensions/nft/utils'
+import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { covalentRequest } from '@/server/external'
 import { getIpfsApi } from '@/server/ipfs'
-import { MinimalUsageQueueWithTimeLimit } from '@/utils/data-structure'
 import { getCidFromMetadataLink, getIpfsContentUrl } from '@/utils/ipfs'
 import { Prefix as KodadotClient } from '@kodadot1/static'
 import { getClient } from '@kodadot1/uniquery'
@@ -51,12 +51,6 @@ const chainMapper: Record<(typeof nftChains)[number], string> = {
   ...kodadotChainMapper,
 }
 
-const MAX_NFTS_IN_CACHE = 500_000
-const nftDataCache = new MinimalUsageQueueWithTimeLimit<NftData>(
-  MAX_NFTS_IN_CACHE,
-  6 * 60 // 6 hours
-)
-
 export default handlerWrapper({
   inputSchema: querySchema,
   dataGetter: (req: NextApiRequest) => req.query,
@@ -83,8 +77,9 @@ export default handlerWrapper({
   },
 })
 
+const MAX_AGE = 60 * 60 // 1 hour
 function getNftCacheKey(nftProperties: ApiNftParams) {
-  return `${nftProperties.chain}_${nftProperties.collectionId}_${nftProperties.nftId}`
+  return `nft:${nftProperties.chain}_${nftProperties.collectionId}_${nftProperties.nftId}`
 }
 
 export async function getNftDataServer(
@@ -95,8 +90,9 @@ export async function getNftDataServer(
   if (!chain) return null
 
   const cacheKey = getNftCacheKey(nftProperties)
-  if (nftDataCache.has(cacheKey)) {
-    return nftDataCache.get(cacheKey) ?? null
+  const cachedData = await redisCallWrapper((redis) => redis?.get(cacheKey))
+  if (cachedData) {
+    return JSON.parse(cachedData) as NftData
   }
 
   try {
@@ -167,7 +163,9 @@ export async function getNftDataServer(
     }
 
     if (isMetadataRecognizedAsValid) {
-      nftDataCache.add(cacheKey, nftData)
+      redisCallWrapper((redis) =>
+        redis?.set(cacheKey, JSON.stringify(nftData), 'EX', MAX_AGE)
+      )
     }
 
     return nftData
