@@ -51,7 +51,7 @@ export const getStaticProps = getCommonStaticProps<
         dehydratedState: dehydrate(queryClient),
         hubId,
       },
-      revalidate: 2,
+      revalidate: 15,
     }
   }
 )

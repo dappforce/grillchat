@@ -43,7 +43,7 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
           image,
         },
       },
-      revalidate: 2,
+      revalidate: 30,
     }
   }
 )

@@ -143,7 +143,7 @@ export const getStaticProps = getCommonStaticProps<
         chatId,
         hubId,
       },
-      revalidate: 2,
+      revalidate: 15,
     }
   }
 )

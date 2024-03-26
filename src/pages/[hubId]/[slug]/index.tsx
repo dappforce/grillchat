@@ -212,7 +212,7 @@ export const getStaticProps = getCommonStaticProps<
           image,
         },
       },
-      revalidate: 2,
+      revalidate: 15,
     }
   }
 )
