@@ -3,6 +3,7 @@ import formidable from 'formidable'
 import { NextApiRequest, NextApiResponse } from 'next'
 import sharp from 'sharp'
 
+sharp.cache(false)
 const MAX_FILE_SIZE = 1 * 1024 * 1024 // 1MB
 
 export type SaveImageResponse = {
