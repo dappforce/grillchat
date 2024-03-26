@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
+import SkeletonFallback from '@/components/SkeletonFallback'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import {
   coingeckoTokenIds,
@@ -44,7 +45,7 @@ const DonatePreview = ({
 
   const tokenId = coingeckoTokenIds[(token as string).toLowerCase()]
 
-  const { data } = getPriceQuery.useQuery(tokenId)
+  const { data, isLoading } = getPriceQuery.useQuery(tokenId)
 
   let amountValue = '0'
   try {
@@ -79,7 +80,9 @@ const DonatePreview = ({
             <HiArrowUpRight />
           </LinkText>
         </div>
-        <div className='text-sm'>≈ ${amountInDollars}</div>
+        <SkeletonFallback isLoading={isLoading} className='w-20'>
+          <div className='text-sm'>≈ ${amountInDollars}</div>
+        </SkeletonFallback>
         {isMyAddress && (
           <Button
             variant='whiteOutline'
