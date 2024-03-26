@@ -1,5 +1,5 @@
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import UpsertChatForm, { UpsertChatFormProps } from './UpsertChatForm'
+import UpsertChatForm, { UpsertChatFormProps } from './content/UpsertChatForm'
 
 export type UpsertChatModalProps = ModalFunctionalityProps & {
   formProps: UpsertChatFormProps

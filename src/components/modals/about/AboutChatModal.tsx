@@ -4,7 +4,7 @@ import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
-import UpsertChatModal from '@/components/community/UpsertChatModal'
+import NewCommunityModal from '@/components/community/NewCommunityModalNew'
 import ModerationInfoModal from '@/components/moderation/ModerationInfoModal'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { isCommunityHubId } from '@/constants/config'
@@ -20,6 +20,7 @@ import {
   LeaveChatWrapper,
 } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
@@ -62,6 +63,7 @@ export default function AboutChatModal({
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
   })
+  const { openModal } = useCreateChatModal()
   const sendEvent = useSendEvent()
   const refSearchParam = useReferralSearchParam()
 
@@ -150,7 +152,8 @@ export default function AboutChatModal({
         icon: LuPencil,
         iconClassName: cx('text-text-muted'),
         onClick: () => {
-          setOpenedModalType('edit')
+          setOpenedModalType(null)
+          openModal({ defaultOpenState: 'update-chat' })
           sendEvent('click edit_chat_menu')
         },
       })
@@ -299,12 +302,7 @@ export default function AboutChatModal({
         url={chatUrl}
         urlTitle={content.title}
       />
-      <UpsertChatModal
-        isOpen={openedModalType === 'edit'}
-        closeModal={closeModal}
-        onBackClick={closeModal}
-        formProps={{ chat }}
-      />
+      <NewCommunityModal chat={chat} />
       {hubId && (
         <ModerationInfoModal
           hubId={hubId}

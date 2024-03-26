@@ -1,7 +1,7 @@
 import { getPostQuery } from '@/services/api/query'
 import type { Meta, StoryObj } from '@storybook/react'
 
-import UpsertChatForm, { UpsertChatFormProps } from './UpsertChatForm'
+import UpsertChatForm, { UpsertChatFormProps } from './content/UpsertChatForm'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta = {

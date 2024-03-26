@@ -2,22 +2,11 @@ import ChatIcon from '@/assets/icons/bubble-chat.svg'
 import HubIcon from '@/assets/icons/hub.svg'
 import MegaphoneIcon from '@/assets/icons/megaphone.svg'
 import ActionCard, { ActionCardProps } from '@/components/ActionCard'
-import Modal from '@/components/modals/Modal'
 import { useSendEvent } from '@/stores/analytics'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
-import UpsertChatModal from './UpsertChatModal'
 
-export type NewCommunityModalProps = {
-  hubId: string
-  withBackButton?: boolean
-}
-
-export default function NewCommunityModal({
-  hubId,
-  withBackButton = true,
-}: NewCommunityModalProps) {
-  const { openModal, isOpen, defaultOpenState, closeModal } =
-    useCreateChatModal()
+const ChooseCommunityTypeContent = () => {
+  const { openModal } = useCreateChatModal()
   const sendEvent = useSendEvent()
 
   const menus: ActionCardProps['actions'] = [
@@ -45,29 +34,6 @@ export default function NewCommunityModal({
     },
   ]
 
-  return (
-    <>
-      <Modal
-        isOpen={isOpen && defaultOpenState === 'new-comunity'}
-        title='💭 New Community'
-        withCloseButton
-        closeModal={closeModal}
-      >
-        <ActionCard className='mt-2' actions={menus} />
-      </Modal>
-      <UpsertChatModal
-        isOpen={defaultOpenState === 'create-chat'}
-        closeModal={() => closeModal()}
-        onBackClick={
-          withBackButton
-            ? () => openModal({ defaultOpenState: 'new-comunity' })
-            : undefined
-        }
-        formProps={{
-          hubId,
-          onTxSuccess: closeModal,
-        }}
-      />
-    </>
-  )
+  return <ActionCard className='mt-2' actions={menus} />
 }
+export default ChooseCommunityTypeContent
