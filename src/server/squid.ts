@@ -1,5 +1,5 @@
 import { redisCallWrapper } from '@/server/cache'
-import { DataSource } from '@/services/subsocial/utils'
+import { DataSource } from '@/services/subsocial/utils/service-mapper'
 
 export function generateGetDataFromSquidWithBlockchainFallback<Param, Response>(
   dataName: string,
@@ -42,7 +42,11 @@ export function generateGetDataFromSquidWithBlockchainFallback<Param, Response>(
         })
       }
     } catch (e) {
-      console.error(`Error fetching ${dataName} from squid`, e)
+      console.error(
+        `Error fetching ${dataName} from squid`,
+        JSON.stringify(params),
+        e
+      )
     }
 
     const foundPostIds = new Set()

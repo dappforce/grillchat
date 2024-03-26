@@ -3,7 +3,7 @@ import { SpaceContent } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
 import { GetProfilesQuery, GetProfilesQueryVariables } from '../squid/generated'
 import { squidRequest } from '../squid/utils'
-import { standaloneDynamicFetcherWrapper } from '../utils'
+import { standaloneDynamicFetcherWrapper } from '../utils/service-mapper'
 
 export type SubsocialProfile = {
   profileSpace: { id: string; content: SpaceContent | null } | null

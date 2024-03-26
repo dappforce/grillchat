@@ -10,7 +10,7 @@ export function subsocialSquidRequest<T, V extends Variables = Variables>(
 ) {
   const url = 'https://squid.subsquid.io/subsocial/graphql'
 
-  const SQUID_TIMEOUT = 3 * 1000 // 3 seconds
+  const SQUID_TIMEOUT = 10 * 1000 // 10 seconds
   const client = new GraphQLClient(url, {
     timeout: SQUID_TIMEOUT,
     ...config,

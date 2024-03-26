@@ -1,3 +1,5 @@
+import { isServer } from '@tanstack/react-query'
+
 export * from './base'
 export * from './types'
 
@@ -25,14 +27,12 @@ function generateBatchPromise<BatchData>() {
 export function poolQuery<SingleParam, SingleReturn>(
   config: PoolQueryConfig<SingleParam, SingleReturn>
 ): (param: SingleParam) => Promise<SingleReturn | null> {
-  const {
-    name,
-    getQueryId,
-    multiCall,
-    singleCall,
-    waitTime = 250,
-    resultMapper,
-  } = config
+  const { name, getQueryId, multiCall, singleCall, resultMapper } = config
+
+  let { waitTime = 250 } = config
+  // Server side calls are using fetchQueries, so same calls should be batched without big delays
+  if (isServer) waitTime = 10
+
   let queryPool: SingleParam[] = []
   let timeout: number | undefined
 

@@ -5,7 +5,7 @@ import {
   GetEvmAddressesQueryVariables,
 } from '../squid/generated'
 import { squidRequest } from '../squid/utils'
-import { standaloneDynamicFetcherWrapper } from '../utils'
+import { standaloneDynamicFetcherWrapper } from '../utils/service-mapper'
 import { getEvmPalletName } from './utils'
 
 async function getEvmAddressesFromBlockchain({

@@ -11,20 +11,17 @@ import { PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
 import { prefetchBlockedEntities } from './moderation/prefetch'
 
-export async function prefetchChatPreviewsData(
-  queryClient: QueryClient,
-  hubId: string
-) {
+async function prefetchChatsMetadata(queryClient: QueryClient, hubId: string) {
   const res = await getPostIdsBySpaceIdQuery.fetchQuery(queryClient, hubId)
   const allChatIds = [
     ...(res?.postIds ?? []),
     ...(constantsConfig.linkedChatsForHubId[hubId] ?? []),
   ]
 
-  const [{ lastMessages, chats }] = await Promise.all([
-    getChatPreviewsData(queryClient, allChatIds),
-    getSpaceQuery.fetchQuery(queryClient, hubId),
-  ] as const)
+  const { lastMessages, chats } = await getChatPreviewsData(
+    queryClient,
+    allChatIds
+  )
 
   const chatEntityIds = chats.map((chat) => chat.entityId ?? '')
 
@@ -35,6 +32,7 @@ export async function prefetchChatPreviewsData(
 
     additionalHubIds.add(originalHubId)
   })
+
   await prefetchBlockedEntities(
     queryClient,
     [hubId, ...Array.from(additionalHubIds)],
@@ -43,6 +41,15 @@ export async function prefetchChatPreviewsData(
   ;[...lastMessages, ...chats].forEach((post) => {
     getPostQuery.setQueryData(queryClient, post.id, removeUndefinedValues(post))
   })
+}
+export async function prefetchChatPreviewsData(
+  queryClient: QueryClient,
+  hubId: string
+) {
+  await Promise.all([
+    prefetchChatsMetadata(queryClient, hubId),
+    getSpaceQuery.fetchQuery(queryClient, hubId),
+  ])
 }
 
 export async function getChatPreviewsData(
@@ -63,13 +70,9 @@ async function getLastMessagesFromDatahub(
   queryClient: QueryClient,
   chatIds: string[]
 ) {
-  const postMetadatas = await Promise.all(
-    chatIds
-      .map((chatId) => {
-        return getPostMetadataQuery.fetchQuery(queryClient, chatId)
-      })
-      .filter(Boolean)
-  )
+  const postMetadatas = (
+    await getPostMetadataQuery.fetchQueries(queryClient, chatIds)
+  ).filter(Boolean)
   const lastMessageIds = postMetadatas
     .map((metadata) => metadata?.lastCommentId)
     .filter(Boolean) as string[]

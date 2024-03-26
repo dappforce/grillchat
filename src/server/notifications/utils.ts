@@ -15,7 +15,7 @@ export function notificationsRequest<T, V extends Variables = Variables>(
   if (!url) throw new Error('Notifications URL not found')
   if (!token) throw new Error('Notifications TOKEN not found')
 
-  const TIMEOUT = 3 * 1000 // 3 seconds
+  const TIMEOUT = 10 * 1000 // 10 seconds
   const client = new GraphQLClient(url, {
     timeout: TIMEOUT,
     headers: {

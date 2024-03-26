@@ -1,3 +1,5 @@
+import { constantsConfig } from '@/constants/config'
+import { env } from '@/env.mjs'
 import { handlerWrapper } from '@/server/common'
 import { getChatPageLink } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
@@ -33,18 +35,32 @@ const handler = handlerWrapper({
           originalHubId
         )
 
+        const isInHomePage =
+          env.NEXT_PUBLIC_MAIN_SPACE_ID === data.hubId ||
+          constantsConfig.linkedChatsForHubId[
+            env.NEXT_PUBLIC_MAIN_SPACE_ID
+          ]?.includes(data.chatId)
+
         if (data.hubId && originalHubId !== data.hubId) {
           const currentLink = getChatPageLink(
             { query: {} },
             createSlug(data.chatId, chat.content),
             data.hubId
           )
-          await Promise.all([
+          const promises = [
             res.revalidate(currentLink),
             res.revalidate(originalLink),
-          ])
+          ]
+          if (isInHomePage) {
+            promises.push(res.revalidate('/'))
+          }
+          await Promise.all(promises)
         } else {
-          await res.revalidate(originalLink)
+          const promises = [res.revalidate(originalLink)]
+          if (isInHomePage) {
+            promises.push(res.revalidate('/'))
+          }
+          await Promise.all(promises)
         }
       }
 

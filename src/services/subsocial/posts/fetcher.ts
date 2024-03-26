@@ -3,6 +3,8 @@ import { gql } from 'graphql-request'
 import { getPostsFromDatahub } from '../../datahub/posts/fetcher'
 import { POST_FRAGMENT } from '../squid/fragments'
 import {
+  GetPostIdsBySpaceIdsQuery,
+  GetPostIdsBySpaceIdsQueryVariables,
   GetPostsFollowersCountQuery,
   GetPostsFollowersCountQueryVariables,
   GetPostsQuery,
@@ -10,7 +12,7 @@ import {
 } from '../squid/generated'
 import { mapPostFragment } from '../squid/mappers'
 import { squidRequest } from '../squid/utils'
-import { standaloneDynamicFetcherWrapper } from '../utils'
+import { standaloneDynamicFetcherWrapper } from '../utils/service-mapper'
 
 async function getPostsFromBlockchain({
   api,
@@ -63,3 +65,52 @@ export async function getPostsFollowersCountFromSquid(postIds: string[]) {
   })
   return res.posts
 }
+
+const GET_POST_IDS_BY_SPACE_IDS = gql`
+  query GetPostIdsBySpaceIds($ids: [String!]) {
+    posts(where: { space: { id_in: $ids } }) {
+      id
+      space {
+        id
+      }
+    }
+  }
+`
+async function getPostIdsBySpaceIdsFromSquid(spaceIds: string[]) {
+  const res = await squidRequest<
+    GetPostIdsBySpaceIdsQuery,
+    GetPostIdsBySpaceIdsQueryVariables
+  >({
+    document: GET_POST_IDS_BY_SPACE_IDS,
+    variables: { ids: spaceIds },
+  })
+  const postIdsBySpaceId: Record<
+    string,
+    { spaceId: string; postIds: string[] }
+  > = {}
+  res.posts.forEach((post) => {
+    const spaceId = post.space?.id
+    if (!spaceId) return
+    if (!postIdsBySpaceId[spaceId])
+      postIdsBySpaceId[spaceId] = { postIds: [], spaceId }
+    postIdsBySpaceId[spaceId].postIds.push(post.id)
+  })
+  return Object.values(postIdsBySpaceId)
+}
+async function getPostIdsBySpaceIdsFromBlockchain({
+  api,
+  data: spaceIds,
+}: SubsocialQueryData<string[]>) {
+  const res = await Promise.all(
+    spaceIds.map((spaceId) => api.blockchain.postIdsBySpaceId(spaceId))
+  )
+  return res.map((postIds, i) => ({
+    spaceId: spaceIds[i],
+    postIds,
+  }))
+}
+export const getPostIdsBySpaceIdsFromSubsocial =
+  standaloneDynamicFetcherWrapper({
+    blockchain: getPostIdsBySpaceIdsFromBlockchain,
+    squid: getPostIdsBySpaceIdsFromSquid,
+  })

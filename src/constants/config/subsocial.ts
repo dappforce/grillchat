@@ -10,6 +10,7 @@ const subsocialConfig: ConstantsConfig = {
   },
   linkedChatsForHubId: {
     '12659': ['54469', '54464'],
+    '12466': ['54461', '54464', '54469', '55227', '54460'],
   },
   pinnedChatsInHubId: {
     '12659': ['6914'],

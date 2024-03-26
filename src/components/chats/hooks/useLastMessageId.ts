@@ -1,3 +1,4 @@
+import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
@@ -27,25 +28,52 @@ function useLastMessageIdFromBlockchain(chatId: string) {
   return lastMessageId
 }
 
-export function useLastMessageIds(chatIds: string[]) {
+type LastMessage = { createdAtTime: number; rootPostId: string }
+export function useLastMessages(chatIds: string[]): LastMessage[] {
   if (isDatahubAvailable) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useLastMessageIdsFromDatahub(chatIds)
+    return useLastMessagesFromDatahub(chatIds)
   } else {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useLastMessageIdsFromBlockchain(chatIds)
   }
 }
-function useLastMessageIdsFromDatahub(chatIds: string[]) {
+function useLastMessagesFromDatahub(chatIds: string[]): LastMessage[] {
   const postMetadatas = getPostMetadataQuery.useQueries(chatIds)
-  return postMetadatas.map(({ data }) => data?.lastCommentId)
+
+  return postMetadatas
+    .map(({ data }) =>
+      data
+        ? {
+            createdAtTime: new Date(data.createdAtTime).getTime(),
+            rootPostId: data?.postId,
+          }
+        : undefined
+    )
+    .filter(Boolean)
 }
-function useLastMessageIdsFromBlockchain(chatIds: string[]) {
+function useLastMessageIdsFromBlockchain(chatIds: string[]): LastMessage[] {
   const commentIdsQueries = getCommentIdsByPostIdFromChainQuery.useQueries(
     chatIds,
     {
       subscribe: true,
     }
   )
-  return commentIdsQueries.map(({ data }) => data?.[data?.length - 1])
+  const latestMessageIds = commentIdsQueries.map(
+    ({ data }) => data?.[data?.length - 1]
+  )
+
+  const filteredLatestMessageIds = latestMessageIds?.filter(Boolean) as string[]
+
+  const lastMessageQueries = getPostQuery.useQueries(
+    filteredLatestMessageIds ?? []
+  )
+  return lastMessageQueries
+    .map(({ data }) => data)
+    ?.filter(Boolean)
+    .map(({ struct, content }) => ({
+      body: content?.body ?? '',
+      createdAtTime: struct.createdAtTime,
+      rootPostId: struct.rootPostId,
+    }))
 }

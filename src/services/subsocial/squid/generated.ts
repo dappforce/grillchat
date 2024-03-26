@@ -7803,6 +7803,13 @@ export type GetPostsFollowersCountQueryVariables = Exact<{
 
 export type GetPostsFollowersCountQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, followersCount: number }> };
 
+export type GetPostIdsBySpaceIdsQueryVariables = Exact<{
+  ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
+
+
+export type GetPostIdsBySpaceIdsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, space?: { __typename?: 'Space', id: string } | null }> };
+
 export type GetPostsByContentQueryVariables = Exact<{
   search: Scalars['String']['input'];
   spaceIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
@@ -7985,6 +7992,16 @@ export const GetPostsFollowersCount = gql`
   posts(where: {id_in: $ids}) {
     id
     followersCount
+  }
+}
+    `;
+export const GetPostIdsBySpaceIds = gql`
+    query GetPostIdsBySpaceIds($ids: [String!]) {
+  posts(where: {space: {id_in: $ids}}) {
+    id
+    space {
+      id
+    }
   }
 }
     `;
