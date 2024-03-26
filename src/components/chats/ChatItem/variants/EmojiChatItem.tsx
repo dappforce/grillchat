@@ -6,6 +6,7 @@ import { getRepliedMessageId } from '../../utils'
 import ChatRelativeTime from '../ChatRelativeTime'
 import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
+import SubTeamLabel from '../SubTeamLabel'
 import { ChatItemContentProps } from './types'
 
 export type EmojiChatItemProps = ChatItemContentProps
@@ -62,7 +63,7 @@ export default function EmojiChatItem({
       )}
     >
       {!isMyMessage && (
-        <div className='flex items-baseline overflow-hidden pl-1'>
+        <div className='flex items-baseline justify-between gap-2 overflow-hidden pl-1'>
           <ProfilePreviewModalName
             clipText
             showModeratorChip
@@ -71,6 +72,7 @@ export default function EmojiChatItem({
             address={ownerId}
             className={cx('mr-2 text-sm font-medium text-text-secondary')}
           />
+          <SubTeamLabel address={ownerId} className='!bg-background-light/50' />
         </div>
       )}
       <div
@@ -106,7 +108,12 @@ export default function EmojiChatItem({
           )}
         </div>
         {!isMyMessage && (
-          <div className='absolute bottom-0 right-0 translate-x-full'>
+          <div
+            className={cx(
+              'absolute bottom-0 right-0 translate-x-full',
+              repliedMessageId && '-right-1'
+            )}
+          >
             {relativeTimeElement}
           </div>
         )}
