@@ -19,6 +19,7 @@ import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink } from '@/utils/links'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { OptionIpfsContent } from '@subsocial/api/substrate/wrappers'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { ComponentProps, useEffect, useState } from 'react'
@@ -135,10 +136,8 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                       const chats = (spaceContent as any).chats ?? []
 
                       const updatedSpaceContent = {
-                        content: {
-                          ...spaceContent,
-                          chats: [...chats, { id: chatId }],
-                        },
+                        ...spaceContent,
+                        chats: [...chats, { id: chatId }],
                       }
 
                       console.log('save content to ipfs')
@@ -147,7 +146,9 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                       console.log('update space with new content')
                       await updateSpace({
                         spaceId: hubId,
-                        updatedSpaceContent: cid,
+                        updatedSpaceContent: {
+                          content: OptionIpfsContent(cid),
+                        },
                       })
                       console.log('space updated with new content')
                     }
