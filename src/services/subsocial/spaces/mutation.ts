@@ -3,7 +3,7 @@ import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { getCurrentWallet } from '../hooks'
-import { createMutationWrapper } from '../utils'
+import { createMutationWrapper } from '../utils/mutation'
 import { getSpaceQuery } from './query'
 
 export type UpdateSpaceParams = {
