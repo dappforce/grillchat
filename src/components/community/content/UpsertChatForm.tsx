@@ -18,6 +18,7 @@ import { useSubscriptionState } from '@/stores/subscription'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink } from '@/utils/links'
+import { sendMessageToParentWindow } from '@/utils/window'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { OptionIpfsContent } from '@subsocial/api/substrate/wrappers'
 import { PostData } from '@subsocial/api/types'
@@ -73,6 +74,12 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
     if (newChat) {
       const chatId = newChat.id
       async function onSuccessChatCreation() {
+        const url = urlJoin(
+          getChatPageLink({ query: {} }, chatId, hubId),
+          '?new=true'
+        )
+
+        sendMessageToParentWindow('redirect', url)
         await router.push(
           urlJoin(getChatPageLink({ query: {} }, chatId, hubId), '?new=true')
         )
@@ -125,10 +132,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                     setSubscriptionState('post', 'always-sub')
                     setIsProcessingData(true)
                     const chatId = await getNewIdFromTxResult(txResult)
-                    console.log('created chat:', chatId)
                     await mutateAsync({ chatId })
-
-                    console.log('chat created:', chatId)
 
                     const spaceContent = data?.content
 
@@ -140,10 +144,8 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                         chats: [...chats, { id: chatId }],
                       }
 
-                      console.log('save content to ipfs')
                       const { cid } = await saveFile(updatedSpaceContent)
-                      console.log('content saved to ipfs:', cid)
-                      console.log('update space with new content')
+
                       await updateSpace({
                         spaceId: hubId,
                         updatedSpaceContent: {
@@ -159,7 +161,6 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                       { ownedChat: true }
                     )
 
-                    closeModal()
                     setNewChatId(chatId)
                   },
                 },

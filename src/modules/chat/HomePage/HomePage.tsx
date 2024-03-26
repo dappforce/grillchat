@@ -1,7 +1,7 @@
 import CommunityAddIcon from '@/assets/icons/community-add.svg'
 import Button from '@/components/Button'
 import Tabs, { TabsProps } from '@/components/Tabs'
-import NewCommunityModal from '@/components/community/NewCommunityModalNew'
+import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
