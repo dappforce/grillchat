@@ -3,7 +3,7 @@ import Button from '@/components/Button'
 import Container from '@/components/Container'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
-import NewCommunityModal from '@/components/community/NewCommunityModal'
+import NewCommunityModal from '@/components/community/NewCommunityModalNew'
 import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
 import {

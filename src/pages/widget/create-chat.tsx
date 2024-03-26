@@ -1,5 +1,4 @@
-import NewCommunityModal from '@/components/community/NewCommunityModal'
-import { communityHubId } from '@/modules/chat/HomePage'
+import NewCommunityModal from '@/components/community/NewCommunityModalNew'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useEffect } from 'react'
@@ -34,8 +33,7 @@ export default function CreateChatPage() {
     return () => {
       window.removeEventListener('message', handler)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return <NewCommunityModal withBackButton={false} hubId={communityHubId} />
+  return <NewCommunityModal withBackButton={false} hubId={'8105'} />
 }

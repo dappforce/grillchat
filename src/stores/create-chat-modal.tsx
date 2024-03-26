@@ -1,7 +1,11 @@
 import { sendMessageToParentWindow } from '@/utils/window'
 import { create, createSelectors } from './utils'
 
-type CreateChatModalState = 'new-comunity' | 'create-chat'
+export type CreateChatModalState =
+  | 'new-comunity'
+  | 'create-chat'
+  | 'update-chat'
+  | 'loading'
 
 type State = {
   isOpen: boolean
