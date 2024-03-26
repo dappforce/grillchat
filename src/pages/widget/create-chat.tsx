@@ -1,4 +1,4 @@
-import NewCommunityModal from '@/components/community/NewCommunityModalNew'
+import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useEffect } from 'react'

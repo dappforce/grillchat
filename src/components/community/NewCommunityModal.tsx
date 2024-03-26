@@ -1,73 +1,76 @@
-import ChatIcon from '@/assets/icons/bubble-chat.svg'
-import HubIcon from '@/assets/icons/hub.svg'
-import MegaphoneIcon from '@/assets/icons/megaphone.svg'
-import ActionCard, { ActionCardProps } from '@/components/ActionCard'
-import Modal from '@/components/modals/Modal'
-import { useSendEvent } from '@/stores/analytics'
-import { useCreateChatModal } from '@/stores/create-chat-modal'
-import UpsertChatModal from './UpsertChatModal'
+import {
+  CreateChatModalState,
+  useCreateChatModal,
+} from '@/stores/create-chat-modal'
+import Modal from '../modals/Modal'
+
+import { PostData } from '@subsocial/api/types'
+import ChooseCommunityTypeContent from './content/ChooseCommunityType'
+import LoadingContent from './content/LoadingContent'
+import UpsertChatForm, { UpsertChatFormProps } from './content/UpsertChatForm'
+
+const chatContentByStep: {
+  [key in CreateChatModalState]: (props: UpsertChatFormProps) => JSX.Element
+} = {
+  'new-comunity': ChooseCommunityTypeContent,
+  'create-chat': UpsertChatForm,
+  'update-chat': UpsertChatForm,
+  loading: LoadingContent,
+}
+
+const modalConfigByStep = {
+  'new-comunity': {
+    title: '💭 New Community',
+  },
+  'create-chat': {
+    title: '💬 New Group Chat',
+  },
+  'update-chat': {
+    title: '✏️ Edit chat',
+  },
+  loading: {
+    title: 'Loading...',
+  },
+}
 
 export type NewCommunityModalProps = {
-  hubId: string
+  chat?: PostData
+  hubId?: string
   withBackButton?: boolean
 }
 
-export default function NewCommunityModal({
+const NewCommunityModal = ({
   hubId,
   withBackButton = true,
-}: NewCommunityModalProps) {
+  chat,
+}: NewCommunityModalProps) => {
   const { openModal, isOpen, defaultOpenState, closeModal } =
     useCreateChatModal()
-  const sendEvent = useSendEvent()
 
-  const menus: ActionCardProps['actions'] = [
-    {
-      text: 'Group Chat',
-      description: 'Anyone can participate in a public conversation',
-      icon: ChatIcon,
-      firstVisitNotificationStorageName: 'new-community-chat',
-      onClick: () => {
-        openModal({ defaultOpenState: 'create-chat' })
-        sendEvent('open_chat_creation_form')
-      },
-    },
-    {
-      text: 'Channel',
-      description: 'Only you can post updates and others can comment on them',
-      icon: MegaphoneIcon,
-      isComingSoon: true,
-    },
-    {
-      text: 'Hub',
-      description: 'A collection of related chats or channels',
-      icon: HubIcon,
-      isComingSoon: true,
-    },
-  ]
+  const Content = chatContentByStep[defaultOpenState || 'new-comunity']
+
+  const { title } = modalConfigByStep[defaultOpenState || 'new-comunity']
+
+  const augmentedFormProps: UpsertChatFormProps = {
+    hubId,
+    ...(chat ? chat : {}),
+  }
 
   return (
-    <>
-      <Modal
-        isOpen={isOpen && defaultOpenState === 'new-comunity'}
-        title='💭 New Community'
-        withCloseButton
-        closeModal={closeModal}
-      >
-        <ActionCard className='mt-2' actions={menus} />
-      </Modal>
-      <UpsertChatModal
-        isOpen={defaultOpenState === 'create-chat'}
-        closeModal={() => closeModal()}
-        onBackClick={
-          withBackButton
-            ? () => openModal({ defaultOpenState: 'new-comunity' })
-            : undefined
-        }
-        formProps={{
-          hubId,
-          onTxSuccess: closeModal,
-        }}
-      />
-    </>
+    <Modal
+      isOpen={isOpen}
+      title={title}
+      withCloseButton
+      onBackClick={
+        withBackButton && defaultOpenState !== 'new-comunity'
+          ? () => openModal({ defaultOpenState: 'new-comunity' })
+          : undefined
+      }
+      closeModal={closeModal}
+    >
+      <Content {...augmentedFormProps} />
+    </Modal>
   )
 }
+
+export default NewCommunityModal
