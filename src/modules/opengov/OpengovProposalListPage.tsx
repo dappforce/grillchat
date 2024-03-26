@@ -1,11 +1,13 @@
+import Button from '@/components/Button'
 import Container from '@/components/Container'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import useSearch from '@/hooks/useSearch'
+import { getPaginatedProposalsQuery } from '@/services/polkassembly/query'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { HiChevronDown } from 'react-icons/hi2'
 
 const sortProposalOptions = [
@@ -31,6 +33,8 @@ export default function OpengovProposalListPage() {
     setSortBy(sortBy)
     sortByStorage.set(sortBy)
   }
+  const { data: proposals, fetchNextPage } =
+    getPaginatedProposalsQuery.useInfiniteQuery()
 
   const { search, setSearch, getFocusedElementIndex, focusController } =
     useSearch()
@@ -63,6 +67,16 @@ export default function OpengovProposalListPage() {
       }}
     >
       {sortBy && <OpengovToolbar sortBy={sortBy} changeSortBy={changeSortBy} />}
+      <div className='flex flex-col gap-4'>
+        {proposals?.pages.map((page, index) => (
+          <Fragment key={index}>
+            {page.data.map((proposal) => (
+              <div key={proposal.post_id}>{proposal.title}</div>
+            ))}
+          </Fragment>
+        ))}
+        <Button onClick={() => fetchNextPage()}>load more</Button>
+      </div>
     </DefaultLayout>
   )
 }
