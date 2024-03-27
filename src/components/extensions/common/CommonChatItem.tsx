@@ -3,6 +3,7 @@ import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
+import SubTeamLabel from '@/components/chats/ChatItem/SubTeamLabel'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike from '@/components/content-staking/SuperLike'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
@@ -155,7 +156,12 @@ export default function CommonChatItem({
         )}
       >
         {!isMyMessage && (
-          <div className='flex items-baseline overflow-hidden px-2.5 first:pt-1.5'>
+          <div
+            className={cx(
+              'flex items-baseline gap-2 overflow-hidden px-2.5 first:pt-1.5',
+              othersMessage.checkMark !== 'top' && 'justify-between'
+            )}
+          >
             <ProfilePreviewModalName
               clipText
               showModeratorChip
@@ -163,10 +169,10 @@ export default function CommonChatItem({
               messageId={message.id}
               address={ownerId}
               color={textColor}
-              className={cx('mr-2 text-sm font-medium text-text-secondary')}
+              className={cx('text-sm font-medium text-text-secondary')}
             />
-            {!isMyMessage &&
-              othersMessage.checkMark === 'top' &&
+            <SubTeamLabel address={ownerId} />
+            {othersMessage.checkMark === 'top' &&
               otherMessageCheckMarkElement()}
           </div>
         )}

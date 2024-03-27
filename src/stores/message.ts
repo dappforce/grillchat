@@ -21,6 +21,8 @@ type State = {
   showEmptyPrimaryChatInput: boolean
 
   unreadMessage: UnreadMessage
+
+  isOpenMessageModal: 'should-stake' | 'blocked' | ''
 }
 
 let savedStateBeforeEditing: State | null = null
@@ -38,6 +40,8 @@ type Actions = {
   setUnreadMessage: (
     unreadData: UnreadMessage | ((prev: UnreadMessage) => UnreadMessage)
   ) => void
+
+  setOpenMessageModal: (isOpenMessageModal: State['isOpenMessageModal']) => void
 }
 
 const INITIAL_STATE: State = {
@@ -50,6 +54,7 @@ const INITIAL_STATE: State = {
     count: 0,
     lastMessageTime: Date.now(),
   },
+  isOpenMessageModal: '',
 }
 
 const useMessageDataBase = create<State & Actions>()((set, get) => ({
@@ -90,6 +95,9 @@ const useMessageDataBase = create<State & Actions>()((set, get) => ({
       return
     }
     set({ unreadMessage })
+  },
+  setOpenMessageModal: (isOpenMessageModal) => {
+    set({ isOpenMessageModal })
   },
   reset: () => {
     savedStateBeforeEditing = null
