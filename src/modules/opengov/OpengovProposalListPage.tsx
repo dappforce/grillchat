@@ -68,18 +68,18 @@ export default function OpengovProposalListPage() {
       }}
     >
       {sortBy && <OpengovToolbar sortBy={sortBy} changeSortBy={changeSortBy} />}
-      <div className='flex flex-col gap-4'>
+      <Container className='flex flex-col px-0'>
         {proposals?.pages.map((page, index) => (
           <Fragment key={index}>
             {page.data.map((proposal) => (
-              <div key={proposal.post_id}>
-                <ProposalPreview />
+              <div key={proposal.id}>
+                <ProposalPreview proposal={proposal} />
               </div>
             ))}
           </Fragment>
         ))}
         <Button onClick={() => fetchNextPage()}>load more</Button>
-      </div>
+      </Container>
     </DefaultLayout>
   )
 }

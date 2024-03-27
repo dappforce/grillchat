@@ -48,6 +48,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     const { data: profile, isLoading } = getProfileQuery.useQuery(address)
     const { ensNames } = accountData || {}
 
+    // TODO: change to identicon
     const avatar = useMemo(() => {
       return createAvatar(bottts, {
         size: 128,

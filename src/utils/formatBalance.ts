@@ -43,3 +43,35 @@ export const formatBalance = ({
     maximumFractionDigits,
   })
 }
+
+export function formatBalanceWithDecimals(
+  value: string,
+  config?: { decimals?: number; precision?: number; shorten?: boolean }
+) {
+  let {
+    decimals: decimalAmt = 10,
+    precision = 2,
+    shorten = true,
+  } = config || {}
+  let parsedValue = BigNumber(value).div(10 ** decimalAmt)
+  let roundings = ''
+
+  if (parsedValue.gte(1000000) && shorten) {
+    parsedValue = parsedValue.div(1000000)
+    roundings = 'm'
+  } else if (parsedValue.gte(1000) && shorten) {
+    parsedValue = parsedValue.div(1000)
+    roundings = 'k'
+  }
+
+  const [prefix, postfix = '0'] = parsedValue.toString().split('.')
+  let decimals = ''
+  if (precision > 0 && postfix !== '0') {
+    decimals = BigNumber(`0.${postfix}`).toPrecision(precision).substring(2)
+    if (prefix !== '0') {
+      decimals = decimals.substring(0, 2)
+    }
+  }
+
+  return `${prefix}${decimals ? `.${decimals}` : ''}${roundings} SUB`
+}

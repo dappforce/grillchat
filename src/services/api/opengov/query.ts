@@ -3,17 +3,6 @@ import { QueryConfig } from '@/subsocial-query'
 import { QueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import { apiInstance } from '../utils'
 
-interface Proposal {
-  post_id: number
-  title: string
-}
-export type PaginatedProposals = {
-  data: Proposal[]
-  page: number
-  hasMore: boolean
-  totalData: number
-}
-
 async function getPaginatedProposals({
   page,
   limit,
@@ -48,9 +37,9 @@ export const getPaginatedProposalsQuery = {
   },
   useInfiniteQuery: (config?: QueryConfig) => {
     return useInfiniteQuery<
-      PaginatedProposals,
+      ApiProposalsResponse,
       unknown,
-      PaginatedProposals,
+      ApiProposalsResponse,
       string[]
     >({
       ...config,
