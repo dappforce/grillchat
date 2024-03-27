@@ -8,6 +8,7 @@ import AddressAvatar from '../AddressAvatar'
 import Button from '../Button'
 import Name from '../Name'
 import ProfilePreview from '../ProfilePreview'
+import VoteSummary from './VoteSummary'
 
 export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
   return (
@@ -38,25 +39,28 @@ export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
               <span>13</span>
             </div>
           </div>
-          <div className='flex flex-col gap-2'>
-            <div className='flex flex-col gap-0.5'>
-              <span className='text-text-muted'>Requested</span>
-              <span>
-                {formatBalanceWithDecimals(proposal.requested, {
-                  precision: 2,
-                })}{' '}
-                DOT
-              </span>
+          <div className='flex items-center gap-8'>
+            <div className='flex flex-col gap-2'>
+              <div className='flex flex-col gap-0.5'>
+                <span className='text-text-muted'>Requested</span>
+                <span>
+                  {formatBalanceWithDecimals(proposal.requested, {
+                    precision: 2,
+                  })}{' '}
+                  DOT
+                </span>
+              </div>
+              <div className='flex flex-col gap-0.5'>
+                <span className='text-text-muted'>Voted</span>
+                <span>
+                  {formatBalanceWithDecimals(proposal.vote.total, {
+                    precision: 2,
+                  })}{' '}
+                  DOT
+                </span>
+              </div>
             </div>
-            <div className='flex flex-col gap-0.5'>
-              <span className='text-text-muted'>Voted</span>
-              <span>
-                {formatBalanceWithDecimals(proposal.vote.total, {
-                  precision: 2,
-                })}{' '}
-                DOT
-              </span>
-            </div>
+            <VoteSummary proposal={proposal} />
           </div>
         </div>
         {/* <NoComments proposal={proposal} /> */}
