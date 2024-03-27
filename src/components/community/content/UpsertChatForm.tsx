@@ -67,10 +67,14 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
   const { data: newChat } = getPostQuery.useQuery(newChatId, {
     enabled: !!newChatId,
   })
+
+  console.log(newChat)
+
   useEffect(() => {
     if (newChat) {
       const chatId = newChat.id
       async function onSuccessChatCreation() {
+        console.log('Hello in redirect')
         const url = urlJoin(
           getChatPageLink({ query: {} }, chatId, hubId),
           '?new=true'
@@ -115,8 +119,6 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
   return (
     <UpdateSpaceWrapper>
       {({ mutateAsync: updateSpace }) => (
-        // <JoinChatWrapper>
-        //   {({ mutateAsync }) => (
         <UpsertPostWrapper
           config={{
             txCallbacks: {
@@ -129,17 +131,21 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                 setSubscriptionState('post', 'always-sub')
                 setIsProcessingData(true)
                 const chatId = await getNewIdFromTxResult(txResult)
-                // await mutateAsync({ chatId })
 
                 const spaceContent = data?.content
 
-                console.log(spaceContent?.experimental)
                 if (spaceContent && hubId) {
-                  const chats = spaceContent.experimental.chats ?? []
+                  const chats = (spaceContent as any).chats ?? []
+
+                  const { name, about, links, image, tags } = spaceContent
 
                   const updatedSpaceContent = {
-                    ...spaceContent,
-                    chats: [...chats, { id: chatId }],
+                    name,
+                    about,
+                    links,
+                    image,
+                    tags,
+                    chats: [{ id: chatId }, ...chats],
                   }
 
                   const { cid } = await saveFile(updatedSpaceContent)
@@ -150,7 +156,6 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                       content: OptionIpfsContent(cid),
                     },
                   })
-                  console.log('space updated with new content')
                 }
 
                 sendEvent(
@@ -252,8 +257,6 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
             )
           }}
         </UpsertPostWrapper>
-        //   )}
-        // </JoinChatWrapper>
       )}
     </UpdateSpaceWrapper>
   )
