@@ -22,7 +22,7 @@ Read the [integration guide](./integration/README.md) to get started.
 
 Requirements:
 
-- Node.js v16.0.0 or higher
+- Node.js v18.0.0 or higher
 - Yarn (you can use npm/pnpm if you want to)
 
 ### 1. Install dependencies
