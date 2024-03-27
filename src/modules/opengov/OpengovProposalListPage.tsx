@@ -3,8 +3,9 @@ import Container from '@/components/Container'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
+import ProposalPreview from '@/components/opengov/ProposalPreview'
 import useSearch from '@/hooks/useSearch'
-import { getPaginatedProposalsQuery } from '@/services/polkassembly/query'
+import { getPaginatedProposalsQuery } from '@/services/api/opengov/query'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
 import { Fragment, useEffect, useState } from 'react'
@@ -71,7 +72,9 @@ export default function OpengovProposalListPage() {
         {proposals?.pages.map((page, index) => (
           <Fragment key={index}>
             {page.data.map((proposal) => (
-              <div key={proposal.post_id}>{proposal.title}</div>
+              <div key={proposal.post_id}>
+                <ProposalPreview />
+              </div>
             ))}
           </Fragment>
         ))}

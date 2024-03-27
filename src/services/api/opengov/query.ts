@@ -21,7 +21,7 @@ async function getPaginatedProposals({
   page: number
   limit: number
 }) {
-  const res = await apiInstance.get('/opengov/proposals', {
+  const res = await apiInstance.get('/api/opengov/proposals', {
     params: { page, limit },
   })
   const resData = res.data as ApiProposalsResponse

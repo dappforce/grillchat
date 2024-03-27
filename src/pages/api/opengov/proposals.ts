@@ -1,5 +1,5 @@
 import { handlerWrapper } from '@/server/common'
-import { polkassemblyApi } from '@/services/polkassembly/utils'
+import { polkassemblyApi } from '@/server/opengov/utils'
 import { z } from 'zod'
 
 const handler = handlerWrapper({
@@ -30,7 +30,7 @@ export type ApiProposalsResponse = {
 }
 const LIMIT_PER_PAGE = 15
 // TODO: add redis cache
-export async function getProposals({
+async function getProposals({
   page = 1,
   limit = 10,
 }: {
