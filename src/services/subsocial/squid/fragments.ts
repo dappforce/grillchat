@@ -16,6 +16,7 @@ export const SPACE_FRAGMENT = gql`
     isShowMore
     linksOriginal
     hidden
+    experimental
     id
     updatedAtTime
     postsCount
