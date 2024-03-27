@@ -4,6 +4,7 @@ import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import { IconType } from 'react-icons'
 import { BiChat, BiNews } from 'react-icons/bi'
+import { GoLaw } from 'react-icons/go'
 import { LuCompass } from 'react-icons/lu'
 import { MdOutlineLeaderboard } from 'react-icons/md'
 import { RiLineChartLine } from 'react-icons/ri'
@@ -22,6 +23,7 @@ export default function Sidebar() {
       <ul className='flex flex-col gap-4'>
         <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation />
         <SidebarItem icon={BiChat} title='Chat' href='/' />
+        <SidebarItem icon={GoLaw} title='Open Gov' href='/opengov' />
         {getIsLoggedIn() && (
           <SidebarItem
             icon={LuCompass}
