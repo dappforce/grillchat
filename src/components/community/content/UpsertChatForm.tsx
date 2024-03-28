@@ -4,7 +4,6 @@ import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import TextArea from '@/components/inputs/TextArea'
 import { saveFile } from '@/services/api/mutation'
-import { getPostQuery } from '@/services/api/query'
 import { UpsertPostWrapper } from '@/services/subsocial/posts/mutation'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { UpdateSpaceWrapper } from '@/services/subsocial/spaces/mutation'
@@ -14,15 +13,11 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { cx } from '@/utils/class-names'
-import { getChatPageLink } from '@/utils/links'
-import { sendMessageToParentWindow } from '@/utils/window'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { OptionIpfsContent } from '@subsocial/api/substrate/wrappers'
 import { PostData } from '@subsocial/api/types'
-import { useRouter } from 'next/router'
-import { ComponentProps, useEffect, useState } from 'react'
+import { ComponentProps, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import urlJoin from 'url-join'
 import { z } from 'zod'
 
 type InsertAdditionalProps = {
@@ -45,53 +40,20 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export default function UpsertChatForm(props: UpsertChatFormProps) {
-  const { openModal } = useCreateChatModal()
+  const { openModal, setNewChatId } = useCreateChatModal()
   const [isImageLoading, setIsImageLoading] = useState(false)
   const [isProcessingData, setIsProcessingData] = useState(false)
   const sendEvent = useSendEvent()
 
-  const router = useRouter()
+  const setSubscriptionState = useSubscriptionState(
+    (state) => state.setSubscriptionState
+  )
+
   const { chat, hubId, onSuccess, onTxSuccess, ...otherProps } =
     props as UpsertChatFormProps &
       Partial<InsertAdditionalProps & UpdateAdditionalProps>
 
   const { data } = getSpaceQuery.useQuery(hubId || '')
-  const setSubscriptionState = useSubscriptionState(
-    (state) => state.setSubscriptionState
-  )
-
-  // even after the tx succeed, datahub needs some time to process the data from squid, so there is some kind of delay before the post is ready to be fetched
-  // if we don't use this hack, the user will be redirected to chat page with empty data
-  // so we need to wait for the post to be ready and then redirect the user
-  const [newChatId, setNewChatId] = useState('')
-  const { data: newChat } = getPostQuery.useQuery(newChatId, {
-    enabled: !!newChatId,
-  })
-
-  console.log(newChat)
-
-  useEffect(() => {
-    if (newChat) {
-      const chatId = newChat.id
-      async function onSuccessChatCreation() {
-        console.log('Hello in redirect')
-        const url = urlJoin(
-          getChatPageLink({ query: {} }, chatId, hubId),
-          '?new=true'
-        )
-
-        sendMessageToParentWindow('redirect-hard', url)
-        await router.push(
-          urlJoin(getChatPageLink({ query: {} }, chatId, hubId), '?new=true')
-        )
-        setIsProcessingData(false)
-        onTxSuccess?.()
-      }
-      onSuccessChatCreation()
-      setSubscriptionState('post', 'dynamic')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newChat, hubId, router])
 
   const myAddress = useMyMainAddress()
 

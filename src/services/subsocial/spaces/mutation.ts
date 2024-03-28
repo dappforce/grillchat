@@ -29,7 +29,7 @@ export function useUpdateSpace(
 
         return {
           tx: substrateApi.tx.spaces.updateSpace(spaceId, updatedSpaceContent),
-          summary: 'Joining chat',
+          summary: 'Updating space...',
         }
       },
     },
