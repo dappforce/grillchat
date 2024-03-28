@@ -16,6 +16,7 @@ export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
     <div className={cx('rounded-2xl bg-background-light p-4')}>
       <div className='flex flex-col'>
         <ProfilePreview
+          withPolkadotIdentity
           address={proposal.proposer}
           showAddress={false}
           className='gap-1'

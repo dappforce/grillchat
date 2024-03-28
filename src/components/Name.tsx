@@ -36,6 +36,7 @@ export type NameProps = ComponentProps<'span'> & {
   forceProfileSource?: ForceProfileSource
   clipText?: boolean
   asLink?: boolean
+  withPolkadotIdentity?: boolean
 }
 
 export default function Name({
@@ -51,6 +52,7 @@ export default function Name({
   clipText,
   profileSourceIconPosition = 'right',
   asLink,
+  withPolkadotIdentity,
   ...props
 }: NameProps) {
   const sendEvent = useSendEvent()
@@ -58,7 +60,8 @@ export default function Name({
 
   const { isLoading, name, textColor, profileSource, profile } = useName(
     address,
-    forceProfileSource
+    forceProfileSource,
+    withPolkadotIdentity
   )
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
     address ?? '',
@@ -197,7 +200,8 @@ LinkOrText.displayName = 'LinkOrText'
 
 export function useName(
   address: string,
-  forceProfileSource?: ForceProfileSource
+  forceProfileSource?: ForceProfileSource,
+  withPolkadotIdentity?: boolean
 ) {
   const { data: profile, isLoading: isLoadingProfile } =
     getProfileQuery.useQuery(address)
@@ -213,9 +217,10 @@ export function useName(
     'polkadot-identity',
     'subsocial-username',
   ]
-  const isIdentitiesNeeded = identitiesNeededInSources.includes(
-    forceProfileSource?.profileSource || source
-  )
+  const isIdentitiesNeeded =
+    identitiesNeededInSources.includes(
+      forceProfileSource?.profileSource || source
+    ) || withPolkadotIdentity
   const { data: identities, isFetching: isFetchingIdentities } =
     getIdentityQuery.useQuery(address ?? '', {
       enabled: isIdentitiesNeeded,
@@ -227,6 +232,7 @@ export function useName(
   let name = generateRandomName(randomSeed)
 
   function getNameFromSource(profileSource?: ProfileSource, content?: string) {
+    if (withPolkadotIdentity) return identities?.polkadot
     switch (profileSource) {
       case 'ens':
         if (ensNames?.includes(content ?? '')) return content

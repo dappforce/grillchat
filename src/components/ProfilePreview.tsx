@@ -33,6 +33,7 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   onEditClick?: () => void
   showAllIdentity?: boolean
   asLink?: boolean
+  withPolkadotIdentity?: boolean
 }
 
 const ProfilePreview = ({
@@ -46,6 +47,7 @@ const ProfilePreview = ({
   onEditClick,
   showAddress = true,
   showAllIdentity,
+  withPolkadotIdentity,
   ...props
 }: ProfilePreviewProps) => {
   const mdUp = useBreakpointThreshold('md')
@@ -110,6 +112,7 @@ const ProfilePreview = ({
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
         <div className='relative left-1 flex items-center gap-2'>
           <Name
+            withPolkadotIdentity
             asLink={asLink}
             profileSourceIconClassName='text-base'
             profileSourceIconPosition='right'
