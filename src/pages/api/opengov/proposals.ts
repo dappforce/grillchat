@@ -1,5 +1,5 @@
 import { handlerWrapper } from '@/server/common'
-import { polkassemblyApi } from '@/server/opengov/utils'
+import { subsquareApi } from '@/server/opengov/utils'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { z } from 'zod'
 
@@ -20,8 +20,8 @@ const handler = handlerWrapper({
 export default handler
 
 export type Proposal = {
-  id: string
-  beneficiaries: string[]
+  id: number
+  beneficiary: string
   proposer: string
   title: string
   status: string
@@ -39,18 +39,29 @@ export type ApiProposalsResponse = {
   totalData: number
 }
 
-type PolkassemblyProposal = {
-  beneficiaries: { value: string }[]
-  created_at: string
-  post_id: number
-  proposer: string
-  requestedAmount: string
-  status: string
+type ApiProposal = {
   title: string
-  tally: {
-    ayes: string
-    nays: string
-    support: string
+  referendumIndex: number
+  proposer: string
+  track: number
+  state: {
+    name: string
+  }
+  onchainData: {
+    info: {
+      origin: {
+        origins: string
+      }
+    }
+    tally: {
+      ayes: string
+      nays: string
+      support: string
+    }
+    treasuryInfo?: {
+      amount: string
+      beneficiary: string
+    }
   }
 }
 const LIMIT_PER_PAGE = 15
@@ -62,36 +73,35 @@ async function getProposals({
   page: number
   limit: number
 }): Promise<ApiProposalsResponse> {
-  const res = await polkassemblyApi.get('/listing/on-chain-posts', {
+  const res = await subsquareApi.get('/gov2/referendums', {
     params: {
       page,
-      listingLimit: limit,
-      proposalType: 'referendums_v2',
-      trackStatus: 'All',
-      sortBy: 'newest',
+      pageSize: limit,
     },
   })
-  const resData = res.data as { count: number; posts: PolkassemblyProposal[] }
+  const resData = res.data as { total: number; items: ApiProposal[] }
 
-  const hasMore = page * LIMIT_PER_PAGE < resData.count
+  const hasMore = page * LIMIT_PER_PAGE < resData.total
   return {
-    data: resData.posts.map((post) => ({
-      id: post.post_id.toString(),
-      beneficiaries: post.beneficiaries.map(
-        (b) => toSubsocialAddress(b.value)!
-      ),
+    data: resData.items.map((post) => ({
+      id: post.referendumIndex,
+      beneficiary: post.onchainData.treasuryInfo?.beneficiary ?? '',
       proposer: toSubsocialAddress(post.proposer)!,
-      requested: BigInt(post.requestedAmount ?? '0').toString(),
-      status: post.status,
+      requested: BigInt(
+        post.onchainData.treasuryInfo?.amount ?? '0'
+      ).toString(),
+      status: post.state.name,
       title: post.title,
       vote: {
-        ayes: BigInt(post.tally.ayes ?? '0').toString(),
-        nays: BigInt(post.tally.nays ?? '0').toString(),
-        total: BigInt(post.tally.support ?? '0').toString(),
+        ayes: BigInt(post.onchainData.tally.ayes ?? '0').toString(),
+        nays: BigInt(post.onchainData.tally.nays ?? '0').toString(),
+        total: BigInt(post.onchainData.tally.support ?? '0').toString(),
       },
+      type: post.onchainData.info.origin.origins,
+      track: post.track,
     })),
     page,
     hasMore,
-    totalData: resData.count,
+    totalData: resData.total,
   }
 }
