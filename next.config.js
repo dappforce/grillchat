@@ -49,6 +49,11 @@ const nextConfig = {
         permanent: false,
       },
       {
+        source: '/c/x',
+        destination: '/c',
+        permanent: false,
+      },
+      {
         source: '/:hubId/c/:slug',
         destination: '/:hubId/:slug',
         permanent: false,
