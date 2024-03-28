@@ -8,6 +8,7 @@ import AddressAvatar from '../AddressAvatar'
 import Button from '../Button'
 import Name from '../Name'
 import ProfilePreview from '../ProfilePreview'
+import ProposalStatus from './ProposalStatus'
 import VoteSummary from './VoteSummary'
 
 export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
@@ -30,9 +31,7 @@ export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
           <div className='flex flex-col gap-2 border-r border-border-gray'>
             <div className='flex flex-col gap-0.5'>
               <span className='text-text-muted'>Status</span>
-              <span className='text-text-primary'>
-                {proposal.status} &middot; 3d left
-              </span>
+              <ProposalStatus proposal={proposal} />
             </div>
             <div className='flex flex-col gap-0.5'>
               <span className='text-text-muted'>Comments</span>
