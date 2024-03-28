@@ -98,7 +98,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           <div
             style={{ backgroundClip: 'padding-box' }}
             className={cx(
-              'bg-background-light',
+              'bg-background-lighter/50',
               'rounded-full',
               'h-9 w-9 self-center',
               props.className
