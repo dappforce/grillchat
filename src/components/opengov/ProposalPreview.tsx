@@ -27,7 +27,7 @@ export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
           {proposal.id} &middot; {proposal.title}
         </span>
 
-        <div className='my-4 grid grid-cols-[2fr_3fr] gap-4 rounded-2xl border border-border-gray px-4 pb-4 pt-3 text-sm'>
+        <div className='my-4 grid grid-cols-[1fr_2fr] gap-4 rounded-2xl border border-border-gray px-4 pb-4 pt-3 text-sm md:grid-cols-[2fr_3fr]'>
           <div className='flex flex-col gap-2 border-r border-border-gray'>
             <div className='flex flex-col gap-0.5'>
               <span className='text-text-muted'>Status</span>
