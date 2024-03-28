@@ -12,7 +12,7 @@ import VoteSummary from './VoteSummary'
 
 export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
   return (
-    <div className={cx('border-b border-border-gray p-4')}>
+    <div className={cx('rounded-2xl bg-background-light p-4')}>
       <div className='flex flex-col'>
         <ProfilePreview
           address={proposal.proposer}
@@ -26,7 +26,7 @@ export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
           {proposal.id} &middot; {proposal.title}
         </span>
 
-        <div className='my-4 grid grid-cols-[225px_1fr] gap-4 rounded-2xl border border-border-gray px-4 pb-4 pt-3 text-sm'>
+        <div className='my-4 grid grid-cols-[2fr_3fr] gap-4 rounded-2xl border border-border-gray px-4 pb-4 pt-3 text-sm'>
           <div className='flex flex-col gap-2 border-r border-border-gray'>
             <div className='flex flex-col gap-0.5'>
               <span className='text-text-muted'>Status</span>
@@ -39,7 +39,7 @@ export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
               <span>13</span>
             </div>
           </div>
-          <div className='flex items-center gap-8'>
+          <div className='flex items-center justify-between gap-8'>
             <div className='flex flex-col gap-2'>
               <div className='flex flex-col gap-0.5'>
                 <span className='text-text-muted'>Requested</span>

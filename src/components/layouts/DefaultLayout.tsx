@@ -13,11 +13,13 @@ export type DefaultLayoutProps = ComponentProps<'div'> & {
   withBackButton?: LayoutNavbarExtensionProps
   withFixedHeight?: boolean
   withSidebar?: boolean
+  withSidebarBorder?: boolean
 }
 
 export default function DefaultLayout({
   children,
   navbarProps,
+  withSidebarBorder = true,
   withBackButton,
   withFixedHeight,
   withSidebar,
@@ -39,8 +41,18 @@ export default function DefaultLayout({
       <Navbar {...navbarProps} withSidebar={withSidebar} />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
-        <div className='container-page flex flex-1 border-border-gray !pl-0 !pr-0 md:border-r md:!pl-4'>
-          <div className='sticky top-14 hidden w-[225px] border-r border-border-gray md:block'>
+        <div
+          className={cx(
+            'container-page flex flex-1 border-border-gray !pl-0 !pr-0 md:!pl-4',
+            withSidebarBorder && 'md:border-r'
+          )}
+        >
+          <div
+            className={cx(
+              'sticky top-14 hidden w-[200px] border-r border-border-gray md:block',
+              withSidebarBorder && 'border-r'
+            )}
+          >
             <Sidebar />
           </div>
           <div className='flex-1'>{children}</div>

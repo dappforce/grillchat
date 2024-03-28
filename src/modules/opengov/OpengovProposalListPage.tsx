@@ -1,5 +1,4 @@
 import Button from '@/components/Button'
-import Container from '@/components/Container'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
@@ -43,6 +42,7 @@ export default function OpengovProposalListPage() {
   return (
     <DefaultLayout
       withSidebar
+      withSidebarBorder={false}
       navbarProps={{
         customContent: ({ logoLink, authComponent, notificationBell }) => {
           return (
@@ -67,19 +67,23 @@ export default function OpengovProposalListPage() {
         },
       }}
     >
-      {sortBy && <OpengovToolbar sortBy={sortBy} changeSortBy={changeSortBy} />}
-      <Container className='flex flex-col px-0'>
-        {proposals?.pages.map((page, index) => (
-          <Fragment key={index}>
-            {page.data.map((proposal) => (
-              <div key={proposal.id}>
-                <ProposalPreview proposal={proposal} />
-              </div>
-            ))}
-          </Fragment>
-        ))}
-        <Button onClick={() => fetchNextPage()}>load more</Button>
-      </Container>
+      <div className='mx-auto flex max-w-screen-md flex-1 flex-col'>
+        {sortBy && (
+          <OpengovToolbar sortBy={sortBy} changeSortBy={changeSortBy} />
+        )}
+        <div className='flex flex-col gap-2 p-2'>
+          {proposals?.pages.map((page, index) => (
+            <Fragment key={index}>
+              {page.data.map((proposal) => (
+                <div key={proposal.id}>
+                  <ProposalPreview proposal={proposal} />
+                </div>
+              ))}
+            </Fragment>
+          ))}
+          <Button onClick={() => fetchNextPage()}>load more</Button>
+        </div>
+      </div>
     </DefaultLayout>
   )
 }
@@ -90,9 +94,9 @@ type OpengovToolbarProps = {
 }
 function OpengovToolbar({ sortBy, changeSortBy }: OpengovToolbarProps) {
   return (
-    <Container
+    <div
       className={cx(
-        'flex items-center justify-between border-b border-border-gray px-4 py-3'
+        'flex items-center justify-between border-b border-border-gray px-2 py-3'
       )}
     >
       <div className='flex items-center gap-2 text-sm'>
@@ -137,6 +141,6 @@ function OpengovToolbar({ sortBy, changeSortBy }: OpengovToolbarProps) {
           }}
         </FloatingMenus>
       </div>
-    </Container>
+    </div>
   )
 }
