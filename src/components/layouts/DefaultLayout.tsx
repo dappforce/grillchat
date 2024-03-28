@@ -43,13 +43,13 @@ export default function DefaultLayout({
       {withSidebar ? (
         <div
           className={cx(
-            'container-page flex flex-1 border-border-gray !pl-0 !pr-0 md:!pl-4',
+            'container-page flex flex-1 items-start border-border-gray !pl-0 !pr-0 md:!pl-4',
             withSidebarBorder && 'md:border-r'
           )}
         >
           <div
             className={cx(
-              'sticky top-14 hidden w-[200px] border-r border-border-gray md:block',
+              'sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-[200px] border-r border-border-gray md:block',
               withSidebarBorder && 'border-r'
             )}
           >
