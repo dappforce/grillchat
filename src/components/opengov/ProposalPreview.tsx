@@ -6,6 +6,7 @@ import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import { FaRegComment } from 'react-icons/fa6'
 import AddressAvatar from '../AddressAvatar'
 import Button from '../Button'
+import LinkText from '../LinkText'
 import Name from '../Name'
 import ProfilePreview from '../ProfilePreview'
 import ProposalStatus from './ProposalStatus'
@@ -23,10 +24,10 @@ export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
           nameClassName='text-sm text-text-muted'
           avatarClassName='h-5 w-5'
         />
-        <span className='mt-1'>
+        <LinkText href={`/opengov/${proposal.id}`} className='mt-1'>
           <span className='text-text-muted'>#</span>
           {proposal.id} &middot; {proposal.title}
-        </span>
+        </LinkText>
 
         <div className='my-4 grid grid-cols-[1fr_2fr] gap-4 rounded-2xl border border-border-gray px-4 pb-4 pt-3 text-sm md:grid-cols-[2fr_3fr]'>
           <div className='flex flex-col gap-2 border-r border-border-gray'>
