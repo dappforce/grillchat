@@ -4,7 +4,14 @@ import {
 } from '@/stores/create-chat-modal'
 import Modal from '../modals/Modal'
 
+import { getPostQuery } from '@/services/api/query'
+import { useSubscriptionState } from '@/stores/subscription'
+import { getChatPageLink } from '@/utils/links'
+import { sendMessageToParentWindow } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import urlJoin from 'url-join'
 import ChooseCommunityTypeContent from './content/ChooseCommunityType'
 import LoadingContent from './content/LoadingContent'
 import UpsertChatForm, { UpsertChatFormProps } from './content/UpsertChatForm'
@@ -44,8 +51,40 @@ const NewCommunityModal = ({
   withBackButton = true,
   chat,
 }: NewCommunityModalProps) => {
-  const { openModal, isOpen, defaultOpenState, closeModal } =
+  const { openModal, isOpen, defaultOpenState, newChatId, closeModal } =
     useCreateChatModal()
+  const router = useRouter()
+
+  // even after the tx succeed, datahub needs some time to process the data from squid, so there is some kind of delay before the post is ready to be fetched
+  // if we don't use this hack, the user will be redirected to chat page with empty data
+  // so we need to wait for the post to be ready and then redirect the user
+  const { data: newChat } = getPostQuery.useQuery(newChatId || '', {
+    enabled: !!newChatId,
+  })
+
+  const setSubscriptionState = useSubscriptionState(
+    (state) => state.setSubscriptionState
+  )
+
+  useEffect(() => {
+    if (newChat) {
+      const chatId = newChat.id
+      async function onSuccessChatCreation() {
+        const url = urlJoin(
+          getChatPageLink({ query: {} }, chatId, hubId),
+          '?new=true'
+        )
+
+        sendMessageToParentWindow('redirect-hard', url)
+        await router.push(
+          urlJoin(getChatPageLink({ query: {} }, chatId, hubId), '?new=true')
+        )
+      }
+      onSuccessChatCreation()
+      setSubscriptionState('post', 'dynamic')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newChat, hubId, router])
 
   const Content = chatContentByStep[defaultOpenState || 'new-comunity']
 

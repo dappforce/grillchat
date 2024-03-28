@@ -10,6 +10,7 @@ export type CreateChatModalState =
 type State = {
   isOpen: boolean
   defaultOpenState?: CreateChatModalState
+  newChatId?: string
   customInternalStepProps?: any
   onBackClick?: () => void
 }
@@ -22,6 +23,7 @@ type Actions = {
     customInternalStepProps?: any
   }) => void
   clearInternalProps: () => void
+  setNewChatId: (id: string) => void
 }
 
 const initialState: State = {
@@ -29,13 +31,18 @@ const initialState: State = {
   defaultOpenState: undefined,
 }
 
-const useCreateChatModalBase = create<State & Actions>()((set) => ({
+const useCreateChatModalBase = create<State & Actions>()((set, get) => ({
   ...initialState,
   openModal: (config) => {
     set({ isOpen: true, ...config })
   },
   clearInternalProps: () => {
     set({ customInternalStepProps: undefined })
+  },
+  setNewChatId: (id: string) => {
+    const config = get()
+
+    set({ ...config, newChatId: id })
   },
   closeModal: () => {
     sendMessageToParentWindow('create-chat', 'close')
