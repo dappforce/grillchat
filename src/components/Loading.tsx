@@ -1,9 +1,9 @@
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 
-export type ChatLoadingProps = ComponentProps<'div'>
+export type LoadingProps = ComponentProps<'div'>
 
-export default function ChatLoading({ ...props }: ChatLoadingProps) {
+export default function Loading({ ...props }: LoadingProps) {
   return (
     <div
       {...props}

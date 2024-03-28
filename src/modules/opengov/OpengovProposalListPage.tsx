@@ -1,10 +1,11 @@
-import Button from '@/components/Button'
+import Loading from '@/components/Loading'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import ProposalPreview from '@/components/opengov/ProposalPreview'
 import useSearch from '@/hooks/useSearch'
 import { getPaginatedProposalsQuery } from '@/services/api/opengov/query'
-import { Fragment } from 'react'
+import { useMemo } from 'react'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 // const sortProposalOptions = [
 //   'request size',
@@ -29,11 +30,28 @@ export default function OpengovProposalListPage() {
   //   setSortBy(sortBy)
   //   sortByStorage.set(sortBy)
   // }
-  const { data: proposals, fetchNextPage } =
-    getPaginatedProposalsQuery.useInfiniteQuery()
+  const {
+    data: proposals,
+    fetchNextPage,
+    hasNextPage,
+  } = getPaginatedProposalsQuery.useInfiniteQuery()
 
   const { search, setSearch, getFocusedElementIndex, focusController } =
     useSearch()
+
+  const flattenedPages = useMemo(() => {
+    const proposalIds = new Set<number>()
+    return (
+      proposals?.pages
+        .flatMap((page) => page.data)
+        .filter((proposal) => {
+          if (!proposal) return false
+          const isExist = proposalIds.has(proposal.id)
+          proposalIds.add(proposal.id)
+          return !isExist
+        }) ?? []
+    )
+  }, [proposals?.pages])
 
   return (
     <DefaultLayout
@@ -67,18 +85,19 @@ export default function OpengovProposalListPage() {
         {/* {sortBy && (
           <OpengovToolbar sortBy={sortBy} changeSortBy={changeSortBy} />
         )} */}
-        <div className='flex flex-col gap-2 p-2'>
-          {proposals?.pages.map((page, index) => (
-            <Fragment key={index}>
-              {page.data.map((proposal) => (
-                <div key={proposal.id}>
-                  <ProposalPreview proposal={proposal} />
-                </div>
-              ))}
-            </Fragment>
+        <InfiniteScroll
+          hasMore={!!hasNextPage}
+          next={fetchNextPage}
+          loader={<Loading className='pb-2 pt-4' />}
+          dataLength={flattenedPages?.length ?? 0}
+          className='flex flex-col gap-2 p-2'
+        >
+          {flattenedPages.map((proposal) => (
+            <div key={proposal.id}>
+              <ProposalPreview proposal={proposal} />
+            </div>
           ))}
-          <Button onClick={() => fetchNextPage()}>load more</Button>
-        </div>
+        </InfiniteScroll>
       </div>
     </DefaultLayout>
   )

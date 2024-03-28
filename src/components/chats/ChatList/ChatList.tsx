@@ -1,4 +1,5 @@
 import Container from '@/components/Container'
+import Loading from '@/components/Loading'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
@@ -29,7 +30,6 @@ import CenterChatNotice from './CenterChatNotice'
 import ChatItemWithMenu from './ChatItemWithMenu'
 import ChatListEventManager from './ChatListEventManager'
 import ChatListSupportingContent from './ChatListSupportingContent'
-import ChatLoading from './ChatLoading'
 import ChatTopNotice from './ChatTopNotice'
 import PinnedMessage from './PinnedMessage'
 import useLastFocusedMessageTime from './hooks/useLastFocusedMessageId'
@@ -224,7 +224,7 @@ function ChatListContent({
               hasMore={!isAllMessagesLoaded}
               inverse
               scrollableTarget={scrollableContainerId}
-              loader={<ChatLoading className='pb-2 pt-4' />}
+              loader={<Loading className='pb-2 pt-4' />}
               endMessage={
                 currentPageMessageIds.length === 0 ? null : (
                   <ChatTopNotice className='pb-2 pt-4' />
