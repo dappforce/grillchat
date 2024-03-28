@@ -1,3 +1,4 @@
+import { PROPOSALS_PER_PAGE } from '@/constants/proposals'
 import { ApiProposalsResponse } from '@/pages/api/opengov/proposals'
 import { QueryConfig } from '@/subsocial-query'
 import { QueryClient, useInfiniteQuery } from '@tanstack/react-query'
@@ -17,7 +18,6 @@ async function getPaginatedProposals({
   return resData
 }
 
-const PROPOSAL_LIMIT_PER_PAGE = 15
 const PROPOSALS_QUERY_KEY = 'proposals'
 const getQueryKey = () => [PROPOSALS_QUERY_KEY]
 export const getPaginatedProposalsQuery = {
@@ -25,7 +25,7 @@ export const getPaginatedProposalsQuery = {
   fetchFirstPageQuery: async (client: QueryClient | null) => {
     const res = await getPaginatedProposals({
       page: 1,
-      limit: PROPOSAL_LIMIT_PER_PAGE,
+      limit: PROPOSALS_PER_PAGE,
     })
     if (!client) return res
 
@@ -34,6 +34,12 @@ export const getPaginatedProposalsQuery = {
       pages: [res],
     })
     return res
+  },
+  setFirstPageData: (queryClient: QueryClient, data: ApiProposalsResponse) => {
+    queryClient.setQueryData(getQueryKey(), {
+      pageParams: [1],
+      pages: [data],
+    })
   },
   useInfiniteQuery: (config?: QueryConfig) => {
     return useInfiniteQuery<
@@ -47,7 +53,7 @@ export const getPaginatedProposalsQuery = {
       queryFn: async ({ pageParam = 1 }) => {
         const res = await getPaginatedProposals({
           page: pageParam,
-          limit: PROPOSAL_LIMIT_PER_PAGE,
+          limit: PROPOSALS_PER_PAGE,
         })
         return res
       },

@@ -13,7 +13,7 @@ const handler = handlerWrapper({
   errorLabel: 'proposals',
   allowedMethods: ['GET'],
   handler: async (data, _, res) => {
-    const response = await getProposals(data)
+    const response = await getProposalsServer(data)
     res.json({ ...response, message: 'OK', success: true })
   },
 })
@@ -64,9 +64,8 @@ type ApiProposal = {
     }
   }
 }
-const LIMIT_PER_PAGE = 15
 // TODO: add redis cache
-async function getProposals({
+export async function getProposalsServer({
   page = 1,
   limit = 10,
 }: {
@@ -81,7 +80,7 @@ async function getProposals({
   })
   const resData = res.data as { total: number; items: ApiProposal[] }
 
-  const hasMore = page * LIMIT_PER_PAGE < resData.total
+  const hasMore = page * limit < resData.total
   return {
     data: resData.items.map((post) => ({
       id: post.referendumIndex,
