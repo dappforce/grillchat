@@ -64,14 +64,22 @@ export function formatBalanceWithDecimals(
     roundings = 'k'
   }
 
-  const [prefix, postfix = '0'] = parsedValue.toString().split('.')
+  let [prefix, postfix = '0'] = parsedValue.toString().split('.')
   let decimals = ''
+
   if (precision > 0 && postfix !== '0') {
-    decimals = BigNumber(`0.${postfix}`).toPrecision(precision).substring(2)
+    decimals = BigNumber(`0.${postfix}`).toPrecision(precision)
+    if (BigNumber(decimals).gte(1)) {
+      prefix = BigNumber(prefix).plus(1).toFixed(0)
+      decimals = BigNumber(decimals).minus(1).toPrecision(precision)
+    }
+    if (BigNumber(decimals).isZero()) {
+      decimals = ''
+    }
     if (prefix !== '0') {
-      decimals = decimals.substring(0, 2)
+      decimals = decimals.substring(2)
     }
   }
 
-  return `${prefix}${decimals ? `.${decimals}` : ''}${roundings} SUB`
+  return `${prefix}${decimals ? `.${decimals}` : ''}${roundings}`
 }
