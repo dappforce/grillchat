@@ -4,6 +4,7 @@ import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch
 import ProposalPreview from '@/components/opengov/ProposalPreview'
 import useSearch from '@/hooks/useSearch'
 import { getPaginatedProposalsQuery } from '@/services/api/opengov/query'
+import { cx } from '@/utils/class-names'
 import { useMemo } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
@@ -88,7 +89,14 @@ export default function OpengovProposalListPage() {
         <InfiniteScroll
           hasMore={!!hasNextPage}
           next={fetchNextPage}
-          loader={<Loading className='pb-2 pt-4' />}
+          loader={
+            <Loading
+              className='pb-2 pt-4'
+              spinnerClassName={cx(
+                'border-border-gray dark:bg-background-lightest'
+              )}
+            />
+          }
           dataLength={flattenedPages?.length ?? 0}
           className='flex flex-col gap-2 p-2'
         >
