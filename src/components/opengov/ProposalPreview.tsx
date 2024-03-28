@@ -99,7 +99,11 @@ function LastCommentItem({ proposal }: { proposal: Proposal }) {
         <AddressAvatar address={proposal.proposer} />
         <div className='flex flex-col items-start gap-0.5'>
           <span className='flex items-center gap-2'>
-            <Name className='text-sm' address={proposal.proposer} />
+            <Name
+              withPolkadotIdentity
+              className='text-sm'
+              address={proposal.proposer}
+            />
             <span className='text-xs text-text-muted'>2h ago</span>
           </span>
           <span>Nice!</span>
