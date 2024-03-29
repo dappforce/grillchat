@@ -11,7 +11,11 @@ const UsersEarnInfo = () => {
   const [userType, setUserType] = useState<UserType>('staker')
 
   return (
-    <div className='z-[1] flex flex-col gap-4'>
+    <div className='relative z-[1] flex flex-col gap-4'>
+      <div
+        id='how-to-increase-my-rewards'
+        className='absolute top-[-63px]'
+      ></div>
       <span className={sectionTitleStyles}>
         How much can I earn as a{' '}
         <UserTypeDropdown value={userType} onChangeValue={setUserType} />
