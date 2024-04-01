@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import FormatBalance from '@/components/FormatBalance'
 import useLoginOption from '@/hooks/useLoginOption'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
@@ -37,6 +38,12 @@ const BannerActionButtons = () => {
   })
 
   const balanceByCurrency = balanceByNetwork?.balances?.[tokenSymbol || '']
+  const freeBalance = balanceByCurrency?.freeBalance
+    ? convertToBalanceWithDecimal(
+        balanceByCurrency.freeBalance.toString(),
+        decimal || 10
+      )
+    : new BN(0)
 
   const availableBalance = balanceByCurrency
     ? calculateBalanceForStaking(balanceByCurrency, 'crestake')
@@ -44,7 +51,7 @@ const BannerActionButtons = () => {
 
   const balanceWithDecimals = convertToBalanceWithDecimal(
     availableBalance.toString(),
-    decimal || 0
+    decimal || 10
   )
 
   const minimumStakingAmountWithDecimals = convertToBalanceWithDecimal(
@@ -118,6 +125,16 @@ const BannerActionButtons = () => {
           >
             {text}
           </div>
+        )}
+        {isLockedTokens && (
+          <span className='text-center text-text-muted'>
+            Available to lock:{' '}
+            <FormatBalance
+              value={freeBalance.toString()}
+              symbol={tokenSymbol}
+              defaultMaximumFractionDigits={2}
+            />
+          </span>
         )}
         <div>{buttons}</div>
       </div>
