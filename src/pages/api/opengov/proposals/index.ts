@@ -1,6 +1,10 @@
 import { handlerWrapper } from '@/server/common'
+import {
+  Proposal,
+  SubsquareProposal,
+  mapSubsquareProposalToProposal,
+} from '@/server/opengov/mapper'
 import { subsquareApi } from '@/server/opengov/utils'
-import { toSubsocialAddress } from '@subsocial/utils'
 import { z } from 'zod'
 
 const handler = handlerWrapper({
@@ -19,21 +23,6 @@ const handler = handlerWrapper({
 })
 export default handler
 
-export type Proposal = {
-  id: number
-  beneficiary: string
-  proposer: string
-  title: string
-  status: string
-  requested: string
-  type: string
-  track: number
-  vote: {
-    total: string
-    ayes: string
-    nays: string
-  }
-}
 export type ApiProposalsResponse = {
   data: Proposal[]
   page: number
@@ -41,31 +30,6 @@ export type ApiProposalsResponse = {
   totalData: number
 }
 
-type ApiProposal = {
-  title: string
-  referendumIndex: number
-  proposer: string
-  track: number
-  state: {
-    name: string
-  }
-  onchainData: {
-    info: {
-      origin: {
-        origins: string
-      }
-    }
-    tally: {
-      ayes: string
-      nays: string
-      support: string
-    }
-    treasuryInfo?: {
-      amount: string
-      beneficiary: string
-    }
-  }
-}
 // TODO: add redis cache
 export async function getProposalsServer({
   page = 1,
@@ -80,27 +44,11 @@ export async function getProposalsServer({
       pageSize: limit,
     },
   })
-  const resData = res.data as { total: number; items: ApiProposal[] }
+  const resData = res.data as { total: number; items: SubsquareProposal[] }
 
   const hasMore = page * limit < resData.total
   return {
-    data: resData.items.map((post) => ({
-      id: post.referendumIndex,
-      beneficiary: post.onchainData.treasuryInfo?.beneficiary ?? '',
-      proposer: toSubsocialAddress(post.proposer)!,
-      requested: BigInt(
-        post.onchainData.treasuryInfo?.amount ?? '0'
-      ).toString(),
-      status: post.state.name,
-      title: post.title,
-      vote: {
-        ayes: BigInt(post.onchainData.tally.ayes ?? '0').toString(),
-        nays: BigInt(post.onchainData.tally.nays ?? '0').toString(),
-        total: BigInt(post.onchainData.tally.support ?? '0').toString(),
-      },
-      type: post.onchainData.info.origin.origins,
-      track: post.track,
-    })),
+    data: resData.items.map(mapSubsquareProposalToProposal),
     page,
     hasMore,
     totalData: resData.total,

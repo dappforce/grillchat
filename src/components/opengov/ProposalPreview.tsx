@@ -1,5 +1,5 @@
 import Send from '@/assets/icons/send.svg'
-import { Proposal } from '@/pages/api/opengov/proposals'
+import { Proposal } from '@/server/opengov/mapper'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'

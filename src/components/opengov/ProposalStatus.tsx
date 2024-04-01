@@ -1,5 +1,7 @@
-import { Proposal } from '@/pages/api/opengov/proposals'
+import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
+import dayjs from 'dayjs'
+import { ReactNode } from 'react'
 
 const proposalsClassNameMap: Record<string, { text: string; bg: string }> = {
   Confirming: { text: cx('text-[#5EC269]'), bg: cx('bg-[#5EC26914]') },
@@ -33,6 +35,28 @@ export default function ProposalStatus({
       )}
     >
       {proposal.status}
+      <ProposalPeriodLeft proposal={proposal} />
     </span>
   )
+}
+
+function getRelativeTime(endDate: number) {
+  const end = dayjs(endDate).diff(dayjs(), 'seconds')
+  if (end > 24 * 60 * 60) {
+    return `${Math.round(dayjs(endDate).diff(dayjs(), 'days', true))} days`
+  } else if (end > 60 * 60) {
+    return `${Math.round(dayjs(endDate).diff(dayjs(), 'hours', true))} hours`
+  }
+  return `${Math.round(dayjs(endDate).diff(dayjs(), 'minutes', true))} minutes`
+}
+function ProposalPeriodLeft({ proposal }: { proposal: Proposal }) {
+  let element: ReactNode = null
+  if (proposal.status === 'Deciding') {
+    const endTime = proposal.decision?.endTime
+    if (endTime) element = <span>{getRelativeTime(endTime)}</span>
+  } else if (proposal.status === 'Confirming') {
+    const endTime = proposal.confirmation?.endTime
+    if (endTime) element = <span>{getRelativeTime(endTime)}</span>
+  }
+  return <> &middot; {element}</>
 }

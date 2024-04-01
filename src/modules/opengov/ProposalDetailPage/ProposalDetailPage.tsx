@@ -2,7 +2,7 @@ import Button from '@/components/Button'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
-import { ProposalDetail } from '@/pages/api/opengov/proposals/[id]'
+import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import { ReactNode, useState } from 'react'
@@ -10,7 +10,7 @@ import ProposalDetailModal from './ProposalDetailModal'
 import ProposalDetailSection from './ProposalDetailSection'
 
 export type ProposalDetailPageProps = {
-  proposal: ProposalDetail
+  proposal: Proposal
 }
 
 export default function ProposalDetailPage({
@@ -48,7 +48,7 @@ function NavbarChatInfo({
   proposal,
   backButton,
 }: {
-  proposal: ProposalDetail
+  proposal: Proposal
   backButton: ReactNode
 }) {
   const [isOpenModal, setIsOpenModal] = useState(false)

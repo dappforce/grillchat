@@ -1,9 +1,9 @@
 import MdRenderer from '@/components/MdRenderer'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { ProposalDetail } from '@/pages/api/opengov/proposals/[id]'
+import { Proposal } from '@/server/opengov/mapper'
 
 export type ProposalDetailModalProps = ModalFunctionalityProps & {
-  proposal: ProposalDetail
+  proposal: Proposal
 }
 
 export default function ProposalDetailModal({

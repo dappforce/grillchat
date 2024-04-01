@@ -4,7 +4,7 @@ import MdRenderer from '@/components/MdRenderer'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
-import { ProposalDetail } from '@/pages/api/opengov/proposals/[id]'
+import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import { useState } from 'react'
@@ -15,7 +15,7 @@ export default function ProposalDetailSection({
   proposal,
   className,
 }: {
-  proposal: ProposalDetail
+  proposal: Proposal
   className?: string
 }) {
   return (
@@ -40,7 +40,7 @@ export default function ProposalDetailSection({
   )
 }
 
-function Summary({ proposal }: { proposal: ProposalDetail }) {
+function Summary({ proposal }: { proposal: Proposal }) {
   const [isOpenModal, setIsOpenModal] = useState(false)
   return (
     <>
@@ -68,7 +68,7 @@ function Summary({ proposal }: { proposal: ProposalDetail }) {
   )
 }
 
-function Status({ proposal }: { proposal: ProposalDetail }) {
+function Status({ proposal }: { proposal: Proposal }) {
   return (
     <Card className='flex flex-col gap-4 bg-background-light'>
       <div className='flex items-center justify-between gap-4'>
