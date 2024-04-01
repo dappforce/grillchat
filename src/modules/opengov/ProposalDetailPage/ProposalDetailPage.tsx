@@ -35,11 +35,7 @@ export default function ProposalDetailPage({
       }}
     >
       <div className={cx('container-page flex flex-1 items-start')}>
-        <div
-          className={cx(
-            'sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-[400px] md:block'
-          )}
-        >
+        <div className={cx('sticky top-14 hidden w-[400px] pb-20 md:block')}>
           <ProposalDetailSection proposal={proposal} className='pt-4' />
         </div>
         <div className='flex-1'>asdfasdf</div>
