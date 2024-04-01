@@ -18,8 +18,6 @@ export default function ProposalDetailSection({
   proposal: ProposalDetail
   className?: string
 }) {
-  const [isOpenModal, setIsOpenModal] = useState(false)
-
   return (
     <div className={cx('container-page flex flex-col gap-4', className)}>
       <div className='flex items-center justify-between gap-3'>
@@ -36,6 +34,16 @@ export default function ProposalDetailSection({
           avatarClassName='h-5 w-5'
         />
       </div>
+      <Summary proposal={proposal} />
+      <Status proposal={proposal} />
+    </div>
+  )
+}
+
+function Summary({ proposal }: { proposal: ProposalDetail }) {
+  const [isOpenModal, setIsOpenModal] = useState(false)
+  return (
+    <>
       <Card className='flex flex-col items-start gap-6 bg-background-light'>
         <h1 className='font-bold'>
           #{proposal.id} <span className='text-text-muted'>&middot;</span>{' '}
@@ -51,41 +59,76 @@ export default function ProposalDetailSection({
           Read more
         </LinkText>
       </Card>
-      <Card className='flex flex-col gap-4 bg-background-light'>
-        <div className='flex items-center justify-between gap-4'>
-          <span className='font-medium'>Status</span>
-          <ProposalStatus withBg className='text-sm' proposal={proposal} />
-        </div>
-        <div className='flex items-center gap-6'>
-          <VoteSummary cutout={34} className='h-20 w-20' proposal={proposal} />
-          <div className='flex w-full flex-col'>
-            <div className='flex items-center justify-between gap-2'>
-              <div className='flex items-center gap-1'>
-                <FaCheck className='text-[#5EC269]' />
-                <span className='text-sm'>
-                  Aye <span className='text-text-muted'>(125)</span>
-                </span>
-              </div>
-              <span>{formatBalanceWithDecimals(proposal.vote.ayes)} DOT</span>
-            </div>
-            <div className='my-3 h-px w-full bg-border-gray/40 dark:bg-background-lightest/30' />
-            <div className='flex items-center justify-between gap-2'>
-              <div className='flex items-center gap-1'>
-                <FaX className='text-text-red' />
-                <span className='text-sm'>
-                  Nay <span className='text-text-muted'>(125)</span>
-                </span>
-              </div>
-              <span>{formatBalanceWithDecimals(proposal.vote.ayes)} DOT</span>
-            </div>
-          </div>
-        </div>
-      </Card>
       <ProposalDetailModal
         isOpen={isOpenModal}
         closeModal={() => setIsOpenModal(false)}
         proposal={proposal}
       />
+    </>
+  )
+}
+
+function Status({ proposal }: { proposal: ProposalDetail }) {
+  return (
+    <Card className='flex flex-col gap-4 bg-background-light'>
+      <div className='flex items-center justify-between gap-4'>
+        <span className='font-medium'>Status</span>
+        <ProposalStatus withBg className='text-sm' proposal={proposal} />
+      </div>
+      <div className='flex items-center gap-6'>
+        <VoteSummary cutout={34} className='h-20 w-20' proposal={proposal} />
+        <div className='flex w-full flex-col'>
+          <div className='flex items-center justify-between gap-2'>
+            <div className='flex items-center gap-1'>
+              <FaCheck className='text-[#5EC269]' />
+              <span className='text-sm'>
+                Aye <span className='text-text-muted'>(125)</span>
+              </span>
+            </div>
+            <span>{formatBalanceWithDecimals(proposal.vote.ayes)} DOT</span>
+          </div>
+          <div className='my-3 h-px w-full bg-border-gray/40 dark:bg-background-lightest/30' />
+          <div className='flex items-center justify-between gap-2'>
+            <div className='flex items-center gap-1'>
+              <FaX className='text-text-red' />
+              <span className='text-sm'>
+                Nay <span className='text-text-muted'>(125)</span>
+              </span>
+            </div>
+            <span>{formatBalanceWithDecimals(proposal.vote.ayes)} DOT</span>
+          </div>
+        </div>
+      </div>
+      <div className='flex flex-col gap-4'>
+        <StatusProgressBar progress={60} text='28d' title='Decision' />
+        <StatusProgressBar progress={90} text='1d' title='Confirmation' />
+        <StatusProgressBar progress={10} text='28d' title='Decision' />
+      </div>
+    </Card>
+  )
+}
+
+function StatusProgressBar({
+  progress,
+  text,
+  title,
+}: {
+  title: string
+  text: string
+  progress: number
+}) {
+  return (
+    <div className='flex flex-col gap-2'>
+      <div className='flex items-center justify-between gap-4 text-sm'>
+        <span className='text-text-muted'>{title}</span>
+        <span>{text}</span>
+      </div>
+      <div
+        className='grid h-1.5 w-full rounded-full bg-background-lightest'
+        style={{ gridTemplateColumns: `${progress}fr ${100 - progress}fr` }}
+      >
+        <div className='h-full rounded-full bg-background-primary' />
+      </div>
     </div>
   )
 }
