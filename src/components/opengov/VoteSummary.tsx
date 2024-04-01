@@ -8,7 +8,7 @@ Chart.register(ArcElement)
 export default function VoteSummary({
   proposal,
   className,
-  cutout = 40,
+  cutout = 42,
   type = 'default',
 }: {
   proposal: Proposal
