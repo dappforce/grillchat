@@ -51,7 +51,7 @@ const BannerSection = () => {
           </LinkText>
         </div>
       </div>
-      <SectionWrapper className='relative z-[1] flex flex-col items-center gap-4 p-4 md:gap-5'>
+      <SectionWrapper className='relative z-[1] flex flex-col items-center gap-5 p-4 md:gap-6'>
         {showBgGradient && (
           <BgGradient
             color='dark-blue'
