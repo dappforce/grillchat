@@ -38,13 +38,6 @@ const BannerActionButtons = () => {
   })
 
   const balanceByCurrency = balanceByNetwork?.balances?.[tokenSymbol || '']
-  const freeBalance = balanceByCurrency?.freeBalance
-    ? convertToBalanceWithDecimal(
-        balanceByCurrency.freeBalance.toString(),
-        decimal || 10
-      )
-    : new BN(0)
-
   const availableBalance = balanceByCurrency
     ? calculateBalanceForStaking(balanceByCurrency, 'crestake')
     : new BN(0)
@@ -130,7 +123,7 @@ const BannerActionButtons = () => {
           <span className='text-center text-text-muted'>
             Available to lock:{' '}
             <FormatBalance
-              value={freeBalance.toString()}
+              value={balanceWithDecimals.toString()}
               symbol={tokenSymbol}
               defaultMaximumFractionDigits={2}
             />
