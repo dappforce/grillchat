@@ -7,6 +7,7 @@ import { getUserProfileLink } from '@/utils/links'
 import { decodeProfileSource } from '@/utils/profile'
 import * as bottts from '@dicebear/bottts'
 import { createAvatar } from '@dicebear/core'
+import Identicon from '@polkadot/react-identicon'
 import Image from 'next/image'
 import {
   ComponentProps,
@@ -143,16 +144,11 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           </div>
         )}
 
-        <div className={cx('relative h-full w-full p-[7.5%]')}>
-          <div className='relative h-full w-full'>
-            <Image
-              sizes='5rem'
-              className='relative rounded-full'
-              fill
-              src={avatar}
-              alt='avatar'
-            />
-          </div>
+        <div className={cx('relative h-full w-full')}>
+          <Identicon
+            value={address}
+            className='h-full w-full [&_svg]:h-full [&_svg]:w-full'
+          />
         </div>
       </LinkOrText>
     )
