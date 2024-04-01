@@ -1,4 +1,4 @@
-import { PAGES_WITH_SIDEBAR } from '@/constants/layout'
+import { PAGES_WITH_LARGER_CONTAINER } from '@/constants/layout'
 import { cx } from '@/utils/class-names'
 import {
   generatePolymorphicComponent,
@@ -20,7 +20,7 @@ const Container: typeof BaseContainer = forwardRef(function Container(
   ref
 ) {
   const { pathname } = useRouter()
-  if (PAGES_WITH_SIDEBAR.includes(pathname))
+  if (PAGES_WITH_LARGER_CONTAINER.includes(pathname))
     return (
       <BaseContainer
         {...props}

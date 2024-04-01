@@ -5,7 +5,15 @@ import { Doughnut } from 'react-chartjs-2'
 
 Chart.register(ArcElement)
 
-export default function VoteSummary({ proposal }: { proposal: Proposal }) {
+export default function VoteSummary({
+  proposal,
+  className,
+  type = 'default',
+}: {
+  proposal: Proposal
+  className?: string
+  type?: 'default' | 'small'
+}) {
   let ayePercentage = 0
   let nayPercentage = 0
   let isAye = true
@@ -19,7 +27,7 @@ export default function VoteSummary({ proposal }: { proposal: Proposal }) {
   } catch {}
 
   return (
-    <div className='relative h-24 w-24 flex-shrink-0'>
+    <div className={cx('relative h-24 w-24 flex-shrink-0', className)}>
       <div className='absolute flex h-full w-full items-center justify-center p-2 text-center'>
         <div
           className={cx(
@@ -28,17 +36,28 @@ export default function VoteSummary({ proposal }: { proposal: Proposal }) {
           )}
         />
         <div className='flex flex-col items-center'>
-          <span className='text-sm font-medium text-black dark:text-white'>
+          <span
+            className={cx(
+              'text-sm font-medium text-black dark:text-white',
+              type === 'small' && 'text-xs'
+            )}
+          >
             {isAye ? ayePercentage : nayPercentage}%
           </span>
-          <span className='text-xs text-text-muted'>
-            {isAye ? 'Aye' : 'Nay'}
-          </span>
+          {type === 'default' && (
+            <span className='text-xs text-text-muted'>
+              {isAye ? 'Aye' : 'Nay'}
+            </span>
+          )}
         </div>
       </div>
       <Doughnut
         className='relative'
-        options={{ cutout: 40, backgroundColor: '#000', animation: false }}
+        options={{
+          cutout: type === 'default' ? 40 : 15,
+          backgroundColor: '#000',
+          animation: false,
+        }}
         data={{
           datasets: [
             {

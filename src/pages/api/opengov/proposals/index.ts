@@ -26,6 +26,8 @@ export type Proposal = {
   title: string
   status: string
   requested: string
+  type: string
+  track: number
   vote: {
     total: string
     ayes: string

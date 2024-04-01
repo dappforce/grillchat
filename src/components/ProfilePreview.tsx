@@ -110,7 +110,7 @@ const ProfilePreview = ({
         forceProfileSource={forceProfileSource}
       />
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
-        <div className='relative left-1 flex items-center gap-2'>
+        <div className='ml-1 flex items-center gap-2'>
           <Name
             withPolkadotIdentity
             asLink={asLink}

@@ -56,12 +56,12 @@ export function formatBalanceWithDecimals(
   let parsedValue = BigNumber(value).div(10 ** decimalAmt)
   let roundings = ''
 
-  if (parsedValue.gte(1000000) && shorten) {
+  if (parsedValue.gte(1_000_000) && shorten) {
     parsedValue = parsedValue.div(1000000)
-    roundings = 'm'
-  } else if (parsedValue.gte(1000) && shorten) {
+    roundings = 'M'
+  } else if (parsedValue.gte(1_000) && shorten) {
     parsedValue = parsedValue.div(1000)
-    roundings = 'k'
+    roundings = 'K'
   }
 
   let [prefix, postfix = '0'] = parsedValue.toString().split('.')
@@ -72,6 +72,11 @@ export function formatBalanceWithDecimals(
     if (BigNumber(decimals).gte(1)) {
       prefix = BigNumber(prefix).plus(1).toFixed(0)
       decimals = BigNumber(decimals).minus(1).toPrecision(precision)
+
+      if (BigNumber(prefix).plus(1).gte(1_000) && roundings === 'K') {
+        prefix = BigNumber(prefix).div(1000).toFixed(0)
+        roundings = 'M'
+      }
     }
     if (BigNumber(decimals).isZero()) {
       decimals = ''
