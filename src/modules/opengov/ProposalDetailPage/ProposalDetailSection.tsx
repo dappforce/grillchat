@@ -2,10 +2,13 @@ import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import MdRenderer from '@/components/MdRenderer'
 import ProfilePreview from '@/components/ProfilePreview'
+import ProposalStatus from '@/components/opengov/ProposalStatus'
+import VoteSummary from '@/components/opengov/VoteSummary'
 import { ProposalDetail } from '@/pages/api/opengov/proposals/[id]'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import { useState } from 'react'
+import { FaCheck, FaX } from 'react-icons/fa6'
 import ProposalDetailModal from './ProposalDetailModal'
 
 export default function ProposalDetailSection({
@@ -47,6 +50,36 @@ export default function ProposalDetailSection({
         >
           Read more
         </LinkText>
+      </Card>
+      <Card className='flex flex-col gap-4 bg-background-light'>
+        <div className='flex items-center justify-between gap-4'>
+          <span className='font-medium'>Status</span>
+          <ProposalStatus withBg className='text-sm' proposal={proposal} />
+        </div>
+        <div className='flex items-center gap-6'>
+          <VoteSummary cutout={34} className='h-20 w-20' proposal={proposal} />
+          <div className='flex w-full flex-col'>
+            <div className='flex items-center justify-between gap-2'>
+              <div className='flex items-center gap-1'>
+                <FaCheck className='text-[#5EC269]' />
+                <span className='text-sm'>
+                  Aye <span className='text-text-muted'>(125)</span>
+                </span>
+              </div>
+              <span>{formatBalanceWithDecimals(proposal.vote.ayes)} DOT</span>
+            </div>
+            <div className='my-3 h-px w-full bg-border-gray/40 dark:bg-background-lightest/30' />
+            <div className='flex items-center justify-between gap-2'>
+              <div className='flex items-center gap-1'>
+                <FaX className='text-text-red' />
+                <span className='text-sm'>
+                  Nay <span className='text-text-muted'>(125)</span>
+                </span>
+              </div>
+              <span>{formatBalanceWithDecimals(proposal.vote.ayes)} DOT</span>
+            </div>
+          </div>
+        </div>
       </Card>
       <ProposalDetailModal
         isOpen={isOpenModal}

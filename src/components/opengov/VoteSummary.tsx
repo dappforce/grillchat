@@ -8,10 +8,12 @@ Chart.register(ArcElement)
 export default function VoteSummary({
   proposal,
   className,
+  cutout = 40,
   type = 'default',
 }: {
   proposal: Proposal
   className?: string
+  cutout?: number
   type?: 'default' | 'small'
 }) {
   let ayePercentage = 0
@@ -54,7 +56,7 @@ export default function VoteSummary({
       <Doughnut
         className='relative'
         options={{
-          cutout: type === 'default' ? 40 : 15,
+          cutout,
           backgroundColor: '#000',
           animation: false,
         }}

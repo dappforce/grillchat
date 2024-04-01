@@ -71,7 +71,12 @@ function NavbarChatInfo({
           setIsOpenModal(true)
         }}
       >
-        <VoteSummary proposal={proposal} className='h-10 w-10' type='small' />
+        <VoteSummary
+          proposal={proposal}
+          className='h-10 w-10'
+          type='small'
+          cutout={15}
+        />
         <div className='flex flex-col overflow-hidden'>
           <div className='flex items-center gap-2 overflow-hidden'>
             <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
