@@ -1,6 +1,7 @@
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm'
 import LinkText from './LinkText'
 
@@ -11,16 +12,19 @@ interface Props {
 
 export default function MdRenderer({ source, className = '' }: Props) {
   return (
-    <div className={cx('prose dark:prose-invert', className)}>
+    <div className={cx('prose max-w-full dark:prose-invert', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
         components={{
-          // @ts-expect-error - the props type is not correctly inferred
           a: (props) => (
+            // @ts-expect-error - the props type is not correctly inferred
             <LinkText {...props} openInNewTab variant='secondary' />
           ),
-          // @ts-expect-error - the props type is not correctly inferred
-          img: (props) => <Image alt='' {...props} />,
+          img: (props) => (
+            // @ts-expect-error - the props type is not correctly inferred
+            <Image alt='' className='bg-background-lighter' {...props} />
+          ),
         }}
       >
         {source}
