@@ -98,7 +98,7 @@ export default function OpengovProposalListPage() {
             />
           }
           dataLength={flattenedPages?.length ?? 0}
-          className='flex flex-col gap-2 p-2'
+          className='flex flex-col gap-2 p-2 pt-4'
         >
           {flattenedPages.map((proposal) => (
             <div key={proposal.id}>
