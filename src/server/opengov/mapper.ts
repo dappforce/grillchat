@@ -28,6 +28,10 @@ type ApprovalType =
     }
 export type SubsquareProposal = {
   title: string
+  indexer: {
+    blockHeight: number
+    blockTime: number
+  }
   referendumIndex: number
   proposer: string
   track: number
@@ -52,6 +56,10 @@ export type SubsquareProposal = {
       origin: {
         origins: string
       }
+      deciding: {
+        since: number
+        confirming: number
+      }
     }
     tally: {
       ayes: string
@@ -67,15 +75,17 @@ export type SubsquareProposal = {
 }
 
 export type ProposalDecisionPeriod = {
-  startTime: number
+  startTime?: number
+  endTime?: number
   duration: number
-  endTime: number
+  timeLeft: number
 }
 export type ProposalConfirmationPeriod = {
-  startTime: number
+  startTime?: number
+  endTime?: number
   duration: number
-  endTime: number
   attempt: number
+  timeLeft?: number
 }
 
 export type Proposal = {

@@ -163,7 +163,6 @@ export default function Navbar({
 
   const isInIframe = useIsInIframe()
   const notificationBell = !isInIframe && <NotificationBell />
-  console.log(withLargerContainer)
 
   return (
     <>

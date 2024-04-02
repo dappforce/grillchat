@@ -1,7 +1,10 @@
 import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
 import { ReactNode } from 'react'
+
+dayjs.extend(duration)
 
 const proposalsClassNameMap: Record<string, { text: string; bg: string }> = {
   Confirming: { text: cx('text-[#5EC269]'), bg: cx('bg-[#5EC26914]') },
@@ -40,26 +43,26 @@ export default function ProposalStatus({
   )
 }
 
-function getRelativeTime(endDate: number) {
-  const end = dayjs(endDate).diff(dayjs(), 'seconds')
-  if (end > 24 * 60 * 60) {
-    const diff = Math.round(dayjs(endDate).diff(dayjs(), 'days', true))
+function getRelativeTime(timeLeft: number) {
+  if (timeLeft > 24 * 60 * 60) {
+    const diff = Math.round(dayjs.duration(timeLeft).asDays())
     return `${diff}d left`
-  } else if (end > 60 * 60) {
-    const diff = Math.round(dayjs(endDate).diff(dayjs(), 'hours', true))
+  } else if (timeLeft > 60 * 60) {
+    const diff = dayjs.duration(timeLeft).asHours()
     return `${diff}h left`
   }
-  const diff = Math.round(dayjs(endDate).diff(dayjs(), 'minutes', true))
+  const diff = dayjs.duration(timeLeft).asMinutes()
   return `${diff}m left`
 }
 function ProposalPeriodLeft({ proposal }: { proposal: Proposal }) {
   let element: ReactNode = null
   if (proposal.status === 'Deciding') {
-    const endTime = proposal.decision?.endTime
-    if (endTime) element = <span>{getRelativeTime(endTime)}</span>
+    const timeLeft = proposal.decision?.timeLeft
+    if (timeLeft) element = <span>{getRelativeTime(timeLeft)}</span>
   } else if (proposal.status === 'Confirming') {
-    const endTime = proposal.confirmation?.endTime
-    if (endTime) element = <span>{getRelativeTime(endTime)}</span>
+    const timeLeft = proposal.confirmation?.timeLeft
+    if (timeLeft) element = <span>{getRelativeTime(timeLeft)}</span>
   }
+  if (!element) return null
   return <> &middot; {element}</>
 }

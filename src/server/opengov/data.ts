@@ -40,11 +40,30 @@ function getDecisionData(
     'DecisionStarted'
   )
   const duration = trackInfo.decisionPeriod * POLKADOT_BLOCK_TIME
-  if (!startTime) return null
+
+  if (!startTime) {
+    if (!proposal.onchainData?.info?.deciding?.since) return null
+
+    const indexerBlockHeight = proposal.indexer.blockHeight
+    const currentBlockHeight =
+      indexerBlockHeight +
+      (Date.now() - proposal.indexer.blockTime) / POLKADOT_BLOCK_TIME
+    const blockLeft =
+      proposal.onchainData.info.deciding.since +
+      trackInfo.decisionPeriod -
+      currentBlockHeight
+
+    return {
+      duration,
+      timeLeft: blockLeft * POLKADOT_BLOCK_TIME,
+    }
+  }
+
   return {
     startTime,
     duration,
     endTime: startTime + duration,
+    timeLeft: startTime + duration - Date.now(),
   }
 }
 
@@ -64,9 +83,17 @@ function getConfirmationData(
   })
   const confirmationDuration = trackInfo.confirmPeriod * POLKADOT_BLOCK_TIME
 
-  if (!confirmationStartTime) return null
+  if (!confirmationStartTime) {
+    // Time left can't be calculated from here, because the block time for the start of the confirmation period is not available with the group fetch
+    // the `onchainData.info.confirming.since` has different data than the timeline used in detail page
+    return {
+      duration: confirmationDuration,
+      attempt: 1,
+    }
+  }
 
   return {
+    timeLeft: confirmationStartTime + confirmationDuration - Date.now(),
     startTime: confirmationStartTime,
     duration: confirmationDuration,
     endTime: (confirmationStartTime ?? 0) + confirmationDuration,
