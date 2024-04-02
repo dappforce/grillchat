@@ -1,7 +1,6 @@
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { getProposalPeriods } from './data'
-import { TracksInfo } from './track-info'
 
 export type ProposalStatus =
   | 'Confirming'
@@ -12,6 +11,21 @@ export type ProposalStatus =
   | 'Executed'
   | 'Rejected'
 
+type ApprovalType =
+  | {
+      linearDecreasing: {
+        length: number
+        floor: number
+        ceil: number
+      }
+    }
+  | {
+      reciprocal: {
+        factor: number
+        xOffset: number
+        yOffset: number
+      }
+    }
 export type SubsquareProposal = {
   title: string
   referendumIndex: number
@@ -22,6 +36,18 @@ export type SubsquareProposal = {
     name: ProposalStatus
   }
   onchainData: {
+    trackInfo: {
+      id: number
+      confirmPeriod: number
+      decisionDeposit: string
+      decisionPeriod: number
+      maxDeciding: number
+      minApproval: ApprovalType
+      minSupport: ApprovalType
+      minEnactmentPeriod: number
+      name: string
+      preparePeriod: number
+    }
     info: {
       origin: {
         origins: string
@@ -73,7 +99,6 @@ export type Proposal = {
 }
 
 export function mapSubsquareProposalToProposal(
-  allTracksInfo: TracksInfo,
   proposal: SubsquareProposal
 ): Proposal {
   return {
@@ -93,6 +118,6 @@ export function mapSubsquareProposalToProposal(
     type: proposal.onchainData.info.origin.origins,
     track: proposal.track,
     content: proposal.content,
-    ...getProposalPeriods(allTracksInfo, proposal),
+    ...getProposalPeriods(proposal),
   }
 }

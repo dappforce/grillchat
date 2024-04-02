@@ -4,7 +4,6 @@ import {
   SubsquareProposal,
   mapSubsquareProposalToProposal,
 } from '@/server/opengov/mapper'
-import { getPolkadotTracksInfo } from '@/server/opengov/track-info'
 import { subsquareApi } from '@/server/opengov/utils'
 import { z } from 'zod'
 
@@ -34,8 +33,7 @@ export async function getProposalDetailServer({
   const res = await subsquareApi.get(`/gov2/referendums/${id}`)
   const proposal = res.data as SubsquareProposal
 
-  const allTracksInfo = await getPolkadotTracksInfo()
   return {
-    data: mapSubsquareProposalToProposal(allTracksInfo, proposal),
+    data: mapSubsquareProposalToProposal(proposal),
   }
 }

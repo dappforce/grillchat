@@ -4,7 +4,6 @@ import {
   ProposalDecisionPeriod,
   SubsquareProposal,
 } from './mapper'
-import { TracksInfo } from './track-info'
 
 const POLKADOT_BLOCK_TIME = 6_000
 
@@ -16,12 +15,9 @@ function getBlockTimeForStatus(
 }
 
 export function getProposalPeriods(
-  allTrackInfo: TracksInfo,
   proposal: SubsquareProposal
 ): Pick<Proposal, 'decision' | 'confirmation'> {
-  const track = proposal.track
-
-  const trackInfo = allTrackInfo[track]
+  const trackInfo = proposal.onchainData.trackInfo
   if (!trackInfo)
     return {
       confirmation: null,
@@ -29,17 +25,15 @@ export function getProposalPeriods(
     }
 
   return {
-    decision: getDecisionData(allTrackInfo, proposal),
-    confirmation: getConfirmationData(allTrackInfo, proposal),
+    decision: getDecisionData(proposal),
+    confirmation: getConfirmationData(proposal),
   }
 }
 
 function getDecisionData(
-  allTrackInfo: TracksInfo,
   proposal: SubsquareProposal
 ): ProposalDecisionPeriod | null {
-  const trackInfo = allTrackInfo[proposal.track]
-  if (!trackInfo) return null
+  const trackInfo = proposal.onchainData.trackInfo
 
   const startTime = getBlockTimeForStatus(
     proposal.onchainData.timeline ?? [],
@@ -55,10 +49,9 @@ function getDecisionData(
 }
 
 function getConfirmationData(
-  allTrackInfo: TracksInfo,
   proposal: SubsquareProposal
 ): ProposalConfirmationPeriod | null {
-  const trackInfo = allTrackInfo[proposal.track]
+  const trackInfo = proposal.onchainData.trackInfo
   if (!trackInfo) return null
 
   let confirmationStartTime: number | undefined

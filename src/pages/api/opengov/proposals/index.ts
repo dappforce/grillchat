@@ -4,7 +4,6 @@ import {
   SubsquareProposal,
   mapSubsquareProposalToProposal,
 } from '@/server/opengov/mapper'
-import { getPolkadotTracksInfo } from '@/server/opengov/track-info'
 import { subsquareApi } from '@/server/opengov/utils'
 import { z } from 'zod'
 
@@ -39,7 +38,6 @@ export async function getProposalsServer({
   page: number
   limit: number
 }): Promise<ApiProposalsResponse> {
-  const allTracksInfo = await getPolkadotTracksInfo()
   const res = await subsquareApi.get('/gov2/referendums', {
     params: {
       page,
@@ -50,9 +48,7 @@ export async function getProposalsServer({
 
   const hasMore = page * limit < resData.total
   return {
-    data: resData.items.map((val) =>
-      mapSubsquareProposalToProposal(allTracksInfo, val)
-    ),
+    data: resData.items.map((val) => mapSubsquareProposalToProposal(val)),
     page,
     hasMore,
     totalData: resData.total,
