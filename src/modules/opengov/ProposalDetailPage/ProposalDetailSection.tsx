@@ -18,6 +18,7 @@ import { useState } from 'react'
 import { FaCheck, FaX } from 'react-icons/fa6'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import ProposalDetailModal from './ProposalDetailModal'
+import ProposalMetadataModal from './ProposalMetadataModal'
 
 dayjs.extend(duration)
 
@@ -79,6 +80,8 @@ function Summary({ proposal }: { proposal: Proposal }) {
 }
 
 function Status({ proposal }: { proposal: Proposal }) {
+  const [isOpenModal, setIsOpenModal] = useState(false)
+
   return (
     <Card className='flex flex-col gap-4 bg-background-light'>
       <div className='flex items-center justify-between gap-4'>
@@ -152,9 +155,15 @@ function Status({ proposal }: { proposal: Proposal }) {
               />
             ),
             text: 'Show Details',
+            onClick: () => setIsOpenModal(true),
           },
         ]}
         size='sm'
+      />
+      <ProposalMetadataModal
+        proposal={proposal}
+        isOpen={isOpenModal}
+        closeModal={() => setIsOpenModal(false)}
       />
     </Card>
   )
