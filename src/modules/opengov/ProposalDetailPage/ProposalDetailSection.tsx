@@ -1,3 +1,7 @@
+import IssuanceIcon from '@/assets/icons/issuance.svg'
+import SupportIcon from '@/assets/icons/support.svg'
+import VoteIcon from '@/assets/icons/vote.svg'
+import ActionCard from '@/components/ActionCard'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import MdRenderer from '@/components/MdRenderer'
@@ -12,6 +16,7 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import { useState } from 'react'
 import { FaCheck, FaX } from 'react-icons/fa6'
+import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import ProposalDetailModal from './ProposalDetailModal'
 
 dayjs.extend(duration)
@@ -92,7 +97,7 @@ function Status({ proposal }: { proposal: Proposal }) {
             </div>
             <span>{formatBalanceWithDecimals(proposal.vote.ayes)} DOT</span>
           </div>
-          <div className='my-3 h-px w-full bg-border-gray/40 dark:bg-background-lightest/30' />
+          <div className='my-3 h-px w-full bg-border-gray/70' />
           <div className='flex items-center justify-between gap-2'>
             <div className='flex items-center gap-1'>
               <FaX className='text-text-red' />
@@ -110,13 +115,47 @@ function Status({ proposal }: { proposal: Proposal }) {
           periodData={proposal.confirmation}
           title='Confirmation'
         />
-        {/* <StatusProgressBar
-          progress={10}
-          title='Decision'
-          currentDayElapsed={0}
-          duration={0}
-        /> */}
       </div>
+      <div className='flex flex-col gap-2.5'>
+        <div className='flex items-center justify-between gap-4 text-sm'>
+          <div className='flex items-center gap-2'>
+            <SupportIcon className='text-text-muted' />
+            <span>Support</span>
+            <span className='text-text-muted'>(0.1%/32.6%)</span>
+          </div>
+          <span>≈ 331.59k DOT</span>
+        </div>
+        <div className='h-px w-full bg-border-gray/70' />
+        <div className='flex items-center justify-between gap-4 text-sm'>
+          <div className='flex items-center gap-2'>
+            <IssuanceIcon className='text-text-muted' />
+            <span>Issuance</span>
+          </div>
+          <span>≈ 690.59k DOT</span>
+        </div>
+      </div>
+      <ActionCard
+        className='p-0'
+        actions={[
+          {
+            icon: (className) => (
+              <VoteIcon className={cx('text-text-muted', className)} />
+            ),
+            href: `https://polkadot.subsquare.io/referenda/${proposal.id}`,
+            text: 'Vote',
+            openInNewTab: true,
+          },
+          {
+            icon: (className) => (
+              <HiOutlineInformationCircle
+                className={cx('text-text-muted', className)}
+              />
+            ),
+            text: 'Show Details',
+          },
+        ]}
+        size='sm'
+      />
     </Card>
   )
 }

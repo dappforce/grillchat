@@ -1,9 +1,11 @@
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
+import { FaArrowUpRightFromSquare } from 'react-icons/fa6'
 import Button, { ButtonProps } from './Button'
 import Card from './Card'
 import DotBlinkingNotification from './DotBlinkingNotification'
+import CustomLink from './referral/CustomLink'
 
 type Action = {
   text: string
@@ -11,6 +13,8 @@ type Action = {
   icon: (props: { className?: string }) => JSX.Element
   iconClassName?: string
   className?: string
+  href?: string
+  openInNewTab?: boolean
   onClick?: ButtonProps['onClick']
   disabled?: boolean
   isComingSoon?: boolean
@@ -58,6 +62,8 @@ function ActionItem({ action, size }: ActionItemProps) {
   const {
     icon: Icon,
     text,
+    href,
+    openInNewTab,
     className,
     description,
     disabled,
@@ -73,7 +79,7 @@ function ActionItem({ action, size }: ActionItemProps) {
 
   const showBlinking = firstVisitNotificationStorageName && showNotification
 
-  return (
+  const button = (
     <Button
       disabled={disabled || isComingSoon}
       variant='transparent'
@@ -99,7 +105,7 @@ function ActionItem({ action, size }: ActionItemProps) {
           iconClassName
         )}
       />
-      <div className='flex flex-col items-start'>
+      <div className='flex flex-1 flex-col'>
         <span className='flex items-center gap-2'>
           {text}{' '}
           {isComingSoon && (
@@ -108,9 +114,29 @@ function ActionItem({ action, size }: ActionItemProps) {
             </Card>
           )}
           {showBlinking && <DotBlinkingNotification />}
+          {openInNewTab && (
+            <FaArrowUpRightFromSquare className='ml-auto text-sm text-text-muted' />
+          )}
         </span>
         <span className='text-sm text-text-muted'>{description}</span>
       </div>
     </Button>
   )
+
+  if (href && !disabled) {
+    let anchorProps = {}
+    if (openInNewTab) {
+      anchorProps = {
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      }
+    }
+    return (
+      <CustomLink {...anchorProps} href={href}>
+        {button}
+      </CustomLink>
+    )
+  }
+
+  return button
 }
